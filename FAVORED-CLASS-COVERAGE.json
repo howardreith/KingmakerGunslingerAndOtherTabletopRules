@@ -1,0 +1,367 @@
+{
+  "schemaVersion": 1,
+  "mission": "gunslinger-favored-class-integration",
+  "overallStatus": "PARTIAL - NOT RELEASE QUALIFIED",
+  "finalCandidate": {
+    "commit": "ef250f877cda322f75b499b0dec8fbe155e14ce2",
+    "dllSha256": "fe451f35dff61c26bb96fd9ff9d8c7eb23bffe177788899e74a57662e10de8bf",
+    "dllMvid": "2c9d8c5f-c424-4179-91cd-72ca85438c54"
+  },
+  "statusLadder": [
+    "NOT STARTED",
+    "CODE COMPLETE",
+    "DOMAIN TESTED",
+    "NATIVE TESTED",
+    "SAVE TESTED",
+    "QUALIFIED"
+  ],
+  "finalRuns": {
+    "contract": "20260924T0603184328859Z PASS",
+    "hostState": "20260924T0604015343603Z PASS",
+    "grit": "20260924T0604457833407Z PASS",
+    "menus": "20260924T0605443253994Z PASS",
+    "mechanics": "20260924T0606461797306Z PASS",
+    "initiative": "20260924T0607291357025Z PASS",
+    "elementalCore": "20260924T0608135881312Z PASS",
+    "mostlyHuman": "20260924T0609003356634Z PASS",
+    "advanced": "20260924T0609525254026Z PASS",
+    "oracle": "20260924T0601519001416Z PASS",
+    "performance": "20260924T0602359332310Z PASS"
+  },
+  "scenarioFamilies": {
+    "H01": {
+      "status": "NATIVE TESTED",
+      "evidence": "20260924T0140349022134Z PASS (cf8a66d21, isolated gunslinger-only profile)",
+      "note": "host physically absent: class, firearms and races work; no favored-class UI"
+    },
+    "H02": {
+      "status": "DOMAIN TESTED",
+      "evidence": "favored-class.host-* domain cases; IntegrationDisabled observed natively (07c21f29b: third-party-on 20260924T0455537582112Z, mostly-human-off 20260924T0456353591331Z, integration-off 20260924T0457176732605Z, invalid-file 20260924T0458003051455Z (all PASS; settings file restored absent))",
+      "note": "native host-disabled/unsupported/partial states NOT RUN (would require altering the host)"
+    },
+    "H03": {
+      "status": "NATIVE TESTED",
+      "evidence": "20260924T0603184328859Z PASS",
+      "note": "one Gunslinger progression and bonus selection, 20 levels"
+    },
+    "H04": {
+      "status": "DOMAIN TESTED",
+      "evidence": "gunslinger-not-ready skip reason (domain)",
+      "note": "native NOT RUN"
+    },
+    "H05": {
+      "status": "DOMAIN TESTED",
+      "evidence": "exact SHA-256/MVID/IL fingerprint gate (domain); positive identity natively in every contract run",
+      "note": "changed-binary native NOT RUN (not authorized to alter host binaries)"
+    },
+    "H06": {
+      "status": "NATIVE TESTED",
+      "evidence": "20260924T0603184328859Z PASS",
+      "note": "repeat publication is a no-op"
+    },
+    "H07": {
+      "status": "NATIVE TESTED",
+      "evidence": "20260924T0605443253994Z PASS; 20260924T0601519001416Z PASS",
+      "note": "absent Goblin/Orc routes only; unfound revelation targets are withheld per target"
+    },
+    "H08": {
+      "status": "NATIVE TESTED",
+      "evidence": "20260924T0603184328859Z PASS",
+      "note": "injected fault rolls back exactly"
+    },
+    "H09": {
+      "status": "NATIVE TESTED",
+      "evidence": "20260924T0603184328859Z PASS",
+      "note": "host custom rewards preserved as foreign entries; no foreign file writes"
+    },
+    "H10": {
+      "status": "NATIVE TESTED",
+      "evidence": "20260924T0603184328859Z PASS",
+      "note": "generic HP/skill rewards unchanged; no second HP patch"
+    },
+    "E01": {
+      "status": "NATIVE TESTED",
+      "evidence": "20260924T0605443253994Z PASS",
+      "note": "race matrix incl. expected provider absences"
+    },
+    "E02": {
+      "status": "NATIVE TESTED",
+      "evidence": "20260924T0605443253994Z PASS",
+      "note": ""
+    },
+    "E03": {
+      "status": "NATIVE TESTED",
+      "evidence": "20260924T0605443253994Z PASS",
+      "note": ""
+    },
+    "E04": {
+      "status": "NATIVE TESTED",
+      "evidence": "20260924T0605443253994Z PASS; 20260924T0538189215967Z PASS (9b3db78bf, third-party profile ON)",
+      "note": ""
+    },
+    "E05": {
+      "status": "NATIVE TESTED",
+      "evidence": "20260924T0609003356634Z PASS; 07c21f29b: third-party-on 20260924T0455537582112Z, mostly-human-off 20260924T0456353591331Z, integration-off 20260924T0457176732605Z, invalid-file 20260924T0458003051455Z (all PASS; settings file restored absent)",
+      "note": ""
+    },
+    "E06": {
+      "status": "NATIVE TESTED",
+      "evidence": "20260924T0609003356634Z PASS",
+      "note": "twelve heritages"
+    },
+    "E07": {
+      "status": "NATIVE TESTED",
+      "evidence": "20260924T0609003356634Z PASS",
+      "note": "fact diff, unchanged race/scores, humanoid-targeting check"
+    },
+    "E08": {
+      "status": "DOMAIN TESTED",
+      "evidence": "eligibility reads the actual race blueprint and verified facts only",
+      "note": "native NOT RUN"
+    },
+    "E09": {
+      "status": "OUT OF SCOPE",
+      "evidence": "charter excludes Racial/Planar Heritage feat systems",
+      "note": "no verified provider"
+    },
+    "E10": {
+      "status": "DOMAIN TESTED",
+      "evidence": "favored-class.eligibility-* (bounded graph)",
+      "note": ""
+    },
+    "E11": {
+      "status": "NOT RUN",
+      "evidence": "",
+      "note": "favored-class levels are the host's; multiclass flow not observed natively"
+    },
+    "E12": {
+      "status": "NATIVE TESTED",
+      "evidence": "20260924T0605443253994Z PASS; 20260924T0609525254026Z PASS; 20260924T0602359332310Z PASS",
+      "note": "replaced features not offered; dormant investment legal"
+    },
+    "E13": {
+      "status": "PARTIAL",
+      "evidence": "20260924T0604457833407Z PASS",
+      "note": "level-up cancel leaves no leak; respec NOT RUN"
+    },
+    "E14": {
+      "status": "NATIVE TESTED",
+      "evidence": "20260924T0605443253994Z PASS",
+      "note": "capped counters close; host generic choices remain"
+    },
+    "E15": {
+      "status": "PARTIAL",
+      "evidence": "20260924T0609525254026Z PASS",
+      "note": "fresh characters observed; pets get only their hidden armor feature; mercenary/companion/auto-level NOT RUN"
+    },
+    "E16": {
+      "status": "NOT RUN",
+      "evidence": "",
+      "note": ""
+    },
+    "M01": {
+      "status": "NATIVE TESTED",
+      "evidence": "20260924T0604457833407Z PASS; 20260924T0605443253994Z PASS",
+      "note": "domain oracle for every divisor; native d = 2, 3, 4, 6"
+    },
+    "M02": {
+      "status": "NATIVE TESTED",
+      "evidence": "20260924T0605443253994Z PASS",
+      "note": ""
+    },
+    "M03": {
+      "status": "NATIVE TESTED",
+      "evidence": "20260924T0605443253994Z PASS",
+      "note": "per-type counters stay independent"
+    },
+    "M04": {
+      "status": "NATIVE TESTED",
+      "evidence": "20260924T0605443253994Z PASS",
+      "note": "one ledger per canonical effect"
+    },
+    "M05": {
+      "status": "NATIVE TESTED",
+      "evidence": "20260924T0604457833407Z PASS",
+      "note": ""
+    },
+    "M06": {
+      "status": "NATIVE TESTED",
+      "evidence": "20260924T0604457833407Z PASS; 20260924T0612102884372Z (prepare) + 20260924T0613092420246Z (verify) PASS; transaction word-of-recall-fcb-persistence-20260924T0612076008434Z_556ce961a4974babba75ab6c3145bb78 (settings and complete Mods tree restored)",
+      "note": "no refill; current grit persists"
+    },
+    "M07": {
+      "status": "PARTIAL",
+      "evidence": "20260924T0606461797306Z PASS",
+      "note": "types and floor; ammunition/conditions/reliability not exhaustively observed"
+    },
+    "M08": {
+      "status": "NATIVE TESTED",
+      "evidence": "20260924T0606461797306Z PASS; 20260924T0608135881312Z PASS",
+      "note": ""
+    },
+    "M09": {
+      "status": "NATIVE TESTED",
+      "evidence": "20260924T0606461797306Z PASS; 20260924T0608135881312Z PASS",
+      "note": "firearm, unarmed, claw, longsword, Pistol-Whip surrogate"
+    },
+    "M10": {
+      "status": "PARTIAL",
+      "evidence": "20260924T0606461797306Z PASS",
+      "note": "deed attack only; interrupted/custom paths NOT RUN"
+    },
+    "M11": {
+      "status": "NATIVE TESTED",
+      "evidence": "20260924T0606461797306Z PASS",
+      "note": ""
+    },
+    "M12": {
+      "status": "PARTIAL",
+      "evidence": "20260924T0606461797306Z PASS",
+      "note": "inside the deed buff; both combat modes not separately observed"
+    },
+    "M13": {
+      "status": "PARTIAL",
+      "evidence": "20260924T0607291357025Z PASS",
+      "note": "real-time and turn-based; zero-grit and True Grit variants NOT RUN"
+    },
+    "M14": {
+      "status": "PARTIAL",
+      "evidence": "20260924T0608135881312Z PASS",
+      "note": "flat bonus on bomb context; splash/critical variants not separately observed"
+    },
+    "M15": {
+      "status": "NATIVE TESTED",
+      "evidence": "20260924T0602359332310Z PASS",
+      "note": "owner-local radius; another performer unchanged"
+    },
+    "M16": {
+      "status": "PARTIAL",
+      "evidence": "20260924T0602359332310Z PASS",
+      "note": "separate counters and +30-ft cap; shared native range text and ring are unchanged (disclosed)"
+    },
+    "M17": {
+      "status": "NATIVE TESTED",
+      "evidence": "20260924T0609525254026Z PASS",
+      "note": "each paladin's own bonus; overlap keeps the game's higher morale bonus"
+    },
+    "M18": {
+      "status": "NATIVE TESTED",
+      "evidence": "20260924T0609525254026Z PASS",
+      "note": "replacement, Barkskin, removal; death/resummon NOT RUN"
+    },
+    "M19": {
+      "status": "NATIVE TESTED",
+      "evidence": "20260924T0606461797306Z PASS; 20260924T0608135881312Z PASS",
+      "note": ""
+    },
+    "M20": {
+      "status": "NATIVE TESTED",
+      "evidence": "20260924T0608135881312Z PASS",
+      "note": "lockstep native level-ups"
+    },
+    "M21": {
+      "status": "NATIVE TESTED",
+      "evidence": "20260924T0608135881312Z PASS",
+      "note": ""
+    },
+    "M22": {
+      "status": "NATIVE TESTED",
+      "evidence": "20260924T0608135881312Z PASS",
+      "note": ""
+    },
+    "M23": {
+      "status": "NATIVE TESTED",
+      "evidence": "20260924T0608135881312Z PASS",
+      "note": ""
+    },
+    "M24": {
+      "status": "PARTIAL",
+      "evidence": "20260924T0601519001416Z PASS; 20260924T0609525254026Z PASS",
+      "note": "every manifest target scoped with its audited families; values probed for representative targets"
+    },
+    "M25": {
+      "status": "NATIVE TESTED",
+      "evidence": "20260924T0601519001416Z PASS; 20260924T0609525254026Z PASS",
+      "note": "neighbor powers/revelations and Fireball unchanged"
+    },
+    "M26": {
+      "status": "PARTIAL",
+      "evidence": "20260924T0601519001416Z PASS",
+      "note": "held tiers and gates unmoved; effective level above 20 NOT RUN"
+    },
+    "M27": {
+      "status": "CODE COMPLETE",
+      "evidence": "docs/FAVORED-CLASS-TARGET-MANIFEST.md",
+      "note": "no-scaling and unsupported branches are not offered"
+    },
+    "M28": {
+      "status": "NATIVE TESTED",
+      "evidence": "20260924T0605443253994Z PASS; 20260924T0538189215967Z PASS (9b3db78bf, third-party profile ON)",
+      "note": "1/4 Halfling vs 1/6 Drow Nimble"
+    },
+    "L01": {
+      "status": "SAVE TESTED",
+      "evidence": "20260924T0612102884372Z (prepare) + 20260924T0613092420246Z (verify) PASS; transaction word-of-recall-fcb-persistence-20260924T0612076008434Z_556ce961a4974babba75ab6c3145bb78 (settings and complete Mods tree restored); earlier 20260924T0352059750938Z + 20260924T0353099892035Z (f2db844c2)",
+      "note": "Gunslinger counters; other counters NOT RUN"
+    },
+    "L02": {
+      "status": "NOT RUN",
+      "evidence": "",
+      "note": ""
+    },
+    "L03": {
+      "status": "NOT RUN",
+      "evidence": "",
+      "note": ""
+    },
+    "L04": {
+      "status": "NATIVE TESTED",
+      "evidence": "07c21f29b: third-party-on 20260924T0455537582112Z, mostly-human-off 20260924T0456353591331Z, integration-off 20260924T0457176732605Z, invalid-file 20260924T0458003051455Z (all PASS; settings file restored absent)",
+      "note": "integration OFF suppresses mechanics and keeps identities; ON restores"
+    },
+    "L05": {
+      "status": "NATIVE TESTED",
+      "evidence": "07c21f29b: third-party-on 20260924T0455537582112Z, mostly-human-off 20260924T0456353591331Z, integration-off 20260924T0457176732605Z, invalid-file 20260924T0458003051455Z (all PASS; settings file restored absent); 20260924T0606461797306Z PASS",
+      "note": "profile OFF withholds new choices; earned choices keep working"
+    },
+    "L06": {
+      "status": "CODE COMPLETE",
+      "evidence": "identities register independently of host/provider; publication fails closed",
+      "note": "native NOT RUN"
+    },
+    "L07": {
+      "status": "PARTIAL",
+      "evidence": "20260924T0607291357025Z PASS",
+      "note": "initiative in both modes; other effects NOT RUN"
+    },
+    "L08": {
+      "status": "DOMAIN TESTED",
+      "evidence": "identity manifest validators; blueprint-only component fields",
+      "note": ""
+    },
+    "L09": {
+      "status": "NATIVE TESTED",
+      "evidence": "launcher deployment manifest (DLL hash/MVID/commit) checked on every run",
+      "note": ""
+    },
+    "L10": {
+      "status": "CODE COMPLETE",
+      "evidence": "docs/FAVORED-CLASS-COMPATIBILITY.md scope statement",
+      "note": ""
+    }
+  },
+  "extraFinalRuns": {
+    "L01 fresh-process persistence (`Invoke-WordOfRecallFavoredClassPersistence.ps1`)": "20260924T0612102884372Z (prepare) + 20260924T0613092420246Z (verify) PASS; transaction word-of-recall-fcb-persistence-20260924T0612076008434Z_556ce961a4974babba75ab6c3145bb78 (settings and complete Mods tree restored)",
+    "`working-save-smoke` (KMG_AUTOMATION_WORKING, 11/11)": "20260924T0615397121565Z PASS"
+  },
+  "restoration": {
+    "verifiedUtc": "2026-09-24T06:18Z",
+    "source": "runtime-backups/live-mod/20260924T0027014050156Z",
+    "kmgDll": "c6cccdac914ed59fa4d85d020108588d7d12cfb4ac38cf5a162772bacc9b465c",
+    "infoJson": "f66de05d5c6282eece8218b6c4f31d49dfc8ef9efa27dfeceeda712034717e17",
+    "featureModules": "6e24b2788a0c8f063d6e561a27c93f9c5349f2fc21b5217689da8aefdbb385d0",
+    "tree": "238/238 files identical (path and SHA-256)",
+    "settingsFile": "absent",
+    "hostAndProviderSettings": "unchanged (ZFavoredClass, CallOfTheWild, RacesUnleashed)"
+  }
+}

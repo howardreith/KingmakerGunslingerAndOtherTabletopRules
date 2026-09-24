@@ -9,14 +9,14 @@
   "worktree": "C:\\Dev\\KingmakerGunslingerLab\\worktrees\\favored-class-integration",
   "baselineCommit": "996105ed9e72259a220be56e2a74e0cc18e5ef47",
   "overallStatus": "PARTIAL - NOT RELEASE QUALIFIED",
-  "currentPhase": "phase-5",
+  "currentPhase": "phase-7 (final local candidate recorded; owner review pending)",
   "phases": {
     "phase-0": {
       "status": "COMPLETE",
       "gate": "every row has a capability disposition; exact binary identities recorded; load-order and advanced-target discovery supported by source/IL evidence"
     },
     "phase-1": {
-      "status": "NATIVE TESTED (CotW profiles BLOCKED)",
+      "status": "NATIVE TESTED (CotW-only profiles BLOCKED, B2)",
       "gate": "H01-H10, basic E/M/L vertical slice for Human G07, actual artifact identity",
       "evidence": {
         "candidateCommit": "f2db844c212b313618a950a939e891d0b41d27b9",
@@ -33,48 +33,67 @@
         "remaining": [
           "CotW-only and CotW+FCB compatibility profiles (B2: reference root missing)",
           "H02/H04 negative host states natively (domain tested)"
-        ]
+        ],
+        "finalCandidateRuns": {
+          "contract": "20260924T0603184328859Z PASS",
+          "hostState": "20260924T0604015343603Z PASS",
+          "grit": "20260924T0604457833407Z PASS"
+        }
       }
     },
     "phase-2": {
-      "status": "NATIVE TESTED",
+      "status": "NATIVE TESTED; Gunslinger counters SAVE TESTED (L01)",
       "gate": "every available first-party Gunslinger target: positive, negative, fraction/cap, native event, preview, persistence",
       "evidence": {
-        "mechanics": "20260924T0349220382365Z PASS (f2db844c2)",
-        "menus": "20260924T0129112635200Z PASS (fba7516d3); 20260924T0350079201836Z FAIL only on a stale publication check (fixed in 4c9409ba4, re-run pending)",
-        "initiativeTiming": "20260924T0154493048526Z PASS (732cddae3)",
-        "sprint38Initiative": "20260924T0155347348333Z PASS (732cddae3)",
-        "persistence": "L01 PASS (grit and confirmation counters)"
+        "menus": "20260924T0605443253994Z PASS",
+        "mechanics": "20260924T0606461797306Z PASS",
+        "initiativeTiming": "20260924T0607291357025Z PASS",
+        "thirdPartyMenus": "20260924T0538189215967Z PASS (9b3db78bf, profile ON)",
+        "persistence": "L01 PASS (f2db844c2)"
       }
     },
     "phase-3": {
-      "status": "IN PROGRESS",
+      "status": "NATIVE TESTED",
       "gate": "no broad leakage; usable target menus; two-owner and negative-target runtime controls",
       "evidence": {
-        "elementalCore": "20260924T0347450150348Z: menus PASS, progressions PASS, mechanics PASS except the bomb probe floor (probe fixed in 4c9409ba4, re-run pending)"
-      },
-      "remaining": [
-        "O01 performance range",
-        "O06 paladin auras",
-        "O07 companion natural armor",
-        "O08 eidolon natural armor"
-      ]
+        "elementalCore": "20260924T0608135881312Z PASS",
+        "advanced (O06-O08, I08/S06)": "20260924T0609525254026Z PASS",
+        "performanceRange (O01)": "20260924T0602359332310Z PASS"
+      }
     },
     "phase-4": {
-      "status": "NOT STARTED",
-      "gate": "each selected-power row has qualified targets when provider exists; complete manifest; neighbors unchanged"
+      "status": "NATIVE TESTED (PARTIAL: representative values per manifest)",
+      "gate": "each selected-power row has qualified targets when provider exists; complete manifest; neighbors unchanged",
+      "evidence": {
+        "oracle (I06/S04)": "20260924T0601519001416Z PASS",
+        "bloodline (I08/S06)": "20260924T0609525254026Z PASS",
+        "manifest": "docs/FAVORED-CLASS-TARGET-MANIFEST.md"
+      }
     },
     "phase-5": {
-      "status": "NOT STARTED",
-      "gate": "human access neither missing nor overbroad; prerequisites survive; no multiplied rewards; real Mostly Human"
+      "status": "NATIVE TESTED",
+      "gate": "human access neither missing nor overbroad; prerequisites survive; no multiplied rewards; real Mostly Human",
+      "evidence": {
+        "mostlyHuman": "20260924T0609003356634Z PASS"
+      }
     },
     "phase-6": {
-      "status": "IN PROGRESS (settings file DOMAIN TESTED; profile-ON/OFF runs pending)",
-      "gate": "third-party profile toggles across restarts without corruption; G19/G22 unpublished"
+      "status": "NATIVE TESTED",
+      "gate": "third-party profile toggles across restarts without corruption; G19/G22 unpublished",
+      "evidence": {
+        "profiles (07c21f29b)": "third-party-on 20260924T0455537582112Z, mostly-human-off 20260924T0456353591331Z, integration-off 20260924T0457176732605Z, invalid-file 20260924T0458003051455Z; settings file restored absent after each",
+        "thirdPartyMenus": "20260924T0538189215967Z PASS (9b3db78bf)"
+      }
     },
     "phase-7": {
-      "status": "NOT STARTED",
-      "gate": "all intended available I/A/O targets and infrastructure qualified on the exact final artifact"
+      "status": "PARTIAL - NOT RELEASE QUALIFIED",
+      "gate": "all intended available I/A/O targets and infrastructure qualified on the exact final artifact",
+      "remaining": [
+        "scenario families NOT RUN: E11 E16 L02 L03 (and L06 native); E09 out of scope",
+        "owner decisions OD-1..OD-10, D1, D2",
+        "original art for 127 visible choices (OD-8)",
+        "CotW-only compatibility profiles (B2)"
+      ]
     }
   },
   "installedIdentities": {
@@ -132,15 +151,57 @@
       "dllMvid": "04b7fb78-5fd9-4080-ae7c-36ae87b727fe",
       "deployment": "runtime-evidence\\deployments\\20260924T0347379474215Z",
       "note": "intermediate candidate; not the final artifact"
+    },
+    {
+      "commit": "ef250f877cda322f75b499b0dec8fbe155e14ce2",
+      "packageSha256": "5947ea172b1a2547e8575007789f242d728818abb35413445a249444195600ea",
+      "dllSha256": "fe451f35dff61c26bb96fd9ff9d8c7eb23bffe177788899e74a57662e10de8bf",
+      "dllMvid": "2c9d8c5f-c424-4179-91cd-72ca85438c54",
+      "deployment": "runtime-evidence\\deployments\\20260924T0601504282380Z",
+      "note": "final local candidate (owner review pending)"
     }
   ],
   "blockers": [
-    "B1 shared installation used by another automation (mitigated)",
+    "B1 shared installation used by another automation (mitigated; overlap 05:45-05:47Z recorded)",
     "B2 CotW-only / CotW+FCB compatibility profiles: reference root missing"
   ],
   "preExistingDefects": [
     "D1 Gun Training level-17 dead end",
     "D2 Dead Shot confirmation unreachable",
     "D3 Gunslinger Initiative timing (FIXED in 732cddae3; native PASS)"
-  ]
+  ],
+  "finalCandidate": {
+    "commit": "ef250f877cda322f75b499b0dec8fbe155e14ce2",
+    "dllSha256": "fe451f35dff61c26bb96fd9ff9d8c7eb23bffe177788899e74a57662e10de8bf",
+    "dllMvid": "2c9d8c5f-c424-4179-91cd-72ca85438c54",
+    "packageSha256": "5947ea172b1a2547e8575007789f242d728818abb35413445a249444195600ea",
+    "deployment": "runtime-evidence\\deployments\\20260924T0601504282380Z",
+    "domainTests": 1801,
+    "runs": {
+      "contract": "20260924T0603184328859Z PASS",
+      "hostState": "20260924T0604015343603Z PASS",
+      "grit": "20260924T0604457833407Z PASS",
+      "menus": "20260924T0605443253994Z PASS",
+      "mechanics": "20260924T0606461797306Z PASS",
+      "initiative": "20260924T0607291357025Z PASS",
+      "elementalCore": "20260924T0608135881312Z PASS",
+      "mostlyHuman": "20260924T0609003356634Z PASS",
+      "advanced": "20260924T0609525254026Z PASS",
+      "oracle": "20260924T0601519001416Z PASS",
+      "performance": "20260924T0602359332310Z PASS"
+    }
+  },
+  "ownerDecisions": [
+    "OD-1 Mostly Human scope (Option A)",
+    "OD-2 other counts-as-human providers",
+    "OD-3 host race traits",
+    "OD-4 overlapping paladin auras",
+    "OD-5 bloodline power thresholds/eligibility",
+    "OD-6 revelation thresholds and scaling policy",
+    "OD-7 performance range scope",
+    "OD-8 icon art for 127 visible choices",
+    "OD-9 elemental character-creation re-qualification",
+    "OD-10 persistence breadth"
+  ],
+  "restoration": "VERIFIED 2026-09-24T06:18Z: Mods\\KingmakerGunslinger restored from runtime-backups/live-mod/20260924T0027014050156Z; DLL c6cccdac..., Info.json f66de05d..., FeatureModules.json 6e24b278... match; 238/238 files identical; FavoredClassIntegration.json absent; host/provider settings unchanged"
 }

@@ -60,7 +60,7 @@ The installed host dump of 2026-09-23 lists
 (`cbe4e1941a5f0fa8229919016a6b283b`) and
 `FavoredClassKMG_Gunslinger_ClassFeatureSelecion`
 (`5ffbec509d160a812695bef00c968c9b`): under the current bootstrap the KMG
-Gunslinger class is present at the host scan. Runtime confirmation is pending.
+Gunslinger class is present at the host scan (confirmed natively; see below).
 
 ## Registration and fractional contract
 
@@ -117,3 +117,74 @@ If `MasterFeatureRank` reads the master's rank of the named feature, the
 Dwarf reward contributes nothing. KMG's Oread Summoner reward (O08) does not
 copy that component graph either way: it reads the master's own full-leaf
 rank, and its owner/rank relationship is tested directly.
+
+## Runtime confirmation (local candidate)
+
+The guarded contract scenario confirms this profile natively on every
+candidate. Checks: exact host SHA-256, MVID and six IL fingerprints; the
+host's completion marker; one Gunslinger progression
+(`cbe4e1941a5f0fa8229919016a6b283b`) and bonus selection
+(`5ffbec509d160a812695bef00c968c9b`) with twenty levels; unchanged generic
+HP/skill rewards; and KMG leaves appended as a suffix after the untouched
+foreign entries of every class selection they use. The final-candidate run is
+recorded in `FAVORED-CLASS-IMPLEMENTATION-REPORT.md`.
+
+## Optional provider content read by KMG counters
+
+KMG never calls host or Call of the Wild code and never writes their folders.
+It reads their blueprints by exact identity only after they exist, at the
+first Unity Mod Manager update after the host initialized:
+
+| Counter | Provider blueprints | How they are read |
+| --- | --- | --- |
+| I06/S04 revelations | Call of the Wild Oracle `32c02466b2364c8a906e6e4761175099`, Demon Hunter archetype `3b3b5950e8264819b69d9aaeffe179da`, the 52 manifest revelations | Bounded walk of each revelation's live graph at publication; the Oracle engine's class-level rank configs, its ability-parameter calculator (by type name and Oracle class) and oracle-level resources |
+| O08 eidolon armor | Call of the Wild eidolon class `e3b3ad6decb14cdba2e7e14982d90035` | Identity of the current pet's class |
+| O01 performances | Song of Fiery Gaze and the Court Bard performances (five features and areas) | Feature and area identities |
+| Summoner and Oracle bonus selections | the host's scan of Call of the Wild classes | `host.BonusSelectionFor(class)`; a class the host did not scan publishes nothing |
+
+The rank read point is a KMG postfix on `ContextRankConfig.GetBaseValue` that
+runs after Call of the Wild's own postfix on the same method
+(`[HarmonyAfter("CallOfTheWild")]`, `Priority.Last`). Call of the Wild's
+postfix assigns the base value for `SummClassLevelWithArchetype` configs; a
+KMG change made before it would be overwritten. KMG adds the steps only for
+configs scoped to a revelation the caster invested in, keyed by the config
+instance and the context's own blueprint. Rank bonus (`AddBonusCasterLevel`)
+is deliberately not used, because Call of the Wild counts it again in every
+Oracle-engine rank.
+
+## Settings file
+
+`Mods\KingmakerGunslinger\FavoredClassIntegration.json` is optional, read once
+per process and never written by KMG. It uses schema 1 with exactly five
+Boolean keys: `integration`, `firstParty`, `adaptations`, `thirdParty` and
+`mostlyHuman`. Absent or invalid, it gives the charter defaults (everything
+ON except `thirdParty`), and an invalid file is reported in the log. Changes
+need a restart.
+
+## Lifecycle, migration and recovery
+
+- **Identities always resolve.** Every KMG favored-class leaf and helper
+  registers on every load, whether or not the host is present and whatever
+  the settings say. Saved investments therefore load even while the host is
+  missing or the integration is disabled.
+- **Integration OFF** (`integration: false`): no choices are offered and every
+  owned numerical effect is suppressed. Nothing is refunded or removed.
+  Turning it back ON restores the effects.
+- **A profile OFF** (`thirdParty`, `adaptations`, `firstParty`): no new
+  choices through those routes. Choices a character already earned keep
+  working.
+- **Mostly Human OFF**: the choice is no longer offered to new characters. A
+  character who has the trait keeps it and its identity.
+- **Host removed or not qualified**: no choices are offered, and the O06 aura
+  and I06/S04 revelation read points are not committed. Other earned counters
+  keep their component effects. The host's own favored-class progression is
+  host content: restore the host rather than editing a save.
+- **Call of the Wild removed**: the Oracle and Summoner counters are not
+  offered, and their saved leaves still resolve. Revelation and eidolon effects
+  are inert because their provider blueprints are gone.
+- **Leaving the favored-class integration entirely**: back up saves first.
+  Removing KMG leaves every KMG identity unresolved; restore the mod rather
+  than editing the save.
+- **Unsupported and not claimed**: other favored-class systems (Eldritch
+  Arcana), a changed host or provider binary, level caps above 20, gestalt,
+  custom respec tools and other race providers' "counts as human" features.

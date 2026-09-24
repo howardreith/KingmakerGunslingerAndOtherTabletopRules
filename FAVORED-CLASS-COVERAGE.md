@@ -1,57 +1,83 @@
 # Favored Class Integration — Coverage Ledger
 
 Human-readable ledger of every charter source row (54 table appearances, 53
-distinct options) and every required infrastructure item. The authoritative
-row data (publisher, rate, cap, disposition, canonical effect) lives in
+distinct options), every required infrastructure item and the 64 charter
+scenario families. The authoritative row data (publisher, rate, cap,
+disposition, canonical effect) lives in
 `src/KingmakerGunslinger/FavoredClass/FavoredClassCatalog.cs` and is pinned by
-the `favored-class.catalog-*` domain tests. This ledger adds implementation
-and qualification status. Status ladder: NOT STARTED → CODE COMPLETE →
-DOMAIN TESTED → NATIVE TESTED → SAVE TESTED → QUALIFIED. Other dispositions:
-BLOCKED, EXPECTED PROVIDER ABSENCE, NOT RUN, OUT OF SCOPE, DEFERRED, EXCLUDED,
-ALIAS.
+the `favored-class.catalog-*` domain tests. The machine-readable form of this
+ledger is `FAVORED-CLASS-COVERAGE.json`. Status ladder: NOT STARTED → CODE
+COMPLETE → DOMAIN TESTED → NATIVE TESTED → SAVE TESTED → QUALIFIED. Other
+dispositions: BLOCKED, EXPECTED PROVIDER ABSENCE, NOT RUN, OUT OF SCOPE,
+DEFERRED, EXCLUDED, ALIAS. No row is QUALIFIED; qualification needs the
+owner's review of this local candidate.
 
 Legend for disposition: I faithful, A adaptation, O optional third-party
 (profile OFF by default), P provider-deferred, D engineering-deferred,
 X excluded, ALIAS repeated appearance.
 
+Evidence entries are run identifiers under
+`C:\Dev\KingmakerGunslingerLab\runtime-evidence\` (machine-local, not
+committed). Target manifests are in `docs/FAVORED-CLASS-TARGET-MANIFEST.md`.
+
+## Final candidate regression
+
+Candidate `ef250f877`: DLL `fe451f35…`, MVID `2c9d8c5f-c424-4179-91cd-72ca85438c54`. Every run used the
+guarded Steam App ID 640820 launcher.
+
+| Scenario | Run (final candidate `ef250f877`) |
+| --- | --- |
+| `observe-favored-class-contract` | 20260924T0603184328859Z PASS |
+| `observe-favored-class-host-state` | 20260924T0604015343603Z PASS |
+| `disposable-favored-class-grit` | 20260924T0604457833407Z PASS |
+| `disposable-favored-class-gunslinger-menus` | 20260924T0605443253994Z PASS |
+| `disposable-favored-class-gunslinger-mechanics` | 20260924T0606461797306Z PASS |
+| `disposable-favored-class-initiative-timing` | 20260924T0607291357025Z PASS |
+| `disposable-favored-class-elemental-core` | 20260924T0608135881312Z PASS |
+| `disposable-favored-class-mostly-human` | 20260924T0609003356634Z PASS |
+| `disposable-favored-class-elemental-advanced` | 20260924T0609525254026Z PASS |
+| `disposable-favored-class-oracle-revelations` | 20260924T0601519001416Z PASS |
+| `disposable-favored-class-performance-range` | 20260924T0602359332310Z PASS |
+| L01 fresh-process persistence (`Invoke-WordOfRecallFavoredClassPersistence.ps1`) | 20260924T0612102884372Z (prepare) + 20260924T0613092420246Z (verify) PASS; transaction word-of-recall-fcb-persistence-20260924T0612076008434Z_556ce961a4974babba75ab6c3145bb78 (settings and complete Mods tree restored) |
+| `working-save-smoke` (KMG_AUTOMATION_WORKING, 11/11) | 20260924T0615397121565Z PASS |
+
 ## Scheduled rows (30)
 
-Candidate for the native evidence below unless stated: `f2db844c2` (DLL `5a278b75…`, MVID `04b7fb78-5fd9-4080-ae7c-36ae87b727fe`).
-Evidence paths are under `C:\Dev\KingmakerGunslingerLab\runtime-evidence\`
-(machine-local, not committed).
+The row evidence names the run that exercised the row in detail. The final
+candidate re-ran every scenario listed above.
 
 | Row | Ancestry → class | Disp. | Canonical effect | Rate / cap | Status | Evidence |
 | --- | --- | --- | --- | --- | --- | --- |
-| G01 | Dwarf → Gunslinger | I | gunslinger.misfire-by-firearm-type (per type) | 1/4, floor 1 | NATIVE TESTED | menus `20260924T0129112635200Z` (`fba7516d3`): three independent per-type counters (6/4/2/8 investments); mechanics `20260924T0349220382365Z`: effective misfire threshold reduced last with floor 1, scatter aggregate uses the effective threshold, other types unchanged |
-| G02 | Elf → Gunslinger | I | gunslinger.firearm-confirmation | 1/3, cap +5, nonstacking CF | SAVE TESTED (shared counter) | menus: capped at (5,10) then closed; mechanics: better of Critical Focus, melee and Pistol-Whip surrogate excluded; L01 `20260924T0352059750938Z`/`20260924T0353099892035Z`: Half-elf (elf route) partial rank survives a fresh-process reload |
-| G04 | Half-elf → Gunslinger | I | gunslinger.grit (shared with G07) | 1/4 | SAVE TESTED | L01 transaction `word-of-recall-fcb-persistence-20260924T0352021320346Z_ba16f881ae444ef8985ad6eb6d178671`: level-5 Half-elf Pistolero, grit P,P,P,F (full 1 / partial 3, +1 max grit), current grit 1 after spending 1 from 2; ranks, current/max grit and earned steps identical after the fresh-process reload |
-| G05 | Half-orc → Gunslinger | I | gunslinger.pistol-whip-attack | 1/3 | NATIVE TESTED | menus: (6,14) over 20 levels; mechanics: attack bonus only on the Pistol-Whip surrogate attack (no shot, damage or CMB leakage) |
-| G06 | Halfling → Gunslinger | I | gunslinger.nimble-halfling + gunslinger.dodge-halfling (two counters) | 1/4 cap +2; 1/4 | NATIVE TESTED | menus: Nimble capped at 8 investments then Dodge (3,9); Mysterious Stranger not offered Nimble, Musket Master not offered Dodge; mechanics: Nimble bonus only while Nimble is active in eligible armor; Dodge only inside the deed buff |
-| G07 | Human → Gunslinger | I | gunslinger.grit | 1/4 | NATIVE TESTED; SAVE TESTED (shared counter) | grit `20260924T0351081263683Z`: 20 native level-ups, ranks (floor(N/4), N-floor(N/4)), +floor(N/4) max grit, no refill, cancel no-leak, closed at 20, Mysterious Stranger +1 at N=4; persistence through the shared counter (G04 row) |
-| G08 | Goblin → Gunslinger | I | gunslinger.firearm-confirmation | 1/3, cap +5 | CODE COMPLETE; route EXPECTED PROVIDER ABSENCE | host goblin race exists but is not in the playable catalog (race matrix in the grit and menus runs); the counter is the G02 counter |
+| G01 | Dwarf → Gunslinger | I | gunslinger.misfire-by-firearm-type (per type) | 1/4, floor 1 | NATIVE TESTED | menus: three independent per-type counters; mechanics: effective threshold reduced last with floor 1, other types unchanged |
+| G02 | Elf → Gunslinger | I | gunslinger.firearm-confirmation | 1/3, cap +5, nonstacking CF | SAVE TESTED (shared counter) | menus: capped at (5,10) then closed; mechanics: better of Critical Focus; L01 `20260924T0352059750938Z`/`20260924T0353099892035Z` |
+| G04 | Half-elf → Gunslinger | I | gunslinger.grit (shared with G07) | 1/4 | SAVE TESTED | L01 transaction `word-of-recall-fcb-persistence-20260924T0352021320346Z_ba16f881ae444ef8985ad6eb6d178671` |
+| G05 | Half-orc → Gunslinger | I | gunslinger.pistol-whip-attack | 1/3 | NATIVE TESTED | menus (6,14); mechanics: only the Pistol-Whip surrogate attack |
+| G06 | Halfling → Gunslinger | I | nimble-halfling + dodge-halfling (two counters) | 1/4 cap +2; 1/4 | NATIVE TESTED | menus: Nimble capped then Dodge; Mysterious Stranger and Musket Master exclusions; mechanics: genuine Nimble and deed buff only |
+| G07 | Human → Gunslinger | I | gunslinger.grit | 1/4 | NATIVE TESTED; SAVE TESTED (shared counter) | grit: 20 native level-ups, no refill, cancel leaves no leak |
+| G08 | Goblin → Gunslinger | I | gunslinger.firearm-confirmation | 1/3, cap +5 | CODE COMPLETE; route EXPECTED PROVIDER ABSENCE | the host goblin race is not in the playable catalog; the counter is G02's |
 | G10 | Hobgoblin → Gunslinger | I | gunslinger.grit | 1/4 | NATIVE TESTED (menu route) | race matrix (Races Unleashed Hobgoblin) |
-| G11 | Ifrit → Gunslinger | I | gunslinger.initiative-deed | 1/2 | NATIVE TESTED | menus: (10,10); initiative timing `20260924T0154493048526Z` (`732cddae3`): the stored combat initiative includes the deed and the earned steps in real-time and turn-based entry (D3 fixed); Sprint 38 regression `20260924T0155347348333Z` PASS |
+| G11 | Ifrit → Gunslinger | I | gunslinger.initiative-deed | 1/2 | NATIVE TESTED | initiative timing in real-time and turn-based entry; D3 fixed in `732cddae3` |
 | G14 | Fetchling → Gunslinger | I | gunslinger.grit | 1/4 | NATIVE TESTED (menu route) | race matrix (Races Unleashed Fetchling) |
-| G16 | Dhampir → Gunslinger (JBE) | O | gunslinger.firearm-confirmation | 1/3, cap +5 | CODE COMPLETE (profile OFF) | withheld by default (contract `20260924T0348360182600Z`); profile-ON publication NOT RUN |
-| G17 | Drow → Gunslinger (JBE) | O | gunslinger.nimble-drow | 1/6, cap +2 | NATIVE TESTED (mechanics, profile OFF) | withheld by default; Drow Nimble mechanics in the mechanics run; profile-ON menus NOT RUN |
-| G18 | Duergar → Gunslinger (JBE) | O | gunslinger.misfire-by-firearm-type | 1/4, floor 1 | CODE COMPLETE (profile OFF) | shared G01 counters; profile-ON route NOT RUN |
-| G20 | Orc → Gunslinger (JBE) | O | gunslinger.pistol-whip-attack (alias route) | 1/3 | CODE COMPLETE (profile OFF) | shared G05 counter; no playable Orc race in the installed stack |
-| G21 | Tiefling → Gunslinger (JBE) | O | gunslinger.cmb-dirty-trick-trip | 1/2 | NATIVE TESTED (mechanics, profile OFF) | withheld by default; trip and the three dirty tricks only, CMD and other maneuvers unchanged; profile-ON menus NOT RUN |
-| I01 | Ifrit → Alchemist | I | alchemist.bomb-damage | 1/2 | NATIVE TESTED (menus, progression); mechanics re-run pending | elemental core `20260924T0347450150348Z`: offered to Ifrit Alchemists only, not to Humans or Vivisectionists; flat damage observed (+3 at three steps) on the bomb context; the zero-base probe hid +1 under the native damage floor (probe fixed in `4c9409ba4`) |
-| I05 | Ifrit → Inquisitor | A | inquisitor.intimidate-fire-subtype (planes knowledge omitted) | 1/2 | NATIVE TESTED | +2 on native Demoralize against a fire-subtype creature, none against others, none for a control |
-| I06 | Ifrit → Oracle | I | oracle.selected-revelation (per revelation) | 1/6 | NOT STARTED | — |
-| I07 | Ifrit → Rogue | A | rogue.demoralize (jump omitted) | 1/2 | NATIVE TESTED | +2 only on Intimidate made by the native Demoralize action; other Intimidate checks unchanged |
-| I08 | Ifrit → Sorcerer | I | sorcerer.selected-bloodline-power (fire elemental/efreeti) | 1/6, cap +2 | NOT STARTED | — |
-| O01 | Oread → Bard | I | bard.selected-performance-range (per performance) | +5 ft, cap +30 ft | NOT STARTED | — |
-| O04 | Oread → Fighter | A | fighter.cmd-bull-rush-drag (drag only if implemented) | +1 | NATIVE TESTED | lockstep native progression: +3 bull rush CMD at three investments, trip CMD unchanged |
-| O05 | Oread → Monk | I | monk.unarmed-confirmation | 1/3, cap +5 | NATIVE TESTED | +5 on native unarmed strikes (Kingmaker marks them IsUnarmed and IsNatural; fixed in `d9d09b8b8`), none on a longsword or a natural claw; with Critical Focus the better of the two (5 over 4) |
-| O06 | Oread → Paladin | I | paladin.aura-ally-bonus (Courage, Resolve) | 1/4 | NOT STARTED | — |
-| O07 | Oread → Ranger | I | ranger.companion-natural-armor | 1/4 | NOT STARTED | — |
-| O08 | Oread → Summoner | I | summoner.eidolon-natural-armor | 1/4 | NOT STARTED | — |
-| S04 | Sylph → Oracle | I | oracle.selected-revelation (shared with I06) | 1/6 | NOT STARTED | — |
-| S06 | Sylph → Sorcerer | I | sorcerer.selected-bloodline-power (air elemental/djinni) | 1/6, cap +2 | NOT STARTED | — |
-| U02 | Undine → Cleric | I | cleric.sr-penetration-aquatic-water | +1 | NATIVE TESTED | +3 spell penetration at three ranks against water and aquatic subtypes, none against other targets or for a control caster |
-| U04 | Undine → Monk | I | monk.grapple-cmd-and-stunning (N CMD, floor(N/3) stunning) | mixed | NATIVE TESTED | six lockstep native level-ups: +6 grapple CMD, +2 Stunning Fist uses, ranks 2/4, bull rush CMD unchanged |
+| G16 | Dhampir → Gunslinger (JBE) | O | gunslinger.firearm-confirmation | 1/3, cap +5 | NATIVE TESTED (profile ON) | third-party menus `20260924T0538189215967Z` (`9b3db78bf`); withheld by default |
+| G17 | Drow → Gunslinger (JBE) | O | gunslinger.nimble-drow | 1/6, cap +2 | NATIVE TESTED | profile-ON menus; mechanics under the default profile (L05) |
+| G18 | Duergar → Gunslinger (JBE) | O | gunslinger.misfire-by-firearm-type | 1/4, floor 1 | NATIVE TESTED (profile ON) | Duergar offered the per-type misfire counters |
+| G20 | Orc → Gunslinger (JBE) | O | gunslinger.pistol-whip-attack (alias route) | 1/3 | CODE COMPLETE; route EXPECTED PROVIDER ABSENCE | no playable Orc race; Half-orcs hold the same G05 counter |
+| G21 | Tiefling → Gunslinger (JBE) | O | gunslinger.cmb-dirty-trick-trip | 1/2 | NATIVE TESTED | profile-ON menus; mechanics: trip and dirty tricks only |
+| I01 | Ifrit → Alchemist | I | alchemist.bomb-damage | 1/2 | NATIVE TESTED | elemental core: flat bonus on a 5d1 bomb, above the damage floor; Vivisectionist excluded |
+| I05 | Ifrit → Inquisitor | A | inquisitor.intimidate-fire-subtype (planes knowledge omitted) | 1/2 | NATIVE TESTED | native Demoralize against a fire-subtype target only |
+| I06 | Ifrit → Oracle | I | oracle.selected-revelation (52 revelation targets) | 1/6 per revelation | NATIVE TESTED (PARTIAL values) | oracle run: all 52 scoped with every audited family; the Ifrit menu offers exactly the owned revelation; Fire Breath at level 9 with two steps: CL 11, DC +1, dice 11, uses 3; neighbors and Fireball unchanged; held tiers unmoved; feature context refreshes on gain and removal |
+| I07 | Ifrit → Rogue | A | rogue.demoralize (jump omitted) | 1/2 | NATIVE TESTED | the native Demoralize check only |
+| I08 | Ifrit → Sorcerer | I | sorcerer.selected-bloodline-power (fire) | 1/6, cap +2 | NATIVE TESTED | advanced run: Blast CL 9→11, DC 14→15, dice 9→11; Ray damage bonus 5→6; neighbor and Fireball unchanged |
+| O01 | Oread → Bard | I | bard.selected-performance-range (15 performances) | +5 ft, cap +30 ft per performance | NATIVE TESTED | performance run: own Inspire Courage area 50→60 ft, 80 ft at the cap; a 55-ft point inside only when widened; other performance, other performer and blueprint unchanged; Human and Archaeologist not offered |
+| O04 | Oread → Fighter | A | fighter.cmd-bull-rush-drag (drag omitted) | +1 | NATIVE TESTED | bull rush CMD only |
+| O05 | Oread → Monk | I | monk.unarmed-confirmation | 1/3, cap +5 | NATIVE TESTED | unarmed strikes only (not claws or weapons); better of Critical Focus |
+| O06 | Oread → Paladin | I | paladin.aura-ally-bonus (Courage, Resolve) | 1/4 | NATIVE TESTED | advanced run: fear +4/+5/+6 and charm +4/+6 by each paladin's own steps; other saves unchanged; Divine Hunter not offered |
+| O07 | Oread → Ranger | I | ranger.companion-natural-armor | 1/4 | NATIVE TESTED | +2 then +3 on the current companion; stacks with Barkskin; touch and master AC unchanged; replacement leaves no orphan; removal clears it |
+| O08 | Oread → Summoner | I | summoner.eidolon-natural-armor | 1/4 | NATIVE TESTED | +2 on Call of the Wild's eidolon |
+| S04 | Sylph → Oracle | I | oracle.selected-revelation (shared with I06) | 1/6 | NATIVE TESTED | oracle run: a Sylph Wind Oracle is offered exactly Lightning Breath |
+| S06 | Sylph → Sorcerer | I | sorcerer.selected-bloodline-power (air) | 1/6, cap +2 | NATIVE TESTED (menus; values through the shared adapter) | the Sylph air menu offers AirRay only; Ifrit with air gets none |
+| U02 | Undine → Cleric | I | cleric.sr-penetration-aquatic-water | +1 | NATIVE TESTED | water and aquatic targets only |
+| U04 | Undine → Monk | I | monk.grapple-cmd-and-stunning | mixed | NATIVE TESTED | +N grapple CMD and floor(N/3) Stunning Fist uses |
 
 ## Alias
 
@@ -91,17 +117,29 @@ Evidence paths are under `C:\Dev\KingmakerGunslingerLab\runtime-evidence\`
 
 | Item | Status | Evidence |
 | --- | --- | --- |
-| Pure rank policy (N = full + partial, ceilings, mixed rates) | DOMAIN TESTED | `favored-class.rank-*` (7 cases) |
-| Source catalog (54 appearances, 53 options, 22 effects) | DOMAIN TESTED | `favored-class.catalog-*` (6 cases) |
-| Ancestry permission graph (FAQ, host policy, Mostly Human, bounded) | DOMAIN TESTED; native routes for FAQ and host policy | `favored-class.eligibility-*` (5 cases); menus race matrix (Half-elf grit + confirmation, Half-orc grit + Pistol-Whip, Aasimar/Tiefling grit) |
-| Optional host adapter (exact binary + readiness) | NATIVE TESTED (host present and host absent) | contract `20260924T0348360182600Z`: exact SHA-256/MVID/six IL fingerprints, completion marker; H01 isolated gunslinger-only profile `20260924T0140349022134Z` (`cf8a66d21`, profile `compat-20260924T014026Z-1da92b038b7e`, restoration verified): HostAbsent, owned leaves registered, no FCB publication, class offered; CotW-only and CotW+FCB profiles BLOCKED (B2) |
-| Native host progression (Gunslinger in host scan) | NATIVE TESTED | one progression `cbe4e194…` and one bonus selection `5ffbec50…`, 20 levels, generic HP/skill rewards unchanged |
-| Atomic, idempotent publication with owned rollback (all host selections) | NATIVE TESTED | contract `20260924T0348360182600Z`: every host class selection holds exactly its owned suffix after untouched foreign entries; profile-withheld leaves absent; repeat publication no-op (H06); injected fault rolls back exactly (H08) |
-| Fresh-process persistence (L01) | SAVE TESTED | Word of Recall FCB transaction `word-of-recall-fcb-persistence-20260924T0352021320346Z_ba16f881ae444ef8985ad6eb6d178671` (prepare `20260924T0352059750938Z`, verify `20260924T0353099892035Z`): Gunslinger ranks, target identities, current/max grit and effects identical; disposable `KMG_FCB_PERSISTENCE_*` save only, cleanup restored |
-| Configuration profiles (restart-required settings file) | DOMAIN TESTED; native defaults observed | `favored-class.settings-*` (3 cases); contract `20260924T0348360182600Z` `fcb-settings-profile`: file absent, charter defaults, effective profile equals the resolved one; third-party-ON and integration-OFF runs NOT RUN |
-| Scoped ancestry bridge for the 20 host human families | NOT STARTED | — |
-| Mostly Human companion racial trait (four parents) | NOT STARTED | — |
-| Lifecycle policy (L02–L10) | NOT STARTED | — |
-| Diagnostics | CODE COMPLETE | `[favored-class]` log events (settings, host decision, publication, rollback); host-state observer |
-| Selected-power target manifests | NOT STARTED | — |
-| Migration/recovery guidance | NOT STARTED | — |
+| Pure rank policy | DOMAIN TESTED; NATIVE TESTED (d = 2, 3, 4, 6; capped and uncapped) | `favored-class.rank-*`; grit and menus runs |
+| Source catalog (54 appearances, 53 options, 22 effects) | DOMAIN TESTED | `favored-class.catalog-*` |
+| Ancestry permission graph | DOMAIN TESTED; NATIVE TESTED | `favored-class.eligibility-*`; menus race matrix; Mostly Human run |
+| Optional host adapter (exact binary + readiness) | NATIVE TESTED (host present; host absent) | contract on the final candidate; H01 isolated profile `20260924T0140349022134Z` |
+| Native host progression | NATIVE TESTED | one Gunslinger progression and bonus selection, 20 levels |
+| Atomic, idempotent publication with owned rollback | NATIVE TESTED | contract: owned leaves appended as suffixes; repeat is a no-op; an injected fault is restored exactly |
+| Fresh-process persistence (L01) | SAVE TESTED (Gunslinger counters) | Word of Recall FCB transaction; other counters NOT RUN (OD-10) |
+| Configuration profiles (restart-required settings file) | NATIVE TESTED | `07c21f29b`: third-party ON `20260924T0455537582112Z`, Mostly Human OFF `20260924T0456353591331Z`, integration OFF `20260924T0457176732605Z` (mechanics suppressed, identities registered), invalid file `20260924T0458003051455Z` (defaults, reported); the file was restored absent after each |
+| Scoped ancestry bridge (host human prerequisites) | NATIVE TESTED | Mostly Human run: 57 tracked prerequisites, open for Mostly Human and closed for Standard; Human, Half-elf and Aasimar true; Dwarf false; other race checks unchanged |
+| Mostly Human companion racial trait (four parents) | NATIVE TESTED | fact diff {Trait, Identity} added and {Standard} removed; race, RaceId and scores unchanged; no Outsider or Human race facts |
+| Selected-power target manifests | NATIVE TESTED | `docs/FAVORED-CLASS-TARGET-MANIFEST.md`; oracle and advanced runs |
+| Lifecycle policy (L02–L10) | PARTIAL | scenario families below |
+| Diagnostics | NATIVE TESTED | `[favored-class]` log events; host-state observer |
+| Migration/recovery guidance | CODE COMPLETE (documented) | `docs/FAVORED-CLASS-COMPATIBILITY.md` |
+| Icon dispositions | DOMAIN TESTED (catalog validator); art pending (OD-8) | 183 consumers recorded; 127 visible choices show the null-icon placeholder |
+
+## Scenario families (64)
+
+`FAVORED-CLASS-COVERAGE.json` holds each family's status, evidence and notes.
+
+| Family | NATIVE/SAVE TESTED | DOMAIN/CODE only | PARTIAL | NOT RUN / OUT OF SCOPE |
+| --- | --- | --- | --- | --- |
+| H01–H10 | H01 H03 H06 H07 H08 H09 H10 | H02 H04 H05 | — | — |
+| E01–E16 | E01 E02 E03 E04 E05 E06 E07 E12 E14 | E08 E10 | E13 E15 | E09 (out of scope), E11, E16 |
+| M01–M28 | M01 M02 M03 M04 M05 M06 M08 M09 M11 M15 M17 M18 M19 M20 M21 M22 M23 M25 M28 | M27 | M07 M10 M12 M13 M14 M16 M24 M26 | — |
+| L01–L10 | L01 L04 L05 L09 | L06 L08 L10 | L07 | L02 L03 |
