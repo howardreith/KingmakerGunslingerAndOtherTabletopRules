@@ -106,17 +106,23 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintAbilityResource resource = gunslinger.Grit.Resource;
             if (unit.Descriptor.Resources.GetResourceAmount(resource) < 1)
                 throw new InvalidOperationException("The persistence Gunslinger has no grit to spend.");
+            // The completing level-up raised the maximum without refilling
+            // (current may be below the maximum here); one point is spent so
+            // the reload can prove that loading does not refill either.
+            int currentBeforeSpend = unit.Descriptor.Resources.GetResourceAmount(resource);
             unit.Descriptor.Resources.Spend(resource, 1);
             expected = DescribeGunslingerFcbState(unit, leaves, gunslinger);
             expected["unitId"] = unit.UniqueId;
             expected["unitName"] = FcbPersistenceGunslingerName;
+            expected["gritCurrentBeforeSpend"] = currentBeforeSpend;
             FcbPersistenceAssert("gunslinger-prepare-committed",
                 "five native level-ups bank grit (1 full, 3 partial: +1 maximum grit) and confirmation (0 full, 1 partial), and one grit point is spent before saving",
                 (int)expected["classLevel"] == 5 && (int)expected["gritFull"] == 1 &&
                     (int)expected["gritPartial"] == 3 && (int)expected["confirmationFull"] == 0 &&
                     (int)expected["confirmationPartial"] == 1 && (int)expected["gritSteps"] == 1 &&
                     (int)expected["confirmationSteps"] == 0 &&
-                    (int)expected["gritCurrent"] == (int)expected["gritMax"] - 1,
+                    (int)expected["gritCurrent"] == currentBeforeSpend - 1 &&
+                    (int)expected["gritCurrent"] < (int)expected["gritMax"],
                 expected);
             player.PartyCharacters.Add(unit);
             player.InvalidateCharacterLists();
