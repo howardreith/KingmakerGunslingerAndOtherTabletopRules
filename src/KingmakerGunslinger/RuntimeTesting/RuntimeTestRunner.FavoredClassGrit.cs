@@ -47,6 +47,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             var reserved = new HashSet<string>(StringComparer.Ordinal) { gunslingerSelection.AssetGuid };
             BlueprintRace human = BlueprintLibraryLookup.RequireExact<BlueprintRace>(
                 BlueprintBootstrap.Library, FcbHumanRace, "native Human");
+            // The base class cannot complete level 17 once its three official
+            // Gun Training types are taken (an obligatory selection with no
+            // remaining choice; recorded as a pre-existing defect), so the
+            // twenty-level progression uses the Pistolero, whose fixed pistol
+            // training replaces those picks and whose grit is the base grit.
+            BlueprintArchetype pistolero = gunslingerSet.Pistolero == null ? null :
+                gunslingerSet.Pistolero.Archetype;
+            BlueprintArchetype stranger = gunslingerSet.MysteriousStranger == null ? null :
+                gunslingerSet.MysteriousStranger.Archetype;
+            evidence["progressionArchetype"] = pistolero == null ? "<absent>" : pistolero.name;
 
             object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
             object state = ReadExactMember(Kingmaker.Game.Instance, "State");
@@ -64,6 +74,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             var raceFailures = new List<string>();
             JObject fighterControl = null;
             var fighterFailures = new List<string>();
+            JObject strangerEvidence = null;
+            var strangerFailures = new List<string>();
             int refillChecks = 0;
             bool progressionComplete = false;
             bool closedAfterTwenty = false;
@@ -72,6 +84,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool cleaned = false;
             try
             {
+                if (pistolero == null)
+                    throw new InvalidOperationException("The Pistolero progression fixture is unavailable.");
                 test = FavoredClassLevelUpHarness.CreateUnit(14);
                 control = FavoredClassLevelUpHarness.CreateUnit(14);
                 for (int level = 1; level <= 20; level++)
@@ -87,7 +101,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     {
                         if (level == 4)
                             cancel = RunCancelledCompletingPick(test, human, gunslinger, grit,
-                                gritResource, reserved, gunslingerSelection, cancelFailures);
+                                gritResource, reserved, gunslingerSelection, cancelFailures,
+                                pistolero);
                         if (test.Descriptor.Resources.GetResourceAmount(gritResource) > 0)
                             test.Descriptor.Resources.Spend(gritResource, 1);
                         spentBefore = test.Descriptor.Resources.GetResourceAmount(gritResource);
@@ -95,9 +110,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     int testMaxBefore = gritResource.GetMaxAmount(test.Descriptor);
                     row["test"] = RunGritVisit(test, human, gunslinger, grit, gunslingerSelection,
-                        reserved, level, expectFull ? grit.Full : grit.Partial, grit, levelFailures);
+                        reserved, level, expectFull ? grit.Full : grit.Partial, grit, levelFailures,
+                        pistolero);
                     row["control"] = RunGritVisit(control, human, gunslinger, grit,
-                        gunslingerSelection, reserved, level, host.GenericHitPoint, null, levelFailures);
+                        gunslingerSelection, reserved, level, host.GenericHitPoint, null, levelFailures,
+                        pistolero);
                     int full = FavoredClassLevelUpHarness.Rank(test.Descriptor, grit.Full);
                     int partial = FavoredClassLevelUpHarness.Rank(test.Descriptor, grit.Partial);
                     int testMax = gritResource.GetMaxAmount(test.Descriptor);
@@ -150,6 +167,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 evidence["partialOpenAfterTwenty"] = openPartial;
                 evidence["closedAfterTwenty"] = closedAfterTwenty;
 
+                strangerEvidence = RunStrangerGrit(human, gunslinger, stranger, grit, gritResource,
+                    gunslingerSelection, reserved, host, strangerFailures);
                 foreach (FavoredClassRaceIdentity identity in FavoredClassRaceIdentities.All)
                     raceMatrix.Add(RunGritRaceRow(identity, gunslinger, grit, gunslingerSelection,
                         reserved, raceFailures));
@@ -173,6 +192,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             evidence["cancel"] = cancel;
             evidence["raceMatrix"] = raceMatrix;
             evidence["fighterControl"] = fighterControl;
+            evidence["mysteriousStranger"] = strangerEvidence;
             string evidencePath = WriteFavoredClassEvidence("favored-class-grit.json", evidence);
 
             assertions.Add(Assertion("fcb-grit-native-progression",
@@ -193,6 +213,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "progressionComplete=" + progressionComplete + ";closed=" + closedAfterTwenty,
                 closedAfterTwenty,
                 "native BlueprintFeature.MeetsPrerequisites on the committed unit"));
+            assertions.Add(Assertion("fcb-grit-attribute-replacing-archetype",
+                "a Mysterious Stranger (Charisma grit on the same grit resource) gains exactly floor(N/4) maximum grit over its lockstep control through four native levels, with identical ability scores",
+                Describe(strangerEvidence, strangerFailures),
+                strangerEvidence != null && strangerFailures.Count == 0,
+                "native AddArchetype + LevelUpController visits; BlueprintAbilityResource.GetMaxAmount"));
             assertions.Add(Assertion("fcb-grit-race-matrix",
                 "for every present source-addressable race the Gunslinger menu offers grit exactly to Human, Half-elf, Half-orc, Aasimar, Tiefling, Hobgoblin and Fetchling; absent optional races are reported as provider absence",
                 Describe(raceMatrix, raceFailures), raceFailures.Count == 0,
@@ -216,14 +241,15 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static JObject RunGritVisit(UnitEntityData unit, BlueprintRace race,
             BlueprintCharacterClass gunslinger, FavoredClassLeafPair grit,
             BlueprintFeatureSelection gunslingerSelection, ICollection<string> reserved, int level,
-            BlueprintFeature choice, FavoredClassLeafPair tested, IList<string> failures)
+            BlueprintFeature choice, FavoredClassLeafPair tested, IList<string> failures,
+            BlueprintArchetype archetype)
         {
             var row = new JObject();
             LevelUpController controller = null;
             try
             {
                 controller = FavoredClassLevelUpHarness.Open(unit.Descriptor, race, gunslinger,
-                    "KMG FCB Grit");
+                    "KMG FCB Grit", archetype);
                 if (level == 1 && FavoredClassLevelUpHarness.ChooseFavoredClass(controller,
                         gunslinger, row) == null)
                     failures.Add("level 1: favored Gunslinger progression not selectable");
@@ -276,7 +302,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private JObject RunCancelledCompletingPick(UnitEntityData unit, BlueprintRace race,
             BlueprintCharacterClass gunslinger, FavoredClassLeafPair grit,
             BlueprintAbilityResource gritResource, ICollection<string> reserved,
-            BlueprintFeatureSelection gunslingerSelection, IList<string> failures)
+            BlueprintFeatureSelection gunslingerSelection, IList<string> failures,
+            BlueprintArchetype archetype)
         {
             var row = new JObject();
             int full = FavoredClassLevelUpHarness.Rank(unit.Descriptor, grit.Full);
@@ -287,7 +314,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             try
             {
                 controller = FavoredClassLevelUpHarness.Open(unit.Descriptor, race, gunslinger,
-                    "KMG FCB Grit");
+                    "KMG FCB Grit", archetype);
                 FavoredClassLevelUpHarness.FillOthers(controller, reserved);
                 FeatureSelectionState fcb = FavoredClassLevelUpHarness.FindOpenState(controller,
                     gunslingerSelection.AssetGuid);
@@ -313,6 +340,75 @@ namespace KingmakerGunslinger.RuntimeTesting
             if ((int)row["previewFullRank"] != full + 1)
                 failures.Add("the preview did not hold the completing pick");
             return row;
+        }
+
+        // M05: an attribute-replacing archetype keeps the same grit resource
+        // and gains the same earned maximum; ability scores are untouched.
+        private static JObject RunStrangerGrit(BlueprintRace race, BlueprintCharacterClass gunslinger,
+            BlueprintArchetype stranger, FavoredClassLeafPair grit, BlueprintAbilityResource gritResource,
+            BlueprintFeatureSelection gunslingerSelection, ICollection<string> reserved,
+            FavoredClassHostHandles host, IList<string> failures)
+        {
+            var result = new JObject();
+            if (stranger == null)
+            {
+                failures.Add("the Mysterious Stranger archetype is unavailable");
+                return result;
+            }
+            UnitEntityData test = null;
+            UnitEntityData control = null;
+            try
+            {
+                test = FavoredClassLevelUpHarness.CreateUnit(14);
+                control = FavoredClassLevelUpHarness.CreateUnit(14);
+                var rows = new JArray();
+                for (int level = 1; level <= 4; level++)
+                {
+                    var row = new JObject { ["level"] = level };
+                    row["test"] = RunGritVisit(test, race, gunslinger, grit, gunslingerSelection,
+                        reserved, level, level == 4 ? grit.Full : grit.Partial, grit, failures,
+                        stranger);
+                    row["control"] = RunGritVisit(control, race, gunslinger, grit,
+                        gunslingerSelection, reserved, level, host.GenericHitPoint, null, failures,
+                        stranger);
+                    int testMax = gritResource.GetMaxAmount(test.Descriptor);
+                    int controlMax = gritResource.GetMaxAmount(control.Descriptor);
+                    row["testGritMax"] = testMax;
+                    row["controlGritMax"] = controlMax;
+                    if (testMax - controlMax != level / 4)
+                        failures.Add(Fmt("stranger level {0}: grit delta={1} expected={2}", level,
+                            testMax - controlMax, level / 4));
+                    rows.Add(row);
+                }
+                result["levels"] = rows;
+                bool archetyped = test.Descriptor.Progression.IsArchetype(stranger) &&
+                    control.Descriptor.Progression.IsArchetype(stranger);
+                result["bothMysteriousStrangers"] = archetyped;
+                if (!archetyped)
+                    failures.Add("a fixture unit is not a Mysterious Stranger");
+                var scores = new JObject();
+                foreach (Kingmaker.EntitySystem.Stats.StatType stat in
+                    Kingmaker.EntitySystem.Stats.StatTypeHelper.Attributes)
+                {
+                    int testScore = test.Stats.GetStat(stat).ModifiedValue;
+                    int controlScore = control.Stats.GetStat(stat).ModifiedValue;
+                    scores[stat.ToString()] = testScore + "/" + controlScore;
+                    if (testScore != controlScore)
+                        failures.Add("ability score " + stat + " differs: " + testScore + "/" +
+                            controlScore);
+                }
+                result["abilityScoresTestControl"] = scores;
+            }
+            catch (Exception exception)
+            {
+                failures.Add("exception=" + exception);
+            }
+            finally
+            {
+                if (test != null) test.Dispose();
+                if (control != null) control.Dispose();
+            }
+            return result;
         }
 
         private JObject RunGritRaceRow(FavoredClassRaceIdentity identity,
