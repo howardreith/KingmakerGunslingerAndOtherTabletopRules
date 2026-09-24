@@ -131,8 +131,10 @@ namespace KingmakerGunslinger.DomainTests
         {
             JToken[] entries = JObject.Parse(Read("blueprints", "blueprints.json"))
                 ["entries"].ToArray();
-            Assertions.Equal(PreservedManifestEntries + 43, entries.Length,
-                "Manifest must be the preserved ledger plus 43 progression identities.");
+            Assertions.Equal(PreservedManifestEntries + 43 +
+                    KingmakerGunslinger.FavoredClass.FavoredClassIdentityCatalog.IdentityCount,
+                entries.Length,
+                "Manifest must be the preserved ledger plus 43 progression identities and the later Favored Class block.");
             string prefix = string.Concat(entries.Take(PreservedManifestEntries)
                 .Select(value => string.Join("|", new[] {
                     (string)value["symbol"], (string)value["guid"],
@@ -146,7 +148,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(entries.Length, entries.Select(value =>
                 (string)value["symbol"]).Distinct(StringComparer.Ordinal).Count(),
                 "Manifest symbol collision.");
-            JToken[] appended = entries.Skip(PreservedManifestEntries).ToArray();
+            JToken[] appended = entries.Skip(PreservedManifestEntries).Take(43).ToArray();
             string[] expectedNew = ProgressionWeaponCatalog.All.Where(value =>
                     !value.ReusesCanonicalItem).Select(value => value.Symbol + "|" +
                     value.Guid).OrderBy(value => value, StringComparer.Ordinal)

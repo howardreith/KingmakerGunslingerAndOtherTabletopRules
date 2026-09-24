@@ -262,10 +262,12 @@ namespace KingmakerGunslinger.FavoredClass
         }
 
         /// <summary>
-        /// The initialization gate, evaluated only after the binary gate
-        /// passed and every LoadDictionary postfix completed.
+        /// Host-wide initialization gate, evaluated only after the binary gate
+        /// passed and every LoadDictionary postfix completed. It governs every
+        /// class family; the Gunslinger entry is checked separately so a
+        /// missing Gunslinger scan blocks only Gunslinger-class publication.
         /// </summary>
-        internal static FavoredClassHostDecision EvaluateReadiness(
+        internal static FavoredClassHostDecision EvaluateHost(
             FavoredClassHostDecision binary, FavoredClassHostReadinessObservation observed)
         {
             if (binary == null)
@@ -278,6 +280,26 @@ namespace KingmakerGunslinger.FavoredClass
                 return Incomplete("core-load-incomplete");
             if (!observed.FavoredClassSelectionPresent)
                 return Incomplete("favored-class-selection-missing");
+            return FavoredClassHostDecision.Of(FavoredClassHostState.Ready, "host-ready", null);
+        }
+
+        /// <summary>
+        /// Both gates: host readiness, then the Gunslinger favored-class
+        /// progression, bonus selection and generic host rewards.
+        /// </summary>
+        internal static FavoredClassHostDecision EvaluateReadiness(
+            FavoredClassHostDecision binary, FavoredClassHostReadinessObservation observed)
+        {
+            return EvaluateGunslinger(EvaluateHost(binary, observed), observed);
+        }
+
+        internal static FavoredClassHostDecision EvaluateGunslinger(
+            FavoredClassHostDecision host, FavoredClassHostReadinessObservation observed)
+        {
+            if (host == null)
+                throw new ArgumentNullException("host");
+            if (!host.IsReady)
+                return host;
             if (!observed.GenericHitPointLeafPresent || !observed.GenericSkillLeavesPresent)
                 return Incomplete("generic-rewards-missing");
             if (string.IsNullOrEmpty(observed.GunslingerProgressionGuid) ||

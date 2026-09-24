@@ -92,15 +92,21 @@ def validate(root: Path, test_count: int = 865) -> None:
         if entry.get("milestone") == "Better Vendors progression"
         and entry.get("symbol", "").startswith("KMG.Firearms.")
         and entry.get("status") == "active")
+    # Optional Favored Class integration leaves (contained registry).
+    favored_class_count = sum(1 for entry in manifest["entries"]
+        if entry.get("symbol", "").startswith("KMG.FavoredClass."))
+    favored_class_active_count = sum(1 for entry in manifest["entries"]
+        if entry.get("symbol", "").startswith("KMG.FavoredClass.")
+        and entry.get("status") == "active")
     active_count, ledger_count = ((1438 + midgame_count + elven_branched_spear_count +
         eastern_weapons_count + focused_weapon_count + brown_fur_active_count +
         martial_performance_active_count + urban_barbarian_active_count +
         bodyguard_active_count + elemental_races_active_count + teleportation_count + magic_circle_active_count +
-        progression_firearm_count,
+        progression_firearm_count + favored_class_active_count,
         1439 + midgame_count + elven_branched_spear_count + eastern_weapons_count +
         focused_weapon_count + martial_performance_count + brown_fur_count +
         urban_barbarian_count + bodyguard_count + elemental_races_count + teleportation_count + magic_circle_count +
-        progression_firearm_count)
+        progression_firearm_count + favored_class_count)
         if has_expanded_summoning_reservations else
         ((254, 255) if has_shield_other else
         ((252, 253) if current_version == "0.0.76" else (250, 251))))
