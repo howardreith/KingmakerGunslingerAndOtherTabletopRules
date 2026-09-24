@@ -348,6 +348,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                     showAll.isOn = true;
                 }
                 for (int frame = 0; frame < 2 * FcbCensusSettle; frame++) yield return null;
+                // A refresh may re-activate the phase's first empty collection;
+                // the reward collection is switched to again until it shows.
+                var shown = new JArray();
+                record["shown"] = shown;
+                for (int attempt = 0; attempt < 3 &&
+                    !ReferenceEquals(selector.SelectorLayerBody.CurrentSelectionState, state); attempt++)
+                {
+                    FeatureSelectionState current = selector.SelectorLayerBody.CurrentSelectionState;
+                    shown.Add(current == null || current.Selection == null ? "none" :
+                        FavoredClassLevelUpHarness.Name(current.Selection) + "#" + current.Index);
+                    problem = ShowFcbCensusCollection(holder, state, out selector, out switchItem);
+                    if (problem != null)
+                        break;
+                    for (int frame = 0; frame < 2 * FcbCensusSettle; frame++) yield return null;
+                }
+            }
+            if (problem == null)
+            {
                 try
                 {
                     problem = CaptureFcbCensusRows(visit, state, backend, selector, switchItem, record, rendered);

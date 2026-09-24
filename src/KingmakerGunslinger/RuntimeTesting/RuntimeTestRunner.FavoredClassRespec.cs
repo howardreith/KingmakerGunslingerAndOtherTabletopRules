@@ -290,7 +290,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         FeatureSelectionState bloodline = FavoredClassLevelUpHarness.FindOpenState(controller,
                             FcbBloodlineSelectionGuid);
                         if (bloodline == null || !FavoredClassLevelUpHarness.Select(controller, bloodline,
-                            BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library, FcbFireBloodlineGuid,
+                            BlueprintLibraryLookup.RequireExact<BlueprintProgression>(library, FcbFireBloodlineGuid,
                                 "Elemental (Fire) bloodline")))
                             throw new InvalidOperationException("the Elemental (Fire) bloodline could not be taken");
                         FeatureSelectionState rayChoice = FavoredClassLevelUpHarness.FindOpenState(controller,
