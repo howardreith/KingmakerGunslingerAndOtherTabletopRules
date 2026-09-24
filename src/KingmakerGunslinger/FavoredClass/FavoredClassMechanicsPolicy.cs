@@ -111,6 +111,21 @@ namespace KingmakerGunslinger.FavoredClass
                 ResourceMaximum(amount, levelSum, divSum, characterLevel, statBonus, 0);
         }
 
+        /// <summary>O01: one investment widens the chosen performance by five feet.</summary>
+        internal const int PerformanceFeetPerStep = 5;
+
+        /// <summary>Kingmaker's feet-to-meters ratio (Kingmaker.Utility.Feet).</summary>
+        internal const float FeetToMeters = 0.3048f;
+
+        /// <summary>
+        /// O01: the per-instance radius of a performance area whose bard has
+        /// earned <paramref name="steps"/> steps (base radius plus 5 feet each).
+        /// </summary>
+        internal static float PerformanceRadiusMeters(float baseMeters, int steps)
+        {
+            return baseMeters + Math.Max(0, steps) * PerformanceFeetPerStep * FeetToMeters;
+        }
+
         /// <summary>
         /// G02/G08/G16: the earned firearm confirmation bonus does not stack
         /// with Critical Focus, and the better contribution is preserved.

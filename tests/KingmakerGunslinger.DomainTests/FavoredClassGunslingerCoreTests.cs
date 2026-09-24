@@ -51,7 +51,10 @@ namespace KingmakerGunslinger.DomainTests
             }.Concat(
                 // Selected revelations (1/6, uncapped): one counter per manifest target.
                 FavoredClassRevelationManifest.All.Select(target => Tuple.Create(
-                    FavoredClassCatalog.EffectSelectedRevelation, target.Key, 3, 17))).ToArray();
+                    FavoredClassCatalog.EffectSelectedRevelation, target.Key, 3, 17))).Concat(
+                // Performance range (1/1, max +30 feet): one full-only counter per performance.
+                FavoredClassPerformanceManifest.All.Select(target => Tuple.Create(
+                    FavoredClassCatalog.EffectPerformanceRange, target.Key, 6, 0))).ToArray();
             IList<FavoredClassLeafSpec> leaves = FavoredClassLeafCatalog.AllLeaves();
             Assertions.Equal(expected.Sum(counter => counter.Item4 > 0 ? 2 : 1), leaves.Count,
                 "Published counter leaf count.");

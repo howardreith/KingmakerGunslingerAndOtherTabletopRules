@@ -203,7 +203,20 @@ namespace KingmakerGunslinger.FavoredClass
             new FavoredClassLeafFamily(FavoredClassCatalog.EffectSelectedRevelation,
                 "Oracle.Revelation", "Revelation", null,
                 "The chosen revelation's own values that it computes from oracle level (damage dice, durations, bonuses, uses per day, save DCs and caster level) use your oracle level plus the earned steps. You must already have the revelation. Levels at which it gains a new ability or effect, and single-level extra uses, still follow your actual oracle level; it never satisfies a level prerequisite and never changes other revelations, spells, spell slots, BAB or saves. The Oracle is provided by Call of the Wild."),
+            new FavoredClassLeafFamily(FavoredClassCatalog.EffectPerformanceRange,
+                "Bard.PerformanceRange", "Performance Range", null,
+                "It widens only your own area of the chosen performance, from the next time you start it (and when a save is loaded); the visual ring keeps its standard size and the performance's other rules are unchanged. You must already have the performance; one-shot or targeted performances (Soothing Performance, Deadly Performance, Thunder Call), masterpieces and Discordant Voice are not choices."),
         };
+
+        /// <summary>
+        /// O01 performance targets: every persistent performance area the
+        /// read-only audit found (FavoredClassPerformanceManifest).
+        /// </summary>
+        private static readonly FavoredClassTargetSpec[] PerformanceTargets = FavoredClassPerformanceManifest.All
+            .Select(target => new FavoredClassTargetSpec(target.Key, target.Title,
+                "+5 feet to the radius of " + target.Title, null,
+                target.Provider ? "This performance is provided by Call of the Wild." : null))
+            .ToArray();
 
         /// <summary>
         /// I06/S04 revelation targets: every revelation the read-only audit of
@@ -329,6 +342,8 @@ namespace KingmakerGunslinger.FavoredClass
                     return BloodlinePowerTargets;
                 case FavoredClassTargetKind.Revelation:
                     return RevelationTargets;
+                case FavoredClassTargetKind.Performance:
+                    return PerformanceTargets;
                 default:
                     throw new InvalidOperationException(effect.Id +
                         " needs a qualified target manifest before it can be published.");
@@ -408,6 +423,8 @@ namespace KingmakerGunslinger.FavoredClass
                     return " Each firearm type keeps its own separate count of investments.";
                 case FavoredClassTargetKind.Revelation:
                     return " Each revelation keeps its own separate count of investments.";
+                case FavoredClassTargetKind.Performance:
+                    return " Each performance keeps its own separate count of investments.";
                 default:
                     return " Each bloodline power keeps its own separate count of investments.";
             }
