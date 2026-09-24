@@ -58,6 +58,17 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal static LevelUpController Open(UnitDescriptor unit, BlueprintRace race,
             BlueprintCharacterClass characterClass, string name)
         {
+            return Open(unit, race, characterClass, name, null);
+        }
+
+        /// <summary>
+        /// As <see cref="Open(UnitDescriptor, BlueprintRace, BlueprintCharacterClass, string)"/>,
+        /// taking <paramref name="archetype"/> through the native pending
+        /// archetype action on the class's first level.
+        /// </summary>
+        internal static LevelUpController Open(UnitDescriptor unit, BlueprintRace race,
+            BlueprintCharacterClass characterClass, string name, BlueprintArchetype archetype)
+        {
             var controller = (LevelUpController)Start.Invoke(null,
                 new object[] { unit, false, null, null, LevelUpMode });
             if (controller == null)
@@ -76,6 +87,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (controller.State.CanSelectVoice)
                     controller.SelectVoice((unit.Gender == Gender.Male ? chargen.MaleVoices :
                         chargen.FemaleVoices).First(value => value != null));
+                if (archetype != null && unit.Progression.GetClassLevel(characterClass) == 0 &&
+                    !controller.AddArchetype(characterClass, archetype))
+                    throw new InvalidOperationException("Native archetype selection rejected " +
+                        archetype.name);
                 if (!controller.SelectClass(characterClass, false))
                     throw new InvalidOperationException("Native class selection rejected " +
                         characterClass.name);
