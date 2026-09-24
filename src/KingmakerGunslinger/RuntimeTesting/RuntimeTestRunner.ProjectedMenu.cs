@@ -1,8 +1,17 @@
 using System;
 using System.Linq;
+using System.Reflection;
 using Kingmaker;
+using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints.Root;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker.UnitLogic;
+using Kingmaker.UnitLogic.Abilities.Blueprints;
+using KingmakerGunslinger.Blueprints;
+using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Summoning;
+using UnityEngine;
 
 namespace KingmakerGunslinger.RuntimeTesting
 {
@@ -17,6 +26,7 @@ namespace KingmakerGunslinger.RuntimeTesting
     internal sealed partial class RuntimeTestRunner
     {
         private ExpandedSummoningProjectedMenuFixture _projectedMenu;
+        private ExpandedSummoningProjectedMenuSubject _projectedMenuSubject;
         private int _projectedMenuSettled;
         private int _projectedMenuCycle;
         private int _projectedMenuFamily;
@@ -35,32 +45,50 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private void RunExpandedSummoningProjectedMenu()
         {
-            if (_projectedMenu == null)
+            if (_projectedMenuSubject == null)
             {
                 UnitEntityData[] party = Game.Instance.Player.Party.Where(value =>
                     value != null && value.Descriptor != null).ToArray();
                 if (party.Length == 0) throw new InvalidOperationException(
                     "The loaded working save has no party member to build " +
                     "projected menu entries against.");
-                _projectedMenu = new ExpandedSummoningProjectedMenuFixture(party[0],
-                    _request.EvidenceDirectory);
+                _projectedMenuSubject = new ExpandedSummoningProjectedMenuSubject(
+                    party, CreateProjectedMenuCaster);
                 _trace.Record("scenario-activated", RuntimeTestScenarioCatalog
                     .DisposableExpandedSummoningProjectedMenu);
             }
 
             if (++_projectedMenuStarved > ProjectedMenuBudgetFrames)
             {
-                _projectedMenu.RestoreActionBar();
+                if (_projectedMenu != null) _projectedMenu.RestoreActionBar();
+                _projectedMenuSubject.Restore();
                 throw new InvalidOperationException(
                     "The projected menu did not complete within " +
-                    ProjectedMenuBudgetFrames + " frames. Setup: " +
-                    _projectedMenu.SetupReason + ". Slots: " +
-                    _projectedMenu.Availability + ". Progress: family=" +
+                    ProjectedMenuBudgetFrames + " frames. Subject: " +
+                    _projectedMenuSubject.Describe() + ". Setup: " +
+                    (_projectedMenu == null ? "<no fixture>" :
+                        _projectedMenu.SetupReason) + ". Slots: " +
+                    (_projectedMenu == null ? "<no fixture>" :
+                        _projectedMenu.Availability) + ". Progress: family=" +
                     _projectedMenuFamily + ";cycle=" + _projectedMenuCycle +
                     ";settled=" + _projectedMenuSettled + ";measured=" +
-                    _projectedMenu.Measurements.Count + ". The layout anchors " +
-                    "the popup to the slot a player clicked, so an absent or " +
-                    "vanishing group slot leaves nothing to measure against.");
+                    (_projectedMenu == null ? 0 :
+                        _projectedMenu.Measurements.Count) + ". The layout " +
+                    "anchors the popup to the slot a player clicked, so an " +
+                    "absent or vanishing group slot leaves nothing to measure " +
+                    "against.");
+            }
+
+            // The subject comes first: a unit whose action bar the game itself
+            // built with group slots, selected through the game's own selection
+            // path. Until one is found there is nothing to anchor a popup to.
+            if (_projectedMenu == null)
+            {
+                if (!_projectedMenuSubject.Step()) return;
+                _projectedMenu = new ExpandedSummoningProjectedMenuFixture(
+                    _projectedMenuSubject.Unit, _request.EvidenceDirectory);
+                _trace.Record("expanded-summoning-projected-menu-subject",
+                    _projectedMenuSubject.Describe());
             }
 
             SummonFamily family = _projectedMenuFamily == 0
@@ -83,10 +111,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             // the outcome. A fixture that leaves the bar rearranged has changed
             // the thing it was measuring.
             _projectedMenu.RestoreActionBar();
+            _projectedMenuSubject.Restore();
 
             string summary;
             bool passes = _projectedMenu.Passes(out summary);
-            summary = "setup=" + _projectedMenu.SetupReason + " | " + summary;
+            summary = "subject=" + _projectedMenuSubject.Describe() + " | setup=" +
+                _projectedMenu.SetupReason + " | " + summary;
             var assertions = new System.Collections.Generic.List<RuntimeTestAssertion>
             {
                 Assertion("expanded-summoning-projected-menu",
@@ -124,7 +154,73 @@ namespace KingmakerGunslinger.RuntimeTesting
             foreach (ExpandedSummoningProjectedMenuFixture.Measurement measurement
                 in _projectedMenu.Measurements)
                 result.Diagnostics.Add(measurement.ToString());
+            result.Diagnostics.Add("subject=" + _projectedMenuSubject.Describe());
             Complete(result);
+        }
+
+        /// <summary>
+        /// A disposable spontaneous caster for the measurement, used only when
+        /// no party member's action bar carries a group slot: the working
+        /// save's party is not guaranteed to hold a caster. Built the way the
+        /// player-path scenario builds its caster, as a Sorcerer with every
+        /// canonical Summon Monster and Nature's Ally parent known, so the
+        /// game's own action bar gives it spell-level groups and the parents'
+        /// variant groups. It is never saved and is disposed by the subject.
+        /// </summary>
+        private UnitEntityData CreateProjectedMenuCaster()
+        {
+            UnitEntityData anchor = Game.Instance.Player.Party.FirstOrDefault(
+                value => value != null && value.HoldingState != null);
+            if (anchor == null) throw new InvalidOperationException(
+                "The working save has no party member in an area state to " +
+                "place a disposable caster beside.");
+            BlueprintUnit blueprint = UnityEngine.Object.Instantiate(
+                BlueprintRoot.Instance.DefaultPlayerCharacter);
+            blueprint.name = "KMG_Runtime_ExpandedSummoning_ProjectedMenuCaster";
+            blueprint.IsCheater = true;
+            UnitEntityData caster = Game.Instance.EntityCreator.SpawnUnit(
+                blueprint, anchor.Position, Quaternion.identity,
+                anchor.HoldingState);
+            Game.Instance.EntityCreator.Tick();
+            if (caster == null || !caster.IsInState || caster.View == null)
+                throw new InvalidOperationException(
+                    "The projected-menu caster did not enter the live area.");
+            caster.Descriptor.Stats.HitPoints.BaseValue = 10000;
+            caster.Descriptor.Stats.Charisma.BaseValue = 30;
+            BlueprintCharacterClass sorcerer = BlueprintLibraryLookup
+                .RequireExact<BlueprintCharacterClass>(BlueprintBootstrap.Library,
+                    "b3a505fb61437dc4097f43c3f8f9a4cf",
+                    "native Sorcerer projected-menu spellbook");
+            object controller = null;
+            try
+            {
+                AdvanceDisposableSpellcaster(caster.Descriptor, sorcerer, 20,
+                    ref controller);
+            }
+            finally
+            {
+                if (controller != null)
+                    controller.GetType().GetMethod("Cancel", BindingFlags.Public |
+                        BindingFlags.Instance).Invoke(controller, null);
+            }
+            Spellbook spellbook = caster.Descriptor.GetSpellbook(sorcerer);
+            if (spellbook == null) throw new InvalidOperationException(
+                "The disposable caster has no Sorcerer spellbook.");
+            int sorcererLevel = caster.Descriptor.Progression.GetClassLevel(sorcerer);
+            while (spellbook.CasterLevel < sorcererLevel)
+                spellbook.AddCasterLevel();
+            string[] guids = ExpandedSummoningInventoryObserver.CanonicalParentGuids;
+            for (int index = 0; index < guids.Length; index++)
+            {
+                BlueprintAbility parent = BlueprintLibraryLookup
+                    .RequireExact<BlueprintAbility>(BlueprintBootstrap.Library,
+                        guids[index], (index < 9 ? "Summon Monster " :
+                            "Summon Nature's Ally ") + (index % 9 + 1));
+                spellbook.AddKnown(index % 9 + 1, parent, true);
+            }
+            spellbook.UpdateAllSlotsSize(false);
+            spellbook.Rest();
+            return caster;
         }
     }
 }
