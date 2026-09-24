@@ -60,6 +60,7 @@
     <Compile Include="FavoredClassIconTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\FavoredClass\FavoredClassIconPolicy.cs"><Link>FavoredClass\FavoredClassIconPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\FavoredClass\FavoredClassPerformanceManifest.cs"><Link>FavoredClass\FavoredClassPerformanceManifest.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\FavoredClass\FavoredClassPerformanceText.cs"><Link>FavoredClass\FavoredClassPerformanceText.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\FavoredClass\FavoredClassRevelationManifest.cs"><Link>FavoredClass\FavoredClassRevelationManifest.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\ElementalMostlyHumanPolicy.cs"><Link>ElementalRaces\ElementalMostlyHumanPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\FavoredClass\FavoredClassSettings.cs"><Link>FavoredClass\FavoredClassSettings.cs</Link></Compile>

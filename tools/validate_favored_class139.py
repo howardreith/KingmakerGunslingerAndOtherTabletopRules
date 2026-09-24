@@ -20,7 +20,7 @@ VERSION = "0.0.139"
 INFORMATIONAL_VERSION = "0.0.139-favored-class-integration"
 PACKAGE = "KingmakerGunslinger-0.0.139-local-runtime.zip"
 PACKAGE_SUFFIX = "favored-class-integration"
-DETERMINISTIC_TEST_COUNT = 1805
+DETERMINISTIC_TEST_COUNT = 1806
 STATIC_KEY = "favoredClassIntegration139"
 
 # Exact ordered (symbol, guid) pairs this candidate appends after the
@@ -196,6 +196,7 @@ APPENDED = (
     ("KMG.FavoredClass.Bard.PerformanceRange.Mockery.Full", "a29d90d2b0e64569b64e92aac02a61b2"),
     ("KMG.FavoredClass.Bard.PerformanceRange.GloriousEpic.Full", "0f8cf9ae1c874e089bf9b875384ed706"),
     ("KMG.FavoredClass.Bard.PerformanceRange.Scandal.Full", "485193cfb5254e21ad30db05f1d2cdaa"),
+    ("KMG.FavoredClass.Bard.PerformanceRange.DanceOfTheDead.Full", "7c7e7e8ded0847de9dfca9c6c74d0aaa"),
     ("KMG.MostlyHuman.Identity", "d71a4b4250914a7aa6d4bec53dfc768f"),
     ("KMG.MostlyHuman.Ifrit.Selection", "c0485fc76e514ad38c09961dbdc6efc7"),
     ("KMG.MostlyHuman.Ifrit.Standard", "7c508ee3415942bb91f584306d70bf70"),

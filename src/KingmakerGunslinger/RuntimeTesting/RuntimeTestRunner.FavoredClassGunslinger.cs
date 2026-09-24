@@ -130,8 +130,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var publicationFailures = new List<string>();
             foreach (FavoredClassLeafPair pair in leaves.Pairs)
             {
-                bool expected = pair.Effect.Rows.Select(FavoredClassCatalog.Row).Any(row =>
-                    row.IsScheduled && FavoredClassRuntime.Profile.Offers(row.Profile));
+                bool expected = FcbOfferedByProfile(pair);
                 BlueprintFeatureSelection home = host.BonusSelectionFor(pair.HostClassGuid);
                 int present = home == null ? -1 : pair.Leaves.Count(leaf => home.AllFeatures.Contains(leaf));
                 publication.Add(pair.Effect.Id + "|" + (pair.TargetKey ?? "-") + "@" +
@@ -211,7 +210,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             string evidencePath = WriteFavoredClassEvidence("favored-class-gunslinger-menus.json", evidence);
 
             assertions.Add(Assertion("fcb-gunslinger-publication-by-profile",
-                "every counter with an enabled route is published exactly once; the third-party-only Drow Nimble and dirty trick/trip counters stay unpublished while registered",
+                "every counter with an enabled route is published exactly once; the third-party-only Drow Nimble and dirty trick/trip counters and the excluded Storm Call and Mockery counters stay unpublished while registered",
                 Describe(publication, publicationFailures), publicationFailures.Count == 0,
                 "each counter's own live host class bonus selection AllFeatures"));
             assertions.Add(Assertion("fcb-gunslinger-race-menus",
