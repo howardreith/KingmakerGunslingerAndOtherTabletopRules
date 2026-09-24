@@ -1052,6 +1052,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.PteranodonMembrane.cs" />
     <Compile Include="RuntimeTesting\ExpandedSummoningProjectedMenuFixture.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ProjectedMenu.cs" />
+    <Compile Include="RuntimeTesting\ExpandedSummoningProjectedMenuSubject.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.PteranodonAttachedView.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircle.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircleEvil.cs" />
