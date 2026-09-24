@@ -12,7 +12,8 @@ namespace KingmakerGunslinger.FavoredClass
     internal static class FavoredClassRuntime
     {
         /// <summary>Stable permission-graph identity of the verified Mostly Human fact.</summary>
-        internal const string MostlyHumanFactId = "KMG.ElementalRaces.MostlyHuman.Identity";
+        internal const string MostlyHumanFactId =
+            KingmakerGunslinger.ElementalRaces.ElementalMostlyHumanPolicy.IdentitySymbol;
 
         private static readonly object Gate = new object();
         private static FavoredClassProfileState _profile = FavoredClassProfileState.Defaults;
@@ -74,6 +75,15 @@ namespace KingmakerGunslinger.FavoredClass
         internal static ISet<string> PermittedAncestries(UnitDescriptor unit)
         {
             return Graph.PermittedAncestries(Evidence(unit));
+        }
+
+        /// <summary>
+        /// The scoped host bridge's only addition to the host's exact-race
+        /// human prerequisite (see FavoredClassEligibility.GrantsHostHumanAccess).
+        /// </summary>
+        internal static bool GrantsHostHumanAccess(UnitDescriptor unit)
+        {
+            return FavoredClassEligibility.GrantsHostHumanAccess(Evidence(unit), MostlyHumanFactId);
         }
 
         /// <summary>Whether this unit may take new choices of the effect.</summary>

@@ -14,7 +14,8 @@ namespace KingmakerGunslinger.DomainTests
             "disposable-favored-class-gunslinger-mechanics",
             "disposable-favored-class-initiative-timing",
             "observe-favored-class-host-state",
-            "disposable-favored-class-elemental-core"
+            "disposable-favored-class-elemental-core",
+            "disposable-favored-class-mostly-human"
         };
 
         private static string Read(params string[] parts)
@@ -50,7 +51,8 @@ namespace KingmakerGunslinger.DomainTests
         }
 
         // The integration never executes host code, never repeats the host's
-        // class scan, installs no Harmony patch of its own in this phase
+        // class scan, patches native game types from FavoredClass/Hooks plus
+        // exactly one scoped postfix on the host's PrerequisiteRace.Check
         // (therefore no second automatic hit-point patch), reads the host
         // library before any Core static, and registers its leaves in a
         // contained registry whose failure cannot fail the core bootstrap.
@@ -67,7 +69,13 @@ namespace KingmakerGunslinger.DomainTests
                 bool hook = Path.GetFileName(Path.GetDirectoryName(file)) == "Hooks";
                 Assertions.False(!hook && (text.Contains("[HarmonyPatch") || text.Contains("HarmonyPatch(")),
                     name + " must not install Harmony patches outside FavoredClass/Hooks.");
-                if (hook)
+                if (hook && name == "FavoredClassHostRaceBridge.cs")
+                    Assertions.True(text.Contains("host.PrerequisiteRaceType.GetMethod(\"Check\"") &&
+                        text.Contains("harmony.Patch(check, null, new HarmonyMethod(postfix), null);") &&
+                        !text.Contains("[HarmonyPatch") && !text.Contains("ZFavoredClass") &&
+                        !text.Contains("CallOfTheWild"),
+                        name + " must patch only the adapter-resolved host race prerequisite.");
+                else if (hook)
                     Assertions.True(text.Contains("[HarmonyPatch(typeof(") && !text.Contains("ZFavoredClass") &&
                         !text.Contains("CallOfTheWild"), name + " must patch a native game type only.");
                 Assertions.False(text.Contains(".Invoke("), name + " must not invoke host methods.");

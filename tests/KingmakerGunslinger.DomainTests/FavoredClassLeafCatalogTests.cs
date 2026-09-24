@@ -16,8 +16,12 @@ namespace KingmakerGunslinger.DomainTests
         {
             JToken[] entries = JObject.Parse(File.ReadAllText(Path.Combine(
                 Environment.CurrentDirectory, "blueprints", "blueprints.json")))["entries"].ToArray();
-            JToken[] tail = entries.Skip(PrecedingManifestEntries).ToArray();
             IList<FavoredClassIdentity> identities = FavoredClassIdentityCatalog.All;
+            // The Mostly Human companion block follows (ElementalMostlyHumanTests).
+            Assertions.Equal(PrecedingManifestEntries + identities.Count +
+                KingmakerGunslinger.ElementalRaces.ElementalMostlyHumanPolicy.IdentityCount,
+                entries.Length, "Favored-class and Mostly Human blocks are the manifest tail.");
+            JToken[] tail = entries.Skip(PrecedingManifestEntries).Take(identities.Count).ToArray();
             Assertions.Equal(identities.Count, tail.Length, "Favored-class manifest block size.");
             for (int index = 0; index < identities.Count; index++)
             {
