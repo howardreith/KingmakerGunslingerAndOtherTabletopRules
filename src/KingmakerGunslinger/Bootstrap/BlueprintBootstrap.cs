@@ -1140,7 +1140,7 @@ namespace KingmakerGunslinger.Bootstrap
                 try
                 {
                     _favoredClass = KingmakerGunslinger.FavoredClass.FavoredClassBlueprints.Register(
-                        favoredClassRegistry, gunslingerClassBlueprints);
+                        favoredClassRegistry, library, gunslingerClassBlueprints, productionFirearms);
                     context.Logger.Info("favored-class", "registration.complete",
                         "leaves=" + _favoredClass.LeafCount + ";pairs=" + _favoredClass.Pairs.Count);
                 }

@@ -222,6 +222,12 @@
     <Compile Include="FavoredClass\FavoredClassRuntime.cs" />
     <Compile Include="FavoredClass\FavoredClassPrerequisites.cs" />
     <Compile Include="FavoredClass\Mechanics\FavoredClassGritResourceBonus.cs" />
+    <Compile Include="FavoredClass\FavoredClassMechanicsPolicy.cs" />
+    <Compile Include="FavoredClass\Mechanics\FavoredClassEarnedSteps.cs" />
+    <Compile Include="FavoredClass\Mechanics\FavoredClassFirearmConfirmationBonus.cs" />
+    <Compile Include="FavoredClass\Mechanics\FavoredClassPistolWhipAttackBonus.cs" />
+    <Compile Include="FavoredClass\Mechanics\FavoredClassNimbleArmorClassBonus.cs" />
+    <Compile Include="FavoredClass\Mechanics\FavoredClassManeuverBonus.cs" />
     <Compile Include="FavoredClass\FavoredClassBlueprints.cs" />
     <Compile Include="FavoredClass\FavoredClassHostAdapter.cs" />
     <Compile Include="FavoredClass\FavoredClassPublication.cs" />
@@ -1107,6 +1113,7 @@
     <Compile Include="RuntimeTesting\FavoredClassLevelUpHarness.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassContract.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassGrit.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassGunslinger.cs" />
     <Compile Include="RuntimeTesting\RapidReloadGateEvidenceRules.cs" />
     <Compile Include="RuntimeTesting\RapidReloadVisitCleanupRules.cs" />
     <Compile Include="RuntimeTesting\FirearmHigherFeatRootsRules.cs" />

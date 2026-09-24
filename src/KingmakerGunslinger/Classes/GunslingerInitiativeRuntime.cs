@@ -18,8 +18,14 @@ namespace KingmakerGunslinger.Classes
 
         internal static bool Apply(RuleInitiativeRoll rule, int currentGrit)
         {
+            return Apply(rule, currentGrit, 0);
+        }
+
+        internal static bool Apply(RuleInitiativeRoll rule, int currentGrit,
+            int favoredClassSteps)
+        {
             if (rule == null) throw new ArgumentNullException("rule");
-            int bonus = Service.CalculateBonus(currentGrit);
+            int bonus = Service.CalculateBonus(currentGrit, favoredClassSteps);
             if (bonus == 0)
             {
                 GunslingerInitiativeRuntimeDiagnostics.Rejected++;
