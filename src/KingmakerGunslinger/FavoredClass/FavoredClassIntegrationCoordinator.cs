@@ -171,11 +171,39 @@ namespace KingmakerGunslinger.FavoredClass
                 if (set.Pair(FavoredClassCatalog.EffectPaladinAuras, null) != null)
                     try { FavoredClassAuraPublication.Check(BlueprintBootstrap.Library); }
                     catch (Exception auraException) { auraProblem = auraException.Message; }
-                FavoredClassRuntime.SetUnavailableEffects(auraProblem == null ? new string[0] :
-                    new[] { FavoredClassCatalog.EffectPaladinAuras });
+                var unavailable = new System.Collections.Generic.List<string>();
                 if (auraProblem != null)
+                {
+                    unavailable.Add(FavoredClassCatalog.EffectPaladinAuras);
                     context.Logger.Warning(Phase, "native-contract.unavailable",
                         "effect=" + FavoredClassCatalog.EffectPaladinAuras + ";" + auraProblem);
+                }
+                // I06/S04 read points are scoped from the live provider graph;
+                // a revelation without any found read point is withheld.
+                if (set.Pairs.Any(pair => pair.Effect.Id == FavoredClassCatalog.EffectSelectedRevelation))
+                {
+                    try
+                    {
+                        System.Collections.Generic.IList<string> withheld =
+                            FavoredClassRevelationScopes.Build(BlueprintBootstrap.Library, set);
+                        unavailable.AddRange(withheld.Select(key => FavoredClassRuntime.TargetKey(
+                            FavoredClassCatalog.EffectSelectedRevelation, key)));
+                        context.Logger.Info(Phase, "revelation-read-points.scoped", string.Format(
+                            CultureInfo.InvariantCulture, "targets={0};scoped={1};withheld={2}",
+                            FavoredClassRevelationManifest.All.Count,
+                            FavoredClassRevelationScopes.All.Count(scope => scope.HasReadPoints),
+                            string.Join(",", withheld.ToArray())));
+                    }
+                    catch (Exception revelationException)
+                    {
+                        FavoredClassRevelationScopes.Clear();
+                        unavailable.Add(FavoredClassCatalog.EffectSelectedRevelation);
+                        context.Logger.Warning(Phase, "native-contract.unavailable",
+                            "effect=" + FavoredClassCatalog.EffectSelectedRevelation + ";" +
+                            revelationException.Message);
+                    }
+                }
+                FavoredClassRuntime.SetUnavailableEffects(unavailable);
                 publication = FavoredClassPublication.Plan(set, host, profile,
                     context.FeatureModules.Active.Gunslinger, null);
                 // Ancestry scopes are registered before the publication
@@ -207,6 +235,7 @@ namespace KingmakerGunslinger.FavoredClass
             catch (Exception exception)
             {
                 Hooks.FavoredClassHostRaceBridge.Clear();
+                FavoredClassRevelationScopes.Clear();
                 FavoredClassAuraPublication committedAura;
                 lock (Gate)
                 {
