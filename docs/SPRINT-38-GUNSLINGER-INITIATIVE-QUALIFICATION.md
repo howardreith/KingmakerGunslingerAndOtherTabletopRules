@@ -61,3 +61,22 @@ would silently evade that action cost. The clause may be revisited only if the
 separate bonus-feat work adds Quick Draw together with deterministic
 free/unrestrained-hand and visible-firearm selection contracts. Continue to
 Pistol-Whip; Sprint 38 is not a stopping condition.
+
+## Correction: native combat-entry timing (0.0.139)
+
+The Sprint 38 runs raised `IUnitInitiativeHandler` by hand and observed only
+`RuleInitiativeRoll.Modifier`. The native `UnitCombatPrepareController`
+stores `RuleInitiativeRoll.Result` into `UnitCombatState.Initiative` and sorts
+the combatants before it raises that event, so the +2 never reached the
+stored initiative. The Favored Class integration reproduced this natively on
+candidate `cf8a66d21` (`20260924T0137282472516Z-disposable-favored-class-initiative-timing`):
+in both real-time and turn-based entry the stored initiative was d20 + stat
+(11) while the rule's later result was 17.
+
+The deed now applies while the rule resolves, through its initiator
+`OnEventDidTrigger` (after `OnTrigger` snapshots the Initiative stat and before
+the controller reads the result); the handler remains a duplicate-guarded
+fallback. `disposable-gunslinger-initiative` now expects the +2 immediately
+after `Rulebook.Trigger` and a no-op handler replay (applied=1, rejected=2,
+duplicates=2), and `disposable-favored-class-initiative-timing` checks the
+stored combat-entry initiative in both modes.
