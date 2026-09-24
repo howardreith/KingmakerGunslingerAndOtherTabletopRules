@@ -53,6 +53,12 @@ the roster's projected size against `docs/EXPANDED-SUMMONING-PROJECTED-MENU-RUBR
 `scripts/Invoke-ExpandedSummoningCompatibilityMechanical.ps1` runs the
 mechanical scenario inside the two required compatibility transactions on a
 fixture derived from the protected baseline and restores the working save.
+Phase 1 adds `observe-expanded-summoning-native-donors`, a mod-load audit
+that writes `native-donor-audit.json` - names, GUIDs, statistics, class
+levels, facts, body weapons, component type names and view asset ids for the
+units, classes, facts, buffs and abilities the Sprint 3-8 creatures may
+reuse, plus the native Grab feature's action graph; metadata only, no asset
+content.
 
 The historical Expanded Summoning authorization allowed working-save writes;
 it does not apply to this hardening pass. Every pre-existing save, including
