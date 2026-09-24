@@ -157,6 +157,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     skipped.Add(pair.Full.name + ": not in a published reward selection");
                     continue;
                 }
+                if (FavoredClassRuntime.IsEffectUnavailable(pair.Effect.Id) ||
+                    FavoredClassRuntime.IsTargetUnavailable(pair.Effect.Id, pair.TargetKey))
+                {
+                    skipped.Add(pair.Full.name + ": effect or target unavailable in this profile");
+                    continue;
+                }
                 BlueprintScriptableObject rawClass;
                 if (!library.BlueprintsByAssetId.TryGetValue(pair.HostClassGuid, out rawClass) ||
                     !(rawClass is BlueprintCharacterClass))
@@ -169,6 +175,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     FavoredClassSourceRow row = FavoredClassCatalog.Row(rowId);
                     if (row == null || !row.IsScheduled)
                         continue;
+                    if (!FavoredClassRuntime.Profile.Offers(row.Profile))
+                    {
+                        skipped.Add(pair.Full.name + " via " + rowId + ": " + row.Profile + " profile off");
+                        continue;
+                    }
                     FavoredClassRaceIdentity identity = FavoredClassRaceIdentities.ForAncestry(row.Ancestry);
                     BlueprintScriptableObject rawRace = null;
                     if (identity == null || !library.BlueprintsByAssetId.TryGetValue(identity.RaceGuid, out rawRace) ||
