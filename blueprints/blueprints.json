@@ -15927,6 +15927,110 @@
       "status": "active",
       "milestone": "Favored Class integration",
       "notes": "Favored class completing investment: +1 CMD against grapple per rank and +1 Stunning Fist attempt per day per rank (U04 Undine Monk mixed-rate counter)."
+    },
+    {
+      "symbol": "KMG.MostlyHuman.Identity",
+      "guid": "d71a4b4250914a7aa6d4bec53dfc768f",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Mostly Human companion trait",
+      "notes": "Hidden shared Mostly Human identity fact granted by each parent race's Mostly Human trait; recognized by the favored-class permission graph and the scoped host ancestry bridge."
+    },
+    {
+      "symbol": "KMG.MostlyHuman.Ifrit.Selection",
+      "guid": "c0485fc76e514ad38c09961dbdc6efc7",
+      "plannedType": "BlueprintFeatureSelection",
+      "status": "active",
+      "milestone": "Mostly Human companion trait",
+      "notes": "Heritage-phase Ifrit choice between standard ancestry and Mostly Human; published into the Ifrit race features only when the Mostly Human control is on."
+    },
+    {
+      "symbol": "KMG.MostlyHuman.Ifrit.Standard",
+      "guid": "7c508ee3415942bb91f584306d70bf70",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Mostly Human companion trait",
+      "notes": "Save-bearing visible marker: the Ifrit keeps the standard ancestry (sorts before the trait)."
+    },
+    {
+      "symbol": "KMG.MostlyHuman.Ifrit.Trait",
+      "guid": "8060afe7da3b40bbbc77b315ee23fdd3",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Mostly Human companion trait",
+      "notes": "Save-bearing visible Mostly Human racial trait for Ifrit; grants the shared identity; the Ignan language portion is documented as nonfunctional."
+    },
+    {
+      "symbol": "KMG.MostlyHuman.Oread.Selection",
+      "guid": "e5bcb7c34a7b4b048c0d877019edac63",
+      "plannedType": "BlueprintFeatureSelection",
+      "status": "active",
+      "milestone": "Mostly Human companion trait",
+      "notes": "Heritage-phase Oread choice between standard ancestry and Mostly Human; published into the Oread race features only when the Mostly Human control is on."
+    },
+    {
+      "symbol": "KMG.MostlyHuman.Oread.Standard",
+      "guid": "5c39e1237c4d4bbd9bfd0f1eaacb18c3",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Mostly Human companion trait",
+      "notes": "Save-bearing visible marker: the Oread keeps the standard ancestry (sorts before the trait)."
+    },
+    {
+      "symbol": "KMG.MostlyHuman.Oread.Trait",
+      "guid": "65aedd35c5a54273a9a33c2d58683a21",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Mostly Human companion trait",
+      "notes": "Save-bearing visible Mostly Human racial trait for Oread; grants the shared identity; the Terran language portion is documented as nonfunctional."
+    },
+    {
+      "symbol": "KMG.MostlyHuman.Sylph.Selection",
+      "guid": "2c93d16297764ce9a0f73622b9825c05",
+      "plannedType": "BlueprintFeatureSelection",
+      "status": "active",
+      "milestone": "Mostly Human companion trait",
+      "notes": "Heritage-phase Sylph choice between standard ancestry and Mostly Human; published into the Sylph race features only when the Mostly Human control is on."
+    },
+    {
+      "symbol": "KMG.MostlyHuman.Sylph.Standard",
+      "guid": "0be790c9af23490e8f3ed46f5a59d00c",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Mostly Human companion trait",
+      "notes": "Save-bearing visible marker: the Sylph keeps the standard ancestry (sorts before the trait)."
+    },
+    {
+      "symbol": "KMG.MostlyHuman.Sylph.Trait",
+      "guid": "21451d96af0843d088b04331ac7a5a99",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Mostly Human companion trait",
+      "notes": "Save-bearing visible Mostly Human racial trait for Sylph; grants the shared identity; the Auran language portion is documented as nonfunctional."
+    },
+    {
+      "symbol": "KMG.MostlyHuman.Undine.Selection",
+      "guid": "bb0bae8a5720452eb16a1a6629e8fd4d",
+      "plannedType": "BlueprintFeatureSelection",
+      "status": "active",
+      "milestone": "Mostly Human companion trait",
+      "notes": "Heritage-phase Undine choice between standard ancestry and Mostly Human; published into the Undine race features only when the Mostly Human control is on."
+    },
+    {
+      "symbol": "KMG.MostlyHuman.Undine.Standard",
+      "guid": "66868270c36a48c89947fbad8e6d979c",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Mostly Human companion trait",
+      "notes": "Save-bearing visible marker: the Undine keeps the standard ancestry (sorts before the trait)."
+    },
+    {
+      "symbol": "KMG.MostlyHuman.Undine.Trait",
+      "guid": "f3f6f6e074114b8da0a94a49b3cf4b47",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Mostly Human companion trait",
+      "notes": "Save-bearing visible Mostly Human racial trait for Undine; grants the shared identity; the Aquan language portion is documented as nonfunctional."
     }
   ]
 }
