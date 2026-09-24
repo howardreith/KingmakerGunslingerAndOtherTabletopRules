@@ -42,7 +42,17 @@ Summoning qualification uses `observe-expanded-summoning-inventory`,
 `disposable-expanded-summoning-player-path`,
 `disposable-expanded-summoning-visual-contracts`, the three
 `working-save-expanded-summoning-*` persistence stages, and all 16
-`observe-feature-module-settings` configurations.
+`observe-feature-module-settings` configurations. The Pteranodon visual adds
+`observe-summon-pteranodon-view-contracts` (loader publication and the
+deformation proof on a detached probe) and the development-only
+`disposable-expanded-summoning-pteranodon-fault-drill` (the mechanical run
+with both fallback paths exercised on live summons). The persistence stages
+carry the Pteranodon and render the party camera to file on it for internal
+review; `disposable-expanded-summoning-projected-menu` measures the menu at
+the roster's projected size against `docs/EXPANDED-SUMMONING-PROJECTED-MENU-RUBRIC.md`;
+`scripts/Invoke-ExpandedSummoningCompatibilityMechanical.ps1` runs the
+mechanical scenario inside the two required compatibility transactions on a
+fixture derived from the protected baseline and restores the working save.
 
 The historical Expanded Summoning authorization allowed working-save writes;
 it does not apply to this hardening pass. Every pre-existing save, including

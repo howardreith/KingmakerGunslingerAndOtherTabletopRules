@@ -848,7 +848,11 @@ finally {
 
 } finally {
     if ($runtimeScope.Acquired -and $ExitAfterCompletion) {
-        $leaseExitDeadline = [DateTime]::UtcNow.AddSeconds(45)
+        # The game's own exit after a long scenario can outlast a fixed 45
+        # seconds; the player-path run left its lease behind twice that
+        # way, with a passing result and a verified restoration. The wait
+        # follows the scenario's budget - the process is exiting anyway.
+        $leaseExitDeadline = [DateTime]::UtcNow.AddSeconds([Math]::Max(45, $TimeoutSeconds))
         while (@(Get-Process -Name Kingmaker -ErrorAction SilentlyContinue).Count -gt 0 -and
             [DateTime]::UtcNow -lt $leaseExitDeadline) { Start-Sleep -Milliseconds 250 }
     }

@@ -89,7 +89,10 @@
         "disposable-firearm-dependent-feats",
         "disposable-pistolero-deeds",
         "disposable-archetype-reconciliation",
-        "musket-master-mechanics-and-starter"
+        "musket-master-mechanics-and-starter",
+        "observe-expanded-summoning-inventory",
+        "observe-expanded-summoning-variant-menu",
+        "disposable-expanded-summoning"
       ],
       "workingSaveSmokePermitted": true,
       "expectedUmmIds": [
@@ -118,7 +121,9 @@
         "disposable-firearm-dependent-feats",
         "disposable-pistolero-deeds",
         "disposable-archetype-reconciliation",
-        "disposable-gunslinger-comprehensive-acceptance"
+        "disposable-gunslinger-comprehensive-acceptance",
+        "observe-expanded-summoning-inventory",
+        "observe-expanded-summoning-variant-menu"
       ],
       "workingSaveSmokePermitted": false,
       "expectedUmmIds": [
@@ -238,7 +243,9 @@
         "disposable-pistolero-deeds",
         "disposable-archetype-reconciliation",
         "disposable-firearm-visual-rigs",
-        "disposable-production-firearm-switching"
+        "disposable-production-firearm-switching",
+        "observe-expanded-summoning-inventory",
+        "observe-expanded-summoning-variant-menu"
       ],
       "workingSaveSmokePermitted": false,
       "expectedUmmIds": [
@@ -264,7 +271,9 @@
         "disposable-firearm-dependent-feats",
         "disposable-pistolero-deeds",
         "disposable-archetype-reconciliation",
-        "disposable-firearm-wwise-audio"
+        "disposable-firearm-wwise-audio",
+        "observe-expanded-summoning-inventory",
+        "observe-expanded-summoning-variant-menu"
       ],
       "workingSaveSmokePermitted": false,
       "expectedUmmIds": [
@@ -317,7 +326,10 @@
         "disposable-firearm-wwise-audio",
         "disposable-gunslinger-scatter-shot",
         "disposable-reload-autocast",
-        "disposable-gunslinger-comprehensive-acceptance"
+        "disposable-gunslinger-comprehensive-acceptance",
+        "observe-expanded-summoning-inventory",
+        "observe-expanded-summoning-variant-menu",
+        "disposable-expanded-summoning"
       ],
       "workingSaveSmokePermitted": true,
       "expectedUmmIds": [

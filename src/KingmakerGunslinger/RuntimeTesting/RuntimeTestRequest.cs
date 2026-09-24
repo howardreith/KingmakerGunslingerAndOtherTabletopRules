@@ -282,6 +282,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .DisposableInHarmsWayOffTurnEconomy ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath ||
+                request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableExpandedSummoningProjectedMenu ||
+                request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableExpandedSummoningPteranodonFaultDrill ||
                 RuntimeTestScenarioCatalog.IsSummonSameTurnWorkingSaveScenario(
                     request.Scenario) ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||

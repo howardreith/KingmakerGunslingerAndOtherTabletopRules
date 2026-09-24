@@ -465,6 +465,13 @@ and Thanadaemon choices; their original blueprint objects remain registered.
 Dire Bat is intentionally hidden because no acceptable installed bat rig was
 found and the Roc proxy failed visual acceptance.
 
+A separate owner-approved charter plans an expanded ideal roster of 145
+creatures. Its planning manifest lives in
+`planning/EXPANDED-SUMMONING-IDEAL-ROSTER.md` with the sprint ledger in
+`planning/EXPANDED-SUMMONING-CHARTER-TRACEABILITY.md`. That manifest is inert:
+it publishes nothing, allocates no identity, and no publication path may read
+it, so the shipped roster above is exactly what players see today.
+
 Every visible creature-choice child uses one of 77 project-owned original
 128x128 icons; the same creature reuses its cached icon across families and
 quantities, while unrelated concepts never share an icon. SNA I exposes only

@@ -68,6 +68,19 @@ Copy-Item -LiteralPath (Join-Path $outputDirectory 'assets\bundles\kingmakerguns
 Copy-Item -LiteralPath (Join-Path $outputDirectory 'assets\bundles\kingmakergunslinger.elvenbranchedspear') -Destination $bundleDestination
 Copy-Item -LiteralPath (Join-Path $outputDirectory 'assets\bundles\kingmakergunslinger.easternweapons') -Destination $bundleDestination
 Copy-Item -LiteralPath (Join-Path $outputDirectory 'assets\bundles\asset-bundle-manifest.json') -Destination $bundleDestination
+
+# The Pteranodon replacement visual ships as mesh data rather than an
+# AssetBundle: it carries no bind poses, no material and no import settings,
+# and it does not depend on a Unity editor licence or editor version.
+$pteranodonSource = Join-Path $outputDirectory 'assets\pteranodon'
+if (Test-Path -LiteralPath $pteranodonSource -PathType Container) {
+    $pteranodonDestination = Join-Path $modDirectory 'assets\pteranodon'
+    New-Item -ItemType Directory -Path $pteranodonDestination -Force | Out-Null
+    Copy-Item -LiteralPath (Join-Path $pteranodonSource 'pteranodon-mesh.json') `
+        -Destination $pteranodonDestination
+    Copy-Item -LiteralPath (Join-Path $pteranodonSource 'pteranodon-albedo.png') `
+        -Destination $pteranodonDestination
+}
 $soundBankSource=Join-Path $repositoryRoot 'assets\soundbanks'
 if(Test-Path -LiteralPath (Join-Path $soundBankSource 'KMG_Firearms.bnk') -PathType Leaf){
     $soundBankDestination=Join-Path $modDirectory 'assets\soundbanks'
@@ -86,9 +99,10 @@ if (Test-Path -LiteralPath $checksumPath) {
 $python = (Get-Command python -ErrorAction Stop).Source
 $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
     'assets\soundbanks\KMG_Firearms.bnk') -PathType Leaf
-# Existing 135-file package plus 89 original elemental/strategic paintings and
-# the 3 composed strategic scroll item icons.
-$expectedPackageFileCount = if ($hasFirearmSoundBank) { 235 } else { 233 }
+# Existing 135-file package plus 89 original elemental/strategic paintings,
+# the 3 composed strategic scroll item icons, and the Pteranodon mesh data
+# with its painted albedo.
+$expectedPackageFileCount = if ($hasFirearmSoundBank) { 237 } else { 235 }
 & $python (Join-Path $repositoryRoot 'tools\create_deterministic_package.py') `
     --source $modDirectory --output $packagePath `
     --expected-file-count $expectedPackageFileCount
