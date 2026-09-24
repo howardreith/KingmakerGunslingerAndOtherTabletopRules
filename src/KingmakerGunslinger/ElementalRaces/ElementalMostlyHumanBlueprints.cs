@@ -153,6 +153,10 @@ namespace KingmakerGunslinger.ElementalRaces
             BlueprintFeature feature = BaseFeature(ElementalMostlyHumanPolicy.IdentitySymbol);
             feature.HideInUI = true;
             feature.HideInCharacterSheetAndLevelUp = true;
+            // Only the chosen trait grants it (without a source): the native
+            // respec keeps every unsourced non-class feature, so the identity
+            // is a class feature and never survives a respec on its own.
+            feature.IsClassFeature = true;
             BlueprintUnitFactAccess.Resolve().Configure(feature,
                 LocalizationService.Create(ElementalMostlyHumanPolicy.IdentitySymbol + ".Name",
                     "Mostly Human identity"),
@@ -238,7 +242,7 @@ namespace KingmakerGunslinger.ElementalRaces
 
         private static void Validate(ElementalMostlyHumanBlueprintSet set)
         {
-            if (set.Identity == null || !set.Identity.HideInUI ||
+            if (set.Identity == null || !set.Identity.HideInUI || !set.Identity.IsClassFeature ||
                 (set.Identity.ComponentsArray ?? new BlueprintComponent[0]).Length != 0 ||
                 set.Races.Count != ElementalMostlyHumanPolicy.RaceCount ||
                 set.Count != ElementalMostlyHumanPolicy.IdentityCount)
