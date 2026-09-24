@@ -63,8 +63,9 @@ namespace KingmakerGunslinger.DomainTests
                         leaf.Role == FavoredClassInvestmentRole.Full && leaf.TargetKey == targetKey);
                     Assertions.Equal(FavoredClassRankPolicy.FullCapacity(effect.Rate), full.Ranks,
                         effectId + " full capacity.");
-                    Assertions.True(full.Description.Contains("completes"),
-                        effectId + " full leaf must say it completes a step.");
+                    Assertions.True(full.Description.Contains(effect.Rate.HasPartial
+                            ? "completes" : "Each selection grants"),
+                        effectId + " full leaf must say what one selection grants.");
                     FavoredClassLeafSpec partial = leaves.SingleOrDefault(leaf =>
                         leaf.Role == FavoredClassInvestmentRole.Partial && leaf.TargetKey == targetKey);
                     Assertions.Equal(effect.Rate.HasPartial, partial != null,
@@ -73,8 +74,10 @@ namespace KingmakerGunslinger.DomainTests
                     {
                         Assertions.Equal(FavoredClassRankPolicy.PartialCapacity(effect.Rate), partial.Ranks,
                             effectId + " partial capacity.");
-                        Assertions.True(partial.Description.Contains("grants nothing by itself"),
-                            effectId + " partial leaf must disclose that it is only investment.");
+                        Assertions.True(partial.Description.Contains(
+                            FavoredClassLeafCatalog.Family(effectId).ImmediateText == null
+                                ? "grants nothing by itself" : "at once"),
+                            effectId + " partial leaf must disclose exactly what it grants.");
                         Assertions.True(partial.Name.EndsWith("(partial)", StringComparison.Ordinal),
                             effectId + " partial leaf name.");
                     }

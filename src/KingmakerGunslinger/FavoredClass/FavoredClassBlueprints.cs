@@ -4,6 +4,10 @@ using System.Linq;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Prerequisites;
+using Kingmaker.Blueprints.Facts;
+using Kingmaker.RuleSystem.Rules;
+using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.FactLogic;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.FavoredClass.Mechanics;
 using UnityEngine;
@@ -85,6 +89,41 @@ namespace KingmakerGunslinger.FavoredClass
         /// <summary>Kingmaker's Critical Focus feat (nonstacking comparison for confirmation).</summary>
         internal const string CriticalFocusGuid = "8ac59959b1b23c347a0361dc97cc786d";
 
+        // Exact native host classes of the scheduled non-Gunslinger families
+        // (the Favored Class host's own class identities).
+        private static readonly Dictionary<string, string> NativeClassGuids =
+            new Dictionary<string, string>(StringComparer.Ordinal)
+            {
+                { FavoredClassCatalog.Alchemist, "0937bec61c0dabc468428f496580c721" },
+                { FavoredClassCatalog.Inquisitor, "f1a70d9e1b0b41e49874e1fa9052a1ce" },
+                { FavoredClassCatalog.Rogue, "299aa766dee3cbf4790da4efb8c72484" },
+                { FavoredClassCatalog.Fighter, "48ac8db94d5de7645906c7d0ad3bcfbd" },
+                { FavoredClassCatalog.Monk, "e8f21e5b58e0569468e420ebea456124" },
+                { FavoredClassCatalog.Cleric, "67819271767a9dd4fbfd4ae700befea0" },
+            };
+
+        // Native blueprints the Phase 3 mechanics read.
+        internal const string FastBombsBuffGuid = "c42ae8f9652bbc14eb13b31d12d20f8a";
+        internal const string SubtypeFireGuid = "23dc7b90d148b9d439f48e015a520a9c";
+        internal const string SubtypeWaterGuid = "bf7ee56ec9e43c14fa17727997e91993";
+        internal const string SubtypeAquaticGuid = "03ce447c6147ecd46940dbef87f6eed7";
+        internal const string StunningFistResourceGuid = "d2bae584db4bf4f4f86dd9d15ae56558";
+        private const string VivisectionistArchetypeGuid = "68cbcd9fbf1fb1d489562f829bb97e38";
+        private const string ToxicantArchetypeGuid = "ad9d36a0e5d7499498c6cc59f43b3afe";
+
+        // Icons of the exact native features each counter improves.
+        private static readonly Dictionary<string, string> NativeIconSources =
+            new Dictionary<string, string>(StringComparer.Ordinal)
+            {
+                { FavoredClassCatalog.EffectBombDamage, "c59b2f256f5a70a4d896568658315b7d" },
+                { FavoredClassCatalog.EffectFireIntimidate, "7d2233c3b7a0b984ba058a83b736e6ac" },
+                { FavoredClassCatalog.EffectDemoralize, "7d2233c3b7a0b984ba058a83b736e6ac" },
+                { FavoredClassCatalog.EffectBullRushDragDefense, "b3614622866fe7046b787a548bbd7f59" },
+                { FavoredClassCatalog.EffectUnarmedConfirmation, "7812ad3672a4b9a4fb894ea402095167" },
+                { FavoredClassCatalog.EffectAquaticPenetration, "ee7dc126939e4d9438357fbd5980d459" },
+                { FavoredClassCatalog.EffectGrappleStunning, "a29a582c3daa4c24bb0e991c596ccb28" },
+            };
+
         internal static FavoredClassBlueprintSet Register(BlueprintRegistry registry,
             LibraryScriptableObject library, GunslingerClassBlueprintSet gunslinger,
             ProductionFirearmBlueprintCatalog firearms)
@@ -100,7 +139,7 @@ namespace KingmakerGunslinger.FavoredClass
                 IList<FavoredClassLeafSpec> leaves = FavoredClassLeafCatalog.LeavesFor(effectId);
                 foreach (string targetKey in FavoredClassLeafCatalog.TargetKeys(effectId))
                 {
-                    Sprite icon = IconFor(effect, targetKey, gunslinger, firearms);
+                    Sprite icon = IconFor(effect, targetKey, library, gunslinger, firearms);
                     FavoredClassLeafSpec fullSpec = leaves.Single(leaf =>
                         leaf.Role == FavoredClassInvestmentRole.Full &&
                         string.Equals(leaf.TargetKey, targetKey, StringComparison.Ordinal));
@@ -112,8 +151,8 @@ namespace KingmakerGunslinger.FavoredClass
                             () => CreateLeaf(partialSpec, icon));
                     BlueprintFeature full = registry.Register<BlueprintFeature>(fullSpec.Symbol,
                         () => CreateLeaf(fullSpec, icon));
-                    AttachPrerequisites(effect, full, partial, gunslinger);
-                    AttachMechanics(effect, full, library, gunslinger);
+                    AttachPrerequisites(effect, full, partial, library, gunslinger);
+                    AttachMechanics(effect, full, partial, library, gunslinger);
                     pairs.Add(new FavoredClassLeafPair(effect, targetKey,
                         HostClassGuidFor(effect, gunslinger), full, partial));
                 }
@@ -129,6 +168,9 @@ namespace KingmakerGunslinger.FavoredClass
         {
             if (effect.ClassFamily == FavoredClassCatalog.Gunslinger)
                 return gunslinger.CharacterClass.AssetGuid;
+            string guid;
+            if (NativeClassGuids.TryGetValue(effect.ClassFamily, out guid))
+                return guid;
             throw new InvalidOperationException("No verified host class for " + effect.Id);
         }
 
@@ -139,8 +181,13 @@ namespace KingmakerGunslinger.FavoredClass
         /// project icon stage has assigned those icons.
         /// </summary>
         private static Sprite IconFor(FavoredClassEffectSpec effect, string targetKey,
-            GunslingerClassBlueprintSet gunslinger, ProductionFirearmBlueprintCatalog firearms)
+            LibraryScriptableObject library, GunslingerClassBlueprintSet gunslinger,
+            ProductionFirearmBlueprintCatalog firearms)
         {
+            string nativeSource;
+            if (NativeIconSources.TryGetValue(effect.Id, out nativeSource))
+                return BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(library, nativeSource,
+                    "native icon source for " + effect.Id).Icon;
             switch (effect.Id)
             {
                 case FavoredClassCatalog.EffectMisfire:
@@ -191,9 +238,12 @@ namespace KingmakerGunslinger.FavoredClass
         }
 
         private static void AttachPrerequisites(FavoredClassEffectSpec effect,
-            BlueprintFeature full, BlueprintFeature partial, GunslingerClassBlueprintSet gunslinger)
+            BlueprintFeature full, BlueprintFeature partial, LibraryScriptableObject library,
+            GunslingerClassBlueprintSet gunslinger)
         {
-            BlueprintArchetype replacing = ReplacingArchetype(effect, gunslinger);
+            BlueprintCharacterClass hostClass = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(
+                library, HostClassGuidFor(effect, gunslinger), "host class of " + effect.Id);
+            IList<BlueprintArchetype> replacing = ReplacingArchetypes(effect, library, gunslinger);
             foreach (BlueprintFeature leaf in new[] { partial, full })
             {
                 if (leaf == null)
@@ -203,8 +253,8 @@ namespace KingmakerGunslinger.FavoredClass
                     Investment(effect, full, partial, ReferenceEquals(leaf, partial)),
                     Ancestry(effect, leaf)
                 };
-                if (replacing != null)
-                    components.Add(NoArchetype(leaf, gunslinger.CharacterClass, replacing));
+                for (int index = 0; index < replacing.Count; index++)
+                    components.Add(NoArchetype(leaf, hostClass, replacing[index], index));
                 leaf.ComponentsArray = leaf.ComponentsArray.Concat(components).ToArray();
             }
         }
@@ -214,21 +264,33 @@ namespace KingmakerGunslinger.FavoredClass
         /// feature, so its favored-class investment would be a broken no-op.
         /// Earlier (dormant) investment is otherwise allowed.
         /// </summary>
-        internal static BlueprintArchetype ReplacingArchetype(FavoredClassEffectSpec effect,
-            GunslingerClassBlueprintSet gunslinger)
+        internal static IList<BlueprintArchetype> ReplacingArchetypes(FavoredClassEffectSpec effect,
+            LibraryScriptableObject library, GunslingerClassBlueprintSet gunslinger)
         {
+            var result = new List<BlueprintArchetype>();
             switch (effect.Id)
             {
                 case FavoredClassCatalog.EffectHalflingNimble:
                 case FavoredClassCatalog.EffectDrowNimble:
-                    return gunslinger.MysteriousStranger == null ? null :
-                        gunslinger.MysteriousStranger.Archetype;
+                    if (gunslinger.MysteriousStranger != null)
+                        result.Add(gunslinger.MysteriousStranger.Archetype);
+                    break;
                 case FavoredClassCatalog.EffectHalflingDodge:
-                    return gunslinger.MusketMaster == null ? null :
-                        gunslinger.MusketMaster.Archetype;
-                default:
-                    return null;
+                    if (gunslinger.MusketMaster != null)
+                        result.Add(gunslinger.MusketMaster.Archetype);
+                    break;
+                case FavoredClassCatalog.EffectBombDamage:
+                    // Vivisectionist is native; Toxicant exists only with Call
+                    // of the Wild, and its absence removes only this exclusion.
+                    result.Add(BlueprintLibraryLookup.RequireExact<BlueprintArchetype>(library,
+                        VivisectionistArchetypeGuid, "native Vivisectionist"));
+                    BlueprintScriptableObject toxicant;
+                    if (library.BlueprintsByAssetId.TryGetValue(ToxicantArchetypeGuid, out toxicant) &&
+                        toxicant is BlueprintArchetype)
+                        result.Add((BlueprintArchetype)toxicant);
+                    break;
             }
+            return result;
         }
 
         private static PrerequisiteFavoredClassInvestment Investment(FavoredClassEffectSpec effect,
@@ -256,10 +318,11 @@ namespace KingmakerGunslinger.FavoredClass
         }
 
         private static PrerequisiteNoArchetype NoArchetype(BlueprintFeature leaf,
-            BlueprintCharacterClass characterClass, BlueprintArchetype archetype)
+            BlueprintCharacterClass characterClass, BlueprintArchetype archetype, int index)
         {
             var prerequisite = ScriptableObject.CreateInstance<PrerequisiteNoArchetype>();
-            prerequisite.name = "$" + leaf.name + "_NoArchetype";
+            prerequisite.name = "$" + leaf.name + "_NoArchetype" + (index == 0 ? string.Empty :
+                index.ToString(System.Globalization.CultureInfo.InvariantCulture));
             prerequisite.CharacterClass = characterClass;
             prerequisite.Archetype = archetype;
             prerequisite.Group = Prerequisite.GroupType.All;
@@ -267,12 +330,28 @@ namespace KingmakerGunslinger.FavoredClass
         }
 
         private static void AttachMechanics(FavoredClassEffectSpec effect, BlueprintFeature full,
-            LibraryScriptableObject library, GunslingerClassBlueprintSet gunslinger)
+            BlueprintFeature partial, LibraryScriptableObject library, GunslingerClassBlueprintSet gunslinger)
         {
             BlueprintComponent mechanics = CreateMechanics(effect, full, library, gunslinger);
             if (mechanics != null)
                 full.ComponentsArray = full.ComponentsArray.Concat(
                     new[] { mechanics }).ToArray();
+            // U04's grapple CMD is immediate: every investment, full or
+            // partial, adds +1, so both leaves carry the per-rank defense.
+            if (effect.Id == FavoredClassCatalog.EffectGrappleStunning)
+                foreach (BlueprintFeature leaf in new[] { partial, full })
+                    if (leaf != null)
+                        leaf.ComponentsArray = leaf.ComponentsArray.Concat(new BlueprintComponent[]
+                            { ManeuverDefense(leaf, CombatManeuver.Grapple) }).ToArray();
+        }
+
+        private static FavoredClassManeuverDefenseBonus ManeuverDefense(BlueprintFeature leaf,
+            CombatManeuver maneuver)
+        {
+            var defense = ScriptableObject.CreateInstance<FavoredClassManeuverDefenseBonus>();
+            defense.name = "$" + leaf.name + "_" + maneuver + "Defense";
+            defense.Maneuver = maneuver;
+            return defense;
         }
 
         /// <summary>
@@ -336,6 +415,69 @@ namespace KingmakerGunslinger.FavoredClass
                     maneuver.CapSteps = cap;
                     return maneuver;
                 }
+                case FavoredClassCatalog.EffectBombDamage:
+                {
+                    var bombs = ScriptableObject.CreateInstance<FavoredClassBombDamageBonus>();
+                    bombs.name = "$" + full.name + "_BombDamage";
+                    bombs.Divisor = divisor;
+                    bombs.CapSteps = cap;
+                    FastBombs lineage = BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(library,
+                        FastBombsBuffGuid, "native Fast Bombs").ComponentsArray.OfType<FastBombs>()
+                        .Single();
+                    bombs.Bombs = lineage.Abilities.Where(value => value != null).ToArray();
+                    if (bombs.Bombs.Length == 0)
+                        throw new InvalidOperationException("The native bomb lineage is empty.");
+                    return bombs;
+                }
+                case FavoredClassCatalog.EffectFireIntimidate:
+                case FavoredClassCatalog.EffectDemoralize:
+                {
+                    var intimidate = ScriptableObject.CreateInstance<FavoredClassIntimidateBonus>();
+                    intimidate.name = "$" + full.name + "_Intimidate";
+                    intimidate.Divisor = divisor;
+                    intimidate.CapSteps = cap;
+                    if (effect.Id == FavoredClassCatalog.EffectFireIntimidate)
+                        intimidate.RequiredTargetSubtype = BlueprintLibraryLookup.RequireExact<BlueprintFeature>(
+                            library, SubtypeFireGuid, "native fire subtype");
+                    else
+                        intimidate.RequireDemoralize = true;
+                    return intimidate;
+                }
+                case FavoredClassCatalog.EffectBullRushDragDefense:
+                    return ManeuverDefense(full, CombatManeuver.BullRush);
+                case FavoredClassCatalog.EffectUnarmedConfirmation:
+                {
+                    var unarmed = ScriptableObject.CreateInstance<FavoredClassUnarmedConfirmationBonus>();
+                    unarmed.name = "$" + full.name + "_Confirmation";
+                    unarmed.Divisor = divisor;
+                    unarmed.CapSteps = cap;
+                    unarmed.CriticalFocus = BlueprintLibraryLookup.RequireExact<BlueprintFeature>(
+                        library, CriticalFocusGuid, "native Critical Focus");
+                    return unarmed;
+                }
+                case FavoredClassCatalog.EffectAquaticPenetration:
+                {
+                    var penetration = ScriptableObject.CreateInstance<FavoredClassSpellPenetrationBonus>();
+                    penetration.name = "$" + full.name + "_SpellPenetration";
+                    penetration.TargetSubtypes = new[]
+                    {
+                        BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library, SubtypeAquaticGuid,
+                            "native aquatic subtype"),
+                        BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library, SubtypeWaterGuid,
+                            "native water subtype")
+                    };
+                    return penetration;
+                }
+                case FavoredClassCatalog.EffectGrappleStunning:
+                {
+                    var stunning = ScriptableObject.CreateInstance<FavoredClassResourceBonus>();
+                    stunning.name = "$" + full.name + "_StunningFist";
+                    stunning.Divisor = divisor;
+                    stunning.CapSteps = cap;
+                    stunning.Resource = BlueprintLibraryLookup.RequireExact<BlueprintAbilityResource>(
+                        library, StunningFistResourceGuid, "native Stunning Fist resource");
+                    return stunning;
+                }
                 case FavoredClassCatalog.EffectMisfire:
                 case FavoredClassCatalog.EffectHalflingDodge:
                 case FavoredClassCatalog.EffectInitiative:
@@ -362,8 +504,12 @@ namespace KingmakerGunslinger.FavoredClass
                         throw new InvalidOperationException("Favored-class leaf graph is malformed: " +
                             leaf.name);
                 }
+                // Only a mixed-rate bundle's immediate portion may sit on a
+                // partial leaf (U04's per-investment grapple defense).
                 if (pair.Partial != null && pair.Partial.ComponentsArray.Any(component =>
-                        !(component is Prerequisite)))
+                        !(component is Prerequisite) &&
+                        !(pair.Effect.Id == FavoredClassCatalog.EffectGrappleStunning &&
+                            component is FavoredClassManeuverDefenseBonus)))
                     throw new InvalidOperationException("A partial favored-class leaf carries mechanics: " +
                         pair.Partial.name);
             }

@@ -302,6 +302,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-firearm-higher-feat-roots";
         internal const string DisposableRapidReloadProficiencyGate =
             "disposable-rapid-reload-proficiency-gate";
+        internal const string DisposableFavoredClassElementalCore =
+            "disposable-favored-class-elemental-core";
         internal const string ObserveFavoredClassHostState =
             "observe-favored-class-host-state";
         internal const string DisposableFavoredClassInitiativeTiming =
@@ -676,6 +678,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableFirearmDependentFeats,
                 DisposableFirearmHigherFeatRoots,
                 DisposableRapidReloadProficiencyGate,
+                DisposableFavoredClassElementalCore,
                 ObserveFavoredClassHostState,
                 DisposableFavoredClassInitiativeTiming,
                 DisposableFavoredClassGunslingerMechanics,
