@@ -11,6 +11,11 @@ audits behind them (private, not committed) read the installed Call of the Wild
 
 A counter never grants a feature, ability, revelation or power early, never
 satisfies a level prerequisite, and never changes spell slots, BAB or saves.
+A revelation, bloodline power or performance counts as owned when the
+character has it or chooses it in the same level-up: the native level-up
+replays its picks in priority order, and the host's reward selection comes
+before the bloodline, revelation and power selections, so the owned-target
+check also counts a later pick of the level-up being replayed.
 Owner decisions are listed in `FAVORED-CLASS-BLOCKERS.md`.
 
 ## I06/S04 — selected oracle revelation (1/6 per revelation, uncapped)
