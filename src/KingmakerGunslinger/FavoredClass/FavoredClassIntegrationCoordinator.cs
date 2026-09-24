@@ -1,6 +1,8 @@
 using System;
 using System.Globalization;
 using System.Linq;
+using Kingmaker.Blueprints.Classes;
+using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using UnityModManagerNet;
 
@@ -44,6 +46,25 @@ namespace KingmakerGunslinger.FavoredClass
             get { lock (Gate) return _settings; }
         }
 
+        /// <summary>
+        /// Restart-required: the optional FavoredClassIntegration.json is read
+        /// once per process, by whichever of blueprint registration (the
+        /// Mostly Human publication) or first-update attachment asks first,
+        /// and never written.
+        /// </summary>
+        internal static FavoredClassSettingsResult ResolveSettings(string modDirectory)
+        {
+            lock (Gate)
+            {
+                if (_settings == null)
+                {
+                    _settings = FavoredClassSettings.Load(modDirectory);
+                    FavoredClassRuntime.ConfigureProfile(_settings.Profile);
+                }
+                return _settings;
+            }
+        }
+
         internal static void AttachFirstUpdate(ModContext context)
         {
             if (context == null) throw new ArgumentNullException("context");
@@ -53,11 +74,7 @@ namespace KingmakerGunslinger.FavoredClass
                 if (_attached || _publication != null) return;
                 _attached = true;
             }
-            // Restart-required: the optional FavoredClassIntegration.json is
-            // read once, before anything is published, and never written.
-            FavoredClassSettingsResult settings = FavoredClassSettings.Load(context.ModEntry.Path);
-            FavoredClassRuntime.ConfigureProfile(settings.Profile);
-            lock (Gate) _settings = settings;
+            FavoredClassSettingsResult settings = ResolveSettings(context.ModEntry.Path);
             if (settings.Source == FavoredClassSettingsSource.Invalid)
                 context.Logger.Warning(Phase, "settings.invalid", settings.ToString() +
                     ";using=charter-defaults");
@@ -143,6 +160,15 @@ namespace KingmakerGunslinger.FavoredClass
                 }
                 publication = FavoredClassPublication.Plan(set, host, profile,
                     context.FeatureModules.Active.Gunslinger, null);
+                // Ancestry scopes are registered before the publication
+                // commits: the exact host human prerequisites of the host's
+                // own leaves, for the verified Mostly Human permission only.
+                BlueprintRace human = BlueprintLibraryLookup.RequireExact<BlueprintRace>(
+                    BlueprintBootstrap.Library, FavoredClassRaceIdentities.ForAncestry(
+                        FavoredClassAncestry.Human).RaceGuid, "native Human race");
+                int bridged = Hooks.FavoredClassHostRaceBridge.Prepare(context.Harmony, host, human);
+                context.Logger.Info(Phase, "ancestry-bridge.scoped",
+                    "trackedHumanPrerequisites=" + bridged + ";permission=mostly-human-geniekin-only");
                 publication.Commit();
                 lock (Gate) _publication = publication;
                 Report(context, new FavoredClassIntegrationStatus(
@@ -154,6 +180,7 @@ namespace KingmakerGunslinger.FavoredClass
             }
             catch (Exception exception)
             {
+                Hooks.FavoredClassHostRaceBridge.Clear();
                 if (publication != null && publication.IsCommitted)
                     try { publication.Rollback(); }
                     catch (Exception rollbackException)

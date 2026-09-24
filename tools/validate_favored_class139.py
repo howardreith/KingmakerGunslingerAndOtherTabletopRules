@@ -20,7 +20,7 @@ VERSION = "0.0.139"
 INFORMATIONAL_VERSION = "0.0.139-favored-class-integration"
 PACKAGE = "KingmakerGunslinger-0.0.139-local-runtime.zip"
 PACKAGE_SUFFIX = "favored-class-integration"
-DETERMINISTIC_TEST_COUNT = 1782
+DETERMINISTIC_TEST_COUNT = 1787
 STATIC_KEY = "favoredClassIntegration139"
 
 # Exact ordered (symbol, guid) pairs this candidate appends after the
@@ -60,6 +60,19 @@ APPENDED = (
     ("KMG.FavoredClass.Cleric.AquaticPenetration.Full", "189538fd7b67433e8d0cea5e691dd8eb"),
     ("KMG.FavoredClass.Monk.GrappleStunning.Partial", "9c56579186ef4fdba0f07d956b1cb9a5"),
     ("KMG.FavoredClass.Monk.GrappleStunning.Full", "ca51bd6d19b241e48f05e6acf892a5f1"),
+    ("KMG.MostlyHuman.Identity", "d71a4b4250914a7aa6d4bec53dfc768f"),
+    ("KMG.MostlyHuman.Ifrit.Selection", "c0485fc76e514ad38c09961dbdc6efc7"),
+    ("KMG.MostlyHuman.Ifrit.Standard", "7c508ee3415942bb91f584306d70bf70"),
+    ("KMG.MostlyHuman.Ifrit.Trait", "8060afe7da3b40bbbc77b315ee23fdd3"),
+    ("KMG.MostlyHuman.Oread.Selection", "e5bcb7c34a7b4b048c0d877019edac63"),
+    ("KMG.MostlyHuman.Oread.Standard", "5c39e1237c4d4bbd9bfd0f1eaacb18c3"),
+    ("KMG.MostlyHuman.Oread.Trait", "65aedd35c5a54273a9a33c2d58683a21"),
+    ("KMG.MostlyHuman.Sylph.Selection", "2c93d16297764ce9a0f73622b9825c05"),
+    ("KMG.MostlyHuman.Sylph.Standard", "0be790c9af23490e8f3ed46f5a59d00c"),
+    ("KMG.MostlyHuman.Sylph.Trait", "21451d96af0843d088b04331ac7a5a99"),
+    ("KMG.MostlyHuman.Undine.Selection", "bb0bae8a5720452eb16a1a6629e8fd4d"),
+    ("KMG.MostlyHuman.Undine.Standard", "66868270c36a48c89947fbad8e6d979c"),
+    ("KMG.MostlyHuman.Undine.Trait", "f3f6f6e074114b8da0a94a49b3cf4b47"),
 )
 
 HOST_SHA256 = "dcd3adf98d1a04c30d772381e7c56ce4beff35a98bcea165aff206a2f0aac26c"
