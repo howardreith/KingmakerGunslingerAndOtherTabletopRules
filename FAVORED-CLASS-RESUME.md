@@ -54,19 +54,26 @@ Favored Class ships nine custom JSON rewards in `ZFavoredClass\Custom\`.
 
 ## Latest meaningful checkpoint
 
-- `7cb2cab92` pure policy, catalog, eligibility, host contract, 0.0.139 plumbing.
-- `68e6d9a8a` Phase 1 code: adapter, contained registry, grit leaves,
-  publication, coordinator, two guarded scenarios.
-- `5fd8ef951` explicit fingerprint serialization; playable-race scoring.
-- `c6c748f6d` chargen alignment settled around feature choices; grit claims
-  fail closed; idempotency observer substring fix.
-- `2cccec68b` grit proven on the Pistolero progression (base class dead-ends
-  at level 17, blocker D1) plus a Mysterious Stranger pair; menu icon evidence.
-  Build-Local: 1772/1772 domain tests; package `5121e2d8…`, DLL `5e256ab2…`,
-  MVID `c65c50f2-f0d3-401c-a591-c644adcad711`.
-- Native PASS on `2cccec68b`:
-  `runtime-evidence\20260924T0102047921088Z-observe-favored-class-contract`
-  and `runtime-evidence\20260924T0101128312625Z-disposable-favored-class-grit`.
+- Phase 1 (`68e6d9a8a`…`2cccec68b`): adapter, contained registry, grit
+  leaves, transactional publication, coordinator; grit proven on the
+  Pistolero progression (D1) plus a Mysterious Stranger pair.
+- Phase 2 (`fba7516d3`, `cf8a66d21`, `732cddae3`): all first-party Gunslinger
+  counters (per-type misfire, confirmation, Pistol-Whip, Halfling
+  Nimble/Dodge, Drow Nimble, Ifrit Initiative, dirty trick/trip); the D3
+  initiative-timing defect reproduced and fixed; H01 host-absent profile.
+- Phase 3 simple counters (`9ee86bfbe`, `11b488be3`, `d9d09b8b8`): I01 I05
+  I07 O04 O05 U02 U04 in each class's own host selection.
+- Phase 6 settings (`f2db844c2`): optional restart-required
+  `FavoredClassIntegration.json` (schema 1, five Boolean controls; absent or
+  invalid gives the charter defaults, reported).
+- Test fixes (`4c9409ba4`): bomb probe above the native damage floor; the
+  menus scenario checks each counter's own class selection.
+- Latest candidate with native runs: `f2db844c2` (package `f3dac054…`, DLL
+  `5a278b75…`, MVID `04b7fb78-5fd9-4080-ae7c-36ae87b727fe`). On it: contract,
+  Gunslinger mechanics, grit and the L01 fresh-process persistence
+  transaction PASS; the elemental core passes menus/progressions and every
+  mechanic except the (since fixed) bomb probe; the menus run fails only on
+  the (since fixed) publication check. See `FAVORED-CLASS-COVERAGE.md`.
 
 Read-only audit reports (private, not committed):
 `C:\Dev\KingmakerGunslingerLab\private\favored-class-mission\audits\` A–G.
@@ -96,15 +103,31 @@ CallOfTheWild and RacesUnleashed files and settings are never written.
 | 20260924T0043533213527Z | `5fd8ef951` | `c03a15a4…` | `20260924T0043487547075Z` |
 | 20260924T0053135459911Z | `c6c748f6d` | `a53e53c9…` | `20260924T0053085191115Z` |
 | 20260924T0101047085831Z | `2cccec68b` | `5e256ab2…` | `20260924T0101000748327Z` |
+| 20260924T0128156041063Z | `fba7516d3` | `568df1a2…` | `20260924T0128101694163Z` |
+| 20260924T0137206615261Z | `cf8a66d21` | `580a668c…` | `20260924T0137156318614Z` |
+| 20260924T0154375760971Z | `732cddae3` | `563bbb35…` | `20260924T0154330289272Z` |
+| 20260924T0208433668788Z | `9ee86bfbe` | `7fb6b259…` | `20260924T0208386740818Z` |
+| 20260924T0336453212821Z | `11b488be3` | `77d5a6e8…` | `20260924T0336405726039Z` (holds `7fb6b259…`: nothing foreign changed the tree in between) |
+| 20260924T0347379474215Z | `f2db844c2` | `5a278b75…` | `20260924T0347332630857Z` |
+
+The isolated H01 profile run (`compat-20260924T014026Z-1da92b038b7e`) staged
+and restored its own Mods tree transactionally (restoration verified by the
+profile runner: FeatureModules and CotW settings bytes restored).
 
 ## Next concrete actions
 
-1. Phase 2 code: per-type misfire (policy applied last, floor 1; scatter
-   aggregate on the effective threshold), firearm confirmation (better of
-   Critical Focus), Pistol-Whip attack, Halfling Nimble and Gunslinger's Dodge
-   counters, Gunslinger Initiative (verify and fix the deed timing first, D3),
-   Drow Nimble and dirty trick/trip (third-party profile OFF); manifest
-   identities, icon dispositions, domain tests.
-2. Native: menu/eligibility per ancestry, native combat events in the
-   save-free PortalHarness + ElementalNativeTurnScope, initiative timing.
-3. Phase 1 remainder: H01 host-absent clean launch, H02/H04, L01 save/load.
+1. Phase 5: the four-race Mostly Human companion trait (separate identity
+   path; optional-form Heritage-phase selection with an explicit Standard
+   entry first; shared hidden identity granted by AddFacts; Option A type
+   model), the scoped host `PrerequisiteRace.Check` bridge for the tracked
+   human FCB leaves, icon catalog consumers (native text, painting pending
+   owner), manifest identities, domain tests and a native scenario (E05–E08,
+   twelve heritages).
+2. Re-run elemental core and menus on the next candidate (probe/check fixes).
+3. Phase 6 native: third-party profile ON (temporary live settings file,
+   removed afterwards and byte-checked) and integration OFF (L04/L05).
+4. Phase 3 advanced: O06 paladin auras, O07 companion and O08 eidolon natural
+   armor, O01 performance range; Phase 4 Oracle revelations and Sorcerer
+   bloodline powers from audits F and G.
+5. Phase 7: machine catalog, implementation report, docs, icon dispositions,
+   final gates and owner-install restoration with byte checks.
