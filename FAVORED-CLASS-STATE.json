@@ -9,7 +9,7 @@
   "worktree": "C:\\Dev\\KingmakerGunslingerLab\\worktrees\\favored-class-integration",
   "baselineCommit": "996105ed9e72259a220be56e2a74e0cc18e5ef47",
   "overallStatus": "PARTIAL - NOT RELEASE QUALIFIED",
-  "currentPhase": "phase-7 (final local candidate recorded; owner review pending)",
+  "currentPhase": "continuation complete (repair, qualification and evidence cleanup); owner review pending",
   "phases": {
     "phase-0": {
       "status": "COMPLETE",
@@ -161,47 +161,45 @@
       "note": "final local candidate (owner review pending)"
     }
   ],
-  "blockers": [
-    "B1 shared installation used by another automation (mitigated; overlap 05:45-05:47Z recorded)",
-    "B2 CotW-only / CotW+FCB compatibility profiles: reference root missing"
-  ],
-  "preExistingDefects": [
-    "D1 Gun Training level-17 dead end",
-    "D2 Dead Shot confirmation unreachable",
-    "D3 Gunslinger Initiative timing (FIXED in 732cddae3; native PASS)"
-  ],
-  "finalCandidate": {
-    "commit": "ef250f877cda322f75b499b0dec8fbe155e14ce2",
-    "dllSha256": "fe451f35dff61c26bb96fd9ff9d8c7eb23bffe177788899e74a57662e10de8bf",
-    "dllMvid": "2c9d8c5f-c424-4179-91cd-72ca85438c54",
-    "packageSha256": "5947ea172b1a2547e8575007789f242d728818abb35413445a249444195600ea",
-    "deployment": "runtime-evidence\\deployments\\20260924T0601504282380Z",
-    "domainTests": 1801,
-    "runs": {
-      "contract": "20260924T0603184328859Z PASS",
-      "hostState": "20260924T0604015343603Z PASS",
-      "grit": "20260924T0604457833407Z PASS",
-      "menus": "20260924T0605443253994Z PASS",
-      "mechanics": "20260924T0606461797306Z PASS",
-      "initiative": "20260924T0607291357025Z PASS",
-      "elementalCore": "20260924T0608135881312Z PASS",
-      "mostlyHuman": "20260924T0609003356634Z PASS",
-      "advanced": "20260924T0609525254026Z PASS",
-      "oracle": "20260924T0601519001416Z PASS",
-      "performance": "20260924T0602359332310Z PASS"
-    }
+  "blockers": {
+    "B1": "mitigated (shared-install protocol)",
+    "B2": "resolved (profiles PASS on the final candidate)"
   },
-  "ownerDecisions": [
-    "OD-1 Mostly Human scope (Option A)",
-    "OD-2 other counts-as-human providers",
-    "OD-3 host race traits",
-    "OD-4 overlapping paladin auras",
-    "OD-5 bloodline power thresholds/eligibility",
-    "OD-6 revelation thresholds and scaling policy",
-    "OD-7 performance range scope",
-    "OD-8 icon art for 127 visible choices",
-    "OD-9 elemental character-creation re-qualification",
-    "OD-10 persistence breadth"
-  ],
-  "restoration": "VERIFIED 2026-09-24T06:18Z: Mods\\KingmakerGunslinger restored from runtime-backups/live-mod/20260924T0027014050156Z; DLL c6cccdac..., Info.json f66de05d..., FeatureModules.json 6e24b278... match; 238/238 files identical; FavoredClassIntegration.json absent; host/provider settings unchanged"
+  "preExistingDefects": {
+    "D1": "open (owner decision)",
+    "D2": "open (owner decision)",
+    "D3": "fixed (732cddae3)",
+    "D4": "fixed (b1b93acad)"
+  },
+  "finalCandidate": {
+    "commit": "15c37695c267522ce35cbc021168514d6fb058fc",
+    "packageSha256": "4a7b5e2d29a9a8ace9ac70bb56061f0618251273a3981700cdb1f2edf04e77f0",
+    "dllSha256": "0261ebd3d776d1a74f0a5d9e5364cff79cb5def8c2c5f117b192cd6ca2022189",
+    "dllMvid": "613caf93-62bb-41e8-87fa-4a154cb4cfd6"
+  },
+  "ownerDecisions": {
+    "status": "resolved by the charter or provider behavior; see FAVORED-CLASS-BLOCKERS.md"
+  },
+  "restoration": {
+    "verified": true,
+    "backup": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20260924T0027014050156Z",
+    "restoredVersion": "0.0.136",
+    "files": {
+      "Info.json": "f66de05d5c6282eece8218b6c4f31d49dfc8ef9efa27dfeceeda712034717e17",
+      "FeatureModules.json": "6e24b2788a0c8f063d6e561a27c93f9c5349f2fc21b5217689da8aefdbb385d0",
+      "KingmakerGunslinger.dll": "c6cccdac914ed59fa4d85d020108588d7d12cfb4ac38cf5a162772bacc9b465c"
+    },
+    "tree": {
+      "backupFiles": 238,
+      "liveFiles": 238,
+      "onlyInBackup": 0,
+      "onlyInLive": 0
+    },
+    "otherModSettings": {
+      "CallOfTheWild\\settings.json": "24cc3f80269992a53ebbfd1f5986e5aab056841d6b2f43d8e22e764cdb73f6e8",
+      "RacesUnleashed\\Settings.json": "270899c3f6c3d29bfe777fc2b55a0bb0404ae50786dbac8f1dccf77e8b9cabbf",
+      "ZFavoredClass\\settings.json": "bdceed77d2bf4a31dd9e4eeb64ef9d55a42ef59d23f46abcb1ddbcc6ef66754b"
+    },
+    "integrationSettingsFilePresent": false
+  }
 }
