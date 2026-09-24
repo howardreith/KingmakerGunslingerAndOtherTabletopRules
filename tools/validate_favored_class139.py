@@ -48,6 +48,18 @@ APPENDED = (
     ("KMG.FavoredClass.Gunslinger.Initiative.Full", "403489a552e5470bb720a8148c2b09ed"),
     ("KMG.FavoredClass.Gunslinger.DirtyTrickTrip.Partial", "422ad9a4bd294b84b2f6230856ecdd10"),
     ("KMG.FavoredClass.Gunslinger.DirtyTrickTrip.Full", "ece977845f1c4b40a6df5183b6caa7e4"),
+    ("KMG.FavoredClass.Alchemist.BombDamage.Partial", "6d101f4776294ec78ac07b2bf8b1ace7"),
+    ("KMG.FavoredClass.Alchemist.BombDamage.Full", "c98af1a0630a452e8af968684e285183"),
+    ("KMG.FavoredClass.Inquisitor.FireIntimidate.Partial", "96c9cb2bc89941b2a37f126aafccf3ca"),
+    ("KMG.FavoredClass.Inquisitor.FireIntimidate.Full", "98847fc06c1c4f53a1da0ce0df78f266"),
+    ("KMG.FavoredClass.Rogue.Demoralize.Partial", "a9f9782987db4b518ccc6726039f56fc"),
+    ("KMG.FavoredClass.Rogue.Demoralize.Full", "bf08007130b24072b50fa165e640ffa1"),
+    ("KMG.FavoredClass.Fighter.BullRushDefense.Full", "429de527d5dc46039e9d5a2311901374"),
+    ("KMG.FavoredClass.Monk.UnarmedConfirmation.Partial", "8b3453ed61fe489a9f120c773215b68e"),
+    ("KMG.FavoredClass.Monk.UnarmedConfirmation.Full", "c76759e1e881420a9248ce8fe74b5004"),
+    ("KMG.FavoredClass.Cleric.AquaticPenetration.Full", "189538fd7b67433e8d0cea5e691dd8eb"),
+    ("KMG.FavoredClass.Monk.GrappleStunning.Partial", "9c56579186ef4fdba0f07d956b1cb9a5"),
+    ("KMG.FavoredClass.Monk.GrappleStunning.Full", "ca51bd6d19b241e48f05e6acf892a5f1"),
 )
 
 HOST_SHA256 = "dcd3adf98d1a04c30d772381e7c56ce4beff35a98bcea165aff206a2f0aac26c"

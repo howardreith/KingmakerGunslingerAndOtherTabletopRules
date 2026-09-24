@@ -228,6 +228,15 @@
     <Compile Include="FavoredClass\Mechanics\FavoredClassPistolWhipAttackBonus.cs" />
     <Compile Include="FavoredClass\Mechanics\FavoredClassNimbleArmorClassBonus.cs" />
     <Compile Include="FavoredClass\Mechanics\FavoredClassManeuverBonus.cs" />
+    <Compile Include="FavoredClass\Mechanics\FavoredClassCriticalFocus.cs" />
+    <Compile Include="FavoredClass\Mechanics\FavoredClassUnarmedConfirmationBonus.cs" />
+    <Compile Include="FavoredClass\Mechanics\FavoredClassBombDamageBonus.cs" />
+    <Compile Include="FavoredClass\Mechanics\FavoredClassIntimidateBonus.cs" />
+    <Compile Include="FavoredClass\Mechanics\FavoredClassDemoralizeScope.cs" />
+    <Compile Include="FavoredClass\Mechanics\FavoredClassManeuverDefenseBonus.cs" />
+    <Compile Include="FavoredClass\Mechanics\FavoredClassSpellPenetrationBonus.cs" />
+    <Compile Include="FavoredClass\Mechanics\FavoredClassResourceBonus.cs" />
+    <Compile Include="FavoredClass\Hooks\FavoredClassDemoralizeScopePatch.cs" />
     <Compile Include="FavoredClass\FavoredClassBlueprints.cs" />
     <Compile Include="FavoredClass\FavoredClassHostAdapter.cs" />
     <Compile Include="FavoredClass\FavoredClassPublication.cs" />
@@ -1117,6 +1126,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassInitiative.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassHostState.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassPersistence.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassElemental.cs" />
     <Compile Include="RuntimeTesting\RapidReloadGateEvidenceRules.cs" />
     <Compile Include="RuntimeTesting\RapidReloadVisitCleanupRules.cs" />
     <Compile Include="RuntimeTesting\FirearmHigherFeatRootsRules.cs" />
