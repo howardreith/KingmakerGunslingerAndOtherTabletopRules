@@ -169,9 +169,13 @@ namespace KingmakerGunslinger.DomainTests
                 "FavoredClassEarnedSteps.For(caster.Descriptor, FavoredClassCatalog.EffectPerformanceRange,",
                 "catch (Exception)",
                 "__instance.Shape as ScriptZoneCylinder",
-                "float native = blueprint.Size.Meters;",
+                "native = blueprint.Size.Meters;",
                 "FavoredClassMechanicsPolicy.PerformanceRadiusMeters(native, steps)",
                 "FavoredClassPerformanceRing.Scale(ring, widened / native);",
+                "[HarmonyPatch(typeof(AreaEffectView), \"SpawnFxs\")]",
+                "FavoredClassPerformanceRangePatch.ScaleLateRing(__instance);",
+                "FavoredClassPerformanceRing.IsScaled(ring)",
+                "Math.Abs(cylinder.Radius - widened) < 0.0001f",
                 "[HarmonyPatch(typeof(Kingmaker.Visual.Particles.GameObjectsPool), \"Release\")]",
                 "FavoredClassPerformanceRing.Restore(instance);"
             })

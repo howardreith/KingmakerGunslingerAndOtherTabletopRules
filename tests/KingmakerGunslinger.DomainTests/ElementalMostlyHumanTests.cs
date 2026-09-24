@@ -87,6 +87,8 @@ namespace KingmakerGunslinger.DomainTests
                 "selection.AllFeatures = new[] { standard, trait };",
                 "grant.Facts = new BlueprintUnitFact[] { identity };",
                 "feature.HideInUI = true;",
+                "feature.IsClassFeature = true;",
+                "!set.Identity.IsClassFeature",
                 "before.Concat(new BlueprintFeatureBase[] { race.Selection })",
                 "if (index < _published.Count && ReferenceEquals(race.Features, _published[index]))"
             })
