@@ -234,8 +234,14 @@ namespace KingmakerGunslinger.Summoning
             SummonVariantMenuRect nativeRect = MeasureRect(root, canvasRect);
             SummonVariantMenuRect slotRect = MeasureSlots(liveSlots,
                 canvasRect);
-            float preferredWidth = LayoutUtility.GetPreferredWidth(root);
-            float preferredHeight = LayoutUtility.GetPreferredHeight(root);
+            // LayoutUtility answers in the root's own units; every rectangle
+            // here is in canvas units, and the popup root sits scaled under
+            // the action-bar canvas. The first live measurement at 120
+            // entries asked for twice the popup's real size, engaged scrolling
+            // it did not need and drew a panel four times the grid.
+            Vector2 toCanvas = ScaleToCanvas(root, canvasRect);
+            float preferredWidth = LayoutUtility.GetPreferredWidth(root) * toCanvas.x;
+            float preferredHeight = LayoutUtility.GetPreferredHeight(root) * toCanvas.y;
             float desiredWidth = Math.Max(slotRect.Width, preferredWidth);
             float desiredHeight = Math.Max(slotRect.Height, preferredHeight);
             if (!FinitePositive(desiredWidth) || !FinitePositive(desiredHeight))
@@ -589,6 +595,20 @@ namespace KingmakerGunslinger.Summoning
             return Math.Abs(left - right) <= tolerance;
         }
 
+        /// <summary>
+        /// The factor from a transform's local units to canvas units - the
+        /// ratio of the two lossy scales - with a scale of zero treated as one
+        /// so a degenerate transform cannot wipe a measurement out.
+        /// </summary>
+        internal static Vector2 ScaleToCanvas(Transform local, RectTransform canvasRect)
+        {
+            Vector3 mine = local.lossyScale;
+            Vector3 canvas = canvasRect.lossyScale;
+            float x = FinitePositive(mine.x) && FinitePositive(canvas.x) ? mine.x / canvas.x : 1f;
+            float y = FinitePositive(mine.y) && FinitePositive(canvas.y) ? mine.y / canvas.y : 1f;
+            return new Vector2(x, y);
+        }
+
         private static string HierarchyPath(Transform transform)
         {
             var parts = new List<string>();
@@ -860,16 +880,19 @@ namespace KingmakerGunslinger.Summoning
             {
                 if (!_viewportApplied) return;
                 LayoutRebuilder.ForceRebuildLayoutImmediate(_content);
-                float preferredWidth = LayoutUtility.GetPreferredWidth(_content);
-                float preferredHeight = LayoutUtility.GetPreferredHeight(_content);
+                // The decision and the desired size are canvas units; the
+                // content's own preferred size and its size are local units.
+                Vector2 toCanvas = ScaleToCanvas(_content, _canvasRect);
+                float preferredWidth = LayoutUtility.GetPreferredWidth(_content) * toCanvas.x;
+                float preferredHeight = LayoutUtility.GetPreferredHeight(_content) * toCanvas.y;
                 float contentWidth = Math.Max(decision.FinalRect.Width,
                     Math.Max(desiredWidth, preferredWidth));
                 float contentHeight = Math.Max(decision.FinalRect.Height,
                     Math.Max(desiredHeight, preferredHeight));
                 _content.SetSizeWithCurrentAnchors(
-                    RectTransform.Axis.Horizontal, contentWidth);
+                    RectTransform.Axis.Horizontal, contentWidth / toCanvas.x);
                 _content.SetSizeWithCurrentAnchors(
-                    RectTransform.Axis.Vertical, contentHeight);
+                    RectTransform.Axis.Vertical, contentHeight / toCanvas.y);
                 LayoutRebuilder.ForceRebuildLayoutImmediate(_content);
                 _scroll.horizontalNormalizedPosition = 0f;
                 _scroll.verticalNormalizedPosition = 1f;
