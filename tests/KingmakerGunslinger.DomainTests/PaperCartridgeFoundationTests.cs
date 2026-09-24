@@ -593,9 +593,9 @@ namespace KingmakerGunslinger.DomainTests
                 "package.ps1"));
             string packager = File.ReadAllText(Path.Combine(root, "tools",
                 "create_deterministic_package.py"));
-            Assertions.True(localBuild.Contains("{ 241 } else { 239 }") &&
+            Assertions.True(localBuild.Contains("{ 244 } else { 242 }") &&
                 packager.Contains("133, 135, 222, 224, 225, 227, 229, 231, 233, 234, 235,") &&
-                packager.Contains("236, 237, 239, 241))"),
+                packager.Contains("236, 237, 239, 241, 242, 244))"),
                 "deterministic package counts include all project-owned runtime icons");
             Assertions.True(package.Contains("create_deterministic_package.py") &&
                 package.Contains("expectedPackageFileCount") &&

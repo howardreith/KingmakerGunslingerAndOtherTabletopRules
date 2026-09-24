@@ -87,3 +87,59 @@ review scenario that casts any named creature through its real parent chain
 into the working save and renders it from the party camera idle, moving and
 attacking, generalised from the Pteranodon review. Every visual creature of
 Sprints 3-8 goes through it before its sprint closes.
+
+## Sprint 4 - Native Publication Pack II
+
+The grapple design started from the game's own assembly rather than from
+the native mound's graph. The graph is a fine mound - slam, grapple check,
+a caster buff that forbids attacking, a target buff that constricts for
+4d6 plus Strength every round - and a poor owlbear, because the constrict
+and the target state are baked into it. The reusable part turned out to be
+underneath: `ContextActionGrapple` only initialises two unit parts, the
+parts add the buffs and conditions, and `UnitGrappleController` already
+handles escape, unconsciousness and reach. So the shared lifecycle is a
+grab component that runs the game's grapple check after a hit with a grab
+weapon and initialises those parts with the project's own buffs, and a hold
+component on the holder's buff that maintains each round at the tabletop
++5, deals the natural attack (plus constrict) or releases, and releases
+its own target whenever the buff turns off. That last rule is the whole
+"link ownership" clause of the charter in one place: the summon's side owns
+the link, the target's side never reaches back, and a summon that expires,
+is dismissed or is dispelled mid-hold cannot leave a party member pinned.
+
+The one thing the native parts do that had to be respected rather than
+worked around: a holding initiator cannot act. Kingmaker's grapple is a
+lockdown, and the tabletop worm's grab-then-swallow-next-round has no path
+through it, because the worm that holds cannot bite. The game's own
+summoned worm swallows on the grab check, so ours does too, through the
+native swallow-whole part, whose spit-out on death and destruction was
+verified in the destruction controller's own order of operations
+(destruction is raised before disposal). The traits buff spits out on any
+other end. And because a swallowed unit whose swallower has left the loaded
+area is otherwise stuck forever - the native part simply returns when the
+swallower resolves to nothing - a small area safeguard releases party
+members held or swallowed by a KMG summon when the party leaves, and repairs
+dangling ones when an area finishes loading.
+
+Two corrections came out of the round-2 evidence rather than the design.
+The Cyclops's armed natural 1 hit but registered no threat: the automatic-hit
+path in `RuleAttackRoll` never rolls, and decides the critical only from the
+two automatic flags together, so "auto-hit with an ordinary confirmation"
+is not a thing the engine can do. The bounded Flash of Insight is an
+automatic critical hit now; every record says so. And the creature review's
+first run failed with nothing but "observed 0": the request writer had
+silently dropped the creatures parameter, and the spawn helper, when it did
+run, was stripping the mod's own same-turn activation postfix from the
+summon rule after each cast. Both are fixed, and the helper now names a
+second witness - the units that actually appeared in the caster's area -
+before it will call a cast a failure.
+
+The plants were data. The plant class carries the plant traits through its
+progression, as the magical beast and humanoid classes did in Sprint 3; the
+mound keeps its native slams and resistances and loses a poison aura the
+tabletop creature never had; the flytrap keeps its four bites, its acid
+resistance and a native 60-foot blindsight standing in for tremorsense, and
+holds one target at a time because the initiator part does. The worm is
+rebuilt on the natural builder from the native summoned worm's own bite,
+sting and poison, without the burrowing kit the charter told us not to
+chase.

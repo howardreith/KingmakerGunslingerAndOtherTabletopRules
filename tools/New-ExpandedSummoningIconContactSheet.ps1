@@ -7,8 +7,8 @@ $manifestPath = Join-Path $root 'assets-source\original-icons\expanded-summoning
 $previewRoot = Join-Path $root 'assets-source\original-icons\expanded-summoning\previews'
 $outputPath = Join-Path $previewRoot 'expanded-summoning-icons-contact-sheet.png'
 $manifest = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
-if ($manifest.count -ne 81 -or @($manifest.icons).Count -ne 81) {
-    throw 'Expected the 81-icon provenance manifest.'
+if ($manifest.count -ne 84 -or @($manifest.icons).Count -ne 84) {
+    throw 'Expected the 84-icon provenance manifest.'
 }
 
 Add-Type -AssemblyName System.Drawing

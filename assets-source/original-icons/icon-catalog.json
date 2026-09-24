@@ -5,9 +5,9 @@
     "commit": "db1fccf648b25baa53667dd00ac566e2a0d7f6b9",
     "version": "0.0.127",
     "registryPath": "blueprints/blueprints.json",
-    "registrySha256": "60b1be2a909c8c59db4c2d66731f3cb95f7a3ead5d8780ec7d96719f8316e0de",
+    "registrySha256": "978e76da1c92513148cec8925aeae0d5a78f725967163c369ce7d3835f180347",
     "publishedRegistrySha256": "00f454f0704918c6cffd00c047f100e87daa67d4fb6d4eab132a85bd67586d5f",
-    "registryExtensionAuthorization": "Magic Circle follow-up: append three exact family parents after the preserved 1910-entry ledger. validate_magic_circle.py preserves the 1886-entry pre-feature prefix and all 24 accepted Magic Circle identities. Better Vendors progression: append exactly 43 generic magic weapon variant identities (Pistol/Musket/Blunderbuss ordinary +2..+5 and Reliable +1..+5; Elven Branched Spear, Wakizashi, Katana and Nodachi +2..+5) after the preserved 1913-entry ledger. validate_better_vendors138.py preserves that prefix and the exact appended identities. Each variant's item icon is its canonical +1 sibling's existing sprite (intentional-family-share); no art, cache or protected assignment changes. Expanded Summoning Phase 1 Sprint 3: append exactly 92 summoning identities after the preserved 1956-entry ledger (Pony, Horse, Owlbear and Cyclops units with their 45 logical placements and 34 template executions, three Nature's Ally Frost Giant wrappers and six Cyclops Flash of Insight specials); tools/expanded_summoning_manifest.py preserves the prefix and ExpandedSummoningSprint3Tests pins the appended tail. Their icons are four new project-owned Blender renders delegated to the expanded-summoning manifest."
+    "registryExtensionAuthorization": "Magic Circle follow-up: append three exact family parents after the preserved 1910-entry ledger. validate_magic_circle.py preserves the 1886-entry pre-feature prefix and all 24 accepted Magic Circle identities. Better Vendors progression: append exactly 43 generic magic weapon variant identities (Pistol/Musket/Blunderbuss ordinary +2..+5 and Reliable +1..+5; Elven Branched Spear, Wakizashi, Katana and Nodachi +2..+5) after the preserved 1913-entry ledger. validate_better_vendors138.py preserves that prefix and the exact appended identities. Each variant's item icon is its canonical +1 sibling's existing sprite (intentional-family-share); no art, cache or protected assignment changes. Expanded Summoning Phase 1 Sprint 3: append exactly 92 summoning identities after the preserved 1956-entry ledger (Pony, Horse, Owlbear and Cyclops units with their 45 logical placements and 34 template executions, three Nature's Ally Frost Giant wrappers and six Cyclops Flash of Insight specials); tools/expanded_summoning_manifest.py preserves the prefix and ExpandedSummoningSprint3Tests pins the appended tail. Their icons are four new project-owned Blender renders delegated to the expanded-summoning manifest. Expanded Summoning Phase 1 Sprint 4: append exactly 19 summoning identities after the 2048-entry ledger (Shambling Mound, Giant Flytrap and Purple Worm units with their nine Nature's Ally placements and seven shared summon grapple lifecycle specials); tools/validate_expanded_summoning_phase1.py pins the whole Phase 1 append and ExpandedSummoningSprint4Tests pins the appended tail. Their icons are three new project-owned Blender renders delegated to the expanded-summoning manifest."
   },
   "coveragePrefixes": [
     "KMG.ElementalRaces.",
@@ -73,8 +73,8 @@
     },
     {
       "path": "assets-source/original-icons/expanded-summoning/icon-manifest.json",
-      "sha256": "959001815956bb164f06e61e13b2c1ccbd160cc643c476664d545811f07e976c",
-      "scope": "Source/export/consumer authority for all 81 summoning identities (77 roster-mission concepts and the Phase 1 Sprint 3 Pony, Horse, Owlbear and Cyclops)."
+      "sha256": "89aa5388d6cc83873b6089dc23fbd71c806dbff60c627472d31a41e07d5d9065",
+      "scope": "Source/export/consumer authority for all 84 summoning identities (77 roster-mission concepts, the Phase 1 Sprint 3 Pony, Horse, Owlbear and Cyclops, and the Sprint 4 Shambling Mound, Giant Flytrap and Purple Worm)."
     },
     {
       "path": "assets-source/original-icons/cord-of-stubborn-resolve/cord-of-stubborn-resolve-assets.json",
@@ -687,6 +687,21 @@
       "path": "assets/bundles/kingmakergunslinger.firearms",
       "sha256": "b3cffb49ba32af10db12470401a58f6dff0ead9f219f87e41d9ec138d62fbaeb",
       "reason": "Protected existing AssetBundle; meshes/materials/VFX/appearances unchanged."
+    },
+    {
+      "path": "assets/game/icons/expanded-summoning/shambling-mound.png",
+      "sha256": "ada7978d2a31da033809a5fb6bd25bc75ea77ee2b9d7712049abca195938ad5d",
+      "reason": "Project-owned Blender render added by Expanded Summoning Phase 1 Sprint 4; internally reviewed, HumanReview NOT_PERFORMED_NONBLOCKING. Protection is not fresh visual approval."
+    },
+    {
+      "path": "assets/game/icons/expanded-summoning/giant-flytrap.png",
+      "sha256": "ac8efbf7cc54e781589b87b06f0dadff3082ab7d245709d6a36afbfa1d5e248c",
+      "reason": "Project-owned Blender render added by Expanded Summoning Phase 1 Sprint 4; internally reviewed, HumanReview NOT_PERFORMED_NONBLOCKING. Protection is not fresh visual approval."
+    },
+    {
+      "path": "assets/game/icons/expanded-summoning/purple-worm.png",
+      "sha256": "cb235f3f9fbb4e865b17982abad1df6faad5c0a7ce884e130027430763f8e20d",
+      "reason": "Project-owned Blender render added by Expanded Summoning Phase 1 Sprint 4; internally reviewed, HumanReview NOT_PERFORMED_NONBLOCKING. Protection is not fresh visual approval."
     }
   ],
   "protectedAssignmentFiles": [
