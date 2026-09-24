@@ -12,6 +12,9 @@ namespace KingmakerGunslinger.FavoredClass.Mechanics
     /// five steps and nonstacking with Critical Focus exactly like the
     /// firearm counter. Natural attacks and manufactured weapons are not
     /// unarmed strikes. It changes only CriticalConfirmationBonus.
+    /// Kingmaker marks its unarmed-strike weapon types natural as well, so
+    /// the native IsUnarmed flag, not IsNatural, separates an unarmed strike
+    /// from a claw, bite or other natural attack.
     /// </summary>
     public sealed class FavoredClassUnarmedConfirmationBonus : RuleInitiatorLogicComponent<RuleAttackRoll>
     {
@@ -42,7 +45,7 @@ namespace KingmakerGunslinger.FavoredClass.Mechanics
         {
             return evt.Weapon != null && evt.Weapon.Blueprint != null &&
                 evt.Weapon.Blueprint.Category == WeaponCategory.UnarmedStrike &&
-                !evt.Weapon.Blueprint.IsNatural;
+                evt.Weapon.Blueprint.IsUnarmed;
         }
     }
 }
