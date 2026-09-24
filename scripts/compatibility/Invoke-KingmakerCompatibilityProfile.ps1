@@ -89,6 +89,8 @@ param(
         'disposable-teleportation-destinations',
         'disposable-teleportation-disabled',
         'observe-expanded-summoning-inventory',
+        'observe-expanded-summoning-variant-menu',
+        'disposable-expanded-summoning',
         'summon-same-turn-activation',
         'summon-same-turn-acadamae',
         'summon-same-turn-multiple',
@@ -364,6 +366,7 @@ try {
             $arguments.PackagePath = $PackagePath
         }
         if ($name -in @('musket-master-mechanics-and-starter',
+            'disposable-expanded-summoning',
             'working-save-smoke', 'disposable-brown-fur-native-cast',
             'disposable-magic-circle-evil', 'disposable-magic-circle-ui', 'disposable-magic-circle-terrain',
             'observe-teleportation-world-map', 'disposable-teleportation-familiarity',
