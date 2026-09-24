@@ -41,6 +41,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private const string FcbMagicMissileGuid = "4ac47ddb9fa1eaf43a1b6809980cfbd2";
         private const string FcbLongswordGuid = "6fd0a849531617844b195f452661b2cd";
         private const string FcbClawGuid = "118fdd03e569a66459ab01a20af6811a";
+        private const int FcbBombProbeBase = 5;
 
         /// <summary>Records every Intimidate skill check's final bonus.</summary>
         private sealed class FavoredClassSkillCheckObserver : IGlobalRulebookHandler<RuleSkillCheck>
@@ -377,12 +378,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // Native ContextActionDealDamage runs inside its context's data
                 // scope; the rulebook takes the damage rule's reason (and so
                 // the associated blueprint) from that scope, because
-                // MechanicsContext.TriggerRule itself assigns no reason.
+                // MechanicsContext.TriggerRule itself assigns no reason. A
+                // fixed 5-point base (5d1) keeps every result above the
+                // native one-point damage floor, so +1 stays observable.
                 var context = new MechanicsContext(caster, caster.Descriptor, blueprint);
                 using (context.GetDataScope(new TargetWrapper(target)))
                 {
                     var deal = context.TriggerRule(new RuleDealDamage(caster, target, new DamageBundle(
-                        new EnergyDamage(DiceFormula.Zero, DamageEnergyType.Fire))));
+                        new EnergyDamage(new DiceFormula(FcbBombProbeBase, DiceType.One),
+                            DamageEnergyType.Fire))));
                     return deal.Damage;
                 }
             };
@@ -391,6 +395,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             row["bombRank1OtherOwner"] = damage(bomberTwo, bomb);
             row["acidBuffFollowUpRank3"] = damage(bomber, acidBuff);
             row["fireballRank3"] = damage(bomber, fireball);
+            if ((int)row["bombControl"] != FcbBombProbeBase)
+                failures.Add("the control bomb probe did not deal exactly its fixed base damage");
             if ((int)row["bombRank3"] - (int)row["bombControl"] != 3)
                 failures.Add("three bomb steps did not add +3 damage");
             if ((int)row["bombRank1OtherOwner"] - (int)row["bombControl"] != 1)

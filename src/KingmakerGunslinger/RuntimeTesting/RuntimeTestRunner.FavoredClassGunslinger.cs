@@ -111,14 +111,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             object[] unitsBefore = SnapshotReferences(allUnits);
 
             // Publication by profile: third-party-only counters stay unpublished.
+            // Each counter is looked up in its own class's host selection (the
+            // Gunslinger's for Gunslinger counters).
             var publication = new JArray();
             var publicationFailures = new List<string>();
             foreach (FavoredClassLeafPair pair in leaves.Pairs)
             {
                 bool expected = pair.Effect.Rows.Select(FavoredClassCatalog.Row).Any(row =>
                     row.IsScheduled && FavoredClassRuntime.Profile.Offers(row.Profile));
-                int present = pair.Leaves.Count(leaf => selection.AllFeatures.Contains(leaf));
-                publication.Add(pair.Effect.Id + "|" + (pair.TargetKey ?? "-") + "=" + present +
+                BlueprintFeatureSelection home = host.BonusSelectionFor(pair.HostClassGuid);
+                int present = home == null ? -1 : pair.Leaves.Count(leaf => home.AllFeatures.Contains(leaf));
+                publication.Add(pair.Effect.Id + "|" + (pair.TargetKey ?? "-") + "@" +
+                    (home == null ? "no-host-selection" : home.name) + "=" + present +
                     "/" + pair.Leaves.Count() + (expected ? " expected" : " withheld"));
                 if (present != (expected ? pair.Leaves.Count() : 0))
                     publicationFailures.Add(pair.Effect.Id + " published " + present + " expected " + expected);
@@ -196,7 +200,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             assertions.Add(Assertion("fcb-gunslinger-publication-by-profile",
                 "every counter with an enabled route is published exactly once; the third-party-only Drow Nimble and dirty trick/trip counters stay unpublished while registered",
                 Describe(publication, publicationFailures), publicationFailures.Count == 0,
-                "live host Gunslinger bonus selection AllFeatures"));
+                "each counter's own live host class bonus selection AllFeatures"));
             assertions.Add(Assertion("fcb-gunslinger-race-menus",
                 "each playable source-addressable race is offered exactly its charter Gunslinger counters (partial leaf open, full leaf closed at N=0); an absent or unplayable race is reported, never scored",
                 Describe(menus, menuFailures), menuFailures.Count == 0,
