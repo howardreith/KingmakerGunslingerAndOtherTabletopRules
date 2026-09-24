@@ -51,6 +51,8 @@
     <Compile Include="..\..\src\KingmakerGunslinger\FavoredClass\FavoredClassHostContract.cs"><Link>FavoredClass\FavoredClassHostContract.cs</Link></Compile>
     <Compile Include="FavoredClassLeafCatalogTests.cs" />
     <Compile Include="FavoredClassGunslingerCoreTests.cs" />
+    <Compile Include="FavoredClassSettingsTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\FavoredClass\FavoredClassSettings.cs"><Link>FavoredClass\FavoredClassSettings.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\FavoredClass\FavoredClassMechanicsPolicy.cs"><Link>FavoredClass\FavoredClassMechanicsPolicy.cs</Link></Compile>
     <Compile Include="FavoredClassSourceTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\FavoredClass\FavoredClassLeafCatalog.cs"><Link>FavoredClass\FavoredClassLeafCatalog.cs</Link></Compile>
