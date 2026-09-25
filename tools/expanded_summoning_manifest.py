@@ -105,12 +105,12 @@ SPECIAL_NOTES = {
     "shambling-mound": "Plant chassis with two slams; slam grab and constrict on the shared summon grapple lifecycle; fire resistance 10 and electricity immunity; the native poison aura is not carried.",
     "giant-flytrap": "Huge plant chassis with four bites; bite grab on the shared summon grapple lifecycle, one held target at a time; acid resistance 20; tremorsense as native blindsight; engulf omitted.",
     "purple-worm": "Gargantuan magical-beast chassis with bite and sting; bite grab swallows whole through the native swallow-whole part; native Constitution-scaled sting poison; burrow omitted.",
-    "dust-mephit": "Air mephit chassis retinted, air subtype; 15-foot enemy-only slashing breath that sickens; blur once per summoning; wind wall omitted (no native spell).",
-    "ice-mephit": "Water mephit chassis retinted, air subtype; 15-foot enemy-only cold breath that sickens; magic missile once per summoning; cold immunity, fire vulnerability; chill metal omitted (no native spell).",
-    "magma-mephit": "Fire mephit chassis retinted, earth and fire subtypes; 15-foot enemy-only 1d8 fire breath; fire immunity, cold vulnerability; pyrotechnics and magma form omitted (no native spell or form).",
-    "ooze-mephit": "Water mephit chassis retinted, water subtype; 15-foot enemy-only acid breath that sickens (Reflex negates both); acid arrow and stinking cloud once per summoning each.",
-    "salt-mephit": "Air mephit chassis retinted, earth subtype; 15-foot enemy-only slashing breath that sickens; glitterdust once per summoning; dehydrate as a project 20-foot burst (2d8, Fortitude half) once per summoning.",
-    "steam-mephit": "Water mephit chassis retinted, fire and water subtypes; 15-foot enemy-only fire breath that sickens; fire immunity, cold vulnerability; blur once per summoning; boiling rain as a project 20-foot burst (2d6 fire, Fortitude half) once per summoning.",
+    "dust-mephit": "Air mephit chassis with its own rim light colour, air subtype; 15-foot enemy-only slashing breath that sickens; blur once per summoning; wind wall omitted (no native spell).",
+    "ice-mephit": "Water mephit chassis with its own rim light colour, air subtype; 15-foot enemy-only cold breath that sickens; magic missile once per summoning; cold immunity, fire vulnerability; chill metal omitted (no native spell).",
+    "magma-mephit": "Fire mephit chassis with its own rim light colour, earth and fire subtypes; 15-foot enemy-only 1d8 fire breath; fire immunity, cold vulnerability; pyrotechnics and magma form omitted (no native spell or form).",
+    "ooze-mephit": "Water mephit chassis with its own rim light colour, water subtype; 15-foot enemy-only acid breath that sickens (Reflex negates both); acid arrow and stinking cloud once per summoning each.",
+    "salt-mephit": "Air mephit chassis with its own rim light colour, earth subtype; 15-foot enemy-only slashing breath that sickens; glitterdust once per summoning; dehydrate as a project 20-foot burst (2d8, Fortitude half) once per summoning.",
+    "steam-mephit": "Water mephit chassis with its own rim light colour, fire and water subtypes; 15-foot enemy-only fire breath that sickens; fire immunity, cold vulnerability; blur once per summoning; boiling rain as a project 20-foot burst (2d6 fire, Fortitude half) once per summoning.",
 }
 
 NATIVE_EXPANDED_OPTIONS = (

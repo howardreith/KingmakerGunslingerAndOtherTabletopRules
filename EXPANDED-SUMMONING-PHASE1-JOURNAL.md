@@ -168,15 +168,25 @@ steam breath sickens the hostile and leaves the caster alone; the salt
 dehydrate damages the hostile and touches neither the caster nor the other
 summons.
 
-Visual distinctness had to be earned within the bounded view family. A
-material tint can only darken or shift, never brighten, which is why the
-pale salt and steam mephits sit on the pale air and water rigs with their
-earth and fire subtypes restored as facts, and why magma and steam carry an
-emission glow. The tint is applied to a private clone of the view's
-materials when the view attaches, so the donor's shared material - and every
-native mephit that uses it - is never written. The creature review records
-what was applied on each reviewed view, so the render check and the
-mechanism check are the same run.
+Visual distinctness had to be earned within the bounded view family, and
+the first three attempts did not earn it. The design tinted a private
+clone of each variant's material, and every run said the tint was
+applied; the review renders said otherwise - six mephits wearing their
+donors' faces. The Pteranodon's notes explained the first half: the
+game's material controller drives a view's materials itself, and on the
+mephit rig it rewrites the tint slot every frame. A coat on the main
+texture, the tiger's trick, was applied and retained and changed nothing
+either. The probe that finally answered it listed every slot on the
+material at the moment the picture was taken: a translucent body with rim
+lighting on, and the only thing that differs between the game's own air
+mephit and fire mephit is the rim light colour - and even that slot is
+painted every frame, by a looping rim animation the view carries. So the
+mephits are told apart the way the game tells them apart: the view's own
+rim animation is recoloured - sand, ice, ember, slime, salt and vapour
+glows, pulsing as the natives pulse - on a clone the controller has been
+made to re-read, so its fades reach it. No emission glow is claimed; the
+shader has no slot for one. The review no longer trusts the attach-time
+report: it records what is on the view when the picture is taken.
 
 One correction fell out of the round-3 mechanical evidence rather than out
 of Sprint 5: the Sprint 4 grapple case's holder-free and safeguard checks
