@@ -241,6 +241,7 @@
     <Compile Include="ElementalRaces\ElementalMostlyHumanBlueprints.cs" />
     <Compile Include="ElementalRaces\ElementalMostlyHumanIcons.cs" />
     <Compile Include="FavoredClass\FavoredClassRuntime.cs" />
+    <Compile Include="FavoredClass\FavoredClassHostActivation.cs" />
     <Compile Include="FavoredClass\FavoredClassPrerequisites.cs" />
     <Compile Include="FavoredClass\Mechanics\FavoredClassGritResourceBonus.cs" />
     <Compile Include="FavoredClass\FavoredClassMechanicsPolicy.cs" />

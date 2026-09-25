@@ -107,7 +107,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 string.Join(",", publishedIn.ToArray()), publicationConsistent,
                 "every BlueprintFeatureSelection AllFeatures/Features in the library"));
 
-            MechanicsFollowIntegrationProbe(evidence, assertions, leaves, profile);
+            MechanicsFollowIntegrationProbe(evidence, assertions, leaves, profile, status.Availability);
             GunslingerClassBlueprintSetProbe(evidence, assertions);
             assertions.Add(Assertion("loaded-mod-version", _request.ExpectedModVersion,
                 _context.ModEntry.Info.Version,
@@ -120,11 +120,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             return result;
         }
 
-        // L04: an already-earned choice keeps its identity and rank; its
-        // owned numerical effect applies while the integration is enabled
-        // and is suppressed (not refunded) while it is disabled.
+        // L04/H01/H02: an already-earned choice keeps its identity and rank;
+        // its owned numerical effect applies only while the integration is
+        // enabled and the exact host is Published (committed), and is zero
+        // (suppressed, not refunded) for an absent, disabled, unsupported or
+        // unpublished host and for a disabled integration.
         private void MechanicsFollowIntegrationProbe(JObject evidence, List<RuntimeTestAssertion> assertions,
-            FavoredClassBlueprintSet leaves, FavoredClassProfileState profile)
+            FavoredClassBlueprintSet leaves, FavoredClassProfileState profile,
+            FavoredClassIntegrationAvailability availability)
         {
             var row = new JObject();
             bool pass = false;
@@ -149,13 +152,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     int rank = GrantFavoredClassRanks(invested, grit.Full, 2);
                     int delta = gunslinger.Grit.Resource.GetMaxAmount(invested.Descriptor) -
                         gunslinger.Grit.Resource.GetMaxAmount(control.Descriptor);
-                    int expectedDelta = profile.IntegrationEnabled ? 2 : 0;
+                    bool published = availability == FavoredClassIntegrationAvailability.Published;
+                    bool live = profile.IntegrationEnabled && published;
+                    int expectedDelta = live ? 2 : 0;
+                    row["availability"] = availability.ToString();
+                    row["hostActive"] = FavoredClassRuntime.HostActive;
+                    row["hostActivation"] = FavoredClassRuntime.HostActivationReason;
                     row["mechanicsEnabled"] = FavoredClassRuntime.MechanicsEnabled;
                     row["savedRank"] = rank;
                     row["gritMaximumDelta"] = delta;
                     row["expectedDelta"] = expectedDelta;
                     pass = rank == 2 && delta == expectedDelta &&
-                        FavoredClassRuntime.MechanicsEnabled == profile.IntegrationEnabled;
+                        FavoredClassRuntime.HostActive == published &&
+                        FavoredClassRuntime.MechanicsEnabled == live;
                 }
                 else
                     row["unavailable"] = "gunslinger or grit counter not registered";
@@ -171,7 +180,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             evidence["mechanicsFollowIntegration"] = row;
             assertions.Add(Assertion("fcb-mechanics-follow-integration",
-                "an earned counter keeps its rank; its owned effect (two grit steps) applies while the integration is enabled and is suppressed, not refunded, while it is disabled",
+                "an earned counter keeps its rank; its owned effect (two grit steps) applies only while the integration is enabled and the exact host is Published, and is zero (not refunded) for an absent, disabled or unpublished host and for a disabled integration",
                 row.ToString(Newtonsoft.Json.Formatting.None), pass,
                 "ChargenUnit with the native grit feature; BlueprintAbilityResource.GetMaxAmount"));
         }

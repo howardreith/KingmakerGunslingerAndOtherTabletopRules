@@ -119,8 +119,10 @@ namespace KingmakerGunslinger.FavoredClass
             Validate();
         }
 
+        /// <summary>A rolled-back publication is never live: owned effects stop until a commit.</summary>
         internal void Rollback()
         {
+            FavoredClassRuntime.DeactivateHost("rolled-back");
             _transaction.Rollback();
         }
 
