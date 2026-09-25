@@ -160,22 +160,38 @@ namespace KingmakerGunslinger.Summoning
         { return MephitVariants.Single(value => value.Key == key); }
 
         /// <summary>
-        /// The tint (a multiplier on the native rig's colour slot, so it can
-        /// only darken or shift, never brighten) and optional inner glow that
-        /// make each variant read as its element on the shared mephit body.
-        /// Plain numbers here; the view patch turns them into colours.
+        /// The procedural elemental coat that makes each variant read as its
+        /// element on the shared mephit body: generated in the rig's own
+        /// texture space at view attach and put on the private material
+        /// clone's main texture slot. A tint could not do it - the game's
+        /// material controller owns the mephit rig's tint slot and rewrites
+        /// it every frame (round-9 diagnostic) - and the rig's shader has no
+        /// emission slot, so no glow is claimed. Plain numbers here; pixels
+        /// only at runtime, and never the game's own.
         /// </summary>
-        internal static readonly SummonVisualTintProfile[] MephitVisualTints = {
-            new SummonVisualTintProfile("dust-mephit", 0.85f, 0.75f, 0.50f, null, null, null),
-            new SummonVisualTintProfile("ice-mephit", 0.55f, 0.72f, 1.00f, null, null, null),
-            new SummonVisualTintProfile("magma-mephit", 0.45f, 0.25f, 0.20f, 0.70f, 0.22f, 0.04f),
-            new SummonVisualTintProfile("ooze-mephit", 0.55f, 0.75f, 0.35f, null, null, null),
-            new SummonVisualTintProfile("salt-mephit", 0.98f, 0.92f, 0.72f, null, null, null),
-            new SummonVisualTintProfile("steam-mephit", 0.88f, 0.80f, 0.72f, 0.25f, 0.12f, 0.06f)
+        internal static readonly SummonCoatProfile[] MephitCoats = {
+            // sand with darker ochre grains, pale underside
+            new SummonCoatProfile("dust-mephit", SummonCoatPattern.Spots, 0.72f, 0.60f, 0.40f,
+                0.46f, 0.34f, 0.18f, 0.86f, 0.78f, 0.60f, 22f),
+            // pale ice with white frost bands
+            new SummonCoatProfile("ice-mephit", SummonCoatPattern.Stripes, 0.58f, 0.78f, 1.00f,
+                0.96f, 0.99f, 1.00f, 0.80f, 0.90f, 1.00f, 9f),
+            // dark crust with lava cracks, ember underside
+            new SummonCoatProfile("magma-mephit", SummonCoatPattern.Stripes, 0.16f, 0.07f, 0.05f,
+                1.00f, 0.42f, 0.06f, 0.42f, 0.12f, 0.04f, 8f),
+            // slime green with darker blotches, yellow-green underside
+            new SummonCoatProfile("ooze-mephit", SummonCoatPattern.Spots, 0.34f, 0.62f, 0.18f,
+                0.12f, 0.30f, 0.08f, 0.62f, 0.78f, 0.30f, 14f),
+            // white with grey salt grains
+            new SummonCoatProfile("salt-mephit", SummonCoatPattern.Spots, 0.96f, 0.95f, 0.90f,
+                0.68f, 0.68f, 0.64f, 0.98f, 0.98f, 0.96f, 30f),
+            // light grey with white wisps, darker underside
+            new SummonCoatProfile("steam-mephit", SummonCoatPattern.Stripes, 0.76f, 0.78f, 0.82f,
+                0.97f, 0.98f, 1.00f, 0.62f, 0.64f, 0.68f, 6f)
         };
 
-        internal static SummonVisualTintProfile MephitVisualTint(string key)
-        { return MephitVisualTints.Single(value => value.Key == key); }
+        internal static SummonCoatProfile MephitCoat(string key)
+        { return MephitCoats.Single(value => value.Key == key); }
 
         internal static IReadOnlyList<string> NativeElementalKeys
         { get { return Array.AsReadOnly(ElementalKeys); } }
@@ -408,12 +424,12 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (MephitVisualTints.Length != 6 ||
-                !MephitVisualTints.Select(value => value.Key).SequenceEqual(
+            if (MephitCoats.Length != 6 ||
+                !MephitCoats.Select(value => value.Key).SequenceEqual(
                     MephitVariants.Select(value => value.Key)) ||
-                MephitVisualTints.Any(value => !value.IsBounded))
+                MephitCoats.Any(value => !value.IsBounded))
                 throw new InvalidOperationException(
-                    "Sprint 5 mephit visual tint profile changed.");
+                    "Sprint 5 mephit coat profile changed.");
             if (MephitVariants.Length != 6 || MephitVariants.Select(value => value.Key)
                     .Distinct(StringComparer.Ordinal).Count() != 6 ||
                 MephitVariants.Any(value => !MephitKeys.Contains(value.DonorKey)) ||

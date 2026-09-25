@@ -385,7 +385,7 @@ def validate(root: Path) -> None:
         "Values.Length != %d" % SPRINT3["projectIcons"])
     # Sprint 5: the mephit pack's charter boundaries stay in the code.
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningSpecialProfiles.cs",
-        "MephitVariants.Length != 6", "MephitVisualTints.Length != 6",
+        "MephitVariants.Length != 6", "MephitCoats.Length != 6",
         "MephitSickenedRounds = 3", "MephitSpellLikeUses = 1", "MephitBurstRadiusFeet = 20")
     require_tokens(root / "src/KingmakerGunslinger/Blueprints/ExpandedSummoningSpecialBuilder.cs",
         "ConfigureMephitVariants(library, bySymbol)", "ContextConditionIsEnemy",
