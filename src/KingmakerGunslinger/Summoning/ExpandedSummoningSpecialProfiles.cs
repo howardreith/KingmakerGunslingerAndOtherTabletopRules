@@ -167,11 +167,11 @@ namespace KingmakerGunslinger.Summoning
         /// </summary>
         internal static readonly SummonVisualTintProfile[] MephitVisualTints = {
             new SummonVisualTintProfile("dust-mephit", 0.85f, 0.75f, 0.50f, null, null, null),
-            new SummonVisualTintProfile("ice-mephit", 0.70f, 0.85f, 1.00f, null, null, null),
+            new SummonVisualTintProfile("ice-mephit", 0.55f, 0.72f, 1.00f, null, null, null),
             new SummonVisualTintProfile("magma-mephit", 0.45f, 0.25f, 0.20f, 0.70f, 0.22f, 0.04f),
             new SummonVisualTintProfile("ooze-mephit", 0.55f, 0.75f, 0.35f, null, null, null),
-            new SummonVisualTintProfile("salt-mephit", 0.95f, 0.95f, 0.90f, null, null, null),
-            new SummonVisualTintProfile("steam-mephit", 0.85f, 0.88f, 0.92f, 0.25f, 0.12f, 0.06f)
+            new SummonVisualTintProfile("salt-mephit", 0.98f, 0.92f, 0.72f, null, null, null),
+            new SummonVisualTintProfile("steam-mephit", 0.88f, 0.80f, 0.72f, 0.25f, 0.12f, 0.06f)
         };
 
         internal static SummonVisualTintProfile MephitVisualTint(string key)
