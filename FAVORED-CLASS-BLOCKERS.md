@@ -31,11 +31,38 @@ now marks its gate with `kbp-gate.active`, and KMG batches wait for it.
 The profiles were staged from the 2026-09-08 capture of this install's
 optional mods (`C:\Dev\KingmakerGunslingerLab\repo\KingmakerGunslinger\artifacts\teleportation\compatibility-references`),
 verified byte-identical first (CallOfTheWild 266 files, ZFavoredClass 24
-files, no difference). On the final candidate:
+files, no difference; re-verified before each round). On the final candidate
+`5636d940b`:
 
-- `gunslinger-only` / `observe-favored-class-host-state`: `20260924T2319494086008Z-observe-favored-class-host-state` PASS (transaction `compat-20260924T231747Z-dcf3953a3add`, restoration verified).
-- `gunslinger-call-of-the-wild` / `observe-favored-class-host-state`: `20260924T2323061576141Z-observe-favored-class-host-state` PASS (transaction `compat-20260924T232119Z-4b08e222f897`, restoration verified).
-- `gunslinger-call-of-the-wild-favored-class` / `observe-favored-class-host-state`: `20260924T2326399456937Z-observe-favored-class-host-state` PASS (transaction `compat-20260924T232452Z-bdadf725cfa8`, restoration verified).
+- `gunslinger-only` / `observe-favored-class-host-state`: `20260925T2141418629762Z-observe-favored-class-host-state` PASS (transaction `compat-20260925T213940Z-2ad3bc526451`, restoration verified).
+- `gunslinger-call-of-the-wild` / `observe-favored-class-host-state`: `20260925T2144578093484Z-observe-favored-class-host-state` PASS (transaction `compat-20260925T214311Z-3b10efecc949`, restoration verified).
+- `gunslinger-call-of-the-wild-favored-class` / `observe-favored-class-host-state`: `20260925T2148287677920Z-observe-favored-class-host-state` PASS (transaction `compat-20260925T214643Z-ffa851fb8dd2`, restoration verified).
+
+### B3 - Native screenshot evidence inflates the game's committed memory (environment; harness follow-up)
+
+Screenshot-heavy guarded lanes drive the game's committed (private) memory
+far above its resident set. Sampled every 5 s during the final candidate's
+cycle: lanes without native screenshots peak at 2-5 GB private; the visual
+census at 45 GB, the four creator lanes at 52-65 GB (Ifrit 64.7 GB, system
+commit 83.8 GB, page file grown to a 93.9 GB limit) and the two native respec
+lanes at 45-46 GB, with a resident set of at most 14 GB. The native UI capture
+(`NativeIconScreenEvidence.Capture`) calls `ScreenCapture.CaptureScreenshot`
+and then re-reads the whole PNG into a new array every frame until the file
+is complete; Mono's non-compacting heap keeps that memory committed until the
+game exits (each guarded run is a fresh process, so nothing accumulates
+across runs). On a healthy machine the system-managed page file absorbs it
+(commit ceiling about 127 GB with 31.6 GB of RAM) and every run passes. On
+2026-09-25, before a machine reboot, about 66 GB was committed with no game
+running, so the Ifrit creator lane's demand exceeded the 127.6 GB ceiling
+three times (the game exited before committing a result, its private bytes at
+60 GB) and a Sylph run reported Out of memory. After the reboot (about 15 GB
+committed with nothing running) the same lanes passed on the final candidate.
+
+Follow-up (outside the favored-class rows; shared harness code used by other
+lanes): check the completed file's size and PNG trailer before reading it, or
+read it once into a reused buffer, so a capture allocates once. Until then,
+qualification batches should start on a machine whose idle commit charge is
+low (check `\Memory\Committed Bytes` before a batch).
 
 ## Pre-existing KMG defects (outside the adopted rows; owner decisions)
 

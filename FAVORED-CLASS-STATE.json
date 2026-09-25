@@ -9,7 +9,7 @@
   "worktree": "C:\\Dev\\KingmakerGunslingerLab\\worktrees\\favored-class-integration",
   "baselineCommit": "996105ed9e72259a220be56e2a74e0cc18e5ef47",
   "overallStatus": "PARTIAL - NOT RELEASE QUALIFIED",
-  "currentPhase": "PR #24 second review addressed (two findings) and requalified; owner review pending",
+  "currentPhase": "PR #24 third review addressed (three findings) and requalified; owner review pending",
   "phases": {
     "phase-0": {
       "status": "COMPLETE",
@@ -175,11 +175,36 @@
       "dllMvid": "60acfa62-36ed-4722-9bb3-af928f5d8758",
       "deployment": "runtime-evidence\\deployments\\20260925T1323002022844Z",
       "note": "final candidate after the second PR #24 review"
+    },
+    {
+      "commit": "4de114511ccba7f2bbd908d13d85984883b3d11e",
+      "packageSha256": "7f01d962fc3970facee5db69518a98dbc62b50e76b00ac353c6e7c5b64cbc687",
+      "dllSha256": "4effec58ab8717857086e13d35b6ebb8f7d39744c71505967ce18755424f98b0",
+      "dllMvid": "02a4d150-8419-4645-92f1-3c407f7585ee",
+      "deployment": "runtime-evidence\\deployments\\20260925T1532361168725Z",
+      "note": "intermediate candidate after the third PR #24 review; its cycle was cut short by the machine's exhausted commit charge (B3) and a reboot, then superseded"
+    },
+    {
+      "commit": "51f56820e90ad126dd5127c51da9d099c8bb073a",
+      "packageSha256": "5c0ccabfadbbdff5ebe50054a4164f1b684f54a1e5b2f3bd4e255afc73afeacb",
+      "dllSha256": "2eb28832841e433d97095ac5c155b20efc1e91f02dff72171e129380469b0b0b",
+      "dllMvid": "229dff67-8bdf-4b41-9c44-e76bbd251da5",
+      "deployment": "runtime-evidence\\deployments\\20260925T2029203755841Z",
+      "note": "intermediate candidate; the new toggle-rollback lane step held two wrong expectations (fixed in 5636d940b)"
+    },
+    {
+      "commit": "5636d940b52c26998f2c5d6e36231956e28dff04",
+      "packageSha256": "e7828df692d9ccb259cc14b6a2a7fda558de7a7ea99dd6c65740ebe3556d1e6c",
+      "dllSha256": "197ba4e5e88f2a9a68b818f90018860508ea6964eaa5a91f13801f24816ac25e",
+      "dllMvid": "76aef19e-962c-427d-b10e-864274b981b0",
+      "deployment": "runtime-evidence\\deployments\\20260925T2042107499390Z",
+      "note": "final candidate after the third PR #24 review (33 guarded runs PASS)"
     }
   ],
   "blockers": {
     "B1": "mitigated (shared-install protocol)",
-    "B2": "resolved (profiles PASS on the final candidate)"
+    "B2": "resolved (profiles PASS on the final candidate)",
+    "B3": "open (harness follow-up: the native screenshot capture inflates the game's committed memory; environment, outside the favored-class rows)"
   },
   "preExistingDefects": {
     "D1": "open (owner decision)",
@@ -188,10 +213,10 @@
     "D4": "fixed (b1b93acad)"
   },
   "finalCandidate": {
-    "commit": "f7b4ae4f535b38f0e13ac498ee2334f84ef0f427",
-    "packageSha256": "1c4127fcaa0132fabbfe39ce236aaf4f6f3d6b7421f800f02be9305a5d652b12",
-    "dllSha256": "faa7ecad620fa504e68fb29a07463e59dfe60b0f12caa245ef3ead141c9680a4",
-    "dllMvid": "60acfa62-36ed-4722-9bb3-af928f5d8758"
+    "commit": "5636d940b52c26998f2c5d6e36231956e28dff04",
+    "packageSha256": "e7828df692d9ccb259cc14b6a2a7fda558de7a7ea99dd6c65740ebe3556d1e6c",
+    "dllSha256": "197ba4e5e88f2a9a68b818f90018860508ea6964eaa5a91f13801f24816ac25e",
+    "dllMvid": "76aef19e-962c-427d-b10e-864274b981b0"
   },
   "ownerDecisions": {
     "status": "resolved by the charter or provider behavior; see FAVORED-CLASS-BLOCKERS.md"
@@ -216,7 +241,8 @@
       "RacesUnleashed\\Settings.json": "270899c3f6c3d29bfe777fc2b55a0bb0404ae50786dbac8f1dccf77e8b9cabbf",
       "ZFavoredClass\\settings.json": "bdceed77d2bf4a31dd9e4eeb64ef9d55a42ef59d23f46abcb1ddbcc6ef66754b"
     },
-    "integrationSettingsFilePresent": false
+    "integrationSettingsFilePresent": false,
+    "lastVerifiedUtc": "2026-09-25T21:51:16Z"
   },
   "pullRequest": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/24",
   "reviewFindings": {
@@ -248,6 +274,20 @@
     ],
     "2-inert-inactive-scopes": [
       "f7b4ae4f535b38f0e13ac498ee2334f84ef0f427"
+    ]
+  },
+  "thirdReviewFindings": {
+    "1-whole-group-outcomes": [
+      "4de114511ccba7f2bbd908d13d85984883b3d11e"
+    ],
+    "2-verified-rollback": [
+      "4de114511ccba7f2bbd908d13d85984883b3d11e",
+      "a17c2efe7eb673195d2e7eb8f6994c99067e7015",
+      "51f56820e90ad126dd5127c51da9d099c8bb073a",
+      "5636d940b52c26998f2c5d6e36231956e28dff04"
+    ],
+    "3-no-remembered-outcome": [
+      "4de114511ccba7f2bbd908d13d85984883b3d11e"
     ]
   }
 }
