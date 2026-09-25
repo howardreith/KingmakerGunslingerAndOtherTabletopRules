@@ -123,6 +123,9 @@ namespace KingmakerGunslinger.DomainTests
                 "int real = progression.CalcLevel(Owner);",
                 "bonus += FavoredClassMechanicsPolicy.ThresholdUsesBetween(UseThresholds(progression, UsesResource),",
                 "if (increase.Resource == resource && increase.Value > 0)",
+                "foreach (KeyValuePair<AddFeatureOnClassLevel, int> gate in UseGates(PowerFeature, UsesResource))",
+                "bonus += FavoredClassMechanicsPolicy.GateUsesDelta(level, earned, component.Level,",
+                "int level = ReplaceCasterLevelOfAbility.CalculateClassLevel(component.Class,",
                 "!Owner.HasFact(PowerFeature))"
             })
                 Assertions.True(level.Contains(token), "Selected power token: " + token);

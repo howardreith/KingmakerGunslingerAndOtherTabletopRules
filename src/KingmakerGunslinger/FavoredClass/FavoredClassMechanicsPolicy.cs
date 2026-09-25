@@ -169,5 +169,19 @@ namespace KingmakerGunslinger.FavoredClass
                     uses += threshold.Value;
             return uses;
         }
+
+        /// <summary>
+        /// I08/S06: the uses one of a power's own class-level gates adds (or,
+        /// for a before-gate, removes) at the effective level beyond its
+        /// native decision at the real level.
+        /// </summary>
+        internal static int GateUsesDelta(int classLevel, int earnedSteps, int gateLevel, bool beforeThisLevel,
+            int uses)
+        {
+            if (earnedSteps <= 0 || uses == 0)
+                return 0;
+            return (GateApplies(classLevel + earnedSteps, gateLevel, beforeThisLevel) ? uses : 0) -
+                (GateApplies(classLevel, gateLevel, beforeThisLevel) ? uses : 0);
+        }
     }
 }
