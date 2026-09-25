@@ -194,7 +194,8 @@ namespace KingmakerGunslinger.DomainTests
                 "ConfigurePyrotechnics(bySymbol, ability, prefix, token)",
                 "ConfigureMagmaForm(bySymbol, ability, prefix, token, unit)",
                 "MakeMephitCloudAllySafe(bySymbol, ability, prefix)", "MakeGlitterdustEnemyOnly(ability)",
-                "UnitCondition.CanNotAttack", "ContextConditionIsAlly", "AbilityType.Supernatural",
+                "UnitCondition.CanNotAttack", "ContextConditionIsEnemy>();", "notEnemy.Not = true;",
+                "AbilityType.Supernatural",
                 "IsProjectMephitAbility(", "MagmaFormAiStartCooldownRounds");
             string components = Source("src", "KingmakerGunslinger", "Summoning",
                 "ExpandedSummoningSpecialCombatComponents.cs");

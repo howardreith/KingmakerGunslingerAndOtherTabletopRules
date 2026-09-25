@@ -425,7 +425,7 @@ def validate(root: Path) -> None:
         "ConfigurePyrotechnics(bySymbol, ability, prefix, token)",
         "ConfigureMagmaForm(bySymbol, ability, prefix, token, unit)",
         "MakeMephitCloudAllySafe(bySymbol, ability, prefix)", "MakeGlitterdustEnemyOnly(ability)",
-        "UnitCondition.CanNotAttack", "ContextConditionIsAlly")
+        "UnitCondition.CanNotAttack", "notEnemy.Not = true;")
     # Sprint 5: the mephit pack's charter boundaries stay in the code.
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningSpecialProfiles.cs",
         "MephitVariants.Length != 6", "MephitVisualTints.Length != 6",
