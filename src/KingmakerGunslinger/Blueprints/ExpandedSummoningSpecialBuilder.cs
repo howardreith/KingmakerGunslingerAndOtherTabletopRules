@@ -2098,12 +2098,17 @@ namespace KingmakerGunslinger.Blueprints
                 ContextActionApplyBuff>();
             arm.Buff = state;
             arm.ToCaster = true;
+            // The arming has no duration of its own: it lasts until the
+            // cyclops's next attack roll, which RemoveBuffOnAttack ends, so a
+            // use never lapses unspent and a save and a reload find it
+            // exactly once (a one-round state lapsed between the save and
+            // the reloaded attack in the first requalification run).
+            arm.Permanent = ExpandedSummoningSpecialProfiles.CyclopsFlashOfInsightLastsUntilUsed;
             arm.DurationValue = new ContextDurationValue {
                     Rate = DurationRate.Rounds,
                     DiceType = DiceType.Zero,
                     DiceCountValue = Simple(0),
-                    BonusValue = Simple(ExpandedSummoningSpecialProfiles
-                        .CyclopsFlashOfInsightRounds)
+                    BonusValue = Simple(0)
                 };
             arm.IsFromSpell = false;
             arm.IsNotDispelable = true;
@@ -2121,7 +2126,7 @@ namespace KingmakerGunslinger.Blueprints
                     "Flash of Insight"),
                 LocalizationService.Create(
                     "KMG.ExpandedSummoning.Cyclops.FlashOfInsight.Description",
-                    "Once per summoning, as a swift action, the cyclops chooses the result of its next attack roll this round: a natural 20. It hits and threatens a critical; the confirmation is rolled normally."),
+                    "Once per summoning, as a swift action, the cyclops chooses the result of its next attack roll: a natural 20. It hits and threatens a critical; the confirmation is rolled normally."),
                 null);
         }
 

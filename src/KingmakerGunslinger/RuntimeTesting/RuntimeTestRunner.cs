@@ -4186,7 +4186,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     writes ? MotionReviewValid : true,
                     "the game camera rendered to file with the mod-manager overlay closed; supporting images for internal review, not the mechanical proof"),
                 Assertion("expanded-summoning-cyclops-flash-persistence",
-                    prepare ? "the Cyclops's Flash of Insight spent and armed before the save" :
+                    prepare ? "the Cyclops's Flash of Insight spent and armed (an arming with no duration of its own) before the save" :
                         verifyCleanup ? "after the reload the resource is still spent, the ability unavailable and the arming present exactly once; the next attack's own d20 is the chosen 20 and the arming is gone; the attack after it rolls its own 1 and misses" :
                         "not applicable after cleanup",
                     _expandedSummoningPersistenceFlashDetail,
@@ -15473,7 +15473,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     sprintThreeNaturalsExact,
                     "pony and horse on their native summoned donors with hoof limbs, the magical-beast owlbear and the humanoid cyclops chassis against the checked-in profiles"),
                 Assertion("expanded-summoning-cyclops-flash-of-insight",
-                    "granted swift supernatural ability; one-use resource; one-round armed state with automatic critical hit and one-attack removal; AI brain",
+                    "granted swift supernatural ability; one-use resource; an armed state with no duration of its own that chooses the next attack's own d20 as a natural 20 and ends with that attack; AI brain",
                     cyclopsObserved, cyclopsExact,
                     "Cyclops special surface beside the natural chassis"),
                 Assertion("expanded-summoning-sprint-four-plants", "exact",
@@ -17532,11 +17532,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     hostile.Descriptor.Buffs.RemoveFact(
                         hostile.Descriptor.Buffs.GetBuff(dismantled));
 
-                // Sprint 3: Cyclops Flash of Insight. Armed, a natural 1 -
-                // otherwise an automatic miss - is an automatic critical hit
-                // (the automatic-hit path grants threat and confirmation
-                // together); the state ends with that one attack, so the next
-                // natural 1 misses again.
+                // Sprint 3: Cyclops Flash of Insight (corrected under the
+                // 2026-09-25 order). Armed, an attack seeded for a natural 1
+                // rolls the chosen 20 instead and so hits and threatens; the
+                // state ends with that one attack, so the next attack rolls
+                // its own 1 and misses.
                 UnitEntityData cyclops = CastExpandedSummoningCombatUnit(
                     blueprints, caster, SummonFamily.NaturesAlly, "cyclops", 5,
                     created, result);
@@ -17577,6 +17577,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // leaves. Worm: grab swallows through the native part;
                 // removing the traits buff spits the target out.
                 string grappleDetail;
+                ResetExpandedSummoningMechanicalHostile(hostile, blueprints);
                 bool grappleLifecycle = ExerciseExpandedSummoningGrappleLifecycle(
                     blueprints, caster, hostile, created, result, out grappleDetail);
 
@@ -17594,6 +17595,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // through the shared lifecycle, and the Giant Spider's web on
                 // the hostile (Reflex -100, forced natural 1).
                 string sprintSixDetail;
+                ResetExpandedSummoningMechanicalHostile(hostile, blueprints);
                 bool sprintSixPack = ExerciseExpandedSummoningSprintSixPack(blueprints,
                     caster, hostile, created, result, out sprintSixDetail);
 
@@ -17602,6 +17604,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // charge and while the leopard holds a grappled foe; a primary
                 // claw is untouched throughout.
                 string rakeDetail;
+                ResetExpandedSummoningMechanicalHostile(hostile, blueprints);
                 bool rakeCadence = ExerciseExpandedSummoningRakeCadence(blueprints,
                     caster, hostile, created, result, out rakeDetail);
 
@@ -17609,6 +17612,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // spent, a second use refused); the Tiger's rake claw follows
                 // the leopard's cadence on a charge.
                 string sprintEightDetail;
+                ResetExpandedSummoningMechanicalHostile(hostile, blueprints);
                 bool sprintEightPack = ExerciseExpandedSummoningSprintEightPack(blueprints,
                     caster, hostile, created, result, out sprintEightDetail);
 
@@ -17797,12 +17801,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // advances and its maintain check runs); the damage is the
                 // establishing slam's own, through the weapon-stats rule.
                 UnityEngine.Random.InitState(FindNativeD20Seed(20));
-                mound.Descriptor.Buffs.GetBuff(hold).TickMechanics();
+                RequiredExpandedSummoningBuff(mound, hold,
+                    "the mound's hold").TickMechanics();
                 bool maintained = hostile.Get<Kingmaker.UnitLogic.Parts
                         .UnitPartGrappleTarget>() != null &&
                     hostile.Descriptor.Damage > afterGrab;
                 // The summon's end path: the hold buff turns off.
-                mound.Descriptor.Buffs.RemoveFact(mound.Descriptor.Buffs.GetBuff(hold));
+                mound.Descriptor.Buffs.RemoveFact(RequiredExpandedSummoningBuff(
+                    mound, hold, "the mound's hold"));
                 bool released = hostile.Get<Kingmaker.UnitLogic.Parts
                         .UnitPartGrappleTarget>() == null &&
                     !hostile.Descriptor.HasFact(grappled) &&
@@ -17860,10 +17866,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool notEligibleYet = !SummonHoldComponent.IsHeldSinceRoundStart(worm, hostile);
                 // The next turn, a failed check (natural 1) releases the hold
                 // without swallowing.
-                hostile.Descriptor.Buffs.GetBuff(grappled).TickMechanics();
+                RequiredExpandedSummoningBuff(hostile, grappled,
+                    "the target's held state").TickMechanics();
                 bool eligible = SummonHoldComponent.IsHeldSinceRoundStart(worm, hostile);
                 UnityEngine.Random.InitState(FindNativeD20Seed(1));
-                worm.Descriptor.Buffs.GetBuff(hold).TickMechanics();
+                RequiredExpandedSummoningBuff(worm, hold,
+                    "the worm's hold").TickMechanics();
                 bool failedSwallowReleased =
                     hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartSwallowed>() == null &&
                     hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>() == null;
@@ -17872,10 +17880,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // deals the bite's damage.
                 UnityEngine.Random.InitState(FindNativeD20Seed(20));
                 bool wormRegrabbed = wormGrab.TryGrab(hostile, wormBite, true);
-                hostile.Descriptor.Buffs.GetBuff(grappled).TickMechanics();
+                RequiredExpandedSummoningBuff(hostile, grappled,
+                    "the target's held state").TickMechanics();
                 int beforeSwallow = hostile.Descriptor.Damage;
                 UnityEngine.Random.InitState(FindNativeD20Seed(20));
-                worm.Descriptor.Buffs.GetBuff(hold).TickMechanics();
+                RequiredExpandedSummoningBuff(worm, hold,
+                    "the worm's hold").TickMechanics();
                 bool biteDamage = hostile.Descriptor.Damage > beforeSwallow;
                 Kingmaker.UnitLogic.Parts.UnitPartSwallowed swallowedPart =
                     hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartSwallowed>();
@@ -17890,14 +17900,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>() == null;
                 bool refusedWhileSwallowed = !wormGrab.TryGrab(hostile, wormBite, true);
                 // The summon's end path: the worm's traits turn off.
-                worm.Descriptor.Buffs.RemoveFact(worm.Descriptor.Buffs.GetBuff(
-                    wormTraits));
+                worm.Descriptor.Buffs.RemoveFact(RequiredExpandedSummoningBuff(
+                    worm, wormTraits, "the worm's traits"));
                 bool spatOut = hostile.Get<Kingmaker.UnitLogic.Parts
                         .UnitPartSwallowed>() == null &&
                     !hostile.Descriptor.HasFact(swallowed) &&
                     !hostile.Descriptor.State.HasCondition(UnitCondition.CantAct) &&
                     !hostile.Descriptor.State.HasCondition(UnitCondition.CantMove) &&
-                    swallower.SwallowedUnits.Count == 0;
+                    swallower != null && swallower.SwallowedUnits.Count == 0;
                 steps.Add("worm:grabbed=" + wormGrabbed + ";heldNotSwallowed=" +
                     heldNotSwallowed + ";notEligibleYet=" + notEligibleYet +
                     ";eligibleNextTurn=" + eligible + ";failedSwallowReleased=" +
@@ -17910,8 +17920,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             catch (Exception exception)
             {
-                steps.Add("exception=" + exception.GetType().Name + ":" +
-                    exception.Message.Replace(';', ','));
+                steps.Add("exception=" + DescribeExpandedSummoningCorrectionException(exception));
                 ok = false;
             }
             finally
@@ -18005,8 +18014,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             catch (Exception exception)
             {
-                steps.Add("exception=" + exception.GetType().Name + ":" +
-                    exception.Message.Replace(';', ','));
+                steps.Add("exception=" + DescribeExpandedSummoningCorrectionException(exception));
                 ok = false;
             }
             finally
@@ -18176,7 +18184,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // The next turn: the held state has ticked once.
                     if (holding)
                     {
-                        hostile.Descriptor.Buffs.GetBuff(grappled).TickMechanics();
+                        RequiredExpandedSummoningBuff(hostile, grappled,
+                            "the target's held state").TickMechanics();
                         eligible = SummonHoldComponent.IsHeldSinceRoundStart(leopard, hostile);
                         rakeHoldingHits = ExerciseExpandedSummoningWeaponAttack(leopard,
                             hostile, rakeClaw, false, 20, out holdingRake);
@@ -18216,8 +18225,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             catch (Exception exception)
             {
-                steps.Add("exception=" + exception.GetType().Name + ":" +
-                    exception.Message.Replace(';', ','));
+                steps.Add("exception=" + DescribeExpandedSummoningCorrectionException(exception));
                 ok = false;
             }
             finally
@@ -18267,7 +18275,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         null && lizard.Get<Kingmaker.UnitLogic.Parts
                         .UnitPartGrappleInitiator>() != null &&
                     lizard.Descriptor.HasFact(hold) && hostile.Descriptor.HasFact(grappled);
-                lizard.Descriptor.Buffs.RemoveFact(lizard.Descriptor.Buffs.GetBuff(hold));
+                lizard.Descriptor.Buffs.RemoveFact(RequiredExpandedSummoningBuff(
+                    lizard, hold, "the lizard's hold"));
                 bool released = hostile.Get<Kingmaker.UnitLogic.Parts
                         .UnitPartGrappleTarget>() == null &&
                     !hostile.Descriptor.HasFact(grappled);
@@ -18317,8 +18326,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             catch (Exception exception)
             {
-                steps.Add("exception=" + exception.GetType().Name + ":" +
-                    exception.Message.Replace(';', ','));
+                steps.Add("exception=" + DescribeExpandedSummoningCorrectionException(exception));
                 ok = false;
             }
             finally
@@ -18428,8 +18436,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             catch (Exception exception)
             {
-                steps.Add("exception=" + exception.GetType().Name + ":" +
-                    exception.Message.Replace(';', ','));
+                steps.Add("exception=" + DescribeExpandedSummoningCorrectionException(exception));
                 ok = false;
             }
             finally
@@ -18441,6 +18448,38 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             detail = string.Join(";", steps.ToArray());
             return ok;
+        }
+
+        /// <summary>
+        /// Frees the mechanical run's hostile of any hold, held state or
+        /// swallow an earlier sub-case left on it, so each sub-case starts
+        /// from a free target.
+        /// </summary>
+        private static void ResetExpandedSummoningMechanicalHostile(UnitEntityData hostile,
+            BlueprintScriptableObject[] blueprints)
+        {
+            if (hostile == null || hostile.Destroyed) return;
+            Kingmaker.UnitLogic.Parts.UnitPartSwallowed swallowed =
+                hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartSwallowed>();
+            if (swallowed != null)
+            {
+                UnitEntityData swallower = swallowed.Swallower.Value;
+                Kingmaker.UnitLogic.Parts.UnitPartSwallowWhole part = swallower == null ? null :
+                    swallower.Get<Kingmaker.UnitLogic.Parts.UnitPartSwallowWhole>();
+                if (part != null) part.Free(hostile);
+                if (hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartSwallowed>() != null)
+                    hostile.Remove<Kingmaker.UnitLogic.Parts.UnitPartSwallowed>();
+            }
+            if (hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>() != null)
+                hostile.Remove<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>();
+            string[] states = { "KMG_Summoning_Special_Grapple_Grappled",
+                "KMG_Summoning_Special_Grapple_MultiHeld", "KMG_Summoning_Special_PurpleWorm_Swallowed",
+                "KMG_Summoning_Special_GiantFlytrap_Engulfed" };
+            foreach (Buff buff in hostile.Descriptor.Buffs.RawFacts.OfType<Buff>().Where(value =>
+                    value.Blueprint != null && (states.Contains(value.Blueprint.name) ||
+                        value.Blueprint.AssetGuid == ExpandedSummoningSpecialBuilder.NativeWebGrappledGuid))
+                .ToArray())
+                hostile.Descriptor.Buffs.RemoveFact(buff);
         }
 
         /// <summary>
@@ -18458,6 +18497,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "Missing runtime component " + typeof(T).Name + " on " +
                 blueprint.name + ".");
             return component;
+        }
+
+        /// <summary>
+        /// The unit's buff of the given blueprint, or a failure that names
+        /// what was missing and where: a grapple sub-case that finds no held
+        /// state has already gone wrong, and the name of the absent buff is
+        /// the finding.
+        /// </summary>
+        private static Buff RequiredExpandedSummoningBuff(UnitEntityData unit,
+            BlueprintBuff blueprint, string what)
+        {
+            Buff buff = unit == null ? null : unit.Descriptor.Buffs.GetBuff(blueprint);
+            if (buff == null) throw new InvalidOperationException(
+                "The mechanical run expected " + what + " (" + blueprint.name +
+                ") on " + (unit == null ? "a missing unit" : unit.Blueprint.name) +
+                ", and it is not there.");
+            return buff;
         }
 
         private static UnitEntityData CastExpandedSummoningCombatUnit(
@@ -18597,9 +18653,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         /// <summary>
-        /// One native weapon attack at a chosen natural d20 result. 20 is the
-        /// ordinary representative-combat roll; 1 is the automatic miss that
-        /// only an auto-hit rider (Flash of Insight) can turn into a hit.
+        /// One native weapon attack seeded for a chosen natural d20 result. 20
+        /// is the ordinary representative-combat roll; a seeded 1 misses unless
+        /// something chooses the roll, as the armed Flash of Insight does. The
+        /// evidence records the seed and the result the attack actually rolled.
         /// </summary>
         private static bool ExerciseExpandedSummoningAttack(
             UnitEntityData attacker, UnitEntityData target, out string detail,
@@ -18619,14 +18676,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             var attack = new RuleAttackWithWeapon(attacker, target, weapon, 0);
             Rulebook.Trigger(attack);
             bool hit = attack.AttackRoll != null && attack.AttackRoll.IsHit;
-            // The automatic-hit path skips the d20 and IsCriticalRoll and
-            // records the critical only through IsCriticalConfirmed.
+            // The threat is the roll's own: nothing here grants one.
             criticalThreat = attack.AttackRoll != null &&
-                (attack.AttackRoll.IsCriticalRoll ||
-                    attack.AttackRoll.IsCriticalConfirmed);
+                attack.AttackRoll.IsCriticalRoll;
+            int rolled = attack.AttackRoll == null ? -1 : (int)attack.AttackRoll.Roll;
             int damageAfter = target.Descriptor.Damage;
-            detail = weapon.Blueprint.name + ":roll=" + naturalRoll + ";hit=" +
-                hit + ";threat=" + criticalThreat + ";damage=" +
+            detail = weapon.Blueprint.name + ":seeded=" + naturalRoll + ";rolled=" +
+                rolled + ";hit=" + hit + ";threat=" + criticalThreat + ";damage=" +
                 damageBefore + "->" + damageAfter;
             target.Descriptor.Damage = damageBefore;
             return hit && (!requireDamage || damageAfter > damageBefore);
@@ -20567,8 +20623,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 flash.Range == AbilityRange.Personal && !flash.Hidden &&
                 cost != null && cost.RequiredResource == resource &&
                 cost.IsSpendResource && cost.Amount == 1 && arm != null &&
-                arm.Buff == state && arm.DurationValue != null &&
-                arm.DurationValue.Rate == DurationRate.Rounds;
+                arm.Buff == state && arm.Permanent && arm.ToCaster;
             bool armed = state.ComponentsArray.OfType<
                     CyclopsFlashOfInsightComponent>().Count() == 1 &&
                 state.ComponentsArray.OfType<
