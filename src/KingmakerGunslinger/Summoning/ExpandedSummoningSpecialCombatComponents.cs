@@ -604,7 +604,7 @@ namespace KingmakerGunslinger.Summoning
                 ReleaseLink(owner, target, grab, true);
                 return "released";
             }
-            int roundsHeld = heldState == null ? 0 : heldState.RoundNumber;
+            int roundsHeld = RoundsHeld(heldState);
             if (grab != null && ExpandedSummoningSpecialProfiles.ShouldSwallowOnMaintain(
                     grab.SwallowedBuff != null, maneuver.Success, roundsHeld,
                     grab.IsSwallowSizeAllowed(owner, target)))
@@ -678,8 +678,44 @@ namespace KingmakerGunslinger.Summoning
                 ? ReferenceEquals(SummonHeldComponent.HolderOf(target, grab.GrappledBuff), owner)
                 : ReferenceEquals(HeldTarget(owner), target);
             Buff state = HeldState(owner, target, grab);
-            return ExpandedSummoningSpecialProfiles.IsHeldSinceRoundStart(held,
-                state == null ? 0 : state.RoundNumber);
+            return ExpandedSummoningSpecialProfiles.IsHeldSinceRoundStart(held, RoundsHeld(state));
+        }
+
+        /// <summary>
+        /// The rounds a held state has stood: its own round number, plus the
+        /// tick that is due in the current frame but not yet delivered - the
+        /// holder's hold and the target's held state attach in the same
+        /// frame and tick in the same later frame, and the game ticks one
+        /// unit's buffs before the other's, so the holder's maintain check
+        /// reads the round the target is entering rather than the one it
+        /// has left.
+        /// </summary>
+        internal static int RoundsHeld(Buff heldState)
+        {
+            if (heldState == null) return 0;
+            int rounds = heldState.RoundNumber;
+            TimeSpan tickTime = BuffTime(heldState, BuffTickTime);
+            TimeSpan nextTick = BuffTime(heldState, BuffNextTickTime);
+            if (tickTime < TimeSpan.MaxValue && Game.Instance != null &&
+                Game.Instance.TimeController != null &&
+                Game.Instance.TimeController.GameTime >= nextTick)
+                rounds++;
+            return rounds;
+        }
+
+        // The buff's tick clock is not public in the reference assembly.
+        private static readonly System.Reflection.PropertyInfo BuffTickTime = typeof(Buff).GetProperty(
+            "TickTime", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public |
+            System.Reflection.BindingFlags.NonPublic);
+        private static readonly System.Reflection.PropertyInfo BuffNextTickTime = typeof(Buff).GetProperty(
+            "NextTickTime", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public |
+            System.Reflection.BindingFlags.NonPublic);
+
+        private static TimeSpan BuffTime(Buff buff, System.Reflection.PropertyInfo property)
+        {
+            if (buff == null || property == null) return TimeSpan.MaxValue;
+            object value = property.GetValue(buff, null);
+            return value is TimeSpan ? (TimeSpan)value : TimeSpan.MaxValue;
         }
 
         /// <summary>
@@ -848,6 +884,21 @@ namespace KingmakerGunslinger.Summoning
                     return buff.Context.MaybeCaster;
             return null;
         }
+    }
+
+    /// <summary>
+    /// The single-link held state's round counter (correction order): a
+    /// buff ticks each round only when a component asks for rounds, and the
+    /// "held since the round began" gate (the cats' rake, the worm's
+    /// swallow) reads the held state's round number, so the grappled buff
+    /// carries this no-op round component and the game advances its round
+    /// number every six seconds of the hold. The multi-link held state ticks
+    /// through its own break-free component already.
+    /// </summary>
+    [Serializable]
+    public sealed class SummonHeldRoundComponent : BuffLogic, ITickEachRound
+    {
+        public void OnNewRound() { }
     }
 
     /// <summary>
