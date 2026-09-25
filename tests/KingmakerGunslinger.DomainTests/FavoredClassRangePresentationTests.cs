@@ -164,6 +164,53 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(liar.Ended && fresh.Areas.Count == 0, "An unverified native member is ended.");
         }
 
+        /// <summary>A fake mechanics context: the engine clones a buff's context for its area.</summary>
+        private sealed class Context
+        {
+            internal readonly Context Parent;
+
+            internal Context(Context parent)
+            {
+                Parent = parent;
+            }
+
+            /// <summary>MechanicsContext.CloneFor: a new context whose parent is this one.</summary>
+            internal Context CloneFor()
+            {
+                return new Context(this);
+            }
+        }
+
+        // Review 3, finding 2: the toggle turned off is the one whose own
+        // current buff runs the unverifiable area. The area runs under a clone
+        // of that buff's context (AreaEffectsController.Spawn), so its own
+        // context is never the buff's.
+        internal static void TheRunningBuffIsAnAncestorOfItsArea()
+        {
+            Func<Context, Context> parent = value => value.Parent;
+            // ActivatableAbility.TryStart: the toggle's context, its applied buff, the buff's area.
+            Context buff = new Context(null).CloneFor();
+            Context area = buff.CloneFor();
+            Assertions.True(!ReferenceEquals(area, buff), "The area's own context is never its buff's.");
+            Assertions.True(FavoredClassContextLineage.Descends(area, buff, parent),
+                "The toggle's current buff is found among the area's ancestors.");
+            Context applied = buff.CloneFor();
+            Assertions.True(FavoredClassContextLineage.Descends(applied.CloneFor(), buff, parent),
+                "An area run by a buff the performance applied belongs to the performance.");
+            // Lingering Performance: the older buff outlives the toggle's reference to it.
+            Context lingering = new Context(null).CloneFor();
+            Context lingeringArea = lingering.CloneFor();
+            Assertions.True(!FavoredClassContextLineage.Descends(lingeringArea, buff, parent),
+                "A lingering older area never stops the current performance.");
+            Assertions.True(!FavoredClassContextLineage.Descends(area, lingering, parent),
+                "The current area is not the lingering buff's.");
+            Assertions.True(FavoredClassContextLineage.Descends(buff, buff, parent), "A context descends from itself.");
+            Assertions.True(!FavoredClassContextLineage.Descends(area, null, parent), "No buff: nothing is turned off.");
+            Assertions.True(!FavoredClassContextLineage.Descends(null, buff, parent), "No area context: nothing matches.");
+            Assertions.True(!FavoredClassContextLineage.Descends(area, lingering, value => value),
+                "A malformed cyclic chain ends without a match.");
+        }
+
         // Every sequence keeps the live areas homogeneous and the text truthful.
         internal static void LiveAreasAndTextAlwaysAgree()
         {
@@ -233,9 +280,11 @@ namespace KingmakerGunslinger.DomainTests
                 instances.Contains("FavoredClassPerformanceRing.Restore(ring);") &&
                 instances.Contains("return VerifyNative(view);") &&
                 instances.Contains("data.ForceEnd();") &&
-                instances.Contains("ReferenceEquals(buff.Context, data.Context)") &&
+                instances.Contains("FavoredClassContextLineage.Descends(context, buff.Context,") &&
+                instances.Contains("value => value.ParentContext))") &&
+                !instances.Contains("ReferenceEquals(buff.Context, data.Context)") &&
                 !instances.Contains("LastCompleted"),
-                "Narrowing is verified, an unverifiable area is ended, and no outcome is remembered.");
+                "Narrowing is verified, an unverifiable area is ended with the toggle whose buff runs it, and no outcome is remembered.");
             string ring = Source("Mechanics", "FavoredClassPerformanceRing.cs");
             Assertions.True(ring.Contains("if (!Restore(record))\n                return false;") &&
                 ring.Contains("complete = false;"),

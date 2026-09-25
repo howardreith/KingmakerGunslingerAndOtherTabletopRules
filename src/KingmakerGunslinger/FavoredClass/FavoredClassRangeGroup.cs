@@ -138,4 +138,32 @@ namespace KingmakerGunslinger.FavoredClass
             }
         }
     }
+
+    /// <summary>
+    /// O01: a performance's area runs under a clone of its buff's context
+    /// (AreaEffectsController.Spawn: parentContext.CloneFor), so the toggle
+    /// whose own current buff runs an area is found among the ancestors of
+    /// the area's context, never by the area's own context.
+    /// </summary>
+    internal static class FavoredClassContextLineage
+    {
+        private const int MaxDepth = 64;
+
+        /// <summary>Whether ancestor is the context itself or one of its ancestors (bounded, so a malformed chain ends).</summary>
+        internal static bool Descends<TContext>(TContext context, TContext ancestor, Func<TContext, TContext> parent)
+            where TContext : class
+        {
+            if (parent == null) throw new ArgumentNullException("parent");
+            if (ancestor == null)
+                return false;
+            TContext cursor = context;
+            for (int depth = 0; cursor != null && depth < MaxDepth; depth++)
+            {
+                if (ReferenceEquals(cursor, ancestor))
+                    return true;
+                cursor = parent(cursor);
+            }
+            return false;
+        }
+    }
 }
