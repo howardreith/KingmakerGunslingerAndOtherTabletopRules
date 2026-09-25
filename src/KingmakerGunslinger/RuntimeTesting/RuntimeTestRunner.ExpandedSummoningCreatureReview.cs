@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Kingmaker;
 using Kingmaker.Blueprints;
@@ -7,6 +8,7 @@ using Kingmaker.EntitySystem.Entities;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json.Linq;
+using UnityEngine;
 
 namespace KingmakerGunslinger.RuntimeTesting
 {
@@ -156,12 +158,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                     bool variantValid = !variantRegistered || _creatureReviewUnits.All(
                         unit => ExpandedSummoningVisualVariantPatch.DescribeView(unit.View)
                             .StartsWith("variant:applied", StringComparison.Ordinal));
+                    // Round 8: the attach-time outcome alone proved nothing
+                    // about the render (the controller had replaced the
+                    // clones); the materials on the view at capture time are
+                    // recorded and, for a registered variant, must still be
+                    // the project clones.
+                    bool retainedAll = true;
+                    var materialsNow = new List<string>();
+                    foreach (UnitEntityData unit in _creatureReviewUnits)
+                    {
+                        bool retained;
+                        materialsNow.Add(DescribeExpandedSummoningViewMaterials(unit,
+                            out retained));
+                        retainedAll = retainedAll && retained;
+                    }
+                    bool retainedValid = !variantRegistered || retainedAll;
                     _creatureReviewAssertions.Add(Assertion(
                         "expanded-summoning-creature-review-" + key,
                         "idle, moving-a, moving-b and attack captures in frame, lit, renderer enabled, intact" +
-                            (variantRegistered ? "; registered visual variant applied" : ""),
-                        MotionReviewSummary + ";visualVariant=" + variantOutcome,
-                        MotionReviewValid && variantValid,
+                            (variantRegistered ? "; registered visual variant applied at attach and retained on the view at capture" : ""),
+                        MotionReviewSummary + ";visualVariant=" + variantOutcome +
+                            ";materialsAtCapture=" + string.Join("|", materialsNow.ToArray()),
+                        MotionReviewValid && variantValid && retainedValid,
                         (variant.Family == SummonFamily.Monster ? "Summon Monster " :
                             "Summon Nature's Ally ") + variant.ParentTier +
                         " single cast through the real parent chain; party-camera renders"));
@@ -185,6 +203,69 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _creatureReviewPhase = 0;
                     return;
             }
+        }
+
+        /// <summary>
+        /// What the reviewed view's renderers carry at capture time: per
+        /// material its name, shader, the declared colour, tint, emission,
+        /// texture and dissolve slots, the current tint, the dissolve amount
+        /// and whether the view's material controller drives it. The variant
+        /// is retained when at least one renderer material is the project
+        /// clone (or the controller's instance of it).
+        /// </summary>
+        private static string DescribeExpandedSummoningViewMaterials(UnitEntityData unit,
+            out bool variantRetained)
+        {
+            variantRetained = false;
+            if (unit == null || unit.View == null) return "<no-view>";
+            Renderer[] renderers = unit.View.GetComponentsInChildren<Renderer>(true)
+                .Where(value => value != null && value.sharedMaterials != null &&
+                    value.sharedMaterials.Length != 0).ToArray();
+            var controller = unit.View.GetComponentInChildren<
+                Kingmaker.Visual.MaterialEffects.StandardMaterialController>(true);
+            IList<Material> driven = ExpandedSummoningPteranodonViewPatch
+                .ControllerMaterials(controller);
+            var parts = new List<string>();
+            int materials = 0, variantMaterials = 0;
+            foreach (Renderer renderer in renderers)
+                foreach (Material material in renderer.sharedMaterials)
+                {
+                    if (material == null) { parts.Add("<null>"); continue; }
+                    materials++;
+                    if (material.name.StartsWith(ExpandedSummoningVisualVariantPatch
+                            .VariantMaterialName, StringComparison.Ordinal))
+                        variantMaterials++;
+                    var slots = new List<string>();
+                    foreach (string slot in new[] { "_Color", "_TintColor", "_BaseColor",
+                        "_MainColor", "_EmissionColor", "_MainTex", "_Dissolve" })
+                        if (material.HasProperty(slot)) slots.Add(slot);
+                    string tint = material.HasProperty("_TintColor")
+                        ? DescribeReviewColour(material.GetColor("_TintColor"))
+                        : material.HasProperty("_Color")
+                            ? DescribeReviewColour(material.GetColor("_Color")) : "<none>";
+                    string dissolve = material.HasProperty("_Dissolve")
+                        ? material.GetFloat("_Dissolve").ToString("0.###",
+                            CultureInfo.InvariantCulture) : "<none>";
+                    parts.Add(material.name.Replace(';', ',').Replace('|', '/') + "{" +
+                        (material.shader == null ? "<no-shader>" : material.shader.name
+                            .Replace(';', ',').Replace('|', '/')) + ":" +
+                        string.Join(",", slots.ToArray()) + ":tint=" + tint +
+                        ":dissolve=" + dissolve + ":driven=" +
+                        (driven != null && driven.Contains(material)) + "}");
+                }
+            variantRetained = variantMaterials != 0;
+            return "renderers=" + renderers.Length + ";materials=" + materials +
+                ";variantMaterials=" + variantMaterials + ";controllerMaterials=" +
+                (driven == null ? -1 : driven.Count) + ";" +
+                string.Join(",", parts.ToArray());
+        }
+
+        private static string DescribeReviewColour(Color value)
+        {
+            return value.r.ToString("0.##", CultureInfo.InvariantCulture) + "/" +
+                value.g.ToString("0.##", CultureInfo.InvariantCulture) + "/" +
+                value.b.ToString("0.##", CultureInfo.InvariantCulture) + "/" +
+                value.a.ToString("0.##", CultureInfo.InvariantCulture);
         }
 
         private void CompleteExpandedSummoningCreatureReview()

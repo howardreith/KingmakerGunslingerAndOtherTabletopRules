@@ -384,6 +384,20 @@ namespace KingmakerGunslinger.Summoning
                 (driven == null ? "<none>" : driven.name);
         }
 
+        /// <summary>
+        /// Shared with every visual variant (Sprint 5 onward): the view's
+        /// material controller re-reads its renderers, so the clones a patch
+        /// has just put on them are what the game's fades and tints drive
+        /// from now on. Returns what happened, for the outcome record.
+        /// </summary>
+        internal static string ReinitializeMaterialController(UnitEntityView view)
+        {
+            StandardMaterialController controller = view == null ? null :
+                view.GetComponentInChildren<StandardMaterialController>(true);
+            if (controller == null) return "absent";
+            return ReinitMaterials(controller) ? "reinitialized" : "reinit-unavailable";
+        }
+
         /// <summary>The materials the controller currently drives (its private list).</summary>
         internal static IList<Material> ControllerMaterials(
             StandardMaterialController controller)

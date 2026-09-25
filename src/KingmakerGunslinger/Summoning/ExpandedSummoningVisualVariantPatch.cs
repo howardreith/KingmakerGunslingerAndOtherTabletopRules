@@ -210,6 +210,7 @@ namespace KingmakerGunslinger.Summoning
             "_BaseColor", "_MainColor" };
         private const string EmissionSlot = "_EmissionColor";
         private const string MainTextureSlot = "_MainTex";
+        private const string DissolveSlot = "_Dissolve";
         internal const int CoatTextureSize = 512;
 
         private static readonly Dictionary<string, SummonVisualVariant> Variants =
@@ -326,6 +327,12 @@ namespace KingmakerGunslinger.Summoning
                         material.SetColor(EmissionSlot, variant.Emission.Value);
                         glowing++;
                     }
+                    // The clone starts intact: at attach the summon is still
+                    // materialising, and a clone taken mid-dissolve would stay
+                    // invisible once the controller stops driving the
+                    // material it was taken from.
+                    if (material.HasProperty(DissolveSlot))
+                        material.SetFloat(DissolveSlot, 0f);
                     replacements[index] = material;
                     slotUsed = slotUsed ?? slot;
                     tinted++;
@@ -336,9 +343,20 @@ namespace KingmakerGunslinger.Summoning
             if (tinted == 0) return "variant:no-colour-slot";
             if (variant.Coat != null && coated == 0)
                 return "variant:coat-not-applied;reason=" + (coatOutcome ?? "no-main-texture");
+            // The game's material controller cached the renderer's materials
+            // before the swap and keeps driving those - and re-instantiates
+            // what it drives, which is how the round-8 review found the native
+            // look back on every tinted mephit. It re-reads the renderers
+            // here, so what it drives from now on are instances of the
+            // clones: the Pteranodon's treatment, shared.
+            string controller = ExpandedSummoningPteranodonViewPatch
+                .ReinitializeMaterialController(view);
+            Material driven = renderers[0].sharedMaterial;
             return "variant:applied;key=" + variant.Key + ";materials=" + tinted +
                 ";slot=" + slotUsed + ";emission=" + glowing +
-                (variant.Coat != null ? ";coat=" + coated + ";" + coatOutcome : "");
+                (variant.Coat != null ? ";coat=" + coated + ";" + coatOutcome : "") +
+                ";controller=" + controller + ";driven=" + (driven == null ? "<none>" :
+                    driven.name.Replace(';', ',').Replace('|', '/'));
         }
     }
 }
