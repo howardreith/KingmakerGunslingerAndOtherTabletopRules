@@ -5,6 +5,7 @@ using System.Linq;
 using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker.View;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json.Linq;
@@ -251,13 +252,122 @@ namespace KingmakerGunslinger.RuntimeTesting
                             .Replace(';', ',').Replace('|', '/')) + ":" +
                         string.Join(",", slots.ToArray()) + ":tint=" + tint +
                         ":dissolve=" + dissolve + ":driven=" +
-                        (driven != null && driven.Contains(material)) + "}");
+                        (driven != null && driven.Contains(material)) +
+                        ":" + DescribeReviewMaterialProbe(material) + "}");
                 }
             variantRetained = variantMaterials != 0;
             return "renderers=" + renderers.Length + ";materials=" + materials +
                 ";variantMaterials=" + variantMaterials + ";controllerMaterials=" +
                 (driven == null ? -1 : driven.Count) + ";" +
-                string.Join(",", parts.ToArray());
+                string.Join(",", parts.ToArray()) + ";character=" +
+                DescribeReviewCharacter(unit.View);
+        }
+
+        /// <summary>
+        /// Round 11: the view's character-system state. A character built at
+        /// runtime rebuilds its texture atlases after the view attaches and
+        /// assigns them to the renderer's materials, which is where a coat
+        /// put on the clone at attach would be overwritten.
+        /// </summary>
+        private static string DescribeReviewCharacter(UnitEntityView view)
+        {
+            var character = view.GetComponentInChildren<
+                Kingmaker.Visual.CharacterSystem.Character>(true);
+            if (character == null) return "<none>";
+            Type type = character.GetType();
+            System.Reflection.BindingFlags flags = System.Reflection.BindingFlags.Instance |
+                System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic;
+            var atlases = new List<string>();
+            var atlasList = type.GetField("m_Atlases", flags) == null ? null :
+                type.GetField("m_Atlases", flags).GetValue(character) as System.Collections.IEnumerable;
+            if (atlasList != null)
+                foreach (object atlas in atlasList)
+                {
+                    if (atlas == null) { atlases.Add("<null>"); continue; }
+                    Type atlasType = atlas.GetType();
+                    object channel = atlasType.GetProperty("Channel", flags) == null ? null :
+                        atlasType.GetProperty("Channel", flags).GetValue(atlas, null);
+                    Texture texture = atlasType.GetProperty("AtlasTexture", flags) == null ? null :
+                        atlasType.GetProperty("AtlasTexture", flags).GetValue(atlas, null) as Texture;
+                    Material material = atlasType.GetProperty("Material", flags) == null ? null :
+                        atlasType.GetProperty("Material", flags).GetValue(atlas, null) as Material;
+                    atlases.Add((channel == null ? "?" : channel.ToString()) + "=" +
+                        (texture == null ? "<null>" : texture.name.Replace(';', ',')
+                            .Replace('|', '/').Replace(':', '.') + "@" + texture.width + "x" +
+                            texture.height) + "/" + (material == null ? "<null>" :
+                            material.name.Replace(';', ',').Replace('|', '/').Replace(':', '.')));
+                }
+            var entities = new List<string>();
+            var entityList = type.GetField("m_EquipmentEntities", flags) == null ? null :
+                type.GetField("m_EquipmentEntities", flags).GetValue(character) as System.Collections.IEnumerable;
+            if (entityList != null)
+                foreach (object entity in entityList)
+                {
+                    var ee = entity as Kingmaker.Visual.CharacterSystem.EquipmentEntity;
+                    if (ee == null) { entities.Add("<null>"); continue; }
+                    entities.Add(ee.name.Replace(';', ',').Replace('|', '/').Replace(':', '.') +
+                        "(primaryRamps=" + (ee.PrimaryRamps == null ? -1 : ee.PrimaryRamps.Count) +
+                        ",secondaryRamps=" + (ee.SecondaryRamps == null ? -1 : ee.SecondaryRamps.Count) +
+                        ",profile=" + (ee.ColorsProfile == null ? "<null>" : ee.ColorsProfile.name
+                            .Replace(';', ',').Replace('|', '/').Replace(':', '.')) +
+                        ",bodyParts=" + (ee.BodyParts == null ? -1 : ee.BodyParts.Count) + ")");
+                }
+            var ramps = new List<string>();
+            var rampList = type.GetField("m_RampIndices", flags) == null ? null :
+                type.GetField("m_RampIndices", flags).GetValue(character) as System.Collections.IEnumerable;
+            if (rampList != null)
+                foreach (object ramp in rampList) ramps.Add(ramp == null ? "<null>" : ramp.ToString());
+            var shared = type.GetField("m_SharedMaterials", flags) == null ? null :
+                type.GetField("m_SharedMaterials", flags).GetValue(character) as System.Collections.IEnumerable;
+            var sharedNames = new List<string>();
+            if (shared != null)
+                foreach (object material in shared)
+                    sharedNames.Add(material == null ? "<null>" : ((Material)material).name
+                        .Replace(';', ',').Replace('|', '/').Replace(':', '.'));
+            return "present:baked=" + (character.BakedCharacter != null) + ":dirty=" +
+                character.IsDirty + ":atlasesDirty=" + character.IsAtlasesDirty +
+                ":atlases[" + string.Join(",", atlases.ToArray()) + "]:entities[" +
+                string.Join(",", entities.ToArray()) + "]:rampIndices[" +
+                string.Join(",", ramps.ToArray()) + "]:sharedMaterials[" +
+                string.Join(",", sharedNames.ToArray()) + "]";
+        }
+
+        /// <summary>
+        /// Round 11: every texture property the shader declares with the
+        /// assigned texture's name and size, the shader keywords, the render
+        /// queue, and the float and colour slots the game's own code
+        /// references - so a variant can target the slot that paints the rig.
+        /// </summary>
+        private static string DescribeReviewMaterialProbe(Material material)
+        {
+            var textures = new List<string>();
+            string[] names;
+            try { names = material.GetTexturePropertyNames(); }
+            catch (Exception) { names = new string[0]; }
+            foreach (string name in names)
+            {
+                Texture texture = material.GetTexture(name);
+                textures.Add(name + "=" + (texture == null ? "<null>" :
+                    texture.name.Replace(';', ',').Replace('|', '/').Replace(':', '.') +
+                    "@" + texture.width + "x" + texture.height));
+            }
+            var floats = new List<string>();
+            foreach (string name in new[] { "_Emission", "_RimPower", "_RimLighting",
+                "_Metallic", "_Cutout", "_Alpha", "_AlphaScale", "_DissolveEmission",
+                "_Glossiness", "_Smoothness", "_BumpScale", "_OcclusionStrength" })
+                if (material.HasProperty(name))
+                    floats.Add(name + "=" + material.GetFloat(name).ToString("0.###",
+                        CultureInfo.InvariantCulture));
+            var colours = new List<string>();
+            foreach (string name in new[] { "_RimColor", "_ColorMask", "_ChannelMask",
+                "_DissolveColor", "_EmissionColor", "_SpecColor", "_Color", "_TintColor" })
+                if (material.HasProperty(name))
+                    colours.Add(name + "=" + DescribeReviewColour(material.GetColor(name)));
+            return "textures[" + string.Join(",", textures.ToArray()) + "]:floats[" +
+                string.Join(",", floats.ToArray()) + "]:colours[" +
+                string.Join(",", colours.ToArray()) + "]:keywords[" +
+                string.Join(",", material.shaderKeywords ?? new string[0]) + "]:queue=" +
+                material.renderQueue;
         }
 
         private static string DescribeReviewColour(Color value)
