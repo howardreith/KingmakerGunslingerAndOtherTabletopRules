@@ -94,6 +94,33 @@ final cycle, settings profiles, persistence transaction, working-save smoke and
 compatibility profiles are recorded in `FAVORED-CLASS-IMPLEMENTATION-REPORT.md`.
 Status: PARTIAL - NOT RELEASE QUALIFIED; owner review pending.
 
+## PR #24 third review checkpoint
+
+The third review of PR #24 (at `d13a1589e`) found three follow-on problems in
+the Bard outcome state machine, all addressed:
+
+1. a success can no longer coexist with older failed or deferred live areas
+   of the same bard's performance: the live areas widen only as a whole
+   (`4de114511`);
+2. a sibling rollback restores the ring and the radius independently and
+   verifies both; an area that cannot be verified native is ended, and the
+   toggle whose own current buff runs it is turned off (`4de114511`; the
+   toggle match, found in this pass's own review, follows the area context's
+   ancestry: `a17c2efe7`; lane follow-ups `51f56820e` and `5636d940b`);
+3. no outcome is remembered after its area ends (`4de114511`).
+
+The first requalification of `4de114511` (before a machine reboot) passed
+every lane except where the machine's exhausted commit charge interrupted it:
+the Ifrit creator run ended with the game process exiting three times, and
+one Sylph creator run reported Out of memory (its rerun passed). About 66 GB
+was committed with no game running, and the game's private bytes reached
+60 GB (B3). The reboot cleared it (15 GB committed with nothing running).
+
+Final candidate: `5636d940b` (package `e7828df6...`, DLL `197ba4e5...`, MVID
+`76aef19e-962c-427d-b10e-864274b981b0`), 33 guarded runs PASS, owner
+install restored and verified. Status: PARTIAL - NOT RELEASE QUALIFIED; owner
+review pending.
+
 ## PR #24 second review checkpoint
 
 The second review of PR #24 found two remaining paths, both addressed:
@@ -247,13 +274,24 @@ deployed inside an isolated compatibility profile and restored by its transactio
 | 20260925T1426308025611Z | `f7b4ae4f5` | `faa7ecad...` | `60acfa62-36ed-4722-9bb3-af928f5d8758` | `20260925T1426260728248Z` (profile) |
 | 20260925T1429494091294Z | `f7b4ae4f5` | `faa7ecad...` | `60acfa62-36ed-4722-9bb3-af928f5d8758` | `20260925T1429447280940Z` (profile) |
 | 20260925T1433314390845Z | `f7b4ae4f5` | `faa7ecad...` | `60acfa62-36ed-4722-9bb3-af928f5d8758` | `20260925T1433266105214Z` (profile) |
+| 20260925T1532361168725Z | `4de114511` | `4effec58...` | `02a4d150-8419-4645-92f1-3c407f7585ee` | `20260925T1532312414478Z` |
+| 20260925T2029203755841Z | `51f56820e` | `2eb28832...` | `229dff67-8bdf-4b41-9c44-e76bbd251da5` | `20260925T2029158628588Z` |
+| 20260925T2042107499390Z | `5636d940b` | `197ba4e5...` | `76aef19e-962c-427d-b10e-864274b981b0` | `20260925T2042062113831Z` |
+| 20260925T2141418189823Z | `5636d940b` | `197ba4e5...` | `76aef19e-962c-427d-b10e-864274b981b0` | `20260925T2141373030765Z` (profile) |
+| 20260925T2144577711475Z | `5636d940b` | `197ba4e5...` | `76aef19e-962c-427d-b10e-864274b981b0` | `20260925T2144531218406Z` (profile) |
+| 20260925T2148287351239Z | `5636d940b` | `197ba4e5...` | `76aef19e-962c-427d-b10e-864274b981b0` | `20260925T2148241245341Z` (profile) |
 
-Final restoration of the owner's install after the second PR #24 review round:
+The `4de114511` deployment's backup holds the owner's restored 0.0.136 tree
+(DLL `c6cccdac...`); that candidate stayed installed over the machine reboot,
+and the `51f56820e` deployment backed it up (DLL `4effec58...`) before
+replacing it.
+
+Final restoration of the owner's install after the third PR #24 review round:
 
 The owner's pre-mission KMG install (0.0.136, backup
 `C:\Dev\KingmakerGunslingerLab\runtime-backups\live-mod\20260924T0027014050156Z`)
 was restored through `scripts/Restore-Live-Mod.ps1` (under this lab's lease)
-after the last run, and verified byte for byte:
+after the last run, and verified byte for byte on 2026-09-25 at 21:51 UTC:
 
 - `Info.json` SHA-256 `f66de05d5c6282eece8218b6c4f31d49dfc8ef9efa27dfeceeda712034717e17` (match True)
 - `FeatureModules.json` SHA-256 `6e24b2788a0c8f063d6e561a27c93f9c5349f2fc21b5217689da8aefdbb385d0` (match True)
@@ -266,15 +304,18 @@ after the last run, and verified byte for byte:
 - each temporary settings profile removed `FavoredClassIntegration.json` after
   its own runs (verified absent after each profile and at the end)
 - the persistence transaction restored the settings and the complete Mods tree
-  (`20260925T1415147077256Z_9b8a8ab64b8e40e9b4973edaa574fdf3`); each compatibility profile restored the exact original Mods tree
-  and FeatureModules bytes before releasing the lock.
+  (`20260925T2130213710790Z_ca397ca4f0124a0c9ddf9fb9a1497c94`); each
+  compatibility profile (`compat-20260925T213940Z-2ad3bc526451`,
+  `compat-20260925T214311Z-3b10efecc949`, `compat-20260925T214643Z-ffa851fb8dd2`)
+  restored the exact original Mods tree and FeatureModules bytes before
+  releasing the lock.
 
 Restoration status: VERIFIED.
 
 ## Next concrete actions
 
-1. Owner review of PR #24 at `f7b4ae4f5` and of the two pre-existing KMG defects
-   D1 and D2 (`FAVORED-CLASS-BLOCKERS.md`).
+1. Owner review of PR #24 at `5636d940b` (and its records commit) and of the
+   two pre-existing KMG defects D1 and D2 (`FAVORED-CLASS-BLOCKERS.md`).
 2. To reach COMPLETE, observe natively the partial families E10, E15, M07, M10, M12, M13, M14, M24, L07:
    turn-based variants of the lanes (L07, M12), True Grit at level 20 (M13),
    bomb splash and critical (M14), the misfire ammunition and condition
@@ -285,5 +326,8 @@ Restoration status: VERIFIED.
 3. The fifteen deferred threshold-only targets (fourteen revelations and
    Elemental Resistance) need new owned identities before they can be
    published.
-4. Nothing is merged, tagged or published; those remain separate owner
+4. B3 (harness follow-up, outside the favored-class rows): make the native
+   screenshot capture read each completed PNG once, and start qualification
+   batches with a low idle commit charge.
+5. Nothing is merged, tagged or published; those remain separate owner
    actions.
