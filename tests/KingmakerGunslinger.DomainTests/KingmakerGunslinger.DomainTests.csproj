@@ -142,6 +142,9 @@
     <Compile Include="ExpandedSummoningSprint3Tests.cs" />
     <Compile Include="ExpandedSummoningSprint4Tests.cs" />
     <Compile Include="ExpandedSummoningSprint5Tests.cs" />
+    <Compile Include="ExpandedSummoningSprint6Tests.cs" />
+    <Compile Include="ExpandedSummoningSprint7Tests.cs" />
+    <Compile Include="ExpandedSummoningSprint8Tests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonFamily.cs"><Link>Summoning\SummonFamily.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonMultiplicity.cs"><Link>Summoning\SummonMultiplicity.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonTemplatePolicy.cs"><Link>Summoning\SummonTemplatePolicy.cs</Link></Compile>

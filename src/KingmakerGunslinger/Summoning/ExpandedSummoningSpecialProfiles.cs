@@ -4,6 +4,51 @@ using System.Linq;
 
 namespace KingmakerGunslinger.Summoning
 {
+    internal enum SummonCoatPattern { Stripes, Spots }
+
+    /// <summary>
+    /// A procedural coat for a shared rig: a base colour, a marking colour, a
+    /// belly colour and a marking frequency, all channels in [0, 1]. The view
+    /// patch rasterizes the rig's own mesh into a texture with these colours;
+    /// nothing of the game's art is read or stored.
+    /// </summary>
+    internal sealed class SummonCoatProfile
+    {
+        internal SummonCoatProfile(string key, SummonCoatPattern pattern,
+            float baseRed, float baseGreen, float baseBlue,
+            float markRed, float markGreen, float markBlue,
+            float bellyRed, float bellyGreen, float bellyBlue, float frequency)
+        {
+            Key = key; Pattern = pattern;
+            BaseRed = baseRed; BaseGreen = baseGreen; BaseBlue = baseBlue;
+            MarkRed = markRed; MarkGreen = markGreen; MarkBlue = markBlue;
+            BellyRed = bellyRed; BellyGreen = bellyGreen; BellyBlue = bellyBlue;
+            Frequency = frequency;
+        }
+        internal string Key { get; private set; }
+        internal SummonCoatPattern Pattern { get; private set; }
+        internal float BaseRed { get; private set; }
+        internal float BaseGreen { get; private set; }
+        internal float BaseBlue { get; private set; }
+        internal float MarkRed { get; private set; }
+        internal float MarkGreen { get; private set; }
+        internal float MarkBlue { get; private set; }
+        internal float BellyRed { get; private set; }
+        internal float BellyGreen { get; private set; }
+        internal float BellyBlue { get; private set; }
+        /// <summary>Markings per body length (stripes) or per body width (spots).</summary>
+        internal float Frequency { get; private set; }
+        internal bool IsBounded
+        {
+            get
+            {
+                return !string.IsNullOrEmpty(Key) && Frequency > 0f && Frequency <= 64f &&
+                    new[] { BaseRed, BaseGreen, BaseBlue, MarkRed, MarkGreen, MarkBlue,
+                        BellyRed, BellyGreen, BellyBlue }.All(value => value >= 0f && value <= 1f);
+            }
+        }
+    }
+
     /// <summary>
     /// A bounded visual variant on a shared native rig: a tint multiplier on
     /// the rig's colour slot and an optional emission colour, all channels in
@@ -90,6 +135,18 @@ namespace KingmakerGunslinger.Summoning
             new MephitVariantProfile("salt-mephit", "air-mephit", "Slashing", 1, 4, true, "Glitterdust", "Dehydrate"),
             new MephitVariantProfile("steam-mephit", "water-mephit", "Fire", 1, 4, true, "Blur", "BoilingRain")
         };
+        /// <summary>
+        /// Sprint 6 Giant Spider web: a 50-foot ranged web (the tabletop 50
+        /// feet), Reflex DC 10 + half hit dice + Constitution as the native
+        /// spider poison scales, entangling one foe through the native
+        /// web-grappled state for at most ten rounds (its own per-round
+        /// break-free ends it sooner); two uses per summoning (the tabletop
+        /// four per day exceeds a summoning).
+        /// </summary>
+        internal const int GiantSpiderWebUses = 2;
+        internal const int GiantSpiderWebRangeFeet = 50;
+        internal const int GiantSpiderWebRounds = 10;
+        internal const int GiantSpiderWebSpellLevel = 1;
         internal const int MephitSickenedRounds = 3;
         internal const int MephitSpellLikeUses = 1;
         internal const int MephitBreathAiCooldownRounds = 4;
@@ -303,6 +360,46 @@ namespace KingmakerGunslinger.Summoning
         { return targetOwned && maintainSuccess; }
 
         /// <summary>
+        /// Sprint 7: the cats' rake claws (the last two additional limbs of
+        /// the body; the game lists secondary limbs after the additional
+        /// ones) attack only on a charge - Pounce makes the charge a full
+        /// attack - or while the cat holds a grappled foe. Any other attack
+        /// with a rake claw is an automatic, silent miss: no roll, no damage,
+        /// no combat-log line.
+        /// </summary>
+        internal const int CatRakeSlotCount = 2;
+        internal static bool ShouldRakeApply(bool isRakeWeapon, bool isCharge,
+            bool isHolding)
+        { return !isRakeWeapon || isCharge || isHolding; }
+
+        /// <summary>
+        /// Sprint 8: the Cheetah's sprint - a swift, once-per-summoning burst
+        /// of +30 feet for one round (the game's own speed cap still applies);
+        /// the tabletop once-per-hour tenfold sprint cannot repeat within one
+        /// summoning either way.
+        /// </summary>
+        internal const int CheetahSprintUses = 1;
+        internal const int CheetahSprintRounds = 1;
+        internal const int CheetahSprintBonusFeet = 30;
+        /// <summary>
+        /// Sprint 8: the procedural coats generated in the leopard rig's own
+        /// texture space at view attach. Stripes for the tiger, spots for the
+        /// cheetah; plain numbers here, pixels only at runtime.
+        /// </summary>
+        internal static readonly SummonCoatProfile TigerCoat = new SummonCoatProfile(
+            "tiger", SummonCoatPattern.Stripes, 0.86f, 0.46f, 0.12f, 0.12f, 0.08f, 0.05f,
+            0.96f, 0.92f, 0.82f, 11f);
+        internal static readonly SummonCoatProfile CheetahCoat = new SummonCoatProfile(
+            "cheetah", SummonCoatPattern.Spots, 0.88f, 0.70f, 0.38f, 0.16f, 0.10f, 0.06f,
+            0.97f, 0.94f, 0.85f, 26f);
+
+        /// <summary>
+        /// The Lion's bounded visual: the leopard rig warmed to a tawny coat.
+        /// </summary>
+        internal static readonly SummonVisualTintProfile LionVisualTint =
+            new SummonVisualTintProfile("lion", 0.90f, 0.72f, 0.42f, null, null, null);
+
+        /// <summary>
         /// Constrict adds one and a half times the Strength modifier to its
         /// dice, the tabletop bonus for a constricting natural attack.
         /// </summary>
@@ -322,6 +419,17 @@ namespace KingmakerGunslinger.Summoning
                 MephitVariants.Any(value => !MephitKeys.Contains(value.DonorKey)) ||
                 MephitSickenedRounds != 3 || MephitSpellLikeUses != 1 ||
                 MephitBreathAiCooldownRounds != 4)
+                throw new InvalidOperationException(
+                    "Sprint 5 mephit variant profile changed.");
+            if (CheetahSprintUses != 1 || CheetahSprintRounds != 1 ||
+                CheetahSprintBonusFeet != 30 || !TigerCoat.IsBounded || !CheetahCoat.IsBounded)
+                throw new InvalidOperationException("Sprint 8 cat profile changed.");
+            if (CatRakeSlotCount != 2 || !LionVisualTint.IsBounded ||
+                ShouldRakeApply(true, false, false) || !ShouldRakeApply(true, true, false) ||
+                !ShouldRakeApply(true, false, true) || !ShouldRakeApply(false, false, false))
+                throw new InvalidOperationException("Sprint 7 rake profile changed.");
+            if (GiantSpiderWebUses != 2 || GiantSpiderWebRangeFeet != 50 ||
+                GiantSpiderWebRounds != 10 || GiantSpiderWebSpellLevel != 1)
                 throw new InvalidOperationException(
                     "Sprint 5 mephit variant profile changed.");
             if (ElementalKeys.Length != 24 || MephitKeys.Length != 4)

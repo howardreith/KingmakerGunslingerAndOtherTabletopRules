@@ -68,9 +68,9 @@ and no future roster data is published.
 | 3 | IMPLEMENTED; RUNTIME QUALIFICATION IN PROGRESS | see "Sprint 3 record" |
 | 4 | IMPLEMENTED; RUNTIME QUALIFICATION IN PROGRESS | see "Sprint 4 record" |
 | 5 | IMPLEMENTED; RUNTIME QUALIFICATION IN PROGRESS | see "Sprint 5 record" |
-| 6 | NOT STARTED | - |
-| 7 | NOT STARTED | - |
-| 8 | NOT STARTED | - |
+| 6 | IMPLEMENTED; RUNTIME QUALIFICATION IN PROGRESS | see "Sprint 6 record" |
+| 7 | IMPLEMENTED; RUNTIME QUALIFICATION IN PROGRESS | see "Sprint 7 record" |
+| 8 | IMPLEMENTED; RUNTIME QUALIFICATION IN PROGRESS | see "Sprint 8 record" |
 
 ## Sprint 3 record - Native Publication Pack I
 
@@ -382,6 +382,170 @@ Decisions (recorded here rather than asked):
 Runtime qualification (guarded, live installation restored after each
 batch): recorded below as it completes.
 
+## Sprint 6 record - Existing Signature Mechanics Repair
+
+Inputs: the deep native-donor audit `20260924T1942171737899Z` (the native
+`Web` spell, `WebGrappled`, `WebBuffSlowMovement`, `SpiderWebImmunity`,
+the native `Pounce`, `TrippingBite` and `MonitorLizardPoisonFeature`
+graphs) and the round-4 audit's named-graph resolution, which showed the
+names that do not exist in the game (there is no native tremorsense
+feature a summon can carry, no native cat rake feature, no native cheetah
+sprint); the game's ability blueprint fields (custom range) and the attack
+rule's charge flag were read from its assembly (IL listing, nothing
+decompiled committed).
+
+Decisions (recorded here rather than asked):
+
+- Grab: the Monitor Lizard (bite `c988aa874d11ff84d873508ddc9b928f`),
+  Grizzly Bear and Dire Bear (claws `c76f72a862d168d44838206524366e1c`)
+  gain `SummonGrabComponent` carriers on the shared summon grapple
+  lifecycle exactly as the Owlbear did - the native generic grab graph is
+  the Shambling Mound's (constrict, mound target state) and stays unused,
+  which is the charter's "without importing unrelated donor constrict
+  logic". Only the mound passes constrict dice to the grabber; the domain
+  suite pins that.
+- Giant Spider: tremorsense is the native 60-foot blindsight
+  (`236ec7f226d3d784884f066aa4be1570`, the flytrap's precedent; the game's
+  own `Tremorsense` feature is a kineticist talent with class
+  prerequisites), plus the native `SpiderWebImmunity`
+  (`3051e7002c803fc47a11bcfa381b9fbd`) so the spider ignores webs. Web is
+  a bounded ranged extraordinary ability on the special builder: 50 feet
+  (custom range), one foe, Reflex DC 10 + half hit dice + Constitution
+  (the native spider poison's scaling), the native `WebGrappled` state
+  (`a719abac0ea0ce346b401060754cc1c0`: entangled, cannot move, per-round
+  break-free) for at most ten rounds, two uses per summoning on a named
+  resource (the tabletop four per day exceeds a summoning), one cast action
+  on its own brain, the spider's summon icon. Climb is omitted: no
+  save-safe seam exists for a summon's climb movement.
+- Pixie: verified, not changed. Sixteen sleep arrows and one irresistible
+  dance per summoning on named resources, one cast action on its brain (no
+  cooldown loop to spin on); the mechanical scenario proves the dance and a
+  sleep arrow live every run (`pixie[...danceApplied=True;...sleepApplied=
+  True]`, evidence `20260924T2220326799940Z-disposable-expanded-summoning`),
+  and the Sprint 6 regression pins the resources and the AI shape.
+- Runtime fixture: the three carriers join the exact grapple check; the
+  web pack is checked part for part
+  (`expanded-summoning-sprint-six-spider-web`); the mechanical scenario
+  grabs with the Monitor Lizard (bite, hold, release, holder free) and webs
+  the hostile with the Giant Spider (Reflex -100, forced natural 1: webbed,
+  one use spent, the spider immune); the persistence fixture gains the
+  Grizzly Bear and the Giant Spider (twelve units).
+- Ledger: 8 appended, active identities (entries 2194-2201); foundation
+  identities 1429; no new units, placements, icons or package files.
+- Domain suite: 1791 cases (four Sprint 6 regressions in
+  `ExpandedSummoningSprint6Tests`), all passing; repository validation
+  PASS.
+
+Runtime qualification (guarded, live installation restored after each
+batch): recorded below as it completes.
+
+## Sprint 7 record - Big-Cat Combat System
+
+Inputs: the game's attack rules read from its assembly (IL listing, nothing
+decompiled committed): `RuleAttackWithWeapon.IsCharge`,
+`RuleAttackRoll.AutoMiss` and `RuleAttackRoll.SuspendCombatLog` (settable),
+`RuleAttackRoll.Weapon`, `ItemEntity.HoldingSlot`, and
+`Kingmaker.Items.UnitBody.Initialize`, which inserts the blueprint's
+additional limbs first and its additional secondary limbs after them into
+one weapon-slot list; `RuleCalculateAttacksCount` carries only the primary
+and secondary hand counts, so natural extra limbs cannot be removed there.
+The native `Pounce` feature (`1a8149c09e0bdfc48a305ee6ac3729a8`,
+AddMechanicsFeature) already sits on the cats' profiles.
+
+Decisions (recorded here rather than asked):
+
+- One truthful pounce/grab/rake system: Pounce stays the native feature (a
+  charge becomes a full attack). Grab is the shared summon grapple
+  lifecycle with each cat's own claw (leopard `800092a2...`, lion
+  `118fdd03...`, dire lion `c76f72a8...`, smilodon `8afc4774...`). Rake is
+  `SummonRakeComponent` on the same combat-traits buff: the cat's rake
+  claws are the last two slots of its body's additional limbs (the two
+  extra claws for the leopard and lion, the secondary pair for the dire
+  lion and smilodon), and an attack roll with a rake claw that is neither a
+  charge nor made while the cat holds a grappled foe becomes a silent
+  automatic miss - no d20, no damage, no combat-log line. Ordinary full
+  attacks, attacks of opportunity and replayed commands therefore never
+  show a rake; a charge and a held foe do. The decision function
+  `ShouldRakeApply(isRakeWeapon, isCharge, isHolding)` is pinned by the
+  domain suite; the placements, sizes, reach, templates and limb sets are
+  unchanged.
+- Lion visual: a tawny tint on the leopard rig through the Sprint 5 visual
+  variant (no mane geometry: the charter marks mane polish optional for the
+  dire lion and asks only for a lion visual; a texture-free tint is the
+  bounded answer on a shared rig).
+- Runtime fixture: the four cats join the exact grapple check as carriers
+  that also carry the rake gate; the mechanical scenario proves the cadence
+  live on the Leopard (a primary claw strikes on an ordinary attack, a rake
+  claw misses silently, the same rake claw strikes on a charge and against
+  a held foe after a real grab); the inventory checks the Lion's registered
+  variant; the persistence fixture gains the Lion (thirteen units).
+- Ledger: 4 appended, active identities (entries 2202-2205); foundation
+  identities 1433; no new units, placements, icons or package files.
+- Domain suite: 1795 cases (four Sprint 7 regressions in
+  `ExpandedSummoningSprint7Tests`), all passing; repository validation
+  PASS.
+
+Runtime qualification (guarded, live installation restored after each
+batch): recorded below as it completes.
+
+## Sprint 8 record - Big-Cat Roster Completion
+
+Inputs: the game has no native tiger unit (the round-4 named-graph
+resolution: only the leopard and smilodon bodies exist); the leopard rig
+`LeopardSummoned` (`768275c9885dd954fb3c84ba69ac4281`) already carries the
+Leopard, Lion and Cheetah; the Pteranodon precedent (Phase 0) proved that a
+project texture on a private material clone survives the fader, the hit
+flash and the death dissolve; `Kingmaker.Designers.Mechanics.Buffs
+.BuffMovementSpeed` (an enhancement-typed speed bonus under the game's own
+cap) was read from the assembly.
+
+Decisions (recorded here rather than asked):
+
+- Tiger (SNA IV, 1d3 at V, 1d4+1 at VI-IX): a new unit on the leopard rig,
+  Large 6 HD animal 23/15/17/2/12/6, speed 40, natural armor +3, the native
+  large 2d6 bite and four project 1d8 claws (`KMG.Summoning.Natural.Claw1d8`,
+  the native 1d6 claw animation with 1d8 dice), Pounce, Improved
+  Initiative, Skill Focus (Perception), Weapon Focus (claw); claw grab on
+  the shared lifecycle and the Sprint 7 charge-only rake gate; a 1.25
+  view-only scale so it reads Large. It is a pounce/rake premium option, not
+  a relabeled Lion: different tier, size, dice, chassis and coat.
+- Tiger and Cheetah visuals: a procedural coat generated at view attach in
+  the rig's own texture space. `SummonCoatRasterizer` reads only geometry -
+  the skinned mesh's vertices, texture coordinates and triangles - and
+  rasterizes each triangle into a private 512x512 texture whose colour comes
+  from where the vertices sit on the body: stripes across the long axis for
+  the tiger, a cellular spot field for the cheetah, a paler belly for both.
+  The texture replaces the albedo on the private material clone with the
+  colour slot reset to white (the Pteranodon's treatment); the game's own
+  texture pixels are never read or stored. A rig without texture
+  coordinates leaves the native look with the reason recorded.
+- Cheetah sprint: a swift extraordinary ability, one use per summoning on a
+  named resource, applying a one-round state with a +30-foot enhancement
+  speed bonus (the game caps speed itself); a cast action on the cheetah's
+  brain spends it. The tabletop tenfold once-per-hour sprint cannot repeat
+  within one summoning in either reading; the bound is the resource. The
+  cheetah's trip bite and chassis are unchanged; its view scale is 0.92.
+- Icon: one Blender procedural render (a striped cat bust) for the Tiger;
+  the Cheetah keeps its icon.
+- Runtime fixture: the tiger joins the natural exactness checks (the
+  project 1d8 claw in the weapon map) and the grapple carrier check with its
+  rake gate; the cheetah's sprint pack is checked part for part; the
+  mechanical scenario sprints with the cheetah (state applied, speed up,
+  one use spent, a second use refused) and rakes with the tiger (silent
+  miss on an ordinary attack, a hit on a charge); the persistence fixture
+  gains the tiger (fourteen units); the creature review requires the coats
+  applied.
+- Pins moved with the roster: 81 creatures, SNA 71/399, 813 logical
+  placements (799 published), 34 natural profiles, 91 icons, foundation
+  identities 1448; the ledger gained exactly 15 appended, active identities
+  (entries 2206-2220); visible choices 822 -> 828; package 250 -> 251 files.
+- Domain suite: 1799 cases (four Sprint 8 regressions in
+  `ExpandedSummoningSprint8Tests`), all passing; repository validation
+  PASS.
+
+Runtime qualification (guarded, live installation restored after each
+batch): recorded below as it completes.
+
 ## Verified facts carried from Phase 0 (do not re-derive)
 
 - Catalog pins at the start of Phase 1: 67 creatures, SM 66 / 361, SNA 57 /
@@ -411,12 +575,15 @@ batch): recorded below as it completes.
 
 ## Next executable action
 
-Sprints 3-5 guarded runtime qualification on one build: structural
+Sprints 3-8 guarded runtime qualification on one build: structural
 inventory and deep donor audit, visual contracts (80 creatures), mechanical
 casting (Flash of Insight as an automatic critical, the grapple lifecycle
 live case with the corrected holder checks, the mephit breath and burst
-case), the player-path matrix, the persistence trio (ten-unit fixture), the
-creature review of the thirteen new creatures beside the four native
-mephits and the two compatibility transactions, each batch alone on the
-machine; internal review of the review renders (tint legibility per
-element); then record the evidence, update the PR body and open Sprint 6.
+case, the lizard grab, the spider web, the leopard's rake cadence, the
+cheetah's sprint and the tiger's rake), the player-path matrix, the
+persistence trio (fourteen-unit fixture), the creature review of the
+fourteen new creatures beside the four native mephits, the four repaired
+creatures and the five cats, and the two compatibility transactions, each
+batch alone on the machine; internal review of the review renders (tint
+legibility per element, the lion's coat, the tiger's stripes, the cheetah's
+spots); then record the evidence, update the PR body and close Phase 1.

@@ -184,3 +184,89 @@ had been reading the mound's CantAct while the native appearance buff was
 still holding the freshly summoned mound still. Every link step had passed;
 only the witness was looking at the wrong thing. The fixture now strips the
 appearance buff and records the baseline before it grabs.
+
+## Sprint 6 - Existing Signature Mechanics Repair
+
+The repair sprint was mostly a matter of finishing sentences the earlier
+sprints had started. Three profiles still said "grab is omitted because the
+installed generic graph carries unrelated Shambling Mound constrict"; the
+Sprint 4 lifecycle was built precisely so that sentence could be retired,
+and the Monitor Lizard, Grizzly Bear and Dire Bear now carry the same grab
+component the Owlbear does, with their own weapons and nothing of the
+mound's. The domain suite pins the boundary the charter drew: exactly one
+grabber constricts.
+
+The spider's web asked for a decision rather than a discovery. The game
+has a web spell that fills an area for minutes and a web-grappled state
+that any unit can wear; the tabletop spider throws one web at one foe.
+The bounded shape is the latter: a 50-foot extraordinary ability, a Reflex
+save at the spider's poison DC, the native web-grappled state (entangled,
+held, a break-free attempt every round) for at most ten rounds, two uses
+per summoning. The spider wears the native web immunity so it walks through
+its own work, and the native 60-foot blindsight stands in for tremorsense
+the way it did for the flytrap; the game's own Tremorsense feature turned
+out to be a kineticist talent with class prerequisites, not a sense a
+summon can carry. Climb stays out: there is no save-safe seam for it.
+
+The Pixie needed only a verdict. Its arrows and its dance were already
+resource-bounded and already proven live by every mechanical run; the
+sprint records that and pins it, and changes nothing.
+
+## Sprint 7 - Big-Cat Combat System
+
+The cats already pounced; what they lacked was honesty about their claws.
+Kingmaker's established way of representing rake is to give a cat two extra
+claw limbs, and those limbs attack on every full attack whether or not the
+cat charged. The tabletop rake is a reward for the pounce: two more claws
+on the charge, or against a foe the cat has already caught. The gap is
+exactly one predicate, and the engine exposes both halves of it - the
+attack rule knows whether it is a charge, and the grapple initiator part
+says whether the cat is holding someone.
+
+So the rake gate is small. The cat's rake claws are the last two weapon
+slots of its body (the game fills the additional limbs first and the
+secondary limbs after them, which is why the leopard's third and fourth
+claws and the smilodon's secondary pair land in the same place), and an
+attack roll with one of them that is neither a charge nor made while
+holding is turned into a silent automatic miss: no die, no damage, no line
+in the log. The attack still exists inside the command - removing limbs on
+the fly would mean rewriting the full-attack builder the charter told us
+not to touch - but nothing of it reaches the player. The mechanical fixture
+drives all four cases on the leopard: a primary claw on an ordinary attack,
+a rake claw on an ordinary attack, the same rake claw on a charge, and the
+same rake claw against a foe the leopard has just grabbed through the
+shared lifecycle.
+
+The grab itself was the Sprint 6 pattern again, with each cat's own claw.
+The lion's visual is a tint on the leopard rig, warm rather than spotted-
+grey; a mane would need geometry the shared rig does not have, and the
+charter asks for a lion visual, not a lion model.
+
+## Sprint 8 - Big-Cat Roster Completion
+
+There is no tiger in Kingmaker. The charter knew it and named the answer -
+a striped albedo on the leopard rig scaled Large - and the Pteranodon had
+already shown that a project texture on a private material survives
+everything the game does to a summon's renderer. What the Pteranodon could
+not answer was how to paint stripes onto a rig whose texture layout we do
+not own and cannot copy. The answer turned out to be geometry: the mesh
+knows where each vertex sits on the body, and it knows where each vertex
+sits in its texture. Rasterizing the mesh's own triangles into a fresh
+texture, colouring each by its position along the spine, produces stripes
+that follow the animal rather than the atlas; the same generator with a
+cellular field produces a cheetah's spots. Nothing of the game's art is
+read - not one pixel - and the coat is private to the view, like every
+variant since Sprint 5.
+
+The tiger's numbers are the tabletop's, with one project weapon: the game
+has no 1d8 claw, so the 1d6 claw animation is cloned with 1d8 dice, the way
+the tail and bite weapons were made in earlier sprints. Its grab and rake
+are the Sprint 7 pattern verbatim, which was the point of building that
+pattern first.
+
+The cheetah's sprint asked the question the profile had deferred since the
+freeze: how to bound a once-per-hour tenfold speed burst inside a summoning.
+The bound is the resource - one sprint per summoning - and the effect is a
+one-round enhancement bonus to speed that the game caps on its own. It is a
+smaller thing than the tabletop's, and it is exactly as repeatable as the
+charter allows, which is not at all.

@@ -445,7 +445,7 @@ The Magic Circle follow-up preserves all 24 spell/held-touch/carrier/area/recipi
 
 The optional Better Vendors progression integration appends exactly 43 generic
 magic weapon variants after the preserved 1913-entry ledger, for
-2193 stable identifiers: 2191 active and 2 reserved (2048 before the Expanded Summoning
+2220 stable identifiers: 2218 active and 2 reserved (2048 before the Expanded Summoning
 Phase 1 creature appends). Every pre-existing GUID is unchanged,
 including the seven canonical +1 items the progression catalog reuses (Pistol,
 Musket and Blunderbuss +1, and the +1 Elven Branched Spear, Wakizashi, Katana
