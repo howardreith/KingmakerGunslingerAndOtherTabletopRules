@@ -6,11 +6,12 @@ using KingmakerGunslinger.Summoning;
 namespace KingmakerGunslinger.DomainTests
 {
     /// <summary>
-    /// Phase 1 Sprint 7 - Big-Cat Combat System. Leopard, Lion, Dire Lion and
-    /// Smilodon (Dire Tiger) grab with their claws on the shared summon grapple
-    /// lifecycle and rake only on a charge or while holding; the Lion wears a
-    /// tawny tint on the leopard rig. Sizes, reach, templates and tiers are
-    /// unchanged.
+    /// Phase 1 Sprint 7 - Big-Cat Combat System. Leopard, Lion and Dire Lion
+    /// grab with their bite, the Smilodon (Dire Tiger) with its bite and both
+    /// foreclaws, on the shared summon grapple lifecycle, and rake only on a
+    /// charge or against the foe held since the round began (correction
+    /// order); the Lion wears a tawny tint on the leopard rig. Sizes, reach,
+    /// templates and tiers are unchanged.
     /// </summary>
     internal static class ExpandedSummoningSprint7Tests
     {
@@ -53,10 +54,10 @@ namespace KingmakerGunslinger.DomainTests
             {
                 NaturalSummonProfile profile = ExpandedSummoningNaturalProfiles.For(key);
                 Assertions.True(profile.Facts.Contains("Pounce"), "Pounce stays native: " + key);
-                Assertions.True(profile.Deviations.Any(value => value.Contains("charge-only rake component")),
+                Assertions.True(profile.Deviations.Any(value => value.Contains("rake gate")),
                     "The rake cadence must be recorded: " + key);
-                Assertions.True(profile.Deviations.Any(value => value.Contains("shared summon grapple lifecycle (Sprint 7)")),
-                    "The claw grab must be recorded: " + key);
+                Assertions.True(profile.Deviations.Any(value => value.Contains("shared summon grapple lifecycle (Sprint 7; correction order)")),
+                    "The grab must be recorded: " + key);
                 Assertions.False(profile.Deviations.Any(value => value.Contains("requires runtime qualification")),
                     "The old placeholder deviation is retired: " + key);
             }
@@ -73,10 +74,10 @@ namespace KingmakerGunslinger.DomainTests
             string builder = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
                 "src", "KingmakerGunslinger", "Blueprints", "ExpandedSummoningSpecialBuilder.cs"));
             foreach (string token in new[] {
-                "ConfigureCat(library, bySymbol, LeopardUnitSymbol", "SmallClawGuid, hold, grappled);",
-                "ConfigureCat(library, bySymbol, LionUnitSymbol", "MediumClawGuid, hold, grappled);",
-                "ConfigureCat(library, bySymbol, DireLionUnitSymbol", "LargeClawGuid, hold, grappled);",
-                "ConfigureCat(library, bySymbol, DireTigerUnitSymbol", "Claw2d4Guid, hold, grappled);",
+                "ConfigureGrabber(library, bySymbol, LeopardUnitSymbol, LeopardCombatTraitsSymbol",
+                "ConfigureGrabber(library, bySymbol, LionUnitSymbol, LionCombatTraitsSymbol",
+                "ConfigureGrabber(library, bySymbol, DireLionUnitSymbol, DireLionCombatTraitsSymbol",
+                "ConfigureGrabber(library, bySymbol, DireTigerUnitSymbol, DireTigerCombatTraitsSymbol",
                 "ScriptableObject.CreateInstance<SummonRakeComponent>()",
                 "800092a2b9a743b48ae8aeeb5d243dcc", "8afc47748d00b3e4a8aff2787d9ee350" })
                 Assertions.True(builder.Contains(token), "Cat pack contract is missing: " + token);
@@ -120,12 +121,12 @@ namespace KingmakerGunslinger.DomainTests
             // Append-only: the Sprint 7 block sits directly before the Sprint 8
             // block at the ledger's tail, and directly after the Sprint 6 block.
             Assertions.True(entries.Skip(entries.Length - AppendedLedgerIdentities -
-                    ExpandedSummoningSprint8Tests.AppendedLedgerIdentities)
+                    (ExpandedSummoningSprint8Tests.AppendedLedgerIdentities + ExpandedSummoningCorrectionTests.AppendedLedgerIdentities))
                 .Take(AppendedLedgerIdentities)
                 .All(value => appended.Contains(value)),
                 "The ledger is append-only: Sprint 7 identities sit directly before Sprint 8's.");
             Assertions.True(entries.Skip(entries.Length - AppendedLedgerIdentities -
-                    ExpandedSummoningSprint8Tests.AppendedLedgerIdentities -
+                    (ExpandedSummoningSprint8Tests.AppendedLedgerIdentities + ExpandedSummoningCorrectionTests.AppendedLedgerIdentities) -
                     ExpandedSummoningSprint6Tests.AppendedLedgerIdentities)
                 .Take(ExpandedSummoningSprint6Tests.AppendedLedgerIdentities)
                 .All(value => !appended.Contains(value)),

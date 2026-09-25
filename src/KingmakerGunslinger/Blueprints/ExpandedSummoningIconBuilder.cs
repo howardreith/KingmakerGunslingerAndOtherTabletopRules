@@ -58,7 +58,7 @@ namespace KingmakerGunslinger.Blueprints
                 ExpandedSummoningSpecialProfiles.MephitVariants)
                 foreach (KeyValuePair<string, string> slot in
                     ExpandedSummoningSpecialBuilder.MephitSpellLikeSlots(profile))
-                    if (slot.Value == "Dehydrate" || slot.Value == "BoilingRain")
+                    if (ExpandedSummoningSpecialBuilder.IsProjectMephitAbility(slot.Value))
                         Set(bySymbol, "KMG.Summoning.Special." +
                             ExpandedSummoningSpecialBuilder.MephitToken(profile.Key) +
                             "." + slot.Key,

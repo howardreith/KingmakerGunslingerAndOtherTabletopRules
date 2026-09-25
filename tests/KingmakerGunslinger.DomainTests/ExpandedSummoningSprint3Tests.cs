@@ -227,17 +227,17 @@ namespace KingmakerGunslinger.DomainTests
             string components = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
                 "src", "KingmakerGunslinger", "Summoning",
                 "ExpandedSummoningSpecialCombatComponents.cs"));
-            // Kingmaker's automatic-hit path never rolls the d20 and decides the
-            // critical only from AutoCriticalThreat and AutoCriticalConfirmation
-            // together (round-2 mechanical evidence), so the bounded insight is
-            // an automatic critical hit rather than a threat with a rolled
-            // confirmation.
+            // Correction order: the armed attack's own d20 is chosen as a
+            // natural 20 through the game's pre-rolled-result seam, so the hit
+            // and the threat follow from the roll and the critical confirmation
+            // is rolled normally; no automatic-hit flag is set.
             Assertions.True(components.Contains("class CyclopsFlashOfInsightComponent") &&
                 components.Contains("RuleInitiatorLogicComponent<RuleAttackRoll>") &&
-                components.Contains("evt.AutoHit = true;") &&
-                components.Contains("evt.AutoCriticalThreat = true;") &&
-                components.Contains("evt.AutoCriticalConfirmation = true;"),
-                "The armed state grants the hit, the threat and the confirmation together on the automatic-hit path.");
+                components.Contains("IInitiatorRulebookHandler<RuleRollD20>") &&
+                components.Contains("\"m_PreRolledResult\"") &&
+                components.Contains("ChosenResult = 20") &&
+                !components.Contains("evt.AutoCriticalConfirmation = true;"),
+                "The armed state chooses the attack's own d20 as a natural 20 and leaves the confirmation to the dice.");
             string builder = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
                 "src", "KingmakerGunslinger", "Blueprints",
                 "ExpandedSummoningSpecialBuilder.cs"));
@@ -264,7 +264,8 @@ namespace KingmakerGunslinger.DomainTests
                 value.Contains(".SNA.Tier7.FrostGiant") ||
                 value.Contains(".SNA.Tier8.FrostGiant") ||
                 value.Contains(".SNA.Tier9.FrostGiant")) &&
-                !value.StartsWith("KMG.Summoning.Special.Owlbear.", StringComparison.Ordinal))
+                !value.StartsWith("KMG.Summoning.Special.Owlbear.", StringComparison.Ordinal) &&
+                !ExpandedSummoningCorrectionTests.IsCorrectionIdentity(value))
                 .ToArray();
             Assertions.Equal(AppendedLedgerIdentities, appended.Length,
                 "Sprint 3 must append exactly its own identities to the ledger.");
@@ -275,7 +276,7 @@ namespace KingmakerGunslinger.DomainTests
                     ExpandedSummoningSprint5Tests.AppendedLedgerIdentities -
                     ExpandedSummoningSprint6Tests.AppendedLedgerIdentities -
                     ExpandedSummoningSprint7Tests.AppendedLedgerIdentities -
-                    ExpandedSummoningSprint8Tests.AppendedLedgerIdentities)
+                    (ExpandedSummoningSprint8Tests.AppendedLedgerIdentities + ExpandedSummoningCorrectionTests.AppendedLedgerIdentities))
                 .Take(AppendedLedgerIdentities)
                 .All(value => appended.Contains(value)),
                 "The ledger is append-only: Sprint 3 identities sit directly before Sprint 4's.");

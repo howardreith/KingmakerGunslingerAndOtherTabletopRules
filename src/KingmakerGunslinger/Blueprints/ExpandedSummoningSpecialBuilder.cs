@@ -121,10 +121,24 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Summoning.Special.Cyclops.FlashOfInsightAi";
         private const string CyclopsBrainSymbol =
             "KMG.Summoning.Special.Cyclops.Brain";
+        private const string CyclopsHideArmorSymbol =
+            "KMG.Summoning.Special.Cyclops.HideArmor";
+        private const string PonyUnitSymbol = "KMG.Summoning.Unit.Pony";
+        private const string PonyCombatTraitsSymbol =
+            "KMG.Summoning.Special.Pony.CombatTraits";
+        private const string HorseUnitSymbol = "KMG.Summoning.Unit.Horse";
+        private const string HorseCombatTraitsSymbol =
+            "KMG.Summoning.Special.Horse.CombatTraits";
         private const string GrappleHoldSymbol =
             "KMG.Summoning.Special.Grapple.Hold";
         private const string GrappleGrappledSymbol =
             "KMG.Summoning.Special.Grapple.Grappled";
+        private const string GrappleMultiHoldSymbol =
+            "KMG.Summoning.Special.Grapple.MultiHold";
+        private const string GrappleMultiHeldSymbol =
+            "KMG.Summoning.Special.Grapple.MultiHeld";
+        private const string GiantFlytrapEngulfedSymbol =
+            "KMG.Summoning.Special.GiantFlytrap.Engulfed";
         private const string OwlbearUnitSymbol = "KMG.Summoning.Unit.Owlbear";
         private const string OwlbearCombatTraitsSymbol =
             "KMG.Summoning.Special.Owlbear.CombatTraits";
@@ -167,6 +181,9 @@ namespace KingmakerGunslinger.Blueprints
         // Sprint 6: exact identities from the deep native-donor audit
         // (20260924T1942171737899Z) and the runner's weapon map.
         internal const string NativeWebGrappledGuid = "a719abac0ea0ce346b401060754cc1c0";
+        /// <summary>The ray weapon the game's rays (acid arrow, scorching ray) make their ranged touch attacks with.</summary>
+        internal const string NativeRayWeaponGuid = "f6ef95b1f7bb52b408a5b345a330ffe8";
+        internal const string NativeMagicMissileProjectileGuid = "2e3992d1695960347a7f9bdf8122966f";
         internal const string MediumBite1d8Guid = "c988aa874d11ff84d873508ddc9b928f";
         private const string MonitorLizardUnitSymbol = "KMG.Summoning.Unit.MonitorLizard";
         private const string MonitorLizardCombatTraitsSymbol =
@@ -403,6 +420,8 @@ namespace KingmakerGunslinger.Blueprints
                 PixieUnitSymbol), pixieSleepBow, pixieDance, pixieBrain,
                 pixieTraits);
             ConfigureCyclops(bySymbol);
+            ConfigureDocileHooves(bySymbol, PonyUnitSymbol, PonyCombatTraitsSymbol, "Pony");
+            ConfigureDocileHooves(bySymbol, HorseUnitSymbol, HorseCombatTraitsSymbol, "Horse");
             ConfigureGrapplers(library, bySymbol);
             ConfigureMephitVariants(library, bySymbol);
         }
@@ -449,13 +468,19 @@ namespace KingmakerGunslinger.Blueprints
                         prefix + slot.Key);
                     BlueprintAbilityResource resource = Require<BlueprintAbilityResource>(
                         bySymbol, prefix + slot.Key + "Resource");
-                    ConfigureMephitSpellLike(library, ability, resource, slot.Value,
-                        prefix + slot.Key, token);
+                    ConfigureMephitSpellLike(library, bySymbol, ability, resource, slot.Value,
+                        prefix + slot.Key, prefix, token, unit);
                     resources.Add(resource);
                     grants.Add(ability);
-                    aiActions.Add(ConfigureMephitAiAction(Require<BlueprintAiCastSpell>(
-                        bySymbol, prefix + slot.Key + "Ai"), prefix + slot.Key + "Ai",
-                        ability, 0));
+                    BlueprintAiCastSpell action = ConfigureMephitAiAction(
+                        Require<BlueprintAiCastSpell>(bySymbol, prefix + slot.Key + "Ai"),
+                        prefix + slot.Key + "Ai", ability, 0);
+                    // The lava form forbids attacks: the brain fights three
+                    // rounds before it may pool into it.
+                    if (slot.Value == "MagmaForm")
+                        action.StartCooldownRounds =
+                            ExpandedSummoningSpecialProfiles.MagmaFormAiStartCooldownRounds;
+                    aiActions.Add(action);
                 }
                 BlueprintBuff traits = Require<BlueprintBuff>(bySymbol,
                     prefix + "CombatTraits");
@@ -703,19 +728,51 @@ namespace KingmakerGunslinger.Blueprints
                     " (Reflex half).");
         }
 
+        /// <summary>The chartered mephit abilities the project builds itself, with no native icon of their own.</summary>
+        internal static bool IsProjectMephitAbility(string kind)
+        {
+            return kind == "Dehydrate" || kind == "BoilingRain" || kind == "WindWall" ||
+                kind == "ChillMetal" || kind == "Pyrotechnics" || kind == "MagmaForm";
+        }
+
         /// <summary>
         /// A spell-like ability: a native spell (or the native mephit's own
-        /// version of it) cloned with a one-use resource, or one of the two
-        /// project bursts. Spell-list memberships are not carried.
+        /// version of it) cloned with a one-use resource, one of the two
+        /// project bursts, or one of the four chartered roles the project
+        /// builds itself (correction order). Spell-list memberships are not
+        /// carried; the cloned cloud is made ally-safe and the cloned
+        /// glitterdust enemy-only, as the charter requires of every harmful
+        /// mephit area effect.
         /// </summary>
         private static void ConfigureMephitSpellLike(LibraryScriptableObject library,
+            IDictionary<string, BlueprintScriptableObject> bySymbol,
             BlueprintAbility ability, BlueprintAbilityResource resource, string kind,
-            string symbol, string token)
+            string symbol, string prefix, string token, BlueprintUnit unit)
         {
             string displayName;
             string description;
             switch (kind)
             {
+                case "WindWall":
+                    ConfigureWindWall(bySymbol, ability, prefix, token);
+                    displayName = "Wind Wall";
+                    description = "A wall of wind around the mephit for 6 rounds: allies inside are sheltered - arrows and bolts aimed at them are deflected and miss, and other ranged weapons have a 30% miss chance. Once per summoning.";
+                    break;
+                case "ChillMetal":
+                    ConfigureChillMetal(bySymbol, ability, prefix, token);
+                    displayName = "Chill Metal";
+                    description = "One enemy within close range wearing or carrying metal: Will negates, or its metal freezes for seven rounds - 1d4 cold the second round, 2d4 the third to fifth, 1d4 the sixth (1 or 2 points for a creature carrying only a metal weapon). Once per summoning.";
+                    break;
+                case "Pyrotechnics":
+                    ConfigurePyrotechnics(bySymbol, ability, prefix, token);
+                    displayName = "Pyrotechnics";
+                    description = "A burst of fireworks: every enemy within 20 feet is blinded for 1d4+1 rounds, Will negates. Once per summoning.";
+                    break;
+                case "MagmaForm":
+                    ConfigureMagmaForm(bySymbol, ability, prefix, token, unit);
+                    displayName = "Magma Form";
+                    description = "The mephit pools into lava for 5 rounds: damage reduction 20/magic and a speed of 10 feet, and it cannot attack - its breath and spell-like abilities still work. Once per summoning.";
+                    break;
                 case "Blur":
                     CloneMephitSpell(library, ability, MephitAirBlurGuid, "native mephit blur");
                     displayName = "Blur";
@@ -734,13 +791,15 @@ namespace KingmakerGunslinger.Blueprints
                 case "StinkingCloud":
                     CloneMephitSpell(library, ability, MephitWaterStinkingCloudGuid,
                         "native mephit stinking cloud");
+                    MakeMephitCloudAllySafe(bySymbol, ability, prefix);
                     displayName = "Stinking Cloud";
-                    description = "Stinking cloud, once per summoning.";
+                    description = "A stinking cloud that nauseates only the mephit's enemies, once per summoning.";
                     break;
                 case "Glitterdust":
                     CloneMephitSpell(library, ability, GlitterdustGuid, "native glitterdust");
+                    MakeGlitterdustEnemyOnly(ability);
                     displayName = "Glitterdust";
-                    description = "Glitterdust, once per summoning.";
+                    description = "Glitterdust that blinds only the mephit's enemies, once per summoning.";
                     break;
                 case "Dehydrate":
                     ConfigureMephitBurst(ability, null,
@@ -761,9 +820,11 @@ namespace KingmakerGunslinger.Blueprints
                         "Unknown mephit spell-like ability " + kind + ".");
             }
             ability.name = InternalName(symbol);
-            ability.Type = AbilityType.SpellLike;
-            // A cloned native spell keeps its native icon; a project burst has
-            // none yet and the icon builder gives it the mephit's own.
+            // Magma form is the mephit's supernatural change of shape; every
+            // other slot is a spell-like ability.
+            ability.Type = kind == "MagmaForm" ? AbilityType.Supernatural : AbilityType.SpellLike;
+            // A cloned native spell keeps its native icon; a project ability
+            // has none yet and the icon builder gives it the mephit's own.
             Sprite nativeIcon = ability.Icon;
             ConfigureNamedResource(resource, symbol + "Resource",
                 "KMG.ExpandedSummoning." + token + "." + kind + ".Resource", displayName,
@@ -781,6 +842,416 @@ namespace KingmakerGunslinger.Blueprints
                     kind + ".Name", displayName),
                 LocalizationService.Create("KMG.ExpandedSummoning." + token + "." +
                     kind + ".Description", description), nativeIcon);
+        }
+
+        /// <summary>
+        /// The spell-like parameters of every chartered role: Charisma-based
+        /// DC at the mephit's caster level 6 and the spell's own level.
+        /// </summary>
+        private static ContextCalculateAbilityParams MephitSpellLikeParameters(int spellLevel)
+        {
+            var parameters = ScriptableObject.CreateInstance<ContextCalculateAbilityParams>();
+            parameters.StatType = StatType.Charisma;
+            parameters.ReplaceCasterLevel = true;
+            parameters.CasterLevel = Simple(
+                ExpandedSummoningSpecialProfiles.MephitSpellLikeCasterLevel);
+            parameters.ReplaceSpellLevel = true;
+            parameters.SpellLevel = Simple(spellLevel);
+            return parameters;
+        }
+
+        private static ContextDurationValue MephitRounds(int rounds)
+        {
+            return new ContextDurationValue {
+                Rate = DurationRate.Rounds, DiceType = DiceType.Zero,
+                DiceCountValue = Simple(0), BonusValue = Simple(rounds) };
+        }
+
+        private static ContextActionApplyBuff MephitApplyState(BlueprintBuff state,
+            ContextDurationValue duration, bool toCaster)
+        {
+            var apply = ScriptableObject.CreateInstance<ContextActionApplyBuff>();
+            apply.Buff = state;
+            apply.ToCaster = toCaster;
+            apply.AsChild = false;
+            apply.Permanent = false;
+            apply.UseDurationSeconds = false;
+            apply.DurationValue = duration;
+            apply.IsFromSpell = false;
+            apply.IsNotDispelable = false;
+            return apply;
+        }
+
+        private static void ConfigureMephitState(BlueprintBuff state, string symbol,
+            string localizationPrefix, string displayName, string description,
+            params BlueprintComponent[] components)
+        {
+            state.name = InternalName(symbol);
+            state.Stacking = StackingType.Replace;
+            state.IsClassFeature = false;
+            state.ComponentsArray = components;
+            BlueprintUnitFactAccess.Resolve().Configure(state,
+                LocalizationService.Create(localizationPrefix + ".Name", displayName),
+                LocalizationService.Create(localizationPrefix + ".Description", description),
+                null);
+        }
+
+        /// <summary>A self-centred mephit ability: personal range, a standard action.</summary>
+        private static void ConfigureMephitSelfAbility(BlueprintAbility ability,
+            AbilityType type, AbilityEffectOnUnit onEnemy, AbilityEffectOnUnit onAlly,
+            bool spellResistance)
+        {
+            ability.Type = type;
+            ability.Parent = null;
+            ability.Hidden = false;
+            ability.ActionBarAutoFillIgnored = false;
+            ability.Range = AbilityRange.Personal;
+            ability.CanTargetEnemies = false;
+            ability.CanTargetSelf = true;
+            ability.CanTargetFriends = false;
+            ability.CanTargetPoint = false;
+            ability.SpellResistance = spellResistance;
+            ability.NeedEquipWeapons = false;
+            ability.EffectOnEnemy = onEnemy;
+            ability.EffectOnAlly = onAlly;
+            ability.ActionType = UnitCommand.CommandType.Standard;
+            ability.Animation = UnitAnimationActionCastSpell.CastAnimationStyle.Omni;
+            ability.MaterialComponent = new BlueprintAbility.MaterialComponentData();
+            ability.ResourceAssetIds = Array.Empty<string>();
+        }
+
+        /// <summary>
+        /// Wind Wall (correction order): a project area effect - an
+        /// allies-only 15-foot cylinder around the mephit for six rounds -
+        /// whose shelter state deflects arrows and bolts aimed at an ally and
+        /// gives any other normal ranged weapon a 30% miss chance. The area
+        /// carries no visual of its own (no native wind-wall asset exists;
+        /// the shelter shows on each ally as a named state).
+        /// </summary>
+        private static void ConfigureWindWall(
+            IDictionary<string, BlueprintScriptableObject> bySymbol, BlueprintAbility ability,
+            string prefix, string token)
+        {
+            BlueprintAbilityAreaEffect area = Require<BlueprintAbilityAreaEffect>(bySymbol,
+                prefix + "WindWallArea");
+            BlueprintBuff state = Require<BlueprintBuff>(bySymbol, prefix + "WindWallState");
+            ConfigureMephitState(state, prefix + "WindWallState",
+                "KMG.ExpandedSummoning." + token + ".WindWallState", "Wind Wall",
+                "Sheltered by a wall of wind: arrows and bolts aimed at this creature are deflected and miss; other ranged weapons have a 30% miss chance.",
+                ScriptableObject.CreateInstance<SummonWindWallComponent>());
+            area.name = InternalName(prefix + "WindWallArea");
+            area.AffectEnemies = false;
+            area.AggroEnemies = false;
+            area.AffectDead = false;
+            area.IgnoreSleepingUnits = false;
+            area.SpellResistance = false;
+            area.Shape = AreaEffectShape.Cylinder;
+            area.Size = new Feet(ExpandedSummoningSpecialProfiles.WindWallRadiusFeet);
+            area.Fx = new Kingmaker.ResourceLinks.PrefabLink { AssetId = string.Empty };
+            SetField(area, "m_AllowNonContextActions", false);
+            var ally = ScriptableObject.CreateInstance<ContextConditionIsAlly>();
+            ally.Not = false;
+            var shelter = ScriptableObject.CreateInstance<
+                Kingmaker.UnitLogic.Abilities.Components.AreaEffects.AbilityAreaEffectBuff>();
+            shelter.Condition = new ConditionsChecker {
+                Operation = Operation.And, Conditions = new Condition[] { ally } };
+            shelter.Buff = state;
+            area.ComponentsArray = new BlueprintComponent[] { shelter };
+            ConfigureMephitSelfAbility(ability, AbilityType.SpellLike, AbilityEffectOnUnit.None,
+                AbilityEffectOnUnit.Helpful, false);
+            var spawn = ScriptableObject.CreateInstance<ContextActionSpawnAreaEffect>();
+            spawn.AreaEffect = area;
+            spawn.DurationValue = MephitRounds(ExpandedSummoningSpecialProfiles.WindWallRounds);
+            spawn.OnUnit = true;
+            var run = ScriptableObject.CreateInstance<AbilityEffectRunAction>();
+            run.SavingThrowType = SavingThrowType.Unknown;
+            run.Actions = new ActionList { Actions = new GameAction[] { spawn } };
+            ability.ComponentsArray = new BlueprintComponent[] { run,
+                MephitSpellLikeParameters(ExpandedSummoningSpecialProfiles.WindWallSpellLevel) };
+        }
+
+        /// <summary>
+        /// Chill Metal (correction order): one enemy within close range that
+        /// wears or carries metal (the target checker); Will negates, or the
+        /// chilled state runs its seven-round cold table, in full for metal
+        /// armor and minimal for a metal weapon only.
+        /// </summary>
+        private static void ConfigureChillMetal(
+            IDictionary<string, BlueprintScriptableObject> bySymbol, BlueprintAbility ability,
+            string prefix, string token)
+        {
+            BlueprintBuff state = Require<BlueprintBuff>(bySymbol, prefix + "ChillMetalState");
+            ConfigureMephitState(state, prefix + "ChillMetalState",
+                "KMG.ExpandedSummoning." + token + ".ChillMetalState", "Chill Metal",
+                "The metal this creature wears or carries is freezing: cold damage at the start of each round for seven rounds - none the first, 1d4 the second, 2d4 the third to fifth, 1d4 the sixth, none the seventh; a creature carrying only a metal weapon takes 1 or 2 points instead.",
+                ScriptableObject.CreateInstance<SummonChillMetalComponent>());
+            ability.Type = AbilityType.SpellLike;
+            ability.Parent = null;
+            ability.Hidden = false;
+            ability.ActionBarAutoFillIgnored = false;
+            ability.Range = AbilityRange.Close;
+            ability.CanTargetEnemies = true;
+            ability.CanTargetSelf = false;
+            ability.CanTargetFriends = false;
+            ability.CanTargetPoint = false;
+            ability.SpellResistance = true;
+            ability.NeedEquipWeapons = false;
+            ability.EffectOnEnemy = AbilityEffectOnUnit.Harmful;
+            ability.EffectOnAlly = AbilityEffectOnUnit.None;
+            ability.ActionType = UnitCommand.CommandType.Standard;
+            ability.Animation = UnitAnimationActionCastSpell.CastAnimationStyle.Point;
+            ability.MaterialComponent = new BlueprintAbility.MaterialComponentData();
+            ability.ResourceAssetIds = Array.Empty<string>();
+            var saved = ScriptableObject.CreateInstance<ContextActionConditionalSaved>();
+            saved.Succeed = new ActionList { Actions = Array.Empty<GameAction>() };
+            saved.Failed = new ActionList { Actions = new GameAction[] {
+                MephitApplyState(state, MephitRounds(
+                    ExpandedSummoningSpecialProfiles.ChillMetalRounds), false) } };
+            var run = ScriptableObject.CreateInstance<AbilityEffectRunAction>();
+            run.SavingThrowType = SavingThrowType.Will;
+            run.Actions = new ActionList { Actions = new GameAction[] { saved } };
+            var descriptor = ScriptableObject.CreateInstance<SpellDescriptorComponent>();
+            descriptor.Descriptor = new SpellDescriptorWrapper(SpellDescriptor.Cold);
+            ability.ComponentsArray = new BlueprintComponent[] {
+                ScriptableObject.CreateInstance<SummonChillMetalTargetChecker>(), run,
+                MephitSpellLikeParameters(ExpandedSummoningSpecialProfiles.ChillMetalSpellLevel),
+                descriptor };
+        }
+
+        /// <summary>
+        /// Pyrotechnics (correction order): fireworks from the mephit's own
+        /// fire - every enemy within 20 feet is blinded for 1d4+1 rounds,
+        /// Will negates. Enemies only, as the charter requires of every
+        /// harmful mephit area effect.
+        /// </summary>
+        private static void ConfigurePyrotechnics(
+            IDictionary<string, BlueprintScriptableObject> bySymbol, BlueprintAbility ability,
+            string prefix, string token)
+        {
+            BlueprintBuff blinded = Require<BlueprintBuff>(bySymbol,
+                prefix + "PyrotechnicsBlindedState");
+            var blindness = ScriptableObject.CreateInstance<AddCondition>();
+            blindness.Condition = UnitCondition.Blindness;
+            ConfigureMephitState(blinded, prefix + "PyrotechnicsBlindedState",
+                "KMG.ExpandedSummoning." + token + ".PyrotechnicsBlindedState",
+                "Blinded (Pyrotechnics)", "Dazzled blind by a burst of fireworks.", blindness);
+            ConfigureMephitSelfAbility(ability, AbilityType.SpellLike, AbilityEffectOnUnit.Harmful,
+                AbilityEffectOnUnit.None, true);
+            var around = ScriptableObject.CreateInstance<AbilityTargetsAround>();
+            SetField(around, "m_Radius", new Feet(
+                ExpandedSummoningSpecialProfiles.MephitBurstRadiusFeet));
+            SetField(around, "m_TargetType",
+                Kingmaker.UnitLogic.Abilities.Components.TargetType.Enemy);
+            SetField(around, "m_IncludeDead", false);
+            SetField(around, "m_Condition", new ConditionsChecker {
+                Operation = Operation.And, Conditions = Array.Empty<Condition>() });
+            SetField(around, "m_SpreadSpeed", new Feet(0));
+            var saved = ScriptableObject.CreateInstance<ContextActionConditionalSaved>();
+            saved.Succeed = new ActionList { Actions = Array.Empty<GameAction>() };
+            saved.Failed = new ActionList { Actions = new GameAction[] {
+                MephitApplyState(blinded, new ContextDurationValue {
+                    Rate = DurationRate.Rounds, DiceType = DiceType.D4,
+                    DiceCountValue = Simple(1),
+                    BonusValue = Simple(ExpandedSummoningSpecialProfiles.PyrotechnicsBlindBonusRounds)
+                }, false) } };
+            var run = ScriptableObject.CreateInstance<AbilityEffectRunAction>();
+            run.SavingThrowType = SavingThrowType.Will;
+            run.Actions = new ActionList { Actions = new GameAction[] { saved } };
+            var descriptor = ScriptableObject.CreateInstance<SpellDescriptorComponent>();
+            descriptor.Descriptor = new SpellDescriptorWrapper(SpellDescriptor.Fire);
+            ability.ComponentsArray = new BlueprintComponent[] { around, run,
+                MephitSpellLikeParameters(ExpandedSummoningSpecialProfiles.PyrotechnicsSpellLevel),
+                descriptor };
+        }
+
+        /// <summary>
+        /// Magma Form (correction order): the mephit's supernatural change
+        /// into a pool of lava for five rounds - damage reduction 20/magic
+        /// (the game's own physical-resistance component), a speed of 10 feet
+        /// (the native summoned mephit moves 40) and the game's own
+        /// cannot-attack condition, which interrupts attack commands and
+        /// attacks of opportunity while abilities still work.
+        /// </summary>
+        private static void ConfigureMagmaForm(
+            IDictionary<string, BlueprintScriptableObject> bySymbol, BlueprintAbility ability,
+            string prefix, string token, BlueprintUnit unit)
+        {
+            BlueprintBuff state = Require<BlueprintBuff>(bySymbol, prefix + "MagmaFormState");
+            var resistance = ScriptableObject.CreateInstance<AddDamageResistancePhysical>();
+            resistance.Value = Simple(ExpandedSummoningSpecialProfiles.MagmaFormDamageReduction);
+            resistance.UsePool = false;
+            resistance.Pool = Simple(0);
+            resistance.Or = false;
+            resistance.BypassedByMaterial = false;
+            resistance.BypassedByForm = false;
+            resistance.BypassedByMagic = true;
+            resistance.MinEnhancementBonus = 1;
+            resistance.BypassedByAlignment = false;
+            resistance.BypassedByReality = false;
+            resistance.BypassedByWeaponType = false;
+            resistance.WeaponType = null;
+            resistance.BypassedByMeleeWeapon = false;
+            var speed = ScriptableObject.CreateInstance<
+                Kingmaker.Designers.Mechanics.Buffs.BuffMovementSpeed>();
+            speed.Descriptor = ModifierDescriptor.UntypedStackable;
+            speed.Value = ExpandedSummoningSpecialProfiles.MagmaFormSpeedFeet - unit.Speed.Value;
+            speed.CappedOnMultiplier = false;
+            speed.MultiplierCap = 0f;
+            speed.CappedMinimum = false;
+            speed.MinimumCap = 0;
+            var noAttacks = ScriptableObject.CreateInstance<AddCondition>();
+            noAttacks.Condition = UnitCondition.CanNotAttack;
+            ConfigureMephitState(state, prefix + "MagmaFormState",
+                "KMG.ExpandedSummoning." + token + ".MagmaFormState", "Magma Form",
+                "A pool of lava: damage reduction 20/magic and a speed of 10 feet; the mephit cannot attack, but its breath and spell-like abilities still work.",
+                resistance, speed, noAttacks);
+            ConfigureMephitSelfAbility(ability, AbilityType.Supernatural, AbilityEffectOnUnit.None,
+                AbilityEffectOnUnit.Helpful, false);
+            var run = ScriptableObject.CreateInstance<AbilityEffectRunAction>();
+            run.SavingThrowType = SavingThrowType.Unknown;
+            run.Actions = new ActionList { Actions = new GameAction[] {
+                MephitApplyState(state, MephitRounds(
+                    ExpandedSummoningSpecialProfiles.MagmaFormRounds), true) } };
+            ability.ComponentsArray = new BlueprintComponent[] { run };
+        }
+
+        /// <summary>
+        /// The ally-safe cloud (correction order): the cloned native cloud
+        /// ability spawns a project clone of the native cloud area instead,
+        /// identical in shape, size, visual and logic except that every
+        /// action list (unit enter, unit move, each round) runs only for an
+        /// enemy of the caster and every area buff carries the same gate.
+        /// An ally - a party member, another summon, the mephit itself - can
+        /// stand in the cloud untouched.
+        /// </summary>
+        private static void MakeMephitCloudAllySafe(
+            IDictionary<string, BlueprintScriptableObject> bySymbol, BlueprintAbility ability,
+            string prefix)
+        {
+            BlueprintAbilityAreaEffect area = Require<BlueprintAbilityAreaEffect>(bySymbol,
+                prefix + "StinkingCloudArea");
+            ContextActionSpawnAreaEffect spawn = FindSpawnAreaEffect(ability);
+            if (spawn == null || spawn.AreaEffect == null)
+                throw new InvalidOperationException(
+                    "The native mephit stinking cloud spawns no area effect.");
+            BlueprintAbilityAreaEffect native = spawn.AreaEffect;
+            area.name = InternalName(prefix + "StinkingCloudArea");
+            area.AffectEnemies = native.AffectEnemies;
+            area.AggroEnemies = native.AggroEnemies;
+            area.AffectDead = native.AffectDead;
+            area.IgnoreSleepingUnits = native.IgnoreSleepingUnits;
+            area.SpellResistance = native.SpellResistance;
+            area.Shape = native.Shape;
+            area.Size = native.Size;
+            area.Fx = native.Fx;
+            FieldInfo nonContext = Fields(typeof(BlueprintAbilityAreaEffect)).Single(
+                value => value.Name == "m_AllowNonContextActions");
+            nonContext.SetValue(area, nonContext.GetValue(native));
+            area.ComponentsArray = (native.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                .Where(value => value != null)
+                .Select(ExpandedSummoningAbilityBuilder.DeepCloneComponent)
+                .Select(MakeAreaComponentEnemyOnly).ToArray();
+            spawn.AreaEffect = area;
+        }
+
+        /// <summary>The area-spawning action of an ability, wherever its action lists nest it.</summary>
+        internal static ContextActionSpawnAreaEffect FindSpawnAreaEffect(BlueprintAbility ability)
+        {
+            foreach (AbilityEffectRunAction run in (ability.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).OfType<AbilityEffectRunAction>())
+            {
+                ContextActionSpawnAreaEffect spawn = FindSpawnAreaEffect(run.Actions);
+                if (spawn != null) return spawn;
+            }
+            return null;
+        }
+
+        private static ContextActionSpawnAreaEffect FindSpawnAreaEffect(ActionList list)
+        {
+            if (list == null || list.Actions == null) return null;
+            foreach (GameAction action in list.Actions)
+            {
+                var spawn = action as ContextActionSpawnAreaEffect;
+                if (spawn != null) return spawn;
+                var conditional = action as Conditional;
+                if (conditional != null)
+                {
+                    spawn = FindSpawnAreaEffect(conditional.IfTrue) ??
+                        FindSpawnAreaEffect(conditional.IfFalse);
+                    if (spawn != null) return spawn;
+                }
+                var saved = action as ContextActionConditionalSaved;
+                if (saved != null)
+                {
+                    spawn = FindSpawnAreaEffect(saved.Succeed) ?? FindSpawnAreaEffect(saved.Failed);
+                    if (spawn != null) return spawn;
+                }
+            }
+            return null;
+        }
+
+        private static BlueprintComponent MakeAreaComponentEnemyOnly(BlueprintComponent component)
+        {
+            var run = component as
+                Kingmaker.UnitLogic.Abilities.Components.AreaEffects.AbilityAreaEffectRunAction;
+            if (run != null)
+            {
+                run.UnitEnter = EnemiesOnly(run.UnitEnter, "unit enter");
+                run.UnitMove = EnemiesOnly(run.UnitMove, "unit move");
+                run.Round = EnemiesOnly(run.Round, "round");
+                return run;
+            }
+            var buff = component as
+                Kingmaker.UnitLogic.Abilities.Components.AreaEffects.AbilityAreaEffectBuff;
+            if (buff != null)
+            {
+                buff.Condition = WithEnemyCondition(buff.Condition);
+                return buff;
+            }
+            if (component is Kingmaker.UnitLogic.Abilities.Components.Base.AbilityAreaEffectLogic)
+                throw new InvalidOperationException(
+                    "Unexpected native cloud area logic " + component.GetType().Name + ".");
+            return component;
+        }
+
+        private static ActionList EnemiesOnly(ActionList list, string role)
+        {
+            if (list == null || list.Actions == null || list.Actions.Length == 0) return list;
+            var enemy = ScriptableObject.CreateInstance<ContextConditionIsEnemy>();
+            enemy.Not = false;
+            var conditional = ScriptableObject.CreateInstance<Conditional>();
+            conditional.Comment = "KMG mephit cloud (" + role + "): enemies of the caster only";
+            conditional.ConditionsChecker = new ConditionsChecker {
+                Operation = Operation.And, Conditions = new Condition[] { enemy } };
+            conditional.IfTrue = list;
+            conditional.IfFalse = new ActionList { Actions = Array.Empty<GameAction>() };
+            return new ActionList { Actions = new GameAction[] { conditional } };
+        }
+
+        private static ConditionsChecker WithEnemyCondition(ConditionsChecker checker)
+        {
+            Condition[] existing = checker == null || checker.Conditions == null ?
+                Array.Empty<Condition>() : checker.Conditions;
+            if (checker != null && checker.Operation == Operation.Or && existing.Length > 1)
+                throw new InvalidOperationException(
+                    "The native cloud area buff condition is an OR list; the enemy gate cannot be appended.");
+            var enemy = ScriptableObject.CreateInstance<ContextConditionIsEnemy>();
+            enemy.Not = false;
+            return new ConditionsChecker { Operation = Operation.And,
+                Conditions = existing.Concat(new Condition[] { enemy }).ToArray() };
+        }
+
+        /// <summary>Glitterdust (correction order): the clone selects enemies of the caster only.</summary>
+        private static void MakeGlitterdustEnemyOnly(BlueprintAbility ability)
+        {
+            AbilityTargetsAround[] arounds = ability.ComponentsArray
+                .OfType<AbilityTargetsAround>().ToArray();
+            if (arounds.Length == 0)
+                throw new InvalidOperationException(
+                    "The native glitterdust selects no targets around its point.");
+            foreach (AbilityTargetsAround around in arounds)
+                SetField(around, "m_TargetType",
+                    Kingmaker.UnitLogic.Abilities.Components.TargetType.Enemy);
         }
 
         private static void CloneMephitSpell(LibraryScriptableObject library,
@@ -943,59 +1414,117 @@ namespace KingmakerGunslinger.Blueprints
                     "Swallowed by a summoned purple worm: crushed each round, unable to act, with a break-free attempt each round."),
                 null);
 
+            // Correction order: the multi-link hold (the Flytrap holds one
+            // target per bite), its held state, and the engulfed state.
+            BlueprintBuff multiHold = Require<BlueprintBuff>(bySymbol, GrappleMultiHoldSymbol);
+            multiHold.name = InternalName(GrappleMultiHoldSymbol);
+            multiHold.Stacking = StackingType.Replace;
+            multiHold.IsClassFeature = false;
+            multiHold.ComponentsArray = new BlueprintComponent[] {
+                ScriptableObject.CreateInstance<SummonMultiHoldComponent>() };
+            BlueprintUnitFactAccess.Resolve().Configure(multiHold,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Grapple.MultiHold.Name", "Holding"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Grapple.MultiHold.Description",
+                    "This summoned creature holds one or more grappled foes, one per bite. Each round it makes a grapple check per foe to maintain, dealing its bite's damage on a success - or engulfing a Medium or smaller foe it began the round holding - and releasing on a failure; each foe may attempt to break free each round."),
+                null);
+            BlueprintBuff multiHeld = Require<BlueprintBuff>(bySymbol, GrappleMultiHeldSymbol);
+            var heldEntangled = ScriptableObject.CreateInstance<AddCondition>();
+            heldEntangled.Condition = UnitCondition.Entangled;
+            var heldImmobile = ScriptableObject.CreateInstance<AddCondition>();
+            heldImmobile.Condition = UnitCondition.CantMove;
+            multiHeld.name = InternalName(GrappleMultiHeldSymbol);
+            multiHeld.Stacking = StackingType.Replace;
+            multiHeld.IsClassFeature = false;
+            multiHeld.ComponentsArray = new BlueprintComponent[] { heldEntangled, heldImmobile,
+                ScriptableObject.CreateInstance<SummonHeldComponent>() };
+            BlueprintUnitFactAccess.Resolve().Configure(multiHeld,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Grapple.MultiHeld.Name", "Held"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Grapple.MultiHeld.Description",
+                    "Held in a summoned creature's jaws: entangled and unable to move until the hold is broken; a break-free attempt each round."),
+                null);
+            BlueprintBuff engulfed = Require<BlueprintBuff>(bySymbol, GiantFlytrapEngulfedSymbol);
+            ConfigureEngulfed(engulfed);
+
             ConfigureGrabber(library, bySymbol, OwlbearUnitSymbol,
                 OwlbearCombatTraitsSymbol, "Owlbear", "Owlbear Grab",
-                "A claw hit lets the owlbear attempt to grab its foe.",
-                new[] { LargeClawGuid }, hold, grappled, null, 0, 0);
+                "A claw hit lets the owlbear attempt to grab a foe no larger than itself.",
+                new GrabSpec { Additional = 2, Hold = hold, Grappled = grappled });
             ConfigureGrabber(library, bySymbol, ShamblingMoundUnitSymbol,
                 ShamblingMoundCombatTraitsSymbol, "ShamblingMound",
                 "Shambling Mound Grab and Constrict",
-                "A slam hit lets the mound attempt to grab its foe; a held foe is constricted for 2d6+7 as the grab lands and each round the hold is maintained.",
-                new[] { "27eee74857c42db499b3a6b20cfa6211" }, hold, grappled, null,
-                ExpandedSummoningSpecialProfiles.ShamblingMoundConstrictDice,
-                ExpandedSummoningSpecialProfiles.ShamblingMoundConstrictBonus);
+                "A slam hit lets the mound attempt to grab a foe no larger than itself; a held foe is constricted for 2d6+7 as the grab lands and each round the hold is maintained.",
+                new GrabSpec { Primary = true, Additional = 1, Hold = hold, Grappled = grappled,
+                    ConstrictDice = ExpandedSummoningSpecialProfiles.ShamblingMoundConstrictDice,
+                    ConstrictBonus = ExpandedSummoningSpecialProfiles.ShamblingMoundConstrictBonus });
             ConfigureGrabber(library, bySymbol, GiantFlytrapUnitSymbol,
-                GiantFlytrapCombatTraitsSymbol, "GiantFlytrap", "Giant Flytrap Grab",
-                "A bite hit lets the flytrap attempt to grab its foe.",
-                new[] { LargeBiteGuid }, hold, grappled, null, 0, 0);
+                GiantFlytrapCombatTraitsSymbol, "GiantFlytrap", "Giant Flytrap Grab and Engulf",
+                "Each bite that hits lets the flytrap attempt to grab a foe no larger than itself, one foe per bite; a Medium or smaller foe it begins its turn holding can be engulfed on a successful grapple check, taking the bite's damage and then crushing and acid damage each round until it escapes.",
+                new GrabSpec { Primary = true, Additional = 3,
+                    MaxHeld = ExpandedSummoningSpecialProfiles.GiantFlytrapBiteCount,
+                    Hold = multiHold, Grappled = multiHeld, Swallowed = engulfed,
+                    SwallowAbsolute = true,
+                    SwallowMaxSize = (Size)ExpandedSummoningSpecialProfiles.GiantFlytrapEngulfMaxSize });
             ConfigureGrabber(library, bySymbol, PurpleWormUnitSymbol,
                 PurpleWormCombatTraitsSymbol, "PurpleWorm",
-                "Purple Worm Swallow Whole",
-                "A bite hit lets the worm attempt to grab its foe; success swallows the foe whole.",
-                new[] { "7e4b9b41a9358264d9e3c69c183ca0a2" }, hold, grappled,
-                swallowed, 0, 0);
+                "Purple Worm Grab and Swallow Whole",
+                "A bite hit lets the worm attempt to grab a foe no larger than itself; a foe up to Huge that it begins its turn holding is swallowed whole on a successful grapple check, taking the bite's damage.",
+                new GrabSpec { Primary = true, Hold = hold, Grappled = grappled,
+                    Swallowed = swallowed,
+                    SwallowDelta = ExpandedSummoningSpecialProfiles.PurpleWormSwallowSizeDelta });
             // Sprint 6: the existing grabbers the charter names, on the same
             // lifecycle; the mound-specific native grab graph stays unused.
             ConfigureGrabber(library, bySymbol, MonitorLizardUnitSymbol,
                 MonitorLizardCombatTraitsSymbol, "MonitorLizard", "Monitor Lizard Grab",
-                "A bite hit lets the lizard attempt to grab its foe.",
-                new[] { MediumBite1d8Guid }, hold, grappled, null, 0, 0);
+                "A bite hit lets the lizard attempt to grab a foe no larger than itself.",
+                new GrabSpec { Primary = true, Hold = hold, Grappled = grappled });
             ConfigureGrabber(library, bySymbol, GrizzlyBearUnitSymbol,
                 GrizzlyBearCombatTraitsSymbol, "GrizzlyBear", "Grizzly Bear Grab",
-                "A claw hit lets the bear attempt to grab its foe.",
-                new[] { LargeClawGuid }, hold, grappled, null, 0, 0);
+                "A claw hit lets the bear attempt to grab a foe no larger than itself.",
+                new GrabSpec { Additional = 2, Hold = hold, Grappled = grappled });
             ConfigureGrabber(library, bySymbol, DireBearUnitSymbol,
                 DireBearCombatTraitsSymbol, "DireBear", "Dire Bear Grab",
-                "A claw hit lets the bear attempt to grab its foe.",
-                new[] { LargeClawGuid }, hold, grappled, null, 0, 0);
+                "A claw hit lets the bear attempt to grab a foe no larger than itself.",
+                new GrabSpec { Additional = 2, Hold = hold, Grappled = grappled });
             ConfigureGiantSpiderWeb(library, bySymbol);
-            // Sprint 7: the cats - claw grab on the same lifecycle, and the
-            // charge-only rake gate on the same traits buff.
-            ConfigureCat(library, bySymbol, LeopardUnitSymbol, LeopardCombatTraitsSymbol,
-                "Leopard", "Leopard Grab and Rake", SmallClawGuid, hold, grappled);
-            ConfigureCat(library, bySymbol, LionUnitSymbol, LionCombatTraitsSymbol,
-                "Lion", "Lion Grab and Rake", MediumClawGuid, hold, grappled);
-            ConfigureCat(library, bySymbol, DireLionUnitSymbol, DireLionCombatTraitsSymbol,
-                "DireLion", "Dire Lion Grab and Rake", LargeClawGuid, hold, grappled);
-            ConfigureCat(library, bySymbol, DireTigerUnitSymbol, DireTigerCombatTraitsSymbol,
-                "DireTiger", "Smilodon Grab and Rake", Claw2d4Guid, hold, grappled);
+            // Sprint 7, rebuilt: the cats grab with the bite (the tiger and the
+            // smilodon also with their two foreclaws); the last two claws are
+            // the rake, which never grabs and strikes only on a charge or
+            // against the foe the cat began its turn holding.
+            ConfigureGrabber(library, bySymbol, LeopardUnitSymbol, LeopardCombatTraitsSymbol,
+                "Leopard", "Leopard Grab and Rake",
+                "A bite hit lets the leopard attempt to grab a foe no larger than itself; its rake claws strike only on a charge or against the foe it began its turn holding.",
+                new GrabSpec { Primary = true, Rake = ExpandedSummoningSpecialProfiles.CatRakeSlotCount,
+                    Hold = hold, Grappled = grappled });
+            ConfigureGrabber(library, bySymbol, LionUnitSymbol, LionCombatTraitsSymbol,
+                "Lion", "Lion Grab and Rake",
+                "A bite hit lets the lion attempt to grab a foe no larger than itself; its rake claws strike only on a charge or against the foe it began its turn holding.",
+                new GrabSpec { Primary = true, Rake = ExpandedSummoningSpecialProfiles.CatRakeSlotCount,
+                    Hold = hold, Grappled = grappled });
+            ConfigureGrabber(library, bySymbol, DireLionUnitSymbol, DireLionCombatTraitsSymbol,
+                "DireLion", "Dire Lion Grab and Rake",
+                "A bite hit lets the dire lion attempt to grab a foe no larger than itself; its rake claws strike only on a charge or against the foe it began its turn holding.",
+                new GrabSpec { Primary = true, Rake = ExpandedSummoningSpecialProfiles.CatRakeSlotCount,
+                    Hold = hold, Grappled = grappled });
+            ConfigureGrabber(library, bySymbol, DireTigerUnitSymbol, DireTigerCombatTraitsSymbol,
+                "DireTiger", "Smilodon Grab and Rake",
+                "A bite or foreclaw hit lets the smilodon attempt to grab a foe no larger than itself; its rake claws strike only on a charge or against the foe it began its turn holding.",
+                new GrabSpec { Primary = true, Additional = 2,
+                    Rake = ExpandedSummoningSpecialProfiles.CatRakeSlotCount,
+                    Hold = hold, Grappled = grappled });
             ExpandedSummoningVisualVariantPatch.Register(new SummonVisualVariant(
                 InternalName(LionUnitSymbol), ExpandedSummoningSpecialProfiles.LionVisualTint));
             // Sprint 8: the tiger's grab-and-rake pack on the project 1d8 claw
             // and its striped coat; the cheetah's spotted coat and sprint.
-            ConfigureCatWithWeapon(library, bySymbol, TigerUnitSymbol, TigerCombatTraitsSymbol,
+            ConfigureGrabber(library, bySymbol, TigerUnitSymbol, TigerCombatTraitsSymbol,
                 "Tiger", "Tiger Grab and Rake",
-                Require<BlueprintItemWeapon>(bySymbol, Claw1d8Symbol), hold, grappled);
+                "A bite or foreclaw hit lets the tiger attempt to grab a foe no larger than itself; its rake claws strike only on a charge or against the foe it began its turn holding.",
+                new GrabSpec { Primary = true, Additional = 2,
+                    Rake = ExpandedSummoningSpecialProfiles.CatRakeSlotCount,
+                    Hold = hold, Grappled = grappled });
             ExpandedSummoningVisualVariantPatch.Register(new SummonVisualVariant(
                 InternalName(TigerUnitSymbol), ExpandedSummoningSpecialProfiles.TigerCoat));
             ConfigureCheetahSprint(bySymbol);
@@ -1004,44 +1533,73 @@ namespace KingmakerGunslinger.Blueprints
         }
 
         /// <summary>
-        /// A cat whose claw is a project weapon (the tiger's 1d8 claw).
+        /// The Giant Flytrap's engulfed state, the shape of the native
+        /// swallowed state: the engulfed unit takes the flytrap's crushing
+        /// bite (1d8+7) and 1d8 acid each round and suffers the grappled
+        /// penalties; the native swallowed part carries the unit, its
+        /// break-free attempts and the spit-out.
         /// </summary>
-        private static void ConfigureCatWithWeapon(LibraryScriptableObject library,
-            IDictionary<string, BlueprintScriptableObject> bySymbol, string unitSymbol,
-            string traitsSymbol, string token, string displayName, BlueprintItemWeapon claw,
-            BlueprintBuff hold, BlueprintBuff grappled)
+        private static void ConfigureEngulfed(BlueprintBuff buff)
         {
-            BlueprintUnit unit = Require<BlueprintUnit>(bySymbol, unitSymbol);
-            BlueprintBuff traits = Require<BlueprintBuff>(bySymbol, traitsSymbol);
-            if (unit.ComponentsArray == null ||
-                unit.ComponentsArray.OfType<AddClassLevels>().Count() != 1)
-                throw new InvalidOperationException(
-                    "The " + token + " chassis must be configured before its grab.");
-            var grab = ScriptableObject.CreateInstance<SummonGrabComponent>();
-            grab.GrabWeapons = new[] { claw };
-            grab.HoldBuff = hold;
-            grab.GrappledBuff = grappled;
-            grab.SwallowedBuff = null;
-            grab.ConstrictDiceCount = 0;
-            grab.ConstrictDiceType = DiceType.D6;
-            grab.ConstrictBonus = 0;
-            var bonus = ScriptableObject.CreateInstance<ManeuverBonus>();
-            bonus.Type = CombatManeuver.Grapple;
-            bonus.Bonus = ExpandedSummoningSpecialProfiles.SummonGrabManeuverBonus;
-            traits.name = InternalName(traitsSymbol);
-            traits.Stacking = StackingType.Replace;
-            traits.IsClassFeature = true;
-            traits.ComponentsArray = new BlueprintComponent[] { grab, bonus,
-                ScriptableObject.CreateInstance<SummonRakeComponent>() };
-            BlueprintUnitFactAccess.Resolve().Configure(traits,
-                LocalizationService.Create("KMG.ExpandedSummoning." + token +
-                    ".CombatTraits.Name", displayName),
-                LocalizationService.Create("KMG.ExpandedSummoning." + token +
-                    ".CombatTraits.Description",
-                    "A claw hit lets the cat attempt to grab its foe; its rake claws strike only on a charge or against a foe it holds."),
+            var crush = ScriptableObject.CreateInstance<ContextActionDealDamage>();
+            crush.DamageType = new DamageTypeDescription { Type = DamageType.Physical,
+                Physical = new DamageTypeDescription.PhysicalData {
+                    Form = PhysicalDamageForm.Bludgeoning } };
+            crush.Value = new ContextDiceValue { DiceType = DiceType.D8,
+                DiceCountValue = Simple(ExpandedSummoningSpecialProfiles.GiantFlytrapEngulfDiceCount),
+                BonusValue = Simple(ExpandedSummoningSpecialProfiles.GiantFlytrapEngulfBonus) };
+            crush.Duration = new ContextDurationValue { Rate = DurationRate.Rounds,
+                DiceType = DiceType.Zero, DiceCountValue = Simple(0), BonusValue = Simple(0) };
+            var acid = ScriptableObject.CreateInstance<ContextActionDealDamage>();
+            acid.DamageType = new DamageTypeDescription { Type = DamageType.Energy,
+                Energy = DamageEnergyType.Acid };
+            acid.Value = new ContextDiceValue { DiceType = DiceType.D8,
+                DiceCountValue = Simple(ExpandedSummoningSpecialProfiles.GiantFlytrapEngulfAcidDiceCount),
+                BonusValue = Simple(0) };
+            acid.Duration = new ContextDurationValue { Rate = DurationRate.Rounds,
+                DiceType = DiceType.Zero, DiceCountValue = Simple(0), BonusValue = Simple(0) };
+            var rounds = ScriptableObject.CreateInstance<AddFactContextActions>();
+            rounds.Activated = new ActionList { Actions = Array.Empty<GameAction>() };
+            rounds.Deactivated = new ActionList { Actions = Array.Empty<GameAction>() };
+            rounds.NewRound = new ActionList { Actions = new GameAction[] { crush, acid } };
+            var cmb = ScriptableObject.CreateInstance<AddStatBonus>();
+            cmb.Stat = StatType.AdditionalCMB;
+            cmb.Descriptor = ModifierDescriptor.UntypedStackable;
+            cmb.Value = -2;
+            var dexterity = ScriptableObject.CreateInstance<AddStatBonus>();
+            dexterity.Stat = StatType.Dexterity;
+            dexterity.Descriptor = ModifierDescriptor.UntypedStackable;
+            dexterity.Value = -4;
+            buff.name = InternalName(GiantFlytrapEngulfedSymbol);
+            buff.Stacking = StackingType.Replace;
+            buff.IsClassFeature = false;
+            buff.ComponentsArray = new BlueprintComponent[] { rounds, cmb, dexterity };
+            BlueprintUnitFactAccess.Resolve().Configure(buff,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.GiantFlytrap.Engulfed.Name", "Engulfed"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.GiantFlytrap.Engulfed.Description",
+                    "Engulfed by a summoned giant flytrap: crushed and burned by acid each round, unable to act, with a break-free attempt each round."),
                 null);
-            unit.AddFacts = (unit.AddFacts ?? Array.Empty<BlueprintUnitFact>())
-                .Concat(new BlueprintUnitFact[] { traits }).ToArray();
+        }
+
+        /// <summary>A creature's grab: which limbs, how many holds, what sizes, whether it swallows.</summary>
+        private sealed class GrabSpec
+        {
+            internal bool Primary;
+            internal int Additional;
+            internal int Rake;
+            internal int MaxHeld = 1;
+            /// <summary>0 = the universal rule (same size or smaller); a stat-block exception sets it.</summary>
+            internal int MaxSizeDelta = 0;
+            internal BlueprintBuff Hold;
+            internal BlueprintBuff Grappled;
+            internal BlueprintBuff Swallowed;
+            internal bool SwallowAbsolute;
+            internal Size SwallowMaxSize;
+            internal int SwallowDelta = -1;
+            internal int ConstrictDice;
+            internal int ConstrictBonus;
         }
 
         /// <summary>
@@ -1165,27 +1723,19 @@ namespace KingmakerGunslinger.Blueprints
         /// A cat: the shared-lifecycle claw grab (every claw slot, primary or
         /// rake, carries the same weapon blueprint) plus the rake gate.
         /// </summary>
-        private static void ConfigureCat(LibraryScriptableObject library,
-            IDictionary<string, BlueprintScriptableObject> bySymbol, string unitSymbol,
-            string traitsSymbol, string token, string displayName, string clawGuid,
-            BlueprintBuff hold, BlueprintBuff grappled)
-        {
-            ConfigureGrabber(library, bySymbol, unitSymbol, traitsSymbol, token, displayName,
-                "A claw hit lets the cat attempt to grab its foe; its rake claws strike only on a charge or against a foe it holds.",
-                new[] { clawGuid }, hold, grappled, null, 0, 0);
-            BlueprintBuff traits = Require<BlueprintBuff>(bySymbol, traitsSymbol);
-            traits.ComponentsArray = traits.ComponentsArray.Concat(new BlueprintComponent[] {
-                ScriptableObject.CreateInstance<SummonRakeComponent>() }).ToArray();
-        }
-
         /// <summary>
-        /// Sprint 6: the Giant Spider's ranged Web. A 50-foot ability against
-        /// one foe: a Reflex save (DC 10 + half hit dice + Constitution, as
-        /// the native spider poison scales) or the native web-grappled state
-        /// for at most ten rounds - the state's own per-round break-free ends
-        /// it sooner. Two uses per summoning on a named resource; the brain
-        /// spends them when the spider fights. The spider itself carries the
-        /// native web immunity (natural profile).
+        /// Sprint 6, rebuilt under the correction order: the Giant Spider's
+        /// Web is a net-like ranged attack. A ranged touch attack through the
+        /// game's own projectile delivery with the ray weapon its rays use
+        /// (the roll is against touch AC), 50-foot maximum, against one foe up
+        /// to one size category larger than the spider: a hit applies the
+        /// native web-grappled state (entangled, immobile) for at most ten
+        /// rounds, and the state's own per-round break-free check against
+        /// the Constitution-based DC (10 + half hit dice + Constitution, the
+        /// ability's own parameters) ends it sooner. No saving throw. Two
+        /// uses per summoning on a named resource; the brain spends them when
+        /// the spider fights. The spider itself carries the native web
+        /// immunity (natural profile).
         /// </summary>
         private static void ConfigureGiantSpiderWeb(LibraryScriptableObject library,
             IDictionary<string, BlueprintScriptableObject> bySymbol)
@@ -1235,12 +1785,25 @@ namespace KingmakerGunslinger.Blueprints
             };
             apply.IsFromSpell = false;
             apply.IsNotDispelable = false;
-            var saved = ScriptableObject.CreateInstance<ContextActionConditionalSaved>();
-            saved.Succeed = new ActionList { Actions = Array.Empty<GameAction>() };
-            saved.Failed = new ActionList { Actions = new GameAction[] { apply } };
+            // The net-like attack: the game's projectile delivery makes a
+            // ranged touch attack roll with the ray weapon its rays use and
+            // runs the effect only on a hit. No saving throw.
+            BlueprintItemWeapon ray = BlueprintLibraryLookup.RequireExact<BlueprintItemWeapon>(
+                library, NativeRayWeaponGuid, "native ranged-touch ray weapon");
+            var deliver = ScriptableObject.CreateInstance<AbilityDeliverProjectile>();
+            deliver.Projectiles = new[] { ResolveWebProjectile(library) };
+            deliver.Type = AbilityProjectileType.Simple;
+            deliver.NeedAttackRoll = true;
+            deliver.Weapon = ray;
+            deliver.ReplaceAttackRollBonusStat = false;
+            deliver.AttackRollBonusStat = StatType.Unknown;
+            deliver.UseMaxProjectilesCount = false;
+            deliver.DelayBetweenProjectiles = 0f;
+            var size = ScriptableObject.CreateInstance<SummonWebTargetSizeChecker>();
+            size.MaxSizeDelta = ExpandedSummoningSpecialProfiles.GiantSpiderWebMaxSizeDelta;
             var run = ScriptableObject.CreateInstance<AbilityEffectRunAction>();
-            run.SavingThrowType = SavingThrowType.Reflex;
-            run.Actions = new ActionList { Actions = new GameAction[] { saved } };
+            run.SavingThrowType = SavingThrowType.Unknown;
+            run.Actions = new ActionList { Actions = new GameAction[] { apply } };
             var parameters = ScriptableObject.CreateInstance<ContextCalculateAbilityParams>();
             parameters.StatType = StatType.Constitution;
             parameters.ReplaceCasterLevel = true;
@@ -1252,11 +1815,11 @@ namespace KingmakerGunslinger.Blueprints
             cost.IsSpendResource = true;
             cost.CostIsCustom = false;
             cost.Amount = 1;
-            web.ComponentsArray = new BlueprintComponent[] { run, parameters, cost };
+            web.ComponentsArray = new BlueprintComponent[] { deliver, size, run, parameters, cost };
             BlueprintUnitFactAccess.Resolve().Configure(web,
                 LocalizationService.Create("KMG.ExpandedSummoning.GiantSpider.Web.Name", "Web"),
                 LocalizationService.Create("KMG.ExpandedSummoning.GiantSpider.Web.Description",
-                    "The spider throws a web at one foe within 50 feet: on a failed Reflex save the foe is entangled and held in place until it breaks free (up to ten rounds). Two uses per summoning."),
+                    "The spider throws a web at one foe within 50 feet, no more than one size larger than itself: a ranged touch attack that, on a hit, leaves the foe entangled and held in place until it breaks free (up to ten rounds). Two uses per summoning."),
                 null);
             ConfigureNamedResource(resource, GiantSpiderWebResourceSymbol,
                 "KMG.ExpandedSummoning.GiantSpider.Web.Resource", "Web",
@@ -1290,12 +1853,25 @@ namespace KingmakerGunslinger.Blueprints
                 .Concat(new BlueprintUnitFact[] { web, traits }).ToArray();
         }
 
+        /// <summary>
+        /// The web's projectile: a native projectile whose name says web if
+        /// the library has one, otherwise the magic missile bolt as a bounded
+        /// stand-in (recorded; the mechanics do not depend on it).
+        /// </summary>
+        private static BlueprintProjectile ResolveWebProjectile(LibraryScriptableObject library)
+        {
+            BlueprintProjectile named = library.GetAllBlueprints().OfType<BlueprintProjectile>()
+                .Where(value => value != null && value.name != null &&
+                    value.name.IndexOf("Web", StringComparison.Ordinal) >= 0)
+                .OrderBy(value => value.name, StringComparer.Ordinal).FirstOrDefault();
+            return named ?? BlueprintLibraryLookup.RequireExact<BlueprintProjectile>(library,
+                NativeMagicMissileProjectileGuid, "native magic missile projectile");
+        }
+
         private static void ConfigureGrabber(LibraryScriptableObject library,
             IDictionary<string, BlueprintScriptableObject> bySymbol,
             string unitSymbol, string traitsSymbol, string token,
-            string displayName, string description, string[] weaponGuids,
-            BlueprintBuff hold, BlueprintBuff grappled, BlueprintBuff swallowed,
-            int constrictDice, int constrictBonus)
+            string displayName, string description, GrabSpec spec)
         {
             BlueprintUnit unit = Require<BlueprintUnit>(bySymbol, unitSymbol);
             BlueprintBuff traits = Require<BlueprintBuff>(bySymbol, traitsSymbol);
@@ -1303,23 +1879,36 @@ namespace KingmakerGunslinger.Blueprints
                 unit.ComponentsArray.OfType<AddClassLevels>().Count() != 1)
                 throw new InvalidOperationException(
                     "The " + token + " chassis must be configured before its grab.");
+            if (unit.Body == null || (spec.Primary && unit.Body.PrimaryHand == null) ||
+                (unit.Body.AdditionalLimbs ?? Array.Empty<BlueprintItemWeapon>()).Length +
+                    (unit.Body.AdditionalSecondaryLimbs ?? Array.Empty<BlueprintItemWeapon>())
+                        .Length < spec.Additional + spec.Rake)
+                throw new InvalidOperationException(
+                    "The " + token + " body does not carry the limbs its grab names.");
             var grab = ScriptableObject.CreateInstance<SummonGrabComponent>();
-            grab.GrabWeapons = weaponGuids.Select(guid =>
-                BlueprintLibraryLookup.RequireExact<BlueprintItemWeapon>(library,
-                    guid, token + " grab weapon")).ToArray();
-            grab.HoldBuff = hold;
-            grab.GrappledBuff = grappled;
-            grab.SwallowedBuff = swallowed;
-            grab.ConstrictDiceCount = constrictDice;
+            grab.GrabWithPrimaryHand = spec.Primary;
+            grab.GrabAdditionalLimbCount = spec.Additional;
+            grab.RakeLimbCount = spec.Rake;
+            grab.MaxTargetSizeDelta = spec.MaxSizeDelta;
+            grab.MaxHeldTargets = spec.MaxHeld;
+            grab.HoldBuff = spec.Hold;
+            grab.GrappledBuff = spec.Grappled;
+            grab.SwallowedBuff = spec.Swallowed;
+            grab.SwallowMaxSizeIsAbsolute = spec.SwallowAbsolute;
+            grab.SwallowMaxSize = spec.SwallowMaxSize;
+            grab.SwallowMaxSizeDelta = spec.SwallowDelta;
+            grab.ConstrictDiceCount = spec.ConstrictDice;
             grab.ConstrictDiceType = DiceType.D6;
-            grab.ConstrictBonus = constrictBonus;
+            grab.ConstrictBonus = spec.ConstrictBonus;
             var bonus = ScriptableObject.CreateInstance<ManeuverBonus>();
             bonus.Type = CombatManeuver.Grapple;
             bonus.Bonus = ExpandedSummoningSpecialProfiles.SummonGrabManeuverBonus;
             var components = new List<BlueprintComponent> { grab, bonus };
-            if (swallowed != null)
+            if (spec.Swallowed != null)
                 components.Add(ScriptableObject.CreateInstance<
                     SummonSwallowLifecycleComponent>());
+            if (spec.Rake > 0)
+                components.Add(ScriptableObject.CreateInstance<SummonRakeComponent>());
             traits.name = InternalName(traitsSymbol);
             traits.Stacking = StackingType.Replace;
             traits.IsClassFeature = true;
@@ -1336,17 +1925,22 @@ namespace KingmakerGunslinger.Blueprints
         }
 
         /// <summary>
-        /// Cyclops Flash of Insight, bounded (Sprint 3). The natural builder
-        /// owns the chassis; this adds one once-per-summoning swift ability
-        /// whose one-round state makes the next attack an automatic critical
-        /// hit, the resource that limits it, and a brain that
-        /// spends it when the cyclops fights. It runs after the natural
-        /// builder and only appends to what that builder configured.
+        /// Cyclops Flash of Insight (Sprint 3; rebuilt under the correction
+        /// order) and hide armor. The natural builder owns the chassis; this
+        /// adds one once-per-summoning swift ability whose one-round state
+        /// makes the next attack's own d20 a chosen 20 (the confirmation is
+        /// rolled normally), the resource that limits it, a brain that spends
+        /// it when the cyclops fights, and the stat block's +4 hide armor as
+        /// an exact armor-descriptor fact - no equipment, no loot. It runs
+        /// after the natural builder and only appends to what that builder
+        /// configured.
         /// </summary>
         private static void ConfigureCyclops(
             IDictionary<string, BlueprintScriptableObject> bySymbol)
         {
             BlueprintUnit unit = Require<BlueprintUnit>(bySymbol, CyclopsUnitSymbol);
+            BlueprintFeature hideArmor = Require<BlueprintFeature>(bySymbol,
+                CyclopsHideArmorSymbol);
             BlueprintAbility flash = Require<BlueprintAbility>(bySymbol,
                 CyclopsFlashSymbol);
             BlueprintBuff state = Require<BlueprintBuff>(bySymbol,
@@ -1389,8 +1983,67 @@ namespace KingmakerGunslinger.Blueprints
             unit.ComponentsArray = unit.ComponentsArray.Concat(
                 new BlueprintComponent[] { grant }).ToArray();
             unit.Brain = brain;
+            ConfigureCyclopsHideArmor(hideArmor);
+            unit.AddFacts = (unit.AddFacts ?? Array.Empty<BlueprintUnitFact>())
+                .Concat(new BlueprintUnitFact[] { traits, hideArmor }).ToArray();
+        }
+
+        /// <summary>
+        /// Docile hooves (correction order): a combat-traits carrier that
+        /// marks the Pony's and the Horse's hoof entities secondary - the
+        /// tabletop Docile quality - so the game itself applies -5 to hit and
+        /// half the Strength modifier to damage. Runs after the natural
+        /// builder and only appends to the unit.
+        /// </summary>
+        private static void ConfigureDocileHooves(
+            IDictionary<string, BlueprintScriptableObject> bySymbol, string unitSymbol,
+            string traitsSymbol, string token)
+        {
+            BlueprintUnit unit = Require<BlueprintUnit>(bySymbol, unitSymbol);
+            BlueprintBuff traits = Require<BlueprintBuff>(bySymbol, traitsSymbol);
+            if (unit.ComponentsArray == null ||
+                unit.ComponentsArray.OfType<AddClassLevels>().Count() != 1)
+                throw new InvalidOperationException(
+                    "The " + token + " chassis must be configured before its docile hooves.");
+            traits.name = InternalName(traitsSymbol);
+            traits.Stacking = StackingType.Replace;
+            traits.IsClassFeature = true;
+            traits.ComponentsArray = new BlueprintComponent[] {
+                ScriptableObject.CreateInstance<SummonDocileHoovesComponent>() };
+            BlueprintUnitFactAccess.Resolve().Configure(traits,
+                LocalizationService.Create("KMG.ExpandedSummoning." + token +
+                    ".CombatTraits.Name", "Docile"),
+                LocalizationService.Create("KMG.ExpandedSummoning." + token +
+                    ".CombatTraits.Description",
+                    "Unless trained for combat, this animal's hooves are secondary attacks: -5 on attack rolls and half its Strength bonus on damage."),
+                null);
             unit.AddFacts = (unit.AddFacts ?? Array.Empty<BlueprintUnitFact>())
                 .Concat(new BlueprintUnitFact[] { traits }).ToArray();
+        }
+
+        /// <summary>
+        /// The stat block's hide armor (+4 armor bonus to AC) as a feature
+        /// carrying an armor-descriptor bonus: it stacks with the natural
+        /// armor exactly as worn armor would and never becomes an item,
+        /// loot or inventory.
+        /// </summary>
+        private static void ConfigureCyclopsHideArmor(BlueprintFeature feature)
+        {
+            var armor = ScriptableObject.CreateInstance<AddStatBonus>();
+            armor.Stat = StatType.AC;
+            armor.Descriptor = ModifierDescriptor.Armor;
+            armor.Value = ExpandedSummoningSpecialProfiles.CyclopsHideArmorBonus;
+            feature.name = InternalName(CyclopsHideArmorSymbol);
+            feature.IsClassFeature = true;
+            feature.HideInUI = false;
+            feature.ComponentsArray = new BlueprintComponent[] { armor };
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Cyclops.HideArmor.Name", "Hide Armor"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Cyclops.HideArmor.Description",
+                    "The cyclops wears hide armor: +4 armor bonus to Armor Class."),
+                null);
         }
 
         private static void ConfigureCyclopsFlashState(BlueprintBuff buff)
@@ -1408,7 +2061,7 @@ namespace KingmakerGunslinger.Blueprints
                     "Flash of Insight"),
                 LocalizationService.Create(
                     "KMG.ExpandedSummoning.Cyclops.FlashOfInsight.State.Description",
-                    "This cyclops's next attack is an automatic critical hit."),
+                    "This cyclops has chosen the result of its next attack roll: a natural 20. The critical confirmation is rolled normally."),
                 null);
         }
 
@@ -1461,7 +2114,7 @@ namespace KingmakerGunslinger.Blueprints
                     "Flash of Insight"),
                 LocalizationService.Create(
                     "KMG.ExpandedSummoning.Cyclops.FlashOfInsight.Description",
-                    "Once per summoning, as a swift action, the cyclops's next attack this round is an automatic critical hit."),
+                    "Once per summoning, as a swift action, the cyclops chooses the result of its next attack roll this round: a natural 20. It hits and threatens a critical; the confirmation is rolled normally."),
                 null);
         }
 

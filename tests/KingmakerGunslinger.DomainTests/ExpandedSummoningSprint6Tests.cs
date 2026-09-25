@@ -47,7 +47,8 @@ namespace KingmakerGunslinger.DomainTests
                 "MonitorLizardCombatTraitsSymbol, \"MonitorLizard\", \"Monitor Lizard Grab\"",
                 "GrizzlyBearCombatTraitsSymbol, \"GrizzlyBear\", \"Grizzly Bear Grab\"",
                 "DireBearCombatTraitsSymbol, \"DireBear\", \"Dire Bear Grab\"",
-                "new[] { MediumBite1d8Guid }, hold, grappled, null, 0, 0",
+                "new GrabSpec { Primary = true, Hold = hold, Grappled = grappled }",
+                "new GrabSpec { Additional = 2, Hold = hold, Grappled = grappled }",
                 "c988aa874d11ff84d873508ddc9b928f" })
                 Assertions.True(builder.Contains(token), "Grab carrier contract is missing: " + token);
             // The carriers never import the mound's constrict: only the mound
@@ -91,7 +92,8 @@ namespace KingmakerGunslinger.DomainTests
                 "src", "KingmakerGunslinger", "Blueprints", "ExpandedSummoningSpecialBuilder.cs"));
             foreach (string token in new[] {
                 "ConfigureGiantSpiderWeb(library, bySymbol)", "a719abac0ea0ce346b401060754cc1c0",
-                "AbilityRange.Custom", "GiantSpiderWebRangeFeet", "SavingThrowType.Reflex",
+                "AbilityRange.Custom", "GiantSpiderWebRangeFeet", "deliver.NeedAttackRoll = true",
+                "SummonWebTargetSizeChecker", "NativeRayWeaponGuid",
                 "GiantSpiderWebRounds", "GiantSpiderWebUses", "web.CanTargetEnemies = true",
                 "web.CanTargetFriends = false" })
                 Assertions.True(builder.Contains(token), "Web contract is missing: " + token);
@@ -145,13 +147,13 @@ namespace KingmakerGunslinger.DomainTests
             // block at the ledger's tail, and directly after the Sprint 5 block.
             Assertions.True(entries.Skip(entries.Length - AppendedLedgerIdentities -
                     ExpandedSummoningSprint7Tests.AppendedLedgerIdentities -
-                    ExpandedSummoningSprint8Tests.AppendedLedgerIdentities)
+                    (ExpandedSummoningSprint8Tests.AppendedLedgerIdentities + ExpandedSummoningCorrectionTests.AppendedLedgerIdentities))
                 .Take(AppendedLedgerIdentities)
                 .All(value => appended.Contains(value)),
                 "The ledger is append-only: Sprint 6 identities sit directly before Sprint 7's.");
             Assertions.True(entries.Skip(entries.Length - AppendedLedgerIdentities -
                     ExpandedSummoningSprint7Tests.AppendedLedgerIdentities -
-                    ExpandedSummoningSprint8Tests.AppendedLedgerIdentities -
+                    (ExpandedSummoningSprint8Tests.AppendedLedgerIdentities + ExpandedSummoningCorrectionTests.AppendedLedgerIdentities) -
                     ExpandedSummoningSprint5Tests.AppendedLedgerIdentities)
                 .Take(ExpandedSummoningSprint5Tests.AppendedLedgerIdentities)
                 .All(value => !appended.Contains(value)),

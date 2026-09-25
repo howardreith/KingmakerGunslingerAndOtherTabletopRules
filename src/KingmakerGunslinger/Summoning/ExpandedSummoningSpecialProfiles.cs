@@ -89,6 +89,9 @@ namespace KingmakerGunslinger.Summoning
         }
     }
 
+    /// <summary>What the Wind Wall does to one incoming attack roll.</summary>
+    internal enum SummonWindWallOutcome { None, Deflected, MissChance }
+
     internal sealed class MephitVariantProfile
     {
         internal MephitVariantProfile(string key, string donorKey, string breathEnergy,
@@ -126,15 +129,16 @@ namespace KingmakerGunslinger.Summoning
         /// tabletop breath does. Each spell-like ability is one use per
         /// summoning (the tabletop once per hour or per day both exceed a
         /// summoning). Wind wall, chill metal, pyrotechnics and magma form have
-        /// no native spell and are omitted; dehydrate and boiling rain are
+        /// no native spell: under the correction order they are project-owned,
+        /// bounded abilities (constants below); dehydrate and boiling rain are
         /// project bursts. The pale salt and steam mephits sit on the pale
         /// air and water rigs (a tint can only darken) with the earth and fire
         /// subtypes restored.
         /// </summary>
         internal static readonly MephitVariantProfile[] MephitVariants = {
-            new MephitVariantProfile("dust-mephit", "air-mephit", "Slashing", 1, 4, true, "Blur", null),
-            new MephitVariantProfile("ice-mephit", "water-mephit", "Cold", 1, 4, true, "MagicMissile", null),
-            new MephitVariantProfile("magma-mephit", "fire-mephit", "Fire", 1, 8, false, null, null),
+            new MephitVariantProfile("dust-mephit", "air-mephit", "Slashing", 1, 4, true, "Blur", "WindWall"),
+            new MephitVariantProfile("ice-mephit", "water-mephit", "Cold", 1, 4, true, "MagicMissile", "ChillMetal"),
+            new MephitVariantProfile("magma-mephit", "fire-mephit", "Fire", 1, 8, false, "Pyrotechnics", "MagmaForm"),
             new MephitVariantProfile("ooze-mephit", "water-mephit", "Acid", 1, 4, true, "AcidArrow", "StinkingCloud"),
             new MephitVariantProfile("salt-mephit", "air-mephit", "Slashing", 1, 4, true, "Glitterdust", "Dehydrate"),
             new MephitVariantProfile("steam-mephit", "water-mephit", "Fire", 1, 4, true, "Blur", "BoilingRain")
@@ -151,6 +155,11 @@ namespace KingmakerGunslinger.Summoning
         internal const int GiantSpiderWebRangeFeet = 50;
         internal const int GiantSpiderWebRounds = 10;
         internal const int GiantSpiderWebSpellLevel = 1;
+        /// <summary>A web catches a creature up to one size category larger than the spinner.</summary>
+        internal const int GiantSpiderWebMaxSizeDelta = 1;
+        internal static bool IsWebTargetSizeAllowed(int targetSize, int spinnerSize,
+            int maxSizeDelta)
+        { return targetSize <= spinnerSize + maxSizeDelta; }
         internal const int MephitSickenedRounds = 3;
         internal const int MephitSpellLikeUses = 1;
         internal const int MephitBreathAiCooldownRounds = 4;
@@ -159,6 +168,63 @@ namespace KingmakerGunslinger.Summoning
         internal const int DehydrateDieSides = 8;
         internal const int BoilingRainDice = 2;
         internal const int BoilingRainDieSides = 6;
+
+        /// <summary>
+        /// The chartered mephit roles (correction order), project-owned and
+        /// bounded. Every spell-like DC is Charisma-based at the mephit's
+        /// caster level 6 (the stat blocks' DC 14 at spell level 2). Wind
+        /// wall: an allies-only 15-foot cylinder around the mephit for six
+        /// rounds (one per level) in which arrows and bolts aimed at an ally
+        /// are deflected and any other normal ranged weapon has a 30% miss
+        /// chance; rays and touch deliveries pass as spells pass the tabletop
+        /// wall. Chill metal: Will negates, seven rounds of cold - none, 1d4,
+        /// 2d4, 2d4, 2d4, 1d4, none - in full against a creature in metal
+        /// armor, the table's minimal 1 or 2 points against one carrying only
+        /// a metal weapon, nothing against one carrying no metal (which is not
+        /// a valid target). Pyrotechnics: fireworks blind every enemy within
+        /// 20 feet for 1d4+1 rounds, Will negates. Magma form: five rounds as
+        /// a pool of lava - damage reduction 20/magic, speed 10 feet, no
+        /// attacks, breath and spell-like abilities intact; the brain fights
+        /// three rounds before it may pool.
+        /// </summary>
+        internal const int MephitSpellLikeCasterLevel = 6;
+        internal const int WindWallRounds = 6;
+        internal const int WindWallRadiusFeet = 15;
+        internal const int WindWallSpellLevel = 3;
+        internal const int WindWallOtherRangedMissChance = 30;
+        internal const int ChillMetalRounds = 7;
+        internal const int ChillMetalSpellLevel = 2;
+        internal const int PyrotechnicsSpellLevel = 2;
+        internal const int PyrotechnicsBlindDieSides = 4;
+        internal const int PyrotechnicsBlindBonusRounds = 1;
+        internal const int MagmaFormRounds = 5;
+        internal const int MagmaFormDamageReduction = 20;
+        internal const int MagmaFormSpeedFeet = 10;
+        internal const int MagmaFormAiStartCooldownRounds = 3;
+
+        internal static SummonWindWallOutcome WindWallOutcome(bool isRangedAttack,
+            bool isArrowOrBolt, bool isSpellDelivery)
+        {
+            if (!isRangedAttack || isSpellDelivery) return SummonWindWallOutcome.None;
+            return isArrowOrBolt ? SummonWindWallOutcome.Deflected :
+                SummonWindWallOutcome.MissChance;
+        }
+
+        /// <summary>d4s of cold in the given round of chill metal (round 1 is the casting round).</summary>
+        internal static int ChillMetalDice(int round)
+        {
+            if (round == 2 || round == 6) return 1;
+            if (round >= 3 && round <= 5) return 2;
+            return 0;
+        }
+
+        /// <summary>The table's minimal damage (1 for 1d4, 2 for 2d4) for metal that is not armor.</summary>
+        internal static int ChillMetalMinimalDamage(int round)
+        { return ChillMetalDice(round); }
+
+        /// <summary>2: full dice (metal armor); 1: minimal (a metal weapon only); 0: no metal, no target.</summary>
+        internal static int ChillMetalTier(bool wearsMetalArmor, bool wieldsMetalWeapon)
+        { return wearsMetalArmor ? 2 : wieldsMetalWeapon ? 1 : 0; }
 
         internal static MephitVariantProfile MephitVariant(string key)
         { return MephitVariants.Single(value => value.Key == key); }
@@ -310,6 +376,10 @@ namespace KingmakerGunslinger.Summoning
         /// </summary>
         internal const int CyclopsFlashOfInsightUses = 1;
         internal const int CyclopsFlashOfInsightRounds = 1;
+        /// <summary>The chosen d20 result: a natural 20; the confirmation is an ordinary roll.</summary>
+        internal const int CyclopsFlashOfInsightChosenRoll = 20;
+        /// <summary>The stat block's hide armor, as an armor-descriptor bonus.</summary>
+        internal const int CyclopsHideArmorBonus = 4;
 
         /// <summary>
         /// Shared summon grapple lifecycle (Sprint 4). A grab is the game's own
@@ -352,16 +422,63 @@ namespace KingmakerGunslinger.Summoning
         { return isOwnerAttackRoll && stateArmed; }
 
         /// <summary>
-        /// A grab starts only from a hit with a grab weapon, by a summon that
-        /// neither holds nor has swallowed anyone, against a live target that
-        /// is neither held nor swallowed and is not the summon itself.
+        /// Attack identity (correction order): a limb grabs when it is the
+        /// primary hand and the creature grabs with its bite, or one of the
+        /// first grab-capable additional limbs (foreclaws, slams, bites);
+        /// a rake slot - one of the last rake-limb-count limbs - never
+        /// grabs, whatever weapon blueprint it shares with the foreclaws.
         /// </summary>
-        internal static bool ShouldAttemptSummonGrab(bool isHit, bool isGrabWeapon,
-            bool ownerHolding, bool targetHeld, bool targetSwallowed,
-            bool selfTarget)
+        internal static bool IsGrabLimb(bool isPrimaryHand, int additionalIndex,
+            bool grabWithPrimaryHand, int grabAdditionalLimbCount,
+            int additionalLimbCount, int rakeLimbCount)
         {
-            return isHit && isGrabWeapon && !ownerHolding && !targetHeld &&
-                !targetSwallowed && !selfTarget;
+            if (isPrimaryHand) return grabWithPrimaryHand;
+            if (additionalIndex < 0) return false;
+            return additionalIndex < grabAdditionalLimbCount &&
+                !IsRakeSlot(additionalIndex, additionalLimbCount, rakeLimbCount);
+        }
+
+        /// <summary>The last rake-limb-count additional limbs are the rake claws.</summary>
+        internal static bool IsRakeSlot(int additionalIndex, int additionalLimbCount,
+            int rakeLimbCount)
+        {
+            return rakeLimbCount > 0 && additionalIndex >= 0 &&
+                additionalIndex >= additionalLimbCount - rakeLimbCount;
+        }
+
+        /// <summary>
+        /// The universal grab rule: unless the stat block says otherwise, grab
+        /// works only against a target of the same size or smaller. A
+        /// creature's explicit exception is a positive delta.
+        /// </summary>
+        internal static bool IsGrabSizeAllowed(int targetSize, int holderSize,
+            int maxTargetSizeDelta)
+        { return targetSize <= holderSize + maxTargetSizeDelta; }
+
+        /// <summary>
+        /// Swallow whole and engulf: up to one size category smaller than the
+        /// swallower unless the stat block names an absolute cap (the Giant
+        /// Flytrap engulfs Medium or smaller).
+        /// </summary>
+        internal static bool IsSwallowSizeAllowed(int targetSize, int holderSize,
+            bool absolute, int maxAbsoluteSize, int maxSizeDelta)
+        {
+            return absolute ? targetSize <= maxAbsoluteSize :
+                targetSize <= holderSize + maxSizeDelta;
+        }
+
+        /// <summary>
+        /// A grab starts only from a hit with a grab limb, by a summon with a
+        /// free hold (a single-link holder holds or has swallowed no one; the
+        /// flytrap has a bite free), against a live target of an allowed size
+        /// that is neither held nor swallowed and is not the summon itself.
+        /// </summary>
+        internal static bool ShouldAttemptSummonGrab(bool isHit, bool isGrabLimb,
+            bool holderFull, bool targetHeld, bool targetSwallowed,
+            bool selfTarget, bool sizeAllowed)
+        {
+            return isHit && isGrabLimb && !holderFull && !targetHeld &&
+                !targetSwallowed && !selfTarget && sizeAllowed;
         }
 
         /// <summary>
@@ -374,17 +491,45 @@ namespace KingmakerGunslinger.Summoning
         { return targetOwned && maintainSuccess; }
 
         /// <summary>
-        /// Sprint 7: the cats' rake claws (the last two additional limbs of
-        /// the body; the game lists secondary limbs after the additional
-        /// ones) attack only on a charge - Pounce makes the charge a full
-        /// attack - or while the cat holds a grappled foe. Any other attack
-        /// with a rake claw is an automatic, silent miss: no roll, no damage,
-        /// no combat-log line.
+        /// Swallow whole / engulf: a swallower that began its round with the
+        /// target held (the held state has ticked at least once) uses its
+        /// successful maintain check as though attempting to pin and swallows
+        /// a target of an allowed size. Never on the grab itself.
+        /// </summary>
+        internal static bool ShouldSwallowOnMaintain(bool isSwallower, bool maintainSuccess,
+            int roundsHeld, bool sizeAllowed)
+        { return isSwallower && maintainSuccess && roundsHeld >= 1 && sizeAllowed; }
+
+        /// <summary>
+        /// Began its turn grappling: the owner holds exactly this target and
+        /// the target's held state has ticked at least once since the grab.
+        /// </summary>
+        internal static bool IsHeldSinceRoundStart(bool ownerHoldsTarget, int roundsHeld)
+        { return ownerHoldsTarget && roundsHeld >= 1; }
+
+        /// <summary>
+        /// Sprint 7, rebuilt: the cats' rake claws (the last two limbs of the
+        /// body) attack only on a charge - Pounce makes the charge a full
+        /// attack - or against the exact foe the cat holds and held when its
+        /// round began. Any other attack with a rake claw never strikes: the
+        /// attack sequence drops it, and a roll that still reaches the rule is
+        /// an automatic, silent miss.
         /// </summary>
         internal const int CatRakeSlotCount = 2;
         internal static bool ShouldRakeApply(bool isRakeWeapon, bool isCharge,
-            bool isHolding)
-        { return !isRakeWeapon || isCharge || isHolding; }
+            bool heldTargetSinceRoundStart)
+        { return !isRakeWeapon || isCharge || heldTargetSinceRoundStart; }
+
+        /// <summary>The Giant Flytrap: one held target per bite, engulf of Medium or smaller.</summary>
+        internal const int GiantFlytrapBiteCount = 4;
+        internal const int GiantFlytrapEngulfMaxSize = 4;
+        internal const int GiantFlytrapEngulfDiceCount = 1;
+        internal const int GiantFlytrapEngulfDieSides = 8;
+        internal const int GiantFlytrapEngulfBonus = 7;
+        internal const int GiantFlytrapEngulfAcidDiceCount = 1;
+        internal const int GiantFlytrapEngulfAcidDieSides = 8;
+        /// <summary>The Purple Worm swallows up to one size category smaller (Huge).</summary>
+        internal const int PurpleWormSwallowSizeDelta = -1;
 
         /// <summary>
         /// Sprint 8: the Cheetah's sprint - a swift, once-per-summoning burst
@@ -432,18 +577,52 @@ namespace KingmakerGunslinger.Summoning
                     .Distinct(StringComparer.Ordinal).Count() != 6 ||
                 MephitVariants.Any(value => !MephitKeys.Contains(value.DonorKey)) ||
                 MephitSickenedRounds != 3 || MephitSpellLikeUses != 1 ||
-                MephitBreathAiCooldownRounds != 4)
+                MephitBreathAiCooldownRounds != 4 ||
+                MephitVariant("dust-mephit").SpellLikeTwo != "WindWall" ||
+                MephitVariant("ice-mephit").SpellLikeTwo != "ChillMetal" ||
+                MephitVariant("magma-mephit").SpellLikeOne != "Pyrotechnics" ||
+                MephitVariant("magma-mephit").SpellLikeTwo != "MagmaForm")
                 throw new InvalidOperationException(
                     "Sprint 5 mephit variant profile changed.");
+            if (MephitSpellLikeCasterLevel != 6 || WindWallRounds != 6 || WindWallRadiusFeet != 15 ||
+                WindWallSpellLevel != 3 || WindWallOtherRangedMissChance != 30 ||
+                WindWallOutcome(false, true, false) != SummonWindWallOutcome.None ||
+                WindWallOutcome(true, true, false) != SummonWindWallOutcome.Deflected ||
+                WindWallOutcome(true, false, false) != SummonWindWallOutcome.MissChance ||
+                WindWallOutcome(true, false, true) != SummonWindWallOutcome.None ||
+                ChillMetalRounds != 7 || ChillMetalSpellLevel != 2 ||
+                ChillMetalDice(1) != 0 || ChillMetalDice(2) != 1 || ChillMetalDice(3) != 2 ||
+                ChillMetalDice(4) != 2 || ChillMetalDice(5) != 2 || ChillMetalDice(6) != 1 ||
+                ChillMetalDice(7) != 0 || ChillMetalMinimalDamage(2) != 1 ||
+                ChillMetalMinimalDamage(4) != 2 || ChillMetalMinimalDamage(7) != 0 ||
+                ChillMetalTier(true, true) != 2 || ChillMetalTier(true, false) != 2 ||
+                ChillMetalTier(false, true) != 1 || ChillMetalTier(false, false) != 0 ||
+                PyrotechnicsSpellLevel != 2 || PyrotechnicsBlindDieSides != 4 ||
+                PyrotechnicsBlindBonusRounds != 1 || MagmaFormRounds != 5 ||
+                MagmaFormDamageReduction != 20 || MagmaFormSpeedFeet != 10 ||
+                MagmaFormAiStartCooldownRounds != 3)
+                throw new InvalidOperationException(
+                    "Correction-order mephit role profile changed.");
             if (CheetahSprintUses != 1 || CheetahSprintRounds != 1 ||
                 CheetahSprintBonusFeet != 30 || !TigerCoat.IsBounded || !CheetahCoat.IsBounded)
                 throw new InvalidOperationException("Sprint 8 cat profile changed.");
             if (CatRakeSlotCount != 2 || !LionVisualTint.IsBounded ||
                 ShouldRakeApply(true, false, false) || !ShouldRakeApply(true, true, false) ||
-                !ShouldRakeApply(true, false, true) || !ShouldRakeApply(false, false, false))
-                throw new InvalidOperationException("Sprint 7 rake profile changed.");
+                !ShouldRakeApply(true, false, true) || !ShouldRakeApply(false, false, false) ||
+                !IsRakeSlot(2, 4, 2) || IsRakeSlot(1, 4, 2) || IsGrabLimb(false, 2, true, 2, 4, 2) ||
+                !IsGrabLimb(false, 1, false, 2, 4, 2) || !IsGrabLimb(true, -1, true, 0, 4, 2) ||
+                IsGrabLimb(true, -1, false, 2, 4, 2) || !IsGrabSizeAllowed(4, 4, 0) ||
+                IsGrabSizeAllowed(5, 4, 0) || !IsSwallowSizeAllowed(6, 7, false, 0, -1) ||
+                IsSwallowSizeAllowed(7, 7, false, 0, -1) || !IsSwallowSizeAllowed(4, 6, true, 4, -1) ||
+                IsSwallowSizeAllowed(5, 6, true, 4, -1) || ShouldSwallowOnMaintain(true, true, 0, true) ||
+                !ShouldSwallowOnMaintain(true, true, 1, true) || IsHeldSinceRoundStart(true, 0) ||
+                !IsHeldSinceRoundStart(true, 1) || GiantFlytrapBiteCount != 4 ||
+                GiantFlytrapEngulfMaxSize != 4 || PurpleWormSwallowSizeDelta != -1)
+                throw new InvalidOperationException("Sprint 7 rake / grapple identity profile changed.");
             if (GiantSpiderWebUses != 2 || GiantSpiderWebRangeFeet != 50 ||
-                GiantSpiderWebRounds != 10 || GiantSpiderWebSpellLevel != 1)
+                GiantSpiderWebRounds != 10 || GiantSpiderWebSpellLevel != 1 ||
+                GiantSpiderWebMaxSizeDelta != 1 || !IsWebTargetSizeAllowed(5, 4, 1) ||
+                IsWebTargetSizeAllowed(6, 4, 1))
                 throw new InvalidOperationException(
                     "Sprint 5 mephit variant profile changed.");
             if (ElementalKeys.Length != 24 || MephitKeys.Length != 4)
@@ -470,6 +649,7 @@ namespace KingmakerGunslinger.Summoning
                 PixieDanceUses != 1 || PixieDanceCasterLevel != 8 ||
                 CyclopsFlashOfInsightUses != 1 ||
                 CyclopsFlashOfInsightRounds != 1 ||
+                CyclopsFlashOfInsightChosenRoll != 20 || CyclopsHideArmorBonus != 4 ||
                 SummonGrabManeuverBonus != 4 || SummonHoldMaintainBonus != 5 ||
                 ShamblingMoundConstrictDice != 2 ||
                 ShamblingMoundConstrictBonus != ConstrictBonus(5))
