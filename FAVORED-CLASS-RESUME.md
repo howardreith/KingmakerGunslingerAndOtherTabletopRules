@@ -94,6 +94,20 @@ final cycle, settings profiles, persistence transaction, working-save smoke and
 compatibility profiles are recorded in `FAVORED-CLASS-IMPLEMENTATION-REPORT.md`.
 Status: PARTIAL - NOT RELEASE QUALIFIED; owner review pending.
 
+## PR #24 second review checkpoint
+
+The second review of PR #24 found two remaining paths, both addressed:
+
+1. a Bard's feature, toggle and action-bar descriptions follow the actual
+   widening outcome of that bard's live areas (`7f9c781d8`);
+2. an excluded, partial, unadmitted or withheld revelation target's counter
+   keeps its saved ranks and is mechanically inert; the bloodline-power and
+   performance counters share the withholding guard (`f7b4ae4f5`).
+
+Final candidate: `f7b4ae4f5` (package `1c4127fc...`, DLL `faa7ecad...`, MVID `60acfa62-36ed-4722-9bb3-af928f5d8758`),
+33 guarded runs PASS, owner install restored and verified. Status:
+PARTIAL - NOT RELEASE QUALIFIED; owner review pending.
+
 ## PR #24 review checkpoint
 
 The owner's review of PR #24 listed six findings; each was addressed in
@@ -229,8 +243,12 @@ deployed inside an isolated compatibility profile and restored by its transactio
 | 20260925T0542174416518Z | `aa298650e` | `5edb5e42...` | `ecc3e660-1295-4132-8019-c01b703561d2` | `20260925T0542126789494Z` (profile) |
 | 20260925T0545354126150Z | `aa298650e` | `5edb5e42...` | `ecc3e660-1295-4132-8019-c01b703561d2` | `20260925T0545309351465Z` (profile) |
 | 20260925T0549103789544Z | `aa298650e` | `5edb5e42...` | `ecc3e660-1295-4132-8019-c01b703561d2` | `20260925T0549056382959Z` (profile) |
+| 20260925T1323002022844Z | `f7b4ae4f5` | `faa7ecad...` | `60acfa62-36ed-4722-9bb3-af928f5d8758` | `20260925T1322555882117Z` |
+| 20260925T1426308025611Z | `f7b4ae4f5` | `faa7ecad...` | `60acfa62-36ed-4722-9bb3-af928f5d8758` | `20260925T1426260728248Z` (profile) |
+| 20260925T1429494091294Z | `f7b4ae4f5` | `faa7ecad...` | `60acfa62-36ed-4722-9bb3-af928f5d8758` | `20260925T1429447280940Z` (profile) |
+| 20260925T1433314390845Z | `f7b4ae4f5` | `faa7ecad...` | `60acfa62-36ed-4722-9bb3-af928f5d8758` | `20260925T1433266105214Z` (profile) |
 
-Final restoration of the owner's install after the PR #24 review round:
+Final restoration of the owner's install after the second PR #24 review round:
 
 The owner's pre-mission KMG install (0.0.136, backup
 `C:\Dev\KingmakerGunslingerLab\runtime-backups\live-mod\20260924T0027014050156Z`)
@@ -248,14 +266,14 @@ after the last run, and verified byte for byte:
 - each temporary settings profile removed `FavoredClassIntegration.json` after
   its own runs (verified absent after each profile and at the end)
 - the persistence transaction restored the settings and the complete Mods tree
-  (`20260925T0531109526835Z_0f112e09e2c341e4b594527cf2b02a11`); each compatibility profile restored the exact original Mods tree
+  (`20260925T1415147077256Z_9b8a8ab64b8e40e9b4973edaa574fdf3`); each compatibility profile restored the exact original Mods tree
   and FeatureModules bytes before releasing the lock.
 
 Restoration status: VERIFIED.
 
 ## Next concrete actions
 
-1. Owner review of PR #24 at `aa298650e` and of the two pre-existing KMG defects
+1. Owner review of PR #24 at `f7b4ae4f5` and of the two pre-existing KMG defects
    D1 and D2 (`FAVORED-CLASS-BLOCKERS.md`).
 2. To reach COMPLETE, observe natively the partial families E10, E15, M07, M10, M12, M13, M14, M24, L07:
    turn-based variants of the lanes (L07, M12), True Grit at level 20 (M13),

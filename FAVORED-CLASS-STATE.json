@@ -9,7 +9,7 @@
   "worktree": "C:\\Dev\\KingmakerGunslingerLab\\worktrees\\favored-class-integration",
   "baselineCommit": "996105ed9e72259a220be56e2a74e0cc18e5ef47",
   "overallStatus": "PARTIAL - NOT RELEASE QUALIFIED",
-  "currentPhase": "PR #24 review addressed (six findings) and requalified; owner review pending",
+  "currentPhase": "PR #24 second review addressed (two findings) and requalified; owner review pending",
   "phases": {
     "phase-0": {
       "status": "COMPLETE",
@@ -167,6 +167,14 @@
       "dllMvid": "ecc3e660-1295-4132-8019-c01b703561d2",
       "deployment": "runtime-evidence\\deployments\\20260925T0441598369963Z",
       "note": "final candidate after the PR #24 review"
+    },
+    {
+      "commit": "f7b4ae4f535b38f0e13ac498ee2334f84ef0f427",
+      "packageSha256": "1c4127fcaa0132fabbfe39ce236aaf4f6f3d6b7421f800f02be9305a5d652b12",
+      "dllSha256": "faa7ecad620fa504e68fb29a07463e59dfe60b0f12caa245ef3ead141c9680a4",
+      "dllMvid": "60acfa62-36ed-4722-9bb3-af928f5d8758",
+      "deployment": "runtime-evidence\\deployments\\20260925T1323002022844Z",
+      "note": "final candidate after the second PR #24 review"
     }
   ],
   "blockers": {
@@ -180,10 +188,10 @@
     "D4": "fixed (b1b93acad)"
   },
   "finalCandidate": {
-    "commit": "aa298650ecbc7003ce4c4d0ff992984793362462",
-    "packageSha256": "9abc94549073461e966a9c6cc0a8e4093e337666eb4cf586269dbe5e6a2fc526",
-    "dllSha256": "5edb5e424df14b58cfc460782f8b3d7c8f181950a0784b04cc21d77717a064cb",
-    "dllMvid": "ecc3e660-1295-4132-8019-c01b703561d2"
+    "commit": "f7b4ae4f535b38f0e13ac498ee2334f84ef0f427",
+    "packageSha256": "1c4127fcaa0132fabbfe39ce236aaf4f6f3d6b7421f800f02be9305a5d652b12",
+    "dllSha256": "faa7ecad620fa504e68fb29a07463e59dfe60b0f12caa245ef3ead141c9680a4",
+    "dllMvid": "60acfa62-36ed-4722-9bb3-af928f5d8758"
   },
   "ownerDecisions": {
     "status": "resolved by the charter or provider behavior; see FAVORED-CLASS-BLOCKERS.md"
@@ -232,6 +240,14 @@
     "6-bootstrap-aggregate": [
       "719085d518d15c0590e38ba8b122be516d70876b",
       "7bb4a704085b143225a8067e39bd8f6b5263237b"
+    ]
+  },
+  "secondReviewFindings": {
+    "1-outcome-following-text": [
+      "7f9c781d86e465e9af8e2784a1db8f29454094d5"
+    ],
+    "2-inert-inactive-scopes": [
+      "f7b4ae4f535b38f0e13ac498ee2334f84ef0f427"
     ]
   }
 }
