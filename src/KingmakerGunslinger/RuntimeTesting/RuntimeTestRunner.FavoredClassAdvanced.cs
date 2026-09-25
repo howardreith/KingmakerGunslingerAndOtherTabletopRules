@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
@@ -15,6 +16,7 @@ using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Class.LevelUp;
+using Kingmaker.UnitLogic.Class.LevelUp.Actions;
 using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Blueprints;
@@ -119,7 +121,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 eidolonFailures.Count == 0,
                 "native AddPet of Call of the Wild's eidolon progression in the save-free fixture scene"));
             assertions.Add(Assertion("fcb-advanced-bloodline-powers",
-                "an Ifrit or Sylph Sorcerer is offered only its own element's owned powers; two steps in Elemental Blast raise exactly its caster level, dice and DC by the effective-level rule and its own extra uses at 17th and 20th level follow the effective bloodline level (at most two steps), two steps in Elemental Ray raise exactly its damage bonus rank, and the other power, Elemental Ray's uses and an unrelated spell are unchanged",
+                "an Ifrit or Sylph Sorcerer is offered only its own element's owned powers, and its level-1 reward pick counts the ray it chooses in the same level-up only inside that replayed pick's finally-closed scope (a failure injected there leaves nothing marked and the retried replay applies the reward); two steps in Elemental Blast raise exactly its caster level, dice and DC by the effective-level rule and its own extra uses at 17th and 20th level follow the effective bloodline level (at most two steps), two steps in Elemental Ray raise exactly its damage bonus rank, and the other power, Elemental Ray's uses and an unrelated spell are unchanged",
                 Describe(evidence["bloodlinePowers"], powerFailures), powerFailures.Count == 0,
                 "level-1 native Sorcerer visits with the chosen bloodline; AbilityData.CreateExecutionContext params and ranks"));
             assertions.Add(Assertion("external-isolation", "unchanged party and global-unit snapshots",
@@ -220,6 +222,85 @@ namespace KingmakerGunslinger.RuntimeTesting
             return rows;
         }
 
+        /// <summary>
+        /// Review finding 5: the reward pick of a level-1 Sorcerer that chose
+        /// the Fire bloodline and its ray replays before them (its native
+        /// priority is earlier), so its owned-target check counts the pending
+        /// ray. A failure injected inside that replayed pick's scope must
+        /// leave nothing marked; the retried native replay counts the pending
+        /// ray again and applies the reward.
+        /// </summary>
+        private static JObject ObserveReplayScope(LevelUpController controller, FeatureSelectionState fcb,
+            FavoredClassLeafPair pair, BlueprintFeature ray, IList<string> failures)
+        {
+            var row = new JObject { ["installed"] = FavoredClassPendingPicks.Installed };
+            if (fcb == null || pair == null || ray == null)
+            {
+                failures.Add("replay scope: the Fire Ray reward state or leaf is missing");
+                return row;
+            }
+            BlueprintFeature leaf = FavoredClassLevelUpHarness.CanSelect(controller, fcb, pair.Full) ? pair.Full :
+                pair.Partial;
+            IFeatureSelection reward = fcb.Selection;
+            bool faulted = false;
+            string thrown = null;
+            FavoredClassPendingPicks.FaultInjection = action =>
+            {
+                var pick = action as SelectFeature;
+                if (faulted || pick == null || pick.Selection != reward)
+                    return;
+                faulted = true;
+                throw new InvalidOperationException("KMG injected failure inside a replayed pick");
+            };
+            try
+            {
+                FavoredClassLevelUpHarness.Select(controller, fcb, leaf);
+            }
+            catch (Exception exception)
+            {
+                thrown = exception.GetType().Name + ": " + exception.Message;
+            }
+            finally
+            {
+                FavoredClassPendingPicks.FaultInjection = null;
+            }
+            row["leaf"] = leaf == null ? null : leaf.name;
+            row["faulted"] = faulted;
+            row["thrown"] = thrown;
+            row["depthAfterFailure"] = FavoredClassPendingPicks.Depth;
+            row["pendingRayCountedAfterFailure"] = FavoredClassPendingPicks.Selects(controller.State,
+                new[] { ray.AssetGuid });
+            row["leafRankAfterFailure"] = controller.Preview.Progression.Features.GetRank(leaf);
+            // The retry: the same native replay of the same picks.
+            try
+            {
+                typeof(LevelUpController).GetField("m_RecalculatePreview", BindingFlags.Instance |
+                    BindingFlags.NonPublic).SetValue(controller, true);
+                typeof(LevelUpController).GetMethod("UpdatePreview", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .Invoke(controller, null);
+            }
+            catch (Exception exception)
+            {
+                row["retryThrown"] = (exception.InnerException ?? exception).GetType().Name + ": " +
+                    (exception.InnerException ?? exception).Message;
+            }
+            row["depthAfterRetry"] = FavoredClassPendingPicks.Depth;
+            row["leafRankAfterRetry"] = controller.Preview.Progression.Features.GetRank(leaf);
+            row["rayAfterRetry"] = controller.Preview.HasFact(ray);
+            if (!FavoredClassPendingPicks.Installed)
+                failures.Add("replay scope: the scoped native replay is not installed");
+            if (!faulted || thrown == null)
+                failures.Add("replay scope: the injected failure did not interrupt the reward's replayed pick");
+            if ((int)row["depthAfterFailure"] != 0 || (bool)row["pendingRayCountedAfterFailure"])
+                failures.Add("replay scope: the interrupted replay left its pending picks marked");
+            if ((int)row["leafRankAfterFailure"] != 0)
+                failures.Add("replay scope: the interrupted pick was applied");
+            if (row["retryThrown"] != null || (int)row["depthAfterRetry"] != 0 ||
+                (int)row["leafRankAfterRetry"] != 1 || !(bool)row["rayAfterRetry"])
+                failures.Add("replay scope: the retried replay did not count the pending ray and apply the reward");
+            return row;
+        }
+
         private JObject ObserveBloodlinePowers(FavoredClassHostHandles host, FavoredClassBlueprintSet leaves,
             IList<string> failures)
         {
@@ -281,6 +362,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         (pair.Partial != null && FavoredClassLevelUpHarness.CanSelect(controller, fcb, pair.Partial)))
                         .Select(pair => pair.TargetKey).ToArray();
                     row["offered"] = new JArray(offered);
+                    // Review finding 5 on the real same-level replay (Ifrit, Fire).
+                    if (entry.Item1 == FavoredClassAncestry.Ifrit && entry.Item2 == FcbFireBloodlineGuid)
+                        result["replayScope"] = ObserveReplayScope(controller, fcb,
+                            pairs.FirstOrDefault(pair => pair.TargetKey == "FireRay"), feature(entry.Item4), failures);
                     if (!(bool)row["rayOwned"])
                         failures.Add(entry.Item1 + " " + entry.Item2 + ": the first power was not gained");
                     if (!offered.SequenceEqual(entry.Item5))
