@@ -99,18 +99,21 @@ namespace KingmakerGunslinger.DomainTests
                 ExpandedSummoningSpecialProfiles.BoilingRainDice == 2 &&
                 ExpandedSummoningSpecialProfiles.BoilingRainDieSides == 6,
                 "Dehydrate is 2d8 and boiling rain 2d6.");
-            Assertions.Equal(6, ExpandedSummoningSpecialProfiles.MephitCoats.Length,
-                "Six elemental coats.");
-            foreach (SummonCoatProfile coat in ExpandedSummoningSpecialProfiles.MephitCoats)
-                Assertions.True(coat.IsBounded && Keys.Contains(coat.Key), "Coat out of bounds: " + coat.Key);
-            Assertions.True(ExpandedSummoningSpecialProfiles.MephitCoat("magma-mephit").Pattern == SummonCoatPattern.Stripes &&
-                ExpandedSummoningSpecialProfiles.MephitCoat("ooze-mephit").Pattern == SummonCoatPattern.Spots &&
-                ExpandedSummoningSpecialProfiles.MephitCoat("magma-mephit").BaseRed < 0.3f &&
-                ExpandedSummoningSpecialProfiles.MephitCoat("magma-mephit").MarkRed > 0.9f,
-                "Magma is lava cracks on dark crust; ooze is blotched.");
-            Assertions.True(ExpandedSummoningSpecialProfiles.MephitCoats
-                .Select(value => value.BaseRed + "/" + value.BaseGreen + "/" + value.BaseBlue)
-                .Distinct().Count() == 6, "Every mephit coat base colour is distinct.");
+            Assertions.Equal(6, ExpandedSummoningSpecialProfiles.MephitVisualTints.Length,
+                "Six visual profiles.");
+            foreach (SummonVisualTintProfile tint in ExpandedSummoningSpecialProfiles.MephitVisualTints)
+                Assertions.True(tint.IsBounded && tint.HasRim && Keys.Contains(tint.Key),
+                    "Visual profile out of bounds or without a rim glow: " + tint.Key);
+            Assertions.True(ExpandedSummoningSpecialProfiles.MephitVisualTint("magma-mephit").RimRed > 2f &&
+                ExpandedSummoningSpecialProfiles.MephitVisualTint("magma-mephit").RimBlue < 0.5f &&
+                ExpandedSummoningSpecialProfiles.MephitVisualTint("ooze-mephit").RimGreen >
+                    ExpandedSummoningSpecialProfiles.MephitVisualTint("ooze-mephit").RimRed &&
+                ExpandedSummoningSpecialProfiles.MephitVisualTint("ice-mephit").RimBlue >
+                    ExpandedSummoningSpecialProfiles.MephitVisualTint("ice-mephit").RimRed,
+                "Magma glows ember red, ooze green, ice blue.");
+            Assertions.True(ExpandedSummoningSpecialProfiles.MephitVisualTints
+                .Select(value => value.RimRed + "/" + value.RimGreen + "/" + value.RimBlue)
+                .Distinct().Count() == 6, "Every mephit rim glow is distinct.");
         }
 
         internal static void MephitPackIsBounded()

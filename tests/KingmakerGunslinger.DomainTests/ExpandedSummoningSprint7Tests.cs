@@ -92,7 +92,7 @@ namespace KingmakerGunslinger.DomainTests
         internal static void LionVisualIsBounded()
         {
             SummonVisualTintProfile tint = ExpandedSummoningSpecialProfiles.LionVisualTint;
-            Assertions.True(tint.IsBounded && tint.Key == "lion" && !tint.HasEmission,
+            Assertions.True(tint.IsBounded && tint.Key == "lion" && !tint.HasRim,
                 "The Lion's tint is a bounded, glow-free warm coat.");
             Assertions.True(tint.TintRed > tint.TintGreen && tint.TintGreen > tint.TintBlue,
                 "The tint warms the leopard rig toward tawny.");
