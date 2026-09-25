@@ -18480,6 +18480,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ExpandedSummoningIdentityCatalog.UnitSymbol(
                         variant.Creature)));
             ExpandedSummoningRuleCapture.Clear();
+            UnitEntityData[] before = ExpandedSummoningKmgUnitsIn(caster.HoldingState);
             caster.Descriptor.AddFact(ability);
             try
             {
@@ -18495,8 +18496,29 @@ namespace KingmakerGunslinger.RuntimeTesting
             Game.Instance.EntityCreator.Tick();
             if (units.Length < 1 || units.Any(value =>
                     !ReferenceEquals(value.Blueprint, expected)))
-                throw new InvalidOperationException(
-                    "Mechanical contract cast returned the wrong unit kind.");
+            {
+                // The rule capture is the primary witness; the units of the
+                // expected kind that appeared in the caster's area are the
+                // second (the same two witnesses as the mechanical run).
+                UnitEntityData[] appeared = ExpandedSummoningKmgUnitsIn(caster.HoldingState)
+                    .Where(value => !before.Any(prior => ReferenceEquals(prior, value))).ToArray();
+                if (units.Length < 1 && appeared.Length >= 1 &&
+                    appeared.All(value => ReferenceEquals(value.Blueprint, expected)))
+                {
+                    _expandedSummoningLastAbilityExecution += ";capturedBy=state;ruleCaptured=0";
+                    units = appeared;
+                }
+                else
+                    throw new InvalidOperationException(
+                        "Mechanical contract cast returned the wrong unit kind: expected=" +
+                        expected.name + ";captured=[" + string.Join(",", units.Select(value =>
+                            value.Blueprint == null ? "<null>" : value.Blueprint.name).ToArray()) +
+                        "];appeared=[" + string.Join(",", appeared.Select(value =>
+                            value.Blueprint == null ? "<null>" : value.Blueprint.name).ToArray()) +
+                        "];execution=" + _expandedSummoningLastAbilityExecution + ";paused=" +
+                        Game.Instance.IsPaused + ";casterInState=" + caster.IsInState +
+                        ";casterConscious=" + caster.Descriptor.State.IsConscious + ".");
+            }
             evidence.AdditionalCasts++;
             return units;
         }
