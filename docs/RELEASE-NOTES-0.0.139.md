@@ -62,8 +62,10 @@ profile:
   uses; nothing else is granted early (Spirit of the Warrior is not offered,
   because its possession would raise base attack bonus). A widened
   performance shows its bard's own range: the area, its ring and the
-  performance's description agree, for that bard only; if a ring cannot be
-  widened, the area and the descriptions both keep the native range.
+  performance's description agree, for that bard only. If a ring cannot be
+  widened, that bard's live areas of the performance and its descriptions
+  all keep the native range; in the rare case that a widened area cannot be
+  restored exactly, that area ends and its performance toggle turns off.
 - **Mostly Human**: an optional Heritage-phase choice for the four elemental
   races. The character counts as both a human (humanoid) and its elemental
   race (native outsider) for effects related to race, such as the Favored

@@ -169,11 +169,16 @@ namespace KingmakerGunslinger.FavoredClass.Hooks
         }
 
         /// <summary>
-        /// A ring spawned after the initialization (a save load whose owner
-        /// view was not ready yet) arrives while the instance is still at its
-        /// native radius (the initialization deferred the widening): the ring
-        /// and the cylinder are widened together now, exactly once, or both
-        /// stay native on failure.
+        /// The native attach (AreaEffectEntityData.OnViewAttached) calls
+        /// SpawnFxs once more after every spawn and load. A ring spawned there
+        /// (a save load whose owner view was not ready yet) arrives while the
+        /// instance is still at its native radius (the initialization deferred
+        /// the widening): the ring and the cylinder are widened together now,
+        /// exactly once, or both stay native on failure. An instance the
+        /// initialization left native beside its unscaled ring (a failed or
+        /// held attempt) is attempted once more there under the same group
+        /// rule (held while a sibling is native); a scaled ring is never
+        /// scaled twice.
         /// </summary>
         internal static void ScaleLateRing(AreaEffectView view)
         {
@@ -197,10 +202,12 @@ namespace KingmakerGunslinger.FavoredClass.Hooks
     }
 
     /// <summary>
-    /// On a save load the native attach spawns a ring the initialization
-    /// could not (its owner's view was not ready yet); that late ring takes
-    /// its owner's scale. A ring spawned during the initialization is
-    /// scaled by the initialization postfix, never twice.
+    /// The native attach calls SpawnFxs after every spawn and load. On a save
+    /// load it spawns a ring the initialization could not (its owner's view
+    /// was not ready yet); that late ring takes its owner's scale. A ring
+    /// spawned during the initialization is scaled by the initialization
+    /// postfix, never twice; an instance it left native is attempted once more
+    /// (FavoredClassPerformanceRangePatch.ScaleLateRing).
     /// </summary>
     [HarmonyPatch(typeof(AreaEffectView), "SpawnFxs")]
     internal static class FavoredClassPerformanceLateRingPatch
