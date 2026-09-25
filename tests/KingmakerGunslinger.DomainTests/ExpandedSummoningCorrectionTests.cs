@@ -224,6 +224,17 @@ namespace KingmakerGunslinger.DomainTests
                 !ExpandedSummoningSpecialProfiles.IsWebTargetSizeAllowed(6, 4, 1), "The web size limit.");
             Assertions.True(ExpandedSummoningNaturalProfiles.For("giant-spider").Deviations.Any(value =>
                 value.Contains("ranged touch attack")), "The web's touch path must be recorded.");
+            // The plant and the worm keep the corrected sequences in their
+            // own records: the reviewed draft had recorded a single flytrap
+            // hold with engulf omitted, and an immediate worm swallow.
+            Assertions.True(ExpandedSummoningNaturalProfiles.For("giant-flytrap").Deviations.Any(value =>
+                    value.Contains("one link per bite")) &&
+                ExpandedSummoningNaturalProfiles.For("giant-flytrap").Deviations.Any(value =>
+                    value.Contains("Engulf is the swallow-whole sequence")),
+                "The flytrap's records must carry the per-bite links and the engulf.");
+            Assertions.True(ExpandedSummoningNaturalProfiles.For("purple-worm").Deviations.Any(value =>
+                value.Contains("on a later turn a successful maintain check")),
+                "The worm's records must carry the later-turn swallow.");
             foreach (string key in new[] { "pony", "horse" })
                 Assertions.True(ExpandedSummoningNaturalProfiles.For(key).Deviations.Any(value =>
                     value.Contains("secondary attacks (Docile")), "The docile hooves must be recorded: " + key);
@@ -299,6 +310,22 @@ namespace KingmakerGunslinger.DomainTests
             // without a round component).
             string components = Source("src", "KingmakerGunslinger", "Summoning", "ExpandedSummoningSpecialCombatComponents.cs");
             string builder = Source("src", "KingmakerGunslinger", "Blueprints", "ExpandedSummoningSpecialBuilder.cs");
+            // The summon grapple's checks honour the attack-roll natural 1
+            // and 20 the engine's maneuver rule lacks.
+            Assertions.False(ExpandedSummoningSpecialProfiles.IsSummonManeuverSuccess(1, true),
+                "A natural 1 fails the summon's grapple check whatever the sum.");
+            Assertions.True(ExpandedSummoningSpecialProfiles.IsSummonManeuverSuccess(20, false),
+                "A natural 20 succeeds whatever the sum.");
+            Assertions.True(ExpandedSummoningSpecialProfiles.IsSummonManeuverSuccess(11, true) &&
+                !ExpandedSummoningSpecialProfiles.IsSummonManeuverSuccess(11, false),
+                "Any other roll follows the engine's sum.");
+            RequireTokens("Maneuver naturals", components,
+                "internal static class SummonManeuverChecks",
+                "if (maneuver == null || maneuver.AutoFailure) return false;",
+                "if (maneuver.ConcealmentCheck != null && !maneuver.ConcealmentCheck.Success)",
+                "IsSummonManeuverSuccess(\n                (int)maneuver.InitiatorRoll, maneuver.Success)",
+                "if (!SummonManeuverChecks.Succeeded(maneuver)) return false;",
+                "bool success = SummonManeuverChecks.Succeeded(maneuver);");
             RequireTokens("Held-state rounds", components,
                 "public sealed class SummonHeldRoundComponent : BuffLogic, ITickEachRound",
                 "internal static int RoundsHeld(Buff heldState)",
@@ -306,6 +333,24 @@ namespace KingmakerGunslinger.DomainTests
             RequireTokens("Grappled buff ticks", builder,
                 "grappled.ComponentsArray = new BlueprintComponent[] { entangled,",
                 "ScriptableObject.CreateInstance<SummonHeldRoundComponent>() };");
+            // The Flash of Insight arming has no duration of its own, so a
+            // use never lapses unspent and the reload finds it exactly once
+            // (the first full run on the candidate found a one-round state
+            // gone before the reloaded attack).
+            Assertions.True(ExpandedSummoningSpecialProfiles.CyclopsFlashOfInsightLastsUntilUsed,
+                "The armed state lasts until the next attack roll ends it.");
+            RequireTokens("Flash arming", builder,
+                "arm.Permanent = ExpandedSummoningSpecialProfiles.CyclopsFlashOfInsightLastsUntilUsed;");
+            RequireTokens("Flash arming evidence", Source("src", "KingmakerGunslinger", "RuntimeTesting",
+                    "RuntimeTestRunner.ExpandedSummoningCorrection.cs"),
+                ";untimedArming=", "armings.All(value => value.IsPermanent)");
+            // A mechanical sub-case that loses a buff names it, and starts
+            // from a hostile no earlier sub-case left held or swallowed.
+            RequireTokens("Mechanical sub-case isolation", Source("src", "KingmakerGunslinger",
+                    "RuntimeTesting", "RuntimeTestRunner.cs"),
+                "private static Buff RequiredExpandedSummoningBuff(UnitEntityData unit,",
+                "private static void ResetExpandedSummoningMechanicalHostile(UnitEntityData hostile,",
+                "DescribeExpandedSummoningCorrectionException(exception)");
             // Every planned type the ledger carries must have a shell factory,
             // or the mod's blueprint initialization fails at load (the first
             // shake-out run of the correction found the area effects missing).

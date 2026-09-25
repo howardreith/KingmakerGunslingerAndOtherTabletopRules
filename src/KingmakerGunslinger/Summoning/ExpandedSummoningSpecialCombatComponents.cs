@@ -234,6 +234,27 @@ namespace KingmakerGunslinger.Summoning
         }
     }
 
+    /// <summary>
+    /// Whether a combat maneuver check a summon made succeeded. The engine's
+    /// rule decides by the sum alone - the d20 plus CMB against CMD - while a
+    /// combat maneuver check is an attack roll on the tabletop, where a
+    /// natural 1 always fails and a natural 20 always succeeds. The chosen
+    /// roll beats the defender's numbers and nothing else: a failed
+    /// concealment check or an auto-failure flag denies the maneuver whatever
+    /// the die showed.
+    /// </summary>
+    internal static class SummonManeuverChecks
+    {
+        internal static bool Succeeded(RuleCombatManeuver maneuver)
+        {
+            if (maneuver == null || maneuver.AutoFailure) return false;
+            if (maneuver.ConcealmentCheck != null && !maneuver.ConcealmentCheck.Success)
+                return false;
+            return ExpandedSummoningSpecialProfiles.IsSummonManeuverSuccess(
+                (int)maneuver.InitiatorRoll, maneuver.Success);
+        }
+    }
+
     /// <summary>Which limb an attack came from, by slot identity.</summary>
     internal enum SummonLimbKind { None, PrimaryHand, Additional }
 
@@ -505,7 +526,7 @@ namespace KingmakerGunslinger.Summoning
                 CombatManeuver.Grapple);
             if (context != null) context.TriggerRule(maneuver);
             else Rulebook.Trigger(maneuver);
-            if (!maneuver.Success) return false;
+            if (!SummonManeuverChecks.Succeeded(maneuver)) return false;
             Buff heldState;
             if (!MultiLink)
             {
@@ -598,15 +619,15 @@ namespace KingmakerGunslinger.Summoning
             var maneuver = new RuleCombatManeuver(owner, target, CombatManeuver.Grapple);
             if (context != null) context.TriggerRule(maneuver);
             else Rulebook.Trigger(maneuver);
-            if (!ExpandedSummoningSpecialProfiles.ShouldMaintainSummonHold(true,
-                    maneuver.Success))
+            bool success = SummonManeuverChecks.Succeeded(maneuver);
+            if (!ExpandedSummoningSpecialProfiles.ShouldMaintainSummonHold(true, success))
             {
                 ReleaseLink(owner, target, grab, true);
                 return "released";
             }
             int roundsHeld = RoundsHeld(heldState);
             if (grab != null && ExpandedSummoningSpecialProfiles.ShouldSwallowOnMaintain(
-                    grab.SwallowedBuff != null, maneuver.Success, roundsHeld,
+                    grab.SwallowedBuff != null, success, roundsHeld,
                     grab.IsSwallowSizeAllowed(owner, target)))
                 return "swallowed:" + grab.SwallowHeld(owner, target, context);
             ItemEntityWeapon weapon = SummonGrappleLinks.EstablishingWeapon(heldState) ??

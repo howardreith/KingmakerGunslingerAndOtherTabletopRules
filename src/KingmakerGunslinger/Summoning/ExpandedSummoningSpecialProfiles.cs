@@ -368,15 +368,22 @@ namespace KingmakerGunslinger.Summoning
         internal const int PixieDanceSpellLevel = 6;
 
         /// <summary>
-        /// Cyclops Flash of Insight, bounded (Sprint 3). Tabletop: once per
-        /// day, as an immediate action, the cyclops chooses the exact result
-        /// of one of its own die rolls. Here: once per summoning, as a swift
-        /// action, its next attack in the round is an automatic critical hit:
-        /// Kingmaker's automatic-hit path never rolls, so the threat and its
-        /// confirmation can only be granted together there.
+        /// Cyclops Flash of Insight, bounded (Sprint 3; corrected under the
+        /// 2026-09-25 order). Tabletop: once per day, as an immediate action,
+        /// the cyclops chooses the result of a single attack roll, skill
+        /// check or saving throw before the roll is made. Here: once per
+        /// summoning, as a swift action (the game has no immediate actions),
+        /// the cyclops's next attack roll is the chosen roll: its own d20
+        /// result is a natural 20, the hit and the threat follow from it,
+        /// the critical confirmation is rolled normally and no other roll is
+        /// touched. The arming has no duration of its own - the attack ends
+        /// it - so a use never lapses unspent and survives a save and a
+        /// reload exactly once. The tabletop choice of any one die roll is
+        /// narrowed to the attack roll.
         /// </summary>
         internal const int CyclopsFlashOfInsightUses = 1;
-        internal const int CyclopsFlashOfInsightRounds = 1;
+        /// <summary>The arming lasts until the next attack roll ends it; it has no duration of its own.</summary>
+        internal const bool CyclopsFlashOfInsightLastsUntilUsed = true;
         /// <summary>The chosen d20 result: a natural 20; the confirmation is an ordinary roll.</summary>
         internal const int CyclopsFlashOfInsightChosenRoll = 20;
         /// <summary>The stat block's hide armor, as an armor-descriptor bonus.</summary>
@@ -490,6 +497,16 @@ namespace KingmakerGunslinger.Summoning
         internal static bool ShouldMaintainSummonHold(bool targetOwned,
             bool maintainSuccess)
         { return targetOwned && maintainSuccess; }
+
+        /// <summary>
+        /// A combat maneuver check is an attack roll (Core Rulebook, Combat
+        /// Maneuvers): a natural 1 always fails and a natural 20 always
+        /// succeeds. The engine's own maneuver rule decides by the sum alone,
+        /// so the summon grapple's grab and maintain checks apply this over
+        /// the engine's result.
+        /// </summary>
+        internal static bool IsSummonManeuverSuccess(int naturalRoll, bool sumSuccess)
+        { return naturalRoll == 20 || (naturalRoll != 1 && sumSuccess); }
 
         /// <summary>
         /// Swallow whole / engulf: a swallower that began its round with the
@@ -617,6 +634,8 @@ namespace KingmakerGunslinger.Summoning
                 IsSwallowSizeAllowed(7, 7, false, 0, -1) || !IsSwallowSizeAllowed(4, 6, true, 4, -1) ||
                 IsSwallowSizeAllowed(5, 6, true, 4, -1) || ShouldSwallowOnMaintain(true, true, 0, true) ||
                 !ShouldSwallowOnMaintain(true, true, 1, true) || IsHeldSinceRoundStart(true, 0) ||
+                IsSummonManeuverSuccess(1, true) || !IsSummonManeuverSuccess(20, false) ||
+                !IsSummonManeuverSuccess(10, true) || IsSummonManeuverSuccess(10, false) ||
                 !IsHeldSinceRoundStart(true, 1) || GiantFlytrapBiteCount != 4 ||
                 GiantFlytrapEngulfMaxSize != 4 || PurpleWormSwallowSizeDelta != -1)
                 throw new InvalidOperationException("Sprint 7 rake / grapple identity profile changed.");
@@ -649,7 +668,7 @@ namespace KingmakerGunslinger.Summoning
                 PixieSleepArrowWillDc != 15 || PixieSleepArrowRounds != 50 ||
                 PixieDanceUses != 1 || PixieDanceCasterLevel != 8 ||
                 CyclopsFlashOfInsightUses != 1 ||
-                CyclopsFlashOfInsightRounds != 1 ||
+                !CyclopsFlashOfInsightLastsUntilUsed ||
                 CyclopsFlashOfInsightChosenRoll != 20 || CyclopsHideArmorBonus != 4 ||
                 SummonGrabManeuverBonus != 4 || SummonHoldMaintainBonus != 5 ||
                 ShamblingMoundConstrictDice != 2 ||

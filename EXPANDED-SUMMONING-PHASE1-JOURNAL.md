@@ -57,7 +57,10 @@ bounded form: once per summoning, a swift supernatural action arms a
 one-round state; the cyclops's next attack roll is an automatic hit and
 critical threat, and the state ends after that one attack through the
 native `RemoveBuffOnAttack`, so a full attack never carries it into later
-swings. The confirmation roll is left ordinary on purpose - a guaranteed
+swings. (Superseded by the 2026-09-25 correction order below: the arming
+has no duration of its own, and the attack's own d20 is chosen as a
+natural 20 rather than the hit being granted.) The confirmation roll is
+left ordinary on purpose - a guaranteed
 critical would be more than the tabletop power, which only fixes one roll.
 A brain spends it in combat; the action bar lets the player spend it first.
 The component keeps no state of its own, which matters because a blueprint
@@ -126,7 +129,9 @@ The Cyclops's armed natural 1 hit but registered no threat: the automatic-hit
 path in `RuleAttackRoll` never rolls, and decides the critical only from the
 two automatic flags together, so "auto-hit with an ordinary confirmation"
 is not a thing the engine can do. The bounded Flash of Insight is an
-automatic critical hit now; every record says so. And the creature review's
+automatic critical hit now; every record says so. (Superseded by the
+2026-09-25 correction order below, which rejected the automatic critical
+and chose the attack's own d20 on the pre-rolled-result seam instead.) And the creature review's
 first run failed with nothing but "observed 0": the request writer had
 silently dropped the creatures parameter, and the spawn helper, when it did
 run, was stripping the mod's own same-turn activation postfix from the
@@ -349,3 +354,25 @@ and makes its own attack roll, recorded by a global rulebook observer. The
 lifecycle scenario waits for the game to destroy each view at the end of the
 frame that disposed its unit, and counts the variant's objects back to
 baseline after each cycle.
+
+The first full run of the gate list on candidate `c6eb242a` found two more
+defects, both in the mechanics rather than the fixtures. The engine's
+combat-maneuver rule decides by the sum alone - d20 plus CMB against CMD,
+with no automatic failure or success - so the worm's later-turn check with
+a natural 1 and a hundred points of CMB maintained the hold and swallowed;
+a combat maneuver check is an attack roll on the tabletop, so the summon
+grapple's grab and maintain checks now apply the natural 1 (always fails)
+and the natural 20 (always succeeds) over the engine's result
+(`IsSummonManeuverSuccess`, pinned by the suite and the validator). And the
+Cyclops's Flash of Insight state, armed for one round before the working
+save, had lapsed by the time the reloaded cyclops attacked, so the reload
+found no arming and the attack rolled its own 1. The tabletop ability is
+chosen at the roll and never lapses unspent, so the arming now has no
+duration of its own: the native `RemoveBuffOnAttack` alone ends it, one
+use per summoning, one roll touched, present exactly once after the reload
+(`CyclopsFlashOfInsightLastsUntilUsed`, pinned). The same pass retired the
+last "automatic critical hit" wording, which the manifest note, the profile
+comment and the inventory assertion text still carried, and isolated the
+mechanical scenario's sub-cases from one another: each frees the hostile
+of any hold or swallow the previous one left, and each exception keeps its
+frames.

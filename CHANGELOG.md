@@ -9,9 +9,9 @@
 - Sprint 3, Native Publication Pack I: Pony (SM I / SNA I) and Horse (SM II /
   SNA II) with docile secondary hooves, Owlbear (SNA IV), Cyclops (SNA V, +4
   hide armor as a fact at AC 19 and a bounded Flash of Insight: once per
-  summoning the next attack's own d20 is a natural 20 with an ordinary
-  confirmation) and the Frost Giant under Summon Nature's Ally VII-IX
-  wrappers on the retained native unit.
+  summoning, armed until the next attack roll, that attack's own d20 is a
+  natural 20 with an ordinary confirmation) and the Frost Giant under Summon
+  Nature's Ally VII-IX wrappers on the retained native unit.
 - Sprint 4, Native Publication Pack II: Shambling Mound (SNA VI), Giant
   Flytrap (SNA VII, one grab link per bite and engulf) and Purple Worm (SNA
   VIII, a later-turn swallow of a foe one size smaller), and the shared
