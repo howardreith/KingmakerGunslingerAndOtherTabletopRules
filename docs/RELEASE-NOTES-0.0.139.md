@@ -84,7 +84,7 @@ only by reflection after the exact binary gate passes.
 
 ## Source gates
 
-Domain suite: 1,812 deterministic tests at this checkpoint (the count in the
+Domain suite: 1,815 deterministic tests at this checkpoint (the count in the
 repository validator is authoritative and is updated with every added case).
 Historical domain checkpoints of 1,251, 1,288 and 1,325 cases remain archived
 under their original releases.
