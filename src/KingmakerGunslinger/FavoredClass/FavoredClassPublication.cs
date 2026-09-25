@@ -184,6 +184,9 @@ namespace KingmakerGunslinger.FavoredClass
             if (pair.Effect.Id == FavoredClassCatalog.EffectPerformanceRange && pair.TargetKey != null &&
                 !FavoredClassPerformanceManifest.For(pair.TargetKey).Published)
                 return "excluded-target:" + pair.TargetKey;
+            if (pair.Effect.Id == FavoredClassCatalog.EffectSelectedRevelation && pair.TargetKey != null &&
+                !FavoredClassRevelationManifest.For(pair.TargetKey).Published)
+                return "excluded-target:" + pair.TargetKey;
             if (host.BonusSelectionFor(pair.HostClassGuid) == null)
                 return "class-not-scanned";
             if (FavoredClassRuntime.IsEffectUnavailable(pair.Effect.Id))
