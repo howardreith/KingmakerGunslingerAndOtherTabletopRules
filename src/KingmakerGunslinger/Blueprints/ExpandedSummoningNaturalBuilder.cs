@@ -29,6 +29,8 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Summoning.Natural.Tail3d6";
         private const string Bite2d8Symbol =
             "KMG.Summoning.Natural.Bite2d8";
+        private const string Claw1d8Symbol =
+            "KMG.Summoning.Natural.Claw1d8";
         private const string Talon2d6Symbol =
             "KMG.Summoning.Natural.Talon2d6";
         private const string NativeBite1d6Guid =
@@ -139,7 +141,8 @@ namespace KingmakerGunslinger.Blueprints
                 { "AcidResistance20", "416386972c8de2e42953533c4946599a" },
                 { "Blindsight", "236ec7f226d3d784884f066aa4be1570" },
                 { "PurpleWormPoison", "728446b9d0bf47144a1b621169299c2a" },
-                { "CriticalFocus", "8ac59959b1b23c347a0361dc97cc786d" }
+                { "CriticalFocus", "8ac59959b1b23c347a0361dc97cc786d" },
+                { "SpiderWebImmunity", "3051e7002c803fc47a11bcfa381b9fbd" }
             };
         private static readonly ISet<string> BaseUnitFactKeys =
             new HashSet<string>(new[] { "ReducedReach", "Ferocity" },
@@ -180,6 +183,12 @@ namespace KingmakerGunslinger.Blueprints
                     "native large claw animation weapon"),
                 Require<BlueprintItemWeapon>(bySymbol, Talon2d6Symbol),
                 Talon2d6Symbol, 2, DiceType.D6);
+            // Sprint 8: the tiger's 1d8 claw on the native large claw animation.
+            ConfigureWeapon(BlueprintLibraryLookup.RequireExact<
+                BlueprintItemWeapon>(library, NativeClaw1d6Guid,
+                    "native large claw animation weapon"),
+                Require<BlueprintItemWeapon>(bySymbol, Claw1d8Symbol),
+                Claw1d8Symbol, 1, DiceType.D8);
             foreach (NaturalSummonProfile profile in
                 ExpandedSummoningNaturalProfiles.All)
                 ConfigureUnit(library, Require<BlueprintUnit>(bySymbol,
@@ -354,6 +363,8 @@ namespace KingmakerGunslinger.Blueprints
                 Bite2d8Symbol);
             if (key == "Talon2d6") return Require<BlueprintItemWeapon>(bySymbol,
                 Talon2d6Symbol);
+            if (key == "Claw1d8") return Require<BlueprintItemWeapon>(bySymbol,
+                Claw1d8Symbol);
             if (key == "Gore2d8") return BlueprintLibraryLookup.RequireExact<
                 BlueprintItemWeapon>(library, NativeMastodonGoreGuid,
                     "mastodon 2d8 gore");

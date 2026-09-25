@@ -745,6 +745,54 @@ def mephit(element):
                        (0.0, 0.0, -1.0), 0.5 + 0.3 * ((k * 7) % 3), 0.07, drip, 0.02)
 
 
+def tiger():
+    """A tiger's head and shoulders facing the viewer: orange coat with dark
+    stripes over the brow and cheeks, white muzzle and chin, round ears,
+    amber eyes, a snarl of fangs."""
+    orange = material("Orange", (0.82, 0.42, 0.10), 0.7, noise=(7.0, 0.35, (0.55, 0.25, 0.05)))
+    dark = material("Stripe", (0.08, 0.05, 0.04), 0.8)
+    white = material("White", (0.95, 0.92, 0.85), 0.6, subsurface=0.15)
+    eye = material("Eye", (0.95, 0.65, 0.15), 0.2, emission=(0.95, 0.65, 0.15), emission_strength=1.0)
+    pupil = material("Pupil", (0.02, 0.02, 0.02), 0.3)
+    nose = material("Nose", (0.9, 0.55, 0.55), 0.5)
+    fang = material("Fang", (0.96, 0.95, 0.9), 0.35)
+    body = Blob("Body", orange, 0.05)
+    body.ball((0.0, 0.6, -1.3), 1.45, (1.2, 0.9, 1.0), axis=(1, 0, 0))      # chest
+    body.ball((0.0, 0.3, -0.35), 0.85)                                       # neck
+    body.ball((0.0, 0.0, 0.55), 1.05, (1.05, 0.95, 1.0), axis=(1, 0, 0))    # head
+    body.ball((0.0, -0.55, 0.15), 0.72, (1.0, 0.85, 0.7), axis=(1, 0, 0))   # muzzle mass
+    for s in (-1, 1):
+        body.ball((s * 1.15, 0.45, -0.85), 0.6)                              # shoulders
+        body.ball((s * 0.72, 0.1, 1.25), 0.34)                               # ears
+    # white muzzle, chin and eye patches
+    sphere("Muzzle", (0.0, -0.95, 0.05), (0.62, 0.32, 0.42), white)
+    sphere("Chin", (0.0, -0.8, -0.45), (0.5, 0.3, 0.25), white)
+    for s in (-1, 1):
+        sphere("Cheek%d" % s, (s * 0.7, -0.6, 0.35), (0.32, 0.2, 0.22), white)
+        sphere("Brow%d" % s, (s * 0.42, -0.7, 0.78), (0.2, 0.12, 0.1), white)
+        sphere("Eye%d" % s, (s * 0.42, -0.86, 0.66), (0.17, 0.1, 0.14), eye)
+        sphere("Pupil%d" % s, (s * 0.42, -0.97, 0.66), (0.05, 0.04, 0.1), pupil)
+        sphere("EarIn%d" % s, (s * 0.72, -0.05, 1.3), (0.2, 0.1, 0.24), white)
+    sphere("Nose", (0.0, -1.22, 0.22), (0.2, 0.1, 0.12), nose)
+    # stripes: dark bands over the brow, cheeks, neck and shoulders
+    for k in range(5):
+        y = 0.9 + 0.12 * (k % 2)
+        cone_along("BrowStripe%d" % k, (-0.6 + 0.3 * k, -0.35, y), (0.15, 0.3, 0.55), 0.55, 0.075, dark, 0.02)
+    for s in (-1, 1):
+        for k in range(4):
+            cone_along("CheekStripe%d%d" % (s, k), (s * (0.75 + 0.15 * k), -0.35 + 0.1 * k, 0.55 - 0.3 * k),
+                       (s * 0.35, -0.3, -0.9), 0.55, 0.07, dark, 0.02)
+        for k in range(5):
+            cone_along("NeckStripe%d%d" % (s, k), (s * (0.5 + 0.28 * k), 0.15 + 0.05 * k, -0.25 - 0.25 * k),
+                       (s * 0.4, 0.2, -1.0), 0.8, 0.09, dark, 0.03)
+    # fangs and mouth line
+    cone_along("MouthLine", (-0.35, -1.18, -0.05), (1.0, 0.0, 0.0), 0.7, 0.03, pupil, 0.03)
+    for s in (-1, 1):
+        cone_along("Fang%d" % s, (s * 0.24, -1.2, -0.05), (0.0, -0.05, -1.0), 0.32, 0.06, fang)
+        cone_along("Whisker%d%d" % (s, 0), (s * 0.3, -1.1, 0.0), (s * 1.0, -0.1, -0.15), 1.1, 0.012, white)
+        cone_along("Whisker%d%d" % (s, 1), (s * 0.3, -1.05, -0.1), (s * 1.0, -0.1, -0.4), 1.0, 0.012, white)
+
+
 CREATURES = {
     "pony": dict(build=lambda: equine(True),
                  inner=(0.5, 0.38, 0.16), outer=(0.05, 0.04, 0.025),
@@ -794,6 +842,10 @@ CREATURES = {
                      inner=MEPHIT_DRESSINGS["salt"]["inner"], outer=MEPHIT_DRESSINGS["salt"]["outer"],
                      key=MEPHIT_DRESSINGS["salt"]["key"], rim=MEPHIT_DRESSINGS["salt"]["rim"],
                      camera=((0.3, -7.4, 0.9), (-0.1, 0.0, 0.1), 55.0)),
+    "tiger": dict(build=tiger,
+                  inner=(0.3, 0.16, 0.05), outer=(0.03, 0.015, 0.005),
+                  key=(1.0, 0.9, 0.75), rim=(1.0, 0.7, 0.4),
+                  camera=((0.3, -7.6, 0.9), (-0.1, 0.0, 0.05), 55.0)),
     "steam-mephit": dict(build=lambda: mephit("steam"),
                      inner=MEPHIT_DRESSINGS["steam"]["inner"], outer=MEPHIT_DRESSINGS["steam"]["outer"],
                      key=MEPHIT_DRESSINGS["steam"]["key"], rim=MEPHIT_DRESSINGS["steam"]["rim"],

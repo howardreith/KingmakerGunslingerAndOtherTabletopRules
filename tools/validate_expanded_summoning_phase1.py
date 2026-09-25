@@ -7,7 +7,11 @@ Nature's Ally Frost Giant wrappers and the Cyclops Flash of Insight specials;
 Sprint 4 added Shambling Mound, Giant Flytrap and Purple Worm and the shared
 summon grapple lifecycle specials; Sprint 5 added the Dust, Ice, Magma, Ooze,
 Salt and Steam Mephits with their breath, spell-like ability, resource, cast
-action, brain and traits specials. This module pins that append exactly -
+action, brain and traits specials; Sprint 6 added the Monitor Lizard, Grizzly
+Bear and Dire Bear grab carriers and the Giant Spider's web pack; Sprint 7
+added the four big-cat grab-and-rake carriers; Sprint 8 added the Tiger with
+its placements, the project 1d8 claw, its carrier and the Cheetah's sprint
+pack. This module pins that append exactly -
 symbol, GUID and planned type, in ledger order, directly after the Better
 Vendors progression block - and the current roster figures the catalogs,
 icons and package carry. It claims no runtime or visual acceptance; those
@@ -25,7 +29,8 @@ PRESERVED_ENTRIES = 1956  # 1913 preserved + 43 Better Vendors progression
 STATIC_KEY = "expandedSummoningPhase1"
 
 # Exact ordered (symbol, guid, plannedType) triples appended by Sprint 3, then
-# Sprint 4, then Sprint 5, in ledger order.
+# Sprint 4, then Sprint 5, then Sprint 6, then Sprint 7, then Sprint 8, in
+# ledger order.
 APPENDED = (
     ("KMG.Summoning.Unit.Pony", "67a661d7b39e44bc811ad9ff59120110", "BlueprintUnit"),
     ("KMG.Summoning.Unit.Horse", "629fa53bf40d4b4b9828f57cf81194e9", "BlueprintUnit"),
@@ -263,24 +268,51 @@ APPENDED = (
     ("KMG.Summoning.Special.SteamMephit.SpellLikeOneAi", "aaa64536cc8345d78cc5109c055e1ae2", "BlueprintAiCastSpell"),
     ("KMG.Summoning.Special.SteamMephit.SpellLikeTwo", "ab241b72756a49cab443ef5b1acd23de", "BlueprintAbility"),
     ("KMG.Summoning.Special.SteamMephit.SpellLikeTwoResource", "d8bdd93b25bb45f9b5775ed90df5b61c", "BlueprintAbilityResource"),
-    ("KMG.Summoning.Special.SteamMephit.SpellLikeTwoAi", "3ab58c5239174273892727aa25c6f5cb", "BlueprintAiCastSpell")
+    ("KMG.Summoning.Special.SteamMephit.SpellLikeTwoAi", "3ab58c5239174273892727aa25c6f5cb", "BlueprintAiCastSpell"),
+    ("KMG.Summoning.Special.MonitorLizard.CombatTraits", "45f7552dddaf4322b44a1421cef3a3f2", "BlueprintBuff"),
+    ("KMG.Summoning.Special.GrizzlyBear.CombatTraits", "75a7c289e4c643bb93c2155a9f079c34", "BlueprintBuff"),
+    ("KMG.Summoning.Special.DireBear.CombatTraits", "74e7cfabb0e14a07b9c0ec9862e8009d", "BlueprintBuff"),
+    ("KMG.Summoning.Special.GiantSpider.Web", "ea2845894cb94af19994768602294900", "BlueprintAbility"),
+    ("KMG.Summoning.Special.GiantSpider.WebResource", "2f841b1ca74a42d487ad43e1c26f7210", "BlueprintAbilityResource"),
+    ("KMG.Summoning.Special.GiantSpider.WebAi", "67a101d251444047a6f3c15323bff174", "BlueprintAiCastSpell"),
+    ("KMG.Summoning.Special.GiantSpider.Brain", "1b8106c390e64f048043998da1c13875", "BlueprintBrain"),
+    ("KMG.Summoning.Special.GiantSpider.CombatTraits", "c5637ec9346b414087fda9334ec50bf5", "BlueprintBuff"),
+    ("KMG.Summoning.Special.Leopard.CombatTraits", "da89f9ecc18849edbbad0ee7772c8cd0", "BlueprintBuff"),
+    ("KMG.Summoning.Special.Lion.CombatTraits", "e7d7d41e2c764fa5a56d33ca4556c65c", "BlueprintBuff"),
+    ("KMG.Summoning.Special.DireLion.CombatTraits", "0641d94c18b740f4b7772e8d3205ba96", "BlueprintBuff"),
+    ("KMG.Summoning.Special.DireTiger.CombatTraits", "4cbd552217734bbfbc4be0c2c8b97849", "BlueprintBuff"),
+    ("KMG.Summoning.Unit.Tiger", "5182125341e34ae98491eaf991bc0ef3", "BlueprintUnit"),
+    ("KMG.Summoning.Ability.SNA.Tier4.Tiger.One", "11803dae3bbd4aa2b724e198723cf823", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier5.Tiger.OneD3", "78f0199c387545bdb4882ca470758fcb", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier6.Tiger.OneD4PlusOne", "9744d59cb03d431abaaebaaddf01de75", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier7.Tiger.OneD4PlusOne", "a73109affc4b41a6bb763bf0f71be396", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier8.Tiger.OneD4PlusOne", "c01fd035f03f402d81402b8b1f26307f", "BlueprintAbility"),
+    ("KMG.Summoning.Ability.SNA.Tier9.Tiger.OneD4PlusOne", "99ac368e5a6c43b9bdb48327984acebe", "BlueprintAbility"),
+    ("KMG.Summoning.Special.Tiger.CombatTraits", "87733e5295284048949fbb4b50c533c9", "BlueprintBuff"),
+    ("KMG.Summoning.Special.Cheetah.Sprint", "a2ae66e5a8ca4bd2bbb8fe7001bd66cd", "BlueprintAbility"),
+    ("KMG.Summoning.Special.Cheetah.SprintResource", "b1db61f007c547bdb0668ffac3e7b960", "BlueprintAbilityResource"),
+    ("KMG.Summoning.Special.Cheetah.SprintState", "c7a7fd6c4c7e4ef29d9a634ed3de995d", "BlueprintBuff"),
+    ("KMG.Summoning.Special.Cheetah.SprintAi", "4c41608d98f945d0897ff01e5a691cdc", "BlueprintAiCastSpell"),
+    ("KMG.Summoning.Special.Cheetah.Brain", "607f8ece3e8943faa13ab95ac611ad54", "BlueprintBrain"),
+    ("KMG.Summoning.Special.Cheetah.CombatTraits", "056353ae7a1b4663b4e028e133eb4b8f", "BlueprintBuff"),
+    ("KMG.Summoning.Natural.Claw1d8", "422318f491354d37aba69dece0004a11", "BlueprintItemWeapon")
 )
 
 PHASE1 = {
-    "uniqueCreatures": 80,
+    "uniqueCreatures": 81,
     "summonMonsterEntries": 74,
     "summonMonsterPlacements": 414,
-    "summonNaturesAllyEntries": 70,
-    "summonNaturesAllyPlacements": 393,
-    "registeredLogicalPlacements": 807,
-    "publishedLogicalPlacements": 793,
+    "summonNaturesAllyEntries": 71,
+    "summonNaturesAllyPlacements": 399,
+    "registeredLogicalPlacements": 813,
+    "publishedLogicalPlacements": 799,
     "templatedPlacements": 199,
     "nativeExpansionWrappers": 29,
-    "naturalProfiles": 33,
-    "projectIcons": 90,
-    "foundationIdentities": 1421,
-    "appendedLedgerIdentities": 237,
-    "packageFileCountWithSoundBank": 250,
+    "naturalProfiles": 34,
+    "projectIcons": 91,
+    "foundationIdentities": 1448,
+    "appendedLedgerIdentities": 264,
+    "packageFileCountWithSoundBank": 251,
 }
 SPRINT3 = PHASE1  # the pins below read the current figures
 
@@ -331,7 +363,8 @@ def validate(root: Path) -> None:
         'C("purple-worm","Purple Worm",null,false,8)',
         'C("dust-mephit","Dust Mephit",4,false,4)', 'C("ice-mephit","Ice Mephit",4,false,4)',
         'C("magma-mephit","Magma Mephit",4,false,4)', 'C("ooze-mephit","Ooze Mephit",4,false,4)',
-        'C("salt-mephit","Salt Mephit",4,false,4)', 'C("steam-mephit","Steam Mephit",4,false,4)')
+        'C("salt-mephit","Salt Mephit",4,false,4)', 'C("steam-mephit","Steam Mephit",4,false,4)',
+        'C("tiger","Tiger",null,false,4,"Leopard")')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs",
         "RegisteredLogicalPlacementCount = %d;" % SPRINT3["registeredLogicalPlacements"],
         "SuppressedLogicalPlacementCount = 14;")
@@ -356,7 +389,26 @@ def validate(root: Path) -> None:
         "MephitSickenedRounds = 3", "MephitSpellLikeUses = 1", "MephitBurstRadiusFeet = 20")
     require_tokens(root / "src/KingmakerGunslinger/Blueprints/ExpandedSummoningSpecialBuilder.cs",
         "ConfigureMephitVariants(library, bySymbol)", "ContextConditionIsEnemy",
-        "TargetType.Enemy", "4e42460798665fd4cb9173ffa7ada323")
+        "TargetType.Enemy", "4e42460798665fd4cb9173ffa7ada323",
+        # Sprint 6: the repaired grabbers and the bounded web
+        "MonitorLizardCombatTraitsSymbol, \"MonitorLizard\"", "GrizzlyBearCombatTraitsSymbol, \"GrizzlyBear\"",
+        "DireBearCombatTraitsSymbol, \"DireBear\"", "ConfigureGiantSpiderWeb(library, bySymbol)",
+        "a719abac0ea0ce346b401060754cc1c0")
+    require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningNaturalProfiles.cs",
+        '"SpiderWebImmunity"', "shared summon grapple lifecycle (Sprint 6)",
+        "charge-only rake component", "shared summon grapple lifecycle (Sprint 7)")
+    require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningSpecialCombatComponents.cs",
+        "class SummonRakeComponent", "evt.AutoMiss = true;", "evt.SuspendCombatLog = true;")
+    require_tokens(root / "src/KingmakerGunslinger/Blueprints/ExpandedSummoningSpecialBuilder.cs",
+        "ConfigureCat(library, bySymbol, LeopardUnitSymbol", "ConfigureCat(library, bySymbol, DireTigerUnitSymbol",
+        "ExpandedSummoningSpecialProfiles.LionVisualTint",
+        # Sprint 8: the tiger's carrier on the project claw, the cheetah's sprint, both coats
+        "ConfigureCatWithWeapon(library, bySymbol, TigerUnitSymbol", "ConfigureCheetahSprint(bySymbol)",
+        "ExpandedSummoningSpecialProfiles.TigerCoat", "ExpandedSummoningSpecialProfiles.CheetahCoat")
+    require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningVisualVariantPatch.cs",
+        "class SummonCoatRasterizer", "CoatTextureSize = 512")
+    require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonViewScaleCatalog.cs",
+        'S("tiger", 1.25f)', 'S("cheetah", 0.92f)')
     for path in (root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningCatalog.cs",
                  root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningIdealRosterCatalog.cs"):
         if "Lightning" in path.read_text(encoding="utf-8-sig"):
@@ -367,11 +419,11 @@ def validate(root: Path) -> None:
             len(runtime_icons["icons"]) != SPRINT3["projectIcons"] or \
             not {"pony", "horse", "owlbear", "cyclops", "shambling-mound", "giant-flytrap",
                  "purple-worm", "dust-mephit", "ice-mephit", "magma-mephit", "ooze-mephit",
-                 "salt-mephit", "steam-mephit"} <= {row["key"] for row in runtime_icons["icons"]}:
+                 "salt-mephit", "steam-mephit", "tiger"} <= {row["key"] for row in runtime_icons["icons"]}:
         raise AssertionError("Runtime icon manifest does not carry the Phase 1 icons")
     for key in ("pony", "horse", "owlbear", "cyclops", "shambling-mound", "giant-flytrap",
                 "purple-worm", "dust-mephit", "ice-mephit", "magma-mephit", "ooze-mephit",
-                "salt-mephit", "steam-mephit"):
+                "salt-mephit", "steam-mephit", "tiger"):
         if not (root / "assets/game/icons/expanded-summoning" / (key + ".png")).is_file() or \
                 not (root / "assets-source/original-icons/expanded-summoning/sources" / (key + ".png")).is_file():
             raise AssertionError("Phase 1 icon file missing: " + key)
@@ -405,7 +457,7 @@ def main() -> int:
     except AssertionError as error:
         print(f"Expanded Summoning Phase 1 validation failed: {error}", file=sys.stderr)
         return 1
-    print("Expanded Summoning Phase 1 validation PASS: %d appended identities; Sprint 3-5 pins exact."
+    print("Expanded Summoning Phase 1 validation PASS: %d appended identities; Sprint 3-8 pins exact."
           % len(APPENDED))
     return 0
 

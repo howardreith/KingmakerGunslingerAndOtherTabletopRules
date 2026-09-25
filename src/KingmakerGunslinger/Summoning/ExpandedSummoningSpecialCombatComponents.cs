@@ -11,6 +11,7 @@ using Kingmaker.Controllers.Units;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Enums.Damage;
+using Kingmaker.Items;
 using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
@@ -509,6 +510,52 @@ namespace KingmakerGunslinger.Summoning
     }
 
     [Serializable]
+    /// <summary>
+    /// Sprint 7: the charge-only rake. A cat's rake claws are the last two
+    /// weapon slots of its body's additional limbs (the game lists the
+    /// secondary limbs after the additional ones). An attack roll with a rake
+    /// claw that is neither part of a charge (Pounce makes the charge a full
+    /// attack) nor made while the cat holds a grappled foe becomes a silent
+    /// automatic miss: no roll, no damage, no combat-log line. Every other
+    /// attack is untouched. Decision: ExpandedSummoningSpecialProfiles
+    /// .ShouldRakeApply.
+    /// </summary>
+    public sealed class SummonRakeComponent :
+        RuleInitiatorLogicComponent<RuleAttackRoll>
+    {
+        public override void OnEventAboutToTrigger(RuleAttackRoll evt)
+        {
+            if (evt == null || Owner == null) return;
+            UnitEntityData owner = Owner.Unit;
+            if (owner == null || owner.Body == null) return;
+            bool isRakeWeapon = IsRakeWeapon(owner, evt.Weapon);
+            bool isCharge = evt.RuleAttackWithWeapon != null &&
+                evt.RuleAttackWithWeapon.IsCharge;
+            bool isHolding = owner.Get<UnitPartGrappleInitiator>() != null;
+            if (ExpandedSummoningSpecialProfiles.ShouldRakeApply(isRakeWeapon,
+                    isCharge, isHolding)) return;
+            evt.AutoMiss = true;
+            evt.SuspendCombatLog = true;
+        }
+
+        public override void OnEventDidTrigger(RuleAttackRoll evt) { }
+
+        /// <summary>
+        /// True when the weapon sits in one of the owner's rake slots.
+        /// </summary>
+        public static bool IsRakeWeapon(UnitEntityData owner, ItemEntityWeapon weapon)
+        {
+            if (owner == null || owner.Body == null || weapon == null) return false;
+            List<Kingmaker.Items.Slots.WeaponSlot> limbs = owner.Body.AdditionalLimbs;
+            if (limbs == null) return false;
+            int first = limbs.Count - ExpandedSummoningSpecialProfiles.CatRakeSlotCount;
+            for (int index = Math.Max(0, first); index < limbs.Count; index++)
+                if (limbs[index] != null && ReferenceEquals(limbs[index].MaybeWeapon, weapon))
+                    return true;
+            return false;
+        }
+    }
+
     public sealed class PixieSleepArrowComponent :
         RuleInitiatorLogicComponent<RuleAttackWithWeapon>
     {

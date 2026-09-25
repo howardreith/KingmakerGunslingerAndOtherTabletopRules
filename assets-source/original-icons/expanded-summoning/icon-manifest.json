@@ -2,7 +2,7 @@
     "schemaVersion":  1,
     "provenance":  "Project-owned original artwork: 77 AI-assisted roster-mission concepts and Phase 1 additions rendered procedurally in Blender; no source images or third-party pixels.",
     "generator":  "tools/New-ExpandedSummoningIcons.ps1",
-    "count":  90,
+    "count":  91,
     "icons":  [
                   {
                       "key":  "dog",
@@ -2547,6 +2547,27 @@
                                                "KMG.Summoning.Ability.SNA.Tier8.SteamMephit.OneD4PlusOne",
                                                "KMG.Summoning.Ability.SNA.Tier9.SteamMephit.OneD4PlusOne",
                                                "KMG.Summoning.Unit.SteamMephit"
+                                           ]
+                  },
+                  {
+                      "key":  "tiger",
+                      "displayName":  "Tiger",
+                      "sourceFile":  "assets-source/original-icons/expanded-summoning/sources/tiger.png",
+                      "productionFile":  "assets/game/icons/expanded-summoning/tiger.png",
+                      "sourceSha256":  "5acdef2253aa46565b4588e6134c9893e8ece4b85816827426f1e47769c800b4",
+                      "outputSha256":  "0c2c7447cf4c8559f5bc2bd0882aac5140b84c75dd2022edb90d2fe87a1c1ae4",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog",
+                      "blueprintSymbols":  [
+                                               "KMG.Summoning.Ability.SNA.Tier4.Tiger.One",
+                                               "KMG.Summoning.Ability.SNA.Tier5.Tiger.OneD3",
+                                               "KMG.Summoning.Ability.SNA.Tier6.Tiger.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SNA.Tier7.Tiger.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SNA.Tier8.Tiger.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SNA.Tier9.Tiger.OneD4PlusOne",
+                                               "KMG.Summoning.Unit.Tiger"
                                            ]
                   }
               ]
