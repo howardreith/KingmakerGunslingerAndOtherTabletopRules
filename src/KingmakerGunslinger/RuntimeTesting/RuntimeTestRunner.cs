@@ -3596,12 +3596,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Expanded Summoning prepare requires the module to be active.");
                 if (!_expandedSummoningPersistenceFixtureSpawned)
                 {
-                    foreach (UnitEntityData stale in
-                        ExpandedSummoningPersistentUnits(gameState, party))
-                        stale.Dispose();
-                    if (ExpandedSummoningPersistentUnits(gameState, party).Length != 0)
+                    int staleLeft = RemoveExpandedSummoningStaleSummons(gameState, party);
+                    if (staleLeft != 0)
                         throw new InvalidOperationException(
-                            "Stale KMG summons could not be removed before prepare.");
+                            "Stale KMG summons could not be removed before prepare: " +
+                            staleLeft + " remain.");
                     _expandedSummoningPersistencePreparedUnits =
                         SpawnExpandedSummoningPersistenceFixture(caster);
                     _expandedSummoningPersistenceFixtureSpawned = true;
@@ -3921,6 +3920,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                 value != null && !value.Destroyed && value.Blueprint != null &&
                 value.Blueprint.name.StartsWith("KMG_Summoning_Unit_",
                     StringComparison.Ordinal)).ToArray();
+        }
+
+        /// <summary>
+        /// Destroys every KMG summon a loaded save still carries (an earlier
+        /// prepare's fixture), drains the game's destruction queue, and
+        /// returns how many are still alive. Disposal alone leaves a unit in
+        /// the state's collections until the destroyer has ticked.
+        /// </summary>
+        private static int RemoveExpandedSummoningStaleSummons(object gameState,
+            UnitEntityData[] party)
+        {
+            foreach (UnitEntityData stale in ExpandedSummoningPersistentUnits(gameState, party))
+            {
+                CleanupExpandedSummoningUnit(stale);
+                if (!stale.Destroyed) stale.Dispose();
+            }
+            for (int pass = 0; pass < 4; pass++) Game.Instance.EntityDestroyer.Tick();
+            return ExpandedSummoningPersistentUnits(gameState, party).Count(value =>
+                !value.Destroyed || value.View != null || value.HoldingState != null);
         }
 
         private static UnitEntityData[] ExpandedSummoningPersistentUnits(
