@@ -1309,10 +1309,15 @@ namespace KingmakerGunslinger.Bootstrap
                     elementalFeats,
                     elementalFeatPublication,
                     martialPerformancePublication,
+                    // The complete aggregate: every registry of this bootstrap.
+                    // The favored-class and Mostly Human registries are
+                    // expected to hold exactly their catalogs' identities when
+                    // registered, and none after a contained rollback.
                     registry.RegisteredCount + teleportationRegistry.RegisteredCount + magicCircleRegistry.RegisteredCount +
-                        favoredClassRegistry.RegisteredCount,
+                        favoredClassRegistry.RegisteredCount + mostlyHumanRegistry.RegisteredCount,
                     expectedRegisteredBlueprintCount + teleportationRegistry.RegisteredCount + magicCircleRegistry.RegisteredCount +
-                        favoredClassRegistry.RegisteredCount);
+                        (_favoredClass == null ? 0 : KingmakerGunslinger.FavoredClass.FavoredClassIdentityCatalog.IdentityCount) +
+                        (_mostlyHuman == null ? 0 : ElementalMostlyHumanPolicy.IdentityCount));
             }
             catch (Exception initializationException)
             {
