@@ -149,6 +149,25 @@ namespace KingmakerGunslinger.RuntimeTesting
             "summon-same-turn-compatibility-acadamae";
         internal const string DisposableExpandedSummoningVisualContracts =
             "disposable-expanded-summoning-visual-contracts";
+        /// <summary>
+        /// Correction order (2026-09-25): the focused live rules cases - the
+        /// cats' attack and target identity, grab and swallow sizes, the
+        /// Giant Flytrap's multi-link hold, the chartered mephit roles with
+        /// the ally-safe cloud cases, the Cyclops armor class and Flash of
+        /// Insight, the Web's ranged touch path and the docile hooves - on
+        /// disposable units in the guarded working save.
+        /// </summary>
+        internal const string DisposableExpandedSummoningRules =
+            "disposable-expanded-summoning-rules";
+        /// <summary>
+        /// Correction order (2026-09-25): repeated cast-and-dispose cycles of
+        /// the tinted and coated summons with the variant-owned material and
+        /// texture counts measured back to baseline after each, a failed
+        /// attach rolled back, the module-wide sweep, and the donor and the
+        /// Pteranodon unchanged. Several frames: views die at frame end.
+        /// </summary>
+        internal const string DisposableExpandedSummoningVisualLifecycle =
+            "disposable-expanded-summoning-visual-lifecycle";
         internal const string WorkingSaveExpandedSummoningPrepare =
             "working-save-expanded-summoning-prepare";
         internal const string WorkingSaveExpandedSummoningVerifyCleanup =
@@ -618,6 +637,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SummonSameTurnCompatibilityQuickened,
                 SummonSameTurnCompatibilityAcadamae,
                 DisposableExpandedSummoningVisualContracts,
+                DisposableExpandedSummoningRules,
+                DisposableExpandedSummoningVisualLifecycle,
                 WorkingSaveExpandedSummoningPrepare,
                 WorkingSaveExpandedSummoningVerifyCleanup,
                 WorkingSaveExpandedSummoningVerifyAbsent,
