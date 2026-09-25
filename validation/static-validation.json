@@ -1866,7 +1866,14 @@
     "draftOnly": true,
     "humanReview": "NOT_PERFORMED_NONBLOCKING",
     "ownerDelegationGranted": true,
-    "sprintsComplete": [],
+    "sprintsComplete": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
     "deterministicTestCount": 1799,
     "uniqueCreatures": 81,
     "summonMonsterEntries": 74,
@@ -1896,7 +1903,7 @@
       ],
       "flashOfInsight": "bounded: once per summoning, swift action, next attack is an automatic critical hit (Kingmaker's automatic-hit path grants threat and confirmation together)",
       "icons": "Blender 4.5 procedural renders (assets-source/original-icons/expanded-summoning/tools/render_creature_icon.py)",
-      "internalAcceptance": "PENDING"
+      "internalAcceptance": "INTERNAL-ACCEPTED"
     },
     "sprint4": {
       "creatures": [
@@ -1906,7 +1913,7 @@
       ],
       "grappleLifecycle": "shared: grab through the game's grapple check with +4; native hold parts carry the project hold and grappled buffs; maintain each round at +5 dealing natural-attack damage (mound adds constrict 2d6+7) or release; the hold buff's end releases its own target; the worm swallows through the native swallow-whole part and its traits' end spits out; party members held or swallowed by a KMG summon are released on area leave and repaired on area load",
       "icons": "Blender 4.5 procedural renders (assets-source/original-icons/expanded-summoning/tools/render_creature_icon.py)",
-      "internalAcceptance": "PENDING"
+      "internalAcceptance": "INTERNAL-ACCEPTED"
     },
     "sprint5": {
       "creatures": [
@@ -1920,9 +1927,9 @@
       "donors": "nearest native summoned mephit body: air (dust, salt), water (ice, ooze, steam), fire (magma); no Lightning Mephit",
       "breath": "the donor's 15-foot cone rebuilt with the tabletop energy and dice (dust/salt slashing 1d4, ice cold 1d4, magma fire 1d8, ooze acid 1d4, steam fire 1d4), an enemies-only effect, and the sickening rider on a failed Reflex save (ooze: Reflex negates both); Constitution-based DC as the native breaths",
       "spellLikeAbilities": "one use per summoning each: dust blur; ice magic missile; ooze acid arrow and stinking cloud; salt glitterdust and dehydrate (project 20-foot enemies-only burst 2d8, Fortitude half); steam blur and boiling rain (project 20-foot enemies-only burst 2d6 fire, Fortitude half); wind wall, chill metal, pyrotechnics and magma form omitted (no native spell)",
-      "visuals": "a private tinted clone of the shared rig's materials per view (magma and steam with an emission glow), applied on view attach and never written to the donor's shared material",
+      "visuals": "a private clone of the shared rig's materials per view carrying the variant's rim light colour (the HDR glow through which the translucent mephit body is seen: sand, icy cyan-white, ember red, slime green, crystalline white, grey-white vapour), applied on view attach, handed to the game's material controller and never written to the donor's shared material; no emission glow (the shader has no emission slot); a tint cannot show on the mephit rig because the controller rewrites its tint slot",
       "icons": "Blender 4.5 procedural renders from one parametrized mephit builder in six elemental dressings",
-      "internalAcceptance": "PENDING"
+      "internalAcceptance": "INTERNAL-ACCEPTED"
     },
     "sprint6": {
       "creatures": [
@@ -1935,7 +1942,7 @@
       "grabCarriers": "Monitor Lizard bite, Grizzly Bear claws, Dire Bear claws on the shared summon grapple lifecycle (SummonGrabComponent carriers); the mound-specific native grab graph stays unused",
       "giantSpider": "native 60-foot blindsight for tremorsense; native web immunity; bounded ranged Web: 50 feet, one foe, Reflex DC 10 + half hit dice + Constitution, native web-grappled state for at most ten rounds (its own per-round break-free ends it sooner), two uses per summoning, its own brain; climb omitted (no save-safe seam)",
       "pixie": "verified, not changed: sixteen sleep arrows and one irresistible dance per summoning on named resources, one cast action, live mechanical evidence each run",
-      "internalAcceptance": "PENDING"
+      "internalAcceptance": "INTERNAL-ACCEPTED"
     },
     "sprint7": {
       "creatures": [
@@ -1948,7 +1955,7 @@
       "rake": "charge-only: SummonRakeComponent on the traits buff turns any attack roll with a rake claw (the last two additional limbs) that is neither a charge nor made while holding a grappled foe into a silent automatic miss - no roll, no damage, no combat-log line; Pounce stays native",
       "lionVisual": "a tawny tint on the leopard rig through the shared visual variant; no mane geometry",
       "unchanged": "sizes, reach, templates, tiers and the extra claw limbs",
-      "internalAcceptance": "PENDING"
+      "internalAcceptance": "INTERNAL-ACCEPTED"
     },
     "sprint8": {
       "creatures": [
@@ -1958,7 +1965,20 @@
       "tiger": "new Summon Nature's Ally IV unit on the leopard rig: Large 6 HD animal 23/15/17/2/12/6, 40 ft, NA +3, 2d6 bite, two 1d8 claws and two 1d8 rake claws (project Claw1d8 weapon), Pounce; claw grab on the shared lifecycle; charge-only rake; 1.25 view scale; procedural striped coat generated in the rig's own texture space at attach",
       "cheetah": "procedural spotted coat on the leopard rig at a 0.92 view scale; bounded sprint: swift extraordinary ability, one use per summoning, +30 feet enhancement speed for one round under the game's own cap, cast action and brain; trip bite unchanged",
       "coats": "SummonCoatRasterizer rasterizes the skinned mesh's triangles into a private 512x512 texture from vertex positions (stripes across the long axis, spots over the surface, a paler belly); the game's textures are never read",
-      "internalAcceptance": "PENDING"
-    }
+      "internalAcceptance": "INTERNAL-ACCEPTED"
+    },
+    "runtimeQualificationCommit": "30a13445",
+    "runtimeEvidence": [
+      "20260925T0508280717241Z-observe-expanded-summoning-inventory",
+      "20260925T0512074898947Z-observe-expanded-summoning-native-donors",
+      "20260925T0517164499486Z-disposable-expanded-summoning-visual-contracts",
+      "20260925T0523222495194Z-disposable-expanded-summoning",
+      "20260925T0526417220346Z-disposable-expanded-summoning-player-path",
+      "20260925T0541546952818Z-working-save-expanded-summoning-prepare",
+      "20260925T0545454137057Z-working-save-expanded-summoning-verify-cleanup",
+      "20260925T0549365901069Z-working-save-expanded-summoning-verify-absent",
+      "20260925T0555240446760Z-working-save-expanded-summoning-creature-review",
+      "20260925T0607591341645Z-working-save-expanded-summoning-creature-review"
+    ]
   }
 }

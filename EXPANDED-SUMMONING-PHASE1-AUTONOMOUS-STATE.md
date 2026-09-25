@@ -65,12 +65,12 @@ and no future roster data is published.
 
 | Sprint | State | Evidence |
 |---|---|---|
-| 3 | IMPLEMENTED; RUNTIME QUALIFICATION IN PROGRESS | see "Sprint 3 record" |
-| 4 | IMPLEMENTED; RUNTIME QUALIFICATION IN PROGRESS | see "Sprint 4 record" |
-| 5 | IMPLEMENTED; RUNTIME QUALIFICATION IN PROGRESS | see "Sprint 5 record" |
-| 6 | IMPLEMENTED; RUNTIME QUALIFICATION IN PROGRESS | see "Sprint 6 record" |
-| 7 | IMPLEMENTED; RUNTIME QUALIFICATION IN PROGRESS | see "Sprint 7 record" |
-| 8 | IMPLEMENTED; RUNTIME QUALIFICATION IN PROGRESS | see "Sprint 8 record" |
+| 3 | COMPLETE - INTERNAL-ACCEPTED (evidence below; HumanReview NOT_PERFORMED_NONBLOCKING) | see "Sprint 3 record" and the runtime qualification record |
+| 4 | COMPLETE - INTERNAL-ACCEPTED (evidence below; HumanReview NOT_PERFORMED_NONBLOCKING) | see "Sprint 4 record" and the runtime qualification record |
+| 5 | COMPLETE - INTERNAL-ACCEPTED (evidence below; HumanReview NOT_PERFORMED_NONBLOCKING) | see "Sprint 5 record" and the runtime qualification record |
+| 6 | COMPLETE - INTERNAL-ACCEPTED (evidence below; HumanReview NOT_PERFORMED_NONBLOCKING) | see "Sprint 6 record" and the runtime qualification record |
+| 7 | COMPLETE - INTERNAL-ACCEPTED (evidence below; HumanReview NOT_PERFORMED_NONBLOCKING) | see "Sprint 7 record" and the runtime qualification record |
+| 8 | COMPLETE - INTERNAL-ACCEPTED (evidence below; HumanReview NOT_PERFORMED_NONBLOCKING) | see "Sprint 8 record" and the runtime qualification record |
 
 ## Sprint 3 record - Native Publication Pack I
 
@@ -345,13 +345,46 @@ Decisions (recorded here rather than asked):
   breath on a four-round cooldown so the mephit also claws; the one-use
   abilities without), the shape the Cyclops and Pixie actions already have.
 - Visuals: `ExpandedSummoningVisualVariantPatch` (a postfix on the view's
-  data attach) clones the view's renderer materials, tints the colour slot
-  by the variant's profile and, for Magma and Steam, sets an emission
-  glow; the clone is private to the view, the donor's shared material is
-  never written, and a view with no renderer or no colour slot is left
-  native with the reason recorded. Tint profiles are plain numbers in the
-  special profiles so the domain suite pins them; the runtime fixture and
-  the creature review read the applied outcome per view.
+  data attach) clones the view's renderer materials and sets each
+  variant's rim light colour - the shader's HDR glow through which the
+  translucent mephit body is seen, and exactly what tells the game's own
+  air mephit (1.3/1.2/1.13) from its fire mephit (4.16/1.51/0.32): warm
+  sand for Dust, icy cyan-white for Ice, ember red for Magma, slime green
+  for Ooze, crystalline white for Salt, grey-white vapour for Steam - on
+  the clone, then has the game's material controller re-read the renderer
+  so its fades and tints drive the clone (the Pteranodon's treatment), and
+  recolours the view's own looping rim-light animation as it reaches the
+  view's material controller with the unit's spawned effects (a prefix on
+  the controller's update; the settings object belongs to this view's
+  effects, and the controller evaluates it every frame to paint the rim
+  slot): its colour gradient takes the variant colour and its intensity
+  scale is set so the pulse peaks at the variant's brightness. The clone
+  is private to the view, the donor's shared material and prefab are never
+  written, and a view with no renderer or no colour slot is left native
+  with the reason recorded. The profiles are plain numbers in the special
+  profiles so the domain suite pins them; the creature review records the
+  attach outcome and the materials on the view at capture.
+  Rounds 8-12 correction: the first design tinted the rig's tint slot (with
+  an emission glow declared for Magma and Steam), and the round-8 review
+  renders (`20260925T0209555654561Z`) showed the native look on every
+  variant although each view had reported the tint applied. The capture-
+  time material record added in round 8 showed the clone retained and
+  driven by the controller with `_TintColor` at the controller's own value
+  on every mephit, native or variant (`20260925T0237410511666Z`): the game
+  rewrites that slot every frame. A procedural coat on the main texture
+  (`20260925T0312103104469Z`) was applied, retained - and invisible: the
+  probe run (`20260925T0333329932642Z`) showed the body material
+  (`PF/StandardDynamic`, premultiplied alpha, no emission keyword or slot)
+  differing between the native elements only in `_RimColor`; and setting
+  that slot on the clone (`20260925T0350332482297Z`) was undone every
+  frame by the controller's looping rim animation, which only reaches the
+  controller after the view attaches (`20260925T0408513561430Z`), so the
+  animation's own per-view settings are recoloured as they arrive
+  (`20260925T0425508244596Z`: all six legible; `20260925T0441444891847Z`:
+  at the designed brightness once the target is shared across the
+  animations; `20260925T0456499760098Z`: ice moved to cyan-white). The
+  leopard rig has rim lighting off, so the lion's tint and the cats' coats
+  show there. No emission glow is claimed anywhere.
 - Icons: six Blender procedural renders from one parametrized mephit builder
   (a small horned, bat-winged bust breathing) in six elemental dressings.
 - Pins moved with the roster: 80 creatures, SM 74/414, SNA 70/393, 807
@@ -545,6 +578,39 @@ Decisions (recorded here rather than asked):
 
 Runtime qualification (guarded, live installation restored after each
 batch): recorded below as it completes.
+
+## Runtime qualification record - Sprints 3-8 on one build
+
+Every scenario below ran through the guarded launcher on commit `30a13445`
+(`Build-Local.ps1` PASS: 1799 domain tests, 0 failures; package
+`KingmakerGunslinger-0.0.138-local-runtime.zip` SHA-256 `729c1ffa2f77b5755b819c5f916614e96d2b94be8bb9fda435bd4f2074a951d1`, DLL SHA-256
+`ef951f4dcc2961506513de9a82f5b1b04d98be49903a5426547e69048b225388`), each batch alone on the machine, and the live installation was
+restored to 0.0.117 / 136 files /
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`
+after each batch (restoration records under
+`runtime-evidence/expanded-summoning-restoration`).
+
+| Evidence | Scenario | Status | Commit | Assertions |
+|---|---|---|---|---|
+| `20260925T0508280717241Z-observe-expanded-summoning-inventory` | observe-expanded-summoning-inventory | PASS | 30a13445 | 48 |
+| `20260925T0512074898947Z-observe-expanded-summoning-native-donors` | observe-expanded-summoning-native-donors | PASS | 30a13445 | 2 |
+| `20260925T0517164499486Z-disposable-expanded-summoning-visual-contracts` | disposable-expanded-summoning-visual-contracts | PASS | 30a13445 | 15 |
+| `20260925T0523222495194Z-disposable-expanded-summoning` | disposable-expanded-summoning | PASS | 30a13445 | 17 |
+| `20260925T0526417220346Z-disposable-expanded-summoning-player-path` | disposable-expanded-summoning-player-path | PASS | 30a13445 | 10 |
+| `20260925T0541546952818Z-working-save-expanded-summoning-prepare` | working-save-expanded-summoning-prepare | PASS | 30a13445 | 11 |
+| `20260925T0545454137057Z-working-save-expanded-summoning-verify-cleanup` | working-save-expanded-summoning-verify-cleanup | PASS | 30a13445 | 11 |
+| `20260925T0549365901069Z-working-save-expanded-summoning-verify-absent` | working-save-expanded-summoning-verify-absent | PASS | 30a13445 | 11 |
+| `20260925T0555240446760Z-working-save-expanded-summoning-creature-review` | working-save-expanded-summoning-creature-review | PASS | 30a13445 | 38 |
+| `20260925T0607591341645Z-working-save-expanded-summoning-creature-review` | working-save-expanded-summoning-creature-review | PASS | 30a13445 | 24 |
+| `20260925T0616156497187Z/20260925T0620346667524Z-disposable-expanded-summoning` | compatibility-mechanical (gunslinger-only; record `20260925T0616156497187Z`, failures=0, liveTreeUnchanged=True) | PASS | 30a13445 | 17 |
+| `20260925T0616156497187Z/20260925T0626348826393Z-disposable-expanded-summoning` | compatibility-mechanical (gunslinger-high-risk-combined; record `20260925T0616156497187Z`, failures=0, liveTreeUnchanged=True) | PASS | 30a13445 | 17 |
+
+Internal acceptance: every Sprint 3-8 item is INTERNAL-ACCEPTED on this
+evidence (structural inventory and deep donor audit exact, visual contracts
+for every creature, the mechanical cases live, the player-path matrix, the
+persistence trio, the party-camera creature review of every new or changed
+creature, and the two compatibility transactions). HumanReview:
+NOT_PERFORMED_NONBLOCKING. OwnerDelegationGranted.
 
 ## Verified facts carried from Phase 0 (do not re-derive)
 
