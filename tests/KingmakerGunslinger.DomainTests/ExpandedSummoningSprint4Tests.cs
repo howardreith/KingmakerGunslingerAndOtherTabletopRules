@@ -102,9 +102,9 @@ namespace KingmakerGunslinger.DomainTests
                 flytrap.Facts.Contains("Blindsight") && flytrap.Facts.Contains("TripImmune") &&
                 flytrap.Facts.Contains("WeaponFocusBite"),
                 "Flytrap resistances, senses or feats changed.");
-            Assertions.True(flytrap.Deviations.Any(value => value.Contains("one held target")) &&
-                flytrap.Deviations.Any(value => value.Contains("Engulf")),
-                "Flytrap deviations must record the single hold and the omitted engulf.");
+            Assertions.True(flytrap.Deviations.Any(value => value.Contains("one link per bite")) &&
+                flytrap.Deviations.Any(value => value.Contains("Engulf is the swallow-whole sequence")),
+                "Flytrap deviations must record the per-bite links and the engulf (corrected 2026-09-25).");
             NaturalSummonProfile worm = ExpandedSummoningNaturalProfiles.For("purple-worm");
             AssertScores(worm, "MagicalBeast", 16, "Gargantuan", 35, 6, 25, 1, 8, 8, 20, 22);
             Assertions.Equal("PurpleWormBite", worm.PrimaryWeapon, "Worm bite changed.");
