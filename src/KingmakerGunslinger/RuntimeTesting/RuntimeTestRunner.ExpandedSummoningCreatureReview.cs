@@ -99,12 +99,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (caster == null) throw new InvalidOperationException(
                     "The loaded working save has no party member in an active area state.");
                 object gameState = ReadExactMember(Game.Instance, "State");
-                foreach (UnitEntityData stale in
-                    ExpandedSummoningPersistentUnits(gameState, party))
-                    stale.Dispose();
-                if (ExpandedSummoningPersistentUnits(gameState, party).Length != 0)
+                int staleLeft = RemoveExpandedSummoningStaleSummons(gameState, party);
+                if (staleLeft != 0)
                     throw new InvalidOperationException(
-                        "Stale KMG summons could not be removed before the creature review.");
+                        "Stale KMG summons could not be removed before the creature review: " +
+                        staleLeft + " remain.");
                 _creatureReviewParty = party;
                 _creatureReviewCaster = caster;
                 _creatureReviewGameState = gameState;
