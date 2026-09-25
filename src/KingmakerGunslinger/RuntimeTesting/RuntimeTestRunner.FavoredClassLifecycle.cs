@@ -151,7 +151,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 FcbCompanionLeopardGuid, "AnimalCompanionFeatureLeopard");
             UnitEntityData ranger = SpawnFcbFixture(fixtures, "PetTransitionsRanger",
                 fixtures.Origin - fixtures.Direction * 6f);
-            foreach (object step in WaitFcbFixtures(fixtures)) yield return step;
+            // Only this step's own fixture: earlier steps destroyed some of theirs.
+            foreach (object step in WaitFcbUnit(ranger)) yield return step;
             GrantFavoredClassRanks(ranger, BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library,
                 FcbAnimalCompanionRankGuid, "AnimalCompanionRank"), 4);
             ranger.Descriptor.AddFact(companion);
