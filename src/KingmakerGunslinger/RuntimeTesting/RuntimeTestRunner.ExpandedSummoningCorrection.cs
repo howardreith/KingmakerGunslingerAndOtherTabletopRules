@@ -362,6 +362,89 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         /// <summary>
+        /// Places a fixture unit by fiat the way the game's own teleports
+        /// leave a unit: at the position, and indexed there in the area's
+        /// spatial grid - the index every area effect queries for the units
+        /// inside it, which the game's move controller advances only for a
+        /// unit that walked, so a translocated unit would otherwise stay
+        /// indexed where it was spawned.
+        /// </summary>
+        private static void PlaceExpandedSummoningUnit(UnitEntityData unit, Vector3 position)
+        {
+            if (unit == null) return;
+            unit.Translocate(position, null);
+            SparseGrid<Kingmaker.EntitySystem.EntityDataBase> grid = ExpandedSummoningAreaGrid();
+            if (grid != null) grid.MoveTo(unit, unit.Position.x, unit.Position.z);
+        }
+
+        private static SparseGrid<Kingmaker.EntitySystem.EntityDataBase> ExpandedSummoningAreaGrid()
+        {
+            if (Game.Instance == null || Game.Instance.CurrentScene == null ||
+                Game.Instance.CurrentScene.Area == null) return null;
+            return Game.Instance.CurrentScene.Area.InteractiveObjectGrid;
+        }
+
+        /// <summary>Where the area's spatial grid holds a unit (row/col), or none.</summary>
+        private static string DescribeExpandedSummoningGridEntry(UnitEntityData unit)
+        {
+            SparseGrid<Kingmaker.EntitySystem.EntityDataBase> grid = ExpandedSummoningAreaGrid();
+            if (grid == null) return "grid=<none>";
+            try
+            {
+                FieldInfo entriesField = grid.GetType().GetField("m_Entries",
+                    BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+                var entries = entriesField == null ? null : entriesField.GetValue(grid) as System.Collections.IDictionary;
+                if (entries == null) return "grid=entries-unavailable";
+                if (!entries.Contains(unit)) return "grid=unregistered";
+                object position = entries[unit];
+                FieldInfo row = position.GetType().GetField("Row"), col = position.GetType().GetField("Col");
+                return "grid=row" + (row == null ? "?" : row.GetValue(position).ToString()) + "/col" +
+                    (col == null ? "?" : col.GetValue(position).ToString());
+            }
+            catch (Exception exception) { return "grid=exception:" + exception.GetType().Name; }
+        }
+
+        private static readonly Vector3[] CompassOffsets = {
+            new Vector3(1f, 0f, 0f), new Vector3(-1f, 0f, 0f), new Vector3(0f, 0f, 1f), new Vector3(0f, 0f, -1f),
+            new Vector3(0.7071f, 0f, 0.7071f), new Vector3(-0.7071f, 0f, 0.7071f),
+            new Vector3(0.7071f, 0f, -0.7071f), new Vector3(-0.7071f, 0f, -0.7071f) };
+
+        /// <summary>
+        /// A point at the distance from the centre in the first compass
+        /// direction not yet used whose line of sight from the centre is
+        /// clear in the game's own sight geometry (the working save's area
+        /// has walls a few metres from the party), so reach, sight and area
+        /// gates measure the rule and not the scenery. Falls back to the
+        /// first unused direction and says so.
+        /// </summary>
+        private static Vector3 ExpandedSummoningOpenPoint(Vector3 centre, float distance,
+            List<int> used, out string chosen)
+        {
+            int fallback = -1;
+            for (int index = 0; index < CompassOffsets.Length; index++)
+            {
+                if (used != null && used.Contains(index)) continue;
+                if (fallback < 0) fallback = index;
+                Vector3 candidate = centre + CompassOffsets[index] * distance;
+                bool clear;
+                try
+                {
+                    clear = Kingmaker.Visual.FogOfWar.LineOfSightGeometry.Instance == null ||
+                        !Kingmaker.Visual.FogOfWar.LineOfSightGeometry.Instance.HasObstacle(centre, candidate, 0);
+                }
+                catch (Exception) { clear = false; }
+                if (!clear) continue;
+                if (used != null) used.Add(index);
+                chosen = "dir" + index + "@" + distance.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture) + "m";
+                return candidate;
+            }
+            if (fallback < 0) fallback = 0;
+            if (used != null) used.Add(fallback);
+            chosen = "dir" + fallback + "@" + distance.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture) + "m(no-clear-direction)";
+            return centre + CompassOffsets[fallback] * distance;
+        }
+
+        /// <summary>
         /// Starts an ability the way the synchronous helper does (the native
         /// command under the cutscene context, the cast animation acted) but
         /// leaves its execution process to the game's own executor on the
@@ -879,14 +962,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                     wolves.Add(wolf);
                 }
                 Func<int> heldCount = () => SummonMultiHoldComponent.HeldTargets(flytrap, multiHeld).Count;
-                // Four targets around the flytrap, within its bites' reach.
+                // Four targets around the flytrap, within its bites' reach
+                // and in its sight (the maintain check needs both).
                 Vector3 centre = flytrap.Position;
                 hostile.Descriptor.Stats.BaseAttackBonus.BaseValue = -100;
-                hostile.Translocate(centre + new Vector3(2.5f, 0f, 0f), null);
-                wolves[0].Translocate(centre + new Vector3(-2.5f, 0f, 0f), null);
-                wolves[1].Translocate(centre + new Vector3(0f, 0f, 2.5f), null);
-                wolves[2].Translocate(centre + new Vector3(0f, 0f, -2.5f), null);
-                wolves[3].Translocate(centre + new Vector3(2.5f, 0f, 2.5f), null);
+                var directions = new List<int>();
+                var placements = new List<string>();
+                string chosen;
+                PlaceExpandedSummoningUnit(hostile, ExpandedSummoningOpenPoint(centre, 2.5f, directions, out chosen));
+                placements.Add("hostile=" + chosen);
+                for (int index = 0; index < 4; index++)
+                {
+                    PlaceExpandedSummoningUnit(wolves[index], ExpandedSummoningOpenPoint(centre, 2.5f, directions, out chosen));
+                    placements.Add("wolf" + index + "=" + chosen);
+                }
+                steps.Add("placement:" + string.Join(",", placements.ToArray()));
                 Func<UnitEntityData, string> linkOf = target =>
                 {
                     Buff state = SummonHoldComponent.HeldState(flytrap, target, grab);
@@ -930,7 +1020,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool pathFound = false;
                 try
                 {
-                    fixture.Caster.Translocate(centre + new Vector3(-6f, 0f, -6f), null);
+                    PlaceExpandedSummoningUnit(fixture.Caster, centre + new Vector3(-6f, 0f, -6f));
                     UnitMovementAgent agent = fixture.Caster.View == null ? null :
                         fixture.Caster.View.MovementAgent as UnitMovementAgent;
                     if (agent == null) pathing = "no-agent";
@@ -982,6 +1072,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                 steps.Add("release:escaped=" + escaped + ";swept=" + swept + ";sweptFree=" + sweptFree);
                 ok = ok && escaped && sweptFree;
 
+                // The maintain check needs the held foe in the bite's reach
+                // and sight; the working save's walls decide which compass
+                // point is open, so the hostile is re-placed until the game's
+                // own reach test agrees, and the test is recorded.
+                Func<string> reachOf = () => "reach=" + Kingmaker.Controllers.Combat.UnitEngagementExtension
+                    .IsReach(flytrap, hostile, flytrap.Body.PrimaryHand) + ",los=" + flytrap.HasLOS(hostile) +
+                    ",dist=" + flytrap.DistanceTo(hostile).ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) +
+                    ",conscious=" + hostile.Descriptor.State.IsConscious;
+                string reachBefore = reachOf();
+                int rePlacements = 0;
+                while (!Kingmaker.Controllers.Combat.UnitEngagementExtension.IsReach(flytrap, hostile,
+                    flytrap.Body.PrimaryHand) && rePlacements < CompassOffsets.Length)
+                {
+                    PlaceExpandedSummoningUnit(hostile, ExpandedSummoningOpenPoint(centre, 2.5f, directions, out chosen));
+                    rePlacements++;
+                }
+                steps.Add("reach:" + reachBefore + (rePlacements == 0 ? "" : ";rePlacements=" + rePlacements +
+                    ";after[" + reachOf() + "]"));
                 // The hostile's own round: its break-free (not a 20) fails
                 // and the link has stood a round.
                 Buff hostileState = SummonHoldComponent.HeldState(flytrap, hostile, grab);
@@ -1067,7 +1175,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (UnitEntityData wolf in wolves)
                     if (fixture.Created.Contains(wolf))
                         DisposeExpandedSummoningUnits(fixture.Created, new[] { wolf });
-                fixture.Caster.Translocate(fixture.Hostile.Position + Vector3.back, null);
+                PlaceExpandedSummoningUnit(fixture.Caster, fixture.Hostile.Position + Vector3.back);
             }
             detail = string.Join(";", steps.ToArray());
             return ok;
@@ -1162,11 +1270,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                 (shape == null ? "<none>" : shape.GetType().Name) + (cylinder == null ? "" :
                     "(radius=" + cylinder.Radius.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) +
                     ",height=" + cylinder.Height.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) +
-                    ",centre=" + Vec(cylinder.Center) + ")") + ";onUnit=" + view.OnUnit);
+                    ",centre=" + Vec(cylinder.Center) + ")") + ";onUnit=" + view.OnUnit +
+                ";paused=" + Game.Instance.IsPaused);
+            // What the game's own grid query returns for the shape's bounds.
+            try
+            {
+                SparseGrid<Kingmaker.EntitySystem.EntityDataBase> grid = ExpandedSummoningAreaGrid();
+                if (grid != null && shape != null)
+                {
+                    var found = new List<Kingmaker.EntitySystem.EntityDataBase>();
+                    grid.GetInBounds(shape.GetBounds(), found);
+                    parts.Add("gridInBounds=" + found.Count + "(" + string.Join(",", found.OfType<UnitEntityData>()
+                        .Select(value => value.Blueprint == null ? "?" : Sanitize(value.Blueprint.name)).ToArray()) + ")");
+                }
+            }
+            catch (Exception exception) { parts.Add("gridInBounds=exception:" + exception.GetType().Name); }
             foreach (KeyValuePair<string, UnitEntityData> pair in units)
             {
                 UnitEntityData unit = pair.Value;
                 if (unit == null) { parts.Add(pair.Key + "=<null>"); continue; }
+                bool awake = Game.Instance.State != null && Game.Instance.State.AwakeUnits != null &&
+                    Game.Instance.State.AwakeUnits.Contains(unit);
                 float corpulence = unit.View == null ? -1f : unit.View.Corpulence;
                 string contains = shape == null ? "?" : shape.Contains(unit.Position, corpulence).ToString();
                 string los;
@@ -1182,7 +1306,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 catch (Exception exception) { untargetable = "exception:" + exception.GetType().Name; }
                 parts.Add(pair.Key + "[pos=" + Vec(unit.Position) + ",dist=" +
                     Vector3.Distance(unit.Position, view.transform.position).ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) +
-                    ",inGame=" + unit.IsInGame + ",sleeping=" + unit.IsSleeping + ",dead=" +
+                    ",inGame=" + unit.IsInGame + ",sleeping=" + unit.IsSleeping + ",awake=" + awake + "," +
+                    DescribeExpandedSummoningGridEntry(unit) + ",dead=" +
                     unit.Descriptor.State.IsDead + ",corpulence=" + corpulence.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) +
                     ",contains=" + contains + ",losObstacle=" + los + ",untargetable=" + untargetable + "]");
             }
@@ -1234,9 +1359,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintAbility windWall = fixture.Blueprints.OfType<BlueprintAbility>().Single(value =>
                 value.name == "KMG_Summoning_Special_DustMephit_SpellLikeTwo");
             Vector3 wallCentre = _rulesMephit.Position;
-            fixture.Caster.Translocate(wallCentre + new Vector3(1f, 0f, 0f), null);
-            _rulesWolf.Translocate(wallCentre + new Vector3(-1f, 0f, 0f), null);
-            fixture.Hostile.Translocate(wallCentre + new Vector3(12f, 0f, 0f), null);
+            var directions = new List<int>();
+            string hostileSpot;
+            // The hostile outside the wall's radius, in the wall's sight.
+            Vector3 hostileSpotPoint = ExpandedSummoningOpenPoint(wallCentre,
+                ExpandedSummoningSpecialProfiles.WindWallRadiusFeet * 0.3048f + 2.5f, directions, out hostileSpot);
+            PlaceExpandedSummoningUnit(fixture.Caster, wallCentre + new Vector3(1f, 0f, 0f));
+            PlaceExpandedSummoningUnit(_rulesWolf, wallCentre + new Vector3(-1f, 0f, 0f));
+            PlaceExpandedSummoningUnit(fixture.Hostile, hostileSpotPoint);
+            _rulesSteps.Add("windWall:hostileSpot=" + hostileSpot);
             SummonWindWallComponent.ClearOutcomes();
             ExecuteExpandedSummoningRuntimeAbility(_rulesMephit, windWall, 3,
                 new TargetWrapper(_rulesMephit), false);
@@ -1334,9 +1465,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             // The placement: the hostile's own ground position, with the
             // party caster, the allied summon and the mephit a step away.
             Vector3 cloudCentre = fixture.Hostile.Position;
-            fixture.Caster.Translocate(cloudCentre + new Vector3(1f, 0f, 0f), null);
-            _rulesWolf.Translocate(cloudCentre + new Vector3(-1f, 0f, 0f), null);
-            _rulesMephit.Translocate(cloudCentre + new Vector3(0f, 0f, 1.5f), null);
+            PlaceExpandedSummoningUnit(fixture.Caster, cloudCentre + new Vector3(1f, 0f, 0f));
+            PlaceExpandedSummoningUnit(_rulesWolf, cloudCentre + new Vector3(-1f, 0f, 0f));
+            PlaceExpandedSummoningUnit(_rulesMephit, cloudCentre + new Vector3(0f, 0f, 1.5f));
             bool nauseatedBefore = fixture.Hostile.Descriptor.State.HasCondition(UnitCondition.Nauseated);
             ExecuteExpandedSummoningRuntimeAbility(_rulesMephit, cloud, 3, new TargetWrapper(cloudCentre), false);
             Game.Instance.EntityCreator.Tick();
@@ -1409,8 +1540,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 value.name == "KMG_Summoning_Special_GiantSpider_Web");
             _rulesWebResource = fixture.Blueprints.OfType<BlueprintAbilityResource>()
                 .Single(value => value.name == "KMG_Summoning_Special_GiantSpider_WebResource");
-            hostile.Translocate(_rulesSpider.Position + new Vector3(3f, 0f, 0f), null);
-            fixture.Caster.Translocate(_rulesSpider.Position + new Vector3(-3f, 0f, 0f), null);
+            var directions = new List<int>();
+            string hostileSpot, casterSpot;
+            PlaceExpandedSummoningUnit(hostile, ExpandedSummoningOpenPoint(_rulesSpider.Position, 3f, directions, out hostileSpot));
+            PlaceExpandedSummoningUnit(fixture.Caster, ExpandedSummoningOpenPoint(_rulesSpider.Position, 3f, directions, out casterSpot));
+            _rulesSteps.Add("web:spiderPos=" + Vec(_rulesSpider.Position) + ";hostileSpot=" + hostileSpot +
+                ";casterSpot=" + casterSpot);
             Func<AbilityData> data = () => new AbilityData(_rulesSpider.Descriptor.Abilities.GetAbility(_rulesWeb));
             Size spiderSize = _rulesSpider.Descriptor.State.Size;
             hostile.Descriptor.State.Size = (Size)((int)spiderSize + 1);
@@ -1550,7 +1685,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     value.name == "KMG_Summoning_Special_IceMephit_SpellLikeTwo");
                 BlueprintBuff chillState = blueprints.OfType<BlueprintBuff>().Single(value =>
                     value.name == "KMG_Summoning_Special_IceMephit_ChillMetalState");
-                hostile.Translocate(ice.Position + new Vector3(2f, 0f, 0f), null);
+                PlaceExpandedSummoningUnit(hostile, ice.Position + new Vector3(2f, 0f, 0f));
                 BlueprintItemArmor armorBlueprint = blueprints.OfType<BlueprintItemArmor>().Where(
                     value => value.Type != null && value.Type.IsArmor &&
                         value.Type.ProficiencyGroup == ArmorProficiencyGroup.Medium &&
@@ -1639,9 +1774,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     value.name == "KMG_Summoning_Special_MagmaMephit_MagmaFormState");
                 BlueprintAbility magmaBreath = blueprints.OfType<BlueprintAbility>().Single(value =>
                     value.name == "KMG_Summoning_Special_MagmaMephit_Breath");
-                hostile.Translocate(magma.Position + new Vector3(2f, 0f, 0f), null);
-                caster.Translocate(magma.Position + new Vector3(-2f, 0f, 0f), null);
-                wolf.Translocate(magma.Position + new Vector3(0f, 0f, 2f), null);
+                PlaceExpandedSummoningUnit(hostile, magma.Position + new Vector3(2f, 0f, 0f));
+                PlaceExpandedSummoningUnit(caster, magma.Position + new Vector3(-2f, 0f, 0f));
+                PlaceExpandedSummoningUnit(wolf, magma.Position + new Vector3(0f, 0f, 2f));
                 ExecuteExpandedSummoningRuntimeAbility(magma, pyrotechnics, 2, new TargetWrapper(magma), false);
                 bool hostileBlinded = hostile.Descriptor.HasFact(blinded) &&
                     hostile.Descriptor.State.HasCondition(UnitCondition.Blindness);
@@ -1696,9 +1831,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 BlueprintAbility glitterdust = blueprints.OfType<BlueprintAbility>().Single(value =>
                     value.name == "KMG_Summoning_Special_SaltMephit_SpellLikeOne");
                 Vector3 dustCentre = salt.Position + new Vector3(3f, 0f, 0f);
-                hostile.Translocate(dustCentre, null);
-                caster.Translocate(dustCentre + new Vector3(1f, 0f, 0f), null);
-                wolf.Translocate(dustCentre + new Vector3(-1f, 0f, 0f), null);
+                PlaceExpandedSummoningUnit(hostile, dustCentre);
+                PlaceExpandedSummoningUnit(caster, dustCentre + new Vector3(1f, 0f, 0f));
+                PlaceExpandedSummoningUnit(wolf, dustCentre + new Vector3(-1f, 0f, 0f));
                 bool blindBefore = hostile.Descriptor.State.HasCondition(UnitCondition.Blindness);
                 ExecuteExpandedSummoningRuntimeAbility(salt, glitterdust, 2, new TargetWrapper(dustCentre), false);
                 bool hostileGlittered = hostile.Descriptor.State.HasCondition(UnitCondition.Blindness);
