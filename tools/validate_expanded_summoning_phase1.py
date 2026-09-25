@@ -417,7 +417,8 @@ def validate(root: Path) -> None:
         "MagmaFormDamageReduction = 20", "MagmaFormSpeedFeet = 10", "PyrotechnicsBlindDieSides = 4")
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningSpecialCombatComponents.cs",
         "class SummonWindWallComponent", "evt.IncreaseMissChance(", "class SummonChillMetal",
-        "class SummonChillMetalTargetChecker", "class SummonChillMetalComponent")
+        "class SummonChillMetalTargetChecker", "class SummonChillMetalComponent",
+        "class ExpandedSummoningDocileHoovesBodyPatch", "buff.Components.OfType<SummonGrabComponent>()")
     require_tokens(root / "src/KingmakerGunslinger/Blueprints/ExpandedSummoningSpecialBuilder.cs",
         "ConfigureWindWall(bySymbol, ability, prefix, token)",
         "ConfigureChillMetal(bySymbol, ability, prefix, token)",

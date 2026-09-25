@@ -2550,7 +2550,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 else if (_request.Scenario == RuntimeTestScenarioCatalog
                     .DisposableExpandedSummoningRules)
                 {
-                    Complete(RunDisposableExpandedSummoningRules());
+                    PollExpandedSummoningRules();
                 }
                 else if (_request.Scenario == RuntimeTestScenarioCatalog
                     .DisposableExpandedSummoningVisualLifecycle)
@@ -21183,14 +21183,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return false;
             }
             var failures = new List<string>();
+            // Correction order: a ranged touch attack through the projectile
+            // delivery with the ray weapon, a size checker, no saving throw.
+            AbilityDeliverProjectile deliver = web.ComponentsArray
+                .OfType<AbilityDeliverProjectile>().SingleOrDefault();
+            SummonWebTargetSizeChecker sizeChecker = web.ComponentsArray
+                .OfType<SummonWebTargetSizeChecker>().SingleOrDefault();
             AbilityEffectRunAction run = web.ComponentsArray
                 .OfType<AbilityEffectRunAction>().SingleOrDefault();
-            ContextActionConditionalSaved saved = run == null || run.Actions == null ||
+            ContextActionApplyBuff apply = run == null || run.Actions == null ||
                 run.Actions.Actions == null ? null :
-                run.Actions.Actions.OfType<ContextActionConditionalSaved>().SingleOrDefault();
-            ContextActionApplyBuff apply = saved == null || saved.Failed == null ||
-                saved.Failed.Actions == null ? null :
-                saved.Failed.Actions.OfType<ContextActionApplyBuff>().SingleOrDefault();
+                run.Actions.Actions.OfType<ContextActionApplyBuff>().SingleOrDefault();
             AbilityResourceLogic cost = web.ComponentsArray.OfType<AbilityResourceLogic>()
                 .SingleOrDefault();
             bool ability = web.Type == AbilityType.Extraordinary &&
@@ -21198,9 +21201,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Math.Abs(web.CustomRange.Value -
                     ExpandedSummoningSpecialProfiles.GiantSpiderWebRangeFeet) < 0.01f &&
                 web.CanTargetEnemies && !web.CanTargetFriends && !web.CanTargetSelf &&
-                !web.CanTargetPoint && run != null &&
-                run.SavingThrowType == SavingThrowType.Reflex && saved != null &&
-                saved.Succeed != null && saved.Succeed.Actions.Length == 0 &&
+                !web.CanTargetPoint && deliver != null && deliver.NeedAttackRoll &&
+                deliver.Weapon != null && deliver.Weapon.AssetGuid ==
+                    ExpandedSummoningSpecialBuilder.NativeRayWeaponGuid &&
+                deliver.Projectiles != null && deliver.Projectiles.Length == 1 &&
+                deliver.Projectiles[0] != null && sizeChecker != null &&
+                sizeChecker.MaxSizeDelta ==
+                    ExpandedSummoningSpecialProfiles.GiantSpiderWebMaxSizeDelta &&
+                run != null && run.SavingThrowType == SavingThrowType.Unknown &&
+                run.Actions.Actions.Length == 1 &&
                 apply != null && ReferenceEquals(apply.Buff, webbed) && !apply.ToCaster &&
                 apply.DurationValue != null && apply.DurationValue.Rate == DurationRate.Rounds &&
                 apply.DurationValue.BonusValue.Value ==
@@ -21316,6 +21325,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 blueprint.name ==
                     "KMG_Summoning_Special_PurpleWorm_CombatTraits" ||
                 blueprint.name == "KMG_Summoning_Special_PurpleWorm_Swallowed")
+                return false;
+            // Correction order: the Cyclops hide armor fact and the docile-hoof carriers.
+            if (blueprint.name == "KMG_Summoning_Special_Cyclops_HideArmor" ||
+                blueprint.name == "KMG_Summoning_Special_Pony_CombatTraits" ||
+                blueprint.name == "KMG_Summoning_Special_Horse_CombatTraits")
                 return false;
             // Sprint 8: the tiger's carrier and the cheetah's sprint pack.
             if (blueprint.name == "KMG_Summoning_Special_Tiger_CombatTraits" ||
