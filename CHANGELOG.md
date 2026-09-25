@@ -1,5 +1,45 @@
 # Changelog
 
+## Unreleased - Expanded Summoning Phase 1 (charter Sprints 3-8; draft PR #23, not released)
+
+- Not published. Under the 2026-09-24 owner order this work stays on a draft
+  pull request: no release, no permanent deployment, no Sprint 9. Every
+  guarded runtime run restored the live installation to 0.0.117 afterwards.
+  Internal acceptance only; human review NOT_PERFORMED_NONBLOCKING.
+- Sprint 3, Native Publication Pack I: Pony (SM I / SNA I), Horse (SM II /
+  SNA II), Owlbear (SNA IV), Cyclops (SNA V, a bounded Flash of Insight: once
+  per summoning the next attack is an automatic critical hit) and the Frost
+  Giant under Summon Nature's Ally VII-IX wrappers on the retained native unit.
+- Sprint 4, Native Publication Pack II: Shambling Mound (SNA VI), Giant
+  Flytrap (SNA VII) and Purple Worm (SNA VIII), and the shared summon grapple
+  lifecycle - grab through the game's own grapple check, hold and maintain
+  through the native parts with project buffs, constrict for the mound,
+  swallow whole for the worm, release on every end path, and an area safeguard
+  that never leaves a party member held by a departed summon.
+- Sprint 5, Mephit Family Expansion: Dust, Ice, Magma, Ooze, Salt and Steam
+  Mephits (SM IV / SNA IV) on the native mephit bodies with their own names,
+  icons, elemental rim glows, enemies-only breaths with the tabletop energy,
+  dice and sickening rider, and one-use spell-like abilities (dehydrate and
+  boiling rain as enemies-only bursts). No Lightning Mephit.
+- Sprint 6, Existing Signature Mechanics Repair: Monitor Lizard, Grizzly
+  Bear and Dire Bear grab on the shared lifecycle; the Giant Spider gains
+  blindsight for tremorsense, web immunity and a bounded ranged Web; the Pixie
+  is verified unchanged.
+- Sprint 7, Big-Cat Combat System: Leopard, Lion, Dire Lion and Smilodon grab
+  with their claws and rake only on a charge or against a held foe (any other
+  rake attack is a silent automatic miss); the Lion wears a tawny tint.
+- Sprint 8, Big-Cat Roster Completion: the Tiger (SNA IV, new) on the leopard
+  rig at a Large view scale with a procedural striped coat, four 1d8 claws,
+  pounce, grab and rake; the Cheetah gains a procedural spotted coat and a
+  once-per-summoning sprint.
+- Roster: 81 creatures, 813 logical placements (799 published), 91 project
+  icons; 264 identities appended to the frozen ledger (2220 stable
+  identifiers, 2218 active); every placement propagates 1d3 / 1d4+1 to the
+  higher tiers by construction. Domain suite 1799 cases.
+- Every project-owned visual is a private material clone or a texture
+  generated from the rig's own geometry; the game's textures are never read,
+  copied or redistributed.
+
 ## 0.0.138-better-vendors-progression
 
 - Published under explicit owner authorization. The five merchant and
