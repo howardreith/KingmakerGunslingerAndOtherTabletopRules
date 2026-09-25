@@ -10,10 +10,13 @@ namespace KingmakerGunslinger.Summoning
 {
     /// <summary>
     /// A bounded visual variant for a KMG summon that shares a native rig:
-    /// the view's renderer materials are cloned and tinted (and, when the
-    /// shader has an emission slot, given an inner glow). The mephits of
-    /// Sprint 5 are the first users: six elements on the native mephit
-    /// bodies. The colours come from the plain tint profile the domain tests
+    /// the view's renderer materials are cloned and either tinted (the lion
+    /// on the leopard rig) or given a procedural coat on the main texture
+    /// slot (the tiger, the cheetah and, since the round-9 diagnostic showed
+    /// the game's material controller rewriting the mephit rig's tint slot
+    /// every frame, the six mephit variants). An emission colour is set
+    /// only where the shader declares the slot; the rigs used so far do
+    /// not. The colours come from the plain profiles the domain tests
     /// compile; only this file knows UnityEngine.
     /// </summary>
     internal sealed class SummonVisualVariant
