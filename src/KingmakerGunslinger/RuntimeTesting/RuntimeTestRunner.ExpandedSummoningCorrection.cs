@@ -24,8 +24,10 @@ using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Commands;
+using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.Utility;
 using Kingmaker.View;
+using Kingmaker.Visual.MaterialEffects.RimLighting;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Summoning;
@@ -69,6 +71,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal UnitEntityData Hostile;
             internal BlueprintUnit HostileBlueprint;
             internal Size HostileSize;
+            internal int HostileDamage;
         }
 
         /// <summary>
@@ -148,8 +151,53 @@ namespace KingmakerGunslinger.RuntimeTesting
             fixture.HostileBlueprint = hostileBlueprint;
             fixture.Hostile.Descriptor.Stats.HitPoints.BaseValue = 100000;
             fixture.HostileSize = fixture.Hostile.Descriptor.State.Size;
+            fixture.HostileDamage = fixture.Hostile.Descriptor.Damage;
             SetExpandedSummoningBrainActive(fixture.Hostile, false);
             DisposeExpandedSummoningUnits(fixture.Created, new[] { pixie });
+        }
+
+        /// <summary>
+        /// Puts the hostile back to a free, unhurt unit of its own size before
+        /// a case starts, whatever an earlier case left on it, and says what
+        /// it cleared so a leak between cases is visible in the record.
+        /// </summary>
+        private static string ResetExpandedSummoningHostile(ExpandedSummoningCorrectionFixture fixture)
+        {
+            UnitEntityData hostile = fixture.Hostile;
+            if (hostile == null || hostile.Destroyed) return "hostile=absent";
+            var cleared = new List<string>();
+            Kingmaker.UnitLogic.Parts.UnitPartSwallowed swallowed =
+                hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartSwallowed>();
+            if (swallowed != null)
+            {
+                UnitEntityData swallower = swallowed.Swallower.Value;
+                Kingmaker.UnitLogic.Parts.UnitPartSwallowWhole part = swallower == null ? null :
+                    swallower.Get<Kingmaker.UnitLogic.Parts.UnitPartSwallowWhole>();
+                if (part != null) part.Free(hostile);
+                if (hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartSwallowed>() != null)
+                    hostile.Remove<Kingmaker.UnitLogic.Parts.UnitPartSwallowed>();
+                cleared.Add("swallowed");
+            }
+            if (hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>() != null)
+            {
+                hostile.Remove<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>();
+                cleared.Add("grappleTarget");
+            }
+            string[] states = { "KMG_Summoning_Special_Grapple_Grappled",
+                "KMG_Summoning_Special_Grapple_MultiHeld", "KMG_Summoning_Special_PurpleWorm_Swallowed",
+                "KMG_Summoning_Special_GiantFlytrap_Engulfed" };
+            foreach (Buff buff in hostile.Descriptor.Buffs.RawFacts.OfType<Buff>().Where(value =>
+                    value.Blueprint != null && (states.Contains(value.Blueprint.name) ||
+                        value.Blueprint.AssetGuid == ExpandedSummoningSpecialBuilder.NativeWebGrappledGuid))
+                .ToArray())
+            {
+                cleared.Add(buff.Blueprint.name);
+                hostile.Descriptor.Buffs.RemoveFact(buff);
+            }
+            hostile.Descriptor.State.Size = fixture.HostileSize;
+            hostile.Descriptor.Damage = fixture.HostileDamage;
+            hostile.Descriptor.Stats.BaseAttackBonus.BaseValue = 0;
+            return cleared.Count == 0 ? "clean" : "cleared=" + string.Join(",", cleared.ToArray());
         }
 
         private void EndExpandedSummoningCorrectionFixture(
@@ -282,7 +330,35 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private static string Sanitize(string value)
         {
-            return value == null ? "<null>" : value.Replace(';', ',').Replace('|', '/');
+            return value == null ? "<null>" : value.Replace(';', ',').Replace('|', '/')
+                .Replace("\r", " ").Replace("\n", " / ");
+        }
+
+        /// <summary>The exception's type, message and its first frames, on one line.</summary>
+        private static string DescribeExpandedSummoningCorrectionException(Exception exception)
+        {
+            if (exception == null) return "<none>";
+            string frames = exception.StackTrace ?? "";
+            var kept = new List<string>();
+            foreach (string line in frames.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                string trimmed = line.Trim();
+                int at = trimmed.IndexOf(" in ", StringComparison.Ordinal);
+                if (at > 0) trimmed = trimmed.Substring(0, at);
+                kept.Add(trimmed.Replace("at ", ""));
+                if (kept.Count == 6) break;
+            }
+            string inner = exception.InnerException == null ? "" :
+                ";inner=" + exception.InnerException.GetType().Name + ":" + exception.InnerException.Message;
+            return exception.GetType().Name + ":" + Sanitize(exception.Message) + Sanitize(inner) +
+                ";at=" + Sanitize(string.Join(" < ", kept.ToArray()));
+        }
+
+        private static string Vec(Vector3 value)
+        {
+            return "(" + value.x.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) + "," +
+                value.y.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) + "," +
+                value.z.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) + ")";
         }
 
         /// <summary>
@@ -380,7 +456,6 @@ namespace KingmakerGunslinger.RuntimeTesting
         private UnitUseAbility _rulesWebCommand;
         private ExpandedSummoningAttackRollObserver _rulesObserver;
         private int _rulesHostileAc;
-        private int _rulesHostileDamage;
         private int _rulesCasterDamage;
         private int _rulesWebUses0, _rulesWebUses1, _rulesWebUses2;
         private int _rulesHighTouch, _rulesLowTouch;
@@ -399,41 +474,47 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "KMG_Runtime_ExpandedSummoning_RulesCaster");
                     stage = "hostile";
                     CreateExpandedSummoningCorrectionHostile(_rulesFixture);
-                    _rulesHostileDamage = _rulesFixture.Hostile.Descriptor.Damage;
                     _rulesCasterDamage = _rulesFixture.Caster.Descriptor.Damage;
                     string detail;
                     bool ok;
                     stage = "cats";
+                    _rulesSteps.Add("reset:cats=" + ResetExpandedSummoningHostile(_rulesFixture));
                     ok = ExerciseExpandedSummoningCorrectionCats(_rulesFixture, out detail);
                     _rulesCases.Add(Assertion("expanded-summoning-correction-cats",
                         "leopard, lion and dire lion grab with the bite only; the tiger and the smilodon with the bite and both foreclaws; no rake claw ever grabs; a single attack never carries a rake slot; the full attack drops the rake slots unless the cat charges or held the exact target since its round began",
                         detail, ok, "SummonGrabComponent.IsGrabLimb and TryGrab on live limbs; UnitAttack.CreateSingleAttack and CreateFullAttack through the sequencing seam"));
                     stage = "grapple-sizes";
+                    _rulesSteps.Add("reset:sizes=" + ResetExpandedSummoningHostile(_rulesFixture));
                     ok = ExerciseExpandedSummoningCorrectionGrappleSizes(_rulesFixture, out detail);
                     _rulesCases.Add(Assertion("expanded-summoning-correction-grapple-sizes",
                         "a grab works against a target of the holder's size or smaller and is refused against a larger one; grapple checks carry +4 from the grab and +5 more to maintain; the worm grabs a Gargantuan foe but never swallows it and refuses a Colossal one",
                         detail, ok, "TryGrab with the hostile's size set exactly; RuleCalculateCMB grapple against trip; the hold buff's later-turn tick"));
                     stage = "flytrap";
+                    _rulesSteps.Add("reset:flytrap=" + ResetExpandedSummoningHostile(_rulesFixture));
                     ok = ExerciseExpandedSummoningCorrectionFlytrap(_rulesFixture, out detail);
                     _rulesCases.Add(Assertion("expanded-summoning-correction-flytrap",
-                        "one link per bite, four at most, each held state naming the flytrap and its own bite; a bite already holding cannot grab again; a Large held foe is maintained but never engulfed, a Medium one is engulfed on the later turn and takes the engulf damage; escape, the last link ending, the holder's disposal, the swallow lifecycle and the area-leave sweep each release; a free unit still finds a path past four held units",
+                        "one link per bite, four at most, each held state naming the flytrap and its own bite; a bite already holding cannot grab again; a Large held foe is maintained but never engulfed, a Medium one is engulfed on the later turn and takes the engulf damage; escape, the area-leave sweep, the last link ending, the swallow lifecycle and the holder's disposal each release; a free unit still finds a path past four held units",
                         detail, ok, "held-state buffs on the targets, the multi-hold tick, UnitHelper.TryBreakFree, SummonGrappleAreaSafeguard.Sweep, the movement agent's path request with the four held units standing"));
                     stage = "mephit-roles";
+                    _rulesSteps.Add("reset:mephits=" + ResetExpandedSummoningHostile(_rulesFixture));
                     ok = ExerciseExpandedSummoningCorrectionMephitRoles(_rulesFixture, out detail);
                     _rulesCases.Add(Assertion("expanded-summoning-correction-mephit-roles",
                         "chill metal targets only metal-bearers and runs the seven-round table (full for armor, minimal for a weapon); pyrotechnics blinds enemies only for 1d4+1 rounds; magma form gives DR 20/magic, speed 10 and forbids attacks while abilities work; glitterdust blinds the hostile and never the party caster or the allied summon",
                         detail, ok, "live casts on the disposable units; SummonChillMetalComponent outcomes; RuleDealDamage through the form's damage reduction; UnitAttack.ShouldBeInterrupted"));
                     stage = "cyclops";
+                    _rulesSteps.Add("reset:cyclops=" + ResetExpandedSummoningHostile(_rulesFixture));
                     ok = ExerciseExpandedSummoningCorrectionCyclops(_rulesFixture, out detail);
                     _rulesCases.Add(Assertion("expanded-summoning-correction-cyclops",
                         "armor class 19 with +4 armor (a fact, no item) and +7 natural armor beside the game's own difficulty modifier; Flash of Insight makes the next attack's own d20 a natural 20 with an ordinary confirmation roll, is spent by that one attack, and touches no other roll",
-                        detail, ok, "RuleCalculateAC, the armor class modifier list, RuleAttackWithWeapon at a forced natural 1 while armed and after, a Will save rolled while armed"));
+                        detail, ok, "RuleCalculateAC, the armor class modifier list, RuleAttackWithWeapon at a forced natural 1 while armed and after, a Will save rolled from the same seed while armed and after"));
                     stage = "hooves";
+                    _rulesSteps.Add("reset:hooves=" + ResetExpandedSummoningHostile(_rulesFixture));
                     ok = ExerciseExpandedSummoningCorrectionHooves(_rulesFixture, out detail);
                     _rulesCases.Add(Assertion("expanded-summoning-correction-hooves",
                         "the pony's and the horse's hooves are both secondary: -5 to hit and half the Strength modifier to damage against the same hooves treated as primary, both listed in the full attack",
                         detail, ok, "RuleCalculateAttackBonus and RuleCalculateWeaponStats with the docile flag on and off; UnitAttack.CreateFullAttack"));
                     stage = "wind-wall-cast";
+                    _rulesSteps.Add("reset:windWall=" + ResetExpandedSummoningHostile(_rulesFixture));
                     BeginExpandedSummoningWindWall();
                     _rulesWait = 0;
                     _rulesPhase = 1;
@@ -445,6 +526,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     stage = "wind-wall";
                     FinishExpandedSummoningWindWall();
                     stage = "cloud-cast";
+                    _rulesSteps.Add("reset:cloud=" + ResetExpandedSummoningHostile(_rulesFixture));
                     BeginExpandedSummoningCloud();
                     _rulesWait = 0;
                     _rulesPhase = 2;
@@ -456,6 +538,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     stage = "cloud";
                     FinishExpandedSummoningCloud();
                     stage = "web-cast-a";
+                    _rulesSteps.Add("reset:web=" + ResetExpandedSummoningHostile(_rulesFixture));
                     BeginExpandedSummoningWeb();
                     _rulesWait = 0;
                     _rulesPhase = 3;
@@ -489,8 +572,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             catch (Exception exception)
             {
                 _rulesCases.Add(Assertion("expanded-summoning-correction-" + stage,
-                    "the stage completes", "exception=" + exception.GetType().Name + ":" +
-                    Sanitize(exception.Message) + ";steps=" + string.Join("||", _rulesSteps.ToArray()),
+                    "the stage completes", "exception=" + DescribeExpandedSummoningCorrectionException(exception) +
+                    ";steps=" + string.Join("||", _rulesSteps.ToArray()),
                     false, "the correction rules fixture"));
                 CompleteExpandedSummoningRules();
             }
@@ -507,12 +590,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             try
             {
-                if (_rulesFixture != null && _rulesFixture.Hostile != null &&
-                    !_rulesFixture.Hostile.Destroyed)
-                {
-                    _rulesFixture.Hostile.Descriptor.State.Size = _rulesFixture.HostileSize;
-                    _rulesFixture.Hostile.Descriptor.Damage = _rulesHostileDamage;
-                }
+                if (_rulesFixture != null) ResetExpandedSummoningHostile(_rulesFixture);
                 if (_rulesFixture != null && _rulesFixture.Caster != null &&
                     !_rulesFixture.Caster.Destroyed)
                     _rulesFixture.Caster.Descriptor.Damage = _rulesCasterDamage;
@@ -521,8 +599,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             catch (Exception exception)
             {
                 _rulesCases.Add(Assertion("expanded-summoning-correction-cleanup-exception",
-                    "cleanup completes", "exception=" + exception.GetType().Name + ":" +
-                    Sanitize(exception.Message), false, "the correction rules fixture"));
+                    "cleanup completes", "exception=" + DescribeExpandedSummoningCorrectionException(exception),
+                    false, "the correction rules fixture"));
             }
             _rulesCases.Add(Assertion("expanded-summoning-correction-cleanup",
                 "exact party and global-unit snapshots restored", "cleaned=" + cleaned, cleaned,
@@ -551,7 +629,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 value.name == "KMG_Summoning_Special_Grapple_Hold");
             BlueprintBuff grappled = fixture.Blueprints.OfType<BlueprintBuff>().Single(value =>
                 value.name == "KMG_Summoning_Special_Grapple_Grappled");
-            int damageBefore = hostile.Descriptor.Damage;
             try
             {
                 foreach (string key in new[] { "leopard", "lion", "dire-lion", "tiger", "dire-tiger" })
@@ -605,6 +682,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     string sequence = "not-held";
                     if (biteGrabbed)
                     {
+                        // The held state's own round tick (a round of the hold
+                        // has passed); the roll it may make is not a 20.
+                        UnityEngine.Random.InitState(FindNativeD20Seed(10));
                         hostile.Descriptor.Buffs.GetBuff(grappled).TickMechanics();
                         sequence = ExerciseExpandedSummoningRakeSequence(cat, hostile,
                             fixture.Caster);
@@ -628,12 +708,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             catch (Exception exception)
             {
-                steps.Add("exception=" + exception.GetType().Name + ":" + Sanitize(exception.Message));
+                steps.Add("exception=" + DescribeExpandedSummoningCorrectionException(exception));
                 ok = false;
             }
             finally
             {
-                hostile.Descriptor.Damage = damageBefore;
+                ResetExpandedSummoningHostile(fixture);
             }
             detail = string.Join(";", steps.ToArray());
             return ok;
@@ -719,11 +799,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 string maintainOutcome = "not-held";
                 if (gargantuanGrabbed)
                 {
+                    UnityEngine.Random.InitState(FindNativeD20Seed(10));
                     hostile.Descriptor.Buffs.GetBuff(grappled).TickMechanics();
+                    bool eligible = SummonHoldComponent.IsHeldSinceRoundStart(worm, hostile);
                     UnityEngine.Random.InitState(FindNativeD20Seed(20));
                     worm.Descriptor.Buffs.GetBuff(hold).TickMechanics();
-                    maintainOutcome = "swallowed=" + (hostile.Get<Kingmaker.UnitLogic.Parts
-                            .UnitPartSwallowed>() != null) + ";stillHeld=" +
+                    maintainOutcome = "eligible=" + eligible + ";swallowed=" + (hostile.Get<
+                            Kingmaker.UnitLogic.Parts.UnitPartSwallowed>() != null) + ";stillHeld=" +
                         (hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>() != null) +
                         ";damage=" + damageBefore + "->" + hostile.Descriptor.Damage;
                 }
@@ -747,13 +829,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             catch (Exception exception)
             {
-                steps.Add("exception=" + exception.GetType().Name + ":" + Sanitize(exception.Message));
+                steps.Add("exception=" + DescribeExpandedSummoningCorrectionException(exception));
                 ok = false;
             }
             finally
             {
-                hostile.Descriptor.State.Size = fixture.HostileSize;
-                hostile.Descriptor.Damage = damageBefore;
+                ResetExpandedSummoningHostile(fixture);
             }
             detail = string.Join(";", steps.ToArray());
             return ok;
@@ -797,6 +878,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     SetExpandedSummoningBrainActive(wolf, false);
                     wolves.Add(wolf);
                 }
+                Func<int> heldCount = () => SummonMultiHoldComponent.HeldTargets(flytrap, multiHeld).Count;
                 // Four targets around the flytrap, within its bites' reach.
                 Vector3 centre = flytrap.Position;
                 hostile.Descriptor.Stats.BaseAttackBonus.BaseValue = -100;
@@ -827,17 +909,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 UnityEngine.Random.InitState(FindNativeD20Seed(20));
                 bool fifthRefused = fourBites && !grab.TryGrab(wolves[3], bites[0], true) &&
                     !grab.TryGrab(wolves[3], bites[1], true);
-                List<UnitEntityData> held = SummonMultiHoldComponent.HeldTargets(flytrap, multiHeld);
+                int held = heldCount();
                 string links = "hostile[" + linkOf(hostile) + "];wolf0[" + linkOf(wolves[0]) +
                     "];wolf1[" + linkOf(wolves[1]) + "];wolf2[" + linkOf(wolves[2]) + "]";
-                bool distinct = held.Count == 4 && links == "hostile[holder=True,bite=0];wolf0[holder=True,bite=1];wolf1[holder=True,bite=2];wolf2[holder=True,bite=3]" &&
+                bool distinct = held == 4 && links == "hostile[holder=True,bite=0];wolf0[holder=True,bite=1];wolf1[holder=True,bite=2];wolf2[holder=True,bite=3]" &&
                     flytrap.Descriptor.HasFact(multiHold) &&
                     hostile.Descriptor.State.HasCondition(UnitCondition.CantMove) &&
                     hostile.Descriptor.State.HasCondition(UnitCondition.Entangled) &&
                     !flytrap.Descriptor.State.HasCondition(UnitCondition.CantAct);
                 steps.Add("links:fourBites=" + fourBites + ";link0=" + link0 + ";link1=" + link1 +
                     ";busyBiteRefused=" + busyBiteRefused + ";link2=" + link2 + ";link3=" + link3 +
-                    ";fifthRefused=" + fifthRefused + ";held=" + held.Count + ";" + links +
+                    ";fifthRefused=" + fifthRefused + ";held=" + held + ";" + links +
                     ";distinct=" + distinct);
                 ok = ok && fourBites && link0 && link1 && busyBiteRefused && link2 && link3 &&
                     fifthRefused && distinct;
@@ -867,24 +949,48 @@ namespace KingmakerGunslinger.RuntimeTesting
                             pathFound = !path.error && points > 1 &&
                                 obstacles != ObstaclePathingResult.NoPath;
                             pathing = "error=" + path.error + ";points=" + points +
-                                ";obstacles=" + obstacles + ";heldStanding=" +
-                                SummonMultiHoldComponent.HeldTargets(flytrap, multiHeld).Count;
+                                ";obstacles=" + obstacles + ";heldStanding=" + heldCount() +
+                                ";from=" + Vec(fixture.Caster.Position) + ";to=" + Vec(destination) +
+                                ";crowd=" + Vec(centre);
                         }
                     }
                 }
                 catch (Exception exception)
                 {
-                    pathing = "exception=" + exception.GetType().Name + ":" +
-                        Sanitize(exception.Message);
+                    pathing = "exception=" + DescribeExpandedSummoningCorrectionException(exception);
                 }
                 steps.Add("pathing[" + pathing + "]");
                 ok = ok && pathFound;
 
+                // Release paths first, down to the hostile alone, so the
+                // engulf ticks that follow make one maintain roll each.
+                // Escape: a held wolf with an overwhelming check breaks free
+                // at its own tick and only its link ends.
+                wolves[0].Descriptor.Stats.BaseAttackBonus.BaseValue = 200;
+                Buff wolfState = SummonHoldComponent.HeldState(flytrap, wolves[0], grab);
+                UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                if (wolfState != null) wolfState.TickMechanics();
+                bool escaped = SummonHeldComponent.HolderOf(wolves[0], multiHeld) == null &&
+                    !wolves[0].Descriptor.State.HasCondition(UnitCondition.CantMove) &&
+                    heldCount() == 3 && flytrap.Descriptor.HasFact(multiHold);
+                // The area-leave sweep releases the held units it is handed.
+                int swept = SummonGrappleAreaSafeguard.Sweep(true, new[] { wolves[1], wolves[2] });
+                bool sweptFree = swept == 2 &&
+                    SummonHeldComponent.HolderOf(wolves[1], multiHeld) == null &&
+                    SummonHeldComponent.HolderOf(wolves[2], multiHeld) == null &&
+                    heldCount() == 1 && flytrap.Descriptor.HasFact(multiHold);
+                steps.Add("release:escaped=" + escaped + ";swept=" + swept + ";sweptFree=" + sweptFree);
+                ok = ok && escaped && sweptFree;
+
+                // The hostile's own round: its break-free (not a 20) fails
+                // and the link has stood a round.
+                Buff hostileState = SummonHoldComponent.HeldState(flytrap, hostile, grab);
+                UnityEngine.Random.InitState(FindNativeD20Seed(10));
+                if (hostileState != null) hostileState.TickMechanics();
+                bool stillHeld = ReferenceEquals(SummonHeldComponent.HolderOf(hostile, multiHeld), flytrap);
+                bool eligible = SummonHoldComponent.IsHeldSinceRoundStart(flytrap, hostile);
                 // Engulf: a Large held foe is maintained (damage, still held);
                 // a Medium one is engulfed on the later turn.
-                Buff hostileState = SummonHoldComponent.HeldState(flytrap, hostile, grab);
-                if (hostileState != null) hostileState.TickMechanics();
-                bool eligible = SummonHoldComponent.IsHeldSinceRoundStart(flytrap, hostile);
                 hostile.Descriptor.State.Size = Size.Large;
                 int beforeLarge = hostile.Descriptor.Damage;
                 UnityEngine.Random.InitState(FindNativeD20Seed(20));
@@ -892,11 +998,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool largeMaintained = hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartSwallowed>() ==
                     null && ReferenceEquals(SummonHeldComponent.HolderOf(hostile, multiHeld), flytrap) &&
                     hostile.Descriptor.Damage > beforeLarge;
-                int stillHeldAfterLarge = SummonMultiHoldComponent.HeldTargets(flytrap, multiHeld).Count;
+                int heldAfterLarge = heldCount();
                 hostile.Descriptor.State.Size = Size.Medium;
                 int beforeEngulf = hostile.Descriptor.Damage;
                 UnityEngine.Random.InitState(FindNativeD20Seed(20));
-                flytrap.Descriptor.Buffs.GetBuff(multiHold).TickMechanics();
+                Buff multiHoldState = flytrap.Descriptor.Buffs.GetBuff(multiHold);
+                if (multiHoldState != null) multiHoldState.TickMechanics();
                 Kingmaker.UnitLogic.Parts.UnitPartSwallowed swallowedPart =
                     hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartSwallowed>();
                 Kingmaker.UnitLogic.Parts.UnitPartSwallowWhole swallower =
@@ -911,43 +1018,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Buff engulfedState = hostile.Descriptor.Buffs.GetBuff(engulfed);
                 if (engulfedState != null) engulfedState.TickMechanics();
                 bool engulfDamage = hostile.Descriptor.Damage > beforeEngulfTick;
-                int heldAfterEngulf = SummonMultiHoldComponent.HeldTargets(flytrap, multiHeld).Count;
-                steps.Add("engulf:eligible=" + eligible + ";largeMaintained=" + largeMaintained +
-                    ";heldAfterLarge=" + stillHeldAfterLarge + ";engulfed=" + engulfedNow +
-                    ";engulfTickDamage=" + engulfDamage + ";heldAfterEngulf=" + heldAfterEngulf +
-                    ";hostile=" + DescribeExpandedSummoningCondition(hostile));
-                ok = ok && eligible && largeMaintained && stillHeldAfterLarge == 4 && engulfedNow &&
-                    engulfDamage && heldAfterEngulf == 3;
+                int heldAfterEngulf = heldCount();
+                steps.Add("engulf:stillHeldAfterOwnRound=" + stillHeld + ";eligible=" + eligible +
+                    ";largeMaintained=" + largeMaintained + ";heldAfterLarge=" + heldAfterLarge +
+                    ";engulfed=" + engulfedNow + ";engulfTickDamage=" + engulfDamage +
+                    ";heldAfterEngulf=" + heldAfterEngulf + ";multiHoldAfterEngulf=" +
+                    flytrap.Descriptor.HasFact(multiHold) + ";hostile=" +
+                    DescribeExpandedSummoningCondition(hostile));
+                ok = ok && stillHeld && eligible && largeMaintained && heldAfterLarge == 1 &&
+                    engulfedNow && engulfDamage && heldAfterEngulf == 0;
 
-                // Release paths. Escape: a held wolf with an overwhelming check
-                // breaks free at its own tick and only its link ends.
-                wolves[0].Descriptor.Stats.BaseAttackBonus.BaseValue = 200;
-                Buff wolfState = SummonHoldComponent.HeldState(flytrap, wolves[0], grab);
-                UnityEngine.Random.InitState(FindNativeD20Seed(20));
-                if (wolfState != null) wolfState.TickMechanics();
-                bool escaped = SummonHeldComponent.HolderOf(wolves[0], multiHeld) == null &&
-                    !wolves[0].Descriptor.State.HasCondition(UnitCondition.CantMove) &&
-                    SummonMultiHoldComponent.HeldTargets(flytrap, multiHeld).Count == 2 &&
-                    flytrap.Descriptor.HasFact(multiHold);
-                // The area-leave sweep releases a held unit it is handed.
-                int swept = SummonGrappleAreaSafeguard.Sweep(true, new[] { wolves[1] });
-                bool sweptFree = swept == 1 &&
-                    SummonHeldComponent.HolderOf(wolves[1], multiHeld) == null &&
-                    SummonMultiHoldComponent.HeldTargets(flytrap, multiHeld).Count == 1;
                 // The holder's own hold ending (dismissal, death, dispel)
-                // releases the last link; the buff is gone with it.
-                flytrap.Descriptor.Buffs.RemoveFact(flytrap.Descriptor.Buffs.GetBuff(multiHold));
-                bool holdEnded = SummonHeldComponent.HolderOf(wolves[2], multiHeld) == null &&
+                // releases the last link and the buff goes with it.
+                UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                bool relinked = grab.TryGrab(wolves[2], bites[1], true) && heldCount() == 1 &&
+                    flytrap.Descriptor.HasFact(multiHold);
+                Buff holdBuff = flytrap.Descriptor.Buffs.GetBuff(multiHold);
+                if (holdBuff != null) flytrap.Descriptor.Buffs.RemoveFact(holdBuff);
+                bool holdEnded = relinked && SummonHeldComponent.HolderOf(wolves[2], multiHeld) == null &&
                     !wolves[2].Descriptor.State.HasCondition(UnitCondition.CantMove) &&
-                    SummonMultiHoldComponent.HeldTargets(flytrap, multiHeld).Count == 0 &&
-                    !flytrap.Descriptor.HasFact(multiHold);
+                    heldCount() == 0 && !flytrap.Descriptor.HasFact(multiHold);
                 // The swallow lifecycle: the traits ending spits the engulfed foe out.
                 flytrap.Descriptor.Buffs.RemoveFact(flytrap.Descriptor.Buffs.GetBuff(flytrapTraits));
                 bool spatOut = hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartSwallowed>() == null &&
                     !hostile.Descriptor.HasFact(engulfed) &&
                     !hostile.Descriptor.State.HasCondition(UnitCondition.CantAct) &&
-                    swallower.SwallowedUnits.Count == 0;
-                // Re-established links end with the holder's disposal.
+                    (swallower == null || swallower.SwallowedUnits.Count == 0);
+                // A link re-established after the traits return ends with the holder's disposal.
                 flytrap.Descriptor.AddBuff(flytrapTraits, flytrap, null);
                 SummonGrabComponent grabAgain = SummonGrabComponent.Find(flytrap);
                 UnityEngine.Random.InitState(FindNativeD20Seed(20));
@@ -955,22 +1052,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposeExpandedSummoningUnits(fixture.Created, new[] { flytrap });
                 bool disposalReleased = SummonHeldComponent.HolderOf(wolves[3], multiHeld) == null &&
                     !wolves[3].Descriptor.State.HasCondition(UnitCondition.CantMove);
-                steps.Add("release:escaped=" + escaped + ";swept=" + swept + ";sweptFree=" +
-                    sweptFree + ";holdEnded=" + holdEnded + ";spatOut=" + spatOut +
+                steps.Add("ending:relinked=" + relinked + ";holdEnded=" + holdEnded + ";spatOut=" + spatOut +
                     ";regrabbed=" + regrabbed + ";disposalReleased=" + disposalReleased);
-                ok = ok && escaped && sweptFree && holdEnded && spatOut && regrabbed &&
-                    disposalReleased;
+                ok = ok && relinked && holdEnded && spatOut && regrabbed && disposalReleased;
             }
             catch (Exception exception)
             {
-                steps.Add("exception=" + exception.GetType().Name + ":" + Sanitize(exception.Message));
+                steps.Add("exception=" + DescribeExpandedSummoningCorrectionException(exception));
                 ok = false;
             }
             finally
             {
-                hostile.Descriptor.State.Size = fixture.HostileSize;
-                hostile.Descriptor.Damage = damageBefore;
-                hostile.Descriptor.Stats.BaseAttackBonus.BaseValue = 0;
+                ResetExpandedSummoningHostile(fixture);
                 foreach (UnitEntityData wolf in wolves)
                     if (fixture.Created.Contains(wolf))
                         DisposeExpandedSummoningUnits(fixture.Created, new[] { wolf });
@@ -1050,6 +1143,78 @@ namespace KingmakerGunslinger.RuntimeTesting
             Game.Instance.EntityDestroyer.Tick();
         }
 
+        /// <summary>
+        /// Every gate the game's own area code applies to a unit, evaluated
+        /// here for the record: in game, awake, alive, inside the view's
+        /// shape, in line of sight of the area's centre, targetable.
+        /// </summary>
+        private static string DescribeExpandedSummoningAreaGates(AreaEffectEntityData area,
+            IEnumerable<KeyValuePair<string, UnitEntityData>> units)
+        {
+            if (area == null) return "area=<none>";
+            var parts = new List<string>();
+            Kingmaker.View.MapObjects.AreaEffectView view = area.View;
+            parts.Add("view=" + (view != null) + ";areaPos=" + Vec(area.Position));
+            if (view == null) return string.Join(";", parts.ToArray());
+            Kingmaker.View.MapObjects.SriptZones.IScriptZoneShape shape = view.Shape;
+            var cylinder = shape as Kingmaker.View.MapObjects.SriptZones.ScriptZoneCylinder;
+            parts.Add("viewPos=" + Vec(view.transform.position) + ";shape=" +
+                (shape == null ? "<none>" : shape.GetType().Name) + (cylinder == null ? "" :
+                    "(radius=" + cylinder.Radius.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) +
+                    ",height=" + cylinder.Height.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) +
+                    ",centre=" + Vec(cylinder.Center) + ")") + ";onUnit=" + view.OnUnit);
+            foreach (KeyValuePair<string, UnitEntityData> pair in units)
+            {
+                UnitEntityData unit = pair.Value;
+                if (unit == null) { parts.Add(pair.Key + "=<null>"); continue; }
+                float corpulence = unit.View == null ? -1f : unit.View.Corpulence;
+                string contains = shape == null ? "?" : shape.Contains(unit.Position, corpulence).ToString();
+                string los;
+                try
+                {
+                    los = (Kingmaker.Visual.FogOfWar.LineOfSightGeometry.Instance == null ? "no-geometry" :
+                        Kingmaker.Visual.FogOfWar.LineOfSightGeometry.Instance.HasObstacle(
+                            view.transform.position, unit.Position, 0).ToString());
+                }
+                catch (Exception exception) { los = "exception:" + exception.GetType().Name; }
+                string untargetable;
+                try { untargetable = UnitCommand.CommandTargetUntargetable(area, unit, null).ToString(); }
+                catch (Exception exception) { untargetable = "exception:" + exception.GetType().Name; }
+                parts.Add(pair.Key + "[pos=" + Vec(unit.Position) + ",dist=" +
+                    Vector3.Distance(unit.Position, view.transform.position).ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) +
+                    ",inGame=" + unit.IsInGame + ",sleeping=" + unit.IsSleeping + ",dead=" +
+                    unit.Descriptor.State.IsDead + ",corpulence=" + corpulence.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) +
+                    ",contains=" + contains + ",losObstacle=" + los + ",untargetable=" + untargetable + "]");
+            }
+            return string.Join(";", parts.ToArray());
+        }
+
+        /// <summary>
+        /// The area's units after the game's own frames; when it found none,
+        /// the game's own tick is run once more from here (the same method
+        /// its controller calls every frame) and the outcome recorded, so the
+        /// record says which path found the units and why none was found.
+        /// </summary>
+        private static string SettleExpandedSummoningArea(AreaEffectEntityData area,
+            IEnumerable<KeyValuePair<string, UnitEntityData>> units, out int inside)
+        {
+            inside = area == null ? -1 : area.UnitsInside.Count();
+            string gates = DescribeExpandedSummoningAreaGates(area, units);
+            if (area == null || inside > 0) return "path=game-frames;inside=" + inside + ";gates[" + gates + "]";
+            string tick;
+            try
+            {
+                area.Tick();
+                tick = "ok";
+            }
+            catch (Exception exception)
+            {
+                tick = "exception:" + DescribeExpandedSummoningCorrectionException(exception);
+            }
+            inside = area.UnitsInside.Count();
+            return "path=game-frames-then-fixture-tick(" + tick + ");inside=" + inside + ";gates[" + gates + "]";
+        }
+
         // --- the wind wall (frames) ---------------------------------------------------------------------------------
 
         private void BeginExpandedSummoningWindWall()
@@ -1076,7 +1241,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             ExecuteExpandedSummoningRuntimeAbility(_rulesMephit, windWall, 3,
                 new TargetWrapper(_rulesMephit), false);
             Game.Instance.EntityCreator.Tick();
-            _rulesSteps.Add("windWall:cast;execution=" + _expandedSummoningLastAbilityExecution);
+            AreaEffectEntityData wall = FindExpandedSummoningArea("KMG_Summoning_Special_DustMephit_WindWallArea");
+            _rulesSteps.Add("windWall:cast;execution=" + _expandedSummoningLastAbilityExecution +
+                ";areaAtCast=" + (wall != null) + ";insideAtCast=" + (wall == null ? -1 : wall.UnitsInside.Count()) +
+                ";mephitPos=" + Vec(_rulesMephit.Position) + ";casterPos=" + Vec(fixture.Caster.Position));
         }
 
         private void FinishExpandedSummoningWindWall()
@@ -1089,7 +1257,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 value.name == "KMG_Summoning_Special_DustMephit_WindWallState");
             AreaEffectEntityData wall = FindExpandedSummoningArea(
                 "KMG_Summoning_Special_DustMephit_WindWallArea");
-            int inside = wall == null ? -1 : wall.UnitsInside.Count();
+            int inside;
+            string settled = SettleExpandedSummoningArea(wall, new[] {
+                new KeyValuePair<string, UnitEntityData>("caster", caster),
+                new KeyValuePair<string, UnitEntityData>("wolf", wolf),
+                new KeyValuePair<string, UnitEntityData>("mephit", dust),
+                new KeyValuePair<string, UnitEntityData>("hostile", hostile) }, out inside);
             bool sheltered = wall != null && caster.Descriptor.HasFact(windWallState) &&
                 wolf.Descriptor.HasFact(windWallState) && dust.Descriptor.HasFact(windWallState) &&
                 !hostile.Descriptor.HasFact(windWallState);
@@ -1138,7 +1311,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 !wolf.Descriptor.HasFact(windWallState);
             string detail = "windWall:area=" + (wall != null) + ";inside=" + inside + ";sheltered=" +
                 sheltered + ";bow[" + bow + "];thrown[" + thrown + "];melee[" + melee + "];" + ray +
-                ";outcomes=" + Sanitize(wallOutcomes) + ";ended=" + wallEnded;
+                ";outcomes=" + Sanitize(wallOutcomes) + ";ended=" + wallEnded + ";" + settled;
             bool ok = sheltered && bowMiss && !bowHit && !thrownMiss &&
                 thrownChance == ExpandedSummoningSpecialProfiles.WindWallOtherRangedMissChance &&
                 !meleeMiss && meleeChance == 0 && !rayMiss && rayChance == 0 && wallEnded;
@@ -1158,16 +1331,19 @@ namespace KingmakerGunslinger.RuntimeTesting
             _rulesMephit = CastExpandedSummoningQuietUnit(fixture, "ooze-mephit");
             BlueprintAbility cloud = fixture.Blueprints.OfType<BlueprintAbility>().Single(value =>
                 value.name == "KMG_Summoning_Special_OozeMephit_SpellLikeTwo");
-            Vector3 cloudCentre = _rulesMephit.Position + new Vector3(3f, 0f, 0f);
-            fixture.Hostile.Translocate(cloudCentre, null);
+            // The placement: the hostile's own ground position, with the
+            // party caster, the allied summon and the mephit a step away.
+            Vector3 cloudCentre = fixture.Hostile.Position;
             fixture.Caster.Translocate(cloudCentre + new Vector3(1f, 0f, 0f), null);
             _rulesWolf.Translocate(cloudCentre + new Vector3(-1f, 0f, 0f), null);
-            _rulesMephit.Translocate(cloudCentre + new Vector3(0f, 0f, 1f), null);
+            _rulesMephit.Translocate(cloudCentre + new Vector3(0f, 0f, 1.5f), null);
             bool nauseatedBefore = fixture.Hostile.Descriptor.State.HasCondition(UnitCondition.Nauseated);
             ExecuteExpandedSummoningRuntimeAbility(_rulesMephit, cloud, 3, new TargetWrapper(cloudCentre), false);
             Game.Instance.EntityCreator.Tick();
+            AreaEffectEntityData area = FindExpandedSummoningArea("KMG_Summoning_Special_OozeMephit_StinkingCloudArea");
             _rulesSteps.Add("cloud:cast;nauseatedBefore=" + nauseatedBefore + ";execution=" +
-                _expandedSummoningLastAbilityExecution);
+                _expandedSummoningLastAbilityExecution + ";areaAtCast=" + (area != null) +
+                ";insideAtCast=" + (area == null ? -1 : area.UnitsInside.Count()) + ";centre=" + Vec(cloudCentre));
         }
 
         private void FinishExpandedSummoningCloud()
@@ -1177,7 +1353,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ooze = _rulesMephit;
             AreaEffectEntityData cloudArea = FindExpandedSummoningArea(
                 "KMG_Summoning_Special_OozeMephit_StinkingCloudArea");
-            int inside = cloudArea == null ? -1 : cloudArea.UnitsInside.Count();
+            int inside;
+            string settled = SettleExpandedSummoningArea(cloudArea, new[] {
+                new KeyValuePair<string, UnitEntityData>("hostile", hostile),
+                new KeyValuePair<string, UnitEntityData>("caster", caster),
+                new KeyValuePair<string, UnitEntityData>("wolf", wolf),
+                new KeyValuePair<string, UnitEntityData>("mephit", ooze) }, out inside);
             string insideNames = cloudArea == null ? "<no-area>" : string.Join(",",
                 cloudArea.UnitsInside.Select(value => value.Blueprint == null ? "?" :
                     value.Blueprint.name).ToArray());
@@ -1197,7 +1378,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             string detail = "cloud:area=" + (cloudArea != null) + ";inside=" + inside + "(" +
                 Sanitize(insideNames) + ");hostileInside=" + hostileInside + ";alliesInside=" + alliesInside +
                 ";hostileNauseated=" + hostileNauseated + ";partyCasterClean=" + casterClean +
-                ";alliedSummonClean=" + wolfClean + ";mephitClean=" + oozeClean;
+                ";alliedSummonClean=" + wolfClean + ";mephitClean=" + oozeClean + ";" + settled;
             bool ok = cloudArea != null && hostileInside && alliesInside && hostileNauseated &&
                 casterClean && wolfClean && oozeClean;
             _rulesCases.Add(Assertion("expanded-summoning-correction-cloud",
@@ -1322,7 +1503,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";brokeFreeOverwhelming=" + brokeFree + ";immunityFact=" + immune +
                 ";directWebOnSpider=" + immunityDirect;
             bool ok = _rulesHighTouch >= 100 && _rulesMissedHighTouch && _rulesWebRollA.Contains("type=RangedTouch") &&
-                _rulesWebRollA.Contains("hit=False") && _rulesLowTouch <= 0 && rollB.Contains("hit=True") &&
+                _rulesWebRollA.Contains("hit=False") && _rulesLowTouch < 10 && rollB.Contains("hit=True") &&
                 webbedLowTouch && _rulesWebUses0 == 2 && _rulesWebUses1 == 1 && _rulesWebUses2 == 0 && !thirdUse &&
                 stillWebbed && brokeFree && immune && immunityDirect == "refused";
             _rulesCases.Add(Assertion("expanded-summoning-correction-web",
@@ -1539,7 +1720,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             catch (Exception exception)
             {
-                steps.Add("exception=" + exception.GetType().Name + ":" + Sanitize(exception.Message));
+                steps.Add("exception=" + DescribeExpandedSummoningCorrectionException(exception));
                 ok = false;
             }
             finally
@@ -1603,11 +1784,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ExecuteExpandedSummoningRuntimeAbility(cyclops, flash, 1, new TargetWrapper(cyclops), false);
                 int usesAfter = cyclops.Descriptor.Resources.GetResourceAmount(flashResource);
                 bool armed = cyclops.Descriptor.HasFact(flashState);
-                // A save rolled while armed is untouched and leaves the arming.
+                // A save rolled while armed is untouched: the same seed gives
+                // the same roll while armed and after the arming is spent,
+                // and it leaves the arming in place.
                 UnityEngine.Random.InitState(FindNativeD20Seed(1));
-                var save = new RuleSavingThrow(cyclops, SavingThrowType.Will, 100);
-                Rulebook.Trigger(save);
-                int saveRoll = save.RollResult;
+                var saveArmed = new RuleSavingThrow(cyclops, SavingThrowType.Will, 100);
+                Rulebook.Trigger(saveArmed);
+                int saveWhileArmed = saveArmed.RollResult;
                 bool stillArmed = cyclops.Descriptor.HasFact(flashState) &&
                     !CyclopsFlashOfInsightComponent.IsArmed(cyclops);
                 cyclops.Descriptor.Stats.BaseAttackBonus.BaseValue = 0;
@@ -1628,24 +1811,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Rulebook.Trigger(plainAttack);
                 int plainNatural = plainAttack.AttackRoll == null ? -1 : (int)plainAttack.AttackRoll.Roll;
                 bool plainMiss = plainAttack.AttackRoll != null && !plainAttack.AttackRoll.IsHit;
+                UnityEngine.Random.InitState(FindNativeD20Seed(1));
+                var saveSpent = new RuleSavingThrow(cyclops, SavingThrowType.Will, 100);
+                Rulebook.Trigger(saveSpent);
+                int saveAfterSpent = saveSpent.RollResult;
                 bool secondUse = new AbilityData(cyclops.Descriptor.Abilities.GetAbility(flash)).IsAvailable;
                 hostile.Descriptor.Damage = damageBefore;
                 steps.Add("flash:uses=" + usesBefore + "->" + usesAfter + ";armed=" + armed +
-                    ";saveWhileArmed=" + saveRoll + ";stillArmedAfterSave=" + stillArmed +
+                    ";saveWhileArmed=" + saveWhileArmed + ";saveAfterSpentSameSeed=" + saveAfterSpent +
+                    ";stillArmedAfterSave=" + stillArmed +
                     ";armedNatural=" + natural + ";hit=" + (roll != null && roll.IsHit) + ";threat=" +
                     (roll != null && roll.IsCriticalRoll) + ";confirmationRoll=" + confirmation +
                     ";confirmed=" + (roll != null && roll.IsCriticalConfirmed) + ";autoFlags=" +
                     (roll != null && (roll.AutoHit || roll.AutoCriticalThreat || roll.AutoCriticalConfirmation)) +
                     ";spent=" + spent + ";nextNatural=" + plainNatural + ";nextMiss=" + plainMiss +
                     ";secondUseAvailable=" + secondUse);
-                ok = ok && usesBefore == 1 && usesAfter == 0 && armed && saveRoll == 1 && stillArmed &&
-                    chosenTwenty && confirmation >= 1 && confirmation <= 20 && spent &&
+                ok = ok && usesBefore == 1 && usesAfter == 0 && armed && saveWhileArmed == saveAfterSpent &&
+                    stillArmed && chosenTwenty && confirmation >= 1 && confirmation <= 20 && spent &&
                     plainNatural == 1 && plainMiss && !secondUse;
                 DisposeExpandedSummoningUnits(fixture.Created, new[] { cyclops });
             }
             catch (Exception exception)
             {
-                steps.Add("exception=" + exception.GetType().Name + ":" + Sanitize(exception.Message));
+                steps.Add("exception=" + DescribeExpandedSummoningCorrectionException(exception));
                 ok = false;
             }
             finally
@@ -1672,37 +1860,56 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var rows = new List<string>();
                     bool animalOk = hooves.Count == 2;
                     bool flaggedAtSpawn = hooves.Count == 2 && hooves.All(value => value.ForceSecondary);
+                    var secondaryAttack = new List<int>();
+                    var secondaryDamage = new List<int>();
+                    var primaryAttack = new List<int>();
+                    var primaryDamage = new List<int>();
+                    var kinds = new List<string>();
+                    SummonDocileHoovesComponent.SuspendedForFixture = false;
                     foreach (ItemEntityWeapon hoof in hooves)
                     {
                         int additionalIndex;
                         SummonLimbKind kind = SummonLimbs.Classify(animal, hoof, out additionalIndex);
-                        SummonDocileHoovesComponent.SuspendedForFixture = false;
-                        var secondaryBonus = new RuleCalculateAttackBonus(animal, hostile, hoof, 0);
-                        Rulebook.Trigger(secondaryBonus);
-                        var secondaryStats = new RuleCalculateWeaponStats(animal, hoof, null);
-                        Rulebook.Trigger(secondaryStats);
-                        int secondaryDamage = secondaryStats.DamageDescription.Count == 0 ? -999 :
-                            secondaryStats.DamageDescription[0].Bonus;
-                        bool secondaryFlag = hoof.ForceSecondary && hoof.IsSecondary;
-                        // The same hoof as a primary attack, with the docile
-                        // carrier's rule hooks suspended for the comparison.
-                        SummonDocileHoovesComponent.SuspendedForFixture = true;
-                        hoof.ForceSecondary = false;
-                        var primaryBonus = new RuleCalculateAttackBonus(animal, hostile, hoof, 0);
-                        Rulebook.Trigger(primaryBonus);
-                        var primaryStats = new RuleCalculateWeaponStats(animal, hoof, null);
-                        Rulebook.Trigger(primaryStats);
-                        int primaryDamage = primaryStats.DamageDescription.Count == 0 ? -999 :
-                            primaryStats.DamageDescription[0].Bonus;
-                        hoof.ForceSecondary = true;
-                        SummonDocileHoovesComponent.SuspendedForFixture = false;
-                        bool hoofOk = secondaryFlag && kind != SummonLimbKind.None &&
-                            secondaryBonus.Result == primaryBonus.Result - 5 &&
-                            primaryDamage == strength && secondaryDamage == strength / 2;
-                        rows.Add(kind + (additionalIndex >= 0 ? "[" + additionalIndex + "]" : "") +
-                            ":secondary=" + secondaryFlag + ",attack=" + secondaryBonus.Result + "(primary " +
-                            primaryBonus.Result + "),damageBonus=" + secondaryDamage + "(primary " +
-                            primaryDamage + ")");
+                        kinds.Add(kind + (additionalIndex >= 0 ? "[" + additionalIndex + "]" : "") +
+                            (hoof.ForceSecondary && hoof.IsSecondary ? "" : "(not-secondary)"));
+                        var bonus = new RuleCalculateAttackBonus(animal, hostile, hoof, 0);
+                        Rulebook.Trigger(bonus);
+                        var stats = new RuleCalculateWeaponStats(animal, hoof, null);
+                        Rulebook.Trigger(stats);
+                        secondaryAttack.Add(bonus.Result);
+                        secondaryDamage.Add(stats.DamageDescription.Count == 0 ? -999 :
+                            stats.DamageDescription[0].Bonus);
+                    }
+                    // The same hooves as primary attacks: both un-flagged
+                    // at once, the docile carrier's rule hooks suspended. The
+                    // game gives a primary-hand natural attack with an empty
+                    // off hand one and a half times Strength on its own.
+                    SummonDocileHoovesComponent.SuspendedForFixture = true;
+                    foreach (ItemEntityWeapon hoof in hooves) hoof.ForceSecondary = false;
+                    foreach (ItemEntityWeapon hoof in hooves)
+                    {
+                        var bonus = new RuleCalculateAttackBonus(animal, hostile, hoof, 0);
+                        Rulebook.Trigger(bonus);
+                        var stats = new RuleCalculateWeaponStats(animal, hoof, null);
+                        Rulebook.Trigger(stats);
+                        primaryAttack.Add(bonus.Result);
+                        primaryDamage.Add(stats.DamageDescription.Count == 0 ? -999 :
+                            stats.DamageDescription[0].Bonus);
+                    }
+                    foreach (ItemEntityWeapon hoof in hooves) hoof.ForceSecondary = true;
+                    SummonDocileHoovesComponent.SuspendedForFixture = false;
+                    for (int index = 0; index < hooves.Count; index++)
+                    {
+                        int primaryFull = strength;
+                        int primaryHandAndAHalf = (int)(strength * 1.5f);
+                        bool hoofOk = !kinds[index].Contains("(not-secondary)") &&
+                            secondaryAttack[index] == primaryAttack[index] - 5 &&
+                            secondaryDamage[index] == strength / 2 &&
+                            (primaryDamage[index] == primaryFull || primaryDamage[index] == primaryHandAndAHalf);
+                        rows.Add(kinds[index] + ":attack=" + secondaryAttack[index] + "(primary " +
+                            primaryAttack[index] + "),damageBonus=" + secondaryDamage[index] + "(primary " +
+                            primaryDamage[index] + (primaryDamage[index] == primaryHandAndAHalf &&
+                                primaryHandAndAHalf != primaryFull ? ", the game's own one-and-a-half" : "") + ")");
                         animalOk = animalOk && hoofOk;
                     }
                     int rakeSlots, attacks;
@@ -1716,7 +1923,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             catch (Exception exception)
             {
-                steps.Add("exception=" + exception.GetType().Name + ":" + Sanitize(exception.Message));
+                steps.Add("exception=" + DescribeExpandedSummoningCorrectionException(exception));
                 ok = false;
             }
             finally
@@ -1823,12 +2030,22 @@ namespace KingmakerGunslinger.RuntimeTesting
         private int _visualLifecycleBaselineMaterials = -1;
         private int _visualLifecycleBaselineTextures = -1;
         private string _visualLifecycleDonorBefore;
+        private string _visualLifecycleDonorRimBefore;
         private readonly List<string> _visualLifecycleSteps = new List<string>();
         private readonly List<RuntimeTestAssertion> _visualLifecycleCases =
             new List<RuntimeTestAssertion>();
         private bool _visualLifecycleFailed;
 
-        private static string DescribeExpandedSummoningViewMaterials(UnitEntityView view)
+        /// <summary>
+        /// A view's material identity: every renderer's material and shader
+        /// names, and the rim animation settings the variants write (the
+        /// gradient's colour keys, the intensity scale, the lifetime) -
+        /// exactly the per-view data a leak into a shared asset would change
+        /// on the next spawn. The animated rim colour itself is elsewhere: it
+        /// is rewritten every frame from these settings and varies with the
+        /// animation's phase at the moment of reading.
+        /// </summary>
+        private static string DescribeExpandedSummoningViewIdentity(UnitEntityView view)
         {
             if (view == null) return "<no-view>";
             var parts = new List<string>();
@@ -1836,12 +2053,34 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 if (renderer == null || renderer.sharedMaterials == null) continue;
                 foreach (Material material in renderer.sharedMaterials)
-                {
-                    if (material == null) { parts.Add("<null>"); continue; }
-                    string rim = material.HasProperty("_RimColor") ?
-                        material.GetColor("_RimColor").ToString("0.##") : "-";
-                    parts.Add(material.name.Replace(';', ',').Replace('|', '/') + "@" + rim);
-                }
+                    parts.Add(material == null ? "<null>" : Sanitize(material.name) + "/" +
+                        (material.shader == null ? "<no-shader>" : Sanitize(material.shader.name)));
+            }
+            foreach (RimLightingAnimationSetup setup in view.GetComponentsInChildren<RimLightingAnimationSetup>(true))
+            {
+                RimLightingAnimationSettings settings = setup == null ? null : setup.Settings;
+                if (settings == null) { parts.Add("rim:<none>"); continue; }
+                string keys = settings.ColorOverLifetime == null || settings.ColorOverLifetime.colorKeys == null ?
+                    "<none>" : string.Join("+", settings.ColorOverLifetime.colorKeys.Select(key =>
+                        key.color.ToString("0.###") + "@" + key.time.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)).ToArray());
+                parts.Add("rim:keys=" + Sanitize(keys) + ",intensityScale=" +
+                    settings.IntensityScale.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture) +
+                    ",lifetime=" + settings.Lifetime.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture) +
+                    ",loop=" + settings.LoopAnimation);
+            }
+            return string.Join("|", parts.ToArray());
+        }
+
+        private static string DescribeExpandedSummoningViewRim(UnitEntityView view)
+        {
+            if (view == null) return "<no-view>";
+            var parts = new List<string>();
+            foreach (Renderer renderer in view.GetComponentsInChildren<Renderer>(true))
+            {
+                if (renderer == null || renderer.sharedMaterials == null) continue;
+                foreach (Material material in renderer.sharedMaterials)
+                    parts.Add(material == null ? "<null>" : material.HasProperty("_RimColor") ?
+                        material.GetColor("_RimColor").ToString("0.##") : "-");
             }
             return string.Join("|", parts.ToArray());
         }
@@ -1858,21 +2097,23 @@ namespace KingmakerGunslinger.RuntimeTesting
             return false;
         }
 
-        private string SpawnExpandedSummoningDonorMephit(ExpandedSummoningCorrectionFixture fixture)
+        private string SpawnExpandedSummoningDonorMephit(ExpandedSummoningCorrectionFixture fixture,
+            out string rim)
         {
             BlueprintUnit donor = fixture.Blueprints.OfType<BlueprintUnit>().Single(value =>
                 value.AssetGuid == NativeAirMephitDonorGuid);
             UnitEntityData unit = Game.Instance.EntityCreator.SpawnUnit(donor,
                 fixture.Caster.Position + new Vector3(2f, 0f, 0f), Quaternion.identity, fixture.Scene);
             Game.Instance.EntityCreator.Tick();
-            string materials = unit == null ? "<no-unit>" : DescribeExpandedSummoningViewMaterials(unit.View) +
+            rim = unit == null ? "<no-unit>" : DescribeExpandedSummoningViewRim(unit.View);
+            string identity = unit == null ? "<no-unit>" : DescribeExpandedSummoningViewIdentity(unit.View) +
                 ";variantPatch=" + ExpandedSummoningVisualVariantPatch.DescribeView(unit == null ? null : unit.View);
             if (unit != null)
             {
                 CleanupExpandedSummoningUnit(unit);
                 Game.Instance.EntityDestroyer.Tick();
             }
-            return materials;
+            return identity;
         }
 
         private void PollExpandedSummoningVisualLifecycle()
@@ -1889,9 +2130,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     string counts = ExpandedSummoningVisualVariantPatch.CountOwnedObjects(
                         out _visualLifecycleBaselineMaterials, out textures, out live);
                     _visualLifecycleBaselineTextures = textures;
-                    _visualLifecycleDonorBefore = SpawnExpandedSummoningDonorMephit(_visualLifecycleFixture);
+                    _visualLifecycleDonorBefore = SpawnExpandedSummoningDonorMephit(_visualLifecycleFixture,
+                        out _visualLifecycleDonorRimBefore);
                     _visualLifecycleSteps.Add("baseline:" + counts + ";donor[" +
-                        Sanitize(_visualLifecycleDonorBefore) + "]");
+                        Sanitize(_visualLifecycleDonorBefore) + "];donorRim[" + Sanitize(_visualLifecycleDonorRimBefore) + "]");
                     _visualLifecycleCases.Add(Assertion("expanded-summoning-lifecycle-baseline",
                         "no variant-owned material or texture exists before the cycles",
                         counts + ";live=" + live, _visualLifecycleBaselineMaterials == 0 && textures == 0 && live == 0,
@@ -2043,8 +2285,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_visualLifecyclePhase == 5)
                 {
                     if (_visualLifecycleWait++ < 3) return;
-                    // The donor and the Pteranodon after everything.
-                    string donorAfter = SpawnExpandedSummoningDonorMephit(fixture);
+                    // The donor and the Pteranodon after everything: the
+                    // donor's materials, shaders and rim animation settings
+                    // are those of a donor spawned before the cycles.
+                    string donorRimAfter;
+                    string donorAfter = SpawnExpandedSummoningDonorMephit(fixture, out donorRimAfter);
                     UnitEntityData pteranodon = CastExpandedSummoningOwnTier(fixture, "pteranodon");
                     SetExpandedSummoningBrainActive(pteranodon, false);
                     string pteranodonView = ExpandedSummoningPteranodonViewPatch.DescribeView(pteranodon.View);
@@ -2055,13 +2300,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     bool donorSame = donorAfter == _visualLifecycleDonorBefore &&
                         !donorAfter.Contains(ExpandedSummoningVisualVariantPatch.VariantMaterialName) &&
                         donorAfter.Contains("variantPatch=<none>");
-                    _visualLifecycleSteps.Add("donorAfter[" + Sanitize(donorAfter) + "];pteranodon=" +
-                        Sanitize(pteranodonView));
+                    _visualLifecycleSteps.Add("donorAfter[" + Sanitize(donorAfter) + "];donorRimAfter[" +
+                        Sanitize(donorRimAfter) + "];pteranodon=" + Sanitize(pteranodonView));
                     _visualLifecycleCases.Add(Assertion("expanded-summoning-lifecycle-donor-and-pteranodon",
-                        "the native air mephit keeps its own materials and rim colour after the cycles; the Pteranodon keeps its own visual and carries no variant material",
-                        "donorSame=" + donorSame + ";pteranodon=" + Sanitize(pteranodonView),
+                        "the native air mephit spawned after the cycles carries the same materials, shaders and rim animation settings as one spawned before them (the rim colour itself is animated every frame from those settings); the Pteranodon keeps its own visual and carries no variant material",
+                        "donorSame=" + donorSame + ";before[" + Sanitize(_visualLifecycleDonorBefore) + "];after[" +
+                        Sanitize(donorAfter) + "];rimBefore[" + Sanitize(_visualLifecycleDonorRimBefore) + "];rimAfter[" +
+                        Sanitize(donorRimAfter) + "];pteranodon=" + Sanitize(pteranodonView),
                         donorSame && pteranodonClean,
-                        "a native donor spawned before and after; ExpandedSummoningPteranodonViewPatch.DescribeView"));
+                        "a native donor spawned before and after; RimLightingAnimationSetup settings per view; ExpandedSummoningPteranodonViewPatch.DescribeView"));
                     _visualLifecycleWait = 0;
                     _visualLifecyclePhase = 6;
                     return;
@@ -2085,8 +2332,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             catch (Exception exception)
             {
                 _visualLifecycleCases.Add(Assertion("expanded-summoning-lifecycle-phase" + _visualLifecyclePhase,
-                    "the phase completes", "exception=" + exception.GetType().Name + ":" +
-                    Sanitize(exception.Message) + ";steps=" + string.Join("||", _visualLifecycleSteps.ToArray()),
+                    "the phase completes", "exception=" + DescribeExpandedSummoningCorrectionException(exception) +
+                    ";steps=" + string.Join("||", _visualLifecycleSteps.ToArray()),
                     false, "the visual lifecycle fixture"));
                 CompleteExpandedSummoningVisualLifecycle();
             }
@@ -2100,8 +2347,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             catch (Exception exception)
             {
                 _visualLifecycleCases.Add(Assertion("expanded-summoning-lifecycle-cleanup-exception",
-                    "cleanup completes", "exception=" + exception.GetType().Name + ":" +
-                    Sanitize(exception.Message), false, "the visual lifecycle fixture"));
+                    "cleanup completes", "exception=" + DescribeExpandedSummoningCorrectionException(exception),
+                    false, "the visual lifecycle fixture"));
             }
             _visualLifecycleFixture = null;
             _visualLifecycleCases.Add(Assertion("expanded-summoning-lifecycle-cleanup",

@@ -1388,7 +1388,8 @@ namespace KingmakerGunslinger.Blueprints
             grappled.name = InternalName(GrappleGrappledSymbol);
             grappled.Stacking = StackingType.Replace;
             grappled.IsClassFeature = false;
-            grappled.ComponentsArray = new BlueprintComponent[] { entangled };
+            grappled.ComponentsArray = new BlueprintComponent[] { entangled,
+                ScriptableObject.CreateInstance<SummonHeldRoundComponent>() };
             BlueprintUnitFactAccess.Resolve().Configure(grappled,
                 LocalizationService.Create(
                     "KMG.ExpandedSummoning.Grapple.Grappled.Name", "Held"),

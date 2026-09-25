@@ -292,6 +292,19 @@ namespace KingmakerGunslinger.DomainTests
                 "ArmExpandedSummoningPersistenceFlash(", "expanded-summoning-cyclops-flash-persistence");
             RequireTokens("Project file", project,
                 "RuntimeTesting\\RuntimeTestRunner.ExpandedSummoningCorrection.cs");
+            // The single-link held state must tick each round, or the
+            // "held since the round began" gate never opens for the cats
+            // and the worm (the third shake-out found the grappled buff
+            // without a round component).
+            string components = Source("src", "KingmakerGunslinger", "Summoning", "ExpandedSummoningSpecialCombatComponents.cs");
+            string builder = Source("src", "KingmakerGunslinger", "Blueprints", "ExpandedSummoningSpecialBuilder.cs");
+            RequireTokens("Held-state rounds", components,
+                "public sealed class SummonHeldRoundComponent : BuffLogic, ITickEachRound",
+                "internal static int RoundsHeld(Buff heldState)",
+                "Game.Instance.TimeController.GameTime >= nextTick");
+            RequireTokens("Grappled buff ticks", builder,
+                "grappled.ComponentsArray = new BlueprintComponent[] { entangled,",
+                "ScriptableObject.CreateInstance<SummonHeldRoundComponent>() };");
             // Every planned type the ledger carries must have a shell factory,
             // or the mod's blueprint initialization fails at load (the first
             // shake-out run of the correction found the area effects missing).
