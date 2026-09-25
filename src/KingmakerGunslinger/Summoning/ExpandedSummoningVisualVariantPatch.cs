@@ -329,14 +329,22 @@ namespace KingmakerGunslinger.Summoning
                 if (!state.Rim.HasValue) return;
                 RimLightingAnimationController rims = RimControllerOf(__instance);
                 if (rims == null || rims.Animations == null) return;
+                bool arrived = false;
                 foreach (RimLightingAnimationSettings settings in rims.Animations)
                 {
                     if (settings == null || !settings.LoopAnimation || state.Seen.Contains(settings))
                         continue;
-                    ExpandedSummoningVisualVariantPatch.RecolourRimAnimation(settings, state.Rim.Value);
                     state.Seen.Add(settings);
                     state.Recoloured++;
+                    arrived = true;
                 }
+                if (!arrived) return;
+                // The controller adds its looping animations together: each
+                // recoloured one carries an equal share of the target, so the
+                // combined glow lands on the profile's brightness.
+                foreach (RimLightingAnimationSettings settings in state.Seen)
+                    ExpandedSummoningVisualVariantPatch.RecolourRimAnimation(settings,
+                        state.Rim.Value, state.Seen.Count);
             }
             catch (Exception)
             {
@@ -449,7 +457,7 @@ namespace KingmakerGunslinger.Summoning
             {
                 RimLightingAnimationSettings settings = setup == null ? null : setup.Settings;
                 if (settings == null) continue;
-                RecolourRimAnimation(settings, rim);
+                RecolourRimAnimation(settings, rim, 1);
                 recoloured++;
             }
             return recoloured;
@@ -459,13 +467,16 @@ namespace KingmakerGunslinger.Summoning
         /// One rim animation in the variant's colour: the gradient's colour
         /// keys become the colour (normalized; alpha keys and times kept)
         /// and IntensityScale is set so the intensity curve's peak lands on
-        /// the colour's brightest channel.
+        /// the colour's brightest channel divided by <paramref name="share"/>
+        /// - the controller adds its looping animations together, so each
+        /// of N carries a 1/N share of the target.
         /// </summary>
         internal static void RecolourRimAnimation(RimLightingAnimationSettings settings,
-            Color rim)
+            Color rim, int share)
         {
             float peakTarget = Mathf.Max(rim.r, Mathf.Max(rim.g, rim.b));
             if (settings == null || peakTarget <= 0f) return;
+            if (share < 1) share = 1;
             var normalized = new Color(rim.r / peakTarget, rim.g / peakTarget,
                 rim.b / peakTarget, 1f);
             Gradient source = settings.ColorOverLifetime;
@@ -487,7 +498,7 @@ namespace KingmakerGunslinger.Summoning
             if (intensity != null && intensity.keys != null && intensity.keys.Length != 0)
                 peakCurve = intensity.keys.Max(key => key.value);
             if (peakCurve <= 0f) peakCurve = 1f;
-            settings.IntensityScale = peakTarget / peakCurve;
+            settings.IntensityScale = peakTarget / peakCurve / share;
             settings.CurrentColor = normalized;
         }
 
