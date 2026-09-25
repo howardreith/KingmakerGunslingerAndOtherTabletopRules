@@ -193,6 +193,17 @@ namespace KingmakerGunslinger.FavoredClass
                     context.Logger.Warning(Phase, "native-contract.unavailable",
                         "effect=" + FavoredClassCatalog.EffectPaladinAuras + ";" + auraProblem);
                 }
+                // O01 widens an area only together with its ring: without the
+                // ring scaler no widened range could show its boundary, so the
+                // counter (and its owner-range text) is withheld.
+                if (set.Pairs.Any(pair => pair.Effect.Id == FavoredClassCatalog.EffectPerformanceRange) &&
+                    !Mechanics.FavoredClassPerformanceRing.Available)
+                {
+                    unavailable.Add(FavoredClassCatalog.EffectPerformanceRange);
+                    context.Logger.Warning(Phase, "native-contract.unavailable",
+                        "effect=" + FavoredClassCatalog.EffectPerformanceRange +
+                        ";the ring scaler (UnityEngine.ParticleSystem) is unavailable");
+                }
                 // I06/S04 read points are scoped from the live provider graph;
                 // a revelation without any found read point is withheld.
                 if (set.Pairs.Any(pair => pair.Effect.Id == FavoredClassCatalog.EffectSelectedRevelation))
