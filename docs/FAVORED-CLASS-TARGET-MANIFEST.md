@@ -133,12 +133,15 @@ Final Revelations (capstones).
 | AirRay | S06 | `acf668c24dfbcdd499276eaf1881486e` | `4729c2ac98d02004fb440d17f7786e28` | damage bonus rank |
 | AirBlast | S06 | `553d9802d5d9de04b941b55cb47d3096` | `6d005cc9c3ad3f24e8769aad2fbfdf3f` | dice, DC, caster level checks, extra daily uses at 17th and 20th level |
 
-Elemental Blast's extra daily uses are granted natively by the bloodline
-progression at 17th and 20th level (`...ElementalBlastExtraUse`, +1 each); a
-Blast counter adds exactly the extra uses between the real and the effective
-level of the owner's eligible bloodline progression (read from that
-progression's own level entries, so the Seeker and Crossblooded copies follow
-their own tables), at most two steps.
+Elemental Blast's extra daily uses (`...ElementalBlastExtraUse`, +1 each at
+17th and 20th level) are granted natively by the bloodline progression's own
+level entries; Call of the Wild moves them into the Blast feature's own
+class-level gates (`AddFeatureOnClassLevel`). A Blast counter adds exactly the
+extra uses between the real and the effective level in either layout: from
+the owner's eligible bloodline progression's own level entries (so the Seeker
+and Crossblooded copies follow their own tables), or from the power's own
+gates, each decided like the native gate at the effective level. At most two
+steps; the extra-use feature itself is never granted early.
 
 Not targets: Elemental Movement, Body and Arcana, and Elemental Ray's uses (no
 level scaling); Primal Elemental bloodlines (not fire or air elemental); efreeti
