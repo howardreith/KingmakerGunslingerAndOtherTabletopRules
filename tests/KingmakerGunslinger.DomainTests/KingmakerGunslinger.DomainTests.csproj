@@ -53,6 +53,7 @@
     <Compile Include="FavoredClassGunslingerCoreTests.cs" />
     <Compile Include="FavoredClassSettingsTests.cs" />
     <Compile Include="FavoredClassHostGateTests.cs" />
+    <Compile Include="FavoredClassThresholdTests.cs" />
     <Compile Include="ElementalMostlyHumanTests.cs" />
     <Compile Include="FavoredClassAdvancedTests.cs" />
     <Compile Include="FavoredClassPowerTests.cs" />

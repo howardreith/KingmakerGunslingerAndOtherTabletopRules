@@ -20,15 +20,20 @@ namespace KingmakerGunslinger.DomainTests
         }
 
         // The generated manifest is the audit's implementable set: 52 targets,
-        // 22 with held-back thresholds, Dragon revelations one feature per colour.
+        // Dragon revelations one feature per colour; every published target
+        // implements its level gates, and only the possession BAB target is
+        // excluded (review finding 2, charter 8.10).
         internal static void ManifestIsTheAuditedImplementableSet()
         {
             IList<FavoredClassRevelationTarget> all = FavoredClassRevelationManifest.All;
             Assertions.Equal(52, all.Count, "Audited implementable revelations.");
             Assertions.Equal(52, all.Select(target => target.Key).Distinct(StringComparer.Ordinal).Count(),
                 "Unique target keys.");
-            Assertions.Equal(13, all.Count(target => target.HeldBack != null),
-                "Targets with a feature-granting gate or the possession BAB at the actual level.");
+            Assertions.Equal(1, all.Count(target => !target.Published),
+                "Only one target is excluded rather than published partially.");
+            FavoredClassRevelationTarget warrior = FavoredClassRevelationManifest.For("SpiritOfTheWarrior");
+            Assertions.True(!warrior.Published && warrior.ExcludedReason.Contains("base attack bonus"),
+                "Spirit of the Warrior is excluded: its possession sets BAB, which a counter must never raise.");
             foreach (FavoredClassRevelationTarget target in all)
             {
                 Assertions.True(Regex.IsMatch(target.Key, "^[A-Z][A-Za-z]+$"), target.Key + " is a symbol segment.");
@@ -77,12 +82,15 @@ namespace KingmakerGunslinger.DomainTests
                     leaf.Symbol + " has a committed identity.");
                 Assertions.True(leaf.Description.Contains("Each revelation keeps its own separate count") &&
                     leaf.Description.Contains("Ifrit") && leaf.Description.Contains("Sylph") &&
-                    leaf.Description.Contains("still gained at your actual oracle level") &&
+                    leaf.Description.Contains("so do the abilities and forms the revelation itself gains at later oracle levels") &&
+                    leaf.Description.Contains("It never grants another revelation or revelation choice") &&
+                    !leaf.Description.Contains("still gained at your actual oracle level") &&
+                    !leaf.Description.Contains("Still at your actual oracle level") &&
                     !leaf.Description.Contains("limited to"),
-                    leaf.Symbol + " discloses its counter, routes and actual-level thresholds.");
+                    leaf.Symbol + " discloses its counter, routes and effective-level gates.");
                 FavoredClassRevelationTarget target = FavoredClassRevelationManifest.For(leaf.TargetKey);
-                Assertions.Equal(target.HeldBack != null, leaf.Description.Contains("Still at your actual oracle level:"),
-                    leaf.Symbol + " lists its own held-back thresholds exactly when it has some.");
+                Assertions.Equal(!target.Published, leaf.Description.Contains("Not offered:"),
+                    leaf.Symbol + " states its exclusion exactly when it is excluded.");
             }
             Assertions.Equal("Combat Healer (Battle)", FavoredClassLeafCatalog.TargetTitle(effect, "BattleCombatHealer"),
                 "Shared names carry their mystery.");
@@ -200,7 +208,15 @@ namespace KingmakerGunslinger.DomainTests
                 "!owners.TryGetValue(context.AssociatedBlueprint, out scope)",
                 "formula.Amount.ScalesWithOracle",
                 "FavoredClassRevelationScopes.IsDeparting(leaf)",
-                "!FavoredClassRuntime.MechanicsEnabled"
+                "!FavoredClassRuntime.MechanicsEnabled",
+                "if (levelGate != null && current.Owner != null && IsOracleGate(levelGate, oracle))",
+                "scope.Gates.Add(recorded);",
+                "scope.Evidence.Add(\"withheld-shared-gate:\" + gate.Label);",
+                "scope.PartialReason = ",
+                "if (!scope.Target.Published)",
+                "if (!scope.HasReadPoints || scope.PartialReason != null)",
+                "result = FavoredClassMechanicsPolicy.GateApplies(level + steps, gate.Level, gate.BeforeThisLevel);",
+                "ReplaceCasterLevelOfAbility.CalculateClassLevel(gate.Class, gate.AdditionalClasses, owner,"
             })
                 Assertions.True(scopes.Contains(token), "Scopes: " + token);
             string level = Source("Mechanics", "FavoredClassSelectedRevelationLevel.cs");
@@ -213,9 +229,18 @@ namespace KingmakerGunslinger.DomainTests
                 "scope.Resources.ContainsKey(resource)",
                 "if (IsReapplying)",
                 "FavoredClassRevelationScopes.BeginDeparture(fact);",
-                "feature.Recalculate();"
+                "feature.Recalculate();",
+                "feature.CallComponents<AddFeatureOnClassLevel>(gate => gate.HandleUnitGainLevel(owner, null));"
             })
                 Assertions.True(level.Contains(token), "Revelation level: " + token);
+            string gateHook = Source("Hooks", "FavoredClassRevelationGatePatch.cs");
+            Assertions.True(gateHook.Contains("[HarmonyPatch(typeof(AddFeatureOnClassLevel), \"IsFeatureShouldBeApplied\")]") &&
+                gateHook.Contains("FavoredClassRevelationScopes.GateResult(__instance, ref __result);") &&
+                gateHook.Contains("catch (Exception)"),
+                "The gate hook re-decides only scoped gates and fails safe to the native decision.");
+            string publication = Source("FavoredClassPublication.cs");
+            Assertions.True(publication.Contains("!FavoredClassRevelationManifest.For(pair.TargetKey).Published)"),
+                "An excluded revelation is never published.");
             Assertions.False(level.Contains("AddBonusCasterLevel") || level.Contains("AddBonusDC"),
                 "No rank bonus: Call of the Wild would count it again in every Oracle rank.");
             string hook = Source("Hooks", "FavoredClassRevelationRankPatch.cs");

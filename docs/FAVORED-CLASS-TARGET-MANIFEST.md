@@ -35,64 +35,71 @@ earned steps where the revelation itself reads oracle level:
   abilities rises by the steps and its half-level spell level by the resulting
   difference, so save DCs and caster-level-based durations and dice follow.
 
-Held back (still the actual oracle level): breakpoint tables, tier selections
-the audit does not implement, the explicitly held reads below, single-level
-extra uses and every level gate. Level-gated abilities are scaled once the
-revelation actually grants them. Read points reached from two targets are
-withheld from both; a target with no read point is not published.
+Level thresholds and gates (review finding 2, charter 8.10): the
+revelation's own steps, tiers, breakpoint tables and single-level extra uses
+follow the effective level, and so do its own native level gates
+(`AddFeatureOnClassLevel`, including the before/after pairs that swap a form):
+an invested revelation gains the abilities and forms it grants at later oracle
+levels earlier, and loses them again when the investment is removed. Nothing
+else is granted: no other revelation, no revelation choice, no class feature,
+spell, slot, BAB or save. A target whose effect cannot be implemented without
+breaking a charter rule is excluded instead of published partially. Read points
+and gates reached from two targets are withheld from both, and a target that
+loses a gate that way is withheld whole; a target with no read point is not
+published.
 
-| Key | Revelation | Mystery | Audit families | Found (build 14) | Rank reads | Resources | Parameter abilities | Held back |
+| Key | Revelation | Mystery | Audit families | Found (build 14) | Rank reads | Resources | Parameter abilities | Effective-level thresholds and gates |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | AgingTouch | Aging Touch | Time | A, B | A, B, C | 2 | 1 | 1 | - |
 | RewindTime | Rewind Time | Time | B | B | 0 | 1 | 0 | - |
 | SpeedOrSlowTime | Speed or Slow Time | Time | B, C | B, C | 0 | 1 | 2 | - |
-| TimeFlicker | Time Flicker | Time | B | B | 0 | 1 | 0 | the displacement gained at 7th level |
+| TimeFlicker | Time Flicker | Time | B | B | 0 | 1 | 0 | the displacement gained at 7th level (gate) |
 | TimeHop | Time Hop | Time | B | B, C | 0 | 1 | 2 | - |
-| TimeSight | Time Sight | Time | B | B | 0 | 1 | 0 | the foresight step at 18th level (held-breakpoint-table) |
-| EraseFromTime | Erase From Time | Time | A, C | A, C | 1 | 0 | 1 | the extra daily use at 11th level (held-threshold-resource) |
+| TimeSight | Time Sight | Time | B | B | 0 | 1 | 0 | the foresight step at 18th level (breakpoint table) |
+| EraseFromTime | Erase From Time | Time | A, C | A, C | 1 | 0 | 1 | the extra daily use at 11th level (resource threshold) |
 | BloodOfHeroes | Blood of Heroes | Ancestor | A, B | A, B | 1 | 1 | 0 | - |
 | PhantomTouch | Phantom Touch | Ancestor | A | A | 1 | 0 | 0 | - |
-| SpiritOfTheWarrior | Spirit of the Warrior | Ancestor | B | B | 0 | 1 | 0 | the base attack bonus while possessed (held-read) |
-| SpiritShield | Spirit Shield | Ancestor | A, B | A, B | 1 | 1 | 0 | the ranged miss chance gained at 13th level (held-tier) |
+| SpiritOfTheWarrior | Spirit of the Warrior | Ancestor | B | B | 0 | 1 | 0 | EXCLUDED, not published: its possession sets the base attack bonus from oracle level, which a counter must never raise |
+| SpiritShield | Spirit Shield | Ancestor | A, B | A, B | 1 | 1 | 0 | the ranged miss chance gained at 13th level (tier) |
 | StormOfSouls | Storm of Souls | Ancestor | A, B, C | A, B, C | 2 | 1 | 1 | - |
 | SpiritWalk | Spirit Walk | Ancestor | B | B | 0 | 1 | 0 | - |
 | AncestralWeapon | Ancestral Weapon | Ancestor | B | B | 0 | 1 | 0 | - |
 | FireBreath | Fire Breath | Flame | A, B, C | A, B, C | 1 | 1 | 1 | - |
 | Firestorm | Firestorm | Flame | A, C | A, C | 1 | 0 | 1 | - |
-| FormOfFlame | Form of Flame | Flame | C | C | 0 | 0 | 4 | the elemental body forms gained at 9th, 11th and 13th level |
+| FormOfFlame | Form of Flame | Flame | C | C | 0 | 0 | 4 | the elemental body forms gained at 9th, 11th and 13th level (gate) |
 | HeatAura | Heat Aura | Flame | A, B, C | A, B, C | 1 | 1 | 1 | - |
-| TouchOfFlame | Touch of Flame | Flame | A | A | 1 | 0 | 0 | the flaming weapon gained at 11th level |
-| Battlecry | Battlecry | Battle | B | B | 0 | 1 | 0 | the +2 bonus at 10th level (held-read) |
+| TouchOfFlame | Touch of Flame | Flame | A | A | 1 | 0 | 0 | the flaming weapon gained at 11th level (gate) |
+| Battlecry | Battlecry | Battle | B | B | 0 | 1 | 0 | the +2 bonus at 10th level (step) |
 | BattleCombatHealer | Combat Healer | Battle | B | B | 0 | 1 | 0 | - |
-| IronSkin | Iron Skin | Battle | C | C | 0 | 0 | 1 | the extra daily use at 15th level (held-threshold-resource) |
+| IronSkin | Iron Skin | Battle | C | C | 0 | 0 | 1 | the extra daily use at 15th level (resource threshold) |
 | SurprisingCharge | Surprising Charge | Battle | B | B | 0 | 1 | 0 | - |
 | Channel | Channel | Life | A, C | A, C | 24 | 0 | 21 | - |
 | LifeCombatHealer | Combat Healer | Life | B | B | 0 | 1 | 0 | - |
 | EnergyBody | Energy Body | Life | A, B | A, B | 2 | 1 | 0 | - |
 | LifeLink | Life Link | Life | B | B | 0 | 1 | 0 | - |
 | SpiritBoost | Spirit Boost | Life | A | A | 1 | 0 | 0 | - |
-| AirBarrier | Air Barrier | Wind | A, B | A, B | 1 | 1 | 0 | the ranged miss chance gained at 13th level (held-tier) |
-| Invisibility | Invisibility | Wind | B | B | 0 | 1 | 0 | greater invisibility at 9th level |
+| AirBarrier | Air Barrier | Wind | A, B | A, B | 1 | 1 | 0 | the ranged miss chance gained at 13th level (tier) |
+| Invisibility | Invisibility | Wind | B | B | 0 | 1 | 0 | greater invisibility at 9th level (gate) |
 | LightningBreath | Lightning Breath | Wind | A, B, C | A, B, C | 1 | 1 | 1 | - |
 | Thunderburst | Thunderburst | Wind | A, B, C | A, B, C | 1 | 1 | 1 | - |
-| TouchOfElectricity | Touch of Electricity | Wind | A | A | 1 | 0 | 0 | the shock weapon gained at 11th level |
+| TouchOfElectricity | Touch of Electricity | Wind | A | A | 1 | 0 | 0 | the shock weapon gained at 11th level (gate) |
 | PresenceOfDragons | Presence of Dragons | Dragon | B, C | B, C | 0 | 1 | 1 | - |
-| ScaledToughness | Scaled Toughness | Dragon | A | A | 1 | 0 | 0 | the extra daily use at 13th level (held-threshold-resource) |
-| BreathWeapon | Breath Weapon | Dragon | A, B, C | A, B, C | 20 | 10 | 20 | the final breath weapon at 20th level |
-| FormOfTheDragon | Form of the Dragon | Dragon | A | A, C | 40 | 0 | 40 | the forms gained at 15th and 19th level |
+| ScaledToughness | Scaled Toughness | Dragon | A | A | 1 | 0 | 0 | the extra daily use at 13th level (resource threshold) |
+| BreathWeapon | Breath Weapon | Dragon | A, B, C | A, B, C | 20 | 10 | 20 | the final breath weapon at 20th level (gate) |
+| FormOfTheDragon | Form of the Dragon | Dragon | A | A, C | 40 | 0 | 40 | the forms gained at 15th and 19th level (gate) |
 | Blizzard | Blizzard | Waves | A, C | A, C | 1 | 0 | 1 | - |
-| IceArmor | Ice Armor | Waves | A, B | A, B | 1 | 1 | 0 | the damage reduction gained at 13th level (held-tier) |
-| WaterForm | Water Form | Waves | C | C | 0 | 0 | 4 | the elemental body forms gained at 9th, 11th and 13th level |
-| WintryTouch | Wintry Touch | Waves | A | A | 1 | 0 | 0 | the frost weapon gained at 11th level |
+| IceArmor | Ice Armor | Waves | A, B | A, B | 1 | 1 | 0 | the damage reduction gained at 13th level (tier) |
+| WaterForm | Water Form | Waves | C | C | 0 | 0 | 4 | the elemental body forms gained at 9th, 11th and 13th level (gate) |
+| WintryTouch | Wintry Touch | Waves | A | A | 1 | 0 | 0 | the frost weapon gained at 11th level (gate) |
 | PunitiveTransformation | Punitive Transformation | Waves | A, C | A, C | 1 | 0 | 1 | - |
 | ErosionTouch | Erosion Touch | Nature | A, B | A, B, C | 1 | 1 | 1 | - |
 | LifeLich | Life Lich | Nature | B, C | B, C | 0 | 1 | 1 | - |
-| FormOfTheBeast | Form of the Beast | Nature | C | C | 0 | 0 | 8 | the forms gained at 9th, 11th and 13th level |
-| GiftOfClawAndHorn | Gift of Claw and Horn | Nature | A | A | 6 | 0 | 0 | the second natural weapon gained at 11th level |
-| ArmorOfBones | Armor of Bones | Bones | A, B | A, B | 1 | 1 | 0 | the damage reduction gained at 13th level (held-tier) |
+| FormOfTheBeast | Form of the Beast | Nature | C | C | 0 | 0 | 8 | the forms gained at 9th, 11th and 13th level (gate) |
+| GiftOfClawAndHorn | Gift of Claw and Horn | Nature | A | A | 6 | 0 | 0 | the second natural weapon gained at 11th level (gate) |
+| ArmorOfBones | Armor of Bones | Bones | A, B | A, B | 1 | 1 | 0 | the damage reduction gained at 13th level (tier) |
 | BleedingWounds | Bleeding Wounds | Bones | A | A | 1 | 0 | 0 | - |
 | DeathsTouch | Death's Touch | Bones | A | A | 1 | 0 | 0 | - |
-| RaiseTheDead | Raise the Dead | Bones | A | A, C | 1 | 0 | 2 | the extra daily use at 10th level and the ability gained at 15th level (held-threshold-resource) |
+| RaiseTheDead | Raise the Dead | Bones | A | A, C | 1 | 0 | 2 | the extra daily use at 10th level (resource threshold) and the ability gained at 15th level (gate) |
 | SoulSiphon | Soul Siphon | Bones | A, B | A, B | 1 | 1 | 0 | - |
 | UndeadServitude | Undead Servitude | Bones | C | C | 0 | 0 | 1 | - |
 
@@ -101,11 +108,13 @@ revelation's own abilities): Aging Touch, Time Hop and Erosion Touch (caster
 level only; no save), Form of the Dragon (the forms' own parameters) and Raise
 the Dead (the 15th-level abilities, scaled once gained). Recorded for owner review.
 
-Not offered (audit dispositions): threshold-only design decisions (Temporal
-Celerity, War Sight, Cinder Dance, Molten Skin, Spark Skin, Icy Skin, Weapon
-Mastery, Fluid Nature, Freezing Spells, Dragon Senses, Draconic Resistances,
-Spirit of Nature, Near Death, Resist Life); unsupported branches (Maneuver
-Mastery, Enhanced Cures, Vortex Spells, Animal Companion); no oracle-level
+Not offered (audit dispositions): explicitly deferred threshold-only
+revelations (Temporal Celerity, War Sight, Cinder Dance, Molten Skin, Spark
+Skin, Icy Skin, Weapon Mastery, Fluid Nature, Freezing Spells, Dragon Senses,
+Draconic Resistances, Spirit of Nature, Near Death, Resist Life): their level
+thresholds follow the same gate and rank rules, but publishing them needs new
+owned target identities that this candidate's identity ledger does not contain;
+unsupported branches (Maneuver Mastery, Enhanced Cures, Vortex Spells, Animal Companion); no oracle-level
 scaling (Sacred Council, Burning Magic, Skill at Arms, Healing Hands, Safe
 Curing, Wings of Air, Dragon Magic, Wings of the Dragon, Friend to Animals,
 Nature's Whispers); Dual-Cursed Fortune (eligibility decision) and Misfortune;
@@ -116,14 +125,23 @@ Final Revelations (capstones).
 | Key | Row | Power feature | Ability | Scales |
 | --- | --- | --- | --- | --- |
 | FireRay | I08 | `ce0889b5c1b392e48baf1e004d1efd67` | `1b4989258e5964149a909e47c72b7f67` | damage bonus rank |
-| FireBlast | I08 | `3022a5066a5604a498dd289b37dfd8aa` | `b2d1d39cd406e0f4185c52fecc73c3b5` | dice, DC, caster level checks |
+| FireBlast | I08 | `3022a5066a5604a498dd289b37dfd8aa` | `b2d1d39cd406e0f4185c52fecc73c3b5` | dice, DC, caster level checks, extra daily uses at 17th and 20th level |
 | AirRay | S06 | `acf668c24dfbcdd499276eaf1881486e` | `4729c2ac98d02004fb440d17f7786e28` | damage bonus rank |
-| AirBlast | S06 | `553d9802d5d9de04b941b55cb47d3096` | `6d005cc9c3ad3f24e8769aad2fbfdf3f` | dice, DC, caster level checks |
+| AirBlast | S06 | `553d9802d5d9de04b941b55cb47d3096` | `6d005cc9c3ad3f24e8769aad2fbfdf3f` | dice, DC, caster level checks, extra daily uses at 17th and 20th level |
 
-Not targets: Elemental Movement, Body and Arcana and Ray uses (no level
-scaling); Elemental Resistance's 9th-level step and Blast's extra uses
-(thresholds, owner decision); Primal Elemental bloodlines (owner decision);
-efreeti and djinni bloodlines (absent from the game).
+Elemental Blast's extra daily uses are granted natively by the bloodline
+progression at 17th and 20th level (`...ElementalBlastExtraUse`, +1 each); a
+Blast counter adds exactly the extra uses between the real and the effective
+level of the owner's eligible bloodline progression (read from that
+progression's own level entries, so the Seeker and Crossblooded copies follow
+their own tables), at most two steps.
+
+Not targets: Elemental Movement, Body and Arcana, and Elemental Ray's uses (no
+level scaling); Primal Elemental bloodlines (not fire or air elemental); efreeti
+and djinni bloodlines (absent from the game). Explicitly deferred: Elemental
+Resistance (its 9th-level step from resistance 10 to 20 is implementable with
+the same threshold rule, but publishing it needs a new owned target identity,
+which this candidate's identity ledger does not contain).
 
 ## O01 - selected bardic performance range (+5 feet per investment, max +30 feet)
 

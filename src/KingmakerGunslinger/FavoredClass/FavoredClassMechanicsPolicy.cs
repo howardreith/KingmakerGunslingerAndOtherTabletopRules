@@ -140,5 +140,34 @@ namespace KingmakerGunslinger.FavoredClass
                 throw new ArgumentOutOfRangeException("earnedSteps");
             return Math.Max(0, earnedSteps - Math.Max(0, criticalFocusBonus));
         }
+
+        /// <summary>
+        /// The native AddFeatureOnClassLevel decision at a class level: a
+        /// before-gate applies below its level, any other gate at or above it.
+        /// I06/S04 evaluates an owned revelation's own gates at the effective
+        /// level (charter 8.10: the owned power's effect thresholds).
+        /// </summary>
+        internal static bool GateApplies(int classLevel, int gateLevel, bool beforeThisLevel)
+        {
+            return beforeThisLevel ? classLevel < gateLevel : classLevel >= gateLevel;
+        }
+
+        /// <summary>
+        /// I08/S06: the extra uses a power's own use thresholds (level, uses)
+        /// grant between the real level (already granted natively) and the
+        /// effective level.
+        /// </summary>
+        internal static int ThresholdUsesBetween(
+            System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<int, int>> thresholds,
+            int realLevel, int effectiveLevel)
+        {
+            if (thresholds == null || effectiveLevel <= realLevel)
+                return 0;
+            int uses = 0;
+            foreach (System.Collections.Generic.KeyValuePair<int, int> threshold in thresholds)
+                if (threshold.Key > realLevel && threshold.Key <= effectiveLevel)
+                    uses += threshold.Value;
+            return uses;
+        }
     }
 }

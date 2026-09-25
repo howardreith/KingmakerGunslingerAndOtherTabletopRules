@@ -10,6 +10,7 @@ using Kingmaker.Blueprints.Classes.Prerequisites;
 using Kingmaker.Blueprints.Classes.Selection;
 using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.Blueprints.Facts;
+using Kingmaker.Designers.Mechanics.Facts;
 using Kingmaker.ElementsSystem;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.PubSubSystem;
@@ -147,8 +148,24 @@ namespace KingmakerGunslinger.FavoredClass
                 FavoredClassRevelationScopes.ResourceComparer);
             RankSources = new List<KeyValuePair<ContextRankConfig, BlueprintScriptableObject>>();
             RefreshFeatures = new HashSet<BlueprintScriptableObject>(FavoredClassRevelationScopes.ReferenceComparer);
+            Gates = new List<FavoredClassRevelationGate>();
+            GateOwners = new HashSet<BlueprintScriptableObject>(FavoredClassRevelationScopes.ReferenceComparer);
             Evidence = new List<string>();
         }
+
+        /// <summary>
+        /// The revelation's own native level gates (AddFeatureOnClassLevel on
+        /// the Oracle engine's classes anywhere in its graph): the abilities
+        /// and forms it grants at later oracle levels, evaluated at the
+        /// effective level.
+        /// </summary>
+        internal List<FavoredClassRevelationGate> Gates { get; private set; }
+
+        /// <summary>The blueprints that hold those gates.</summary>
+        internal HashSet<BlueprintScriptableObject> GateOwners { get; private set; }
+
+        /// <summary>Why this target cannot be published completely in this process, or null.</summary>
+        internal string PartialReason { get; set; }
 
         internal FavoredClassRevelationTarget Target { get; private set; }
         internal string Key { get { return Target.Key; } }
@@ -175,7 +192,7 @@ namespace KingmakerGunslinger.FavoredClass
 
         internal bool HasReadPoints
         {
-            get { return ParamsAbilities.Count + Resources.Count + RankSources.Count > 0; }
+            get { return ParamsAbilities.Count + Resources.Count + RankSources.Count + Gates.Count > 0; }
         }
 
         /// <summary>The families actually found: A rank configs, B resources, C parameters.</summary>
@@ -209,6 +226,38 @@ namespace KingmakerGunslinger.FavoredClass
         }
     }
 
+    /// <summary>One native level gate of an owned revelation.</summary>
+    internal sealed class FavoredClassRevelationGate
+    {
+        internal FavoredClassRevelationGate(BlueprintScriptableObject owner, AddFeatureOnClassLevel gate)
+        {
+            Owner = owner;
+            ComponentName = gate.name;
+            Level = gate.Level;
+            BeforeThisLevel = gate.BeforeThisLevel;
+            Feature = gate.Feature;
+        }
+
+        /// <summary>The blueprint whose fact carries the gate component.</summary>
+        internal BlueprintScriptableObject Owner { get; private set; }
+
+        /// <summary>The component's name, kept by every per-fact copy of it.</summary>
+        internal string ComponentName { get; private set; }
+
+        internal int Level { get; private set; }
+        internal bool BeforeThisLevel { get; private set; }
+        internal BlueprintFeature Feature { get; private set; }
+
+        internal string Label
+        {
+            get
+            {
+                return Owner.name + "|" + ComponentName + (BeforeThisLevel ? "<" : "@") + Level + ":" +
+                    (Feature == null ? "null" : Feature.name);
+            }
+        }
+    }
+
     /// <summary>
     /// Builds, when the publication commits (after the optional provider
     /// has created the Oracle), each revelation target's read points by a
@@ -219,11 +268,15 @@ namespace KingmakerGunslinger.FavoredClass
     /// the Oracle engine's class level (the sum of Oracle levels and Demon
     /// Hunter levels) uses the effective level: its rank configs including
     /// their steps, tiers and breakpoint tables, its resources including their
-    /// single-level thresholds, and its caster level and DC (charter 8.10).
-    /// Feature-granting level gates are never moved, so no revelation or
-    /// ability is gained early, and the possession BAB read is excluded (the
-    /// charter never raises BAB). Read points reached from two targets are
-    /// withheld from both.
+    /// single-level thresholds, its caster level and DC, and its own level
+    /// gates, so the abilities and forms the owned revelation grants at later
+    /// oracle levels follow the effective level too (charter 8.10: the owned
+    /// power's effect thresholds). No other revelation, no revelation choice
+    /// and no class feature is ever granted early. A target whose effect
+    /// cannot be implemented without breaking a charter rule (the possession
+    /// BAB) is excluded from publication, never published partially. Read
+    /// points and gates reached from two targets are withheld from both, and a
+    /// target that loses a gate that way is withheld whole.
     /// </summary>
     internal static class FavoredClassRevelationScopes
     {
@@ -249,6 +302,8 @@ namespace KingmakerGunslinger.FavoredClass
             new Dictionary<string, FavoredClassRevelationScope>(StringComparer.Ordinal);
         private static Dictionary<ContextRankConfig, Dictionary<BlueprintScriptableObject, FavoredClassRevelationScope>> _ranks =
             NewRankIndex();
+        private static Dictionary<BlueprintScriptableObject, Dictionary<string, FavoredClassRevelationScope>> _gates =
+            NewGateIndex();
         private static readonly HashSet<Fact> Departing = new HashSet<Fact>(new Reference<Fact>());
 
         internal static int ScopeCount
@@ -286,6 +341,33 @@ namespace KingmakerGunslinger.FavoredClass
             return context.MaybeCaster == null ? 0 : scope.EarnedSteps(context.MaybeCaster.Descriptor);
         }
 
+        /// <summary>
+        /// Level-gate read (called for every native AddFeatureOnClassLevel
+        /// decision, so it returns at once unless this exact gate of an owned
+        /// revelation is scoped): with earned steps the gate decides at the
+        /// Oracle engine's class level plus those steps, exactly like the
+        /// native decision at that level.
+        /// </summary>
+        internal static void GateResult(AddFeatureOnClassLevel gate, ref bool result)
+        {
+            Dictionary<BlueprintScriptableObject, Dictionary<string, FavoredClassRevelationScope>> gates = _gates;
+            if (gates.Count == 0 || gate == null)
+                return;
+            Fact fact = gate.Fact;
+            Dictionary<string, FavoredClassRevelationScope> byName;
+            FavoredClassRevelationScope scope;
+            if (fact == null || fact.Blueprint == null || !gates.TryGetValue(fact.Blueprint, out byName) ||
+                gate.name == null || !byName.TryGetValue(gate.name, out scope))
+                return;
+            UnitDescriptor owner = gate.Owner;
+            int steps = scope.EarnedSteps(owner);
+            if (steps <= 0)
+                return;
+            int level = ReplaceCasterLevelOfAbility.CalculateClassLevel(gate.Class, gate.AdditionalClasses, owner,
+                gate.Archetypes);
+            result = FavoredClassMechanicsPolicy.GateApplies(level + steps, gate.Level, gate.BeforeThisLevel);
+        }
+
         internal static bool IsDeparting(Fact fact)
         {
             return fact != null && Departing.Count > 0 && Departing.Contains(fact);
@@ -310,6 +392,7 @@ namespace KingmakerGunslinger.FavoredClass
             {
                 _byKey = new Dictionary<string, FavoredClassRevelationScope>(StringComparer.Ordinal);
                 _ranks = NewRankIndex();
+                _gates = NewGateIndex();
             }
         }
 
@@ -366,12 +449,31 @@ namespace KingmakerGunslinger.FavoredClass
             }
             WithholdShared(byKey.Values.ToList());
             var ranks = NewRankIndex();
+            var gates = NewGateIndex();
             foreach (FavoredClassRevelationScope scope in byKey.Values)
             {
-                if (!scope.HasReadPoints)
+                // An excluded target is registered but never published; none
+                // of its read points or gates is indexed.
+                if (!scope.Target.Published)
                 {
+                    scope.Evidence.Add("excluded-target:" + scope.Target.ExcludedReason);
+                    continue;
+                }
+                if (!scope.HasReadPoints || scope.PartialReason != null)
+                {
+                    if (scope.PartialReason != null)
+                        scope.Evidence.Add("withheld-partial:" + scope.PartialReason);
                     withheld.Add(scope.Key);
                     continue;
+                }
+                foreach (FavoredClassRevelationGate gate in scope.Gates)
+                {
+                    Dictionary<string, FavoredClassRevelationScope> byName;
+                    if (!gates.TryGetValue(gate.Owner, out byName))
+                        gates[gate.Owner] = byName = new Dictionary<string, FavoredClassRevelationScope>(
+                            StringComparer.Ordinal);
+                    byName[gate.ComponentName] = scope;
+                    scope.GateOwners.Add(gate.Owner);
                 }
                 foreach (KeyValuePair<ContextRankConfig, BlueprintScriptableObject> source in scope.RankSources)
                 {
@@ -388,6 +490,7 @@ namespace KingmakerGunslinger.FavoredClass
             {
                 _byKey = byKey;
                 _ranks = ranks;
+                _gates = gates;
             }
             return withheld.AsReadOnly();
         }
@@ -433,6 +536,15 @@ namespace KingmakerGunslinger.FavoredClass
                         if (component != null && !IsRestriction(component))
                             pending.Enqueue(new Node(component, current.Depth + 1, blueprint));
                     continue;
+                }
+                // The revelation's own level gates (its later abilities and
+                // forms) are recorded; their granted features are walked too.
+                var levelGate = current.Value as AddFeatureOnClassLevel;
+                if (levelGate != null && current.Owner != null && IsOracleGate(levelGate, oracle))
+                {
+                    var recorded = new FavoredClassRevelationGate(current.Owner, levelGate);
+                    scope.Gates.Add(recorded);
+                    scope.Evidence.Add("gate:" + recorded.Label);
                 }
                 if (current.Owner != null && current.Value.GetType().Name == TierAction)
                 {
@@ -530,6 +642,13 @@ namespace KingmakerGunslinger.FavoredClass
             return false;
         }
 
+        /// <summary>A native level gate on the Oracle engine's classes.</summary>
+        private static bool IsOracleGate(AddFeatureOnClassLevel gate, BlueprintCharacterClass oracle)
+        {
+            return gate.Feature != null && (ReferenceEquals(gate.Class, oracle) ||
+                (gate.AdditionalClasses != null && gate.AdditionalClasses.Contains(oracle)));
+        }
+
         /// <summary>
         /// The Oracle engine's class-level rank: the sum of the listed class
         /// levels (Oracle, and Inquisitor only for the Demon Hunter).
@@ -551,8 +670,13 @@ namespace KingmakerGunslinger.FavoredClass
                 new Reference<ContextRankConfig>());
             var resourceOwners = new Dictionary<BlueprintAbilityResource, int>(ResourceComparer);
             var paramsOwners = new Dictionary<BlueprintScriptableObject, int>(ReferenceComparer);
+            var gateOwners = new Dictionary<string, int>(StringComparer.Ordinal);
+            Func<FavoredClassRevelationGate, string> gateKey = gate =>
+                RuntimeHelpers.GetHashCode(gate.Owner) + ":" + gate.Owner.AssetGuid + "|" + gate.ComponentName;
             foreach (FavoredClassRevelationScope scope in scopes)
             {
+                foreach (string key in scope.Gates.Select(gateKey).Distinct(StringComparer.Ordinal))
+                    gateOwners[key] = (gateOwners.ContainsKey(key) ? gateOwners[key] : 0) + 1;
                 var seen = new HashSet<KeyValuePair<ContextRankConfig, BlueprintScriptableObject>>(new SourceComparer());
                 foreach (KeyValuePair<ContextRankConfig, BlueprintScriptableObject> source in scope.RankSources)
                 {
@@ -588,7 +712,23 @@ namespace KingmakerGunslinger.FavoredClass
                     scope.ParamsAbilities.Remove(ability);
                     scope.Evidence.Add("withheld-shared-params:" + ability.name);
                 }
+                // A shared gate cannot follow one target's steps; the target
+                // would be partial, so it is withheld whole.
+                foreach (FavoredClassRevelationGate gate in scope.Gates.Where(gate => gateOwners[gateKey(gate)] > 1)
+                    .ToList())
+                {
+                    scope.Gates.Remove(gate);
+                    scope.Evidence.Add("withheld-shared-gate:" + gate.Label);
+                    scope.PartialReason = "a level gate shared with another revelation (" + gate.Label + ")";
+                }
             }
+        }
+
+        private static Dictionary<BlueprintScriptableObject, Dictionary<string, FavoredClassRevelationScope>>
+            NewGateIndex()
+        {
+            return new Dictionary<BlueprintScriptableObject, Dictionary<string, FavoredClassRevelationScope>>(
+                ReferenceComparer);
         }
 
         private static Dictionary<ContextRankConfig, Dictionary<BlueprintScriptableObject, FavoredClassRevelationScope>>

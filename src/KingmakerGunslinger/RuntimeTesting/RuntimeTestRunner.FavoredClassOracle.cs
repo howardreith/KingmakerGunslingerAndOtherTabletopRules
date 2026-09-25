@@ -73,12 +73,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             var scopeFailures = new List<string>();
             var menuFailures = new List<string>();
             var mechanicsFailures = new List<string>();
+            var gateFailures = new List<string>();
             bool cleaned = false;
             try
             {
                 evidence["scopes"] = ObserveRevelationScopes(scopeFailures);
                 evidence["menus"] = RunOracleMenus(bonus, leaves, menuFailures);
                 evidence["mechanics"] = ObserveRevelationMechanics(leaves, mechanicsFailures);
+                evidence["gates"] = ObserveRevelationGates(bonus, leaves, gateFailures);
             }
             catch (Exception exception)
             {
@@ -102,6 +104,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "two Fire Breath steps give exactly the native values at oracle level 11 (dice, caster level, DC, uses) while Heat Aura, Fireball and other revelations stay at level 9; per-level uses, buff and area ranks, tiers, steps and single-level uses of the owned revelation follow its own counter; the possession BAB read is excluded; a feature context refreshes on gain and removal",
                 Describe(evidence["mechanics"], mechanicsFailures), mechanicsFailures.Count == 0,
                 "AddClassLevel fixtures; AbilityData.CreateExecutionContext, MechanicsContext ranks and GetMaxAmount"));
+            assertions.Add(Assertion("fcb-oracle-level-gates",
+                "every level gate of every published revelation (the abilities and forms it grants at later oracle levels) decides at the effective level: one level below the gate the native state holds, one earned step moves it exactly as the native gate at the next level, removing the step restores it; a neighbor revelation's gate, BAB, saves and class level stay native; Spirit of the Warrior (its possession BAB) is excluded and never published",
+                Describe(evidence["gates"] == null ? null : evidence["gates"]["summary"], gateFailures),
+                gateFailures.Count == 0,
+                "AddClassLevel fixtures; the native AddFeatureOnClassLevel gates (HasFact of each gated feature); publication skip evidence"));
             assertions.Add(Assertion("external-isolation", "unchanged party and global-unit snapshots",
                 "cleaned=" + cleaned, cleaned, "detached entity disposal and exact reference snapshots"));
             assertions.Add(Assertion("loaded-mod-version", _request.ExpectedModVersion,
@@ -475,6 +482,155 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (UnitEntityData unit in units)
                     try { unit.Dispose(); } catch (Exception) { }
             }
+            return result;
+        }
+
+        // Charter 8.10 (review finding 2): an owned revelation's own level
+        // gates follow its effective level; no other gate, revelation, BAB,
+        // save or class level moves, and the excluded target is never offered.
+        private JObject ObserveRevelationGates(BlueprintFeatureSelection bonus, FavoredClassBlueprintSet leaves,
+            IList<string> failures)
+        {
+            var library = BlueprintBootstrap.Library;
+            string effect = FavoredClassCatalog.EffectSelectedRevelation;
+            BlueprintCharacterClass oracle = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(library,
+                FavoredClassRevelationManifest.OracleClassGuid, "Oracle");
+            var rows = new JArray();
+            var units = new List<UnitEntityData>();
+            int tested = 0, moved = 0, skipped = 0;
+            var result = new JObject();
+            Func<int, UnitEntityData> oracleAt = levels =>
+            {
+                UnitEntityData unit = new Kingmaker.UI.LevelUp.ChargenUnit(
+                    BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
+                units.Add(unit);
+                for (int added = 0; added < levels; added++)
+                    unit.Descriptor.Progression.AddClassLevel(oracle);
+                return unit;
+            };
+            Action<UnitEntityData, BlueprintFeature> remove = (unit, leaf) =>
+            {
+                while (unit.Descriptor.Progression.Features.GetFact(leaf) != null)
+                    unit.Descriptor.Progression.Features.RemoveFact(leaf);
+            };
+            try
+            {
+                foreach (FavoredClassRevelationTarget target in FavoredClassRevelationManifest.All)
+                {
+                    FavoredClassRevelationScope scope = FavoredClassRevelationScopes.ForKey(target.Key);
+                    if (scope == null || !target.Published)
+                        continue;
+                    BlueprintFeature leaf = leaves.Pair(effect, target.Key).Full;
+                    foreach (FavoredClassRevelationGate gate in scope.Gates)
+                    {
+                        var row = new JObject { ["target"] = target.Key, ["gate"] = gate.Label };
+                        rows.Add(row);
+                        var owner = gate.Owner as BlueprintFeature;
+                        if (owner == null || !target.FeatureGuids.Contains(owner.AssetGuid) || gate.Level < 2 ||
+                            gate.Feature == null)
+                        {
+                            // A gate on a deeper feature is decided the same way
+                            // once that feature is present; the fixture adds the
+                            // revelation's own selectable features only.
+                            row["skipped"] = "the gate's owner is not a selectable revelation feature";
+                            skipped++;
+                            continue;
+                        }
+                        int level = gate.Level - 1;
+                        UnitEntityData unit = oracleAt(level);
+                        unit.Descriptor.AddFact(owner);
+                        bool below = unit.Descriptor.HasFact(gate.Feature);
+                        GrantFavoredClassRanks(unit, leaf, 1);
+                        bool invested = unit.Descriptor.HasFact(gate.Feature);
+                        remove(unit, leaf);
+                        bool restored = unit.Descriptor.HasFact(gate.Feature);
+                        bool nativeBelow = FavoredClassMechanicsPolicy.GateApplies(level, gate.Level, gate.BeforeThisLevel);
+                        bool nativeNext = FavoredClassMechanicsPolicy.GateApplies(level + 1, gate.Level,
+                            gate.BeforeThisLevel);
+                        row["level"] = level;
+                        row["below"] = below;
+                        row["invested"] = invested;
+                        row["restored"] = restored;
+                        tested++;
+                        if (below != nativeBelow || invested != nativeNext || restored != nativeBelow)
+                            failures.Add(target.Key + " " + gate.Label + ": below=" + below + " invested=" + invested +
+                                " restored=" + restored);
+                        else if (below != invested)
+                            moved++;
+                    }
+                }
+                // Neighbor, BAB, saves and class level: an Oracle 10 with two
+                // gated revelations invests only in Touch of Flame.
+                FavoredClassRevelationScope flame = FavoredClassRevelationScopes.ForKey("TouchOfFlame");
+                FavoredClassRevelationScope shock = FavoredClassRevelationScopes.ForKey("TouchOfElectricity");
+                FavoredClassRevelationGate flameGate = flame == null ? null :
+                    flame.Gates.FirstOrDefault(gate => gate.Level == 11 && !gate.BeforeThisLevel);
+                FavoredClassRevelationGate shockGate = shock == null ? null :
+                    shock.Gates.FirstOrDefault(gate => gate.Level == 11 && !gate.BeforeThisLevel);
+                if (flameGate == null || shockGate == null)
+                    failures.Add("the Touch of Flame and Touch of Electricity 11th-level gates were not scoped");
+                else
+                {
+                    Func<UnitEntityData> pair = () =>
+                    {
+                        UnitEntityData unit = oracleAt(10);
+                        unit.Descriptor.AddFact((BlueprintFeature)flameGate.Owner);
+                        unit.Descriptor.AddFact((BlueprintFeature)shockGate.Owner);
+                        return unit;
+                    };
+                    UnitEntityData control = pair();
+                    UnitEntityData invested = pair();
+                    GrantFavoredClassRanks(invested, leaves.Pair(effect, "TouchOfFlame").Full, 1);
+                    Func<UnitEntityData, JObject> sheet = unit => new JObject
+                    {
+                        ["oracleLevel"] = unit.Descriptor.Progression.GetClassLevel(oracle),
+                        ["characterLevel"] = unit.Descriptor.Progression.CharacterLevel,
+                        ["bab"] = unit.Stats.BaseAttackBonus.ModifiedValue,
+                        ["fortitude"] = unit.Stats.SaveFortitude.ModifiedValue,
+                        ["reflex"] = unit.Stats.SaveReflex.ModifiedValue,
+                        ["will"] = unit.Stats.SaveWill.ModifiedValue,
+                        ["flamingWeapon"] = unit.Descriptor.HasFact(flameGate.Feature),
+                        ["shockWeapon"] = unit.Descriptor.HasFact(shockGate.Feature)
+                    };
+                    JObject controlSheet = sheet(control), investedSheet = sheet(invested);
+                    result["neighbor"] = new JObject { ["control"] = controlSheet, ["invested"] = investedSheet };
+                    if ((bool)controlSheet["flamingWeapon"] || !(bool)investedSheet["flamingWeapon"])
+                        failures.Add("one Touch of Flame step did not bring its 11th-level flaming weapon to an Oracle 10");
+                    if ((bool)controlSheet["shockWeapon"] || (bool)investedSheet["shockWeapon"])
+                        failures.Add("the neighbor Touch of Electricity gate moved");
+                    foreach (string key in new[] { "oracleLevel", "characterLevel", "bab", "fortitude", "reflex", "will" })
+                        if ((int)controlSheet[key] != (int)investedSheet[key])
+                            failures.Add("an invested revelation changed " + key);
+                }
+                // The excluded target is registered but never published.
+                FavoredClassLeafPair warrior = leaves.Pair(effect, "SpiritOfTheWarrior");
+                FavoredClassPublication publication = FavoredClassIntegrationCoordinator.Publication;
+                bool skippedWarrior = publication != null && publication.Skipped.Any(value =>
+                    value.EndsWith("excluded-target:SpiritOfTheWarrior", StringComparison.Ordinal));
+                bool offeredWarrior = (bonus.AllFeatures ?? new BlueprintFeature[0]).Any(feature =>
+                    ReferenceEquals(feature, warrior.Full) || ReferenceEquals(feature, warrior.Partial));
+                result["spiritOfTheWarrior"] = new JObject
+                {
+                    ["registered"] = warrior.Full != null,
+                    ["skipped"] = skippedWarrior,
+                    ["offered"] = offeredWarrior
+                };
+                if (warrior.Full == null || !skippedWarrior || offeredWarrior)
+                    failures.Add("Spirit of the Warrior was not registered-but-excluded");
+                if (tested == 0 || moved == 0)
+                    failures.Add("no revelation gate was exercised");
+            }
+            catch (Exception exception)
+            {
+                failures.Add("probe: " + exception.GetType().Name + ": " + exception.Message);
+            }
+            finally
+            {
+                foreach (UnitEntityData unit in units)
+                    try { unit.Dispose(); } catch (Exception) { }
+            }
+            result["summary"] = new JObject { ["tested"] = tested, ["moved"] = moved, ["skipped"] = skipped };
+            result["gates"] = rows;
             return result;
         }
     }
