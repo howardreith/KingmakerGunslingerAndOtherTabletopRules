@@ -32,11 +32,11 @@ satisfied) is the standing reason.
 
 | Item | Placement | Donor (audit-proven) | Chassis | Signature / deviations | Status |
 |---|---|---|---|---|---|
-| Pony | SM I (templated), SNA I | `PonySummoned` `3f95557fc806db741b500a5735990841`, dedicated summon | Animal 2 HD, Medium, 13/13/14/2/11/4, 40 ft, two 1d3 hooves (native `SmallHoof1d3`) | Endurance/Run omitted; hooves primary as on the native summon | implemented; runtime qualification in progress |
-| Horse | SM II (templated), SNA II | `HorseSummoned` `5bb9579fdb2b26b48bb10d61c81cfdfb`, dedicated summon | Animal 2 HD, Large, 16/14/17/2/13/7, 50 ft, two 1d4 hooves (native `Hoof1d4`), reduced reach | Endurance/Run omitted | implemented; runtime qualification in progress |
-| Owlbear | SNA IV | `CR8_OwlbearStandard` `d6e0acbdbdb56114898922063ae2cba0`, sanitized body | Magical beast 5 HD, Large, 19/12/18/2/12/10, 30 ft, NA +5, bite 1d6, two 1d6 claws, Improved Initiative, Great Fortitude, Skill Focus (Perception), reduced reach | claw grab deferred to Sprint 4's shared grapple lifecycle | implemented; runtime qualification in progress |
-| Cyclops | SNA V | `CR5_CyclopStandard` `124f1c45ef24d654e9cd420fe84f7f36`, sanitized body | Humanoid 10 HD, Large, 21/8/15/10/13/8, 30 ft, NA +7, greataxe (Large 3d6), Ferocity, Power Attack, Cleave | Flash of Insight bounded (one swift use per summoning: next attack roll auto-hit and threat; confirmation ordinary); hide armor, crossbow, Alertness, Great Cleave, Improved Bull Rush omitted | implemented; runtime qualification in progress |
-| Frost Giant | SNA VII / VIII (1d3) / IX (1d4+1) | retained native unit `590cd3d5e76fdc649a5f97bc984cd3c4`, no new identity | native wrappers carved from the Mastodon options (`6d8d59aa…`, `256739c1…`, `9bd8cb61…`), spawn unit replaced | identity reused (charter D-01); SM VIII wrapper unchanged | implemented; runtime qualification in progress |
+| Pony | SM I (templated), SNA I | `PonySummoned` `3f95557fc806db741b500a5735990841`, dedicated summon | Animal 2 HD, Medium, 13/13/14/2/11/4, 40 ft, two 1d3 hooves (native `SmallHoof1d3`) | Endurance/Run omitted; hooves primary as on the native summon | complete; internally accepted on the Sprints 3-8 evidence |
+| Horse | SM II (templated), SNA II | `HorseSummoned` `5bb9579fdb2b26b48bb10d61c81cfdfb`, dedicated summon | Animal 2 HD, Large, 16/14/17/2/13/7, 50 ft, two 1d4 hooves (native `Hoof1d4`), reduced reach | Endurance/Run omitted | complete; internally accepted on the Sprints 3-8 evidence |
+| Owlbear | SNA IV | `CR8_OwlbearStandard` `d6e0acbdbdb56114898922063ae2cba0`, sanitized body | Magical beast 5 HD, Large, 19/12/18/2/12/10, 30 ft, NA +5, bite 1d6, two 1d6 claws, Improved Initiative, Great Fortitude, Skill Focus (Perception), reduced reach | claw grab deferred to Sprint 4's shared grapple lifecycle | complete; internally accepted on the Sprints 3-8 evidence |
+| Cyclops | SNA V | `CR5_CyclopStandard` `124f1c45ef24d654e9cd420fe84f7f36`, sanitized body | Humanoid 10 HD, Large, 21/8/15/10/13/8, 30 ft, NA +7, greataxe (Large 3d6), Ferocity, Power Attack, Cleave | Flash of Insight bounded (one swift use per summoning: next attack roll auto-hit and threat; confirmation ordinary); hide armor, crossbow, Alertness, Great Cleave, Improved Bull Rush omitted | complete; internally accepted on the Sprints 3-8 evidence |
+| Frost Giant | SNA VII / VIII (1d3) / IX (1d4+1) | retained native unit `590cd3d5e76fdc649a5f97bc984cd3c4`, no new identity | native wrappers carved from the Mastodon options (`6d8d59aa…`, `256739c1…`, `9bd8cb61…`), spawn unit replaced | identity reused (charter D-01); SM VIII wrapper unchanged | complete; internally accepted on the Sprints 3-8 evidence |
 
 Placements propagate to the 1d3 / 1d4+1 tiers by construction (45 new
 logical placements, 34 template executions). Ledger: 92 identities appended
@@ -50,78 +50,74 @@ as the guarded batches complete.
 
 | Item | Placement | Donor (audit-proven) | Chassis | Signature / deviations | Status |
 |---|---|---|---|---|---|
-| Shambling Mound | SNA VI (1d3 at VII, 1d4+1 at VIII-IX) | `CR6_ShamblingMound` `b98ae409beb5e8543a75b82ecda082a7`, sanitized body | Plant 9 HD, Large, 21/10/17/7/10/9, 20 ft, NA +10, two native 2d6 slams, fire resistance 10, electricity immunity, Power Attack, Iron Will, Lightning Reflexes, Cleave, Weapon Focus (slam) | slam grab and constrict 2d6+7 on the shared lifecycle; Electric Fortitude's Constitution gain, swim and the native poison aura omitted | implemented; runtime qualification in progress |
-| Giant Flytrap | SNA VII (1d3 at VIII, 1d4+1 at IX) | `CR10_GiantFlytrapStandard` `fb824352b7968fb4d8103ac439644633`, sanitized body | Plant 13 HD, Huge, 25/18/25/1/12/6, 10 ft, NA +10, four native 1d8 bites, acid resistance 20, native 60-ft blindsight (tremorsense), trip immunity, Cleave, Great Fortitude, Improved Initiative, Power Attack, Skill Focus (Stealth), Weapon Focus (bite) | bite grab on the shared lifecycle, one held target at a time; engulf and Vital Strike omitted | implemented; runtime qualification in progress |
-| Purple Worm | SNA VIII (1d3 at IX) | native `PurpleWormSummoned` `bf2216f48b3f4d24c9c502007649340d`, dedicated summon, rebuilt on the natural builder | Magical beast 16 HD, Gargantuan, 35/6/25/1/8/8, 20 ft, NA +22, native bite and sting, exact native sting poison, trip immunity, Critical Focus, Improved Critical (bite), Power Attack, Weapon Focus (bite) | bite grab swallows whole through the native part (swallowed state cloned from the native worm); burrow, swim, the native brain, Awesome Blow, Improved Bull Rush, Staggering Critical, Weapon Focus (sting) omitted | implemented; runtime qualification in progress |
-| Shared grapple lifecycle | Owlbear, Shambling Mound, Giant Flytrap, Purple Worm (Sprints 6-8 reuse) | native `UnitPartGrappleInitiator` / `UnitPartGrappleTarget` / `UnitPartSwallowWhole` | `SummonGrabComponent`, `SummonHoldComponent`, `SummonSwallowLifecycleComponent`, `SummonGrappleAreaSafeguard`; shared `Grapple.Hold` and `Grapple.Grappled` buffs | grab +4 through the game's check; maintain +5 each round or release; hold-buff end releases its own target; swallow spit-out on traits end; area leave/load safeguard | implemented; runtime qualification in progress |
+| Shambling Mound | SNA VI (1d3 at VII, 1d4+1 at VIII-IX) | `CR6_ShamblingMound` `b98ae409beb5e8543a75b82ecda082a7`, sanitized body | Plant 9 HD, Large, 21/10/17/7/10/9, 20 ft, NA +10, two native 2d6 slams, fire resistance 10, electricity immunity, Power Attack, Iron Will, Lightning Reflexes, Cleave, Weapon Focus (slam) | slam grab and constrict 2d6+7 on the shared lifecycle; Electric Fortitude's Constitution gain, swim and the native poison aura omitted | complete; internally accepted on the Sprints 3-8 evidence |
+| Giant Flytrap | SNA VII (1d3 at VIII, 1d4+1 at IX) | `CR10_GiantFlytrapStandard` `fb824352b7968fb4d8103ac439644633`, sanitized body | Plant 13 HD, Huge, 25/18/25/1/12/6, 10 ft, NA +10, four native 1d8 bites, acid resistance 20, native 60-ft blindsight (tremorsense), trip immunity, Cleave, Great Fortitude, Improved Initiative, Power Attack, Skill Focus (Stealth), Weapon Focus (bite) | bite grab on the shared lifecycle, one held target at a time; engulf and Vital Strike omitted | complete; internally accepted on the Sprints 3-8 evidence |
+| Purple Worm | SNA VIII (1d3 at IX) | native `PurpleWormSummoned` `bf2216f48b3f4d24c9c502007649340d`, dedicated summon, rebuilt on the natural builder | Magical beast 16 HD, Gargantuan, 35/6/25/1/8/8, 20 ft, NA +22, native bite and sting, exact native sting poison, trip immunity, Critical Focus, Improved Critical (bite), Power Attack, Weapon Focus (bite) | bite grab swallows whole through the native part (swallowed state cloned from the native worm); burrow, swim, the native brain, Awesome Blow, Improved Bull Rush, Staggering Critical, Weapon Focus (sting) omitted | complete; internally accepted on the Sprints 3-8 evidence |
+| Shared grapple lifecycle | Owlbear, Shambling Mound, Giant Flytrap, Purple Worm (Sprints 6-8 reuse) | native `UnitPartGrappleInitiator` / `UnitPartGrappleTarget` / `UnitPartSwallowWhole` | `SummonGrabComponent`, `SummonHoldComponent`, `SummonSwallowLifecycleComponent`, `SummonGrappleAreaSafeguard`; shared `Grapple.Hold` and `Grapple.Grappled` buffs | grab +4 through the game's check; maintain +5 each round or release; hold-buff end releases its own target; swallow spit-out on traits end; area leave/load safeguard | complete; internally accepted on the Sprints 3-8 evidence |
 
 Placements propagate to the 1d3 / 1d4+1 tiers by construction (9 new
 logical placements). Ledger: 19 identities appended and active
 (`blueprints/blueprints.json`, entries 2049-2067), pinned by
 `tools/validate_expanded_summoning_phase1.py`. Icons: three Blender
 procedural renders. Tests: four Sprint 4 domain regressions; suite
-1783/1783. Runtime evidence: recorded in the state file as the guarded
-batches complete.
+1783/1783. Runtime evidence: see the runtime qualification record in the state file.
 
 ### Sprint 5 - Mephit Family Expansion
 
 | Item | Placement | Donor (audit-proven) | Chassis | Signature / deviations | Status |
 |---|---|---|---|---|---|
-| Dust Mephit | SM IV / SNA IV (1d3 at V, 1d4+1 at VI-IX) | native `MephitAirSummoned` `50782bc4eb36aac4287023e20ee00808`, dedicated summon | Outsider 3 HD, Small, 13/15/12/6/11/14, 40 ft, NA +3, two native 1d4 claws, DR 5/magic, fast healing 2, air subtype, Dodge, Improved Initiative | 15-ft enemies-only 1d4 slashing breath, sickened 3 rounds on a failed Reflex save; blur once per summoning; wind wall omitted (no native spell); tan tint | implemented; runtime qualification in progress |
-| Ice Mephit | SM IV / SNA IV | native `MephitWaterSummoned` `4615328295cd7e84bb2ef09d3dba8403`, dedicated summon | as above; air subtype, cold immunity, fire vulnerability | 15-ft enemies-only 1d4 cold breath, sickened rider; magic missile once per summoning; chill metal omitted (no native spell); pale blue tint | implemented; runtime qualification in progress |
-| Magma Mephit | SM IV / SNA IV | native `MephitFireSummoned` `10a820de0a417f345866f794324205ad`, dedicated summon | as above; earth and fire subtypes (fire immunity, cold vulnerability) | 15-ft enemies-only 1d8 fire breath (no rider); pyrotechnics and magma form omitted (no native spell or form); dark crust tint with an ember glow | implemented; runtime qualification in progress |
-| Ooze Mephit | SM IV / SNA IV | native `MephitWaterSummoned` `4615328295cd7e84bb2ef09d3dba8403`, dedicated summon | as above; water subtype | 15-ft enemies-only 1d4 acid breath, Reflex negates damage and sickening together; acid arrow and stinking cloud once per summoning each; murky green tint | implemented; runtime qualification in progress |
-| Salt Mephit | SM IV / SNA IV | native `MephitAirSummoned` `50782bc4eb36aac4287023e20ee00808`, dedicated summon | as above; earth subtype | 15-ft enemies-only 1d4 slashing breath, sickened rider; glitterdust once per summoning; dehydrate as a project 20-ft enemies-only burst (2d8, Fortitude half) once per summoning; pale salt tint | implemented; runtime qualification in progress |
-| Steam Mephit | SM IV / SNA IV | native `MephitWaterSummoned` `4615328295cd7e84bb2ef09d3dba8403`, dedicated summon | as above; fire and water subtypes (fire immunity, cold vulnerability) | 15-ft enemies-only 1d4 fire breath, sickened rider; blur once per summoning; boiling rain as a project 20-ft enemies-only burst (2d6 fire, Fortitude half) once per summoning; pale grey tint with a warm glow | implemented; runtime qualification in progress |
-| Shared visual variant | the six mephits (later sprints reuse) | native rig materials | `ExpandedSummoningVisualVariantPatch`: private tinted material clone per view on attach | never writes the donor's shared material; outcome recorded per view for the review | implemented; runtime qualification in progress |
+| Dust Mephit | SM IV / SNA IV (1d3 at V, 1d4+1 at VI-IX) | native `MephitAirSummoned` `50782bc4eb36aac4287023e20ee00808`, dedicated summon | Outsider 3 HD, Small, 13/15/12/6/11/14, 40 ft, NA +3, two native 1d4 claws, DR 5/magic, fast healing 2, air subtype, Dodge, Improved Initiative | 15-ft enemies-only 1d4 slashing breath, sickened 3 rounds on a failed Reflex save; blur once per summoning; wind wall omitted (no native spell); warm sand rim glow (the mephit body's visible colour) | complete; internally accepted on the Sprints 3-8 evidence |
+| Ice Mephit | SM IV / SNA IV | native `MephitWaterSummoned` `4615328295cd7e84bb2ef09d3dba8403`, dedicated summon | as above; air subtype, cold immunity, fire vulnerability | 15-ft enemies-only 1d4 cold breath, sickened rider; magic missile once per summoning; chill metal omitted (no native spell); icy cyan-white rim glow | complete; internally accepted on the Sprints 3-8 evidence |
+| Magma Mephit | SM IV / SNA IV | native `MephitFireSummoned` `10a820de0a417f345866f794324205ad`, dedicated summon | as above; earth and fire subtypes (fire immunity, cold vulnerability) | 15-ft enemies-only 1d8 fire breath (no rider); pyrotechnics and magma form omitted (no native spell or form); ember-red rim glow (no emission slot on the shader) | complete; internally accepted on the Sprints 3-8 evidence |
+| Ooze Mephit | SM IV / SNA IV | native `MephitWaterSummoned` `4615328295cd7e84bb2ef09d3dba8403`, dedicated summon | as above; water subtype | 15-ft enemies-only 1d4 acid breath, Reflex negates damage and sickening together; acid arrow and stinking cloud once per summoning each; slime-green rim glow | complete; internally accepted on the Sprints 3-8 evidence |
+| Salt Mephit | SM IV / SNA IV | native `MephitAirSummoned` `50782bc4eb36aac4287023e20ee00808`, dedicated summon | as above; earth subtype | 15-ft enemies-only 1d4 slashing breath, sickened rider; glitterdust once per summoning; dehydrate as a project 20-ft enemies-only burst (2d8, Fortitude half) once per summoning; crystalline white rim glow | complete; internally accepted on the Sprints 3-8 evidence |
+| Steam Mephit | SM IV / SNA IV | native `MephitWaterSummoned` `4615328295cd7e84bb2ef09d3dba8403`, dedicated summon | as above; fire and water subtypes (fire immunity, cold vulnerability) | 15-ft enemies-only 1d4 fire breath, sickened rider; blur once per summoning; boiling rain as a project 20-ft enemies-only burst (2d6 fire, Fortitude half) once per summoning; grey-white vapour rim glow (no emission slot on the shader) | complete; internally accepted on the Sprints 3-8 evidence |
+| Shared visual variant | the six mephits (later sprints reuse) | native rig materials | `ExpandedSummoningVisualVariantPatch`: private material clone per view on attach carrying a tint and rim light colour (the mephits' element glow; the lion's tint) or a procedural coat on the main texture (the tiger, the cheetah), handed to the game's material controller | never writes the donor's shared material; attach outcome and capture-time materials recorded per view for the review; a tint cannot show on the mephit rig (the controller rewrites its tint slot) and a main texture barely does (translucent body) - the round-8 review found it and the round-11 probe proved it | complete; internally accepted on the Sprints 3-8 evidence |
 
 Placements propagate to the 1d3 / 1d4+1 tiers by construction (72 new
 logical placements across both families). Ledger: 126 identities appended
 and active (`blueprints/blueprints.json`, entries 2068-2193), pinned by
 `tools/validate_expanded_summoning_phase1.py`. Icons: six Blender
 procedural renders. Tests: four Sprint 5 domain regressions; suite
-1787/1787. Runtime evidence: recorded in the state file as the guarded
-batches complete.
+1787/1787. Runtime evidence: see the runtime qualification record in the state file.
 
 ### Sprint 6 - Existing Signature Mechanics Repair
 
 | Item | Placement | Donor (audit-proven) | Chassis | Signature / deviations | Status |
 |---|---|---|---|---|---|
-| Monitor Lizard | SM III / SNA III (unchanged) | unchanged | unchanged | bite grab on the shared summon grapple lifecycle (`c988aa874d11ff84d873508ddc9b928f`); no donor constrict | implemented; runtime qualification in progress |
-| Grizzly Bear | SM IV / SNA IV (unchanged) | unchanged | unchanged | claw grab on the shared lifecycle (`c76f72a862d168d44838206524366e1c`) | implemented; runtime qualification in progress |
-| Dire Bear | SM VI / SNA VI (unchanged) | unchanged | unchanged | claw grab on the shared lifecycle | implemented; runtime qualification in progress |
-| Giant Spider | SM II / SNA II (unchanged) | unchanged | native 60-ft blindsight (tremorsense), native web immunity added | ranged Web: 50 ft, one foe, Reflex (Constitution DC), native web-grappled state up to ten rounds, two uses per summoning, own brain; climb omitted (no save-safe seam) | implemented; runtime qualification in progress |
-| Pixie | SNA IX (unchanged) | unchanged | unchanged | verified: sixteen sleep arrows and one irresistible dance per summoning on named resources, one cast action; live mechanical evidence each run | verified; no change |
+| Monitor Lizard | SM III / SNA III (unchanged) | unchanged | unchanged | bite grab on the shared summon grapple lifecycle (`c988aa874d11ff84d873508ddc9b928f`); no donor constrict | complete; internally accepted on the Sprints 3-8 evidence |
+| Grizzly Bear | SM IV / SNA IV (unchanged) | unchanged | unchanged | claw grab on the shared lifecycle (`c76f72a862d168d44838206524366e1c`) | complete; internally accepted on the Sprints 3-8 evidence |
+| Dire Bear | SM VI / SNA VI (unchanged) | unchanged | unchanged | claw grab on the shared lifecycle | complete; internally accepted on the Sprints 3-8 evidence |
+| Giant Spider | SM II / SNA II (unchanged) | unchanged | native 60-ft blindsight (tremorsense), native web immunity added | ranged Web: 50 ft, one foe, Reflex (Constitution DC), native web-grappled state up to ten rounds, two uses per summoning, own brain; climb omitted (no save-safe seam) | complete; internally accepted on the Sprints 3-8 evidence |
+| Pixie | SNA IX (unchanged) | unchanged | unchanged | verified: sixteen sleep arrows and one irresistible dance per summoning on named resources, one cast action; live mechanical evidence each run | verified; internally accepted on the Sprints 3-8 evidence |
 
 Ledger: 8 identities appended and active (`blueprints/blueprints.json`,
 entries 2194-2201), pinned by `tools/validate_expanded_summoning_phase1.py`.
 No new icons or package files. Tests: four Sprint 6 domain regressions;
-suite 1791/1791. Runtime evidence: recorded in the state file as the
-guarded batches complete.
+suite 1791/1791. Runtime evidence: see the runtime qualification record in the state file.
 
 ### Sprint 7 - Big-Cat Combat System
 
 | Item | Placement | Donor (audit-proven) | Chassis | Signature / deviations | Status |
 |---|---|---|---|---|---|
-| Leopard | SM III / SNA III (unchanged) | unchanged | unchanged (bite, two claws, two rake claws, Pounce) | claw grab on the shared lifecycle; charge-only rake gate (silent automatic miss otherwise) | implemented; runtime qualification in progress |
-| Lion | SM IV / SNA IV (unchanged) | unchanged (leopard rig) | unchanged | claw grab; charge-only rake; tawny visual tint on the leopard rig (no mane) | implemented; runtime qualification in progress |
-| Dire Lion | SM V / SNA V (unchanged) | unchanged | unchanged (secondary rake pair) | claw grab; charge-only rake | implemented; runtime qualification in progress |
-| Smilodon (Dire Tiger) | SM VI / SNA VI (unchanged) | unchanged | unchanged (secondary rake pair) | claw grab; charge-only rake | implemented; runtime qualification in progress |
-| Shared rake gate | the four cats (Sprint 8 reuses) | native attack rules | `SummonRakeComponent` on each cat's combat-traits buff | rake claws strike only on a charge or against a held foe; never on ordinary full attacks, attacks of opportunity or replays | implemented; runtime qualification in progress |
+| Leopard | SM III / SNA III (unchanged) | unchanged | unchanged (bite, two claws, two rake claws, Pounce) | claw grab on the shared lifecycle; charge-only rake gate (silent automatic miss otherwise) | complete; internally accepted on the Sprints 3-8 evidence |
+| Lion | SM IV / SNA IV (unchanged) | unchanged (leopard rig) | unchanged | claw grab; charge-only rake; tawny visual tint on the leopard rig (no mane) | complete; internally accepted on the Sprints 3-8 evidence |
+| Dire Lion | SM V / SNA V (unchanged) | unchanged | unchanged (secondary rake pair) | claw grab; charge-only rake | complete; internally accepted on the Sprints 3-8 evidence |
+| Smilodon (Dire Tiger) | SM VI / SNA VI (unchanged) | unchanged | unchanged (secondary rake pair) | claw grab; charge-only rake | complete; internally accepted on the Sprints 3-8 evidence |
+| Shared rake gate | the four cats (Sprint 8 reuses) | native attack rules | `SummonRakeComponent` on each cat's combat-traits buff | rake claws strike only on a charge or against a held foe; never on ordinary full attacks, attacks of opportunity or replays | complete; internally accepted on the Sprints 3-8 evidence |
 
 Ledger: 4 identities appended and active (`blueprints/blueprints.json`,
 entries 2202-2205), pinned by `tools/validate_expanded_summoning_phase1.py`.
 No new icons or package files. Tests: four Sprint 7 domain regressions;
-suite 1795/1795. Runtime evidence: recorded in the state file as the
-guarded batches complete.
+suite 1795/1795. Runtime evidence: see the runtime qualification record in the state file.
 
 ### Sprint 8 - Big-Cat Roster Completion
 
 | Item | Placement | Donor (audit-proven) | Chassis | Signature / deviations | Status |
 |---|---|---|---|---|---|
-| Tiger | SNA IV (1d3 at V, 1d4+1 at VI-IX); new | `LeopardSummoned` `768275c9885dd954fb3c84ba69ac4281` (the leopard rig), 1.25 view scale | Animal 6 HD, Large, 23/15/17/2/12/6, 40 ft, NA +3, native 2d6 bite, four project 1d8 claws, Pounce, Improved Initiative, Skill Focus (Perception), Weapon Focus (claw) | claw grab on the shared lifecycle; charge-only rake; procedural striped coat generated in the rig's texture space; Run and Skill Focus (Stealth) omitted | implemented; runtime qualification in progress |
-| Cheetah | SM III / SNA III (unchanged) | unchanged (leopard rig), 0.92 view scale | unchanged (bite, two claws, trip bite) | procedural spotted coat; bounded sprint: swift, once per summoning, +30 ft enhancement speed for one round, own brain | implemented; runtime qualification in progress |
-| Procedural coats | Tiger, Cheetah (later sprints reuse) | the rig's own geometry | `SummonCoatRasterizer` on the shared visual variant patch | stripes / spots / pale belly from vertex positions; private 512x512 texture; no game pixels read | implemented; runtime qualification in progress |
+| Tiger | SNA IV (1d3 at V, 1d4+1 at VI-IX); new | `LeopardSummoned` `768275c9885dd954fb3c84ba69ac4281` (the leopard rig), 1.25 view scale | Animal 6 HD, Large, 23/15/17/2/12/6, 40 ft, NA +3, native 2d6 bite, four project 1d8 claws, Pounce, Improved Initiative, Skill Focus (Perception), Weapon Focus (claw) | claw grab on the shared lifecycle; charge-only rake; procedural striped coat generated in the rig's texture space; Run and Skill Focus (Stealth) omitted | complete; internally accepted on the Sprints 3-8 evidence |
+| Cheetah | SM III / SNA III (unchanged) | unchanged (leopard rig), 0.92 view scale | unchanged (bite, two claws, trip bite) | procedural spotted coat; bounded sprint: swift, once per summoning, +30 ft enhancement speed for one round, own brain | complete; internally accepted on the Sprints 3-8 evidence |
+| Procedural coats | Tiger, Cheetah (later sprints reuse) | the rig's own geometry | `SummonCoatRasterizer` on the shared visual variant patch | stripes / spots / pale belly from vertex positions; private 512x512 texture; no game pixels read | complete; internally accepted on the Sprints 3-8 evidence |
 
 Placements propagate to the 1d3 / 1d4+1 tiers by construction (6 new
 logical placements). Ledger: 15 identities appended and active
