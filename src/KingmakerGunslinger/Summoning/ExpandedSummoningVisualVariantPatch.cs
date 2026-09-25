@@ -71,15 +71,17 @@ namespace KingmakerGunslinger.Summoning
         internal static Texture2D Rasterize(Mesh mesh, SummonCoatProfile coat, int size,
             out string outcome)
         {
-            Vector3[] vertices = mesh.vertices;
-            Vector2[] uvs = mesh.uv;
-            int[] triangles = mesh.triangles;
+            Vector3[] vertices = mesh == null ? null : mesh.vertices;
+            Vector2[] uvs = mesh == null ? null : mesh.uv;
+            int[] triangles = mesh == null ? null : mesh.triangles;
             if (vertices == null || uvs == null || triangles == null ||
                 vertices.Length == 0 || uvs.Length != vertices.Length ||
                 triangles.Length < 3)
             {
-                outcome = "mesh-without-texture-coordinates";
-                return null;
+                // A mesh the CPU cannot read (no Read/Write flag - the mephit
+                // rigs) gives empty arrays; the pattern is then drawn over the
+                // whole texture instead of along the body.
+                return RasterizeTextureSpace(coat, size, out outcome);
             }
             Bounds bounds = mesh.bounds;
             Vector3 extent = bounds.size;
@@ -108,7 +110,60 @@ namespace KingmakerGunslinger.Summoning
             }
             texture.SetPixels32(pixels);
             texture.Apply(false, false);
-            outcome = "coat=" + coat.Pattern + ";triangles=" + drawn + ";size=" + size;
+            outcome = "coat=" + coat.Pattern + ";mode=mesh;triangles=" + drawn + ";size=" + size;
+            return texture;
+        }
+
+        /// <summary>
+        /// The coat drawn over the whole texture when the rig's mesh cannot
+        /// be read: bands or cellular spots at the profile's frequency across
+        /// the texture, over a low-frequency mottle between the base and the
+        /// belly colour, so it reads as a surface pattern wherever the atlas
+        /// puts it.
+        /// </summary>
+        private static Texture2D RasterizeTextureSpace(SummonCoatProfile coat, int size,
+            out string outcome)
+        {
+            var texture = new Texture2D(size, size, TextureFormat.RGBA32, false);
+            texture.name = ExpandedSummoningVisualVariantPatch.VariantMaterialName + "_" +
+                coat.Key;
+            var pixels = new Color32[size * size];
+            for (int y = 0; y < size; y++)
+            {
+                float v = (y + 0.5f) / size;
+                for (int x = 0; x < size; x++)
+                {
+                    float u = (x + 0.5f) / size;
+                    float marking;
+                    if (coat.Pattern == SummonCoatPattern.Stripes)
+                    {
+                        float phase = u * coat.Frequency * Mathf.PI * 2f +
+                            Mathf.Sin(v * 11f) * 0.9f + Mathf.Sin(v * 29f + u * 7f) * 0.35f;
+                        marking = Mathf.Clamp01((Mathf.Sin(phase) - 0.35f) * 3f);
+                    }
+                    else
+                    {
+                        float cu = u * coat.Frequency, cv = v * coat.Frequency;
+                        float cellU = cu - Mathf.Floor(cu) - 0.5f, cellV = cv - Mathf.Floor(cv) - 0.5f;
+                        float jitter = Mathf.Sin(Mathf.Floor(cu) * 12.9898f +
+                            Mathf.Floor(cv) * 78.233f) * 0.25f;
+                        float distance = Mathf.Sqrt((cellU + jitter) * (cellU + jitter) +
+                            (cellV - jitter) * (cellV - jitter));
+                        marking = Mathf.Clamp01((0.28f - distance) * 8f);
+                    }
+                    float mottle = 0.5f + 0.5f * Mathf.Sin(u * 9.7f + 1.3f) * Mathf.Sin(v * 7.3f);
+                    float red = Mathf.Lerp(Mathf.Lerp(coat.BaseRed, coat.BellyRed, mottle * 0.6f),
+                        coat.MarkRed, marking);
+                    float green = Mathf.Lerp(Mathf.Lerp(coat.BaseGreen, coat.BellyGreen, mottle * 0.6f),
+                        coat.MarkGreen, marking);
+                    float blue = Mathf.Lerp(Mathf.Lerp(coat.BaseBlue, coat.BellyBlue, mottle * 0.6f),
+                        coat.MarkBlue, marking);
+                    pixels[y * size + x] = ToColor32(red, green, blue);
+                }
+            }
+            texture.SetPixels32(pixels);
+            texture.Apply(false, false);
+            outcome = "coat=" + coat.Pattern + ";mode=texture-space;size=" + size;
             return texture;
         }
 
@@ -297,11 +352,12 @@ namespace KingmakerGunslinger.Summoning
                 Texture2D coat = null;
                 if (variant.Coat != null)
                 {
+                    // Only the rig's skinned body takes a coat; a particle or
+                    // line renderer on the view is left as it is.
                     SkinnedMeshRenderer skinned = renderer as SkinnedMeshRenderer;
-                    coat = skinned == null || skinned.sharedMesh == null ? null :
-                        SummonCoatRasterizer.Rasterize(skinned.sharedMesh, variant.Coat,
-                            CoatTextureSize, out coatOutcome);
-                    if (coat == null && coatOutcome == null) coatOutcome = "no-skinned-mesh";
+                    if (skinned == null) { coatOutcome = coatOutcome ?? "no-skinned-mesh"; continue; }
+                    coat = SummonCoatRasterizer.Rasterize(skinned.sharedMesh, variant.Coat,
+                        CoatTextureSize, out coatOutcome);
                 }
                 for (int index = 0; index < originals.Length; index++)
                 {
@@ -311,6 +367,7 @@ namespace KingmakerGunslinger.Summoning
                         continue;
                     string slot = ColorSlots.FirstOrDefault(original.HasProperty);
                     if (slot == null) continue;
+                    if (coat != null && !original.HasProperty(MainTextureSlot)) continue;
                     var material = new Material(original);
                     material.name = VariantMaterialName;
                     if (coat != null && material.HasProperty(MainTextureSlot))
