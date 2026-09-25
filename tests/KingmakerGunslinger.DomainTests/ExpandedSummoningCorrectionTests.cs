@@ -231,7 +231,9 @@ namespace KingmakerGunslinger.DomainTests
             RequireTokens("Cyclops, web and hoof component contract", components,
                 "class CyclopsFlashOfInsightComponent", "\"m_PreRolledResult\"", "ChosenResult = 20",
                 "class SummonWebTargetSizeChecker", "class SummonDocileHoovesComponent",
-                "hoof.ForceSecondary = secondary");
+                "hoof.ForceSecondary = secondary", "class ExpandedSummoningDocileHoovesBodyPatch",
+                "[HarmonyPatch(typeof(UnitBody), \"Initialize\")]",
+                "IInitiatorRulebookHandler<RuleCalculateAttackBonus>");
             string builder = Source("src", "KingmakerGunslinger", "Blueprints",
                 "ExpandedSummoningSpecialBuilder.cs");
             RequireTokens("Cyclops, web and hoof builder contract", builder,
@@ -286,7 +288,7 @@ namespace KingmakerGunslinger.DomainTests
                 "RuntimeTestScenarioCatalog.DisposableExpandedSummoningRules",
                 "RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualLifecycle");
             RequireTokens("Runner dispatch", runner,
-                "Complete(RunDisposableExpandedSummoningRules());", "PollExpandedSummoningVisualLifecycle();",
+                "PollExpandedSummoningRules();", "PollExpandedSummoningVisualLifecycle();",
                 "ArmExpandedSummoningPersistenceFlash(", "expanded-summoning-cyclops-flash-persistence");
             RequireTokens("Project file", project,
                 "RuntimeTesting\\RuntimeTestRunner.ExpandedSummoningCorrection.cs");
