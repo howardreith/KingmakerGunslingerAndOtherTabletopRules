@@ -10,7 +10,7 @@ stale install, fixture or cleanup command from this file.
 | Item | Value |
 | --- | --- |
 | Worktree | `C:\Dev\KingmakerGunslingerLab\worktrees\favored-class-integration` |
-| Branch | `claude/favored-class-integration` (local only; never pushed) |
+| Branch | `claude/favored-class-integration` (pushed to PR #24 on the owner's instruction; never merged) |
 | Baseline | `996105ed9e72259a220be56e2a74e0cc18e5ef47` (master, published 0.0.138 identity record; code parent `a0cae195c`) |
 | Main checkout | `C:\Dev\KingmakerGunslingerLab\repo\KingmakerGunslinger` (master, untouched) |
 | Private decompiled references (not committed) | `C:\Dev\KingmakerGunslingerLab\private\favored-class-mission\decompiled\` (`ZFavoredClass\`, `CallOfTheWild.decompiled.cs`, `AssemblyCSharp\`) |
@@ -94,7 +94,28 @@ final cycle, settings profiles, persistence transaction, working-save smoke and
 compatibility profiles are recorded in `FAVORED-CLASS-IMPLEMENTATION-REPORT.md`.
 Status: PARTIAL - NOT RELEASE QUALIFIED; owner review pending.
 
-## First-pass checkpoint (superseded by the continuation checkpoint above)
+## PR #24 review checkpoint
+
+The owner's review of PR #24 listed six findings; each was addressed in
+order on this branch (section 10 of `FAVORED-CLASS-IMPLEMENTATION-REPORT.md`
+maps every finding to its commits, domain tests and native runs):
+
+1. owned effects apply only while the integration is enabled and the exact
+   host publication is committed (host activation);
+2. the chosen revelation's own level gates and Blast's extra uses follow the
+   effective level (both the native and the Call of the Wild layout); Spirit of
+   the Warrior is excluded (BAB);
+3. the companion projection follows one qualified desired pet (unlink,
+   relink, qualification loss, dismissal, resummoning);
+4. a performance's cylinder is widened only together with its ring;
+5. the level-up replay and Demoralize scopes close in finally blocks;
+6. the bootstrap aggregate counts every registry, Mostly Human's included.
+
+Final candidate: `aa298650e` (package `9abc9454...`, DLL `5edb5e42...`, MVID `ecc3e660-1295-4132-8019-c01b703561d2`),
+33 guarded runs PASS, owner install restored and verified. Status:
+PARTIAL - NOT RELEASE QUALIFIED; owner review pending.
+
+## First-pass checkpoint (superseded by the checkpoints above)
 
 - Phase 1 (`68e6d9a8a`…`2cccec68b`): adapter, contained registry, grit
   leaves, transactional publication, coordinator; grit proven on the
@@ -202,8 +223,14 @@ deployed inside an isolated compatibility profile and restored by its transactio
 | 20260924T2319493525825Z | `15c37695c` | `0261ebd3...` | `613caf93-62bb-41e8-87fa-4a154cb4cfd6` | `20260924T2319446874767Z` (profile) |
 | 20260924T2323061224769Z | `15c37695c` | `0261ebd3...` | `613caf93-62bb-41e8-87fa-4a154cb4cfd6` | `20260924T2323016112056Z` (profile) |
 | 20260924T2326399101015Z | `15c37695c` | `0261ebd3...` | `613caf93-62bb-41e8-87fa-4a154cb4cfd6` | `20260924T2326353817722Z` (profile) |
+| 20260925T0411348835015Z | `719085d51` | `36849dc7...` | `69e74a51-319c-4c91-bf2b-67d7f094ba5d` | `20260925T0411302528284Z` |
+| 20260925T0426279539132Z | `27176f424` | `3c07668a...` | `54f66021-2e12-4cd4-b719-0697c1be6147` | `20260925T0426232586030Z` |
+| 20260925T0441598369963Z | `aa298650e` | `5edb5e42...` | `ecc3e660-1295-4132-8019-c01b703561d2` | `20260925T0441553147956Z` |
+| 20260925T0542174416518Z | `aa298650e` | `5edb5e42...` | `ecc3e660-1295-4132-8019-c01b703561d2` | `20260925T0542126789494Z` (profile) |
+| 20260925T0545354126150Z | `aa298650e` | `5edb5e42...` | `ecc3e660-1295-4132-8019-c01b703561d2` | `20260925T0545309351465Z` (profile) |
+| 20260925T0549103789544Z | `aa298650e` | `5edb5e42...` | `ecc3e660-1295-4132-8019-c01b703561d2` | `20260925T0549056382959Z` (profile) |
 
-Final restoration of the owner's install after the continuation:
+Final restoration of the owner's install after the PR #24 review round:
 
 The owner's pre-mission KMG install (0.0.136, backup
 `C:\Dev\KingmakerGunslingerLab\runtime-backups\live-mod\20260924T0027014050156Z`)
@@ -221,21 +248,24 @@ after the last run, and verified byte for byte:
 - each temporary settings profile removed `FavoredClassIntegration.json` after
   its own runs (verified absent after each profile and at the end)
 - the persistence transaction restored the settings and the complete Mods tree
-  (`20260924T2309101781279Z_bf24e45a425e4d8f857c7fb353530d5b`); each compatibility profile restored the exact original Mods tree
+  (`20260925T0531109526835Z_0f112e09e2c341e4b594527cf2b02a11`); each compatibility profile restored the exact original Mods tree
   and FeatureModules bytes before releasing the lock.
 
 Restoration status: VERIFIED.
 
 ## Next concrete actions
 
-1. Owner review of the local candidate `15c37695c` and of the two pre-existing KMG
-   defects D1 and D2 (`FAVORED-CLASS-BLOCKERS.md`).
+1. Owner review of PR #24 at `aa298650e` and of the two pre-existing KMG defects
+   D1 and D2 (`FAVORED-CLASS-BLOCKERS.md`).
 2. To reach COMPLETE, observe natively the partial families E10, E15, M07, M10, M12, M13, M14, M24, L07:
    turn-based variants of the lanes (L07, M12), True Grit at level 20 (M13),
    bomb splash and critical (M14), the misfire ammunition and condition
    matrix (M07), the deed interruption path (M10), native auto-level (E15),
-   per-revelation values for all 52 revelations (M24) and an injected
+   per-revelation values for all published revelations (M24) and an injected
    permission cycle or duplicate fact (E10). H02, H04, H05 and L06 stay
    domain tested unless the owner authorizes staging a host or dependency state.
-3. Nothing is pushed, merged, tagged or published; those remain separate
-   owner actions.
+3. The fifteen deferred threshold-only targets (fourteen revelations and
+   Elemental Resistance) need new owned identities before they can be
+   published.
+4. Nothing is merged, tagged or published; those remain separate owner
+   actions.
