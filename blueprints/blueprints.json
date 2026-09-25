@@ -17551,6 +17551,222 @@
       "status": "active",
       "milestone": "Expanded Summoning",
       "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.MonitorLizard.CombatTraits",
+      "guid": "45f7552dddaf4322b44a1421cef3a3f2",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.GrizzlyBear.CombatTraits",
+      "guid": "75a7c289e4c643bb93c2155a9f079c34",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.DireBear.CombatTraits",
+      "guid": "74e7cfabb0e14a07b9c0ec9862e8009d",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.GiantSpider.Web",
+      "guid": "ea2845894cb94af19994768602294900",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.GiantSpider.WebResource",
+      "guid": "2f841b1ca74a42d487ad43e1c26f7210",
+      "plannedType": "BlueprintAbilityResource",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.GiantSpider.WebAi",
+      "guid": "67a101d251444047a6f3c15323bff174",
+      "plannedType": "BlueprintAiCastSpell",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.GiantSpider.Brain",
+      "guid": "1b8106c390e64f048043998da1c13875",
+      "plannedType": "BlueprintBrain",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.GiantSpider.CombatTraits",
+      "guid": "c5637ec9346b414087fda9334ec50bf5",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Leopard.CombatTraits",
+      "guid": "da89f9ecc18849edbbad0ee7772c8cd0",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Lion.CombatTraits",
+      "guid": "e7d7d41e2c764fa5a56d33ca4556c65c",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.DireLion.CombatTraits",
+      "guid": "0641d94c18b740f4b7772e8d3205ba96",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.DireTiger.CombatTraits",
+      "guid": "4cbd552217734bbfbc4be0c2c8b97849",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Unit.Tiger",
+      "guid": "5182125341e34ae98491eaf991bc0ef3",
+      "plannedType": "BlueprintUnit",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier4.Tiger.One",
+      "guid": "11803dae3bbd4aa2b724e198723cf823",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier5.Tiger.OneD3",
+      "guid": "78f0199c387545bdb4882ca470758fcb",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier6.Tiger.OneD4PlusOne",
+      "guid": "9744d59cb03d431abaaebaaddf01de75",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier7.Tiger.OneD4PlusOne",
+      "guid": "a73109affc4b41a6bb763bf0f71be396",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier8.Tiger.OneD4PlusOne",
+      "guid": "c01fd035f03f402d81402b8b1f26307f",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier9.Tiger.OneD4PlusOne",
+      "guid": "99ac368e5a6c43b9bdb48327984acebe",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Tiger.CombatTraits",
+      "guid": "87733e5295284048949fbb4b50c533c9",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Cheetah.Sprint",
+      "guid": "a2ae66e5a8ca4bd2bbb8fe7001bd66cd",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Cheetah.SprintResource",
+      "guid": "b1db61f007c547bdb0668ffac3e7b960",
+      "plannedType": "BlueprintAbilityResource",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Cheetah.SprintState",
+      "guid": "c7a7fd6c4c7e4ef29d9a634ed3de995d",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Cheetah.SprintAi",
+      "guid": "4c41608d98f945d0897ff01e5a691cdc",
+      "plannedType": "BlueprintAiCastSpell",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Cheetah.Brain",
+      "guid": "607f8ece3e8943faa13ab95ac611ad54",
+      "plannedType": "BlueprintBrain",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Cheetah.CombatTraits",
+      "guid": "056353ae7a1b4663b4e028e133eb4b8f",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Natural.Claw1d8",
+      "guid": "422318f491354d37aba69dece0004a11",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
     }
   ]
 }

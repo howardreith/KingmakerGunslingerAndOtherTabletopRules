@@ -85,15 +85,50 @@ batches complete.
 
 ### Sprint 6 - Existing Signature Mechanics Repair
 
-Not started.
+| Item | Placement | Donor (audit-proven) | Chassis | Signature / deviations | Status |
+|---|---|---|---|---|---|
+| Monitor Lizard | SM III / SNA III (unchanged) | unchanged | unchanged | bite grab on the shared summon grapple lifecycle (`c988aa874d11ff84d873508ddc9b928f`); no donor constrict | implemented; runtime qualification in progress |
+| Grizzly Bear | SM IV / SNA IV (unchanged) | unchanged | unchanged | claw grab on the shared lifecycle (`c76f72a862d168d44838206524366e1c`) | implemented; runtime qualification in progress |
+| Dire Bear | SM VI / SNA VI (unchanged) | unchanged | unchanged | claw grab on the shared lifecycle | implemented; runtime qualification in progress |
+| Giant Spider | SM II / SNA II (unchanged) | unchanged | native 60-ft blindsight (tremorsense), native web immunity added | ranged Web: 50 ft, one foe, Reflex (Constitution DC), native web-grappled state up to ten rounds, two uses per summoning, own brain; climb omitted (no save-safe seam) | implemented; runtime qualification in progress |
+| Pixie | SNA IX (unchanged) | unchanged | unchanged | verified: sixteen sleep arrows and one irresistible dance per summoning on named resources, one cast action; live mechanical evidence each run | verified; no change |
+
+Ledger: 8 identities appended and active (`blueprints/blueprints.json`,
+entries 2194-2201), pinned by `tools/validate_expanded_summoning_phase1.py`.
+No new icons or package files. Tests: four Sprint 6 domain regressions;
+suite 1791/1791. Runtime evidence: recorded in the state file as the
+guarded batches complete.
 
 ### Sprint 7 - Big-Cat Combat System
 
-Not started.
+| Item | Placement | Donor (audit-proven) | Chassis | Signature / deviations | Status |
+|---|---|---|---|---|---|
+| Leopard | SM III / SNA III (unchanged) | unchanged | unchanged (bite, two claws, two rake claws, Pounce) | claw grab on the shared lifecycle; charge-only rake gate (silent automatic miss otherwise) | implemented; runtime qualification in progress |
+| Lion | SM IV / SNA IV (unchanged) | unchanged (leopard rig) | unchanged | claw grab; charge-only rake; tawny visual tint on the leopard rig (no mane) | implemented; runtime qualification in progress |
+| Dire Lion | SM V / SNA V (unchanged) | unchanged | unchanged (secondary rake pair) | claw grab; charge-only rake | implemented; runtime qualification in progress |
+| Smilodon (Dire Tiger) | SM VI / SNA VI (unchanged) | unchanged | unchanged (secondary rake pair) | claw grab; charge-only rake | implemented; runtime qualification in progress |
+| Shared rake gate | the four cats (Sprint 8 reuses) | native attack rules | `SummonRakeComponent` on each cat's combat-traits buff | rake claws strike only on a charge or against a held foe; never on ordinary full attacks, attacks of opportunity or replays | implemented; runtime qualification in progress |
+
+Ledger: 4 identities appended and active (`blueprints/blueprints.json`,
+entries 2202-2205), pinned by `tools/validate_expanded_summoning_phase1.py`.
+No new icons or package files. Tests: four Sprint 7 domain regressions;
+suite 1795/1795. Runtime evidence: recorded in the state file as the
+guarded batches complete.
 
 ### Sprint 8 - Big-Cat Roster Completion
 
-Not started.
+| Item | Placement | Donor (audit-proven) | Chassis | Signature / deviations | Status |
+|---|---|---|---|---|---|
+| Tiger | SNA IV (1d3 at V, 1d4+1 at VI-IX); new | `LeopardSummoned` `768275c9885dd954fb3c84ba69ac4281` (the leopard rig), 1.25 view scale | Animal 6 HD, Large, 23/15/17/2/12/6, 40 ft, NA +3, native 2d6 bite, four project 1d8 claws, Pounce, Improved Initiative, Skill Focus (Perception), Weapon Focus (claw) | claw grab on the shared lifecycle; charge-only rake; procedural striped coat generated in the rig's texture space; Run and Skill Focus (Stealth) omitted | implemented; runtime qualification in progress |
+| Cheetah | SM III / SNA III (unchanged) | unchanged (leopard rig), 0.92 view scale | unchanged (bite, two claws, trip bite) | procedural spotted coat; bounded sprint: swift, once per summoning, +30 ft enhancement speed for one round, own brain | implemented; runtime qualification in progress |
+| Procedural coats | Tiger, Cheetah (later sprints reuse) | the rig's own geometry | `SummonCoatRasterizer` on the shared visual variant patch | stripes / spots / pale belly from vertex positions; private 512x512 texture; no game pixels read | implemented; runtime qualification in progress |
+
+Placements propagate to the 1d3 / 1d4+1 tiers by construction (6 new
+logical placements). Ledger: 15 identities appended and active
+(`blueprints/blueprints.json`, entries 2206-2220), pinned by
+`tools/validate_expanded_summoning_phase1.py`. Icons: one Blender procedural
+render. Tests: four Sprint 8 domain regressions; suite 1799/1799. Runtime
+evidence: recorded in the state file as the guarded batches complete.
 
 ## Appendix A - tabletop stat blocks (fetched 2026-09-24 from the public SRD)
 

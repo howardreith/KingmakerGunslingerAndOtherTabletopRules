@@ -194,10 +194,19 @@ namespace KingmakerGunslinger.DomainTests
                 value.Contains(".SaltMephit") || value.Contains(".SteamMephit")).ToArray();
             Assertions.Equal(AppendedLedgerIdentities, appended.Length,
                 "Sprint 5 must append exactly its own identities to the ledger.");
-            Assertions.True(entries.Skip(entries.Length - AppendedLedgerIdentities)
-                .All(value => appended.Contains(value)),
-                "The ledger is append-only: Sprint 5 identities sit at its tail.");
+            // Append-only: the Sprint 5 block sits directly before the Sprint 6
+            // block at the ledger's tail, and directly after the Sprint 4 block.
             Assertions.True(entries.Skip(entries.Length - AppendedLedgerIdentities -
+                    ExpandedSummoningSprint6Tests.AppendedLedgerIdentities -
+                    ExpandedSummoningSprint7Tests.AppendedLedgerIdentities -
+                    ExpandedSummoningSprint8Tests.AppendedLedgerIdentities)
+                .Take(AppendedLedgerIdentities)
+                .All(value => appended.Contains(value)),
+                "The ledger is append-only: Sprint 5 identities sit directly before Sprint 6's.");
+            Assertions.True(entries.Skip(entries.Length - AppendedLedgerIdentities -
+                    ExpandedSummoningSprint6Tests.AppendedLedgerIdentities -
+                    ExpandedSummoningSprint7Tests.AppendedLedgerIdentities -
+                    ExpandedSummoningSprint8Tests.AppendedLedgerIdentities -
                     ExpandedSummoningSprint4Tests.AppendedLedgerIdentities)
                 .Take(ExpandedSummoningSprint4Tests.AppendedLedgerIdentities)
                 .All(value => !appended.Contains(value)),

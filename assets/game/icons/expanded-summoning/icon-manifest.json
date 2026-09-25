@@ -1,6 +1,6 @@
 ﻿{
     "schemaVersion":  1,
-    "count":  90,
+    "count":  91,
     "icons":  [
                   {
                       "key":  "dog",
@@ -807,6 +807,15 @@
                       "key":  "steam-mephit",
                       "file":  "steam-mephit.png",
                       "sha256":  "10df7e50b2650cc661b5645c43ed28b5850b39dc44ab8590f36951fcd72f51a8",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "tiger",
+                      "file":  "tiger.png",
+                      "sha256":  "0c2c7447cf4c8559f5bc2bd0882aac5140b84c75dd2022edb90d2fe87a1c1ae4",
                       "width":  128,
                       "height":  128,
                       "format":  "RGBA PNG",

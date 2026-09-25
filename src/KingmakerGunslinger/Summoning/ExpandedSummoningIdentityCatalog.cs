@@ -20,12 +20,12 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class ExpandedSummoningIdentityCatalog
     {
-        internal const int UnitCount = 80;
-        internal const int LogicalAbilityCount = 807;
+        internal const int UnitCount = 81;
+        internal const int LogicalAbilityCount = 813;
         internal const int TemplatedPlacementCount = 199;
         internal const int TemplateExecutionAbilityCount = TemplatedPlacementCount * 2;
         internal const int TemplateBuffCount = 8;
-        internal const int SpecialIdentityCount = 94;
+        internal const int SpecialIdentityCount = 114;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -165,12 +165,32 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.SteamMephit.SpellLikeTwo", "BlueprintAbility"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.SteamMephit.SpellLikeTwoResource", "BlueprintAbilityResource"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.SteamMephit.SpellLikeTwoAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.MonitorLizard.CombatTraits", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.GrizzlyBear.CombatTraits", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.DireBear.CombatTraits", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.GiantSpider.Web", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.GiantSpider.WebResource", "BlueprintAbilityResource"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.GiantSpider.WebAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.GiantSpider.Brain", "BlueprintBrain"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.GiantSpider.CombatTraits", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Leopard.CombatTraits", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Lion.CombatTraits", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.DireLion.CombatTraits", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.DireTiger.CombatTraits", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Tiger.CombatTraits", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Cheetah.Sprint", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Cheetah.SprintResource", "BlueprintAbilityResource"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Cheetah.SprintState", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Cheetah.SprintAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Cheetah.Brain", "BlueprintBrain"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Cheetah.CombatTraits", "BlueprintBuff"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Bite1d4", "BlueprintItemWeapon"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Bite1d3", "BlueprintItemWeapon"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Tail1d12", "BlueprintItemWeapon"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Tail3d6", "BlueprintItemWeapon"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Bite2d8", "BlueprintItemWeapon"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Talon2d6", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Claw1d8", "BlueprintItemWeapon"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Subtype.Extraplanar", "BlueprintFeature"));
             Validate(result);
             return result.AsReadOnly();

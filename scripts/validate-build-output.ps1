@@ -50,7 +50,7 @@ foreach ($name in @('firearm-monogram-rifle','firearm-monogram-revolver')) {
 }
 $summonManifest = Get-Content -LiteralPath (Join-Path $repositoryRoot `
     'assets\game\icons\expanded-summoning\icon-manifest.json') -Raw | ConvertFrom-Json
-if ($summonManifest.count -ne 90 -or @($summonManifest.icons).Count -ne 90) {
+if ($summonManifest.count -ne 91 -or @($summonManifest.icons).Count -ne 91) {
     throw 'Expanded Summoning runtime icon manifest is malformed.'
 }
 $requiredFiles += 'assets\icons\expanded-summoning\icon-manifest.json'
