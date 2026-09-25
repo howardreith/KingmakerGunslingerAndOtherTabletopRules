@@ -246,6 +246,8 @@
     <Compile Include="FavoredClass\FavoredClassHostActivation.cs" />
     <Compile Include="FavoredClass\FavoredClassPetSync.cs" />
     <Compile Include="FavoredClass\FavoredClassPerformanceWidening.cs" />
+    <Compile Include="FavoredClass\FavoredClassScopeStack.cs" />
+    <Compile Include="FavoredClass\FavoredClassCallScoping.cs" />
     <Compile Include="FavoredClass\FavoredClassPrerequisites.cs" />
     <Compile Include="FavoredClass\Mechanics\FavoredClassGritResourceBonus.cs" />
     <Compile Include="FavoredClass\FavoredClassMechanicsPolicy.cs" />
@@ -263,6 +265,7 @@
     <Compile Include="FavoredClass\Mechanics\FavoredClassSpellPenetrationBonus.cs" />
     <Compile Include="FavoredClass\Mechanics\FavoredClassResourceBonus.cs" />
     <Compile Include="FavoredClass\Hooks\FavoredClassDemoralizeScopePatch.cs" />
+    <Compile Include="FavoredClass\Hooks\FavoredClassActionEnvelopePatch.cs" />
     <Compile Include="FavoredClass\FavoredClassBlueprints.cs" />
     <Compile Include="FavoredClass\FavoredClassHostAdapter.cs" />
     <Compile Include="FavoredClass\FavoredClassPublication.cs" />
