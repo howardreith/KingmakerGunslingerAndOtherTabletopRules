@@ -54,6 +54,7 @@
     <Compile Include="FavoredClassSettingsTests.cs" />
     <Compile Include="FavoredClassHostGateTests.cs" />
     <Compile Include="FavoredClassThresholdTests.cs" />
+    <Compile Include="FavoredClassPetSyncTests.cs" />
     <Compile Include="ElementalMostlyHumanTests.cs" />
     <Compile Include="FavoredClassAdvancedTests.cs" />
     <Compile Include="FavoredClassPowerTests.cs" />
@@ -68,6 +69,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\FavoredClass\FavoredClassSettings.cs"><Link>FavoredClass\FavoredClassSettings.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\FavoredClass\FavoredClassMechanicsPolicy.cs"><Link>FavoredClass\FavoredClassMechanicsPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\FavoredClass\FavoredClassHostActivation.cs"><Link>FavoredClass\FavoredClassHostActivation.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\FavoredClass\FavoredClassPetSync.cs"><Link>FavoredClass\FavoredClassPetSync.cs</Link></Compile>
     <Compile Include="FavoredClassSourceTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\FavoredClass\FavoredClassLeafCatalog.cs"><Link>FavoredClass\FavoredClassLeafCatalog.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\FavoredClass\FavoredClassIdentityCatalog.cs"><Link>FavoredClass\FavoredClassIdentityCatalog.cs</Link></Compile>

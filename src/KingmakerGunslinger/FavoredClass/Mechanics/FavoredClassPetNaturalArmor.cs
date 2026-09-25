@@ -106,12 +106,16 @@ namespace KingmakerGunslinger.FavoredClass.Mechanics
     }
 
     /// <summary>
-    /// O07/O08, master side, on the full leaf: projects the hidden pet
-    /// feature onto the master's current qualified pet (on activation, on
-    /// load and whenever a pet is linked to this master) and removes it from
-    /// a previously projected pet, so a replaced pet keeps no orphaned bonus
-    /// and a pet never receives two copies. The investment stays on the
-    /// master; no favored-class progression is added to the pet's class.
+    /// O07/O08, master side, on the full leaf: keeps the hidden pet feature
+    /// on exactly one qualified desired pet, the master's current pet when it
+    /// qualifies for the counter's pet class (on activation, on load, when a
+    /// pet is linked to this master, and when the tracked pet is unlinked,
+    /// dismissed or transferred through the native SetMaster). The tracked
+    /// pet loses it as soon as it is no longer the desired pet (unlinked,
+    /// dismissed, transferred, replaced or no longer qualified), unless
+    /// another master with the same counter now holds it; a pet never
+    /// receives two copies. The investment stays on the master; no
+    /// favored-class progression is added to the pet's class.
     /// </summary>
     public sealed class FavoredClassPetArmorProjection : OwnedGameLogicComponent<UnitDescriptor>,
         IUnitFactionHandler
@@ -121,6 +125,12 @@ namespace KingmakerGunslinger.FavoredClass.Mechanics
 
         [JsonProperty]
         private UnitReference m_ProjectedPet;
+
+        /// <summary>The pet this master currently projects onto, if any.</summary>
+        internal UnitEntityData ProjectedPet
+        {
+            get { return m_ProjectedPet.Value; }
+        }
 
         public override void OnFactActivate()
         {
@@ -137,37 +147,68 @@ namespace KingmakerGunslinger.FavoredClass.Mechanics
             // A rank change reactivates the fact; activation re-synchronizes.
             if (IsReapplying)
                 return;
-            Unproject(m_ProjectedPet.Value);
+            UnitEntityData tracked = m_ProjectedPet.Value;
+            if (tracked != null && !ClaimedByAnotherMaster(tracked))
+                Unproject(tracked);
             m_ProjectedPet = null;
         }
 
         public void HandleFactionChanged(UnitEntityData unit)
         {
-            // Native SetMaster raises this when a pet is linked to its master.
-            if (unit != null && Owner != null && unit.Descriptor != null &&
-                ReferenceEquals(unit.Descriptor.Master.Value, Owner.Unit))
+            // Native SetMaster raises this when a pet is linked to a master:
+            // this master's new pet, or the tracked pet linked to another.
+            if (unit == null || Owner == null || unit.Descriptor == null)
+                return;
+            if (ReferenceEquals(unit.Descriptor.Master.Value, Owner.Unit) ||
+                ReferenceEquals(unit, m_ProjectedPet.Value))
                 Sync();
+        }
+
+        /// <summary>The master's current pet when it qualifies for this counter, otherwise none.</summary>
+        internal UnitEntityData DesiredPet()
+        {
+            UnitEntityData pet = Owner == null ? null : Owner.Pet;
+            return pet != null && FavoredClassPets.IsQualified(pet, PetClassGuid) ? pet : null;
         }
 
         internal void Sync()
         {
             if (Owner == null || PetFeature == null)
                 return;
-            UnitEntityData current = Owner.Pet;
-            UnitEntityData previous = m_ProjectedPet.Value;
-            if (previous != null && !ReferenceEquals(previous, current))
-                Unproject(previous);
-            if (current == null || !FavoredClassPets.IsQualified(current, PetClassGuid))
+            UnitEntityData desired = DesiredPet();
+            UnitEntityData tracked = m_ProjectedPet.Value;
+            FavoredClassPetSyncPlan plan = FavoredClassPetSync.Plan(tracked, desired,
+                pet => pet.Descriptor != null && pet.Descriptor.Progression.Features.HasFact(PetFeature),
+                ClaimedByAnotherMaster);
+            if (plan.Unproject)
+                Unproject(tracked);
+            if (plan.Project)
+                desired.Descriptor.Progression.Features.AddFact(PetFeature, null);
+            else if (plan.Refresh)
             {
-                m_ProjectedPet = null;
-                return;
+                Fact existing = desired.Descriptor.Progression.Features.GetFact(PetFeature);
+                if (existing != null)
+                    existing.CallComponents<FavoredClassPetNaturalArmor>(component => component.Refresh());
             }
-            Fact existing = current.Descriptor.Progression.Features.GetFact(PetFeature);
-            if (existing == null)
-                current.Descriptor.Progression.Features.AddFact(PetFeature, null);
-            else
-                existing.CallComponents<FavoredClassPetNaturalArmor>(component => component.Refresh());
-            m_ProjectedPet = current;
+            m_ProjectedPet = desired;
+        }
+
+        /// <summary>Re-synchronizes every projection a master holds (its tracked pet was unlinked).</summary>
+        internal static void SyncMaster(UnitEntityData master)
+        {
+            if (master == null || master.Descriptor == null)
+                return;
+            foreach (Feature feature in master.Descriptor.Progression.Features.Enumerable.ToArray())
+                if (feature != null)
+                    feature.CallComponents<FavoredClassPetArmorProjection>(component => component.Sync());
+        }
+
+        /// <summary>The pet now belongs to another master who holds this same counter.</summary>
+        private bool ClaimedByAnotherMaster(UnitEntityData pet)
+        {
+            UnitEntityData master = pet == null || pet.Descriptor == null ? null : pet.Descriptor.Master.Value;
+            return master != null && Owner != null && !ReferenceEquals(master, Owner.Unit) && Fact != null &&
+                master.Descriptor.Progression.Features.HasFact(Fact.Blueprint);
         }
 
         private void Unproject(UnitEntityData pet)

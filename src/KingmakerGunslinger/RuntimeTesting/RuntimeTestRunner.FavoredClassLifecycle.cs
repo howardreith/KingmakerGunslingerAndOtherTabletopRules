@@ -8,6 +8,7 @@ using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Selection;
 using Kingmaker.Blueprints.Classes.Spells;
+using Kingmaker.Blueprints.Facts;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.Controllers;
 using Kingmaker.Controllers.Units;
@@ -126,11 +127,138 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (object step in FcbPerformanceMembership(fixtures, leaves)) yield return step;
                 foreach (object step in FcbFamilyLifecycle(fixtures, leaves)) yield return step;
                 foreach (object step in FcbRespecPet(fixtures, leaves)) yield return step;
+                foreach (object step in FcbPetTransitions(fixtures, leaves)) yield return step;
             }
             finally
             {
                 CleanupFcbLifecycle(fixtures);
             }
+        }
+
+        // Review finding 3 (O07): the projection follows one qualified desired
+        // pet through a native unlink without replacement, a relink, the same
+        // pet losing and regaining qualification, and a native dismissal
+        // (RemoveMaster) with a resummoned companion; no pet keeps an orphan
+        // and none receives two copies.
+        private IEnumerable<object> FcbPetTransitions(FcbLifecycleFixtures fixtures, FavoredClassBlueprintSet leaves)
+        {
+            var failures = new List<string>();
+            var evidence = new JObject();
+            var library = BlueprintBootstrap.Library;
+            BlueprintFeature petFeature = leaves.PetFeature(FavoredClassCatalog.EffectCompanionArmor);
+            BlueprintFeature armorLeaf = leaves.Pair(FavoredClassCatalog.EffectCompanionArmor, null).Full;
+            BlueprintFeature companion = BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library,
+                FcbCompanionLeopardGuid, "AnimalCompanionFeatureLeopard");
+            UnitEntityData ranger = SpawnFcbFixture(fixtures, "PetTransitionsRanger",
+                fixtures.Origin - fixtures.Direction * 6f);
+            foreach (object step in WaitFcbFixtures(fixtures)) yield return step;
+            GrantFavoredClassRanks(ranger, BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library,
+                FcbAnimalCompanionRankGuid, "AnimalCompanionRank"), 4);
+            ranger.Descriptor.AddFact(companion);
+            Game.Instance.EntityCreator.Tick();
+            GrantFavoredClassRanks(ranger, armorLeaf, 2);
+            UnitEntityData first = ranger.Descriptor.Pet;
+            if (first == null)
+            {
+                failures.Add("the ranger's companion did not spawn");
+                RecordFcbLifecycle("fcb-lifecycle-pet-transitions", "a companion spawned", evidence, failures);
+                yield break;
+            }
+            fixtures.Units.Add(first);
+            foreach (object step in WaitFcbUnit(first)) yield return step;
+            Func<UnitEntityData, JObject> pet = unit => new JObject
+            {
+                ["id"] = unit == null ? null : unit.UniqueId,
+                ["projectionFacts"] = unit == null ? 0 : unit.Descriptor.Progression.Features.Enumerable
+                    .Count(feature => feature != null && ReferenceEquals(feature.Blueprint, petFeature)),
+                ["ownedArmor"] = unit == null ? 0 : unit.Descriptor.Progression.Features.Enumerable
+                    .Where(feature => feature != null && ReferenceEquals(feature.Blueprint, petFeature))
+                    .Sum(feature => feature.SelectComponents<FavoredClassPetNaturalArmor>()
+                        .Sum(component => component.AppliedValue))
+            };
+            Func<UnitEntityData> tracked = () =>
+            {
+                UnitEntityData value = null;
+                Fact leafFact = ranger.Descriptor.Progression.Features.GetFact(armorLeaf);
+                if (leafFact != null)
+                    leafFact.CallComponents<FavoredClassPetArmorProjection>(component =>
+                        value = component.ProjectedPet);
+                return value;
+            };
+            Func<UnitEntityData, int, bool> exactly = (unit, armor) =>
+                (int)pet(unit)["projectionFacts"] == (armor > 0 ? 1 : 0) && (int)pet(unit)["ownedArmor"] == armor;
+            evidence["linked"] = pet(first);
+            if (!exactly(first, 2))
+                failures.Add("the linked companion did not carry exactly one +2 projection");
+
+            // 1. Unlink without replacement (native SetMaster(null)).
+            first.Descriptor.SetMaster(null);
+            for (int wait = 0; wait < FcbSettleUpdates; wait++) yield return null;
+            evidence["unlinked"] = new JObject
+            {
+                ["pet"] = pet(first),
+                ["masterPet"] = ranger.Descriptor.Pet == null ? null : ranger.Descriptor.Pet.UniqueId,
+                ["tracked"] = tracked() == null ? null : tracked().UniqueId
+            };
+            if (!exactly(first, 0) || ranger.Descriptor.Pet != null || tracked() != null)
+                failures.Add("the unlinked companion kept a projection or stayed tracked");
+
+            // 2. Relink the same pet: projected again, once.
+            first.Descriptor.SetMaster(ranger);
+            for (int wait = 0; wait < FcbSettleUpdates; wait++) yield return null;
+            evidence["relinked"] = pet(first);
+            if (!exactly(first, 2) || !ReferenceEquals(tracked(), first))
+                failures.Add("the relinked companion did not regain exactly one projection");
+
+            // 3. The same pet stops qualifying (the counter's pet class no
+            // longer matches), then qualifies again.
+            string petClass = null;
+            Fact armorFact = ranger.Descriptor.Progression.Features.GetFact(armorLeaf);
+            armorFact.CallComponents<FavoredClassPetArmorProjection>(component =>
+            {
+                petClass = component.PetClassGuid;
+                component.PetClassGuid = "00000000000000000000000000000000";
+                component.Sync();
+            });
+            evidence["unqualified"] = pet(first);
+            bool lost = exactly(first, 0) && tracked() == null;
+            armorFact.CallComponents<FavoredClassPetArmorProjection>(component =>
+            {
+                component.PetClassGuid = petClass;
+                component.Sync();
+            });
+            evidence["requalified"] = pet(first);
+            if (!lost)
+                failures.Add("the same pet kept the projection after it stopped qualifying");
+            if (!exactly(first, 2) || !ReferenceEquals(tracked(), first))
+                failures.Add("the requalified pet did not regain exactly one projection");
+
+            // 4. Native dismissal (the companion feature removed: RemoveMaster)
+            // and a resummoned companion.
+            ranger.Descriptor.RemoveFact(companion);
+            for (int wait = 0; wait < FcbSettleUpdates; wait++) yield return null;
+            evidence["dismissed"] = new JObject
+            {
+                ["pet"] = pet(first),
+                ["masterPet"] = ranger.Descriptor.Pet == null ? null : ranger.Descriptor.Pet.UniqueId
+            };
+            if (!exactly(first, 0) || ranger.Descriptor.Pet != null)
+                failures.Add("the dismissed companion kept a projection");
+            ranger.Descriptor.AddFact(companion);
+            Game.Instance.EntityCreator.Tick();
+            UnitEntityData second = ranger.Descriptor.Pet;
+            if (second != null)
+            {
+                fixtures.Units.Add(second);
+                foreach (object step in WaitFcbUnit(second)) yield return step;
+            }
+            evidence["resummoned"] = new JObject { ["pet"] = pet(second), ["dismissedPet"] = pet(first) };
+            if (second == null || ReferenceEquals(second, first) || !exactly(second, 2) || !exactly(first, 0) ||
+                !ReferenceEquals(tracked(), second))
+                failures.Add("the resummoned companion did not receive exactly one projection, or the dismissed one kept one");
+            RecordFcbLifecycle("fcb-lifecycle-pet-transitions",
+                "the companion projection follows one qualified desired pet: a native unlink without replacement removes it, a relink restores it once, the same pet losing qualification loses it and regains it once when qualified again, and a native dismissal leaves the dismissed pet without it while the resummoned companion receives it exactly once",
+                evidence, failures);
         }
 
         // M17: two paladins' auras through the native area enter/exit logic.

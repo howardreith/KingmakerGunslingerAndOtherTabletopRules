@@ -191,6 +191,12 @@ need a restart.
   companion whose master is respecced is destroyed natively and keeps no
   projected armor; a new companion receives the projection once. A cancelled
   respec changes nothing.
+- **Companion and eidolon armor (O07/O08)**: the projected armor follows one
+  qualified pet, the master's current pet of the counter's pet class. A native
+  unlink or dismissal removes it from that pet, a relinked, replacement or
+  resummoned pet receives it exactly once, a pet that no longer qualifies loses
+  it, and a pet handed to another master who holds the same counter keeps it
+  under that master.
 - **Host removed, disabled, unsupported or not published**: no choices are
   offered and every owned numerical effect is zero. Owned effects need both
   the enabled integration and a committed publication of the exact qualified
