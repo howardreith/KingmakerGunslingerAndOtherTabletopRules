@@ -263,6 +263,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("favored-class.host-commit-activates", FavoredClassHostGateTests.OnlyACommitActivatesTheHost),
             Case("favored-class.gate-decision-native", FavoredClassThresholdTests.GateDecisionMatchesTheNativeComponent),
             Case("favored-class.power-use-thresholds", FavoredClassThresholdTests.PowerUseThresholdsFollowTheEffectiveLevel),
+            Case("favored-class.power-use-gates", FavoredClassThresholdTests.PowerUseGatesFollowTheEffectiveLevel),
             Case("favored-class.pet-sync-transitions", FavoredClassPetSyncTests.EveryTransitionKeepsOneProjection),
             Case("favored-class.pet-sync-plan", FavoredClassPetSyncTests.PlanDecisionsAreExact),
             Case("favored-class.pet-sync-wiring", FavoredClassPetSyncTests.ProjectionAndUnlinkHookAreWired),
