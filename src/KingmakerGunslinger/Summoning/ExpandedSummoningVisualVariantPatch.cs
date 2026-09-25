@@ -10,14 +10,15 @@ namespace KingmakerGunslinger.Summoning
 {
     /// <summary>
     /// A bounded visual variant for a KMG summon that shares a native rig:
-    /// the view's renderer materials are cloned and either tinted (the lion
-    /// on the leopard rig) or given a procedural coat on the main texture
-    /// slot (the tiger, the cheetah and, since the round-9 diagnostic showed
-    /// the game's material controller rewriting the mephit rig's tint slot
-    /// every frame, the six mephit variants). An emission colour is set
-    /// only where the shader declares the slot; the rigs used so far do
-    /// not. The colours come from the plain profiles the domain tests
-    /// compile; only this file knows UnityEngine.
+    /// the view's renderer materials are cloned and either tinted, with an
+    /// optional rim light colour (the lion on the leopard rig; the six
+    /// mephit variants, whose translucent bodies are seen through the
+    /// shader's HDR rim glow - rounds 8-11 showed the game's material
+    /// controller rewriting the mephit rig's tint slot and a project main
+    /// texture changing nothing on it), or given a procedural coat on the
+    /// main texture slot (the tiger and the cheetah). The colours come from
+    /// the plain profiles the domain tests compile; only this file knows
+    /// UnityEngine.
     /// </summary>
     internal sealed class SummonVisualVariant
     {
@@ -31,8 +32,8 @@ namespace KingmakerGunslinger.Summoning
             BlueprintName = blueprintName;
             Key = tint.Key;
             Tint = new Color(tint.TintRed, tint.TintGreen, tint.TintBlue, 1f);
-            Emission = tint.HasEmission ? new Color(tint.EmissionRed,
-                tint.EmissionGreen, tint.EmissionBlue, 1f) : (Color?)null;
+            Rim = tint.HasRim ? new Color(tint.RimRed, tint.RimGreen, tint.RimBlue, 1f)
+                : (Color?)null;
         }
 
         /// <summary>
@@ -48,14 +49,15 @@ namespace KingmakerGunslinger.Summoning
             BlueprintName = blueprintName;
             Key = coat.Key;
             Tint = Color.white;
-            Emission = null;
+            Rim = null;
             Coat = coat;
         }
 
         internal string BlueprintName { get; private set; }
         internal string Key { get; private set; }
         internal Color Tint { get; private set; }
-        internal Color? Emission { get; private set; }
+        /// <summary>The shader's rim light colour (HDR), or none.</summary>
+        internal Color? Rim { get; private set; }
         internal SummonCoatProfile Coat { get; private set; }
     }
 
@@ -266,7 +268,7 @@ namespace KingmakerGunslinger.Summoning
         internal const string VariantMaterialName = "KMG_SummonVisualVariant";
         private static readonly string[] ColorSlots = { "_Color", "_TintColor",
             "_BaseColor", "_MainColor" };
-        private const string EmissionSlot = "_EmissionColor";
+        private const string RimSlot = "_RimColor";
         private const string MainTextureSlot = "_MainTex";
         private const string DissolveSlot = "_Dissolve";
         internal const int CoatTextureSize = 512;
@@ -292,7 +294,7 @@ namespace KingmakerGunslinger.Summoning
         { get { lock (Sync) { return Outcomes.ToArray(); } } }
 
         /// <summary>
-        /// "variant:applied;materials=2;slot=_Color;emission=0" and the like,
+        /// "variant:applied;materials=2;slot=_Color;rim=0" and the like,
         /// or the reason nothing was applied; "&lt;none&gt;" for a view this
         /// patch never saw.
         /// </summary>
@@ -382,9 +384,9 @@ namespace KingmakerGunslinger.Summoning
                     }
                     else
                         material.SetColor(slot, original.GetColor(slot) * variant.Tint);
-                    if (variant.Emission.HasValue && material.HasProperty(EmissionSlot))
+                    if (variant.Rim.HasValue && material.HasProperty(RimSlot))
                     {
-                        material.SetColor(EmissionSlot, variant.Emission.Value);
+                        material.SetColor(RimSlot, variant.Rim.Value);
                         glowing++;
                     }
                     // The clone starts intact: at attach the summon is still
@@ -413,7 +415,7 @@ namespace KingmakerGunslinger.Summoning
                 .ReinitializeMaterialController(view);
             Material driven = renderers[0].sharedMaterial;
             return "variant:applied;key=" + variant.Key + ";materials=" + tinted +
-                ";slot=" + slotUsed + ";emission=" + glowing +
+                ";slot=" + slotUsed + ";rim=" + glowing +
                 (variant.Coat != null ? ";coat=" + coated + ";" + coatOutcome : "") +
                 ";controller=" + controller + ";driven=" + (driven == null ? "<none>" :
                     driven.name.Replace(';', ',').Replace('|', '/'));

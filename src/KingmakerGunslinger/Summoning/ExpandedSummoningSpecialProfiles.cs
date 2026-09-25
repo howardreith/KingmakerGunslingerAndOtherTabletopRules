@@ -51,36 +51,40 @@ namespace KingmakerGunslinger.Summoning
 
     /// <summary>
     /// A bounded visual variant on a shared native rig: a tint multiplier on
-    /// the rig's colour slot and an optional emission colour, all channels in
-    /// [0, 1]. Domain-testable without the engine.
+    /// the rig's colour slot (channels in [0, 1]) and an optional rim light
+    /// colour (the shader's HDR glow, channels in [0, 8]) - on the mephit
+    /// rigs the rim light is the translucent body's visible colour, and the
+    /// native elements differ by exactly that. Domain-testable without the
+    /// engine.
     /// </summary>
     internal sealed class SummonVisualTintProfile
     {
+        internal const float RimChannelMaximum = 8f;
+
         internal SummonVisualTintProfile(string key, float tintRed, float tintGreen,
-            float tintBlue, float? emissionRed, float? emissionGreen,
-            float? emissionBlue)
+            float tintBlue, float? rimRed, float? rimGreen, float? rimBlue)
         {
             Key = key; TintRed = tintRed; TintGreen = tintGreen; TintBlue = tintBlue;
-            HasEmission = emissionRed.HasValue && emissionGreen.HasValue &&
-                emissionBlue.HasValue;
-            EmissionRed = emissionRed ?? 0f; EmissionGreen = emissionGreen ?? 0f;
-            EmissionBlue = emissionBlue ?? 0f;
+            HasRim = rimRed.HasValue && rimGreen.HasValue && rimBlue.HasValue;
+            RimRed = rimRed ?? 0f; RimGreen = rimGreen ?? 0f; RimBlue = rimBlue ?? 0f;
         }
         internal string Key { get; private set; }
         internal float TintRed { get; private set; }
         internal float TintGreen { get; private set; }
         internal float TintBlue { get; private set; }
-        internal bool HasEmission { get; private set; }
-        internal float EmissionRed { get; private set; }
-        internal float EmissionGreen { get; private set; }
-        internal float EmissionBlue { get; private set; }
+        internal bool HasRim { get; private set; }
+        internal float RimRed { get; private set; }
+        internal float RimGreen { get; private set; }
+        internal float RimBlue { get; private set; }
         internal bool IsBounded
         {
             get
             {
                 return !string.IsNullOrEmpty(Key) &&
-                    new[] { TintRed, TintGreen, TintBlue, EmissionRed, EmissionGreen,
-                        EmissionBlue }.All(value => value >= 0f && value <= 1f);
+                    new[] { TintRed, TintGreen, TintBlue }.All(value =>
+                        value >= 0f && value <= 1f) &&
+                    new[] { RimRed, RimGreen, RimBlue }.All(value =>
+                        value >= 0f && value <= RimChannelMaximum);
             }
         }
     }
@@ -160,38 +164,32 @@ namespace KingmakerGunslinger.Summoning
         { return MephitVariants.Single(value => value.Key == key); }
 
         /// <summary>
-        /// The procedural elemental coat that makes each variant read as its
-        /// element on the shared mephit body: generated in the rig's own
-        /// texture space at view attach and put on the private material
-        /// clone's main texture slot. A tint could not do it - the game's
-        /// material controller owns the mephit rig's tint slot and rewrites
-        /// it every frame (round-9 diagnostic) - and the rig's shader has no
-        /// emission slot, so no glow is claimed. Plain numbers here; pixels
-        /// only at runtime, and never the game's own.
+        /// What makes each variant read as its element on the shared mephit
+        /// body: the rim light colour, the HDR glow through which the
+        /// translucent mephit body is seen (the native air mephit glows
+        /// 1.3/1.2/1.13, the native fire mephit 4.16/1.51/0.32 - rounds 8-11
+        /// showed that neither a tint on the rig's tint slot, which the
+        /// game's material controller rewrites, nor a project main texture
+        /// changes the frame). The tint multiplier stays white here. Plain
+        /// numbers; the view patch turns them into colours.
         /// </summary>
-        internal static readonly SummonCoatProfile[] MephitCoats = {
-            // sand with darker ochre grains, pale underside
-            new SummonCoatProfile("dust-mephit", SummonCoatPattern.Spots, 0.72f, 0.60f, 0.40f,
-                0.46f, 0.34f, 0.18f, 0.86f, 0.78f, 0.60f, 22f),
-            // pale ice with white frost bands
-            new SummonCoatProfile("ice-mephit", SummonCoatPattern.Stripes, 0.58f, 0.78f, 1.00f,
-                0.96f, 0.99f, 1.00f, 0.80f, 0.90f, 1.00f, 9f),
-            // dark crust with lava cracks, ember underside
-            new SummonCoatProfile("magma-mephit", SummonCoatPattern.Stripes, 0.16f, 0.07f, 0.05f,
-                1.00f, 0.42f, 0.06f, 0.42f, 0.12f, 0.04f, 8f),
-            // slime green with darker blotches, yellow-green underside
-            new SummonCoatProfile("ooze-mephit", SummonCoatPattern.Spots, 0.34f, 0.62f, 0.18f,
-                0.12f, 0.30f, 0.08f, 0.62f, 0.78f, 0.30f, 14f),
-            // white with grey salt grains
-            new SummonCoatProfile("salt-mephit", SummonCoatPattern.Spots, 0.96f, 0.95f, 0.90f,
-                0.68f, 0.68f, 0.64f, 0.98f, 0.98f, 0.96f, 30f),
-            // light grey with white wisps, darker underside
-            new SummonCoatProfile("steam-mephit", SummonCoatPattern.Stripes, 0.76f, 0.78f, 0.82f,
-                0.97f, 0.98f, 1.00f, 0.62f, 0.64f, 0.68f, 6f)
+        internal static readonly SummonVisualTintProfile[] MephitVisualTints = {
+            // warm sand glow against the air mephit's white
+            new SummonVisualTintProfile("dust-mephit", 1f, 1f, 1f, 2.4f, 1.7f, 0.7f),
+            // icy cyan-white, brighter than the water mephit
+            new SummonVisualTintProfile("ice-mephit", 1f, 1f, 1f, 1.6f, 2.8f, 4.0f),
+            // deep ember red, darker and redder than the fire mephit's orange
+            new SummonVisualTintProfile("magma-mephit", 1f, 1f, 1f, 3.2f, 0.55f, 0.1f),
+            // slime green
+            new SummonVisualTintProfile("ooze-mephit", 1f, 1f, 1f, 0.6f, 2.8f, 0.4f),
+            // crystalline bright white
+            new SummonVisualTintProfile("salt-mephit", 1f, 1f, 1f, 3.0f, 3.0f, 2.9f),
+            // pale grey-white vapour
+            new SummonVisualTintProfile("steam-mephit", 1f, 1f, 1f, 2.0f, 2.0f, 2.1f)
         };
 
-        internal static SummonCoatProfile MephitCoat(string key)
-        { return MephitCoats.Single(value => value.Key == key); }
+        internal static SummonVisualTintProfile MephitVisualTint(string key)
+        { return MephitVisualTints.Single(value => value.Key == key); }
 
         internal static IReadOnlyList<string> NativeElementalKeys
         { get { return Array.AsReadOnly(ElementalKeys); } }
@@ -424,12 +422,12 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (MephitCoats.Length != 6 ||
-                !MephitCoats.Select(value => value.Key).SequenceEqual(
+            if (MephitVisualTints.Length != 6 ||
+                !MephitVisualTints.Select(value => value.Key).SequenceEqual(
                     MephitVariants.Select(value => value.Key)) ||
-                MephitCoats.Any(value => !value.IsBounded))
+                MephitVisualTints.Any(value => !value.IsBounded || !value.HasRim))
                 throw new InvalidOperationException(
-                    "Sprint 5 mephit coat profile changed.");
+                    "Sprint 5 mephit visual profile changed.");
             if (MephitVariants.Length != 6 || MephitVariants.Select(value => value.Key)
                     .Distinct(StringComparer.Ordinal).Count() != 6 ||
                 MephitVariants.Any(value => !MephitKeys.Contains(value.DonorKey)) ||
