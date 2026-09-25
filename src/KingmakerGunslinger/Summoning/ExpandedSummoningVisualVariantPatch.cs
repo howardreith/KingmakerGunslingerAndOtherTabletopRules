@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using Harmony12;
 using Kingmaker.View;
+using Kingmaker.Visual.MaterialEffects.RimLighting;
 using UnityEngine;
 
 namespace KingmakerGunslinger.Summoning
@@ -336,6 +337,57 @@ namespace KingmakerGunslinger.Summoning
             }
         }
 
+        /// <summary>
+        /// The rim light on the mephit rigs is a looping rim animation: a
+        /// RimLightingAnimationSetup on the view registers its own settings
+        /// object with the material controller, which rewrites _RimColor
+        /// every frame from the settings' colour gradient and intensity
+        /// curve (times IntensityScale). The variant's rim colour goes into
+        /// that per-view object: the gradient's colour keys become the
+        /// variant colour (alpha keys and times kept) and IntensityScale is
+        /// set so the intensity curve's peak lands on the variant's
+        /// brightness - the pulse stays, in the variant's colour. Nothing
+        /// shared is touched: the settings object belongs to this view's
+        /// component instance.
+        /// </summary>
+        private static int RecolourRimAnimations(UnitEntityView view, Color rim)
+        {
+            float peakTarget = Mathf.Max(rim.r, Mathf.Max(rim.g, rim.b));
+            if (peakTarget <= 0f) return 0;
+            var normalized = new Color(rim.r / peakTarget, rim.g / peakTarget,
+                rim.b / peakTarget, 1f);
+            int recoloured = 0;
+            foreach (RimLightingAnimationSetup setup in
+                view.GetComponentsInChildren<RimLightingAnimationSetup>(true))
+            {
+                RimLightingAnimationSettings settings = setup == null ? null : setup.Settings;
+                if (settings == null) continue;
+                Gradient source = settings.ColorOverLifetime;
+                GradientColorKey[] colorKeys = source == null || source.colorKeys == null ||
+                    source.colorKeys.Length == 0
+                    ? new[] { new GradientColorKey(normalized, 0f), new GradientColorKey(normalized, 1f) }
+                    : source.colorKeys.Select(key => new GradientColorKey(normalized, key.time))
+                        .ToArray();
+                GradientAlphaKey[] alphaKeys = source == null || source.alphaKeys == null ||
+                    source.alphaKeys.Length == 0
+                    ? new[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(1f, 1f) }
+                    : source.alphaKeys;
+                var gradient = new Gradient();
+                gradient.SetKeys(colorKeys, alphaKeys);
+                if (source != null) gradient.mode = source.mode;
+                settings.ColorOverLifetime = gradient;
+                float peakCurve = 1f;
+                AnimationCurve intensity = settings.IntensityOverLifetime;
+                if (intensity != null && intensity.keys != null && intensity.keys.Length != 0)
+                    peakCurve = intensity.keys.Max(key => key.value);
+                if (peakCurve <= 0f) peakCurve = 1f;
+                settings.IntensityScale = peakTarget / peakCurve;
+                settings.CurrentColor = normalized;
+                recoloured++;
+            }
+            return recoloured;
+        }
+
         internal static string Apply(UnitEntityView view, SummonVisualVariant variant)
         {
             Renderer[] renderers = view.GetComponentsInChildren<Renderer>(true)
@@ -413,9 +465,14 @@ namespace KingmakerGunslinger.Summoning
             // clones: the Pteranodon's treatment, shared.
             string controller = ExpandedSummoningPteranodonViewPatch
                 .ReinitializeMaterialController(view);
+            // The rim light on these rigs is driven every frame by the
+            // controller's looping rim animation (round 12); the variant's
+            // colour goes into that per-view animation too.
+            int rimAnimations = variant.Rim.HasValue
+                ? RecolourRimAnimations(view, variant.Rim.Value) : 0;
             Material driven = renderers[0].sharedMaterial;
             return "variant:applied;key=" + variant.Key + ";materials=" + tinted +
-                ";slot=" + slotUsed + ";rim=" + glowing +
+                ";slot=" + slotUsed + ";rim=" + glowing + ";rimAnimations=" + rimAnimations +
                 (variant.Coat != null ? ";coat=" + coated + ";" + coatOutcome : "") +
                 ";controller=" + controller + ";driven=" + (driven == null ? "<none>" :
                     driven.name.Replace(';', ',').Replace('|', '/'));
