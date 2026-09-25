@@ -1278,7 +1278,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "(radius=" + cylinder.Radius.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) +
                     ",height=" + cylinder.Height.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) +
                     ",centre=" + Vec(cylinder.Center) + ")") + ";onUnit=" + view.OnUnit +
-                ";paused=" + Game.Instance.IsPaused + ";mode=" + Game.Instance.CurrentMode);
+                ";paused=" + Game.Instance.IsPaused + ";mode=" + Game.Instance.CurrentMode +
+                ";awakeTotal=" + (Game.Instance.State == null || Game.Instance.State.AwakeUnits == null ? -1 :
+                    Game.Instance.State.AwakeUnits.Count) + ";loading=" +
+                Kingmaker.EntitySystem.Persistence.LoadingProcess.Instance.IsLoadingInProcess + "/" +
+                Kingmaker.EntitySystem.Persistence.LoadingProcess.Instance.IsLoadingScreenActive +
+                ";gameTime=" + Game.Instance.TimeController.GameTime.TotalSeconds.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) +
+                ";frame=" + Time.frameCount);
             // What the game's own grid query returns for the shape's bounds.
             try
             {
@@ -1317,6 +1323,65 @@ namespace KingmakerGunslinger.RuntimeTesting
                     DescribeExpandedSummoningGridEntry(unit) + ",dead=" +
                     unit.Descriptor.State.IsDead + ",corpulence=" + corpulence.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) +
                     ",contains=" + contains + ",losObstacle=" + los + ",untargetable=" + untargetable + "]");
+            }
+            return string.Join(";", parts.ToArray());
+        }
+
+        /// <summary>
+        /// Why each unit inside the wall did or did not receive the shelter
+        /// state: the state on the unit, the buffs the area itself sourced,
+        /// the game's own ally relation between the mephit and the unit
+        /// (factions, groups), the area buff component's condition evaluated
+        /// exactly as the component evaluates it, and - for a unit still
+        /// without the state - whether the game accepts the state from the
+        /// area's context at all.
+        /// </summary>
+        private static string DescribeExpandedSummoningShelter(AreaEffectEntityData area,
+            BlueprintBuff state, UnitEntityData mephit, IEnumerable<KeyValuePair<string, UnitEntityData>> units)
+        {
+            if (area == null) return "area=<none>";
+            var parts = new List<string>();
+            var component = area.Blueprint == null || area.Blueprint.ComponentsArray == null ? null :
+                area.Blueprint.ComponentsArray.OfType<
+                    Kingmaker.UnitLogic.Abilities.Components.AreaEffects.AbilityAreaEffectBuff>().FirstOrDefault();
+            parts.Add("component=" + (component != null) + ";componentBuffIsState=" +
+                (component != null && ReferenceEquals(component.Buff, state)) + ";areaCaster=" +
+                (area.Context == null || area.Context.MaybeCaster == null ? "<none>" :
+                    Sanitize(area.Context.MaybeCaster.Blueprint.name)) + ";mephitPlayerFaction=" +
+                (mephit != null && mephit.IsPlayerFaction));
+            foreach (KeyValuePair<string, UnitEntityData> pair in units)
+            {
+                UnitEntityData unit = pair.Value;
+                if (unit == null) { parts.Add(pair.Key + "=<null>"); continue; }
+                string sourced = string.Join("+", unit.Descriptor.Buffs.RawFacts.OfType<Buff>().Where(value =>
+                    value.SourceAreaEffectId == area.UniqueId).Select(value => value.Blueprint == null ? "?" :
+                        Sanitize(value.Blueprint.name)).ToArray());
+                string check;
+                try
+                {
+                    if (component == null || area.Context == null) check = "n/a";
+                    else
+                        using (area.Context.GetDataScope(new TargetWrapper(unit)))
+                            check = component.Condition == null ? "no-condition" :
+                                component.Condition.Check(area.Blueprint).ToString();
+                }
+                catch (Exception exception) { check = "exception:" + exception.GetType().Name + ":" + Sanitize(exception.Message); }
+                string accepts = "n/a";
+                if (!unit.Descriptor.HasFact(state) && area.Context != null)
+                {
+                    try
+                    {
+                        Buff probe = unit.Descriptor.AddBuff(state, area.Context, null);
+                        accepts = (probe != null).ToString();
+                        if (probe != null) unit.Descriptor.Buffs.RemoveFact(probe);
+                    }
+                    catch (Exception exception) { accepts = "exception:" + exception.GetType().Name + ":" + Sanitize(exception.Message); }
+                }
+                parts.Add(pair.Key + "[hasState=" + unit.Descriptor.HasFact(state) + ",sourced=" + (sourced.Length == 0 ? "-" : sourced) +
+                    ",allyOfMephit=" + (mephit != null && mephit.IsAlly(unit)) + ",playerFaction=" + unit.IsPlayerFaction +
+                    ",faction=" + (unit.Faction == null ? "<none>" : Sanitize(unit.Faction.name)) + ",sameGroup=" +
+                    (mephit != null && ReferenceEquals(unit.Group, mephit.Group)) + ",conditionCheck=" + check +
+                    ",gameAcceptsState=" + accepts + "]");
             }
             return string.Join(";", parts.ToArray());
         }
@@ -1411,6 +1476,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 new KeyValuePair<string, UnitEntityData>("wolf", wolf),
                 new KeyValuePair<string, UnitEntityData>("mephit", dust),
                 new KeyValuePair<string, UnitEntityData>("hostile", hostile) }, out inside);
+            string shelterDetail = DescribeExpandedSummoningShelter(wall, windWallState, dust, new[] {
+                new KeyValuePair<string, UnitEntityData>("caster", caster),
+                new KeyValuePair<string, UnitEntityData>("wolf", wolf),
+                new KeyValuePair<string, UnitEntityData>("mephit", dust),
+                new KeyValuePair<string, UnitEntityData>("hostile", hostile) });
             bool sheltered = wall != null && caster.Descriptor.HasFact(windWallState) &&
                 wolf.Descriptor.HasFact(windWallState) && dust.Descriptor.HasFact(windWallState) &&
                 !hostile.Descriptor.HasFact(windWallState);
@@ -1459,7 +1529,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 !wolf.Descriptor.HasFact(windWallState);
             string detail = "windWall:area=" + (wall != null) + ";inside=" + inside + ";sheltered=" +
                 sheltered + ";bow[" + bow + "];thrown[" + thrown + "];melee[" + melee + "];" + ray +
-                ";outcomes=" + Sanitize(wallOutcomes) + ";ended=" + wallEnded + ";" + settled;
+                ";outcomes=" + Sanitize(wallOutcomes) + ";ended=" + wallEnded + ";shelter[" + shelterDetail +
+                "];" + settled;
             bool ok = sheltered && bowMiss && !bowHit && !thrownMiss &&
                 thrownChance == ExpandedSummoningSpecialProfiles.WindWallOtherRangedMissChance &&
                 !meleeMiss && meleeChance == 0 && !rayMiss && rayChance == 0 && wallEnded;
@@ -2188,6 +2259,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private readonly List<RuntimeTestAssertion> _visualLifecycleCases =
             new List<RuntimeTestAssertion>();
         private bool _visualLifecycleFailed;
+        private int _visualLifecycleCastAttempt;
 
         /// <summary>
         /// A view's material identity: every renderer's material and shader
@@ -2307,12 +2379,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 ExpandedSummoningCorrectionFixture fixture = _visualLifecycleFixture;
+                if (_visualLifecyclePhase == 7)
+                {
+                    // A cast that produced no unit is tried again after a few
+                    // frames (the game spawns a summon on its own schedule
+                    // around the caster); the record keeps every attempt.
+                    if (_visualLifecycleWait++ < 5) return;
+                    _visualLifecyclePhase = 1;
+                    return;
+                }
                 if (_visualLifecyclePhase == 1)
                 {
                     // Cast the set, check every attach, dispose, then wait for the views to go.
-                    _visualLifecycleCycle++;
+                    if (_visualLifecycleCastAttempt == 0) _visualLifecycleCycle++;
+                    _visualLifecycleCastAttempt++;
                     var outcomes = new List<string>();
                     var units = new List<UnitEntityData>();
+                    bool retry = false;
                     foreach (SummonVariantSpec variant in new[] {
                         ExpandedSummoningOwnTierVariant("dust-mephit", SummonMultiplicity.One),
                         ExpandedSummoningOwnTierVariant("steam-mephit", SummonMultiplicity.OneD3),
@@ -2328,10 +2411,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                         }
                         catch (Exception exception)
                         {
-                            throw new InvalidOperationException("Cast of " + variant.StableKey + " failed: " +
-                                exception.Message + " (captured=" + string.Join(",", ExpandedSummoningRuleCapture.ToArray()
-                                    .Select(value => value.Blueprint == null ? "?" : value.Blueprint.name).ToArray()) +
-                                "; execution=" + _expandedSummoningLastAbilityExecution + ")", exception);
+                            string failure = "Cast of " + variant.StableKey + " failed: " + exception.Message +
+                                " (execution=" + _expandedSummoningLastAbilityExecution + ")";
+                            if (_visualLifecycleCastAttempt < 3)
+                            {
+                                _visualLifecycleSteps.Add("cycle" + _visualLifecycleCycle + ":castAttempt" +
+                                    _visualLifecycleCastAttempt + "=" + Sanitize(failure) + ";retry");
+                                foreach (UnitEntityData unit in units.ToArray())
+                                {
+                                    CleanupExpandedSummoningUnit(unit);
+                                    fixture.Created.Remove(unit);
+                                }
+                                Game.Instance.EntityDestroyer.Tick();
+                                retry = true;
+                                break;
+                            }
+                            throw new InvalidOperationException(failure + " after " + _visualLifecycleCastAttempt +
+                                " attempts", exception);
                         }
                         fixture.Created.AddRange(spawned);
                         units.AddRange(spawned);
@@ -2344,6 +2440,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ExpandedSummoningVisualVariantPatch.DescribeOwnership(unit.View) + "}");
                         }
                     }
+                    if (retry)
+                    {
+                        _visualLifecycleWait = 0;
+                        _visualLifecyclePhase = 7;
+                        return;
+                    }
+                    if (_visualLifecycleCastAttempt > 1)
+                        _visualLifecycleSteps.Add("cycle" + _visualLifecycleCycle + ":castSucceededOnAttempt=" +
+                            _visualLifecycleCastAttempt);
+                    _visualLifecycleCastAttempt = 0;
                     int materials, textures, live;
                     string counts = ExpandedSummoningVisualVariantPatch.CountOwnedObjects(
                         out materials, out textures, out live);
