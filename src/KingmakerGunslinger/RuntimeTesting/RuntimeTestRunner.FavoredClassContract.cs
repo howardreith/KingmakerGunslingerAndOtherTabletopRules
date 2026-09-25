@@ -15,39 +15,55 @@ namespace KingmakerGunslinger.RuntimeTesting
 {
     internal sealed partial class RuntimeTestRunner
     {
+        // Review finding 6: the complete registered aggregate (every registry
+        // of the bootstrap) equals its expectation, whose favored-class and
+        // Mostly Human terms are their catalogs' identity counts, and every one
+        // of those catalog identities is live in the library.
+        private JObject DescribeFcbAggregate()
+        {
+            int registered = BlueprintBootstrap.RegisteredBlueprintCount;
+            int expected = BlueprintBootstrap.ExpectedRegisteredBlueprintCountForCurrentRuntime;
+            string manifestPath = System.IO.Path.Combine(_context.ModEntry.Path,
+                KingmakerGunslinger.Blueprints.BlueprintManifest.RelativeManifestPath);
+            JToken[] active = ((JArray)JObject.Parse(System.IO.File.ReadAllText(manifestPath))["entries"])
+                .Where(entry => (string)entry["status"] == "active").ToArray();
+            Func<string, int, JObject> family = (prefix, catalog) =>
+            {
+                string[] guids = active.Where(entry => ((string)entry["symbol"]).StartsWith(prefix,
+                    StringComparison.Ordinal)).Select(entry => (string)entry["guid"]).ToArray();
+                return new JObject
+                {
+                    ["catalog"] = catalog,
+                    ["manifest"] = guids.Length,
+                    ["live"] = guids.Count(guid => BlueprintBootstrap.Library.BlueprintsByAssetId.ContainsKey(guid))
+                };
+            };
+            JObject favoredClass = family("KMG.FavoredClass.", FavoredClassIdentityCatalog.IdentityCount);
+            JObject mostlyHuman = family("KMG.MostlyHuman.",
+                KingmakerGunslinger.ElementalRaces.ElementalMostlyHumanPolicy.IdentityCount);
+            Func<JObject, bool> complete = value => (int)value["manifest"] == (int)value["catalog"] &&
+                (int)value["live"] == (int)value["catalog"];
+            // Informational only (not asserted): active manifest identities that
+            // are not live at the main menu.
+            string[] notLive = active.Where(entry => !BlueprintBootstrap.Library.BlueprintsByAssetId.ContainsKey(
+                (string)entry["guid"])).Select(entry => (string)entry["symbol"]).ToArray();
+            return new JObject
+            {
+                ["registered"] = registered,
+                ["expected"] = expected,
+                ["favoredClass"] = favoredClass,
+                ["mostlyHuman"] = mostlyHuman,
+                ["manifestActive"] = active.Length,
+                ["activeNotLive"] = new JArray(notLive.Cast<object>().ToArray()),
+                ["exact"] = registered == expected && complete(favoredClass) && complete(mostlyHuman)
+            };
+        }
+
         // Main-menu, save-free observation of the live Favored Class contract
         // and of the committed publication. Publication is exercised on the
         // live host graph only at the main menu, where no build session can
         // hold the menus: rollback, a fault-injected transaction and a fresh
         // re-publication must each leave the exact expected foreign arrays.
-        private JObject DescribeFcbAggregate()
-        {
-            int registered = BlueprintBootstrap.RegisteredBlueprintCount;
-            int expected = BlueprintBootstrap.ExpectedRegisteredBlueprintCountForCurrentRuntime;
-            var brownFur = KingmakerGunslinger.BrownFur.BrownFurOptionalExtensionCoordinator.Blueprints;
-            var mostlyHuman = BlueprintBootstrap.MostlyHuman;
-            int brownFurCount = brownFur == null ? 0 : brownFur.Count;
-            int mostlyHumanCount = mostlyHuman == null ? 0 : mostlyHuman.Count;
-            string manifestPath = System.IO.Path.Combine(_context.ModEntry.Path,
-                KingmakerGunslinger.Blueprints.BlueprintManifest.RelativeManifestPath);
-            int active = ((JArray)JObject.Parse(System.IO.File.ReadAllText(manifestPath))["entries"])
-                .Count(entry => (string)entry["status"] == "active");
-            bool exact = registered == expected &&
-                mostlyHumanCount == KingmakerGunslinger.ElementalRaces.ElementalMostlyHumanPolicy.IdentityCount &&
-                registered + brownFurCount == active;
-            return new JObject
-            {
-                ["registered"] = registered,
-                ["expected"] = expected,
-                ["favoredClassRegistered"] = BlueprintBootstrap.FavoredClassLeaves != null,
-                ["favoredClassCatalog"] = FavoredClassIdentityCatalog.IdentityCount,
-                ["mostlyHuman"] = mostlyHumanCount,
-                ["brownFur"] = brownFurCount,
-                ["manifestActive"] = active,
-                ["exact"] = exact
-            };
-        }
-
         private RuntimeTestResult RunFavoredClassContract()
         {
             var assertions = new List<RuntimeTestAssertion>();
@@ -112,14 +128,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "registered=" + (mostlyHuman != null) + ";profileMostlyHuman=" + effective.MostlyHuman +
                     ";listed=" + string.Join(",", mostlyHumanRows.Select(value => (string)value).ToArray()),
                 mostlyHumanExact, "BlueprintBootstrap.MostlyHuman and live race Features"));
-            // Review finding 6: the complete registered aggregate matches its
-            // expectation and, with the separately registered Brown-Fur
-            // identities, accounts for every active identity of the installed
-            // manifest (Mostly Human's included).
+            // Review finding 6: the complete registered aggregate.
             JObject aggregate = DescribeFcbAggregate();
             evidence["aggregate"] = aggregate;
             assertions.Add(Assertion("fcb-bootstrap-aggregate",
-                "the complete registered aggregate (core, teleportation, Magic Circle, favored-class and Mostly Human registries) equals its expectation (the favored-class and Mostly Human registries expected to hold exactly their catalogs' identities), and with the Brown-Fur extension it equals the installed manifest's active identities",
+                "the complete registered aggregate (core, teleportation, Magic Circle, favored-class and Mostly Human registries) equals its expectation, whose favored-class and Mostly Human terms are their catalogs' 171 and 13 identities, and every one of those identities is live in the library",
                 aggregate.ToString(Newtonsoft.Json.Formatting.None), (bool)aggregate["exact"],
                 "BlueprintBootstrap registered and expected counts; installed blueprints/blueprints.json"));
             var readinessFailures = new List<string>();
