@@ -245,6 +245,7 @@
     <Compile Include="FavoredClass\FavoredClassRuntime.cs" />
     <Compile Include="FavoredClass\FavoredClassHostActivation.cs" />
     <Compile Include="FavoredClass\FavoredClassPetSync.cs" />
+    <Compile Include="FavoredClass\FavoredClassPerformanceWidening.cs" />
     <Compile Include="FavoredClass\FavoredClassPrerequisites.cs" />
     <Compile Include="FavoredClass\Mechanics\FavoredClassGritResourceBonus.cs" />
     <Compile Include="FavoredClass\FavoredClassMechanicsPolicy.cs" />
