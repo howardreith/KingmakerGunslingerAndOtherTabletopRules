@@ -240,14 +240,23 @@ namespace KingmakerGunslinger.Summoning
     /// combat maneuver check is an attack roll on the tabletop, where a
     /// natural 1 always fails and a natural 20 always succeeds. The chosen
     /// roll beats the defender's numbers and nothing else: a failed
-    /// concealment check or an auto-failure flag denies the maneuver whatever
-    /// the die showed.
+    /// concealment check, an auto-failure flag or a target immune to combat
+    /// maneuvers denies the maneuver whatever the die showed.
     /// </summary>
     internal static class SummonManeuverChecks
     {
         internal static bool Succeeded(RuleCombatManeuver maneuver)
         {
             if (maneuver == null || maneuver.AutoFailure) return false;
+            // The engine declines to decide a maneuver against a target
+            // immune to combat maneuvers: its rule returns before it
+            // calculates CMB and CMD, so the verdict it leaves behind reads
+            // 0 + 0 >= 0 and reports a success. A summon must not take hold
+            // of an immune foe on that.
+            if (maneuver.Target == null || maneuver.Target.Descriptor == null ||
+                maneuver.Target.Descriptor.State.HasCondition(
+                    UnitCondition.ImmuneToCombatManeuvers))
+                return false;
             if (maneuver.ConcealmentCheck != null && !maneuver.ConcealmentCheck.Success)
                 return false;
             return ExpandedSummoningSpecialProfiles.IsSummonManeuverSuccess(

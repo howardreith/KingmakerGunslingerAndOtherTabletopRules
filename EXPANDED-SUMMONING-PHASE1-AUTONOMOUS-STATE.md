@@ -221,8 +221,13 @@ Decisions (recorded here rather than asked):
   grab and the maintain apply the attack-roll natural 1 (always fails) and
   natural 20 (always succeeds) over the engine's combat-maneuver rule,
   which decides by the sum alone (`IsSummonManeuverSuccess`, pinned), while
-  a failed concealment check or an auto-failure flag still denies the
-  maneuver whatever the die showed (`SummonManeuverChecks.Succeeded`). The
+  a failed concealment check, an auto-failure flag or a target immune to
+  combat maneuvers still denies the maneuver whatever the die showed
+  (`SummonManeuverChecks.Succeeded`; the engine's rule returns before it
+  computes CMB and CMD against an immune target, so the verdict it leaves
+  behind reads 0 + 0 >= 0 as a success, and a summon must not take hold on
+  that - the rules scenario refuses the grab while the foe is immune and
+  takes it once the immunity ends). The
   same component - this is the link ownership the charter asks for -
   releases exactly the target the summon's own initiator part names
   whenever the hold buff turns off, for
