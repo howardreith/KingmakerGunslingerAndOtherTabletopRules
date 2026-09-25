@@ -18291,8 +18291,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 spider.Translocate(hostile.Position, null);
                 bool targetable = new AbilityData(spider.Descriptor.Abilities.GetAbility(web))
                     .CanTarget(new TargetWrapper(hostile));
-                // The web is a ranged touch attack (correction order): a
-                // natural 20 hits whatever the touch AC; there is no save.
+                // The web is a ranged touch attack (correction order). This
+                // synchronous helper cannot fly the projectile inside the
+                // frame and applies the effect to the named target itself, so
+                // the webbing here proves the targeting, the use spent and the
+                // immunity; the attack roll against a high and a low touch AC
+                // is proven live by the correction rules scenario.
                 UnityEngine.Random.InitState(FindNativeD20Seed(20));
                 ExecuteExpandedSummoningRuntimeAbility(spider, web, 1,
                     new TargetWrapper(hostile), false, hostile);
