@@ -52,7 +52,7 @@ Read this first; it is the record the journal and the report summarise.
 | 4 | Shambling Mound -/VI, Giant Flytrap -/VII, Purple Worm -/VIII | grab/constrict/swallow on shared grapple infrastructure |
 | 5 | Dust, Ice, Magma, Ooze, Salt, Steam Mephits IV/IV | distinct visuals, icons, breath, SLAs; no Lightning Mephit |
 | 6 | Monitor Lizard, Grizzly Bear, Dire Bear (grab); Giant Spider (ranged Web, tremorsense, bounded climb only if feasible); Pixie (sleep arrow, dance) | signature mechanics repair |
-| 7 | Leopard, Lion (+visual), Dire Lion, Dire Tiger/Smilodon | pounce / grab / charge-only rake |
+| 7 | Leopard, Lion (+visual), Dire Lion, Dire Tiger/Smilodon | pounce / grab by limb and target identity / rake gate (charge, or the foe held since the round began) |
 | 8 | Tiger -/IV new; Cheetah authentic visual + bounded per-summon sprint | cat family completion |
 
 Placements propagate to the 1d3 / 1d4+1 tiers. No feats, aquatic, mounts,
@@ -86,9 +86,13 @@ Decisions (recorded here rather than asked):
   Kingmaker's own dedicated summoned units `PonySummoned`
   `3f95557fc806db741b500a5735990841` and `HorseSummoned`
   `5bb9579fdb2b26b48bb10d61c81cfdfb` as donors; the profiles are the tabletop
-  stat blocks (Appendix A) on the animal class, both hooves as primary limbs
-  exactly as those native summons carry them. Endurance and Run are omitted
-  (no proven final-live feature identity).
+  stat blocks (Appendix A) on the animal class. Both hooves are secondary
+  attacks (Docile; corrected under the 2026-09-25 order): the native summons
+  carry them as primary limbs, so a docile-hoof carrier on each unit sets the
+  game's own secondary flag on both hoof entities at spawn and after a load,
+  and the game itself applies -5 to hit and half the Strength modifier to
+  damage. Endurance and Run are omitted (no proven final-live feature
+  identity).
 - Owlbear (SNA IV) is the first magical-beast chassis: `CR8_OwlbearStandard`
   `d6e0acbdbdb56114898922063ae2cba0` as a sanitized body donor, 5 HD on
   `MagicalBeastClass` `b9e97f47cb86f2d45a0784a096ff8037`, natural armor +5
@@ -102,13 +106,20 @@ Decisions (recorded here rather than asked):
   (`e73864391ccf0894997928443a29d755`), the native `StandardGreataxe`
   `6efea466862f014469cec6c3f2b85cb7` in hand (the game scales it to the
   Large 3d6), Ferocity, Power Attack and Cleave
-  (`d809b6c4ff2aaff4fa70d712a70f7d7b`). Flash of Insight is bounded: once
-  per summoning, as a swift action, the next attack roll in the round is an
-  automatic hit and critical threat (`CyclopsFlashOfInsightComponent` on a
-  one-round state that the native `RemoveBuffOnAttack` ends after one
-  attack); the confirmation roll stays ordinary; a small brain spends it
-  when the cyclops fights and the player may spend it from the action bar.
-  Hide armor and the heavy crossbow are omitted (no equipment beyond the
+  (`d809b6c4ff2aaff4fa70d712a70f7d7b`). Flash of Insight is bounded to one
+  use per summoning and to the next attack roll (corrected under the
+  2026-09-25 order): a swift action arms a one-round state that the native
+  `RemoveBuffOnAttack` ends after one attack; that attack's own d20 result
+  is chosen as a natural 20 through the game's pre-rolled-result seam
+  (`RuleRollD20.m_PreRolledResult`, `CyclopsFlashOfInsightComponent`), so
+  the hit and the threat follow from the roll, the critical confirmation is
+  rolled normally, no automatic-hit flag is set and no other roll is
+  touched; a small brain spends it when the cyclops fights and the player
+  may spend it from the action bar. The +4 hide armor is carried as an
+  exact armor-descriptor fact (`Cyclops.HideArmor`; no item, loot or
+  inventory) over the stat block's +7 natural armor, so the armor class is
+  the tabletop 19 (10 + 4 armor - 1 Dexterity + 7 natural - 1 size); the
+  heavy crossbow is omitted (the summon carries no equipment beyond the
   weapon); Alertness, Great Cleave and Improved Bull Rush are omitted (no
   proven identity).
 - Frost Giant under Summon Nature's Ally VII, VIII and IX reuses the retained
@@ -180,7 +191,8 @@ The game's grapple and swallow runtime was read from its own assembly
   before disposal, on its destruction too.
 - `RuleCombatManeuver` rolls the caster's CMB (with `ManeuverBonus`
   components) against the target's CMD; `RuleAttackRoll`'s automatic-hit
-  path never rolls the d20 (the Flash of Insight correction below).
+  path never rolls the d20, which is why the corrected Flash of Insight uses
+  the pre-rolled-result seam instead (the Sprint 3 record).
 - Native Shambling Mound grab: slam hit -> grapple maneuver -> caster buff
   `ShamblingMoundGrappledCantAttack` (CanNotAttack), target buff
   `ShamblingMoundGrappledBuff` (Entangled, CantMove, 4d6+Strength per
@@ -235,8 +247,13 @@ Decisions (recorded here rather than asked):
   60-foot `Blindsight` (`236ec7f226d3d784884f066aa4be1570`) standing in for
   tremorsense, trip immunity, Cleave, Great Fortitude, Improved Initiative,
   Power Attack, Skill Focus (Stealth), Weapon Focus (bite); bite grab on the
-  shared lifecycle, one held target at a time (the native initiator part
-  holds one). Engulf and Vital Strike are omitted.
+  shared lifecycle with one link per bite, four at most (corrected under the
+  2026-09-25 order: the links are held-state buffs on the targets that name
+  the flytrap and their establishing bite; a bite that holds cannot take a
+  second foe), and engulf as the swallow-whole sequence for a Medium or
+  smaller foe held since the round began (the project `GiantFlytrap.Engulfed`
+  state: 1d8+7 bludgeoning and 1d8 acid each round inside). Vital Strike is
+  omitted.
 - Purple Worm (SNA VIII): the native dedicated `PurpleWormSummoned`
   `bf2216f48b3f4d24c9c502007649340d` as donor, rebuilt on the natural
   builder as a 16 HD magical beast, Gargantuan, 35/6/25/1/8/8, speed 20,
@@ -245,24 +262,28 @@ Decisions (recorded here rather than asked):
   `PurpleWormSting` (`287cd06241fdaf8408410b226f744093`), the exact native
   `PurpleWormPoisonFeature` (`728446b9d0bf47144a1b621169299c2a`,
   Constitution-scaled sting poison), trip immunity, Critical Focus,
-  Improved Critical (bite), Power Attack, Weapon Focus (bite); bite grab
-  swallows whole, with the swallowed state cloned component-for-component
-  from the native `PurpleWormSwallowed` (`368d1df7c1d0267459a584bf23ccadc8`).
+  Improved Critical (bite), Power Attack, Weapon Focus (bite); the bite grab
+  holds (corrected under the 2026-09-25 order), and on a later turn a
+  successful maintain check - used as though attempting to pin - swallows a
+  foe up to one size smaller (Gargantuan swallows Huge) whole and deals the
+  bite's damage, with the swallowed state cloned component-for-component
+  from the native `PurpleWormSwallowed` (`368d1df7c1d0267459a584bf23ccadc8`);
+  a failed check releases and a same-size foe is held but never swallowed.
   The native summoned worm's burrowing kit and brain are not carried
   (bounded combat adaptation, charter Sprint 4); Awesome Blow, Improved
   Bull Rush, Staggering Critical and Weapon Focus (sting) are omitted.
 - Owlbear: the claw grab deferred in Sprint 3 now rides the shared
   lifecycle (`Owlbear.CombatTraits` with the native `ClawLarge1d6`).
-- Flash of Insight correction (round-2 mechanical evidence
-  `20260924T2023157894340Z-disposable-expanded-summoning`): with AutoHit
-  set, `RuleAttackRoll` takes its automatic-hit path, never rolls the d20 and
-  decides the critical only from AutoCriticalThreat and
-  AutoCriticalConfirmation together, so the armed natural 1 hit with no
-  threat. A threat with an ordinary confirmation cannot be expressed on that
-  path; the bounded Flash of Insight is now an automatic critical hit (hit,
-  threat and confirmation together), still once per summoning and for one
-  attack. Every description, the profile deviation, the manifest note, the
-  static record, the runner's check and the Sprint 3 test say so.
+- Flash of Insight history: round-2 mechanical evidence
+  (`20260924T2023157894340Z-disposable-expanded-summoning`) showed that with
+  AutoHit set `RuleAttackRoll` takes its automatic-hit path, never rolls the
+  d20 and decides the critical only from AutoCriticalThreat and
+  AutoCriticalConfirmation together, and the sprint answered with an
+  automatic critical hit. The 2026-09-25 correction order rejected that
+  adaptation; the corrected Flash of Insight chooses the attack's own d20
+  as a natural 20 on the pre-rolled-result seam (the Sprint 3 record above
+  and the correction record below), and every description, profile
+  deviation, manifest note, static record, runner check and test says so.
 - Creature review instrument correction: its first run
   (`20260924T2013288609426Z`) failed inside the shared spawn helper with
   "observed 0". The request writer had dropped the `creatures` parameter
@@ -339,8 +360,12 @@ Decisions (recorded here rather than asked):
   Steam blur and boiling rain. Dehydrate and boiling rain are project
   bursts centred on the mephit (20 feet, enemies only by targeting,
   Fortitude half, 2d8 and 2d6 fire). Wind wall, chill metal, pyrotechnics
-  and magma form have no native spell or form and are omitted. Spell-list
-  memberships are not carried on the clones.
+  and magma form have no native spell or form; under the 2026-09-25
+  correction order they are project-owned bounded abilities (the correction
+  record below), the Ooze Mephit's stinking cloud spawns a project ally-safe
+  clone of the native cloud area, and the Salt Mephit's glitterdust selects
+  enemies of the caster only. Spell-list memberships are not carried on the
+  clones.
 - Brains: a project brain per variant with one cast action per ability (the
   breath on a four-round cooldown so the mephit also claws; the one-use
   abilities without), the shape the Cyclops and Pixie actions already have.
@@ -442,14 +467,18 @@ Decisions (recorded here rather than asked):
   own `Tremorsense` feature is a kineticist talent with class
   prerequisites), plus the native `SpiderWebImmunity`
   (`3051e7002c803fc47a11bcfa381b9fbd`) so the spider ignores webs. Web is
-  a bounded ranged extraordinary ability on the special builder: 50 feet
-  (custom range), one foe, Reflex DC 10 + half hit dice + Constitution
-  (the native spider poison's scaling), the native `WebGrappled` state
-  (`a719abac0ea0ce346b401060754cc1c0`: entangled, cannot move, per-round
-  break-free) for at most ten rounds, two uses per summoning on a named
-  resource (the tabletop four per day exceeds a summoning), one cast action
-  on its own brain, the spider's summon icon. Climb is omitted: no
-  save-safe seam exists for a summon's climb movement.
+  a bounded ranged extraordinary ability on the special builder (corrected
+  under the 2026-09-25 order): a 50-foot (custom range) ranged touch attack
+  through the game's own projectile delivery with the ray weapon its rays
+  use (`f6ef95b1f7bb52b408a5b345a330ffe8`), against one foe up to one size
+  larger than the spider (a target checker), no saving throw; a hit applies
+  the native `WebGrappled` state (`a719abac0ea0ce346b401060754cc1c0`:
+  entangled, cannot move, its own per-round break-free check against the
+  Constitution-based DC 10 + half hit dice + Constitution) for at most ten
+  rounds; two uses per summoning on a named resource (the tabletop four per
+  day exceeds a summoning), one cast action on its own brain, the spider's
+  summon icon. Climb is omitted: no save-safe seam exists for a summon's
+  climb movement.
 - Pixie: verified, not changed. Sixteen sleep arrows and one irresistible
   dance per summoning on named resources, one cast action on its brain (no
   cooldown loop to spin on); the mechanical scenario proves the dance and a
@@ -460,8 +489,10 @@ Decisions (recorded here rather than asked):
   web pack is checked part for part
   (`expanded-summoning-sprint-six-spider-web`); the mechanical scenario
   grabs with the Monitor Lizard (bite, hold, release, holder free) and webs
-  the hostile with the Giant Spider (Reflex -100, forced natural 1: webbed,
-  one use spent, the spider immune); the persistence fixture gains the
+  the hostile with the Giant Spider (the cast targets it, one use spent,
+  the spider immune; the ranged touch attack itself, its miss against a high
+  touch AC and its hit against a low one, is proven live in the correction
+  rules scenario); the persistence fixture gains the
   Grizzly Bear and the Giant Spider (twelve units).
 - Ledger: 8 appended, active identities (entries 2194-2201); foundation
   identities 1429; no new units, placements, icons or package files.
@@ -487,21 +518,30 @@ AddMechanicsFeature) already sits on the cats' profiles.
 
 Decisions (recorded here rather than asked):
 
-- One truthful pounce/grab/rake system: Pounce stays the native feature (a
-  charge becomes a full attack). Grab is the shared summon grapple
-  lifecycle with each cat's own claw (leopard `800092a2...`, lion
-  `118fdd03...`, dire lion `c76f72a8...`, smilodon `8afc4774...`). Rake is
-  `SummonRakeComponent` on the same combat-traits buff: the cat's rake
-  claws are the last two slots of its body's additional limbs (the two
-  extra claws for the leopard and lion, the secondary pair for the dire
-  lion and smilodon), and an attack roll with a rake claw that is neither a
-  charge nor made while the cat holds a grappled foe becomes a silent
-  automatic miss - no d20, no damage, no combat-log line. Ordinary full
-  attacks, attacks of opportunity and replayed commands therefore never
-  show a rake; a charge and a held foe do. The decision function
-  `ShouldRakeApply(isRakeWeapon, isCharge, isHolding)` is pinned by the
-  domain suite; the placements, sizes, reach, templates and limb sets are
-  unchanged.
+- One truthful pounce/grab/rake system (as corrected under the 2026-09-25
+  order): Pounce stays the native feature (a charge becomes a full attack).
+  Grab is the shared summon grapple lifecycle keyed on attack identity - the
+  slot the attacking weapon entity sits in, never the weapon blueprint the
+  foreclaws and rake claws share: the leopard, the lion and the dire lion
+  grab with the bite only; the tiger and the smilodon with the bite and the
+  first two additional limbs (the foreclaws); a rake slot never grabs; and
+  every grab respects the universal size rule (a foe of the holder's size
+  or smaller). Rake is `SummonRakeComponent` on the same combat-traits buff
+  plus the attack-sequencing seam (`ExpandedSummoningRakeSequencePatch` on
+  `UnitAttack.CreateFullAttack`): the rake claws are the last two slots of
+  the body's additional limbs, they strike only on a charge (pounce) or
+  against the exact foe the cat has held since its round began (the held
+  state has ticked at least once: the grappled state carries a no-op round
+  component so the game advances its round number every six seconds of the
+  hold, and the reading counts a tick due in the same frame so the holder's
+  own check sees the round the foe is entering), the sequencing seam drops
+  them from any other full attack so no hidden extra swing is made, and the roll-level
+  gate makes any stray rake roll a silent automatic miss. A single attack
+  (an attack of opportunity) never carries a rake slot. The decision
+  functions `IsGrabLimb`, `IsRakeSlot`, `IsHeldSinceRoundStart` and
+  `ShouldRakeApply(isRakeWeapon, isCharge, heldTargetSinceRoundStart)` are
+  pinned by the domain suite; the placements, sizes, reach, templates and
+  limb sets are unchanged.
 - Lion visual: a tawny tint on the leopard rig through the Sprint 5 visual
   variant (no mane geometry: the charter marks mane polish optional for the
   dire lion and asks only for a lion visual; a texture-free tint is the
@@ -538,8 +578,9 @@ Decisions (recorded here rather than asked):
   Large 6 HD animal 23/15/17/2/12/6, speed 40, natural armor +3, the native
   large 2d6 bite and four project 1d8 claws (`KMG.Summoning.Natural.Claw1d8`,
   the native 1d6 claw animation with 1d8 dice), Pounce, Improved
-  Initiative, Skill Focus (Perception), Weapon Focus (claw); claw grab on
-  the shared lifecycle and the Sprint 7 charge-only rake gate; a 1.25
+  Initiative, Skill Focus (Perception), Weapon Focus (claw); grab with the
+  bite and both foreclaws by limb identity on the shared lifecycle and the
+  rake gate (a charge, or the foe held since the round began); a 1.25
   view-only scale so it reads Large. It is a pounce/rake premium option, not
   a relabeled Lion: different tier, size, dice, chassis and coat.
 - Tiger and Cheetah visuals: a procedural coat generated at view attach in
@@ -579,7 +620,13 @@ Decisions (recorded here rather than asked):
 Runtime qualification (guarded, live installation restored after each
 batch): recorded below as it completes.
 
-## Runtime qualification record - Sprints 3-8 on one build
+## Runtime qualification record - Sprints 3-8 on the reviewed build (superseded)
+
+This record is the reviewed head's (`2569a8eb`, runtime commit `30a13445`).
+The 2026-09-25 correction order found that build's cats, grab sizes,
+Flytrap, mephit roles, Cyclops, Web, hooves and visual resources short of
+the charter; it is kept as history and superseded by the correction record
+below, which is the qualification of the corrected build.
 
 Every scenario below ran through the guarded launcher on commit `30a13445`
 (`Build-Local.ps1` PASS: 1799 domain tests, 0 failures; package
@@ -612,6 +659,87 @@ persistence trio, the party-camera creature review of every new or changed
 creature, and the two compatibility transactions). HumanReview:
 NOT_PERFORMED_NONBLOCKING. OwnerDelegationGranted.
 
+## Correction order record - 2026-09-25 (PR #23 correction and requalification)
+
+Order: "Expanded Summoning Phase 1 - PR #23 correction and requalification
+order" on the reviewed head `2569a8eb`. The prior internal-acceptance labels
+waived nothing; every finding below is implemented exactly or would have
+been marked BLOCKED. Nothing was restarted, reset, force-pushed, merged,
+released, deployed permanently, or begun on Sprint 9.
+
+Findings and what was done:
+
+1. Visual resource ownership: `SummonVisualOwnership` per view records the
+   replaced renderers with their original shared materials, every private
+   material clone and every coat texture; `ExpandedSummoningVisualTeardownPatch`
+   (Harmony prefix on `UnitEntityView.OnDestroy`) releases it with the view;
+   an attach that fails part way, or ends short of applied, is rolled back
+   in the same frame (renderers put back, clones, textures and the material
+   controller's instances of the clones destroyed at once); `ReleaseAll`
+   is the module-wide sweep. The visual lifecycle scenario measures the
+   variant-prefixed material and texture counts back to baseline after each
+   of three cast-and-dispose cycles (dust mephit, a 1d3 steam mephit cast,
+   tiger, cheetah, lion), after a fault-injected attach, after the sweep on
+   a live lion, and at the end, with the native air mephit's materials and
+   rim colour and the Pteranodon's visual unchanged.
+2. Cats: grab by limb identity (bite only for the leopard, lion and dire
+   lion; bite and both foreclaws for the tiger and smilodon; a rake slot
+   never grabs) and by target identity; rake only on a charge or against
+   the exact foe held since the cat's round began; the sequencing seam drops
+   rake slots from any other full attack; a single attack never carries one.
+3. Grab audit: the universal size rule (holder's size or smaller unless the
+   stat block says otherwise), +4 on grapple checks from grab and +5 more to
+   maintain (the grab bonus alone with nothing held), maintain damage as the
+   establishing limb's own weapon damage; the Purple Worm holds on the grab
+   and swallows a foe up to one size smaller on a later turn's successful
+   check (natural 1 releases, natural 20 swallows, a same-size foe is never
+   swallowed, a Colossal foe is refused); the Giant Flytrap holds one foe
+   per bite on distinct held-state links, engulfs Medium or smaller, and
+   releases on escape, the last link's end, disposal, the swallow lifecycle
+   and the area-leave sweep; the game's pathfinder still routes a free unit
+   past four held units.
+4. Mephit roles: project Wind Wall (Dust; a 15-foot shelter for six rounds for
+   every creature inside that is not the mephit's enemy: arrows and bolts
+   aimed at a sheltered creature miss, other
+   ranged weapons roll the tabletop 30% miss chance, melee and rays pass),
+   Chill Metal (Ice; close range, only a foe wearing or carrying metal, Will
+   negates, the seven-round table none/1d4/2d4/2d4/2d4/1d4/none in full
+   against metal armor and minimal 1 or 2 against a metal weapon only),
+   Pyrotechnics (Magma; every enemy within 20 feet blinded 1d4+1 rounds,
+   Will negates) and Magma Form (Magma; five rounds of DR 20/magic, speed 10
+   and no attacks with breath and abilities intact; the brain waits three
+   rounds before pooling). Every DC is Charisma-based at caster level 6.
+   The stinking cloud runs on a project clone of the native cloud area whose
+   every action list and area buff is gated on enemy-of-caster; glitterdust
+   selects enemies only. The live cases put the hostile, the party caster,
+   an allied summon and the mephit inside the one cloud placement: only the
+   hostile is nauseated.
+5. Cyclops: +4 hide armor as an armor-descriptor fact (no item, loot or
+   inventory) over +7 natural armor at armor class 19, with the live
+   breakdown; Flash of Insight chooses the attack's own d20 as a natural 20
+   with an ordinary confirmation, one use, a save rolled while armed is
+   untouched, and the persistence trio proves the single armed use across
+   the save and the reload (still spent after the reload, armed once, the
+   next attack a 20, the one after it a 1 that misses).
+6. Web: a ranged touch attack through the projectile delivery with the ray
+   weapon, 50 feet, a foe up to one size larger, no save, the native
+   web-grappled state with its Constitution-based break-free, the native
+   immunity, two uses; live against a high-touch-AC/hopeless-Reflex foe
+   (missed) and a low-touch-AC/superb-Reflex foe (webbed).
+7. Pony and Horse: both hooves secondary through the game's own secondary
+   flag (-5 to hit, half Strength to damage, both listed in the full
+   attack), with the live breakdown against the same hooves as primary.
+8. Documents and claims: every "omitted", "charge-only", "automatic
+   critical", "Reflex-save web", "one held target" and "primary hooves"
+   claim was replaced by the corrected mechanics in the state file, the
+   report, the fidelity matrix, the roster notes, the static record, the
+   changelog, the program state, the profiles and the tests; adaptations
+   are recorded as adaptations, never as rules facts.
+9. Requalification: the full gate list on one candidate commit (below).
+10. PR #23 stays a draft and unmerged.
+
+{{CORRECTION_EVIDENCE}}
+
 ## Verified facts carried from Phase 0 (do not re-derive)
 
 - Catalog pins at the start of Phase 1: 67 creatures, SM 66 / 361, SNA 57 /
@@ -641,15 +769,4 @@ NOT_PERFORMED_NONBLOCKING. OwnerDelegationGranted.
 
 ## Next executable action
 
-Sprints 3-8 guarded runtime qualification on one build: structural
-inventory and deep donor audit, visual contracts (80 creatures), mechanical
-casting (Flash of Insight as an automatic critical, the grapple lifecycle
-live case with the corrected holder checks, the mephit breath and burst
-case, the lizard grab, the spider web, the leopard's rake cadence, the
-cheetah's sprint and the tiger's rake), the player-path matrix, the
-persistence trio (fourteen-unit fixture), the creature review of the
-fourteen new creatures beside the four native mephits, the four repaired
-creatures and the five cats, and the two compatibility transactions, each
-batch alone on the machine; internal review of the review renders (tint
-legibility per element, the lion's coat, the tiger's stripes, the cheetah's
-spots); then record the evidence, update the PR body and close Phase 1.
+{{NEXT_ACTION}}

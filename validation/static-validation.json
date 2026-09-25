@@ -1901,9 +1901,11 @@
         "SNA VIII 1d3",
         "SNA IX 1d4+1"
       ],
-      "flashOfInsight": "bounded: once per summoning, swift action, next attack is an automatic critical hit (Kingmaker's automatic-hit path grants threat and confirmation together)",
+      "flashOfInsight": "bounded and corrected (2026-09-25): once per summoning, swift action, the next attack's own d20 is chosen as a natural 20 through the game's pre-rolled-result seam; the hit and the threat follow from the roll, the critical confirmation is rolled normally, no automatic-hit flag is set, no other roll is touched, and the persistence trio proves the single armed use across the save and the reload",
       "icons": "Blender 4.5 procedural renders (assets-source/original-icons/expanded-summoning/tools/render_creature_icon.py)",
-      "internalAcceptance": "INTERNAL-ACCEPTED"
+      "internalAcceptance": "INTERNAL-ACCEPTED",
+      "cyclopsArmorClass": "19: +4 hide armor as an armor-descriptor fact (no item, loot or inventory), -1 Dexterity, +7 natural armor, -1 size; live breakdown in the correction rules scenario",
+      "docileHooves": "Pony and Horse hooves are secondary through the game's own secondary flag set by a docile-hoof carrier on both hoof entities (-5 to hit, half Strength to damage, both in the full attack); corrected 2026-09-25"
     },
     "sprint4": {
       "creatures": [
@@ -1911,9 +1913,10 @@
         "giant-flytrap",
         "purple-worm"
       ],
-      "grappleLifecycle": "shared: grab through the game's grapple check with +4; native hold parts carry the project hold and grappled buffs; maintain each round at +5 dealing natural-attack damage (mound adds constrict 2d6+7) or release; the hold buff's end releases its own target; the worm swallows through the native swallow-whole part and its traits' end spits out; party members held or swallowed by a KMG summon are released on area leave and repaired on area load",
+      "grappleLifecycle": "shared and corrected (2026-09-25): grab by limb identity against a foe of the holder's size or smaller through the game's grapple check with +4; native hold parts (single link) or held-state buffs naming the holder (multi-link) carry the project buffs; maintain each round at +5 more dealing the establishing limb's own weapon damage (mound adds constrict 2d6+7) or release; a swallower that began the round holding uses a successful check as though pinning and swallows a foe up to one size smaller (the worm) or engulfs Medium or smaller (the flytrap); the hold's end releases its own target(s); the swallow lifecycle spits out on traits end; party members held or swallowed by a KMG summon are released on area leave and repaired on area load",
       "icons": "Blender 4.5 procedural renders (assets-source/original-icons/expanded-summoning/tools/render_creature_icon.py)",
-      "internalAcceptance": "INTERNAL-ACCEPTED"
+      "internalAcceptance": "INTERNAL-ACCEPTED",
+      "giantFlytrap": "one grab link per bite, four at most, each held state naming the flytrap and its establishing bite; a bite that holds cannot take a second foe; engulf of a Medium or smaller foe held since the round began (project Engulfed state, 1d8+7 bludgeoning plus 1d8 acid per round); release on escape, the last link's end, disposal, the swallow lifecycle and the area-leave sweep; the pathfinder still routes a free unit past four held units"
     },
     "sprint5": {
       "creatures": [
@@ -1926,10 +1929,11 @@
       ],
       "donors": "nearest native summoned mephit body: air (dust, salt), water (ice, ooze, steam), fire (magma); no Lightning Mephit",
       "breath": "the donor's 15-foot cone rebuilt with the tabletop energy and dice (dust/salt slashing 1d4, ice cold 1d4, magma fire 1d8, ooze acid 1d4, steam fire 1d4), an enemies-only effect, and the sickening rider on a failed Reflex save (ooze: Reflex negates both); Constitution-based DC as the native breaths",
-      "spellLikeAbilities": "one use per summoning each: dust blur; ice magic missile; ooze acid arrow and stinking cloud; salt glitterdust and dehydrate (project 20-foot enemies-only burst 2d8, Fortitude half); steam blur and boiling rain (project 20-foot enemies-only burst 2d6 fire, Fortitude half); wind wall, chill metal, pyrotechnics and magma form omitted (no native spell)",
+      "spellLikeAbilities": "one use per summoning each: dust blur and project wind wall (15-foot shelter for 6 rounds for every creature inside that is not the mephit's enemy: arrows and bolts miss, other ranged weapons 30% miss chance); ice magic missile and project chill metal (close range, a metal-bearing foe only, Will negates, the seven-round cold table in full for metal armor and minimal for a metal weapon); magma project pyrotechnics (enemies within 20 feet blinded 1d4+1 rounds, Will negates) and project magma form (5 rounds: DR 20/magic, speed 10, no attacks, abilities intact); ooze acid arrow and stinking cloud on a project ally-safe clone of the native cloud area (enemies of the caster only); salt glitterdust (enemies only) and dehydrate (project 20-foot enemies-only burst 2d8, Fortitude half); steam blur and boiling rain (project 20-foot enemies-only burst 2d6 fire, Fortitude half); every project DC Charisma-based at caster level 6 (corrected 2026-09-25)",
       "visuals": "a private clone of the shared rig's materials per view carrying the variant's rim light colour (the HDR glow through which the translucent mephit body is seen: sand, icy cyan-white, ember red, slime green, crystalline white, grey-white vapour), applied on view attach, handed to the game's material controller and never written to the donor's shared material; no emission glow (the shader has no emission slot); a tint cannot show on the mephit rig because the controller rewrites its tint slot",
       "icons": "Blender 4.5 procedural renders from one parametrized mephit builder in six elemental dressings",
-      "internalAcceptance": "INTERNAL-ACCEPTED"
+      "internalAcceptance": "INTERNAL-ACCEPTED",
+      "visualResourceOwnership": "every material clone, coat texture and material-controller instance is owned per view (SummonVisualOwnership) and destroyed with the view (UnitEntityView.OnDestroy prefix), on a failed or incomplete attach (same-frame rollback) and on the module-wide sweep; the visual lifecycle scenario counts the variant-prefixed objects back to baseline after each cycle (corrected 2026-09-25)"
     },
     "sprint6": {
       "creatures": [
@@ -1940,7 +1944,7 @@
         "pixie"
       ],
       "grabCarriers": "Monitor Lizard bite, Grizzly Bear claws, Dire Bear claws on the shared summon grapple lifecycle (SummonGrabComponent carriers); the mound-specific native grab graph stays unused",
-      "giantSpider": "native 60-foot blindsight for tremorsense; native web immunity; bounded ranged Web: 50 feet, one foe, Reflex DC 10 + half hit dice + Constitution, native web-grappled state for at most ten rounds (its own per-round break-free ends it sooner), two uses per summoning, its own brain; climb omitted (no save-safe seam)",
+      "giantSpider": "native 60-foot blindsight for tremorsense; native web immunity; bounded ranged Web corrected 2026-09-25: a 50-foot ranged touch attack through the game's projectile delivery with its ray weapon, one foe up to one size larger, no saving throw, the native web-grappled state for at most ten rounds with its own Constitution-based per-round break-free (DC 10 + half hit dice + Constitution), two uses per summoning, its own brain; climb omitted (no save-safe seam)",
       "pixie": "verified, not changed: sixteen sleep arrows and one irresistible dance per summoning on named resources, one cast action, live mechanical evidence each run",
       "internalAcceptance": "INTERNAL-ACCEPTED"
     },
@@ -1951,8 +1955,8 @@
         "dire-lion",
         "dire-tiger"
       ],
-      "grab": "claw grab on the shared summon grapple lifecycle (SummonGrabComponent carriers with each cat's own claw)",
-      "rake": "charge-only: SummonRakeComponent on the traits buff turns any attack roll with a rake claw (the last two additional limbs) that is neither a charge nor made while holding a grappled foe into a silent automatic miss - no roll, no damage, no combat-log line; Pounce stays native",
+      "grab": "grab by limb and target identity on the shared summon grapple lifecycle (SummonGrabComponent): the leopard, lion and dire lion with the bite only, the smilodon with the bite and both foreclaws; a rake slot never grabs; a foe of the cat's size or smaller (corrected 2026-09-25)",
+      "rake": "rake gate (corrected 2026-09-25): the rake claws (the last two additional limbs) strike only on a charge or against the exact foe the cat has held since its round began (the held state has ticked at least once); ExpandedSummoningRakeSequencePatch on UnitAttack.CreateFullAttack drops them from any other full attack so no hidden extra swing is made, and SummonRakeComponent turns any stray rake roll into a silent automatic miss; a single attack never carries a rake slot; Pounce stays native",
       "lionVisual": "a tawny tint on the leopard rig through the shared visual variant; no mane geometry",
       "unchanged": "sizes, reach, templates, tiers and the extra claw limbs",
       "internalAcceptance": "INTERNAL-ACCEPTED"
@@ -1962,7 +1966,7 @@
         "tiger",
         "cheetah"
       ],
-      "tiger": "new Summon Nature's Ally IV unit on the leopard rig: Large 6 HD animal 23/15/17/2/12/6, 40 ft, NA +3, 2d6 bite, two 1d8 claws and two 1d8 rake claws (project Claw1d8 weapon), Pounce; claw grab on the shared lifecycle; charge-only rake; 1.25 view scale; procedural striped coat generated in the rig's own texture space at attach",
+      "tiger": "new Summon Nature's Ally IV unit on the leopard rig: Large 6 HD animal 23/15/17/2/12/6, 40 ft, NA +3, 2d6 bite, two 1d8 claws and two 1d8 rake claws (project Claw1d8 weapon), Pounce; grab with the bite and both foreclaws by limb identity on the shared lifecycle; rake gate (corrected 2026-09-25); 1.25 view scale; procedural striped coat generated in the rig's own texture space at attach",
       "cheetah": "procedural spotted coat on the leopard rig at a 0.92 view scale; bounded sprint: swift extraordinary ability, one use per summoning, +30 feet enhancement speed for one round under the game's own cap, cast action and brain; trip bite unchanged",
       "coats": "SummonCoatRasterizer rasterizes the skinned mesh's triangles into a private 512x512 texture from vertex positions (stripes across the long axis, spots over the surface, a paler belly); the game's textures are never read",
       "internalAcceptance": "INTERNAL-ACCEPTED"
@@ -1979,6 +1983,16 @@
       "20260925T0549365901069Z-working-save-expanded-summoning-verify-absent",
       "20260925T0555240446760Z-working-save-expanded-summoning-creature-review",
       "20260925T0607591341645Z-working-save-expanded-summoning-creature-review"
-    ]
+    ],
+    "correctionOrder": {
+      "order": "Expanded Summoning Phase 1 - PR #23 correction and requalification order (2026-09-25) on the reviewed head 2569a8eb",
+      "status": "{{STATIC_STATUS}}",
+      "candidateCommit": "{{COMMIT}}",
+      "packageSha256": "{{PACKAGE_SHA}}",
+      "dllSha256": "{{DLL_SHA}}",
+      "runtimeEvidence": [],
+      "humanReview": "NOT_PERFORMED_NONBLOCKING",
+      "prState": "draft PR #23, unmerged"
+    }
   }
 }
