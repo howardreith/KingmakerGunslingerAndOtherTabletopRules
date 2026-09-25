@@ -199,10 +199,10 @@ namespace KingmakerGunslinger.FavoredClass
                 "It applies to your current eidolon, stacks with its own natural armor and never changes your own AC. The Summoner is provided by Call of the Wild."),
             new FavoredClassLeafFamily(FavoredClassCatalog.EffectSelectedBloodlinePower,
                 "Sorcerer.BloodlinePower", "Bloodline Power", null,
-                "Only the chosen power's own level-based values change: Elemental Ray's damage bonus, and Elemental Blast's damage dice, save DC and caster level checks. You must already have the power. It never grants a power early, and never changes other powers, spells, spell slots, other caster level checks, BAB, saves or Elemental Resistance's 9th-level step. The efreeti and djinni bloodlines do not exist in this game."),
+                "Only the chosen power's own level-based values change: Elemental Ray's damage bonus, and Elemental Blast's damage dice, save DC, caster level checks and the extra daily uses it gains at 17th and 20th level. You must already have the power. It never grants a power early, and never changes other powers, spells, spell slots, other caster level checks, BAB, saves or Elemental Resistance's 9th-level step. The efreeti and djinni bloodlines do not exist in this game."),
             new FavoredClassLeafFamily(FavoredClassCatalog.EffectSelectedRevelation,
                 "Oracle.Revelation", "Revelation", null,
-                "Every value the chosen revelation computes from oracle level (damage dice, durations, bonuses and their level steps, uses per day, save DCs and caster level) uses your oracle level plus the earned steps. You must already have the revelation. Abilities it grants at later levels are still gained at your actual oracle level, and it never satisfies a level prerequisite or changes other revelations, spells, spell slots, BAB or saves. The Oracle is provided by Call of the Wild."),
+                "Every value the chosen revelation computes from oracle level (damage dice, durations, bonuses and their level steps, uses per day, save DCs and caster level) uses your oracle level plus the earned steps, and so do the abilities and forms the revelation itself gains at later oracle levels. You must already have the revelation. It never grants another revelation or revelation choice, never satisfies a level prerequisite, and never changes other revelations, spells, spell slots, BAB or saves. The Oracle is provided by Call of the Wild."),
             new FavoredClassLeafFamily(FavoredClassCatalog.EffectPerformanceRange,
                 "Bard.PerformanceRange", "Performance Range", null,
                 "It widens only your own area of the chosen performance, from the next time you start it and when a save is loaded; that area's ring and your performance's description show your range, and its other rules are unchanged. You must already have the performance. One-shot, personal and masterpiece performances, Discordant Voice, Storm Call (its text and area disagree) and Mockery (it names a single target) are not choices."),
@@ -229,8 +229,7 @@ namespace KingmakerGunslinger.FavoredClass
         private static readonly FavoredClassTargetSpec[] RevelationTargets = FavoredClassRevelationManifest.All
             .Select(target => new FavoredClassTargetSpec(target.Key, RevelationTitle(target),
                 "+1 effective oracle level for " + RevelationTitle(target), null,
-                target.HeldBack == null ? null :
-                    "Still at your actual oracle level: " + target.HeldBack + "."))
+                target.Published ? null : "Not offered: " + target.ExcludedReason + "."))
             .ToArray();
 
         /// <summary>

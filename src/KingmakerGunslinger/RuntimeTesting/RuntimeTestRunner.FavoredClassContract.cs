@@ -267,13 +267,15 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         // A counter is published when any of its scheduled routes is enabled by
-        // the profile, unless the O01 manifest excludes its performance target.
+        // the profile, unless the O01 or I06/S04 manifest excludes its target.
         private static bool FcbOfferedByProfile(FavoredClassLeafPair pair)
         {
             return pair.Effect.Rows.Select(FavoredClassCatalog.Row).Any(row => row.IsScheduled &&
                     FavoredClassRuntime.Profile.Offers(row.Profile)) &&
                 !(pair.Effect.Id == FavoredClassCatalog.EffectPerformanceRange && pair.TargetKey != null &&
-                    !FavoredClassPerformanceManifest.For(pair.TargetKey).Published);
+                    !FavoredClassPerformanceManifest.For(pair.TargetKey).Published) &&
+                !(pair.Effect.Id == FavoredClassCatalog.EffectSelectedRevelation && pair.TargetKey != null &&
+                    !FavoredClassRevelationManifest.For(pair.TargetKey).Published);
         }
 
         private static JObject DescribeFcbBinary(FavoredClassHostHandles host, IList<string> failures)

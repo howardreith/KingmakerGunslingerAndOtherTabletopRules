@@ -261,6 +261,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("favored-class.host-activation-transitions", FavoredClassHostGateTests.ActivationStartsInactiveAndFollowsTransitions),
             Case("favored-class.host-mechanics-truth-table", FavoredClassHostGateTests.MechanicsNeedIntegrationAndPublishedHost),
             Case("favored-class.host-commit-activates", FavoredClassHostGateTests.OnlyACommitActivatesTheHost),
+            Case("favored-class.gate-decision-native", FavoredClassThresholdTests.GateDecisionMatchesTheNativeComponent),
+            Case("favored-class.power-use-thresholds", FavoredClassThresholdTests.PowerUseThresholdsFollowTheEffectiveLevel),
             Case("mostly-human.policy-inventory", ElementalMostlyHumanTests.PolicyInventoryIsExact),
             Case("mostly-human.manifest-block", ElementalMostlyHumanTests.ManifestBlockFollowsTheFavoredClassBlock),
             Case("mostly-human.factory-keeps-race-identity", ElementalMostlyHumanTests.FactoryAddsAHeritageChoiceWithoutTouchingRaceIdentity),

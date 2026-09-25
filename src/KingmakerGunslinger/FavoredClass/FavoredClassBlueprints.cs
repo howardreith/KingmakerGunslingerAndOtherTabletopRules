@@ -9,6 +9,7 @@ using Kingmaker.RuleSystem.Rules;
 using Kingmaker.Blueprints.Classes.Selection;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.UnitLogic.Mechanics.Properties;
 using KingmakerGunslinger.Blueprints;
@@ -758,6 +759,11 @@ namespace KingmakerGunslinger.FavoredClass
                         power.Key, "native bloodline power " + targetKey);
                     level.Ability = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(library,
                         power.Value, "native bloodline power ability " + targetKey);
+                    // The power's own use thresholds follow the effective level
+                    // of the owner's eligible bloodline progression.
+                    var logic = level.Ability.GetComponent<AbilityResourceLogic>();
+                    level.UsesResource = logic == null ? null : logic.RequiredResource;
+                    level.BloodlineGuids = FavoredClassLeafCatalog.EligibleBloodlines(targetKey).Value;
                     return level;
                 }
                 case FavoredClassCatalog.EffectSelectedRevelation:

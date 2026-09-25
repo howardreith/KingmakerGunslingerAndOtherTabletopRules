@@ -1,6 +1,7 @@
 using System.Linq;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Facts;
+using Kingmaker.Designers.Mechanics.Facts;
 using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem.Rules.Abilities;
 using Kingmaker.UnitLogic;
@@ -15,10 +16,11 @@ namespace KingmakerGunslinger.FavoredClass.Mechanics
     /// the Wild's Oracle engine computes for the revelation's own abilities
     /// (so their save DCs and caster-level-based durations and dice follow),
     /// and the native maximum of its own resources at the effective level.
-    /// Its class-level ranks are raised by the rank hook. After a rank change
-    /// it refreshes the revelation's persistent feature contexts; spell slots,
-    /// other revelations, BAB and saves never change, and nothing is granted
-    /// early.
+    /// Its class-level ranks are raised by the rank hook and its own level
+    /// gates by the gate hook. After a rank change it refreshes the
+    /// revelation's persistent feature contexts and re-decides its gates;
+    /// spell slots, other revelations, revelation choices, BAB and saves never
+    /// change.
     /// </summary>
     public sealed class FavoredClassSelectedRevelationLevel : RuleInitiatorLogicComponent<RuleCalculateAbilityParams>,
         IResourceAmountBonusHandler, IUnitSubscriber
@@ -81,15 +83,27 @@ namespace KingmakerGunslinger.FavoredClass.Mechanics
             }
         }
 
-        /// <summary>Recalculates the owner's revelation features whose contexts hold a scaled rank.</summary>
+        /// <summary>
+        /// Recalculates the owner's revelation features whose contexts hold a
+        /// scaled rank, and re-decides the revelation's own level gates (the
+        /// native gate adds or removes its feature at the effective level).
+        /// </summary>
         internal void Refresh()
         {
             FavoredClassRevelationScope scope = FavoredClassRevelationScopes.ForKey(TargetKey);
-            if (scope == null || Owner == null || scope.RefreshFeatures.Count == 0)
+            if (scope == null || Owner == null ||
+                scope.RefreshFeatures.Count == 0 && scope.GateOwners.Count == 0)
                 return;
-            foreach (Feature feature in Owner.Progression.Features.Enumerable.ToArray())
-                if (feature != null && scope.RefreshFeatures.Contains(feature.Blueprint))
+            UnitDescriptor owner = Owner;
+            foreach (Feature feature in owner.Progression.Features.Enumerable.ToArray())
+            {
+                if (feature == null)
+                    continue;
+                if (scope.RefreshFeatures.Contains(feature.Blueprint))
                     feature.Recalculate();
+                if (scope.GateOwners.Contains(feature.Blueprint))
+                    feature.CallComponents<AddFeatureOnClassLevel>(gate => gate.HandleUnitGainLevel(owner, null));
+            }
         }
     }
 }

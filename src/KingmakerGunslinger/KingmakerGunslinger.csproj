@@ -228,6 +228,7 @@
     <Compile Include="FavoredClass\FavoredClassRevelationScopes.cs" />
     <Compile Include="FavoredClass\Mechanics\FavoredClassSelectedRevelationLevel.cs" />
     <Compile Include="FavoredClass\Hooks\FavoredClassRevelationRankPatch.cs" />
+    <Compile Include="FavoredClass\Hooks\FavoredClassRevelationGatePatch.cs" />
     <Compile Include="FavoredClass\FavoredClassPerformanceManifest.cs" />
     <Compile Include="FavoredClass\FavoredClassIconPolicy.cs" />
     <Compile Include="FavoredClass\FavoredClassLeafIcons.cs" />

@@ -8,7 +8,7 @@ namespace KingmakerGunslinger.FavoredClass
     internal sealed class FavoredClassRevelationTarget
     {
         internal FavoredClassRevelationTarget(string key, string title, string mystery,
-            string[] featureGuids, string families, string heldBack, string[] extraRoots,
+            string[] featureGuids, string families, string excludedReason, string[] extraRoots,
             string[] excludedRanks)
         {
             Key = key;
@@ -16,7 +16,7 @@ namespace KingmakerGunslinger.FavoredClass
             Mystery = mystery;
             FeatureGuids = featureGuids;
             Families = families;
-            HeldBack = heldBack;
+            ExcludedReason = excludedReason;
             ExtraRoots = extraRoots ?? new string[0];
             ExcludedRanks = excludedRanks ?? new string[0];
         }
@@ -33,11 +33,19 @@ namespace KingmakerGunslinger.FavoredClass
         internal string Families { get; private set; }
 
         /// <summary>
-        /// Player-facing text for what stays at the actual oracle level: the
-        /// revelation's feature-granting level gates (or its possession BAB);
-        /// null when every level-based value of the revelation scales.
+        /// Why the target is registered but never published, or null for a
+        /// published target. A published target implements every
+        /// level-dependent effect of the revelation, including the abilities
+        /// and forms its own level gates grant (charter 8.10); a target with an
+        /// effect that cannot be implemented without breaking a charter rule
+        /// (the possession BAB) is withheld instead of published partially.
         /// </summary>
-        internal string HeldBack { get; private set; }
+        internal string ExcludedReason { get; private set; }
+
+        internal bool Published
+        {
+            get { return ExcludedReason == null; }
+        }
 
         /// <summary>
         /// Further blueprints that execute this revelation's own effect but
@@ -85,7 +93,7 @@ namespace KingmakerGunslinger.FavoredClass
                 null, null),
             new FavoredClassRevelationTarget("TimeFlicker", "Time Flicker", "Time",
                 new[] { "eca04928555a4341aeddc28de9047eb0" },
-                "B", "the displacement gained at 7th level",
+                "B", null,
                 null, null),
             new FavoredClassRevelationTarget("TimeHop", "Time Hop", "Time",
                 new[] { "081472d6cf334eadad43e4cd1109db3f" },
@@ -109,7 +117,7 @@ namespace KingmakerGunslinger.FavoredClass
                 null, null),
             new FavoredClassRevelationTarget("SpiritOfTheWarrior", "Spirit of the Warrior", "Ancestor",
                 new[] { "8a50489e8bb640eca8b0b0d5538d69ed" },
-                "B", "the base attack bonus while possessed",
+                "B", "its possession sets the base attack bonus from oracle level, which a favored-class counter must never raise",
                 null, new[] { "90fc3e05688f4b9dad36bc7c49221d74|StatBonus" }),
             new FavoredClassRevelationTarget("SpiritShield", "Spirit Shield", "Ancestor",
                 new[] { "c9309afa08da4b579b06d06ea8e144c6" },
@@ -137,7 +145,7 @@ namespace KingmakerGunslinger.FavoredClass
                 null, null),
             new FavoredClassRevelationTarget("FormOfFlame", "Form of Flame", "Flame",
                 new[] { "1b5d140f7771438f9f71579296624da7" },
-                "C", "the elemental body forms gained at 9th, 11th and 13th level",
+                "C", null,
                 null, null),
             new FavoredClassRevelationTarget("HeatAura", "Heat Aura", "Flame",
                 new[] { "2bf5045f727a4a1a9699ad74d3d65c79" },
@@ -145,7 +153,7 @@ namespace KingmakerGunslinger.FavoredClass
                 null, null),
             new FavoredClassRevelationTarget("TouchOfFlame", "Touch of Flame", "Flame",
                 new[] { "d0aa505baca24aa088baab3e8974dcd3" },
-                "A", "the flaming weapon gained at 11th level",
+                "A", null,
                 null, null),
             new FavoredClassRevelationTarget("Battlecry", "Battlecry", "Battle",
                 new[] { "65b3530731194d5c9f04750b856db9a7" },
@@ -213,7 +221,7 @@ namespace KingmakerGunslinger.FavoredClass
                 null, null),
             new FavoredClassRevelationTarget("Invisibility", "Invisibility", "Wind",
                 new[] { "fc829c930e0c4cadb95477a5434311bc" },
-                "B", "greater invisibility gained at 9th level",
+                "B", null,
                 null, null),
             new FavoredClassRevelationTarget("LightningBreath", "Lightning Breath", "Wind",
                 new[] { "13cf26e41a6e4e9b801462c9c1ba7207" },
@@ -225,7 +233,7 @@ namespace KingmakerGunslinger.FavoredClass
                 null, null),
             new FavoredClassRevelationTarget("TouchOfElectricity", "Touch of Electricity", "Wind",
                 new[] { "23656cf3addf4154af83f9191d15dfb4" },
-                "A", "the shock weapon gained at 11th level",
+                "A", null,
                 null, null),
             new FavoredClassRevelationTarget("PresenceOfDragons", "Presence of Dragons", "Dragon",
                 new[] { "d1620b3d94f94b1fa92608aff1d90660" },
@@ -249,7 +257,7 @@ namespace KingmakerGunslinger.FavoredClass
                     "510e96ee559e4b319119c4e7fba88c98",
                     "fef079fe621a4a64b4332f451e1a55ea"
                 },
-                "A,B,C", "the final breath weapon gained at 20th level",
+                "A,B,C", null,
                 null, null),
             new FavoredClassRevelationTarget("FormOfTheDragon", "Form of the Dragon", "Dragon",
                 new[]
@@ -265,7 +273,7 @@ namespace KingmakerGunslinger.FavoredClass
                     "90205cdc525e49f6bc1916131625ebde",
                     "5e0b1f10c63344be9f67c99e797518f8"
                 },
-                "A", "the forms gained at 15th and 19th level",
+                "A", null,
                 null, null),
             new FavoredClassRevelationTarget("Blizzard", "Blizzard", "Waves",
                 new[] { "cd6ab66c88e64a07afa268a22bbd3016" },
@@ -277,11 +285,11 @@ namespace KingmakerGunslinger.FavoredClass
                 null, null),
             new FavoredClassRevelationTarget("WaterForm", "Water Form", "Waves",
                 new[] { "63624232951d4f319e0c893ca43ad6ea" },
-                "C", "the elemental body forms gained at 9th, 11th and 13th level",
+                "C", null,
                 null, null),
             new FavoredClassRevelationTarget("WintryTouch", "Wintry Touch", "Waves",
                 new[] { "7009b228a4e54502ae746d6be5e67f78" },
-                "A", "the frost weapon gained at 11th level",
+                "A", null,
                 null, null),
             new FavoredClassRevelationTarget("PunitiveTransformation", "Punitive Transformation", "Waves",
                 new[] { "fcf3872a7dbb450c84d07efe233d58b3" },
@@ -297,11 +305,11 @@ namespace KingmakerGunslinger.FavoredClass
                 null, null),
             new FavoredClassRevelationTarget("FormOfTheBeast", "Form of the Beast", "Nature",
                 new[] { "9d9e811fc7c84f8f922ed0892d98122a" },
-                "C", "the forms gained at 9th, 11th and 13th level",
+                "C", null,
                 null, null),
             new FavoredClassRevelationTarget("GiftOfClawAndHorn", "Gift of Claw and Horn", "Nature",
                 new[] { "44cdc6ee8b2043d6b71198b0b75f3c2c" },
-                "A", "the second natural weapon gained at 11th level",
+                "A", null,
                 null, null),
             new FavoredClassRevelationTarget("ArmorOfBones", "Armor of Bones", "Bones",
                 new[] { "3fec5abe444240058c20369e2f5e3cb9" },
@@ -317,7 +325,7 @@ namespace KingmakerGunslinger.FavoredClass
                 null, null),
             new FavoredClassRevelationTarget("RaiseTheDead", "Raise the Dead", "Bones",
                 new[] { "b66c66feda9b4e0e8b9c783bc2572c08" },
-                "A tier", "the ability gained at 15th level",
+                "A tier", null,
                 null, null),
             new FavoredClassRevelationTarget("SoulSiphon", "Soul Siphon", "Bones",
                 new[] { "92bf48c30024462baf6a5ee9fd6eeb94" },
