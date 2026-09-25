@@ -28,6 +28,7 @@ using Kingmaker.Utility;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.FavoredClass;
+using KingmakerGunslinger.FavoredClass.Mechanics;
 using Newtonsoft.Json.Linq;
 
 namespace KingmakerGunslinger.RuntimeTesting
@@ -42,6 +43,76 @@ namespace KingmakerGunslinger.RuntimeTesting
         private const string FcbLongswordGuid = "6fd0a849531617844b195f452661b2cd";
         private const string FcbClawGuid = "118fdd03e569a66459ab01a20af6811a";
         private const int FcbBombProbeBase = 5;
+
+        /// <summary>
+        /// A native action whose own Intimidate check runs in the current
+        /// action context (the next action after a demoralize in one list).
+        /// </summary>
+        private sealed class FcbIntimidateCheckAction : GameAction
+        {
+            public override void RunAction()
+            {
+                var data = ElementsContext.GetData<MechanicsContext.Data>();
+                MechanicsContext context = data == null ? null : data.Context;
+                if (context != null && context.MaybeCaster != null)
+                    context.TriggerRule(new RuleSkillCheck(context.MaybeCaster, StatType.CheckIntimidate, 10));
+            }
+
+            public override string GetCaption()
+            {
+                return "KMG FCB Intimidate check";
+            }
+        }
+
+        /// <summary>
+        /// Review finding 5: a real native ActionList.Run of [Demoralize, an
+        /// Intimidate check in the same context], healthy, with a failure
+        /// injected inside the demoralize's open frame, and again healthy.
+        /// </summary>
+        private static JObject ObserveDemoralizeEnvelope(UnitEntityData rogue, UnitEntityData target,
+            BlueprintAbility persuasion, Demoralize demoralize, FavoredClassSkillCheckObserver observer)
+        {
+            var result = new JObject { ["installed"] = FavoredClassDemoralizeScope.EnvelopeInstalled };
+            var probe = UnityEngine.ScriptableObject.CreateInstance<FcbIntimidateCheckAction>();
+            var list = new ActionList { Actions = new GameAction[] { demoralize, probe } };
+            try
+            {
+                foreach (string pass in new[] { "healthy", "injected", "retry" })
+                {
+                    bool faulted = false;
+                    observer.Checks.Clear();
+                    if (pass == "injected")
+                        FavoredClassDemoralizeScope.FaultInjection = () =>
+                        {
+                            faulted = true;
+                            throw new InvalidOperationException("KMG injected failure inside a demoralize frame");
+                        };
+                    var context = new MechanicsContext(rogue, rogue.Descriptor, persuasion);
+                    try
+                    {
+                        using (context.GetDataScope(new TargetWrapper(target)))
+                            list.Run();
+                    }
+                    finally
+                    {
+                        FavoredClassDemoralizeScope.FaultInjection = null;
+                    }
+                    result[pass] = new JObject
+                    {
+                        ["faulted"] = faulted,
+                        ["checks"] = new JArray(observer.Checks.Where(value => ReferenceEquals(value.Item1, rogue))
+                            .Select(value => value.Item2)),
+                        ["depthAfter"] = FavoredClassDemoralizeScope.Depth
+                    };
+                }
+            }
+            finally
+            {
+                FavoredClassDemoralizeScope.FaultInjection = null;
+                UnityEngine.Object.Destroy(probe);
+            }
+            return result;
+        }
 
         /// <summary>Records every Intimidate skill check's final bonus.</summary>
         private sealed class FavoredClassSkillCheckObserver : IGlobalRulebookHandler<RuleSkillCheck>
@@ -128,9 +199,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Describe(evidence["progressions"], progressionFailures), progressionFailures.Count == 0,
                 "LevelUpController visits; RuleCalculateCMD; BlueprintAbilityResource.GetMaxAmount"));
             assertions.Add(Assertion("fcb-elemental-native-mechanics",
-                "bomb damage only on bomb damage (not buff follow-ups or other abilities), Intimidate only against fire creatures (I05) or when demoralizing (I07), unarmed confirmation only on unarmed strikes with the Critical Focus comparison, spell penetration only against aquatic/water creatures; two owners keep their own values",
+                "bomb damage only on bomb damage (not buff follow-ups or other abilities), Intimidate only against fire creatures (I05) or when demoralizing (I07; a native action list closes the demoralize's frame in a finally block, so a failure injected inside it never reaches the next check and a retry works), unarmed confirmation only on unarmed strikes with the Critical Focus comparison, spell penetration only against aquatic/water creatures; two owners keep their own values",
                 Describe(evidence["mechanics"], mechanicsFailures), mechanicsFailures.Count == 0,
-                "native RuleDealDamage, Demoralize action, RuleAttackRoll, RuleSpellResistanceCheck"));
+                "native RuleDealDamage, Demoralize action, ActionList.Run, RuleAttackRoll, RuleSpellResistanceCheck"));
             assertions.Add(Assertion("external-isolation", "unchanged party and global-unit snapshots",
                 "cleaned=" + cleaned, cleaned, "detached entity disposal and exact reference snapshots"));
             assertions.Add(Assertion("loaded-mod-version", _request.ExpectedModVersion,
@@ -449,9 +520,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 row["rogueDemoralizePlain"] = intimidate(rogue, target, true);
                 row["rogueOtherIntimidatePlain"] = intimidate(rogue, target, false);
                 row["controlDemoralizePlain"] = intimidate(control, target, true);
+                row["demoralizeEnvelope"] = ObserveDemoralizeEnvelope(rogue, target, persuasion, demoralize, observer);
             }
             finally
             {
+                FavoredClassDemoralizeScope.FaultInjection = null;
                 EventBus.Unsubscribe(observer);
             }
             int baseFire = (int)row["controlDemoralizeFire"];
@@ -466,6 +539,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                 failures.Add("the Rogue bonus did not apply to demoralize");
             if ((int)row["rogueOtherIntimidatePlain"] != basePlain)
                 failures.Add("the Rogue bonus reached an Intimidate check that is not a demoralize");
+            // Review finding 5: native action lists close a demoralize's frame
+            // in a finally block, even when the demoralize throws.
+            var envelope = (JObject)row["demoralizeEnvelope"];
+            int roguePlain = (int)row["rogueOtherIntimidatePlain"];
+            foreach (string pass in new[] { "healthy", "retry" })
+            {
+                var checks = (JArray)envelope[pass]["checks"];
+                if (checks.Count != 2 || (int)checks[0] - roguePlain != 2 || (int)checks[1] != roguePlain)
+                    failures.Add(pass + ": a native list did not give +2 to its demoralize and nothing to the next check");
+            }
+            var injectedChecks = (JArray)envelope["injected"]["checks"];
+            if (!(bool)envelope["installed"])
+                failures.Add("the per-action demoralize envelope is not installed");
+            if (!(bool)envelope["injected"]["faulted"] || injectedChecks.Count != 1 ||
+                (int)injectedChecks[0] != roguePlain)
+                failures.Add("after an injected demoralize failure the next check in the same list was not plain");
+            foreach (string pass in new[] { "healthy", "injected", "retry" })
+                if ((int)envelope[pass]["depthAfter"] != 0)
+                    failures.Add(pass + ": a demoralize frame stayed open after its list");
 
             // O05: unarmed strikes only, with the Critical Focus comparison.
             var criticalFocus = BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library,

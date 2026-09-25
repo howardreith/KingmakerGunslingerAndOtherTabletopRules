@@ -15,7 +15,11 @@ A revelation, bloodline power or performance counts as owned when the
 character has it or chooses it in the same level-up: the native level-up
 replays its picks in priority order, and the host's reward selection comes
 before the bloodline, revelation and power selections, so the owned-target
-check also counts a later pick of the level-up being replayed.
+check also counts a later pick of the level-up being replayed. Only the
+replay's own check and application of each pick are scoped (Harmony 1.2 has
+no finalizers, so those two native calls are made inside a scope closed in a
+finally block): a pick that throws leaves nothing counted, a nested replay
+restores the outer one, and a retried replay scopes its picks afresh.
 Owner decisions are listed in `FAVORED-CLASS-BLOCKERS.md`.
 
 ## I06/S04 — selected oracle revelation (1/6 per revelation, uncapped)

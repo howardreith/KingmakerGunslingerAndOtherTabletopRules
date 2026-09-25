@@ -95,10 +95,16 @@ namespace KingmakerGunslinger.DomainTests
             string replay = Source(Path.Combine("Hooks", "FavoredClassLevelUpReplayPatch.cs"));
             Assertions.True(prerequisites.Contains("return FavoredClassPendingPicks.Selects(state, FeatureGuids);") &&
                 prerequisites.Contains("!ReferenceEquals(controller.State, state)") &&
+                prerequisites.Contains("return Replays.Run(controller, () =>") &&
+                prerequisites.Contains("            Replays.Run(controller, () =>") &&
+                prerequisites.Contains("                action.Apply(state, unit);") &&
+                prerequisites.Contains("if (!Installed || controller == null") &&
+                !prerequisites.Contains("s_Replaying") &&
                 replay.Contains("[HarmonyPatch(typeof(LevelUpController), \"ApplyLevelup\")]") &&
-                replay.Contains("FavoredClassPendingPicks.Begin(__instance);") &&
-                replay.Contains("FavoredClassPendingPicks.End();"),
-                "A target chosen in the same level-up counts during the native priority replay only.");
+                replay.Contains("FavoredClassCallScoping.ReplaceSingle(values, NativeCheck, ScopedCheck, true)") &&
+                replay.Contains("FavoredClassCallScoping.ReplaceSingle(values, NativeApply, ScopedApply, true)") &&
+                !replay.Contains("Prefix") && !replay.Contains("Postfix"),
+                "A target chosen in the same level-up counts only inside the finally-closed scope of a replayed pick.");
         }
 
         // One chosen power's own ability only; exact DC delta from its own binding.

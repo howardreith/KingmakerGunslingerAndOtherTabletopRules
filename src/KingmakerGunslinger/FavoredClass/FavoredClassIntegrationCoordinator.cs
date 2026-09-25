@@ -204,6 +204,23 @@ namespace KingmakerGunslinger.FavoredClass
                         "effect=" + FavoredClassCatalog.EffectPerformanceRange +
                         ";the ring scaler (UnityEngine.ParticleSystem) is unavailable");
                 }
+                // I07 recognizes a demoralize's check only while every native
+                // action closes its demoralize frame in a finally block; without
+                // that envelope the demoralize bonus is withheld.
+                if (set.Pairs.Any(pair => pair.Effect.Id == FavoredClassCatalog.EffectDemoralize) &&
+                    !Mechanics.FavoredClassDemoralizeScope.EnvelopeInstalled)
+                {
+                    unavailable.Add(FavoredClassCatalog.EffectDemoralize);
+                    context.Logger.Warning(Phase, "native-contract.unavailable",
+                        "effect=" + FavoredClassCatalog.EffectDemoralize +
+                        ";the per-action demoralize envelope (ActionList.Run) is not installed");
+                }
+                // Without the scoped native replay a counter cannot target what
+                // the same level-up gains (it can from the next level-up on).
+                if (!FavoredClassPendingPicks.Installed)
+                    context.Logger.Warning(Phase, "native-contract.degraded",
+                        "the scoped level-up replay (LevelUpController.ApplyLevelup) is not installed; " +
+                        "same-level targets count from the next level-up");
                 // I06/S04 read points are scoped from the live provider graph;
                 // a revelation without any found read point is withheld.
                 if (set.Pairs.Any(pair => pair.Effect.Id == FavoredClassCatalog.EffectSelectedRevelation))
