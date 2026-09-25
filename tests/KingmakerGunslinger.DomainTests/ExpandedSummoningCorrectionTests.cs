@@ -290,6 +290,13 @@ namespace KingmakerGunslinger.DomainTests
                 "ArmExpandedSummoningPersistenceFlash(", "expanded-summoning-cyclops-flash-persistence");
             RequireTokens("Project file", project,
                 "RuntimeTesting\\RuntimeTestRunner.ExpandedSummoningCorrection.cs");
+            // Every planned type the ledger carries must have a shell factory,
+            // or the mod's blueprint initialization fails at load (the first
+            // shake-out run of the correction found the area effects missing).
+            string factory = Source("src", "KingmakerGunslinger", "Blueprints", "ExpandedSummoningBlueprints.cs");
+            foreach (string plannedType in identities.Select(value => value.PlannedType).Distinct())
+                Assertions.True(factory.Contains("identity.PlannedType == \"" + plannedType + "\""),
+                    "The identity factory has no shell for planned type " + plannedType);
         }
     }
 }
