@@ -191,10 +191,16 @@ need a restart.
   companion whose master is respecced is destroyed natively and keeps no
   projected armor; a new companion receives the projection once. A cancelled
   respec changes nothing.
-- **Host removed or not qualified**: no choices are offered, and the O06 aura
-  and I06/S04 revelation read points are not committed. Other earned counters
-  keep their component effects. The host's own favored-class progression is
-  host content: restore the host rather than editing a save.
+- **Host removed, disabled, unsupported or not published**: no choices are
+  offered and every owned numerical effect is zero. Owned effects need both
+  the enabled integration and a committed publication of the exact qualified
+  host; the host activation starts off and is cleared for an absent, disabled,
+  unsupported or incompletely initialized host, a failed publication and any
+  rollback. Saved ranks still resolve and nothing is refunded or removed, so
+  the effects return once the exact host is published again. The Mostly Human
+  racial identity and its bridge do not depend on it. The host's own
+  favored-class progression is host content: restore the host rather than
+  editing a save.
 - **Call of the Wild removed**: the Oracle and Summoner counters are not
   offered, and their saved leaves still resolve. Revelation and eidolon effects
   are inert because their provider blueprints are gone.
