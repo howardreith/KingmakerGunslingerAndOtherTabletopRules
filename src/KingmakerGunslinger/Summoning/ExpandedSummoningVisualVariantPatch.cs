@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using Harmony12;
 using Kingmaker.View;
+using Kingmaker.Visual.MaterialEffects;
 using Kingmaker.Visual.MaterialEffects.RimLighting;
 using UnityEngine;
 
@@ -255,6 +257,95 @@ namespace KingmakerGunslinger.Summoning
     }
 
     /// <summary>
+    /// The rim light on the mephit rigs is a looping rim animation that
+    /// reaches the view's material controller after the view attaches (with
+    /// the unit's spawned effects), so an attach-time pass cannot see it
+    /// (round 13). This prefix on the controller's Update looks up, once
+    /// per controller, whether its view is a registered variant with a rim
+    /// colour, and thereafter recolours every new looping animation in the
+    /// controller's rim list before the controller evaluates it. Transient
+    /// animations (hit flashes) keep the game's colour. Nothing shared is
+    /// touched: the settings objects belong to this view's effects.
+    /// </summary>
+    [HarmonyPatch(typeof(StandardMaterialController), "Update")]
+    internal static class ExpandedSummoningRimAnimationPatch
+    {
+        private sealed class State
+        {
+            internal Color? Rim;
+            internal bool Resolved;
+            internal int Recoloured;
+            internal readonly HashSet<RimLightingAnimationSettings> Seen =
+                new HashSet<RimLightingAnimationSettings>();
+        }
+
+        private static readonly ConditionalWeakTable<StandardMaterialController, State> States =
+            new ConditionalWeakTable<StandardMaterialController, State>();
+        private static readonly FieldInfo RimControllerField = typeof(StandardMaterialController)
+            .GetField("m_RimController", BindingFlags.Instance | BindingFlags.NonPublic |
+                BindingFlags.Public);
+
+        /// <summary>The controller's rim animation list owner (a private field of the game's controller).</summary>
+        internal static RimLightingAnimationController RimControllerOf(
+            StandardMaterialController controller)
+        {
+            return controller == null || RimControllerField == null ? null :
+                RimControllerField.GetValue(controller) as RimLightingAnimationController;
+        }
+
+        /// <summary>"rim=R/G/B;recoloured=N" for a view's controller, or "&lt;none&gt;".</summary>
+        internal static string Describe(UnitEntityView view)
+        {
+            StandardMaterialController controller = view == null ? null :
+                view.GetComponentInChildren<StandardMaterialController>(true);
+            State state;
+            if (controller == null || !States.TryGetValue(controller, out state)) return "<none>";
+            return "resolved=" + state.Resolved + ";rim=" + (state.Rim.HasValue ?
+                state.Rim.Value.r.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture) + "/" +
+                state.Rim.Value.g.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture) + "/" +
+                state.Rim.Value.b.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture) : "<none>") +
+                ";recoloured=" + state.Recoloured;
+        }
+
+        private static void Prefix(StandardMaterialController __instance)
+        {
+            try
+            {
+                if (__instance == null) return;
+                State state;
+                if (!States.TryGetValue(__instance, out state))
+                {
+                    state = new State();
+                    States.Add(__instance, state);
+                }
+                if (!state.Resolved)
+                {
+                    UnitEntityView view = __instance.GetComponentInParent<UnitEntityView>();
+                    if (view == null || view.EntityData == null ||
+                        view.EntityData.Blueprint == null) return;
+                    state.Rim = ExpandedSummoningVisualVariantPatch.RimFor(view);
+                    state.Resolved = true;
+                }
+                if (!state.Rim.HasValue) return;
+                RimLightingAnimationController rims = RimControllerOf(__instance);
+                if (rims == null || rims.Animations == null) return;
+                foreach (RimLightingAnimationSettings settings in rims.Animations)
+                {
+                    if (settings == null || !settings.LoopAnimation || state.Seen.Contains(settings))
+                        continue;
+                    ExpandedSummoningVisualVariantPatch.RecolourRimAnimation(settings, state.Rim.Value);
+                    state.Seen.Add(settings);
+                    state.Recoloured++;
+                }
+            }
+            catch (Exception)
+            {
+                // A visual variant never interrupts the game's own material update.
+            }
+        }
+    }
+
+    /// <summary>
     /// Applies a registered visual variant when a KMG summon's view attaches
     /// (Sprint 5). Everything is validated before a renderer is touched: no
     /// registered variant, no renderer, or a material without a colour slot
@@ -352,40 +443,66 @@ namespace KingmakerGunslinger.Summoning
         /// </summary>
         private static int RecolourRimAnimations(UnitEntityView view, Color rim)
         {
-            float peakTarget = Mathf.Max(rim.r, Mathf.Max(rim.g, rim.b));
-            if (peakTarget <= 0f) return 0;
-            var normalized = new Color(rim.r / peakTarget, rim.g / peakTarget,
-                rim.b / peakTarget, 1f);
             int recoloured = 0;
             foreach (RimLightingAnimationSetup setup in
                 view.GetComponentsInChildren<RimLightingAnimationSetup>(true))
             {
                 RimLightingAnimationSettings settings = setup == null ? null : setup.Settings;
                 if (settings == null) continue;
-                Gradient source = settings.ColorOverLifetime;
-                GradientColorKey[] colorKeys = source == null || source.colorKeys == null ||
-                    source.colorKeys.Length == 0
-                    ? new[] { new GradientColorKey(normalized, 0f), new GradientColorKey(normalized, 1f) }
-                    : source.colorKeys.Select(key => new GradientColorKey(normalized, key.time))
-                        .ToArray();
-                GradientAlphaKey[] alphaKeys = source == null || source.alphaKeys == null ||
-                    source.alphaKeys.Length == 0
-                    ? new[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(1f, 1f) }
-                    : source.alphaKeys;
-                var gradient = new Gradient();
-                gradient.SetKeys(colorKeys, alphaKeys);
-                if (source != null) gradient.mode = source.mode;
-                settings.ColorOverLifetime = gradient;
-                float peakCurve = 1f;
-                AnimationCurve intensity = settings.IntensityOverLifetime;
-                if (intensity != null && intensity.keys != null && intensity.keys.Length != 0)
-                    peakCurve = intensity.keys.Max(key => key.value);
-                if (peakCurve <= 0f) peakCurve = 1f;
-                settings.IntensityScale = peakTarget / peakCurve;
-                settings.CurrentColor = normalized;
+                RecolourRimAnimation(settings, rim);
                 recoloured++;
             }
             return recoloured;
+        }
+
+        /// <summary>
+        /// One rim animation in the variant's colour: the gradient's colour
+        /// keys become the colour (normalized; alpha keys and times kept)
+        /// and IntensityScale is set so the intensity curve's peak lands on
+        /// the colour's brightest channel.
+        /// </summary>
+        internal static void RecolourRimAnimation(RimLightingAnimationSettings settings,
+            Color rim)
+        {
+            float peakTarget = Mathf.Max(rim.r, Mathf.Max(rim.g, rim.b));
+            if (settings == null || peakTarget <= 0f) return;
+            var normalized = new Color(rim.r / peakTarget, rim.g / peakTarget,
+                rim.b / peakTarget, 1f);
+            Gradient source = settings.ColorOverLifetime;
+            GradientColorKey[] colorKeys = source == null || source.colorKeys == null ||
+                source.colorKeys.Length == 0
+                ? new[] { new GradientColorKey(normalized, 0f), new GradientColorKey(normalized, 1f) }
+                : source.colorKeys.Select(key => new GradientColorKey(normalized, key.time))
+                    .ToArray();
+            GradientAlphaKey[] alphaKeys = source == null || source.alphaKeys == null ||
+                source.alphaKeys.Length == 0
+                ? new[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(1f, 1f) }
+                : source.alphaKeys;
+            var gradient = new Gradient();
+            gradient.SetKeys(colorKeys, alphaKeys);
+            if (source != null) gradient.mode = source.mode;
+            settings.ColorOverLifetime = gradient;
+            float peakCurve = 1f;
+            AnimationCurve intensity = settings.IntensityOverLifetime;
+            if (intensity != null && intensity.keys != null && intensity.keys.Length != 0)
+                peakCurve = intensity.keys.Max(key => key.value);
+            if (peakCurve <= 0f) peakCurve = 1f;
+            settings.IntensityScale = peakTarget / peakCurve;
+            settings.CurrentColor = normalized;
+        }
+
+        /// <summary>The registered rim colour for a view, or none.</summary>
+        internal static Color? RimFor(UnitEntityView view)
+        {
+            if (view == null || view.EntityData == null || view.EntityData.Blueprint == null)
+                return null;
+            SummonVisualVariant variant;
+            lock (Sync)
+            {
+                if (!Variants.TryGetValue(view.EntityData.Blueprint.name, out variant))
+                    return null;
+            }
+            return variant.Rim;
         }
 
         internal static string Apply(UnitEntityView view, SummonVisualVariant variant)
