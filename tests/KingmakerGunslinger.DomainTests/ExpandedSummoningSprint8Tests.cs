@@ -52,8 +52,8 @@ namespace KingmakerGunslinger.DomainTests
                 "The Tiger carries two 1d8 claws and two 1d8 rake claws.");
             Assertions.True(profile.Facts.Contains("Pounce") && profile.Facts.Contains("WeaponFocusClaw"),
                 "The Tiger pounces and focuses its claws.");
-            Assertions.True(profile.Deviations.Any(value => value.Contains("charge-only rake component")) &&
-                profile.Deviations.Any(value => value.Contains("shared summon grapple lifecycle (Sprint 8)")) &&
+            Assertions.True(profile.Deviations.Any(value => value.Contains("rake gate")) &&
+                profile.Deviations.Any(value => value.Contains("shared summon grapple lifecycle (Sprint 8; correction order)")) &&
                 profile.Deviations.Any(value => value.Contains("no native tiger exists")),
                 "The Tiger's deviations record the rake, the grab and the visual.");
             float scale;
@@ -97,7 +97,7 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string token in new[] {
                 "ConfigureCheetahSprint(bySymbol)", "BuffMovementSpeed", "ModifierDescriptor.Enhancement",
                 "CheetahSprintBonusFeet", "UnitCommand.CommandType.Swift", "CheetahSprintUses",
-                "ConfigureCatWithWeapon(library, bySymbol, TigerUnitSymbol" })
+                "ConfigureGrabber(library, bySymbol, TigerUnitSymbol, TigerCombatTraitsSymbol" })
                 Assertions.True(builder.Contains(token), "Sprint 8 builder contract is missing: " + token);
         }
 
@@ -139,10 +139,13 @@ namespace KingmakerGunslinger.DomainTests
                 value.StartsWith("KMG.Summoning.Special.Cheetah.", StringComparison.Ordinal)).ToArray();
             Assertions.Equal(AppendedLedgerIdentities, appended.Length,
                 "Sprint 8 must append exactly its own identities to the ledger.");
-            Assertions.True(entries.Skip(entries.Length - AppendedLedgerIdentities)
-                .All(value => appended.Contains(value)),
-                "The ledger is append-only: Sprint 8 identities sit at its tail.");
             Assertions.True(entries.Skip(entries.Length - AppendedLedgerIdentities -
+                    ExpandedSummoningCorrectionTests.AppendedLedgerIdentities)
+                .Take(AppendedLedgerIdentities)
+                .All(value => appended.Contains(value)),
+                "The ledger is append-only: Sprint 8 identities sit directly before the correction's.");
+            Assertions.True(entries.Skip(entries.Length - AppendedLedgerIdentities -
+                    ExpandedSummoningCorrectionTests.AppendedLedgerIdentities -
                     ExpandedSummoningSprint7Tests.AppendedLedgerIdentities)
                 .Take(ExpandedSummoningSprint7Tests.AppendedLedgerIdentities)
                 .All(value => !appended.Contains(value)),

@@ -289,6 +289,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RuntimeTestScenarioCatalog.IsSummonSameTurnWorkingSaveScenario(
                     request.Scenario) ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
+                request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningRules ||
+                request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualLifecycle ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleEvil ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleUi ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleTerrain ||

@@ -634,6 +634,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !RuntimeTestScenarioCatalog.IsSummonSameTurnScenario(
                         _request.Scenario) &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableExpandedSummoningRules &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualLifecycle &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveExpandedSummoningVariantMenu &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableMagicCircleEvil &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableMagicCircleUi &&
@@ -1844,6 +1846,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .IsSummonSameTurnWorkingSaveScenario(
                         _request.Scenario) ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningRules ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualLifecycle ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleEvil ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleUi ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleTerrain ||
@@ -1958,6 +1962,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .IsSummonSameTurnWorkingSaveScenario(
                         _request.Scenario) ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningRules ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualLifecycle ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleEvil ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleUi ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleTerrain ||
@@ -2540,6 +2546,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .DisposableExpandedSummoningVisualContracts)
                 {
                     Complete(RunDisposableExpandedSummoningVisualContracts());
+                }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableExpandedSummoningRules)
+                {
+                    Complete(RunDisposableExpandedSummoningRules());
+                }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableExpandedSummoningVisualLifecycle)
+                {
+                    PollExpandedSummoningVisualLifecycle();
                 }
                 else if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationContext ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationCasting)
@@ -3603,6 +3619,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                             staleLeft + " remain.");
                     _expandedSummoningPersistencePreparedUnits =
                         SpawnExpandedSummoningPersistenceFixture(caster);
+                    // Correction order: the Cyclops spends and arms its Flash
+                    // of Insight before the save, so the reload proves the one
+                    // use survives exactly once and never doubles.
+                    ArmExpandedSummoningPersistenceFlash(
+                        _expandedSummoningPersistencePreparedUnits);
                     _expandedSummoningPersistenceFixtureSpawned = true;
                     return;
                 }
@@ -3632,6 +3653,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     out _expandedSummoningPersistenceDurationValid,
                     out _expandedSummoningPersistenceControlValid,
                     out _expandedSummoningPersistenceDetail);
+                _expandedSummoningPersistenceFlashDetail =
+                    DescribeExpandedSummoningPersistenceFlash(units, prepare, verifyCleanup,
+                        caster, out _expandedSummoningPersistenceFlashValid);
                 // The Pteranodon's visual on the unit as this phase found it:
                 // freshly spawned in prepare, freshly deserialized and
                 // re-attached in verify-cleanup, absent in verify-absent.
@@ -4161,6 +4185,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     MotionReviewSummary,
                     writes ? MotionReviewValid : true,
                     "the game camera rendered to file with the mod-manager overlay closed; supporting images for internal review, not the mechanical proof"),
+                Assertion("expanded-summoning-cyclops-flash-persistence",
+                    prepare ? "the Cyclops's Flash of Insight spent and armed before the save" :
+                        verifyCleanup ? "after the reload the resource is still spent, the ability unavailable and the arming present exactly once; the next attack's own d20 is the chosen 20 and the arming is gone; the attack after it rolls its own 1 and misses" :
+                        "not applicable after cleanup",
+                    _expandedSummoningPersistenceFlashDetail,
+                    writes ? _expandedSummoningPersistenceFlashValid : true,
+                    "the native resource and the project state on the persistent Cyclops across the save and the reload"),
                 Assertion(verifyCleanup || !writes ?
                         "expanded-summoning-cleaned" :
                         "expanded-summoning-prepared",
@@ -5592,6 +5623,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .IsSummonSameTurnWorkingSaveScenario(
                     _request.Scenario) ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningRules ||
+                _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualLifecycle ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleEvil ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleUi ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleTerrain ||
@@ -17739,13 +17772,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     UnitCondition.CantMove);
                 SummonGrabComponent moundGrab = ExpandedSummoningRuntimeComponent<
                     SummonGrabComponent>(mound, moundTraits);
-                BlueprintItemWeapon slam = moundGrab.GrabWeapons[0];
-                // A hit with the wrong weapon, or by a summon already holding,
-                // never grabs.
+                ItemEntityWeapon slam = mound.Body.PrimaryHand.MaybeWeapon;
+                // A hit with a weapon that is not one of the mound's grab
+                // limbs (here the hostile's own), or by a summon already
+                // holding, never grabs.
                 bool refusedWrongWeapon = !moundGrab.TryGrab(hostile,
-                    mound.Body.PrimaryHand.MaybeWeapon == null ? null :
-                        blueprints.OfType<BlueprintItemWeapon>().First(value =>
-                            !ReferenceEquals(value, slam)), true);
+                    hostile.Body.PrimaryHand.MaybeWeapon, true);
                 UnityEngine.Random.InitState(FindNativeD20Seed(20));
                 bool grabbed = moundGrab.TryGrab(hostile, slam, true);
                 Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget heldPart =
@@ -17761,10 +17793,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int afterGrab = hostile.Descriptor.Damage;
                 bool constricted = afterGrab > damageBefore;
                 bool refusedWhileHolding = !moundGrab.TryGrab(hostile, slam, true);
-                SummonHoldComponent holdComponent = ExpandedSummoningRuntimeComponent<
-                    SummonHoldComponent>(mound, hold);
+                // The next round: the hold buff ticks (its round number
+                // advances and its maintain check runs); the damage is the
+                // establishing slam's own, through the weapon-stats rule.
                 UnityEngine.Random.InitState(FindNativeD20Seed(20));
-                holdComponent.OnNewRound();
+                mound.Descriptor.Buffs.GetBuff(hold).TickMechanics();
                 bool maintained = hostile.Get<Kingmaker.UnitLogic.Parts
                         .UnitPartGrappleTarget>() != null &&
                     hostile.Descriptor.Damage > afterGrab;
@@ -17815,9 +17848,35 @@ namespace KingmakerGunslinger.RuntimeTesting
                 worm.Descriptor.Stats.BaseAttackBonus.BaseValue = 100;
                 SummonGrabComponent wormGrab = ExpandedSummoningRuntimeComponent<
                     SummonGrabComponent>(worm, wormTraits);
+                ItemEntityWeapon wormBite = worm.Body.PrimaryHand.MaybeWeapon;
+                RemoveExpandedSummoningAppearanceBuffs(worm);
                 UnityEngine.Random.InitState(FindNativeD20Seed(20));
-                bool wormGrabbed = wormGrab.TryGrab(hostile, wormGrab.GrabWeapons[0],
-                    true);
+                bool wormGrabbed = wormGrab.TryGrab(hostile, wormBite, true);
+                // The grab holds; nothing is swallowed until a later turn.
+                bool heldNotSwallowed = wormGrabbed &&
+                    hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartSwallowed>() == null &&
+                    hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>() != null &&
+                    worm.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleInitiator>() != null;
+                bool notEligibleYet = !SummonHoldComponent.IsHeldSinceRoundStart(worm, hostile);
+                // The next turn, a failed check (natural 1) releases the hold
+                // without swallowing.
+                hostile.Descriptor.Buffs.GetBuff(grappled).TickMechanics();
+                bool eligible = SummonHoldComponent.IsHeldSinceRoundStart(worm, hostile);
+                UnityEngine.Random.InitState(FindNativeD20Seed(1));
+                worm.Descriptor.Buffs.GetBuff(hold).TickMechanics();
+                bool failedSwallowReleased =
+                    hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartSwallowed>() == null &&
+                    hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>() == null;
+                worm.Remove<Kingmaker.UnitLogic.Parts.UnitPartGrappleInitiator>();
+                // Grabbed again; the next turn's successful check swallows and
+                // deals the bite's damage.
+                UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                bool wormRegrabbed = wormGrab.TryGrab(hostile, wormBite, true);
+                hostile.Descriptor.Buffs.GetBuff(grappled).TickMechanics();
+                int beforeSwallow = hostile.Descriptor.Damage;
+                UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                worm.Descriptor.Buffs.GetBuff(hold).TickMechanics();
+                bool biteDamage = hostile.Descriptor.Damage > beforeSwallow;
                 Kingmaker.UnitLogic.Parts.UnitPartSwallowed swallowedPart =
                     hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartSwallowed>();
                 Kingmaker.UnitLogic.Parts.UnitPartSwallowWhole swallower =
@@ -17828,10 +17887,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     hostile.Descriptor.State.HasCondition(UnitCondition.CantAct) &&
                     hostile.Descriptor.State.HasCondition(UnitCondition.CantMove) &&
                     swallower != null && swallower.SwallowedUnits.Count == 1 &&
-                    mound.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleInitiator>() ==
-                        null;
-                bool refusedWhileSwallowed = !wormGrab.TryGrab(hostile,
-                    wormGrab.GrabWeapons[0], true);
+                    hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>() == null;
+                bool refusedWhileSwallowed = !wormGrab.TryGrab(hostile, wormBite, true);
                 // The summon's end path: the worm's traits turn off.
                 worm.Descriptor.Buffs.RemoveFact(worm.Descriptor.Buffs.GetBuff(
                     wormTraits));
@@ -17841,11 +17898,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !hostile.Descriptor.State.HasCondition(UnitCondition.CantAct) &&
                     !hostile.Descriptor.State.HasCondition(UnitCondition.CantMove) &&
                     swallower.SwallowedUnits.Count == 0;
-                steps.Add("worm:grabbed=" + wormGrabbed + ";swallowed=" +
-                    swallowedState + ";refusedWhileSwallowed=" +
+                steps.Add("worm:grabbed=" + wormGrabbed + ";heldNotSwallowed=" +
+                    heldNotSwallowed + ";notEligibleYet=" + notEligibleYet +
+                    ";eligibleNextTurn=" + eligible + ";failedSwallowReleased=" +
+                    failedSwallowReleased + ";regrabbed=" + wormRegrabbed + ";biteDamage=" +
+                    biteDamage + ";swallowed=" + swallowedState + ";refusedWhileSwallowed=" +
                     refusedWhileSwallowed + ";spatOut=" + spatOut);
-                ok = ok && wormGrabbed && swallowedState && refusedWhileSwallowed &&
-                    spatOut;
+                ok = ok && wormGrabbed && heldNotSwallowed && notEligibleYet && eligible &&
+                    failedSwallowReleased && wormRegrabbed && biteDamage && swallowedState &&
+                    refusedWhileSwallowed && spatOut;
             }
             catch (Exception exception)
             {
@@ -17908,25 +17969,38 @@ namespace KingmakerGunslinger.RuntimeTesting
                 List<Kingmaker.Items.Slots.WeaponSlot> limbs = tiger.Body.AdditionalLimbs;
                 int limbCount = limbs == null ? 0 : limbs.Count;
                 ItemEntityWeapon rakeClaw = limbCount < 4 ? null : limbs[limbCount - 1].MaybeWeapon;
-                string ordinary = "no-slots", charge = "no-slots";
-                bool rakeOrdinaryHits = false, rakeChargeHits = false;
-                if (rakeClaw != null)
+                ItemEntityWeapon foreclaw = limbCount < 4 ? null : limbs[0].MaybeWeapon;
+                BlueprintBuff tigerHold = blueprints.OfType<BlueprintBuff>()
+                    .Single(value => value.name == "KMG_Summoning_Special_Grapple_Hold");
+                string ordinary = "no-slots", charge = "no-slots", foreclawHit = "no-slots";
+                bool rakeOrdinaryHits = false, rakeChargeHits = false, rakeGrabbed = false,
+                    foreclawHits = false, foreclawGrabbed = false;
+                if (rakeClaw != null && foreclaw != null)
                 {
                     rakeOrdinaryHits = ExerciseExpandedSummoningWeaponAttack(tiger, hostile,
                         rakeClaw, false, 20, out ordinary);
                     rakeChargeHits = ExerciseExpandedSummoningWeaponAttack(tiger, hostile,
                         rakeClaw, true, 20, out charge);
+                    // A rake claw hit (on the charge) never initiates a grab.
+                    rakeGrabbed = tiger.Get<Kingmaker.UnitLogic.Parts
+                        .UnitPartGrappleInitiator>() != null;
+                    ReleaseExpandedSummoningHold(tiger, hostile, tigerHold);
+                    // A foreclaw hit does.
+                    UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                    foreclawHits = ExerciseExpandedSummoningWeaponAttack(tiger, hostile,
+                        foreclaw, false, 20, out foreclawHit);
+                    foreclawGrabbed = tiger.Get<Kingmaker.UnitLogic.Parts
+                        .UnitPartGrappleInitiator>() != null;
+                    ReleaseExpandedSummoningHold(tiger, hostile, tigerHold);
                 }
-                bool tigerHolding = tiger.Get<Kingmaker.UnitLogic.Parts
-                    .UnitPartGrappleInitiator>() != null;
-                ReleaseExpandedSummoningHold(tiger, hostile, blueprints.OfType<BlueprintBuff>()
-                    .Single(value => value.name == "KMG_Summoning_Special_Grapple_Hold"));
                 steps.Add("tiger:limbs=" + limbCount + ";rakeOrdinary[" + ordinary +
-                    "];rakeCharge[" + charge + "];grabbedOnCharge=" + tigerHolding +
+                    "];rakeCharge[" + charge + "];grabbedByRake=" + rakeGrabbed +
+                    ";foreclaw[" + foreclawHit + "];grabbedByForeclaw=" + foreclawGrabbed +
                     ";released=" + (hostile.Get<Kingmaker.UnitLogic.Parts
                         .UnitPartGrappleTarget>() == null));
                 ok = ok && rakeClaw != null && !rakeOrdinaryHits &&
-                    ordinary.Contains("autoMiss=True") && rakeChargeHits;
+                    ordinary.Contains("autoMiss=True") && rakeChargeHits && !rakeGrabbed &&
+                    foreclawHits && foreclawGrabbed;
             }
             catch (Exception exception)
             {
@@ -17940,6 +18014,54 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             detail = string.Join(";", steps.ToArray());
             return ok;
+        }
+
+        /// <summary>
+        /// The attack sequence seam on live units: the full attack the game
+        /// builds for the cat against its held foe (rake kept), against
+        /// another creature (rake dropped), on a charge (rake kept) and, once
+        /// the hold is gone, on an ordinary full attack (rake dropped).
+        /// Counts the rake slots in each planned list.
+        /// </summary>
+        private static string ExerciseExpandedSummoningRakeSequence(UnitEntityData cat,
+            UnitEntityData held, UnitEntityData other)
+        {
+            SummonGrabComponent grab = SummonGrabComponent.Find(cat);
+            if (grab == null) return "no-grab";
+            Func<UnitEntityData, bool, string> plan = (target, charge) =>
+            {
+                var command = new Kingmaker.UnitLogic.Commands.UnitAttack(target);
+                command.IsCharge = charge;
+                command.Init(cat);
+                List<Kingmaker.UnitLogic.Commands.AttackHandInfo> attacks =
+                    command.CreateFullAttack();
+                int rake = attacks.Count(info => info != null && info.Hand != null &&
+                    SummonLimbs.IsRakeSlot(cat, info.Hand, grab.RakeLimbCount));
+                return (rake == 0 ? "dropped" : "kept") + "(" + attacks.Count + "/" + rake + ")";
+            };
+            string heldPlan = plan(held, false);
+            string otherPlan = plan(other, false);
+            string chargePlan = plan(held, true);
+            return "held=" + heldPlan + ",other=" + otherPlan + ",charge=" + chargePlan +
+                ",ordinary=" + ExerciseExpandedSummoningRakeSequenceOrdinary(cat, held, grab);
+        }
+
+        private static string ExerciseExpandedSummoningRakeSequenceOrdinary(UnitEntityData cat,
+            UnitEntityData target, SummonGrabComponent grab)
+        {
+            // Without a hold since the round began: the fixture inspects the
+            // plan against a unit the cat does not hold.
+            UnitEntityData free = Game.Instance.Player.Party.FirstOrDefault(value =>
+                value != null && !ReferenceEquals(value, target) &&
+                !ReferenceEquals(SummonHoldComponent.HeldTarget(cat), value));
+            if (free == null) return "no-free-target";
+            var command = new Kingmaker.UnitLogic.Commands.UnitAttack(free);
+            command.IsCharge = false;
+            command.Init(cat);
+            List<Kingmaker.UnitLogic.Commands.AttackHandInfo> attacks = command.CreateFullAttack();
+            int rake = attacks.Count(info => info != null && info.Hand != null &&
+                SummonLimbs.IsRakeSlot(cat, info.Hand, grab.RakeLimbCount));
+            return (rake == 0 ? "dropped" : "kept") + "(" + attacks.Count + "/" + rake + ")";
         }
 
         /// <summary>
@@ -18015,16 +18137,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                     SummonRakeComponent.IsRakeWeapon(leopard, rakeClaw) &&
                     !SummonRakeComponent.IsRakeWeapon(leopard,
                         leopard.Body.PrimaryHand.MaybeWeapon);
-                // The leopard's primary claw is also its grab weapon: the
-                // first ordinary hit grabs through the shared lifecycle, and
-                // every later rake attack is then legitimately made while
-                // holding. So: the rake claw first (no hit yet, a silent
-                // miss), then the primary hit (which grabs), then the rake
-                // while holding, then release, then the charge.
+                // The contract: a rake claw never strikes on an ordinary
+                // attack; a claw hit never grabs; the bite grabs; the turn of
+                // the grab the rake still does not strike; from the next turn
+                // it strikes the held foe and only the held foe; the charge
+                // (Pounce) rakes without a hold. Every attack roll here is a
+                // single rule; the full-attack sequence is checked separately.
+                BlueprintBuff grappled = blueprints.OfType<BlueprintBuff>().Single(
+                    value => value.name == "KMG_Summoning_Special_Grapple_Grappled");
+                ItemEntityWeapon bite = leopard.Body.PrimaryHand.MaybeWeapon;
                 string ordinaryPrimary = "no-slots", ordinaryRake = "no-slots",
-                    chargeRake = "no-slots", holdingRake = "not-holding";
+                    chargeRake = "no-slots", holdingRake = "not-holding",
+                    sameTurnRake = "not-holding", biteHit = "no-slots", otherRake = "not-holding";
                 bool primaryHits = false, rakeOrdinaryHits = false, rakeChargeHits = false,
-                    rakeHoldingHits = false, holding = false, released = false;
+                    rakeHoldingHits = false, rakeSameTurnHits = false, rakeOtherHits = false,
+                    clawGrabbed = false, biteHits = false, holding = false, eligible = false,
+                    released = false, notEligibleSameTurn = false;
+                string sequence = "not-run";
                 if (slots)
                 {
                     rakeOrdinaryHits = ExerciseExpandedSummoningWeaponAttack(leopard,
@@ -18032,11 +18161,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                     UnityEngine.Random.InitState(FindNativeD20Seed(20));
                     primaryHits = ExerciseExpandedSummoningWeaponAttack(leopard, hostile,
                         primaryClaw, false, 20, out ordinaryPrimary);
+                    clawGrabbed = leopard.Get<Kingmaker.UnitLogic.Parts
+                        .UnitPartGrappleInitiator>() != null;
+                    UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                    biteHits = ExerciseExpandedSummoningWeaponAttack(leopard, hostile,
+                        bite, false, 20, out biteHit);
                     holding = leopard.Get<Kingmaker.UnitLogic.Parts
                         .UnitPartGrappleInitiator>() != null;
+                    notEligibleSameTurn = !SummonHoldComponent.IsHeldSinceRoundStart(leopard,
+                        hostile);
+                    rakeSameTurnHits = ExerciseExpandedSummoningWeaponAttack(leopard,
+                        hostile, rakeClaw, false, 20, out sameTurnRake);
+                    // The next turn: the held state has ticked once.
                     if (holding)
+                    {
+                        hostile.Descriptor.Buffs.GetBuff(grappled).TickMechanics();
+                        eligible = SummonHoldComponent.IsHeldSinceRoundStart(leopard, hostile);
                         rakeHoldingHits = ExerciseExpandedSummoningWeaponAttack(leopard,
                             hostile, rakeClaw, false, 20, out holdingRake);
+                        // Holding the hostile, a rake at the caster (another
+                        // creature) never strikes.
+                        int casterDamage = caster.Descriptor.Damage;
+                        rakeOtherHits = ExerciseExpandedSummoningWeaponAttack(leopard,
+                            caster, rakeClaw, false, 20, out otherRake);
+                        caster.Descriptor.Damage = casterDamage;
+                        sequence = ExerciseExpandedSummoningRakeSequence(leopard, hostile,
+                            caster);
+                    }
                     ReleaseExpandedSummoningHold(leopard, hostile, hold);
                     released = hostile.Get<Kingmaker.UnitLogic.Parts
                         .UnitPartGrappleTarget>() == null && leopard.Get<Kingmaker
@@ -18046,13 +18197,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ReleaseExpandedSummoningHold(leopard, hostile, hold);
                 }
                 steps.Add("leopard:limbs=" + limbCount + ";slots=" + slots +
-                    ";rakeOrdinary[" + ordinaryRake + "];primary[" + ordinaryPrimary +
-                    "];holdingAfterPrimary=" + holding + ";rakeHolding[" + holdingRake +
+                    ";rakeOrdinary[" + ordinaryRake + "];claw[" + ordinaryPrimary +
+                    "];clawGrabbed=" + clawGrabbed + ";bite[" + biteHit + "];holdingAfterBite=" +
+                    holding + ";notEligibleSameTurn=" + notEligibleSameTurn + ";rakeSameTurn[" +
+                    sameTurnRake + "];eligibleNextTurn=" + eligible + ";rakeHolding[" +
+                    holdingRake + "];rakeOtherTarget[" + otherRake + "];sequence[" + sequence +
                     "];released=" + released + ";rakeCharge[" + chargeRake + "]");
                 ok = ok && slots && !rakeOrdinaryHits &&
                     ordinaryRake.Contains("autoMiss=True") &&
-                    ordinaryRake.Contains("silent=True") && primaryHits && holding &&
-                    rakeHoldingHits && released && rakeChargeHits;
+                    ordinaryRake.Contains("silent=True") && primaryHits && !clawGrabbed &&
+                    biteHits && holding && notEligibleSameTurn && !rakeSameTurnHits &&
+                    sameTurnRake.Contains("autoMiss=True") && eligible && rakeHoldingHits &&
+                    !rakeOtherHits && otherRake.Contains("autoMiss=True") &&
+                    sequence.Contains("ordinary=dropped") && sequence.Contains("charge=kept") &&
+                    sequence.Contains("held=kept") && sequence.Contains("other=dropped") &&
+                    released && rakeChargeHits;
             }
             catch (Exception exception)
             {
@@ -18070,9 +18229,11 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         /// <summary>
         /// The Sprint 6 live case: the Monitor Lizard grabs with its bite and
-        /// releases when its hold buff ends; the Giant Spider webs the hostile,
-        /// which fails its save and is web-grappled; the web's one use is
-        /// spent. Damage and conditions are restored.
+        /// releases when its hold buff ends; the Giant Spider webs the hostile
+        /// with a ranged touch attack (a natural 20 here) and it is
+        /// web-grappled; one of the web's two uses is spent. Damage and
+        /// conditions are restored. The touch-versus-Reflex discrimination is
+        /// the correction rules scenario's.
         /// </summary>
         private static bool ExerciseExpandedSummoningSprintSixPack(
             BlueprintScriptableObject[] blueprints, UnitEntityData caster,
@@ -18100,7 +18261,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SummonGrabComponent grab = ExpandedSummoningRuntimeComponent<
                     SummonGrabComponent>(lizard, lizardTraits);
                 UnityEngine.Random.InitState(FindNativeD20Seed(20));
-                bool grabbed = grab.TryGrab(hostile, grab.GrabWeapons[0], true);
+                bool grabbed = grab.TryGrab(hostile, lizard.Body.PrimaryHand.MaybeWeapon, true);
                 bool held = hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>() !=
                         null && lizard.Get<Kingmaker.UnitLogic.Parts
                         .UnitPartGrappleInitiator>() != null &&
@@ -18130,7 +18291,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 spider.Translocate(hostile.Position, null);
                 bool targetable = new AbilityData(spider.Descriptor.Abilities.GetAbility(web))
                     .CanTarget(new TargetWrapper(hostile));
-                UnityEngine.Random.InitState(FindNativeD20Seed(1));
+                // The web is a ranged touch attack (correction order): a
+                // natural 20 hits whatever the touch AC; there is no save.
+                UnityEngine.Random.InitState(FindNativeD20Seed(20));
                 ExecuteExpandedSummoningRuntimeAbility(spider, web, 1,
                     new TargetWrapper(hostile), false, hostile);
                 int usesAfter = spider.Descriptor.Resources.GetResourceAmount(webResource);
@@ -20440,23 +20603,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .ComponentsArray.Any(native => ReferenceEquals(native, value)));
             var rows = new List<string>();
             bool carriers = true;
+            // token, primary grab, grab additional limbs, rake limbs, max held,
+            // constrict dice, constrict bonus, mode (hold / swallow / engulf /
+            // rake). Limb identity, never a weapon blueprint (correction order).
+            BlueprintBuff multiHold = all.OfType<BlueprintBuff>().SingleOrDefault(
+                value => value.name == "KMG_Summoning_Special_Grapple_MultiHold");
+            BlueprintBuff multiHeld = all.OfType<BlueprintBuff>().SingleOrDefault(
+                value => value.name == "KMG_Summoning_Special_Grapple_MultiHeld");
+            BlueprintBuff engulfed = all.OfType<BlueprintBuff>().SingleOrDefault(
+                value => value.name == "KMG_Summoning_Special_GiantFlytrap_Engulfed");
             foreach (string[] spec in new[] {
-                new[] { "Owlbear", "c76f72a862d168d44838206524366e1c", "0", "0", "hold" },
-                new[] { "ShamblingMound", "27eee74857c42db499b3a6b20cfa6211", "2", "7", "hold" },
-                new[] { "GiantFlytrap", "ec35ef997ed5a984280e1a6d87ae80a8", "0", "0", "hold" },
-                new[] { "PurpleWorm", "7e4b9b41a9358264d9e3c69c183ca0a2", "0", "0", "swallow" },
+                new[] { "Owlbear", "false", "2", "0", "1", "0", "0", "hold" },
+                new[] { "ShamblingMound", "true", "1", "0", "1", "2", "7", "hold" },
+                new[] { "GiantFlytrap", "true", "3", "0", "4", "0", "0", "engulf" },
+                new[] { "PurpleWorm", "true", "0", "0", "1", "0", "0", "swallow" },
                 // Sprint 6: the existing grabbers repaired onto the lifecycle
-                new[] { "MonitorLizard", "c988aa874d11ff84d873508ddc9b928f", "0", "0", "hold" },
-                new[] { "GrizzlyBear", "c76f72a862d168d44838206524366e1c", "0", "0", "hold" },
-                new[] { "DireBear", "c76f72a862d168d44838206524366e1c", "0", "0", "hold" },
-                // Sprint 7: the cats carry the rake gate beside the grab
-                new[] { "Leopard", "800092a2b9a743b48ae8aeeb5d243dcc", "0", "0", "rake" },
-                new[] { "Lion", "118fdd03e569a66459ab01a20af6811a", "0", "0", "rake" },
-                new[] { "DireLion", "c76f72a862d168d44838206524366e1c", "0", "0", "rake" },
-                new[] { "DireTiger", "8afc47748d00b3e4a8aff2787d9ee350", "0", "0", "rake" },
-                // Sprint 8: the tiger on the project 1d8 claw
-                new[] { "Tiger", all.OfType<BlueprintItemWeapon>().Single(value =>
-                    value.name == "KMG_Summoning_Natural_Claw1d8").AssetGuid, "0", "0", "rake" } })
+                new[] { "MonitorLizard", "true", "0", "0", "1", "0", "0", "hold" },
+                new[] { "GrizzlyBear", "false", "2", "0", "1", "0", "0", "hold" },
+                new[] { "DireBear", "false", "2", "0", "1", "0", "0", "hold" },
+                // Sprint 7: bite grab; the smilodon's foreclaws grab too
+                new[] { "Leopard", "true", "0", "2", "1", "0", "0", "rake" },
+                new[] { "Lion", "true", "0", "2", "1", "0", "0", "rake" },
+                new[] { "DireLion", "true", "0", "2", "1", "0", "0", "rake" },
+                new[] { "DireTiger", "true", "2", "2", "1", "0", "0", "rake" },
+                // Sprint 8: the tiger's bite and foreclaws
+                new[] { "Tiger", "true", "2", "2", "1", "0", "0", "rake" } })
             {
                 BlueprintUnit unit = all.OfType<BlueprintUnit>().SingleOrDefault(
                     value => value.name == "KMG_Summoning_Unit_" + spec[0]);
@@ -20474,22 +20645,35 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Kingmaker.Designers.Mechanics.Facts.ManeuverBonus bonus = traits
                     .ComponentsArray.OfType<Kingmaker.Designers.Mechanics.Facts
                         .ManeuverBonus>().SingleOrDefault();
-                bool swallower = spec[4] == "swallow";
-                bool raker = spec[4] == "rake";
+                bool swallower = spec[7] == "swallow";
+                bool engulfer = spec[7] == "engulf";
+                bool raker = spec[7] == "rake";
                 bool lifecycle = traits.ComponentsArray.OfType<
-                    SummonSwallowLifecycleComponent>().Count() == (swallower ? 1 : 0) &&
+                    SummonSwallowLifecycleComponent>().Count() == (swallower || engulfer ? 1 : 0) &&
                     traits.ComponentsArray.OfType<SummonRakeComponent>().Count() ==
                         (raker ? 1 : 0);
-                bool grabExact = grab != null && grab.GrabWeapons != null &&
-                    grab.GrabWeapons.Length == 1 && grab.GrabWeapons[0] != null &&
-                    grab.GrabWeapons[0].AssetGuid == spec[1] &&
-                    ReferenceEquals(grab.HoldBuff, hold) &&
-                    ReferenceEquals(grab.GrappledBuff, grappled) &&
-                    (swallower ? ReferenceEquals(grab.SwallowedBuff, swallowed) :
-                        grab.SwallowedBuff == null) &&
-                    grab.ConstrictDiceCount == int.Parse(spec[2],
+                int maxHeld = int.Parse(spec[4], System.Globalization.CultureInfo.InvariantCulture);
+                bool grabExact = grab != null &&
+                    grab.GrabWithPrimaryHand == (spec[1] == "true") &&
+                    grab.GrabAdditionalLimbCount == int.Parse(spec[2],
                         System.Globalization.CultureInfo.InvariantCulture) &&
-                    grab.ConstrictBonus == int.Parse(spec[3],
+                    grab.RakeLimbCount == int.Parse(spec[3],
+                        System.Globalization.CultureInfo.InvariantCulture) &&
+                    grab.MaxHeldTargets == maxHeld && grab.MaxTargetSizeDelta == 0 &&
+                    (engulfer ? ReferenceEquals(grab.HoldBuff, multiHold) &&
+                        ReferenceEquals(grab.GrappledBuff, multiHeld) &&
+                        ReferenceEquals(grab.SwallowedBuff, engulfed) &&
+                        grab.SwallowMaxSizeIsAbsolute && (int)grab.SwallowMaxSize ==
+                            ExpandedSummoningSpecialProfiles.GiantFlytrapEngulfMaxSize :
+                        ReferenceEquals(grab.HoldBuff, hold) &&
+                        ReferenceEquals(grab.GrappledBuff, grappled)) &&
+                    (swallower ? ReferenceEquals(grab.SwallowedBuff, swallowed) &&
+                        !grab.SwallowMaxSizeIsAbsolute && grab.SwallowMaxSizeDelta ==
+                            ExpandedSummoningSpecialProfiles.PurpleWormSwallowSizeDelta :
+                        engulfer || grab.SwallowedBuff == null) &&
+                    grab.ConstrictDiceCount == int.Parse(spec[5],
+                        System.Globalization.CultureInfo.InvariantCulture) &&
+                    grab.ConstrictBonus == int.Parse(spec[6],
                         System.Globalization.CultureInfo.InvariantCulture);
                 bool bonusExact = bonus != null && bonus.Type == CombatManeuver.Grapple &&
                     bonus.Bonus == ExpandedSummoningSpecialProfiles
@@ -20497,7 +20681,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool onUnit = (unit.AddFacts ?? Array.Empty<BlueprintUnitFact>())
                     .Contains(traits);
                 bool row = grabExact && bonusExact && lifecycle && onUnit &&
-                    traits.ComponentsArray.Length == (swallower || raker ? 3 : 2);
+                    traits.ComponentsArray.Length == (swallower || engulfer || raker ? 3 : 2);
                 carriers = carriers && row;
                 rows.Add(spec[0] + "=" + (row ? "exact" : "grab=" + grabExact +
                     ",bonus=" + bonusExact + ",lifecycle=" + lifecycle + ",onUnit=" +
@@ -20508,9 +20692,61 @@ namespace KingmakerGunslinger.RuntimeTesting
             return holdExact && grappledExact && swallowedExact && carriers;
         }
 
+        /// <summary>The Charisma-based parameters every chartered mephit role carries.</summary>
+        private static bool ExpandedSummoningMephitParametersExact(BlueprintAbility ability,
+            int spellLevel)
+        {
+            ContextCalculateAbilityParams parameters = ability.ComponentsArray
+                .OfType<ContextCalculateAbilityParams>().SingleOrDefault();
+            return parameters != null && parameters.StatType == StatType.Charisma &&
+                parameters.ReplaceCasterLevel && parameters.CasterLevel.Value ==
+                    ExpandedSummoningSpecialProfiles.MephitSpellLikeCasterLevel &&
+                parameters.ReplaceSpellLevel && parameters.SpellLevel.Value == spellLevel;
+        }
+
+        /// <summary>An area component whose every effect is gated on enemy-of-caster (the ally-safe cloud).</summary>
+        private static bool ExpandedSummoningAreaComponentIsEnemyOnly(BlueprintComponent component)
+        {
+            var run = component as
+                Kingmaker.UnitLogic.Abilities.Components.AreaEffects.AbilityAreaEffectRunAction;
+            if (run != null)
+                return ExpandedSummoningActionListIsEnemyOnly(run.UnitEnter) &&
+                    ExpandedSummoningActionListIsEnemyOnly(run.UnitMove) &&
+                    ExpandedSummoningActionListIsEnemyOnly(run.Round);
+            var buff = component as
+                Kingmaker.UnitLogic.Abilities.Components.AreaEffects.AbilityAreaEffectBuff;
+            if (buff != null)
+                return buff.Condition != null &&
+                    buff.Condition.Operation == Kingmaker.ElementsSystem.Operation.And &&
+                    buff.Condition.Conditions != null && buff.Condition.Conditions.Any(value =>
+                        value is Kingmaker.UnitLogic.Mechanics.Conditions.ContextConditionIsEnemy &&
+                        !value.Not);
+            return !(component is Kingmaker.UnitLogic.Abilities.Components.Base.AbilityAreaEffectLogic);
+        }
+
+        private static bool ExpandedSummoningActionListIsEnemyOnly(
+            Kingmaker.ElementsSystem.ActionList list)
+        {
+            if (list == null || list.Actions == null || list.Actions.Length == 0) return true;
+            if (list.Actions.Length != 1) return false;
+            var conditional = list.Actions[0] as
+                Kingmaker.Designers.EventConditionActionSystem.Actions.Conditional;
+            return conditional != null && conditional.ConditionsChecker != null &&
+                conditional.ConditionsChecker.Conditions != null &&
+                conditional.ConditionsChecker.Conditions.Length == 1 &&
+                conditional.ConditionsChecker.Conditions[0] is
+                    Kingmaker.UnitLogic.Mechanics.Conditions.ContextConditionIsEnemy &&
+                !conditional.ConditionsChecker.Conditions[0].Not &&
+                (conditional.IfFalse == null || conditional.IfFalse.Actions == null ||
+                    conditional.IfFalse.Actions.Length == 0);
+        }
+
         /// <summary>
         /// Sprint 5: each mephit variant against its profile and the builder's
-        /// contract. A row per variant names every disagreeing part.
+        /// contract. A row per variant names every disagreeing part. The
+        /// correction order's roles (wind wall, chill metal, pyrotechnics,
+        /// magma form), the ally-safe cloud and the enemy-only glitterdust
+        /// are checked slot by slot.
         /// </summary>
         private static bool ExpandedSummoningMephitSpecialExact(
             BlueprintScriptableObject[] all, out string observed)
@@ -20653,6 +20889,170 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     burstDamage.DamageType.Energy == DamageEnergyType.Fire :
                                 burstDamage.DamageType.Type == DamageType.Direct);
                     }
+                    else if (slot.Value == "WindWall")
+                    {
+                        AbilityEffectRunAction wallRun = ability.ComponentsArray
+                            .OfType<AbilityEffectRunAction>().SingleOrDefault();
+                        Kingmaker.UnitLogic.Mechanics.Actions.ContextActionSpawnAreaEffect spawn =
+                            ExpandedSummoningSpecialBuilder.FindSpawnAreaEffect(ability);
+                        BlueprintAbilityAreaEffect area = spawn == null ? null : spawn.AreaEffect;
+                        Kingmaker.UnitLogic.Abilities.Components.AreaEffects.AbilityAreaEffectBuff
+                            shelter = area == null || area.ComponentsArray == null ? null :
+                                area.ComponentsArray.OfType<Kingmaker.UnitLogic.Abilities.Components
+                                    .AreaEffects.AbilityAreaEffectBuff>().SingleOrDefault();
+                        BlueprintBuff state = shelter == null ? null : shelter.Buff;
+                        slotExact = slotExact && ability.Range == AbilityRange.Personal &&
+                            wallRun != null && wallRun.SavingThrowType == SavingThrowType.Unknown &&
+                            spawn != null && spawn.OnUnit && spawn.DurationValue != null &&
+                            spawn.DurationValue.Rate ==
+                                Kingmaker.UnitLogic.Mechanics.DurationRate.Rounds &&
+                            spawn.DurationValue.BonusValue.Value ==
+                                ExpandedSummoningSpecialProfiles.WindWallRounds &&
+                            area != null && area.name == prefix + "WindWallArea" &&
+                            !area.AffectEnemies && !area.AggroEnemies && !area.AffectDead &&
+                            area.Shape == Kingmaker.UnitLogic.Abilities.Blueprints
+                                .AreaEffectShape.Cylinder &&
+                            area.Size.Value == ExpandedSummoningSpecialProfiles.WindWallRadiusFeet &&
+                            area.ComponentsArray.Length == 1 && shelter != null &&
+                            shelter.Condition != null && shelter.Condition.Conditions != null &&
+                            shelter.Condition.Conditions.Length == 1 &&
+                            shelter.Condition.Conditions[0] is
+                                Kingmaker.UnitLogic.Mechanics.Conditions.ContextConditionIsAlly &&
+                            !shelter.Condition.Conditions[0].Not &&
+                            state != null && state.name == prefix + "WindWallState" &&
+                            state.ComponentsArray.OfType<SummonWindWallComponent>().Count() == 1 &&
+                            ExpandedSummoningMephitParametersExact(ability,
+                                ExpandedSummoningSpecialProfiles.WindWallSpellLevel);
+                    }
+                    else if (slot.Value == "ChillMetal")
+                    {
+                        AbilityEffectRunAction chillRun = ability.ComponentsArray
+                            .OfType<AbilityEffectRunAction>().SingleOrDefault();
+                        ContextActionConditionalSaved chillSaved = chillRun == null ||
+                            chillRun.Actions == null || chillRun.Actions.Actions == null ? null :
+                            chillRun.Actions.Actions.OfType<ContextActionConditionalSaved>()
+                                .SingleOrDefault();
+                        ContextActionApplyBuff chillApply = chillSaved == null ||
+                            chillSaved.Failed == null || chillSaved.Failed.Actions == null ? null :
+                            chillSaved.Failed.Actions.OfType<ContextActionApplyBuff>()
+                                .SingleOrDefault();
+                        BlueprintBuff state = chillApply == null ? null : chillApply.Buff;
+                        slotExact = slotExact && ability.Range == AbilityRange.Close &&
+                            ability.CanTargetEnemies && !ability.CanTargetFriends &&
+                            !ability.CanTargetSelf && !ability.CanTargetPoint &&
+                            ability.SpellResistance &&
+                            ability.ComponentsArray.OfType<SummonChillMetalTargetChecker>()
+                                .Count() == 1 &&
+                            chillRun != null && chillRun.SavingThrowType == SavingThrowType.Will &&
+                            chillRun.Actions.Actions.Length == 1 && chillSaved != null &&
+                            chillSaved.Succeed != null && chillSaved.Succeed.Actions.Length == 0 &&
+                            chillSaved.Failed.Actions.Length == 1 && chillApply != null &&
+                            !chillApply.ToCaster && chillApply.DurationValue.BonusValue.Value ==
+                                ExpandedSummoningSpecialProfiles.ChillMetalRounds &&
+                            state != null && state.name == prefix + "ChillMetalState" &&
+                            state.ComponentsArray.OfType<SummonChillMetalComponent>().Count() == 1 &&
+                            ability.ComponentsArray.OfType<SpellDescriptorComponent>().Count() == 1 &&
+                            ExpandedSummoningMephitParametersExact(ability,
+                                ExpandedSummoningSpecialProfiles.ChillMetalSpellLevel);
+                    }
+                    else if (slot.Value == "Pyrotechnics")
+                    {
+                        AbilityTargetsAround fireworks = ability.ComponentsArray
+                            .OfType<AbilityTargetsAround>().SingleOrDefault();
+                        AbilityEffectRunAction fireRun = ability.ComponentsArray
+                            .OfType<AbilityEffectRunAction>().SingleOrDefault();
+                        ContextActionConditionalSaved fireSaved = fireRun == null ||
+                            fireRun.Actions == null || fireRun.Actions.Actions == null ? null :
+                            fireRun.Actions.Actions.OfType<ContextActionConditionalSaved>()
+                                .SingleOrDefault();
+                        ContextActionApplyBuff fireApply = fireSaved == null ||
+                            fireSaved.Failed == null || fireSaved.Failed.Actions == null ? null :
+                            fireSaved.Failed.Actions.OfType<ContextActionApplyBuff>()
+                                .SingleOrDefault();
+                        BlueprintBuff blinded = fireApply == null ? null : fireApply.Buff;
+                        slotExact = slotExact && ability.Range == AbilityRange.Personal &&
+                            fireworks != null && fireworks.Targets == TargetType.Enemy &&
+                            fireworks.AoERadius.Value ==
+                                ExpandedSummoningSpecialProfiles.MephitBurstRadiusFeet &&
+                            fireRun != null && fireRun.SavingThrowType == SavingThrowType.Will &&
+                            fireSaved != null && fireSaved.Succeed.Actions.Length == 0 &&
+                            fireApply != null && fireApply.DurationValue.DiceType == DiceType.D4 &&
+                            fireApply.DurationValue.DiceCountValue.Value == 1 &&
+                            fireApply.DurationValue.BonusValue.Value ==
+                                ExpandedSummoningSpecialProfiles.PyrotechnicsBlindBonusRounds &&
+                            blinded != null && blinded.name == prefix + "PyrotechnicsBlindedState" &&
+                            blinded.ComponentsArray.Length == 1 &&
+                            blinded.ComponentsArray.OfType<AddCondition>().Count(value =>
+                                value.Condition == UnitCondition.Blindness) == 1 &&
+                            ExpandedSummoningMephitParametersExact(ability,
+                                ExpandedSummoningSpecialProfiles.PyrotechnicsSpellLevel);
+                    }
+                    else if (slot.Value == "MagmaForm")
+                    {
+                        // The supernatural change of shape is not a spell-like ability.
+                        bool magmaExact = ability.Type == AbilityType.Supernatural && cost != null &&
+                            ReferenceEquals(cost.RequiredResource, resource) &&
+                            cost.IsSpendResource && cost.Amount == 1 &&
+                            !ability.ComponentsArray.OfType<SpellListComponent>().Any() &&
+                            facts.Contains(ability) && ability.Icon != null;
+                        AbilityEffectRunAction lavaRun = ability.ComponentsArray
+                            .OfType<AbilityEffectRunAction>().SingleOrDefault();
+                        ContextActionApplyBuff lavaApply = lavaRun == null ||
+                            lavaRun.Actions == null || lavaRun.Actions.Actions == null ? null :
+                            lavaRun.Actions.Actions.OfType<ContextActionApplyBuff>().SingleOrDefault();
+                        BlueprintBuff lava = lavaApply == null ? null : lavaApply.Buff;
+                        AddDamageResistancePhysical reduction = lava == null ? null :
+                            lava.ComponentsArray.OfType<AddDamageResistancePhysical>().SingleOrDefault();
+                        Kingmaker.Designers.Mechanics.Buffs.BuffMovementSpeed crawl = lava == null ?
+                            null : lava.ComponentsArray.OfType<
+                                Kingmaker.Designers.Mechanics.Buffs.BuffMovementSpeed>().SingleOrDefault();
+                        AddCondition noAttacks = lava == null ? null :
+                            lava.ComponentsArray.OfType<AddCondition>().SingleOrDefault();
+                        slotExact = magmaExact && ability.Range == AbilityRange.Personal &&
+                            lavaRun != null && lavaRun.Actions.Actions.Length == 1 &&
+                            lavaApply != null && lavaApply.ToCaster &&
+                            lavaApply.DurationValue.BonusValue.Value ==
+                                ExpandedSummoningSpecialProfiles.MagmaFormRounds &&
+                            lava != null && lava.name == prefix + "MagmaFormState" &&
+                            lava.ComponentsArray.Length == 3 && reduction != null &&
+                            reduction.Value.Value ==
+                                ExpandedSummoningSpecialProfiles.MagmaFormDamageReduction &&
+                            reduction.BypassedByMagic && reduction.MinEnhancementBonus == 1 &&
+                            !reduction.BypassedByMaterial && !reduction.BypassedByAlignment &&
+                            !reduction.BypassedByForm && !reduction.BypassedByReality &&
+                            !reduction.BypassedByWeaponType && !reduction.BypassedByMeleeWeapon &&
+                            !reduction.Or && !reduction.UsePool && crawl != null &&
+                            crawl.Value == ExpandedSummoningSpecialProfiles.MagmaFormSpeedFeet -
+                                unit.Speed.Value &&
+                            noAttacks != null && noAttacks.Condition == UnitCondition.CanNotAttack;
+                    }
+                    else if (slot.Value == "StinkingCloud")
+                    {
+                        Kingmaker.UnitLogic.Mechanics.Actions.ContextActionSpawnAreaEffect spawn =
+                            ExpandedSummoningSpecialBuilder.FindSpawnAreaEffect(ability);
+                        BlueprintAbilityAreaEffect area = spawn == null ? null : spawn.AreaEffect;
+                        slotExact = slotExact && spawn != null && area != null &&
+                            area.name == prefix + "StinkingCloudArea" &&
+                            area.ComponentsArray != null && area.ComponentsArray.Length > 0 &&
+                            area.ComponentsArray.All(ExpandedSummoningAreaComponentIsEnemyOnly);
+                    }
+                    else if (slot.Value == "Glitterdust")
+                    {
+                        AbilityTargetsAround[] arounds = ability.ComponentsArray
+                            .OfType<AbilityTargetsAround>().ToArray();
+                        slotExact = slotExact && arounds.Length >= 1 &&
+                            arounds.All(value => value.Targets == TargetType.Enemy) &&
+                            ExpandedSummoningSpecialBuilder.FindSpawnAreaEffect(ability) == null;
+                    }
+                    // Every slot's cast action; the lava form waits three rounds.
+                    Kingmaker.Controllers.Brain.Blueprints.BlueprintAiCastSpell slotAction =
+                        unit.Brain == null || unit.Brain.Actions == null ? null :
+                        unit.Brain.Actions.OfType<Kingmaker.Controllers.Brain.Blueprints
+                            .BlueprintAiCastSpell>().SingleOrDefault(value =>
+                                ReferenceEquals(value.Ability, ability));
+                    if (slotAction == null || slotAction.StartCooldownRounds != (slot.Value == "MagmaForm" ?
+                            ExpandedSummoningSpecialProfiles.MagmaFormAiStartCooldownRounds : 0))
+                        failures.Add(slot.Key + "-ai");
                     if (!slotExact) failures.Add(slot.Key + ":" + slot.Value);
                 }
                 BlueprintAbilityResource[] granted = traits.ComponentsArray.OfType<

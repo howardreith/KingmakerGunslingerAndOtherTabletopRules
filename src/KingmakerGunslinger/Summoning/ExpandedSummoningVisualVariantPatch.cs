@@ -354,6 +354,55 @@ namespace KingmakerGunslinger.Summoning
     }
 
     /// <summary>
+    /// Everything a visual variant created for one view (correction order):
+    /// the replaced renderers with their original shared materials, the
+    /// private material clones and the coat textures. With it the view can
+    /// be put back exactly and every owned object destroyed - when the view
+    /// goes, when an attach fails part way, or on a module-wide sweep. A
+    /// second release of the same record is a no-op.
+    /// </summary>
+    internal sealed class SummonVisualOwnership
+    {
+        internal SummonVisualOwnership(UnitEntityView view, string blueprintName)
+        {
+            View = new WeakReference(view);
+            BlueprintName = blueprintName;
+        }
+
+        internal WeakReference View { get; private set; }
+        internal string BlueprintName { get; private set; }
+        internal readonly Dictionary<Renderer, Material[]> Originals =
+            new Dictionary<Renderer, Material[]>();
+        internal readonly List<Material> Materials = new List<Material>();
+        internal readonly List<Texture2D> Textures = new List<Texture2D>();
+        internal bool Released;
+        internal string ReleaseOutcome;
+    }
+
+    /// <summary>
+    /// The teardown seam (correction order): when the game destroys a unit
+    /// view that carries a visual variant, the variant's ownership is
+    /// released before the view's own destruction runs - renderers put back,
+    /// clones, coat textures and the controller's instances of the clones
+    /// destroyed. Nothing of the variant outlives its view.
+    /// </summary>
+    [HarmonyPatch(typeof(UnitEntityView), "OnDestroy")]
+    internal static class ExpandedSummoningVisualTeardownPatch
+    {
+        private static void Prefix(UnitEntityView __instance)
+        {
+            try
+            {
+                ExpandedSummoningVisualVariantPatch.ReleaseView(__instance, "view-destroyed", false);
+            }
+            catch (Exception)
+            {
+                // Teardown never interrupts the game's own view destruction.
+            }
+        }
+    }
+
+    /// <summary>
     /// Applies a registered visual variant when a KMG summon's view attaches
     /// (Sprint 5). Everything is validated before a renderer is touched: no
     /// registered variant, no renderer, or a material without a colour slot
@@ -377,8 +426,163 @@ namespace KingmakerGunslinger.Summoning
             new Dictionary<string, SummonVisualVariant>(StringComparer.Ordinal);
         private static readonly ConditionalWeakTable<UnitEntityView, string>
             Applied = new ConditionalWeakTable<UnitEntityView, string>();
+        private static readonly ConditionalWeakTable<UnitEntityView, SummonVisualOwnership>
+            Ownerships = new ConditionalWeakTable<UnitEntityView, SummonVisualOwnership>();
         private static readonly object Sync = new object();
         private static readonly List<string> Outcomes = new List<string>();
+        private static readonly List<SummonVisualOwnership> LiveOwnerships =
+            new List<SummonVisualOwnership>();
+        private static readonly List<string> Releases = new List<string>();
+
+        /// <summary>
+        /// Fixture-only fault injection: when positive, an attach throws
+        /// after that many renderers have been swapped, so the rollback of
+        /// a part-way attach can be proven on a live view. Zero in play.
+        /// </summary>
+        internal static int FaultAfterRenderers { get; set; }
+
+        /// <summary>"blueprint=reason;restored=N;materials=N;instances=N;textures=N;controller=..." per release.</summary>
+        internal static IReadOnlyList<string> ObservedReleases
+        { get { lock (Sync) { return Releases.ToArray(); } } }
+
+        internal static void ClearObservations()
+        { lock (Sync) { Outcomes.Clear(); Releases.Clear(); } }
+
+        /// <summary>
+        /// The project's live footprint: every material and texture in the
+        /// process whose name carries the variant prefix (the clones, the
+        /// coat textures and the controller's instances of the clones) and
+        /// the number of views still owning a variant.
+        /// </summary>
+        internal static string CountOwnedObjects(out int materials, out int textures, out int live)
+        {
+            materials = Resources.FindObjectsOfTypeAll<Material>().Count(value =>
+                value != null && value.name != null &&
+                value.name.StartsWith(VariantMaterialName, StringComparison.Ordinal));
+            textures = Resources.FindObjectsOfTypeAll<Texture2D>().Count(value =>
+                value != null && value.name != null &&
+                value.name.StartsWith(VariantMaterialName, StringComparison.Ordinal));
+            lock (Sync) { live = LiveOwnerships.Count; }
+            return "materials=" + materials + ";textures=" + textures + ";live=" + live;
+        }
+
+        /// <summary>"renderers=N;materials=N;textures=N;released=bool" for a view's ownership, or "&lt;none&gt;".</summary>
+        internal static string DescribeOwnership(UnitEntityView view)
+        {
+            SummonVisualOwnership ownership;
+            if (view == null || !Ownerships.TryGetValue(view, out ownership)) return "<none>";
+            return "renderers=" + ownership.Originals.Count + ";materials=" +
+                ownership.Materials.Count + ";textures=" + ownership.Textures.Count +
+                ";released=" + ownership.Released;
+        }
+
+        /// <summary>
+        /// Releases one view's variant: renderers back to their original
+        /// shared materials, the controller re-read (unless the view is being
+        /// destroyed), owned objects destroyed. "&lt;none&gt;" for a view
+        /// without an ownership; idempotent.
+        /// </summary>
+        internal static string ReleaseView(UnitEntityView view, string reason, bool reinitialize)
+        {
+            SummonVisualOwnership ownership;
+            if (view == null || !Ownerships.TryGetValue(view, out ownership)) return "<none>";
+            return Release(ownership, reason, true, reinitialize);
+        }
+
+        /// <summary>
+        /// The module-wide sweep: every live ownership released (views put
+        /// back where they still exist), then every straggling object with
+        /// the variant prefix destroyed. For module shutdown and the fixture.
+        /// </summary>
+        internal static string ReleaseAll(string reason)
+        {
+            SummonVisualOwnership[] live;
+            lock (Sync) { live = LiveOwnerships.ToArray(); }
+            int released = 0;
+            foreach (SummonVisualOwnership ownership in live)
+            {
+                UnitEntityView view = ownership.View.Target as UnitEntityView;
+                Release(ownership, reason, true, view != null && view.gameObject != null);
+                released++;
+            }
+            int swept = 0;
+            foreach (Material material in Resources.FindObjectsOfTypeAll<Material>())
+                if (material != null && material.name != null &&
+                    material.name.StartsWith(VariantMaterialName, StringComparison.Ordinal))
+                { DestroyOwned(material); swept++; }
+            foreach (Texture2D texture in Resources.FindObjectsOfTypeAll<Texture2D>())
+                if (texture != null && texture.name != null &&
+                    texture.name.StartsWith(VariantMaterialName, StringComparison.Ordinal))
+                { DestroyOwned(texture); swept++; }
+            return "released=" + released + ";swept=" + swept;
+        }
+
+        private static void DestroyOwned(UnityEngine.Object owned)
+        {
+            // Runtime-created objects: destroyed at once so that a count in
+            // the same frame already shows them gone.
+            try { UnityEngine.Object.DestroyImmediate(owned); }
+            catch (Exception) { UnityEngine.Object.Destroy(owned); }
+        }
+
+        private static string Release(SummonVisualOwnership ownership, string reason,
+            bool restoreRenderers, bool reinitialize)
+        {
+            if (ownership == null) return "<none>";
+            if (ownership.Released) return ownership.ReleaseOutcome;
+            ownership.Released = true;
+            int restored = 0, instances = 0, materials = 0, textures = 0;
+            var doomed = new List<Material>();
+            foreach (Material material in ownership.Materials)
+                if (material != null && !doomed.Contains(material)) doomed.Add(material);
+            foreach (KeyValuePair<Renderer, Material[]> pair in ownership.Originals)
+            {
+                Renderer renderer = pair.Key;
+                if (renderer == null) continue;
+                // The game's controller instantiates what it drives: those
+                // instances of the clones sit on the renderer now and are as
+                // much the project's as the clones.
+                Material[] current = renderer.sharedMaterials;
+                if (current != null)
+                    foreach (Material material in current)
+                        if (material != null && material.name != null &&
+                            material.name.StartsWith(VariantMaterialName, StringComparison.Ordinal) &&
+                            !doomed.Contains(material))
+                        { doomed.Add(material); instances++; }
+                if (restoreRenderers)
+                {
+                    renderer.sharedMaterials = pair.Value;
+                    restored++;
+                }
+            }
+            string controller = "skipped";
+            UnitEntityView view = ownership.View.Target as UnitEntityView;
+            if (restoreRenderers && reinitialize && view != null && view.gameObject != null)
+            {
+                try
+                {
+                    controller = ExpandedSummoningPteranodonViewPatch
+                        .ReinitializeMaterialController(view);
+                }
+                catch (Exception exception) { controller = "exception:" + exception.GetType().Name; }
+            }
+            foreach (Material material in doomed)
+                if (material != null) { DestroyOwned(material); materials++; }
+            foreach (Texture2D texture in ownership.Textures)
+                if (texture != null) { DestroyOwned(texture); textures++; }
+            ownership.Materials.Clear();
+            ownership.Textures.Clear();
+            ownership.Originals.Clear();
+            ownership.ReleaseOutcome = reason + ";restored=" + restored + ";materials=" + materials +
+                ";instances=" + instances + ";textures=" + textures + ";controller=" + controller;
+            lock (Sync)
+            {
+                LiveOwnerships.Remove(ownership);
+                if (Releases.Count >= 256) Releases.RemoveAt(0);
+                Releases.Add(ownership.BlueprintName + "=" + ownership.ReleaseOutcome);
+            }
+            return ownership.ReleaseOutcome;
+        }
 
         internal static void Register(SummonVisualVariant variant)
         {
@@ -518,6 +722,34 @@ namespace KingmakerGunslinger.Summoning
 
         internal static string Apply(UnitEntityView view, SummonVisualVariant variant)
         {
+            var ownership = new SummonVisualOwnership(view, view.EntityData.Blueprint.name);
+            string outcome;
+            try
+            {
+                outcome = Apply(view, variant, ownership);
+            }
+            catch (Exception exception)
+            {
+                // A failed attach leaves nothing behind: renderers back to
+                // the donor's materials, every object made on the way gone.
+                Release(ownership, "attach-failed:" + exception.GetType().Name, true, true);
+                throw;
+            }
+            if (!outcome.StartsWith("variant:applied", StringComparison.Ordinal))
+            {
+                Release(ownership, "attach-incomplete:" + outcome, true, true);
+                return outcome;
+            }
+            Ownerships.Remove(view);
+            Ownerships.Add(view, ownership);
+            lock (Sync) { LiveOwnerships.Add(ownership); }
+            return outcome;
+        }
+
+        private static string Apply(UnitEntityView view, SummonVisualVariant variant,
+            SummonVisualOwnership ownership)
+        {
+            int swapped = 0;
             Renderer[] renderers = view.GetComponentsInChildren<Renderer>(true)
                 .Where(value => value != null && value.sharedMaterials != null &&
                     value.sharedMaterials.Length != 0)
@@ -540,6 +772,7 @@ namespace KingmakerGunslinger.Summoning
                     if (skinned == null) { coatOutcome = coatOutcome ?? "no-skinned-mesh"; continue; }
                     coat = SummonCoatRasterizer.Rasterize(skinned.sharedMesh, variant.Coat,
                         CoatTextureSize, out coatOutcome);
+                    if (coat != null) ownership.Textures.Add(coat);
                 }
                 for (int index = 0; index < originals.Length; index++)
                 {
@@ -552,6 +785,7 @@ namespace KingmakerGunslinger.Summoning
                     if (coat != null && !original.HasProperty(MainTextureSlot)) continue;
                     var material = new Material(original);
                     material.name = VariantMaterialName;
+                    ownership.Materials.Add(material);
                     if (coat != null && material.HasProperty(MainTextureSlot))
                     {
                         // The coat replaces the albedo; the colour slot is
@@ -580,7 +814,15 @@ namespace KingmakerGunslinger.Summoning
                     tinted++;
                     changed = true;
                 }
-                if (changed) renderer.sharedMaterials = replacements;
+                if (changed)
+                {
+                    ownership.Originals[renderer] = originals;
+                    renderer.sharedMaterials = replacements;
+                    swapped++;
+                    if (FaultAfterRenderers > 0 && swapped >= FaultAfterRenderers)
+                        throw new InvalidOperationException(
+                            "KMG visual variant fault injected after " + swapped + " renderer(s).");
+                }
             }
             if (tinted == 0) return "variant:no-colour-slot";
             if (variant.Coat != null && coated == 0)

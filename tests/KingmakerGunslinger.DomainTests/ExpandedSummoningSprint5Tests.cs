@@ -80,9 +80,9 @@ namespace KingmakerGunslinger.DomainTests
             }
             Assertions.Equal(6, ExpandedSummoningSpecialProfiles.MephitVariants.Length,
                 "Six mephit variants.");
-            AssertBreath("dust-mephit", "Slashing", 1, 4, true, "Blur", null);
-            AssertBreath("ice-mephit", "Cold", 1, 4, true, "MagicMissile", null);
-            AssertBreath("magma-mephit", "Fire", 1, 8, false, null, null);
+            AssertBreath("dust-mephit", "Slashing", 1, 4, true, "Blur", "WindWall");
+            AssertBreath("ice-mephit", "Cold", 1, 4, true, "MagicMissile", "ChillMetal");
+            AssertBreath("magma-mephit", "Fire", 1, 8, false, "Pyrotechnics", "MagmaForm");
             AssertBreath("ooze-mephit", "Acid", 1, 4, true, "AcidArrow", "StinkingCloud");
             AssertBreath("salt-mephit", "Slashing", 1, 4, true, "Glitterdust", "Dehydrate");
             AssertBreath("steam-mephit", "Fire", 1, 4, true, "Blur", "BoilingRain");
@@ -145,7 +145,8 @@ namespace KingmakerGunslinger.DomainTests
                     specials += 3;
                 }
             }
-            Assertions.Equal(48, specials, "Sprint 5 adds forty-eight mephit specials.");
+            Assertions.Equal(60, specials,
+                "Sprint 5 adds forty-eight mephit specials; the correction order's four chartered roles add twelve more.");
             string builder = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
                 "src", "KingmakerGunslinger", "Blueprints", "ExpandedSummoningSpecialBuilder.cs"));
             foreach (string token in new[] {
@@ -178,8 +179,8 @@ namespace KingmakerGunslinger.DomainTests
                 "The visual variant patch must be compiled into the mod.");
             string icons = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
                 "src", "KingmakerGunslinger", "Blueprints", "ExpandedSummoningIconBuilder.cs"));
-            Assertions.True(icons.Contains("\"Dehydrate\" || slot.Value == \"BoilingRain\""),
-                "The project bursts wear their mephit's icon.");
+            Assertions.True(icons.Contains("IsProjectMephitAbility(slot.Value)"),
+                "The project bursts and the chartered roles wear their mephit's icon.");
         }
 
         internal static void LedgerAndIconsCoverTheNewCreatures()
@@ -193,9 +194,10 @@ namespace KingmakerGunslinger.DomainTests
             var entries = Newtonsoft.Json.Linq.JObject.Parse(ledger)["entries"]
                 .Select(value => (string)value["symbol"]).ToArray();
             string[] appended = entries.Where(value =>
-                value.Contains(".DustMephit") || value.Contains(".IceMephit") ||
+                (value.Contains(".DustMephit") || value.Contains(".IceMephit") ||
                 value.Contains(".MagmaMephit") || value.Contains(".OozeMephit") ||
-                value.Contains(".SaltMephit") || value.Contains(".SteamMephit")).ToArray();
+                value.Contains(".SaltMephit") || value.Contains(".SteamMephit")) &&
+                !ExpandedSummoningCorrectionTests.IsCorrectionIdentity(value)).ToArray();
             Assertions.Equal(AppendedLedgerIdentities, appended.Length,
                 "Sprint 5 must append exactly its own identities to the ledger.");
             // Append-only: the Sprint 5 block sits directly before the Sprint 6
@@ -203,14 +205,14 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(entries.Skip(entries.Length - AppendedLedgerIdentities -
                     ExpandedSummoningSprint6Tests.AppendedLedgerIdentities -
                     ExpandedSummoningSprint7Tests.AppendedLedgerIdentities -
-                    ExpandedSummoningSprint8Tests.AppendedLedgerIdentities)
+                    (ExpandedSummoningSprint8Tests.AppendedLedgerIdentities + ExpandedSummoningCorrectionTests.AppendedLedgerIdentities))
                 .Take(AppendedLedgerIdentities)
                 .All(value => appended.Contains(value)),
                 "The ledger is append-only: Sprint 5 identities sit directly before Sprint 6's.");
             Assertions.True(entries.Skip(entries.Length - AppendedLedgerIdentities -
                     ExpandedSummoningSprint6Tests.AppendedLedgerIdentities -
                     ExpandedSummoningSprint7Tests.AppendedLedgerIdentities -
-                    ExpandedSummoningSprint8Tests.AppendedLedgerIdentities -
+                    (ExpandedSummoningSprint8Tests.AppendedLedgerIdentities + ExpandedSummoningCorrectionTests.AppendedLedgerIdentities) -
                     ExpandedSummoningSprint4Tests.AppendedLedgerIdentities)
                 .Take(ExpandedSummoningSprint4Tests.AppendedLedgerIdentities)
                 .All(value => !appended.Contains(value)),
