@@ -485,7 +485,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint6-spider-web", ExpandedSummoningSprint6Tests.GiantSpiderWebIsBounded),
             Case("expanded-summoning.sprint6-pixie-verified", ExpandedSummoningSprint6Tests.PixieIsVerifiedNotChanged),
             Case("expanded-summoning.sprint6-ledger", ExpandedSummoningSprint6Tests.LedgerCoversTheRepairSpecials),
-            Case("expanded-summoning.sprint7-rake-charge-only", ExpandedSummoningSprint7Tests.RakeIsChargeOnly),
+            Case("expanded-summoning.sprint7-rake-gate", ExpandedSummoningSprint7Tests.RakeGateIsChargeOrHeldFoe),
             Case("expanded-summoning.sprint7-cat-carriers", ExpandedSummoningSprint7Tests.CatsCarryGrabAndRake),
             Case("expanded-summoning.sprint7-lion-visual", ExpandedSummoningSprint7Tests.LionVisualIsBounded),
             Case("expanded-summoning.sprint7-ledger", ExpandedSummoningSprint7Tests.LedgerCoversTheCatCarriers),

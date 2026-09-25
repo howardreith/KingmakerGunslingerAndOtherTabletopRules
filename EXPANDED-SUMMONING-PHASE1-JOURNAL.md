@@ -280,3 +280,72 @@ The bound is the resource - one sprint per summoning - and the effect is a
 one-round enhancement bonus to speed that the game caps on its own. It is a
 smaller thing than the tabletop's, and it is exactly as repeatable as the
 charter allows, which is not at all.
+
+## 2026-09-25 - The correction order
+
+The reviewer's order on the draft was exact and it was right: the labels
+had said "complete" over a set of documented deviations that were not
+accepted deviations at all. The cats grabbed with claws that the stat blocks
+give to the bite; the rake was "charge or holding" without asking whether
+the foe had been held since the round began, and the full attack still
+carried the rake swings it merely refused to roll; grab ignored size; the
+worm swallowed on the grab; the flytrap held one foe; the mephits had lost
+four of their chartered roles to "no native spell"; the cyclops had no
+armor and an automatic critical instead of a chosen roll; the web asked for
+a Reflex save where the rules make a touch attack; the hooves were primary;
+and every material a variant made lived as long as the process.
+
+The corrections are all in the code now, and the shape of each is the same:
+find the exact seam the rule needs, and refuse the adaptation that would
+have been easier. Attack identity is the weapon entity's slot in the body,
+never the blueprint the foreclaws and rake claws share. The rake's "held
+since the round began" is the held state's own round counter, and the
+sequencing seam is the game's own full-attack builder, so the rake is not
+rolled-and-refused but never planned. Swallow and engulf are the maintain
+check of a later turn used as though pinning, with the size limits the
+Bestiary states. The flytrap's links are buffs on the targets that name the
+flytrap and the bite that took them, which is what lets four of them save,
+load and count on their own. The mephit roles are project abilities on the
+Charisma-based DC the stat blocks give; the cloud is the native cloud area
+cloned with an enemy-of-caster gate on every action, which is the only way
+"ally-safe" can be a property of the effect rather than of where the AI
+happened to put it. The cyclops's insight is the pre-rolled-result seam the
+d20 rule already exposes, so the confirmation is the dice's. The web is the
+projectile delivery the game's rays use, with the ray weapon, so the roll is
+against touch AC. The hooves are one flag the game already honours. And
+every clone, texture and controller instance a variant makes is now written
+into an ownership record that the view's own destruction releases.
+
+Two of the findings changed my own earlier records rather than the code
+alone. The cyclops's natural armor had drifted to +9 in an attempt to reach
+an armor class the stat block never states; it is +7 and the class is 19,
+with the +4 armor as a fact. And the "charge-only rake" phrase, which every
+document repeated, was retired for the rule as written.
+
+Three engine facts came out of the shake-outs and are worth keeping. A
+buff advances its round number only when one of its components asks for
+rounds, so a held state without such a component never counts a round (the
+grappled state now carries a no-op round component). The units inside an
+area effect are read from the area's spatial grid, which the game's move
+controller advances only for a unit that walked, so a unit placed by
+translocation stays indexed where it spawned until it moves; the fixture
+re-indexes a placed unit where it stands, as the game does for a unit that
+moved. The working save's area has walls a few metres from the party,
+so every fixture placement takes a compass point whose line of sight is
+clear in the game's own sight geometry. The game ticks no mode controller
+behind an active loading screen or loading process, so a scenario must
+wait for those flags to clear before it expects an area effect, a buff or
+the sleep list to advance on the game's own frames. And a summon is not
+player faction: the game's own ally relation from a summon's side excludes
+the party it fights for, so an ally-scoped effect a summon casts must key
+on the enemy relation, which is exact from both sides.
+
+The proof is the point, so the correction added two scenarios, both of
+them spanning frames. The rules scenario exercises every corrected rule on
+live units with the hostile's size, touch AC and saves set exactly; the wind
+wall and the stinking cloud are found through the game's own grid on the
+frames after their placement, and the web's projectile flies on world time
+and makes its own attack roll, recorded by a global rulebook observer. The
+lifecycle scenario waits for the game to destroy each view at the end of the
+frame that disposed its unit, and counts the variant's objects back to
+baseline after each cycle.
