@@ -99,17 +99,18 @@ namespace KingmakerGunslinger.DomainTests
                 ExpandedSummoningSpecialProfiles.BoilingRainDice == 2 &&
                 ExpandedSummoningSpecialProfiles.BoilingRainDieSides == 6,
                 "Dehydrate is 2d8 and boiling rain 2d6.");
-            Assertions.Equal(6, ExpandedSummoningSpecialProfiles.MephitVisualTints.Length,
-                "Six visual tints.");
-            foreach (SummonVisualTintProfile tint in ExpandedSummoningSpecialProfiles.MephitVisualTints)
-                Assertions.True(tint.IsBounded && Keys.Contains(tint.Key), "Tint out of bounds: " + tint.Key);
-            Assertions.True(ExpandedSummoningSpecialProfiles.MephitVisualTint("magma-mephit").HasEmission &&
-                ExpandedSummoningSpecialProfiles.MephitVisualTint("steam-mephit").HasEmission &&
-                !ExpandedSummoningSpecialProfiles.MephitVisualTint("salt-mephit").HasEmission,
-                "Magma and steam glow; the others only tint.");
-            Assertions.True(ExpandedSummoningSpecialProfiles.MephitVisualTints
-                .Select(value => value.TintRed + "/" + value.TintGreen + "/" + value.TintBlue)
-                .Distinct().Count() == 6, "Every mephit tint is distinct.");
+            Assertions.Equal(6, ExpandedSummoningSpecialProfiles.MephitCoats.Length,
+                "Six elemental coats.");
+            foreach (SummonCoatProfile coat in ExpandedSummoningSpecialProfiles.MephitCoats)
+                Assertions.True(coat.IsBounded && Keys.Contains(coat.Key), "Coat out of bounds: " + coat.Key);
+            Assertions.True(ExpandedSummoningSpecialProfiles.MephitCoat("magma-mephit").Pattern == SummonCoatPattern.Stripes &&
+                ExpandedSummoningSpecialProfiles.MephitCoat("ooze-mephit").Pattern == SummonCoatPattern.Spots &&
+                ExpandedSummoningSpecialProfiles.MephitCoat("magma-mephit").BaseRed < 0.3f &&
+                ExpandedSummoningSpecialProfiles.MephitCoat("magma-mephit").MarkRed > 0.9f,
+                "Magma is lava cracks on dark crust; ooze is blotched.");
+            Assertions.True(ExpandedSummoningSpecialProfiles.MephitCoats
+                .Select(value => value.BaseRed + "/" + value.BaseGreen + "/" + value.BaseBlue)
+                .Distinct().Count() == 6, "Every mephit coat base colour is distinct.");
         }
 
         internal static void MephitPackIsBounded()
