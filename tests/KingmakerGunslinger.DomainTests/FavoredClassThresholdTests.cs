@@ -64,5 +64,26 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(2, FavoredClassMechanicsPolicy.ThresholdUsesBetween(weighted, 9, 10),
                 "A threshold's own amount is added.");
         }
+
+        // Call of the Wild moves the Blast's extra uses into the power's own
+        // class-level gates (17 and 20): the same arithmetic as the native
+        // level-entry layout, decided like the native gate.
+        internal static void PowerUseGatesFollowTheEffectiveLevel()
+        {
+            Func<int, int, int> uses = (real, steps) =>
+                FavoredClassMechanicsPolicy.GateUsesDelta(real, steps, 17, false, 1) +
+                FavoredClassMechanicsPolicy.GateUsesDelta(real, steps, 20, false, 1);
+            Assertions.Equal(0, uses(15, 0), "No steps, no uses.");
+            Assertions.Equal(0, uses(15, 1), "16 reaches no gate.");
+            Assertions.Equal(1, uses(15, 2), "17: the second use early.");
+            Assertions.Equal(1, uses(16, 1), "One step at 16 reaches 17.");
+            Assertions.Equal(0, uses(17, 2), "The 17th-level use is already native at 17.");
+            Assertions.Equal(1, uses(18, 2), "20: the third use early.");
+            Assertions.Equal(0, uses(20, 2), "Nothing beyond the power's own gates.");
+            Assertions.Equal(-1, FavoredClassMechanicsPolicy.GateUsesDelta(9, 2, 10, true, 1),
+                "A before-gate is lost at the effective level exactly as natively.");
+            Assertions.Equal(0, FavoredClassMechanicsPolicy.GateUsesDelta(12, 2, 10, true, 1),
+                "A before-gate already passed natively changes nothing.");
+        }
     }
 }

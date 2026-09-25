@@ -494,14 +494,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 FcbBlastResourceGuid, "Elemental Blast resource");
             var rayResource = BlueprintLibraryLookup.RequireExact<BlueprintAbilityResource>(library,
                 FcbRayResourceGuid, "Elemental Ray resource");
+            // The native layout keeps them in the bloodline's level entries;
+            // Call of the Wild moves them into the Blast feature's own gates.
             IList<KeyValuePair<int, int>> thresholds =
                 FavoredClassSelectedPowerLevel.UseThresholds(progression, blastResource);
+            var gates = FavoredClassSelectedPowerLevel.UseGates(blast, blastResource);
             var row = new JObject
             {
-                ["thresholds"] = new JArray(thresholds.Select(value => value.Key + ":" + value.Value))
+                ["levelEntries"] = new JArray(thresholds.Select(value => value.Key + ":" + value.Value)),
+                ["powerGates"] = new JArray(gates.Select(value => (value.Key.BeforeThisLevel ? "<" : "@") +
+                    value.Key.Level + ":" + value.Value))
             };
-            if (!thresholds.Select(value => value.Key).OrderBy(value => value).SequenceEqual(new[] { 17, 20 }))
-                failures.Add("the fire bloodline's Blast use thresholds were not exactly 17 and 20");
+            int[] useLevels = thresholds.Select(value => value.Key).Concat(gates.Where(value =>
+                !value.Key.BeforeThisLevel).Select(value => value.Key.Level)).OrderBy(value => value).ToArray();
+            if (!useLevels.SequenceEqual(new[] { 17, 20 }) || gates.Any(value => value.Key.BeforeThisLevel))
+                failures.Add("the fire Blast's own use thresholds were not exactly 17 and 20");
             Func<int, int, UnitEntityData> sorcererAt = (levels, steps) =>
             {
                 UnitEntityData unit = create();
