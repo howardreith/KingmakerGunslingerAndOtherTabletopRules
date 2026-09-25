@@ -91,6 +91,9 @@ namespace KingmakerGunslinger.Blueprints
                     blueprint = registry.Register<BlueprintActivatableAbility>(
                         identity.Symbol, () => CreateActivatableShell(
                             identity.Symbol));
+                else if (identity.PlannedType == "BlueprintAbilityAreaEffect")
+                    blueprint = registry.Register<BlueprintAbilityAreaEffect>(
+                        identity.Symbol, () => CreateAreaEffectShell(identity.Symbol));
                 else throw new InvalidOperationException(
                     "Unsupported Expanded Summoning planned type " +
                     identity.PlannedType + ".");
@@ -179,6 +182,22 @@ namespace KingmakerGunslinger.Blueprints
                 BlueprintFeature>();
             result.name = InternalName(symbol);
             result.ComponentsArray = Array.Empty<BlueprintComponent>();
+            return result;
+        }
+
+        /// <summary>
+        /// Correction order: the area effects the mephit roles spawn (the
+        /// wind wall's shelter and the ally-safe cloud). The special builder
+        /// fills shape, size, visual and logic; the shell carries an empty
+        /// visual link because the area view dereferences it.
+        /// </summary>
+        private static BlueprintAbilityAreaEffect CreateAreaEffectShell(string symbol)
+        {
+            BlueprintAbilityAreaEffect result = ScriptableObject.CreateInstance<
+                BlueprintAbilityAreaEffect>();
+            result.name = InternalName(symbol);
+            result.ComponentsArray = Array.Empty<BlueprintComponent>();
+            result.Fx = new Kingmaker.ResourceLinks.PrefabLink();
             return result;
         }
 
