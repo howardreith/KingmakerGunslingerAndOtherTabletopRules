@@ -158,7 +158,9 @@ cylinder and scales that instance's ring, an `AreaEffectView.SpawnFxs` postfix
 scales a ring the native attach spawns later, a `GameObjectsPool.Release`
 prefix restores the exact ring scales before a pooled effect is reused, and
 `Fact.SelectUIData` and `MechanicActionBarSlotActivableAbility.GetDescription`
-postfixes show the owner's range in the owner's own descriptions
+postfixes show the owner's range in the owner's own descriptions, following
+the recorded widening outcome of that owner's live areas: native while one
+failed or waits for its ring, and after a failure until a later success
 (`docs/FAVORED-CLASS-TARGET-MANIFEST.md`).
 
 Two scopes are closed in finally blocks rather than by postfixes alone, since

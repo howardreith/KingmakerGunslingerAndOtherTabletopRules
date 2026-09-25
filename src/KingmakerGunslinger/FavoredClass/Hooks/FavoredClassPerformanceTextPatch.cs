@@ -13,8 +13,13 @@ namespace KingmakerGunslinger.FavoredClass.Hooks
 {
     /// <summary>
     /// O01 displayed range: the owner's own performance feature and toggle
-    /// facts describe the range the owner's area actually has. The shared
-    /// blueprints and every other bard's text are unchanged.
+    /// facts describe the range the owner's area actually has, from the
+    /// recorded widening outcome of the owner's own live areas of that target
+    /// (FavoredClassPerformanceInstances, FavoredClassRangePresentation): a
+    /// live area that failed to widen or still waits for its ring keeps every
+    /// description native, and after a failed widening they stay native until
+    /// a later widening succeeds. The shared blueprints and every other
+    /// bard's text are unchanged.
     /// </summary>
     internal static class FavoredClassPerformanceOwnerText
     {
@@ -23,14 +28,17 @@ namespace KingmakerGunslinger.FavoredClass.Hooks
         {
             string key = FavoredClassPerformanceManifest.KeyForFact(blueprintGuid);
             if (key == null || owner == null || native == null ||
-                FavoredClassRuntime.IsEffectUnavailable(FavoredClassCatalog.EffectPerformanceRange))
+                FavoredClassRuntime.IsEffectUnavailable(FavoredClassCatalog.EffectPerformanceRange) ||
+                FavoredClassRuntime.IsTargetUnavailable(FavoredClassCatalog.EffectPerformanceRange, key))
                 return null;
             int steps = FavoredClassEarnedSteps.For(owner, FavoredClassCatalog.EffectPerformanceRange, key);
             if (steps <= 0)
                 return null;
             FavoredClassPerformanceTarget target = FavoredClassPerformanceManifest.For(key);
-            return FavoredClassPerformanceText.OwnerDescription(native, target.BaseFeet,
+            int? feet = FavoredClassPerformanceInstances.Feet(owner, key,
                 FavoredClassPerformanceManifest.OwnerFeet(target, steps));
+            return feet == null ? null :
+                FavoredClassPerformanceText.OwnerDescription(native, target.BaseFeet, feet.Value);
         }
     }
 
