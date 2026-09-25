@@ -20,6 +20,7 @@ using Kingmaker.View.MapObjects.SriptZones;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.FavoredClass;
+using KingmakerGunslinger.FavoredClass.Hooks;
 using KingmakerGunslinger.FavoredClass.Mechanics;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -92,6 +93,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["targets"] = _performanceRange.Targets,
                 ["excluded"] = _performanceRange.Excluded,
                 ["release"] = _performanceRange.Release,
+                ["injected"] = _performanceRange.Injected,
                 ["diagnostics"] = new JArray(_performanceRange.Diagnostics),
             };
             string evidencePath = WriteFavoredClassEvidence("favored-class-performance-range.json", evidence);
@@ -116,6 +118,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "Storm Call and Mockery counters, even when held, never widen an area, scale a ring or change a text",
                 Describe(probe.Excluded, probe.ExcludedFailures), probe.ExcludedFailures.Count == 0,
                 "FavoredClassPerformanceManifest publication exclusions"));
+            assertions.Add(Assertion("fcb-performance-injected-failure",
+                "an injected ring failure on a real invested bard's area (a scaler that scales then throws, and one that scales nothing) leaves that instance at its native radius with its ring restored exactly; with the scaler restored the same bard's next instance widens its cylinder and ring together",
+                Describe(probe.Injected, probe.InjectedFailures), probe.InjectedFailures.Count == 0,
+                "FavoredClassPerformanceRangePatch.RingScalerOverride (guarded qualification seam); spawned instance radius and ring systems"));
             assertions.Add(Assertion("fcb-performance-ring-release",
                 "every scaled ring is restored exactly when the pool releases it, and a ring reclaimed from the pool for an uninvested bard is native",
                 Describe(probe.Release, probe.ReleaseFailures), probe.ReleaseFailures.Count == 0,
@@ -232,6 +238,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 TextFailures = new List<string>();
                 ExcludedFailures = new List<string>();
                 ReleaseFailures = new List<string>();
+                Injected = new JObject();
+                InjectedFailures = new List<string>();
             }
 
             internal bool Done { get; private set; }
@@ -244,6 +252,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal List<string> TextFailures { get; private set; }
             internal List<string> ExcludedFailures { get; private set; }
             internal List<string> ReleaseFailures { get; private set; }
+            internal JObject Injected { get; private set; }
+            internal List<string> InjectedFailures { get; private set; }
 
             internal void Poll()
             {
@@ -258,6 +268,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             if (target.Published) ObserveTarget(target);
                             else ObserveExcluded(target);
                         }
+                        ObserveInjectedFailure();
                         Release["scaledBeforeRelease"] = FavoredClassPerformanceRing.ScaledCount;
                         DestroySpawned();
                         _releaseStarted = Time.realtimeSinceStartup;
@@ -329,6 +340,86 @@ namespace KingmakerGunslinger.RuntimeTesting
                 row["text"] = ObserveText(target, feature);
                 RemoveRanks(_low, leaf);
                 RemoveRanks(_high, leaf);
+            }
+
+            // Review finding 4: an injected ring failure on a real instance
+            // restores its radius and ring; the healthy path still widens both.
+            private void ObserveInjectedFailure()
+            {
+                FavoredClassPerformanceTarget target = FavoredClassPerformanceManifest.For("InspireCourage");
+                BlueprintFeature leaf = _leaves.Pair(FavoredClassCatalog.EffectPerformanceRange, target.Key).Full;
+                var area = Resolve<BlueprintAbilityAreaEffect>(target.AreaGuids[0]);
+                Dictionary<string, JObject> native;
+                if (area == null || !_nativeSystems.TryGetValue(target.RingAssetId, out native))
+                {
+                    InjectedFailures.Add("Inspire Courage's area or native ring systems were not observed");
+                    return;
+                }
+                float nativeRadius = area.Size.Meters;
+                float widened = FavoredClassMechanicsPolicy.PerformanceRadiusMeters(nativeRadius, Low);
+                // Exactly the native local scales the uninvested bard's ring showed.
+                Func<GameObject, bool> nativeRing = ring =>
+                {
+                    if (ring == null || FavoredClassPerformanceRing.IsScaled(ring))
+                        return false;
+                    Dictionary<string, JObject> systems = Systems(ring);
+                    return native.All(entry => systems.ContainsKey(entry.Key) &&
+                        Floats(systems[entry.Key]["localScale"]).SequenceEqual(Floats(entry.Value["localScale"])));
+                };
+                GrantFavoredClassRanks(_low, leaf, Low);
+                try
+                {
+                    foreach (string fault in new[] { "scaled-then-threw", "scaled-nothing" })
+                    {
+                        FavoredClassPerformanceRangePatch.RingScalerOverride = (effect, factor) =>
+                        {
+                            if (fault == "scaled-nothing")
+                                return 0;
+                            FavoredClassPerformanceRing.Scale(effect, factor);
+                            throw new InvalidOperationException("injected ring failure after scaling");
+                        };
+                        AreaEffectEntityData instance;
+                        try
+                        {
+                            instance = Spawn(_low, area);
+                        }
+                        finally
+                        {
+                            FavoredClassPerformanceRangePatch.RingScalerOverride = null;
+                        }
+                        GameObject ring = Ring(instance);
+                        bool restored = nativeRing(ring);
+                        Injected[fault] = new JObject
+                        {
+                            ["radius"] = Radius(instance),
+                            ["nativeRadius"] = nativeRadius,
+                            ["ringPresent"] = ring != null,
+                            ["ringFactor"] = ring == null ? 1f : FavoredClassPerformanceRing.FactorOf(ring),
+                            ["ringNative"] = restored
+                        };
+                        if (!Same(Radius(instance), nativeRadius))
+                            InjectedFailures.Add(fault + ": the cylinder stayed widened after the ring failed");
+                        if (!restored)
+                            InjectedFailures.Add(fault + ": the ring was not restored to its native transforms");
+                    }
+                    AreaEffectEntityData healthy = Spawn(_low, area);
+                    GameObject healthyRing = Ring(healthy);
+                    Injected["healthy"] = new JObject
+                    {
+                        ["radius"] = Radius(healthy),
+                        ["factor"] = healthyRing == null ? 1f : FavoredClassPerformanceRing.FactorOf(healthyRing)
+                    };
+                    if (healthyRing != null)
+                        _scaledRings.Add(healthyRing);
+                    if (!Same(Radius(healthy), widened) || healthyRing == null ||
+                        !FavoredClassPerformanceRing.IsScaled(healthyRing))
+                        InjectedFailures.Add("with the scaler restored the instance did not widen with its ring");
+                }
+                finally
+                {
+                    FavoredClassPerformanceRangePatch.RingScalerOverride = null;
+                    RemoveRanks(_low, leaf);
+                }
             }
 
             private JObject ObserveArea(FavoredClassPerformanceTarget target, BlueprintAbilityAreaEffect area)

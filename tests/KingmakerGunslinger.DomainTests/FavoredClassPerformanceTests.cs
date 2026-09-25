@@ -171,11 +171,15 @@ namespace KingmakerGunslinger.DomainTests
                 "__instance.Shape as ScriptZoneCylinder",
                 "native = blueprint.Size.Meters;",
                 "FavoredClassMechanicsPolicy.PerformanceRadiusMeters(native, steps)",
-                "FavoredClassPerformanceRing.Scale(ring, widened / native);",
+                "FavoredClassPerformanceWidening.Apply(native, widened, ringExpected, ring != null,",
+                "() => ScaleRing(ring, widened / native),",
+                "() => FavoredClassPerformanceRing.Restore(ring));",
+                "Widen(cylinder, ring, native, widened, RingExpected(blueprint));",
+                "return key == null || FavoredClassPerformanceManifest.For(key).RingSpawns;",
                 "[HarmonyPatch(typeof(AreaEffectView), \"SpawnFxs\")]",
                 "FavoredClassPerformanceRangePatch.ScaleLateRing(__instance);",
                 "FavoredClassPerformanceRing.IsScaled(ring)",
-                "Math.Abs(cylinder.Radius - widened) < 0.0001f",
+                "Math.Abs(cylinder.Radius - native) < 0.0001f",
                 "[HarmonyPatch(typeof(Kingmaker.Visual.Particles.GameObjectsPool), \"Release\")]",
                 "FavoredClassPerformanceRing.Restore(instance);"
             })

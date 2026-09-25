@@ -22,7 +22,8 @@ namespace KingmakerGunslinger.FavoredClass.Hooks
         internal static string For(UnitDescriptor owner, string blueprintGuid, string native)
         {
             string key = FavoredClassPerformanceManifest.KeyForFact(blueprintGuid);
-            if (key == null || owner == null || native == null)
+            if (key == null || owner == null || native == null ||
+                FavoredClassRuntime.IsEffectUnavailable(FavoredClassCatalog.EffectPerformanceRange))
                 return null;
             int steps = FavoredClassEarnedSteps.For(owner, FavoredClassCatalog.EffectPerformanceRange, key);
             if (steps <= 0)

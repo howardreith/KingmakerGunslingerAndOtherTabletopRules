@@ -15,9 +15,12 @@ namespace KingmakerGunslinger.FavoredClass.Hooks
     /// O01 read point: after the native view of a published performance area
     /// creates its per-instance cylinder and spawns its ring effect (on spawn
     /// and again when a save is loaded), widens that one instance's cylinder
-    /// to the casting bard's own range and scales that one spawned ring by
-    /// the same ratio, so the actual range and the visible boundary agree.
-    /// The shared area blueprint, other performers of the same area and every
+    /// to the casting bard's own range together with that one spawned ring,
+    /// in one transaction (FavoredClassPerformanceWidening): the ring is
+    /// scaled first and the cylinder is widened only when the ring changed; a
+    /// failure restores both. An intentionally ringless target widens its
+    /// cylinder alone, and a ring that spawns later widens both then. The
+    /// shared area blueprint, other performers of the same area and every
     /// other performance keep their native size.
     /// </summary>
     [HarmonyPatch(typeof(AreaEffectView), "InitAtRuntime")]
@@ -26,27 +29,69 @@ namespace KingmakerGunslinger.FavoredClass.Hooks
         private static readonly FieldInfo SpawnedFx = typeof(AreaEffectView).GetField("m_SpawnedFx",
             BindingFlags.Instance | BindingFlags.NonPublic);
 
+        /// <summary>
+        /// Guarded runtime qualification only: replaces the ring scaler so a
+        /// failure can be injected into the real transaction; null in play.
+        /// </summary>
+        internal static Func<GameObject, float, int> RingScalerOverride;
+
         private static void Postfix(AreaEffectView __instance, MechanicsContext context,
             BlueprintAbilityAreaEffect blueprint)
         {
             if (__instance == null || context == null || blueprint == null ||
                 blueprint.Shape != AreaEffectShape.Cylinder)
                 return;
+            var cylinder = __instance.Shape as ScriptZoneCylinder;
+            float native, widened;
             try
             {
-                var cylinder = __instance.Shape as ScriptZoneCylinder;
-                float native, widened;
                 if (cylinder == null || !OwnerRadius(context, blueprint, out native, out widened))
                     return;
-                cylinder.Radius = widened;
-                var ring = SpawnedFx == null ? null : SpawnedFx.GetValue(__instance) as GameObject;
-                if (ring != null && native > 0f)
-                    FavoredClassPerformanceRing.Scale(ring, widened / native);
             }
             catch (Exception)
             {
-                // Fail safe: the area keeps its native radius and is never broken.
+                return;
             }
+            var ring = SpawnedFx == null ? null : SpawnedFx.GetValue(__instance) as GameObject;
+            // A ring the native attach already handled for this owner is never scaled twice.
+            if (ring != null && FavoredClassPerformanceRing.IsScaled(ring))
+                return;
+            Widen(cylinder, ring, native, widened, RingExpected(blueprint));
+        }
+
+        /// <summary>Whether the area's published target spawns a ring (Scandal's link spawns none).</summary>
+        internal static bool RingExpected(BlueprintAbilityAreaEffect blueprint)
+        {
+            string key = blueprint == null ? null : FavoredClassPerformanceManifest.KeyForArea(blueprint.AssetGuid);
+            return key == null || FavoredClassPerformanceManifest.For(key).RingSpawns;
+        }
+
+        /// <summary>The one widening transaction for one area instance and its ring.</summary>
+        internal static FavoredClassWideningOutcome Widen(ScriptZoneCylinder cylinder, GameObject ring, float native,
+            float widened, bool ringExpected)
+        {
+            if (cylinder == null || native <= 0f)
+                return FavoredClassWideningOutcome.Failed;
+            try
+            {
+                return FavoredClassPerformanceWidening.Apply(native, widened, ringExpected, ring != null,
+                    radius => cylinder.Radius = radius,
+                    () => ScaleRing(ring, widened / native),
+                    () => FavoredClassPerformanceRing.Restore(ring));
+            }
+            catch (Exception)
+            {
+                // Fail safe: native radius and ring.
+                try { FavoredClassPerformanceRing.Restore(ring); } catch (Exception) { }
+                try { cylinder.Radius = native; } catch (Exception) { }
+                return FavoredClassWideningOutcome.Failed;
+            }
+        }
+
+        private static int ScaleRing(GameObject ring, float factor)
+        {
+            Func<GameObject, float, int> scaler = RingScalerOverride;
+            return scaler != null ? scaler(ring, factor) : FavoredClassPerformanceRing.Scale(ring, factor);
         }
 
         /// <summary>The casting bard's own radius for a published performance area with earned steps.</summary>
@@ -56,7 +101,8 @@ namespace KingmakerGunslinger.FavoredClass.Hooks
             native = widened = 0f;
             string key = FavoredClassPerformanceManifest.KeyForArea(blueprint.AssetGuid);
             UnitEntityData caster = key == null ? null : context.MaybeCaster;
-            if (caster == null)
+            if (caster == null ||
+                FavoredClassRuntime.IsEffectUnavailable(FavoredClassCatalog.EffectPerformanceRange))
                 return false;
             int steps = FavoredClassEarnedSteps.For(caster.Descriptor, FavoredClassCatalog.EffectPerformanceRange,
                 key);
@@ -69,8 +115,10 @@ namespace KingmakerGunslinger.FavoredClass.Hooks
 
         /// <summary>
         /// A ring spawned after the initialization (a save load whose owner
-        /// view was not ready yet) receives the scale of the cylinder the
-        /// initialization widened for this owner, exactly once.
+        /// view was not ready yet) arrives while the instance is still at its
+        /// native radius (the initialization deferred the widening): the ring
+        /// and the cylinder are widened together now, exactly once, or both
+        /// stay native on failure.
         /// </summary>
         internal static void ScaleLateRing(AreaEffectView view)
         {
@@ -83,8 +131,8 @@ namespace KingmakerGunslinger.FavoredClass.Hooks
                 return;
             float native, widened;
             if (OwnerRadius(view.Context, blueprint, out native, out widened) && native > 0f &&
-                Math.Abs(cylinder.Radius - widened) < 0.0001f)
-                FavoredClassPerformanceRing.Scale(ring, widened / native);
+                Math.Abs(cylinder.Radius - native) < 0.0001f)
+                Widen(cylinder, ring, native, widened, true);
         }
     }
 
