@@ -22,44 +22,44 @@ committed). Target manifests are in `docs/FAVORED-CLASS-TARGET-MANIFEST.md`.
 
 ## Final candidate regression
 
-Candidate `15c37695c`: package `4a7b5e2d...`, DLL `0261ebd3...`, MVID `613caf93-62bb-41e8-87fa-4a154cb4cfd6`. Every run used the guarded
+Candidate `aa298650e`: package `9abc9454...`, DLL `5edb5e42...`, MVID `ecc3e660-1295-4132-8019-c01b703561d2`. Every run used the guarded
 Steam App ID 640820 launcher against that one deployment.
 
 | Scenario | Run | Result |
 | --- | --- | --- |
-| disposable-favored-class-respec | 20260924T2220569492544Z-disposable-favored-class-respec | PASS |
-| working-save-favored-class-lifecycle@KMG_AUTOMATION_WORKING | 20260924T2221475158335Z-working-save-favored-class-lifecycle | PASS |
-| working-save-favored-class-visual-census@KMG_AUTOMATION_WORKING | 20260924T2222538555754Z-working-save-favored-class-visual-census | PASS |
-| observe-favored-class-contract | 20260924T2225191670410Z-observe-favored-class-contract | PASS |
-| observe-favored-class-host-state | 20260924T2226027077620Z-observe-favored-class-host-state | PASS |
-| disposable-favored-class-grit | 20260924T2226448919430Z-disposable-favored-class-grit | PASS |
-| disposable-favored-class-gunslinger-menus | 20260924T2227387192205Z-disposable-favored-class-gunslinger-menus | PASS |
-| disposable-favored-class-gunslinger-mechanics | 20260924T2228377987947Z-disposable-favored-class-gunslinger-mechanics | PASS |
-| disposable-favored-class-initiative-timing | 20260924T2229202813247Z-disposable-favored-class-initiative-timing | PASS |
-| disposable-favored-class-elemental-core | 20260924T2230008474164Z-disposable-favored-class-elemental-core | PASS |
-| disposable-favored-class-mostly-human | 20260924T2230465320618Z-disposable-favored-class-mostly-human | PASS |
-| disposable-favored-class-elemental-advanced | 20260924T2231378092098Z-disposable-favored-class-elemental-advanced | PASS |
-| disposable-favored-class-oracle-revelations | 20260924T2232222685811Z-disposable-favored-class-oracle-revelations | PASS |
-| disposable-favored-class-performance-range | 20260924T2233041003087Z-disposable-favored-class-performance-range | PASS |
-| observe-favored-class-performance-visuals | 20260924T2233465837647Z-observe-favored-class-performance-visuals | PASS |
-| disposable-favored-class-multiclass | 20260924T2234289449508Z-disposable-favored-class-multiclass | PASS |
-| working-save-elemental-character-creation-regression@KMG_AUTOMATION_WORKING (parameters class=Fighter;allocation=point-buy;nativeActionCase=racial-actions;race=Ifrit) | 20260924T2235098039182Z-working-save-elemental-character-creation-regression | PASS |
-| working-save-elemental-character-creation-regression@KMG_AUTOMATION_WORKING (parameters class=Fighter;allocation=point-buy;nativeActionCase=racial-actions;race=Oread) | 20260924T2240280151837Z-working-save-elemental-character-creation-regression | PASS |
-| working-save-elemental-character-creation-regression@KMG_AUTOMATION_WORKING (parameters class=Fighter;allocation=point-buy;nativeActionCase=racial-actions;race=Sylph) | 20260924T2245332372339Z-working-save-elemental-character-creation-regression | PASS |
-| working-save-elemental-character-creation-regression@KMG_AUTOMATION_WORKING (parameters class=Fighter;allocation=point-buy;nativeActionCase=racial-actions;race=Undine) | 20260924T2250450430459Z-working-save-elemental-character-creation-regression | PASS |
-| working-save-elemental-native-respec@KMG_AUTOMATION_WORKING (parameters class=Fighter;allocation=point-buy;race=Sylph) | 20260924T2255050397924Z-working-save-elemental-native-respec | PASS |
-| working-save-elemental-native-respec@KMG_AUTOMATION_WORKING (parameters class=Fighter;allocation=point-buy;race=Oread) | 20260924T2301546644666Z-working-save-elemental-native-respec | PASS |
-| working-save-smoke@KMG_AUTOMATION_WORKING | 20260924T2311475004961Z-working-save-smoke | PASS |
-| observe-favored-class-contract (settings profile third-party ON (L05; G16/G17/G18/G21 routes offered); the settings file was removed and verified absent) | 20260924T2313089848830Z-observe-favored-class-contract | PASS |
-| disposable-favored-class-gunslinger-menus (settings profile third-party ON (L05; G16/G17/G18/G21 routes offered); the settings file was removed and verified absent) | 20260924T2313502108487Z-disposable-favored-class-gunslinger-menus | PASS |
-| observe-favored-class-contract (settings profile Mostly Human OFF (the trait not offered; identities registered); the settings file was removed and verified absent) | 20260924T2314436934489Z-observe-favored-class-contract | PASS |
-| observe-favored-class-host-state (settings profile integration OFF (L04; mechanics suppressed, identities registered); the settings file was removed and verified absent) | 20260924T2315245411188Z-observe-favored-class-host-state | PASS |
-| observe-favored-class-contract (settings profile invalid file (schema 2; charter defaults applied and reported); the settings file was removed and verified absent) | 20260924T2316046934476Z-observe-favored-class-contract | PASS |
-| L01 fresh-process persistence (prepare) (transaction 20260924T2309101781279Z_bf24e45a425e4d8f857c7fb353530d5b) | 20260924T2309157060004Z-disposable-word-of-recall-favored-class-persistence | PASS |
-| L01 fresh-process persistence (verify) (one subject per state/mechanic family reloaded, with native firearm shots and the paladin aura after the reload; settings and Mods tree restored) | 20260924T2310166908088Z-disposable-word-of-recall-favored-class-persistence | PASS |
-| profile gunslinger-only / observe-favored-class-host-state (compatibility transaction compat-20260924T231747Z-dcf3953a3add) | 20260924T2319494086008Z-observe-favored-class-host-state | PASS |
-| profile gunslinger-call-of-the-wild / observe-favored-class-host-state (compatibility transaction compat-20260924T232119Z-4b08e222f897) | 20260924T2323061576141Z-observe-favored-class-host-state | PASS |
-| profile gunslinger-call-of-the-wild-favored-class / observe-favored-class-host-state (compatibility transaction compat-20260924T232452Z-bdadf725cfa8) | 20260924T2326399456937Z-observe-favored-class-host-state | PASS |
+| observe-favored-class-contract | 20260925T0442014336065Z-observe-favored-class-contract | PASS |
+| observe-favored-class-host-state | 20260925T0442470377650Z-observe-favored-class-host-state | PASS |
+| disposable-favored-class-elemental-core | 20260925T0443327592809Z-disposable-favored-class-elemental-core | PASS |
+| disposable-favored-class-elemental-advanced | 20260925T0444268317587Z-disposable-favored-class-elemental-advanced | PASS |
+| disposable-favored-class-oracle-revelations | 20260925T0445118827121Z-disposable-favored-class-oracle-revelations | PASS |
+| disposable-favored-class-performance-range | 20260925T0445550085579Z-disposable-favored-class-performance-range | PASS |
+| working-save-favored-class-lifecycle@KMG_AUTOMATION_WORKING | 20260925T0446375733122Z-working-save-favored-class-lifecycle | PASS |
+| disposable-favored-class-respec | 20260925T0447410780186Z-disposable-favored-class-respec | PASS |
+| working-save-favored-class-visual-census@KMG_AUTOMATION_WORKING | 20260925T0448564533908Z-working-save-favored-class-visual-census | PASS |
+| disposable-favored-class-grit | 20260925T0451021662946Z-disposable-favored-class-grit | PASS |
+| disposable-favored-class-gunslinger-menus | 20260925T0451520044915Z-disposable-favored-class-gunslinger-menus | PASS |
+| disposable-favored-class-gunslinger-mechanics | 20260925T0452460362817Z-disposable-favored-class-gunslinger-mechanics | PASS |
+| disposable-favored-class-initiative-timing | 20260925T0453281176124Z-disposable-favored-class-initiative-timing | PASS |
+| disposable-favored-class-mostly-human | 20260925T0454100197487Z-disposable-favored-class-mostly-human | PASS |
+| observe-favored-class-performance-visuals | 20260925T0455038884902Z-observe-favored-class-performance-visuals | PASS |
+| disposable-favored-class-multiclass | 20260925T0455468192345Z-disposable-favored-class-multiclass | PASS |
+| working-save-elemental-character-creation-regression@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;nativeActionCase=racial-actions;race=Ifrit | 20260925T0456291145076Z-working-save-elemental-character-creation-regression | PASS |
+| working-save-elemental-character-creation-regression@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;nativeActionCase=racial-actions;race=Oread | 20260925T0501485813744Z-working-save-elemental-character-creation-regression | PASS |
+| working-save-elemental-character-creation-regression@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;nativeActionCase=racial-actions;race=Sylph | 20260925T0506558549217Z-working-save-elemental-character-creation-regression | PASS |
+| working-save-elemental-character-creation-regression@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;nativeActionCase=racial-actions;race=Undine | 20260925T0512150323621Z-working-save-elemental-character-creation-regression | PASS |
+| working-save-elemental-native-respec@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;race=Sylph | 20260925T0516386681284Z-working-save-elemental-native-respec | PASS |
+| working-save-elemental-native-respec@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;race=Oread | 20260925T0523365598188Z-working-save-elemental-native-respec | PASS |
+| working-save-smoke@KMG_AUTOMATION_WORKING | 20260925T0533562110581Z-working-save-smoke | PASS |
+| observe-favored-class-contract | 20260925T0535332433840Z-observe-favored-class-contract | PASS |
+| disposable-favored-class-gunslinger-menus | 20260925T0536147542447Z-disposable-favored-class-gunslinger-menus | PASS |
+| observe-favored-class-contract | 20260925T0537085074923Z-observe-favored-class-contract | PASS |
+| observe-favored-class-host-state | 20260925T0537500689244Z-observe-favored-class-host-state | PASS |
+| observe-favored-class-contract | 20260925T0538309895677Z-observe-favored-class-contract | PASS |
+| L01 persistence prepare | 20260925T0531206167709Z-disposable-word-of-recall-favored-class-persistence | PASS |
+| L01 persistence verify | 20260925T0532235047813Z-disposable-word-of-recall-favored-class-persistence | PASS |
+| profile gunslinger-only | 20260925T0542174833633Z-observe-favored-class-host-state | PASS |
+| profile gunslinger-call-of-the-wild | 20260925T0545354549902Z-observe-favored-class-host-state | PASS |
+| profile gunslinger-call-of-the-wild-favored-class | 20260925T0549104167941Z-observe-favored-class-host-state | PASS |
 
 ## Scheduled rows (30)
 
@@ -85,14 +85,14 @@ candidate re-ran every scenario listed above.
 | G21 | Tiefling → Gunslinger (JBE) | O | gunslinger.cmb-dirty-trick-trip | 1/2 | NATIVE TESTED | profile-ON menus; mechanics: trip and dirty tricks only; final candidate: third-party ON menus `20260924T2313502108487Z` (the profile ON publishes 166 leaves) |
 | I01 | Ifrit → Alchemist | I | alchemist.bomb-damage | 1/2 | NATIVE TESTED | elemental core: flat bonus on a 5d1 bomb, above the damage floor; Vivisectionist excluded |
 | I05 | Ifrit → Inquisitor | A | inquisitor.intimidate-fire-subtype (planes knowledge omitted) | 1/2 | NATIVE TESTED | native Demoralize against a fire-subtype target only |
-| I06 | Ifrit → Oracle | I | oracle.selected-revelation (52 revelation targets) | 1/6 per revelation | NATIVE TESTED; SAVE TESTED (Fire Breath) | oracle run: all 52 scoped with every audited family; the Ifrit menu offers exactly the owned revelation; Fire Breath at level 9 with two steps: CL 11, DC +1, dice 11, uses 3; neighbors and Fireball unchanged; held tiers unmoved; feature context refreshes on gain and removal; L01 families: the Ifrit Fire Breath counter reloads with its caster level, DC, dice and uses; the census renders every revelation leaf |
-| I07 | Ifrit → Rogue | A | rogue.demoralize (jump omitted) | 1/2 | NATIVE TESTED | the native Demoralize check only |
-| I08 | Ifrit → Sorcerer | I | sorcerer.selected-bloodline-power (fire) | 1/6, cap +2 | NATIVE TESTED; SAVE TESTED (Fire Ray); RESPEC TESTED | advanced run: Blast CL 9→11, DC 14→15, dice 9→11; Ray damage bonus 5→6; neighbor and Fireball unchanged; L01 families: the Fire Ray arithmetic reloads; respec: an Ifrit Sorcerer 6 respecced to Sorcerer 1 keeps no counter and native level-1 arithmetic |
+| I06 | Ifrit → Oracle | I | oracle.selected-revelation (52 revelation targets; 51 published, Spirit of the Warrior excluded) | 1/6 per revelation | NATIVE TESTED; SAVE TESTED (Fire Breath) | oracle run: all 52 scoped with every audited family; the Ifrit menu offers exactly the owned revelation; Fire Breath at level 9 with two steps: CL 11, DC +1, dice 11, uses 3; neighbors and Fireball unchanged; own level gates follow the effective level (83 moved natively); feature context refreshes on gain and removal; L01 families: the Ifrit Fire Breath counter reloads with its caster level, DC, dice and uses; the census renders every revelation leaf |
+| I07 | Ifrit → Rogue | A | rogue.demoralize (jump omitted) | 1/2 | NATIVE TESTED | the native Demoralize check only; a failure inside a demoralize never reaches the next check (finally-closed envelope) |
+| I08 | Ifrit → Sorcerer | I | sorcerer.selected-bloodline-power (fire) | 1/6, cap +2 | NATIVE TESTED; SAVE TESTED (Fire Ray); RESPEC TESTED | advanced run: Blast CL 9→11, DC 14→15, dice 9→11; Blast's extra uses at 17 and 20 follow the effective level; Ray damage bonus 5→6; neighbor and Fireball unchanged; L01 families: the Fire Ray arithmetic reloads; respec: an Ifrit Sorcerer 6 respecced to Sorcerer 1 keeps no counter and native level-1 arithmetic |
 | O01 | Oread → Bard | I | bard.selected-performance-range (14 published performances) | +5 ft, cap +30 ft per performance | NATIVE TESTED; SAVE TESTED | performance run: own Inspire Courage area 50→60 ft, 80 ft at the cap; a 55-ft point inside only when widened; other performance, other performer and blueprint unchanged; Human and Archaeologist not offered; redesign: the area, its ring and the performance's description all show the owner's range, for that bard only; Storm Call and Mockery excluded; lifecycle: membership, movement, interruption, death and area reload; L01 families: the widened area and its ring reload |
 | O04 | Oread → Fighter | A | fighter.cmd-bull-rush-drag (drag omitted) | +1 | NATIVE TESTED | bull rush CMD only |
 | O05 | Oread → Monk | I | monk.unarmed-confirmation | 1/3, cap +5 | NATIVE TESTED | unarmed strikes only (not claws or weapons); better of Critical Focus |
 | O06 | Oread → Paladin | I | paladin.aura-ally-bonus (Courage, Resolve) | 1/4 | NATIVE TESTED; SAVE TESTED | advanced run: fear +4/+5/+6 and charm +4/+6 by each paladin's own steps; other saves unchanged; Divine Hunter not offered; lifecycle: two overlapping paladins follow the native Replace and Morale rules (never a sum, no stacking with Remove Fear); L01 families: the reloaded aura still gives +6 |
-| O07 | Oread → Ranger | I | ranger.companion-natural-armor | 1/4 | NATIVE TESTED; SAVE TESTED; RESPEC TESTED | +2 then +3 on the current companion; stacks with Barkskin; touch and master AC unchanged; replacement leaves no orphan; removal clears it; lifecycle: death, polymorph, reload; respec: the old companion is destroyed without an orphaned projection and the new one receives it once; L01 families: reload and replacement after reload |
+| O07 | Oread → Ranger | I | ranger.companion-natural-armor | 1/4 | NATIVE TESTED; SAVE TESTED; RESPEC TESTED | +2 then +3 on the current companion; stacks with Barkskin; touch and master AC unchanged; replacement leaves no orphan; removal clears it; lifecycle: death, polymorph, reload; respec: the old companion is destroyed without an orphaned projection and the new one receives it once; transitions: unlink, relink, qualification loss, dismissal and resummoning keep exactly one projection on the qualified pet; L01 families: reload, replacement and unlink after reload |
 | O08 | Oread → Summoner | I | summoner.eidolon-natural-armor | 1/4 | NATIVE TESTED | +2 on Call of the Wild's eidolon |
 | S04 | Sylph → Oracle | I | oracle.selected-revelation (shared with I06) | 1/6 | NATIVE TESTED | oracle run: a Sylph Wind Oracle is offered exactly Lightning Breath |
 | S06 | Sylph → Sorcerer | I | sorcerer.selected-bloodline-power (air) | 1/6, cap +2 | NATIVE TESTED (menus; values through the shared adapter) | the Sylph air menu offers AirRay only; Ifrit with air gets none |

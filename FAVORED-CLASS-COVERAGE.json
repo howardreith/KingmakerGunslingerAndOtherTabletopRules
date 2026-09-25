@@ -3,10 +3,10 @@
   "mission": "gunslinger-favored-class-integration",
   "overallStatus": "PARTIAL - NOT RELEASE QUALIFIED",
   "finalCandidate": {
-    "commit": "15c37695c267522ce35cbc021168514d6fb058fc",
-    "packageSha256": "4a7b5e2d29a9a8ace9ac70bb56061f0618251273a3981700cdb1f2edf04e77f0",
-    "dllSha256": "0261ebd3d776d1a74f0a5d9e5364cff79cb5def8c2c5f117b192cd6ca2022189",
-    "dllMvid": "613caf93-62bb-41e8-87fa-4a154cb4cfd6"
+    "commit": "aa298650ecbc7003ce4c4d0ff992984793362462",
+    "packageSha256": "9abc94549073461e966a9c6cc0a8e4093e337666eb4cf586269dbe5e6a2fc526",
+    "dllSha256": "5edb5e424df14b58cfc460782f8b3d7c8f181950a0784b04cc21d77717a064cb",
+    "dllMvid": "ecc3e660-1295-4132-8019-c01b703561d2"
   },
   "statusLadder": [
     "NOT STARTED",
@@ -18,202 +18,172 @@
   ],
   "finalRuns": [
     {
-      "scenario": "disposable-favored-class-respec",
-      "run": "20260924T2220569492544Z-disposable-favored-class-respec",
-      "status": "PASS",
-      "note": ""
-    },
-    {
-      "scenario": "working-save-favored-class-lifecycle@KMG_AUTOMATION_WORKING",
-      "run": "20260924T2221475158335Z-working-save-favored-class-lifecycle",
-      "status": "PASS",
-      "note": ""
-    },
-    {
-      "scenario": "working-save-favored-class-visual-census@KMG_AUTOMATION_WORKING",
-      "run": "20260924T2222538555754Z-working-save-favored-class-visual-census",
-      "status": "PASS",
-      "note": ""
-    },
-    {
       "scenario": "observe-favored-class-contract",
-      "run": "20260924T2225191670410Z-observe-favored-class-contract",
+      "run": "20260925T0442014336065Z-observe-favored-class-contract",
       "status": "PASS",
       "note": ""
     },
     {
       "scenario": "observe-favored-class-host-state",
-      "run": "20260924T2226027077620Z-observe-favored-class-host-state",
-      "status": "PASS",
-      "note": ""
-    },
-    {
-      "scenario": "disposable-favored-class-grit",
-      "run": "20260924T2226448919430Z-disposable-favored-class-grit",
-      "status": "PASS",
-      "note": ""
-    },
-    {
-      "scenario": "disposable-favored-class-gunslinger-menus",
-      "run": "20260924T2227387192205Z-disposable-favored-class-gunslinger-menus",
-      "status": "PASS",
-      "note": ""
-    },
-    {
-      "scenario": "disposable-favored-class-gunslinger-mechanics",
-      "run": "20260924T2228377987947Z-disposable-favored-class-gunslinger-mechanics",
-      "status": "PASS",
-      "note": ""
-    },
-    {
-      "scenario": "disposable-favored-class-initiative-timing",
-      "run": "20260924T2229202813247Z-disposable-favored-class-initiative-timing",
+      "run": "20260925T0442470377650Z-observe-favored-class-host-state",
       "status": "PASS",
       "note": ""
     },
     {
       "scenario": "disposable-favored-class-elemental-core",
-      "run": "20260924T2230008474164Z-disposable-favored-class-elemental-core",
-      "status": "PASS",
-      "note": ""
-    },
-    {
-      "scenario": "disposable-favored-class-mostly-human",
-      "run": "20260924T2230465320618Z-disposable-favored-class-mostly-human",
+      "run": "20260925T0443327592809Z-disposable-favored-class-elemental-core",
       "status": "PASS",
       "note": ""
     },
     {
       "scenario": "disposable-favored-class-elemental-advanced",
-      "run": "20260924T2231378092098Z-disposable-favored-class-elemental-advanced",
+      "run": "20260925T0444268317587Z-disposable-favored-class-elemental-advanced",
       "status": "PASS",
       "note": ""
     },
     {
       "scenario": "disposable-favored-class-oracle-revelations",
-      "run": "20260924T2232222685811Z-disposable-favored-class-oracle-revelations",
+      "run": "20260925T0445118827121Z-disposable-favored-class-oracle-revelations",
       "status": "PASS",
       "note": ""
     },
     {
       "scenario": "disposable-favored-class-performance-range",
-      "run": "20260924T2233041003087Z-disposable-favored-class-performance-range",
+      "run": "20260925T0445550085579Z-disposable-favored-class-performance-range",
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "scenario": "working-save-favored-class-lifecycle@KMG_AUTOMATION_WORKING",
+      "run": "20260925T0446375733122Z-working-save-favored-class-lifecycle",
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "scenario": "disposable-favored-class-respec",
+      "run": "20260925T0447410780186Z-disposable-favored-class-respec",
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "scenario": "working-save-favored-class-visual-census@KMG_AUTOMATION_WORKING",
+      "run": "20260925T0448564533908Z-working-save-favored-class-visual-census",
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "scenario": "disposable-favored-class-grit",
+      "run": "20260925T0451021662946Z-disposable-favored-class-grit",
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "scenario": "disposable-favored-class-gunslinger-menus",
+      "run": "20260925T0451520044915Z-disposable-favored-class-gunslinger-menus",
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "scenario": "disposable-favored-class-gunslinger-mechanics",
+      "run": "20260925T0452460362817Z-disposable-favored-class-gunslinger-mechanics",
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "scenario": "disposable-favored-class-initiative-timing",
+      "run": "20260925T0453281176124Z-disposable-favored-class-initiative-timing",
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "scenario": "disposable-favored-class-mostly-human",
+      "run": "20260925T0454100197487Z-disposable-favored-class-mostly-human",
       "status": "PASS",
       "note": ""
     },
     {
       "scenario": "observe-favored-class-performance-visuals",
-      "run": "20260924T2233465837647Z-observe-favored-class-performance-visuals",
+      "run": "20260925T0455038884902Z-observe-favored-class-performance-visuals",
       "status": "PASS",
       "note": ""
     },
     {
       "scenario": "disposable-favored-class-multiclass",
-      "run": "20260924T2234289449508Z-disposable-favored-class-multiclass",
+      "run": "20260925T0455468192345Z-disposable-favored-class-multiclass",
       "status": "PASS",
       "note": ""
     },
     {
-      "scenario": "working-save-elemental-character-creation-regression@KMG_AUTOMATION_WORKING",
-      "run": "20260924T2235098039182Z-working-save-elemental-character-creation-regression",
+      "scenario": "working-save-elemental-character-creation-regression@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;nativeActionCase=racial-actions;race=Ifrit",
+      "run": "20260925T0456291145076Z-working-save-elemental-character-creation-regression",
       "status": "PASS",
-      "note": "parameters class=Fighter;allocation=point-buy;nativeActionCase=racial-actions;race=Ifrit"
+      "note": "parameters allocation=point-buy;class=Fighter;nativeActionCase=racial-actions;race=Ifrit"
     },
     {
-      "scenario": "working-save-elemental-character-creation-regression@KMG_AUTOMATION_WORKING",
-      "run": "20260924T2240280151837Z-working-save-elemental-character-creation-regression",
+      "scenario": "working-save-elemental-character-creation-regression@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;nativeActionCase=racial-actions;race=Oread",
+      "run": "20260925T0501485813744Z-working-save-elemental-character-creation-regression",
       "status": "PASS",
-      "note": "parameters class=Fighter;allocation=point-buy;nativeActionCase=racial-actions;race=Oread"
+      "note": "parameters allocation=point-buy;class=Fighter;nativeActionCase=racial-actions;race=Oread"
     },
     {
-      "scenario": "working-save-elemental-character-creation-regression@KMG_AUTOMATION_WORKING",
-      "run": "20260924T2245332372339Z-working-save-elemental-character-creation-regression",
+      "scenario": "working-save-elemental-character-creation-regression@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;nativeActionCase=racial-actions;race=Sylph",
+      "run": "20260925T0506558549217Z-working-save-elemental-character-creation-regression",
       "status": "PASS",
-      "note": "parameters class=Fighter;allocation=point-buy;nativeActionCase=racial-actions;race=Sylph"
+      "note": "parameters allocation=point-buy;class=Fighter;nativeActionCase=racial-actions;race=Sylph"
     },
     {
-      "scenario": "working-save-elemental-character-creation-regression@KMG_AUTOMATION_WORKING",
-      "run": "20260924T2250450430459Z-working-save-elemental-character-creation-regression",
+      "scenario": "working-save-elemental-character-creation-regression@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;nativeActionCase=racial-actions;race=Undine",
+      "run": "20260925T0512150323621Z-working-save-elemental-character-creation-regression",
       "status": "PASS",
-      "note": "parameters class=Fighter;allocation=point-buy;nativeActionCase=racial-actions;race=Undine"
+      "note": "parameters allocation=point-buy;class=Fighter;nativeActionCase=racial-actions;race=Undine"
     },
     {
-      "scenario": "working-save-elemental-native-respec@KMG_AUTOMATION_WORKING",
-      "run": "20260924T2255050397924Z-working-save-elemental-native-respec",
+      "scenario": "working-save-elemental-native-respec@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;race=Sylph",
+      "run": "20260925T0516386681284Z-working-save-elemental-native-respec",
       "status": "PASS",
-      "note": "parameters class=Fighter;allocation=point-buy;race=Sylph"
+      "note": "parameters allocation=point-buy;class=Fighter;race=Sylph"
     },
     {
-      "scenario": "working-save-elemental-native-respec@KMG_AUTOMATION_WORKING",
-      "run": "20260924T2301546644666Z-working-save-elemental-native-respec",
+      "scenario": "working-save-elemental-native-respec@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;race=Oread",
+      "run": "20260925T0523365598188Z-working-save-elemental-native-respec",
       "status": "PASS",
-      "note": "parameters class=Fighter;allocation=point-buy;race=Oread"
+      "note": "parameters allocation=point-buy;class=Fighter;race=Oread"
     },
     {
       "scenario": "working-save-smoke@KMG_AUTOMATION_WORKING",
-      "run": "20260924T2311475004961Z-working-save-smoke",
+      "run": "20260925T0533562110581Z-working-save-smoke",
       "status": "PASS",
       "note": ""
     },
     {
       "scenario": "observe-favored-class-contract",
-      "run": "20260924T2313089848830Z-observe-favored-class-contract",
+      "run": "20260925T0535332433840Z-observe-favored-class-contract",
       "status": "PASS",
       "note": "settings profile third-party ON (L05; G16/G17/G18/G21 routes offered); the settings file was removed and verified absent"
     },
     {
       "scenario": "disposable-favored-class-gunslinger-menus",
-      "run": "20260924T2313502108487Z-disposable-favored-class-gunslinger-menus",
+      "run": "20260925T0536147542447Z-disposable-favored-class-gunslinger-menus",
       "status": "PASS",
       "note": "settings profile third-party ON (L05; G16/G17/G18/G21 routes offered); the settings file was removed and verified absent"
     },
     {
       "scenario": "observe-favored-class-contract",
-      "run": "20260924T2314436934489Z-observe-favored-class-contract",
+      "run": "20260925T0537085074923Z-observe-favored-class-contract",
       "status": "PASS",
       "note": "settings profile Mostly Human OFF (the trait not offered; identities registered); the settings file was removed and verified absent"
     },
     {
       "scenario": "observe-favored-class-host-state",
-      "run": "20260924T2315245411188Z-observe-favored-class-host-state",
+      "run": "20260925T0537500689244Z-observe-favored-class-host-state",
       "status": "PASS",
       "note": "settings profile integration OFF (L04; mechanics suppressed, identities registered); the settings file was removed and verified absent"
     },
     {
       "scenario": "observe-favored-class-contract",
-      "run": "20260924T2316046934476Z-observe-favored-class-contract",
+      "run": "20260925T0538309895677Z-observe-favored-class-contract",
       "status": "PASS",
       "note": "settings profile invalid file (schema 2; charter defaults applied and reported); the settings file was removed and verified absent"
-    },
-    {
-      "scenario": "L01 fresh-process persistence (prepare)",
-      "run": "20260924T2309157060004Z-disposable-word-of-recall-favored-class-persistence",
-      "status": "PASS",
-      "note": "transaction 20260924T2309101781279Z_bf24e45a425e4d8f857c7fb353530d5b"
-    },
-    {
-      "scenario": "L01 fresh-process persistence (verify)",
-      "run": "20260924T2310166908088Z-disposable-word-of-recall-favored-class-persistence",
-      "status": "PASS",
-      "note": "one subject per state/mechanic family reloaded, with native firearm shots and the paladin aura after the reload; settings and Mods tree restored"
-    },
-    {
-      "scenario": "profile gunslinger-only / observe-favored-class-host-state",
-      "run": "20260924T2319494086008Z-observe-favored-class-host-state",
-      "status": "PASS",
-      "note": "compatibility transaction compat-20260924T231747Z-dcf3953a3add"
-    },
-    {
-      "scenario": "profile gunslinger-call-of-the-wild / observe-favored-class-host-state",
-      "run": "20260924T2323061576141Z-observe-favored-class-host-state",
-      "status": "PASS",
-      "note": "compatibility transaction compat-20260924T232119Z-4b08e222f897"
-    },
-    {
-      "scenario": "profile gunslinger-call-of-the-wild-favored-class / observe-favored-class-host-state",
-      "run": "20260924T2326399456937Z-observe-favored-class-host-state",
-      "status": "PASS",
-      "note": "compatibility transaction compat-20260924T232452Z-bdadf725cfa8"
     }
   ],
   "scenarioFamilies": {
@@ -816,7 +786,7 @@
     },
     "integrationSettingsFilePresent": false
   },
-  "finalDeployment": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\deployments\\20260924T2220560490337Z\\deployment.json",
+  "finalDeployment": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\deployments\\20260925T0441598369963Z\\deployment.json",
   "continuationDeployments": [
     {
       "id": "20260924T1231430167010Z",
@@ -992,6 +962,54 @@
       "dll": "0261ebd3",
       "mvid": "613caf93-62bb-41e8-87fa-4a154cb4cfd6",
       "backup": "20260924T2326353817722Z",
+      "profile": true
+    },
+    {
+      "id": "20260925T0411348835015Z",
+      "commit": "719085d51",
+      "dll": "36849dc7",
+      "mvid": "69e74a51-319c-4c91-bf2b-67d7f094ba5d",
+      "backup": "20260925T0411302528284Z",
+      "profile": false
+    },
+    {
+      "id": "20260925T0426279539132Z",
+      "commit": "27176f424",
+      "dll": "3c07668a",
+      "mvid": "54f66021-2e12-4cd4-b719-0697c1be6147",
+      "backup": "20260925T0426232586030Z",
+      "profile": false
+    },
+    {
+      "id": "20260925T0441598369963Z",
+      "commit": "aa298650e",
+      "dll": "5edb5e42",
+      "mvid": "ecc3e660-1295-4132-8019-c01b703561d2",
+      "backup": "20260925T0441553147956Z",
+      "profile": false
+    },
+    {
+      "id": "20260925T0542174416518Z",
+      "commit": "aa298650e",
+      "dll": "5edb5e42",
+      "mvid": "ecc3e660-1295-4132-8019-c01b703561d2",
+      "backup": "20260925T0542126789494Z",
+      "profile": true
+    },
+    {
+      "id": "20260925T0545354126150Z",
+      "commit": "aa298650e",
+      "dll": "5edb5e42",
+      "mvid": "ecc3e660-1295-4132-8019-c01b703561d2",
+      "backup": "20260925T0545309351465Z",
+      "profile": true
+    },
+    {
+      "id": "20260925T0549103789544Z",
+      "commit": "aa298650e",
+      "dll": "5edb5e42",
+      "mvid": "ecc3e660-1295-4132-8019-c01b703561d2",
+      "backup": "20260925T0549056382959Z",
       "profile": true
     }
   ]

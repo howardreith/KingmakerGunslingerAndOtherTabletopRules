@@ -9,7 +9,7 @@
   "worktree": "C:\\Dev\\KingmakerGunslingerLab\\worktrees\\favored-class-integration",
   "baselineCommit": "996105ed9e72259a220be56e2a74e0cc18e5ef47",
   "overallStatus": "PARTIAL - NOT RELEASE QUALIFIED",
-  "currentPhase": "continuation complete (repair, qualification and evidence cleanup); owner review pending",
+  "currentPhase": "PR #24 review addressed (six findings) and requalified; owner review pending",
   "phases": {
     "phase-0": {
       "status": "COMPLETE",
@@ -159,6 +159,14 @@
       "dllMvid": "2c9d8c5f-c424-4179-91cd-72ca85438c54",
       "deployment": "runtime-evidence\\deployments\\20260924T0601504282380Z",
       "note": "final local candidate (owner review pending)"
+    },
+    {
+      "commit": "aa298650ecbc7003ce4c4d0ff992984793362462",
+      "packageSha256": "9abc94549073461e966a9c6cc0a8e4093e337666eb4cf586269dbe5e6a2fc526",
+      "dllSha256": "5edb5e424df14b58cfc460782f8b3d7c8f181950a0784b04cc21d77717a064cb",
+      "dllMvid": "ecc3e660-1295-4132-8019-c01b703561d2",
+      "deployment": "runtime-evidence\\deployments\\20260925T0441598369963Z",
+      "note": "final candidate after the PR #24 review"
     }
   ],
   "blockers": {
@@ -172,10 +180,10 @@
     "D4": "fixed (b1b93acad)"
   },
   "finalCandidate": {
-    "commit": "15c37695c267522ce35cbc021168514d6fb058fc",
-    "packageSha256": "4a7b5e2d29a9a8ace9ac70bb56061f0618251273a3981700cdb1f2edf04e77f0",
-    "dllSha256": "0261ebd3d776d1a74f0a5d9e5364cff79cb5def8c2c5f117b192cd6ca2022189",
-    "dllMvid": "613caf93-62bb-41e8-87fa-4a154cb4cfd6"
+    "commit": "aa298650ecbc7003ce4c4d0ff992984793362462",
+    "packageSha256": "9abc94549073461e966a9c6cc0a8e4093e337666eb4cf586269dbe5e6a2fc526",
+    "dllSha256": "5edb5e424df14b58cfc460782f8b3d7c8f181950a0784b04cc21d77717a064cb",
+    "dllMvid": "ecc3e660-1295-4132-8019-c01b703561d2"
   },
   "ownerDecisions": {
     "status": "resolved by the charter or provider behavior; see FAVORED-CLASS-BLOCKERS.md"
@@ -201,5 +209,29 @@
       "ZFavoredClass\\settings.json": "bdceed77d2bf4a31dd9e4eeb64ef9d55a42ef59d23f46abcb1ddbcc6ef66754b"
     },
     "integrationSettingsFilePresent": false
+  },
+  "pullRequest": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/24",
+  "reviewFindings": {
+    "1-host-gate": [
+      "ae0f1dafd436b94ee5e63985f03223e82982f904"
+    ],
+    "2-thresholds": [
+      "f9a8e6cfbecd1c80d323e29a98c6b5ea61fe7600",
+      "27176f424f4d4f6e794669367a26a2d01e8cdff2"
+    ],
+    "3-pet-projection": [
+      "078978a4c8e53710ef36de084027f324554bb1ba",
+      "aa298650ecbc7003ce4c4d0ff992984793362462"
+    ],
+    "4-range-transaction": [
+      "da07c4e07bbc2ea47b63310f33131301e2637654"
+    ],
+    "5-exception-safe-scopes": [
+      "f4f5b9931b693e4429a3324a92d2ff960e73f627"
+    ],
+    "6-bootstrap-aggregate": [
+      "719085d518d15c0590e38ba8b122be516d70876b",
+      "7bb4a704085b143225a8067e39bd8f6b5263237b"
+    ]
   }
 }
