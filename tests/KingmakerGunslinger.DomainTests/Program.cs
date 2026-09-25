@@ -280,6 +280,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("favored-class.range-group-success-beside-native", FavoredClassRangePresentationTests.ASuccessBesideNativeSiblingsNeverWidensAlone),
             Case("favored-class.range-group-success-beside-deferred", FavoredClassRangePresentationTests.ASuccessBesideADeferredSiblingIsHeld),
             Case("favored-class.range-group-unverifiable-rollback", FavoredClassRangePresentationTests.AnUnverifiableRollbackEndsTheArea),
+            Case("favored-class.range-group-toggle-lineage", FavoredClassRangePresentationTests.TheRunningBuffIsAnAncestorOfItsArea),
             Case("favored-class.range-group-invariant", FavoredClassRangePresentationTests.LiveAreasAndTextAlwaysAgree),
             Case("favored-class.range-text-sources", FavoredClassRangePresentationTests.PresentationIsWired),
             Case("favored-class.revelation-scope-active", FavoredClassScopeActivityTests.OnlyActiveRevelationScopesGiveBenefits),

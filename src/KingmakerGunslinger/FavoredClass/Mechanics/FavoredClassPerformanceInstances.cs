@@ -6,6 +6,7 @@ using Kingmaker.EntitySystem.Entities;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.ActivatableAbilities;
 using Kingmaker.UnitLogic.Buffs;
+using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.View.MapObjects;
 using Kingmaker.View.MapObjects.SriptZones;
 using UnityEngine;
@@ -205,21 +206,25 @@ namespace KingmakerGunslinger.FavoredClass.Mechanics
         /// Ends an instance that cannot be verified native. The toggle whose
         /// own current buff runs that area is turned off, so the performance
         /// stops instead of spending rounds on an area that no longer exists;
-        /// an older, lingering area never stops the current performance.
+        /// an older, lingering area never stops the current performance. The
+        /// area runs under a clone of its buff's context (CloneFor), so the
+        /// buff is found among the ancestors of the area's context.
         /// </summary>
         private static void End(AreaEffectView view)
         {
             var data = view == null ? null : view.Data as AreaEffectEntityData;
             if (data == null)
                 return;
-            UnitEntityData owner = data.Context == null ? null : data.Context.MaybeCaster;
+            MechanicsContext context = data.Context;
+            UnitEntityData owner = context == null ? null : context.MaybeCaster;
             data.ForceEnd();
             if (owner == null || AppliedBuff == null)
                 return;
             foreach (ActivatableAbility toggle in owner.Descriptor.ActivatableAbilities.Enumerable.ToArray())
             {
                 var buff = toggle.IsOn ? AppliedBuff.GetValue(toggle) as Buff : null;
-                if (buff != null && ReferenceEquals(buff.Context, data.Context))
+                if (buff != null && FavoredClassContextLineage.Descends(context, buff.Context,
+                        value => value.ParentContext))
                     toggle.IsOn = false;
             }
         }

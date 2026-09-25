@@ -187,8 +187,11 @@ Exact read points, all owner-local (only the bard who casts that instance):
   performance is widened, and otherwise stays native (held); an area that
   ends up native (failed, deferred or held) narrows every widened sibling,
   restoring the ring and the radius independently and verifying both, and an
-  area that cannot be verified native is ended (the toggle whose own buff
-  runs it is turned off). The descriptions follow the live areas: native
+  area that cannot be verified native is ended. The toggle whose own current
+  buff runs that area is turned off; the area runs under a clone of that
+  buff's context, so the buff is found among the ancestors of the area's
+  context, and a lingering older area never stops the current performance.
+  The descriptions follow the live areas: native
   while any is native, their actual range while all are widened, and the
   owner's configured range when none is live. No outcome is remembered after
   its area ends.
