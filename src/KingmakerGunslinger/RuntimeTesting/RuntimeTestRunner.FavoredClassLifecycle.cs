@@ -128,6 +128,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 foreach (object step in FcbAuraOverlap(fixtures, leaves)) yield return step;
                 foreach (object step in FcbPerformanceMembership(fixtures, leaves)) yield return step;
+                foreach (object step in FcbPerformanceToggleRollback(fixtures, leaves)) yield return step;
                 foreach (object step in FcbFamilyLifecycle(fixtures, leaves)) yield return step;
                 foreach (object step in FcbRespecPet(fixtures, leaves)) yield return step;
                 foreach (object step in FcbPetTransitions(fixtures, leaves)) yield return step;
@@ -459,6 +460,295 @@ namespace KingmakerGunslinger.RuntimeTesting
             RecordFcbLifecycle("fcb-lifecycle-performance",
                 "in the live area the invested bard's own area is widened and the control's native; an ally crossing the widened boundary leaves and re-enters exactly at it, the area follows its moving bard, interruption ends it without an orphaned effect, and on death it behaves exactly like the control's",
                 evidence, failures);
+        }
+
+        private const string FcbToggleRollbackExpectation =
+            "a real Inspire Competence toggle started natively (ActivatableAbility.TryStart) widens the area its buff runs; when a failing second area makes that area's rollback unverifiable (an injected ring restore failure), the area is ended, the toggle is turned off and at the next round stops without spending a round, and the failed area and every description are native; beside the running toggle, a lingering older performance buff whose area cannot be restored has that area ended while the current performance keeps running, narrowed with the failed area; nothing is left once they end";
+
+        // PR #24 review 3, finding 2: a live area whose rollback cannot be
+        // verified native is ended, and the toggle whose own current buff runs
+        // it is turned off. An area runs under a clone of its buff's context
+        // (AreaEffectsController.Spawn: CloneFor), so this step starts the real
+        // toggle natively instead of adding a buff; a lingering older
+        // performance buff (no longer the toggle's) is added directly.
+        private IEnumerable<object> FcbPerformanceToggleRollback(FcbLifecycleFixtures fixtures,
+            FavoredClassBlueprintSet leaves)
+        {
+            var failures = new List<string>();
+            var evidence = new JObject();
+            _fcbLifecycleEvidence["toggleRollback"] = evidence;
+            var library = BlueprintBootstrap.Library;
+            FavoredClassPerformanceTarget target = FavoredClassPerformanceManifest.For("InspireCompetence");
+            BlueprintFeature feature = BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library,
+                target.FeatureGuid, "InspireCompetenceFeature");
+            var area = BlueprintLibraryLookup.RequireExact<BlueprintAbilityAreaEffect>(library, target.AreaGuids[0],
+                "InspireCompetenceArea");
+            float native = area.Size.Meters;
+            float widened = FavoredClassMechanicsPolicy.PerformanceRadiusMeters(native, 2);
+            UnitEntityData bard = SpawnFcbFixture(fixtures, "ToggleBard", fixtures.Origin - fixtures.Direction * 4f);
+            foreach (object step in WaitFcbUnit(bard)) yield return step;
+            GrantFavoredClassRanks(bard, leaves.Pair(FavoredClassCatalog.EffectPerformanceRange, target.Key).Full, 2);
+            bard.Descriptor.AddFact(feature);
+            ActivatableAbility toggle = bard.Descriptor.ActivatableAbilities.Enumerable.FirstOrDefault(value =>
+                value.Blueprint != null && target.ToggleGuids.Contains(value.Blueprint.AssetGuid));
+            BlueprintBuff performer = toggle == null ? null : toggle.Blueprint.Buff;
+            if (performer == null)
+            {
+                failures.Add("the bard's Inspire Competence toggle or its buff is missing");
+                RecordFcbLifecycle("fcb-lifecycle-toggle-rollback", FcbToggleRollbackExpectation, evidence, failures);
+                yield break;
+            }
+            var resourceLogic = toggle.Blueprint.GetComponent<ActivatableAbilityResourceLogic>();
+            BlueprintAbilityResource resource = resourceLogic == null ? null : resourceLogic.RequiredResource;
+            Func<int> rounds = () => resource == null ? -1 : bard.Descriptor.Resources.GetResourceAmount(resource);
+            FcbEnsureOneRound(bard, resource);
+            evidence["toggle"] = new JObject
+            {
+                ["blueprint"] = toggle.Blueprint.name,
+                ["buff"] = performer.name,
+                ["resource"] = resource == null ? null : resource.name,
+                ["rounds"] = rounds(),
+                ["availableByResources"] = toggle.IsAvailableByResources,
+                ["availableByRestrictions"] = toggle.IsAvailableByRestrictions,
+                ["activateWithUnitCommand"] = toggle.Blueprint.ActivateWithUnitCommand,
+                ["deactivateImmediately"] = toggle.Blueprint.DeactivateImmediately
+            };
+            Buff running = null;
+            // The native start (no round passes while the lane is paused).
+            Func<bool> start = () =>
+            {
+                FcbEnsureOneRound(bard, resource);
+                toggle.TryStart();
+                toggle.IsOn = true;
+                running = FcbAppliedBuff(toggle);
+                return toggle.IsRunning && toggle.IsOn && running != null;
+            };
+            // The live area a buff runs: its context is a clone of the buff's.
+            Func<Buff, AreaEffectEntityData> runBy = buff =>
+            {
+                Game.Instance.EntityCreator.Tick();
+                return buff == null ? null : Game.Instance.State.AreaEffects.FirstOrDefault(value => value != null &&
+                    !value.IsEnded && value.Context != null && ReferenceEquals(value.Context.ParentContext, buff.Context));
+            };
+            Func<AreaEffectEntityData, JObject> describe = data =>
+            {
+                Kingmaker.View.MapObjects.AreaEffectView view = data == null ? null : data.View;
+                var cylinder = view == null ? null : view.Shape as ScriptZoneCylinder;
+                GameObject ring = FcbAreaRing(view);
+                FavoredClassWideningOutcome? recorded = view == null ? null :
+                    FavoredClassPerformanceInstances.OutcomeOf(bard.Descriptor, target.Key, view);
+                return new JObject
+                {
+                    ["ended"] = data == null || data.IsEnded,
+                    ["radius"] = cylinder == null ? -1d : Math.Round((double)cylinder.Radius, 3),
+                    ["ringFactor"] = ring == null ? 1d : Math.Round((double)FavoredClassPerformanceRing.FactorOf(ring), 3),
+                    ["recorded"] = recorded == null ? null : recorded.Value.ToString()
+                };
+            };
+            Func<JObject, bool> nativeArea = row => !(bool)row["ended"] &&
+                Math.Abs((double)row["radius"] - native) < 0.01 && (double)row["ringFactor"] == 1d;
+            Func<JObject, bool> widenedArea = row => !(bool)row["ended"] &&
+                Math.Abs((double)row["radius"] - widened) < 0.01 && (double)row["ringFactor"] > 1d;
+            Func<JObject, string, bool> texts = (row, expected) => (string)row["feature"] == expected &&
+                (string)row["toggle"] == expected && (string)row["actionBar"] == expected;
+            Action<Buff> remove = buff =>
+            {
+                if (buff != null && !buff.IsDisposed) buff.Remove();
+            };
+            Action<AreaEffectEntityData> tick = data =>
+            {
+                if (data == null) return;
+                fixtures.Areas.Add(data);
+                if (data.IsEnded && !data.Destroyed) data.Tick();
+            };
+
+            // A. The toggle's own area: its rollback cannot be verified.
+            bool startedA = start();
+            yield return null;
+            AreaEffectEntityData own = runBy(running);
+            Buff ownBuff = running;
+            if (!startedA || own == null)
+            {
+                failures.Add("the native toggle start did not run a performance area: " + evidence["toggle"]);
+                toggle.IsOn = false;
+                toggle.Stop(true);
+                remove(ownBuff);
+                tick(own);
+                RecordFcbLifecycle("fcb-lifecycle-toggle-rollback", FcbToggleRollbackExpectation, evidence, failures);
+                yield break;
+            }
+            JObject startedOwn = describe(own);
+            int roundsBefore = rounds();
+            Buff failingA = FcbFailingPerformance(bard, performer, own);
+            AreaEffectEntityData failedA = runBy(failingA);
+            var ownRollback = new JObject
+            {
+                ["started"] = startedOwn,
+                ["own"] = describe(own),
+                ["failed"] = describe(failedA),
+                ["toggleOn"] = toggle.IsOn,
+                ["descriptions"] = DescribeOutcome(bard, target, feature, 2)
+            };
+            // The next round: a toggle turned off stops without spending a round.
+            toggle.OnNewRound();
+            ownRollback["nextRound"] = new JObject
+            {
+                ["toggleRunning"] = toggle.IsRunning,
+                ["roundsBefore"] = roundsBefore,
+                ["roundsAfter"] = rounds()
+            };
+            evidence["ownAreaRollback"] = ownRollback;
+            if (!widenedArea(startedOwn))
+                failures.Add("the toggle's own area did not widen with its ring");
+            if (!(bool)((JObject)ownRollback["own"])["ended"])
+                failures.Add("the toggle's area whose ring could not be restored stayed live");
+            if ((bool)ownRollback["toggleOn"])
+                failures.Add("the toggle whose own buff ran the ended area was not turned off");
+            if (!nativeArea((JObject)ownRollback["failed"]) ||
+                (string)((JObject)ownRollback["failed"])["recorded"] != "Failed")
+                failures.Add("the failed second area was not native");
+            if (!texts((JObject)ownRollback["descriptions"], "native") ||
+                (int)((JObject)ownRollback["descriptions"])["liveAreas"] != 1)
+                failures.Add("a description disagreed with the one live failed area");
+            if (toggle.IsRunning || rounds() != roundsBefore)
+                failures.Add("the toggle turned off kept running or spent a round at the next round");
+            toggle.Stop(true);
+            remove(ownBuff);
+            remove(failingA);
+            yield return null;
+            tick(own);
+            tick(failedA);
+
+            // B. A lingering older performance buff (no longer the toggle's):
+            // its area cannot be restored and is ended; the current performance
+            // keeps running, narrowed together with the failed area.
+            Buff lingering = bard.Descriptor.AddBuff(performer, new MechanicsContext(bard, bard.Descriptor, performer));
+            yield return null;
+            AreaEffectEntityData older = runBy(lingering);
+            bool startedB = start();
+            yield return null;
+            AreaEffectEntityData current = runBy(running);
+            Buff currentBuff = running;
+            var lingeringRollback = new JObject
+            {
+                ["afterOwnCleanup"] = FavoredClassPerformanceInstances.LiveCount(bard.Descriptor, target.Key),
+                ["started"] = new JObject { ["older"] = describe(older), ["current"] = describe(current) }
+            };
+            evidence["lingeringAreaRollback"] = lingeringRollback;
+            if (!startedB || older == null || current == null)
+            {
+                failures.Add("the lingering buff's area or the restarted toggle's area did not run");
+                toggle.IsOn = false;
+                toggle.Stop(true);
+                remove(currentBuff);
+                remove(lingering);
+                tick(older);
+                tick(current);
+                RecordFcbLifecycle("fcb-lifecycle-toggle-rollback", FcbToggleRollbackExpectation, evidence, failures);
+                yield break;
+            }
+            Buff failingB = FcbFailingPerformance(bard, performer, older);
+            AreaEffectEntityData failedB = runBy(failingB);
+            lingeringRollback["older"] = describe(older);
+            lingeringRollback["current"] = describe(current);
+            lingeringRollback["failed"] = describe(failedB);
+            lingeringRollback["toggleOn"] = toggle.IsOn;
+            lingeringRollback["toggleRunning"] = toggle.IsRunning;
+            lingeringRollback["currentBuffKept"] = ReferenceEquals(FcbAppliedBuff(toggle), currentBuff);
+            lingeringRollback["descriptions"] = DescribeOutcome(bard, target, feature, 2);
+            JObject startedPair = (JObject)lingeringRollback["started"];
+            if ((int)lingeringRollback["afterOwnCleanup"] != 0)
+                failures.Add("the first rollback left a live area behind");
+            if (!widenedArea((JObject)startedPair["older"]) || !widenedArea((JObject)startedPair["current"]))
+                failures.Add("the lingering and the current areas did not both widen");
+            if (!(bool)((JObject)lingeringRollback["older"])["ended"])
+                failures.Add("the lingering area whose ring could not be restored stayed live");
+            if (!(bool)lingeringRollback["toggleOn"] || !(bool)lingeringRollback["toggleRunning"] ||
+                !(bool)lingeringRollback["currentBuffKept"])
+                failures.Add("ending a lingering older area stopped the current performance");
+            if (!nativeArea((JObject)lingeringRollback["current"]) ||
+                (string)((JObject)lingeringRollback["current"])["recorded"] != "Narrowed")
+                failures.Add("the current area was not narrowed to native with the failed area");
+            if (!nativeArea((JObject)lingeringRollback["failed"]) ||
+                (string)((JObject)lingeringRollback["failed"])["recorded"] != "Failed")
+                failures.Add("the failed area beside the current one was not native");
+            if (!texts((JObject)lingeringRollback["descriptions"], "native") ||
+                (int)((JObject)lingeringRollback["descriptions"])["liveAreas"] != 2)
+                failures.Add("a description disagreed with the two live native areas");
+            toggle.IsOn = false;
+            toggle.Stop(true);
+            remove(currentBuff);
+            remove(lingering);
+            remove(failingB);
+            yield return null;
+            tick(older);
+            tick(current);
+            tick(failedB);
+            JObject cleaned = DescribeOutcome(bard, target, feature, 2);
+            evidence["afterCleanup"] = cleaned;
+            if ((int)cleaned["liveAreas"] != 0 || !texts(cleaned, "widened"))
+                failures.Add("after every area ended a live area remained or the configured range did not return");
+            RecordFcbLifecycle("fcb-lifecycle-toggle-rollback", FcbToggleRollbackExpectation, evidence, failures);
+        }
+
+        /// <summary>
+        /// A second performance buff of the bard whose area fails to widen (its
+        /// ring scales, then throws) while the narrowing of the given widened
+        /// area is made unverifiable (its ring restore throws).
+        /// </summary>
+        private static Buff FcbFailingPerformance(UnitEntityData bard, BlueprintBuff performer,
+            AreaEffectEntityData unverifiable)
+        {
+            Kingmaker.View.MapObjects.AreaEffectView view = unverifiable == null ? null : unverifiable.View;
+            FavoredClassPerformanceRangePatch.RingScalerOverride = (effect, factor) =>
+            {
+                FavoredClassPerformanceRing.Scale(effect, factor);
+                throw new InvalidOperationException("KMG injected ring failure beside a live area");
+            };
+            FavoredClassPerformanceInstances.NarrowFaultForQualification = value =>
+            {
+                if (ReferenceEquals(value, view))
+                    throw new InvalidOperationException("KMG injected ring restore failure while narrowing");
+            };
+            try
+            {
+                return bard.Descriptor.AddBuff(performer, new MechanicsContext(bard, bard.Descriptor, performer));
+            }
+            finally
+            {
+                FavoredClassPerformanceRangePatch.RingScalerOverride = null;
+                FavoredClassPerformanceInstances.NarrowFaultForQualification = null;
+            }
+        }
+
+        /// <summary>A fixture has no Bard levels: it gets one round of the toggle's own resource.</summary>
+        private static void FcbEnsureOneRound(UnitEntityData unit, BlueprintAbilityResource resource)
+        {
+            if (resource == null)
+                return;
+            if (!unit.Descriptor.Resources.ContainsResource(resource))
+                unit.Descriptor.Resources.Add(resource, true);
+            if (unit.Descriptor.Resources.HasEnoughResource(resource, 1))
+                return;
+            var resources = typeof(UnitAbilityResourceCollection).GetField("m_Resources",
+                BindingFlags.Instance | BindingFlags.NonPublic).GetValue(unit.Descriptor.Resources)
+                as Dictionary<BlueprintScriptableObject, UnitAbilityResource>;
+            UnitAbilityResource entry;
+            if (resources != null && resources.TryGetValue(resource, out entry))
+                entry.Amount = 1;
+        }
+
+        private static Buff FcbAppliedBuff(ActivatableAbility toggle)
+        {
+            FieldInfo field = typeof(ActivatableAbility).GetField("m_AppliedBuff",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            return toggle == null || field == null ? null : field.GetValue(toggle) as Buff;
+        }
+
+        private static GameObject FcbAreaRing(Kingmaker.View.MapObjects.AreaEffectView view)
+        {
+            return view == null ? null : typeof(Kingmaker.View.MapObjects.AreaEffectView).GetField("m_SpawnedFx",
+                BindingFlags.Instance | BindingFlags.NonPublic).GetValue(view) as GameObject;
         }
 
         // L02: every stateful owned-effect family through death and
