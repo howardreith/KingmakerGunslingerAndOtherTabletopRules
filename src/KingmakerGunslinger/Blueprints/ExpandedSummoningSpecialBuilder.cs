@@ -493,7 +493,8 @@ namespace KingmakerGunslinger.Blueprints
                     MephitDisplayName(profile.Key));
                 unit.LocalizedName = name;
                 ExpandedSummoningVisualVariantPatch.Register(new SummonVisualVariant(
-                    unit.name, ExpandedSummoningSpecialProfiles.MephitCoat(profile.Key)));
+                    unit.name, ExpandedSummoningSpecialProfiles.MephitVisualTint(
+                        profile.Key)));
             }
         }
 
