@@ -23,7 +23,7 @@ namespace KingmakerGunslinger.DomainTests
         /// </summary>
         internal const int AppendedLedgerIdentities = 4;
 
-        internal static void RakeIsChargeOnly()
+        internal static void RakeGateIsChargeOrHeldFoe()
         {
             ExpandedSummoningSpecialProfiles.Validate();
             Assertions.Equal(2, ExpandedSummoningSpecialProfiles.CatRakeSlotCount,

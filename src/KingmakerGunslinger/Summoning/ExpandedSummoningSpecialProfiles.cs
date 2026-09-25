@@ -173,9 +173,10 @@ namespace KingmakerGunslinger.Summoning
         /// The chartered mephit roles (correction order), project-owned and
         /// bounded. Every spell-like DC is Charisma-based at the mephit's
         /// caster level 6 (the stat blocks' DC 14 at spell level 2). Wind
-        /// wall: an allies-only 15-foot cylinder around the mephit for six
-        /// rounds (one per level) in which arrows and bolts aimed at an ally
-        /// are deflected and any other normal ranged weapon has a 30% miss
+        /// wall: a 15-foot cylinder around the mephit for six rounds (one
+        /// per level) sheltering every creature inside that is not the
+        /// mephit's enemy, in which arrows and bolts aimed at a sheltered
+        /// creature are deflected and any other normal ranged weapon has a 30% miss
         /// chance; rays and touch deliveries pass as spells pass the tabletop
         /// wall. Chill metal: Will negates, seven rounds of cold - none, 1d4,
         /// 2d4, 2d4, 2d4, 1d4, none - in full against a creature in metal

@@ -6,28 +6,37 @@
   pull request: no release, no permanent deployment, no Sprint 9. Every
   guarded runtime run restored the live installation to 0.0.117 afterwards.
   Internal acceptance only; human review NOT_PERFORMED_NONBLOCKING.
-- Sprint 3, Native Publication Pack I: Pony (SM I / SNA I), Horse (SM II /
-  SNA II), Owlbear (SNA IV), Cyclops (SNA V, a bounded Flash of Insight: once
-  per summoning the next attack is an automatic critical hit) and the Frost
-  Giant under Summon Nature's Ally VII-IX wrappers on the retained native unit.
+- Sprint 3, Native Publication Pack I: Pony (SM I / SNA I) and Horse (SM II /
+  SNA II) with docile secondary hooves, Owlbear (SNA IV), Cyclops (SNA V, +4
+  hide armor as a fact at AC 19 and a bounded Flash of Insight: once per
+  summoning the next attack's own d20 is a natural 20 with an ordinary
+  confirmation) and the Frost Giant under Summon Nature's Ally VII-IX
+  wrappers on the retained native unit.
 - Sprint 4, Native Publication Pack II: Shambling Mound (SNA VI), Giant
-  Flytrap (SNA VII) and Purple Worm (SNA VIII), and the shared summon grapple
-  lifecycle - grab through the game's own grapple check, hold and maintain
-  through the native parts with project buffs, constrict for the mound,
-  swallow whole for the worm, release on every end path, and an area safeguard
-  that never leaves a party member held by a departed summon.
+  Flytrap (SNA VII, one grab link per bite and engulf) and Purple Worm (SNA
+  VIII, a later-turn swallow of a foe one size smaller), and the shared
+  summon grapple lifecycle - grab by limb identity against a foe of the
+  holder's size or smaller through the game's own grapple check, hold and
+  maintain (+4 and +5) with the establishing limb's damage, constrict for the
+  mound, release on every end path, and an area safeguard that never leaves
+  a party member held by a departed summon.
 - Sprint 5, Mephit Family Expansion: Dust, Ice, Magma, Ooze, Salt and Steam
   Mephits (SM IV / SNA IV) on the native mephit bodies with their own names,
   icons, elemental rim glows, enemies-only breaths with the tabletop energy,
-  dice and sickening rider, and one-use spell-like abilities (dehydrate and
-  boiling rain as enemies-only bursts). No Lightning Mephit.
+  dice and sickening rider, and one-use spell-like abilities: the native
+  blur, magic missile and acid arrow, an ally-safe stinking cloud, an
+  enemies-only glitterdust, and the project Wind Wall, Chill Metal,
+  Pyrotechnics, Magma Form, Dehydrate and Boiling Rain. No Lightning Mephit.
 - Sprint 6, Existing Signature Mechanics Repair: Monitor Lizard, Grizzly
   Bear and Dire Bear grab on the shared lifecycle; the Giant Spider gains
-  blindsight for tremorsense, web immunity and a bounded ranged Web; the Pixie
-  is verified unchanged.
-- Sprint 7, Big-Cat Combat System: Leopard, Lion, Dire Lion and Smilodon grab
-  with their claws and rake only on a charge or against a held foe (any other
-  rake attack is a silent automatic miss); the Lion wears a tawny tint.
+  blindsight for tremorsense, web immunity and a bounded ranged Web (a ranged
+  touch attack, no save, the native break-free); the Pixie is verified
+  unchanged.
+- Sprint 7, Big-Cat Combat System: Leopard, Lion and Dire Lion grab with the
+  bite, the Smilodon with the bite and both foreclaws, and every cat rakes
+  only on a charge or against the foe it has held since its round began
+  (rake slots are dropped from any other full attack); the Lion wears a
+  tawny tint.
 - Sprint 8, Big-Cat Roster Completion: the Tiger (SNA IV, new) on the leopard
   rig at a Large view scale with a procedural striped coat, four 1d8 claws,
   pounce, grab and rake; the Cheetah gains a procedural spotted coat and a
@@ -37,8 +46,15 @@
   identifiers, 2218 active); every placement propagates 1d3 / 1d4+1 to the
   higher tiers by construction. Domain suite 1799 cases.
 - Every project-owned visual is a private material clone or a texture
-  generated from the rig's own geometry; the game's textures are never read,
-  copied or redistributed.
+  generated from the rig's own geometry, owned per view and destroyed with
+  the view; the game's textures are never read, copied or redistributed.
+- Correction order (2026-09-25): the reviewed draft was corrected and
+  requalified on one candidate commit - the cats' attack and target
+  identity, the grab size rule and swallow limits, the Flytrap's multi-link
+  hold and engulf, the mephit roles above, the Cyclops armor class and Flash
+  of Insight, the Web's touch path, the docile hooves and the visual
+  resource ownership - with the correction rules and visual lifecycle
+  scenarios added to the gate list. Still a draft; still unreleased.
 
 ## 0.0.138-better-vendors-progression
 

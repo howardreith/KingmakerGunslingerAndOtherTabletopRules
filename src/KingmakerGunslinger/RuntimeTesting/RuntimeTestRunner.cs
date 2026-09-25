@@ -15490,7 +15490,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     mephitObserved, mephitExact,
                     "Sprint 5 mephit family surface"),
                 Assertion("expanded-summoning-sprint-six-spider-web",
-                    "50-foot extraordinary web on one foe, Reflex save (Constitution DC), native web-grappled state for ten rounds, two uses on a named resource, cast action and brain, web immunity and blindsight on the spider",
+                    "50-foot extraordinary web on one foe as a ranged touch attack through the native ray weapon (no save), a foe at most one size larger, the native web-grappled state for ten rounds with its Constitution-based break-free, two uses on a named resource, cast action and brain, web immunity and blindsight on the spider",
                     spiderObserved, spiderExact,
                     "Sprint 6 Giant Spider ranged web surface"),
                 Assertion("expanded-summoning-sprint-seven-lion-visual",
@@ -17924,7 +17924,8 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         /// <summary>
         /// The Sprint 8 live case: the Cheetah's once-per-summoning sprint and
-        /// the Tiger's charge-only rake claw.
+        /// the Tiger's rake claw under the rake gate (a charge, or the foe
+        /// held since the round began).
         /// </summary>
         private static bool ExerciseExpandedSummoningSprintEightPack(
             BlueprintScriptableObject[] blueprints, UnitEntityData caster,

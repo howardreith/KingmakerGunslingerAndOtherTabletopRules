@@ -921,9 +921,10 @@ namespace KingmakerGunslinger.Blueprints
         }
 
         /// <summary>
-        /// Wind Wall (correction order): a project area effect - an
-        /// allies-only 15-foot cylinder around the mephit for six rounds -
-        /// whose shelter state deflects arrows and bolts aimed at an ally and
+        /// Wind Wall (correction order): a project area effect - a 15-foot
+        /// cylinder around the mephit for six rounds sheltering every
+        /// creature inside that is not the mephit's enemy - whose shelter
+        /// state deflects arrows and bolts aimed at a sheltered creature and
         /// gives any other normal ranged weapon a 30% miss chance. The area
         /// carries no visual of its own (no native wind-wall asset exists;
         /// the shelter shows on each ally as a named state).
