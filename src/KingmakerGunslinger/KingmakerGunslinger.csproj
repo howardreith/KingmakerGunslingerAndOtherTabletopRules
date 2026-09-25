@@ -248,6 +248,7 @@
     <Compile Include="FavoredClass\FavoredClassPerformanceWidening.cs" />
     <Compile Include="FavoredClass\FavoredClassScopeStack.cs" />
     <Compile Include="FavoredClass\FavoredClassRangePresentation.cs" />
+    <Compile Include="FavoredClass\FavoredClassRangeGroup.cs" />
     <Compile Include="FavoredClass\Mechanics\FavoredClassPerformanceInstances.cs" />
     <Compile Include="FavoredClass\FavoredClassCallScoping.cs" />
     <Compile Include="FavoredClass\FavoredClassPrerequisites.cs" />

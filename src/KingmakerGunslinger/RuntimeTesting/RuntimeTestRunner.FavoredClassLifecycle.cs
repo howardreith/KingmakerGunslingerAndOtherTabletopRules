@@ -22,6 +22,8 @@ using Kingmaker.RuleSystem.Rules;
 using Kingmaker.RuleSystem.Rules.Damage;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.ActivatableAbilities;
+using Kingmaker.UI.UnitSettings;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Mechanics;
@@ -34,6 +36,7 @@ using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.ElementalRaces;
 using KingmakerGunslinger.FavoredClass;
+using KingmakerGunslinger.FavoredClass.Hooks;
 using KingmakerGunslinger.FavoredClass.Mechanics;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -566,6 +569,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 fixtures.Origin + fixtures.Direction * 15f);
             UnitEntityData performanceOwner = SpawnFcbFixture(fixtures, "TransitionBard",
                 fixtures.Origin + fixtures.Direction * 16f);
+            // PR #24 review 3, finding 3: an invested bard whose area failed to
+            // widen before the same-process area reload.
+            UnitEntityData outcomeOwner = SpawnFcbFixture(fixtures, "OutcomeBard",
+                fixtures.Origin + fixtures.Direction * 17f);
             foreach (object step in WaitFcbFixtures(fixtures)) yield return step;
             GrantFavoredClassRanks(auraOwner, full(FavoredClassCatalog.EffectPaladinAuras), 2);
             auraOwner.Descriptor.AddFact(BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library,
@@ -576,11 +583,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                 FcbInspireCompetenceBuffGuid, "InspireCompetenceBuff");
             performanceOwner.Descriptor.AddBuff(performer,
                 new MechanicsContext(performanceOwner, performanceOwner.Descriptor, performer));
+            FavoredClassPerformanceTarget competence = FavoredClassPerformanceManifest.For("InspireCompetence");
+            BlueprintFeature competenceFeature = BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library,
+                competence.FeatureGuid, "InspireCompetenceFeature");
+            GrantFavoredClassRanks(outcomeOwner, leaves.Pair(FavoredClassCatalog.EffectPerformanceRange,
+                competence.Key).Full, 2);
+            outcomeOwner.Descriptor.AddFact(competenceFeature);
+            FavoredClassPerformanceRangePatch.RingScalerOverride = (effect, factor) =>
+            {
+                FavoredClassPerformanceRing.Scale(effect, factor);
+                throw new InvalidOperationException("KMG injected ring failure before the reload");
+            };
+            try
+            {
+                outcomeOwner.Descriptor.AddBuff(performer,
+                    new MechanicsContext(outcomeOwner, outcomeOwner.Descriptor, performer));
+            }
+            finally
+            {
+                FavoredClassPerformanceRangePatch.RingScalerOverride = null;
+            }
             Game.Instance.EntityCreator.Tick();
             // A native area unload destroys every cross-scene unit outside the
             // party roster, so the transition subjects join the party exactly
             // as companions do (in memory only: the lane never saves).
-            UnitEntityData[] travelers = subjects.Concat(new[] { auraOwner, performanceOwner }).ToArray();
+            UnitEntityData[] travelers = subjects.Concat(new[] { auraOwner, performanceOwner, outcomeOwner }).ToArray();
             foreach (UnitEntityData traveler in travelers)
                 JoinFcbParty(fixtures, traveler);
             yield return null;
@@ -594,6 +621,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (performanceBefore.Count != 2 || performanceBefore[performanceKey] == null ||
                 (float)performanceBefore[performanceKey]["ringFactor"] <= 1f)
                 failures.Add("the transition owners' aura and widened performance were not live before the reload");
+            string outcomeId = outcomeOwner.UniqueId;
+            JObject outcomeBefore = DescribeOutcome(outcomeOwner, competence, competenceFeature, 2);
             Game.Instance.ReloadArea();
             int guard = 0;
             while ((LoadingProcess.Instance.IsLoadingInProcess || Game.Instance.CurrentMode != Kingmaker.GameModes.GameModeType.Default) &&
@@ -632,6 +661,27 @@ namespace KingmakerGunslinger.RuntimeTesting
             RecordFcbLifecycle("fcb-lifecycle-families",
                 "grit (spent, with its raised maximum), Nimble, Dodge, Initiative, confirmation, Monk grapple/stunning, Fighter CMD, Mostly Human identity and human access, and the Ranger companion's projected armor keep exactly their counters, owned modifiers, resources, pet projection and identity through death and resurrection, polymorph and return, and an area reload; owner-local aura and performance areas return with their owners' radii and rings",
                 evidence, failures);
+            // The failed area and its outcome do not survive the reload: the
+            // recreated area widens and the descriptions follow it.
+            var outcomeFailures = new List<string>();
+            UnitEntityData outcomeReloaded = Game.Instance.State.Units.FirstOrDefault(value => value.UniqueId == outcomeId);
+            JObject outcomeAfter = outcomeReloaded == null ? null :
+                DescribeOutcome(outcomeReloaded, competence, competenceFeature, 2);
+            var outcomeEvidence = new JObject { ["before"] = outcomeBefore, ["after"] = outcomeAfter };
+            Func<JObject, string, bool> texts = (row, expected) => row != null &&
+                (string)row["feature"] == expected && (string)row["toggle"] == expected &&
+                (string)row["actionBar"] == expected;
+            if (!texts(outcomeBefore, "native") || (int)outcomeBefore["liveAreas"] != 1 ||
+                !(bool)outcomeBefore["areaNative"])
+                outcomeFailures.Add("before the reload the failed area or its descriptions were not native");
+            if (outcomeAfter == null)
+                outcomeFailures.Add("the bard did not return after the area reload");
+            else if (!texts(outcomeAfter, "widened") || (int)outcomeAfter["liveAreas"] != 1 ||
+                !(bool)outcomeAfter["areaWidened"])
+                outcomeFailures.Add("after the reload the recreated area and its descriptions were not widened together");
+            RecordFcbLifecycle("fcb-lifecycle-outcome-reload",
+                "a bard whose performance area failed to widen shows native descriptions; after a same-process area reload (Game.Instance.ReloadArea) the recreated area widens with its ring, the descriptions follow it, and nothing of the failed area or its outcome survives (one live area)",
+                outcomeEvidence, outcomeFailures);
         }
 
         // L03 with a pet: an Oread Ranger whose companion armor was earned
@@ -881,6 +931,39 @@ namespace KingmakerGunslinger.RuntimeTesting
             foreach (JProperty resource in ((JObject)copy["resources"]).Properties())
                 ((JObject)resource.Value).Remove("current");
             return copy;
+        }
+
+        /// <summary>
+        /// One bard's live area of a performance (radius and ring) and its
+        /// feature, toggle and action-bar descriptions: native, widened or other.
+        /// </summary>
+        private JObject DescribeOutcome(UnitEntityData bard, FavoredClassPerformanceTarget target,
+            BlueprintFeature feature, int steps)
+        {
+            int widenedFeet = FavoredClassPerformanceManifest.OwnerFeet(target, steps);
+            var fact = bard.Descriptor.Progression.Features.GetFact(feature) as Feature;
+            ActivatableAbility toggle = bard.Descriptor.ActivatableAbilities.Enumerable.FirstOrDefault(value =>
+                value.Blueprint != null && target.ToggleGuids.Contains(value.Blueprint.AssetGuid));
+            Func<string, string, string> label = (actual, nativeText) => actual == nativeText ? "native" :
+                actual == FavoredClassPerformanceText.OwnerDescription(nativeText, target.BaseFeet, widenedFeet) ?
+                    "widened" : "other";
+            JObject areas = DescribeOwnedAreas(new[] { bard.UniqueId });
+            float nativeMeters = target.BaseFeet * FavoredClassMechanicsPolicy.FeetToMeters;
+            float widenedMeters = widenedFeet * FavoredClassMechanicsPolicy.FeetToMeters;
+            JToken live = areas.Properties().Select(property => property.Value).FirstOrDefault();
+            return new JObject
+            {
+                ["feature"] = fact == null ? "missing" : label(fact.Description, feature.Description),
+                ["toggle"] = toggle == null ? "missing" : label(toggle.Description, toggle.Blueprint.Description),
+                ["actionBar"] = toggle == null ? "missing" : label(new MechanicActionBarSlotActivableAbility
+                    { ActivatableAbility = toggle, Unit = bard }.GetDescription(), toggle.Blueprint.Description),
+                ["liveAreas"] = FavoredClassPerformanceInstances.LiveCount(bard.Descriptor, target.Key),
+                ["areas"] = areas,
+                ["areaNative"] = live != null && Math.Abs((double)live["radius"] - nativeMeters) < 0.01 &&
+                    (double)live["ringFactor"] == 1d,
+                ["areaWidened"] = live != null && Math.Abs((double)live["radius"] - widenedMeters) < 0.01 &&
+                    (double)live["ringFactor"] > 1d
+            };
         }
 
         private JObject DescribeOwnedAreas(ICollection<string> ids)
