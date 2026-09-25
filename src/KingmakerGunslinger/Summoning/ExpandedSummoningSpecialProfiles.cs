@@ -176,8 +176,8 @@ namespace KingmakerGunslinger.Summoning
         internal static readonly SummonVisualTintProfile[] MephitVisualTints = {
             // warm sand glow against the air mephit's white
             new SummonVisualTintProfile("dust-mephit", 1f, 1f, 1f, 2.4f, 1.7f, 0.7f),
-            // icy cyan-white, brighter than the water mephit
-            new SummonVisualTintProfile("ice-mephit", 1f, 1f, 1f, 1.6f, 2.8f, 4.0f),
+            // cold cyan-white against the water mephit's blue
+            new SummonVisualTintProfile("ice-mephit", 1f, 1f, 1f, 1.0f, 3.4f, 3.8f),
             // deep ember red, darker and redder than the fire mephit's orange
             new SummonVisualTintProfile("magma-mephit", 1f, 1f, 1f, 3.2f, 0.55f, 0.1f),
             // slime green
