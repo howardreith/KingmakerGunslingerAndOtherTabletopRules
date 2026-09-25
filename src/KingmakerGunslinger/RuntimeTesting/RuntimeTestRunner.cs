@@ -20617,10 +20617,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             bool holdExact = hold.ComponentsArray.Length == 1 &&
                 hold.ComponentsArray.OfType<SummonHoldComponent>().Count() == 1;
-            bool grappledExact = grappled.ComponentsArray.Length == 1 &&
+            // The single-link held state: entangled, and the round component
+            // that lets the game count the rounds it has stood.
+            bool grappledExact = grappled.ComponentsArray.Length == 2 &&
                 grappled.ComponentsArray.OfType<Kingmaker.UnitLogic.FactLogic
                     .AddCondition>().Count(value => value.Condition ==
-                        UnitCondition.Entangled) == 1;
+                        UnitCondition.Entangled) == 1 &&
+                grappled.ComponentsArray.OfType<SummonHeldRoundComponent>().Count() == 1;
             bool swallowedExact = swallowed.ComponentsArray.Length ==
                     nativeSwallowed.ComponentsArray.Length &&
                 swallowed.ComponentsArray.Select(value => value.GetType())
@@ -20944,8 +20947,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             shelter.Condition != null && shelter.Condition.Conditions != null &&
                             shelter.Condition.Conditions.Length == 1 &&
                             shelter.Condition.Conditions[0] is
-                                Kingmaker.UnitLogic.Mechanics.Conditions.ContextConditionIsAlly &&
-                            !shelter.Condition.Conditions[0].Not &&
+                                Kingmaker.UnitLogic.Mechanics.Conditions.ContextConditionIsEnemy &&
+                            shelter.Condition.Conditions[0].Not &&
                             state != null && state.name == prefix + "WindWallState" &&
                             state.ComponentsArray.OfType<SummonWindWallComponent>().Count() == 1 &&
                             ExpandedSummoningMephitParametersExact(ability,
