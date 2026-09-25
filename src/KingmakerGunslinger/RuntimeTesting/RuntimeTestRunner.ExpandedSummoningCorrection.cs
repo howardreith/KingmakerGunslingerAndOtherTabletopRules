@@ -127,6 +127,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             // alignment, and the disposable caster stays out of the AI.
             fixture.Caster.Descriptor.Alignment.Set(Alignment.NeutralGood);
             SetExpandedSummoningBrainActive(fixture.Caster, false);
+            PlaceExpandedSummoningUnit(fixture.Caster, fixture.Caster.Position);
             fixture.ExactStart = SnapshotReferences(fixture.SceneEntities);
             return fixture;
         }
@@ -153,6 +154,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             fixture.HostileSize = fixture.Hostile.Descriptor.State.Size;
             fixture.HostileDamage = fixture.Hostile.Descriptor.Damage;
             SetExpandedSummoningBrainActive(fixture.Hostile, false);
+            PlaceExpandedSummoningUnit(fixture.Hostile, fixture.Hostile.Position);
             DisposeExpandedSummoningUnits(fixture.Created, new[] { pixie });
         }
 
@@ -271,6 +273,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 fixture.Evidence).Single();
             fixture.Created.Add(unit);
             RemoveExpandedSummoningAppearanceBuffs(unit);
+            // A summoned unit enters the area's spatial grid before it is
+            // positioned; the game re-indexes it on its first walk, so the
+            // fixture indexes it where it stands now.
+            PlaceExpandedSummoningUnit(unit, unit.Position);
             return unit;
         }
 
@@ -959,6 +965,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     wolf.Descriptor.Stats.HitPoints.BaseValue = 100000;
                     wolf.Descriptor.Stats.BaseAttackBonus.BaseValue = -100;
                     SetExpandedSummoningBrainActive(wolf, false);
+                    PlaceExpandedSummoningUnit(wolf, wolf.Position);
                     wolves.Add(wolf);
                 }
                 Func<int> heldCount = () => SummonMultiHoldComponent.HeldTargets(flytrap, multiHeld).Count;
@@ -1271,7 +1278,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "(radius=" + cylinder.Radius.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) +
                     ",height=" + cylinder.Height.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) +
                     ",centre=" + Vec(cylinder.Center) + ")") + ";onUnit=" + view.OnUnit +
-                ";paused=" + Game.Instance.IsPaused);
+                ";paused=" + Game.Instance.IsPaused + ";mode=" + Game.Instance.CurrentMode);
             // What the game's own grid query returns for the shape's bounds.
             try
             {
@@ -1315,17 +1322,25 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         /// <summary>
-        /// The area's units after the game's own frames; when it found none,
-        /// the game's own tick is run once more from here (the same method
-        /// its controller calls every frame) and the outcome recorded, so the
-        /// record says which path found the units and why none was found.
+        /// The area's units: what the game's own frames found, then the
+        /// area's own Tick run from here - the very method the game's area
+        /// controller calls every frame in play. That controller is
+        /// registered for the Default, Dialog and Rest game modes only, and
+        /// the guarded harness drives the game in a mode where abilities and
+        /// projectiles tick but areas do not (the record names the mode), so
+        /// the tick is the designed path and the record shows both counts
+        /// beside every gate the area applies to each unit.
         /// </summary>
         private static string SettleExpandedSummoningArea(AreaEffectEntityData area,
             IEnumerable<KeyValuePair<string, UnitEntityData>> units, out int inside)
         {
-            inside = area == null ? -1 : area.UnitsInside.Count();
+            int framesInside = area == null ? -1 : area.UnitsInside.Count();
             string gates = DescribeExpandedSummoningAreaGates(area, units);
-            if (area == null || inside > 0) return "path=game-frames;inside=" + inside + ";gates[" + gates + "]";
+            if (area == null)
+            {
+                inside = -1;
+                return "area=<none>;gates[" + gates + "]";
+            }
             string tick;
             try
             {
@@ -1337,7 +1352,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 tick = "exception:" + DescribeExpandedSummoningCorrectionException(exception);
             }
             inside = area.UnitsInside.Count();
-            return "path=game-frames-then-fixture-tick(" + tick + ");inside=" + inside + ";gates[" + gates + "]";
+            return "gameFramesInside=" + framesInside + ";areaTick=" + tick + ";insideAfterTick=" + inside +
+                ";gates[" + gates + "]";
         }
 
         // --- the wind wall (frames) ---------------------------------------------------------------------------------
@@ -1352,6 +1368,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             RemoveExpandedSummoningAppearanceBuffs(_rulesWolf);
             _rulesWolf.Descriptor.Stats.HitPoints.BaseValue = 100000;
             SetExpandedSummoningBrainActive(_rulesWolf, false);
+            PlaceExpandedSummoningUnit(_rulesWolf, _rulesWolf.Position);
             SetExactProperty(fixture.Hostile.Descriptor.Stats.GetStat(StatType.SaveWill), "BaseValue", -100);
             SetExactProperty(fixture.Hostile.Descriptor.Stats.GetStat(StatType.SaveFortitude), "BaseValue", -100);
             SetExactProperty(fixture.Hostile.Descriptor.Stats.GetStat(StatType.SaveReflex), "BaseValue", -100);
@@ -1448,7 +1465,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 !meleeMiss && meleeChance == 0 && !rayMiss && rayChance == 0 && wallEnded;
             _rulesCases.Add(Assertion("expanded-summoning-correction-wind-wall",
                 "the dust mephit's wall of wind shelters the allies inside it - the party caster, the allied summon and the mephit - and not the hostile outside: arrows and bolts aimed at a sheltered ally are deflected outright, other ranged weapons roll the tabletop 30% miss chance, melee and rays pass; the shelter ends with the wall",
-                detail, ok, "the area effect found through the game's own grid on the frames after placement; RuleAttackWithWeapon by the hostile with a bow, a thrown weapon, a sword and the ray weapon; SummonWindWallComponent outcomes"));
+                detail, ok, "the area effect's own tick (the method the game's area controller calls each frame in play; the harness's game mode does not tick areas) reading the units from the area's spatial grid after the placement frames; RuleAttackWithWeapon by the hostile with a bow, a thrown weapon, a sword and the ray weapon; SummonWindWallComponent outcomes"));
             caster.Descriptor.Damage = _rulesCasterDamage;
             DisposeExpandedSummoningUnits(fixture.Created, new[] { dust });
             _rulesMephit = null;
@@ -1514,7 +1531,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 casterClean && wolfClean && oozeClean;
             _rulesCases.Add(Assertion("expanded-summoning-correction-cloud",
                 "the ooze mephit's stinking cloud, placed where the hostile, the party caster, an allied summon and the mephit all stand inside it (the only placement, no safe target), nauseates the hostile and touches no ally",
-                detail, ok, "the project ally-safe area clone found through the game's own grid on the frames after placement; UnitsInside and the nauseated condition per unit"));
+                detail, ok, "the project ally-safe area clone's own tick (the method the game's area controller calls each frame in play; the harness's game mode does not tick areas) reading the units from the area's spatial grid after the placement frames; UnitsInside and the nauseated condition per unit"));
             DisposeExpandedSummoningUnits(fixture.Created, new[] { ooze });
             _rulesMephit = null;
         }
@@ -1674,6 +1691,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RemoveExpandedSummoningAppearanceBuffs(wolf);
                 wolf.Descriptor.Stats.HitPoints.BaseValue = 100000;
                 SetExpandedSummoningBrainActive(wolf, false);
+                PlaceExpandedSummoningUnit(wolf, wolf.Position);
                 int wolfDamageBefore = wolf.Descriptor.Damage;
                 SetExactProperty(hostile.Descriptor.Stats.GetStat(StatType.SaveWill), "BaseValue", -100);
                 SetExactProperty(hostile.Descriptor.Stats.GetStat(StatType.SaveFortitude), "BaseValue", -100);
@@ -2191,6 +2209,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     parts.Add(material == null ? "<null>" : Sanitize(material.name) + "/" +
                         (material.shader == null ? "<no-shader>" : Sanitize(material.shader.name)));
             }
+            foreach (string assetName in view.GetComponentsInChildren<Renderer>(true)
+                .Where(value => value != null && value.sharedMaterials != null)
+                .SelectMany(value => value.sharedMaterials).Where(value => value != null)
+                .Select(value => value.name.Replace(" (Instance)", "")).Distinct().OrderBy(value => value, StringComparer.Ordinal))
+            {
+                foreach (Material asset in Resources.FindObjectsOfTypeAll<Material>()
+                    .Where(value => value != null && value.name == assetName).OrderBy(value => value.GetInstanceID()))
+                    parts.Add("asset:" + Sanitize(asset.name) + "#" + asset.GetInstanceID() + ",rim=" +
+                        (asset.HasProperty("_RimColor") ? asset.GetColor("_RimColor").ToString("0.###") : "-") + ",tint=" +
+                        (asset.HasProperty("_TintColor") ? asset.GetColor("_TintColor").ToString("0.###") : "-"));
+            }
             foreach (RimLightingAnimationSetup setup in view.GetComponentsInChildren<RimLightingAnimationSetup>(true))
             {
                 RimLightingAnimationSettings settings = setup == null ? null : setup.Settings;
@@ -2309,6 +2338,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         foreach (UnitEntityData unit in spawned)
                         {
                             SetExpandedSummoningBrainActive(unit, false);
+                            PlaceExpandedSummoningUnit(unit, unit.Position);
                             outcomes.Add(variant.Creature.Key + "=" + Sanitize(
                                 ExpandedSummoningVisualVariantPatch.DescribeView(unit.View)) + "{" +
                                 ExpandedSummoningVisualVariantPatch.DescribeOwnership(unit.View) + "}");
