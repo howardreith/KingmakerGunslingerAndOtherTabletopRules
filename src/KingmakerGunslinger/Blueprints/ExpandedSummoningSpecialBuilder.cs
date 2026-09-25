@@ -949,12 +949,17 @@ namespace KingmakerGunslinger.Blueprints
             area.Size = new Feet(ExpandedSummoningSpecialProfiles.WindWallRadiusFeet);
             area.Fx = new Kingmaker.ResourceLinks.PrefabLink { AssetId = string.Empty };
             SetField(area, "m_AllowNonContextActions", false);
-            var ally = ScriptableObject.CreateInstance<ContextConditionIsAlly>();
-            ally.Not = false;
+            // Every creature inside that is not the mephit's enemy. The
+            // game's own ally relation from a summon's side excludes the
+            // party it fights for (a summon is faction Summoned, and IsAlly
+            // from a non-player unit is false for a player-faction unit),
+            // so the wall keys on the enemy relation, exact from both sides.
+            var notEnemy = ScriptableObject.CreateInstance<ContextConditionIsEnemy>();
+            notEnemy.Not = true;
             var shelter = ScriptableObject.CreateInstance<
                 Kingmaker.UnitLogic.Abilities.Components.AreaEffects.AbilityAreaEffectBuff>();
             shelter.Condition = new ConditionsChecker {
-                Operation = Operation.And, Conditions = new Condition[] { ally } };
+                Operation = Operation.And, Conditions = new Condition[] { notEnemy } };
             shelter.Buff = state;
             area.ComponentsArray = new BlueprintComponent[] { shelter };
             ConfigureMephitSelfAbility(ability, AbilityType.SpellLike, AbilityEffectOnUnit.None,
