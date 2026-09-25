@@ -463,14 +463,14 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private const string FcbToggleRollbackExpectation =
-            "a real Inspire Competence toggle started natively (ActivatableAbility.TryStart) widens the area its buff runs; when a failing second area makes that area's rollback unverifiable (an injected ring restore failure), the area is ended, the toggle is turned off and at the next round stops without spending a round, and the failed area and every description are native; beside the running toggle, a lingering older performance buff whose area cannot be restored has that area ended while the current performance keeps running, narrowed with the failed area; nothing is left once they end";
+            "a real Inspire Competence toggle started natively (ActivatableAbility.TryStart) widens the area its buff runs; when a failing second area makes that area's rollback unverifiable (an injected ring restore failure), the area is ended, the toggle is turned off and at the next round stops without spending a round, and the failed area and every description are native; beside the running toggle, an older live area of the performance that the toggle's current buff does not run, whose ring cannot be restored, is ended while the current performance keeps running, narrowed with the failed area; nothing is left once they end";
 
         // PR #24 review 3, finding 2: a live area whose rollback cannot be
         // verified native is ended, and the toggle whose own current buff runs
         // it is turned off. An area runs under a clone of its buff's context
         // (AreaEffectsController.Spawn: CloneFor), so this step starts the real
-        // toggle natively instead of adding a buff; a lingering older
-        // performance buff (no longer the toggle's) is added directly.
+        // toggle natively instead of adding a buff; the failing and the older
+        // areas are spawned on the bard directly.
         private IEnumerable<object> FcbPerformanceToggleRollback(FcbLifecycleFixtures fixtures,
             FavoredClassBlueprintSet leaves)
         {
@@ -579,8 +579,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             JObject startedOwn = describe(own);
             int roundsBefore = rounds();
-            Buff failingA = FcbFailingPerformance(bard, performer, own);
-            AreaEffectEntityData failedA = runBy(failingA);
+            AreaEffectEntityData failedA = FcbFailingArea(bard, area, own);
             var ownRollback = new JObject
             {
                 ["started"] = startedOwn,
@@ -614,17 +613,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 failures.Add("the toggle turned off kept running or spent a round at the next round");
             toggle.Stop(true);
             remove(ownBuff);
-            remove(failingA);
+            if (failedA != null && !failedA.IsEnded) failedA.ForceEnd();
             yield return null;
             tick(own);
             tick(failedA);
 
-            // B. A lingering older performance buff (no longer the toggle's):
-            // its area cannot be restored and is ended; the current performance
-            // keeps running, narrowed together with the failed area.
-            Buff lingering = bard.Descriptor.AddBuff(performer, new MechanicsContext(bard, bard.Descriptor, performer));
-            yield return null;
-            AreaEffectEntityData older = runBy(lingering);
+            // B. An older live area of the same performance that the toggle's
+            // current buff does not run (a lingering one): its area cannot be
+            // restored and is ended; the current performance keeps running,
+            // narrowed together with the failed area. A second buff of the
+            // same blueprint would replace the toggle's (BuffCollection
+            // stacking), so the older and the failed areas are spawned on the
+            // bard directly, each under its own context.
+            AreaEffectEntityData older = FcbSpawnArea(bard, area);
             bool startedB = start();
             yield return null;
             AreaEffectEntityData current = runBy(running);
@@ -637,18 +638,21 @@ namespace KingmakerGunslinger.RuntimeTesting
             evidence["lingeringAreaRollback"] = lingeringRollback;
             if (!startedB || older == null || current == null)
             {
-                failures.Add("the lingering buff's area or the restarted toggle's area did not run");
+                failures.Add("the older area or the restarted toggle's area did not run");
                 toggle.IsOn = false;
                 toggle.Stop(true);
                 remove(currentBuff);
-                remove(lingering);
+                if (older != null && !older.IsEnded) older.ForceEnd();
                 tick(older);
                 tick(current);
                 RecordFcbLifecycle("fcb-lifecycle-toggle-rollback", FcbToggleRollbackExpectation, evidence, failures);
                 yield break;
             }
-            Buff failingB = FcbFailingPerformance(bard, performer, older);
-            AreaEffectEntityData failedB = runBy(failingB);
+            // The toggle's current area must be live beside the older area
+            // (widened together) before the failure arrives.
+            ((JObject)lingeringRollback["started"])["liveAreas"] =
+                FavoredClassPerformanceInstances.LiveCount(bard.Descriptor, target.Key);
+            AreaEffectEntityData failedB = FcbFailingArea(bard, area, older);
             lingeringRollback["older"] = describe(older);
             lingeringRollback["current"] = describe(current);
             lingeringRollback["failed"] = describe(failedB);
@@ -659,13 +663,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             JObject startedPair = (JObject)lingeringRollback["started"];
             if ((int)lingeringRollback["afterOwnCleanup"] != 0)
                 failures.Add("the first rollback left a live area behind");
-            if (!widenedArea((JObject)startedPair["older"]) || !widenedArea((JObject)startedPair["current"]))
-                failures.Add("the lingering and the current areas did not both widen");
+            if (!widenedArea((JObject)startedPair["older"]) || !widenedArea((JObject)startedPair["current"]) ||
+                (int)startedPair["liveAreas"] != 2)
+                failures.Add("the older and the current areas were not both live and widened");
             if (!(bool)((JObject)lingeringRollback["older"])["ended"])
-                failures.Add("the lingering area whose ring could not be restored stayed live");
+                failures.Add("the older area whose ring could not be restored stayed live");
             if (!(bool)lingeringRollback["toggleOn"] || !(bool)lingeringRollback["toggleRunning"] ||
                 !(bool)lingeringRollback["currentBuffKept"])
-                failures.Add("ending a lingering older area stopped the current performance");
+                failures.Add("ending an older area the toggle's buff does not run stopped the current performance");
             if (!nativeArea((JObject)lingeringRollback["current"]) ||
                 (string)((JObject)lingeringRollback["current"])["recorded"] != "Narrowed")
                 failures.Add("the current area was not narrowed to native with the failed area");
@@ -678,8 +683,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             toggle.IsOn = false;
             toggle.Stop(true);
             remove(currentBuff);
-            remove(lingering);
-            remove(failingB);
+            if (failedB != null && !failedB.IsEnded) failedB.ForceEnd();
             yield return null;
             tick(older);
             tick(current);
@@ -692,11 +696,23 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         /// <summary>
-        /// A second performance buff of the bard whose area fails to widen (its
+        /// An area of the performance spawned on the bard directly (the native
+        /// attached spawn), under its own context: no buff of the bard runs it.
+        /// </summary>
+        private static AreaEffectEntityData FcbSpawnArea(UnitEntityData bard, BlueprintAbilityAreaEffect area)
+        {
+            AreaEffectEntityData data = AreaEffectsController.SpawnAttachedToTarget(
+                new MechanicsContext(bard, bard.Descriptor, area), area, bard, null);
+            Game.Instance.EntityCreator.Tick();
+            return data;
+        }
+
+        /// <summary>
+        /// A second live area of the bard's performance that fails to widen (its
         /// ring scales, then throws) while the narrowing of the given widened
         /// area is made unverifiable (its ring restore throws).
         /// </summary>
-        private static Buff FcbFailingPerformance(UnitEntityData bard, BlueprintBuff performer,
+        private static AreaEffectEntityData FcbFailingArea(UnitEntityData bard, BlueprintAbilityAreaEffect area,
             AreaEffectEntityData unverifiable)
         {
             Kingmaker.View.MapObjects.AreaEffectView view = unverifiable == null ? null : unverifiable.View;
@@ -712,7 +728,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             };
             try
             {
-                return bard.Descriptor.AddBuff(performer, new MechanicsContext(bard, bard.Descriptor, performer));
+                return FcbSpawnArea(bard, area);
             }
             finally
             {
