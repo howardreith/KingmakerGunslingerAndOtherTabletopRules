@@ -30,7 +30,7 @@ favored-class choices appear.
 
 ## Status
 
-**PARTIAL — NOT RELEASE QUALIFIED** (local candidate, owner review pending).
+**PARTIAL — NOT RELEASE QUALIFIED** (PR #24 candidate, owner review pending).
 All 30 scheduled rows are implemented and pass their domain tests and guarded
 native runs, except G08 and G20, whose optional races have no playable
 provider. Every required infrastructure item is implemented; the lifecycle
@@ -55,10 +55,14 @@ profile:
 - Ifrit, Oread, Sylph and Undine favored-class options in the Alchemist,
   Inquisitor, Rogue, Fighter, Monk, Cleric, Paladin, Ranger, Summoner,
   Sorcerer, Oracle and Bard menus. These include per-revelation Oracle
-  counters (52 revelations), per-power Sorcerer counters and per-performance
-  Bard range counters (14 performances). A widened performance shows its
-  bard's own range: the area, its ring and the performance's description
-  agree, for that bard only.
+  counters (51 revelations), per-power Sorcerer counters and per-performance
+  Bard range counters (14 performances). An invested revelation or power
+  follows its own effective level, including the abilities and forms the
+  revelation gains at later oracle levels and Elemental Blast's extra daily
+  uses; nothing else is granted early (Spirit of the Warrior is not offered,
+  because its possession would raise base attack bonus). A widened
+  performance shows its bard's own range: the area, its ring and the
+  performance's description agree, for that bard only.
 - **Mostly Human**: an optional Heritage-phase choice for the four elemental
   races. The character counts as both a human (humanoid) and its elemental
   race (native outsider) for effects related to race, such as the Favored
