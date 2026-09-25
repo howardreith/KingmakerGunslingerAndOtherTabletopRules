@@ -323,6 +323,7 @@ namespace KingmakerGunslinger.DomainTests
                 "internal static class SummonManeuverChecks",
                 "if (maneuver == null || maneuver.AutoFailure) return false;",
                 "if (maneuver.ConcealmentCheck != null && !maneuver.ConcealmentCheck.Success)",
+                "UnitCondition.ImmuneToCombatManeuvers))",
                 "IsSummonManeuverSuccess(\n                (int)maneuver.InitiatorRoll, maneuver.Success)",
                 "if (!SummonManeuverChecks.Succeeded(maneuver)) return false;",
                 "bool success = SummonManeuverChecks.Succeeded(maneuver);");
@@ -343,7 +344,8 @@ namespace KingmakerGunslinger.DomainTests
                 "arm.Permanent = ExpandedSummoningSpecialProfiles.CyclopsFlashOfInsightLastsUntilUsed;");
             RequireTokens("Flash arming evidence", Source("src", "KingmakerGunslinger", "RuntimeTesting",
                     "RuntimeTestRunner.ExpandedSummoningCorrection.cs"),
-                ";untimedArming=", "armings.All(value => value.IsPermanent)");
+                ";untimedArming=", "armings.All(value => value.IsPermanent)",
+                ";maneuverImmuneRefused=", ";takenOnceImmunityEnds=");
             // A mechanical sub-case that loses a buff names it, and starts
             // from a hostile no earlier sub-case left held or swallowed.
             RequireTokens("Mechanical sub-case isolation", Source("src", "KingmakerGunslinger",
