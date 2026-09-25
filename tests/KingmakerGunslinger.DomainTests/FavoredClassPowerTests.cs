@@ -112,7 +112,12 @@ namespace KingmakerGunslinger.DomainTests
                 "evt.AddBonusDC(delta);",
                 "return spell != null && (spell == Ability || (spell.Parent != null && spell.Parent == Ability));",
                 "value.Abilites != null && value.Abilites.Contains(Ability)",
-                "!FavoredClassRuntime.MechanicsEnabled"
+                "!FavoredClassRuntime.MechanicsEnabled",
+                "IResourceAmountBonusHandler, IUnitSubscriber",
+                "int real = progression.CalcLevel(Owner);",
+                "bonus += FavoredClassMechanicsPolicy.ThresholdUsesBetween(UseThresholds(progression, UsesResource),",
+                "if (increase.Resource == resource && increase.Value > 0)",
+                "!Owner.HasFact(PowerFeature))"
             })
                 Assertions.True(level.Contains(token), "Selected power token: " + token);
             foreach (string forbidden in new[] { "AddFakeClassLevel", "Progression.AddClass", "AddBonusSpellLevel",
@@ -127,7 +132,9 @@ namespace KingmakerGunslinger.DomainTests
                 "\"553d9802d5d9de04b941b55cb47d3096\", \"6d005cc9c3ad3f24e8769aad2fbfdf3f\"",
                 "{ FavoredClassCatalog.Sorcerer, \"b3a505fb61437dc4097f43c3f8f9a4cf\" },",
                 "owned.FeatureGuids = new[] { usablePower.AssetGuid };",
-                "prerequisite.RowIds = restrictedRows;"
+                "prerequisite.RowIds = restrictedRows;",
+                "level.UsesResource = logic == null ? null : logic.RequiredResource;",
+                "level.BloodlineGuids = FavoredClassLeafCatalog.EligibleBloodlines(targetKey).Value;"
             })
                 Assertions.True(blueprints.Contains(token), "Bloodline power wiring token: " + token);
         }

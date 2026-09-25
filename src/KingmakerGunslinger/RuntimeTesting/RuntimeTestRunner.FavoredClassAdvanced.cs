@@ -47,6 +47,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private const string FcbFireBlastFeatureGuid = "3022a5066a5604a498dd289b37dfd8aa";
         private const string FcbFireRayAbilityGuid = "1b4989258e5964149a909e47c72b7f67";
         private const string FcbFireBlastAbilityGuid = "b2d1d39cd406e0f4185c52fecc73c3b5";
+        private const string FcbBlastResourceGuid = "4c415d8268a451843a52d3a43fe2e4d2";
+        private const string FcbRayResourceGuid = "ebbb59cea666c1249ba7da55addccfa2";
 
         // Phase 3 advanced rows: O06 paladin auras, O07 companion and O08
         // eidolon natural armor, with archetype, two-owner, replacement and
@@ -117,7 +119,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 eidolonFailures.Count == 0,
                 "native AddPet of Call of the Wild's eidolon progression in the save-free fixture scene"));
             assertions.Add(Assertion("fcb-advanced-bloodline-powers",
-                "an Ifrit or Sylph Sorcerer is offered only its own element's owned powers; two steps in Elemental Blast raise exactly its caster level, dice and DC by the effective-level rule, two steps in Elemental Ray raise exactly its damage bonus rank, and the other power and an unrelated spell are unchanged",
+                "an Ifrit or Sylph Sorcerer is offered only its own element's owned powers; two steps in Elemental Blast raise exactly its caster level, dice and DC by the effective-level rule and its own extra uses at 17th and 20th level follow the effective bloodline level (at most two steps), two steps in Elemental Ray raise exactly its damage bonus rank, and the other power, Elemental Ray's uses and an unrelated spell are unchanged",
                 Describe(evidence["bloodlinePowers"], powerFailures), powerFailures.Count == 0,
                 "level-1 native Sorcerer visits with the chosen bloodline; AbilityData.CreateExecutionContext params and ranks"));
             assertions.Add(Assertion("external-isolation", "unchanged party and global-unit snapshots",
@@ -378,6 +380,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     foreach (string key in new[] { "casterLevel", "dc", "rankBonus", "damageDice", "damageBonus" })
                         if (delta(pair.Item1, pair.Item2, key) != 0)
                             failures.Add("an unchosen power or spell changed " + key);
+                result["blastUses"] = ObserveBlastUseThresholds(create, sorcerer, ray, blast, leaves, failures);
             }
             catch (Exception exception)
             {
@@ -389,6 +392,76 @@ namespace KingmakerGunslinger.RuntimeTesting
                     try { unit.Dispose(); } catch (Exception) { }
             }
             return result;
+        }
+
+        // Review finding 2 / charter 8.10: Elemental Blast's own use
+        // thresholds (the bloodline's extra uses at 17th and 20th level) follow
+        // the effective level of the owner's bloodline, at most two steps;
+        // Elemental Ray's uses never change.
+        private static JObject ObserveBlastUseThresholds(Func<UnitEntityData> create, BlueprintCharacterClass sorcerer,
+            BlueprintFeature ray, BlueprintFeature blast, FavoredClassBlueprintSet leaves, IList<string> failures)
+        {
+            var library = BlueprintBootstrap.Library;
+            string effect = FavoredClassCatalog.EffectSelectedBloodlinePower;
+            var progression = BlueprintLibraryLookup.RequireExact<BlueprintProgression>(library, FcbFireBloodlineGuid,
+                "Elemental (Fire) bloodline");
+            var blastResource = BlueprintLibraryLookup.RequireExact<BlueprintAbilityResource>(library,
+                FcbBlastResourceGuid, "Elemental Blast resource");
+            var rayResource = BlueprintLibraryLookup.RequireExact<BlueprintAbilityResource>(library,
+                FcbRayResourceGuid, "Elemental Ray resource");
+            IList<KeyValuePair<int, int>> thresholds =
+                FavoredClassSelectedPowerLevel.UseThresholds(progression, blastResource);
+            var row = new JObject
+            {
+                ["thresholds"] = new JArray(thresholds.Select(value => value.Key + ":" + value.Value))
+            };
+            if (!thresholds.Select(value => value.Key).OrderBy(value => value).SequenceEqual(new[] { 17, 20 }))
+                failures.Add("the fire bloodline's Blast use thresholds were not exactly 17 and 20");
+            Func<int, int, UnitEntityData> sorcererAt = (levels, steps) =>
+            {
+                UnitEntityData unit = create();
+                for (int added = 0; added < levels; added++)
+                    unit.Descriptor.Progression.AddClassLevel(sorcerer);
+                unit.Descriptor.AddFact(progression);
+                unit.Descriptor.AddFact(ray);
+                unit.Descriptor.AddFact(blast);
+                if (steps > 0)
+                    GrantFavoredClassRanks(unit, leaves.Pair(effect, "FireBlast").Full, steps);
+                return unit;
+            };
+            // (real level, steps, extra uses beyond the native ones)
+            var cases = new[]
+            {
+                Tuple.Create(15, 0, 0), Tuple.Create(15, 1, 0), Tuple.Create(15, 2, 1),
+                Tuple.Create(16, 1, 1), Tuple.Create(17, 2, 0), Tuple.Create(18, 2, 1), Tuple.Create(20, 2, 0)
+            };
+            var probes = new JArray();
+            foreach (var entry in cases)
+            {
+                UnitEntityData control = sorcererAt(entry.Item1, 0);
+                UnitEntityData invested = sorcererAt(entry.Item1, entry.Item2);
+                int blastControl = blastResource.GetMaxAmount(control.Descriptor);
+                int blastInvested = blastResource.GetMaxAmount(invested.Descriptor);
+                int rayControl = rayResource.GetMaxAmount(control.Descriptor);
+                int rayInvested = rayResource.GetMaxAmount(invested.Descriptor);
+                probes.Add(new JObject
+                {
+                    ["level"] = entry.Item1,
+                    ["steps"] = entry.Item2,
+                    ["progressionLevel"] = progression.CalcLevel(invested.Descriptor),
+                    ["blastControl"] = blastControl,
+                    ["blastInvested"] = blastInvested,
+                    ["rayControl"] = rayControl,
+                    ["rayInvested"] = rayInvested
+                });
+                if (blastInvested - blastControl != entry.Item3)
+                    failures.Add("Blast at sorcerer " + entry.Item1 + " with " + entry.Item2 + " steps gained " +
+                        (blastInvested - blastControl) + " uses, expected " + entry.Item3);
+                if (rayInvested != rayControl)
+                    failures.Add("a Blast investment changed Elemental Ray's uses");
+            }
+            row["probes"] = probes;
+            return row;
         }
 
         private static JObject ObserveAuraBonuses(FavoredClassBlueprintSet leaves, IList<string> failures)
