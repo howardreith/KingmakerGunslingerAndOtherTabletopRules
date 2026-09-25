@@ -50,7 +50,10 @@ spell, slot, BAB or save. A target whose effect cannot be implemented without
 breaking a charter rule is excluded instead of published partially. Read points
 and gates reached from two targets are withheld from both, and a target that
 loses a gate that way is withheld whole; a target with no read point is not
-published.
+published. An excluded, withheld or unavailable target's registered counter
+keeps its saved ranks but is mechanically inert: only an active scope
+(published, complete, admitted to the read-point indexes and not withheld)
+gives earned steps to any of its read points.
 
 | Key | Revelation | Mystery | Audit families | Found (build 14) | Rank reads | Resources | Parameter abilities | Effective-level thresholds and gates |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |

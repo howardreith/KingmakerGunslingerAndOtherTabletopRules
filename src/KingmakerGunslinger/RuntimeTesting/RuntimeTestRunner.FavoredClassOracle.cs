@@ -74,6 +74,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var menuFailures = new List<string>();
             var mechanicsFailures = new List<string>();
             var gateFailures = new List<string>();
+            var inactiveFailures = new List<string>();
             bool cleaned = false;
             try
             {
@@ -81,6 +82,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 evidence["menus"] = RunOracleMenus(bonus, leaves, menuFailures);
                 evidence["mechanics"] = ObserveRevelationMechanics(leaves, mechanicsFailures);
                 evidence["gates"] = ObserveRevelationGates(bonus, leaves, gateFailures);
+                evidence["inactive"] = ObserveInactiveScopes(leaves, inactiveFailures);
             }
             catch (Exception exception)
             {
@@ -109,6 +111,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Describe(evidence["gates"] == null ? null : evidence["gates"]["summary"], gateFailures),
                 gateFailures.Count == 0,
                 "AddClassLevel fixtures; the native AddFeatureOnClassLevel gates (HasFact of each gated feature); publication skip evidence"));
+            assertions.Add(Assertion("fcb-oracle-inactive-scopes",
+                "a held rank of the excluded Spirit of the Warrior counter resolves but changes no read point (resources, ability parameters, ranks including the excluded BAB read, gated facts), no feature and no BAB against an uninvested control; a complete published target (Fire Breath) gives its benefit, none while a partial reason is injected into its live scope, and its benefit again once the injection is removed",
+                Describe(evidence["inactive"], inactiveFailures), inactiveFailures.Count == 0,
+                "AddClassLevel fixtures; FavoredClassRevelationScope.Active; GetMaxAmount, AbilityData.CreateExecutionContext, MechanicsContext ranks and HasFact"));
             assertions.Add(Assertion("external-isolation", "unchanged party and global-unit snapshots",
                 "cleaned=" + cleaned, cleaned, "detached entity disposal and exact reference snapshots"));
             assertions.Add(Assertion("loaded-mod-version", _request.ExpectedModVersion,
@@ -118,6 +124,192 @@ namespace KingmakerGunslinger.RuntimeTesting
             RuntimeTestResult result = CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
             result.EvidenceFiles.Add(evidencePath);
+            return result;
+        }
+
+        // PR #24 second review, finding 2: a registered revelation counter
+        // whose target is excluded (Spirit of the Warrior) or withheld as
+        // partial keeps its saved rank but gives no benefit: every read point
+        // (resources, ability parameters, ranks including the excluded BAB
+        // read, gated facts, the unit's features and BAB) equals an uninvested
+        // control. A complete published target (Fire Breath) gives its benefit
+        // before and after a partial reason is injected into its live scope
+        // and none while it is injected.
+        private JObject ObserveInactiveScopes(FavoredClassBlueprintSet leaves, IList<string> failures)
+        {
+            var result = new JObject();
+            var library = BlueprintBootstrap.Library;
+            string effect = FavoredClassCatalog.EffectSelectedRevelation;
+            BlueprintCharacterClass oracle = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(library,
+                FavoredClassRevelationManifest.OracleClassGuid, "Oracle");
+            Func<string, BlueprintScriptableObject> blueprint = guid =>
+            {
+                BlueprintScriptableObject value;
+                if (!library.BlueprintsByAssetId.TryGetValue(guid, out value) || value == null)
+                    throw new InvalidOperationException("Missing provider blueprint " + guid);
+                return value;
+            };
+            var leafGuids = new HashSet<string>(leaves.Pairs.SelectMany(pair => pair.Leaves)
+                .Select(leaf => leaf.AssetGuid), StringComparer.Ordinal);
+            var units = new List<UnitEntityData>();
+            try
+            {
+                UnitEntityData target = new Kingmaker.UI.LevelUp.ChargenUnit(
+                    BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
+                units.Add(target);
+                Func<int, string, UnitEntityData> oracleAt = (levels, key) =>
+                {
+                    UnitEntityData unit = new Kingmaker.UI.LevelUp.ChargenUnit(
+                        BlueprintRoot.Instance.DefaultPlayerCharacter).Unit;
+                    units.Add(unit);
+                    for (int added = 0; added < levels; added++)
+                        unit.Descriptor.Progression.AddClassLevel(oracle);
+                    foreach (string guid in FavoredClassRevelationManifest.For(key).FeatureGuids)
+                        unit.Descriptor.AddFact((BlueprintFeature)blueprint(guid));
+                    return unit;
+                };
+                // Everything a revelation counter could change on one unit.
+                Func<UnitEntityData, FavoredClassRevelationScope, JObject> observe = (unit, scope) =>
+                {
+                    var resources = new JObject();
+                    foreach (BlueprintAbilityResource resource in scope.Resources.Keys)
+                        resources[resource.name] = resource.GetMaxAmount(unit.Descriptor);
+                    var parameters = new JObject();
+                    foreach (BlueprintAbility ability in scope.ParamsAbilities.OfType<BlueprintAbility>())
+                    {
+                        var data = new AbilityData(ability, unit.Descriptor);
+                        var context = data.CreateExecutionContext(new TargetWrapper(target));
+                        context.Recalculate();
+                        parameters[ability.name] = new JArray(context.Params.CasterLevel, context.Params.DC,
+                            context[AbilityRankType.Default], context[AbilityRankType.DamageDice],
+                            context[AbilityRankType.StatBonus]);
+                    }
+                    var ranks = new JObject();
+                    var rankReads = scope.RankSources.Select(source => Tuple.Create(source.Value, source.Key.Type))
+                        .Concat((scope.Target.ExcludedRanks ?? new string[0]).Select(value => value.Split('|'))
+                            .Select(value => Tuple.Create(blueprint(value[0]),
+                                (AbilityRankType)Enum.Parse(typeof(AbilityRankType), value[1]))));
+                    foreach (Tuple<BlueprintScriptableObject, AbilityRankType> read in rankReads)
+                    {
+                        var context = new MechanicsContext(unit, unit.Descriptor, read.Item1);
+                        context.Recalculate();
+                        ranks[read.Item1.name + "|" + read.Item2] = context[read.Item2];
+                    }
+                    var gated = new JObject();
+                    foreach (FavoredClassRevelationGate gate in scope.Gates)
+                        gated[gate.Label] = gate.Feature != null && unit.Descriptor.HasFact(gate.Feature);
+                    return new JObject
+                    {
+                        ["bab"] = unit.Stats.BaseAttackBonus.ModifiedValue,
+                        ["resources"] = resources,
+                        ["parameters"] = parameters,
+                        ["ranks"] = ranks,
+                        ["gatedFacts"] = gated,
+                        ["features"] = new JArray(unit.Descriptor.Progression.Features.Enumerable
+                            .Where(feature => feature != null && feature.Blueprint != null &&
+                                !leafGuids.Contains(feature.Blueprint.AssetGuid))
+                            .Select(feature => feature.Blueprint.AssetGuid + ":" + feature.GetRank())
+                            .OrderBy(value => value, StringComparer.Ordinal).ToArray())
+                    };
+                };
+
+                // 1. The excluded Spirit of the Warrior counter, held at its
+                // printed maximum on an oracle whose effective level would
+                // cross the revelation's own thresholds.
+                FavoredClassRevelationScope spirit = FavoredClassRevelationScopes.ForKey("SpiritOfTheWarrior");
+                BlueprintFeature spiritLeaf = leaves.Pair(effect, "SpiritOfTheWarrior").Full;
+                if (spirit == null || spiritLeaf == null)
+                {
+                    failures.Add("Spirit of the Warrior's scope or registered counter is missing");
+                    return result;
+                }
+                UnitEntityData spiritControl = oracleAt(14, "SpiritOfTheWarrior");
+                UnitEntityData spiritHeld = oracleAt(14, "SpiritOfTheWarrior");
+                GrantFavoredClassRanks(spiritHeld, spiritLeaf, 3);
+                JObject spiritControlRow = observe(spiritControl, spirit);
+                JObject spiritHeldRow = observe(spiritHeld, spirit);
+                int heldRank = spiritHeld.Descriptor.Progression.Features.GetRank(spiritLeaf);
+                result["spiritOfTheWarrior"] = new JObject
+                {
+                    ["published"] = spirit.Target.Published,
+                    ["active"] = spirit.Active,
+                    ["heldRank"] = heldRank,
+                    ["readPoints"] = new JObject
+                    {
+                        ["resources"] = spirit.Resources.Count,
+                        ["parameters"] = spirit.ParamsAbilities.Count,
+                        ["ranks"] = spirit.RankSources.Count,
+                        ["excludedRanks"] = (spirit.Target.ExcludedRanks ?? new string[0]).Length,
+                        ["gates"] = spirit.Gates.Count
+                    },
+                    ["control"] = spiritControlRow,
+                    ["held"] = spiritHeldRow
+                };
+                if (spirit.Target.Published || spirit.Active)
+                    failures.Add("Spirit of the Warrior's scope is published or active");
+                if (heldRank != 3)
+                    failures.Add("the held Spirit of the Warrior rank did not resolve (" + heldRank + ")");
+                if (spirit.Resources.Count == 0)
+                    failures.Add("Spirit of the Warrior has no resource read to prove inert");
+                if (!JToken.DeepEquals(spiritControlRow, spiritHeldRow))
+                    failures.Add("a held Spirit of the Warrior rank changed a read point, a fact or BAB");
+
+                // 2. A complete published target, then a partial reason
+                // injected into its live scope, then removed again.
+                FavoredClassRevelationScope breath = FavoredClassRevelationScopes.ForKey("FireBreath");
+                BlueprintFeature breathLeaf = leaves.Pair(effect, "FireBreath").Full;
+                if (breath == null || breathLeaf == null)
+                {
+                    failures.Add("Fire Breath's scope or registered counter is missing");
+                    return result;
+                }
+                UnitEntityData breathControl = oracleAt(9, "FireBreath");
+                UnitEntityData breathInvested = oracleAt(9, "FireBreath");
+                GrantFavoredClassRanks(breathInvested, breathLeaf, 2);
+                bool activeBefore = breath.Active;
+                JObject controlRow = observe(breathControl, breath);
+                JObject beforeRow = observe(breathInvested, breath);
+                string previous = breath.PartialReason;
+                JObject inertRow;
+                bool activeWhileInjected;
+                breath.PartialReason = "qualification: injected partial scope";
+                try
+                {
+                    activeWhileInjected = breath.Active;
+                    inertRow = observe(breathInvested, breath);
+                }
+                finally
+                {
+                    breath.PartialReason = previous;
+                }
+                bool activeAfter = breath.Active;
+                JObject afterRow = observe(breathInvested, breath);
+                result["injectedPartial"] = new JObject
+                {
+                    ["key"] = "FireBreath",
+                    ["activeBefore"] = activeBefore,
+                    ["activeWhileInjected"] = activeWhileInjected,
+                    ["activeAfter"] = activeAfter,
+                    ["heldRank"] = breathInvested.Descriptor.Progression.Features.GetRank(breathLeaf),
+                    ["control"] = controlRow,
+                    ["before"] = beforeRow,
+                    ["whileInjected"] = inertRow,
+                    ["after"] = afterRow
+                };
+                if (!activeBefore || activeWhileInjected || !activeAfter)
+                    failures.Add("the injected partial reason did not toggle Fire Breath's scope exactly");
+                if (JToken.DeepEquals(beforeRow, controlRow))
+                    failures.Add("the complete Fire Breath target gave no benefit before the injection");
+                if (!JToken.DeepEquals(inertRow, controlRow))
+                    failures.Add("a partial Fire Breath scope still changed a read point, a fact or BAB");
+                if (!JToken.DeepEquals(afterRow, beforeRow))
+                    failures.Add("the complete Fire Breath target did not work again after the injection");
+            }
+            finally
+            {
+                foreach (UnitEntityData unit in units)
+                    try { unit.Dispose(); } catch (Exception) { }
+            }
             return result;
         }
 

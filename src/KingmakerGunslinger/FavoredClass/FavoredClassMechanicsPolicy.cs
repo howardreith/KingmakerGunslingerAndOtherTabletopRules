@@ -171,6 +171,19 @@ namespace KingmakerGunslinger.FavoredClass
         }
 
         /// <summary>
+        /// I06/S04: whether a revelation target's counter gives any benefit in
+        /// this process. Only a published, complete target (no partial
+        /// reason) with read points, admitted to the read-point indexes and not
+        /// withheld or unavailable, is active; any other keeps its saved ranks
+        /// and is mechanically inert.
+        /// </summary>
+        internal static bool ScopeActive(bool published, string partialReason, bool hasReadPoints, bool admitted,
+            bool withheld)
+        {
+            return published && partialReason == null && hasReadPoints && admitted && !withheld;
+        }
+
+        /// <summary>
         /// I08/S06: the uses one of a power's own class-level gates adds (or,
         /// for a before-gate, removes) at the effective level beyond its
         /// native decision at the real level.

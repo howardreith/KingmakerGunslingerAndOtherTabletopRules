@@ -225,6 +225,11 @@ need a restart.
   racial identity and its bridge do not depend on it. The host's own
   favored-class progression is host content: restore the host rather than
   editing a save.
+- **Excluded or withheld targets**: a registered revelation, bloodline power
+  or performance counter whose target is excluded (Spirit of the Warrior),
+  withheld as partial or unavailable in this process keeps its saved ranks
+  and gives no benefit; none of its read points, gates, resources or texts
+  changes.
 - **Call of the Wild removed**: the Oracle and Summoner counters are not
   offered, and their saved leaves still resolve. Revelation and eidolon effects
   are inert because their provider blueprints are gone.

@@ -278,6 +278,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("favored-class.range-text-follows-live-outcome", FavoredClassRangePresentationTests.FailedOrDeferredLiveAreasKeepTheTextNative),
             Case("favored-class.range-text-failure-memory", FavoredClassRangePresentationTests.WithoutALiveAreaAFailureHoldsUntilALaterSuccess),
             Case("favored-class.range-text-sources", FavoredClassRangePresentationTests.PresentationIsWired),
+            Case("favored-class.revelation-scope-active", FavoredClassScopeActivityTests.OnlyActiveRevelationScopesGiveBenefits),
+            Case("favored-class.scope-activity-sources", FavoredClassScopeActivityTests.InactiveScopesAreWired),
             Case("mostly-human.policy-inventory", ElementalMostlyHumanTests.PolicyInventoryIsExact),
             Case("mostly-human.manifest-block", ElementalMostlyHumanTests.ManifestBlockFollowsTheFavoredClassBlock),
             Case("mostly-human.factory-keeps-race-identity", ElementalMostlyHumanTests.FactoryAddsAHeritageChoiceWithoutTouchingRaceIdentity),

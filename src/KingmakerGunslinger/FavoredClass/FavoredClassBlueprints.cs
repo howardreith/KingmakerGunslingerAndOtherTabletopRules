@@ -755,6 +755,7 @@ namespace KingmakerGunslinger.FavoredClass
                     level.name = "$" + full.name + "_EffectiveLevel";
                     level.Divisor = divisor;
                     level.CapSteps = cap;
+                    level.TargetKey = targetKey;
                     level.PowerFeature = BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library,
                         power.Key, "native bloodline power " + targetKey);
                     level.Ability = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(library,

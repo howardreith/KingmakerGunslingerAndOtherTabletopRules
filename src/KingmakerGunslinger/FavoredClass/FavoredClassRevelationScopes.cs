@@ -167,6 +167,26 @@ namespace KingmakerGunslinger.FavoredClass
         /// <summary>Why this target cannot be published completely in this process, or null.</summary>
         internal string PartialReason { get; set; }
 
+        /// <summary>Whether Build admitted this target's read points and gates to the indexes.</summary>
+        internal bool Admitted { get; set; }
+
+        /// <summary>
+        /// Whether this target's counter gives any benefit in this process
+        /// (FavoredClassMechanicsPolicy.ScopeActive). An excluded, partial,
+        /// read-point-less, unadmitted, withheld or unavailable target keeps
+        /// its saved ranks and every one of its read points stays native:
+        /// ranks, resources, ability parameters and level gates.
+        /// </summary>
+        internal bool Active
+        {
+            get
+            {
+                return FavoredClassMechanicsPolicy.ScopeActive(Target.Published, PartialReason, HasReadPoints,
+                    Admitted, FavoredClassRuntime.IsEffectUnavailable(FavoredClassCatalog.EffectSelectedRevelation) ||
+                    FavoredClassRuntime.IsTargetUnavailable(FavoredClassCatalog.EffectSelectedRevelation, Key));
+            }
+        }
+
         internal FavoredClassRevelationTarget Target { get; private set; }
         internal string Key { get { return Target.Key; } }
         internal BlueprintFeature FullLeaf { get; private set; }
@@ -211,7 +231,8 @@ namespace KingmakerGunslinger.FavoredClass
         /// </summary>
         internal int EarnedSteps(UnitDescriptor unit)
         {
-            if (unit == null || unit.Progression == null || FullLeaf == null || !FavoredClassRuntime.MechanicsEnabled)
+            if (unit == null || unit.Progression == null || FullLeaf == null || !FavoredClassRuntime.MechanicsEnabled ||
+                !Active)
                 return 0;
             Fact leaf = unit.Progression.Features.GetFact(FullLeaf);
             if (leaf == null || FavoredClassRevelationScopes.IsDeparting(leaf))
@@ -466,6 +487,7 @@ namespace KingmakerGunslinger.FavoredClass
                     withheld.Add(scope.Key);
                     continue;
                 }
+                scope.Admitted = true;
                 foreach (FavoredClassRevelationGate gate in scope.Gates)
                 {
                     Dictionary<string, FavoredClassRevelationScope> byName;
