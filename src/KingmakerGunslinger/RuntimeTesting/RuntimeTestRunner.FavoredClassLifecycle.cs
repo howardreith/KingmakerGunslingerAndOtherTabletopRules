@@ -549,6 +549,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Math.Abs((double)row["radius"] - native) < 0.01 && (double)row["ringFactor"] == 1d;
             Func<JObject, bool> widenedArea = row => !(bool)row["ended"] &&
                 Math.Abs((double)row["radius"] - widened) < 0.01 && (double)row["ringFactor"] > 1d;
+            // A failing area records Failed at its initialization; the native
+            // attach (OnViewAttached: SpawnFxs) then attempts it once more under
+            // the group rule, which holds it while a sibling is native.
+            Func<JObject, bool> nativeOutcome = row => (string)row["recorded"] == "Failed" ||
+                (string)row["recorded"] == "Held";
             Func<JObject, string, bool> texts = (row, expected) => (string)row["feature"] == expected &&
                 (string)row["toggle"] == expected && (string)row["actionBar"] == expected;
             Action<Buff> remove = buff =>
@@ -603,8 +608,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 failures.Add("the toggle's area whose ring could not be restored stayed live");
             if ((bool)ownRollback["toggleOn"])
                 failures.Add("the toggle whose own buff ran the ended area was not turned off");
-            if (!nativeArea((JObject)ownRollback["failed"]) ||
-                (string)((JObject)ownRollback["failed"])["recorded"] != "Failed")
+            if (!nativeArea((JObject)ownRollback["failed"]) || !nativeOutcome((JObject)ownRollback["failed"]))
                 failures.Add("the failed second area was not native");
             if (!texts((JObject)ownRollback["descriptions"], "native") ||
                 (int)((JObject)ownRollback["descriptions"])["liveAreas"] != 1)
@@ -617,6 +621,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             yield return null;
             tick(own);
             tick(failedA);
+            int afterOwnCleanup = FavoredClassPerformanceInstances.LiveCount(bard.Descriptor, target.Key);
 
             // B. An older live area of the same performance that the toggle's
             // current buff does not run (a lingering one): its area cannot be
@@ -632,7 +637,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             Buff currentBuff = running;
             var lingeringRollback = new JObject
             {
-                ["afterOwnCleanup"] = FavoredClassPerformanceInstances.LiveCount(bard.Descriptor, target.Key),
+                ["afterOwnCleanup"] = afterOwnCleanup,
                 ["started"] = new JObject { ["older"] = describe(older), ["current"] = describe(current) }
             };
             evidence["lingeringAreaRollback"] = lingeringRollback;
@@ -674,8 +679,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (!nativeArea((JObject)lingeringRollback["current"]) ||
                 (string)((JObject)lingeringRollback["current"])["recorded"] != "Narrowed")
                 failures.Add("the current area was not narrowed to native with the failed area");
-            if (!nativeArea((JObject)lingeringRollback["failed"]) ||
-                (string)((JObject)lingeringRollback["failed"])["recorded"] != "Failed")
+            if (!nativeArea((JObject)lingeringRollback["failed"]) || !nativeOutcome((JObject)lingeringRollback["failed"]))
                 failures.Add("the failed area beside the current one was not native");
             if (!texts((JObject)lingeringRollback["descriptions"], "native") ||
                 (int)((JObject)lingeringRollback["descriptions"])["liveAreas"] != 2)
