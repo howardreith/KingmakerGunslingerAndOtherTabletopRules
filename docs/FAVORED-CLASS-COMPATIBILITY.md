@@ -159,9 +159,10 @@ scales a ring the native attach spawns later, a `GameObjectsPool.Release`
 prefix restores the exact ring scales before a pooled effect is reused, and
 `Fact.SelectUIData` and `MechanicActionBarSlotActivableAbility.GetDescription`
 postfixes show the owner's range in the owner's own descriptions, following
-the recorded widening outcome of that owner's live areas: native while one
-failed or waits for its ring, and after a failure until a later success
-(`docs/FAVORED-CLASS-TARGET-MANIFEST.md`).
+that owner's live areas of the performance, which widen only as a whole:
+native while any live area is native, their actual range while all are
+widened, and the configured range when none is live; no outcome outlives
+its area (`docs/FAVORED-CLASS-TARGET-MANIFEST.md`).
 
 Two scopes are closed in finally blocks rather than by postfixes alone, since
 Harmony 1.2 has no finalizers. A transpiler on
