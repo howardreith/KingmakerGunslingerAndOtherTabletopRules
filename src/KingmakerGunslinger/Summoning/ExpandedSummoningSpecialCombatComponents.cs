@@ -405,13 +405,21 @@ namespace KingmakerGunslinger.Summoning
             TryGrab(evt.Target, evt.Weapon, evt.AttackRoll.IsHit);
         }
 
+        /// <summary>
+        /// The owner's live grab component - the instance on its buff, which
+        /// knows its owner and its fact; the blueprint's own instance only as
+        /// a last resort for configuration reads.
+        /// </summary>
         internal static SummonGrabComponent Find(UnitEntityData owner)
         {
             if (owner == null || owner.Descriptor == null) return null;
             foreach (Buff buff in owner.Descriptor.Buffs.RawFacts.OfType<Buff>())
             {
-                if (buff == null || buff.Blueprint == null ||
-                    buff.Blueprint.ComponentsArray == null) continue;
+                if (buff == null || buff.Blueprint == null) continue;
+                SummonGrabComponent live = buff.Components == null ? null :
+                    buff.Components.OfType<SummonGrabComponent>().FirstOrDefault();
+                if (live != null) return live;
+                if (buff.Blueprint.ComponentsArray == null) continue;
                 SummonGrabComponent grab = buff.Blueprint.ComponentsArray
                     .OfType<SummonGrabComponent>().FirstOrDefault();
                 if (grab != null) return grab;
@@ -1324,25 +1332,65 @@ namespace KingmakerGunslinger.Summoning
     /// when it turns off. No other stat, limb or attack is touched.
     /// </summary>
     [Serializable]
-    public sealed class SummonDocileHoovesComponent : BuffLogic
+    public sealed class SummonDocileHoovesComponent : BuffLogic,
+        IInitiatorRulebookHandler<RuleCalculateAttackBonus>,
+        IInitiatorRulebookHandler<RuleCalculateWeaponStats>
     {
+        /// <summary>Fixture-only: lets the fixture compute the same hooves as primary for the comparison.</summary>
+        internal static bool SuspendedForFixture { get; set; }
+
         public override void OnTurnOn()
         {
             base.OnTurnOn();
-            Apply(true);
+            // The unit's facts activate before its body's limbs exist; the
+            // body patch below and the rule-time hooks catch that case.
+            Apply(Owner == null ? null : Owner.Unit, true);
         }
 
         public override void OnTurnOff()
         {
             base.OnTurnOff();
-            Apply(false);
+            Apply(Owner == null ? null : Owner.Unit, false);
         }
 
-        private void Apply(bool secondary)
+        public void OnEventAboutToTrigger(RuleCalculateAttackBonus evt)
+        { Ensure(evt == null ? null : evt.Initiator, evt == null ? null : evt.Weapon); }
+
+        public void OnEventDidTrigger(RuleCalculateAttackBonus evt) { }
+
+        public void OnEventAboutToTrigger(RuleCalculateWeaponStats evt)
+        { Ensure(evt == null ? null : evt.Initiator, evt == null ? null : evt.Weapon); }
+
+        public void OnEventDidTrigger(RuleCalculateWeaponStats evt) { }
+
+        private void Ensure(UnitEntityData owner, ItemEntityWeapon weapon)
         {
-            UnitEntityData owner = Owner == null ? null : Owner.Unit;
+            if (SuspendedForFixture || owner == null || weapon == null || Owner == null ||
+                !ReferenceEquals(owner, Owner.Unit)) return;
+            if (Hooves(owner).Contains(weapon)) weapon.ForceSecondary = true;
+        }
+
+        /// <summary>Sets or clears the docile flag on every hoof; returns how many hooves were touched.</summary>
+        internal static int Apply(UnitEntityData owner, bool secondary)
+        {
+            int count = 0;
             foreach (ItemEntityWeapon hoof in Hooves(owner))
+            {
                 hoof.ForceSecondary = secondary;
+                count++;
+            }
+            return count;
+        }
+
+        /// <summary>True when the unit carries a docile-hoof carrier buff.</summary>
+        internal static bool Carries(UnitDescriptor descriptor)
+        {
+            if (descriptor == null || descriptor.Buffs == null) return false;
+            foreach (Buff buff in descriptor.Buffs.RawFacts.OfType<Buff>())
+                if (buff != null && buff.Blueprint != null && buff.Blueprint.ComponentsArray != null &&
+                    buff.Blueprint.ComponentsArray.OfType<SummonDocileHoovesComponent>().Any())
+                    return true;
+            return false;
         }
 
         /// <summary>Every natural weapon entity on the body: the primary hand's and the additional limbs'.</summary>
@@ -1359,6 +1407,31 @@ namespace KingmakerGunslinger.Summoning
                         limb.MaybeWeapon.Blueprint != null && limb.MaybeWeapon.Blueprint.IsNatural)
                         result.Add(limb.MaybeWeapon);
             return result;
+        }
+    }
+
+    /// <summary>
+    /// The unit's facts activate before its body's limbs are created, so
+    /// the docile carrier's own activation finds no hooves; once the body
+    /// initializes, the flag is set on every hoof of a unit that carries
+    /// the docile-hoof carrier (spawn and load alike).
+    /// </summary>
+    [HarmonyPatch(typeof(UnitBody), "Initialize")]
+    internal static class ExpandedSummoningDocileHoovesBodyPatch
+    {
+        private static void Postfix(UnitBody __instance)
+        {
+            try
+            {
+                UnitDescriptor owner = __instance == null ? null : __instance.Owner;
+                if (owner == null || owner.Unit == null ||
+                    !SummonDocileHoovesComponent.Carries(owner)) return;
+                SummonDocileHoovesComponent.Apply(owner.Unit, true);
+            }
+            catch (Exception)
+            {
+                // The docile flag never interrupts the game's own body initialization.
+            }
         }
     }
 
