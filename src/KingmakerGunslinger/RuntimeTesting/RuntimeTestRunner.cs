@@ -17899,8 +17899,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     rakeChargeHits = ExerciseExpandedSummoningWeaponAttack(tiger, hostile,
                         rakeClaw, true, 20, out charge);
                 }
+                bool tigerHolding = tiger.Get<Kingmaker.UnitLogic.Parts
+                    .UnitPartGrappleInitiator>() != null;
+                ReleaseExpandedSummoningHold(tiger, hostile, blueprints.OfType<BlueprintBuff>()
+                    .Single(value => value.name == "KMG_Summoning_Special_Grapple_Hold"));
                 steps.Add("tiger:limbs=" + limbCount + ";rakeOrdinary[" + ordinary +
-                    "];rakeCharge[" + charge + "]");
+                    "];rakeCharge[" + charge + "];grabbedOnCharge=" + tigerHolding +
+                    ";released=" + (hostile.Get<Kingmaker.UnitLogic.Parts
+                        .UnitPartGrappleTarget>() == null));
                 ok = ok && rakeClaw != null && !rakeOrdinaryHits &&
                     ordinary.Contains("autoMiss=True") && rakeChargeHits;
             }
@@ -17916,6 +17922,22 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             detail = string.Join(";", steps.ToArray());
             return ok;
+        }
+
+        /// <summary>
+        /// Ends a summon's hold the way the summon's own end path does (the
+        /// hold buff turns off and releases its target) and drops the
+        /// initiator part the game's controller would drop on its next tick.
+        /// </summary>
+        private static void ReleaseExpandedSummoningHold(UnitEntityData holder,
+            UnitEntityData target, BlueprintBuff hold)
+        {
+            if (holder.Descriptor.HasFact(hold))
+                holder.Descriptor.Buffs.RemoveFact(holder.Descriptor.Buffs.GetBuff(hold));
+            if (holder.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleInitiator>() != null)
+                holder.Remove<Kingmaker.UnitLogic.Parts.UnitPartGrappleInitiator>();
+            if (target.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>() != null)
+                target.Remove<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>();
         }
 
         /// <summary>
@@ -17975,44 +17997,44 @@ namespace KingmakerGunslinger.RuntimeTesting
                     SummonRakeComponent.IsRakeWeapon(leopard, rakeClaw) &&
                     !SummonRakeComponent.IsRakeWeapon(leopard,
                         leopard.Body.PrimaryHand.MaybeWeapon);
+                // The leopard's primary claw is also its grab weapon: the
+                // first ordinary hit grabs through the shared lifecycle, and
+                // every later rake attack is then legitimately made while
+                // holding. So: the rake claw first (no hit yet, a silent
+                // miss), then the primary hit (which grabs), then the rake
+                // while holding, then release, then the charge.
                 string ordinaryPrimary = "no-slots", ordinaryRake = "no-slots",
                     chargeRake = "no-slots", holdingRake = "not-holding";
-                bool primaryHits = false, rakeOrdinaryHits = false, rakeChargeHits = false;
+                bool primaryHits = false, rakeOrdinaryHits = false, rakeChargeHits = false,
+                    rakeHoldingHits = false, holding = false, released = false;
                 if (slots)
                 {
-                    primaryHits = ExerciseExpandedSummoningWeaponAttack(leopard, hostile,
-                        primaryClaw, false, 20, out ordinaryPrimary);
                     rakeOrdinaryHits = ExerciseExpandedSummoningWeaponAttack(leopard,
                         hostile, rakeClaw, false, 20, out ordinaryRake);
+                    UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                    primaryHits = ExerciseExpandedSummoningWeaponAttack(leopard, hostile,
+                        primaryClaw, false, 20, out ordinaryPrimary);
+                    holding = leopard.Get<Kingmaker.UnitLogic.Parts
+                        .UnitPartGrappleInitiator>() != null;
+                    if (holding)
+                        rakeHoldingHits = ExerciseExpandedSummoningWeaponAttack(leopard,
+                            hostile, rakeClaw, false, 20, out holdingRake);
+                    ReleaseExpandedSummoningHold(leopard, hostile, hold);
+                    released = hostile.Get<Kingmaker.UnitLogic.Parts
+                        .UnitPartGrappleTarget>() == null && leopard.Get<Kingmaker
+                        .UnitLogic.Parts.UnitPartGrappleInitiator>() == null;
                     rakeChargeHits = ExerciseExpandedSummoningWeaponAttack(leopard,
                         hostile, rakeClaw, true, 20, out chargeRake);
+                    ReleaseExpandedSummoningHold(leopard, hostile, hold);
                 }
-                // Holding: the grab component takes the hold through the real
-                // grapple check, then the rake claw strikes.
-                SummonGrabComponent grab = ExpandedSummoningRuntimeComponent<
-                    SummonGrabComponent>(leopard, leopardTraits);
-                UnityEngine.Random.InitState(FindNativeD20Seed(20));
-                bool grabbed = grab.TryGrab(hostile, leopard.Body.PrimaryHand.MaybeWeapon ==
-                    null ? grab.GrabWeapons[0] : grab.GrabWeapons[0], true);
-                bool holding = leopard.Get<Kingmaker.UnitLogic.Parts
-                    .UnitPartGrappleInitiator>() != null;
-                bool rakeHoldingHits = false;
-                if (slots && holding)
-                    rakeHoldingHits = ExerciseExpandedSummoningWeaponAttack(leopard, hostile,
-                        rakeClaw, false, 20, out holdingRake);
-                if (leopard.Descriptor.HasFact(hold))
-                    leopard.Descriptor.Buffs.RemoveFact(leopard.Descriptor.Buffs.GetBuff(hold));
-                leopard.Remove<Kingmaker.UnitLogic.Parts.UnitPartGrappleInitiator>();
-                bool released = hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>()
-                    == null;
-                steps.Add("leopard:limbs=" + limbCount + ";slots=" + slots + ";primary[" +
-                    ordinaryPrimary + "];rakeOrdinary[" + ordinaryRake + "];rakeCharge[" +
-                    chargeRake + "];grabbed=" + grabbed + ";holding=" + holding +
-                    ";rakeHolding[" + holdingRake + "];released=" + released);
-                ok = ok && slots && primaryHits && !rakeOrdinaryHits &&
-                    ordinaryRake.Contains("autoMiss=True") && ordinaryRake.Contains(
-                        "silent=True") && rakeChargeHits && grabbed && holding &&
-                    rakeHoldingHits && released;
+                steps.Add("leopard:limbs=" + limbCount + ";slots=" + slots +
+                    ";rakeOrdinary[" + ordinaryRake + "];primary[" + ordinaryPrimary +
+                    "];holdingAfterPrimary=" + holding + ";rakeHolding[" + holdingRake +
+                    "];released=" + released + ";rakeCharge[" + chargeRake + "]");
+                ok = ok && slots && !rakeOrdinaryHits &&
+                    ordinaryRake.Contains("autoMiss=True") &&
+                    ordinaryRake.Contains("silent=True") && primaryHits && holding &&
+                    rakeHoldingHits && released && rakeChargeHits;
             }
             catch (Exception exception)
             {
@@ -18086,6 +18108,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "KMG_Summoning_Special_GiantSpider_WebResource");
                 int usesBefore = spider.Descriptor.Resources.GetResourceAmount(webResource);
                 bool webbedBefore = hostile.Descriptor.HasFact(webbed);
+                RemoveExpandedSummoningAppearanceBuffs(spider);
+                spider.Translocate(hostile.Position, null);
                 bool targetable = new AbilityData(spider.Descriptor.Abilities.GetAbility(web))
                     .CanTarget(new TargetWrapper(hostile));
                 UnityEngine.Random.InitState(FindNativeD20Seed(1));
@@ -18159,6 +18183,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     value => value.name == "KMG_Summoning_Special_SteamMephit_Breath");
                 bool breathGranted = steam.Descriptor.Abilities.GetAbility(breath) != null;
                 bool sickenedBefore = hostile.Descriptor.HasFact(sickened);
+                // The synchronous fixture cannot walk a summon into reach, so
+                // the mephit stands at its target as the pixie did in Phase 0.
+                RemoveExpandedSummoningAppearanceBuffs(steam);
+                steam.Translocate(hostile.Position, null);
                 TargetWrapper breathTarget = breath.CanTargetPoint ?
                     new TargetWrapper(hostile.Position) : new TargetWrapper(hostile);
                 UnityEngine.Random.InitState(FindNativeD20Seed(1));
@@ -18189,6 +18217,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "KMG_Summoning_Special_SaltMephit_SpellLikeTwoResource");
                 int usesBefore = salt.Descriptor.Resources.GetResourceAmount(
                     dehydrateResource);
+                RemoveExpandedSummoningAppearanceBuffs(salt);
+                salt.Translocate(hostile.Position, null);
                 int saltBefore = salt.Descriptor.Damage;
                 int steamBefore = steam.Descriptor.Damage;
                 ExecuteExpandedSummoningRuntimeAbility(salt, dehydrate, 2,
@@ -19406,6 +19436,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         data.CanTarget(target) + ";result=" + command.Result;
                     return;
                 }
+                UnitEntityData targetUnit = target == null ? null : target.Unit;
                 throw new InvalidOperationException(
                     "The native Expanded Summoning command did not start: " +
                     ability.name + ";started=" + command.IsStarted +
@@ -19413,7 +19444,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     command.Result + ";execution=" +
                     (command.ExecutionProcess != null) + ";inState=" +
                     caster.IsInState + ";conscious=" +
-                    caster.Descriptor.State.IsConscious + ".");
+                    caster.Descriptor.State.IsConscious + ";canAct=" +
+                    caster.Descriptor.State.CanAct + ";canMove=" +
+                    caster.Descriptor.State.CanMove + ";canTarget=" +
+                    data.CanTarget(target) + ";enoughClose=" +
+                    command.IsUnitEnoughClose + ";distance=" +
+                    (targetUnit == null ? "point" : Vector3.Distance(caster.Position,
+                        targetUnit.Position).ToString(
+                            System.Globalization.CultureInfo.InvariantCulture)) +
+                    ";targetConscious=" + (targetUnit != null &&
+                        targetUnit.Descriptor.State.IsConscious) + ".");
             }
             if (command.Animation != null) command.Animation.IsActed = true;
             command.Tick();
