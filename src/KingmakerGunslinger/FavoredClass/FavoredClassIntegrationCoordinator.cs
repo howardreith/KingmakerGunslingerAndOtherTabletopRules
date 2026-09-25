@@ -136,9 +136,13 @@ namespace KingmakerGunslinger.FavoredClass
                         "checkpoint=" + checkpoint + ";leaves=" + existing.Surfaces.Count);
                     return true;
                 }
+                // Only a committed publication of the exact host activates the
+                // owned numerical effects; every other outcome leaves them off.
+                FavoredClassRuntime.DeactivateHost("resolving");
                 FavoredClassBlueprintSet set = BlueprintBootstrap.FavoredClassLeaves;
                 if (set == null)
                 {
+                    FavoredClassRuntime.DeactivateHost("registration-failed");
                     Report(context, new FavoredClassIntegrationStatus(
                         FavoredClassIntegrationAvailability.RegistrationFailed,
                         "Owned favored-class leaves are not registered; no choices are offered.", 0, null),
@@ -151,6 +155,7 @@ namespace KingmakerGunslinger.FavoredClass
                 lock (Gate) _host = host;
                 if (!host.Decision.IsReady)
                 {
+                    FavoredClassRuntime.DeactivateHost("host-" + host.Decision.State);
                     bool pending = host.Decision.State == FavoredClassHostState.IncompleteInitialization &&
                         host.Decision.Reason == "library-unassigned";
                     Report(context, new FavoredClassIntegrationStatus(
@@ -168,6 +173,7 @@ namespace KingmakerGunslinger.FavoredClass
                 PrepareAncestryBridge(context, host);
                 if (!profile.IntegrationEnabled)
                 {
+                    FavoredClassRuntime.DeactivateHost("integration-disabled");
                     Report(context, new FavoredClassIntegrationStatus(
                         FavoredClassIntegrationAvailability.IntegrationDisabled,
                         "The favored-class integration is disabled; owned identities stay registered for saves.",
@@ -235,6 +241,7 @@ namespace KingmakerGunslinger.FavoredClass
                         string.Join("|", aura.Evidence.ToArray()));
                 }
                 lock (Gate) _publication = publication;
+                FavoredClassRuntime.ActivateHost("published");
                 Report(context, new FavoredClassIntegrationStatus(
                     FavoredClassIntegrationAvailability.Published,
                     "host=" + host.Decision + ";gunslinger=" + host.GunslingerDecision +
@@ -244,6 +251,7 @@ namespace KingmakerGunslinger.FavoredClass
             }
             catch (Exception exception)
             {
+                FavoredClassRuntime.DeactivateHost("publication-failed");
                 FavoredClassRevelationScopes.Clear();
                 FavoredClassAuraPublication committedAura;
                 lock (Gate)
@@ -368,6 +376,7 @@ namespace KingmakerGunslinger.FavoredClass
                 throw new InvalidOperationException("Only a committed publication can be adopted.");
             publication.Validate();
             lock (Gate) _publication = publication;
+            FavoredClassRuntime.ActivateHost("republished");
         }
 
         private static void Report(ModContext context, FavoredClassIntegrationStatus status,

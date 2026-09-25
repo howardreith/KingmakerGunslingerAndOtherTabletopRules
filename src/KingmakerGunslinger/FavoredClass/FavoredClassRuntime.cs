@@ -20,6 +20,7 @@ namespace KingmakerGunslinger.FavoredClass
         private static BlueprintFeature _mostlyHumanIdentity;
         private static readonly FavoredClassPermissionGraph Graph =
             FavoredClassPermissionGraph.CreateVerified(MostlyHumanFactId);
+        private static readonly FavoredClassHostActivation Activation = new FavoredClassHostActivation();
 
         internal static FavoredClassProfileState Profile
         {
@@ -27,13 +28,47 @@ namespace KingmakerGunslinger.FavoredClass
         }
 
         /// <summary>
-        /// Owned numerical effects are suppressed only when the whole
-        /// integration is disabled. Disabling a profile stops new choices but
-        /// keeps already-earned choices working.
+        /// Whether the exact qualified host's owned publication is committed
+        /// and live (false until then, and after any failure or rollback).
+        /// </summary>
+        internal static bool HostActive
+        {
+            get { return Activation.IsActive; }
+        }
+
+        /// <summary>Why the host is (in)active, for diagnostics.</summary>
+        internal static string HostActivationReason
+        {
+            get { return Activation.Reason; }
+        }
+
+        /// <summary>
+        /// Owned numerical effects need both the enabled integration and a
+        /// committed publication of the exact host. Saved ranks always
+        /// resolve; without the published host their effects are zero until
+        /// it is published again. Disabling a profile stops new choices but
+        /// keeps already-earned choices working while the host is published.
         /// </summary>
         internal static bool MechanicsEnabled
         {
-            get { lock (Gate) return _profile.IntegrationEnabled; }
+            get
+            {
+                bool integration;
+                lock (Gate) integration = _profile.IntegrationEnabled;
+                return FavoredClassHostActivation.MechanicsEnabled(integration, Activation.IsActive);
+            }
+        }
+
+        /// <summary>Only the coordinator, after the exact host's publication committed.</summary>
+        internal static void ActivateHost(string reason)
+        {
+            Activation.Activate(reason);
+        }
+
+        /// <summary>Absent, disabled, unsupported, incomplete, failed or rolled-back host states.</summary>
+        internal static void DeactivateHost(string reason)
+        {
+            Activation.Deactivate(reason);
         }
 
         internal static void ConfigureProfile(FavoredClassProfileState profile)
