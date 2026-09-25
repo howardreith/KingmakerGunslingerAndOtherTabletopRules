@@ -164,6 +164,53 @@ namespace KingmakerGunslinger.Blueprints
         private const string AcidArrowGuid = "9a46dfd390f943647ab4395fc997936d";
         private const string MagicMissileGuid = "4ac47ddb9fa1eaf43a1b6809980cfbd2";
         private const string GlitterdustGuid = "ce7dad2b25acf85429b6c9550787b2d9";
+        // Sprint 6: exact identities from the deep native-donor audit
+        // (20260924T1942171737899Z) and the runner's weapon map.
+        internal const string NativeWebGrappledGuid = "a719abac0ea0ce346b401060754cc1c0";
+        internal const string MediumBite1d8Guid = "c988aa874d11ff84d873508ddc9b928f";
+        private const string MonitorLizardUnitSymbol = "KMG.Summoning.Unit.MonitorLizard";
+        private const string MonitorLizardCombatTraitsSymbol =
+            "KMG.Summoning.Special.MonitorLizard.CombatTraits";
+        private const string GrizzlyBearUnitSymbol = "KMG.Summoning.Unit.GrizzlyBear";
+        private const string GrizzlyBearCombatTraitsSymbol =
+            "KMG.Summoning.Special.GrizzlyBear.CombatTraits";
+        private const string DireBearUnitSymbol = "KMG.Summoning.Unit.DireBear";
+        private const string DireBearCombatTraitsSymbol =
+            "KMG.Summoning.Special.DireBear.CombatTraits";
+        private const string GiantSpiderUnitSymbol = "KMG.Summoning.Unit.GiantSpider";
+        private const string GiantSpiderWebSymbol = "KMG.Summoning.Special.GiantSpider.Web";
+        private const string GiantSpiderWebResourceSymbol =
+            "KMG.Summoning.Special.GiantSpider.WebResource";
+        private const string GiantSpiderWebAiSymbol = "KMG.Summoning.Special.GiantSpider.WebAi";
+        private const string GiantSpiderBrainSymbol = "KMG.Summoning.Special.GiantSpider.Brain";
+        private const string GiantSpiderCombatTraitsSymbol =
+            "KMG.Summoning.Special.GiantSpider.CombatTraits";
+        // Sprint 7: the cats.
+        private const string LeopardUnitSymbol = "KMG.Summoning.Unit.Leopard";
+        private const string LeopardCombatTraitsSymbol = "KMG.Summoning.Special.Leopard.CombatTraits";
+        private const string LionUnitSymbol = "KMG.Summoning.Unit.Lion";
+        private const string LionCombatTraitsSymbol = "KMG.Summoning.Special.Lion.CombatTraits";
+        private const string DireLionUnitSymbol = "KMG.Summoning.Unit.DireLion";
+        private const string DireLionCombatTraitsSymbol = "KMG.Summoning.Special.DireLion.CombatTraits";
+        private const string DireTigerUnitSymbol = "KMG.Summoning.Unit.DireTiger";
+        private const string DireTigerCombatTraitsSymbol = "KMG.Summoning.Special.DireTiger.CombatTraits";
+        // Sprint 8: the tiger and the cheetah.
+        private const string TigerUnitSymbol = "KMG.Summoning.Unit.Tiger";
+        private const string TigerCombatTraitsSymbol = "KMG.Summoning.Special.Tiger.CombatTraits";
+        private const string Claw1d8Symbol = "KMG.Summoning.Natural.Claw1d8";
+        private const string CheetahUnitSymbol = "KMG.Summoning.Unit.Cheetah";
+        private const string CheetahSprintSymbol = "KMG.Summoning.Special.Cheetah.Sprint";
+        private const string CheetahSprintResourceSymbol =
+            "KMG.Summoning.Special.Cheetah.SprintResource";
+        private const string CheetahSprintStateSymbol =
+            "KMG.Summoning.Special.Cheetah.SprintState";
+        private const string CheetahSprintAiSymbol = "KMG.Summoning.Special.Cheetah.SprintAi";
+        private const string CheetahBrainSymbol = "KMG.Summoning.Special.Cheetah.Brain";
+        private const string CheetahCombatTraitsSymbol =
+            "KMG.Summoning.Special.Cheetah.CombatTraits";
+        internal const string SmallClawGuid = "800092a2b9a743b48ae8aeeb5d243dcc";
+        internal const string MediumClawGuid = "118fdd03e569a66459ab01a20af6811a";
+        internal const string Claw2d4Guid = "8afc47748d00b3e4a8aff2787d9ee350";
         internal const string ColdConeProjectileGuid = "5af8b717a209fd444a1e4d077ed776f0";
         internal const string AcidConeProjectileGuid = "f6544caac8fe528489327cd86a84b025";
         internal const string FireConeProjectileGuid = "6dfc5e4c7d9ae3048984744222dbd0fa";
@@ -590,12 +637,14 @@ namespace KingmakerGunslinger.Blueprints
                 .OfType<SpellDescriptorComponent>().Single();
             descriptor.Descriptor = new SpellDescriptorWrapper(
                 MephitBreathDescriptor(profile.BreathEnergy));
+            // The native breath's icon stays with the clone; the helper
+            // replaces the icon it is handed, so the copied one is passed back.
             BlueprintUnitFactAccess.Resolve().Configure(breath,
                 LocalizationService.Create("KMG.ExpandedSummoning." + token +
                     ".Breath.Name", MephitDisplayName(profile.Key) + " Breath"),
                 LocalizationService.Create("KMG.ExpandedSummoning." + token +
                     ".Breath.Description", MephitBreathDescription(profile)),
-                null);
+                nativeBreath.Icon);
         }
 
         private static ContextActionApplyBuff MephitSickenAction(BlueprintBuff sickened)
@@ -713,6 +762,9 @@ namespace KingmakerGunslinger.Blueprints
             }
             ability.name = InternalName(symbol);
             ability.Type = AbilityType.SpellLike;
+            // A cloned native spell keeps its native icon; a project burst has
+            // none yet and the icon builder gives it the mephit's own.
+            Sprite nativeIcon = ability.Icon;
             ConfigureNamedResource(resource, symbol + "Resource",
                 "KMG.ExpandedSummoning." + token + "." + kind + ".Resource", displayName,
                 "Uses remaining for this summoned mephit.",
@@ -728,7 +780,7 @@ namespace KingmakerGunslinger.Blueprints
                 LocalizationService.Create("KMG.ExpandedSummoning." + token + "." +
                     kind + ".Name", displayName),
                 LocalizationService.Create("KMG.ExpandedSummoning." + token + "." +
-                    kind + ".Description", description), null);
+                    kind + ".Description", description), nativeIcon);
         }
 
         private static void CloneMephitSpell(LibraryScriptableObject library,
@@ -912,6 +964,330 @@ namespace KingmakerGunslinger.Blueprints
                 "A bite hit lets the worm attempt to grab its foe; success swallows the foe whole.",
                 new[] { "7e4b9b41a9358264d9e3c69c183ca0a2" }, hold, grappled,
                 swallowed, 0, 0);
+            // Sprint 6: the existing grabbers the charter names, on the same
+            // lifecycle; the mound-specific native grab graph stays unused.
+            ConfigureGrabber(library, bySymbol, MonitorLizardUnitSymbol,
+                MonitorLizardCombatTraitsSymbol, "MonitorLizard", "Monitor Lizard Grab",
+                "A bite hit lets the lizard attempt to grab its foe.",
+                new[] { MediumBite1d8Guid }, hold, grappled, null, 0, 0);
+            ConfigureGrabber(library, bySymbol, GrizzlyBearUnitSymbol,
+                GrizzlyBearCombatTraitsSymbol, "GrizzlyBear", "Grizzly Bear Grab",
+                "A claw hit lets the bear attempt to grab its foe.",
+                new[] { LargeClawGuid }, hold, grappled, null, 0, 0);
+            ConfigureGrabber(library, bySymbol, DireBearUnitSymbol,
+                DireBearCombatTraitsSymbol, "DireBear", "Dire Bear Grab",
+                "A claw hit lets the bear attempt to grab its foe.",
+                new[] { LargeClawGuid }, hold, grappled, null, 0, 0);
+            ConfigureGiantSpiderWeb(library, bySymbol);
+            // Sprint 7: the cats - claw grab on the same lifecycle, and the
+            // charge-only rake gate on the same traits buff.
+            ConfigureCat(library, bySymbol, LeopardUnitSymbol, LeopardCombatTraitsSymbol,
+                "Leopard", "Leopard Grab and Rake", SmallClawGuid, hold, grappled);
+            ConfigureCat(library, bySymbol, LionUnitSymbol, LionCombatTraitsSymbol,
+                "Lion", "Lion Grab and Rake", MediumClawGuid, hold, grappled);
+            ConfigureCat(library, bySymbol, DireLionUnitSymbol, DireLionCombatTraitsSymbol,
+                "DireLion", "Dire Lion Grab and Rake", LargeClawGuid, hold, grappled);
+            ConfigureCat(library, bySymbol, DireTigerUnitSymbol, DireTigerCombatTraitsSymbol,
+                "DireTiger", "Smilodon Grab and Rake", Claw2d4Guid, hold, grappled);
+            ExpandedSummoningVisualVariantPatch.Register(new SummonVisualVariant(
+                InternalName(LionUnitSymbol), ExpandedSummoningSpecialProfiles.LionVisualTint));
+            // Sprint 8: the tiger's grab-and-rake pack on the project 1d8 claw
+            // and its striped coat; the cheetah's spotted coat and sprint.
+            ConfigureCatWithWeapon(library, bySymbol, TigerUnitSymbol, TigerCombatTraitsSymbol,
+                "Tiger", "Tiger Grab and Rake",
+                Require<BlueprintItemWeapon>(bySymbol, Claw1d8Symbol), hold, grappled);
+            ExpandedSummoningVisualVariantPatch.Register(new SummonVisualVariant(
+                InternalName(TigerUnitSymbol), ExpandedSummoningSpecialProfiles.TigerCoat));
+            ConfigureCheetahSprint(bySymbol);
+            ExpandedSummoningVisualVariantPatch.Register(new SummonVisualVariant(
+                InternalName(CheetahUnitSymbol), ExpandedSummoningSpecialProfiles.CheetahCoat));
+        }
+
+        /// <summary>
+        /// A cat whose claw is a project weapon (the tiger's 1d8 claw).
+        /// </summary>
+        private static void ConfigureCatWithWeapon(LibraryScriptableObject library,
+            IDictionary<string, BlueprintScriptableObject> bySymbol, string unitSymbol,
+            string traitsSymbol, string token, string displayName, BlueprintItemWeapon claw,
+            BlueprintBuff hold, BlueprintBuff grappled)
+        {
+            BlueprintUnit unit = Require<BlueprintUnit>(bySymbol, unitSymbol);
+            BlueprintBuff traits = Require<BlueprintBuff>(bySymbol, traitsSymbol);
+            if (unit.ComponentsArray == null ||
+                unit.ComponentsArray.OfType<AddClassLevels>().Count() != 1)
+                throw new InvalidOperationException(
+                    "The " + token + " chassis must be configured before its grab.");
+            var grab = ScriptableObject.CreateInstance<SummonGrabComponent>();
+            grab.GrabWeapons = new[] { claw };
+            grab.HoldBuff = hold;
+            grab.GrappledBuff = grappled;
+            grab.SwallowedBuff = null;
+            grab.ConstrictDiceCount = 0;
+            grab.ConstrictDiceType = DiceType.D6;
+            grab.ConstrictBonus = 0;
+            var bonus = ScriptableObject.CreateInstance<ManeuverBonus>();
+            bonus.Type = CombatManeuver.Grapple;
+            bonus.Bonus = ExpandedSummoningSpecialProfiles.SummonGrabManeuverBonus;
+            traits.name = InternalName(traitsSymbol);
+            traits.Stacking = StackingType.Replace;
+            traits.IsClassFeature = true;
+            traits.ComponentsArray = new BlueprintComponent[] { grab, bonus,
+                ScriptableObject.CreateInstance<SummonRakeComponent>() };
+            BlueprintUnitFactAccess.Resolve().Configure(traits,
+                LocalizationService.Create("KMG.ExpandedSummoning." + token +
+                    ".CombatTraits.Name", displayName),
+                LocalizationService.Create("KMG.ExpandedSummoning." + token +
+                    ".CombatTraits.Description",
+                    "A claw hit lets the cat attempt to grab its foe; its rake claws strike only on a charge or against a foe it holds."),
+                null);
+            unit.AddFacts = (unit.AddFacts ?? Array.Empty<BlueprintUnitFact>())
+                .Concat(new BlueprintUnitFact[] { traits }).ToArray();
+        }
+
+        /// <summary>
+        /// Sprint 8: the Cheetah's sprint. A swift extraordinary ability, one
+        /// use per summoning, that applies a one-round state carrying an
+        /// enhancement bonus to speed (the game's own speed cap still applies);
+        /// a cast action on the cheetah's brain spends it once a fight starts.
+        /// </summary>
+        private static void ConfigureCheetahSprint(
+            IDictionary<string, BlueprintScriptableObject> bySymbol)
+        {
+            BlueprintUnit unit = Require<BlueprintUnit>(bySymbol, CheetahUnitSymbol);
+            BlueprintAbility sprint = Require<BlueprintAbility>(bySymbol, CheetahSprintSymbol);
+            BlueprintAbilityResource resource = Require<BlueprintAbilityResource>(
+                bySymbol, CheetahSprintResourceSymbol);
+            BlueprintBuff state = Require<BlueprintBuff>(bySymbol, CheetahSprintStateSymbol);
+            BlueprintAiCastSpell ai = Require<BlueprintAiCastSpell>(bySymbol,
+                CheetahSprintAiSymbol);
+            BlueprintBrain brain = Require<BlueprintBrain>(bySymbol, CheetahBrainSymbol);
+            BlueprintBuff traits = Require<BlueprintBuff>(bySymbol, CheetahCombatTraitsSymbol);
+            if (unit.ComponentsArray == null ||
+                unit.ComponentsArray.OfType<AddClassLevels>().Count() != 1)
+                throw new InvalidOperationException(
+                    "The Cheetah chassis must be configured before its sprint.");
+            var speed = ScriptableObject.CreateInstance<
+                Kingmaker.Designers.Mechanics.Buffs.BuffMovementSpeed>();
+            speed.Descriptor = ModifierDescriptor.Enhancement;
+            speed.Value = ExpandedSummoningSpecialProfiles.CheetahSprintBonusFeet;
+            speed.CappedOnMultiplier = false;
+            speed.CappedMinimum = false;
+            state.name = InternalName(CheetahSprintStateSymbol);
+            state.Stacking = StackingType.Replace;
+            state.IsClassFeature = false;
+            state.ComponentsArray = new BlueprintComponent[] { speed };
+            BlueprintUnitFactAccess.Resolve().Configure(state,
+                LocalizationService.Create("KMG.ExpandedSummoning.Cheetah.SprintState.Name",
+                    "Sprinting"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Cheetah.SprintState.Description",
+                    "The cheetah's speed is increased by 30 feet for this round."),
+                null);
+            sprint.name = InternalName(CheetahSprintSymbol);
+            sprint.Type = AbilityType.Extraordinary;
+            sprint.Parent = null;
+            sprint.Hidden = false;
+            sprint.ActionBarAutoFillIgnored = false;
+            sprint.Range = AbilityRange.Personal;
+            sprint.CanTargetEnemies = false;
+            sprint.CanTargetSelf = true;
+            sprint.CanTargetFriends = false;
+            sprint.CanTargetPoint = false;
+            sprint.SpellResistance = false;
+            sprint.NeedEquipWeapons = false;
+            sprint.EffectOnEnemy = AbilityEffectOnUnit.None;
+            sprint.EffectOnAlly = AbilityEffectOnUnit.Helpful;
+            sprint.ActionType = UnitCommand.CommandType.Swift;
+            sprint.Animation = UnitAnimationActionCastSpell.CastAnimationStyle.Immediate;
+            sprint.MaterialComponent = new BlueprintAbility.MaterialComponentData();
+            sprint.ResourceAssetIds = Array.Empty<string>();
+            var apply = ScriptableObject.CreateInstance<ContextActionApplyBuff>();
+            apply.Buff = state;
+            apply.ToCaster = true;
+            apply.DurationValue = new ContextDurationValue {
+                Rate = DurationRate.Rounds,
+                DiceType = DiceType.Zero,
+                DiceCountValue = Simple(0),
+                BonusValue = Simple(ExpandedSummoningSpecialProfiles.CheetahSprintRounds)
+            };
+            apply.IsFromSpell = false;
+            apply.IsNotDispelable = true;
+            var effect = ScriptableObject.CreateInstance<AbilityEffectRunAction>();
+            effect.Actions = new ActionList { Actions = new GameAction[] { apply } };
+            var cost = ScriptableObject.CreateInstance<AbilityResourceLogic>();
+            cost.RequiredResource = resource;
+            cost.IsSpendResource = true;
+            cost.CostIsCustom = false;
+            cost.Amount = 1;
+            sprint.ComponentsArray = new BlueprintComponent[] { cost, effect };
+            BlueprintUnitFactAccess.Resolve().Configure(sprint,
+                LocalizationService.Create("KMG.ExpandedSummoning.Cheetah.Sprint.Name", "Sprint"),
+                LocalizationService.Create("KMG.ExpandedSummoning.Cheetah.Sprint.Description",
+                    "Once per summoning, as a swift action, the cheetah sprints: +30 feet of speed for one round."),
+                null);
+            ConfigureNamedResource(resource, CheetahSprintResourceSymbol,
+                "KMG.ExpandedSummoning.Cheetah.Sprint.Resource", "Sprint",
+                "Sprints remaining for this summoned cheetah.",
+                ExpandedSummoningSpecialProfiles.CheetahSprintUses);
+            ai.name = InternalName(CheetahSprintAiSymbol);
+            ai.Ability = sprint;
+            ai.Variant = null;
+            ai.BaseScore = 3;
+            ai.CooldownRounds = 0;
+            ai.StartCooldownRounds = 0;
+            ai.ActorConsiderations = Array.Empty<Kingmaker.Controllers.Brain
+                .Blueprints.Considerations.Consideration>();
+            ai.TargetConsiderations = Array.Empty<Kingmaker.Controllers.Brain
+                .Blueprints.Considerations.Consideration>();
+            ai.Locators = Array.Empty<EntityReference>();
+            brain.name = InternalName(CheetahBrainSymbol);
+            brain.Actions = new BlueprintAiAction[] { ai };
+            traits.name = InternalName(CheetahCombatTraitsSymbol);
+            traits.Stacking = StackingType.Replace;
+            traits.IsClassFeature = true;
+            traits.ComponentsArray = new BlueprintComponent[] { AddResource(resource) };
+            BlueprintUnitFactAccess.Resolve().Configure(traits,
+                LocalizationService.Create("KMG.ExpandedSummoning.Cheetah.CombatTraits.Name",
+                    "Cheetah Traits"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Cheetah.CombatTraits.Description",
+                    "One sprint for this summoning."), null);
+            var grant = ScriptableObject.CreateInstance<AddAbilityToCharacterComponent>();
+            grant.Abilities = new[] { sprint };
+            unit.ComponentsArray = unit.ComponentsArray.Concat(
+                new BlueprintComponent[] { grant }).ToArray();
+            unit.Brain = brain;
+            unit.AddFacts = (unit.AddFacts ?? Array.Empty<BlueprintUnitFact>())
+                .Concat(new BlueprintUnitFact[] { traits }).ToArray();
+        }
+
+        /// <summary>
+        /// A cat: the shared-lifecycle claw grab (every claw slot, primary or
+        /// rake, carries the same weapon blueprint) plus the rake gate.
+        /// </summary>
+        private static void ConfigureCat(LibraryScriptableObject library,
+            IDictionary<string, BlueprintScriptableObject> bySymbol, string unitSymbol,
+            string traitsSymbol, string token, string displayName, string clawGuid,
+            BlueprintBuff hold, BlueprintBuff grappled)
+        {
+            ConfigureGrabber(library, bySymbol, unitSymbol, traitsSymbol, token, displayName,
+                "A claw hit lets the cat attempt to grab its foe; its rake claws strike only on a charge or against a foe it holds.",
+                new[] { clawGuid }, hold, grappled, null, 0, 0);
+            BlueprintBuff traits = Require<BlueprintBuff>(bySymbol, traitsSymbol);
+            traits.ComponentsArray = traits.ComponentsArray.Concat(new BlueprintComponent[] {
+                ScriptableObject.CreateInstance<SummonRakeComponent>() }).ToArray();
+        }
+
+        /// <summary>
+        /// Sprint 6: the Giant Spider's ranged Web. A 50-foot ability against
+        /// one foe: a Reflex save (DC 10 + half hit dice + Constitution, as
+        /// the native spider poison scales) or the native web-grappled state
+        /// for at most ten rounds - the state's own per-round break-free ends
+        /// it sooner. Two uses per summoning on a named resource; the brain
+        /// spends them when the spider fights. The spider itself carries the
+        /// native web immunity (natural profile).
+        /// </summary>
+        private static void ConfigureGiantSpiderWeb(LibraryScriptableObject library,
+            IDictionary<string, BlueprintScriptableObject> bySymbol)
+        {
+            BlueprintUnit unit = Require<BlueprintUnit>(bySymbol, GiantSpiderUnitSymbol);
+            BlueprintAbility web = Require<BlueprintAbility>(bySymbol, GiantSpiderWebSymbol);
+            BlueprintAbilityResource resource = Require<BlueprintAbilityResource>(
+                bySymbol, GiantSpiderWebResourceSymbol);
+            BlueprintAiCastSpell ai = Require<BlueprintAiCastSpell>(bySymbol,
+                GiantSpiderWebAiSymbol);
+            BlueprintBrain brain = Require<BlueprintBrain>(bySymbol, GiantSpiderBrainSymbol);
+            BlueprintBuff traits = Require<BlueprintBuff>(bySymbol,
+                GiantSpiderCombatTraitsSymbol);
+            if (unit.ComponentsArray == null ||
+                unit.ComponentsArray.OfType<AddClassLevels>().Count() != 1)
+                throw new InvalidOperationException(
+                    "The Giant Spider chassis must be configured before its web.");
+            BlueprintBuff webbed = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(
+                library, NativeWebGrappledGuid, "native web-grappled state");
+            web.name = InternalName(GiantSpiderWebSymbol);
+            web.Type = AbilityType.Extraordinary;
+            web.Parent = null;
+            web.Hidden = false;
+            web.ActionBarAutoFillIgnored = false;
+            web.Range = AbilityRange.Custom;
+            web.CustomRange = new Feet(ExpandedSummoningSpecialProfiles.GiantSpiderWebRangeFeet);
+            web.CanTargetEnemies = true;
+            web.CanTargetSelf = false;
+            web.CanTargetFriends = false;
+            web.CanTargetPoint = false;
+            web.SpellResistance = false;
+            web.NeedEquipWeapons = false;
+            web.EffectOnEnemy = AbilityEffectOnUnit.Harmful;
+            web.EffectOnAlly = AbilityEffectOnUnit.None;
+            web.ActionType = UnitCommand.CommandType.Standard;
+            web.Animation = UnitAnimationActionCastSpell.CastAnimationStyle.Point;
+            web.MaterialComponent = new BlueprintAbility.MaterialComponentData();
+            web.ResourceAssetIds = Array.Empty<string>();
+            var apply = ScriptableObject.CreateInstance<ContextActionApplyBuff>();
+            apply.Buff = webbed;
+            apply.ToCaster = false;
+            apply.DurationValue = new ContextDurationValue {
+                Rate = DurationRate.Rounds,
+                DiceType = DiceType.Zero,
+                DiceCountValue = Simple(0),
+                BonusValue = Simple(ExpandedSummoningSpecialProfiles.GiantSpiderWebRounds)
+            };
+            apply.IsFromSpell = false;
+            apply.IsNotDispelable = false;
+            var saved = ScriptableObject.CreateInstance<ContextActionConditionalSaved>();
+            saved.Succeed = new ActionList { Actions = Array.Empty<GameAction>() };
+            saved.Failed = new ActionList { Actions = new GameAction[] { apply } };
+            var run = ScriptableObject.CreateInstance<AbilityEffectRunAction>();
+            run.SavingThrowType = SavingThrowType.Reflex;
+            run.Actions = new ActionList { Actions = new GameAction[] { saved } };
+            var parameters = ScriptableObject.CreateInstance<ContextCalculateAbilityParams>();
+            parameters.StatType = StatType.Constitution;
+            parameters.ReplaceCasterLevel = true;
+            parameters.CasterLevel = Simple(ExpandedSummoningNaturalProfiles.For("giant-spider").HitDice);
+            parameters.ReplaceSpellLevel = true;
+            parameters.SpellLevel = Simple(ExpandedSummoningSpecialProfiles.GiantSpiderWebSpellLevel);
+            var cost = ScriptableObject.CreateInstance<AbilityResourceLogic>();
+            cost.RequiredResource = resource;
+            cost.IsSpendResource = true;
+            cost.CostIsCustom = false;
+            cost.Amount = 1;
+            web.ComponentsArray = new BlueprintComponent[] { run, parameters, cost };
+            BlueprintUnitFactAccess.Resolve().Configure(web,
+                LocalizationService.Create("KMG.ExpandedSummoning.GiantSpider.Web.Name", "Web"),
+                LocalizationService.Create("KMG.ExpandedSummoning.GiantSpider.Web.Description",
+                    "The spider throws a web at one foe within 50 feet: on a failed Reflex save the foe is entangled and held in place until it breaks free (up to ten rounds). Two uses per summoning."),
+                null);
+            ConfigureNamedResource(resource, GiantSpiderWebResourceSymbol,
+                "KMG.ExpandedSummoning.GiantSpider.Web.Resource", "Web",
+                "Webs remaining for this summoned spider.",
+                ExpandedSummoningSpecialProfiles.GiantSpiderWebUses);
+            ai.name = InternalName(GiantSpiderWebAiSymbol);
+            ai.Ability = web;
+            ai.Variant = null;
+            ai.BaseScore = 3;
+            ai.CooldownRounds = 0;
+            ai.StartCooldownRounds = 0;
+            ai.ActorConsiderations = Array.Empty<Kingmaker.Controllers.Brain
+                .Blueprints.Considerations.Consideration>();
+            ai.TargetConsiderations = Array.Empty<Kingmaker.Controllers.Brain
+                .Blueprints.Considerations.Consideration>();
+            ai.Locators = Array.Empty<EntityReference>();
+            brain.name = InternalName(GiantSpiderBrainSymbol);
+            brain.Actions = new BlueprintAiAction[] { ai };
+            traits.name = InternalName(GiantSpiderCombatTraitsSymbol);
+            traits.Stacking = StackingType.Replace;
+            traits.IsClassFeature = true;
+            traits.ComponentsArray = new BlueprintComponent[] { AddResource(resource) };
+            BlueprintUnitFactAccess.Resolve().Configure(traits,
+                LocalizationService.Create("KMG.ExpandedSummoning.GiantSpider.CombatTraits.Name",
+                    "Giant Spider Traits"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.GiantSpider.CombatTraits.Description",
+                    "Two webs for this summoning."), null);
+            unit.Brain = brain;
+            unit.AddFacts = (unit.AddFacts ?? Array.Empty<BlueprintUnitFact>())
+                .Concat(new BlueprintUnitFact[] { web, traits }).ToArray();
         }
 
         private static void ConfigureGrabber(LibraryScriptableObject library,

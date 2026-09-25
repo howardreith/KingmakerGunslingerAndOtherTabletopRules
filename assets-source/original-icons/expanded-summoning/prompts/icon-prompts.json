@@ -466,6 +466,12 @@
       "displayName": "Steam Mephit",
       "subjectPrompt": "A small horned, bat-winged mephit bust of pale grey vapour with a warm inner glow, mouth open with a plume of steam motes, slate-grey radial backdrop.",
       "generator": "blender-procedural"
+    },
+    {
+      "key": "tiger",
+      "displayName": "Tiger",
+      "subjectPrompt": "A snarling tiger's head and shoulders facing the viewer, orange coat with dark stripes over the brow, cheeks and neck, white muzzle and chin, amber eyes, bared fangs, warm amber radial backdrop.",
+      "generator": "blender-procedural"
     }
   ]
 }

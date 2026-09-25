@@ -134,7 +134,10 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(PreservedManifestEntries + 43 +
                     ExpandedSummoningSprint3Tests.AppendedLedgerIdentities +
                     ExpandedSummoningSprint4Tests.AppendedLedgerIdentities +
-                    ExpandedSummoningSprint5Tests.AppendedLedgerIdentities, entries.Length,
+                    ExpandedSummoningSprint5Tests.AppendedLedgerIdentities +
+                    ExpandedSummoningSprint6Tests.AppendedLedgerIdentities +
+                    ExpandedSummoningSprint7Tests.AppendedLedgerIdentities +
+                    ExpandedSummoningSprint8Tests.AppendedLedgerIdentities, entries.Length,
                 "Manifest must be the preserved ledger plus 43 progression identities and the Expanded Summoning Phase 1 appends.");
             string prefix = string.Concat(entries.Take(PreservedManifestEntries)
                 .Select(value => string.Join("|", new[] {
@@ -155,7 +158,10 @@ namespace KingmakerGunslinger.DomainTests
                 .Take(entries.Length - PreservedManifestEntries -
                     ExpandedSummoningSprint3Tests.AppendedLedgerIdentities -
                     ExpandedSummoningSprint4Tests.AppendedLedgerIdentities -
-                    ExpandedSummoningSprint5Tests.AppendedLedgerIdentities).ToArray();
+                    ExpandedSummoningSprint5Tests.AppendedLedgerIdentities -
+                    ExpandedSummoningSprint6Tests.AppendedLedgerIdentities -
+                    ExpandedSummoningSprint7Tests.AppendedLedgerIdentities -
+                    ExpandedSummoningSprint8Tests.AppendedLedgerIdentities).ToArray();
             string[] expectedNew = ProgressionWeaponCatalog.All.Where(value =>
                     !value.ReusesCanonicalItem).Select(value => value.Symbol + "|" +
                     value.Guid).OrderBy(value => value, StringComparer.Ordinal)

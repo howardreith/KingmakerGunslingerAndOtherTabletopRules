@@ -1768,7 +1768,7 @@
   "betterVendorsProgression138": {
     "baselineCommit": "202a41815f7ca80303e33c2f694804e7926efd8b",
     "branch": "codex/better-vendors-progression",
-    "deterministicTestCount": 1787,
+    "deterministicTestCount": 1799,
     "publicReleaseAuthorized": true,
     "ownerAuthorizedRelease": true,
     "ownerReleaseInstruction": "Run the final tests. IF they have issues, please address them. If not, please proceeding with committing, merging, pushing to remote, incrementing the version number and cutting a new release.",
@@ -1867,21 +1867,21 @@
     "humanReview": "NOT_PERFORMED_NONBLOCKING",
     "ownerDelegationGranted": true,
     "sprintsComplete": [],
-    "deterministicTestCount": 1787,
-    "uniqueCreatures": 80,
+    "deterministicTestCount": 1799,
+    "uniqueCreatures": 81,
     "summonMonsterEntries": 74,
     "summonMonsterPlacements": 414,
-    "summonNaturesAllyEntries": 70,
-    "summonNaturesAllyPlacements": 393,
-    "registeredLogicalPlacements": 807,
-    "publishedLogicalPlacements": 793,
+    "summonNaturesAllyEntries": 71,
+    "summonNaturesAllyPlacements": 399,
+    "registeredLogicalPlacements": 813,
+    "publishedLogicalPlacements": 799,
     "templatedPlacements": 199,
     "nativeExpansionWrappers": 29,
-    "naturalProfiles": 33,
-    "projectIcons": 90,
-    "foundationIdentities": 1421,
-    "appendedLedgerIdentities": 237,
-    "packageFileCountWithSoundBank": 250,
+    "naturalProfiles": 34,
+    "projectIcons": 91,
+    "foundationIdentities": 1448,
+    "appendedLedgerIdentities": 264,
+    "packageFileCountWithSoundBank": 251,
     "sprint3": {
       "creatures": [
         "pony",
@@ -1922,6 +1922,42 @@
       "spellLikeAbilities": "one use per summoning each: dust blur; ice magic missile; ooze acid arrow and stinking cloud; salt glitterdust and dehydrate (project 20-foot enemies-only burst 2d8, Fortitude half); steam blur and boiling rain (project 20-foot enemies-only burst 2d6 fire, Fortitude half); wind wall, chill metal, pyrotechnics and magma form omitted (no native spell)",
       "visuals": "a private tinted clone of the shared rig's materials per view (magma and steam with an emission glow), applied on view attach and never written to the donor's shared material",
       "icons": "Blender 4.5 procedural renders from one parametrized mephit builder in six elemental dressings",
+      "internalAcceptance": "PENDING"
+    },
+    "sprint6": {
+      "creatures": [
+        "monitor-lizard",
+        "grizzly-bear",
+        "dire-bear",
+        "giant-spider",
+        "pixie"
+      ],
+      "grabCarriers": "Monitor Lizard bite, Grizzly Bear claws, Dire Bear claws on the shared summon grapple lifecycle (SummonGrabComponent carriers); the mound-specific native grab graph stays unused",
+      "giantSpider": "native 60-foot blindsight for tremorsense; native web immunity; bounded ranged Web: 50 feet, one foe, Reflex DC 10 + half hit dice + Constitution, native web-grappled state for at most ten rounds (its own per-round break-free ends it sooner), two uses per summoning, its own brain; climb omitted (no save-safe seam)",
+      "pixie": "verified, not changed: sixteen sleep arrows and one irresistible dance per summoning on named resources, one cast action, live mechanical evidence each run",
+      "internalAcceptance": "PENDING"
+    },
+    "sprint7": {
+      "creatures": [
+        "leopard",
+        "lion",
+        "dire-lion",
+        "dire-tiger"
+      ],
+      "grab": "claw grab on the shared summon grapple lifecycle (SummonGrabComponent carriers with each cat's own claw)",
+      "rake": "charge-only: SummonRakeComponent on the traits buff turns any attack roll with a rake claw (the last two additional limbs) that is neither a charge nor made while holding a grappled foe into a silent automatic miss - no roll, no damage, no combat-log line; Pounce stays native",
+      "lionVisual": "a tawny tint on the leopard rig through the shared visual variant; no mane geometry",
+      "unchanged": "sizes, reach, templates, tiers and the extra claw limbs",
+      "internalAcceptance": "PENDING"
+    },
+    "sprint8": {
+      "creatures": [
+        "tiger",
+        "cheetah"
+      ],
+      "tiger": "new Summon Nature's Ally IV unit on the leopard rig: Large 6 HD animal 23/15/17/2/12/6, 40 ft, NA +3, 2d6 bite, two 1d8 claws and two 1d8 rake claws (project Claw1d8 weapon), Pounce; claw grab on the shared lifecycle; charge-only rake; 1.25 view scale; procedural striped coat generated in the rig's own texture space at attach",
+      "cheetah": "procedural spotted coat on the leopard rig at a 0.92 view scale; bounded sprint: swift extraordinary ability, one use per summoning, +30 feet enhancement speed for one round under the game's own cap, cast action and brain; trip bite unchanged",
+      "coats": "SummonCoatRasterizer rasterizes the skinned mesh's triangles into a private 512x512 texture from vertex positions (stripes across the long axis, spots over the surface, a paler belly); the game's textures are never read",
       "internalAcceptance": "PENDING"
     }
   }

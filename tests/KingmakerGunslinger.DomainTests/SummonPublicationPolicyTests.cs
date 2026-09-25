@@ -74,7 +74,7 @@ namespace KingmakerGunslinger.DomainTests
                     "86f4287572bef49449b9d06c66adf456")
                     .EquivalentCreatureKey,
                 "Native SNA Smilodon reconciliation changed.");
-            Assertions.Equal(793,
+            Assertions.Equal(799,
                 ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
                     .Concat(ExpandedSummoningCatalog.GenerateVariants(
                         SummonFamily.NaturesAlly))
@@ -114,7 +114,7 @@ namespace KingmakerGunslinger.DomainTests
         {
             SummonIconCatalog.Validate();
             SummonViewScaleCatalog.Validate();
-            Assertions.Equal(90, SummonIconCatalog.All.Count,
+            Assertions.Equal(91, SummonIconCatalog.All.Count,
                 "Project icon concept count changed.");
             Assertions.Equal("Smilodon", SummonIconCatalog.For("dire-tiger")
                 .DisplayName, "Smilodon icon identity changed.");

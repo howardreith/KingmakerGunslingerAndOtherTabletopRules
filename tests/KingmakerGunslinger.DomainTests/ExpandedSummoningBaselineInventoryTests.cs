@@ -13,28 +13,28 @@ namespace KingmakerGunslinger.DomainTests
     {
         internal static void ShippedSurfaceMatchesFrozenBaseline()
         {
-            Assertions.Equal(80, ExpandedSummoningBaselineInventory.UniqueCreatures,
+            Assertions.Equal(81, ExpandedSummoningBaselineInventory.UniqueCreatures,
                 "Baseline unique creature count changed.");
             Assertions.Equal(74, ExpandedSummoningBaselineInventory.RosterEntries(
                 SummonFamily.Monster), "Baseline SM roster count changed.");
-            Assertions.Equal(70, ExpandedSummoningBaselineInventory.RosterEntries(
+            Assertions.Equal(71, ExpandedSummoningBaselineInventory.RosterEntries(
                 SummonFamily.NaturesAlly), "Baseline SNA roster count changed.");
             Assertions.Equal(414, ExpandedSummoningBaselineInventory
                 .RegisteredPlacements(SummonFamily.Monster),
                 "Baseline SM registered placements changed.");
-            Assertions.Equal(393, ExpandedSummoningBaselineInventory
+            Assertions.Equal(399, ExpandedSummoningBaselineInventory
                 .RegisteredPlacements(SummonFamily.NaturesAlly),
                 "Baseline SNA registered placements changed.");
             Assertions.Equal(424, ExpandedSummoningBaselineInventory
                 .VisibleChoices(SummonFamily.Monster),
                 "Baseline SM visible choice count changed.");
-            Assertions.Equal(398, ExpandedSummoningBaselineInventory
+            Assertions.Equal(404, ExpandedSummoningBaselineInventory
                 .VisibleChoices(SummonFamily.NaturesAlly),
                 "Baseline SNA visible choice count changed.");
         }
 
         /// <summary>
-        /// The 822 headline figure (693 at the Sprint 0 freeze) must decompose
+        /// The 828 headline figure (693 at the Sprint 0 freeze) must decompose
         /// exactly, so a sprint cannot quietly move a choice between the
         /// generated and native pools.
         /// </summary>
@@ -42,11 +42,11 @@ namespace KingmakerGunslinger.DomainTests
         {
             int generated = SummonVisibilityCatalog.PublishedLogicalPlacementCount;
             int wrappers = SummonNativeExpansionCatalog.All.Count;
-            Assertions.Equal(793, generated, "Published generated placements changed.");
+            Assertions.Equal(799, generated, "Published generated placements changed.");
             Assertions.Equal(29, wrappers, "Native wrapper count changed.");
-            Assertions.Equal(822, generated + wrappers,
+            Assertions.Equal(828, generated + wrappers,
                 "The combined visible choice total changed.");
-            Assertions.Equal(822,
+            Assertions.Equal(828,
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.Monster) +
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.NaturesAlly),
                 "Per-parent census disagrees with the catalog totals.");
@@ -108,7 +108,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(ExpandedSummoningBaselineInventory.ProxyVisualCreatures
                 .Contains("dire-tiger<Smilodon"),
                 "Smilodon displays under its own name and is not a proxy.");
-            Assertions.Equal(20,
+            Assertions.Equal(21,
                 ExpandedSummoningBaselineInventory.ProxyVisualCreatures.Count,
                 "The frozen borrowed-body proxy count changed.");
         }
@@ -146,7 +146,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(first.StartsWith(
                 "{\n  \"schema\": \"" + ExpandedSummoningBaselineInventory.BaselineSchema + "\""),
                 "The census must declare its schema first so evidence stays comparable.");
-            Assertions.True(first.Contains("\"totalVisibleChoices\": 822"),
+            Assertions.True(first.Contains("\"totalVisibleChoices\": 828"),
                 "The emitted census lost the frozen visible-choice total.");
         }
     }

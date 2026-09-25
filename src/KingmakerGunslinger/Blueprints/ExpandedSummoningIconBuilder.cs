@@ -45,6 +45,12 @@ namespace KingmakerGunslinger.Blueprints
             // action bar; the ability has no separate art of its own.
             Set(bySymbol, "KMG.Summoning.Special.Cyclops.FlashOfInsight",
                 ExpandedSummoningProjectIcons.Require("cyclops"));
+            // Sprint 8: the Cheetah's project sprint has no art of its own.
+            Set(bySymbol, "KMG.Summoning.Special.Cheetah.Sprint",
+                ExpandedSummoningProjectIcons.Require("cheetah"));
+            // Sprint 6: the Giant Spider's project web has no art of its own.
+            Set(bySymbol, "KMG.Summoning.Special.GiantSpider.Web",
+                ExpandedSummoningProjectIcons.Require("giant-spider"));
             // Sprint 5: the cloned native breaths and spells keep their native
             // art; the two project bursts (Dehydrate, Boiling Rain) have none
             // of their own and wear their mephit's summon icon.
