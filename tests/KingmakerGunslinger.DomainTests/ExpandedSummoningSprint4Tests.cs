@@ -151,19 +151,39 @@ namespace KingmakerGunslinger.DomainTests
                 ExpandedSummoningSpecialProfiles.ShamblingMoundConstrictBonus,
                 "The mound's constrict bonus derives from its Strength 21.");
             Assertions.True(ExpandedSummoningSpecialProfiles.ShouldAttemptSummonGrab(
-                true, true, false, false, false, false), "A clean hit with a grab weapon grabs.");
+                true, true, false, false, false, false, true), "A clean hit with a grab limb grabs.");
             Assertions.False(ExpandedSummoningSpecialProfiles.ShouldAttemptSummonGrab(
-                false, true, false, false, false, false), "A miss never grabs.");
+                false, true, false, false, false, false, true), "A miss never grabs.");
             Assertions.False(ExpandedSummoningSpecialProfiles.ShouldAttemptSummonGrab(
-                true, false, false, false, false, false), "A hit with another weapon never grabs.");
+                true, false, false, false, false, false, true), "A hit with another limb never grabs.");
             Assertions.False(ExpandedSummoningSpecialProfiles.ShouldAttemptSummonGrab(
-                true, true, true, false, false, false), "A summon already holding never grabs again.");
+                true, true, true, false, false, false, true), "A summon with no free hold never grabs again.");
             Assertions.False(ExpandedSummoningSpecialProfiles.ShouldAttemptSummonGrab(
-                true, true, false, true, false, false), "A held target is never grabbed twice.");
+                true, true, false, true, false, false, true), "A held target is never grabbed twice.");
             Assertions.False(ExpandedSummoningSpecialProfiles.ShouldAttemptSummonGrab(
-                true, true, false, false, true, false), "A swallowed target is never grabbed.");
+                true, true, false, false, true, false, true), "A swallowed target is never grabbed.");
             Assertions.False(ExpandedSummoningSpecialProfiles.ShouldAttemptSummonGrab(
-                true, true, false, false, false, true), "A summon never grabs itself.");
+                true, true, false, false, false, true, true), "A summon never grabs itself.");
+            Assertions.False(ExpandedSummoningSpecialProfiles.ShouldAttemptSummonGrab(
+                true, true, false, false, false, false, false), "A target larger than the holder is never grabbed.");
+            Assertions.True(ExpandedSummoningSpecialProfiles.IsGrabSizeAllowed(4, 4, 0) &&
+                ExpandedSummoningSpecialProfiles.IsGrabSizeAllowed(3, 4, 0) &&
+                !ExpandedSummoningSpecialProfiles.IsGrabSizeAllowed(5, 4, 0) &&
+                ExpandedSummoningSpecialProfiles.IsGrabSizeAllowed(5, 4, 1),
+                "Grab works against the same size or smaller unless the stat block says otherwise.");
+            Assertions.True(ExpandedSummoningSpecialProfiles.IsSwallowSizeAllowed(6, 7, false, 0, -1) &&
+                !ExpandedSummoningSpecialProfiles.IsSwallowSizeAllowed(7, 7, false, 0, -1) &&
+                ExpandedSummoningSpecialProfiles.IsSwallowSizeAllowed(4, 6, true, 4, -1) &&
+                !ExpandedSummoningSpecialProfiles.IsSwallowSizeAllowed(5, 6, true, 4, -1),
+                "Swallow whole takes up to one size smaller; engulf takes Medium or smaller.");
+            Assertions.True(!ExpandedSummoningSpecialProfiles.ShouldSwallowOnMaintain(true, true, 0, true) &&
+                ExpandedSummoningSpecialProfiles.ShouldSwallowOnMaintain(true, true, 1, true) &&
+                !ExpandedSummoningSpecialProfiles.ShouldSwallowOnMaintain(true, false, 1, true) &&
+                !ExpandedSummoningSpecialProfiles.ShouldSwallowOnMaintain(false, true, 1, true) &&
+                !ExpandedSummoningSpecialProfiles.ShouldSwallowOnMaintain(true, true, 1, false),
+                "A swallow is a later turn's successful check on a held target of an allowed size, never the grab.");
+            Assertions.Equal(4, ExpandedSummoningSpecialProfiles.GiantFlytrapBiteCount,
+                "The Flytrap holds one target per bite.");
             Assertions.True(ExpandedSummoningSpecialProfiles.ShouldMaintainSummonHold(true, true),
                 "A successful maintain check keeps the hold.");
             Assertions.False(ExpandedSummoningSpecialProfiles.ShouldMaintainSummonHold(true, false),
@@ -174,6 +194,9 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string symbol in new[] {
                 "KMG.Summoning.Special.Grapple.Hold",
                 "KMG.Summoning.Special.Grapple.Grappled",
+                "KMG.Summoning.Special.Grapple.MultiHold",
+                "KMG.Summoning.Special.Grapple.MultiHeld",
+                "KMG.Summoning.Special.GiantFlytrap.Engulfed",
                 "KMG.Summoning.Special.Owlbear.CombatTraits",
                 "KMG.Summoning.Special.ShamblingMound.CombatTraits",
                 "KMG.Summoning.Special.GiantFlytrap.CombatTraits",
@@ -187,11 +210,15 @@ namespace KingmakerGunslinger.DomainTests
                 "ExpandedSummoningSpecialCombatComponents.cs"));
             foreach (string token in new[] {
                 "class SummonGrabComponent", "class SummonHoldComponent",
+                "class SummonMultiHoldComponent", "class SummonHeldComponent",
                 "class SummonSwallowLifecycleComponent", "class SummonGrappleAreaSafeguard",
-                "CombatManeuver.Grapple", "UnitPartGrappleInitiator", "UnitPartGrappleTarget",
-                "UnitPartSwallowWhole", "SpitOut(true)", "IPartyLeaveAreaHandler",
-                "IAreaLoadingStagesHandler", "public override void OnTurnOff()",
-                "ShouldAttemptSummonGrab", "ShouldMaintainSummonHold" })
+                "class SummonLimbs", "class SummonGrappleDamage", "RuleCalculateWeaponStats",
+                "DamageDescription", "CombatManeuver.Grapple", "UnitPartGrappleInitiator",
+                "UnitPartGrappleTarget", "UnitPartSwallowWhole", "SpitOut(true)",
+                "IPartyLeaveAreaHandler", "IAreaLoadingStagesHandler",
+                "public override void OnTurnOff()", "UnitHelper.TryBreakFree",
+                "ShouldAttemptSummonGrab", "ShouldMaintainSummonHold", "ShouldSwallowOnMaintain",
+                "IsGrabSizeAllowed", "IsSwallowSizeAllowed", "IsHeldSinceRoundStart" })
                 Assertions.True(components.Contains(token),
                     "Grapple lifecycle component contract is missing: " + token);
             Assertions.False(components.Contains("Remove<UnitPartGrappleInitiator>()") &&
@@ -223,9 +250,10 @@ namespace KingmakerGunslinger.DomainTests
             var entries = Newtonsoft.Json.Linq.JObject.Parse(ledger)["entries"]
                 .Select(value => (string)value["symbol"]).ToArray();
             string[] appended = entries.Where(value =>
-                value.Contains(".ShamblingMound") || value.Contains(".GiantFlytrap") ||
+                (value.Contains(".ShamblingMound") || value.Contains(".GiantFlytrap") ||
                 value.Contains(".PurpleWorm") || value.Contains(".Grapple.") ||
-                value == "KMG.Summoning.Special.Owlbear.CombatTraits").ToArray();
+                value == "KMG.Summoning.Special.Owlbear.CombatTraits") &&
+                !ExpandedSummoningCorrectionTests.IsCorrectionIdentity(value)).ToArray();
             Assertions.Equal(AppendedLedgerIdentities, appended.Length,
                 "Sprint 4 must append exactly its own identities to the ledger.");
             // Append-only: the Sprint 4 block sits directly before the Sprint 5
@@ -234,7 +262,7 @@ namespace KingmakerGunslinger.DomainTests
                     ExpandedSummoningSprint5Tests.AppendedLedgerIdentities -
                     ExpandedSummoningSprint6Tests.AppendedLedgerIdentities -
                     ExpandedSummoningSprint7Tests.AppendedLedgerIdentities -
-                    ExpandedSummoningSprint8Tests.AppendedLedgerIdentities)
+                    (ExpandedSummoningSprint8Tests.AppendedLedgerIdentities + ExpandedSummoningCorrectionTests.AppendedLedgerIdentities))
                 .Take(AppendedLedgerIdentities)
                 .All(value => appended.Contains(value)),
                 "The ledger is append-only: Sprint 4 identities sit directly before Sprint 5's.");
@@ -242,7 +270,7 @@ namespace KingmakerGunslinger.DomainTests
                     ExpandedSummoningSprint5Tests.AppendedLedgerIdentities -
                     ExpandedSummoningSprint6Tests.AppendedLedgerIdentities -
                     ExpandedSummoningSprint7Tests.AppendedLedgerIdentities -
-                    ExpandedSummoningSprint8Tests.AppendedLedgerIdentities -
+                    (ExpandedSummoningSprint8Tests.AppendedLedgerIdentities + ExpandedSummoningCorrectionTests.AppendedLedgerIdentities) -
                     ExpandedSummoningSprint3Tests.AppendedLedgerIdentities)
                 .Take(ExpandedSummoningSprint3Tests.AppendedLedgerIdentities)
                 .All(value => !appended.Contains(value)),

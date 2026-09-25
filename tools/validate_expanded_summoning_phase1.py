@@ -295,7 +295,34 @@ APPENDED = (
     ("KMG.Summoning.Special.Cheetah.SprintAi", "4c41608d98f945d0897ff01e5a691cdc", "BlueprintAiCastSpell"),
     ("KMG.Summoning.Special.Cheetah.Brain", "607f8ece3e8943faa13ab95ac611ad54", "BlueprintBrain"),
     ("KMG.Summoning.Special.Cheetah.CombatTraits", "056353ae7a1b4663b4e028e133eb4b8f", "BlueprintBuff"),
-    ("KMG.Summoning.Natural.Claw1d8", "422318f491354d37aba69dece0004a11", "BlueprintItemWeapon")
+    ("KMG.Summoning.Natural.Claw1d8", "422318f491354d37aba69dece0004a11", "BlueprintItemWeapon"),
+    # Correction order (2026-09-25): multi-link hold and held states, the Flytrap engulfed
+    # state, the Cyclops hide armor, the docile hoof carriers, and the chartered mephit
+    # abilities (wind wall, chill metal, pyrotechnics, magma form) with the ally-safe cloud area.
+    ("KMG.Summoning.Special.Grapple.MultiHold", "a6ff9b2a7c704889a3adf6c28da683fe", "BlueprintBuff"),
+    ("KMG.Summoning.Special.Grapple.MultiHeld", "c6a4dd2e1c3d401ca464178ffb590452", "BlueprintBuff"),
+    ("KMG.Summoning.Special.GiantFlytrap.Engulfed", "6f8239e5e0ad4506b76972cd85a01de7", "BlueprintBuff"),
+    ("KMG.Summoning.Special.Cyclops.HideArmor", "09b90e2a09ef4bf99c158d816ae8ccba", "BlueprintFeature"),
+    ("KMG.Summoning.Special.Pony.CombatTraits", "94945076953646e9827fa7dae965e3b9", "BlueprintBuff"),
+    ("KMG.Summoning.Special.Horse.CombatTraits", "824224c39ac440849414f8a78c5e50b7", "BlueprintBuff"),
+    ("KMG.Summoning.Special.DustMephit.SpellLikeTwo", "342914575f204309b3ea64da949a347e", "BlueprintAbility"),
+    ("KMG.Summoning.Special.DustMephit.SpellLikeTwoResource", "262dd7ae4bf74db8953698cbd5c3ccca", "BlueprintAbilityResource"),
+    ("KMG.Summoning.Special.DustMephit.SpellLikeTwoAi", "2657bacbca8a4b6cbbb586cbd9546117", "BlueprintAiCastSpell"),
+    ("KMG.Summoning.Special.DustMephit.WindWallArea", "9d08edbf64a84f1aabdce39370774f76", "BlueprintAbilityAreaEffect"),
+    ("KMG.Summoning.Special.DustMephit.WindWallState", "334df80385894c0189212aefecb509cd", "BlueprintBuff"),
+    ("KMG.Summoning.Special.IceMephit.SpellLikeTwo", "4a2400396c7544039380104e76613816", "BlueprintAbility"),
+    ("KMG.Summoning.Special.IceMephit.SpellLikeTwoResource", "757a99a5d9b8455ebdc4f1eac68db267", "BlueprintAbilityResource"),
+    ("KMG.Summoning.Special.IceMephit.SpellLikeTwoAi", "8dac523325794ed3a767007d2e50eb90", "BlueprintAiCastSpell"),
+    ("KMG.Summoning.Special.IceMephit.ChillMetalState", "fb0e363ae9c440cf8d37d63c9b679e73", "BlueprintBuff"),
+    ("KMG.Summoning.Special.MagmaMephit.SpellLikeOne", "bd1ea7fc5dbe4c228a500f757b31c188", "BlueprintAbility"),
+    ("KMG.Summoning.Special.MagmaMephit.SpellLikeOneResource", "dbff52927879462d88faaf784e650594", "BlueprintAbilityResource"),
+    ("KMG.Summoning.Special.MagmaMephit.SpellLikeOneAi", "9595136945f6453bbfe9ec16001da54d", "BlueprintAiCastSpell"),
+    ("KMG.Summoning.Special.MagmaMephit.SpellLikeTwo", "1fbf5c29c1974bdfadbbf9109b023420", "BlueprintAbility"),
+    ("KMG.Summoning.Special.MagmaMephit.SpellLikeTwoResource", "249fc0db377e47c98c652af72bb5c4a5", "BlueprintAbilityResource"),
+    ("KMG.Summoning.Special.MagmaMephit.SpellLikeTwoAi", "68a29584ba8b4c81a22d29d1782055e0", "BlueprintAiCastSpell"),
+    ("KMG.Summoning.Special.MagmaMephit.MagmaFormState", "38ae68b0102a442f8eda8d85018f4ddc", "BlueprintBuff"),
+    ("KMG.Summoning.Special.OozeMephit.StinkingCloudArea", "eb0e5daa5ddd408cbf6fb38acb0e8751", "BlueprintAbilityAreaEffect"),
+    ("KMG.Summoning.Special.MagmaMephit.PyrotechnicsBlindedState", "a507e36761f9478f956d38d2a4b37d0a", "BlueprintBuff"),
 )
 
 PHASE1 = {
@@ -310,8 +337,8 @@ PHASE1 = {
     "nativeExpansionWrappers": 29,
     "naturalProfiles": 34,
     "projectIcons": 91,
-    "foundationIdentities": 1448,
-    "appendedLedgerIdentities": 264,
+    "foundationIdentities": 1472,
+    "appendedLedgerIdentities": 288,
     "packageFileCountWithSoundBank": 251,
 }
 SPRINT3 = PHASE1  # the pins below read the current figures
@@ -383,6 +410,21 @@ def validate(root: Path) -> None:
         '"Animal", "Vermin", "MagicalBeast", "Humanoid", "Plant"')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonIconCatalog.cs",
         "Values.Length != %d" % SPRINT3["projectIcons"])
+    # Correction order: the chartered mephit roles and the ally-safe cloud stay in the code.
+    require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningSpecialProfiles.cs",
+        '"Blur", "WindWall"', '"MagicMissile", "ChillMetal"', '"Pyrotechnics", "MagmaForm"',
+        "WindWallRounds = 6", "WindWallOtherRangedMissChance = 30", "ChillMetalRounds = 7",
+        "MagmaFormDamageReduction = 20", "MagmaFormSpeedFeet = 10", "PyrotechnicsBlindDieSides = 4")
+    require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningSpecialCombatComponents.cs",
+        "class SummonWindWallComponent", "evt.IncreaseMissChance(", "class SummonChillMetal",
+        "class SummonChillMetalTargetChecker", "class SummonChillMetalComponent")
+    require_tokens(root / "src/KingmakerGunslinger/Blueprints/ExpandedSummoningSpecialBuilder.cs",
+        "ConfigureWindWall(bySymbol, ability, prefix, token)",
+        "ConfigureChillMetal(bySymbol, ability, prefix, token)",
+        "ConfigurePyrotechnics(bySymbol, ability, prefix, token)",
+        "ConfigureMagmaForm(bySymbol, ability, prefix, token, unit)",
+        "MakeMephitCloudAllySafe(bySymbol, ability, prefix)", "MakeGlitterdustEnemyOnly(ability)",
+        "UnitCondition.CanNotAttack", "ContextConditionIsAlly")
     # Sprint 5: the mephit pack's charter boundaries stay in the code.
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningSpecialProfiles.cs",
         "MephitVariants.Length != 6", "MephitVisualTints.Length != 6",
@@ -396,14 +438,19 @@ def validate(root: Path) -> None:
         "a719abac0ea0ce346b401060754cc1c0")
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningNaturalProfiles.cs",
         '"SpiderWebImmunity"', "shared summon grapple lifecycle (Sprint 6)",
-        "charge-only rake component", "shared summon grapple lifecycle (Sprint 7)")
+        "rake gate", "shared summon grapple lifecycle (Sprint 7; correction order)")
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningSpecialCombatComponents.cs",
-        "class SummonRakeComponent", "evt.AutoMiss = true;", "evt.SuspendCombatLog = true;")
+        "class SummonRakeComponent", "evt.AutoMiss = true;", "evt.SuspendCombatLog = true;",
+        # Correction order: attack identity, target identity, the multi-link hold, the later-turn swallow
+        "class SummonLimbs", "class SummonGrappleDamage", "class SummonMultiHoldComponent",
+        "class SummonHeldComponent", "class ExpandedSummoningRakeSequencePatch",
+        "IsHeldSinceRoundStart", "ShouldSwallowOnMaintain", "IsGrabSizeAllowed", "UnitHelper.TryBreakFree")
     require_tokens(root / "src/KingmakerGunslinger/Blueprints/ExpandedSummoningSpecialBuilder.cs",
-        "ConfigureCat(library, bySymbol, LeopardUnitSymbol", "ConfigureCat(library, bySymbol, DireTigerUnitSymbol",
-        "ExpandedSummoningSpecialProfiles.LionVisualTint",
-        # Sprint 8: the tiger's carrier on the project claw, the cheetah's sprint, both coats
-        "ConfigureCatWithWeapon(library, bySymbol, TigerUnitSymbol", "ConfigureCheetahSprint(bySymbol)",
+        "ConfigureGrabber(library, bySymbol, LeopardUnitSymbol", "ConfigureGrabber(library, bySymbol, DireTigerUnitSymbol",
+        "ExpandedSummoningSpecialProfiles.LionVisualTint", "GrappleMultiHoldSymbol", "GrappleMultiHeldSymbol",
+        "GiantFlytrapEngulfedSymbol", "ConfigureEngulfed(engulfed)",
+        # Sprint 8: the tiger's carrier, the cheetah's sprint, both coats
+        "ConfigureGrabber(library, bySymbol, TigerUnitSymbol", "ConfigureCheetahSprint(bySymbol)",
         "ExpandedSummoningSpecialProfiles.TigerCoat", "ExpandedSummoningSpecialProfiles.CheetahCoat")
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningVisualVariantPatch.cs",
         "class SummonCoatRasterizer", "CoatTextureSize = 512")

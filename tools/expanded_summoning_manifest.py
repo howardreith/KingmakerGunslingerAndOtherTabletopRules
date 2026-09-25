@@ -105,11 +105,11 @@ SPECIAL_NOTES = {
     "shambling-mound": "Plant chassis with two slams; slam grab and constrict on the shared summon grapple lifecycle; fire resistance 10 and electricity immunity; the native poison aura is not carried.",
     "giant-flytrap": "Huge plant chassis with four bites; bite grab on the shared summon grapple lifecycle, one held target at a time; acid resistance 20; tremorsense as native blindsight; engulf omitted.",
     "purple-worm": "Gargantuan magical-beast chassis with bite and sting; bite grab swallows whole through the native swallow-whole part; native Constitution-scaled sting poison; burrow omitted.",
-    "dust-mephit": "Air mephit chassis with its own rim light colour, air subtype; 15-foot enemy-only slashing breath that sickens; blur once per summoning; wind wall omitted (no native spell).",
-    "ice-mephit": "Water mephit chassis with its own rim light colour, air subtype; 15-foot enemy-only cold breath that sickens; magic missile once per summoning; cold immunity, fire vulnerability; chill metal omitted (no native spell).",
-    "magma-mephit": "Fire mephit chassis with its own rim light colour, earth and fire subtypes; 15-foot enemy-only 1d8 fire breath; fire immunity, cold vulnerability; pyrotechnics and magma form omitted (no native spell or form).",
-    "ooze-mephit": "Water mephit chassis with its own rim light colour, water subtype; 15-foot enemy-only acid breath that sickens (Reflex negates both); acid arrow and stinking cloud once per summoning each.",
-    "salt-mephit": "Air mephit chassis with its own rim light colour, earth subtype; 15-foot enemy-only slashing breath that sickens; glitterdust once per summoning; dehydrate as a project 20-foot burst (2d8, Fortitude half) once per summoning.",
+    "dust-mephit": "Air mephit chassis with its own rim light colour, air subtype; 15-foot enemy-only slashing breath that sickens; blur once per summoning; project wind wall once per summoning (allies-only 15-foot shelter for 6 rounds: arrows and bolts deflected, other ranged weapons 30% miss).",
+    "ice-mephit": "Water mephit chassis with its own rim light colour, air subtype; 15-foot enemy-only cold breath that sickens; magic missile once per summoning; cold immunity, fire vulnerability; project chill metal once per summoning (Will negates; seven-round cold table against metal armor, minimal against a metal weapon only).",
+    "magma-mephit": "Fire mephit chassis with its own rim light colour, earth and fire subtypes; 15-foot enemy-only 1d8 fire breath; fire immunity, cold vulnerability; project pyrotechnics once per summoning (enemies within 20 feet blinded 1d4+1 rounds, Will negates); project magma form once per summoning (5 rounds: DR 20/magic, speed 10, no attacks).",
+    "ooze-mephit": "Water mephit chassis with its own rim light colour, water subtype; 15-foot enemy-only acid breath that sickens (Reflex negates both); acid arrow once per summoning; stinking cloud once per summoning on a project ally-safe clone of the native cloud area (enemies of the caster only).",
+    "salt-mephit": "Air mephit chassis with its own rim light colour, earth subtype; 15-foot enemy-only slashing breath that sickens; glitterdust (enemies only) once per summoning; dehydrate as a project 20-foot burst (2d8, Fortitude half) once per summoning.",
     "steam-mephit": "Water mephit chassis with its own rim light colour, fire and water subtypes; 15-foot enemy-only fire breath that sickens; fire immunity, cold vulnerability; blur once per summoning; boiling rain as a project 20-foot burst (2d6 fire, Fortitude half) once per summoning.",
 }
 
@@ -297,6 +297,31 @@ def planned():
         ("KMG.Summoning.Special.Cheetah.SprintAi", "BlueprintAiCastSpell"),
         ("KMG.Summoning.Special.Cheetah.Brain", "BlueprintBrain"),
         ("KMG.Summoning.Special.Cheetah.CombatTraits", "BlueprintBuff"),
+        # Correction order (2026-09-25): the multi-link hold, its held state and the Flytrap's engulfed state.
+        ("KMG.Summoning.Special.Grapple.MultiHold", "BlueprintBuff"),
+        ("KMG.Summoning.Special.Grapple.MultiHeld", "BlueprintBuff"),
+        ("KMG.Summoning.Special.GiantFlytrap.Engulfed", "BlueprintBuff"),
+        ("KMG.Summoning.Special.Cyclops.HideArmor", "BlueprintFeature"),
+        ("KMG.Summoning.Special.Pony.CombatTraits", "BlueprintBuff"),
+        ("KMG.Summoning.Special.Horse.CombatTraits", "BlueprintBuff"),
+        ("KMG.Summoning.Special.DustMephit.SpellLikeTwo", "BlueprintAbility"),
+        ("KMG.Summoning.Special.DustMephit.SpellLikeTwoResource", "BlueprintAbilityResource"),
+        ("KMG.Summoning.Special.DustMephit.SpellLikeTwoAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.Special.DustMephit.WindWallArea", "BlueprintAbilityAreaEffect"),
+        ("KMG.Summoning.Special.DustMephit.WindWallState", "BlueprintBuff"),
+        ("KMG.Summoning.Special.IceMephit.SpellLikeTwo", "BlueprintAbility"),
+        ("KMG.Summoning.Special.IceMephit.SpellLikeTwoResource", "BlueprintAbilityResource"),
+        ("KMG.Summoning.Special.IceMephit.SpellLikeTwoAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.Special.IceMephit.ChillMetalState", "BlueprintBuff"),
+        ("KMG.Summoning.Special.MagmaMephit.SpellLikeOne", "BlueprintAbility"),
+        ("KMG.Summoning.Special.MagmaMephit.SpellLikeOneResource", "BlueprintAbilityResource"),
+        ("KMG.Summoning.Special.MagmaMephit.SpellLikeOneAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.Special.MagmaMephit.SpellLikeTwo", "BlueprintAbility"),
+        ("KMG.Summoning.Special.MagmaMephit.SpellLikeTwoResource", "BlueprintAbilityResource"),
+        ("KMG.Summoning.Special.MagmaMephit.SpellLikeTwoAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.Special.MagmaMephit.MagmaFormState", "BlueprintBuff"),
+        ("KMG.Summoning.Special.MagmaMephit.PyrotechnicsBlindedState", "BlueprintBuff"),
+        ("KMG.Summoning.Special.OozeMephit.StinkingCloudArea", "BlueprintAbilityAreaEffect"),
         ("KMG.Summoning.Natural.Bite1d4", "BlueprintItemWeapon"),
         ("KMG.Summoning.Natural.Bite1d3", "BlueprintItemWeapon"),
         ("KMG.Summoning.Natural.Tail1d12", "BlueprintItemWeapon"),
@@ -306,7 +331,7 @@ def planned():
         ("KMG.Summoning.Natural.Claw1d8", "BlueprintItemWeapon"),
         ("KMG.Summoning.Subtype.Extraplanar", "BlueprintFeature"),
     ))
-    if len(rows) != 1448 or len({symbol for symbol, _ in rows}) != 1448:
+    if len(rows) != 1472 or len({symbol for symbol, _ in rows}) != 1472:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 
