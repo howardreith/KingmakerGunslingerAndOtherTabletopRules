@@ -19,46 +19,35 @@ namespace KingmakerGunslinger.FavoredClass
 
     /// <summary>
     /// O01 displayed range: an owner's performance descriptions follow the
-    /// actual widening outcome of that owner's own live areas of the target,
-    /// never the earned steps alone. A live area that failed to widen or is
-    /// still waiting for its ring keeps every description native; widened
-    /// live areas show the range they actually have. With no live area the
-    /// owner's configured range is shown, unless the owner's last completed
-    /// widening of that target failed: then the descriptions stay native
-    /// until a later widening succeeds.
+    /// live areas of that owner's performance (FavoredClassRangeGroup keeps
+    /// them all widened or all native). While any live area is native the
+    /// descriptions are native; while every live area is widened they show
+    /// the range those areas actually have; with no live area they show the
+    /// owner's configured range. No outcome is remembered after its area
+    /// ends, so nothing survives a save load, a new game or a respec.
     /// </summary>
     internal static class FavoredClassRangePresentation
     {
         /// <summary>The range the owner's descriptions show, in feet, or null for the native text.</summary>
-        internal static int? Feet(IList<FavoredClassLiveRange> live, FavoredClassWideningOutcome? lastCompleted,
-            int configuredFeet)
+        internal static int? Feet(IList<FavoredClassLiveRange> live, int? configuredFeet)
         {
-            if (live != null && live.Count > 0)
+            if (live == null || live.Count == 0)
+                return configuredFeet;
+            int? feet = null;
+            foreach (FavoredClassLiveRange instance in live)
             {
-                int feet = configuredFeet;
-                foreach (FavoredClassLiveRange instance in live)
-                {
-                    if (!IsWidened(instance.Outcome))
-                        return null;
-                    // The most recent live instance decides the range shown.
-                    feet = instance.Feet;
-                }
-                return feet;
+                if (!IsWidened(instance.Outcome))
+                    return null;
+                // The most recent live instance decides the range shown.
+                feet = instance.Feet;
             }
-            return lastCompleted == FavoredClassWideningOutcome.Failed ? (int?)null : configuredFeet;
+            return feet;
         }
 
         internal static bool IsWidened(FavoredClassWideningOutcome outcome)
         {
             return outcome == FavoredClassWideningOutcome.Widened ||
                 outcome == FavoredClassWideningOutcome.WidenedRingless;
-        }
-
-        /// <summary>A deferral is not a completed widening: it never changes the last completed outcome.</summary>
-        internal static FavoredClassWideningOutcome? NextLastCompleted(FavoredClassWideningOutcome? previous,
-            FavoredClassWideningOutcome outcome)
-        {
-            return outcome == FavoredClassWideningOutcome.Deferred ? previous : outcome;
         }
     }
 }

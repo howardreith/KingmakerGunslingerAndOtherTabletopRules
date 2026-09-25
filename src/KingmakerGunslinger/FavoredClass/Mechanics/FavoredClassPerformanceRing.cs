@@ -104,27 +104,42 @@ namespace KingmakerGunslinger.FavoredClass.Mechanics
             return record.Scales.Count;
         }
 
-        /// <summary>Restores a scaled instance exactly; returns whether it had been scaled.</summary>
+        /// <summary>
+        /// Restores a scaled instance exactly; returns whether it is native
+        /// afterwards. Every recorded transform is restored independently; if
+        /// any cannot be, the record is kept, so the instance still reports
+        /// scaled and is never taken for native.
+        /// </summary>
         internal static bool Restore(GameObject effect)
         {
-            if (effect == null) return false;
+            if (effect == null) return true;
             int id = effect.GetInstanceID();
             Record record;
             if (!Scaled.TryGetValue(id, out record))
+                return true;
+            if (!Restore(record))
                 return false;
             Scaled.Remove(id);
-            Restore(record);
             return true;
         }
 
-        private static void Restore(Record record)
+        private static bool Restore(Record record)
         {
+            bool complete = true;
             for (int index = record.Scales.Count - 1; index >= 0; index--)
             {
                 Transform transform = record.Scales[index].Key;
-                if (transform != null)
-                    transform.localScale = record.Scales[index].Value;
+                try
+                {
+                    if (transform != null)
+                        transform.localScale = record.Scales[index].Value;
+                }
+                catch (Exception)
+                {
+                    complete = false;
+                }
             }
+            return complete;
         }
 
         /// <summary>Forgets instances Unity destroyed without releasing them to the pool.</summary>

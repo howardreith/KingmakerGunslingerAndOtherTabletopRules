@@ -4,6 +4,8 @@ using System.Linq;
 using System.Reflection;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.UnitLogic;
+using Kingmaker.UnitLogic.ActivatableAbilities;
+using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.View.MapObjects;
 using Kingmaker.View.MapObjects.SriptZones;
 using UnityEngine;
@@ -11,88 +13,86 @@ using UnityEngine;
 namespace KingmakerGunslinger.FavoredClass.Mechanics
 {
     /// <summary>
-    /// O01: the actual widening outcome of every live performance area
-    /// instance, per owner and target, recorded by the widening transaction
-    /// itself (at initialization and when a late ring spawns). The owner's
-    /// descriptions read it (FavoredClassRangePresentation), so they state
-    /// the range the owner's live areas actually have. A failure narrows every
-    /// other live instance of the same owner and target to its native radius
-    /// and ring, so all of that owner's live areas and every description of
-    /// the target agree.
+    /// O01: the live area instances of every owner's performances, grouped
+    /// per owner and performance (FavoredClassRangeGroup: widened only as a
+    /// whole). The widening transaction asks whether an instance may widen
+    /// and records every outcome; the owner's descriptions read the group.
+    /// Narrowing restores the ring and the radius independently and then
+    /// verifies both; an instance that cannot be verified native is ended,
+    /// and the performance toggle whose own buff runs that area is turned
+    /// off. Only live views are kept: nothing survives the end of its area,
+    /// a save load or a new game, and no outcome is remembered.
     /// </summary>
     internal static class FavoredClassPerformanceInstances
     {
-        private sealed class Instance
-        {
-            internal AreaEffectView View;
-            internal string Owner;
-            internal string Key;
-            internal FavoredClassWideningOutcome Outcome;
-            internal int Feet;
-            internal float Native;
-        }
-
         private static readonly FieldInfo SpawnedFx = typeof(AreaEffectView).GetField("m_SpawnedFx",
             BindingFlags.Instance | BindingFlags.NonPublic);
+        private static readonly FieldInfo AppliedBuff = typeof(ActivatableAbility).GetField("m_AppliedBuff",
+            BindingFlags.Instance | BindingFlags.NonPublic);
         private static readonly object Gate = new object();
-        private static readonly List<Instance> Live = new List<Instance>();
-        private static readonly Dictionary<string, FavoredClassWideningOutcome> LastCompleted =
-            new Dictionary<string, FavoredClassWideningOutcome>(StringComparer.Ordinal);
+        private static readonly Dictionary<string, FavoredClassRangeGroup<AreaEffectView>> Groups =
+            new Dictionary<string, FavoredClassRangeGroup<AreaEffectView>>(StringComparer.Ordinal);
+        private static readonly Dictionary<AreaEffectView, float> NativeRadii =
+            new Dictionary<AreaEffectView, float>();
 
-        /// <summary>Records one instance's widening outcome (a later outcome of the same instance replaces it).</summary>
+        /// <summary>
+        /// Guarded runtime qualification only: runs inside a sibling's
+        /// narrowing before its ring is restored, so a restore failure can be
+        /// injected into the real rollback; null in play.
+        /// </summary>
+        internal static Action<AreaEffectView> NarrowFaultForQualification;
+
+        /// <summary>Whether a live instance may attempt widening: every other live instance of its group is widened.</summary>
+        internal static bool MayWiden(AreaEffectView view, UnitEntityData owner, string key)
+        {
+            if (view == null || owner == null || key == null)
+                return false;
+            lock (Gate)
+            {
+                Purge();
+                if (!IsLive(view))
+                    return false;
+                FavoredClassRangeGroup<AreaEffectView> group;
+                return !Groups.TryGetValue(Name(owner.UniqueId, key), out group) || group.MayWiden(view);
+            }
+        }
+
+        /// <summary>Records one live instance's outcome and restores its group's invariant.</summary>
         internal static void Record(AreaEffectView view, UnitEntityData owner, string key,
             FavoredClassWideningOutcome outcome, int feet, float native)
         {
             if (view == null || owner == null || key == null)
                 return;
-            string ownerId = owner.UniqueId;
-            List<Instance> narrow = null;
             lock (Gate)
             {
                 Purge();
-                Instance entry = Live.FirstOrDefault(value => ReferenceEquals(value.View, view));
-                if (entry == null)
-                {
-                    entry = new Instance { View = view, Owner = ownerId, Key = key };
-                    Live.Add(entry);
-                }
-                entry.Outcome = outcome;
-                entry.Feet = feet;
-                entry.Native = native;
-                string memory = Memory(ownerId, key);
-                FavoredClassWideningOutcome? next = FavoredClassRangePresentation.NextLastCompleted(
-                    LastOutcome(memory), outcome);
-                if (next.HasValue)
-                    LastCompleted[memory] = next.Value;
-                if (outcome == FavoredClassWideningOutcome.Failed)
-                    narrow = Live.Where(value => !ReferenceEquals(value, entry) && value.Owner == ownerId &&
-                        value.Key == key && FavoredClassRangePresentation.IsWidened(value.Outcome)).ToList();
+                if (!IsLive(view))
+                    return;
+                NativeRadii[view] = native;
+                string name = Name(owner.UniqueId, key);
+                FavoredClassRangeGroup<AreaEffectView> group;
+                if (!Groups.TryGetValue(name, out group))
+                    Groups[name] = group = new FavoredClassRangeGroup<AreaEffectView>();
+                group.Record(view, outcome, feet, VerifyNative, Narrow, End);
             }
-            if (narrow != null)
-                foreach (Instance sibling in narrow)
-                    Narrow(sibling);
         }
 
-        /// <summary>The range the owner's descriptions of the target show, in feet, or null for native text.</summary>
-        internal static int? Feet(UnitDescriptor owner, string key, int configuredFeet)
+        /// <summary>The range the owner's descriptions of the performance show, in feet, or null for native text.</summary>
+        internal static int? Feet(UnitDescriptor owner, string key, int? configuredFeet)
         {
             UnitEntityData unit = owner == null ? null : owner.Unit;
             if (unit == null || key == null)
                 return configuredFeet;
-            var live = new List<FavoredClassLiveRange>();
-            FavoredClassWideningOutcome? last;
             lock (Gate)
             {
                 Purge();
-                foreach (Instance value in Live)
-                    if (value.Owner == unit.UniqueId && value.Key == key)
-                        live.Add(new FavoredClassLiveRange(value.Outcome, value.Feet));
-                last = LastOutcome(Memory(unit.UniqueId, key));
+                FavoredClassRangeGroup<AreaEffectView> group;
+                return Groups.TryGetValue(Name(unit.UniqueId, key), out group) ? group.Feet(configuredFeet) :
+                    configuredFeet;
             }
-            return FavoredClassRangePresentation.Feet(live, last, configuredFeet);
         }
 
-        /// <summary>The owner's live instances of the target (qualification evidence).</summary>
+        /// <summary>The owner's live instances of the performance (qualification evidence).</summary>
         internal static int LiveCount(UnitDescriptor owner, string key)
         {
             UnitEntityData unit = owner == null ? null : owner.Unit;
@@ -101,56 +101,126 @@ namespace KingmakerGunslinger.FavoredClass.Mechanics
             lock (Gate)
             {
                 Purge();
-                return Live.Count(value => value.Owner == unit.UniqueId && value.Key == key);
+                FavoredClassRangeGroup<AreaEffectView> group;
+                return Groups.TryGetValue(Name(unit.UniqueId, key), out group) ? group.Count : 0;
             }
         }
 
-        private static string Memory(string owner, string key)
+        /// <summary>One live instance's recorded outcome (qualification evidence).</summary>
+        internal static FavoredClassWideningOutcome? OutcomeOf(UnitDescriptor owner, string key, AreaEffectView view)
+        {
+            UnitEntityData unit = owner == null ? null : owner.Unit;
+            if (unit == null)
+                return null;
+            lock (Gate)
+            {
+                Purge();
+                FavoredClassRangeGroup<AreaEffectView> group;
+                return Groups.TryGetValue(Name(unit.UniqueId, key), out group) ? group.OutcomeOf(view) : null;
+            }
+        }
+
+        private static string Name(string owner, string key)
         {
             return owner + "|" + key;
         }
 
-        private static FavoredClassWideningOutcome? LastOutcome(string memory)
-        {
-            FavoredClassWideningOutcome value;
-            return LastCompleted.TryGetValue(memory, out value) ? value : (FavoredClassWideningOutcome?)null;
-        }
-
-        /// <summary>Forgets destroyed views and areas that ended.</summary>
+        /// <summary>Forgets destroyed views, areas that ended and empty groups.</summary>
         private static void Purge()
         {
-            Live.RemoveAll(value => value.View == null || Ended(value.View));
+            foreach (KeyValuePair<string, FavoredClassRangeGroup<AreaEffectView>> pair in Groups.ToArray())
+            {
+                pair.Value.Purge(IsLive);
+                if (pair.Value.Count == 0)
+                    Groups.Remove(pair.Key);
+            }
+            foreach (AreaEffectView view in NativeRadii.Keys.ToArray())
+                if (!IsLive(view))
+                    NativeRadii.Remove(view);
         }
 
-        private static bool Ended(AreaEffectView view)
+        private static bool IsLive(AreaEffectView view)
         {
+            if (view == null)
+                return false;
             var data = view.Data as AreaEffectEntityData;
-            return data != null && (data.Destroyed || data.IsEnded);
+            return data == null || (!data.Destroyed && !data.IsEnded);
         }
 
-        /// <summary>Restores a widened sibling to its native radius and ring.</summary>
-        private static void Narrow(Instance instance)
+        private static GameObject Ring(AreaEffectView view)
         {
             try
             {
-                AreaEffectView view = instance.View;
-                if (view == null)
-                    return;
-                var ring = SpawnedFx == null ? null : SpawnedFx.GetValue(view) as GameObject;
-                if (ring != null)
-                    FavoredClassPerformanceRing.Restore(ring);
-                var cylinder = view.Shape as ScriptZoneCylinder;
-                if (cylinder != null && instance.Native > 0f)
-                    cylinder.Radius = instance.Native;
+                return SpawnedFx == null ? null : SpawnedFx.GetValue(view) as GameObject;
             }
             catch (Exception)
             {
-                // Fail safe: the instance is reported native either way.
+                return null;
             }
-            finally
+        }
+
+        /// <summary>Whether the instance's cylinder is at its native radius and its ring carries no owner scale.</summary>
+        private static bool VerifyNative(AreaEffectView view)
+        {
+            float native;
+            if (view == null || !NativeRadii.TryGetValue(view, out native))
+                return false;
+            var cylinder = view.Shape as ScriptZoneCylinder;
+            GameObject ring = Ring(view);
+            return cylinder != null && Math.Abs(cylinder.Radius - native) < 0.0001f &&
+                (ring == null || !FavoredClassPerformanceRing.IsScaled(ring));
+        }
+
+        /// <summary>Restores a widened instance: the ring and the radius independently, then verified.</summary>
+        private static bool Narrow(AreaEffectView view)
+        {
+            GameObject ring = Ring(view);
+            try
             {
-                lock (Gate)
-                    instance.Outcome = FavoredClassWideningOutcome.Failed;
+                Action<AreaEffectView> fault = NarrowFaultForQualification;
+                if (fault != null)
+                    fault(view);
+                if (ring != null)
+                    FavoredClassPerformanceRing.Restore(ring);
+            }
+            catch (Exception)
+            {
+                // Verified below.
+            }
+            try
+            {
+                float native;
+                var cylinder = view.Shape as ScriptZoneCylinder;
+                if (cylinder != null && NativeRadii.TryGetValue(view, out native))
+                    cylinder.Radius = native;
+            }
+            catch (Exception)
+            {
+                // Verified below.
+            }
+            return VerifyNative(view);
+        }
+
+        /// <summary>
+        /// Ends an instance that cannot be verified native. The toggle whose
+        /// own current buff runs that area is turned off, so the performance
+        /// stops instead of spending rounds on an area that no longer exists;
+        /// an older, lingering area never stops the current performance.
+        /// </summary>
+        private static void End(AreaEffectView view)
+        {
+            var data = view == null ? null : view.Data as AreaEffectEntityData;
+            if (data == null)
+                return;
+            UnitEntityData owner = data.Context == null ? null : data.Context.MaybeCaster;
+            data.ForceEnd();
+            if (owner == null || AppliedBuff == null)
+                return;
+            foreach (ActivatableAbility toggle in owner.Descriptor.ActivatableAbilities.Enumerable.ToArray())
+            {
+                var buff = toggle.IsOn ? AppliedBuff.GetValue(toggle) as Buff : null;
+                if (buff != null && ReferenceEquals(buff.Context, data.Context))
+                    toggle.IsOn = false;
             }
         }
     }

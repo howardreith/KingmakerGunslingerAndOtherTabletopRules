@@ -15,7 +15,16 @@ namespace KingmakerGunslinger.FavoredClass
         Deferred,
 
         /// <summary>Scaling or widening failed: the native radius and ring are restored.</summary>
-        Failed
+        Failed,
+
+        /// <summary>
+        /// Not attempted: another live area of the same owner's performance is
+        /// native, so this one stays native too (FavoredClassRangeGroup).
+        /// </summary>
+        Held,
+
+        /// <summary>Widened, then restored to native because a live sibling became native.</summary>
+        Narrowed
     }
 
     /// <summary>
