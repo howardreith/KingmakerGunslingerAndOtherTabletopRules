@@ -155,14 +155,17 @@ Oracle-engine rank.
 O01 is read inside each performance area's own view and never in a shared
 blueprint: an `AreaEffectView.InitAtRuntime` postfix widens that instance's
 cylinder and scales that instance's ring, an `AreaEffectView.SpawnFxs` postfix
-scales a ring the native attach spawns later, a `GameObjectsPool.Release`
-prefix restores the exact ring scales before a pooled effect is reused, and
-`Fact.SelectUIData` and `MechanicActionBarSlotActivableAbility.GetDescription`
-postfixes show the owner's range in the owner's own descriptions, following
-that owner's live areas of the performance, which widen only as a whole:
-native while any live area is native, their actual range while all are
-widened, and the configured range when none is live; no outcome outlives
-its area (`docs/FAVORED-CLASS-TARGET-MANIFEST.md`).
+(the native attach calls `SpawnFxs` after every spawn and load) scales a ring
+spawned there and attempts once more an instance the initialization left
+native, a `GameObjectsPool.Release` prefix restores the exact ring scales
+before a pooled effect is reused, and `Fact.SelectUIData` and
+`MechanicActionBarSlotActivableAbility.GetDescription` postfixes show the
+owner's range in the owner's own descriptions, following that owner's live
+areas of the performance, which widen only as a whole: native while any live
+area is native, their actual range while all are widened, and the configured
+range when none is live; no outcome outlives its area. An area that cannot be
+verified native after a rollback is ended, and the toggle whose own current
+buff runs it is turned off (`docs/FAVORED-CLASS-TARGET-MANIFEST.md`).
 
 Two scopes are closed in finally blocks rather than by postfixes alone, since
 Harmony 1.2 has no finalizers. A transpiler on
