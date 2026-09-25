@@ -256,11 +256,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ":" + DescribeReviewMaterialProbe(material) + "}");
                 }
             variantRetained = variantMaterials != 0;
+            var rimAnimations = new List<string>();
+            var rimController = ExpandedSummoningRimAnimationPatch.RimControllerOf(controller);
+            if (rimController != null && rimController.Animations != null)
+                foreach (var animation in rimController.Animations)
+                    rimAnimations.Add(animation == null ? "<null>" : "loop=" + animation.LoopAnimation +
+                        ",lifetime=" + animation.Lifetime.ToString("0.##", CultureInfo.InvariantCulture) +
+                        ",scale=" + animation.IntensityScale.ToString("0.##", CultureInfo.InvariantCulture) +
+                        ",colour=" + DescribeReviewColour(animation.CurrentColor) +
+                        ",intensity=" + animation.CurrentIntensity.ToString("0.##", CultureInfo.InvariantCulture) +
+                        ",finished=" + animation.IsFinished);
             return "renderers=" + renderers.Length + ";materials=" + materials +
                 ";variantMaterials=" + variantMaterials + ";controllerMaterials=" +
                 (driven == null ? -1 : driven.Count) + ";" +
                 string.Join(",", parts.ToArray()) + ";character=" +
-                DescribeReviewCharacter(unit.View);
+                DescribeReviewCharacter(unit.View) + ";rimAnimations[" +
+                string.Join("|", rimAnimations.ToArray()) + "];rimPatch=" +
+                ExpandedSummoningRimAnimationPatch.Describe(unit.View);
         }
 
         /// <summary>
