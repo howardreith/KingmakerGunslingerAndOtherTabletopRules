@@ -134,7 +134,7 @@ namespace KingmakerGunslinger.DomainTests
                 "Cyclops ferocity or feats changed.");
             Assertions.True(cyclops.Deviations.Any(value => value.Contains("Flash of Insight")) &&
                 cyclops.Deviations.Any(value => value.Contains("hide armor")),
-                "Cyclops deviations must record the bounded insight and the omitted armor.");
+                "Cyclops deviations must record the bounded insight and the carried hide armor.");
             Assertions.True(ExpandedSummoningNaturalProfiles.SupportedHitDieClasses
                 .Take(4).SequenceEqual(new[] { "Animal", "Vermin", "MagicalBeast", "Humanoid" }),
                 "The Sprint 3 hit-die classes changed.");
@@ -206,8 +206,8 @@ namespace KingmakerGunslinger.DomainTests
             ExpandedSummoningSpecialProfiles.Validate();
             Assertions.Equal(1, ExpandedSummoningSpecialProfiles.CyclopsFlashOfInsightUses,
                 "Flash of Insight is one use per summoning.");
-            Assertions.Equal(1, ExpandedSummoningSpecialProfiles.CyclopsFlashOfInsightRounds,
-                "The armed state lasts one round.");
+            Assertions.True(ExpandedSummoningSpecialProfiles.CyclopsFlashOfInsightLastsUntilUsed,
+                "The armed state has no duration of its own; the next attack roll ends it.");
             Assertions.True(ExpandedSummoningSpecialProfiles.ShouldApplyFlashOfInsight(true, true),
                 "The owner's attack roll while armed is converted.");
             Assertions.False(ExpandedSummoningSpecialProfiles.ShouldApplyFlashOfInsight(false, true),
@@ -244,8 +244,9 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(builder.Contains("RemoveBuffOnAttack") &&
                 builder.Contains("UnitCommand.CommandType.Swift") &&
                 builder.Contains("AbilityType.Supernatural") &&
-                builder.Contains("CyclopsFlashOfInsightUses"),
-                "The ability must be a swift supernatural power whose state ends after one attack.");
+                builder.Contains("CyclopsFlashOfInsightUses") &&
+                builder.Contains("arm.Permanent = ExpandedSummoningSpecialProfiles.CyclopsFlashOfInsightLastsUntilUsed;"),
+                "The ability must be a swift supernatural power whose state has no duration of its own and ends after one attack.");
         }
 
         internal static void LedgerAndIconsCoverTheNewCreatures()

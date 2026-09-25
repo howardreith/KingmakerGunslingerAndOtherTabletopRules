@@ -2032,6 +2032,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ExecuteExpandedSummoningRuntimeAbility(cyclops, flash, 1, new TargetWrapper(cyclops), false);
                 int usesAfter = cyclops.Descriptor.Resources.GetResourceAmount(flashResource);
                 bool armed = cyclops.Descriptor.HasFact(flashState);
+                // The arming has no duration of its own: only the attack ends it.
+                Buff arming = cyclops.Descriptor.Buffs.GetBuff(flashState);
+                bool untimedArming = arming != null && arming.IsPermanent;
                 // A save rolled while armed is untouched: the same seed gives
                 // the same roll while armed and after the arming is spent,
                 // and it leaves the arming in place.
@@ -2066,6 +2069,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool secondUse = new AbilityData(cyclops.Descriptor.Abilities.GetAbility(flash)).IsAvailable;
                 hostile.Descriptor.Damage = damageBefore;
                 steps.Add("flash:uses=" + usesBefore + "->" + usesAfter + ";armed=" + armed +
+                    ";untimedArming=" + untimedArming +
                     ";saveWhileArmed=" + saveWhileArmed + ";saveAfterSpentSameSeed=" + saveAfterSpent +
                     ";stillArmedAfterSave=" + stillArmed +
                     ";armedNatural=" + natural + ";hit=" + (roll != null && roll.IsHit) + ";threat=" +
@@ -2074,7 +2078,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     (roll != null && (roll.AutoHit || roll.AutoCriticalThreat || roll.AutoCriticalConfirmation)) +
                     ";spent=" + spent + ";nextNatural=" + plainNatural + ";nextMiss=" + plainMiss +
                     ";secondUseAvailable=" + secondUse);
-                ok = ok && usesBefore == 1 && usesAfter == 0 && armed && saveWhileArmed == saveAfterSpent &&
+                ok = ok && usesBefore == 1 && usesAfter == 0 && armed && untimedArming &&
+                    saveWhileArmed == saveAfterSpent &&
                     stillArmed && chosenTwenty && confirmation >= 1 && confirmation <= 20 && spent &&
                     plainNatural == 1 && plainMiss && !secondUse;
                 DisposeExpandedSummoningUnits(fixture.Created, new[] { cyclops });
@@ -2229,12 +2234,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             int uses = cyclops.Descriptor.Resources.GetResourceAmount(resource);
             Ability granted = cyclops.Descriptor.Abilities.GetAbility(flash);
             bool available = granted != null && new AbilityData(granted).IsAvailable;
-            int armedStates = cyclops.Descriptor.Buffs.RawFacts.OfType<Buff>().Count(value =>
-                ReferenceEquals(value.Blueprint, state));
-            string detail = "uses=" + uses + ";available=" + available + ";armedStates=" + armedStates;
+            Buff[] armings = cyclops.Descriptor.Buffs.RawFacts.OfType<Buff>().Where(value =>
+                ReferenceEquals(value.Blueprint, state)).ToArray();
+            int armedStates = armings.Length;
+            // The arming has no duration of its own: only the attack ends it.
+            bool untimed = armings.Length > 0 && armings.All(value => value.IsPermanent);
+            string detail = "uses=" + uses + ";available=" + available + ";armedStates=" + armedStates +
+                ";untimed=" + untimed;
             if (prepare)
             {
-                valid = uses == 0 && !available && armedStates == 1;
+                valid = uses == 0 && !available && armedStates == 1 && untimed;
                 return detail;
             }
             if (!verifyCleanup || target == null) return detail;
@@ -2259,8 +2268,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             target.Descriptor.Damage = damageBefore;
             detail += ";reloadedNatural=" + natural + ";hit=" + hit + ";spent=" + spent +
                 ";nextNatural=" + nextNatural + ";nextMiss=" + nextMiss;
-            valid = uses == 0 && !available && armedStates == 1 && natural == 20 && hit && spent &&
-                nextNatural == 1 && nextMiss;
+            valid = uses == 0 && !available && armedStates == 1 && untimed && natural == 20 && hit &&
+                spent && nextNatural == 1 && nextMiss;
             return detail;
         }
 

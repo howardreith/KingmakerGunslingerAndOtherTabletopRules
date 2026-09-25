@@ -99,7 +99,8 @@ Decisions (recorded here rather than asked):
   (`7661741dbb9604842a642457456fd0e4`), bite 1d6 and two 1d6 claws, Improved
   Initiative, Great Fortitude, Skill Focus (Perception), reduced reach. Claw
   grab is deferred to the shared grapple lifecycle Sprint 4 introduces and is
-  recorded as a deviation until then.
+  recorded as a deviation until then; Sprint 4 delivered it, and the Owlbear
+  entry below records the claw grab riding that lifecycle.
 - Cyclops (SNA V) is the first humanoid chassis: `CR5_CyclopStandard`
   `124f1c45ef24d654e9cd420fe84f7f36` as a sanitized body donor, 10 HD on
   `HumanoidClass` `6ab4526f94d2e3e439af0599a29b6675`, natural armor +7
@@ -108,8 +109,11 @@ Decisions (recorded here rather than asked):
   Large 3d6), Ferocity, Power Attack and Cleave
   (`d809b6c4ff2aaff4fa70d712a70f7d7b`). Flash of Insight is bounded to one
   use per summoning and to the next attack roll (corrected under the
-  2026-09-25 order): a swift action arms a one-round state that the native
-  `RemoveBuffOnAttack` ends after one attack; that attack's own d20 result
+  2026-09-25 order): a swift action arms a state with no duration of its
+  own that the native `RemoveBuffOnAttack` ends after one attack, so a use
+  never lapses unspent and a save and a reload find it exactly once (the
+  first requalification run found a one-round state lapsed before the
+  reloaded attack); that attack's own d20 result
   is chosen as a natural 20 through the game's pre-rolled-result seam
   (`RuleRollD20.m_PreRolledResult`, `CyclopsFlashOfInsightComponent`), so
   the hit and the threat follow from the roll, the critical confirmation is
@@ -213,17 +217,26 @@ Decisions (recorded here rather than asked):
   `Grapple.Grappled` (target, Entangled) buffs and deals any constrict.
   `SummonHoldComponent` on the hold buff maintains each new round with a
   grapple check at the tabletop +5, dealing the grab weapon's damage plus
-  Strength (plus constrict) on success and releasing on failure, and - the
-  link ownership the charter asks for - releases exactly the target the
-  summon's own initiator part names whenever the hold buff turns off, for
+  Strength (plus constrict) on success and releasing on failure - both the
+  grab and the maintain apply the attack-roll natural 1 (always fails) and
+  natural 20 (always succeeds) over the engine's combat-maneuver rule,
+  which decides by the sum alone (`IsSummonManeuverSuccess`, pinned), while
+  a failed concealment check or an auto-failure flag still denies the
+  maneuver whatever the die showed (`SummonManeuverChecks.Succeeded`). The
+  same component - this is the link ownership the charter asks for -
+  releases exactly the target the summon's own initiator part names
+  whenever the hold buff turns off, for
   any reason (escape, the holder falling, dispel, the summon's disposal),
   never touching the initiator part itself (the game's controller drops it,
   and removing it from inside its own buff's removal would re-enter). The
-  worm swallows through the native part on a successful grab, as
-  Kingmaker's own worm does; `SummonSwallowLifecycleComponent` on its
-  traits spits everyone out when the traits turn off. The tabletop
-  grab-then-maintain-then-swallow sequence has no native hold-and-swallow
-  path (a holding initiator cannot act) and is recorded as a deviation.
+  worm holds on a successful grab and swallows through the native part on
+  a later turn's successful maintain check, used as though attempting to
+  pin, against a foe up to one size smaller (corrected under the
+  2026-09-25 order); `SummonSwallowLifecycleComponent` on its traits spits
+  everyone out when the traits turn off. The game has no native
+  hold-and-swallow path of its own - a holding initiator cannot act - so
+  the project's own components drive the tabletop
+  grab-then-maintain-then-swallow sequence over the native parts.
 - `SummonGrappleAreaSafeguard` (subscribed once at load beside the
   alignment-mode runtime) releases party members held or swallowed by a
   KMG summon when the party leaves an area and repairs any party member

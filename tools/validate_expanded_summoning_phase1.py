@@ -414,7 +414,8 @@ def validate(root: Path) -> None:
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningSpecialProfiles.cs",
         '"Blur", "WindWall"', '"MagicMissile", "ChillMetal"', '"Pyrotechnics", "MagmaForm"',
         "WindWallRounds = 6", "WindWallOtherRangedMissChance = 30", "ChillMetalRounds = 7",
-        "MagmaFormDamageReduction = 20", "MagmaFormSpeedFeet = 10", "PyrotechnicsBlindDieSides = 4")
+        "MagmaFormDamageReduction = 20", "MagmaFormSpeedFeet = 10", "PyrotechnicsBlindDieSides = 4",
+        "CyclopsFlashOfInsightLastsUntilUsed = true")
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningSpecialCombatComponents.cs",
         "class SummonWindWallComponent", "evt.IncreaseMissChance(", "class SummonChillMetal",
         "class SummonChillMetalTargetChecker", "class SummonChillMetalComponent",
@@ -425,7 +426,11 @@ def validate(root: Path) -> None:
         "ConfigurePyrotechnics(bySymbol, ability, prefix, token)",
         "ConfigureMagmaForm(bySymbol, ability, prefix, token, unit)",
         "MakeMephitCloudAllySafe(bySymbol, ability, prefix)", "MakeGlitterdustEnemyOnly(ability)",
-        "UnitCondition.CanNotAttack", "notEnemy.Not = true;")
+        "UnitCondition.CanNotAttack", "notEnemy.Not = true;",
+        "arm.Permanent = ExpandedSummoningSpecialProfiles.CyclopsFlashOfInsightLastsUntilUsed;")
+    require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningSpecialCombatComponents.cs",
+        "IsSummonManeuverSuccess(", "internal static class SummonManeuverChecks",
+        "SummonManeuverChecks.Succeeded(maneuver)")
     # Sprint 5: the mephit pack's charter boundaries stay in the code.
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningSpecialProfiles.cs",
         "MephitVariants.Length != 6", "MephitVisualTints.Length != 6",

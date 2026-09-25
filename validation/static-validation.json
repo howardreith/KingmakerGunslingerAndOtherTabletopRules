@@ -1901,7 +1901,7 @@
         "SNA VIII 1d3",
         "SNA IX 1d4+1"
       ],
-      "flashOfInsight": "bounded and corrected (2026-09-25): once per summoning, swift action, the next attack's own d20 is chosen as a natural 20 through the game's pre-rolled-result seam; the hit and the threat follow from the roll, the critical confirmation is rolled normally, no automatic-hit flag is set, no other roll is touched, and the persistence trio proves the single armed use across the save and the reload",
+      "flashOfInsight": "bounded and corrected (2026-09-25): once per summoning, swift action, an arming with no duration of its own that the next attack ends; that attack's own d20 is chosen as a natural 20 through the game's pre-rolled-result seam; the hit and the threat follow from the roll, the critical confirmation is rolled normally, no automatic-hit flag is set, no other roll is touched, and the persistence trio proves the single armed use across the save and the reload",
       "icons": "Blender 4.5 procedural renders (assets-source/original-icons/expanded-summoning/tools/render_creature_icon.py)",
       "internalAcceptance": "INTERNAL-ACCEPTED",
       "cyclopsArmorClass": "19: +4 hide armor as an armor-descriptor fact (no item, loot or inventory), -1 Dexterity, +7 natural armor, -1 size; live breakdown in the correction rules scenario",

@@ -287,7 +287,7 @@ namespace KingmakerGunslinger.Summoning
                     21, 8, 15, 10, 13, 8, 30, 7, "Greataxe",
                     Array.Empty<string>(),
                     A("Ferocity", "PowerAttack", "Cleave"),
-                    "Flash of Insight is bounded to one use per summoning and to the next attack roll: a swift action after which that attack's own d20 result is chosen as a natural 20 (the game's pre-rolled-result seam), so the hit and the threat follow from the roll and the critical confirmation is rolled normally; the tabletop choice of any one die roll is narrowed to the attack.",
+                    "Flash of Insight is bounded to one use per summoning and to the next attack roll: a swift action arms the cyclops until its next attack roll, whose own d20 result is chosen as a natural 20 (the game's pre-rolled-result seam), so the hit and the threat follow from the roll and the critical confirmation is rolled normally; the tabletop choice of any one die roll is narrowed to the attack.",
                     "The +4 hide armor is carried as an exact armor-descriptor fact (no item, loot or inventory) and the natural armor is the stat block's +7, so the armor class is the tabletop 19 (10 + 4 armor - 1 Dexterity + 7 natural - 1 size); the heavy crossbow is omitted because the summon carries no equipment; Alertness, Great Cleave and Improved Bull Rush are omitted because exact final-live feature identities were not proven."),
                 // Sprint 4 (Phase 1): native publication pack II - plants and
                 // the colossal worm, on the shared summon grapple lifecycle.
@@ -305,15 +305,15 @@ namespace KingmakerGunslinger.Summoning
                     A("AcidResistance20", "Blindsight", "TripImmune", "Cleave",
                         "GreatFortitude", "ImprovedInitiative", "PowerAttack",
                         "SkillFocusStealth", "WeaponFocusBite"),
-                    "Bite grab rides the shared summon grapple lifecycle; the native hold takes one target at a time, so the tabletop four simultaneous grabs are bounded to one held target while the other bites continue.",
-                    "Engulf is omitted because no summon-safe native representation was proven. Tremorsense 60 feet is represented by the native 60-foot blindsight. Vital Strike is omitted because no exact final-live feature identity was proven.",
+                    "Bite grab rides the shared summon grapple lifecycle with one link per bite, four at most (corrected 2026-09-25): every link is a held state on the target that names the flytrap and the bite that established it, and a bite that already holds cannot take a second foe.",
+                    "Engulf is the swallow-whole sequence against a Medium or smaller foe the flytrap has held since the round began (corrected 2026-09-25), dealing 1d8+7 bludgeoning and 1d8 acid each round inside; the project state releases on every end path. Tremorsense 60 feet is represented by the native 60-foot blindsight. Vital Strike is omitted because no exact final-live feature identity was proven.",
                     "Kingmaker cannot represent an absent Intelligence score, so Intelligence 1 is used."),
                 P("purple-worm", "Purple Worm", "MagicalBeast", 16, "Gargantuan",
                     35, 6, 25, 1, 8, 8, 20, 22, "PurpleWormBite",
                     A("PurpleWormSting"),
                     A("TripImmune", "PurpleWormPoison", "CriticalFocus",
                         "ImprovedCriticalBite", "PowerAttack", "WeaponFocusBite"),
-                    "Grab and swallow whole follow Kingmaker's own worm: a bite hit attempts the game's grapple check and success swallows the target through the native swallow-whole part, which handles break-free attempts, the per-round crushing damage and the spit-out on the worm's death or end; the separate tabletop grab-then-swallow step has no native hold-and-swallow path.",
+                    "Grab and swallow whole follow the tabletop sequence (corrected 2026-09-25): a bite hit attempts the game's grapple check and success holds the target, and on a later turn a successful maintain check - used as though attempting to pin - swallows a foe up to one size smaller through the native swallow-whole part, which handles break-free attempts, the per-round crushing damage and the spit-out on the worm's death or end; a foe of the worm's own size is held but never swallowed.",
                     "Burrow and swim movement are omitted; the native summoned worm's burrowing kit is not carried, as the charter's bounded combat adaptation directs. The sting poison is the exact native Constitution-scaled graph.",
                     "Awesome Blow, Improved Bull Rush, Staggering Critical and Weapon Focus (sting) are omitted because exact final-live feature identities were not proven; Kingmaker cannot represent an absent Intelligence score, so Intelligence 1 is used.")
             };
