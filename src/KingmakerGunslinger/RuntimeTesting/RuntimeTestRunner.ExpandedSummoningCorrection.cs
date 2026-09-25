@@ -885,6 +885,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ExpandedSummoningSpecialProfiles.SummonGrabManeuverBonus +
                                 ExpandedSummoningSpecialProfiles.SummonHoldMaintainBonus);
                     }
+                    hostile.Descriptor.State.Size = holderSize;
+                    // A foe immune to combat maneuvers is never taken: the
+                    // engine's own rule returns before it computes CMB and
+                    // CMD there, and the verdict it leaves behind would read
+                    // as a success.
+                    hostile.Descriptor.State.AddCondition(
+                        UnitCondition.ImmuneToCombatManeuvers, null);
+                    UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                    bool immuneRefused = grab != null && limb != null &&
+                        !grab.TryGrab(hostile, limb, true) &&
+                        hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>() == null &&
+                        holder.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleInitiator>() == null;
+                    hostile.Descriptor.State.RemoveConditionAll(
+                        UnitCondition.ImmuneToCombatManeuvers);
+                    UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                    bool takenOnceImmunityEnds = grab != null && limb != null &&
+                        grab.TryGrab(hostile, limb, true);
+                    if (takenOnceImmunityEnds)
+                        ReleaseExpandedSummoningHold(holder, hostile, hold);
                     hostile.Descriptor.State.Size = fixture.HostileSize;
                     // The +4 grab bonus alone, with nothing held.
                     var freeGrapple = new RuleCalculateCMB(holder, hostile, CombatManeuver.Grapple);
@@ -895,8 +914,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ExpandedSummoningSpecialProfiles.SummonGrabManeuverBonus;
                     steps.Add(row[0] + ":size=" + holderSize + ";" + string.Join(",",
                         outcomes.ToArray()) + ";freeGrappleCmb=" + freeGrapple.Result +
-                        ";freeTripCmb=" + freeTrip.Result + ";grabBonus=" + grabBonus);
-                    ok = ok && rowOk && grabBonus;
+                        ";freeTripCmb=" + freeTrip.Result + ";grabBonus=" + grabBonus +
+                        ";maneuverImmuneRefused=" + immuneRefused +
+                        ";takenOnceImmunityEnds=" + takenOnceImmunityEnds);
+                    ok = ok && rowOk && grabBonus && immuneRefused && takenOnceImmunityEnds;
                     DisposeExpandedSummoningUnits(fixture.Created, new[] { holder });
                 }
 

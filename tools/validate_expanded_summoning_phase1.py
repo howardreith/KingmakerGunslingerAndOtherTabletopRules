@@ -430,7 +430,8 @@ def validate(root: Path) -> None:
         "arm.Permanent = ExpandedSummoningSpecialProfiles.CyclopsFlashOfInsightLastsUntilUsed;")
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningSpecialCombatComponents.cs",
         "IsSummonManeuverSuccess(", "internal static class SummonManeuverChecks",
-        "SummonManeuverChecks.Succeeded(maneuver)")
+        "SummonManeuverChecks.Succeeded(maneuver)",
+        "UnitCondition.ImmuneToCombatManeuvers))")
     # Sprint 5: the mephit pack's charter boundaries stay in the code.
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningSpecialProfiles.cs",
         "MephitVariants.Length != 6", "MephitVisualTints.Length != 6",
