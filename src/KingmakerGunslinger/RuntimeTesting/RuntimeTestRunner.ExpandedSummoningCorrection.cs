@@ -410,6 +410,27 @@ namespace KingmakerGunslinger.RuntimeTesting
             catch (Exception exception) { return "grid=exception:" + exception.GetType().Name; }
         }
 
+        /// <summary>
+        /// The game ticks no mode controller behind an active loading
+        /// screen or loading process (Game.Tick), so a scenario that begins
+        /// there sees no area effect, buff or sleep controller run on its
+        /// own; both scenarios wait for the flags to clear before their
+        /// first phase and record the wait.
+        /// </summary>
+        private static bool ExpandedSummoningLoadingActive(out string flags)
+        {
+            Kingmaker.EntitySystem.Persistence.LoadingProcess loading =
+                Kingmaker.EntitySystem.Persistence.LoadingProcess.Instance;
+            bool inProcess = loading != null && loading.IsLoadingInProcess;
+            bool screen = loading != null && loading.IsLoadingScreenActive;
+            bool manual = loading != null && loading.IsManualLoadingScreenActive;
+            flags = "inProcess=" + inProcess + ",screen=" + screen + ",manual=" + manual +
+                ",paused=" + Game.Instance.IsPaused + ",mode=" + Game.Instance.CurrentMode;
+            return inProcess || screen || manual;
+        }
+
+        private const int ExpandedSummoningLoadingGateFrames = 1200;
+
         private static readonly Vector3[] CompassOffsets = {
             new Vector3(1f, 0f, 0f), new Vector3(-1f, 0f, 0f), new Vector3(0f, 0f, 1f), new Vector3(0f, 0f, -1f),
             new Vector3(0.7071f, 0f, 0.7071f), new Vector3(-0.7071f, 0f, 0.7071f),
@@ -550,6 +571,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private int _rulesHighTouch, _rulesLowTouch;
         private bool _rulesMissedHighTouch;
         private string _rulesWebRollA = "<none>";
+        private int _rulesLoadingWait;
 
         private void PollExpandedSummoningRules()
         {
@@ -558,6 +580,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 if (_rulesPhase == 0)
                 {
+                    string loadingFlags;
+                    if (ExpandedSummoningLoadingActive(out loadingFlags) &&
+                        _rulesLoadingWait++ < ExpandedSummoningLoadingGateFrames) return;
+                    _rulesSteps.Add("loadingGate:framesWaited=" + _rulesLoadingWait + ";" + loadingFlags);
                     stage = "construct-fixture";
                     _rulesFixture = BeginExpandedSummoningCorrectionFixture(
                         "KMG_Runtime_ExpandedSummoning_RulesCaster");
@@ -1387,13 +1413,11 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         /// <summary>
-        /// The area's units: what the game's own frames found, then the
-        /// area's own Tick run from here - the very method the game's area
-        /// controller calls every frame in play. That controller is
-        /// registered for the Default, Dialog and Rest game modes only, and
-        /// the guarded harness drives the game in a mode where abilities and
-        /// projectiles tick but areas do not (the record names the mode), so
-        /// the tick is the designed path and the record shows both counts
+        /// The area's units: what the game's own frames found after the
+        /// loading gate, then the area's own Tick run from here - the very
+        /// method the game's area controller calls every frame in play - as
+        /// a recorded fallback. The record shows both counts, the game mode,
+        /// the loading flags, the awake list, the game time and the frame
         /// beside every gate the area applies to each unit.
         /// </summary>
         private static string SettleExpandedSummoningArea(AreaEffectEntityData area,
@@ -1535,8 +1559,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 thrownChance == ExpandedSummoningSpecialProfiles.WindWallOtherRangedMissChance &&
                 !meleeMiss && meleeChance == 0 && !rayMiss && rayChance == 0 && wallEnded;
             _rulesCases.Add(Assertion("expanded-summoning-correction-wind-wall",
-                "the dust mephit's wall of wind shelters the allies inside it - the party caster, the allied summon and the mephit - and not the hostile outside: arrows and bolts aimed at a sheltered ally are deflected outright, other ranged weapons roll the tabletop 30% miss chance, melee and rays pass; the shelter ends with the wall",
-                detail, ok, "the area effect's own tick (the method the game's area controller calls each frame in play; the harness's game mode does not tick areas) reading the units from the area's spatial grid after the placement frames; RuleAttackWithWeapon by the hostile with a bow, a thrown weapon, a sword and the ray weapon; SummonWindWallComponent outcomes"));
+                "the dust mephit's wall of wind shelters every creature inside it that is not the mephit's enemy - the party caster, the allied summon and the mephit - and not the hostile outside: arrows and bolts aimed at a sheltered creature are deflected outright, other ranged weapons roll the tabletop 30% miss chance, melee and rays pass; the shelter ends with the wall",
+                detail, ok, "the area effect found through the game's own frames after the loading gate (the area's own tick run from the fixture as a recorded fallback), its units read from the area's spatial grid; RuleAttackWithWeapon by the hostile with a bow, a thrown weapon, a sword and the ray weapon; SummonWindWallComponent outcomes"));
             caster.Descriptor.Damage = _rulesCasterDamage;
             DisposeExpandedSummoningUnits(fixture.Created, new[] { dust });
             _rulesMephit = null;
@@ -1602,7 +1626,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 casterClean && wolfClean && oozeClean;
             _rulesCases.Add(Assertion("expanded-summoning-correction-cloud",
                 "the ooze mephit's stinking cloud, placed where the hostile, the party caster, an allied summon and the mephit all stand inside it (the only placement, no safe target), nauseates the hostile and touches no ally",
-                detail, ok, "the project ally-safe area clone's own tick (the method the game's area controller calls each frame in play; the harness's game mode does not tick areas) reading the units from the area's spatial grid after the placement frames; UnitsInside and the nauseated condition per unit"));
+                detail, ok, "the project ally-safe area clone found through the game's own frames after the loading gate (its own tick run from the fixture as a recorded fallback), its units read from the area's spatial grid; UnitsInside and the nauseated condition per unit"));
             DisposeExpandedSummoningUnits(fixture.Created, new[] { ooze });
             _rulesMephit = null;
         }
@@ -2260,6 +2284,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             new List<RuntimeTestAssertion>();
         private bool _visualLifecycleFailed;
         private int _visualLifecycleCastAttempt;
+        private int _visualLifecycleLoadingWait;
 
         /// <summary>
         /// A view's material identity: every renderer's material and shader
@@ -2358,6 +2383,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 if (_visualLifecycleFixture == null && _visualLifecyclePhase == 0)
                 {
+                    string loadingFlags;
+                    if (ExpandedSummoningLoadingActive(out loadingFlags) &&
+                        _visualLifecycleLoadingWait++ < ExpandedSummoningLoadingGateFrames) return;
+                    _visualLifecycleSteps.Add("loadingGate:framesWaited=" + _visualLifecycleLoadingWait + ";" + loadingFlags);
                     _visualLifecycleFixture = BeginExpandedSummoningCorrectionFixture(
                         "KMG_Runtime_ExpandedSummoning_LifecycleCaster");
                     ExpandedSummoningVisualVariantPatch.ClearObservations();
