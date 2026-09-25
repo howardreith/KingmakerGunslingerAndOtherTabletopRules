@@ -161,6 +161,22 @@ prefix restores the exact ring scales before a pooled effect is reused, and
 postfixes show the owner's range in the owner's own descriptions
 (`docs/FAVORED-CLASS-TARGET-MANIFEST.md`).
 
+Two scopes are closed in finally blocks rather than by postfixes alone, since
+Harmony 1.2 has no finalizers. A transpiler on
+`LevelUpController.ApplyLevelup` replaces only the replay's
+`ILevelUpAction.Check` and `ILevelUpAction.Apply` calls with helpers that make
+the same calls inside a scope of that controller (the same-level owned-target
+check). A transpiler on `ActionList.Run` replaces only its per-action
+`GameAction.RunAction()` call with a helper that makes the same call and
+restores the demoralize scope depth in a finally block; the native try/catch,
+logging and order are unchanged. The `Demoralize.RunAction` prefix (first,
+before Call of the Wild's replacing prefix) opens the I07 frame and its
+postfix restores the depth it opened at, so a nested demoralize keeps the
+outer frame and a demoralize that throws never reaches the next action. Each
+transpiler changes nothing unless its call sites are found exactly once; I07
+is withheld without the `ActionList.Run` envelope, and without the replay
+scope a same-level target counts from the next level-up.
+
 ## Settings file
 
 `Mods\KingmakerGunslinger\FavoredClassIntegration.json` is optional, read once

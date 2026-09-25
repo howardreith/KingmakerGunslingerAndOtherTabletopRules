@@ -131,38 +131,77 @@ namespace KingmakerGunslinger.FavoredClass
     }
 
     /// <summary>
-    /// I06/S04 and O01: the unit already has the chosen revelation (any one of
-    /// its selectable features; a Dragon revelation has one per colour) or
-    /// performance. Some belong to an optional provider that may create them
-    /// after KMG registers, so they are matched by identity when checked.
-    /// </summary>
-    /// <summary>
     /// The native level-up replays its picks in priority order, and the
     /// host's reward selection has an earlier priority than the bloodline, the
     /// revelation or the power chosen in the same level-up. While a level-up
     /// replays, its own later picks count as chosen, so a counter can target
     /// what the same level-up gains; outside a replay nothing changes.
+    /// Each replayed pick's check and application run inside a scope of its
+    /// own controller that is closed in a finally block (the replay hook
+    /// routes exactly those two native calls through Check and Apply): an
+    /// exception in a pick leaves nothing marked, a nested replay restores
+    /// the outer one and a retry opens a fresh scope.
     /// </summary>
     internal static class FavoredClassPendingPicks
     {
         [ThreadStatic]
-        private static LevelUpController s_Replaying;
+        private static FavoredClassScopeStack<LevelUpController> s_Replays;
 
-        internal static void Begin(LevelUpController controller)
+        /// <summary>
+        /// Guarded runtime qualification only: runs inside a replayed pick's
+        /// scope before the native call, so a failure can be injected into
+        /// the real replay; null in play.
+        /// </summary>
+        internal static Action<ILevelUpAction> FaultInjection;
+
+        /// <summary>Whether the replay hook scoped both native calls (set when it applies).</summary>
+        internal static bool Installed { get; set; }
+
+        /// <summary>Open replay scopes on this thread; zero outside a replayed pick.</summary>
+        internal static int Depth
         {
-            s_Replaying = controller;
+            get { return s_Replays == null ? 0 : s_Replays.Depth; }
         }
 
-        internal static void End()
+        private static FavoredClassScopeStack<LevelUpController> Replays
         {
-            s_Replaying = null;
+            get { return s_Replays ?? (s_Replays = new FavoredClassScopeStack<LevelUpController>()); }
+        }
+
+        /// <summary>The native replay's action.Check, made inside its controller's scope.</summary>
+        internal static bool Check(ILevelUpAction action, LevelUpState state, UnitDescriptor unit,
+            LevelUpController controller)
+        {
+            return Replays.Run(controller, () =>
+            {
+                Fault(action);
+                return action.Check(state, unit);
+            });
+        }
+
+        /// <summary>The native replay's action.Apply, made inside its controller's scope.</summary>
+        internal static void Apply(ILevelUpAction action, LevelUpState state, UnitDescriptor unit,
+            LevelUpController controller)
+        {
+            Replays.Run(controller, () =>
+            {
+                Fault(action);
+                action.Apply(state, unit);
+            });
+        }
+
+        private static void Fault(ILevelUpAction action)
+        {
+            Action<ILevelUpAction> fault = FaultInjection;
+            if (fault != null)
+                fault(action);
         }
 
         /// <summary>Whether the level-up replaying this exact state picks one of these features.</summary>
         internal static bool Selects(LevelUpState state, string[] featureGuids)
         {
-            LevelUpController controller = s_Replaying;
-            if (controller == null || state == null || featureGuids == null ||
+            LevelUpController controller = s_Replays == null ? null : s_Replays.Current;
+            if (!Installed || controller == null || state == null || featureGuids == null ||
                 !ReferenceEquals(controller.State, state) || controller.LevelUpActions == null)
                 return false;
             foreach (ILevelUpAction action in controller.LevelUpActions)
@@ -176,6 +215,12 @@ namespace KingmakerGunslinger.FavoredClass
         }
     }
 
+    /// <summary>
+    /// I06/S04 and O01: the unit already has the chosen revelation (any one of
+    /// its selectable features; a Dragon revelation has one per colour) or
+    /// performance. Some belong to an optional provider that may create them
+    /// after KMG registers, so they are matched by identity when checked.
+    /// </summary>
     public sealed class PrerequisiteFavoredClassOwnsAny : Prerequisite
     {
         public string[] FeatureGuids;
