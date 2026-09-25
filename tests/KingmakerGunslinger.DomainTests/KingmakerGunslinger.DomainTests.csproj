@@ -58,6 +58,7 @@
     <Compile Include="FavoredClassPerformanceWideningTests.cs" />
     <Compile Include="FavoredClassScopeStackTests.cs" />
     <Compile Include="FavoredClassRangePresentationTests.cs" />
+    <Compile Include="FavoredClassScopeActivityTests.cs" />
     <Compile Include="ElementalMostlyHumanTests.cs" />
     <Compile Include="FavoredClassAdvancedTests.cs" />
     <Compile Include="FavoredClassPowerTests.cs" />
