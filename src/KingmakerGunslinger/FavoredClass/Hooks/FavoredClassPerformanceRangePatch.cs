@@ -19,8 +19,10 @@ namespace KingmakerGunslinger.FavoredClass.Hooks
     /// in one transaction (FavoredClassPerformanceWidening): the ring is
     /// scaled first and the cylinder is widened only when the ring changed; a
     /// failure restores both. An intentionally ringless target widens its
-    /// cylinder alone, and a ring that spawns later widens both then. Every
-    /// outcome is recorded for that owner and target
+    /// cylinder alone, and a ring that spawns later widens both then. An
+    /// owner's performance widens only as a whole: while another live area of
+    /// it is native, a new or late-ring area stays native (Held). Every
+    /// outcome is recorded for that owner and performance
     /// (FavoredClassPerformanceInstances), which the owner's descriptions
     /// follow. The shared area blueprint, other performers of the same area
     /// and every other performance keep their native size.
@@ -67,8 +69,27 @@ namespace KingmakerGunslinger.FavoredClass.Hooks
             // A ring the native attach already handled for this owner is never scaled twice.
             if (ring != null && FavoredClassPerformanceRing.IsScaled(ring))
                 return;
-            FavoredClassWideningOutcome outcome = Widen(cylinder, ring, native, widened, RingExpected(blueprint));
+            FavoredClassWideningOutcome outcome = MayWiden(__instance, context, blueprint)
+                ? Widen(cylinder, ring, native, widened, RingExpected(blueprint))
+                : FavoredClassWideningOutcome.Held;
             Record(__instance, context, blueprint, outcome, feet, native);
+        }
+
+        /// <summary>
+        /// Whether this instance may attempt widening: every other live area of
+        /// the same owner's performance is widened (a failure here keeps it native).
+        /// </summary>
+        private static bool MayWiden(AreaEffectView view, MechanicsContext context, BlueprintAbilityAreaEffect blueprint)
+        {
+            try
+            {
+                return FavoredClassPerformanceInstances.MayWiden(view, context.MaybeCaster,
+                    FavoredClassPerformanceManifest.KeyForArea(blueprint.AssetGuid));
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         /// <summary>Records the instance's outcome for its owner and target (the owner's descriptions follow it).</summary>
@@ -169,7 +190,9 @@ namespace KingmakerGunslinger.FavoredClass.Hooks
             int feet;
             if (OwnerRadius(view.Context, blueprint, out native, out widened, out feet) && native > 0f &&
                 Math.Abs(cylinder.Radius - native) < 0.0001f)
-                Record(view, view.Context, blueprint, Widen(cylinder, ring, native, widened, true), feet, native);
+                Record(view, view.Context, blueprint, MayWiden(view, view.Context, blueprint)
+                    ? Widen(cylinder, ring, native, widened, true)
+                    : FavoredClassWideningOutcome.Held, feet, native);
         }
     }
 

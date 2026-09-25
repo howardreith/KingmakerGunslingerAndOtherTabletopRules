@@ -181,14 +181,17 @@ Exact read points, all owner-local (only the bard who casts that instance):
   `MechanicActionBarSlotActivableAbility.GetDescription` postfixes
   (`FavoredClassPerformanceTextPatch`) show the owner's range in that owner's
   feature and toggle descriptions only (`FavoredClassPerformanceText`). The
-  descriptions follow the recorded widening outcome of the owner's own live
-  areas of that performance (`FavoredClassPerformanceInstances`): a live area
-  that failed to widen or still waits for its ring keeps every description
-  native; widened live areas show the range they actually have; with no live
-  area the owner's range is shown unless the owner's last widening of that
-  performance failed, in which case the descriptions stay native until a
-  later widening succeeds. A failure also narrows the owner's other live
-  areas of that performance to their native radius and ring.
+  owner's live areas of a performance widen only as a whole
+  (`FavoredClassRangeGroup`, `FavoredClassPerformanceInstances`): an area may
+  attempt widening only while every other live area of that owner's
+  performance is widened, and otherwise stays native (held); an area that
+  ends up native (failed, deferred or held) narrows every widened sibling,
+  restoring the ring and the radius independently and verifying both, and an
+  area that cannot be verified native is ended (the toggle whose own buff
+  runs it is turned off). The descriptions follow the live areas: native
+  while any is native, their actual range while all are widened, and the
+  owner's configured range when none is live. No outcome is remembered after
+  its area ends.
 - **Eligibility:** `PrerequisiteFavoredClassOwnsAny` on the performance feature.
   Publication withholds the unpublished counters (`excluded-target:`).
 
