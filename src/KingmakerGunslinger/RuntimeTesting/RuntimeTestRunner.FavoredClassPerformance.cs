@@ -94,6 +94,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["excluded"] = _performanceRange.Excluded,
                 ["release"] = _performanceRange.Release,
                 ["injected"] = _performanceRange.Injected,
+                ["outcomeText"] = _performanceRange.OutcomeText,
                 ["diagnostics"] = new JArray(_performanceRange.Diagnostics),
             };
             string evidencePath = WriteFavoredClassEvidence("favored-class-performance-range.json", evidence);
@@ -119,9 +120,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Describe(probe.Excluded, probe.ExcludedFailures), probe.ExcludedFailures.Count == 0,
                 "FavoredClassPerformanceManifest publication exclusions"));
             assertions.Add(Assertion("fcb-performance-injected-failure",
-                "an injected ring failure on a real invested bard's area (a scaler that scales then throws, and one that scales nothing) leaves that instance at its native radius with its ring restored exactly; with the scaler restored the same bard's next instance widens its cylinder and ring together",
+                "an injected ring failure on a real invested bard's area (a scaler that scales then throws, and one that scales nothing) leaves that instance at its native radius with its ring restored exactly; the recovered next cast widens its cylinder and ring together; a failing second area of the same bard and performance narrows the widened one; a deferred ring leaves the instance native until the late ring widens both",
                 Describe(probe.Injected, probe.InjectedFailures), probe.InjectedFailures.Count == 0,
-                "FavoredClassPerformanceRangePatch.RingScalerOverride (guarded qualification seam); spawned instance radius and ring systems"));
+                "FavoredClassPerformanceRangePatch.RingScalerOverride and DeferRingsForQualification (guarded qualification seams); spawned instance radius and ring systems"));
+            assertions.Add(Assertion("fcb-performance-outcome-text",
+                "the invested bard's feature, toggle and action-bar descriptions follow the actual widening outcome: the configured range before any cast; the native range while a failed or deferred area is live and, after a failure, until a later success; the widened range together with a recovered or late-widened area",
+                Describe(probe.OutcomeText, probe.OutcomeTextFailures), probe.OutcomeTextFailures.Count == 0,
+                "Fact.Description (SelectUIData), ActivatableAbility.Description and MechanicActionBarSlotActivableAbility.GetDescription on the invested bard; FavoredClassPerformanceInstances"));
             assertions.Add(Assertion("fcb-performance-ring-release",
                 "every scaled ring is restored exactly when the pool releases it, and a ring reclaimed from the pool for an uninvested bard is native",
                 Describe(probe.Release, probe.ReleaseFailures), probe.ReleaseFailures.Count == 0,
@@ -223,6 +228,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             private UnitEntityData _control;
             private UnitEntityData _low;
             private UnitEntityData _high;
+            private UnitEntityData _outcome;
             private int _stage;
             private float _releaseStarted;
 
@@ -239,6 +245,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ExcludedFailures = new List<string>();
                 ReleaseFailures = new List<string>();
                 Injected = new JObject();
+                OutcomeText = new JObject();
+                OutcomeTextFailures = new List<string>();
                 InjectedFailures = new List<string>();
             }
 
@@ -253,6 +261,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal List<string> ExcludedFailures { get; private set; }
             internal List<string> ReleaseFailures { get; private set; }
             internal JObject Injected { get; private set; }
+            internal JObject OutcomeText { get; private set; }
+            internal List<string> OutcomeTextFailures { get; private set; }
             internal List<string> InjectedFailures { get; private set; }
 
             internal void Poll()
@@ -268,7 +278,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             if (target.Published) ObserveTarget(target);
                             else ObserveExcluded(target);
                         }
-                        ObserveInjectedFailure();
+                        ObserveInjectedOutcomes();
                         Release["scaledBeforeRelease"] = FavoredClassPerformanceRing.ScaledCount;
                         DestroySpawned();
                         _releaseStarted = Time.realtimeSinceStartup;
@@ -308,6 +318,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _control = _scene.Initialize(oread);
                 _low = _scene.SpawnFixtureUnit(oread, _control.Blueprint.Faction, new Vector3(0, 0, 40), "BardLow");
                 _high = _scene.SpawnFixtureUnit(oread, _control.Blueprint.Faction, new Vector3(40, 0, 0), "BardHigh");
+                _outcome = _scene.SpawnFixtureUnit(oread, _control.Blueprint.Faction, new Vector3(-40, 0, 0),
+                    "BardOutcome");
             }
 
             private void ObserveTarget(FavoredClassPerformanceTarget target)
@@ -342,21 +354,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RemoveRanks(_high, leaf);
             }
 
-            // Review finding 4: an injected ring failure on a real instance
-            // restores its radius and ring; the healthy path still widens both.
-            private void ObserveInjectedFailure()
+            // PR #24 reviews: the widening transaction of a real invested bard's
+            // own area under injected ring failures, a deferred ring and
+            // recovery, with the bard's feature, toggle and action-bar
+            // descriptions after every outcome. A fresh bard keeps earlier
+            // targets' live areas out of the observation.
+            private void ObserveInjectedOutcomes()
             {
                 FavoredClassPerformanceTarget target = FavoredClassPerformanceManifest.For("InspireCourage");
                 BlueprintFeature leaf = _leaves.Pair(FavoredClassCatalog.EffectPerformanceRange, target.Key).Full;
                 var area = Resolve<BlueprintAbilityAreaEffect>(target.AreaGuids[0]);
+                BlueprintFeature feature = Resolve<BlueprintFeature>(target.FeatureGuid);
                 Dictionary<string, JObject> native;
-                if (area == null || !_nativeSystems.TryGetValue(target.RingAssetId, out native))
+                if (area == null || feature == null || !_nativeSystems.TryGetValue(target.RingAssetId, out native))
                 {
-                    InjectedFailures.Add("Inspire Courage's area or native ring systems were not observed");
+                    InjectedFailures.Add("Inspire Courage's area, feature or native ring systems were not observed");
                     return;
                 }
+                UnitEntityData bard = _outcome;
                 float nativeRadius = area.Size.Meters;
                 float widened = FavoredClassMechanicsPolicy.PerformanceRadiusMeters(nativeRadius, Low);
+                int widenedFeet = FavoredClassPerformanceManifest.OwnerFeet(target, Low);
                 // Exactly the native local scales the uninvested bard's ring showed.
                 Func<GameObject, bool> nativeRing = ring =>
                 {
@@ -366,60 +384,186 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return native.All(entry => systems.ContainsKey(entry.Key) &&
                         Floats(systems[entry.Key]["localScale"]).SequenceEqual(Floats(entry.Value["localScale"])));
                 };
-                GrantFavoredClassRanks(_low, leaf, Low);
+                Func<AreaEffectEntityData, bool> nativeInstance = instance =>
+                    Same(Radius(instance), nativeRadius) && nativeRing(Ring(instance));
+                Func<AreaEffectEntityData, bool> widenedInstance = instance =>
+                    Same(Radius(instance), widened) && Ring(instance) != null &&
+                    FavoredClassPerformanceRing.IsScaled(Ring(instance));
+                GrantFavoredClassRanks(bard, leaf, Low);
+                Feature fact = bard.Descriptor.AddFact(feature) as Feature ??
+                    bard.Descriptor.Progression.Features.GetFact(feature) as Feature;
+                ActivatableAbility toggle = bard.Descriptor.ActivatableAbilities.Enumerable.FirstOrDefault(value =>
+                    value.Blueprint != null && target.ToggleGuids.Contains(value.Blueprint.AssetGuid));
                 try
                 {
+                    if (fact == null || toggle == null)
+                    {
+                        OutcomeTextFailures.Add("the invested bard's performance feature or toggle is missing");
+                        return;
+                    }
+                    string nativeFeature = feature.Description;
+                    string nativeToggle = toggle.Blueprint.Description;
+                    string widenedFeature = FavoredClassPerformanceText.OwnerDescription(nativeFeature,
+                        target.BaseFeet, widenedFeet);
+                    string widenedToggle = FavoredClassPerformanceText.OwnerDescription(nativeToggle,
+                        target.BaseFeet, widenedFeet);
+                    if (widenedFeature == nativeFeature || widenedToggle == nativeToggle)
+                        OutcomeTextFailures.Add("the widened descriptions do not differ from the native ones");
+                    // Each surface: native, widened or other.
+                    Func<JObject> texts = () =>
+                    {
+                        Func<string, string, string, string> label = (actual, nativeText, widenedText) =>
+                            actual == nativeText ? "native" : actual == widenedText ? "widened" : "other";
+                        var slot = new MechanicActionBarSlotActivableAbility { ActivatableAbility = toggle, Unit = bard };
+                        return new JObject
+                        {
+                            ["feature"] = label(fact.Description, nativeFeature, widenedFeature),
+                            ["toggle"] = label(toggle.Description, nativeToggle, widenedToggle),
+                            ["actionBar"] = label(slot.GetDescription(), nativeToggle, widenedToggle),
+                            ["liveAreas"] = FavoredClassPerformanceInstances.LiveCount(bard.Descriptor, target.Key)
+                        };
+                    };
+                    Func<JObject, string, bool> all = (row, expected) => (string)row["feature"] == expected &&
+                        (string)row["toggle"] == expected && (string)row["actionBar"] == expected;
+                    Func<AreaEffectEntityData, JObject> mechanics = instance => new JObject
+                    {
+                        ["radius"] = Radius(instance),
+                        ["ringPresent"] = Ring(instance) != null,
+                        ["ringFactor"] = Ring(instance) == null ? 1f : FavoredClassPerformanceRing.FactorOf(Ring(instance)),
+                        ["ringNative"] = nativeRing(Ring(instance))
+                    };
+                    Action<string, string, string> expectTexts = (step, expected, problem) =>
+                    {
+                        JObject row = texts();
+                        OutcomeText[step] = row;
+                        if (!all(row, expected))
+                            OutcomeTextFailures.Add(step + ": " + problem);
+                    };
+
+                    // 0. Before any cast: the owner's configured range.
+                    expectTexts("before-cast", "widened", "the descriptions do not show the configured range");
+
+                    // 1-2. Injected failures on a real instance, then the area ends.
                     foreach (string fault in new[] { "scaled-then-threw", "scaled-nothing" })
                     {
-                        FavoredClassPerformanceRangePatch.RingScalerOverride = (effect, factor) =>
-                        {
-                            if (fault == "scaled-nothing")
-                                return 0;
-                            FavoredClassPerformanceRing.Scale(effect, factor);
-                            throw new InvalidOperationException("injected ring failure after scaling");
-                        };
-                        AreaEffectEntityData instance;
+                        FavoredClassPerformanceRangePatch.RingScalerOverride = FaultyScaler(fault);
+                        AreaEffectEntityData failed;
                         try
                         {
-                            instance = Spawn(_low, area);
+                            failed = Spawn(bard, area);
                         }
                         finally
                         {
                             FavoredClassPerformanceRangePatch.RingScalerOverride = null;
                         }
-                        GameObject ring = Ring(instance);
-                        bool restored = nativeRing(ring);
-                        Injected[fault] = new JObject
-                        {
-                            ["radius"] = Radius(instance),
-                            ["nativeRadius"] = nativeRadius,
-                            ["ringPresent"] = ring != null,
-                            ["ringFactor"] = ring == null ? 1f : FavoredClassPerformanceRing.FactorOf(ring),
-                            ["ringNative"] = restored
-                        };
-                        if (!Same(Radius(instance), nativeRadius))
+                        Injected[fault] = mechanics(failed);
+                        if (!Same(Radius(failed), nativeRadius))
                             InjectedFailures.Add(fault + ": the cylinder stayed widened after the ring failed");
-                        if (!restored)
+                        if (!nativeRing(Ring(failed)))
                             InjectedFailures.Add(fault + ": the ring was not restored to its native transforms");
+                        expectTexts(fault, "native", "a description advertised the widened range for a native area");
+                        End(failed);
+                        expectTexts(fault + "-ended", "native",
+                            "after the failed area ended a description advertised the widened range before any success");
                     }
-                    AreaEffectEntityData healthy = Spawn(_low, area);
-                    GameObject healthyRing = Ring(healthy);
-                    Injected["healthy"] = new JObject
+
+                    // 3. The recovered next cast: widened mechanics and text together.
+                    AreaEffectEntityData recovered = Spawn(bard, area);
+                    Injected["recovered"] = mechanics(recovered);
+                    if (Ring(recovered) != null)
+                        _scaledRings.Add(Ring(recovered));
+                    if (!widenedInstance(recovered))
+                        InjectedFailures.Add("recovered: the next cast did not widen its cylinder and ring together");
+                    expectTexts("recovered", "widened", "the recovered cast's descriptions do not show its range");
+
+                    // 4. A failing second area of the same bard and performance
+                    // narrows the widened one: every live area and text agree.
+                    FavoredClassPerformanceRangePatch.RingScalerOverride = FaultyScaler("scaled-then-threw");
+                    AreaEffectEntityData second;
+                    try
                     {
-                        ["radius"] = Radius(healthy),
-                        ["factor"] = healthyRing == null ? 1f : FavoredClassPerformanceRing.FactorOf(healthyRing)
+                        second = Spawn(bard, area);
+                    }
+                    finally
+                    {
+                        FavoredClassPerformanceRangePatch.RingScalerOverride = null;
+                    }
+                    Injected["narrowed-sibling"] = new JObject
+                    {
+                        ["first"] = mechanics(recovered),
+                        ["second"] = mechanics(second)
                     };
-                    if (healthyRing != null)
-                        _scaledRings.Add(healthyRing);
-                    if (!Same(Radius(healthy), widened) || healthyRing == null ||
-                        !FavoredClassPerformanceRing.IsScaled(healthyRing))
-                        InjectedFailures.Add("with the scaler restored the instance did not widen with its ring");
+                    if (!nativeInstance(recovered) || !nativeInstance(second))
+                        InjectedFailures.Add("narrowed-sibling: a failing second area left the first one widened");
+                    expectTexts("narrowed-sibling", "native", "a description disagreed with the narrowed areas");
+                    End(second);
+                    End(recovered);
+
+                    // 5. A deferred ring: native until the late ring, then widened together.
+                    FavoredClassPerformanceRangePatch.DeferRingsForQualification = true;
+                    AreaEffectEntityData deferred;
+                    try
+                    {
+                        deferred = Spawn(bard, area);
+                    }
+                    finally
+                    {
+                        FavoredClassPerformanceRangePatch.DeferRingsForQualification = false;
+                    }
+                    Injected["deferred"] = mechanics(deferred);
+                    if (!nativeInstance(deferred))
+                        InjectedFailures.Add("deferred: the instance widened before its ring");
+                    expectTexts("deferred", "native", "a description advertised the widened range before the ring");
+                    FavoredClassPerformanceRangePatch.ScaleLateRing(deferred.View);
+                    Injected["late-ring"] = mechanics(deferred);
+                    if (Ring(deferred) != null)
+                        _scaledRings.Add(Ring(deferred));
+                    if (!widenedInstance(deferred))
+                        InjectedFailures.Add("late-ring: the late ring did not widen the cylinder and ring together");
+                    expectTexts("late-ring", "widened", "the late-widened area's descriptions do not show its range");
+                    End(deferred);
+                    expectTexts("late-ring-ended", "widened", "after a success the configured range was not shown");
                 }
                 finally
                 {
                     FavoredClassPerformanceRangePatch.RingScalerOverride = null;
-                    RemoveRanks(_low, leaf);
+                    FavoredClassPerformanceRangePatch.DeferRingsForQualification = false;
+                    if (fact != null)
+                        bard.Descriptor.RemoveFact(fact);
+                    RemoveRanks(bard, leaf);
                 }
+            }
+
+            /// <summary>A ring scaler that scales then throws, or one that scales nothing.</summary>
+            private static Func<GameObject, float, int> FaultyScaler(string fault)
+            {
+                return (effect, factor) =>
+                {
+                    if (fault == "scaled-nothing")
+                        return 0;
+                    FavoredClassPerformanceRing.Scale(effect, factor);
+                    throw new InvalidOperationException("KMG injected ring failure after scaling");
+                };
+            }
+
+            /// <summary>Ends one spawned instance exactly as the performance ending would.</summary>
+            private void End(AreaEffectEntityData data)
+            {
+                if (data == null)
+                    return;
+                try
+                {
+                    AreaEffectView view = data.View;
+                    data.ForceEnd();
+                    data.Destroy();
+                    if (view != null && view.gameObject != null)
+                        UnityEngine.Object.Destroy(view.gameObject);
+                }
+                catch (Exception exception)
+                {
+                    Diagnostics.Add("end: " + exception.GetType().Name + ": " + exception.Message);
+                }
+                _spawned.Remove(data);
             }
 
             private JObject ObserveArea(FavoredClassPerformanceTarget target, BlueprintAbilityAreaEffect area)

@@ -174,7 +174,7 @@ namespace KingmakerGunslinger.DomainTests
                 "FavoredClassPerformanceWidening.Apply(native, widened, ringExpected, ring != null,",
                 "() => ScaleRing(ring, widened / native),",
                 "() => FavoredClassPerformanceRing.Restore(ring));",
-                "Widen(cylinder, ring, native, widened, RingExpected(blueprint));",
+                "FavoredClassWideningOutcome outcome = Widen(cylinder, ring, native, widened, RingExpected(blueprint));",
                 "return key == null || FavoredClassPerformanceManifest.For(key).RingSpawns;",
                 "[HarmonyPatch(typeof(AreaEffectView), \"SpawnFxs\")]",
                 "FavoredClassPerformanceRangePatch.ScaleLateRing(__instance);",

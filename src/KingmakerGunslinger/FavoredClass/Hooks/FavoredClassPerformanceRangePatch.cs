@@ -19,9 +19,11 @@ namespace KingmakerGunslinger.FavoredClass.Hooks
     /// in one transaction (FavoredClassPerformanceWidening): the ring is
     /// scaled first and the cylinder is widened only when the ring changed; a
     /// failure restores both. An intentionally ringless target widens its
-    /// cylinder alone, and a ring that spawns later widens both then. The
-    /// shared area blueprint, other performers of the same area and every
-    /// other performance keep their native size.
+    /// cylinder alone, and a ring that spawns later widens both then. Every
+    /// outcome is recorded for that owner and target
+    /// (FavoredClassPerformanceInstances), which the owner's descriptions
+    /// follow. The shared area blueprint, other performers of the same area
+    /// and every other performance keep their native size.
     /// </summary>
     [HarmonyPatch(typeof(AreaEffectView), "InitAtRuntime")]
     internal static class FavoredClassPerformanceRangePatch
@@ -35,6 +37,13 @@ namespace KingmakerGunslinger.FavoredClass.Hooks
         /// </summary>
         internal static Func<GameObject, float, int> RingScalerOverride;
 
+        /// <summary>
+        /// Guarded runtime qualification only: every ring counts as not spawned
+        /// yet, so the deferred path (a save load whose owner view was not
+        /// ready) can be observed on a real instance; false in play.
+        /// </summary>
+        internal static bool DeferRingsForQualification;
+
         private static void Postfix(AreaEffectView __instance, MechanicsContext context,
             BlueprintAbilityAreaEffect blueprint)
         {
@@ -43,20 +52,38 @@ namespace KingmakerGunslinger.FavoredClass.Hooks
                 return;
             var cylinder = __instance.Shape as ScriptZoneCylinder;
             float native, widened;
+            int feet;
             try
             {
-                if (cylinder == null || !OwnerRadius(context, blueprint, out native, out widened))
+                if (cylinder == null || !OwnerRadius(context, blueprint, out native, out widened, out feet))
                     return;
             }
             catch (Exception)
             {
                 return;
             }
-            var ring = SpawnedFx == null ? null : SpawnedFx.GetValue(__instance) as GameObject;
+            var ring = DeferRingsForQualification || SpawnedFx == null ? null :
+                SpawnedFx.GetValue(__instance) as GameObject;
             // A ring the native attach already handled for this owner is never scaled twice.
             if (ring != null && FavoredClassPerformanceRing.IsScaled(ring))
                 return;
-            Widen(cylinder, ring, native, widened, RingExpected(blueprint));
+            FavoredClassWideningOutcome outcome = Widen(cylinder, ring, native, widened, RingExpected(blueprint));
+            Record(__instance, context, blueprint, outcome, feet, native);
+        }
+
+        /// <summary>Records the instance's outcome for its owner and target (the owner's descriptions follow it).</summary>
+        private static void Record(AreaEffectView view, MechanicsContext context, BlueprintAbilityAreaEffect blueprint,
+            FavoredClassWideningOutcome outcome, int feet, float native)
+        {
+            try
+            {
+                FavoredClassPerformanceInstances.Record(view, context.MaybeCaster,
+                    FavoredClassPerformanceManifest.KeyForArea(blueprint.AssetGuid), outcome, feet, native);
+            }
+            catch (Exception)
+            {
+                // The owner's descriptions then keep the configured range.
+            }
         }
 
         /// <summary>Whether the area's published target spawns a ring (Scandal's link spawns none).</summary>
@@ -94,15 +121,21 @@ namespace KingmakerGunslinger.FavoredClass.Hooks
             return scaler != null ? scaler(ring, factor) : FavoredClassPerformanceRing.Scale(ring, factor);
         }
 
-        /// <summary>The casting bard's own radius for a published performance area with earned steps.</summary>
+        /// <summary>
+        /// The casting bard's own radius (and range in feet) for a published
+        /// performance area with earned steps; a target withheld in this
+        /// process stays native.
+        /// </summary>
         internal static bool OwnerRadius(MechanicsContext context, BlueprintAbilityAreaEffect blueprint,
-            out float native, out float widened)
+            out float native, out float widened, out int feet)
         {
             native = widened = 0f;
+            feet = 0;
             string key = FavoredClassPerformanceManifest.KeyForArea(blueprint.AssetGuid);
             UnitEntityData caster = key == null ? null : context.MaybeCaster;
             if (caster == null ||
-                FavoredClassRuntime.IsEffectUnavailable(FavoredClassCatalog.EffectPerformanceRange))
+                FavoredClassRuntime.IsEffectUnavailable(FavoredClassCatalog.EffectPerformanceRange) ||
+                FavoredClassRuntime.IsTargetUnavailable(FavoredClassCatalog.EffectPerformanceRange, key))
                 return false;
             int steps = FavoredClassEarnedSteps.For(caster.Descriptor, FavoredClassCatalog.EffectPerformanceRange,
                 key);
@@ -110,6 +143,7 @@ namespace KingmakerGunslinger.FavoredClass.Hooks
                 return false;
             native = blueprint.Size.Meters;
             widened = FavoredClassMechanicsPolicy.PerformanceRadiusMeters(native, steps);
+            feet = FavoredClassPerformanceManifest.OwnerFeet(FavoredClassPerformanceManifest.For(key), steps);
             return true;
         }
 
@@ -122,6 +156,8 @@ namespace KingmakerGunslinger.FavoredClass.Hooks
         /// </summary>
         internal static void ScaleLateRing(AreaEffectView view)
         {
+            if (DeferRingsForQualification)
+                return;
             var data = view == null ? null : view.Data as AreaEffectEntityData;
             BlueprintAbilityAreaEffect blueprint = data == null ? null : data.Blueprint;
             var cylinder = view == null ? null : view.Shape as ScriptZoneCylinder;
@@ -130,9 +166,10 @@ namespace KingmakerGunslinger.FavoredClass.Hooks
                 blueprint.Shape != AreaEffectShape.Cylinder || FavoredClassPerformanceRing.IsScaled(ring))
                 return;
             float native, widened;
-            if (OwnerRadius(view.Context, blueprint, out native, out widened) && native > 0f &&
+            int feet;
+            if (OwnerRadius(view.Context, blueprint, out native, out widened, out feet) && native > 0f &&
                 Math.Abs(cylinder.Radius - native) < 0.0001f)
-                Widen(cylinder, ring, native, widened, true);
+                Record(view, view.Context, blueprint, Widen(cylinder, ring, native, widened, true), feet, native);
         }
     }
 

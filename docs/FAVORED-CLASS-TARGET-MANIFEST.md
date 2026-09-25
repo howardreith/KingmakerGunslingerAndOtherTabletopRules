@@ -177,7 +177,15 @@ Exact read points, all owner-local (only the bard who casts that instance):
 - **Displayed range:** `Fact.SelectUIData` and
   `MechanicActionBarSlotActivableAbility.GetDescription` postfixes
   (`FavoredClassPerformanceTextPatch`) show the owner's range in that owner's
-  feature and toggle descriptions only (`FavoredClassPerformanceText`).
+  feature and toggle descriptions only (`FavoredClassPerformanceText`). The
+  descriptions follow the recorded widening outcome of the owner's own live
+  areas of that performance (`FavoredClassPerformanceInstances`): a live area
+  that failed to widen or still waits for its ring keeps every description
+  native; widened live areas show the range they actually have; with no live
+  area the owner's range is shown unless the owner's last widening of that
+  performance failed, in which case the descriptions stay native until a
+  later widening succeeds. A failure also narrows the owner's other live
+  areas of that performance to their native radius and ring.
 - **Eligibility:** `PrerequisiteFavoredClassOwnsAny` on the performance feature.
   Publication withholds the unpublished counters (`excluded-target:`).
 
