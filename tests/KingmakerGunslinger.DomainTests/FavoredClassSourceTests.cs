@@ -111,6 +111,27 @@ namespace KingmakerGunslinger.DomainTests
                 bootstrap.Contains("KingmakerGunslinger.FavoredClass.FavoredClassBlueprints.Register(\n" +
                     "                        favoredClassRegistry,"),
                 "Leaves register in a contained registry with exact rollback.");
+            // Review finding 6: the complete aggregate counts every registry of
+            // the bootstrap on both sides; the favored-class and Mostly Human
+            // registries are expected to hold exactly their catalogs.
+            string normalized = bootstrap.Replace("\r\n", "\n");
+            Assertions.True(normalized.Contains(
+                    "registry.RegisteredCount + teleportationRegistry.RegisteredCount + magicCircleRegistry.RegisteredCount +\n" +
+                    "                        favoredClassRegistry.RegisteredCount + mostlyHumanRegistry.RegisteredCount,") &&
+                normalized.Contains(
+                    "expectedRegisteredBlueprintCount + teleportationRegistry.RegisteredCount + magicCircleRegistry.RegisteredCount +\n" +
+                    "                        (_favoredClass == null ? 0 : KingmakerGunslinger.FavoredClass.FavoredClassIdentityCatalog.IdentityCount) +\n" +
+                    "                        (_mostlyHuman == null ? 0 : ElementalMostlyHumanPolicy.IdentityCount));"),
+                "The complete aggregate includes every registry, Mostly Human's included, on both sides.");
+            int registries = 0;
+            for (int index = normalized.IndexOf("new BlueprintRegistry(library, manifest, context.Logger)",
+                    StringComparison.Ordinal); index >= 0;
+                index = normalized.IndexOf("new BlueprintRegistry(library, manifest, context.Logger)", index + 1,
+                    StringComparison.Ordinal))
+                registries++;
+            Assertions.Equal(5, registries, "The bootstrap aggregates exactly its five registries.");
+            Assertions.Equal(171, KingmakerGunslinger.FavoredClass.FavoredClassIdentityCatalog.IdentityCount,
+                "The favored-class registry is expected to hold all 171 manifest identities.");
             string publication = Read("src", "KingmakerGunslinger", "FavoredClass", "FavoredClassPublication.cs");
             Assertions.True(publication.Contains("feature => feature.AssetGuid, true);"),
                 "Publication appends by stable identity and tolerates foreign multiplicity.");
