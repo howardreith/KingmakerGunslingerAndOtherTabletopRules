@@ -33,6 +33,9 @@ namespace KingmakerGunslinger.FavoredClass.Mechanics
     {
         public BlueprintAbility Ability;
         public BlueprintFeature PowerFeature;
+
+        /// <summary>The manifest key of the chosen power (a withheld target stays native).</summary>
+        public string TargetKey;
         public int Divisor = 6;
 
         /// <summary>Printed cap in steps; zero means uncapped.</summary>
@@ -185,6 +188,9 @@ namespace KingmakerGunslinger.FavoredClass.Mechanics
 
         private int Earned(Fact fact)
         {
+            if (FavoredClassRuntime.IsEffectUnavailable(FavoredClassCatalog.EffectSelectedBloodlinePower) ||
+                FavoredClassRuntime.IsTargetUnavailable(FavoredClassCatalog.EffectSelectedBloodlinePower, TargetKey))
+                return 0;
             return FavoredClassRankPolicy.BenefitSteps(
                 new FavoredClassRate(Divisor, CapSteps > 0 ? CapSteps : (int?)null), fact.GetRank());
         }
