@@ -229,6 +229,7 @@
     <Compile Include="FavoredClass\Mechanics\FavoredClassSelectedRevelationLevel.cs" />
     <Compile Include="FavoredClass\Hooks\FavoredClassRevelationRankPatch.cs" />
     <Compile Include="FavoredClass\Hooks\FavoredClassRevelationGatePatch.cs" />
+    <Compile Include="FavoredClass\Hooks\FavoredClassPetUnlinkPatch.cs" />
     <Compile Include="FavoredClass\FavoredClassPerformanceManifest.cs" />
     <Compile Include="FavoredClass\FavoredClassIconPolicy.cs" />
     <Compile Include="FavoredClass\FavoredClassLeafIcons.cs" />
@@ -243,6 +244,7 @@
     <Compile Include="ElementalRaces\ElementalMostlyHumanIcons.cs" />
     <Compile Include="FavoredClass\FavoredClassRuntime.cs" />
     <Compile Include="FavoredClass\FavoredClassHostActivation.cs" />
+    <Compile Include="FavoredClass\FavoredClassPetSync.cs" />
     <Compile Include="FavoredClass\FavoredClassPrerequisites.cs" />
     <Compile Include="FavoredClass\Mechanics\FavoredClassGritResourceBonus.cs" />
     <Compile Include="FavoredClass\FavoredClassMechanicsPolicy.cs" />

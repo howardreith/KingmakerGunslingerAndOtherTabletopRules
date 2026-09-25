@@ -286,6 +286,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     second != null && !ReferenceEquals(first, second) && copies == 1 && rank == 1 &&
                     armor.SequenceEqual(new[] { "AC|NaturalArmor|2" }) && !orphan,
                     new { replaced = second != null && !ReferenceEquals(first, second), copies, rank, armor, orphan });
+                // A native unlink of the reloaded master's companion leaves it
+                // no projection (review finding 3).
+                bool unlinkedOrphan = true;
+                if (second != null)
+                {
+                    second.Descriptor.SetMaster(null);
+                    unlinkedOrphan = second.Descriptor.HasFact(petFeature);
+                }
+                FcbPersistenceAssert("family-ranger-unlink-after-reload",
+                    "a native unlink of the reloaded master's companion leaves that companion no projected armor",
+                    second != null && !unlinkedOrphan && ranger.Descriptor.Pet == null,
+                    new { unlinked = second != null, orphan = unlinkedOrphan,
+                        masterHasPet = ranger.Descriptor.Pet != null });
             }
             // The reloaded pistol step still lowers only the pistol's native
             // misfire threshold: seeded native attack rolls with paper
