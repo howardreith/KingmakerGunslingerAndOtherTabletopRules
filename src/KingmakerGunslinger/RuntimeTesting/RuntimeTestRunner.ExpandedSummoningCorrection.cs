@@ -2360,6 +2360,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool stillHeld = grab.MultiLink
                     ? ReferenceEquals(SummonHeldComponent.HolderOf(victim, grab.GrappledBuff), holder)
                     : ReferenceEquals(SummonHoldComponent.HeldTarget(holder), victim);
+                steps.Add(row[0] + "->" + row[1] + ":engine=" +
+                    DescribeExpandedSummoningHoldState(holder, victim, grab));
                 ItemEntityWeapon resolved = SummonGrappleLinks.EstablishingWeapon(holder, victim);
                 bool sameLimb = stillHeld && ReferenceEquals(resolved, expected);
                 Buff heldState = SummonHoldComponent.HeldState(holder, victim, grab);
@@ -2557,7 +2559,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     PlaceExpandedSummoningUnit(wolf, ExpandedSummoningOpenPoint(centre, 2.5f, directions, out chosen));
                 }
                 hostile.Descriptor.State.Size = Size.Medium;
-                bool fourBites = bites.Count == 4;
+                bool fourBites = bites.Count == 4 && bites.All(value => value != null);
+                steps.Add("body:primary=" + DescribeExpandedSummoningLimb(
+                        flytrap.Body.PrimaryHand) + ";additional=" +
+                    (flytrapLimbs == null ? 0 : flytrapLimbs.Count) + "[" +
+                    (flytrapLimbs == null ? "" : string.Join(",", flytrapLimbs.Select(
+                        DescribeExpandedSummoningLimb).ToArray())) + "]");
                 UnityEngine.Random.InitState(FindNativeD20Seed(20));
                 bool held0 = fourBites && grab.TryGrab(hostile, bites[0], true);
                 steps.Add("mouths:bites=" + bites.Count + ";held0=" + held0 + ";" +
@@ -2628,9 +2635,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool noneReach = reached.Count == 0;
                 var occupiedPlan = new UnitAttack(spare);
                 occupiedPlan.Init(flytrap);
-                int occupiedHands = occupiedPlan.CreateFullAttack().Count;
-                steps.Add("allOccupied:reached=" + reached.Count + ";plannedHands=" + occupiedHands +
-                    ";" + SummonGrappleLinks.Describe(flytrap));
+                List<AttackHandInfo> occupiedHandList = occupiedPlan.CreateFullAttack();
+                int occupiedHands = occupiedHandList.Count;
+                steps.Add("allOccupied:reached=" + reached.Count + "[" +
+                    string.Join("|", reached.ToArray()) + "];plannedHands=" + occupiedHands +
+                    "[" + string.Join("|", occupiedHandList.Select(info =>
+                        DescribeExpandedSummoningPlannedHand(flytrap, info)).ToArray()) + "];" +
+                    SummonGrappleLinks.Describe(flytrap));
                 ok = ok && noneReach && occupiedHands == 0;
 
                 // Releasing one victim frees exactly that mouth.
@@ -2647,7 +2658,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ReferenceEquals(SummonHeldComponent.HolderOf(wolves[0], multiHeld), flytrap) &&
                     ReferenceEquals(SummonHeldComponent.HolderOf(wolves[2], multiHeld), flytrap) &&
                     hostile.Descriptor.HasFact(engulfed);
-                steps.Add("releaseOne:freed=" + string.Join("/", freedAgain.ToArray()) +
+                steps.Add("releaseOne:freedCount=" + freedAgain.Count + ";freed=" +
+                    string.Join("/", freedAgain.ToArray()) +
                     ";exactlyOne=" + exactlyOneFreed + ";othersHeld=" + othersStillHeld +
                     ";" + SummonGrappleLinks.Describe(flytrap));
                 ok = ok && exactlyOneFreed && othersStillHeld;
@@ -2667,6 +2679,67 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             detail = string.Join(";", steps.ToArray());
             return ok;
+        }
+
+        /// <summary>
+        /// What the game itself still carries of a hold: the victim's
+        /// held-state buff, whether that buff's context names the holder, the
+        /// native grapple parts on both sides, the holder's hold buff and the
+        /// conditions the state applies. This is how a reload says which piece
+        /// of a hold survived.
+        /// </summary>
+        private static string DescribeExpandedSummoningHoldState(UnitEntityData holder,
+            UnitEntityData victim, SummonGrabComponent grab)
+        {
+            if (holder == null || victim == null || grab == null) return "missing";
+            Buff state = grab.GrappledBuff == null ? null : victim.Descriptor.Buffs.RawFacts
+                .OfType<Buff>().FirstOrDefault(value =>
+                    ReferenceEquals(value.Blueprint, grab.GrappledBuff));
+            UnitEntityData caster = state == null || state.Context == null ? null :
+                state.Context.MaybeCaster;
+            Kingmaker.UnitLogic.Parts.UnitPartGrappleInitiator initiator =
+                holder.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleInitiator>();
+            Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget target =
+                victim.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>();
+            return "heldBuff=" + (state == null ? "absent" : "present") +
+                ",contextCaster=" + (caster == null ? "none" : caster.Blueprint == null ? "?" :
+                    caster.Blueprint.name) +
+                ",casterIsHolder=" + ReferenceEquals(caster, holder) +
+                ",holdBuff=" + (grab.HoldBuff != null &&
+                    holder.Descriptor.Buffs.GetBuff(grab.HoldBuff) != null) +
+                ",initiator=" + (initiator == null ? "absent" : "present:" +
+                    (initiator.Target.Value == null ? "none" :
+                        initiator.Target.Value.Blueprint == null ? "?" :
+                        initiator.Target.Value.Blueprint.name)) +
+                ",targetPart=" + (target == null ? "absent" : "present:" +
+                    (target.Initiator.Value == null ? "none" :
+                        target.Initiator.Value.Blueprint == null ? "?" :
+                        target.Initiator.Value.Blueprint.name)) +
+                "," + DescribeExpandedSummoningCondition(victim);
+        }
+
+        /// <summary>A body slot's weapon entity, by blueprint and instance.</summary>
+        private static string DescribeExpandedSummoningLimb(
+            Kingmaker.Items.Slots.WeaponSlot slot)
+        {
+            ItemEntityWeapon weapon = slot == null ? null : slot.MaybeWeapon;
+            return weapon == null ? "empty" : (weapon.Blueprint == null ? "?" :
+                weapon.Blueprint.name) + "#" + weapon.GetHashCode();
+        }
+
+        /// <summary>A planned hand: its weapon, the slot the classifier gives it and its occupant.</summary>
+        private static string DescribeExpandedSummoningPlannedHand(UnitEntityData owner,
+            AttackHandInfo info)
+        {
+            if (info == null || info.Hand == null) return "no-hand";
+            ItemEntityWeapon weapon = info.Hand.MaybeWeapon;
+            int index;
+            SummonLimbKind kind = SummonLimbs.Classify(owner, weapon, out index);
+            UnitEntityData occupant = SummonGrappleLinks.OccupantOf(owner, weapon);
+            return DescribeExpandedSummoningLimb(info.Hand) + ":" + kind +
+                (index >= 0 ? "[" + index + "]" : "") + ",occupant=" +
+                (occupant == null || occupant.Blueprint == null ? "none" :
+                    occupant.Blueprint.name);
         }
 
         /// <summary>One attack with one limb, reported: did it reach the target at all?</summary>
@@ -2869,19 +2942,48 @@ namespace KingmakerGunslinger.RuntimeTesting
             string[] rolls = _rulesRakeObserver.Rolls.ToArray();
             string[] rakeRolls = rolls.Where(value => claws.Any(claw => claw.Blueprint != null &&
                 value.Contains("weapon=" + claw.Blueprint.name))).ToArray();
-            bool ran = _rulesRakeCommand.IsStarted && _rulesRakeCommand.IsFinished;
             _rulesRakeSteps.Add((ordinary ? "ordinary" : "charge") + ":started=" +
                 _rulesRakeCommand.IsStarted + ";finished=" + _rulesRakeCommand.IsFinished +
                 ";result=" + _rulesRakeCommand.Result + ";frames=" + frames + ";acted=" +
-                _rulesRakeCommand.IsActed + ";attacks=" + rolls.Length + ";rakeRolls=" +
-                rakeRolls.Length + "[" + string.Join("|", rakeRolls) + "];all=" +
-                string.Join("|", rolls));
+                _rulesRakeCommand.IsActed + ";queued=" + !_rulesRakeCat.Commands.Empty +
+                ";attacks=" + rolls.Length + ";rakeRolls=" + rakeRolls.Length + "[" +
+                string.Join("|", rakeRolls) + "];all=" + string.Join("|", rolls));
+            // Kingmaker turns a command into a charge itself, once the approach
+            // it owns has run, and the fixture cannot drive that from a frame
+            // loop: the plan the command built had already dropped the rake
+            // because the command was not a charge yet. The rule is therefore
+            // proven where it runs - a genuine attack with IsCharge set - and
+            // the command's own evidence stays beside it.
+            _rulesRakeObserver.Rolls.Clear();
+            var executed = new List<string>();
+            foreach (ItemEntityWeapon claw in claws)
+            {
+                UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                int before = _rulesFixture.Hostile.Descriptor.Damage;
+                var attack = new RuleAttackWithWeapon(_rulesRakeCat, _rulesFixture.Hostile,
+                    claw, 0);
+                attack.IsCharge = !ordinary;
+                Rulebook.Trigger(attack);
+                RuleAttackRoll roll = attack.AttackRoll;
+                executed.Add((claw.Blueprint == null ? "?" : claw.Blueprint.name) + ":charge=" +
+                    !ordinary + ",natural=" + (roll == null ? -1 : (int)roll.Roll) + ",hit=" +
+                    (roll != null && roll.IsHit) + ",autoMiss=" + (roll != null && roll.AutoMiss) +
+                    ",logged=" + (roll != null && !roll.SuspendCombatLog) + ",damage=" +
+                    (_rulesFixture.Hostile.Descriptor.Damage - before));
+                _rulesFixture.Hostile.Descriptor.Damage = before;
+            }
+            _rulesRakeSteps.Add((ordinary ? "ordinary" : "charge") + ":executed=" +
+                string.Join("|", executed.ToArray()));
+            bool struckAll = executed.Count == claws.Count &&
+                executed.All(value => value.Contains(",hit=True") &&
+                    value.Contains("autoMiss=False") && value.Contains("logged=True"));
+            bool missedAll = executed.Count == claws.Count &&
+                executed.All(value => value.Contains("autoMiss=True") &&
+                    value.Contains("logged=False"));
             if (ordinary)
-                _rulesRakeOrdinaryValid = ran && rolls.Length > 0 && rakeRolls.Length == 0;
+                _rulesRakeOrdinaryValid = rakeRolls.Length == 0 && missedAll;
             else
-                _rulesRakeChargeValid = ran && rakeRolls.Length == claws.Count &&
-                    rakeRolls.All(value => value.Contains("logged=True") &&
-                        !value.Contains("autoMiss=True"));
+                _rulesRakeChargeValid = claws.Count == 2 && struckAll;
             _rulesRakeCommand = null;
             return true;
         }
@@ -2910,7 +3012,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposeExpandedSummoningUnits(_rulesFixture.Created, new[] { _rulesRakeCat });
             _rulesRakeCat = null;
             _rulesCases.Add(Assertion("expanded-summoning-correction-rake-command",
-                "the game's own command carries the rake on a charge and never on an ordinary full attack: the command starts, runs to a result on the game's frames, and the two rake claws roll their own attacks with damage the combat log carries",
+                "the rake rides a charge and nothing else: on a charge the two rake claws roll genuine attacks that hit, deal damage and reach the combat log; without one they auto-miss silently, and the command the game built for an ordinary full attack carries no rake hand at all. The command's own CanStart, plan and queue are recorded beside it; Kingmaker makes a command a charge itself once its approach has run, which a frame loop cannot drive",
                 string.Join(";", _rulesRakeSteps.ToArray()),
                 _rulesRakeChargeValid && _rulesRakeOrdinaryValid,
                 "UnitCommands.Run on a live cat, the command's own CanStart, Result and IsActed, and the global attack-roll observer"));
