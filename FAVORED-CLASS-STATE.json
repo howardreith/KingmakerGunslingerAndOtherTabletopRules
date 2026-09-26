@@ -8,8 +8,8 @@
   "branch": "claude/favored-class-integration",
   "worktree": "C:\\Dev\\KingmakerGunslingerLab\\worktrees\\favored-class-integration",
   "baselineCommit": "996105ed9e72259a220be56e2a74e0cc18e5ef47",
-  "overallStatus": "PARTIAL - NOT RELEASE QUALIFIED",
-  "currentPhase": "fourth review: two findings open (Dead Shot's natural 1 and 20 confirmation; verified ending of Bard performance areas); requalification pending",
+  "overallStatus": "COMPLETE LOCALLY - AWAITING OWNER REVIEW",
+  "currentPhase": "fourth review: both findings fixed and requalified (focused lanes and the complete final gate on one exact DLL); owner review pending",
   "phases": {
     "phase-0": {
       "status": "COMPLETE",
@@ -207,6 +207,14 @@
       "dllMvid": "62badef3-342b-409a-9733-20dc6a664578",
       "deployment": "runtime-evidence\\deployments\\20260926T0424273426492Z",
       "note": "final candidate of the completion round (40 guarded runs PASS)"
+    },
+    {
+      "commit": "4748a47b2b8f90fb544fde2fbddbbfc7e225102a",
+      "packageSha256": "cbec54d159ce7aec524852d738bd55ae5080df91c0ee42cd0b025c4ba1306237",
+      "dllSha256": "a35f338ccbd6fd92f152af17d98a92b5b58b37ddbedf2e2d4f13f15b66f00981",
+      "dllMvid": "bf422dd9-16e7-4027-9086-b01e1a71b9a5",
+      "deployment": "runtime-evidence\\deployments\\20260926T1114257470410Z",
+      "note": "final candidate after the fourth PR #24 review (41 guarded runs PASS, after the focused lanes)"
     }
   ],
   "blockers": {
@@ -216,17 +224,17 @@
   },
   "preExistingDefects": {
     "D1": "fixed by the tabletop rule on the owner's decision (bb4dfd674)",
-    "D2": "fixed by the tabletop rule on the owner's decision (bb4dfd674)",
+    "D2": "fixed by the tabletop rule on the owner's decision (bb4dfd674; the confirmation's natural 1 and 20 in 7054b3917)",
     "D3": "fixed (732cddae3)",
     "D4": "fixed (b1b93acad)",
     "D5": "fixed (60c93b319): stored level plans keep a same-level target's reward",
     "D6": "open (owner decision): Pistol-Whip ignores the firearm's enhancement bonus on its attack roll"
   },
   "finalCandidate": {
-    "commit": "12651613c6bbf8533884e7f73cf1b5dd0a5eaf39",
-    "packageSha256": "95d57d55c31c829ae4f7175b01df310a2081100af4cc207d49b2e9d9d91d8ec1",
-    "dllSha256": "ee0a67e40ebf5a926ef7df4d84485d3702f3c52e0677ec91b51a00e83bbf9f8f",
-    "dllMvid": "62badef3-342b-409a-9733-20dc6a664578"
+    "commit": "4748a47b2b8f90fb544fde2fbddbbfc7e225102a",
+    "packageSha256": "cbec54d159ce7aec524852d738bd55ae5080df91c0ee42cd0b025c4ba1306237",
+    "dllSha256": "a35f338ccbd6fd92f152af17d98a92b5b58b37ddbedf2e2d4f13f15b66f00981",
+    "dllMvid": "bf422dd9-16e7-4027-9086-b01e1a71b9a5"
   },
   "ownerDecisions": {
     "status": "resolved by the charter or provider behavior; see FAVORED-CLASS-BLOCKERS.md"
@@ -252,7 +260,7 @@
       "ZFavoredClass\\settings.json": "bdceed77d2bf4a31dd9e4eeb64ef9d55a42ef59d23f46abcb1ddbcc6ef66754b"
     },
     "integrationSettingsFilePresent": false,
-    "lastVerifiedUtc": "2026-09-26T05:44:26Z"
+    "lastVerifiedUtc": "2026-09-26T12:28:41Z"
   },
   "pullRequest": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/24",
   "reviewFindings": {
@@ -357,7 +365,11 @@
     "targetsPublished": 15
   },
   "fourthReviewFindings": {
-    "1-dead-shot-natural-confirmation": "open",
-    "2-verified-area-ending": "open"
+    "1-dead-shot-natural-confirmation": [
+      "7054b3917cc8ad0896927e3ffb5c7c2210d5cd73"
+    ],
+    "2-verified-area-ending": [
+      "ff55924c28337195f18094fb2664dfd7d0dcdd7a"
+    ]
   }
 }

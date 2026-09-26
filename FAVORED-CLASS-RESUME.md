@@ -54,15 +54,17 @@ Favored Class ships nine custom JSON rewards in `ZFavoredClass\Custom\`.
 
 ## Fourth review checkpoint
 
-Status: PARTIAL - NOT RELEASE QUALIFIED. The fourth PR #24 review found two
-defects in `12651613c`: Dead Shot's confirmation must fail on a natural 1 and
-succeed on a natural 20 before the total is compared with the critical AC,
-and the Bard range group must keep a member tracked (blocking widening,
-with a diagnostic and a later retry) until its native state or its actual
-ending is verified. Requalification: the full domain suite, two identical
-clean Release builds, the Dead Shot, Bard range, lifecycle, persistence,
-visual-census and smoke lanes on the exact new DLL, then the complete final
-gate.
+Status: COMPLETE LOCALLY - AWAITING OWNER REVIEW. The fourth PR #24 review found two defects in
+`12651613c`, both fixed and requalified: Dead Shot's confirmation fails on a
+natural 1 and succeeds on a natural 20 before the total is compared with the
+critical AC (`7054b3917`), and the Bard range group keeps a member tracked
+(blocking widening, with a diagnostic and a later retry) until its native
+state or its actual ending is verified (`ff55924c2`).
+
+Candidate `4748a47b2b8f90fb544fde2fbddbbfc7e225102a` (package `cbec54d159ce7aec524852d738bd55ae5080df91c0ee42cd0b025c4ba1306237`, DLL `a35f338ccbd6fd92f152af17d98a92b5b58b37ddbedf2e2d4f13f15b66f00981`, MVID `bf422dd9-16e7-4027-9086-b01e1a71b9a5`),
+deployment `C:\Dev\KingmakerGunslingerLab\runtime-evidence\deployments\20260926T1114257470410Z\deployment.json`: the 1,854-case domain suite, two identical clean builds,
+the focused lanes and the complete final gate (41 guarded runs PASS; report
+sections 4 and 14).
 
 ## Completion round checkpoint
 
@@ -413,15 +415,60 @@ after the last run of the completion round, and verified byte for byte on
 
 Restoration status: VERIFIED.
 
+Fourth review deployments (guarded `scripts\Deploy-Local.ps1`; each backed up the previous tree
+under `C:\Dev\KingmakerGunslingerLab\runtime-backups\live-mod\`; rows marked profile were
+deployed inside an isolated compatibility profile and restored by its transaction):
+
+| Deployment (UTC) | Commit | DLL SHA-256 | MVID | Backup of the previous tree |
+| --- | --- | --- | --- | --- |
+| 20260926T1036471431158Z | `ff55924c2` | `a75b9b47...` | `cec9fb76-85d0-4406-991d-2dff5c5041c6` | `20260926T1036425119410Z` |
+| 20260926T1048226979589Z | `d94f94216` | `0d4472d5...` | `c1e95bf7-e22e-4949-aef9-9f89931e80a6` | `20260926T1048181157956Z` |
+| 20260926T1103286070910Z | `4748a47b2` | `a35f338c...` | `bf422dd9-16e7-4027-9086-b01e1a71b9a5` | `20260926T1103239552852Z` |
+| 20260926T1114257470410Z | `4748a47b2` | `a35f338c...` | `bf422dd9-16e7-4027-9086-b01e1a71b9a5` | `20260926T1114211436511Z` |
+| 20260926T1218350022281Z | `4748a47b2` | `a35f338c...` | `bf422dd9-16e7-4027-9086-b01e1a71b9a5` | `20260926T1218304756703Z` (profile) |
+| 20260926T1221511146180Z | `4748a47b2` | `a35f338c...` | `bf422dd9-16e7-4027-9086-b01e1a71b9a5` | `20260926T1221464986774Z` (profile) |
+| 20260926T1225242845901Z | `4748a47b2` | `a35f338c...` | `bf422dd9-16e7-4027-9086-b01e1a71b9a5` | `20260926T1225196704469Z` (profile) |
+
+Final restoration of the owner's install after the fourth review's requalification:
+
+The owner's pre-mission KMG install (0.0.136, backup
+`C:\Dev\KingmakerGunslingerLab\runtime-backups\live-mod\20260924T0027014050156Z`)
+was restored through `scripts/Restore-Live-Mod.ps1` (under this lab's lease)
+after the last run of the fourth review's requalification, and verified byte for byte on
+2026-09-26 at 12:28 UTC:
+
+- `Info.json` SHA-256 `f66de05d5c6282eece8218b6c4f31d49dfc8ef9efa27dfeceeda712034717e17` (match True)
+- `FeatureModules.json` SHA-256 `6e24b2788a0c8f063d6e561a27c93f9c5349f2fc21b5217689da8aefdbb385d0` (match True)
+- `KingmakerGunslinger.dll` SHA-256 `c6cccdac914ed59fa4d85d020108588d7d12cfb4ac38cf5a162772bacc9b465c` (match True)
+- whole tree: 238 backup files, 238 live files, 0 only in the backup, 0 only live
+- no `FavoredClassIntegration.json` remains (the default settings apply)
+- other mod files unchanged: `CallOfTheWild\settings.json` `24cc3f80...`, `RacesUnleashed\Settings.json` `270899c3...`,
+  `ZFavoredClass\settings.json` `bdceed77...` and Tweak or Treat's regenerated `loaded_blueprints.txt` `96e13782...` (match True)
+- Unity Mod Manager's `Params.xml`: every disabled-host stage of the round (`20260926T121237Z`) and each L06
+  transaction backed it up, disabled only ZFavoredClass and restored the exact pre-stage bytes after
+  the game exited (SHA-256 match; backups in `C:\Dev\KingmakerGunslingerLab\runtime-backups\umm-params\`
+  and the transaction folders); the regenerated `loaded_blueprints.txt` files were restored byte for byte
+  after each disabled-host run; ZFavoredClass is enabled now
+- each temporary settings profile removed `FavoredClassIntegration.json` after
+  its own runs (verified absent after each profile and at the end)
+- the persistence transaction `20260926T1205578501702Z_2d76d8dea8fa4d318f97fd297772ec8f` restored the settings and the complete Mods tree;
+  its owned save was deleted from the save folder with hash proof (94 preexisting saves preserved;
+  the prepared save's evidence copy stays in the machine-local transaction folder)
+- the L06 transaction `20260926T1213475709412Z_99e2a6b32050436c94ec26ff6275e748` restored `Params.xml` (match True) and deleted its fixture from the save
+  folder with hash proof (its evidence copy stays in the machine-local transaction folder); the lab's
+  only saves are `KMG_AUTOMATION_BASELINE` and `KMG_AUTOMATION_WORKING`
+- each compatibility profile (`compat-20260926T121633Z-5083c0ce5fb9`, `compat-20260926T122004Z-b08da2da404f`, `compat-20260926T122336Z-c6fb2faf6f8b`) restored the exact original Mods tree and
+  FeatureModules bytes before releasing the lock (restoration verified)
+
+Restoration status: VERIFIED.
+
 ## Next concrete actions
 
-1. Fix the fourth review's two findings (report section 14) with their domain
-   and guarded tests, then requalify as the fourth review checkpoint states.
-2. Owner review of PR #24 at the requalified candidate, including the
+1. Owner review of PR #24 at `4748a47b2` (and its records commit), including the
    simulated disposition of H04/H05 and the open owner decision D6
    (`FAVORED-CLASS-BLOCKERS.md`).
-3. Nothing is merged, tagged or published; those remain separate owner
+2. Nothing is merged, tagged or published; those remain separate owner
    actions.
-4. B3 follow-up (harness, outside the favored-class rows): isolate the allocation
+3. B3 follow-up (harness, outside the favored-class rows): isolate the allocation
    the native character-build screens retain; until then start qualification
    batches only with a low idle commit charge.

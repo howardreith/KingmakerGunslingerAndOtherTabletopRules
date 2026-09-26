@@ -32,11 +32,11 @@ The profiles were staged from the 2026-09-08 capture of this install's
 optional mods (`C:\Dev\KingmakerGunslingerLab\repo\KingmakerGunslinger\artifacts\teleportation\compatibility-references`),
 verified byte-identical first (CallOfTheWild 266 files, ZFavoredClass 24
 files, no difference; re-verified before each round). On the final candidate
-`12651613c`:
+`4748a47b2`:
 
-- `gunslinger-only` / `observe-favored-class-host-state`: `20260926T0528022419214Z-observe-favored-class-host-state` PASS (transaction `compat-20260926T052602Z-a75f8c60d59d`, restoration verified).
-- `gunslinger-call-of-the-wild` / `observe-favored-class-host-state`: `20260926T0531183716191Z-observe-favored-class-host-state` PASS (transaction `compat-20260926T052931Z-3aacec891548`, restoration verified).
-- `gunslinger-call-of-the-wild-favored-class` / `observe-favored-class-host-state`: `20260926T0534505046553Z-observe-favored-class-host-state` PASS (transaction `compat-20260926T053303Z-0acfe3e6e607`, restoration verified).
+- `gunslinger-only` / `observe-favored-class-host-state`: `20260926T1218350412229Z-observe-favored-class-host-state` PASS (transaction `compat-20260926T121633Z-5083c0ce5fb9`, restoration verified).
+- `gunslinger-call-of-the-wild` / `observe-favored-class-host-state`: `20260926T1221511486176Z-observe-favored-class-host-state` PASS (transaction `compat-20260926T122004Z-b08da2da404f`, restoration verified).
+- `gunslinger-call-of-the-wild-favored-class` / `observe-favored-class-host-state`: `20260926T1225243181332Z-observe-favored-class-host-state` PASS (transaction `compat-20260926T122336Z-c6fb2faf6f8b`, restoration verified).
 
 ### B3 - Native character-build lanes inflate the game's committed memory (open: environment risk for qualification batches)
 
@@ -118,8 +118,11 @@ confirmation with the native rules (attack bonus, every confirmation bonus
 plus -5 and +1 per extra threat up to 0, and the critical AC computed after
 the firearm AC frame so the touch-AC rule applies); immunity and the party
 critical setting block it as they block a native threat, and a failed
-confirmation is contained. Native PASS: Dead Shot confirmed, unconfirmed,
-immune-target and touch-AC checks (`dead-shot-critical-touch-ac`).
+confirmation is contained. The confirmation is an attack roll: a natural 1
+always fails and a natural 20 always succeeds (fourth review, `7054b3917`).
+Native PASS: Dead Shot ordinary, natural 20 and natural 1 confirmations,
+the party setting, immune-target and touch-AC checks
+(`disposable-gunslinger-dead-shot`).
 
 ### D3 - Gunslinger Initiative timing (fixed in this mission)
 

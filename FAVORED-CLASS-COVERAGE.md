@@ -22,51 +22,52 @@ committed). Target manifests are in `docs/FAVORED-CLASS-TARGET-MANIFEST.md`.
 
 ## Final candidate regression
 
-Candidate `12651613c`: package `95d57d55...`, DLL `ee0a67e4...`, MVID `62badef3-342b-409a-9733-20dc6a664578`. Every run used the guarded
+Candidate `4748a47b2`: package `cbec54d1...`, DLL `a35f338c...`, MVID `bf422dd9-16e7-4027-9086-b01e1a71b9a5`. Every run used the guarded
 Steam App ID 640820 launcher against that one deployment.
 
 | Scenario | Run | Result |
 | --- | --- | --- |
-| observe-favored-class-contract | 20260926T0424285521034Z-observe-favored-class-contract | PASS |
-| observe-favored-class-host-state | 20260926T0425098817176Z-observe-favored-class-host-state | PASS |
-| observe-favored-class-host-defects | 20260926T0425504713383Z-observe-favored-class-host-defects | PASS |
-| disposable-favored-class-elemental-core | 20260926T0426304190835Z-disposable-favored-class-elemental-core | PASS |
-| disposable-favored-class-elemental-advanced | 20260926T0427143130346Z-disposable-favored-class-elemental-advanced | PASS |
-| disposable-favored-class-oracle-revelations | 20260926T0427587131736Z-disposable-favored-class-oracle-revelations | PASS |
-| disposable-favored-class-performance-range | 20260926T0429246463836Z-disposable-favored-class-performance-range | PASS |
-| working-save-favored-class-lifecycle@KMG_AUTOMATION_WORKING | 20260926T0430061268709Z-working-save-favored-class-lifecycle | PASS |
-| disposable-favored-class-respec | 20260926T0431104013973Z-disposable-favored-class-respec | PASS |
-| working-save-favored-class-visual-census@KMG_AUTOMATION_WORKING | 20260926T0431532259029Z-working-save-favored-class-visual-census | PASS |
-| disposable-favored-class-grit | 20260926T0433443953898Z-disposable-favored-class-grit | PASS |
-| disposable-favored-class-gunslinger-menus | 20260926T0434326926830Z-disposable-favored-class-gunslinger-menus | PASS |
-| disposable-favored-class-gunslinger-mechanics | 20260926T0435266732898Z-disposable-favored-class-gunslinger-mechanics | PASS |
-| disposable-favored-class-initiative-timing | 20260926T0436075638631Z-disposable-favored-class-initiative-timing | PASS |
-| disposable-favored-class-turn-modes | 20260926T0436472719055Z-disposable-favored-class-turn-modes | PASS |
-| disposable-favored-class-bombs | 20260926T0437279321541Z-disposable-favored-class-bombs | PASS |
-| disposable-favored-class-auto-level | 20260926T0438084070076Z-disposable-favored-class-auto-level | PASS |
-| disposable-favored-class-mostly-human | 20260926T0438487161591Z-disposable-favored-class-mostly-human | PASS |
-| observe-favored-class-performance-visuals | 20260926T0439381382013Z-observe-favored-class-performance-visuals | PASS |
-| disposable-favored-class-multiclass | 20260926T0440198691989Z-disposable-favored-class-multiclass | PASS |
-| working-save-elemental-character-creation-regression@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;nativeActionCase=racial-actions;race=Ifrit | 20260926T0441000207225Z-working-save-elemental-character-creation-regression | PASS |
-| working-save-elemental-character-creation-regression@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;nativeActionCase=racial-actions;race=Oread | 20260926T0446152587603Z-working-save-elemental-character-creation-regression | PASS |
-| working-save-elemental-character-creation-regression@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;nativeActionCase=racial-actions;race=Sylph | 20260926T0451067541490Z-working-save-elemental-character-creation-regression | PASS |
-| working-save-elemental-character-creation-regression@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;nativeActionCase=racial-actions;race=Undine | 20260926T0456110533371Z-working-save-elemental-character-creation-regression | PASS |
-| working-save-elemental-native-respec@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;race=Sylph | 20260926T0500236878668Z-working-save-elemental-native-respec | PASS |
-| working-save-elemental-native-respec@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;race=Oread | 20260926T0507046815679Z-working-save-elemental-native-respec | PASS |
-| working-save-smoke@KMG_AUTOMATION_WORKING | 20260926T0514062685374Z-working-save-smoke | PASS |
-| L01 fresh-process persistence (prepare) | 20260926T0515338811043Z-disposable-word-of-recall-favored-class-persistence | PASS |
-| L01 fresh-process persistence (verify) | 20260926T0516336684454Z-disposable-word-of-recall-favored-class-persistence | PASS |
-| observe-favored-class-contract | 20260926T0518031115585Z-observe-favored-class-contract | PASS |
-| disposable-favored-class-gunslinger-menus | 20260926T0518432350673Z-disposable-favored-class-gunslinger-menus | PASS |
-| observe-favored-class-contract | 20260926T0519366390443Z-observe-favored-class-contract | PASS |
-| observe-favored-class-host-state | 20260926T0520171147411Z-observe-favored-class-host-state | PASS |
-| observe-favored-class-contract | 20260926T0520572501435Z-observe-favored-class-contract | PASS |
-| observe-favored-class-host-state | 20260926T0522081723639Z-observe-favored-class-host-state | PASS |
-| L06 missing dependency (prepare) | 20260926T0523196350139Z-disposable-word-of-recall-favored-class-persistence | PASS |
-| L06 missing dependency (absent host) | 20260926T0524188474485Z-observe-favored-class-missing-dependency | PASS |
-| profile gunslinger-only / observe-favored-class-host-state | 20260926T0528022419214Z-observe-favored-class-host-state | PASS |
-| profile gunslinger-call-of-the-wild / observe-favored-class-host-state | 20260926T0531183716191Z-observe-favored-class-host-state | PASS |
-| profile gunslinger-call-of-the-wild-favored-class / observe-favored-class-host-state | 20260926T0534505046553Z-observe-favored-class-host-state | PASS |
+| observe-favored-class-contract | 20260926T1114269644219Z-observe-favored-class-contract | PASS |
+| observe-favored-class-host-state | 20260926T1115078596778Z-observe-favored-class-host-state | PASS |
+| observe-favored-class-host-defects | 20260926T1115472753377Z-observe-favored-class-host-defects | PASS |
+| disposable-favored-class-elemental-core | 20260926T1116273715565Z-disposable-favored-class-elemental-core | PASS |
+| disposable-favored-class-elemental-advanced | 20260926T1117116392755Z-disposable-favored-class-elemental-advanced | PASS |
+| disposable-favored-class-oracle-revelations | 20260926T1117562623926Z-disposable-favored-class-oracle-revelations | PASS |
+| disposable-favored-class-performance-range | 20260926T1119202164739Z-disposable-favored-class-performance-range | PASS |
+| working-save-favored-class-lifecycle@KMG_AUTOMATION_WORKING | 20260926T1120016975723Z-working-save-favored-class-lifecycle | PASS |
+| disposable-favored-class-respec | 20260926T1121045533286Z-disposable-favored-class-respec | PASS |
+| working-save-favored-class-visual-census@KMG_AUTOMATION_WORKING | 20260926T1121473616469Z-working-save-favored-class-visual-census | PASS |
+| disposable-favored-class-grit | 20260926T1123381262650Z-disposable-favored-class-grit | PASS |
+| disposable-gunslinger-dead-shot | 20260926T1124264435541Z-disposable-gunslinger-dead-shot | PASS |
+| disposable-favored-class-gunslinger-menus | 20260926T1125063458458Z-disposable-favored-class-gunslinger-menus | PASS |
+| disposable-favored-class-gunslinger-mechanics | 20260926T1125593536750Z-disposable-favored-class-gunslinger-mechanics | PASS |
+| disposable-favored-class-initiative-timing | 20260926T1126403603631Z-disposable-favored-class-initiative-timing | PASS |
+| disposable-favored-class-turn-modes | 20260926T1127200860022Z-disposable-favored-class-turn-modes | PASS |
+| disposable-favored-class-bombs | 20260926T1128001379414Z-disposable-favored-class-bombs | PASS |
+| disposable-favored-class-auto-level | 20260926T1128403811811Z-disposable-favored-class-auto-level | PASS |
+| disposable-favored-class-mostly-human | 20260926T1129205786535Z-disposable-favored-class-mostly-human | PASS |
+| observe-favored-class-performance-visuals | 20260926T1130101155262Z-observe-favored-class-performance-visuals | PASS |
+| disposable-favored-class-multiclass | 20260926T1130512528416Z-disposable-favored-class-multiclass | PASS |
+| working-save-elemental-character-creation-regression@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;nativeActionCase=racial-actions;race=Ifrit | 20260926T1131314400628Z-working-save-elemental-character-creation-regression | PASS |
+| working-save-elemental-character-creation-regression@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;nativeActionCase=racial-actions;race=Oread | 20260926T1136484016159Z-working-save-elemental-character-creation-regression | PASS |
+| working-save-elemental-character-creation-regression@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;nativeActionCase=racial-actions;race=Sylph | 20260926T1141444572920Z-working-save-elemental-character-creation-regression | PASS |
+| working-save-elemental-character-creation-regression@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;nativeActionCase=racial-actions;race=Undine | 20260926T1146529537828Z-working-save-elemental-character-creation-regression | PASS |
+| working-save-elemental-native-respec@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;race=Sylph | 20260926T1151067198469Z-working-save-elemental-native-respec | PASS |
+| working-save-elemental-native-respec@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;race=Oread | 20260926T1157572351994Z-working-save-elemental-native-respec | PASS |
+| working-save-smoke@KMG_AUTOMATION_WORKING | 20260926T1204384457284Z-working-save-smoke | PASS |
+| L01 fresh-process persistence (prepare) | 20260926T1206065221021Z-disposable-word-of-recall-favored-class-persistence | PASS |
+| L01 fresh-process persistence (verify) | 20260926T1207060708813Z-disposable-word-of-recall-favored-class-persistence | PASS |
+| observe-favored-class-contract | 20260926T1208355786721Z-observe-favored-class-contract | PASS |
+| disposable-favored-class-gunslinger-menus | 20260926T1209151779642Z-disposable-favored-class-gunslinger-menus | PASS |
+| observe-favored-class-contract | 20260926T1210087729853Z-observe-favored-class-contract | PASS |
+| observe-favored-class-host-state | 20260926T1210488556764Z-observe-favored-class-host-state | PASS |
+| observe-favored-class-contract | 20260926T1211286961351Z-observe-favored-class-contract | PASS |
+| observe-favored-class-host-state | 20260926T1212388155055Z-observe-favored-class-host-state | PASS |
+| L06 missing dependency (prepare) | 20260926T1213503098613Z-disposable-word-of-recall-favored-class-persistence | PASS |
+| L06 missing dependency (absent host) | 20260926T1214498019146Z-observe-favored-class-missing-dependency | PASS |
+| profile gunslinger-only / observe-favored-class-host-state | 20260926T1218350412229Z-observe-favored-class-host-state | PASS |
+| profile gunslinger-call-of-the-wild / observe-favored-class-host-state | 20260926T1221511486176Z-observe-favored-class-host-state | PASS |
+| profile gunslinger-call-of-the-wild-favored-class / observe-favored-class-host-state | 20260926T1225243181332Z-observe-favored-class-host-state | PASS |
 
 ## Scheduled rows (30)
 
