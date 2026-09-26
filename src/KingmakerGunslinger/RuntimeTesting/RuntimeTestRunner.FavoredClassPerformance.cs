@@ -129,7 +129,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Describe(probe.OutcomeText, probe.OutcomeTextFailures), probe.OutcomeTextFailures.Count == 0,
                 "Fact.Description (SelectUIData), ActivatableAbility.Description and MechanicActionBarSlotActivableAbility.GetDescription on the invested bard; FavoredClassPerformanceInstances"));
             assertions.Add(Assertion("fcb-performance-unresolved-ending",
-                "on a real invested bard's areas, a widened area whose narrowing cannot be verified and whose ending throws, does nothing or finds no area data, and a widened area whose liveness read throws, all stay tracked and unresolved: every live area stays tracked, no widened live area sits beside native or configured text unless it is unresolved, a success is held while any area is unresolved, the descriptions are native, a diagnostic is logged for each; once the fault clears, the next widening attempt narrows or ends it verifiably (an ending that never took effect is retried and verified), and an area that ended while its liveness could not be read is forgotten only once the read works (fourth review finding 2)",
+                "on a real invested bard's areas, a widened area whose narrowing cannot be verified and whose ending throws, does nothing or finds no area data, and a widened area whose liveness read throws, all stay tracked and unresolved: every live area stays tracked, a widened live area sits beside native or configured text only while an area of the group is unresolved, a success is held while any area is unresolved, the descriptions are native while any area is unresolved (the liveness case included, and reading them neither narrows nor ends the area), a diagnostic is logged for each; once the fault clears, the next widening attempt narrows or ends it verifiably (an ending that never took effect is retried and verified), an area whose liveness is readable again and that is still live and widened resumes its widened text, and an area that ended while its liveness could not be read is forgotten only once the read works (fourth review finding 2 and its follow-up)",
                 Describe(probe.Unresolved, probe.UnresolvedFailures), probe.UnresolvedFailures.Count == 0,
                 "FavoredClassPerformanceInstances EndFault, DataUnavailable, LivenessFault and NarrowFault qualification seams; AreaEffectEntityData.IsEnded; FavoredClassPerformanceInstances.RecentDiagnostics"));
             assertions.Add(Assertion("fcb-performance-ring-release",
@@ -652,15 +652,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     row["problem"] = problem(instance);
                     return row;
                 };
-                // Every live area stays tracked; a widened live area beside
-                // native or configured text is unresolved; the texts agree.
+                // Every live area stays tracked; a widened live area sits beside
+                // native or configured text only while an area of the group is
+                // unresolved; any unresolved area keeps the texts native.
                 Func<string, string, AreaEffectEntityData[], JObject> check = (step, expectedText, live) =>
                 {
                     JObject row = texts();
-                    row["unresolvedCount"] = FavoredClassPerformanceInstances.UnresolvedCount(bard.Descriptor, target.Key);
+                    int unresolved = FavoredClassPerformanceInstances.UnresolvedCount(bard.Descriptor, target.Key);
+                    row["unresolvedCount"] = unresolved;
                     if (!all(row, expectedText))
                         UnresolvedFailures.Add(step + ": the descriptions are not " + expectedText);
                     bool widenedText = all(row, "widened");
+                    if (unresolved > 0 && !all(row, "native"))
+                        UnresolvedFailures.Add(step + ": an unresolved area left the descriptions not native");
                     foreach (AreaEffectEntityData instance in live)
                     {
                         if (instance == null || instance.IsEnded)
@@ -670,9 +674,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         GameObject ring = Ring(instance);
                         bool widenedNow = !Same(Radius(instance), nativeRadius) ||
                             (ring != null && FavoredClassPerformanceRing.IsScaled(ring));
-                        if (widenedNow && !widenedText && problem(instance) == null)
+                        if (widenedNow && !widenedText && unresolved == 0)
                             UnresolvedFailures.Add(step + ": a widened live area sits beside " + expectedText +
-                                " text without being unresolved");
+                                " text while no area is unresolved");
                     }
                     return row;
                 };
@@ -789,17 +793,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                     End(missingRetry);
                     End(missing);
 
-                    // 8d. The liveness read throws: nothing is forgotten; a
-                    // success is held (and narrows it); an area that ended
-                    // while unreadable is forgotten only once the read works.
+                    // 8d. The liveness read throws: nothing is forgotten and,
+                    // as for every unresolved area, the descriptions are
+                    // native, while reading them neither narrows nor ends the
+                    // area; readable again, the still-live widened area resumes
+                    // its widened text. Unreadable again, a success is held (and
+                    // narrows it), and an area that ended while unreadable is
+                    // forgotten only once the read works.
                     AreaEffectEntityData unreadable = widenedSpawn();
-                    FavoredClassPerformanceInstances.LivenessFaultForQualification = view =>
-                        ReferenceEquals(view, unreadable.View);
-                    JObject alone = check("liveness-throws", "widened", new[] { unreadable });
+                    Func<AreaEffectView, bool> unreadableFault = view => ReferenceEquals(view, unreadable.View);
+                    FavoredClassPerformanceInstances.LivenessFaultForQualification = unreadableFault;
+                    JObject alone = check("liveness-throws", "native", new[] { unreadable });
                     Unresolved["liveness-throws"] = new JObject { ["unreadable"] = tracked(unreadable), ["texts"] = alone };
                     if (recorded(unreadable) == null || problem(unreadable) == null ||
                         !problem(unreadable).Contains("liveness"))
                         UnresolvedFailures.Add("liveness-throws: the unreadable area was forgotten or not unresolved");
+                    if (!widenedInstance(unreadable) || unreadable.IsEnded)
+                        UnresolvedFailures.Add("liveness-throws: reading the descriptions narrowed or ended the unreadable area");
+                    FavoredClassPerformanceInstances.LivenessFaultForQualification = null;
+                    Unresolved["liveness-readable"] = new JObject
+                    {
+                        ["texts"] = check("liveness-readable", "widened", new[] { unreadable }),
+                        ["area"] = tracked(unreadable)
+                    };
+                    if (!widenedInstance(unreadable) || problem(unreadable) != null ||
+                        recorded(unreadable) != FavoredClassWideningOutcome.Widened)
+                        UnresolvedFailures.Add("liveness-readable: the still-live widened area did not resume its widened text once readable");
+                    FavoredClassPerformanceInstances.LivenessFaultForQualification = unreadableFault;
                     AreaEffectEntityData besideUnreadable = Spawn(bard, area);
                     Unresolved["liveness-throws-beside"] = new JObject
                     {
