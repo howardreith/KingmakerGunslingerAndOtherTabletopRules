@@ -59,6 +59,7 @@ $expected = @(
     'disposable-favored-class-bombs',
     'disposable-favored-class-auto-level',
     'observe-favored-class-host-defects',
+    'observe-favored-class-missing-dependency',
     'disposable-favored-class-gunslinger-mechanics',
     'disposable-favored-class-gunslinger-menus',
     'disposable-favored-class-grit',

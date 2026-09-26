@@ -81,6 +81,8 @@
     <Compile Include="..\..\src\KingmakerGunslinger\FavoredClass\FavoredClassRangePresentation.cs"><Link>FavoredClass\FavoredClassRangePresentation.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\FavoredClass\FavoredClassRangeGroup.cs"><Link>FavoredClass\FavoredClassRangeGroup.cs</Link></Compile>
     <Compile Include="FavoredClassSourceTests.cs" />
+    <Compile Include="FavoredClassDependencyWarningTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\FavoredClass\FavoredClassDependencyPolicy.cs"><Link>FavoredClass\FavoredClassDependencyPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\FavoredClass\FavoredClassLeafCatalog.cs"><Link>FavoredClass\FavoredClassLeafCatalog.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\FavoredClass\FavoredClassIdentityCatalog.cs"><Link>FavoredClass\FavoredClassIdentityCatalog.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\FavoredClass\FavoredClassIntegrationStatus.cs"><Link>FavoredClass\FavoredClassIntegrationStatus.cs</Link></Compile>
