@@ -167,12 +167,16 @@ range when none is live; no outcome outlives its area. An area that cannot be
 verified native after a rollback is ended, and the toggle whose own current
 buff runs it is turned off (`docs/FAVORED-CLASS-TARGET-MANIFEST.md`).
 
-Two scopes are closed in finally blocks rather than by postfixes alone, since
-Harmony 1.2 has no finalizers. A transpiler on
+Three scopes are closed in finally blocks rather than by postfixes alone,
+since Harmony 1.2 has no finalizers. A transpiler on
 `LevelUpController.ApplyLevelup` replaces only the replay's
 `ILevelUpAction.Check` and `ILevelUpAction.Apply` calls with helpers that make
 the same calls inside a scope of that controller (the same-level owned-target
-check). A transpiler on `ActionList.Run` replaces only its per-action
+check). A transpiler on `LevelUpController.ApplyLevelUpPlan` replaces only
+its one `AddAction(action, ignoreOrder)` call with a helper that makes the
+same call inside a scope of that controller and the plan it is applying, so a
+stored plan (auto-level, a pregen, an imported companion) keeps a reward whose
+target the same planned level chooses. A transpiler on `ActionList.Run` replaces only its per-action
 `GameAction.RunAction()` call with a helper that makes the same call and
 restores the demoralize scope depth in a finally block; the native try/catch,
 logging and order are unchanged. The `Demoralize.RunAction` prefix (first,
@@ -180,8 +184,18 @@ before Call of the Wild's replacing prefix) opens the I07 frame and its
 postfix restores the depth it opened at, so a nested demoralize keeps the
 outer frame and a demoralize that throws never reaches the next action. Each
 transpiler changes nothing unless its call sites are found exactly once; I07
-is withheld without the `ActionList.Run` envelope, and without the replay
-scope a same-level target counts from the next level-up.
+is withheld without the `ActionList.Run` envelope, and without the replay or
+plan scope a same-level target counts from the next level-up (each missing
+hook is logged as degraded).
+
+Three read-only observations serve the missing-dependency warning (L06): a
+prefix on the internal `BlueprintConverter.ReadJson` (installed by hand; when
+its shape is absent the warning has no records) records a blueprint
+reference the live library cannot resolve, reading the same dictionary as the
+native lookup, which then throws exactly as before; a `Game.LoadGame` prefix
+starts a fresh record; and a `Game.ResetToMainMenu` prefix puts KMG's
+warning before the unchanged native message, only when the failed load
+involves favored-class content. Nothing is loaded, substituted or written.
 
 ## Settings file
 
@@ -237,6 +251,17 @@ need a restart.
 - **Call of the Wild removed**: the Oracle and Summoner counters are not
   offered, and their saved leaves still resolve. Revelation and eidolon effects
   are inert because their provider blueprints are gone.
+- **A save whose builds need a missing host or Call of the Wild (L06)**: a
+  character made with the host holds the host's favored class choice and
+  per-class progressions; a character with a Call of the Wild class, race or
+  power holds that content. Without it the game's own loader cannot resolve
+  those blueprints and refuses the save: nothing is loaded, substituted or
+  written, and the game returns to the main menu. KMG then shows, before the
+  native "Cannot load game" message, which content is missing (ZFavoredClass
+  1.3.1 and its state, Call of the Wild 1.14.4c, and how many references),
+  that nothing was changed, how to recover (install and enable the exact
+  mods, restart, load again) and not to save over the game until then. KMG's
+  own favored-class identities in such a save always resolve.
 - **Leaving the favored-class integration entirely**: back up saves first.
   Removing KMG leaves every KMG identity unresolved; restore the mod rather
   than editing the save.

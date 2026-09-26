@@ -5,13 +5,17 @@ scales, what stays at the actual class level, and what is not offered. The
 revelation and performance tables are generated from the committed manifests
 (`FavoredClassRevelationManifest`, `FavoredClassPerformanceManifest`) and the
 live scope evidence of candidate `6db62e57d` (run
-`20260924T0549454842857Z-disposable-favored-class-oracle-revelations`). The
+`20260924T0549454842857Z-disposable-favored-class-oracle-revelations`); the
+appended revelation and Elemental Resistance rows are from the final candidate
+`12651613c` (run `20260926T0427587131736Z-disposable-favored-class-oracle-revelations`). The
 audits behind them (private, not committed) read the installed Call of the Wild
 1.14.4c-2.1 and Kingmaker 2.1.7b blueprints.
 
-A counter never grants a feature, ability, revelation or power early, never
-satisfies a level prerequisite, and never changes spell slots, BAB or saves.
-A revelation, bloodline power or performance counts as owned when the
+A counter never grants its target itself (a revelation, bloodline power or
+performance) early, never satisfies a level prerequisite, and never changes
+spell slots, BAB or saves; only the owned target's own level-dependent
+effects, including its own level gates, follow the effective level (charter
+8.10). A revelation, bloodline power or performance counts as owned when the
 character has it or chooses it in the same level-up: the native level-up
 replays its picks in priority order, and the host's reward selection comes
 before the bloodline, revelation and power selections, so the owned-target
@@ -19,7 +23,10 @@ check also counts a later pick of the level-up being replayed. Only the
 replay's own check and application of each pick are scoped (Harmony 1.2 has
 no finalizers, so those two native calls are made inside a scope closed in a
 finally block): a pick that throws leaves nothing counted, a nested replay
-restores the outer one, and a retried replay scopes its picks afresh.
+restores the outer one, and a retried replay scopes its picks afresh. A
+stored level plan (auto-level, a pregen, an imported companion) is applied
+by the controller itself, one AddAction per planned pick; that one call is
+scoped the same way, and the plan's own picks count as chosen too.
 Owner decisions are listed in `FAVORED-CLASS-BLOCKERS.md`.
 
 ## I06/S04 — selected oracle revelation (1/6 per revelation, uncapped)
@@ -109,19 +116,34 @@ gives earned steps to any of its read points.
 | RaiseTheDead | Raise the Dead | Bones | A | A, C | 1 | 0 | 2 | the extra daily use at 10th level (resource threshold) and the ability gained at 15th level (gate) |
 | SoulSiphon | Soul Siphon | Bones | A, B | A, B | 1 | 1 | 0 | - |
 | UndeadServitude | Undead Servitude | Bones | C | C | 0 | 0 | 1 | - |
+| TemporalCelerity | Temporal Celerity | Time | D | D | 0 | 0 | 0 | the surprise-round action at 7th level and the initiative step that replaces the first one at 11th level (gates) |
+| CinderDance | Cinder Dance | Flame | D | D | 0 | 0 | 0 | the second step at 10th level (gate) |
+| MoltenSkin | Molten Skin | Flame | A, D | A, D | 1 | 0 | 0 | the fire immunity at 17th level (gate) |
+| WarSight | War Sight | Battle | D | D | 0 | 0 | 0 | the surprise-round action at 7th level and the initiative step that replaces the first one at 11th level (gates) |
+| WeaponMastery | Weapon Mastery | Battle | D (chosen weapon) | D | 0 | 0 | 0 | the chosen weapon's Improved Critical at 8th and Greater Weapon Focus at 12th level (its own gates) |
+| SparkSkin | Spark Skin | Wind | A, D | A, D | 1 | 0 | 0 | the electricity immunity at 17th level (gate) |
+| DragonSenses | Dragon Senses | Dragon | A, D | A, D | 1 | 0 | 0 | blindsense at 11th and its wider range at 15th level (gates) |
+| DraconicResistances | Draconic Resistances | Dragon | A | A | 20 | 0 | 0 | - (ten colours, one target) |
+| FluidNature | Fluid Nature | Waves | D | D | 0 | 0 | 0 | the Dodge feat at 5th level (gate) |
+| FreezingSpells | Freezing Spells | Waves | D | D | 0 | 0 | 0 | the second step that replaces the first one at 11th level (gates) |
+| IcySkin | Icy Skin | Waves | A, D | A, D | 1 | 0 | 0 | the cold immunity at 17th level (gate) |
+| SpiritOfNature | Spirit of Nature | Nature | A (buff) | A | 1 | 0 | 0 | - |
+| NearDeath | Near Death | Bones | A, D | A, D | 2 | 0 | 0 | the second step at 7th level (gate) |
+| ResistLife | Resist Life | Bones | A | A | 1 | 0 | 0 | - |
+
+The last fourteen rows (formerly deferred as threshold-only) were published
+after charter 8.10 counted their effect thresholds among the level-dependent
+effects; their own gates and rank reads follow the same rules, and their
+counters have appended identities, so no earlier identity moved. Their found
+families are from the final candidate's Oracle lane (build 14 for the rows
+above).
 
 Families found beyond the audit (all Oracle-engine parameters of the
 revelation's own abilities): Aging Touch, Time Hop and Erosion Touch (caster
 level only; no save), Form of the Dragon (the forms' own parameters) and Raise
 the Dead (the 15th-level abilities, scaled once gained). Recorded for owner review.
 
-Not offered (audit dispositions): explicitly deferred threshold-only
-revelations (Temporal Celerity, War Sight, Cinder Dance, Molten Skin, Spark
-Skin, Icy Skin, Weapon Mastery, Fluid Nature, Freezing Spells, Dragon Senses,
-Draconic Resistances, Spirit of Nature, Near Death, Resist Life): their level
-thresholds follow the same gate and rank rules, but publishing them needs new
-owned target identities that this candidate's identity ledger does not contain;
-unsupported branches (Maneuver Mastery, Enhanced Cures, Vortex Spells, Animal Companion); no oracle-level
+Not offered (audit dispositions): unsupported branches (Maneuver Mastery, Enhanced Cures, Vortex Spells, Animal Companion); no oracle-level
 scaling (Sacred Council, Burning Magic, Skill at Arms, Healing Hands, Safe
 Curing, Wings of Air, Dragon Magic, Wings of the Dragon, Friend to Animals,
 Nature's Whispers); Dual-Cursed Fortune (eligibility decision) and Misfortune;
@@ -135,6 +157,8 @@ Final Revelations (capstones).
 | FireBlast | I08 | `3022a5066a5604a498dd289b37dfd8aa` | `b2d1d39cd406e0f4185c52fecc73c3b5` | dice, DC, caster level checks, extra daily uses at 17th and 20th level |
 | AirRay | S06 | `acf668c24dfbcdd499276eaf1881486e` | `4729c2ac98d02004fb440d17f7786e28` | damage bonus rank |
 | AirBlast | S06 | `553d9802d5d9de04b941b55cb47d3096` | `6d005cc9c3ad3f24e8769aad2fbfdf3f` | dice, DC, caster level checks, extra daily uses at 17th and 20th level |
+| FireResistance | I08 | `24980315c1bdcc4478ebb717e9b81961` | - | its own gates: resistance 10 before 9th level, 20 from 9th |
+| AirResistance | S06 | `6472c51065d734e4b99ac56694925920` | - | its own gates: resistance 10 before 9th level, 20 from 9th |
 
 Elemental Blast's extra daily uses (`...ElementalBlastExtraUse`, +1 each at
 17th and 20th level) are granted natively by the bloodline progression's own
@@ -146,12 +170,16 @@ and Crossblooded copies follow their own tables), or from the power's own
 gates, each decided like the native gate at the effective level. At most two
 steps; the extra-use feature itself is never granted early.
 
+Elemental Resistance (formerly deferred) has no ability: its counter decides
+only the power feature's own gates at the sorcerer level plus the earned
+steps, at most two, so an invested sorcerer holds exactly what a native
+sorcerer at the effective level holds (resistance 20 two levels early);
+the power is never granted early, the Blast counter never moves it, and
+removal restores the real level's step.
+
 Not targets: Elemental Movement, Body and Arcana, and Elemental Ray's uses (no
 level scaling); Primal Elemental bloodlines (not fire or air elemental); efreeti
-and djinni bloodlines (absent from the game). Explicitly deferred: Elemental
-Resistance (its 9th-level step from resistance 10 to 20 is implementable with
-the same threshold rule, but publishing it needs a new owned target identity,
-which this candidate's identity ledger does not contain).
+and djinni bloodlines (absent from the game).
 
 ## O01 - selected bardic performance range (+5 feet per investment, max +30 feet)
 
