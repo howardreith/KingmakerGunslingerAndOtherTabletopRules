@@ -26,5 +26,7 @@ namespace KingmakerGunslinger.Deeds
         internal RuleAttackWithWeapon Delivery { get; private set; }
         internal FirearmState Before { get; private set; }
         internal FirearmState After { get; private set; }
+        /// <summary>The shot's one critical confirmation, or null when no roll threatened.</summary>
+        internal DeadShotConfirmationRecord Confirmation { get; set; }
     }
 }

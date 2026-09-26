@@ -48,9 +48,10 @@ namespace KingmakerGunslinger.Deeds
                 ability.Caster.HasFact(m_ArmorClassBuff))
                 return false;
             GunslingerClassBlueprintSet set = BlueprintBootstrap.GunslingerClass;
+            // True Grit reduces the cost to 0 but still requires grit above 0.
             return set != null && ability.Caster.Resources.GetResourceAmount(
                 set.Grit.Resource) >= TrueGritRuntime.Evaluate(ability.Caster,
-                    TrueGritDeed.GunslingersDodge, 1, false).EffectiveCost;
+                    TrueGritDeed.GunslingersDodge, 1, false).NativeCheckCost;
         }
 
         public string GetReason()
@@ -127,9 +128,10 @@ namespace KingmakerGunslinger.Deeds
         public int Calculate(AbilityData ability)
         {
             if (ability == null || ability.Caster == null) return 1;
+            // True Grit reduces the cost to 0 but still requires grit above 0.
             return TrueGritRuntime.Evaluate(ability.Caster,
                 TrueGritDeed.GunslingersDodge, 1, false)
-                .EffectiveCost;
+                .NativeCheckCost;
         }
     }
 }

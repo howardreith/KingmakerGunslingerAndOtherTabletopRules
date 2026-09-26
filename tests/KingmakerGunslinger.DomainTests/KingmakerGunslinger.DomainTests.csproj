@@ -58,6 +58,7 @@
     <Compile Include="FavoredClassPerformanceWideningTests.cs" />
     <Compile Include="FavoredClassScopeStackTests.cs" />
     <Compile Include="FavoredClassRangePresentationTests.cs" />
+    <Compile Include="GunslingerDeedFixTests.cs" />
     <Compile Include="FavoredClassScopeActivityTests.cs" />
     <Compile Include="ElementalMostlyHumanTests.cs" />
     <Compile Include="FavoredClassAdvancedTests.cs" />
@@ -480,6 +481,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\DeadShotDecision.cs"><Link>Deeds\DeadShotDecision.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\DeadShotOutcome.cs"><Link>Deeds\DeadShotOutcome.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\DeadShotOutcomeService.cs"><Link>Deeds\DeadShotOutcomeService.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Deeds\DeadShotConfirmationPolicy.cs"><Link>Deeds\DeadShotConfirmationPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\DeadShotRequest.cs"><Link>Deeds\DeadShotRequest.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\DeadShotRollObservation.cs"><Link>Deeds\DeadShotRollObservation.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Deeds\DeadShotService.cs"><Link>Deeds\DeadShotService.cs</Link></Compile>

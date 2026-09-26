@@ -25898,7 +25898,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 training.Selection.AllFeatures.SequenceEqual(training.Choices) &&
                 training.Choices.Select(value => value.AssetGuid).Distinct().Count() == 3 &&
                 training.Choices.All(value => value.Ranks == 1) &&
-                training.Selection.Obligatory && !training.Selection.IgnorePrerequisites;
+                !training.Selection.Obligatory && !training.Selection.IgnorePrerequisites;
             try
             {
                 attacker = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
@@ -25978,7 +25978,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("gun-training-progression",
-                    "5,9,13,17 exactly once; three distinct rank-one choices",
+                    "5,9,13,17 exactly once; three distinct rank-one choices; not obligatory (required while an official type is untrained, skipped once all three are)",
                     observed, selectionContract,
                     "production progression and stable BlueprintFeatureSelection"),
                 Assertion("gun-training-damage", "selected pistol adds Dexterity +4 once",
@@ -26017,6 +26017,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             ItemEntityWeapon weapon = null;
             Deeds.DeadShotExecutionResult mixed = null;
             Deeds.DeadShotExecutionResult allMisfire = null;
+            Deeds.DeadShotExecutionResult calibration = null, confirmed = null, unconfirmed = null,
+                immune = null;
+            BlueprintFeature criticalFocus = null, immunity = null;
+            BlueprintFaction targetFactionBefore = null, hostileFaction = null;
+            ModifiableValue.Modifier naturalArmor = null;
+            int plainCriticalArmorClass = int.MinValue, touchGap = int.MinValue;
+            bool targetPartyDuringCriticals = true;
+            int targetArmorBefore = int.MinValue;
             int gritBefore = -1, gritAfterMixed = -1, gritAfterMisfire = -1;
             long conditionLogsBefore = FirearmConditionCombatLog.Attempts;
             bool cleaned = false;
@@ -26033,6 +26041,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 attacker = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
                 target = new Kingmaker.UI.LevelUp.ChargenUnit(source).Unit;
                 targetDamageBefore = target.Damage;
+                // Critical volleys must never drop the target.
+                target.Descriptor.Stats.HitPoints.BaseValue = 1000;
                 attacker.Descriptor.Stats.BaseAttackBonus.BaseValue = 11;
                 attacker.Descriptor.Stats.Wisdom.BaseValue = 18;
                 attacker.Descriptor.AddFact(gunslinger.Grit.Feature);
@@ -26062,6 +26072,63 @@ namespace KingmakerGunslinger.RuntimeTesting
                     target, 1, 1, 1);
                 gritAfterMisfire = attacker.Descriptor.Resources.GetResourceAmount(
                     gunslinger.Grit.Resource);
+
+                // D2: two natural 20s threaten (the natural 1 is one misfire,
+                // not an aggregate misfire); Critical Focus's +4 and the -4
+                // penalty for two threats add. A calibration volley gives the
+                // native attack bonus, confirmation bonus and critical AC; the
+                // target's AC is then set so a forced 20 confirms and a
+                // forced 1 does not.
+                stage = "critical-calibration";
+                criticalFocus = BlueprintLibraryLookup.RequireExact<BlueprintFeature>(
+                    BlueprintBootstrap.Library, FavoredClass.FavoredClassBlueprints.CriticalFocusGuid,
+                    "Critical Focus");
+                attacker.Descriptor.AddFact(criticalFocus);
+                // Off the party (party criticals follow a difficulty setting),
+                // and +6 natural armor so the firearm touch-AC rule (adjacent,
+                // first range increment) visibly lowers the critical AC.
+                targetFactionBefore = target.Descriptor.Faction;
+                hostileFaction = ScriptableObject.CreateInstance<BlueprintFaction>();
+                hostileFaction.name = "KMG_Runtime_DeadShot_TargetFaction";
+                target.Descriptor.Faction = hostileFaction;
+                targetPartyDuringCriticals = target.IsPlayerFaction;
+                naturalArmor = target.Descriptor.Stats.AC.AddModifier(6, null,
+                    "dead-shot-natural-armor", ModifierDescriptor.NaturalArmor);
+                Func<int, Deeds.DeadShotExecutionResult> criticalVolley = confirmationRoll =>
+                {
+                    target.Damage = 0;
+                    attacker.Descriptor.Resources.Restore(gunslinger.Grit.Resource, 1);
+                    FirearmRuntimeState.Service.Set(weapon, new FirearmState(
+                        FirearmState.CurrentSchemaVersion, 1,
+                        FirearmStateTokenCatalog.DiagnosticLeadBall,
+                        FirearmCondition.Normal));
+                    return Deeds.DeadShotRuntime.ExecuteForRuntimeTestConfirming(attacker,
+                        target, confirmationRoll, 20, 20, 1);
+                };
+                calibration = criticalVolley(20);
+                Deeds.DeadShotConfirmationRecord measured = calibration.Confirmation;
+                if (measured == null || measured.Blocked != null)
+                    throw new InvalidOperationException("The calibration volley made no confirmation.");
+                // The same critical AC outside any attack (no firearm frame),
+                // and the target's ordinary-to-touch gap.
+                plainCriticalArmorClass = Rulebook.Trigger(new RuleCalculateAC(attacker, target,
+                    weapon.Blueprint.AttackType) { IsCritical = true }).TargetAC;
+                touchGap = target.Descriptor.Stats.AC.ModifiedValue - target.Descriptor.Stats.AC.Touch;
+                targetArmorBefore = target.Descriptor.Stats.AC.BaseValue;
+                target.Descriptor.Stats.AC.BaseValue += measured.AttackBonus +
+                    measured.ConfirmationBonus + 11 - measured.CriticalArmorClass;
+                stage = "critical-confirmed";
+                confirmed = criticalVolley(20);
+                stage = "critical-unconfirmed";
+                unconfirmed = criticalVolley(1);
+                stage = "critical-immune-target";
+                immunity = ScriptableObject.CreateInstance<BlueprintFeature>();
+                immunity.name = "KMG_Runtime_DeadShot_CriticalImmunity";
+                immunity.Ranks = 1;
+                immunity.ComponentsArray = new BlueprintComponent[] {
+                    ScriptableObject.CreateInstance<Kingmaker.UnitLogic.FactLogic.AddImmunityToCriticalHits>() };
+                target.Descriptor.AddFact(immunity);
+                immune = criticalVolley(20);
             }
             catch (Exception exception)
             {
@@ -26076,6 +26143,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (attacker != null && attacker.Body.PrimaryHand.MaybeItem != null)
                         attacker.Body.PrimaryHand.RemoveItem(false);
                 }
+                if (target != null && immunity != null)
+                    target.Descriptor.RemoveFact(immunity);
+                if (immunity != null)
+                {
+                    foreach (BlueprintComponent component in immunity.ComponentsArray)
+                        if (component != null) UnityEngine.Object.DestroyImmediate(component);
+                    UnityEngine.Object.DestroyImmediate(immunity);
+                }
+                if (attacker != null && criticalFocus != null)
+                    attacker.Descriptor.RemoveFact(criticalFocus);
+                if (target != null && targetArmorBefore != int.MinValue)
+                    target.Descriptor.Stats.AC.BaseValue = targetArmorBefore;
+                if (target != null && naturalArmor != null)
+                    target.Descriptor.Stats.AC.RemoveModifier(naturalArmor);
+                if (target != null && hostileFaction != null)
+                    target.Descriptor.Faction = targetFactionBefore;
+                if (hostileFaction != null) UnityEngine.Object.DestroyImmediate(hostileFaction);
                 if (target != null) target.Damage = targetDamageBefore;
                 if (target != null) target.Dispose();
                 if (attacker != null) attacker.Dispose();
@@ -26115,6 +26199,40 @@ namespace KingmakerGunslinger.RuntimeTesting
                 allMisfire.Outcome.Misfires && !allMisfire.Outcome.IsHit &&
                 allMisfire.After.IsEmpty &&
                 allMisfire.After.Condition == FirearmCondition.Broken;
+            Func<Deeds.DeadShotExecutionResult, string> describeCritical = value =>
+                value == null || value.Outcome == null ? "missing" :
+                "threats=" + value.Outcome.ThreatCount + ";penalty=" + value.Outcome.ConfirmationPenalty +
+                ";hits=" + value.Outcome.HitCount + ";misfires=" + value.Outcome.Misfires +
+                (value.Confirmation == null ? ";confirmation=none" :
+                    value.Confirmation.Blocked != null ? ";blocked=" + value.Confirmation.Blocked :
+                    ";roll=" + value.Confirmation.NaturalRoll + ";attackBonus=" + value.Confirmation.AttackBonus +
+                    ";confirmationBonus=" + value.Confirmation.ConfirmationBonus +
+                    ";criticalAC=" + value.Confirmation.CriticalArmorClass +
+                    ";confirmed=" + value.Confirmation.Confirmed) +
+                ";nativeConfirmed=" + (value.Delivery != null && value.Delivery.AttackRoll != null &&
+                    value.Delivery.AttackRoll.IsCriticalConfirmed);
+            string criticalObserved = "calibration{" + describeCritical(calibration) + "};confirmed{" +
+                describeCritical(confirmed) + "};unconfirmed{" + describeCritical(unconfirmed) +
+                "};immune{" + describeCritical(immune) + "};plainCriticalAC=" + plainCriticalArmorClass +
+                ";touchGap=" + touchGap + ";targetParty=" + targetPartyDuringCriticals;
+            // Touch AC: the confirmation's critical AC is the plain critical
+            // AC less the ordinary-to-touch gap (FirearmArmorClassService).
+            bool touchContract = !targetPartyDuringCriticals && touchGap >= 6 &&
+                plainCriticalArmorClass != int.MinValue && calibration != null &&
+                calibration.Confirmation != null && calibration.Confirmation.Blocked == null &&
+                calibration.Confirmation.CriticalArmorClass == plainCriticalArmorClass - touchGap;
+            Func<Deeds.DeadShotExecutionResult, bool> twoThreats = value => value != null &&
+                value.Outcome != null && value.Outcome.ThreatCount == 2 &&
+                value.Outcome.ConfirmationPenalty == -4 && value.Outcome.HitCount == 2 &&
+                !value.Outcome.Misfires && value.Delivery != null && value.Delivery.AttackRoll != null;
+            Func<Deeds.DeadShotExecutionResult, bool, bool> confirmationAs = (value, expected) =>
+                twoThreats(value) && value.Confirmation != null && value.Confirmation.Blocked == null &&
+                value.Confirmation.Penalty == -4 && value.Confirmation.ConfirmationBonus == 0 &&
+                value.Confirmation.Confirmed == expected &&
+                value.Delivery.AttackRoll.IsCriticalConfirmed == expected;
+            bool criticalContract = confirmationAs(confirmed, true) && confirmationAs(unconfirmed, false);
+            bool immuneContract = twoThreats(immune) && immune.Confirmation != null &&
+                immune.Confirmation.Blocked != null && !immune.Delivery.AttackRoll.IsCriticalConfirmed;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("dead-shot-progression", "level 7 full-round weapon ability",
@@ -26140,6 +26258,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observed, gritBefore > 0 && gritAfterMixed == gritBefore - 1 &&
                     gritAfterMisfire == gritAfterMixed,
                     "native per-unit grit resource"),
+                Assertion("dead-shot-critical-confirmation",
+                    "two natural 20s threaten (penalty -4); Critical Focus's +4 and the penalty add to 0; the shot's one native confirmation (natural roll + attack bonus + 0 against the critical AC) confirms on a forced 20 and fails on a forced 1, and the delivery's native critical follows it (pre-existing defect D2 fixed)",
+                    criticalObserved, criticalContract,
+                    "probe natural rolls against RuleCalculateWeaponStats.CriticalEdge; RuleCalculateAttackBonus and RuleCalculateAC(IsCritical) on the auto-hit delivery"),
+                Assertion("dead-shot-critical-touch-ac",
+                    "adjacent (first range increment), the one confirmation is against the target's touch critical AC: the plain critical AC less the ordinary-to-touch gap (+6 natural armor), as a native firearm roll's would be",
+                    criticalObserved, touchContract,
+                    "RuleCalculateAC(IsCritical) inside the attack's firearm AC frame (FirearmArmorClassRuntime) versus the same rule outside any attack"),
+                Assertion("dead-shot-critical-immune-target",
+                    "against a target immune to critical hits (the native AddImmunityToCriticalHits) the threats roll no confirmation and the delivery is no critical",
+                    criticalObserved, immuneContract,
+                    "RuleAttackRoll.ImmuneToCriticalHit set by the target's native component"),
                 Assertion("external-isolation", "unchanged party and global-unit snapshots",
                     "cleaned=" + cleaned, cleaned,
                     "item state forgotten and detached units disposed"),
@@ -27808,7 +27938,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 successStunned = false, immunityStunned = false, cleaned = false;
             bool selectionShape = false, positiveGateAtZero = false,
                 zeroCostRequiresPositive = false, variableCost = false,
-                slingersLuckExcluded = false, archetypeChoicesEffective = false;
+                slingersLuckExcluded = false, archetypeChoicesEffective = false,
+                dodgeNativeRefusedAtZero = false, dodgeNativeFreeAtOne = false;
             double durationSeconds = -1d;
             int failureD20 = -1, successD20 = -1;
             int shotEventsBefore = -1, shotEventsAfter = -1;
@@ -27963,6 +28094,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     zeroCostRequiresPositive = !TrueGritRuntime.Evaluate(
                         attacker.Descriptor, TrueGritDeed.StunningShot, 1, false)
                         .Available;
+                    // The Dodge ability's own native resource check (its cost
+                    // calculator): True Grit makes it free, yet at 0 grit the
+                    // native check must still refuse it.
+                    attacker.Descriptor.AddFact(gunslinger.TrueGrit.ChoiceFor(
+                        TrueGritDeed.GunslingersDodge));
+                    var dodgeData = new Kingmaker.UnitLogic.Abilities.AbilityData(
+                        gunslinger.Dodge.ProneAbility, attacker.Descriptor);
+                    var dodgeResource = gunslinger.Dodge.ProneAbility.GetComponent<
+                        Kingmaker.UnitLogic.Abilities.Components.AbilityResourceLogic>();
+                    dodgeNativeRefusedAtZero = dodgeResource != null &&
+                        !dodgeResource.IsAvailableFor(dodgeData);
                     attacker.Descriptor.AddFact(gunslinger.TrueGrit.ChoiceFor(
                         TrueGritDeed.FocusedAim));
                     attacker.Descriptor.AddFact(gunslinger.TrueGrit.ChoiceFor(
@@ -27978,6 +28120,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .Available;
                     attacker.Descriptor.Resources.Restore(
                         gunslinger.Grit.Resource, 1);
+                    dodgeNativeFreeAtOne = dodgeResource != null &&
+                        dodgeResource.IsAvailableFor(dodgeData) &&
+                        dodgeResource.CalculateCost(dodgeData) == 0;
                     TrueGritDecision focused = TrueGritRuntime.Evaluate(
                         attacker.Descriptor, TrueGritDeed.FocusedAim, 1, false);
                     TrueGritDecision twin = TrueGritRuntime.Evaluate(
@@ -28073,11 +28218,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !immunityStunned,
                     "RuleAttackRoll.ImmuneToCriticalHit"),
                 Assertion("true-grit-selection-and-policy",
-                    qualifyTrueGrit ? "two level-20 selections, 24 choices, selected cost reduction, archetype runtime effects, zero-grit gate removal, and fixed exclusion" : "ordinary Stunning Shot cost retained",
-                    observed, !qualifyTrueGrit || (selectionShape &&
+                    qualifyTrueGrit ? "two level-20 selections, 24 choices, selected cost reduction, archetype runtime effects, zero-grit gate removal, fixed exclusion, and the Gunslinger's Dodge ability's own native resource check: free with True Grit, refused at 0 grit" : "ordinary Stunning Shot cost retained",
+                    observed + ";dodgeNativeRefusedAtZero=" + dodgeNativeRefusedAtZero +
+                        ";dodgeNativeFreeAtOne=" + dodgeNativeFreeAtOne,
+                    !qualifyTrueGrit || (selectionShape &&
                     positiveGateAtZero && zeroCostRequiresPositive &&
                     variableCost && slingersLuckExcluded &&
-                    archetypeChoicesEffective),
+                    archetypeChoicesEffective && dodgeNativeRefusedAtZero &&
+                    dodgeNativeFreeAtOne),
                     "production selection blueprints, unit-owned facts, and TrueGritRuntime"),
                 Assertion("external-isolation", "detached units and item cleaned",
                     observed, cleaned, "reference snapshots and disposal"),
