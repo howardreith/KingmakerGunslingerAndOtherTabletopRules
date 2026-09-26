@@ -1,6 +1,15 @@
 # Favored Class Integration - Implementation Report
 
-## COMPLETE LOCALLY - AWAITING OWNER REVIEW
+## PARTIAL - NOT RELEASE QUALIFIED
+
+A follow-up to the fourth review found one more inconsistency in
+`4748a47b2` (section 14): a range-group member unresolved only because its
+liveness read throws stayed tracked and blocked widening, but the owner's
+descriptions still showed its recorded widened range, although every
+unresolved member must keep them native. It is being fixed; the status
+returns to COMPLETE LOCALLY only after the source, the tests, the runtime
+assertion and this report agree on a new exact build. The record below
+stands for `4748a47b2`.
 
 The fourth PR #24 review found two defects in the completion round's
 candidate `12651613c`; both are fixed and requalified (section 14). Dead
@@ -722,3 +731,9 @@ Intermediate candidates of this review (superseded):
   assertion. The complete final gate was stopped during its builds, before
   any launch; `4748a47b2` restores the assertion and adds
   `dead-shot.lane-keeps-every-check`.
+
+Follow-up finding (open):
+
+| Finding | Status |
+| --- | --- |
+| 3. `FavoredClassRangeGroup.Feet` returned native text only for a state problem, so a member unresolved only by a failed liveness read (tracked, blocking widening) still advertised its recorded widened range | OPEN |

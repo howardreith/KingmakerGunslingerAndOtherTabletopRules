@@ -5,8 +5,8 @@ Package: `KingmakerGunslinger-0.0.139-favored-class-integration.zip`
 Build label: Kingmaker Gunslinger 0.0.139.
 Publication status: local candidate, **not published**. No merge, push, tag or
 public release is authorized by this candidate. Its qualification status is
-tracked in `FAVORED-CLASS-IMPLEMENTATION-REPORT.md`: **COMPLETE LOCALLY —
-AWAITING OWNER REVIEW** (release qualification is the owner's decision).
+tracked in `FAVORED-CLASS-IMPLEMENTATION-REPORT.md`: **PARTIAL — NOT RELEASE
+QUALIFIED** while a fourth-review follow-up is fixed and requalified.
 
 The qualified firearm SoundBank is unchanged, SHA-256
 `0E9F88C562F4F937A8941ACE0F241BB31A7ED56B46FBCA549C98F764392EDF18`.
@@ -30,7 +30,9 @@ favored-class choices appear.
 
 ## Status
 
-**COMPLETE LOCALLY — AWAITING OWNER REVIEW** (PR #24 candidate). All 30
+**PARTIAL — NOT RELEASE QUALIFIED** (PR #24 candidate; a fourth-review
+follow-up is open: every unresolved Bard performance area must keep the
+descriptions native). All 30
 scheduled rows are implemented and pass their domain tests and guarded native
 runs, except G08 and G20, whose optional races have no playable provider
 (their counters are published and tested through their other routes). Every
