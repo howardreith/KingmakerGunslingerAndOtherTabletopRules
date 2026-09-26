@@ -234,7 +234,7 @@ Decisions (recorded here rather than asked):
   any reason (escape, the holder falling, dispel, the summon's disposal),
   never touching the initiator part itself (the game's controller drops it,
   and removing it from inside its own buff's removal would re-enter). The
-  establishing attack of every link is durable (corrected under the
+  establishing attack of every link is owned (corrected under the
   2026-09-26 order): `UnitPartSummonGrappleLinks` on the holder records the
   limb as a semantic slot - the primary hand, or an additional limb by
   index - beside the target's unit id, and serializes with the holder, so a
@@ -252,7 +252,37 @@ Decisions (recorded here rather than asked):
   game's state, so escape, death, dismissal, expiry, an area transition, a
   module-disabled load and a repaired load each free precisely the mouth
   they should; an orphan link a save carried without a record is adopted
-  and marked repaired. The
+  and marked repaired.
+
+  What that store cannot do is survive a save, and the reason is the
+  engine's, established by four reproducible observations in the
+  persistence trio and in the save's own bytes. In the frame that saves,
+  every hold is complete on both sides - the victim's held state present
+  with its context naming the holder, the holder's hold buff present, both
+  native grapple parts pointing at each other - and the store names the
+  establishing limb. The unit ids are identical before and after the load,
+  so the store's keying is sound. The bytes carry the holder's hold buff
+  and the Cyclops arming, and carry no victim-side held state and no
+  native grapple part; the link part is written by type with an empty
+  list, whatever shape its records take (public fields, auto-properties
+  with `JsonProperty`, or lines of text - a list of strings on another
+  project part is written, so the obstacle is not the element type alone).
+  After the load neither side of any hold is there.
+
+  So Kingmaker does not carry an active grapple across a save, and a unit
+  part on these summons is written by type without its contents. A
+  maintain after a reload cannot be demonstrated for want of a hold to
+  maintain, and the substitution the order forbids is unreachable there
+  rather than corrected. The persistence trio proves instead that nothing
+  is left in a bad state: after the load no link is live, every mouth is
+  free, and no summon holds a victim it cannot name. This is recorded as a
+  BLOCKED item of the 2026-09-26 order, not as an accepted deviation; the
+  smallest owner decision is whether to accept the store as
+  session-scoped with that safe post-load state, or to authorise a
+  project-owned re-establishment of holds on load, which is new behaviour
+  beyond this order's scope.
+
+  The
   worm holds on a successful grab and swallows through the native part on
   a later turn's successful maintain check, used as though attempting to
   pin, against a foe up to one size smaller (corrected under the
