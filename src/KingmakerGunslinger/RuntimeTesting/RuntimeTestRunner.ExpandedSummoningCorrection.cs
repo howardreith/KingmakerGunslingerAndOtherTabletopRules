@@ -847,10 +847,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                         sequence = ExerciseExpandedSummoningRakeSequence(cat, hostile,
                             fixture.Caster);
                     }
+                    // One target per mouth (2026-09-26): while this cat holds
+                    // the hostile with its bite, a full attack against anyone
+                    // else drops that bite as well as the two rake claws, so
+                    // three planned hands become two.
                     bool sequenceExact = sequence.Contains("held=kept(5/2)") &&
-                        sequence.Contains("other=dropped(3/0)") &&
+                        sequence.Contains("other=dropped(2/0)") &&
                         sequence.Contains("charge=kept(5/2)") &&
-                        sequence.Contains("ordinary=dropped(3/0)");
+                        sequence.Contains("ordinary=dropped(2/0)");
                     ReleaseExpandedSummoningHold(cat, hostile, hold);
                     bool released = hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>() ==
                         null && !hostile.Descriptor.HasFact(grappled);
@@ -2274,8 +2278,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// has three distinct limb identities to name and one multi-link
         /// holder whose mouths must stay apart.
         /// </summary>
-        private static string TakeExpandedSummoningPersistenceHolds(UnitEntityData[] units)
+        private static string TakeExpandedSummoningPersistenceHolds(UnitEntityData[] units,
+            out bool valid)
         {
+            bool ok = true;
             var steps = new List<string>();
             foreach (string[] row in ExpandedSummoningPersistenceHoldPlan)
             {
@@ -2288,13 +2294,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (grab == null || victim == null || limb == null)
                 {
                     steps.Add(row[0] + ":missing");
+                    ok = false;
                     continue;
                 }
                 UnityEngine.Random.InitState(FindNativeD20Seed(20));
                 bool held = grab.TryGrab(victim, limb, true);
+                ItemEntityWeapon recorded = SummonGrappleLinks.EstablishingWeapon(holder, victim);
+                bool sameLimb = ReferenceEquals(recorded, limb);
                 steps.Add(row[0] + "->" + row[1] + ":limb=" + (limb.Blueprint == null ? "?" :
-                    limb.Blueprint.name) + ",held=" + held);
+                    limb.Blueprint.name) + ",held=" + held + ",recorded=" + sameLimb);
+                ok = ok && held && sameLimb;
             }
+            valid = ok;
             return string.Join(";", steps.ToArray());
         }
 
@@ -2347,6 +2358,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ItemEntityWeapon resolved = SummonGrappleLinks.EstablishingWeapon(holder, victim);
                 bool sameLimb = ReferenceEquals(resolved, expected);
                 Buff heldState = SummonHoldComponent.HeldState(holder, victim, grab);
+                // The reloaded hold gets its round, so a cat's rake is legal
+                // on this maintain exactly as it would be in play.
+                UnityEngine.Random.InitState(FindNativeD20Seed(10));
+                if (heldState != null) heldState.TickMechanics();
                 int before = victim.Descriptor.Damage;
                 UnityEngine.Random.InitState(FindNativeD20Seed(20));
                 string maintained = SummonHoldComponent.MaintainLink(holder, victim, grab, null,
@@ -2355,11 +2370,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool namedLimb = expected.Blueprint != null &&
                     maintained.Contains(";limb=" + expected.Blueprint.name) &&
                     !maintained.Contains(";substituted");
+                bool rakeWhenDue = grab.RakeLimbCount <= 0 ||
+                    (maintained.Contains(";rake=") && !maintained.Contains("not-eligible"));
                 steps.Add(row[0] + "->" + row[1] + ":expected=" + (expected.Blueprint == null ?
                     "?" : expected.Blueprint.name) + ",resolved=" + (resolved == null ||
                     resolved.Blueprint == null ? "none" : resolved.Blueprint.name) +
-                    ",sameLimb=" + sameLimb + ",maintain=" + maintained);
-                ok = ok && sameLimb && namedLimb;
+                    ",sameLimb=" + sameLimb + ",rakeWhenDue=" + rakeWhenDue +
+                    ",maintain=" + maintained + ",store=" +
+                    SummonGrappleLinks.Describe(holder));
+                ok = ok && sameLimb && namedLimb && rakeWhenDue;
             }
             UnitEntityData flytrap = ExpandedSummoningPersistenceUnit(units,
                 "KMG_Summoning_Unit_GiantFlytrap");
@@ -2542,6 +2561,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool shut = !ExpandedSummoningMouthStrikes(flytrap, wolves[0], bites[0], out shutRoll);
                 bool free = ExpandedSummoningMouthStrikes(flytrap, wolves[0], bites[2], out freeRoll);
                 var planned = new UnitAttack(wolves[0]);
+                planned.Init(flytrap);
                 List<AttackHandInfo> plannedHands = planned.CreateFullAttack();
                 bool plannedDropped = !plannedHands.Any(info => info != null && info.Hand != null &&
                     ReferenceEquals(info.Hand.MaybeWeapon, bites[0]));
@@ -2595,6 +2615,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 bool noneReach = reached.Count == 0;
                 var occupiedPlan = new UnitAttack(spare);
+                occupiedPlan.Init(flytrap);
                 int occupiedHands = occupiedPlan.CreateFullAttack().Count;
                 steps.Add("allOccupied:reached=" + reached.Count + ";plannedHands=" + occupiedHands +
                     ";" + SummonGrappleLinks.Describe(flytrap));
@@ -2694,7 +2715,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 UnityEngine.Random.InitState(FindNativeD20Seed(20));
                 bool biteHold = grab.TryGrab(hostile, bite, true);
                 string sameTurn = SummonRakeExecution.RakeOnMaintain(tiger, hostile, grab, null);
-                steps.Add("sameTurn:held=" + biteHold + ";rake=" + sameTurn + ";" +
+                steps.Add("sameTurn:held=" + biteHold + sameTurn + ";" +
                     SummonGrappleLinks.Describe(tiger));
                 ok = ok && biteHold && sameTurn.Contains("not-eligible");
 
@@ -2729,6 +2750,11 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 // The same cat holding with a foreclaw maintains with claw damage.
                 SummonHoldComponent.ReleaseLink(tiger, hostile, grab, true);
+                // A single-link release leaves the holder's own initiator part
+                // to the game's grapple controller; the fixture takes its next
+                // hold in the same frame, so it clears the part itself.
+                if (tiger.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleInitiator>() != null)
+                    tiger.Remove<Kingmaker.UnitLogic.Parts.UnitPartGrappleInitiator>();
                 ResetExpandedSummoningHostile(fixture);
                 hostile.Descriptor.State.Size = Size.Medium;
                 UnityEngine.Random.InitState(FindNativeD20Seed(20));
@@ -2802,6 +2828,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             PlaceExpandedSummoningUnit(_rulesRakeCat, ExpandedSummoningOpenPoint(
                 hostile.Position, ordinary ? 2.5f : 9f, used, out chosen));
             _rulesRakeCommand = new UnitAttack(hostile);
+            _rulesRakeCommand.Init(_rulesRakeCat);
             if (!ordinary) _rulesRakeCommand.IsCharge = true;
             else _rulesRakeCommand.ForceFullAttack = true;
             _rulesRakeSteps.Add((ordinary ? "ordinary" : "charge") + ":placed=" + chosen +

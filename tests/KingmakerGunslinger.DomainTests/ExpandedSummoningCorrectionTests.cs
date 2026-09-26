@@ -277,6 +277,10 @@ namespace KingmakerGunslinger.DomainTests
                 "internal static int Repair(UnitEntityData holder, SummonGrabComponent grab)");
             Assertions.False(store.Contains("ConditionalWeakTable"),
                 "The durable store keeps no process-local table.");
+            // Reading must not destroy the store: a read taken before the game
+            // re-links its grapple parts would otherwise empty it for good.
+            Assertions.False(store.Contains("part.Keep(kept)"),
+                "Reconciliation filters the records without writing them back.");
             Assertions.False(store.Contains("[JsonProperty] public ItemEntityWeapon") ||
                 store.Contains("JsonProperty] public UnitEntityData"),
                 "No live Unity or item reference is serialized.");
