@@ -221,7 +221,7 @@ namespace KingmakerGunslinger.FavoredClass
             get
             {
                 return (RankSources.Count > 0 ? "A" : string.Empty) + (Resources.Count > 0 ? "B" : string.Empty) +
-                    (ParamsAbilities.Count > 0 ? "C" : string.Empty);
+                    (ParamsAbilities.Count > 0 ? "C" : string.Empty) + (Gates.Count > 0 ? "D" : string.Empty);
             }
         }
 

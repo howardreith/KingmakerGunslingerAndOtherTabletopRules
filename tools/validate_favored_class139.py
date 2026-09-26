@@ -20,7 +20,7 @@ VERSION = "0.0.139"
 INFORMATIONAL_VERSION = "0.0.139-favored-class-integration"
 PACKAGE = "KingmakerGunslinger-0.0.139-local-runtime.zip"
 PACKAGE_SUFFIX = "favored-class-integration"
-DETERMINISTIC_TEST_COUNT = 1841
+DETERMINISTIC_TEST_COUNT = 1842
 STATIC_KEY = "favoredClassIntegration139"
 
 # Exact ordered (symbol, guid) pairs this candidate appends after the
@@ -197,6 +197,38 @@ APPENDED = (
     ("KMG.FavoredClass.Bard.PerformanceRange.GloriousEpic.Full", "0f8cf9ae1c874e089bf9b875384ed706"),
     ("KMG.FavoredClass.Bard.PerformanceRange.Scandal.Full", "485193cfb5254e21ad30db05f1d2cdaa"),
     ("KMG.FavoredClass.Bard.PerformanceRange.DanceOfTheDead.Full", "7c7e7e8ded0847de9dfca9c6c74d0aaa"),
+    ("KMG.FavoredClass.Oracle.Revelation.TemporalCelerity.Partial", "ff19d64783da4b0c8173a7bddc4bc2e8"),
+    ("KMG.FavoredClass.Oracle.Revelation.TemporalCelerity.Full", "86be83fdb6c343e481795f25045d8a2b"),
+    ("KMG.FavoredClass.Oracle.Revelation.CinderDance.Partial", "3fe79294fc4f4b1b89886e9c3bda808d"),
+    ("KMG.FavoredClass.Oracle.Revelation.CinderDance.Full", "536c30c252a34e6ea104c1839d085d2f"),
+    ("KMG.FavoredClass.Oracle.Revelation.MoltenSkin.Partial", "8ef2f621d64f4f38b89617df475374c5"),
+    ("KMG.FavoredClass.Oracle.Revelation.MoltenSkin.Full", "49d22e7992fb45d5b3aeecc2ce22a7be"),
+    ("KMG.FavoredClass.Oracle.Revelation.WarSight.Partial", "f39c7251fbfa4c08afe6554574763e43"),
+    ("KMG.FavoredClass.Oracle.Revelation.WarSight.Full", "2ffe92e9f47f4b3e8f447801229b3d98"),
+    ("KMG.FavoredClass.Oracle.Revelation.WeaponMastery.Partial", "7860a902ae8a4c16a149dd5fe10d56e5"),
+    ("KMG.FavoredClass.Oracle.Revelation.WeaponMastery.Full", "4cb85e3e80aa4e44809b3554ef16c56a"),
+    ("KMG.FavoredClass.Oracle.Revelation.SparkSkin.Partial", "59c5ceaf438f4f95b1a8c2515166ef55"),
+    ("KMG.FavoredClass.Oracle.Revelation.SparkSkin.Full", "d177cf03db0447179e8bc269cd61aac7"),
+    ("KMG.FavoredClass.Oracle.Revelation.DragonSenses.Partial", "c1a4d832049d4922b1a6fc32e1d5b8cc"),
+    ("KMG.FavoredClass.Oracle.Revelation.DragonSenses.Full", "87b2096c1aec455f96dfddf52ddf6de3"),
+    ("KMG.FavoredClass.Oracle.Revelation.DraconicResistances.Partial", "2ea09410b7a340fe8df00a1e49f4bb62"),
+    ("KMG.FavoredClass.Oracle.Revelation.DraconicResistances.Full", "94a7461b045c4235b6a8d7486ff70c39"),
+    ("KMG.FavoredClass.Oracle.Revelation.FluidNature.Partial", "0066a79f465a486fa55ea12143e1aa03"),
+    ("KMG.FavoredClass.Oracle.Revelation.FluidNature.Full", "c1af9d8a87a8421a91abc0caa1eec89c"),
+    ("KMG.FavoredClass.Oracle.Revelation.FreezingSpells.Partial", "f21558bc39ef4882a3cdc08e0dd3f56d"),
+    ("KMG.FavoredClass.Oracle.Revelation.FreezingSpells.Full", "3a2fbbd0a87a45f8ae339d1b7039d47c"),
+    ("KMG.FavoredClass.Oracle.Revelation.IcySkin.Partial", "4eb55f672da34b469a466a72d6771059"),
+    ("KMG.FavoredClass.Oracle.Revelation.IcySkin.Full", "1de898d3313441e988f48842cc16709c"),
+    ("KMG.FavoredClass.Oracle.Revelation.SpiritOfNature.Partial", "f1ad446e8bde4f329dd9a1fe026b7655"),
+    ("KMG.FavoredClass.Oracle.Revelation.SpiritOfNature.Full", "d1f37dbdc0de4130bb43439f8dd2cae9"),
+    ("KMG.FavoredClass.Oracle.Revelation.NearDeath.Partial", "4f28a4cbd96f4fcaa03daeb7c8159ef0"),
+    ("KMG.FavoredClass.Oracle.Revelation.NearDeath.Full", "564c644c23c443059f42cb30f1439e35"),
+    ("KMG.FavoredClass.Oracle.Revelation.ResistLife.Partial", "e15f9ee3eff6424c94a6f98a0b75c19d"),
+    ("KMG.FavoredClass.Oracle.Revelation.ResistLife.Full", "cf9410d941a04b5b8702a547b8aab11c"),
+    ("KMG.FavoredClass.Sorcerer.BloodlinePower.FireResistance.Partial", "3a0f8d1ffa5a4903891fe00da20ea803"),
+    ("KMG.FavoredClass.Sorcerer.BloodlinePower.FireResistance.Full", "d9a8ab6c61444a00aefc844892f8e559"),
+    ("KMG.FavoredClass.Sorcerer.BloodlinePower.AirResistance.Partial", "37ffaa6b72fe4c41a5e0de10c37b2f9b"),
+    ("KMG.FavoredClass.Sorcerer.BloodlinePower.AirResistance.Full", "16a88cccfb7e4131a626b2c5437b3f60"),
     ("KMG.MostlyHuman.Identity", "d71a4b4250914a7aa6d4bec53dfc768f"),
     ("KMG.MostlyHuman.Ifrit.Selection", "c0485fc76e514ad38c09961dbdc6efc7"),
     ("KMG.MostlyHuman.Ifrit.Standard", "7c508ee3415942bb91f584306d70bf70"),

@@ -158,6 +158,11 @@ namespace KingmakerGunslinger.FavoredClass
                     "acf668c24dfbcdd499276eaf1881486e", "4729c2ac98d02004fb440d17f7786e28") },
                 { "AirBlast", new KeyValuePair<string, string>(
                     "553d9802d5d9de04b941b55cb47d3096", "6d005cc9c3ad3f24e8769aad2fbfdf3f") },
+                // Elemental Resistance has no ability: its own level gates move.
+                { "FireResistance", new KeyValuePair<string, string>(
+                    "24980315c1bdcc4478ebb717e9b81961", null) },
+                { "AirResistance", new KeyValuePair<string, string>(
+                    "6472c51065d734e4b99ac56694925920", null) },
             };
 
         // Classes of an optional provider (Call of the Wild), which may be
@@ -751,6 +756,19 @@ namespace KingmakerGunslinger.FavoredClass
                 case FavoredClassCatalog.EffectSelectedBloodlinePower:
                 {
                     KeyValuePair<string, string> power = BloodlinePowers[targetKey];
+                    if (power.Value == null)
+                    {
+                        var gates = ScriptableObject.CreateInstance<FavoredClassSelectedPowerGates>();
+                        gates.name = "$" + full.name + "_EffectiveLevelGates";
+                        gates.Divisor = divisor;
+                        gates.CapSteps = cap;
+                        gates.TargetKey = targetKey;
+                        gates.Leaf = full;
+                        gates.PowerFeature = BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library,
+                            power.Key, "native bloodline power " + targetKey);
+                        FavoredClassSelectedPowerGates.Register(gates);
+                        return gates;
+                    }
                     var level = ScriptableObject.CreateInstance<FavoredClassSelectedPowerLevel>();
                     level.name = "$" + full.name + "_EffectiveLevel";
                     level.Divisor = divisor;

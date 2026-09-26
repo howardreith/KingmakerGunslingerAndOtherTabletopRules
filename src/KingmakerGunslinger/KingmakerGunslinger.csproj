@@ -224,6 +224,7 @@
     <Compile Include="FavoredClass\Mechanics\FavoredClassEarnedStepsProperty.cs" />
     <Compile Include="FavoredClass\Mechanics\FavoredClassPetNaturalArmor.cs" />
     <Compile Include="FavoredClass\Mechanics\FavoredClassSelectedPowerLevel.cs" />
+    <Compile Include="FavoredClass\Mechanics\FavoredClassSelectedPowerGates.cs" />
     <Compile Include="FavoredClass\FavoredClassRevelationManifest.cs" />
     <Compile Include="FavoredClass\FavoredClassRevelationScopes.cs" />
     <Compile Include="FavoredClass\Mechanics\FavoredClassSelectedRevelationLevel.cs" />
