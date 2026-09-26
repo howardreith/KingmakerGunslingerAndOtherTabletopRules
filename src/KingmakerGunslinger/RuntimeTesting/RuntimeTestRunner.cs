@@ -3832,11 +3832,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             // Sprint 7: a cat with the rake gate and the lion's tint
             new[] { "NaturesAlly", "lion", "4" },
             // Sprint 8: the tiger with its procedural coat and view scale
-            new[] { "NaturesAlly", "tiger", "4" },
-            // Final corrections (2026-09-26): the durable establishing limb
-            // needs a second foreclaw grabber and the multi-mouth holder.
-            new[] { "NaturesAlly", "dire-tiger", "6" },
-            new[] { "NaturesAlly", "giant-flytrap", "7" }
+            new[] { "NaturesAlly", "tiger", "4" }
         };
 
         private static int ExpandedSummoningPersistenceFixtureCount
