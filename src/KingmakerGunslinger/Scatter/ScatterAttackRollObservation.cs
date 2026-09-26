@@ -42,9 +42,9 @@ namespace KingmakerGunslinger.Scatter
 
         internal bool IsMisfire(int misfireThreshold)
         {
-            if (misfireThreshold < 1 || misfireThreshold > 20)
+            if (misfireThreshold < 0 || misfireThreshold > 20)
                 throw new ArgumentOutOfRangeException("misfireThreshold");
-            return NaturalRoll <= misfireThreshold;
+            return misfireThreshold != 0 && NaturalRoll <= misfireThreshold;
         }
     }
 }

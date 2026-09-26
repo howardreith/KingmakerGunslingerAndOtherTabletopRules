@@ -26,6 +26,9 @@ DETERMINISTIC_TEST_COUNT = 1806
 STATIC_KEY = "betterVendorsProgression138"
 PRESERVED_MANIFEST_ENTRIES = 1913
 CATALOG = "docs/better-vendors-progression-catalog.json"
+# Exact ordered (symbol, guid) pairs a later, separately validated candidate
+# appends after this release's 43 identities (none by default).
+AUTHORIZED_APPENDED_AFTER = ()
 
 # Exact ordered identities appended after the preserved 1913-entry ledger.
 APPENDED = (
@@ -93,14 +96,16 @@ def forbid_tokens(path: Path, *tokens: str) -> None:
 def validate(root: Path) -> None:
     if len(APPENDED) != 43 or len({guid for _, guid in APPENDED}) != 43:
         raise AssertionError("The appended progression identity list is malformed")
-    # The Magic Circle block stays exact; only these identities, and then the
+    # The Magic Circle block stays exact; only these identities, then the
     # Expanded Summoning Phase 1 append that validate_expanded_summoning_phase1
-    # pins, may follow it.
+    # pins, and then the Favored Class and Mostly Human blocks may follow it.
     phase1 = tuple((symbol, guid) for symbol, guid, _ in
                    validate_expanded_summoning_phase1.APPENDED)
-    validate_magic_circle.AUTHORIZED_APPENDED = APPENDED + phase1
-    validate_icon_overhaul132.MANIFEST_TOTAL = PRESERVED_MANIFEST_ENTRIES + len(APPENDED) + len(phase1)
-    validate_icon_overhaul132.MANIFEST_ACTIVE = 1911 + len(APPENDED) + len(phase1)
+    validate_magic_circle.AUTHORIZED_APPENDED = APPENDED + phase1 + tuple(AUTHORIZED_APPENDED_AFTER)
+    validate_icon_overhaul132.MANIFEST_TOTAL = (PRESERVED_MANIFEST_ENTRIES + len(APPENDED) +
+                                                len(phase1) + len(AUTHORIZED_APPENDED_AFTER))
+    validate_icon_overhaul132.MANIFEST_ACTIVE = (1911 + len(APPENDED) + len(phase1) +
+                                                 len(AUTHORIZED_APPENDED_AFTER))
     baseline.VERSION = VERSION
     baseline.INFORMATIONAL_VERSION = INFORMATIONAL_VERSION
     baseline.PACKAGE = PACKAGE
@@ -114,6 +119,9 @@ def validate(root: Path) -> None:
     if [(entry["symbol"], entry["guid"]) for entry in tail] != list(APPENDED):
         raise AssertionError("Better Vendors progression identities drifted")
     validate_expanded_summoning_phase1.validate(root)
+    after = entries[PRESERVED_MANIFEST_ENTRIES + len(APPENDED) + len(phase1):]
+    if [(entry["symbol"], entry["guid"]) for entry in after] != list(AUTHORIZED_APPENDED_AFTER):
+        raise AssertionError("Unauthorized identities follow the Expanded Summoning Phase 1 block")
     if any(entry["plannedType"] != "BlueprintItemWeapon" or
            entry["status"] != "active" or
            entry["milestone"] != "Better Vendors progression" for entry in tail):
@@ -169,7 +177,7 @@ def validate(root: Path) -> None:
     state = json.loads((root / "validation/static-validation.json").read_text(
         encoding="utf-8"))[STATIC_KEY]
     expected = {
-        "deterministicTestCount": DETERMINISTIC_TEST_COUNT,
+        "deterministicTestCount": 1806,
         "publicReleaseAuthorized": True,
         "ownerAuthorizedRelease": True,
         "candidateOnly": False,

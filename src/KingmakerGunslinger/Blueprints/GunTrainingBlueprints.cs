@@ -107,7 +107,12 @@ namespace KingmakerGunslinger.Blueprints
             selection.IsClassFeature = true;
             selection.HideInUI = false;
             selection.IgnorePrerequisites = false;
-            selection.Obligatory = true;
+            // Tabletop Gun Training trains one more type every four levels.
+            // Not obligatory: LevelUpState.IsComplete still requires a pick
+            // while an official type is untrained (CanSelectAnything), and a
+            // level whose pick has no untrained official type left (a base
+            // Gunslinger's 17th) completes instead of blocking forever.
+            selection.Obligatory = false;
             selection.Group = FeatureGroup.None;
             selection.Group2 = FeatureGroup.None;
             selection.Features = (BlueprintFeature[])choices.Clone();

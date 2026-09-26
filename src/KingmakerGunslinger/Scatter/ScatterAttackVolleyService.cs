@@ -16,6 +16,23 @@ namespace KingmakerGunslinger.Scatter
             IEnumerable<ScatterAttackRollObservation> rolls)
         {
             if (definition == null) throw new ArgumentNullException("definition");
+            return Evaluate(definition, plan, rolls, definition.MisfireValue);
+        }
+
+        /// <summary>
+        /// Aggregates against the effective misfire threshold that decided
+        /// each native roll (condition, training, ammunition, Reliable and
+        /// favored-class reductions); 0 means no roll can misfire.
+        /// </summary>
+        internal ScatterAttackVolleyDecision Evaluate(
+            FirearmDefinition definition,
+            ScatterTargetPlan plan,
+            IEnumerable<ScatterAttackRollObservation> rolls,
+            int misfireThreshold)
+        {
+            if (definition == null) throw new ArgumentNullException("definition");
+            if (misfireThreshold < 0 || misfireThreshold > 20)
+                throw new ArgumentOutOfRangeException("misfireThreshold");
             if (!definition.IsScatter)
                 throw new ArgumentException("Only a scatter firearm can evaluate a scatter volley.", "definition");
             if (plan == null) throw new ArgumentNullException("plan");
@@ -39,7 +56,7 @@ namespace KingmakerGunslinger.Scatter
                     throw new ArgumentException("A scatter target received more than one attack roll.", "rolls");
                 count++;
                 if (roll.IsHit) hits++;
-                if (roll.IsMisfire(definition.MisfireValue)) misfires++;
+                if (roll.IsMisfire(misfireThreshold)) misfires++;
                 if (roll.IsCriticalThreat) threats++;
                 if (roll.IsCriticalConfirmed) confirmed++;
             }

@@ -133,7 +133,10 @@ namespace KingmakerGunslinger.DomainTests
                     ExpandedSummoningSprint5Tests.AppendedLedgerIdentities +
                     ExpandedSummoningSprint6Tests.AppendedLedgerIdentities +
                     ExpandedSummoningSprint7Tests.AppendedLedgerIdentities +
-                    (ExpandedSummoningSprint8Tests.AppendedLedgerIdentities + ExpandedSummoningCorrectionTests.AppendedLedgerIdentities), all.Length,
+                    (ExpandedSummoningSprint8Tests.AppendedLedgerIdentities + ExpandedSummoningCorrectionTests.AppendedLedgerIdentities) +
+                    KingmakerGunslinger.FavoredClass.FavoredClassIdentityCatalog.IdentityCount +
+                    KingmakerGunslinger.ElementalRaces.ElementalMostlyHumanPolicy.IdentityCount,
+                all.Length,
                 "Manifest total must include 240 production elemental identities.");
             Assertions.Equal(1911 + KingmakerGunslinger.Acquisition
                     .ProgressionWeaponCatalog.NewBlueprintCount +
@@ -142,7 +145,9 @@ namespace KingmakerGunslinger.DomainTests
                     ExpandedSummoningSprint5Tests.AppendedLedgerIdentities +
                     ExpandedSummoningSprint6Tests.AppendedLedgerIdentities +
                     ExpandedSummoningSprint7Tests.AppendedLedgerIdentities +
-                    (ExpandedSummoningSprint8Tests.AppendedLedgerIdentities + ExpandedSummoningCorrectionTests.AppendedLedgerIdentities),
+                    (ExpandedSummoningSprint8Tests.AppendedLedgerIdentities + ExpandedSummoningCorrectionTests.AppendedLedgerIdentities) +
+                    KingmakerGunslinger.FavoredClass.FavoredClassIdentityCatalog.IdentityCount +
+                    KingmakerGunslinger.ElementalRaces.ElementalMostlyHumanPolicy.IdentityCount,
                 all.Count(value => string.Equals(
                 (string)value["status"], "active", StringComparison.Ordinal)),
                 "Manifest active count must include all elemental identities.");
