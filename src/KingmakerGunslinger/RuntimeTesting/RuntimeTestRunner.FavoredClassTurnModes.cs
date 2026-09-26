@@ -513,6 +513,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                         dodgeFailures.Add("on the enemy's turn " + Math.Round(enemySeconds, 2) +
                             " s after the Dodge, the buff was " + ((bool)dodgeRow["enemyTurnBuff"] ? "" : "not ") +
                             "active");
+                    // Every observation inside the Dodge's round (each time step
+                    // before its end and the enemy's turn when it falls there)
+                    // shows the buff and its whole bonus; there is at least one.
+                    var inRound = new List<Tuple<bool, int>>(steps.Where(value => (double)value["seconds"] < 6.0)
+                        .Select(value => Tuple.Create((bool)value["buff"], (int)value["ac"])));
+                    if (enemySeconds < 6.0)
+                        inRound.Add(Tuple.Create((bool)dodgeRow["enemyTurnBuff"], (int)dodgeRow["enemyTurnAc"]));
+                    dodgeRow["inRoundObservations"] = inRound.Count;
+                    dodgeRow["inRoundProtected"] = inRound.Count > 0 &&
+                        inRound.All(value => value.Item1 && value.Item2 == acActive);
                     turns.ReachCasterTurn();
                     gritAt("caster turn 2");
                     dodgeRow["casterTurnTwoCosts"] = string.Join(",", FcbCosts(actor));
@@ -529,9 +539,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     for (int tick = 0; tick < 40 && elapsed() < 6.5; tick++) turns.PumpCommands(false);
                     gritAt("after one round");
                 }
-                bool protectedWindow = turnBased ? dodgeRow["roundEnd"] != null &&
-                    dodgeRow["roundEnd"].Type == JTokenType.Object && (double)dodgeRow["roundEnd"]["seconds"] >= 5.5 &&
-                    (bool)dodgeRow["roundEnd"]["buff"] && (int)dodgeRow["roundEnd"]["ac"] == acActive :
+                bool protectedWindow = turnBased ? (bool)dodgeRow["inRoundProtected"] :
                     (bool)dodgeRow["fiveSecondsBuff"] && (int)dodgeRow["fiveSecondsAc"] == acActive;
                 dodgeRow["expiredBuff"] = actor.Buffs.GetBuff(gunslinger.Dodge.ArmorClassBuff) == null;
                 dodgeRow["expiredAc"] = actor.Stats.AC.ModifiedValue;
