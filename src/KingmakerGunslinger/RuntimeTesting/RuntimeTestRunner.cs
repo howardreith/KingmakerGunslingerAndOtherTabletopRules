@@ -26114,8 +26114,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // is an attack roll (fourth review): a natural 20 confirms
                 // against an AC 31 above its total, and a natural 1 fails with
                 // a +40 attack bonus against an AC far below its total (the base
-                // AC lowered by 20; the game floors the critical AC, so the
-                // margin is asserted as at least 40).
+                // AC lowered by 20 lowered the measured critical AC by 17, 22 to
+                // 5, so the margin is asserted as at least 40).
                 stage = "critical-calibration";
                 criticalFocus = BlueprintLibraryLookup.RequireExact<BlueprintFeature>(
                     BlueprintBootstrap.Library, FavoredClass.FavoredClassBlueprints.CriticalFocusGuid,
