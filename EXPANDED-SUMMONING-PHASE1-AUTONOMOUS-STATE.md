@@ -65,12 +65,12 @@ and no future roster data is published.
 
 | Sprint | State | Evidence |
 |---|---|---|
-| 3 | COMPLETE - INTERNAL-ACCEPTED (evidence below; HumanReview NOT_PERFORMED_NONBLOCKING) | see "Sprint 3 record" and the runtime qualification record |
-| 4 | COMPLETE - INTERNAL-ACCEPTED (evidence below; HumanReview NOT_PERFORMED_NONBLOCKING) | see "Sprint 4 record" and the runtime qualification record |
-| 5 | COMPLETE - INTERNAL-ACCEPTED (evidence below; HumanReview NOT_PERFORMED_NONBLOCKING) | see "Sprint 5 record" and the runtime qualification record |
-| 6 | COMPLETE - INTERNAL-ACCEPTED (evidence below; HumanReview NOT_PERFORMED_NONBLOCKING) | see "Sprint 6 record" and the runtime qualification record |
-| 7 | COMPLETE - INTERNAL-ACCEPTED (evidence below; HumanReview NOT_PERFORMED_NONBLOCKING) | see "Sprint 7 record" and the runtime qualification record |
-| 8 | COMPLETE - INTERNAL-ACCEPTED (evidence below; HumanReview NOT_PERFORMED_NONBLOCKING) | see "Sprint 8 record" and the runtime qualification record |
+| 3 | COMPLETE - CORRECTED AND REQUALIFIED (2026-09-25 correction record; HumanReview NOT_PERFORMED_NONBLOCKING) | see "Sprint 3 record" and the correction order record |
+| 4 | COMPLETE - CORRECTED AND REQUALIFIED (2026-09-25 correction record; HumanReview NOT_PERFORMED_NONBLOCKING) | see "Sprint 4 record" and the correction order record |
+| 5 | COMPLETE - CORRECTED AND REQUALIFIED (2026-09-25 correction record; HumanReview NOT_PERFORMED_NONBLOCKING) | see "Sprint 5 record" and the correction order record |
+| 6 | COMPLETE - CORRECTED AND REQUALIFIED (2026-09-25 correction record; HumanReview NOT_PERFORMED_NONBLOCKING) | see "Sprint 6 record" and the correction order record |
+| 7 | COMPLETE - CORRECTED AND REQUALIFIED (2026-09-25 correction record; HumanReview NOT_PERFORMED_NONBLOCKING) | see "Sprint 7 record" and the correction order record |
+| 8 | COMPLETE - CORRECTED AND REQUALIFIED (2026-09-25 correction record; HumanReview NOT_PERFORMED_NONBLOCKING) | see "Sprint 8 record" and the correction order record |
 
 ## Sprint 3 record - Native Publication Pack I
 
@@ -756,7 +756,71 @@ Findings and what was done:
 9. Requalification: the full gate list on one candidate commit (below).
 10. PR #23 stays a draft and unmerged.
 
-{{CORRECTION_EVIDENCE}}
+### Requalification on the candidate commit
+
+Candidate commit `2f04baf4` (`Build-Local.ps1` PASS: 1805 domain tests, 0
+failures; package `KingmakerGunslinger-0.0.138-local-runtime.zip` SHA-256
+`bb12daef63a78c9ebcd1af9b3f0f51d7ea5d193c3f46028d425dbf443009de12`, DLL SHA-256 `1753c235d42b9f23569a5608837e290b0ab1b77ea20cb006d9a7e1c7d395bb81`). Every gate below ran through the guarded launcher
+on that commit, each batch alone on the machine, and the live installation
+was restored to 0.0.117 / 136 files / `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3` after each batch (the restoration
+records under `runtime-evidence/expanded-summoning-restoration`, one per batch of this candidate's set:
+`20260925T2256005248418Z-observe-expanded-summoning-inventory.json`, `20260925T2302098623052Z-disposable-expanded-summoning-visual-contracts.json`, `20260925T2322090385235Z-disposable-expanded-summoning.json`, `20260925T2328478527124Z-disposable-expanded-summoning-rules.json`, `20260925T2334579715665Z-disposable-expanded-summoning-visual-lifecycle.json`, `20260925T2348412265034Z-working-save-expanded-summoning-prepare.json`, `20260926T0001214650545Z-working-save-expanded-summoning-creature-review.json`, `20260926T0011181316459Z-working-save-expanded-summoning-creature-review.json`).
+
+| Evidence | Gate | Status | Commit | Assertions |
+|---|---|---|---|---|
+| `20260925T2250290639749Z-observe-expanded-summoning-inventory` | observe-expanded-summoning-inventory | PASS | 2f04baf4 | 48 |
+| `20260925T2254080500336Z-observe-expanded-summoning-native-donors` | observe-expanded-summoning-native-donors | PASS | 2f04baf4 | 2 |
+| `20260925T2259196277277Z-disposable-expanded-summoning-visual-contracts` | disposable-expanded-summoning-visual-contracts | PASS | 2f04baf4 | 15 |
+| `20260925T2305288036107Z-disposable-expanded-summoning` | disposable-expanded-summoning | PASS | 2f04baf4 | 17 |
+| `20260925T2308574998456Z-disposable-expanded-summoning-player-path` | disposable-expanded-summoning-player-path | PASS | 2f04baf4 | 10 |
+| `20260925T2325577479285Z-disposable-expanded-summoning-rules` | disposable-expanded-summoning-rules | PASS | 2f04baf4 | 11 |
+| `20260925T2332106243721Z-disposable-expanded-summoning-visual-lifecycle` | disposable-expanded-summoning-visual-lifecycle | PASS | 2f04baf4 | 7 |
+| `20260925T2338139678603Z-working-save-expanded-summoning-prepare` | working-save-expanded-summoning-prepare | PASS | 2f04baf4 | 12 |
+| `20260925T2342075552541Z-working-save-expanded-summoning-verify-cleanup` | working-save-expanded-summoning-verify-cleanup | PASS | 2f04baf4 | 12 |
+| `20260925T2346027778408Z-working-save-expanded-summoning-verify-absent` | working-save-expanded-summoning-verify-absent | PASS | 2f04baf4 | 12 |
+| `20260925T2351580405941Z-working-save-expanded-summoning-creature-review` | working-save-expanded-summoning-creature-review (half 1 of 2) | PASS | 2f04baf4 | 38 |
+| `20260926T0004389221429Z-working-save-expanded-summoning-creature-review` | working-save-expanded-summoning-creature-review (half 2 of 2) | PASS | 2f04baf4 | 24 |
+| `20260926T0011187022628Z/20260926T0015363490585Z-disposable-expanded-summoning` | compatibility-mechanical (gunslinger-only; record `20260926T0011187022628Z`, failures=0, liveTreeUnchanged=True) | PASS | 2f04baf4 | 17 |
+| `20260926T0011187022628Z/20260926T0021271261533Z-disposable-expanded-summoning` | compatibility-mechanical (gunslinger-high-risk-combined; record `20260926T0011187022628Z`, failures=0, liveTreeUnchanged=True) | PASS | 2f04baf4 | 17 |
+
+Live observations carried into the record (each the assertion's own observed
+string, clipped):
+
+- Visual resource lifecycle: `loadingGate:framesWaited=35;inProcess=False,screen=False,manual=False,paused=False,mode=Default||baseline:materials=0;textures=0;live=0;donor[mephit_grey_character_d (Instance)/PF/StandardDynamic/asset:mephit_grey_character_d#1441332,rim=RGBA(1, 1, 1, 1),tint=RGBA(1, 1, 1, 1),variantPatch=<none>];donorRim[RGBA(1.3, 1.2, 1.13, 1)]||cycle1:cast=7;dust-mephit=variant:applied,key=dust-mephit,materials=1,slot=_TintColor,rim=1,rimAnimations=0,controller=reinitialized,driven=KMG_SummonVisualVariant (Instance){renderers=1;materials=1;textures=0;released=False},steam-mephit=variant:applied,key=steam-mephit,materials=1,slot=_TintColor,rim=1,rimAnimations=0,controller=reinitialized,driven=KMG_SummonVisualVariant (Instance){renderers=1;materials=1;textures=0;released=False},steam-mephit=variant:applied,key=steam-mephit,materials=1,slot=_TintColor,rim=1,rimAnimations=0,controller=reinitialized,driven=KMG_SummonVisualVariant (Instance){renderers=1;materials=1;textures=0;released=False},steam-mephit=variant:applied,key=steam-mephit,materials=1,slot=_TintColor,rim=1,rimAnimations=0,controller=reinitialized,driven=KMG_SummonVisualVariant (Instance){renderers=1;materials=1;textures=0;released=False},tiger=variant:applied,key=tiger,materials=1,slot=_TintColor,rim=0,rimAnimations=0,coat=1,coat=Stripes,mode=mesh,triangles=3226,size=512,controller=reinitialized,driven=KMG_SummonVisualVariant (Ins...`; failed attach: `outcome=variant:exception:InvalidOperationException;materials=0;textures=0;live=0;native=True`; module sweep: `released=1;swept=0;materials=0;textures=0;live=0;variantOff=True`;
+  donor and Pteranodon: `donorSame=True;before[mephit_grey_character_d (Instance)/PF/StandardDynamic/asset:mephit_grey_character_d#1441332,rim=RGBA(1, 1, 1, 1),tint=RGBA(1, 1, 1, 1),variantPatch=<none>];after[mephit_grey_character_d (Instance)/PF/StandardDynamic/asset:mephit_grey_character_d#1441332,rim=RGBA(1, 1, 1, 1),tint=RGBA(1, 1, 1, 1),variantPatch=<none>];rimBefore[RGBA(1.3, 1.2, 1.13, 1)];rimAfter[RGBA(2.4, 1.7...`.
+- Cats: `leopard:classification=True;rakeRefused=True;clawGrabbed=False(expected False);biteGrabbed=True;singleAttackClean=True;sameTurnPlan=dropped(3/0);sequence[held=kept(5/2),other=dropped(3/0),charge=kept(5/2),ordinary=dropped(3/0)];released=True;lion:classification=True;rakeRefused=True;clawGrabbed=False(expected False);biteGrabbed=True;singleAttackClean=True;sameTurnPlan=dropped(3/0);sequence[held=kept(5/2),other=dropped(3/0),charge=kept(5/2),ordinary=dropped(3/0)];released=True;dire-lion:classification=True;rakeRefused=True;clawGrabbed=False(expected False);biteGrabbed=True;singleAttackClean=True;sameTurnPlan=dropped(3/0);sequence[held=kept(5/2),other=dropped(3/0),charge=kept(5/2),ordinary=dropped(3/0)];released=True;tiger:classification=True;rakeRefused=True;clawGrabbed=True(expected True);biteGrabbed=True;singleAttackClean=True;sameTurnPlan=dropped(3/0);sequence[held=kept(5/2),other=d...`.
+- Grab sizes and the worm: `grizzly-bear:size=Large;Medium:grabbed=True;maintainCmb=115;tripCmb=106,Large:grabbed=True;maintainCmb=115;tripCmb=106,Huge:grabbed=False;freeGrappleCmb=110;freeTripCmb=106;grabBonus=True;maneuverImmuneRefused=True;takenOnceImmunityEnds=True;leopard:size=Medium;Small:grabbed=True;maintainCmb=112;tripCmb=103,Medium:grabbed=True;maintainCmb=112;tripCmb=103,Large:grabbed=False;freeGrappleCmb=107;freeTripCmb=103;grabBonus=True;maneuverImmuneRefused=True;takenOnceImmunityEnds=True;worm:gargantuanGrabbed=True;swallowSizeRefused=True;eligible=True;swallowed=False;stillHeld=True;damage=0->94;notSwallowed=True;colossalRefused=True;hugeSwallowAllowed=True`.
+- Flytrap: `placement:hostile=dir1@2.5m,wolf0=dir2@2.5m,wolf1=dir3@2.5m,wolf2=dir4@2.5m,wolf3=dir5@2.5m;links:fourBites=True;link0=True;link1=True;busyBiteRefused=True;link2=True;link3=True;fifthRefused=True;held=4;hostile[holder=True,bite=0];wolf0[holder=True,bite=1];wolf1[holder=True,bite=2];wolf2[holder=True,bite=3];distinct=True;pathing[error=False;points=2;obstacles=PathClear;heldStanding=4;from=(13.13,-6.00,-16.82);to=(25.13,-6.00,-4.82);crowd=(19.13,-6.00,-10.82)];release:escaped=True;swept=2;sweptFree=True;reach:reach=True,los=True,dist=2.50,conscious=True;engulf:stillHeldAfterOwnRound=True;eligible=True;largeMaintained=True;heldAfterLarge=1;engulfed=True;engulfTickDamage=True;heldAfterEngulf=0;multiHoldAfterEngulf=False;hostile=cantMove=True;entangled=False;cantAct=True;ending:relinked=True;holdEnded=True;spatOut=True;regrabbed=True;disposalReleased=True`.
+- Mephit roles and the ally-safe cloud: `chillMetal:noMetalUntargetable=True;armored[armor=ChainmailType;metalArmor=True;metalWeapon=False;tier=2];targetable=True;chilled=True;ticks=1,3,3,5,3,0;outcomes=round=2,tier=2,dice=1d4,minimal=1,damage=1/round=3,tier=2,dice=2d4,minimal=2,damage=3/round=4,tier=2,dice=2d4,minimal=2,damage=3/round=5,tier=2,dice=2d4,minimal=2,damage=5/round=6,tier=2,dice=1d4,minimal=1,damage=3/round=7,tier=2,dice=0d4,minimal=0,damage=0;fullTable=True;armed[armor=none;metalArmor=False;metalWeapon=True;tier=1];minimalTicks=1,2,2,2,1,0;minimalTable=True;noMetalAfter=True;execution=ability=KMG_Summoning_Special_IceMephit_SpellLikeTwo;targetable=True;approach=True;endedAfterTicks=True;detached=False;finished=True;result=Success;magma:blinded=True;alliesSighted=True;blindSeconds=30;pooled=True;speed=40->10->40;cannotAttack=True;attackInterrupted=True;abilitiesWork=True;slash18InForm=0;slash18OutOfForm=10(DR 5/magic and the game's difficulty scaling);attacksAgain=True;execution=ability=KMG_Summoning_Special_MagmaMephit_SpellLikeTwo;targetable=True;approach=True;endedAfterTicks=True;detached=False;finished=True;result=Success;glitterdust:blindBefore=False;hostileBlinded=True;partyCasterSighted=True;alliedS...`; wind wall: `windWall:area=True;inside=5;sheltered=True;bow[HuntersBlessingLongbowItem:type=Ranged,autoMiss=True,missChance=0,hit=False];thrown[FrozenCrescentItem:type=Ranged,autoMiss=False,missChance=30,hit=True];melee[LongswordPlus1:type=Melee,autoMiss=False,missChance=0,hit=True];ray:type=RangedTouch,autoMiss=False,missChance=0,hit=True;outcomes=166625bc-9a0f-43bc-b44c-905d58b2a0a6:Deflected:Longbow:missChance=0/166625bc-9a0f-43bc-b44c-905d58b2a0a6:MissChance:ThrowingAxe:missChance=30;ended=True;shelter[component=True;componentBuffIsState=True;areaCaster=KMG_Summoning_Unit_DustMephit;mephitPlayerFaction=False;caster[hasState=True,sourced=KMG_Summoning_Special_DustMephit_WindWallState,allyOfMephit=F...`; stinking cloud: `cloud:area=True;inside=5(KMG_Summoning_Unit_Wolf,KMG_Runtime_ExpandedSummoning_HostileTarget,KMG_Runtime_ExpandedSummoning_RulesCaster,KMG_Summoning_Unit_OozeMephit,StartGamePregenFighterUnit);hostileInside=True;alliesInside=True;hostileNauseated=True;partyCasterClean=True;alliedSummonClean=True;mephitClean=True;gameFramesInside=5;areaTick=ok;insideAfterTick=5;gates[view=True;areaPos=(9.92,-6.00,-12.75);viewPos=(9.92,-6.00,-12.75);shape=ScriptZoneCylinder(radius=6.10,height=100.00,centre=(0.0...`.
+- Cyclops: `ac:target=17;tabletop=19;difficulty=-2;modifiers=DexterityBonus:-1,Size:-1,NaturalArmor:7,Armor:4,Difficulty:-2;armorFact=True;natural7=True;noArmorItem=True;dex=8;size=Large;flash:uses=1->0;armed=True;untimedArming=True;saveWhileArmed=5;saveAfterSpentSameSeed=5;stillArmedAfterSave=True;armedNatural=20;hit=True;threat=True;confirmationRoll=1;confirmed=False;autoFlags=False;spent=True;nextNatural=1;nextMiss=True;secondUseAvailable=False`; across the save and the reload: `uses=0;available=False;armedStates=1;untimed=True;reloadedNatural=20;hit=True;spent=True;nextNatural=1;nextMiss=True`.
+- Web: `web:spiderPos=(7.11,-6.00,-15.26);hostileSpot=dir0@3m;casterSpot=dir1@3m;web:spiderSize=Medium;oneLargerAllowed=True;twoLargerRefused=True;highTouchAc=114;usesBefore=2;webA:ended=True;frames=9;webB:ended=True;frames=6;rollA=type=RangedTouch,natural=10,bonus=5,targetAc=114,hit=False,weapon=RayItem;missedHighTouch=True;lowTouchAc=5;rollB=type=RangedTouch,natural=10,bonus=5,targetAc=5,hit=True,weapon=RayItem;webbedLowTouch=True;uses=2->1->0;thirdUseAvailable=False;stillWebbedHopeless=True;brokeFreeOverwhelming=True;immunityFact=True;directWebOnSpider=refused`.
+- Hooves: `pony:strengthBonus=1;hooves=2;flaggedAtSpawn=True;PrimaryHand:attack=-3(primary 2),damageBonus=0(primary 1);Additional[0]:attack=-3(primary 2),damageBonus=0(primary 1);fullAttack=2;horse:strengthBonus=3;hooves=2;flaggedAtSpawn=True;PrimaryHand:attack=-2(primary 3),damageBonus=1(primary 4, the game's own one-and-a-half);Additional[0]:attack=-2(primary 3),damageBonus=1(primary 3);fullAttack=2`.
+
+Eleven guarded shake-out runs preceded the candidate (commits `815ddd2f`,
+`1d247e1b`, `c9313ce9`, `7f199c48`, `927a3ae6`, `9631b4b8`, `0f13ca40`,
+`11e1d7ca`, `ceacab65`, `c6eb242a`, `0ab74226`); each found a code,
+fixture or record defect that the next commit closed, and the journal
+keeps their findings: the area-effect shell factory, the live grab
+component, the docile hooves at body initialization, the held state's
+round component, the fixture's placement in the open and in the area's
+spatial grid, the wall keyed on the enemy relation (a summon's own ally
+test excludes the party it fights for), the scenarios waiting out the
+game's loading screen, the inventory gate's exactness following the
+corrected blueprints, the natural 1 and 20 on the summon grapple's checks
+(the engine's maneuver rule decides by the sum alone), the Flash of
+Insight arming that lasts until the attack (a one-round state lapsed
+between the save and the reloaded attack), three creature records still
+written as the reviewed draft had them, and the grab that would have
+taken a foe immune to combat maneuvers (the engine's rule returns before
+it computes CMB and CMD there, and the verdict it leaves behind reads as
+a success).
+
+Reviewer findings and closure: items 1-7 implemented exactly and proven
+live above; item 8 (documents) audited in this commit; item 9 (this
+requalification) on the one candidate commit; item 10 kept (draft PR #23,
+unmerged). Nothing was reclassified as an accepted deviation. Internal
+acceptance on this evidence; HumanReview: NOT_PERFORMED_NONBLOCKING.
+OwnerDelegationGranted.
 
 ## Verified facts carried from Phase 0 (do not re-derive)
 
@@ -787,4 +851,4 @@ Findings and what was done:
 
 ## Next executable action
 
-{{NEXT_ACTION}}
+PASS - Sprints 3-8 corrected and requalified on candidate commit `2f04baf4`; draft PR #23 is ready for owner review. No merge, release, permanent deployment or Sprint 9 under the orders of 2026-09-24 and 2026-09-25.
