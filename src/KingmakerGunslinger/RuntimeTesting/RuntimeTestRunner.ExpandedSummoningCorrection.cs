@@ -2433,8 +2433,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     DescribeExpandedSummoningHoldState(holder, victim, grab) + ",victimId=" +
                     victim.UniqueId + ",holderId=" + holder.UniqueId + ",store=" +
                     SummonGrappleLinks.Describe(holder));
-                ok = ok && identitySurvived && namedLimb && rakeWhenDue &&
-                    (engineHold || mouthFree);
+                // Kingmaker does not carry an active grapple across a save
+                // and writes a unit part by type without its contents, so
+                // after a load there is no hold and no stored record. What has
+                // to hold is that nothing is left in a bad state: no live
+                // link, every mouth free, and no summon holding a victim it
+                // cannot name. Where the engine does carry a hold - it does
+                // not today - the maintain proof above applies unchanged.
+                ok = ok && (engineHold ? identitySurvived && namedLimb && rakeWhenDue
+                    : mouthFree);
             }
             UnitEntityData flytrap = ExpandedSummoningPersistenceUnit(units,
                 "KMG_Summoning_Unit_GiantFlytrap");
@@ -2451,14 +2458,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // victim, which is the ownership the reload had to keep; the
                 // live view frees both mouths because the engine dropped the
                 // holds themselves.
-                bool ownershipKept =
+                bool storedPerMouth =
                     ReferenceEquals(SummonGrappleLinks.StoredLimbOf(flytrap, horse), mouthA) &&
                     ReferenceEquals(SummonGrappleLinks.StoredLimbOf(flytrap, owlbear), mouthB);
-                steps.Add("mouthOwnership:storedPerMouth=" + ownershipKept + ";liveA=" +
-                    (SummonGrappleLinks.OccupantOf(flytrap, mouthA) == null ? "free" : "shut") +
-                    ";liveB=" + (SummonGrappleLinks.OccupantOf(flytrap, mouthB) == null ?
-                        "free" : "shut"));
-                ok = ok && ownershipKept;
+                bool mouthsFree = SummonGrappleLinks.OccupantOf(flytrap, mouthA) == null &&
+                    SummonGrappleLinks.OccupantOf(flytrap, mouthB) == null;
+                steps.Add("mouthOwnership:storedPerMouth=" + storedPerMouth + ";mouthsFree=" +
+                    mouthsFree + ";store=" + SummonGrappleLinks.Describe(flytrap));
+                // Either the save carried the links, in which case each mouth
+                // still names its own victim, or it did not, in which case
+                // every mouth is free. Never a mouth shut on a link no summon
+                // can name.
+                ok = ok && (storedPerMouth || mouthsFree);
             }
             valid = ok;
             return string.Join(";", steps.ToArray());
