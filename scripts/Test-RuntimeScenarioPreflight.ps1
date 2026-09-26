@@ -55,6 +55,8 @@ $expected = @(
     'disposable-favored-class-elemental-core',
     'observe-favored-class-host-state',
     'disposable-favored-class-initiative-timing',
+    'disposable-favored-class-turn-modes',
+    'disposable-favored-class-bombs',
     'disposable-favored-class-gunslinger-mechanics',
     'disposable-favored-class-gunslinger-menus',
     'disposable-favored-class-grit',

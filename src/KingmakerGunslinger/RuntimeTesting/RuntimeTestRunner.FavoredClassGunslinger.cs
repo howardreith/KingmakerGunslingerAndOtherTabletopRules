@@ -603,7 +603,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Describe(evidence["confirmation"], failures["confirmation"]),
                 failures["confirmation"].Count == 0, "RuleAttackRoll.CriticalConfirmationBonus"));
             assertions.Add(Assertion("fcb-pistol-whip-native-attack",
-                "the Pistol-Whip deed attack bonus rises by exactly the earned steps while an ordinary firearm shot and the trip CMB are unchanged",
+                "the Pistol-Whip deed attack bonus rises by exactly the earned steps with the one- and two-handed stand-ins, a Broken firearm and the off hand, while an ordinary firearm shot and the trip CMB (natural 20s, so every compared deed trips) are unchanged; a Wrecked firearm or two firearms are refused without spending grit; True Grit makes it free at 1 grit and refuses it at 0",
                 Describe(evidence["pistolWhip"], failures["pistolWhip"]), failures["pistolWhip"].Count == 0,
                 "PistolWhipRuntime.ExecuteForRuntimeTest; RuleAttackRoll.AttackBonus; RuleCombatManeuver"));
             assertions.Add(Assertion("fcb-nimble-native-ac",
@@ -632,6 +632,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
             result.EvidenceFiles.Add(evidencePath);
             return result;
+        }
+
+        /// <summary>
+        /// Removes a leaf with every rank: the native FeatureCollection.RemoveFact
+        /// takes away only one rank while the rank is above one.
+        /// </summary>
+        private static void RemoveFavoredClassRanks(UnitEntityData unit, BlueprintFeature leaf)
+        {
+            if (leaf == null) return;
+            for (int guard = 0; guard < 64 && unit.Descriptor.HasFact(leaf); guard++)
+                unit.Descriptor.RemoveFact(leaf);
+            if (unit.Descriptor.HasFact(leaf))
+                throw new InvalidOperationException("The favored-class leaf kept ranks after removal: " + leaf.name);
         }
 
         private static int GrantFavoredClassRanks(UnitEntityData unit, BlueprintFeature leaf, int ranks)
@@ -958,6 +971,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             return row;
         }
 
+        // M10: the deed's own attack roll gains exactly the earned steps
+        // however the deed is made (one- or two-handed stand-in, a Broken
+        // firearm, the off hand), and neither an ordinary shot nor the trip's
+        // CMB does; a Wrecked firearm or two firearms are refused without
+        // spending grit; True Grit makes it free at 1 grit and refuses it at
+        // 0. Natural 20s hit, so every compared deed also trips.
         private static JObject ObserveFavoredClassPistolWhip(Func<UnitEntityData> create,
             FavoredClassBlueprintSet leaves, GunslingerClassBlueprintSet gunslinger, IList<string> failures)
         {
@@ -965,22 +984,41 @@ namespace KingmakerGunslinger.RuntimeTesting
             FavoredClassLeafPair pair = leaves.Pair(FavoredClassCatalog.EffectPistolWhip, null);
             UnitEntityData target = create();
             target.Descriptor.State.Immortality.Retain();
-            Func<UnitEntityData, PistolWhipResult> whip = attacker =>
+            BlueprintItemWeapon pistol = BlueprintBootstrap.ProductionFirearms.Pistol.Item;
+            BlueprintAbilityResource grit = gunslinger.Grit.Resource;
+            Action<UnitEntityData, int> setGrit = (unit, amount) =>
             {
-                var weapon = new ItemEntityWeapon(BlueprintBootstrap.ProductionFirearms.Pistol.Item);
-                if (attacker.Body.PrimaryHand.MaybeItem != null)
-                    attacker.Body.PrimaryHand.RemoveItem(false);
-                attacker.Body.PrimaryHand.InsertItem(weapon);
-                FirearmRuntimeState.Service.Set(weapon, new FirearmState(FirearmState.CurrentSchemaVersion,
-                    1, FirearmStateTokenCatalog.DiagnosticLeadBall, FirearmCondition.Normal));
-                attacker.Descriptor.Resources.Restore(gunslinger.Grit.Resource, 1);
-                UnityEngine.Random.InitState(FindNativeD20Seed(15));
-                PistolWhipResult result = PistolWhipRuntime.ExecuteForRuntimeTest(attacker, target,
-                    gunslinger.PistolWhip.OneHandedItem, gunslinger.PistolWhip.TwoHandedItem, false);
-                FirearmRuntimeState.Service.Forget(weapon);
-                attacker.Body.PrimaryHand.RemoveItem(false);
-                return result;
+                unit.Descriptor.Resources.Spend(grit, unit.Descriptor.Resources.GetResourceAmount(grit));
+                if (amount > 0) unit.Descriptor.Resources.Restore(grit, amount);
             };
+            Func<UnitEntityData, BlueprintItemWeapon, FirearmCondition, bool, bool, PistolWhipResult> whip =
+                (attacker, firearm, condition, offHand, twoFirearms) =>
+                {
+                    var weapon = new ItemEntityWeapon(firearm);
+                    var second = twoFirearms ? new ItemEntityWeapon(pistol) : null;
+                    if (attacker.Body.PrimaryHand.MaybeItem != null) attacker.Body.PrimaryHand.RemoveItem(false);
+                    if (attacker.Body.SecondaryHand.MaybeItem != null) attacker.Body.SecondaryHand.RemoveItem(false);
+                    (offHand ? attacker.Body.SecondaryHand : attacker.Body.PrimaryHand).InsertItem(weapon);
+                    if (second != null) attacker.Body.SecondaryHand.InsertItem(second);
+                    try
+                    {
+                        FirearmRuntimeState.Service.Set(weapon, new FirearmState(FirearmState.CurrentSchemaVersion,
+                            1, FirearmStateTokenCatalog.DiagnosticLeadBall, condition));
+                        if (second != null)
+                            FirearmRuntimeState.Service.Set(second, new FirearmState(FirearmState.CurrentSchemaVersion,
+                                1, FirearmStateTokenCatalog.DiagnosticLeadBall, FirearmCondition.Normal));
+                        UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                        return PistolWhipRuntime.ExecuteForRuntimeTest(attacker, target,
+                            gunslinger.PistolWhip.OneHandedItem, gunslinger.PistolWhip.TwoHandedItem, false);
+                    }
+                    finally
+                    {
+                        FirearmRuntimeState.Service.Forget(weapon);
+                        if (second != null) FirearmRuntimeState.Service.Forget(second);
+                        if (attacker.Body.PrimaryHand.MaybeItem != null) attacker.Body.PrimaryHand.RemoveItem(false);
+                        if (attacker.Body.SecondaryHand.MaybeItem != null) attacker.Body.SecondaryHand.RemoveItem(false);
+                    }
+                };
             UnitEntityData control = create();
             UnitEntityData invested = create();
             foreach (UnitEntityData unit in new[] { control, invested })
@@ -990,33 +1028,93 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             int granted = GrantFavoredClassRanks(invested, pair.Full, 3);
             int earned = FavoredClassRankPolicy.BenefitSteps(pair.Effect.Rate, granted);
-            PistolWhipResult controlWhip = whip(control);
-            PistolWhipResult investedWhip = whip(invested);
+            row["earnedSteps"] = earned;
+            Func<PistolWhipResult, string> describe = value => value == null ? "<none>" :
+                value.Attack == null || value.Attack.AttackRoll == null ? "refused " + value.Decision.Status :
+                "attack=" + value.Attack.AttackRoll.AttackBonus + ";natural=" + (int)value.Attack.AttackRoll.Roll +
+                ";hit=" + value.Hit + ";surrogate=" + value.Attack.Weapon.Blueprint.name + ";enhancement=" +
+                value.Enhancement + ";trip=" + (value.Trip == null ? "none" : value.Trip.InitiatorCMB.ToString());
+            var cases = new JObject();
+            // Each eligible form: control and invested, with grit 1 each time.
+            foreach (var form in new[]
+            {
+                Tuple.Create("pistol", pistol, FirearmCondition.Normal, false, false),
+                Tuple.Create("musket (two-handed stand-in)", BlueprintBootstrap.ProductionFirearms.Musket.Item,
+                    FirearmCondition.Normal, false, true),
+                Tuple.Create("broken pistol", pistol, FirearmCondition.Broken, false, false),
+                Tuple.Create("off-hand pistol", pistol, FirearmCondition.Normal, true, false),
+            })
+            {
+                setGrit(control, 1);
+                setGrit(invested, 1);
+                PistolWhipResult controlWhip = whip(control, form.Item2, form.Item3, form.Item4, false);
+                PistolWhipResult investedWhip = whip(invested, form.Item2, form.Item3, form.Item4, false);
+                cases[form.Item1] = "control{" + describe(controlWhip) + "};invested{" + describe(investedWhip) + "}";
+                if (controlWhip == null || investedWhip == null || controlWhip.Attack == null ||
+                    investedWhip.Attack == null || controlWhip.Attack.AttackRoll == null ||
+                    investedWhip.Attack.AttackRoll == null)
+                {
+                    failures.Add(form.Item1 + ": a Pistol-Whip attack was not executed");
+                    continue;
+                }
+                if (investedWhip.Attack.AttackRoll.AttackBonus - controlWhip.Attack.AttackRoll.AttackBonus != earned)
+                    failures.Add(form.Item1 + ": the deed attack bonus did not rise by exactly the earned steps");
+                if (investedWhip.Decision.TwoHanded != form.Item5 || !ReferenceEquals(investedWhip.Attack.Weapon.Blueprint,
+                        form.Item5 ? gunslinger.PistolWhip.TwoHandedItem : gunslinger.PistolWhip.OneHandedItem))
+                    failures.Add(form.Item1 + ": the wrong stand-in weapon was used");
+                if (controlWhip.Trip == null || investedWhip.Trip == null)
+                    failures.Add(form.Item1 + ": a natural 20 did not trip, so the CMB comparison is vacuous");
+                else if (controlWhip.Trip.InitiatorCMB != investedWhip.Trip.InitiatorCMB)
+                    failures.Add(form.Item1 + ": the trip CMB changed");
+            }
+            // Refusals spend no grit and make no attack.
+            foreach (var refusal in new[]
+            {
+                Tuple.Create("wrecked pistol", FirearmCondition.Wrecked, false, PistolWhipStatus.Wrecked),
+                Tuple.Create("two firearms", FirearmCondition.Normal, true, PistolWhipStatus.NotExactEquippedFirearm),
+            })
+            {
+                setGrit(invested, 1);
+                PistolWhipResult refused = whip(invested, pistol, refusal.Item2, false, refusal.Item3);
+                int left = invested.Descriptor.Resources.GetResourceAmount(grit);
+                cases[refusal.Item1] = describe(refused) + ";gritLeft=" + left;
+                if (refused == null || refused.Decision.Status != refusal.Item4 || refused.Attack != null || left != 1)
+                    failures.Add(refusal.Item1 + ": not refused exactly without spending grit");
+            }
+            // True Grit (Pistol-Whip): free at 1 grit, refused at 0.
+            BlueprintFeature trueGrit = gunslinger.TrueGrit.ChoiceFor(TrueGritDeed.PistolWhip);
+            invested.Descriptor.AddFact(trueGrit);
+            setGrit(invested, 1);
+            PistolWhipResult free = whip(invested, pistol, FirearmCondition.Normal, false, false);
+            int afterFree = invested.Descriptor.Resources.GetResourceAmount(grit);
+            setGrit(invested, 0);
+            PistolWhipResult empty = whip(invested, pistol, FirearmCondition.Normal, false, false);
+            invested.Descriptor.RemoveFact(trueGrit);
+            cases["true grit at 1 grit"] = describe(free) + ";gritLeft=" + afterFree;
+            cases["true grit at 0 grit"] = describe(empty);
+            if (free == null || free.Attack == null || afterFree != 1)
+                failures.Add("True Grit Pistol-Whip at 1 grit was not free");
+            if (empty == null || empty.Decision.Status != PistolWhipStatus.InsufficientGrit || empty.Attack != null)
+                failures.Add("True Grit Pistol-Whip at 0 grit was not refused");
+            // Observation for review (tabletop Pistol-Whip adds the firearm's
+            // enhancement bonus to attack and damage): the Pistol +1 deed's
+            // attack bonus against the plain pistol's, both invested.
+            setGrit(invested, 1);
+            PistolWhipResult enhanced = whip(invested, BlueprintBootstrap.MagicFirearms.Entries[0].Item,
+                FirearmCondition.Normal, false, false);
+            setGrit(invested, 1);
+            PistolWhipResult plain = whip(invested, pistol, FirearmCondition.Normal, false, false);
+            cases["enhanced pistol (observation)"] = "plus1{" + describe(enhanced) + "};plain{" + describe(plain) + "}";
+            if (enhanced != null && plain != null && enhanced.Attack != null && plain.Attack != null)
+                row["enhancedPistolAttackDelta"] = enhanced.Attack.AttackRoll.AttackBonus - plain.Attack.AttackRoll.AttackBonus;
+            row["cases"] = cases;
+            // No leakage into an ordinary shot.
             RuleAttackRoll controlShot = FireOrdinaryShot(control, target);
             RuleAttackRoll investedShot = FireOrdinaryShot(invested, target);
-            Func<PistolWhipResult, string> describe = value => value == null || value.Attack == null ||
-                value.Attack.AttackRoll == null ? "<no attack>" :
-                "attack=" + value.Attack.AttackRoll.AttackBonus + ";hit=" + value.Hit + ";trip=" +
-                (value.Trip == null ? "none" : value.Trip.InitiatorCMB.ToString());
-            row["earnedSteps"] = earned;
-            row["control"] = describe(controlWhip);
-            row["invested"] = describe(investedWhip);
             row["controlShot"] = controlShot.AttackBonus;
             row["investedShot"] = investedShot.AttackBonus;
-            if (controlWhip == null || investedWhip == null || controlWhip.Attack == null ||
-                investedWhip.Attack == null || controlWhip.Attack.AttackRoll == null ||
-                investedWhip.Attack.AttackRoll == null)
-            {
-                failures.Add("a Pistol-Whip attack was not executed");
-                return row;
-            }
-            if (investedWhip.Attack.AttackRoll.AttackBonus - controlWhip.Attack.AttackRoll.AttackBonus != earned)
-                failures.Add("the deed attack bonus did not rise by the earned steps");
             if (investedShot.AttackBonus != controlShot.AttackBonus)
                 failures.Add("an ordinary firearm shot received the Pistol-Whip bonus");
-            if (controlWhip.Trip != null && investedWhip.Trip != null &&
-                controlWhip.Trip.InitiatorCMB != investedWhip.Trip.InitiatorCMB)
-                failures.Add("the trip CMB changed");
             return row;
         }
 

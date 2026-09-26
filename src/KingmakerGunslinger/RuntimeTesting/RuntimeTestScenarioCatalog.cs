@@ -324,6 +324,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             "observe-favored-class-host-state";
         internal const string DisposableFavoredClassInitiativeTiming =
             "disposable-favored-class-initiative-timing";
+        internal const string DisposableFavoredClassTurnModes =
+            "disposable-favored-class-turn-modes";
+        internal const string DisposableFavoredClassBombs =
+            "disposable-favored-class-bombs";
         internal const string DisposableFavoredClassGunslingerMechanics =
             "disposable-favored-class-gunslinger-mechanics";
         internal const string DisposableFavoredClassGunslingerMenus =
@@ -704,6 +708,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableFavoredClassElementalCore,
                 ObserveFavoredClassHostState,
                 DisposableFavoredClassInitiativeTiming,
+                DisposableFavoredClassTurnModes,
+                DisposableFavoredClassBombs,
                 DisposableFavoredClassGunslingerMechanics,
                 DisposableFavoredClassGunslingerMenus,
                 DisposableFavoredClassGrit,
