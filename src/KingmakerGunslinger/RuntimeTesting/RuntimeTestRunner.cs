@@ -2201,8 +2201,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 if (_expandedSummoningPersistenceSaveCompleted)
                 {
-                    // The clock starts again now that the bytes are written.
-                    Game.Instance.IsPaused = _expandedSummoningPersistenceWasPaused;
                     CompleteExpandedSummoningPersistence(RuntimeTestStatuses.Pass, "");
                     return;
                 }
@@ -3626,6 +3624,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // use survives exactly once and never doubles.
                     ArmExpandedSummoningPersistenceFlash(
                         _expandedSummoningPersistencePreparedUnits);
+                    // The holds live as long as the arming does: taken here,
+                    // with each victim beside its holder and each holder's
+                    // attack bonus raised, so the reach check keeps the link
+                    // and the victims' break-free attempts fail through the
+                    // frames before the save.
+                    _expandedSummoningPersistenceLinkDetail =
+                        TakeExpandedSummoningPersistenceHolds(
+                            _expandedSummoningPersistencePreparedUnits,
+                            out _expandedSummoningPersistenceLinkValid);
                     _expandedSummoningPersistenceFixtureSpawned = true;
                     return;
                 }
@@ -3763,31 +3770,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             // the motion review: rounds pass there, and the reach check and
             // the victims' own break-free attempts end links, correctly.
             if (prepare)
-            {
-                // Two ways to lose a hold before the bytes are written. Taken
-                // hundreds of frames early it is ended by the rounds that pass
-                // - the reach check and the victims' own break-free attempts,
-                // both correct. Taken in the frame that calls SaveGame it is
-                // absent from the save, which does not include what changed in
-                // that frame. So the clock stops, the holds are taken, and the
-                // save follows a few frames later: no game time passes and the
-                // state is already there when the snapshot is made.
-                if (!_expandedSummoningPersistenceHoldsTaken)
-                {
-                    _expandedSummoningPersistenceHoldsTaken = true;
-                    _expandedSummoningPersistenceWasPaused = Game.Instance.IsPaused;
-                    Game.Instance.IsPaused = true;
-                    _expandedSummoningPersistenceLinkDetail = "paused=" +
-                        Game.Instance.IsPaused + ";" +
-                        TakeExpandedSummoningPersistenceHolds(
-                            _expandedSummoningPersistencePreparedUnits,
-                            out _expandedSummoningPersistenceLinkValid);
-                    return;
-                }
-                if (_expandedSummoningPersistenceHoldSettle++ <
-                        ExpandedSummoningPersistenceHoldSettleFrames)
-                    return;
-            }
+                _expandedSummoningPersistenceLinkDetail += ";atSave=" +
+                    DescribeExpandedSummoningPersistenceHolds(
+                        _expandedSummoningPersistencePreparedUnits);
             _workingSaveSmoke.ArmExactWorkingSaveWrite();
             MethodInfo saveGame = typeof(Game).GetMethods(BindingFlags.Instance |
                 BindingFlags.Public | BindingFlags.NonPublic).Single(value =>
