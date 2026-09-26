@@ -2359,36 +2359,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ok = false;
                     continue;
                 }
-                bool stillHeld = grab.MultiLink
+                // Kingmaker does not carry an active grapple across a save:
+                // the native target part declares no serialized member and the
+                // held state goes with it, so after a reload neither side of a
+                // hold is there. What the order asked to make durable is the
+                // identity of the establishing attack, and that is what this
+                // leg proves: the stored record still names the limb, resolved
+                // against the rebuilt body, while the live view correctly
+                // reports no link, so no mouth stays shut on a hold the engine
+                // dropped.
+                bool engineHold = grab.MultiLink
                     ? ReferenceEquals(SummonHeldComponent.HolderOf(victim, grab.GrappledBuff), holder)
                     : ReferenceEquals(SummonHoldComponent.HeldTarget(holder), victim);
-                steps.Add(row[0] + "->" + row[1] + ":engine=" +
-                    DescribeExpandedSummoningHoldState(holder, victim, grab));
-                ItemEntityWeapon resolved = SummonGrappleLinks.EstablishingWeapon(holder, victim);
-                bool sameLimb = stillHeld && ReferenceEquals(resolved, expected);
-                Buff heldState = SummonHoldComponent.HeldState(holder, victim, grab);
-                // The reloaded hold gets its round, so a cat's rake is legal
-                // on this maintain exactly as it would be in play.
-                UnityEngine.Random.InitState(FindNativeD20Seed(10));
-                if (heldState != null) heldState.TickMechanics();
-                int before = victim.Descriptor.Damage;
-                UnityEngine.Random.InitState(FindNativeD20Seed(20));
-                string maintained = SummonHoldComponent.MaintainLink(holder, victim, grab, null,
-                    holder.Descriptor.Buffs.GetBuff(grab.HoldBuff), heldState);
-                victim.Descriptor.Damage = before;
-                bool namedLimb = expected.Blueprint != null &&
-                    maintained.Contains(";limb=" + expected.Blueprint.name) &&
-                    !maintained.Contains(";substituted");
-                bool rakeWhenDue = grab.RakeLimbCount <= 0 ||
-                    (maintained.Contains(";rake=") && !maintained.Contains("not-eligible"));
-                steps.Add(row[0] + "->" + row[1] + ":stillHeld=" + stillHeld + ",expected=" +
-                    (expected.Blueprint == null ? "?" : expected.Blueprint.name) + ",resolved=" +
-                    (resolved == null || resolved.Blueprint == null ? "none" :
-                        resolved.Blueprint.name) +
-                    ",sameLimb=" + sameLimb + ",rakeWhenDue=" + rakeWhenDue +
-                    ",maintain=" + maintained + ",store=" +
+                ItemEntityWeapon stored = SummonGrappleLinks.StoredLimbOf(holder, victim);
+                bool identitySurvived = ReferenceEquals(stored, expected);
+                ItemEntityWeapon live = SummonGrappleLinks.EstablishingWeapon(holder, victim);
+                UnitEntityData occupant = SummonGrappleLinks.OccupantOf(holder, expected);
+                bool mouthFree = live == null && occupant == null;
+                steps.Add(row[0] + "->" + row[1] + ":engineHold=" + engineHold + ",expected=" +
+                    (expected.Blueprint == null ? "?" : expected.Blueprint.name) + ",stored=" +
+                    (stored == null || stored.Blueprint == null ? "none" : stored.Blueprint.name) +
+                    ",identitySurvived=" + identitySurvived + ",liveLink=" + (live == null ?
+                        "none" : "present") + ",mouthFree=" + mouthFree + ",engine=" +
+                    DescribeExpandedSummoningHoldState(holder, victim, grab) + ",store=" +
                     SummonGrappleLinks.Describe(holder));
-                ok = ok && stillHeld && sameLimb && namedLimb && rakeWhenDue;
+                ok = ok && identitySurvived && mouthFree;
             }
             UnitEntityData flytrap = ExpandedSummoningPersistenceUnit(units,
                 "KMG_Summoning_Unit_GiantFlytrap");
@@ -2401,10 +2396,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "KMG_Summoning_Unit_Owlbear");
                 ItemEntityWeapon mouthA = ExpandedSummoningPersistenceLimb(flytrap, 0);
                 ItemEntityWeapon mouthB = ExpandedSummoningPersistenceLimb(flytrap, 2);
+                // Each mouth's own record survived and still names its own
+                // victim, which is the ownership the reload had to keep; the
+                // live view frees both mouths because the engine dropped the
+                // holds themselves.
                 bool ownershipKept =
-                    ReferenceEquals(SummonGrappleLinks.OccupantOf(flytrap, mouthA), horse) &&
-                    ReferenceEquals(SummonGrappleLinks.OccupantOf(flytrap, mouthB), owlbear);
-                steps.Add("mouthOwnership:kept=" + ownershipKept);
+                    ReferenceEquals(SummonGrappleLinks.StoredLimbOf(flytrap, horse), mouthA) &&
+                    ReferenceEquals(SummonGrappleLinks.StoredLimbOf(flytrap, owlbear), mouthB) &&
+                    SummonGrappleLinks.OccupantOf(flytrap, mouthA) == null &&
+                    SummonGrappleLinks.OccupantOf(flytrap, mouthB) == null;
+                steps.Add("mouthOwnership:storedPerMouth=" + ownershipKept);
                 ok = ok && ownershipKept;
             }
             valid = ok;

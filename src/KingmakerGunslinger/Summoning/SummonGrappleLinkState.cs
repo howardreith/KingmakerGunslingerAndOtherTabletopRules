@@ -157,6 +157,20 @@ namespace KingmakerGunslinger.Summoning
             return record == null ? null : Resolve(holder, record);
         }
 
+        /// <summary>
+        /// The limb a stored record names for this target, whatever the game's
+        /// own state says now. This is how a reload proves the identity
+        /// survived even where the engine did not carry the hold itself.
+        /// </summary>
+        internal static ItemEntityWeapon StoredLimbOf(UnitEntityData holder,
+            UnitEntityData target)
+        {
+            if (holder == null || holder.Descriptor == null || target == null) return null;
+            UnitPartSummonGrappleLinks part = holder.Get<UnitPartSummonGrappleLinks>();
+            SummonGrappleLinkRecord record = part == null ? null : part.Find(target.UniqueId);
+            return record == null ? null : Resolve(holder, record);
+        }
+
         /// <summary>True when this limb already holds or has engulfed someone.</summary>
         internal static bool IsLimbOccupied(UnitEntityData holder, ItemEntityWeapon weapon)
         {
