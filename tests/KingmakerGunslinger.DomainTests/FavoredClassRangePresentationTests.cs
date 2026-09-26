@@ -290,28 +290,33 @@ namespace KingmakerGunslinger.DomainTests
                 fresh.Areas.UnresolvedCount == 0, "The retry narrowed E once its data returned.");
         }
 
-        // Fourth review, finding 2: a liveness read that throws forgets nothing.
+        // Fourth review, finding 2 and its follow-up: a liveness read that
+        // throws forgets nothing, and the member it leaves unresolved keeps
+        // the text native like every other unresolved member.
         internal static void ALivenessReadThatThrowsForgetsNothing()
         {
             var group = new Group();
             var a = new Area("A");
             group.Cast(a, FavoredClassWideningOutcome.Widened);
+            Assertions.True(group.Feet() == Configured, "A alone and widened: the widened range.");
             a.LivenessThrows = true;
-            Assertions.True(group.Feet() == Configured && group.Areas.Contains(a),
-                "A stays tracked; its recorded widening still decides the text.");
+            Assertions.True(group.Feet() == null && group.Areas.Contains(a) && a.Widened,
+                "While its liveness read fails, A stays tracked and widened and the text is native.");
             Assertions.True(group.Areas.ProblemOf(a) != null && group.Areas.ProblemOf(a).Contains("liveness"),
                 "A is unresolved: its liveness cannot be read.");
             Assertions.True(group.Reported("A", "unresolved: its liveness probe threw"), "A diagnostic is reported.");
             Assertions.True(!group.Areas.MayWiden(new Area("X")), "Widening is blocked meanwhile.");
+            Assertions.True(group.Feet() == null && a.Widened && !a.Ended && group.Areas.Contains(a),
+                "Reading the text again neither narrows nor ends nor forgets A.");
             a.LivenessThrows = false;
             Assertions.True(group.Feet() == Configured && a.Widened && group.Areas.ProblemOf(a) == null,
-                "Readable again, A is kept as it was: never narrowed or forgotten by the read.");
+                "Readable again, the still-live widened A resumes its widened text: never narrowed or forgotten by the read.");
             Assertions.True(group.Areas.MayWiden(new Area("Y")) && group.Reported("A", "resolved"),
                 "Widening is allowed again and the resolution reported.");
             // Ended while unreadable: forgotten only once the read works.
             a.LivenessThrows = true;
             a.Ended = true;
-            group.Feet();
+            Assertions.True(group.Feet() == null, "Native text while the ended A cannot be read.");
             Assertions.True(group.Areas.Contains(a), "An unreadable member is never forgotten.");
             a.LivenessThrows = false;
             Assertions.True(group.Feet() == Configured && !group.Areas.Contains(a),
@@ -417,12 +422,13 @@ namespace KingmakerGunslinger.DomainTests
             }
         }
 
-        // Fourth review, finding 2: under every fault (a failed narrowing, an
-        // ending that throws or does nothing, unavailable area data, a
-        // liveness read that throws, and their recovery) no live area is ever
-        // untracked, a widened live area beside native or configured text is
-        // always tracked as unresolved, widened text means every live area is
-        // widened, and an unresolved member blocks widening.
+        // Fourth review, finding 2 and its follow-up: under every fault (a
+        // failed narrowing, an ending that throws or does nothing, unavailable
+        // area data, a liveness read that throws, and their recovery) no live
+        // area is ever untracked, widened text means every live area is
+        // widened, every unresolved member, by its state or by its liveness
+        // alone, blocks widening and keeps the text native, and a widened live
+        // area sits beside native text only while a member is unresolved.
         internal static void NoUntrackedWidenedAreaBesideNativeText()
         {
             var random = new Random(4);
@@ -431,7 +437,7 @@ namespace KingmakerGunslinger.DomainTests
                 FavoredClassWideningOutcome.Widened, FavoredClassWideningOutcome.WidenedRingless,
                 FavoredClassWideningOutcome.Failed, FavoredClassWideningOutcome.Deferred
             };
-            int unresolvedSeen = 0, resolvedSeen = 0;
+            int unresolvedSeen = 0, resolvedSeen = 0, livenessOnlySeen = 0;
             for (int run = 0; run < 400; run++)
             {
                 var group = new Group();
@@ -477,20 +483,31 @@ namespace KingmakerGunslinger.DomainTests
                     int? feet = group.Feet();
                     foreach (Area area in live)
                         Assertions.True(group.Areas.Contains(area), at + "the live " + area.Name + " is untracked.");
+                    // Native text beside a widened live area only while a member
+                    // (that area, or a sibling whose liveness cannot be read) is
+                    // unresolved: tracked, diagnosed and retried.
                     foreach (Area area in live.Where(value => value.Widened))
-                        Assertions.True(feet == Configured || group.Areas.ProblemOf(area) != null,
-                            at + "the widened " + area.Name + " is live beside native text without being unresolved.");
+                        Assertions.True(feet == Configured || group.Areas.UnresolvedCount > 0,
+                            at + "the widened " + area.Name + " is live beside native text while no member is unresolved.");
                     if (feet == Configured && live.Length > 0)
                         Assertions.True(live.All(value => value.Widened), at + "the widened text beside a native area.");
                     if (group.Areas.UnresolvedCount > 0)
                     {
                         unresolvedSeen++;
                         Assertions.True(!group.Areas.MayWiden(new Area("probe")), at + "an unresolved member allowed widening.");
+                        Assertions.True(feet == null, at + "an unresolved member left the text widened or configured.");
                     }
+                    // ProblemOf reports a state problem first, so a member whose
+                    // problem is its failed liveness read is unresolved by it alone.
+                    if (areas.Any(value => group.Areas.ProblemOf(value) != null &&
+                        group.Areas.ProblemOf(value).StartsWith("its liveness probe threw", StringComparison.Ordinal)))
+                        livenessOnlySeen++;
                     if (group.Diagnostics.Any(value => value.Contains(": resolved")))
                         resolvedSeen++;
                 }
             }
+            Assertions.True(livenessOnlySeen > 0,
+                "The sequences reached members unresolved by their liveness read alone (" + livenessOnlySeen + ").");
             Assertions.True(unresolvedSeen > 0 && resolvedSeen > 0,
                 "The sequences reached unresolved members and resolved them (" + unresolvedSeen + ", " + resolvedSeen + ").");
         }
