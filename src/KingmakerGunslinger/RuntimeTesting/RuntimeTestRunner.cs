@@ -3764,18 +3764,29 @@ namespace KingmakerGunslinger.RuntimeTesting
             // the victims' own break-free attempts end links, correctly.
             if (prepare)
             {
-                // The game saves asynchronously and keeps ticking while it
-                // does: rounds pass, the reach check runs and the victims make
-                // their own break-free attempts, so a hold taken for the save
-                // can be gone before the bytes are written. The clock stops
-                // for the holds and the save, and starts again afterwards.
-                _expandedSummoningPersistenceWasPaused = Game.Instance.IsPaused;
-                Game.Instance.IsPaused = true;
-                _expandedSummoningPersistenceLinkDetail = "paused=" +
-                    Game.Instance.IsPaused + ";" +
-                    TakeExpandedSummoningPersistenceHolds(
-                        _expandedSummoningPersistencePreparedUnits,
-                        out _expandedSummoningPersistenceLinkValid);
+                // Two ways to lose a hold before the bytes are written. Taken
+                // hundreds of frames early it is ended by the rounds that pass
+                // - the reach check and the victims' own break-free attempts,
+                // both correct. Taken in the frame that calls SaveGame it is
+                // absent from the save, which does not include what changed in
+                // that frame. So the clock stops, the holds are taken, and the
+                // save follows a few frames later: no game time passes and the
+                // state is already there when the snapshot is made.
+                if (!_expandedSummoningPersistenceHoldsTaken)
+                {
+                    _expandedSummoningPersistenceHoldsTaken = true;
+                    _expandedSummoningPersistenceWasPaused = Game.Instance.IsPaused;
+                    Game.Instance.IsPaused = true;
+                    _expandedSummoningPersistenceLinkDetail = "paused=" +
+                        Game.Instance.IsPaused + ";" +
+                        TakeExpandedSummoningPersistenceHolds(
+                            _expandedSummoningPersistencePreparedUnits,
+                            out _expandedSummoningPersistenceLinkValid);
+                    return;
+                }
+                if (_expandedSummoningPersistenceHoldSettle++ <
+                        ExpandedSummoningPersistenceHoldSettleFrames)
+                    return;
             }
             _workingSaveSmoke.ArmExactWorkingSaveWrite();
             MethodInfo saveGame = typeof(Game).GetMethods(BindingFlags.Instance |
