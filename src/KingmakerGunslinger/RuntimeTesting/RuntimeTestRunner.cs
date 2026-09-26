@@ -2201,6 +2201,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 if (_expandedSummoningPersistenceSaveCompleted)
                 {
+                    // The clock starts again now that the bytes are written.
+                    Game.Instance.IsPaused = _expandedSummoningPersistenceWasPaused;
                     CompleteExpandedSummoningPersistence(RuntimeTestStatuses.Pass, "");
                     return;
                 }
@@ -3761,10 +3763,20 @@ namespace KingmakerGunslinger.RuntimeTesting
             // the motion review: rounds pass there, and the reach check and
             // the victims' own break-free attempts end links, correctly.
             if (prepare)
-                _expandedSummoningPersistenceLinkDetail =
+            {
+                // The game saves asynchronously and keeps ticking while it
+                // does: rounds pass, the reach check runs and the victims make
+                // their own break-free attempts, so a hold taken for the save
+                // can be gone before the bytes are written. The clock stops
+                // for the holds and the save, and starts again afterwards.
+                _expandedSummoningPersistenceWasPaused = Game.Instance.IsPaused;
+                Game.Instance.IsPaused = true;
+                _expandedSummoningPersistenceLinkDetail = "paused=" +
+                    Game.Instance.IsPaused + ";" +
                     TakeExpandedSummoningPersistenceHolds(
                         _expandedSummoningPersistencePreparedUnits,
                         out _expandedSummoningPersistenceLinkValid);
+            }
             _workingSaveSmoke.ArmExactWorkingSaveWrite();
             MethodInfo saveGame = typeof(Game).GetMethods(BindingFlags.Instance |
                 BindingFlags.Public | BindingFlags.NonPublic).Single(value =>
