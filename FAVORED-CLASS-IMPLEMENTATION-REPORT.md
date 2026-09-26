@@ -1,22 +1,21 @@
 # Favored Class Integration - Implementation Report
 
-## PARTIAL - NOT RELEASE QUALIFIED
+## COMPLETE LOCALLY - AWAITING OWNER REVIEW
 
 The fourth PR #24 review found two defects in the completion round's
-candidate `12651613c` (section 14): Dead Shot's critical confirmation
-ignores the automatic results of a natural 1 and a natural 20, and a Bard
-performance area can be forgotten after a forced ending that was never
-verified. Both are being fixed; the status returns to COMPLETE LOCALLY only
-after both fixes are requalified on a new exact build. The completion
-round's record below stands for `12651613c`.
+candidate `12651613c`; both are fixed and requalified (section 14). Dead
+Shot's critical confirmation now fails on a natural 1 and succeeds on a
+natural 20 before the total is compared with the critical AC, and a Bard
+performance area is forgotten only once its ending or its liveness is
+verified. The final candidate `4748a47b2` passed the focused lanes and then all
+41 guarded native runs of the complete final gate (section 4) on one exact
+DLL, and the owner's install was restored and verified byte for byte
+afterwards (section 8). Every charter scenario family is observed natively
+(sections 3 and 13): no family is partial or blocked, and QUALIFIED waits
+only for the owner's review of this local candidate.
 
-This completion round closed every gap the previous candidate left open.
-The final candidate `12651613c` passed all 40 guarded native runs of
-its qualification (section 4), and the owner's install was restored and
-verified byte for byte afterwards (section 8). Every charter scenario family
-is now observed natively (sections 3 and 13): no family is partial or
-blocked, and QUALIFIED waits only for the owner's review of this local
-candidate.
+The completion round before this review (section 13) closed every gap the
+previous candidate left open:
 
 - The nine partly observed families are native: E10 (permission bounds on
   real level-1 visits), E15 (a stored level plan applied by the native
@@ -57,20 +56,21 @@ named in section 4.
 | Worktree | `C:\Dev\KingmakerGunslingerLab\worktrees\favored-class-integration` |
 | Branch | `claude/favored-class-integration` (pushed to PR #24 on the owner's instruction; not merged) |
 | Baseline | `996105ed9e72259a220be56e2a74e0cc18e5ef47` (master, 0.0.138 release record) |
-| Final source commit | `12651613c6bbf8533884e7f73cf1b5dd0a5eaf39` |
+| Final source commit | `4748a47b2b8f90fb544fde2fbddbbfc7e225102a` |
 | Evidence and records commit | the commit that adds this report (on top of the source commit) |
-| Package | `artifacts/local-runtime/0.0.139/KingmakerGunslinger-0.0.139-local-runtime.zip`, SHA-256 `95d57d55c31c829ae4f7175b01df310a2081100af4cc207d49b2e9d9d91d8ec1` (not committed) |
-| Loaded DLL | `KingmakerGunslinger.dll` 0.0.139, SHA-256 `ee0a67e40ebf5a926ef7df4d84485d3702f3c52e0677ec91b51a00e83bbf9f8f`, MVID `62badef3-342b-409a-9733-20dc6a664578` |
-| Deployment | `C:\Dev\KingmakerGunslingerLab\runtime-evidence\deployments\20260926T0424273426492Z\deployment.json` |
-| Deterministic build | two clean Release builds of `12651613c` each ran the 1,846-case domain suite (0 failures) and produced the identical package and DLL; strict standalone UMM package validation PASS |
-| Domain suite | 1,846 deterministic cases, all PASS; repository and icon-catalog validation PASS |
+| Package | `artifacts/local-runtime/0.0.139/KingmakerGunslinger-0.0.139-local-runtime.zip`, SHA-256 `cbec54d159ce7aec524852d738bd55ae5080df91c0ee42cd0b025c4ba1306237` (not committed) |
+| Loaded DLL | `KingmakerGunslinger.dll` 0.0.139, SHA-256 `a35f338ccbd6fd92f152af17d98a92b5b58b37ddbedf2e2d4f13f15b66f00981`, MVID `bf422dd9-16e7-4027-9086-b01e1a71b9a5` |
+| Deployment | `C:\Dev\KingmakerGunslingerLab\runtime-evidence\deployments\20260926T1114257470410Z\deployment.json` |
+| Deterministic build | two clean Release builds of `4748a47b2` each ran the 1,854-case domain suite (0 failures) and produced the identical package and DLL; strict standalone UMM package validation PASS |
+| Domain suite | 1,854 deterministic cases, all PASS; repository and icon-catalog validation PASS |
 
 Continuation commits (oldest first), after the first pass's records commit
 `fee3f45ec` on the same branch (47 commits since the baseline up to the
 continuation's candidate `15c37695c`, whose records commit `eed717046`
 follows; 57 up to the first review's candidate `aa298650e`, 60 up to the
 second review's `f7b4ae4f5` and 65 up to the third review's candidate
-`5636d940b` and 80 up to the final source commit `12651613c`):
+`5636d940b`, 80 up to the completion round's candidate `12651613c` and
+87 up to the final source commit `4748a47b2`):
 
 - `8a46506df72ce79903a1bff94a0968441d9adc3c` Repair Mostly Human identity, power eligibility, thresholds and icons
 - `0138d70b65348d0d2f5ddf2755b70723a95d31d1` Add the O01 performance visual observation
@@ -134,6 +134,16 @@ Completion round commits (oldest first), after the third review's records commit
 - `d8fd0ea4a06d347e49c0af032ae2f62c34e490fa` Keep the Pistol-Whip counter inside the deed's own attack (M10)
 - `5ae4eafc76fc63f5cad8b6c8b4d5f70ce6a22422` Check the turn-based Dodge over every observation in its round
 - `12651613c6bbf8533884e7f73cf1b5dd0a5eaf39` Grant gate-only bloodline powers in the visual census
+
+Fourth review commits (oldest first), after the completion round's records commit
+`560e41e03`:
+
+- `3fc94f7b4f4a30f7de446cee7e7018c45534f76d` Reopen the candidate for the fourth review's two findings
+- `7054b3917cc8ad0896927e3ffb5c7c2210d5cd73` Make Dead Shot's confirmation fail on a natural 1 and confirm on a 20
+- `ff55924c28337195f18094fb2664dfd7d0dcdd7a` Forget a Bard area only once its ending or liveness is verified
+- `c1cfe8c2f6795ffc42b024e2fd58ba77644f9429` Assert the Dead Shot natural 1 margin as the game floors the AC
+- `d94f9421623ed76b4b8dec569f21f1c6f83062a5` Describe the natural 1 lane's AC drop as measured
+- `4748a47b2b8f90fb544fde2fbddbbfc7e225102a` Restore the Dead Shot lane's touch-AC assertion
 
 ## 2. Rows, targets and counts
 
@@ -256,52 +266,56 @@ is the single highest step fully reached.
 
 ## 4. Final-candidate runs
 
-Every run used the guarded launcher (Steam App ID 640820), verified the
-commit, package, DLL and MVID before launch, and used only
-`KMG_AUTOMATION_WORKING` or request-local disposable fixtures (the persistence and missing-dependency transactions' owned saves were deleted with hash proof).
+The complete final gate of `4748a47b2`. Every run used the guarded launcher (Steam
+App ID 640820), verified the commit, package, DLL and MVID before launch, and
+used only `KMG_AUTOMATION_WORKING` or request-local disposable fixtures (the
+persistence and missing-dependency transactions' owned saves were deleted from
+the save folder with hash proof). The focused lanes that ran first on the same
+DLL are listed in section 14.
 
 | Scenario | Run | Result | Note |
 | --- | --- | --- | --- |
-| observe-favored-class-contract | 20260926T0424285521034Z-observe-favored-class-contract | PASS |  |
-| observe-favored-class-host-state | 20260926T0425098817176Z-observe-favored-class-host-state | PASS |  |
-| observe-favored-class-host-defects | 20260926T0425504713383Z-observe-favored-class-host-defects | PASS | H02 unsupported and partial, H04 and H05 simulated on cloned live observations |
-| disposable-favored-class-elemental-core | 20260926T0426304190835Z-disposable-favored-class-elemental-core | PASS |  |
-| disposable-favored-class-elemental-advanced | 20260926T0427143130346Z-disposable-favored-class-elemental-advanced | PASS |  |
-| disposable-favored-class-oracle-revelations | 20260926T0427587131736Z-disposable-favored-class-oracle-revelations | PASS |  |
-| disposable-favored-class-performance-range | 20260926T0429246463836Z-disposable-favored-class-performance-range | PASS |  |
-| working-save-favored-class-lifecycle@KMG_AUTOMATION_WORKING | 20260926T0430061268709Z-working-save-favored-class-lifecycle | PASS | includes fcb-lifecycle-toggle-rollback and fcb-lifecycle-outcome-reload |
-| disposable-favored-class-respec | 20260926T0431104013973Z-disposable-favored-class-respec | PASS |  |
-| working-save-favored-class-visual-census@KMG_AUTOMATION_WORKING | 20260926T0431532259029Z-working-save-favored-class-visual-census | PASS |  |
-| disposable-favored-class-grit | 20260926T0433443953898Z-disposable-favored-class-grit | PASS |  |
-| disposable-favored-class-gunslinger-menus | 20260926T0434326926830Z-disposable-favored-class-gunslinger-menus | PASS |  |
-| disposable-favored-class-gunslinger-mechanics | 20260926T0435266732898Z-disposable-favored-class-gunslinger-mechanics | PASS |  |
-| disposable-favored-class-initiative-timing | 20260926T0436075638631Z-disposable-favored-class-initiative-timing | PASS |  |
-| disposable-favored-class-turn-modes | 20260926T0436472719055Z-disposable-favored-class-turn-modes | PASS | M10, M12, M13 and L07 through real commands in real time and a fresh turn-based combat |
-| disposable-favored-class-bombs | 20260926T0437279321541Z-disposable-favored-class-bombs | PASS | M14: production bombs thrown natively |
-| disposable-favored-class-auto-level | 20260926T0438084070076Z-disposable-favored-class-auto-level | PASS | E15: a recorded level applied by the native plan; D5 scope |
-| disposable-favored-class-mostly-human | 20260926T0438487161591Z-disposable-favored-class-mostly-human | PASS |  |
-| observe-favored-class-performance-visuals | 20260926T0439381382013Z-observe-favored-class-performance-visuals | PASS |  |
-| disposable-favored-class-multiclass | 20260926T0440198691989Z-disposable-favored-class-multiclass | PASS |  |
-| working-save-elemental-character-creation-regression@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;nativeActionCase=racial-actions;race=Ifrit | 20260926T0441000207225Z-working-save-elemental-character-creation-regression | PASS | parameters allocation=point-buy;class=Fighter;nativeActionCase=racial-actions;race=Ifrit |
-| working-save-elemental-character-creation-regression@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;nativeActionCase=racial-actions;race=Oread | 20260926T0446152587603Z-working-save-elemental-character-creation-regression | PASS | parameters allocation=point-buy;class=Fighter;nativeActionCase=racial-actions;race=Oread |
-| working-save-elemental-character-creation-regression@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;nativeActionCase=racial-actions;race=Sylph | 20260926T0451067541490Z-working-save-elemental-character-creation-regression | PASS | parameters allocation=point-buy;class=Fighter;nativeActionCase=racial-actions;race=Sylph |
-| working-save-elemental-character-creation-regression@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;nativeActionCase=racial-actions;race=Undine | 20260926T0456110533371Z-working-save-elemental-character-creation-regression | PASS | parameters allocation=point-buy;class=Fighter;nativeActionCase=racial-actions;race=Undine |
-| working-save-elemental-native-respec@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;race=Sylph | 20260926T0500236878668Z-working-save-elemental-native-respec | PASS | parameters allocation=point-buy;class=Fighter;race=Sylph |
-| working-save-elemental-native-respec@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;race=Oread | 20260926T0507046815679Z-working-save-elemental-native-respec | PASS | parameters allocation=point-buy;class=Fighter;race=Oread |
-| working-save-smoke@KMG_AUTOMATION_WORKING | 20260926T0514062685374Z-working-save-smoke | PASS |  |
-| L01 fresh-process persistence (prepare) | 20260926T0515338811043Z-disposable-word-of-recall-favored-class-persistence | PASS | transaction 20260926T0515255118814Z_3bbf199cd52b4a5eb9d4d430a20064b1 |
-| L01 fresh-process persistence (verify) | 20260926T0516336684454Z-disposable-word-of-recall-favored-class-persistence | PASS | one subject per state/mechanic family and the own cases of G05, G06 (Dodge), G11, G17, G21, I01, I05, I07, O04, O05, O08, U02, S04 and S06 reloaded in a fresh process; settings and Mods tree restored |
-| observe-favored-class-contract | 20260926T0518031115585Z-observe-favored-class-contract | PASS | settings profile third-party ON (L05; G16/G17/G18/G21 routes offered); the settings file was removed and verified absent |
-| disposable-favored-class-gunslinger-menus | 20260926T0518432350673Z-disposable-favored-class-gunslinger-menus | PASS | settings profile third-party ON (L05; G16/G17/G18/G21 routes offered); the settings file was removed and verified absent |
-| observe-favored-class-contract | 20260926T0519366390443Z-observe-favored-class-contract | PASS | settings profile Mostly Human OFF (the trait not offered; identities registered); the settings file was removed and verified absent |
-| observe-favored-class-host-state | 20260926T0520171147411Z-observe-favored-class-host-state | PASS | settings profile integration OFF (L04; mechanics suppressed, identities registered); the settings file was removed and verified absent |
-| observe-favored-class-contract | 20260926T0520572501435Z-observe-favored-class-contract | PASS | settings profile invalid file (schema 2; charter defaults applied and reported); the settings file was removed and verified absent |
-| observe-favored-class-host-state | 20260926T0522081723639Z-observe-favored-class-host-state | PASS | real disabled host (H02): ZFavoredClass disabled through a byte-exact Params.xml stage; Params.xml and the regenerated loaded_blueprints.txt files restored byte-exact |
-| L06 missing dependency (prepare) | 20260926T0523196350139Z-disposable-word-of-recall-favored-class-persistence | PASS | transaction 20260926T0523169075109Z_328953d2b5034ecb8d9ad783de2b1b80: the fixture saved with the host present |
-| L06 missing dependency (absent host) | 20260926T0524188474485Z-observe-favored-class-missing-dependency | PASS | the fixture read with ZFavoredClass disabled: the native loader refuses it, nothing is substituted or written, and KMG's warning names the missing host and its state; Params.xml and the regenerated loaded_blueprints.txt files restored byte-exact; the fixture deleted with hash proof |
-| profile gunslinger-only / observe-favored-class-host-state | 20260926T0528022419214Z-observe-favored-class-host-state | PASS | compatibility transaction compat-20260926T052602Z-a75f8c60d59d, restoration verified |
-| profile gunslinger-call-of-the-wild / observe-favored-class-host-state | 20260926T0531183716191Z-observe-favored-class-host-state | PASS | compatibility transaction compat-20260926T052931Z-3aacec891548, restoration verified |
-| profile gunslinger-call-of-the-wild-favored-class / observe-favored-class-host-state | 20260926T0534505046553Z-observe-favored-class-host-state | PASS | compatibility transaction compat-20260926T053303Z-0acfe3e6e607, restoration verified |
+| observe-favored-class-contract | 20260926T1114269644219Z-observe-favored-class-contract | PASS |  |
+| observe-favored-class-host-state | 20260926T1115078596778Z-observe-favored-class-host-state | PASS |  |
+| observe-favored-class-host-defects | 20260926T1115472753377Z-observe-favored-class-host-defects | PASS | H02 unsupported and partial, H04 and H05 simulated on cloned live observations |
+| disposable-favored-class-elemental-core | 20260926T1116273715565Z-disposable-favored-class-elemental-core | PASS |  |
+| disposable-favored-class-elemental-advanced | 20260926T1117116392755Z-disposable-favored-class-elemental-advanced | PASS |  |
+| disposable-favored-class-oracle-revelations | 20260926T1117562623926Z-disposable-favored-class-oracle-revelations | PASS |  |
+| disposable-favored-class-performance-range | 20260926T1119202164739Z-disposable-favored-class-performance-range | PASS | O01 whole-group outcomes; fourth review finding 2: unresolved endings retried and verified |
+| working-save-favored-class-lifecycle@KMG_AUTOMATION_WORKING | 20260926T1120016975723Z-working-save-favored-class-lifecycle | PASS | includes fcb-lifecycle-toggle-rollback and fcb-lifecycle-outcome-reload |
+| disposable-favored-class-respec | 20260926T1121045533286Z-disposable-favored-class-respec | PASS |  |
+| working-save-favored-class-visual-census@KMG_AUTOMATION_WORKING | 20260926T1121473616469Z-working-save-favored-class-visual-census | PASS |  |
+| disposable-favored-class-grit | 20260926T1123381262650Z-disposable-favored-class-grit | PASS |  |
+| disposable-gunslinger-dead-shot | 20260926T1124264435541Z-disposable-gunslinger-dead-shot | PASS | D2 and fourth review finding 1: ordinary, natural 20 and natural 1 confirmations, the party setting and immunity |
+| disposable-favored-class-gunslinger-menus | 20260926T1125063458458Z-disposable-favored-class-gunslinger-menus | PASS |  |
+| disposable-favored-class-gunslinger-mechanics | 20260926T1125593536750Z-disposable-favored-class-gunslinger-mechanics | PASS |  |
+| disposable-favored-class-initiative-timing | 20260926T1126403603631Z-disposable-favored-class-initiative-timing | PASS |  |
+| disposable-favored-class-turn-modes | 20260926T1127200860022Z-disposable-favored-class-turn-modes | PASS | M10, M12, M13 and L07 through real commands in real time and a fresh turn-based combat |
+| disposable-favored-class-bombs | 20260926T1128001379414Z-disposable-favored-class-bombs | PASS | M14: production bombs thrown natively |
+| disposable-favored-class-auto-level | 20260926T1128403811811Z-disposable-favored-class-auto-level | PASS | E15: a recorded level applied by the native plan; D5 scope |
+| disposable-favored-class-mostly-human | 20260926T1129205786535Z-disposable-favored-class-mostly-human | PASS |  |
+| observe-favored-class-performance-visuals | 20260926T1130101155262Z-observe-favored-class-performance-visuals | PASS |  |
+| disposable-favored-class-multiclass | 20260926T1130512528416Z-disposable-favored-class-multiclass | PASS |  |
+| working-save-elemental-character-creation-regression@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;nativeActionCase=racial-actions;race=Ifrit | 20260926T1131314400628Z-working-save-elemental-character-creation-regression | PASS | parameters allocation=point-buy;class=Fighter;nativeActionCase=racial-actions;race=Ifrit |
+| working-save-elemental-character-creation-regression@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;nativeActionCase=racial-actions;race=Oread | 20260926T1136484016159Z-working-save-elemental-character-creation-regression | PASS | parameters allocation=point-buy;class=Fighter;nativeActionCase=racial-actions;race=Oread |
+| working-save-elemental-character-creation-regression@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;nativeActionCase=racial-actions;race=Sylph | 20260926T1141444572920Z-working-save-elemental-character-creation-regression | PASS | parameters allocation=point-buy;class=Fighter;nativeActionCase=racial-actions;race=Sylph |
+| working-save-elemental-character-creation-regression@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;nativeActionCase=racial-actions;race=Undine | 20260926T1146529537828Z-working-save-elemental-character-creation-regression | PASS | parameters allocation=point-buy;class=Fighter;nativeActionCase=racial-actions;race=Undine |
+| working-save-elemental-native-respec@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;race=Sylph | 20260926T1151067198469Z-working-save-elemental-native-respec | PASS | parameters allocation=point-buy;class=Fighter;race=Sylph |
+| working-save-elemental-native-respec@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;race=Oread | 20260926T1157572351994Z-working-save-elemental-native-respec | PASS | parameters allocation=point-buy;class=Fighter;race=Oread |
+| working-save-smoke@KMG_AUTOMATION_WORKING | 20260926T1204384457284Z-working-save-smoke | PASS |  |
+| L01 fresh-process persistence (prepare) | 20260926T1206065221021Z-disposable-word-of-recall-favored-class-persistence | PASS | transaction 20260926T1205578501702Z_2d76d8dea8fa4d318f97fd297772ec8f |
+| L01 fresh-process persistence (verify) | 20260926T1207060708813Z-disposable-word-of-recall-favored-class-persistence | PASS | one subject per state/mechanic family and the own cases of G05, G06 (Dodge), G11, G17, G21, I01, I05, I07, O04, O05, O08, U02, S04 and S06 reloaded in a fresh process; settings and Mods tree restored |
+| observe-favored-class-contract | 20260926T1208355786721Z-observe-favored-class-contract | PASS | settings profile third-party ON (L05; G16/G17/G18/G21 routes offered); the settings file was removed and verified absent |
+| disposable-favored-class-gunslinger-menus | 20260926T1209151779642Z-disposable-favored-class-gunslinger-menus | PASS | settings profile third-party ON (L05; G16/G17/G18/G21 routes offered); the settings file was removed and verified absent |
+| observe-favored-class-contract | 20260926T1210087729853Z-observe-favored-class-contract | PASS | settings profile Mostly Human OFF (the trait not offered; identities registered); the settings file was removed and verified absent |
+| observe-favored-class-host-state | 20260926T1210488556764Z-observe-favored-class-host-state | PASS | settings profile integration OFF (L04; mechanics suppressed, identities registered); the settings file was removed and verified absent |
+| observe-favored-class-contract | 20260926T1211286961351Z-observe-favored-class-contract | PASS | settings profile invalid file (schema 2; charter defaults applied and reported); the settings file was removed and verified absent |
+| observe-favored-class-host-state | 20260926T1212388155055Z-observe-favored-class-host-state | PASS | real disabled host (H02): ZFavoredClass disabled through a byte-exact Params.xml stage; Params.xml and the regenerated loaded_blueprints.txt files restored byte-exact |
+| L06 missing dependency (prepare) | 20260926T1213503098613Z-disposable-word-of-recall-favored-class-persistence | PASS | transaction 20260926T1213475709412Z_99e2a6b32050436c94ec26ff6275e748: the fixture saved with the host present |
+| L06 missing dependency (absent host) | 20260926T1214498019146Z-observe-favored-class-missing-dependency | PASS | the fixture read with ZFavoredClass disabled: the native loader refuses it, nothing is substituted or written, and KMG's warning names the missing host and its state; Params.xml and the regenerated loaded_blueprints.txt files restored byte-exact; the fixture deleted with hash proof |
+| profile gunslinger-only / observe-favored-class-host-state | 20260926T1218350412229Z-observe-favored-class-host-state | PASS | compatibility transaction compat-20260926T121633Z-5083c0ce5fb9, restoration verified |
+| profile gunslinger-call-of-the-wild / observe-favored-class-host-state | 20260926T1221511486176Z-observe-favored-class-host-state | PASS | compatibility transaction compat-20260926T122004Z-b08da2da404f, restoration verified |
+| profile gunslinger-call-of-the-wild-favored-class / observe-favored-class-host-state | 20260926T1225243181332Z-observe-favored-class-host-state | PASS | compatibility transaction compat-20260926T122336Z-c6fb2faf6f8b, restoration verified |
 
 ## 5. Adversarial audit
 
@@ -329,6 +343,8 @@ commit, package, DLL and MVID before launch, and used only
 | Stored level plans (E15) | PASS | a recorded level applied by the native constructor keeps its same-level reward; the unscoped native calls drop exactly that reward (D5 fixed); host-only and story-companion plans are accepted identically either way |
 | Deed attack scope (M10) | PASS | under the owner's mod stack another mod derives the base CMB from a weapon's attack bonus; the Pistol-Whip counter now applies only inside the deed's own attack, and the trip's CMB is equal with and without it |
 | Host and dependency states | PASS | a real disabled host (byte-exact Params.xml stage) and simulated unsupported, partial and Gunslinger-less hosts stay inactive or block only their rows; a save needing the missing host is refused natively with nothing substituted or written, and KMG's warning names the host and its state |
+| Dead Shot natural confirmation (fourth review 1) | PASS | a natural 1 fails and a natural 20 confirms regardless of the total; ordinary rolls follow the total; immunity and the party setting block first; threat count, penalty, Critical Focus and touch AC unchanged |
+| Verified area ending (fourth review 2) | PASS | an area is forgotten only when verified no longer live; an ending that throws, does nothing or finds no data, and a liveness read that throws, keep it tracked and unresolved (widening blocked, native text, diagnostic) until a later widening attempt resolves it |
 | Save, respec and lifecycle cleanup | PASS | L01 reloads one subject per state/mechanic family in a fresh process, including a selected firearm target; L02 death, polymorph and party area reload; L03 cancelled and committed respecs including the Mostly Human identity, a companion and a selected power |
 
 ## 6. Unfinished targets, exclusions and provider absences
@@ -377,16 +393,18 @@ decided to fix them by the tabletop rules (2026-09-25); both are fixed in
   (plus 1 per extra threat, at most 0), adding every other confirmation bonus,
   against the critical AC computed after the firearm AC frame (touch AC when
   the firearm's rule applies); immunity and the party critical setting block
-  it as they block a native threat. The firearm confirmation counter (G02 and
-  its G08/G16 routes) therefore also applies to Dead Shot's confirmation.
+  it as they block a native threat. The confirmation is an attack roll: a
+  natural 1 always fails and a natural 20 always succeeds (fourth review,
+  `7054b3917`). The firearm confirmation counter (G02 and its G08/G16 routes)
+  therefore also applies to Dead Shot's confirmation.
 
 ## 8. Installation restoration
 
 The owner's pre-mission KMG install (0.0.136, backup
 `C:\Dev\KingmakerGunslingerLab\runtime-backups\live-mod\20260924T0027014050156Z`)
 was restored through `scripts/Restore-Live-Mod.ps1` (under this lab's lease)
-after the last run of the completion round, and verified byte for byte on
-2026-09-26 at 05:44 UTC:
+after the last run of the fourth review's requalification, and verified byte for byte on
+2026-09-26 at 12:28 UTC:
 
 - `Info.json` SHA-256 `f66de05d5c6282eece8218b6c4f31d49dfc8ef9efa27dfeceeda712034717e17` (match True)
 - `FeatureModules.json` SHA-256 `6e24b2788a0c8f063d6e561a27c93f9c5349f2fc21b5217689da8aefdbb385d0` (match True)
@@ -395,22 +413,20 @@ after the last run of the completion round, and verified byte for byte on
 - no `FavoredClassIntegration.json` remains (the default settings apply)
 - other mod files unchanged: `CallOfTheWild\settings.json` `24cc3f80...`, `RacesUnleashed\Settings.json` `270899c3...`,
   `ZFavoredClass\settings.json` `bdceed77...` and Tweak or Treat's regenerated `loaded_blueprints.txt` `96e13782...` (match True)
-- Unity Mod Manager's `Params.xml`: every disabled-host stage of the round (`20260926T022705Z`, `20260926T030221Z`, `20260926T040626Z`, `20260926T052206Z`) and each L06
+- Unity Mod Manager's `Params.xml`: every disabled-host stage of the round (`20260926T121237Z`) and each L06
   transaction backed it up, disabled only ZFavoredClass and restored the exact pre-stage bytes after
   the game exited (SHA-256 match; backups in `C:\Dev\KingmakerGunslingerLab\runtime-backups\umm-params\`
   and the transaction folders); the regenerated `loaded_blueprints.txt` files were restored byte for byte
   after each disabled-host run; ZFavoredClass is enabled now
 - each temporary settings profile removed `FavoredClassIntegration.json` after
   its own runs (verified absent after each profile and at the end)
-- the B3 memory diagnostic wrote the integration-off `FavoredClassIntegration.json` only for its one
-  run and removed it (verified absent)
-- the persistence transaction `20260926T0515255118814Z_3bbf199cd52b4a5eb9d4d430a20064b1` restored the settings and the complete Mods tree;
+- the persistence transaction `20260926T1205578501702Z_2d76d8dea8fa4d318f97fd297772ec8f` restored the settings and the complete Mods tree;
   its owned save was deleted from the save folder with hash proof (94 preexisting saves preserved;
   the prepared save's evidence copy stays in the machine-local transaction folder)
-- the L06 transaction `20260926T0523169075109Z_328953d2b5034ecb8d9ad783de2b1b80` restored `Params.xml` (match True) and deleted its fixture from the save
+- the L06 transaction `20260926T1213475709412Z_99e2a6b32050436c94ec26ff6275e748` restored `Params.xml` (match True) and deleted its fixture from the save
   folder with hash proof (its evidence copy stays in the machine-local transaction folder); the lab's
   only saves are `KMG_AUTOMATION_BASELINE` and `KMG_AUTOMATION_WORKING`
-- each compatibility profile (`compat-20260926T052602Z-a75f8c60d59d`, `compat-20260926T052931Z-3aacec891548`, `compat-20260926T053303Z-0acfe3e6e607`) restored the exact original Mods tree and
+- each compatibility profile (`compat-20260926T121633Z-5083c0ce5fb9`, `compat-20260926T122004Z-b08da2da404f`, `compat-20260926T122336Z-c6fb2faf6f8b`) restored the exact original Mods tree and
   FeatureModules bytes before releasing the lock (restoration verified)
 
 Restoration status: VERIFIED.
@@ -434,7 +450,8 @@ Restoration status: VERIFIED.
   H-2; host data, never patched).
 
 B2 is resolved; D1 and D2 are fixed on the owner's decision; D3, D4 and D5
-were found and fixed in this mission. Every former owner question
+were found and fixed in this mission, and the fourth review's two findings
+are fixed and requalified (section 14). Every former owner question
 (OD-1 to OD-12) is resolved there with the charter rule, the owner's
 authorization or the evidence that decides it. No qualification gap remains;
 QUALIFIED waits for the owner's review of this local candidate.
@@ -672,9 +689,36 @@ does not cause it. B3 stays an environment risk for qualification batches
 ## 14. Fourth review findings (PR #24)
 
 The fourth review (at `12651613c`, records `560e41e03`) found two defects.
-Both stay OPEN until they are fixed and requalified on a new exact build.
+The records were reopened (`3fc94f7b4`) while both were fixed; both are fixed
+and requalified on `4748a47b2`.
 
-| Finding | Status |
-| --- | --- |
-| 1. Dead Shot's one critical confirmation compared the total with the critical AC only. A confirmation is an attack roll, so a natural 1 must always fail and a natural 20 must always succeed before that comparison (immunity and the party critical setting still block first). | OPEN |
-| 2. The Bard range group removed a member after a forced ending it never verified (the end threw, did nothing, or found no area data) and whenever its liveness read threw, so a live area left unrestored could become untracked and disagree with the owner's text. | OPEN |
+| Finding | Commit | Domain tests | Native evidence |
+| --- | --- | --- | --- |
+| 1. Dead Shot's one critical confirmation compared the total with the critical AC only | `7054b3917`; lane follow-ups `c1cfe8c2f`, `d94f94216`, `4748a47b2` (the last restores the touch-AC assertion the first rewrite of the lane dropped) | `dead-shot.confirmation-natural-rolls` (a natural 1 with an extreme bonus against a trivial AC fails, a natural 20 with an insufficient total against an extreme AC confirms, ordinary 2 and 19 follow the total), `dead-shot.confirmation-blocks` (immunity, then the party setting, block before any roll), `dead-shot.lane-keeps-every-check` (the lane asserts all six confirmation checks) | `disposable-gunslinger-dead-shot` (focused `20260926T1103298457727Z-disposable-gunslinger-dead-shot`, final gate `20260926T1124264435541Z-disposable-gunslinger-dead-shot`): an ordinary 19 confirms and a 2 fails against a critical AC 11 above the total; a natural 20 confirms against an AC at least 30 above its total while a 19 fails there; a natural 1 fails with a +40 attack bonus against an AC at least 40 below its total while a 2 confirms there; a party-faction target is blocked with party criticals off and confirms with them on (the setting supplied to that shot only; the game's setting unchanged); an immune target blocks a natural 20; touch AC, the -4 penalty and Critical Focus unchanged |
+| 2. The Bard range group forgot a member after an unverified forced ending and whenever its liveness read threw | `ff55924c2` | `favored-class.range-group-end-throws`, `-end-no-op`, `-data-unavailable`, `-liveness-throws` (each keeps the area tracked and unresolved, blocks widening, keeps the text native, reports a diagnostic, and a later mechanics point resolves it), `-no-untracked-widened` (400 randomized fault sequences: no live area is ever untracked; a widened live area beside native or configured text is always unresolved) | `fcb-performance-unresolved-ending` (focused `20260926T1104101487365Z-disposable-favored-class-performance-range`, final gate `20260926T1119202164739Z-disposable-favored-class-performance-range`) on a real invested bard's areas: an ending that throws, one that does nothing, unavailable area data and a liveness read that throws each keep the area tracked and unresolved with a logged diagnostic while a success is held and the descriptions stay native; once the fault clears the next widening attempt narrows it verified native or ends it verified; an area that ended while unreadable is forgotten only once the read works |
+
+Kingmaker's own confirmation of an ordinary threat (`RuleAttackRoll.OnTrigger`)
+compares the total only; the natural 1 and 20 rule applies to Dead Shot's own
+confirmation, which the owner's D2 decision made follow the tabletop rules.
+
+Requalification on the exact DLL `a35f338c...` (MVID `bf422dd9-16e7-4027-9086-b01e1a71b9a5`): the full domain suite
+(1,854 cases) and two identical clean Release builds; then the focused lanes on
+one deployment: the Dead Shot, Bard range, lifecycle, visual-census and smoke
+lanes and the fresh-process persistence transaction (`20260926T1103298457727Z-disposable-gunslinger-dead-shot`, `20260926T1104101487365Z-disposable-favored-class-performance-range`, `20260926T1104510731371Z-working-save-favored-class-lifecycle`, `20260926T1105526107989Z-working-save-favored-class-visual-census`, `20260926T1107425494841Z-working-save-smoke`, `20260926T1109040122056Z-disposable-word-of-recall-favored-class-persistence`, `20260926T1110030742655Z-disposable-word-of-recall-favored-class-persistence`), all PASS; then the
+complete final gate, all 41 runs PASS (section 4), with the Dead Shot lane
+added to it.
+
+Intermediate candidates of this review (superseded):
+
+- `ff55924c2` (DLL `a75b9b47...`): the focused Bard range, lifecycle,
+  visual-census and smoke lanes and the persistence transaction PASS; the Dead
+  Shot lane (`20260926T1036483716252Z-disposable-gunslinger-dead-shot`) FAIL
+  only on `dead-shot-critical-natural-1`, whose behavior was correct (a natural
+  1 failed with a total of 52 against a critical AC of 5, and a 2 there
+  confirmed) but whose expected margin of 50 assumed the base AC's -20 lowers
+  the critical AC by 20 (it fell by 17); `c1cfe8c2f` asserts at least 40.
+- `d94f94216` (DLL `0d4472d5...`): every focused run PASS, but the first
+  rewrite of the Dead Shot lane had dropped its `dead-shot-critical-touch-ac`
+  assertion. The complete final gate was stopped during its builds, before
+  any launch; `4748a47b2` restores the assertion and adds
+  `dead-shot.lane-keeps-every-check`.
