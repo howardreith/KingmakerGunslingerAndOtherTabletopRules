@@ -114,7 +114,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 gateFailures.Count == 0,
                 "AddClassLevel fixtures; the native AddFeatureOnClassLevel gates (HasFact of each gated feature); publication skip evidence"));
             assertions.Add(Assertion("fcb-oracle-values",
-                "every published revelation (M24, data-driven): at real oracle levels 1, 4, 9, 12 and 17 with 2 or 3 earned steps, each read point its scope scales (resource maxima, its abilities' caster level and DC, its rank reads and its own gates) equals a native oracle at the effective level while BAB stays at the real level; a neighboring revelation on the same units is unchanged; removing the counter restores the real level; and every target shows at least one changed read point",
+                "every published revelation (M24, data-driven): at real oracle levels 1, 4, 9, 12 and 17 with 2 or 3 earned steps, each read point its scope scales (resource maxima, its abilities' caster level and DC, its rank reads and its own gates) equals a native oracle at the effective level while BAB stays at the real level; a neighboring revelation on the same units is unchanged; removing the counter restores the real level on every resource, ability parameter and rank read (gate removal is the gate lane's single-step check, since a replacement chain never steps down in play); and every target shows at least one changed read point",
                 Describe(evidence["values"] == null ? null : evidence["values"]["summary"], valueFailures),
                 valueFailures.Count == 0,
                 "AddClassLevel fixtures; GetMaxAmount, AbilityData.CreateExecutionContext params, MechanicsContext ranks and HasFact of gated features"));

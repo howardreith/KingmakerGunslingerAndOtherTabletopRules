@@ -145,6 +145,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             var menuFailures = new List<string>();
             var archetypes = new JObject();
             var archetypeFailures = new List<string>();
+            var permissionFailures = new List<string>();
+            JObject permissions = null;
             var progressions = new JObject();
             var progressionFailures = new List<string>();
             bool cleaned = false;
@@ -161,6 +163,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     gunslinger, gunslingerSet.MusketMaster.Archetype, leaves, selection, reserved,
                     FavoredClassCatalog.EffectHalflingNimble, FavoredClassCatalog.EffectHalflingDodge,
                     archetypeFailures);
+                permissions = ObservePermissionBounds(gunslinger, leaves, selection, reserved, permissionFailures);
 
                 BlueprintArchetype pistolero = gunslingerSet.Pistolero.Archetype;
                 Func<string, string, FavoredClassLeafPair> pair = (effect, target) => leaves.Pair(effect, target);
@@ -206,6 +209,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             evidence["menus"] = menus;
             evidence["archetypes"] = archetypes;
+            evidence["permissionBounds"] = permissions;
             evidence["progressions"] = progressions;
             string evidencePath = WriteFavoredClassEvidence("favored-class-gunslinger-menus.json", evidence);
 
@@ -217,6 +221,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "each playable source-addressable race is offered exactly its charter Gunslinger counters (partial leaf open, full leaf closed at N=0); an absent or unplayable race is reported, never scored",
                 Describe(menus, menuFailures), menuFailures.Count == 0,
                 "level-1 native visit per race; BlueprintFeatureSelection.CanSelect"));
+            assertions.Add(Assertion("fcb-gunslinger-permission-bounds",
+                "E10 natively: with the live permission graph extended for one scope at a time, an unconditional cycle terminates and opens exactly the reachable ancestries' counters, a five-edge chain stops at the depth bound of four, an edge on an unverified fact never applies, a duplicated Mostly Human identity opens each counter once, a stray racial fact proves nothing, and an unrecognized playable race (when installed) is offered nothing; every visit has one favored-class selection",
+                Describe(permissions, permissionFailures), permissionFailures.Count == 0,
+                "FavoredClassRuntime.ExtendPermissionGraphForRuntimeTest; level-1 native visits; BlueprintFeatureSelection.CanSelect"));
             assertions.Add(Assertion("fcb-gunslinger-archetype-replacement",
                 "a Mysterious Stranger is not offered Nimble improvements and a Musket Master is not offered the Dodge branch, while the other branch stays available",
                 Describe(archetypes, archetypeFailures), archetypeFailures.Count == 0,
@@ -1002,8 +1010,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (second != null) attacker.Body.SecondaryHand.InsertItem(second);
                     try
                     {
+                        // A Wrecked firearm is always empty.
+                        bool wrecked = condition == FirearmCondition.Wrecked;
                         FirearmRuntimeState.Service.Set(weapon, new FirearmState(FirearmState.CurrentSchemaVersion,
-                            1, FirearmStateTokenCatalog.DiagnosticLeadBall, condition));
+                            wrecked ? 0 : 1, wrecked ? null : FirearmStateTokenCatalog.DiagnosticLeadBall, condition));
                         if (second != null)
                             FirearmRuntimeState.Service.Set(second, new FirearmState(FirearmState.CurrentSchemaVersion,
                                 1, FirearmStateTokenCatalog.DiagnosticLeadBall, FirearmCondition.Normal));

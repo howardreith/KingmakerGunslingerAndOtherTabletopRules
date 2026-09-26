@@ -354,7 +354,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 subscribed = true;
                 turns = new ElementalNativeTurnScope(actor, enemy, rows, "fcb-turn-modes-deeds-" + mode + "-",
                     turnBased, true);
+                row["turns"] = rows;
                 UnitEntityData caster = actor;
+                ElementalNativeTurnScope scope = turns;
+                // The pistol was equipped before combat: let the native hands
+                // controller and the draw animation settle before any command.
+                int settleTicks = 0;
+                for (; settleTicks < 40 && (caster.AreHandsBusyWithAnimation ||
+                    Game.Instance.HandsEquipmentController.IsUpdateScheduledFor(caster)); settleTicks++)
+                    scope.Execute(() =>
+                    {
+                        Game.Instance.HandsEquipmentController.Tick();
+                        caster.View.AnimationManager.Tick();
+                        caster.View.AnimationManager.Update(0.25f);
+                    });
+                row["handsSettleTicks"] = settleTicks;
+                row["handsBusyAfterSettle"] = caster.AreHandsBusyWithAnimation ||
+                    Game.Instance.HandsEquipmentController.IsUpdateScheduledFor(caster);
                 Action<string> gritAt = stage => gritTrail.Add(stage + "=" +
                     caster.Descriptor.Resources.GetResourceAmount(grit));
                 Action waitToAct = () =>
@@ -645,7 +661,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 if (!command.IsActed)
                     throw new InvalidOperationException("The native command never acted: " +
-                        data.Blueprint.name + " (" + command.Result + ").");
+                        data.Blueprint.name + " (result=" + command.Result + ";started=" + command.IsStarted +
+                        ";canStart=" + command.CanStart + ";available=" + data.IsAvailable +
+                        ";handsBusy=" + caster.AreHandsBusyWithAnimation + ";handsScheduled=" +
+                        Game.Instance.HandsEquipmentController.IsUpdateScheduledFor(caster) +
+                        ";dontWaitForHands=" + command.DontWaitForHands + ";canAct=" + caster.Descriptor.State.CanAct +
+                        ";canActInCombat=" + caster.CombatState.CanActInCombat + ";cooldown=" +
+                        caster.CombatState.HasCooldownForCommand(command) + ";close=" + command.IsUnitEnoughClose +
+                        ";costs=" + string.Join(",", FcbCosts(caster)) + ").");
                 return command;
             }
             finally
