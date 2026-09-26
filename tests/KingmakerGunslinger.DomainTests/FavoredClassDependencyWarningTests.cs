@@ -66,7 +66,7 @@ namespace KingmakerGunslinger.DomainTests
                 "3 of its blueprint references are missing",
                 "1 from Favored Class (ZFavoredClass 1.3.1, which is disabled in Unity Mod Manager)",
                 "1 from Call of the Wild 1.14.4c",
-                "1 from another mod or version",
+                "1 that Kingmaker Gunslinger cannot attribute to a mod",
                 "Nothing was loaded and the save file was not changed.",
                 "install and enable ZFavoredClass 1.3.1 with Call of the Wild 1.14.4c in Unity Mod Manager",
                 "do not save over it"

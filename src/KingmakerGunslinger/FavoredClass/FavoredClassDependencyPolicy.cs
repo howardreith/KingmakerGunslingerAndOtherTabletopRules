@@ -94,7 +94,8 @@ namespace KingmakerGunslinger.FavoredClass
                 parts.Add(report.CallOfTheWild.ToString(CultureInfo.InvariantCulture) +
                     " from Call of the Wild 1.14.4c");
             if (report.Unknown > 0)
-                parts.Add(report.Unknown.ToString(CultureInfo.InvariantCulture) + " from another mod or version");
+                parts.Add(report.Unknown.ToString(CultureInfo.InvariantCulture) +
+                    " that Kingmaker Gunslinger cannot attribute to a mod");
             return "Kingmaker Gunslinger: this save uses favored-class content that is not loaded. " +
                 report.Total.ToString(CultureInfo.InvariantCulture) + " of its blueprint references are missing: " +
                 string.Join(", ", parts.ToArray()) + ". Nothing was loaded and the save file was not changed. " +
