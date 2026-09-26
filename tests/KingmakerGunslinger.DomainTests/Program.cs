@@ -1162,6 +1162,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("true-grit.pair-uniqueness", TrueGritPairUniqueness),
             Case("true-grit.one-cost", TrueGritOneCostBoundary),
             Case("true-grit.native-check-cost", GunslingerDeedFixTests.TrueGritNativeCheckCost),
+            Case("harness.completed-png-read-once", HarnessEvidenceTests.CompletedPngIsReadOnce),
             Case("true-grit.two-cost", TrueGritTwoCostReduction),
             Case("true-grit.positive-gate", TrueGritPositiveGateRemoval),
             Case("true-grit.variable-cheat-death", TrueGritVariableAndCheatDeath),

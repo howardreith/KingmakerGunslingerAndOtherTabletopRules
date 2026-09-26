@@ -1169,6 +1169,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassLifecycle.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassVisualCensus.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassPersistenceFamilies.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassPersistenceRows.cs" />
     <Compile Include="RuntimeTesting\FavoredClassPerformanceVisualProbe.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassPerformanceVisuals.cs" />
     <Compile Include="RuntimeTesting\RapidReloadGateEvidenceRules.cs" />

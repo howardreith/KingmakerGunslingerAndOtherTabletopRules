@@ -391,33 +391,52 @@ namespace KingmakerGunslinger.RuntimeTesting
             tooltips.SetTemporaryCooldown();
         }
 
+        private static readonly byte[] PngSignature = { 137, 80, 78, 71, 13, 10, 26, 10 };
+
+        // An empty IEND chunk: zero length, the type and its fixed CRC.
+        private static readonly byte[] PngEnd =
+            { 0, 0, 0, 0, (byte)'I', (byte)'E', (byte)'N', (byte)'D', 0xAE, 0x42, 0x60, 0x82 };
+
+        // B3: while the native writer is still appending, only the 24-byte
+        // header and the 12-byte trailer are read; the image is read in full
+        // once, after its IEND trailer shows it is complete. Reading the whole
+        // file on every polled frame allocated up to 32 MB per frame.
         private static byte[] ReadCompletedPng(string path, int width, int height)
         {
             if (!File.Exists(path)) return null;
-            byte[] bytes;
             try
             {
                 using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.None))
                 {
-                    if (stream.Length < 32 || stream.Length > 32 * 1024 * 1024) return null;
-                    bytes = new byte[(int)stream.Length];
-                    int offset = 0;
-                    while (offset < bytes.Length)
-                    {
-                        int count = stream.Read(bytes, offset, bytes.Length - offset);
-                        if (count == 0) return null;
-                        offset += count;
-                    }
+                    long length = stream.Length;
+                    if (length < 45 || length > 32 * 1024 * 1024) return null;
+                    var header = new byte[24];
+                    if (!ReadExactly(stream, header)) return null;
+                    for (int i = 0; i < PngSignature.Length; i++) if (header[i] != PngSignature[i]) return null;
+                    var trailer = new byte[PngEnd.Length];
+                    stream.Seek(length - PngEnd.Length, SeekOrigin.Begin);
+                    if (!ReadExactly(stream, trailer)) return null;
+                    for (int i = 0; i < PngEnd.Length; i++) if (trailer[i] != PngEnd[i]) return null;
+                    if (BigEndian(header, 16) != width || BigEndian(header, 20) != height)
+                        throw new InvalidOperationException("Screenshot dimensions differ from the real game framebuffer.");
+                    var bytes = new byte[(int)length];
+                    stream.Seek(0, SeekOrigin.Begin);
+                    return ReadExactly(stream, bytes) ? bytes : null;
                 }
             }
             catch (IOException) { return null; }
-            byte[] signature = { 137, 80, 78, 71, 13, 10, 26, 10 };
-            for (int i = 0; i < signature.Length; i++) if (bytes[i] != signature[i]) return null;
-            int end = bytes.Length - 8;
-            if (bytes[end] != 'I' || bytes[end + 1] != 'E' || bytes[end + 2] != 'N' || bytes[end + 3] != 'D') return null;
-            if (BigEndian(bytes, 16) != width || BigEndian(bytes, 20) != height)
-                throw new InvalidOperationException("Screenshot dimensions differ from the real game framebuffer.");
-            return bytes;
+        }
+
+        private static bool ReadExactly(Stream stream, byte[] buffer)
+        {
+            int offset = 0;
+            while (offset < buffer.Length)
+            {
+                int count = stream.Read(buffer, offset, buffer.Length - offset);
+                if (count == 0) return false;
+                offset += count;
+            }
+            return true;
         }
 
         private static int BigEndian(byte[] bytes, int at) =>
