@@ -276,7 +276,7 @@
       "detail": "Supplied by the owner and read. The Pteranodon passage confirms the shipped profile rather than changing it: ten-foot reach valued for attacks of opportunity, and a single main bite on which everything stacks (2d6 plus modifiers). The guide also positions multiple Pteranodons as the best single-target aerial attacker at their tier. This informs Sprint 2's acceptance emphasis on correct bite impact timing and location at Large reach; it changes no accepted statistic."
     }
   ],
-  "nextConcreteAction": "{{NEXT_ACTION}}",
+  "nextConcreteAction": "PASS - Sprints 3-8 corrected and requalified on candidate commit `2f04baf4`; draft PR #23 is ready for owner review. No merge, release, permanent deployment or Sprint 9 under the orders of 2026-09-24 and 2026-09-25.",
   "deploymentReconciliation": {
     "finding": "The first runs left this mission's 0.0.136 branch build installed over the pre-run 0.0.117 installation. The mission required restoration and did not authorize a permanent installation; a shared version string does not make a branch artifact an accepted release.",
     "ownershipVerified": "The live DLL hash matched this mission's exact build byte for byte, so the tree was unambiguously mission-owned.",
@@ -383,24 +383,28 @@
       ],
       "sharedCapability": "procedural coats (SummonCoatRasterizer) on the shared visual variant; bounded once-per-summoning sprint"
     },
-    "runtimeQualificationCommit": "30a13445",
+    "runtimeQualificationCommit": "2f04baf4",
     "runtimeEvidence": [
-      "20260925T0508280717241Z-observe-expanded-summoning-inventory",
-      "20260925T0512074898947Z-observe-expanded-summoning-native-donors",
-      "20260925T0517164499486Z-disposable-expanded-summoning-visual-contracts",
-      "20260925T0523222495194Z-disposable-expanded-summoning",
-      "20260925T0526417220346Z-disposable-expanded-summoning-player-path",
-      "20260925T0541546952818Z-working-save-expanded-summoning-prepare",
-      "20260925T0545454137057Z-working-save-expanded-summoning-verify-cleanup",
-      "20260925T0549365901069Z-working-save-expanded-summoning-verify-absent",
-      "20260925T0555240446760Z-working-save-expanded-summoning-creature-review",
-      "20260925T0607591341645Z-working-save-expanded-summoning-creature-review"
+      "20260925T2250290639749Z-observe-expanded-summoning-inventory",
+      "20260925T2254080500336Z-observe-expanded-summoning-native-donors",
+      "20260925T2259196277277Z-disposable-expanded-summoning-visual-contracts",
+      "20260925T2305288036107Z-disposable-expanded-summoning",
+      "20260925T2308574998456Z-disposable-expanded-summoning-player-path",
+      "20260925T2325577479285Z-disposable-expanded-summoning-rules",
+      "20260925T2332106243721Z-disposable-expanded-summoning-visual-lifecycle",
+      "20260925T2338139678603Z-working-save-expanded-summoning-prepare",
+      "20260925T2342075552541Z-working-save-expanded-summoning-verify-cleanup",
+      "20260925T2346027778408Z-working-save-expanded-summoning-verify-absent",
+      "20260925T2351580405941Z-working-save-expanded-summoning-creature-review",
+      "20260926T0004389221429Z-working-save-expanded-summoning-creature-review",
+      "20260926T0011187022628Z/20260926T0015363490585Z-disposable-expanded-summoning",
+      "20260926T0011187022628Z/20260926T0021271261533Z-disposable-expanded-summoning"
     ],
     "correctionOrder": {
       "date": "2026-09-25",
       "reviewedHead": "2569a8eb6aa3fe5200462ebb85c69a7cadfedf68",
-      "candidateCommit": "{{COMMIT}}",
-      "status": "{{PROGRAM_STATUS}}",
+      "candidateCommit": "2f04baf4",
+      "status": "PASS - corrected and requalified",
       "items": [
         "per-view visual resource ownership and teardown (SummonVisualOwnership, UnitEntityView.OnDestroy prefix, failed-attach rollback, ReleaseAll)",
         "cat grab by limb and target identity; rake gate (charge or foe held since the round began) with the CreateFullAttack sequencing seam",
@@ -412,6 +416,22 @@
         "documents audited; stale claims removed",
         "requalification of one candidate commit with the full gate list plus the correction rules and visual lifecycle scenarios",
         "draft PR #23 unmerged"
+      ],
+      "runtimeEvidence": [
+        "20260925T2250290639749Z-observe-expanded-summoning-inventory",
+        "20260925T2254080500336Z-observe-expanded-summoning-native-donors",
+        "20260925T2259196277277Z-disposable-expanded-summoning-visual-contracts",
+        "20260925T2305288036107Z-disposable-expanded-summoning",
+        "20260925T2308574998456Z-disposable-expanded-summoning-player-path",
+        "20260925T2325577479285Z-disposable-expanded-summoning-rules",
+        "20260925T2332106243721Z-disposable-expanded-summoning-visual-lifecycle",
+        "20260925T2338139678603Z-working-save-expanded-summoning-prepare",
+        "20260925T2342075552541Z-working-save-expanded-summoning-verify-cleanup",
+        "20260925T2346027778408Z-working-save-expanded-summoning-verify-absent",
+        "20260925T2351580405941Z-working-save-expanded-summoning-creature-review",
+        "20260926T0004389221429Z-working-save-expanded-summoning-creature-review",
+        "20260926T0011187022628Z/20260926T0015363490585Z-disposable-expanded-summoning",
+        "20260926T0011187022628Z/20260926T0021271261533Z-disposable-expanded-summoning"
       ]
     }
   }
