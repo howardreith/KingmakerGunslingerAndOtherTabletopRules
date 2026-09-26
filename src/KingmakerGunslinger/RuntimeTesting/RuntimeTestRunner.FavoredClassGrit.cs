@@ -47,16 +47,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             var reserved = new HashSet<string>(StringComparer.Ordinal) { gunslingerSelection.AssetGuid };
             BlueprintRace human = BlueprintLibraryLookup.RequireExact<BlueprintRace>(
                 BlueprintBootstrap.Library, FcbHumanRace, "native Human");
-            // The base class cannot complete level 17 once its three official
-            // Gun Training types are taken (an obligatory selection with no
-            // remaining choice; recorded as a pre-existing defect), so the
-            // twenty-level progression uses the Pistolero, whose fixed pistol
-            // training replaces those picks and whose grit is the base grit.
-            BlueprintArchetype pistolero = gunslingerSet.Pistolero == null ? null :
-                gunslingerSet.Pistolero.Archetype;
+            // The base class: its Gun Training picks at 5, 9 and 13 train the
+            // three official types, and its 17th pick, with none left, no
+            // longer blocks the level (pre-existing defect D1, fixed).
+            BlueprintArchetype progressionArchetype = null;
             BlueprintArchetype stranger = gunslingerSet.MysteriousStranger == null ? null :
                 gunslingerSet.MysteriousStranger.Archetype;
-            evidence["progressionArchetype"] = pistolero == null ? "<absent>" : pistolero.name;
+            evidence["progressionArchetype"] = "<base class>";
+            var gunTrainingFailures = new List<string>();
 
             object player = ReadExactMember(Kingmaker.Game.Instance, "Player");
             object state = ReadExactMember(Kingmaker.Game.Instance, "State");
@@ -84,8 +82,6 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool cleaned = false;
             try
             {
-                if (pistolero == null)
-                    throw new InvalidOperationException("The Pistolero progression fixture is unavailable.");
                 test = FavoredClassLevelUpHarness.CreateUnit(14);
                 control = FavoredClassLevelUpHarness.CreateUnit(14);
                 for (int level = 1; level <= 20; level++)
@@ -102,7 +98,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if (level == 4)
                             cancel = RunCancelledCompletingPick(test, human, gunslinger, grit,
                                 gritResource, reserved, gunslingerSelection, cancelFailures,
-                                pistolero);
+                                progressionArchetype);
                         if (test.Descriptor.Resources.GetResourceAmount(gritResource) > 0)
                             test.Descriptor.Resources.Spend(gritResource, 1);
                         spentBefore = test.Descriptor.Resources.GetResourceAmount(gritResource);
@@ -111,10 +107,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     int testMaxBefore = gritResource.GetMaxAmount(test.Descriptor);
                     row["test"] = RunGritVisit(test, human, gunslinger, grit, gunslingerSelection,
                         reserved, level, expectFull ? grit.Full : grit.Partial, grit, levelFailures,
-                        pistolero);
+                        progressionArchetype);
                     row["control"] = RunGritVisit(control, human, gunslinger, grit,
                         gunslingerSelection, reserved, level, host.GenericHitPoint, null, levelFailures,
-                        pistolero);
+                        progressionArchetype);
+                    CheckGunTrainingVisit((JObject)row["test"], level, gunTrainingFailures);
                     int full = FavoredClassLevelUpHarness.Rank(test.Descriptor, grit.Full);
                     int partial = FavoredClassLevelUpHarness.Rank(test.Descriptor, grit.Partial);
                     int testMax = gritResource.GetMaxAmount(test.Descriptor);
@@ -159,6 +156,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     test.Descriptor.Progression.GetClassLevel(gunslinger) == 20 &&
                     FavoredClassLevelUpHarness.Rank(test.Descriptor, grit.Full) == 5 &&
                     FavoredClassLevelUpHarness.Rank(test.Descriptor, grit.Partial) == 15;
+                string[] trainedTypes = levels.Cast<JObject>().Where(value =>
+                        (int)value["level"] < 17 && Classes.GunTrainingProgression.GrantsAt((int)value["level"]))
+                    .Select(value => (string)((JObject)value["test"])["gunTrainingPick"]).ToArray();
+                evidence["gunTrainingPicks"] = new JArray(trainedTypes);
+                if (trainedTypes.Length != 3 || trainedTypes.Any(value => value == null) ||
+                    trainedTypes.Distinct().Count() != 3)
+                    gunTrainingFailures.Add("picks at 5, 9 and 13: " + string.Join(",", trainedTypes));
                 bool openFull = grit.Full.MeetsPrerequisites(null, test.Descriptor, null);
                 bool openPartial = grit.Partial.MeetsPrerequisites(null, test.Descriptor, null);
                 closedAfterTwenty = progressionComplete && !openFull && !openPartial;
@@ -213,6 +217,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "progressionComplete=" + progressionComplete + ";closed=" + closedAfterTwenty,
                 closedAfterTwenty,
                 "native BlueprintFeature.MeetsPrerequisites on the committed unit"));
+            assertions.Add(Assertion("gunslinger-gun-training-seventeen",
+                "a base Gunslinger's Gun Training pick is required at 5, 9 and 13 (a distinct official type each); at 17, with all three official types trained, it opens with nothing selectable and the level completes, and so do 18 to 20 (pre-existing defect D1 fixed)",
+                Describe(evidence["gunTrainingPicks"], gunTrainingFailures),
+                progressionComplete && gunTrainingFailures.Count == 0,
+                "LevelUpState.IsComplete over FeatureSelectionState.CanSelectAnything of the non-obligatory Gun Training selection"));
             assertions.Add(Assertion("fcb-grit-attribute-replacing-archetype",
                 "a Mysterious Stranger (Charisma grit on the same grit resource) gains exactly floor(N/4) maximum grit over its lockstep control through four native levels, with identical ability scores",
                 Describe(strangerEvidence, strangerFailures),
@@ -253,6 +262,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (level == 1 && FavoredClassLevelUpHarness.ChooseFavoredClass(controller,
                         gunslinger, row) == null)
                     failures.Add("level 1: favored Gunslinger progression not selectable");
+                // D1: the Gun Training pick as the native completion gate sees it.
+                FeatureSelectionState training = controller.State.Selections.FirstOrDefault(value =>
+                    ReferenceEquals(value.Selection, BlueprintBootstrap.GunslingerClass.GunTraining.Selection));
+                row["gunTrainingOpen"] = training != null;
+                if (training != null)
+                    row["gunTrainingRequired"] = training.CanSelectAnything(controller.State,
+                        controller.Preview);
                 row["fillBefore"] = FavoredClassLevelUpHarness.FillOthers(controller, reserved);
                 FeatureSelectionState fcb = FavoredClassLevelUpHarness.FindOpenState(controller,
                     gunslingerSelection.AssetGuid);
@@ -286,6 +302,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 row["selected"] = choice.name;
                 row["fillAfter"] = FavoredClassLevelUpHarness.FillOthers(controller, reserved);
+                if (training != null)
+                    row["gunTrainingPick"] = training.Selected && training.SelectedItem != null &&
+                        training.SelectedItem.Feature != null ? training.SelectedItem.Feature.name : null;
                 if (!FavoredClassLevelUpHarness.Confirm(controller, unit.Descriptor, row))
                     failures.Add(Fmt("level {0}: build incomplete: {1}", level, row["blockers"]));
                 row["classLevel"] = unit.Descriptor.Progression.GetClassLevel(gunslinger);
@@ -297,6 +316,35 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 FavoredClassLevelUpHarness.Close(controller);
             }
+        }
+
+        /// <summary>
+        /// D1: at 5, 9 and 13 the Gun Training pick is open and required and a
+        /// type is taken; at 17, with every official type trained, it is open
+        /// with nothing selectable, nothing is taken and the level completes;
+        /// no other level opens it.
+        /// </summary>
+        private static void CheckGunTrainingVisit(JObject visit, int level, IList<string> failures)
+        {
+            bool open = visit["gunTrainingOpen"] != null && (bool)visit["gunTrainingOpen"];
+            bool trainingLevel = Classes.GunTrainingProgression.GrantsAt(level);
+            if (open != trainingLevel)
+            {
+                failures.Add(Fmt("level {0}: Gun Training open={1}", level, open));
+                return;
+            }
+            if (!trainingLevel)
+                return;
+            bool required = visit["gunTrainingRequired"] != null && (bool)visit["gunTrainingRequired"];
+            string pick = visit["gunTrainingPick"] == null ? null : (string)visit["gunTrainingPick"];
+            bool completed = visit["classLevel"] != null && (int)visit["classLevel"] == level;
+            if (level < 17 && (!required || pick == null))
+                failures.Add(Fmt("level {0}: required={1} pick={2}", level, required, pick ?? "<none>"));
+            if (level == 17 && (required || pick != null))
+                failures.Add(Fmt("level 17: required={0} pick={1} (every official type was trained)",
+                    required, pick ?? "<none>"));
+            if (!completed)
+                failures.Add(Fmt("level {0}: the level did not complete", level));
         }
 
         private JObject RunCancelledCompletingPick(UnitEntityData unit, BlueprintRace race,

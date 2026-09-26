@@ -767,6 +767,7 @@
     <Compile Include="Deeds\DeadShotDecision.cs" />
     <Compile Include="Deeds\DeadShotOutcome.cs" />
     <Compile Include="Deeds\DeadShotOutcomeService.cs" />
+    <Compile Include="Deeds\DeadShotConfirmationPolicy.cs" />
     <Compile Include="Deeds\DeadShotRequest.cs" />
     <Compile Include="Deeds\DeadShotRollObservation.cs" />
     <Compile Include="Deeds\DeadShotService.cs" />
