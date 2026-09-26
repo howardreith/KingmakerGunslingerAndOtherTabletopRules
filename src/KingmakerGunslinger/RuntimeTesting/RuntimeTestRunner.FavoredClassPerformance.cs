@@ -95,6 +95,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["release"] = _performanceRange.Release,
                 ["injected"] = _performanceRange.Injected,
                 ["outcomeText"] = _performanceRange.OutcomeText,
+                ["unresolved"] = _performanceRange.Unresolved,
                 ["diagnostics"] = new JArray(_performanceRange.Diagnostics),
             };
             string evidencePath = WriteFavoredClassEvidence("favored-class-performance-range.json", evidence);
@@ -127,6 +128,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "the invested bard's feature, toggle and action-bar descriptions follow the bard's live areas of the performance: the configured range before any cast and once every live area ended (nothing is remembered); the native range while any live area is native (failed, deferred, held or narrowed); the widened range together with a recovered or late-widened area",
                 Describe(probe.OutcomeText, probe.OutcomeTextFailures), probe.OutcomeTextFailures.Count == 0,
                 "Fact.Description (SelectUIData), ActivatableAbility.Description and MechanicActionBarSlotActivableAbility.GetDescription on the invested bard; FavoredClassPerformanceInstances"));
+            assertions.Add(Assertion("fcb-performance-unresolved-ending",
+                "on a real invested bard's areas, a widened area whose narrowing cannot be verified and whose ending throws, does nothing or finds no area data, and a widened area whose liveness read throws, all stay tracked and unresolved: every live area stays tracked, no widened live area sits beside native or configured text unless it is unresolved, a success is held while any area is unresolved, the descriptions are native, a diagnostic is logged for each; once the fault clears, the next widening attempt narrows or ends it verifiably (an ending that never took effect is retried and verified), and an area that ended while its liveness could not be read is forgotten only once the read works (fourth review finding 2)",
+                Describe(probe.Unresolved, probe.UnresolvedFailures), probe.UnresolvedFailures.Count == 0,
+                "FavoredClassPerformanceInstances EndFault, DataUnavailable, LivenessFault and NarrowFault qualification seams; AreaEffectEntityData.IsEnded; FavoredClassPerformanceInstances.RecentDiagnostics"));
             assertions.Add(Assertion("fcb-performance-ring-release",
                 "every scaled ring is restored exactly when the pool releases it, and a ring reclaimed from the pool for an uninvested bard is native",
                 Describe(probe.Release, probe.ReleaseFailures), probe.ReleaseFailures.Count == 0,
@@ -248,6 +253,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 OutcomeText = new JObject();
                 OutcomeTextFailures = new List<string>();
                 InjectedFailures = new List<string>();
+                Unresolved = new JObject();
+                UnresolvedFailures = new List<string>();
             }
 
             internal bool Done { get; private set; }
@@ -264,6 +271,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal JObject OutcomeText { get; private set; }
             internal List<string> OutcomeTextFailures { get; private set; }
             internal List<string> InjectedFailures { get; private set; }
+            internal JObject Unresolved { get; private set; }
+            internal List<string> UnresolvedFailures { get; private set; }
 
             internal void Poll()
             {
@@ -595,15 +604,246 @@ namespace KingmakerGunslinger.RuntimeTesting
                     End(widenedArea);
                     expectTexts("unverifiable-rollback-ended", "widened",
                         "after the areas ended the descriptions did not return to the configured range");
+
+                    // 8. Fourth review, finding 2: an area that cannot be
+                    // narrowed and whose ending throws, does nothing or finds
+                    // no area data, and an area whose liveness read throws,
+                    // stay tracked and unresolved; the next widening attempt
+                    // retries once the fault clears.
+                    ObserveUnresolvedEndings(bard, area, target, nativeRadius, texts, all, mechanics,
+                        nativeInstance, widenedInstance, failing);
                 }
                 finally
                 {
                     FavoredClassPerformanceRangePatch.RingScalerOverride = null;
                     FavoredClassPerformanceRangePatch.DeferRingsForQualification = false;
                     FavoredClassPerformanceInstances.NarrowFaultForQualification = null;
+                    FavoredClassPerformanceInstances.EndFaultForQualification = null;
+                    FavoredClassPerformanceInstances.DataUnavailableForQualification = null;
+                    FavoredClassPerformanceInstances.LivenessFaultForQualification = null;
                     if (fact != null)
                         bard.Descriptor.RemoveFact(fact);
                     RemoveRanks(bard, leaf);
+                }
+            }
+
+            // Fourth review, finding 2, on the invested bard's real areas. Each
+            // case widens an area, makes its narrowing fail (the ring restore
+            // throws) and its ending fail in one way, then records a failing
+            // sibling: the area must stay live, tracked and unresolved, block
+            // a success (held), keep the descriptions native and log a
+            // diagnostic; once the fault clears the next widening attempt must
+            // retry it verifiably. A last case makes the liveness read throw.
+            private void ObserveUnresolvedEndings(UnitEntityData bard, BlueprintAbilityAreaEffect area,
+                FavoredClassPerformanceTarget target, float nativeRadius, Func<JObject> texts,
+                Func<JObject, string, bool> all, Func<AreaEffectEntityData, JObject> mechanics,
+                Func<AreaEffectEntityData, bool> nativeInstance, Func<AreaEffectEntityData, bool> widenedInstance,
+                Func<string, AreaEffectEntityData> failing)
+            {
+                int diagnosticsBefore = FavoredClassPerformanceInstances.RecentDiagnostics().Length;
+                Func<AreaEffectEntityData, string> problem = instance => instance == null || instance.View == null ? null :
+                    FavoredClassPerformanceInstances.ProblemOf(bard.Descriptor, target.Key, instance.View);
+                Func<AreaEffectEntityData, FavoredClassWideningOutcome?> recorded = instance =>
+                    instance == null || instance.View == null ? null :
+                        FavoredClassPerformanceInstances.OutcomeOf(bard.Descriptor, target.Key, instance.View);
+                Func<AreaEffectEntityData, JObject> tracked = instance =>
+                {
+                    JObject row = mechanics(instance);
+                    row["problem"] = problem(instance);
+                    return row;
+                };
+                // Every live area stays tracked; a widened live area beside
+                // native or configured text is unresolved; the texts agree.
+                Func<string, string, AreaEffectEntityData[], JObject> check = (step, expectedText, live) =>
+                {
+                    JObject row = texts();
+                    row["unresolvedCount"] = FavoredClassPerformanceInstances.UnresolvedCount(bard.Descriptor, target.Key);
+                    if (!all(row, expectedText))
+                        UnresolvedFailures.Add(step + ": the descriptions are not " + expectedText);
+                    bool widenedText = all(row, "widened");
+                    foreach (AreaEffectEntityData instance in live)
+                    {
+                        if (instance == null || instance.IsEnded)
+                            continue;
+                        if (recorded(instance) == null)
+                            UnresolvedFailures.Add(step + ": a live area is untracked");
+                        GameObject ring = Ring(instance);
+                        bool widenedNow = !Same(Radius(instance), nativeRadius) ||
+                            (ring != null && FavoredClassPerformanceRing.IsScaled(ring));
+                        if (widenedNow && !widenedText && problem(instance) == null)
+                            UnresolvedFailures.Add(step + ": a widened live area sits beside " + expectedText +
+                                " text without being unresolved");
+                    }
+                    return row;
+                };
+                Func<AreaEffectEntityData> widenedSpawn = () =>
+                {
+                    AreaEffectEntityData spawned = Spawn(bard, area);
+                    if (Ring(spawned) != null)
+                        _scaledRings.Add(Ring(spawned));
+                    return spawned;
+                };
+                Func<AreaEffectEntityData, Action<AreaEffectView>> narrowFails = instance => view =>
+                {
+                    if (ReferenceEquals(view, instance.View))
+                        throw new InvalidOperationException("KMG injected ring restore failure while narrowing");
+                };
+                try
+                {
+                    // 8a. The ending throws; the retry narrows.
+                    AreaEffectEntityData throwing = widenedSpawn();
+                    if (!widenedInstance(throwing))
+                        UnresolvedFailures.Add("end-throws: the area did not widen first");
+                    FavoredClassPerformanceInstances.NarrowFaultForQualification = narrowFails(throwing);
+                    FavoredClassPerformanceInstances.EndFaultForQualification = view =>
+                    {
+                        if (ReferenceEquals(view, throwing.View))
+                            throw new InvalidOperationException("KMG injected ending failure");
+                        return true;
+                    };
+                    AreaEffectEntityData throwTrigger = failing("scaled-then-threw");
+                    AreaEffectEntityData throwHeld = Spawn(bard, area);
+                    Unresolved["end-throws"] = new JObject
+                    {
+                        ["unresolved"] = tracked(throwing), ["trigger"] = tracked(throwTrigger), ["held"] = tracked(throwHeld),
+                        ["texts"] = check("end-throws", "native", new[] { throwing, throwTrigger, throwHeld })
+                    };
+                    // The failed narrowing restored the radius but not the ring.
+                    if (throwing.IsEnded || nativeInstance(throwing) || problem(throwing) == null ||
+                        !problem(throwing).Contains("ending it threw"))
+                        UnresolvedFailures.Add("end-throws: the area whose ending threw is not live, unrestored and unresolved");
+                    if (recorded(throwHeld) != FavoredClassWideningOutcome.Held || !nativeInstance(throwHeld))
+                        UnresolvedFailures.Add("end-throws: a success beside the unresolved area was not held native");
+                    FavoredClassPerformanceInstances.NarrowFaultForQualification = null;
+                    FavoredClassPerformanceInstances.EndFaultForQualification = null;
+                    AreaEffectEntityData throwRetry = Spawn(bard, area);
+                    Unresolved["end-throws-retried"] = new JObject
+                    {
+                        ["retried"] = tracked(throwing), ["held"] = tracked(throwRetry),
+                        ["texts"] = check("end-throws-retried", "native",
+                            new[] { throwing, throwTrigger, throwHeld, throwRetry })
+                    };
+                    if (!nativeInstance(throwing) || throwing.IsEnded ||
+                        recorded(throwing) != FavoredClassWideningOutcome.Narrowed || problem(throwing) != null)
+                        UnresolvedFailures.Add("end-throws: the next widening attempt did not narrow the area verifiably");
+                    End(throwTrigger);
+                    End(throwHeld);
+                    End(throwRetry);
+                    End(throwing);
+
+                    // 8b. The ending does nothing; the retry ends it.
+                    AreaEffectEntityData noOp = widenedSpawn();
+                    FavoredClassPerformanceInstances.NarrowFaultForQualification = narrowFails(noOp);
+                    FavoredClassPerformanceInstances.EndFaultForQualification = view => !ReferenceEquals(view, noOp.View);
+                    AreaEffectEntityData noOpTrigger = failing("scaled-then-threw");
+                    Unresolved["end-no-op"] = new JObject
+                    {
+                        ["unresolved"] = tracked(noOp), ["trigger"] = tracked(noOpTrigger),
+                        ["texts"] = check("end-no-op", "native", new[] { noOp, noOpTrigger })
+                    };
+                    if (noOp.IsEnded || problem(noOp) == null || !problem(noOp).Contains("still live after ending"))
+                        UnresolvedFailures.Add("end-no-op: the area whose ending did nothing is not live and unresolved");
+                    FavoredClassPerformanceInstances.EndFaultForQualification = null;
+                    AreaEffectEntityData noOpRetry = Spawn(bard, area);
+                    Unresolved["end-no-op-retried"] = new JObject
+                    {
+                        ["retried"] = tracked(noOp), ["held"] = tracked(noOpRetry),
+                        ["texts"] = check("end-no-op-retried", "native", new[] { noOp, noOpTrigger, noOpRetry })
+                    };
+                    if (!noOp.IsEnded || recorded(noOp) != null)
+                        UnresolvedFailures.Add("end-no-op: the retried ending was not verified and forgotten");
+                    if (recorded(noOpRetry) != FavoredClassWideningOutcome.Held || !nativeInstance(noOpRetry))
+                        UnresolvedFailures.Add("end-no-op: the retry's own area was not held native");
+                    FavoredClassPerformanceInstances.NarrowFaultForQualification = null;
+                    End(noOpTrigger);
+                    End(noOpRetry);
+                    End(noOp);
+
+                    // 8c. The area data is unavailable (it cannot be ended and
+                    // counts as live); the retry narrows once it returns.
+                    AreaEffectEntityData missing = widenedSpawn();
+                    FavoredClassPerformanceInstances.NarrowFaultForQualification = narrowFails(missing);
+                    FavoredClassPerformanceInstances.DataUnavailableForQualification = view =>
+                        ReferenceEquals(view, missing.View);
+                    AreaEffectEntityData missingTrigger = failing("scaled-then-threw");
+                    Unresolved["data-unavailable"] = new JObject
+                    {
+                        ["unresolved"] = tracked(missing), ["trigger"] = tracked(missingTrigger),
+                        ["texts"] = check("data-unavailable", "native", new[] { missing, missingTrigger })
+                    };
+                    if (missing.IsEnded || problem(missing) == null || !problem(missing).Contains("data is unavailable"))
+                        UnresolvedFailures.Add("data-unavailable: the area without data is not live and unresolved");
+                    FavoredClassPerformanceInstances.NarrowFaultForQualification = null;
+                    FavoredClassPerformanceInstances.DataUnavailableForQualification = null;
+                    AreaEffectEntityData missingRetry = Spawn(bard, area);
+                    Unresolved["data-unavailable-retried"] = new JObject
+                    {
+                        ["retried"] = tracked(missing), ["held"] = tracked(missingRetry),
+                        ["texts"] = check("data-unavailable-retried", "native",
+                            new[] { missing, missingTrigger, missingRetry })
+                    };
+                    if (!nativeInstance(missing) || recorded(missing) != FavoredClassWideningOutcome.Narrowed ||
+                        problem(missing) != null)
+                        UnresolvedFailures.Add("data-unavailable: the retry did not narrow the area verifiably");
+                    End(missingTrigger);
+                    End(missingRetry);
+                    End(missing);
+
+                    // 8d. The liveness read throws: nothing is forgotten; a
+                    // success is held (and narrows it); an area that ended
+                    // while unreadable is forgotten only once the read works.
+                    AreaEffectEntityData unreadable = widenedSpawn();
+                    FavoredClassPerformanceInstances.LivenessFaultForQualification = view =>
+                        ReferenceEquals(view, unreadable.View);
+                    JObject alone = check("liveness-throws", "widened", new[] { unreadable });
+                    Unresolved["liveness-throws"] = new JObject { ["unreadable"] = tracked(unreadable), ["texts"] = alone };
+                    if (recorded(unreadable) == null || problem(unreadable) == null ||
+                        !problem(unreadable).Contains("liveness"))
+                        UnresolvedFailures.Add("liveness-throws: the unreadable area was forgotten or not unresolved");
+                    AreaEffectEntityData besideUnreadable = Spawn(bard, area);
+                    Unresolved["liveness-throws-beside"] = new JObject
+                    {
+                        ["unreadable"] = tracked(unreadable), ["held"] = tracked(besideUnreadable),
+                        ["texts"] = check("liveness-throws-beside", "native", new[] { unreadable, besideUnreadable })
+                    };
+                    if (recorded(besideUnreadable) != FavoredClassWideningOutcome.Held || !nativeInstance(besideUnreadable) ||
+                        !nativeInstance(unreadable) || recorded(unreadable) != FavoredClassWideningOutcome.Narrowed)
+                        UnresolvedFailures.Add("liveness-throws: the success beside the unreadable area was not held, or did not narrow it");
+                    unreadable.ForceEnd();
+                    texts();
+                    bool keptWhileUnreadable = recorded(unreadable) != null;
+                    FavoredClassPerformanceInstances.LivenessFaultForQualification = null;
+                    texts();
+                    bool forgottenOnceReadable = recorded(unreadable) == null;
+                    Unresolved["liveness-throws-ended"] = new JObject
+                    {
+                        ["keptWhileUnreadable"] = keptWhileUnreadable, ["forgottenOnceReadable"] = forgottenOnceReadable,
+                        ["liveAreas"] = FavoredClassPerformanceInstances.LiveCount(bard.Descriptor, target.Key)
+                    };
+                    if (!keptWhileUnreadable || !forgottenOnceReadable)
+                        UnresolvedFailures.Add("liveness-throws: an area that ended while unreadable was forgotten early or kept after the read worked");
+                    End(besideUnreadable);
+                    End(unreadable);
+                    Unresolved["ended"] = check("unresolved-ended", "widened", new AreaEffectEntityData[0]);
+                    if (FavoredClassPerformanceInstances.LiveCount(bard.Descriptor, target.Key) != 0)
+                        UnresolvedFailures.Add("unresolved-ended: an area is still tracked after every area ended");
+
+                    string[] diagnostics = FavoredClassPerformanceInstances.RecentDiagnostics()
+                        .Skip(diagnosticsBefore).ToArray();
+                    Unresolved["diagnostics"] = new JArray(diagnostics);
+                    foreach (string expected in new[]
+                        { "ending it threw", "still live after ending", "data is unavailable", "liveness probe threw" })
+                        if (!diagnostics.Any(value => value.Contains(";unresolved") && value.Contains(expected)))
+                            UnresolvedFailures.Add("diagnostics: no unresolved diagnostic for " + expected);
+                    if (diagnostics.Count(value => value.Contains(";resolved")) < 4)
+                        UnresolvedFailures.Add("diagnostics: fewer than four resolutions were logged");
+                }
+                finally
+                {
+                    FavoredClassPerformanceInstances.NarrowFaultForQualification = null;
+                    FavoredClassPerformanceInstances.EndFaultForQualification = null;
+                    FavoredClassPerformanceInstances.DataUnavailableForQualification = null;
+                    FavoredClassPerformanceInstances.LivenessFaultForQualification = null;
                 }
             }
 
