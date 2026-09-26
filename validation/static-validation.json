@@ -2014,7 +2014,12 @@
       "prState": "draft PR #23, unmerged",
       "ownerAcceptedEngineLimitation": "ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD",
       "ownerAcceptedEngineLimitationDate": "2026-09-26",
-      "activeGrappleScope": "Session-scoped. A KMG summon's grab, hold, swallow or engulf, its mouth occupancy and the held-target rake do not cross a save: Kingmaker carries no active grapple across one and writes a unit part on these summons by type without its contents. A save and a reload must resolve to a clean released state - no lingering conditions, occupied mouths, delayed damage, dangling links, unusable units or module-disabled deserialization problems - which the persistence trio proves. This is not grapple persistence; a project-owned re-establishment of holds on load is out of scope for PR #23."
+      "activeGrappleScope": "Session-scoped. A KMG summon's grab, hold, swallow or engulf, its mouth occupancy and the held-target rake do not cross a save: Kingmaker carries no active grapple across one and writes a unit part on these summons by type without its contents. A save and a reload must resolve to a clean released state - no lingering conditions, occupied mouths, delayed damage, dangling links, unusable units or module-disabled deserialization problems - which the persistence trio proves. This is not grapple persistence; a project-owned re-establishment of holds on load is out of scope for PR #23.",
+      "closeoutCommit": "fd877587",
+      "closeoutGates": "domain suite PASS (1806 tests, 0 failures); repository, manifest and static validation PASS; exact-reference Release build PASS; strict package validation PASS",
+      "closeoutPackageSha256": "70eadffe2701d7778d8fe1a5dfbc6ca333df4f9c20696bb652b95a27d9871bf6",
+      "closeoutDllSha256": "0706c3306020d31a00c7f81b099b550cfb9f81e8e07c4d7670e4db1e1ccbce46",
+      "closeoutLiveMatrixRerun": "not required: the closeout changed no executable behaviour (record text, one profile note and test token names), so the live qualification remains the candidate 145810a5 matrix"
     }
   }
 }
