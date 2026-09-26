@@ -19,13 +19,19 @@ namespace KingmakerGunslinger.Summoning
     /// </summary>
     public sealed class SummonGrappleLinkRecord
     {
-        [JsonProperty] public string TargetId;
-        [JsonProperty] public int Limb;
-        [JsonProperty] public int AdditionalIndex = -1;
-        [JsonProperty] public string WeaponName;
-        [JsonProperty] public bool Engulfed;
+        // Auto-properties carrying JsonProperty, with an explicit
+        // parameterless constructor: the shape the game's serializer writes,
+        // as the project's other persisted records do. Public fields were
+        // skipped and the list reached the save empty.
+        [JsonProperty] public string TargetId { get; set; }
+        [JsonProperty] public int Limb { get; set; }
+        [JsonProperty] public int AdditionalIndex { get; set; }
+        [JsonProperty] public string WeaponName { get; set; }
+        [JsonProperty] public bool Engulfed { get; set; }
         /// <summary>The record was rebuilt for a link that had none, not established by a grab.</summary>
-        [JsonProperty] public bool Repaired;
+        [JsonProperty] public bool Repaired { get; set; }
+
+        public SummonGrappleLinkRecord() { AdditionalIndex = -1; }
     }
 
     /// <summary>
