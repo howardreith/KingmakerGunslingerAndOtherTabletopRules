@@ -1916,7 +1916,7 @@
       "grappleLifecycle": "shared and corrected (2026-09-25): grab by limb identity against a foe of the holder's size or smaller through the game's grapple check with +4; native hold parts (single link) or held-state buffs naming the holder (multi-link) carry the project buffs; maintain each round at +5 more dealing the establishing limb's own weapon damage (mound adds constrict 2d6+7) or release; a swallower that began the round holding uses a successful check as though pinning and swallows a foe up to one size smaller (the worm) or engulfs Medium or smaller (the flytrap); the hold's end releases its own target(s); the swallow lifecycle spits out on traits end; party members held or swallowed by a KMG summon are released on area leave and repaired on area load",
       "icons": "Blender 4.5 procedural renders (assets-source/original-icons/expanded-summoning/tools/render_creature_icon.py)",
       "internalAcceptance": "INTERNAL-ACCEPTED",
-      "giantFlytrap": "one grab link per bite, four at most, each held state naming the flytrap and its establishing bite; a bite that holds cannot take a second foe; engulf of a Medium or smaller foe held since the round began (project Engulfed state, 1d8+7 bludgeoning plus 1d8 acid per round); release on escape, the last link's end, disposal, the swallow lifecycle and the area-leave sweep; the pathfinder still routes a free unit past four held units"
+      "giantFlytrap": "one grab link per bite, four at most, each held state naming the flytrap and its establishing bite; a bite that holds cannot take a second foe; engulf of a Medium or smaller foe held since the round began (project Engulfed state, 1d8+7 bludgeoning plus 2d6 acid per round); release on escape, the last link's end, disposal, the swallow lifecycle and the area-leave sweep; the pathfinder still routes a free unit past four held units"
     },
     "sprint5": {
       "creatures": [
@@ -1990,7 +1990,7 @@
     ],
     "correctionOrder": {
       "order": "Expanded Summoning Phase 1 - PR #23 correction and requalification order (2026-09-25) on the reviewed head 2569a8eb",
-      "status": "Sprints 3-8 corrected and requalified; the 2026-09-26 order closed except the post-reload maintain, BLOCKED by the engine with the safe post-load state proven; draft PR #23 ready for owner review",
+      "status": "Sprints 3-8 corrected and requalified; the 2026-09-25 and 2026-09-26 orders are both closed; draft PR #23 ready for owner review, unmerged",
       "candidateCommit": "145810a5",
       "packageSha256": "e0fed6b851898965eda8dc9f1e152d44376bb15a6bd1a735fbf6758b6c63aff1",
       "dllSha256": "db9daf45b086fbfd9b36e1523edba712bd82141c76e2f98616240fb725d65bcf",
@@ -2011,7 +2011,10 @@
         "20260926T0948097208982Z/20260926T0957291887929Z-disposable-expanded-summoning"
       ],
       "humanReview": "NOT_PERFORMED_NONBLOCKING",
-      "prState": "draft PR #23, unmerged"
+      "prState": "draft PR #23, unmerged",
+      "ownerAcceptedEngineLimitation": "ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD",
+      "ownerAcceptedEngineLimitationDate": "2026-09-26",
+      "activeGrappleScope": "Session-scoped. A KMG summon's grab, hold, swallow or engulf, its mouth occupancy and the held-target rake do not cross a save: Kingmaker carries no active grapple across one and writes a unit part on these summons by type without its contents. A save and a reload must resolve to a clean released state - no lingering conditions, occupied mouths, delayed damage, dangling links, unusable units or module-disabled deserialization problems - which the persistence trio proves. This is not grapple persistence; a project-owned re-establishment of holds on load is out of scope for PR #23."
     }
   }
 }

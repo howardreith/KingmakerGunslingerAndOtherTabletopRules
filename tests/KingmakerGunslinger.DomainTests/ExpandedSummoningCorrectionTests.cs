@@ -257,17 +257,20 @@ namespace KingmakerGunslinger.DomainTests
 
         /// <summary>
         /// The 2026-09-26 order's four defects, pinned where they live: the
-        /// durable link store, the rake the maintain makes, the mouth that
-        /// stays shut, the engulf bundle and the Web's exact projectile.
+        /// link store that owns the establishing attack, the rake the maintain
+        /// makes, the mouth that stays shut, the engulf bundle and the Web's
+        /// exact projectile. The store is session-scoped by owner-accepted
+        /// engine limitation (2026-09-26), so nothing here claims a reload
+        /// carries it.
         /// </summary>
         internal static void FinalCorrectionsAreImplemented()
         {
-            // 1. The establishing attack is durable. It is a serialized unit
-            // part naming a semantic limb slot and a unit id, never a live
-            // weapon entity and never a process-local table.
+            // 1. The establishing attack is owned for the life of the hold by
+            // a unit part naming a semantic limb slot and a unit id, never a
+            // live weapon entity and never a process-local table.
             string store = Source("src", "KingmakerGunslinger", "Summoning",
                 "SummonGrappleLinkState.cs");
-            RequireTokens("Durable link store", store,
+            RequireTokens("Link store", store,
                 "public sealed class UnitPartSummonGrappleLinks : UnitPart",
                 "private List<string> _links", "internal string Encode()",
                 "internal static SummonGrappleLinkRecord Decode(",
@@ -289,7 +292,7 @@ namespace KingmakerGunslinger.DomainTests
                 "ExpandedSummoningSpecialCombatComponents.cs");
             Assertions.False(components.Contains("ConditionalWeakTable<Buff, LinkInfo>"),
                 "The buff-keyed link table is gone.");
-            RequireTokens("Durable link wiring", components,
+            RequireTokens("Link wiring", components,
                 "SummonGrappleLinks.Record(owner, target, establishing);",
                 "SummonGrappleLinks.EstablishingWeapon(owner, target)",
                 "internal static ItemEntityWeapon WeaponAt(UnitEntityData owner, SummonLimbKind kind,",

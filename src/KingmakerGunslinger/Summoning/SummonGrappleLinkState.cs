@@ -12,10 +12,10 @@ namespace KingmakerGunslinger.Summoning
 {
     /// <summary>
     /// One link a summon holds: which of its limbs took which target, and
-    /// whether that target has since been engulfed. Nothing live is stored.
-    /// The limb is a semantic slot - the primary hand, or an additional limb
-    /// by index - so it resolves against the body the game rebuilds on load,
-    /// and the target is its unit id.
+    /// whether that target has since been engulfed. Nothing live is kept: the
+    /// limb is a semantic slot - the primary hand, or an additional limb by
+    /// index - resolved against the holder's body when it is read, and the
+    /// target is its unit id.
     /// </summary>
     public sealed class SummonGrappleLinkRecord
     {
@@ -30,10 +30,11 @@ namespace KingmakerGunslinger.Summoning
         public SummonGrappleLinkRecord() { AdditionalIndex = -1; }
 
         /// <summary>
-        /// One line of text per link. The game's serializer writes a list of
-        /// strings on a unit part - the project's battered-firearm receipts
-        /// prove it - and does not write this list of a custom class, whatever
-        /// shape the class takes, so the store keeps its records as text.
+        /// One line of text per link, so the records stay plain data: target
+        /// id, limb kind, limb index, the weapon blueprint's name, engulfed,
+        /// repaired. Kingmaker writes a unit part on these summons by type
+        /// without its contents, so this text is not carried across a save;
+        /// the encoding keeps the store simple and inspectable, not durable.
         /// </summary>
         internal string Encode()
         {
@@ -69,21 +70,28 @@ namespace KingmakerGunslinger.Summoning
 
     /// <summary>
     /// The summon's own record of which limb holds or has engulfed which
-    /// target, carried on the holder and serialized with it.
+    /// target, for the life of that hold.
     ///
-    /// It replaces a process-local table keyed by buff instances, which was
-    /// empty after a load: the maintain damage then fell back to the holder's
-    /// first grab limb, which is not equivalent for a Tiger or a Smilodon
-    /// (bite and foreclaw deal different dice) and loses which of the Giant
-    /// Flytrap's four mouths owns which target. It is also the mouth
+    /// It replaces a process-local table keyed by buff instances, which the
+    /// maintain could lose within a session: the damage then fell back to the
+    /// holder's first grab limb, which is not equivalent for a Tiger or a
+    /// Smilodon (bite and foreclaw deal different dice) and loses which of the
+    /// Giant Flytrap's four mouths owns which target. It is also the mouth
     /// occupancy the one-target-per-mouth rule needs: a mouth that holds or
     /// has engulfed a target may not attack another one, and that has to
-    /// survive both the engulf, which ends the held state, and the reload.
+    /// outlive the engulf, which ends the held state.
+    ///
+    /// The store is session-scoped, which the owner accepted on 2026-09-26
+    /// (OwnerAcceptedEngineLimitation:
+    /// ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD). Kingmaker carries no
+    /// active grapple across a save and writes a unit part on these summons by
+    /// type without its contents, so a reload has neither a hold nor a record,
+    /// and must simply come back clean.
     ///
     /// Reading filters the records against the game's own state without
     /// writing: a link whose target is gone, freed, spat out or no longer held
     /// by this summon answers nothing, so escape, death, dismissal, expiry, an
-    /// area transition, a module-disabled load and a repaired load all free
+    /// area transition, a module-disabled load and a reloaded game all free
     /// precisely the mouth they should without a hook in each path. Records
     /// leave the store through the release paths, which know the link has
     /// ended, or when their limb takes a new victim; a read taken before the
@@ -141,10 +149,11 @@ namespace KingmakerGunslinger.Summoning
     }
 
     /// <summary>
-    /// The durable link store: which limb of a summon established the hold on
-    /// each target, and which mouths are occupied. Every read reconciles the
-    /// records against the game's own state first, so a stale link never
-    /// answers a question.
+    /// The link store: which limb of a summon established the hold on each
+    /// target, and which mouths are occupied, for as long as the game holds
+    /// them. Every read reconciles the records against the game's own state
+    /// first, so a stale link never answers a question, and a reload - which
+    /// keeps neither hold nor record - answers nothing at all.
     /// </summary>
     internal static class SummonGrappleLinks
     {
@@ -166,7 +175,7 @@ namespace KingmakerGunslinger.Summoning
         }
 
         /// <summary>
-        /// The link survives the engulf: the held state ends there, but the
+        /// The link outlives the engulf: the held state ends there, but the
         /// mouth stays shut on that victim until it is spat out or freed.
         /// </summary>
         internal static void MarkEngulfed(UnitEntityData holder, UnitEntityData target)
@@ -195,8 +204,10 @@ namespace KingmakerGunslinger.Summoning
 
         /// <summary>
         /// The weapon entity of the limb that established the hold on this
-        /// target, resolved against the body the summon carries now, or null
-        /// when this summon holds no such link.
+        /// target, read from the holder's body as it stands, or null when this
+        /// summon holds no such link - which is also what a reloaded game
+        /// answers, because neither the hold nor the record is carried across
+        /// a save.
         /// </summary>
         internal static ItemEntityWeapon EstablishingWeapon(UnitEntityData holder,
             UnitEntityData target)
@@ -207,8 +218,9 @@ namespace KingmakerGunslinger.Summoning
 
         /// <summary>
         /// The limb a stored record names for this target, whatever the game's
-        /// own state says now. This is how a reload proves the identity
-        /// survived even where the engine did not carry the hold itself.
+        /// own state says now. The persistence leg reads it to show that a
+        /// reloaded game holds no record at all, beside a hold it also does
+        /// not hold.
         /// </summary>
         internal static ItemEntityWeapon StoredLimbOf(UnitEntityData holder,
             UnitEntityData target)
@@ -276,10 +288,11 @@ namespace KingmakerGunslinger.Summoning
 
         /// <summary>
         /// Adopts a link that exists in the game's state but carries no
-        /// record - a hold established before this store, or one a repaired
-        /// load rebuilt - so a mouth is never left owning a target it cannot
-        /// name. The adopted record is marked repaired and uses the holder's
-        /// first grab limb, which is all that is knowable then.
+        /// record - one established before this store existed, or one a
+        /// module-disabled recovery rebuilt - so a mouth is never left owning
+        /// a target it cannot name. The adopted record is marked repaired and
+        /// uses the holder's first grab limb, which is all that is knowable
+        /// then.
         /// </summary>
         internal static int Repair(UnitEntityData holder, SummonGrabComponent grab)
         {

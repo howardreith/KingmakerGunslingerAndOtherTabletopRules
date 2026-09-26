@@ -44,19 +44,22 @@
 - Roster: 81 creatures, 813 logical placements (799 published), 91 project
   icons; 264 identities appended to the frozen ledger (2220 stable
   identifiers, 2218 active); every placement propagates 1d3 / 1d4+1 to the
-  higher tiers by construction. Domain suite 1799 cases.
+  higher tiers by construction. Domain suite 1806 cases.
 - Every project-owned visual is a private material clone or a texture
   generated from the rig's own geometry, owned per view and destroyed with
   the view; the game's textures are never read, copied or redistributed.
-- Final corrections (2026-09-26): the establishing attack of a grapple
-  link is durable across a save and a reload, so a Tiger's bite and a
-  Smilodon's foreclaw keep their own maintain damage and the Giant
-  Flytrap's four mouths keep their own victims; a mouth that holds or has
-  engulfed a foe attacks no one else; the cats' rake is made by the
-  maintain check the tabletop puts it in, because the game's own initiator
-  part leaves a holder unable to act, with the charge rake still on the
-  command path; the flytrap's engulf deals the stat block's 2d6 acid; and
-  the Web pins one projectile identity instead of scanning names.
+- Final corrections (2026-09-26): the establishing attack of a grapple link
+  is owned for the life of that hold, so a Tiger's bite and a Smilodon's
+  foreclaw keep their own maintain damage and the Giant Flytrap's four
+  mouths keep their own victims; a mouth that holds or has engulfed a foe
+  attacks no one else; the cats' rake is made by the maintain check the
+  tabletop puts it in, because the game's own initiator part leaves a
+  holder unable to act, with the charge rake still on the command path; the
+  flytrap's engulf deals the stat block's 2d6 acid; and the Web pins one
+  projectile identity instead of scanning names. An active grab, hold,
+  swallow, engulf, mouth occupancy or held-target rake is session-scoped: a
+  save and a reload release it cleanly (owner-accepted engine limitation,
+  2026-09-26).
 - Correction order (2026-09-25): the reviewed draft was corrected and
   requalified on one candidate commit - the cats' attack and target
   identity, the grab size rule and swallow limits, the Flytrap's multi-link
