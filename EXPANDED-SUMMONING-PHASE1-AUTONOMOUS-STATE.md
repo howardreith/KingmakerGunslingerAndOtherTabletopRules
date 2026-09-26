@@ -783,6 +783,20 @@ records under `runtime-evidence/expanded-summoning-restoration`, one per batch o
 | `20260926T0011187022628Z/20260926T0015363490585Z-disposable-expanded-summoning` | compatibility-mechanical (gunslinger-only; record `20260926T0011187022628Z`, failures=0, liveTreeUnchanged=True) | PASS | 2f04baf4 | 17 |
 | `20260926T0011187022628Z/20260926T0021271261533Z-disposable-expanded-summoning` | compatibility-mechanical (gunslinger-high-risk-combined; record `20260926T0011187022628Z`, failures=0, liveTreeUnchanged=True) | PASS | 2f04baf4 | 17 |
 
+The branch carries a documentation-only delta after the candidate: the
+requalification record itself - this section, the implementation report's
+correction section, `EXPANDED-SUMMONING-PROGRAM-STATE.json` and
+`validation/static-validation.json`. Nothing executable changes with it: no
+source, test, tool, blueprint, asset or packaged file differs from the
+candidate, the package and the DLL built from the branch head hash
+identically to the candidate's
+(`bb12daef63a78c9ebcd1af9b3f0f51d7ea5d193c3f46028d425dbf443009de12` and
+`1753c235d42b9f23569a5608837e290b0ab1b77ea20cb006d9a7e1c7d395bb81`), and the
+static gates that read the validation data - the repository validation, the
+Phase 1 validator, the manifest tool and the 1805-test domain suite - were
+rerun on the branch head and pass. The guarded runtime evidence above
+therefore stands for the branch head exactly as for `2f04baf4`.
+
 Live observations carried into the record (each the assertion's own observed
 string, clipped):
 
