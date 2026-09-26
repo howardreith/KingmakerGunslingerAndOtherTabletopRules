@@ -81,6 +81,11 @@ namespace KingmakerGunslinger.FavoredClass
                 if (_attached || _publication != null) return;
                 _attached = true;
             }
+            FavoredClassDependencyWarning.Initialize(context.Logger);
+            if (!Hooks.FavoredClassDependencyWarningPatches.ConverterInstalled)
+                context.Logger.Warning(Phase, "native-contract.degraded",
+                    "the blueprint converter observation is not installed; a save with missing favored-class " +
+                    "dependencies shows only the native load error");
             FavoredClassSettingsResult settings = ResolveSettings(context.ModEntry.Path);
             if (settings.Source == FavoredClassSettingsSource.Invalid)
                 context.Logger.Warning(Phase, "settings.invalid", settings.ToString() +

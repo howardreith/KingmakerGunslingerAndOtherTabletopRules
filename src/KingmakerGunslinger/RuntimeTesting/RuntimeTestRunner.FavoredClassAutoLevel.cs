@@ -201,6 +201,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException("the favored Sorcerer progression was not chosen");
                 FavoredClassLevelUpHarness.FillOthers(recording,
                     new HashSet<string>(StringComparer.Ordinal) { bonus.AssetGuid });
+                FillFcbSpells(recording);
                 FeatureSelectionState reward = FavoredClassLevelUpHarness.FindOpenState(recording, bonus.AssetGuid);
                 leaf = reward == null ? null : FavoredClassLevelUpHarness.CanSelect(recording, reward, pair.Full) ?
                     pair.Full : pair.Partial;

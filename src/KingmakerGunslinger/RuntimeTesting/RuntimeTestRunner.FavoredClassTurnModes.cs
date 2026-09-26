@@ -18,6 +18,7 @@ using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Commands;
+using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
@@ -729,11 +730,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                         caster.CombatState.HasCooldownForCommand(command) + ";close=" + command.IsUnitEnoughClose +
                         ";costs=" + string.Join(",", FcbCosts(caster)) + ").");
                 // A command still acting when the next turn is prepared would
-                // charge its action again (TurnController.Prepare); a finished
-                // deed command leaves the queue before anything else runs.
-                if (!command.IsFinished && command.IsActed && (command.ExecutionProcess == null ||
-                        command.ExecutionProcess.IsEnded))
-                    caster.Commands.InterruptAll(true);
+                // charge its action again (TurnController.Prepare). An acted
+                // command whose effect has ended only waits for its animation's
+                // tail, which the save-free host never plays: it ends with its
+                // own result, as the native tick ends it after the animation,
+                // and leaves the queue before anything else runs.
+                if (!command.IsFinished && command.IsActed && command.Result != UnitCommand.ResultType.None &&
+                        (command.ExecutionProcess == null || command.ExecutionProcess.IsEnded))
+                    command.ForceFinishForTurnBased(command.Result);
                 caster.Commands.RemoveFinishedAndUpdateQueue();
                 if (caster.Commands.Raw.Any(value => value != null))
                     throw new InvalidOperationException("A deed command stayed queued after it finished: " +

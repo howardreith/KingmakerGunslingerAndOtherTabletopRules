@@ -332,6 +332,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-favored-class-auto-level";
         internal const string ObserveFavoredClassHostDefects =
             "observe-favored-class-host-defects";
+        internal const string ObserveFavoredClassMissingDependency =
+            "observe-favored-class-missing-dependency";
         internal const string DisposableFavoredClassGunslingerMechanics =
             "disposable-favored-class-gunslinger-mechanics";
         internal const string DisposableFavoredClassGunslingerMenus =
@@ -716,6 +718,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableFavoredClassBombs,
                 DisposableFavoredClassAutoLevel,
                 ObserveFavoredClassHostDefects,
+                ObserveFavoredClassMissingDependency,
                 DisposableFavoredClassGunslingerMechanics,
                 DisposableFavoredClassGunslingerMenus,
                 DisposableFavoredClassGrit,
