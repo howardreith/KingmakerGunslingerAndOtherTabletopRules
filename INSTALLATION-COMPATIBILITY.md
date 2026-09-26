@@ -1,6 +1,15 @@
 # Installation, updates, removal, and compatibility
 
-Full release: `0.0.139-expanded-summoning-phase1` (UMM version `0.0.139`).
+Full release: `0.0.140-favored-class-integration` (UMM version `0.0.140`), archive
+`KingmakerGunslinger-0.0.140-favored-class-integration.zip`. It adds the
+optional Favored Class integration described in
+[docs/FAVORED-CLASS-COMPATIBILITY.md](docs/FAVORED-CLASS-COMPATIBILITY.md) and
+[its release notes](docs/RELEASE-NOTES-0.0.140.md). Favored Class is never
+required; only the exact qualified Favored Class 1.3.1 and Call of the Wild
+1.14.4c-2.1 binaries activate it. It was published under explicit owner
+authorization.
+
+Previous full release: `0.0.139-expanded-summoning-phase1` (UMM version `0.0.139`).
 The installable archive is
 `KingmakerGunslinger-0.0.139-expanded-summoning-phase1.zip`. It brings the
 Expanded Summoning charter's Sprints 3 through 8 to the summoning lists. An

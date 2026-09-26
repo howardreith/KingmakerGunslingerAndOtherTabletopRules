@@ -65,6 +65,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "KMG.Spells.GreaterTeleport.",
             "KMG.Spells.WordOfRecall.",
             "KMG.Spells.MagicCircle.",
+            "KMG.FavoredClass.",
+            "KMG.MostlyHuman.",
         };
         private static readonly string[] AdditionalSymbols = {
             "KMG.Feats.FirearmWeaponFocus",
@@ -127,6 +129,49 @@ namespace KingmakerGunslinger.RuntimeTesting
             new[] { "KMG.ElementalRaces.Sylph.Stormsoul.ShockingGraspDeliveryAbility", "17451c1327c571641a1345bd31155209" },
             new[] { "KMG.ElementalRaces.Traits.Ifrit.EfreetiMagic.EnlargePerson", "c60969e7f264e6d4b84a1499fdcf9039" },
             new[] { "KMG.ElementalRaces.Traits.Ifrit.EfreetiMagic.ReducePerson", "4e0e9aba6447d514f88eff1464cc4763" },
+            new[] { "KMG.FavoredClass.Gunslinger.FirearmConfirmation.Partial", "8ac59959b1b23c347a0361dc97cc786d" },
+            new[] { "KMG.FavoredClass.Gunslinger.FirearmConfirmation.Full", "8ac59959b1b23c347a0361dc97cc786d" },
+            new[] { "KMG.FavoredClass.Gunslinger.DirtyTrickTrip.Partial", "ed699d64870044b43bb5a7fbe3f29494" },
+            new[] { "KMG.FavoredClass.Gunslinger.DirtyTrickTrip.Full", "ed699d64870044b43bb5a7fbe3f29494" },
+            new[] { "KMG.FavoredClass.Alchemist.BombDamage.Partial", "c59b2f256f5a70a4d896568658315b7d" },
+            new[] { "KMG.FavoredClass.Alchemist.BombDamage.Full", "c59b2f256f5a70a4d896568658315b7d" },
+            new[] { "KMG.FavoredClass.Inquisitor.FireIntimidate.Partial", "7d2233c3b7a0b984ba058a83b736e6ac" },
+            new[] { "KMG.FavoredClass.Inquisitor.FireIntimidate.Full", "7d2233c3b7a0b984ba058a83b736e6ac" },
+            new[] { "KMG.FavoredClass.Rogue.Demoralize.Partial", "7d2233c3b7a0b984ba058a83b736e6ac" },
+            new[] { "KMG.FavoredClass.Rogue.Demoralize.Full", "7d2233c3b7a0b984ba058a83b736e6ac" },
+            new[] { "KMG.FavoredClass.Fighter.BullRushDefense.Full", "b3614622866fe7046b787a548bbd7f59" },
+            new[] { "KMG.FavoredClass.Monk.UnarmedConfirmation.Partial", "7812ad3672a4b9a4fb894ea402095167" },
+            new[] { "KMG.FavoredClass.Monk.UnarmedConfirmation.Full", "7812ad3672a4b9a4fb894ea402095167" },
+            new[] { "KMG.FavoredClass.Cleric.AquaticPenetration.Full", "ee7dc126939e4d9438357fbd5980d459" },
+            new[] { "KMG.FavoredClass.Monk.GrappleStunning.Partial", "a29a582c3daa4c24bb0e991c596ccb28" },
+            new[] { "KMG.FavoredClass.Monk.GrappleStunning.Full", "a29a582c3daa4c24bb0e991c596ccb28" },
+            new[] { "KMG.FavoredClass.Paladin.AuraAllyBonus.Partial", "e45ab30f49215054e83b4ea12165409f" },
+            new[] { "KMG.FavoredClass.Paladin.AuraAllyBonus.Full", "e45ab30f49215054e83b4ea12165409f" },
+            new[] { "KMG.FavoredClass.Ranger.CompanionNaturalArmor.Partial", "ee63330662126374e8785cc901941ac7" },
+            new[] { "KMG.FavoredClass.Ranger.CompanionNaturalArmor.Full", "ee63330662126374e8785cc901941ac7" },
+            new[] { "KMG.FavoredClass.Summoner.EidolonNaturalArmor.Partial", "5b77d7cc65b8ab74688e74a37fc2f553" },
+            new[] { "KMG.FavoredClass.Summoner.EidolonNaturalArmor.Full", "5b77d7cc65b8ab74688e74a37fc2f553" },
+            new[] { "KMG.FavoredClass.Sorcerer.BloodlinePower.FireRay.Partial", "1b4989258e5964149a909e47c72b7f67" },
+            new[] { "KMG.FavoredClass.Sorcerer.BloodlinePower.FireRay.Full", "1b4989258e5964149a909e47c72b7f67" },
+            new[] { "KMG.FavoredClass.Sorcerer.BloodlinePower.FireBlast.Partial", "b2d1d39cd406e0f4185c52fecc73c3b5" },
+            new[] { "KMG.FavoredClass.Sorcerer.BloodlinePower.FireBlast.Full", "b2d1d39cd406e0f4185c52fecc73c3b5" },
+            new[] { "KMG.FavoredClass.Sorcerer.BloodlinePower.AirRay.Partial", "4729c2ac98d02004fb440d17f7786e28" },
+            new[] { "KMG.FavoredClass.Sorcerer.BloodlinePower.AirRay.Full", "4729c2ac98d02004fb440d17f7786e28" },
+            new[] { "KMG.FavoredClass.Sorcerer.BloodlinePower.AirBlast.Partial", "6d005cc9c3ad3f24e8769aad2fbfdf3f" },
+            new[] { "KMG.FavoredClass.Sorcerer.BloodlinePower.AirBlast.Full", "6d005cc9c3ad3f24e8769aad2fbfdf3f" },
+            new[] { "KMG.FavoredClass.Bard.PerformanceRange.InspireCourage.Full", "acb4df34b25ca9043a6aba1a4c92bc69" },
+            new[] { "KMG.FavoredClass.Bard.PerformanceRange.InspireCompetence.Full", "6d3fcfab6d935754c918eb0e004b5ef7" },
+            new[] { "KMG.FavoredClass.Bard.PerformanceRange.Fascinate.Full", "ddaec3a5845bc7d4191792529b687d65" },
+            new[] { "KMG.FavoredClass.Bard.PerformanceRange.DirgeOfDoom.Full", "1d48ab2bded57a74dad8af3da07d313a" },
+            new[] { "KMG.FavoredClass.Bard.PerformanceRange.InspireGreatness.Full", "9ae0f32c72f8df84dab023d1b34641dc" },
+            new[] { "KMG.FavoredClass.Bard.PerformanceRange.FrighteningTune.Full", "cfd8940869a304f4aa9077415f93febe" },
+            new[] { "KMG.FavoredClass.Bard.PerformanceRange.InspireHeroics.Full", "199d6fa0de149d044a8ab622a542cc79" },
+            new[] { "KMG.FavoredClass.Bard.PerformanceRange.InciteRage.Full", "35ac4bd7990fa0842bfc22e80665c2f9" },
+            new[] { "KMG.FavoredClass.Bard.PerformanceRange.FireDance.Full", "3c10a0069e7f110499d2e810f4861a6e" },
+            new[] { "KMG.FavoredClass.Sorcerer.BloodlinePower.FireResistance.Partial", "24980315c1bdcc4478ebb717e9b81961" },
+            new[] { "KMG.FavoredClass.Sorcerer.BloodlinePower.FireResistance.Full", "24980315c1bdcc4478ebb717e9b81961" },
+            new[] { "KMG.FavoredClass.Sorcerer.BloodlinePower.AirResistance.Partial", "6472c51065d734e4b99ac56694925920" },
+            new[] { "KMG.FavoredClass.Sorcerer.BloodlinePower.AirResistance.Full", "6472c51065d734e4b99ac56694925920" },
         };
 
         // Called only by the runner after full validation and exclusive claim.
@@ -181,8 +226,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .ToDictionary(entry => (string)entry["guid"], entry => (string)entry["symbol"],
                 StringComparer.Ordinal);
             var failures = new List<string>();
-            if (inventory.Count != 255 || resourceEntries.Length != 28)
-                failures.Add("Expected 255 blueprint and 28 resource-cache identities.");
+            if (inventory.Count != 466 || resourceEntries.Length != 28)
+                failures.Add("Expected 466 blueprint and 28 resource-cache identities.");
             foreach (var pair in inventory)
             {
                 try
@@ -305,7 +350,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "donorIcon", DescribeIcon(expected) }
                 });
             }
-            bool reuseExact = reuse.Count == 21 && reuse.Count == NativeReuse.Length && reuse.All(row => (bool)row["sameSpriteReference"]);
+            bool reuseExact = reuse.Count == 60 && reuse.Count == NativeReuse.Length && reuse.All(row => (bool)row["sameSpriteReference"]);
             var exports = new JArray(OwnedIconAssignments.IconKeys.Concat(new[] { "rapid-reload" }).Distinct(StringComparer.Ordinal).Select(key => {
                 Sprite icon = ProjectAssetIcons.RequireIcon(key);
                 string path = Path.Combine(context.ModEntry.Path, "assets", "icons", key + ".png");
@@ -328,9 +373,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             };
             RuntimeTestResultWriter.WriteAtomic(evidencePath, evidence.ToString(Formatting.Indented));
             files.Add(evidencePath);
-            Add(assertions, "icon-census-complete-inventory", inventory.Count == 284 &&
-                _before.Count(value => value.Symbol != null) == 255 && _resources.Count == 28,
-                "284 catalog identities: 255 blueprints, 28 appearance resources and one reserved diagnostic absence", inventory.Count.ToString(), evidencePath);
+            Add(assertions, "icon-census-complete-inventory", inventory.Count == 495 &&
+                _before.Count(value => value.Symbol != null) == 466 && _resources.Count == 28,
+                "495 catalog identities: 466 blueprints, 28 appearance resources and one reserved diagnostic absence", inventory.Count.ToString(), evidencePath);
             Add(assertions, "icon-reserved-diagnostic-absent", (bool)_immediate["reservedAbsent"] && (bool)late["reservedAbsent"],
                 "the request-local race probe stays absent before/after ordinary initialization",
                 inventory.Last.ToString(Formatting.None), evidencePath);
@@ -347,7 +392,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         (bool)observation["protectedExact"], "all other observed sprite references are unchanged across icon mapping",
                         observation["protectedFailures"].ToString(Formatting.None), evidencePath);
                     Add(assertions, "icon-owned-graphs-" + stage,
-                        (bool)observation["graphsExact"], "all 255 graphs/components are unchanged across icon mapping",
+                        (bool)observation["graphsExact"], "all 466 graphs/components are unchanged across icon mapping",
                         observation["graphFailures"].ToString(Formatting.None), evidencePath);
                 }
                 else
@@ -364,7 +409,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observation["resourceFailures"].ToString(Formatting.None), evidencePath);
             }
             Add(assertions, "icon-native-semantic-reuse", reuseExact,
-                "21 native-equivalent feature/ability/delivery consumers retain exact donor sprites",
+                "60 native-equivalent feature/ability/delivery consumers retain exact donor sprites",
                 reuse.ToString(Formatting.None), evidencePath);
         }
 

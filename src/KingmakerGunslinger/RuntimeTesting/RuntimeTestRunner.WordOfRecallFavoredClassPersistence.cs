@@ -146,6 +146,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             };
             var experienceProperty = typeof(UnitProgressionData).GetProperty("Experience");
             UnitEntityData unit = null;
+            UnitEntityData gunslingerUnit = null;
             LevelUpController backend = null;
             var trace = new List<object>();
             Application.logMessageReceived += ObserveTeleportSpellbookUiException;
@@ -224,7 +225,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (!player.Party.Contains(unit))
                         throw new InvalidOperationException(
                             "The persistence Oracle did not enter the traveling party.");
+                    // L01: the Gunslinger favored-class subject shares the
+                    // same guarded disposable save.
+                    JObject gunslingerExpected;
+                    gunslingerUnit = PrepareGunslingerFcbPersistence(anchor, player,
+                        out gunslingerExpected);
+                    // The favored-class families share the same guarded save.
+                    JObject familiesExpected = PrepareFcbFamilySubjects(anchor, player);
+                    // The rows no family subject reaches, in the same save.
+                    JObject rowsExpected = PrepareFcbRowSubjects(anchor, player);
                     _fcbPersistenceExpected = new JObject {
+                        ["gunslinger"] = gunslingerExpected,
+                        ["families"] = familiesExpected,
+                        ["rows"] = rowsExpected,
                         ["unitId"] = unit.UniqueId,
                         ["unitName"] = "KMG FCB Persistence Oracle",
                         ["classId"] = oracle.AssetGuid,
@@ -248,6 +261,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (unit.HoldingState != null &&
                         unit.HoldingState.AllEntityData.Contains(unit))
                         unit.HoldingState.RemoveEntityData(unit);
+                    DetachGunslingerFcbPersistence(player, ref gunslingerUnit);
+                    DetachFcbFamilySubjects(player, true);
                     player.InvalidateCharacterLists(); player.UpdateCharacterLists();
                     captureStarterItems("persistence-prepare-starter-items");
                     foreach (var entry in starterDeltas)
@@ -332,6 +347,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                             expectedNew.Count(value => string.Equals(value, recallId,
                                 StringComparison.Ordinal)) == 1,
                         new { knownSixth, expectedKnown, expectedNew, expectedOrdinaryNew });
+                    gunslingerUnit = VerifyGunslingerFcbPersistence(
+                        (JObject)plan.Expected["gunslinger"], player);
+                    VerifyFcbFamilySubjects((JObject)plan.Expected["families"], player);
+                    if (plan.Expected["rows"] == null)
+                        throw new InvalidOperationException(
+                            "The persistence receipt predates the row subjects; prepare again.");
+                    VerifyFcbRowSubjects((JObject)plan.Expected["rows"], player);
                     // Strategic cast from the reloaded save: exactly one
                     // sixth-level spontaneous slot, no scroll substitution.
                     game.LoadArea(game.BlueprintRoot.GlobalMap.GlobalMapEnterPoint,
@@ -365,6 +387,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     backend.Cancel();
                 }
                 ui.LevelUpController = priorBackend; presenter.Unit = priorPresenterUnit;
+                if (gunslingerUnit != null && plan.Phase == "verify")
+                    player.PartyCharacters.RemoveAll(value =>
+                        value.UniqueId == gunslingerUnit.UniqueId);
+                else if (gunslingerUnit != null)
+                    DetachGunslingerFcbPersistence(player, ref gunslingerUnit);
+                DetachFcbFamilySubjects(player, plan.Phase != "verify");
                 if (unit != null && plan.Phase == "verify")
                 {
                     // The verify process leaves the loaded save untouched; the

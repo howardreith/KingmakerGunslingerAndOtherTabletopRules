@@ -24,6 +24,12 @@ PACKAGE = "KingmakerGunslinger-0.0.139-local-runtime.zip"
 PACKAGE_SUFFIX = "expanded-summoning-phase1"
 DETERMINISTIC_TEST_COUNT = 1806
 STATIC_KEY = "expandedSummoningPhase1Release139"
+# This release's own record; VERSION and friends follow the active release
+# when a later validator chains through this one.
+RELEASE_VERSION = VERSION
+RELEASE_INFORMATIONAL_VERSION = INFORMATIONAL_VERSION
+RELEASE_PACKAGE = PACKAGE
+RELEASE_TEST_COUNT = DETERMINISTIC_TEST_COUNT
 ACCEPTED_LIMITATION = "ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD"
 
 
@@ -45,10 +51,10 @@ def validate(root: Path) -> None:
     state = json.loads((root / "validation/static-validation.json").read_text(
         encoding="utf-8"))[STATIC_KEY]
     expected = {
-        "releaseVersion": VERSION,
-        "releaseInformationalVersion": INFORMATIONAL_VERSION,
-        "package": PACKAGE,
-        "deterministicTestCount": DETERMINISTIC_TEST_COUNT,
+        "releaseVersion": RELEASE_VERSION,
+        "releaseInformationalVersion": RELEASE_INFORMATIONAL_VERSION,
+        "package": RELEASE_PACKAGE,
+        "deterministicTestCount": RELEASE_TEST_COUNT,
         "publicReleaseAuthorized": True,
         "ownerAuthorizedRelease": True,
         "candidateOnly": False,
@@ -70,7 +76,7 @@ def validate(root: Path) -> None:
     validate_expanded_summoning_phase1.validate(root)
 
     notes = root / "docs/RELEASE-NOTES-0.0.139.md"
-    require_tokens(notes, INFORMATIONAL_VERSION, "Expanded Summoning",
+    require_tokens(notes, RELEASE_INFORMATIONAL_VERSION, "Expanded Summoning",
                    "owner authorized", ACCEPTED_LIMITATION, "session-scoped",
                    "uninstall")
     # The accepted limitation is never dressed up as persistence.

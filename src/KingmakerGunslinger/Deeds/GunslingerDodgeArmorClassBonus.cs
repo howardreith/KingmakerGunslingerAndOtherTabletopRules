@@ -36,8 +36,10 @@ namespace KingmakerGunslinger.Deeds
             Interlocked.Increment(ref _turnedOn);
             Remove();
             if (Owner == null || Owner.Stats == null) return;
+            // The Halfling favored-class Dodge branch (G06) augments this
+            // bounded bonus only; it adds no action, buff or defense window.
             _modifier = Owner.Stats.AC.AddModifier(
-                Bonus,
+                Bonus + FavoredClass.Mechanics.FavoredClassEarnedSteps.DodgeBonus(Owner),
                 Fact,
                 GetType().FullName,
                 ModifierDescriptor.Dodge);
