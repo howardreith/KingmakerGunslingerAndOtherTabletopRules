@@ -29,6 +29,8 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Summoning.Natural.Tail3d6";
         private const string Bite2d8Symbol =
             "KMG.Summoning.Natural.Bite2d8";
+        private const string Claw1d8Symbol =
+            "KMG.Summoning.Natural.Claw1d8";
         private const string Talon2d6Symbol =
             "KMG.Summoning.Natural.Talon2d6";
         private const string NativeBite1d6Guid =
@@ -61,6 +63,29 @@ namespace KingmakerGunslinger.Blueprints
             "4cd1757a0eea7694ba5c933729a53920";
         private const string VerminClassGuid =
             "d1a15612d1a96334d94edf5f1d3b8d29";
+        private const string MagicalBeastClassGuid =
+            "b9e97f47cb86f2d45a0784a096ff8037";
+        private const string HumanoidClassGuid =
+            "6ab4526f94d2e3e439af0599a29b6675";
+        private const string PlantClassGuid =
+            "9393cc36ea29d084bab7433e3a28d40b";
+        // Sprint 4 natural weapons: the native Shambling Mound slam, the
+        // native large bite the Giant Flytrap carries four of, and the
+        // dedicated Purple Worm bite and sting.
+        private const string NativePlantSlam2d6Guid =
+            "27eee74857c42db499b3a6b20cfa6211";
+        private const string NativeBiteLarge1d8Guid =
+            "ec35ef997ed5a984280e1a6d87ae80a8";
+        private const string NativePurpleWormBiteGuid =
+            "7e4b9b41a9358264d9e3c69c183ca0a2";
+        private const string NativePurpleWormStingGuid =
+            "287cd06241fdaf8408410b226f744093";
+        private const string NativeSmallHoof1d3Guid =
+            "085547b82eded104ba7e1870dd0563bf";
+        private const string NativeHoof1d4Guid =
+            "b0e472a49ff2a294f93faa3ab757a4a5";
+        private const string NativeStandardGreataxeGuid =
+            "6efea466862f014469cec6c3f2b85cb7";
         private const string DumbBrainGuid =
             "5abc8884c6f15204c8604cb01a2efbab";
         private static readonly IDictionary<int, string> NaturalArmorGuids =
@@ -69,11 +94,15 @@ namespace KingmakerGunslinger.Blueprints
                 { 2, "45a52ce762f637f4c80cc741c91f58b7" },
                 { 3, "f6e106931f95fec4eb995f0d0629fb84" },
                 { 4, "16fc201a83edcde4cbd64c291ebe0d07" },
+                { 5, "7661741dbb9604842a642457456fd0e4" },
                 { 6, "987ba44303e88054c9504cb3083ba0c9" },
+                { 7, "e73864391ccf0894997928443a29d755" },
                 { 8, "b9342e2a6dc5165489ba3412c50ca3d1" },
                 { 9, "da6417809bdedfa468dd2fd0cc74be92" },
+                { 10, "4179c5c08d606a6439a62bf178b738e1" },
                 { 12, "0b2d92c6aac8093489dfdadf1e448280" },
-                { 14, "209a2920891b580418b4e5e80466e134" }
+                { 14, "209a2920891b580418b4e5e80466e134" },
+                { 22, "eee672c8f6555b445a89dbbb91361d64" }
             };
         private static readonly IDictionary<string, string> FactGuids =
             new Dictionary<string, string>(StringComparer.Ordinal) {
@@ -103,7 +132,17 @@ namespace KingmakerGunslinger.Blueprints
                 { "ImprovedCriticalClaw", "76a335b7d69691c4e8376f9379338778" },
                 { "PowerAttack", "9972f33f977fc724c838e59641b2fca5" },
                 { "IronWill", "175d1577bb6c9a04baf88eec99c66334" },
-                { "LightningReflexes", "15e7da6645a7f3d41bdad7c8c4b9de1e" }
+                { "LightningReflexes", "15e7da6645a7f3d41bdad7c8c4b9de1e" },
+                { "Cleave", "d809b6c4ff2aaff4fa70d712a70f7d7b" },
+                // Sprint 4
+                { "FireResistance10", "24700a71dd3dc844ea585345f6dd18f6" },
+                { "ElectricityImmunity", "cd1e5ab641a833c49994aff99db98952" },
+                { "WeaponFocusSlam", "8c046dfa8d1c64247af0e830a5909510" },
+                { "AcidResistance20", "416386972c8de2e42953533c4946599a" },
+                { "Blindsight", "236ec7f226d3d784884f066aa4be1570" },
+                { "PurpleWormPoison", "728446b9d0bf47144a1b621169299c2a" },
+                { "CriticalFocus", "8ac59959b1b23c347a0361dc97cc786d" },
+                { "SpiderWebImmunity", "3051e7002c803fc47a11bcfa381b9fbd" }
             };
         private static readonly ISet<string> BaseUnitFactKeys =
             new HashSet<string>(new[] { "ReducedReach", "Ferocity" },
@@ -144,6 +183,12 @@ namespace KingmakerGunslinger.Blueprints
                     "native large claw animation weapon"),
                 Require<BlueprintItemWeapon>(bySymbol, Talon2d6Symbol),
                 Talon2d6Symbol, 2, DiceType.D6);
+            // Sprint 8: the tiger's 1d8 claw on the native large claw animation.
+            ConfigureWeapon(BlueprintLibraryLookup.RequireExact<
+                BlueprintItemWeapon>(library, NativeClaw1d6Guid,
+                    "native large claw animation weapon"),
+                Require<BlueprintItemWeapon>(bySymbol, Claw1d8Symbol),
+                Claw1d8Symbol, 1, DiceType.D8);
             foreach (NaturalSummonProfile profile in
                 ExpandedSummoningNaturalProfiles.All)
                 ConfigureUnit(library, Require<BlueprintUnit>(bySymbol,
@@ -176,8 +221,7 @@ namespace KingmakerGunslinger.Blueprints
                 AddClassLevels>();
             levels.CharacterClass = BlueprintLibraryLookup.RequireExact<
                 BlueprintCharacterClass>(library,
-                    profile.HitDieClass == "Animal" ? AnimalClassGuid :
-                        VerminClassGuid,
+                    HitDieClassGuid(profile.HitDieClass),
                     profile.HitDieClass + " racial hit dice");
             levels.Levels = profile.HitDice;
             levels.RaceStat = StatType.Constitution;
@@ -250,9 +294,42 @@ namespace KingmakerGunslinger.Blueprints
             unit.AddFacts = facts.ToArray();
         }
 
+        internal static string HitDieClassGuid(string hitDieClass)
+        {
+            switch (hitDieClass)
+            {
+                case "Animal": return AnimalClassGuid;
+                case "Vermin": return VerminClassGuid;
+                case "MagicalBeast": return MagicalBeastClassGuid;
+                case "Humanoid": return HumanoidClassGuid;
+                case "Plant": return PlantClassGuid;
+            }
+            throw new InvalidOperationException("Unsupported natural hit-die class " +
+                hitDieClass + ".");
+        }
+
         private static BlueprintItemWeapon Weapon(LibraryScriptableObject library,
             IDictionary<string, BlueprintScriptableObject> bySymbol, string key)
         {
+            if (key == "Hoof1d3") return BlueprintLibraryLookup.RequireExact<
+                BlueprintItemWeapon>(library, NativeSmallHoof1d3Guid, "1d3 hoof");
+            if (key == "Hoof1d4") return BlueprintLibraryLookup.RequireExact<
+                BlueprintItemWeapon>(library, NativeHoof1d4Guid, "1d4 hoof");
+            if (key == "Greataxe") return BlueprintLibraryLookup.RequireExact<
+                BlueprintItemWeapon>(library, NativeStandardGreataxeGuid,
+                    "standard greataxe");
+            if (key == "SlamPlant2d6") return BlueprintLibraryLookup.RequireExact<
+                BlueprintItemWeapon>(library, NativePlantSlam2d6Guid,
+                    "shambling mound 2d6 slam");
+            if (key == "BiteLarge1d8") return BlueprintLibraryLookup.RequireExact<
+                BlueprintItemWeapon>(library, NativeBiteLarge1d8Guid,
+                    "large 1d8 bite");
+            if (key == "PurpleWormBite") return BlueprintLibraryLookup.RequireExact<
+                BlueprintItemWeapon>(library, NativePurpleWormBiteGuid,
+                    "purple worm bite");
+            if (key == "PurpleWormSting") return BlueprintLibraryLookup.RequireExact<
+                BlueprintItemWeapon>(library, NativePurpleWormStingGuid,
+                    "purple worm sting");
             if (key == "Bite1d4") return Require<BlueprintItemWeapon>(bySymbol,
                 Bite1d4Symbol);
             if (key == "Bite1d3") return Require<BlueprintItemWeapon>(bySymbol,
@@ -286,6 +363,8 @@ namespace KingmakerGunslinger.Blueprints
                 Bite2d8Symbol);
             if (key == "Talon2d6") return Require<BlueprintItemWeapon>(bySymbol,
                 Talon2d6Symbol);
+            if (key == "Claw1d8") return Require<BlueprintItemWeapon>(bySymbol,
+                Claw1d8Symbol);
             if (key == "Gore2d8") return BlueprintLibraryLookup.RequireExact<
                 BlueprintItemWeapon>(library, NativeMastodonGoreGuid,
                     "mastodon 2d8 gore");

@@ -923,6 +923,14 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
         UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
     }
+    # Phase 1 native-donor audit: metadata about the installed library for
+    # the Sprint 3-8 creatures, at mod load, no save.
+    'observe-expanded-summoning-native-donors' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
     'observe-expanded-summoning-inventory' = [pscustomobject]@{
         RequiresSaveName = $false; PermittedSaveName = $null
         RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
@@ -943,6 +951,24 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
     }
     'disposable-expanded-summoning-player-path' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
+    # Development-only projected-menu measurement. Unattended on
+    # purpose: it drives the menu itself rather than waiting for a human,
+    # which is what makes it usable as a scalability gate.
+    'disposable-expanded-summoning-projected-menu' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
+    # Development-only fallback drill: the mechanical run with the
+    # Pteranodon visual withdrawn on its first cast and faulted after donor
+    # suppression on its second, proving both fallback paths on live units.
+    'disposable-expanded-summoning-pteranodon-fault-drill' = [pscustomobject]@{
         RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
         RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
         TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
@@ -996,6 +1022,20 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
         UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
     }
+    # Correction order (2026-09-25): the focused rules cases and the visual
+    # resource lifecycle, on disposable units in the guarded working save.
+    'disposable-expanded-summoning-rules' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
+    'disposable-expanded-summoning-visual-lifecycle' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
     'working-save-expanded-summoning-prepare' = [pscustomobject]@{
         RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
         RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
@@ -1003,6 +1043,14 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
     }
     'working-save-expanded-summoning-verify-cleanup' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
+    # Phase 1 internal review: party-camera renders of the creatures the
+    # request names, cast one at a time into the working save; reads only.
+    'working-save-expanded-summoning-creature-review' = [pscustomobject]@{
         RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
         RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
         TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
@@ -1129,6 +1177,12 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
     }
     'observe-native-firearm-rig-contracts' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'observe-summon-pteranodon-view-contracts' = [pscustomobject]@{
         RequiresSaveName = $false; PermittedSaveName = $null
         RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
         TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
@@ -1836,9 +1890,9 @@ function Assert-KmgRuntimeScenarioPreflight {
         $Parameters.Count -ne 1 -or $Parameters.saveName -cne 'KMG_AUTOMATION_WORKING')) {
         throw 'Public 0.0.117 authority permits only its exact disposable persistence producer, without another producer authority.'
     }
-    if ($ExpectedVersion -cne '0.0.139' -and
+    if ($ExpectedVersion -cne '0.0.140' -and
         -not $qualifiedElementalRaces114 -and -not $qualifiedElementalRaces117) {
-        throw 'ExpectedVersion must be exactly the active version 0.0.139.'
+        throw 'ExpectedVersion must be exactly the active version 0.0.140.'
     }
     if ($TimeoutSeconds -lt 5 -or $TimeoutSeconds -gt 1800) {
         throw 'TimeoutSeconds must be from 5 through 1800.'
@@ -1921,12 +1975,17 @@ function Assert-KmgRuntimeScenarioPreflight {
         }
         $nativeActionCase = $Scenario -ceq 'working-save-elemental-character-creation-regression' -and
             $Parameters.ContainsKey('nativeActionCase')
-        $requiredParameterCount = if ($circleBound) { 2 } elseif ($persistence -or $fcbPersistence) { 3 } elseif ($Scenario -ceq 'working-save-elemental-nereid-respec') { 5 } elseif ($nativeActionCase) { 5 } elseif ($creatorRegression -or $visualLifecycle -or (Test-KmgCompletionSceneScope $Scenario $Parameters)) { 4 } elseif (Test-KmgTreacherousEffectScope $Scenario $Parameters) { 3 } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers' -or (Test-KmgNereidPersistenceScope $Scenario $Parameters)) { 2 } else { 1 }
+        $requiredParameterCount = if ($circleBound) { 2 } elseif ($persistence -or $fcbPersistence) { 3 } elseif ($Scenario -ceq 'working-save-elemental-nereid-respec') { 5 } elseif ($nativeActionCase) { 5 } elseif ($creatorRegression -or $visualLifecycle -or (Test-KmgCompletionSceneScope $Scenario $Parameters)) { 4 } elseif (Test-KmgTreacherousEffectScope $Scenario $Parameters) { 3 } elseif ($Scenario -ceq 'working-save-expanded-summoning-creature-review') { 2 } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers' -or (Test-KmgNereidPersistenceScope $Scenario $Parameters)) { 2 } else { 1 }
         if ($Parameters.Count -ne $requiredParameterCount -or
             -not $Parameters.ContainsKey('saveName') -or
             $Parameters.saveName -isnot [string] -or
             (-not $persistence -and -not $fcbPersistence -and $Parameters.saveName -cne $metadata.PermittedSaveName)) {
             throw "$Scenario requires its exact working save and allowlisted parameters."
+        }
+        if ($Scenario -ceq 'working-save-expanded-summoning-creature-review' -and
+            (-not $Parameters.ContainsKey('creatures') -or $Parameters.creatures -isnot [string] -or
+             [string]::IsNullOrWhiteSpace([string]$Parameters.creatures))) {
+            throw 'The creature review requires creatures: comma-separated creature keys.'
         }
         if ($nativeActionCase -and ([string]$Parameters['nativeActionCase'] -cne 'racial-actions' -or
             [string]$Parameters['class'] -cne 'Fighter' -or
@@ -2174,6 +2233,8 @@ function New-KmgRuntimeRequest {
             }
         } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers') {
             [ordered]@{ saveName = [string]$Parameters.saveName; fixtureCase = [string]$Parameters.fixtureCase }
+        } elseif ($Scenario -ceq 'working-save-expanded-summoning-creature-review') {
+            [ordered]@{ saveName = [string]$Parameters.saveName; creatures = [string]$Parameters.creatures }
         } elseif (Test-KmgNereidPersistenceScope $Scenario $Parameters) {
             $scopeArgs = [ordered]@{ saveName = [string]$Parameters.saveName; qualificationTrait = 'NereidFascination' }
             if (Test-KmgTreacherousEffectScope $Scenario $Parameters) { $scopeArgs.qualificationEffect = 'TreacherousEarth' }

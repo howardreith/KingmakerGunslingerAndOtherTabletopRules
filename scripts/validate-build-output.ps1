@@ -20,7 +20,12 @@ $requiredFiles = @(
     'assets\bundles\kingmakergunslinger.firearms',
     'assets\bundles\kingmakergunslinger.elvenbranchedspear',
     'assets\bundles\kingmakergunslinger.easternweapons',
-    'assets\bundles\asset-bundle-manifest.json'
+    'assets\bundles\asset-bundle-manifest.json',
+    # The Pteranodon replacement visual ships as mesh data plus its painted
+    # albedo rather than an AssetBundle: no bind poses, no material, no
+    # editor dependency.
+    'assets\pteranodon\pteranodon-mesh.json',
+    'assets\pteranodon\pteranodon-albedo.png'
 )
 $requiredIcons = @('gunslinger-class','firearm-proficiency','gunsmithing','grit',
     'deeds','nimble','bonus-feat','gun-training','true-grit','rapid-reload',
@@ -45,7 +50,7 @@ foreach ($name in @('firearm-monogram-rifle','firearm-monogram-revolver')) {
 }
 $summonManifest = Get-Content -LiteralPath (Join-Path $repositoryRoot `
     'assets\game\icons\expanded-summoning\icon-manifest.json') -Raw | ConvertFrom-Json
-if ($summonManifest.count -ne 77 -or @($summonManifest.icons).Count -ne 77) {
+if ($summonManifest.count -ne 91 -or @($summonManifest.icons).Count -ne 91) {
     throw 'Expanded Summoning runtime icon manifest is malformed.'
 }
 $requiredFiles += 'assets\icons\expanded-summoning\icon-manifest.json'
@@ -69,6 +74,8 @@ $allowedRelativePaths = @{
     'assets\bundles\kingmakergunslinger.elvenbranchedspear' = $true
     'assets\bundles\kingmakergunslinger.easternweapons' = $true
     'assets\bundles\asset-bundle-manifest.json' = $true
+    'assets\pteranodon\pteranodon-mesh.json' = $true
+    'assets\pteranodon\pteranodon-albedo.png' = $true
 }
 
 $unexpected = @()

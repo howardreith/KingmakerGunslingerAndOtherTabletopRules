@@ -50,6 +50,16 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class ExpandedSummoningNaturalProfiles
     {
+        /// <summary>
+        /// Racial hit-die classes the natural builder can bind. Sprint 3 added
+        /// the magical beast (Owlbear) and humanoid (Cyclops) classes to the
+        /// animal and vermin classes of the earlier tiers; Sprint 4 added the
+        /// plant class (Shambling Mound, Giant Flytrap), whose progression
+        /// carries the plant traits.
+        /// </summary>
+        internal static readonly string[] SupportedHitDieClasses = {
+            "Animal", "Vermin", "MagicalBeast", "Humanoid", "Plant"
+        };
         private static readonly NaturalSummonProfile[] Values = Build();
         internal static IReadOnlyList<NaturalSummonProfile> All
         { get { return Array.AsReadOnly(Values); } }
@@ -59,16 +69,15 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Values.Length != 26 || Values.Select(value => value.Key)
+            if (Values.Length != 34 || Values.Select(value => value.Key)
                     .Distinct(StringComparer.Ordinal).Count() != Values.Length)
                 throw new InvalidOperationException(
-                    "The tier I-VII natural reconstruction catalog is incomplete or duplicated.");
+                    "The natural reconstruction catalog is incomplete or duplicated.");
             foreach (NaturalSummonProfile value in Values)
             {
                 if (!ExpandedSummoningCatalog.All.Any(creature =>
                         creature.Key == value.Key) ||
-                    (value.HitDieClass != "Animal" &&
-                        value.HitDieClass != "Vermin") ||
+                    !SupportedHitDieClasses.Contains(value.HitDieClass) ||
                     value.HitDice < 1 || value.SpeedFeet < 1 ||
                     value.NaturalArmor < 0 ||
                     string.IsNullOrEmpty(value.PrimaryWeapon))
@@ -112,8 +121,10 @@ namespace KingmakerGunslinger.Summoning
                 P("giant-spider", "Giant Spider", "Vermin", 3, "Medium",
                     11, 17, 12, 1, 10, 2, 30, 1, "Bite1d6",
                     Array.Empty<string>(),
-                    A("TripDefenseEightLegs", "GiantSpiderPoison"),
-                    "Kingmaker cannot represent an absent Intelligence score, so Intelligence 1 is used. Web, climb movement, and tremorsense are omitted pending bounded native contracts."),
+                    A("TripDefenseEightLegs", "GiantSpiderPoison", "Blindsight",
+                        "SpiderWebImmunity"),
+                    "Kingmaker cannot represent an absent Intelligence score, so Intelligence 1 is used. The native 60-foot blindsight stands in for tremorsense; climb movement is omitted (no save-safe seam).",
+                    "Web is a bounded ranged ability on the special builder (Sprint 6; correction order): a 50-foot ranged touch attack through the game's own projectile delivery against one foe up to one size larger than the spider, no saving throw, that entangles and holds it through the native web-grappled state until its Constitution-based break-free check succeeds (at most ten rounds); two uses per summoning; the spider is immune to its own webs."),
                 P("goblin-dog", "Goblin Dog", "Animal", 1, "Medium",
                     15, 14, 15, 2, 12, 8, 50, 1, "Bite1d6",
                     Array.Empty<string>(), A("Toughness"),
@@ -132,21 +143,22 @@ namespace KingmakerGunslinger.Summoning
                     A("Claw1d3", "Claw1d3", "Claw1d3", "Claw1d3"),
                     A("Pounce", "TripDefenseFourLegs", "WeaponFinesse",
                         "SkillFocusStealth"),
-                    "The two extra native claw limbs are Kingmaker's established bounded representation of rake during pounce; actual non-charge cadence requires runtime qualification.",
-                    "Grab is omitted because the installed generic graph carries unrelated Shambling Mound constrict and target-state behavior."),
+                    "The two extra native claw limbs are the rake; the rake gate lets them strike only on a charge (Pounce) or against the exact foe the leopard has held since its round began, the attack sequencing seam drops them from any other full attack, and a rake claw never grabs (Sprint 7; correction order).",
+                    "The leopard grabs with its bite only, against a foe of its size or smaller, on the shared summon grapple lifecycle (Sprint 7; correction order); the mound-specific native grab graph stays unused."),
                 P("monitor-lizard", "Monitor Lizard", "Animal", 3, "Medium",
                     17, 15, 17, 2, 12, 6, 30, 3, "Bite1d8",
                     Array.Empty<string>(),
                     A("GreatFortitude", "SkillFocusPerception",
                         "TripDefenseFourLegs", "MonitorLizardPoison"),
                     "Kingmaker exposes one movement speed; the 30-foot ground speed is used and swim movement is omitted.",
-                    "Grab is omitted because the installed generic graph carries unrelated Shambling Mound constrict and target-state behavior."),
+                    "Bite grab rides the shared summon grapple lifecycle (Sprint 6); the mound-specific native grab graph stays unused."),
                 P("cheetah", "Cheetah", "Animal", 3, "Medium",
                     17, 19, 15, 2, 12, 6, 50, 1, "Bite1d6",
                     A("Claw1d3", "Claw1d3"),
                     A("TripDefenseFourLegs", "TrippingBite",
                         "WeaponFinesse", "ImprovedInitiative"),
-                    "The once-per-hour tenfold sprint has no proven bounded native cooldown contract and is omitted conservatively."),
+                    "Sprint is a bounded once-per-summoning swift burst on the special builder (Sprint 8): +30 feet for one round under the game's own speed cap, never repeatable within one summoning.",
+                    "Cheetah visual: a procedural spotted coat on the leopard rig at a lean view scale (Sprint 8)."),
                 PS("crocodile", "Crocodile", "Animal", 3, "Large",
                     19, 12, 17, 1, 12, 2, 20, 4, "Bite1d8",
                     Array.Empty<string>(), A("Tail1d12"),
@@ -180,15 +192,24 @@ namespace KingmakerGunslinger.Summoning
                 P("grizzly-bear", "Grizzly Bear", "Animal", 5, "Large",
                     21, 13, 19, 2, 12, 6, 40, 6, "Bite1d6",
                     A("Claw1d6", "Claw1d6"), A("ReducedReach"),
-                    "Claw grab is omitted because the installed generic graph carries unrelated Shambling Mound constrict and target-state behavior.",
+                    "Claw grab rides the shared summon grapple lifecycle (Sprint 6); the mound-specific native grab graph stays unused.",
                     "Endurance, Run, and Skill Focus (Survival) are omitted because exact final-live feature identities were not proven."),
+                P("tiger", "Tiger", "Animal", 6, "Large",
+                    23, 15, 17, 2, 12, 6, 40, 3, "BiteLarge2d6",
+                    A("Claw1d8", "Claw1d8", "Claw1d8", "Claw1d8"),
+                    A("Pounce", "TripDefenseFourLegs", "ImprovedInitiative",
+                        "SkillFocusPerception", "WeaponFocusClaw"),
+                    "The two extra claw limbs are the rake; the rake gate lets them strike only on a charge (Pounce) or against the exact foe the tiger has held since its round began, the attack sequencing seam drops them from any other full attack, and a rake claw never grabs (Sprint 8; correction order).",
+                    "The tiger grabs with its bite and both foreclaws, against a foe of its size or smaller, on the shared summon grapple lifecycle (Sprint 8; correction order); Run and Skill Focus (Stealth) are omitted (no summon-safe contracts proven).",
+                    "Tiger visual: the leopard rig at a 1.25 view scale with a procedural striped coat generated in the rig's own texture space (Sprint 8); no native tiger exists."),
                 P("lion", "Lion", "Animal", 5, "Large",
                     21, 17, 15, 2, 12, 6, 40, 3, "Bite1d8",
                     A("Claw1d4", "Claw1d4", "Claw1d4", "Claw1d4"),
                     A("ReducedReach", "Pounce", "TripDefenseFourLegs",
                         "ImprovedInitiative", "SkillFocusPerception"),
-                    "The two extra native claw limbs are Kingmaker's established bounded representation of rake during pounce; actual non-charge cadence requires runtime qualification.",
-                    "Grab and Run are omitted because no safe exact final-live contracts were proven."),
+                    "The two extra native claw limbs are the rake; the rake gate lets them strike only on a charge (Pounce) or against the exact foe the lion has held since its round began, the attack sequencing seam drops them from any other full attack, and a rake claw never grabs (Sprint 7; correction order).",
+                    "The lion grabs with its bite only, against a foe of its size or smaller, on the shared summon grapple lifecycle (Sprint 7; correction order); Run is omitted because no safe exact final-live contract was proven.",
+                    "Lion visual: a tawny tint on the leopard rig through the shared visual variant (Sprint 7); no mane geometry."),
                 P("pteranodon", "Pteranodon", "Animal", 5, "Large",
                     16, 19, 15, 2, 15, 12, 50, 2, "Bite2d6",
                     Array.Empty<string>(), A("Airborne", "Dodge",
@@ -200,8 +221,8 @@ namespace KingmakerGunslinger.Summoning
                     A("ReducedReach", "Pounce", "TripDefenseFourLegs",
                         "ImprovedInitiative", "SkillFocusPerception",
                         "WeaponFocusClaw"),
-                    "The secondary claw pair is Kingmaker's bounded representation of rake during pounce; actual charge-only cadence requires runtime qualification.",
-                    "Grab and Run are omitted because no summon-safe exact final-live contracts were proven."),
+                    "The secondary claw pair is the rake; the rake gate lets it strike only on a charge (Pounce) or against the exact foe the dire lion has held since its round began, the attack sequencing seam drops it from any other full attack, and a rake claw never grabs (Sprint 7; correction order).",
+                    "The dire lion grabs with its bite only, against a foe of its size or smaller, on the shared summon grapple lifecycle (Sprint 7; correction order); Run is omitted because no summon-safe exact final-live contract was proven."),
                 P("ankylosaurus", "Ankylosaurus", "Animal", 10, "Huge",
                     27, 10, 17, 2, 13, 8, 30, 14, "Tail3d6",
                     Array.Empty<string>(), A("GreatFortitude", "PowerAttack"),
@@ -212,7 +233,7 @@ namespace KingmakerGunslinger.Summoning
                     A("Claw1d6", "Claw1d6"), A("ReducedReach",
                         "ImprovedInitiative", "IronWill",
                         "SkillFocusPerception"),
-                    "Claw grab is omitted because the installed generic graph carries unrelated Shambling Mound constrict and target-state behavior.",
+                    "Claw grab rides the shared summon grapple lifecycle (Sprint 6); the mound-specific native grab graph stays unused.",
                     "Endurance and Run are omitted because exact concrete final-live feature identities were not proven."),
                 PS("dire-tiger", "Smilodon", "Animal", 14,
                     "Large", 27, 15, 17, 2, 12, 10, 40, 6,
@@ -222,8 +243,8 @@ namespace KingmakerGunslinger.Summoning
                         "ImprovedCriticalClaw", "ImprovedInitiative",
                         "SkillFocusPerception", "SkillFocusStealth",
                         "WeaponFocusBite", "WeaponFocusClaw"),
-                    "The secondary claw pair is Kingmaker's bounded representation of rake during pounce; actual charge-only cadence requires runtime qualification.",
-                    "Grab and Run are omitted because no summon-safe exact final-live contracts were proven."),
+                    "The secondary claw pair is the rake; the rake gate lets it strike only on a charge (Pounce) or against the exact foe the smilodon has held since its round began, the attack sequencing seam drops it from any other full attack, and a rake claw never grabs (Sprint 7; correction order).",
+                    "The smilodon grabs with its bite and both foreclaws, against a foe of its size or smaller, on the shared summon grapple lifecycle (Sprint 7; correction order); Run is omitted because no summon-safe exact final-live contract was proven."),
                 PS("elephant", "Elephant", "Animal", 11, "Huge",
                     30, 10, 19, 2, 13, 7, 40, 9, "Gore2d8",
                     Array.Empty<string>(), A("Slam2d6"),
@@ -244,7 +265,57 @@ namespace KingmakerGunslinger.Summoning
                         "IronWill", "LightningReflexes", "PowerAttack",
                         "SkillFocusPerception", "WeaponFocusClaw"),
                     "Kingmaker exposes one movement speed; 80-foot fly speed is used with airborne navigation and the 20-foot ground speed is omitted.",
-                    "Talon grab and Flyby Attack are omitted because no summon-safe exact final-live contracts were proven.")
+                    "Talon grab and Flyby Attack are omitted because no summon-safe exact final-live contracts were proven."),
+                // Sprint 3 (Phase 1): native publication pack I.
+                P("pony", "Pony", "Animal", 2, "Medium",
+                    13, 13, 14, 2, 11, 4, 40, 0, "Hoof1d3",
+                    A("Hoof1d3"), A("TripDefenseFourLegs"),
+                    "Both hooves are secondary attacks (Docile; a summon is never combat-trained): the game's own secondary natural-attack rule, -5 to hit and half the Strength modifier to damage, through the ForceSecondary flag set by the Docile carrier on both hoof entities.",
+                    "Endurance and Run are omitted because exact final-live feature identities were not proven."),
+                P("horse", "Horse", "Animal", 2, "Large",
+                    16, 14, 17, 2, 13, 7, 50, 0, "Hoof1d4",
+                    A("Hoof1d4"), A("ReducedReach", "TripDefenseFourLegs"),
+                    "Both hooves are secondary attacks (Docile; a summon is never combat-trained): the game's own secondary natural-attack rule, -5 to hit and half the Strength modifier to damage, through the ForceSecondary flag set by the Docile carrier on both hoof entities.",
+                    "Endurance and Run are omitted because exact final-live feature identities were not proven."),
+                P("owlbear", "Owlbear", "MagicalBeast", 5, "Large",
+                    19, 12, 18, 2, 12, 10, 30, 5, "Bite1d6",
+                    A("Claw1d6", "Claw1d6"),
+                    A("ReducedReach", "ImprovedInitiative", "GreatFortitude",
+                        "SkillFocusPerception"),
+                    "Claw grab rides the shared summon grapple lifecycle (Sprint 4): a claw hit attempts the game's own grapple check, success starts the native hold, each new round the owlbear maintains with a grapple check that deals claw damage or releases, and the hold ends with the target's escape or the summon's end."),
+                P("cyclops", "Cyclops", "Humanoid", 10, "Large",
+                    21, 8, 15, 10, 13, 8, 30, 7, "Greataxe",
+                    Array.Empty<string>(),
+                    A("Ferocity", "PowerAttack", "Cleave"),
+                    "Flash of Insight is bounded to one use per summoning and to the next attack roll: a swift action arms the cyclops until its next attack roll, whose own d20 result is chosen as a natural 20 (the game's pre-rolled-result seam), so the hit and the threat follow from the roll and the critical confirmation is rolled normally; the tabletop choice of any one die roll is narrowed to the attack.",
+                    "The +4 hide armor is carried as an exact armor-descriptor fact (no item, loot or inventory) and the natural armor is the stat block's +7, so the armor class is the tabletop 19 (10 + 4 armor - 1 Dexterity + 7 natural - 1 size); the heavy crossbow is omitted because the summon carries no equipment; Alertness, Great Cleave and Improved Bull Rush are omitted because exact final-live feature identities were not proven."),
+                // Sprint 4 (Phase 1): native publication pack II - plants and
+                // the colossal worm, on the shared summon grapple lifecycle.
+                P("shambling-mound", "Shambling Mound", "Plant", 9, "Large",
+                    21, 10, 17, 7, 10, 9, 20, 10, "SlamPlant2d6",
+                    A("SlamPlant2d6"),
+                    A("FireResistance10", "ElectricityImmunity", "PowerAttack",
+                        "IronWill", "LightningReflexes", "Cleave", "WeaponFocusSlam"),
+                    "Slam grab and constrict ride the shared summon grapple lifecycle: a slam hit attempts the game's own grapple check, success starts the native hold and deals constrict damage, and each maintained round deals slam and constrict damage or releases.",
+                    "Electric Fortitude keeps its electricity immunity; the temporary Constitution gain has no bounded native representation and is omitted. Swim movement is omitted; the native unit's poison aura is not tabletop and is not carried.",
+                    "Both slams are carried as primary limbs, as the native unit carries them."),
+                P("giant-flytrap", "Giant Flytrap", "Plant", 13, "Huge",
+                    25, 18, 25, 1, 12, 6, 10, 10, "BiteLarge1d8",
+                    A("BiteLarge1d8", "BiteLarge1d8", "BiteLarge1d8"),
+                    A("AcidResistance20", "Blindsight", "TripImmune", "Cleave",
+                        "GreatFortitude", "ImprovedInitiative", "PowerAttack",
+                        "SkillFocusStealth", "WeaponFocusBite"),
+                    "Bite grab rides the shared summon grapple lifecycle with one link per bite, four at most (corrected 2026-09-25): every link is a held state on the target that names the flytrap and the bite that established it, and a bite that already holds cannot take a second foe.",
+                    "Engulf is the swallow-whole sequence against a Medium or smaller foe the flytrap has held since the round began (corrected 2026-09-25), dealing the stat block's 1d8+7 bludgeoning and 2d6 acid each round inside (the acid corrected 2026-09-26); a mouth that holds or has engulfed a foe attacks no other target, and an active hold is session-scoped: a save and a reload release it cleanly (owner-accepted engine limitation, 2026-09-26); the project state releases on every end path. Tremorsense 60 feet is represented by the native 60-foot blindsight. Vital Strike is omitted because no exact final-live feature identity was proven.",
+                    "Kingmaker cannot represent an absent Intelligence score, so Intelligence 1 is used."),
+                P("purple-worm", "Purple Worm", "MagicalBeast", 16, "Gargantuan",
+                    35, 6, 25, 1, 8, 8, 20, 22, "PurpleWormBite",
+                    A("PurpleWormSting"),
+                    A("TripImmune", "PurpleWormPoison", "CriticalFocus",
+                        "ImprovedCriticalBite", "PowerAttack", "WeaponFocusBite"),
+                    "Grab and swallow whole follow the tabletop sequence (corrected 2026-09-25): a bite hit attempts the game's grapple check and success holds the target, and on a later turn a successful maintain check - used as though attempting to pin - swallows a foe up to one size smaller through the native swallow-whole part, which handles break-free attempts, the per-round crushing damage and the spit-out on the worm's death or end; a foe of the worm's own size is held but never swallowed.",
+                    "Burrow and swim movement are omitted; the native summoned worm's burrowing kit is not carried, as the charter's bounded combat adaptation directs. The sting poison is the exact native Constitution-scaled graph.",
+                    "Awesome Blow, Improved Bull Rush, Staggering Critical and Weapon Focus (sting) are omitted because exact final-live feature identities were not proven; Kingmaker cannot represent an absent Intelligence score, so Intelligence 1 is used.")
             };
         }
 

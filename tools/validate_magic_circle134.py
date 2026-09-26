@@ -12,7 +12,7 @@ VERSION = "0.0.134"
 INFORMATIONAL_VERSION = "0.0.134-magic-circle-alignment-spells"
 PACKAGE = "KingmakerGunslinger-0.0.134-local-runtime.zip"
 PACKAGE_SUFFIX = "magic-circle-alignment-spells"
-DETERMINISTIC_TEST_COUNT = 1702
+DETERMINISTIC_TEST_COUNT = 1734
 
 
 def validate(root: Path) -> None:

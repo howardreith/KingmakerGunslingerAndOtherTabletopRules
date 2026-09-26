@@ -445,7 +445,8 @@ The Magic Circle follow-up preserves all 24 spell/held-touch/carrier/area/recipi
 
 The optional Better Vendors progression integration appends exactly 43 generic
 magic weapon variants after the preserved 1913-entry ledger, for
-1956 stable identifiers: 1954 active and 2 reserved. Every pre-existing GUID is unchanged,
+2244 stable identifiers: 2242 active and 2 reserved (2048 before the Expanded Summoning
+Phase 1 creature appends). Every pre-existing GUID is unchanged,
 including the seven canonical +1 items the progression catalog reuses (Pistol,
 Musket and Blunderbuss +1, and the +1 Elven Branched Spear, Wakizashi, Katana
 and Nodachi). The appended symbols follow the existing generic item patterns:
@@ -464,10 +465,10 @@ and listed with family, module, enhancement, Reliable flag and price in
 ## Favored Class integration identities (0.0.139 candidate)
 
 The optional Favored Class integration appends its owned full/partial leaves
-after the Better Vendors block, for
-2172 stable identifiers: 2170 active and 2 reserved. Every pre-existing GUID is unchanged. The symbols use the
+after the Expanded Summoning Phase 1 append (0.0.140), for
+2460 stable identifiers: 2458 active and 2 reserved (2172 before the merge with 0.0.139). Every pre-existing GUID is unchanged. The symbols use the
 `KMG.FavoredClass.<Class>.<Effect>[.<Target>].{Full|Partial}` pattern. They
 register on every load in a contained registry, independently of the host and
 of the publication profile, so saved investments always resolve. The exact
-ordered list is enforced by `tools/validate_favored_class139.py` and
+ordered list is enforced by `tools/validate_favored_class140.py` and
 `FavoredClassIdentityCatalog`.

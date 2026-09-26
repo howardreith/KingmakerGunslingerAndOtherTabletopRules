@@ -234,8 +234,14 @@ namespace KingmakerGunslinger.Summoning
             SummonVariantMenuRect nativeRect = MeasureRect(root, canvasRect);
             SummonVariantMenuRect slotRect = MeasureSlots(liveSlots,
                 canvasRect);
-            float preferredWidth = LayoutUtility.GetPreferredWidth(root);
-            float preferredHeight = LayoutUtility.GetPreferredHeight(root);
+            // LayoutUtility answers in the root's own units; every rectangle
+            // here is in canvas units, and the popup root sits scaled under
+            // the action-bar canvas. The first live measurement at 120
+            // entries asked for twice the popup's real size, engaged scrolling
+            // it did not need and drew a panel four times the grid.
+            Vector2 toCanvas = ScaleToCanvas(root, canvasRect);
+            float preferredWidth = LayoutUtility.GetPreferredWidth(root) * toCanvas.x;
+            float preferredHeight = LayoutUtility.GetPreferredHeight(root) * toCanvas.y;
             float desiredWidth = Math.Max(slotRect.Width, preferredWidth);
             float desiredHeight = Math.Max(slotRect.Height, preferredHeight);
             if (!FinitePositive(desiredWidth) || !FinitePositive(desiredHeight))
@@ -318,9 +324,15 @@ namespace KingmakerGunslinger.Summoning
             Interlocked.Increment(ref _failures);
             lock (StateGate)
             {
+                // The first frames of the trace name the seam that failed;
+                // the message alone did not, in the first live measurement.
+                string trace = exception.StackTrace ?? string.Empty;
+                string[] frames = trace.Split(new[] { '\n' },
+                    StringSplitOptions.RemoveEmptyEntries);
                 _lastResult = string.Format(CultureInfo.InvariantCulture,
-                    "FAULT {0}: {1}", exception.GetType().Name,
-                    exception.Message);
+                    "FAULT {0}: {1} @ {2}", exception.GetType().Name,
+                    exception.Message, string.Join(" <- ", frames.Take(4)
+                        .Select(value => value.Trim()).ToArray()));
             }
 
             ModContext context;
@@ -583,6 +595,20 @@ namespace KingmakerGunslinger.Summoning
             return Math.Abs(left - right) <= tolerance;
         }
 
+        /// <summary>
+        /// The factor from a transform's local units to canvas units - the
+        /// ratio of the two lossy scales - with a scale of zero treated as one
+        /// so a degenerate transform cannot wipe a measurement out.
+        /// </summary>
+        internal static Vector2 ScaleToCanvas(Transform local, RectTransform canvasRect)
+        {
+            Vector3 mine = local.lossyScale;
+            Vector3 canvas = canvasRect.lossyScale;
+            float x = FinitePositive(mine.x) && FinitePositive(canvas.x) ? mine.x / canvas.x : 1f;
+            float y = FinitePositive(mine.y) && FinitePositive(canvas.y) ? mine.y / canvas.y : 1f;
+            return new Vector2(x, y);
+        }
+
         private static string HierarchyPath(Transform transform)
         {
             var parts = new List<string>();
@@ -637,9 +663,12 @@ namespace KingmakerGunslinger.Summoning
             private RectTransform _content;
             private ScrollRect _scroll;
             private RectMask2D _mask;
-            private GridLayoutGroup _contentGrid;
-            private HorizontalLayoutGroup _contentHorizontal;
-            private VerticalLayoutGroup _contentVertical;
+            // One layout group, of the native layout's own type. Unity marks
+            // LayoutGroup DisallowMultipleComponent, so the first live
+            // measurement at 120 entries - the first size to need the
+            // viewport - found the second and third AddComponent calls of
+            // the earlier scaffold returning null and the install faulting.
+            private LayoutGroup _contentLayout;
             private ContentSizeFitter _contentFitter;
             private RectTransform _canvasRect;
             private ActionBarSpontaneousConvertedSlot[] _lastSlots =
@@ -851,16 +880,19 @@ namespace KingmakerGunslinger.Summoning
             {
                 if (!_viewportApplied) return;
                 LayoutRebuilder.ForceRebuildLayoutImmediate(_content);
-                float preferredWidth = LayoutUtility.GetPreferredWidth(_content);
-                float preferredHeight = LayoutUtility.GetPreferredHeight(_content);
+                // The decision and the desired size are canvas units; the
+                // content's own preferred size and its size are local units.
+                Vector2 toCanvas = ScaleToCanvas(_content, _canvasRect);
+                float preferredWidth = LayoutUtility.GetPreferredWidth(_content) * toCanvas.x;
+                float preferredHeight = LayoutUtility.GetPreferredHeight(_content) * toCanvas.y;
                 float contentWidth = Math.Max(decision.FinalRect.Width,
                     Math.Max(desiredWidth, preferredWidth));
                 float contentHeight = Math.Max(decision.FinalRect.Height,
                     Math.Max(desiredHeight, preferredHeight));
                 _content.SetSizeWithCurrentAnchors(
-                    RectTransform.Axis.Horizontal, contentWidth);
+                    RectTransform.Axis.Horizontal, contentWidth / toCanvas.x);
                 _content.SetSizeWithCurrentAnchors(
-                    RectTransform.Axis.Vertical, contentHeight);
+                    RectTransform.Axis.Vertical, contentHeight / toCanvas.y);
                 LayoutRebuilder.ForceRebuildLayoutImmediate(_content);
                 _scroll.horizontalNormalizedPosition = 0f;
                 _scroll.verticalNormalizedPosition = 1f;
@@ -939,16 +971,8 @@ namespace KingmakerGunslinger.Summoning
                 _content.anchorMax = new Vector2(0f, 1f);
                 _content.pivot = new Vector2(0f, 1f);
                 _content.anchoredPosition = Vector2.zero;
-                _contentGrid = contentObject.AddComponent<GridLayoutGroup>();
-                _contentHorizontal = contentObject.AddComponent<
-                    HorizontalLayoutGroup>();
-                _contentVertical = contentObject.AddComponent<
-                    VerticalLayoutGroup>();
                 _contentFitter = contentObject.AddComponent<
                     ContentSizeFitter>();
-                _contentGrid.enabled = false;
-                _contentHorizontal.enabled = false;
-                _contentVertical.enabled = false;
                 _contentFitter.enabled = false;
                 _scroll.viewport = _viewport;
                 _scroll.content = _content;
@@ -957,44 +981,50 @@ namespace KingmakerGunslinger.Summoning
 
             private void ConfigureContentLayout(LayoutGroup source)
             {
-                _contentGrid.enabled = false;
-                _contentHorizontal.enabled = false;
-                _contentVertical.enabled = false;
                 GridLayoutGroup grid = source as GridLayoutGroup;
                 HorizontalLayoutGroup horizontal = source as
                     HorizontalLayoutGroup;
                 VerticalLayoutGroup vertical = source as VerticalLayoutGroup;
+                if (grid == null && horizontal == null && vertical == null)
+                    throw new InvalidOperationException(
+                        "Unsupported native variant-menu LayoutGroup: " +
+                        source.GetType().FullName);
+                // The content carries exactly one layout group, matching the
+                // native one's type; a group of another type from an earlier
+                // open is removed at once so the replacement can be added.
+                Type needed = source.GetType();
+                if (_contentLayout != null && _contentLayout.GetType() != needed)
+                {
+                    UnityEngine.Object.DestroyImmediate(_contentLayout);
+                    _contentLayout = null;
+                }
+                if (_contentLayout == null)
+                    _contentLayout = _content.gameObject.AddComponent(needed) as
+                        LayoutGroup;
+                if (_contentLayout == null)
+                    throw new InvalidOperationException(
+                        "The content layout group could not be added: " +
+                        needed.FullName);
                 if (grid != null)
                 {
-                    CopyCommon(grid, _contentGrid);
-                    _contentGrid.cellSize = grid.cellSize;
-                    _contentGrid.spacing = grid.spacing;
-                    _contentGrid.startCorner =
+                    var contentGrid = (GridLayoutGroup)_contentLayout;
+                    CopyCommon(grid, contentGrid);
+                    contentGrid.cellSize = grid.cellSize;
+                    contentGrid.spacing = grid.spacing;
+                    contentGrid.startCorner =
                         grid.startCorner == GridLayoutGroup.Corner.UpperRight ||
                         grid.startCorner == GridLayoutGroup.Corner.LowerRight
                             ? GridLayoutGroup.Corner.UpperRight
                             : GridLayoutGroup.Corner.UpperLeft;
-                    _contentGrid.startAxis = grid.startAxis;
-                    _contentGrid.constraint = grid.constraint;
-                    _contentGrid.constraintCount = grid.constraintCount;
-                    _contentGrid.enabled = true;
+                    contentGrid.startAxis = grid.startAxis;
+                    contentGrid.constraint = grid.constraint;
+                    contentGrid.constraintCount = grid.constraintCount;
                 }
                 else if (horizontal != null)
-                {
-                    CopyLinear(horizontal, _contentHorizontal);
-                    _contentHorizontal.enabled = true;
-                }
-                else if (vertical != null)
-                {
-                    CopyLinear(vertical, _contentVertical);
-                    _contentVertical.enabled = true;
-                }
+                    CopyLinear(horizontal, (HorizontalLayoutGroup)_contentLayout);
                 else
-                {
-                    throw new InvalidOperationException(
-                        "Unsupported native variant-menu LayoutGroup: " +
-                        source.GetType().FullName);
-                }
+                    CopyLinear(vertical, (VerticalLayoutGroup)_contentLayout);
+                _contentLayout.enabled = true;
 
                 if (_nativeFitter != null)
                 {

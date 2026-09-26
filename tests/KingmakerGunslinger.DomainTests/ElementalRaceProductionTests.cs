@@ -125,15 +125,27 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(240, elemental.Length,
                 "Production elemental identity count changed.");
             // 1913 preserved identities plus exactly the appended Better Vendors
-            // progression variants.
+            // progression variants and the Expanded Summoning Phase 1 appends.
             Assertions.Equal(1913 + KingmakerGunslinger.Acquisition
                     .ProgressionWeaponCatalog.NewBlueprintCount +
+                    ExpandedSummoningSprint3Tests.AppendedLedgerIdentities +
+                    ExpandedSummoningSprint4Tests.AppendedLedgerIdentities +
+                    ExpandedSummoningSprint5Tests.AppendedLedgerIdentities +
+                    ExpandedSummoningSprint6Tests.AppendedLedgerIdentities +
+                    ExpandedSummoningSprint7Tests.AppendedLedgerIdentities +
+                    (ExpandedSummoningSprint8Tests.AppendedLedgerIdentities + ExpandedSummoningCorrectionTests.AppendedLedgerIdentities) +
                     KingmakerGunslinger.FavoredClass.FavoredClassIdentityCatalog.IdentityCount +
                     KingmakerGunslinger.ElementalRaces.ElementalMostlyHumanPolicy.IdentityCount,
                 all.Length,
                 "Manifest total must include 240 production elemental identities.");
             Assertions.Equal(1911 + KingmakerGunslinger.Acquisition
                     .ProgressionWeaponCatalog.NewBlueprintCount +
+                    ExpandedSummoningSprint3Tests.AppendedLedgerIdentities +
+                    ExpandedSummoningSprint4Tests.AppendedLedgerIdentities +
+                    ExpandedSummoningSprint5Tests.AppendedLedgerIdentities +
+                    ExpandedSummoningSprint6Tests.AppendedLedgerIdentities +
+                    ExpandedSummoningSprint7Tests.AppendedLedgerIdentities +
+                    (ExpandedSummoningSprint8Tests.AppendedLedgerIdentities + ExpandedSummoningCorrectionTests.AppendedLedgerIdentities) +
                     KingmakerGunslinger.FavoredClass.FavoredClassIdentityCatalog.IdentityCount +
                     KingmakerGunslinger.ElementalRaces.ElementalMostlyHumanPolicy.IdentityCount,
                 all.Count(value => string.Equals(

@@ -1,0 +1,94 @@
+{
+  "$id": "1",
+  "schemaVersion": 1,
+  "runId": "20260923T1258015475577Z-7213af277ebe47a99699b490bb6d58ea",
+  "scenario": "observe-summon-pteranodon-view-contracts",
+  "status": "PASS",
+  "loadedModVersion": "0.0.136",
+  "runtimeIdentity": "KingmakerGunslinger, Version=0.0.136.0, Culture=neutral, PublicKeyToken=null",
+  "gitCommit": "8b490ed41f357b106d74a8e0ccbdc0a4c01ece85",
+  "gameVersion": "UNKNOWN",
+  "startUtc": "2026-09-23T12:58:10.2120926Z",
+  "endUtc": "2026-09-23T12:59:44.7498277Z",
+  "durationMilliseconds": 94538,
+  "assertions": [
+    {
+      "$id": "2",
+      "name": "pteranodon-donor-resolves",
+      "expected": "406c1e1af5400ac4881e330502ccbd9e loads a UnitEntityView prefab",
+      "observed": "donor=CR3_GiantEagleStandard;prefab=GiantEagle",
+      "status": "PASS",
+      "evidence": "exact installed BlueprintUnit.Prefab UnitViewLink"
+    },
+    {
+      "$id": "3",
+      "name": "pteranodon-donor-has-skinned-mesh",
+      "expected": "at least one SkinnedMeshRenderer to replace",
+      "observed": "view=GiantEagle(Clone);characterAvatar=<null>;animatorOnView=<null>;animatorsInChildren=1;childAnimatorNames=GiantEagleBoss_Body_RIG_02;animationManagerField=<null>;skinnedMeshes=1;[renderer=eagle_boss1,mesh=eagle_boss1,rootBone=LowerTorso,bones=72,bindposes=72,materials=1,shaders=PF/StandardDynamic];boneCount=72;boneNames=LowerTorso,L_Leg0_Upper,L_Leg0_Lower,L_Foot0,L_Finger_1_1,L_Finger_1_2,L_Finger_1_2_end,L_Finger_2_1,L_Finger_2_2,L_Finger_2_2_end,L_Finger_3_1,L_Finger_3_2,L_Finger_3_2_end,L_Finger_4_1,L_Finger_4_2,L_Finger_4_2_end,Tail,Tail_end,Tail_L,Tail_L_end,UpperTorso,Neck,Head,Jaw,Jaw_end,L_Arm_Upper,L_Arm_Lower,L_Palm,L_Feather_1,L_Feather_1_end,L_Feather_2,L_Feather_2_end,L_Feather_3,L_Feather_3_end,L_Feather_4,L_Feather_4_end,L_Feather_5,L_Feather_5_end,L_Feather_6,L_Feather_6_end,R_Arm_Upper,R_Arm_Lower,R_Palm,R_Feather_1,R_Feather_1_end,R_Feather_2,R_Feather_2_end,R_Feather_3,R_Feather_3_end,R_Feather_4,R_Feather_4_end,R_Feather_5,R_Feather_5_end,R_Feather_6,R_Feather_6_end,R_Leg0_Upper,R_Leg0_Lower,R_Foot0,R_Finger_1_1,R_Finger_1_2,R_Finger_1_2_end,R_Finger_2_1,R_Finger_2_2,R_Finger_2_2_end,R_Finger_3_1,R_Finger_3_2,R_Finger_3_2_end,R_Finger_4_1,R_Finger_4_2,R_Finger_4_2_end,Tail_R,Tail_R_end;meshRenderers=0;m_SoftCollider=CapsuleCollider:[soft collider];m_CoreCollider=MeshCollider:[core collider];corpulence=1.6;cameraBounds=0x1.548;cameraCoreBounds=0x0;firstRendererBounds=10.205x4.532x3.585;childTransforms=194",
+      "status": "PASS",
+      "evidence": "transient donor prefab instance"
+    },
+    {
+      "$id": "4",
+      "name": "pteranodon-donor-is-not-a-character-doll",
+      "expected": "CharacterAvatar absent, so the creature is a plain skinned prefab",
+      "observed": "characterAvatarAbsent=True",
+      "status": "PASS",
+      "evidence": "UnitEntityView.CharacterAvatar on the transient instance"
+    },
+    {
+      "$id": "5",
+      "name": "pteranodon-donor-animation-binding-recorded",
+      "expected": "the animation source on a detached donor prefab is recorded, not assumed",
+      "observed": "animatorOnView=<null>;animatorsInChildren=1;childAnimatorNames=GiantEagleBoss_Body_RIG_02;animationManagerField=<null>",
+      "status": "PASS",
+      "evidence": "Animator on the view, Animators in children, and UnitAnimationManager"
+    },
+    {
+      "$id": "6",
+      "name": "pteranodon-donor-bone-binding-is-consistent",
+      "expected": "named root bone with bindposes matching the bound bone count",
+      "observed": "boundToNamedBones=True",
+      "status": "PASS",
+      "evidence": "SkinnedMeshRenderer rootBone, bones and sharedMesh.bindposes"
+    },
+    {
+      "$id": "7",
+      "name": "pteranodon-identity-unchanged",
+      "expected": "pteranodon remains SM 4 / SNA 4 and alignment-templated",
+      "observed": "identityIntact=True",
+      "status": "PASS",
+      "evidence": "ExpandedSummoningCatalog after observation"
+    },
+    {
+      "$id": "8",
+      "name": "pteranodon-view-observation-cleanup",
+      "expected": "transient donor instance destroyed; no blueprint, unit, inventory or save mutation",
+      "observed": "cleaned=True",
+      "status": "PASS",
+      "evidence": "finally cleanup of the single transient view instance"
+    },
+    {
+      "$id": "9",
+      "name": "loaded-mod-version",
+      "expected": "0.0.136",
+      "observed": "0.0.136",
+      "status": "PASS",
+      "evidence": "Unity Mod Manager ModEntry.Info.Version"
+    }
+  ],
+  "diagnostics": [
+    "mainThreadManagedId=1"
+  ],
+  "warnings": [],
+  "exceptionSummary": "",
+  "evidenceFiles": [
+    "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20260923T1258015475577Z-observe-summon-pteranodon-view-contracts\\runtime-summary.txt",
+    "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20260923T1258015475577Z-observe-summon-pteranodon-view-contracts\\runtime-result.json",
+    "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20260923T1258015475577Z-observe-summon-pteranodon-view-contracts\\runtime-events.json"
+  ],
+  "automaticExitRequested": true,
+  "automaticExitInitiated": true,
+  "exceptionManagedThreadId": 0,
+  "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20260923T1258015475577Z-observe-summon-pteranodon-view-contracts"
+}

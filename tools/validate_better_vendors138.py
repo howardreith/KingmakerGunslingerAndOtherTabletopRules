@@ -16,12 +16,13 @@ sys.dont_write_bytecode = True
 import validate_rapid_reload_combat_feat137 as baseline
 import validate_icon_overhaul132
 import validate_magic_circle
+import validate_expanded_summoning_phase1
 
 VERSION = "0.0.138"
 INFORMATIONAL_VERSION = "0.0.138-better-vendors-progression"
 PACKAGE = "KingmakerGunslinger-0.0.138-local-runtime.zip"
 PACKAGE_SUFFIX = "better-vendors-progression"
-DETERMINISTIC_TEST_COUNT = 1742
+DETERMINISTIC_TEST_COUNT = 1806
 STATIC_KEY = "betterVendorsProgression138"
 PRESERVED_MANIFEST_ENTRIES = 1913
 CATALOG = "docs/better-vendors-progression-catalog.json"
@@ -95,11 +96,15 @@ def forbid_tokens(path: Path, *tokens: str) -> None:
 def validate(root: Path) -> None:
     if len(APPENDED) != 43 or len({guid for _, guid in APPENDED}) != 43:
         raise AssertionError("The appended progression identity list is malformed")
-    # The Magic Circle block stays exact; only these identities may follow it.
-    validate_magic_circle.AUTHORIZED_APPENDED = APPENDED + tuple(AUTHORIZED_APPENDED_AFTER)
+    # The Magic Circle block stays exact; only these identities, then the
+    # Expanded Summoning Phase 1 append that validate_expanded_summoning_phase1
+    # pins, and then the Favored Class and Mostly Human blocks may follow it.
+    phase1 = tuple((symbol, guid) for symbol, guid, _ in
+                   validate_expanded_summoning_phase1.APPENDED)
+    validate_magic_circle.AUTHORIZED_APPENDED = APPENDED + phase1 + tuple(AUTHORIZED_APPENDED_AFTER)
     validate_icon_overhaul132.MANIFEST_TOTAL = (PRESERVED_MANIFEST_ENTRIES + len(APPENDED) +
-                                                len(AUTHORIZED_APPENDED_AFTER))
-    validate_icon_overhaul132.MANIFEST_ACTIVE = (1911 + len(APPENDED) +
+                                                len(phase1) + len(AUTHORIZED_APPENDED_AFTER))
+    validate_icon_overhaul132.MANIFEST_ACTIVE = (1911 + len(APPENDED) + len(phase1) +
                                                  len(AUTHORIZED_APPENDED_AFTER))
     baseline.VERSION = VERSION
     baseline.INFORMATIONAL_VERSION = INFORMATIONAL_VERSION
@@ -113,9 +118,10 @@ def validate(root: Path) -> None:
     tail = entries[PRESERVED_MANIFEST_ENTRIES:PRESERVED_MANIFEST_ENTRIES + len(APPENDED)]
     if [(entry["symbol"], entry["guid"]) for entry in tail] != list(APPENDED):
         raise AssertionError("Better Vendors progression identities drifted")
-    after = entries[PRESERVED_MANIFEST_ENTRIES + len(APPENDED):]
+    validate_expanded_summoning_phase1.validate(root)
+    after = entries[PRESERVED_MANIFEST_ENTRIES + len(APPENDED) + len(phase1):]
     if [(entry["symbol"], entry["guid"]) for entry in after] != list(AUTHORIZED_APPENDED_AFTER):
-        raise AssertionError("Unauthorized identities follow the Better Vendors block")
+        raise AssertionError("Unauthorized identities follow the Expanded Summoning Phase 1 block")
     if any(entry["plannedType"] != "BlueprintItemWeapon" or
            entry["status"] != "active" or
            entry["milestone"] != "Better Vendors progression" for entry in tail):
@@ -171,12 +177,13 @@ def validate(root: Path) -> None:
     state = json.loads((root / "validation/static-validation.json").read_text(
         encoding="utf-8"))[STATIC_KEY]
     expected = {
-        "deterministicTestCount": 1742,
+        "deterministicTestCount": 1806,
         "publicReleaseAuthorized": True,
         "ownerAuthorizedRelease": True,
         "candidateOnly": False,
         "releaseVersion": "0.0.138",
-        "releaseInformationalVersion": "0.0.138-better-vendors-progression",
+        "releaseInformationalVersion":
+            "0.0.138-better-vendors-progression",
         "progressionEntries": 50,
         "reusedCanonicalEntries": 7,
         "newBlueprints": 43,

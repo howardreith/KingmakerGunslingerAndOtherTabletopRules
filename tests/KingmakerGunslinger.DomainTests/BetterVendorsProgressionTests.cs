@@ -132,10 +132,16 @@ namespace KingmakerGunslinger.DomainTests
             JToken[] entries = JObject.Parse(Read("blueprints", "blueprints.json"))
                 ["entries"].ToArray();
             Assertions.Equal(PreservedManifestEntries + 43 +
+                    ExpandedSummoningSprint3Tests.AppendedLedgerIdentities +
+                    ExpandedSummoningSprint4Tests.AppendedLedgerIdentities +
+                    ExpandedSummoningSprint5Tests.AppendedLedgerIdentities +
+                    ExpandedSummoningSprint6Tests.AppendedLedgerIdentities +
+                    ExpandedSummoningSprint7Tests.AppendedLedgerIdentities +
+                    (ExpandedSummoningSprint8Tests.AppendedLedgerIdentities + ExpandedSummoningCorrectionTests.AppendedLedgerIdentities) +
                     KingmakerGunslinger.FavoredClass.FavoredClassIdentityCatalog.IdentityCount +
                     KingmakerGunslinger.ElementalRaces.ElementalMostlyHumanPolicy.IdentityCount,
                 entries.Length,
-                "Manifest must be the preserved ledger plus 43 progression identities and the later Favored Class and Mostly Human blocks.");
+                "Manifest must be the preserved ledger plus 43 progression identities, the Expanded Summoning Phase 1 appends and the later Favored Class and Mostly Human blocks.");
             string prefix = string.Concat(entries.Take(PreservedManifestEntries)
                 .Select(value => string.Join("|", new[] {
                     (string)value["symbol"], (string)value["guid"],
@@ -149,6 +155,9 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(entries.Length, entries.Select(value =>
                 (string)value["symbol"]).Distinct(StringComparer.Ordinal).Count(),
                 "Manifest symbol collision.");
+            // The progression variants follow the preserved prefix directly; the
+            // Expanded Summoning Phase 1, Favored Class and Mostly Human identities
+            // were appended after them.
             JToken[] appended = entries.Skip(PreservedManifestEntries).Take(43).ToArray();
             string[] expectedNew = ProgressionWeaponCatalog.All.Where(value =>
                     !value.ReusesCanonicalItem).Select(value => value.Symbol + "|" +
