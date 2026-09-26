@@ -58,15 +58,15 @@ namespace KingmakerGunslinger.DomainTests
 
             Assertions.True(info.Contains("\"Version\": \"0.0.139\"") &&
                 props.Contains("<KmgVersion>0.0.139</KmgVersion>") &&
-                props.Contains("<KmgInformationalVersion>0.0.139-favored-class-integration</KmgInformationalVersion>") &&
-                assembly.Contains("AssemblyVersion(\"0.0.139\")") &&
-                assembly.Contains("AssemblyFileVersion(\"0.0.139\")") &&
-                assembly.Contains("AssemblyInformationalVersion(\"0.0.139-favored-class-integration\")"),
-                "Release and assembly identity are not transactionally pinned to the Better Vendors progression candidate.");
+                props.Contains("<KmgInformationalVersion>0.0.140-favored-class-integration</KmgInformationalVersion>") &&
+                assembly.Contains("AssemblyVersion(\"0.0.140\")") &&
+                assembly.Contains("AssemblyFileVersion(\"0.0.140\")") &&
+                assembly.Contains("AssemblyInformationalVersion(\"0.0.140-favored-class-integration\")"),
+                "Release and assembly identity are not transactionally pinned to the Favored Class integration release.");
             Assertions.True(package.Contains(
                 "$($info.Id)-$($info.Version)-favored-class-integration.zip") &&
                 !package.Contains("expanded-summoning.zip"),
-                "Package identity is not pinned to the Better Vendors progression archive.");
+                "Package identity is not pinned to the Favored Class integration archive.");
             Assertions.True(runtime.Contains("active version 0.0.139") &&
                 localBuild.Contains("active version 0.0.139") &&
                 localBuild.Contains("local-runtime\\0.0.139"),

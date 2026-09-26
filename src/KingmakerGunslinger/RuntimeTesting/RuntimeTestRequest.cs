@@ -282,9 +282,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .DisposableInHarmsWayOffTurnEconomy ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoning ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningPlayerPath ||
+                request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableExpandedSummoningProjectedMenu ||
+                request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableExpandedSummoningPteranodonFaultDrill ||
                 RuntimeTestScenarioCatalog.IsSummonSameTurnWorkingSaveScenario(
                     request.Scenario) ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
+                request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningRules ||
+                request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualLifecycle ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleEvil ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleUi ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleTerrain ||
@@ -321,6 +327,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningPrepare ||
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyCleanup ||
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyAbsent ||
+                request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningCreatureReview ||
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElvenBranchedSpearPrepare ||
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElvenBranchedSpearVerifyCleanup ||
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElvenBranchedSpearVerifyAbsent ||
@@ -395,11 +402,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool treacherousEffect = nereidPersistence && request.Parameters?["qualificationEffect"]?.Type == JTokenType.String &&
                     (string)request.Parameters["qualificationEffect"] == "TreacherousEarth";
                 bool sceneRoundtrip = IsCompletionSceneScope(request);
+                bool creatureReview = request.Scenario ==
+                    RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningCreatureReview;
+                if (creatureReview && (!request.ExitAfterCompletion ||
+                    request.Parameters?["creatures"]?.Type != JTokenType.String ||
+                    string.IsNullOrWhiteSpace((string)request.Parameters["creatures"])))
+                    return "creature-review-creatures-required";
                 bool circleBound = MagicCirclePreparationBinding.RequiresBinding(request.Scenario);
                 if (circleBound && (!request.ExitAfterCompletion || request.Parameters?["preparationBinding"]?.Type != JTokenType.String ||
                     !MagicCirclePreparationBinding.Valid((string)request.Parameters["preparationBinding"], request.ExpectedModVersion)))
                     return "magic-circle-preparation-binding-required";
-                if (request.Parameters == null || request.Parameters.Count != (circleBound ? 2 : persistence || fcbPersistence ? 3 : nativeActionCase ? 5 : request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveNereidRespec ? 5 : creatorRegression || sceneRoundtrip || visualLifecycle ? 4 : treacherousEffect ? 3 : nereidPersistence || deferredMarkers ? 2 : 1) ||
+                if (request.Parameters == null || request.Parameters.Count != (circleBound ? 2 : persistence || fcbPersistence ? 3 : nativeActionCase ? 5 : request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveNereidRespec ? 5 : creatorRegression || sceneRoundtrip || visualLifecycle ? 4 : treacherousEffect ? 3 : nereidPersistence || deferredMarkers || creatureReview ? 2 : 1) ||
                     request.Parameters.Property("saveName") == null ||
                     request.Parameters["saveName"].Type != JTokenType.String)
                     return "save-name-required";

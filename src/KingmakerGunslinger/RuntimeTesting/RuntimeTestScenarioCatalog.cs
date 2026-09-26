@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace KingmakerGunslinger.RuntimeTesting
@@ -100,6 +100,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             "working-save-brown-fur-off-verify-cleanup";
         internal const string ObserveShieldOtherInventory =
             "observe-shield-other-inventory";
+        /// <summary>
+        /// Phase 1 native-donor audit. At mod load, records as metadata only
+        /// which native units, classes, facts, buffs and abilities the
+        /// installed library offers for the Sprint 3-8 creatures, and what
+        /// the native Grab feature's action graph wires to.
+        /// </summary>
+        internal const string ObserveExpandedSummoningNativeDonors =
+            "observe-expanded-summoning-native-donors";
         internal const string ObserveExpandedSummoningInventory =
             "observe-expanded-summoning-inventory";
         internal const string ObserveExpandedSummoningVariantMenu =
@@ -108,6 +116,25 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-expanded-summoning";
         internal const string DisposableExpandedSummoningPlayerPath =
             "disposable-expanded-summoning-player-path";
+        /// <summary>
+        /// Development-only. Opens the real variant menu at the roster's
+        /// projected worst-case size - 120 Summon Monster entries and 110
+        /// Nature's Ally - and measures it. The shipped observation of that
+        /// menu is supervised and can only report on the list that exists
+        /// today, which is the wrong shape for a scalability gate.
+        /// </summary>
+        internal const string DisposableExpandedSummoningProjectedMenu =
+            "disposable-expanded-summoning-projected-menu";
+        /// <summary>
+        /// Development-only. The mechanical Expanded Summoning run with the
+        /// Pteranodon visual's two fallback paths exercised on live units: the
+        /// first Pteranodon cast runs with the visual withdrawn, the second
+        /// with a fault injected after the donor renderer is suppressed, and
+        /// the rest run clean. Every other creature is cast exactly as in the
+        /// plain run.
+        /// </summary>
+        internal const string DisposableExpandedSummoningPteranodonFaultDrill =
+            "disposable-expanded-summoning-pteranodon-fault-drill";
         internal const string SummonSameTurnActivation =
             "summon-same-turn-activation";
         internal const string SummonSameTurnAcadamae =
@@ -124,12 +151,38 @@ namespace KingmakerGunslinger.RuntimeTesting
             "summon-same-turn-compatibility-acadamae";
         internal const string DisposableExpandedSummoningVisualContracts =
             "disposable-expanded-summoning-visual-contracts";
+        /// <summary>
+        /// Correction order (2026-09-25): the focused live rules cases - the
+        /// cats' attack and target identity, grab and swallow sizes, the
+        /// Giant Flytrap's multi-link hold, the chartered mephit roles with
+        /// the ally-safe cloud cases, the Cyclops armor class and Flash of
+        /// Insight, the Web's ranged touch path and the docile hooves - on
+        /// disposable units in the guarded working save.
+        /// </summary>
+        internal const string DisposableExpandedSummoningRules =
+            "disposable-expanded-summoning-rules";
+        /// <summary>
+        /// Correction order (2026-09-25): repeated cast-and-dispose cycles of
+        /// the tinted and coated summons with the variant-owned material and
+        /// texture counts measured back to baseline after each, a failed
+        /// attach rolled back, the module-wide sweep, and the donor and the
+        /// Pteranodon unchanged. Several frames: views die at frame end.
+        /// </summary>
+        internal const string DisposableExpandedSummoningVisualLifecycle =
+            "disposable-expanded-summoning-visual-lifecycle";
         internal const string WorkingSaveExpandedSummoningPrepare =
             "working-save-expanded-summoning-prepare";
         internal const string WorkingSaveExpandedSummoningVerifyCleanup =
             "working-save-expanded-summoning-verify-cleanup";
         internal const string WorkingSaveExpandedSummoningVerifyAbsent =
             "working-save-expanded-summoning-verify-absent";
+        /// <summary>
+        /// Phase 1 internal review: casts the creatures named by the request
+        /// one at a time into the working save and renders each from the
+        /// party camera idle, moving and attacking. Reads the save only.
+        /// </summary>
+        internal const string WorkingSaveExpandedSummoningCreatureReview =
+            "working-save-expanded-summoning-creature-review";
         internal const string DisposableShieldOther = "disposable-shield-other";
         internal const string ObserveOptionalModCompatibility =
             "observe-optional-mod-compatibility";
@@ -381,6 +434,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "observe-production-firearm-fallbacks";
         internal const string ObserveNativeFirearmRigContracts =
             "observe-native-firearm-rig-contracts";
+        internal const string ObserveSummonPteranodonViewContracts =
+            "observe-summon-pteranodon-view-contracts";
         internal const string DisposableFirearmVisualRigs =
             "disposable-firearm-visual-rigs";
         internal const string ObserveFirearmItemLifecycleContracts =
@@ -607,10 +662,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 WorkingSaveMagicCircleCleanup,
                 WorkingSaveMagicCircleAbsent,
                 WorkingSaveMagicCircleScene,
+                ObserveExpandedSummoningNativeDonors,
                 ObserveExpandedSummoningInventory,
                 ObserveExpandedSummoningVariantMenu,
                 DisposableExpandedSummoning,
                 DisposableExpandedSummoningPlayerPath,
+                DisposableExpandedSummoningProjectedMenu,
+                DisposableExpandedSummoningPteranodonFaultDrill,
                 SummonSameTurnActivation,
                 SummonSameTurnAcadamae,
                 SummonSameTurnMultiple,
@@ -619,9 +677,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SummonSameTurnCompatibilityQuickened,
                 SummonSameTurnCompatibilityAcadamae,
                 DisposableExpandedSummoningVisualContracts,
+                DisposableExpandedSummoningRules,
+                DisposableExpandedSummoningVisualLifecycle,
                 WorkingSaveExpandedSummoningPrepare,
                 WorkingSaveExpandedSummoningVerifyCleanup,
                 WorkingSaveExpandedSummoningVerifyAbsent,
+                WorkingSaveExpandedSummoningCreatureReview,
                 DisposableShieldOther,
                 ObserveOptionalModCompatibility,
                 ObserveCraftMagicItemsCompatibility,
@@ -765,6 +826,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 BlunderbussThunderingScatter,
                 ObserveProductionFirearmFallbacks,
                 ObserveNativeFirearmRigContracts,
+                ObserveSummonPteranodonViewContracts,
                 DisposableFirearmVisualRigs,
                 ObserveFirearmItemLifecycleContracts,
                 DisposableReloadAutocast,

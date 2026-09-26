@@ -21,9 +21,9 @@ namespace KingmakerGunslinger.DomainTests
             JArray rows = (JArray)manifest["icons"];
             Assertions.Equal(1, (int)manifest["schemaVersion"],
                 "Icon manifest schema changed.");
-            Assertions.Equal(77, (int)manifest["count"],
+            Assertions.Equal(91, (int)manifest["count"],
                 "Icon manifest count changed.");
-            Assertions.Equal(77, rows.Count,
+            Assertions.Equal(91, rows.Count,
                 "Icon manifest row count changed.");
             string[] catalogKeys = SummonIconCatalog.All.Select(value =>
                 value.Key).OrderBy(value => value, StringComparer.Ordinal).ToArray();
@@ -110,7 +110,7 @@ namespace KingmakerGunslinger.DomainTests
                 "Runtime project must include every manifest-backed icon path.");
             Assertions.True(package.Contains("expanded-summoning") &&
                 package.Contains("summonIconDestination") &&
-                package.Contains("expectedPackageFileCount = if ($hasFirearmSoundBank) { 235 } else { 233 }"),
+                package.Contains("expectedPackageFileCount = if ($hasFirearmSoundBank) { 251 } else { 249 }"),
                 "Standalone package must stage the exact runtime icon tree.");
         }
 
@@ -118,7 +118,7 @@ namespace KingmakerGunslinger.DomainTests
         {
             SummonNativeExpansionSpec[] allies = SummonNativeExpansionCatalog.All
                 .Where(value => value.Family == SummonFamily.NaturesAlly).ToArray();
-            Assertions.Equal(9, allies.Length,
+            Assertions.Equal(12, allies.Length,
                 "Creature-named SNA preservation wrapper count changed.");
             Assertions.True(allies.Any(value => value.Tier == 1 &&
                     value.DisplayName == "Mite" && value.IconKey == "mite" &&
@@ -178,9 +178,9 @@ namespace KingmakerGunslinger.DomainTests
                 Environment.CurrentDirectory, "src", "KingmakerGunslinger",
                 "RuntimeTesting", "RuntimeTestRunner.cs"));
             Assertions.True(source.Contains("SummonFamily.Monster ? 0 : 9") &&
-                source.Contains("nativeExpansionCases.Count == 26") &&
-                source.Contains("26/26 visible creature-named"),
-                "Player-path coverage must route all 17 SM and nine SNA wrappers through their actual family parents.");
+                source.Contains("nativeExpansionCases.Count ==\n                    SummonNativeExpansionCatalog.All.Count") &&
+                source.Contains("\" visible creature-named native/preservation wrappers live"),
+                "Player-path coverage must route all 17 SM and twelve SNA wrappers through their actual family parents.");
             Assertions.False(source.Contains(
                     "spellbook, parents[nativeSpec.Tier - 1], distinct"),
                 "SNA wrappers may not be tested through Summon Monster parents.");

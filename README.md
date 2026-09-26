@@ -1,15 +1,23 @@
 # Kingmaker Gunslinger
 
-The local candidate **0.0.139-favored-class-integration** is not published.
-It adds an optional integration with the Favored Class mod: Gunslinger and
-elemental-race favored-class options, and a Mostly Human alternate racial
-trait for the four elemental races. Favored Class stays optional, and only the
-exact qualified Favored Class 1.3.1 binary is supported. Its qualification
-status is recorded in
-[the candidate notes](docs/RELEASE-NOTES-0.0.139.md) and
+The current full release, **0.0.140-favored-class-integration**, adds an optional
+integration with the Favored Class mod: Gunslinger and elemental-race
+favored-class options, and a Mostly Human alternate racial trait for the four
+elemental races. Favored Class stays optional, and only the exact qualified
+Favored Class 1.3.1 binary is supported. It was published under explicit owner
+authorization. See [the release notes](docs/RELEASE-NOTES-0.0.140.md) and
 [the compatibility contract](docs/FAVORED-CLASS-COMPATIBILITY.md).
 
-The current full release, **0.0.138-better-vendors-progression**, adds
+The previous release, **0.0.139-expanded-summoning-phase1**, brings the
+Expanded Summoning charter's Sprints 3 through 8 to the summoning lists:
+twenty-five creature work items across native publication, the plants and the
+Purple Worm, the six mephits, repaired signature mechanics and the big cats,
+with their visuals owned per view and released with the view. An active grab,
+hold, swallow or engulf is session-scoped and releases cleanly on a reload,
+an engine limitation the owner accepted on 2026-09-26. The release was owner
+authorized. See the [release notes](docs/RELEASE-NOTES-0.0.139.md).
+
+The earlier **0.0.138-better-vendors-progression** adds
 optional Better Vendors compatibility. With the exact approved Better Vendors
 2.0.8 binary installed and its vendor progression on, the capital blacksmith
 stocks this mod's Pistol, Musket and Blunderbuss +1 to +5 and their Reliable
@@ -473,6 +481,13 @@ distinct Redcap, Axiomite, Soul Eater, Bogeyman, Movanic Deva, Frost Giant,
 and Thanadaemon choices; their original blueprint objects remain registered.
 Dire Bat is intentionally hidden because no acceptable installed bat rig was
 found and the Roc proxy failed visual acceptance.
+
+A separate owner-approved charter plans an expanded ideal roster of 145
+creatures. Its planning manifest lives in
+`planning/EXPANDED-SUMMONING-IDEAL-ROSTER.md` with the sprint ledger in
+`planning/EXPANDED-SUMMONING-CHARTER-TRACEABILITY.md`. That manifest is inert:
+it publishes nothing, allocates no identity, and no publication path may read
+it, so the shipped roster above is exactly what players see today.
 
 Every visible creature-choice child uses one of 77 project-owned original
 128x128 icons; the same creature reuses its cached icon across families and

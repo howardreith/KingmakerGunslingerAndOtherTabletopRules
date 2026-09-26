@@ -109,6 +109,12 @@ if ($scenarioMetadata.RequiresSaveName) {
             throw 'The deferred-marker probe requires typed -SaveName and only fixtureCase.'
         }
         $Parameters = @{saveName=$SaveName;fixtureCase=$Parameters.fixtureCase}
+    } elseif ($Scenario -ceq 'working-save-expanded-summoning-creature-review') {
+        if ($Parameters.Count -ne 1 -or -not $Parameters.ContainsKey('creatures') -or
+            [string]::IsNullOrWhiteSpace([string]$Parameters.creatures)) {
+            throw 'The creature review requires typed -SaveName plus exactly creatures (comma-separated creature keys).'
+        }
+        $Parameters = @{ saveName = $SaveName; creatures = [string]$Parameters.creatures }
     } elseif (Test-KmgNereidPersistenceScope $Scenario $Parameters) {
         if (Test-KmgTreacherousEffectScope $Scenario $Parameters) {
             $sceneRoundtrip = Test-KmgCompletionSceneScope $Scenario $Parameters
@@ -850,7 +856,11 @@ finally {
 
 } finally {
     if ($runtimeScope.Acquired -and $ExitAfterCompletion) {
-        $leaseExitDeadline = [DateTime]::UtcNow.AddSeconds(45)
+        # The game's own exit after a long scenario can outlast a fixed 45
+        # seconds; the player-path run left its lease behind twice that
+        # way, with a passing result and a verified restoration. The wait
+        # follows the scenario's budget - the process is exiting anyway.
+        $leaseExitDeadline = [DateTime]::UtcNow.AddSeconds([Math]::Max(45, $TimeoutSeconds))
         while (@(Get-Process -Name Kingmaker -ErrorAction SilentlyContinue).Count -gt 0 -and
             [DateTime]::UtcNow -lt $leaseExitDeadline) { Start-Sleep -Milliseconds 250 }
     }

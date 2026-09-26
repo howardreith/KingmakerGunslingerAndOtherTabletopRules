@@ -1,0 +1,46 @@
+{
+  "schema": "expanded-summoning-baseline/1",
+  "uniqueCreatures": 67,
+  "registeredLogicalPlacements": 681,
+  "suppressedLogicalPlacements": 14,
+  "publishedLogicalPlacements": 667,
+  "nativeExpansionWrappers": 26,
+  "nativeOptionsInspected": 48,
+  "totalVisibleChoices": 693,
+  "families": {
+    "summonMonster": {
+      "rosterEntries": 66,
+      "registeredPlacements": 361,
+      "visibleChoices": 371,
+      "parents": [
+        { "tier": 1, "one": 3, "oneD3": 0, "oneD4PlusOne": 0, "registered": 3, "suppressed": 0, "nativeWrappers": 0, "visibleChoices": 3 },
+        { "tier": 2, "one": 10, "oneD3": 3, "oneD4PlusOne": 0, "registered": 13, "suppressed": 0, "nativeWrappers": 0, "visibleChoices": 13 },
+        { "tier": 3, "one": 8, "oneD3": 10, "oneD4PlusOne": 3, "registered": 21, "suppressed": 1, "nativeWrappers": 0, "visibleChoices": 20 },
+        { "tier": 4, "one": 14, "oneD3": 8, "oneD4PlusOne": 13, "registered": 35, "suppressed": 1, "nativeWrappers": 0, "visibleChoices": 34 },
+        { "tier": 5, "one": 8, "oneD3": 14, "oneD4PlusOne": 21, "registered": 43, "suppressed": 1, "nativeWrappers": 1, "visibleChoices": 43 },
+        { "tier": 6, "one": 11, "oneD3": 8, "oneD4PlusOne": 35, "registered": 54, "suppressed": 1, "nativeWrappers": 3, "visibleChoices": 56 },
+        { "tier": 7, "one": 7, "oneD3": 11, "oneD4PlusOne": 43, "registered": 61, "suppressed": 1, "nativeWrappers": 4, "visibleChoices": 64 },
+        { "tier": 8, "one": 4, "oneD3": 7, "oneD4PlusOne": 54, "registered": 65, "suppressed": 1, "nativeWrappers": 5, "visibleChoices": 69 },
+        { "tier": 9, "one": 1, "oneD3": 4, "oneD4PlusOne": 61, "registered": 66, "suppressed": 1, "nativeWrappers": 4, "visibleChoices": 69 }
+      ]
+    },
+    "summonNaturesAlly": {
+      "rosterEntries": 57,
+      "registeredPlacements": 320,
+      "visibleChoices": 322,
+      "parents": [
+        { "tier": 1, "one": 4, "oneD3": 0, "oneD4PlusOne": 0, "registered": 4, "suppressed": 0, "nativeWrappers": 1, "visibleChoices": 5 },
+        { "tier": 2, "one": 9, "oneD3": 4, "oneD4PlusOne": 0, "registered": 13, "suppressed": 0, "nativeWrappers": 1, "visibleChoices": 14 },
+        { "tier": 3, "one": 7, "oneD3": 9, "oneD4PlusOne": 4, "registered": 20, "suppressed": 1, "nativeWrappers": 1, "visibleChoices": 20 },
+        { "tier": 4, "one": 13, "oneD3": 7, "oneD4PlusOne": 13, "registered": 33, "suppressed": 1, "nativeWrappers": 0, "visibleChoices": 32 },
+        { "tier": 5, "one": 6, "oneD3": 13, "oneD4PlusOne": 20, "registered": 39, "suppressed": 1, "nativeWrappers": 1, "visibleChoices": 39 },
+        { "tier": 6, "one": 7, "oneD3": 6, "oneD4PlusOne": 33, "registered": 46, "suppressed": 1, "nativeWrappers": 1, "visibleChoices": 46 },
+        { "tier": 7, "one": 6, "oneD3": 7, "oneD4PlusOne": 39, "registered": 52, "suppressed": 1, "nativeWrappers": 1, "visibleChoices": 52 },
+        { "tier": 8, "one": 4, "oneD3": 6, "oneD4PlusOne": 46, "registered": 56, "suppressed": 1, "nativeWrappers": 1, "visibleChoices": 56 },
+        { "tier": 9, "one": 1, "oneD3": 4, "oneD4PlusOne": 52, "registered": 57, "suppressed": 1, "nativeWrappers": 2, "visibleChoices": 58 }
+      ]
+    }
+  },
+  "registeredButHidden": ["dire-bat"],
+  "proxyVisuals": ["air-mephit<Air Mephit", "ankylosaurus<Hodag", "bebelith<Doomspider", "boar<Boar", "bralani-azata<Bralani Azata", "cheetah<Leopard", "crocodile<Monitor Lizard", "dire-bat<Roc", "dire-bear<Dire Bear", "dire-boar<Dire Boar", "dire-lion<Smilodon", "dire-tiger<Smilodon", "dire-wolf<Dire Wolf", "dog<Dog", "eagle<Roc", "earth-mephit<Earth Mephit", "elder-air-elemental<Elder Air Elemental", "elder-earth-elemental<Elder Earth Elemental", "elder-fire-elemental<Elder Fire Elemental", "elder-water-elemental<Elder Water Elemental", "elephant<Mastodon", "erinyes-devil<Erinyes Devil", "fire-mephit<Fire Mephit", "ghaele-azata<Ghaele Azata", "giant-centipede<Giant Centipede", "giant-frog<Giant Frog", "giant-spider<Giant Spider", "goblin-dog<Worg", "greater-air-elemental<Greater Air Elemental", "greater-earth-elemental<Greater Earth Elemental", "greater-fire-elemental<Greater Fire Elemental", "greater-water-elemental<Greater Water Elemental", "grizzly-bear<Grizzly Bear", "hell-hound<Hell Hound", "huge-air-elemental<Huge Air Elemental", "huge-earth-elemental<Huge Earth Elemental", "huge-fire-elemental<Huge Fire Elemental", "huge-water-elemental<Huge Water Elemental", "hyena<Wolf", "invisible-stalker<Air Elemental", "lantern-archon<Will-o'-Wisp", "large-air-elemental<Large Air Elemental", "large-earth-elemental<Large Earth Elemental", "large-fire-elemental<Large Fire Elemental", "large-water-elemental<Large Water Elemental", "leopard<Leopard", "lion<Leopard", "mastodon<Mastodon", "medium-air-elemental<Medium Air Elemental", "medium-earth-elemental<Medium Earth Elemental", "medium-fire-elemental<Medium Fire Elemental", "medium-water-elemental<Medium Water Elemental", "monitor-lizard<Monitor Lizard", "pixie<Pixie / Nixie / Nymph", "poisonous-frog<Giant Poisonous Frog", "pteranodon<Roc", "roc<Roc", "salamander<Lizardfolk", "shadow-demon<Soul Eater / Ankou", "small-air-elemental<Small Air Elemental", "small-earth-elemental<Small Earth Elemental", "small-fire-elemental<Small Fire Elemental", "small-water-elemental<Small Water Elemental", "succubus<Nymph / Tiefling", "water-mephit<Water Mephit", "wolf<Wolf", "wolverine<Worg"]
+}
