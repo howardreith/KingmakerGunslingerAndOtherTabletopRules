@@ -1861,7 +1861,7 @@
     "branch": "claude/favored-class-integration",
     "baselineCommit": "996105ed9e72259a220be56e2a74e0cc18e5ef47",
     "charterSha256": "35e5ed5776839e8b1f4007f2d413079e26dac51ba3ab0f77ce4174be39ec7959",
-    "deterministicTestCount": 1843,
+    "deterministicTestCount": 1846,
     "publicReleaseAuthorized": false,
     "candidateOnly": true,
     "releaseVersion": "0.0.139",

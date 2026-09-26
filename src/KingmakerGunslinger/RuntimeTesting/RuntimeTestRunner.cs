@@ -1384,6 +1384,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    ObserveFavoredClassMissingDependency)
+                {
+                    Complete(RunFavoredClassMissingDependency());
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
                     DisposableFavoredClassGunslingerMechanics)
                 {
                     Complete(RunFavoredClassGunslingerMechanics());
