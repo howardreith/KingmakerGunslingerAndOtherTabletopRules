@@ -2264,11 +2264,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private string _expandedSummoningPersistenceLinkDetail = "not run";
         private bool _expandedSummoningPersistenceLinkValid;
-        private bool _expandedSummoningPersistenceWasPaused;
-        private bool _expandedSummoningPersistenceHoldsTaken;
-        private int _expandedSummoningPersistenceHoldSettle;
-        /// <summary>Frames between the holds and the save, with the clock stopped.</summary>
-        private const int ExpandedSummoningPersistenceHoldSettleFrames = 8;
+
 
         private static UnitEntityData ExpandedSummoningPersistenceUnit(UnitEntityData[] units,
             string blueprintName)
@@ -2304,6 +2300,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 PlaceExpandedSummoningUnit(victim, holder.Position +
                     UnityEngine.Vector3.forward * (1f + 0.4f * steps.Count));
+                // The holder keeps its grip through the frames before the save:
+                // its maintain checks succeed and the victim's break-free
+                // attempts fail.
+                holder.Descriptor.Stats.BaseAttackBonus.BaseValue = 100;
                 UnityEngine.Random.InitState(FindNativeD20Seed(20));
                 bool held = grab.TryGrab(victim, limb, true);
                 ItemEntityWeapon recorded = SummonGrappleLinks.EstablishingWeapon(holder, victim);
@@ -2315,6 +2315,24 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             valid = ok;
             return string.Join(";", steps.ToArray());
+        }
+
+        /// <summary>The engine's view of every planned hold, for the frame that saves.</summary>
+        private static string DescribeExpandedSummoningPersistenceHolds(UnitEntityData[] units)
+        {
+            var parts = new List<string>();
+            foreach (string[] row in ExpandedSummoningPersistenceHoldPlan)
+            {
+                UnitEntityData holder = ExpandedSummoningPersistenceUnit(units, row[0]);
+                UnitEntityData victim = ExpandedSummoningPersistenceUnit(units, row[1]);
+                SummonGrabComponent grab = holder == null ? null : SummonGrabComponent.Find(holder);
+                if (grab == null || victim == null) { parts.Add(row[0] + ":missing"); continue; }
+                ItemEntityWeapon stored = SummonGrappleLinks.StoredLimbOf(holder, victim);
+                parts.Add(row[0] + "->" + row[1] + ":stored=" + (stored == null ||
+                    stored.Blueprint == null ? "none" : stored.Blueprint.name) + "," +
+                    DescribeExpandedSummoningHoldState(holder, victim, grab));
+            }
+            return string.Join("|", parts.ToArray());
         }
 
         /// <summary>The holder's limb by plan index: -1 is the primary hand, 0+ an additional limb.</summary>
