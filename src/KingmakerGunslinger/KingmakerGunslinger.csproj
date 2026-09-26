@@ -236,6 +236,7 @@
     <Compile Include="FavoredClass\FavoredClassLeafIcons.cs" />
     <Compile Include="FavoredClass\Hooks\FavoredClassPerformanceRangePatch.cs" />
     <Compile Include="FavoredClass\Hooks\FavoredClassPerformanceTextPatch.cs" />
+    <Compile Include="FavoredClass\Hooks\FavoredClassLevelPlanPatch.cs" />
     <Compile Include="FavoredClass\Hooks\FavoredClassLevelUpReplayPatch.cs" />
     <Compile Include="FavoredClass\Mechanics\FavoredClassPerformanceRing.cs" />
     <Compile Include="FavoredClass\FavoredClassPerformanceText.cs" />
@@ -1159,6 +1160,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassGunslinger.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassInitiative.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassTurnModes.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassAutoLevel.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassBombs.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassPermissionBounds.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassHostState.cs" />
