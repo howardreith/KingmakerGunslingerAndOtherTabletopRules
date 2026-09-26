@@ -26,6 +26,15 @@ namespace KingmakerGunslinger.FavoredClass.Hooks
             {
                 // Fail safe: the native decision stands.
             }
+            try
+            {
+                // I08/S06 Elemental Resistance: the chosen power's own gates.
+                Mechanics.FavoredClassSelectedPowerGates.GateResult(__instance, ref __result);
+            }
+            catch (Exception)
+            {
+                // Fail safe: the native decision stands.
+            }
         }
     }
 }

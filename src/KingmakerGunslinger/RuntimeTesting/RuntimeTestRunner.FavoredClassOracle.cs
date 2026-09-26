@@ -356,7 +356,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         " revelation features resolved");
                 if (!scope.HasReadPoints)
                     failures.Add(target.Key + ": no read point");
-                foreach (char family in new[] { 'A', 'B', 'C' })
+                foreach (char family in new[] { 'A', 'B', 'C', 'D' })
                 {
                     if (target.HasFamily(family) && found.IndexOf(family) < 0)
                         failures.Add(target.Key + ": audited family " + family + " not found");
