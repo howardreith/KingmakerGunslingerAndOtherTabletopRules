@@ -26,6 +26,10 @@ namespace KingmakerGunslinger.DomainTests
         /// pyrotechnics blinded state.
         /// </summary>
         internal const int AppendedLedgerIdentities = 24;
+        // The Favored Class and Mostly Human blocks (0.0.140) follow the Phase 1 appends.
+        internal static readonly int LaterLedgerIdentities =
+            KingmakerGunslinger.FavoredClass.FavoredClassIdentityCatalog.IdentityCount +
+            KingmakerGunslinger.ElementalRaces.ElementalMostlyHumanPolicy.IdentityCount;
 
         private static readonly string[] AppendedSymbols = {
             "KMG.Summoning.Special.Grapple.MultiHold", "KMG.Summoning.Special.Grapple.MultiHeld",
@@ -360,9 +364,10 @@ namespace KingmakerGunslinger.DomainTests
                 .Select(value => (string)value["symbol"]).ToArray();
             Assertions.Equal(AppendedLedgerIdentities, AppendedSymbols.Length,
                 "The correction's identity list is complete.");
-            Assertions.True(entries.Skip(entries.Length - AppendedLedgerIdentities)
-                .SequenceEqual(AppendedSymbols),
-                "The ledger is append-only: the correction identities sit at its tail in order.");
+            Assertions.True(entries.Skip(entries.Length - ExpandedSummoningCorrectionTests.LaterLedgerIdentities -
+                    AppendedLedgerIdentities)
+                .Take(AppendedLedgerIdentities).SequenceEqual(AppendedSymbols),
+                "The ledger is append-only: the correction identities end the Phase 1 append in order.");
             var identities = ExpandedSummoningIdentityCatalog.Build();
             foreach (string symbol in AppendedSymbols)
                 Assertions.Equal(1, identities.Count(value => value.Symbol == symbol),
