@@ -14,8 +14,11 @@
   chooses; a precise warning explains a save that needs a missing Favored
   Class or Call of the Wild.
 - Fixes: a base Gunslinger completes 17th level (Gun Training); Dead Shot
-  threatens and confirms by the tabletop rule; True Grit Dodge at 0 grit; the
-  Pistol-Whip favored-class bonus stays on the deed's own attack roll.
+  threatens and confirms by the tabletop rule (a natural 1 on its confirmation
+  fails and a natural 20 succeeds); True Grit Dodge at 0 grit; the
+  Pistol-Whip favored-class bonus stays on the deed's own attack roll; a Bard
+  performance area whose widening cannot be undone is never forgotten until
+  it is verified native or ended.
 
 ## 0.0.138-better-vendors-progression
 
