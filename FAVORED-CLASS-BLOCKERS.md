@@ -32,41 +32,56 @@ The profiles were staged from the 2026-09-08 capture of this install's
 optional mods (`C:\Dev\KingmakerGunslingerLab\repo\KingmakerGunslinger\artifacts\teleportation\compatibility-references`),
 verified byte-identical first (CallOfTheWild 266 files, ZFavoredClass 24
 files, no difference; re-verified before each round). On the final candidate
-`5636d940b`:
+`12651613c`:
 
-- `gunslinger-only` / `observe-favored-class-host-state`: `20260925T2141418629762Z-observe-favored-class-host-state` PASS (transaction `compat-20260925T213940Z-2ad3bc526451`, restoration verified).
-- `gunslinger-call-of-the-wild` / `observe-favored-class-host-state`: `20260925T2144578093484Z-observe-favored-class-host-state` PASS (transaction `compat-20260925T214311Z-3b10efecc949`, restoration verified).
-- `gunslinger-call-of-the-wild-favored-class` / `observe-favored-class-host-state`: `20260925T2148287677920Z-observe-favored-class-host-state` PASS (transaction `compat-20260925T214643Z-ffa851fb8dd2`, restoration verified).
+- `gunslinger-only` / `observe-favored-class-host-state`: `20260926T0528022419214Z-observe-favored-class-host-state` PASS (transaction `compat-20260926T052602Z-a75f8c60d59d`, restoration verified).
+- `gunslinger-call-of-the-wild` / `observe-favored-class-host-state`: `20260926T0531183716191Z-observe-favored-class-host-state` PASS (transaction `compat-20260926T052931Z-3aacec891548`, restoration verified).
+- `gunslinger-call-of-the-wild-favored-class` / `observe-favored-class-host-state`: `20260926T0534505046553Z-observe-favored-class-host-state` PASS (transaction `compat-20260926T053303Z-0acfe3e6e607`, restoration verified).
 
-### B3 - Native screenshot evidence inflates the game's committed memory (environment; harness follow-up)
+### B3 - Native character-build lanes inflate the game's committed memory (open: environment risk for qualification batches)
 
-Screenshot-heavy guarded lanes drive the game's committed (private) memory
-far above its resident set. Sampled every 5 s during the final candidate's
-cycle: lanes without native screenshots peak at 2-5 GB private; the visual
-census at 45 GB, the four creator lanes at 52-65 GB (Ifrit 64.7 GB, system
-commit 83.8 GB, page file grown to a 93.9 GB limit) and the two native respec
-lanes at 45-46 GB, with a resident set of at most 14 GB. The native UI capture
-(`NativeIconScreenEvidence.Capture`) calls `ScreenCapture.CaptureScreenshot`
-and then re-reads the whole PNG into a new array every frame until the file
-is complete; Mono's non-compacting heap keeps that memory committed until the
-game exits (each guarded run is a fresh process, so nothing accumulates
-across runs). On a healthy machine the system-managed page file absorbs it
-(commit ceiling about 127 GB with 31.6 GB of RAM) and every run passes. On
-2026-09-25, before a machine reboot, about 66 GB was committed with no game
-running, so the Ifrit creator lane's demand exceeded the 127.6 GB ceiling
-three times (the game exited before committing a result, its private bytes at
-60 GB) and a Sylph run reported Out of memory. After the reboot (about 15 GB
-committed with nothing running) the same lanes passed on the final candidate.
+Only the guarded lanes that drive the native character-build screens (level-up
+and character creation) raise the game's committed (private) memory far above
+its resident set; every other lane peaks under 5 GB. Sampled every 5 s through
+both final cycles (`5ae4eafc7`, then the final candidate `12651613c`):
 
-Follow-up (outside the favored-class rows; shared harness code used by other
-lanes): check the completed file's size and PNG trailer before reading it, or
-read it once into a reused buffer, so a capture allocates once. Until then,
-qualification batches should start on a machine whose idle commit charge is
-low (check `\Memory\Committed Bytes` before a batch).
+| Lanes | Native screenshots | Peak private | Peak system commit |
+| --- | --- | --- | --- |
+| Visual census (47 native level-up visits, 4 creator visits) | none | 41.9 / 43.0 GB | 65.1 / 67.7 GB |
+| Four elemental creator lanes | 91-110 per run, about 30 KB each | 57-72 GB | 83-97 GB |
+| Two native respec lanes | none | 46-47 GB | 70-73 GB |
+| Every other lane, transaction and profile run | none | 2.3-4.9 GB | 25-30 GB |
 
-## Pre-existing KMG defects (outside the adopted rows; owner decisions)
+In the census the private bytes grow by about 0.75 GB per native visit; in a
+creator lane they grow in bursts (often about 3.5 GB within 10 s) that do not
+follow the screenshot times. The memory is released only when the game exits
+(each guarded run is a fresh process, so nothing accumulates across runs); the
+resident set stays at 6-15 GB and the page file absorbs the rest. The earlier
+attribution to the screenshot poll was wrong: the census and the respec lanes
+save no screenshot at all, and `e7748fff4` (the poll now reads a completed PNG
+once, which is kept) did not lower the peaks (the creator lanes peaked at
+52-65 GB before it and at 57-72 GB after it).
 
-### D1 - Base Gunslinger cannot complete level 17 (Gun Training dead end)
+The favored-class integration does not cause it. With the integration
+disabled by the integration-off settings profile (the game log reports
+`IntegrationDisabled` with 0 leaves published), the Ifrit creator lane on the
+final deployment peaked at 70.1 GB private and 96.5 GB system commit
+(`20260926T0536579357364Z-working-save-elemental-character-creation-regression`,
+PASS, 110 screenshots), against 69.2 and 72.0 GB with it enabled.
+
+Consequence: on this machine (31.6 GB of RAM, system-managed page file) the
+commit limit grows as needed (to 109 GB during the final cycle) and every run
+passes. On 2026-09-25, with about 66 GB already committed by other processes
+before a reboot, the Ifrit creator lane hit the 127.6 GB ceiling three times
+and a Sylph run reported Out of memory. Qualification batches therefore start
+only on a machine with a low idle commit charge (about 23 GB before these
+cycles). Follow-up, outside the favored-class rows: isolate the allocation the
+native character-build screens retain (for example by measuring a single
+screen open per fresh process, or unloading unused assets between visits).
+
+## Pre-existing KMG defects (outside the adopted rows)
+
+### D1 - Base Gunslinger cannot complete level 17 (fixed by the tabletop rule, owner decision)
 
 `GunslingerClassBlueprints` grants the obligatory `KMG_GunTraining_Selection`
 at levels 5, 9, 13 and 17, but the selection offers only the three official
@@ -78,10 +93,14 @@ false. Native evidence: `20260924T0054089932945Z-disposable-favored-class-grit`
 completion term satisfied, for the test and the control unit). Mysterious
 Stranger keeps exactly three picks and is not stuck; Pistolero and Musket
 Master replace the picks. The favored-class twenty-level proof therefore uses
-the Pistolero. Decision needed: allow a repeated type, publish a fourth
-choice, make the 17th pick non-obligatory, or remove the level-17 entry.
+the Pistolero. Owner decision (2026-09-25): fix by the tabletop rules. Fixed in
+`bb4dfd674`: the Gun Training selection is no longer obligatory; the native
+gate still requires a pick while an official type is untrained, and a base
+Gunslinger's 17th level (all three types trained) completes with the empty
+pick. Native PASS: the favored-class grit lane levels a base Gunslinger to 17
+(domain test `gun-training.empty-pick-completes`).
 
-### D2 - Dead Shot critical confirmation is unreachable
+### D2 - Dead Shot critical confirmation is unreachable (fixed by the tabletop rule, owner decision)
 
 `DeadShotRuntime` probes set `RuleAttackRoll.ImmuneToCriticalHit = true`, and
 the native `RuleAttackRoll.OnTrigger` computes `IsCriticalRoll = hit &&
@@ -92,8 +111,15 @@ reachable, `DeadShotRuntime.ConfigureDelivery` assigns (rather than adds)
 confirmation bonus. Evidence: source and the decompiled native rule (static;
 not reproduced natively). Consequence for G02/G08/G16: the firearm
 confirmation counter applies to every reachable firearm confirmation roll;
-Dead Shot has none today. Decision needed: whether Dead Shot should threaten
-and confirm, and with which confirmation bonuses.
+Dead Shot had none. Owner decision (2026-09-25): fix by the tabletop rules.
+Fixed in `bb4dfd674`: probes threaten from their natural roll against the
+weapon's critical edge, and the auto-hit delivery makes the shot's single
+confirmation with the native rules (attack bonus, every confirmation bonus
+plus -5 and +1 per extra threat up to 0, and the critical AC computed after
+the firearm AC frame so the touch-AC rule applies); immunity and the party
+critical setting block it as they block a native threat, and a failed
+confirmation is contained. Native PASS: Dead Shot confirmed, unconfirmed,
+immune-target and touch-AC checks (`dead-shot-critical-touch-ac`).
 
 ### D3 - Gunslinger Initiative timing (fixed in this mission)
 
@@ -120,6 +146,36 @@ later pick of that same level-up; the usable-power check uses the same
 prerequisite. Native PASS: the respec lane builds the Sorcerer through that
 exact level-1 sequence.
 
+### D5 - Stored level plans bypassed the same-level scope (fixed in this mission)
+
+A stored level plan (auto-level for companions, a pregen, an imported
+companion) is applied by the level-up controller's own constructor, one
+`AddAction(action, ignoreOrder: true)` per planned pick, outside the scoped
+replay of D4. In priority order the plan lists the host's reward before the
+bloodline, revelation or power chosen at that level, so a counter targeting
+that choice was rejected and silently dropped (the level committed without
+it). Found by the E15 research and reproduced natively. Fixed in `60c93b319`:
+a transpiler on `LevelUpController.ApplyLevelUpPlan` makes that one call
+inside a scope of its controller and plan (closed in a finally block), and
+the owned-target prerequisite also counts the plan's own picks. Native PASS:
+the auto-level lane applies a recorded Ifrit Sorcerer level (reward listed
+before its ray) whole through the constructor, while the same native
+`AddAction` calls without the scope reject exactly the reward; a host-only
+plan and Linzi's own stored plan are accepted identically either way.
+
+### D6 - Pistol-Whip ignores the firearm's enhancement bonus (owner decision)
+
+The tabletop Pistol-Whip adds the firearm's enhancement bonus to the attack
+and damage rolls. KMG's deed (`PistolWhipRuntime`) attacks with its surrogate
+weapon and copies the enhancement only into the damage weapon stats; the
+attack roll gains nothing. Native evidence: the favored-class Gunslinger
+mechanics lane records `enhancedPistolAttackDelta = 0` for a +1 pistol
+against a plain one. The favored-class counter (G05/G20) adds exactly its
+steps either way. This deed behavior predates the mission and lies outside
+the favored-class rows; it is recorded for the owner and not changed.
+Decision needed: apply the enhancement to the Pistol-Whip attack (and verify
+its damage) by the tabletop rule, or keep the current behavior.
+
 ## Suspected host defects (Favored Class 1.3.1; recorded, never patched)
 
 - H-1: the host's own Eidolon natural-armor reward likely grants +0 (not
@@ -141,4 +197,6 @@ exact level-1 sequence.
 | OD-7 Performance scope | Owner-local actual range, ring and displayed text agree; Storm Call and Mockery are excluded with recorded reasons; instantaneous, personal, masterpiece and inert entries are not targets. | Charter 8.7; target manifest O01; `disposable-favored-class-performance-range` |
 | OD-8 Icons | Every published choice has a deterministic appropriate existing donor icon; no published choice is blank. Original art is optional later polish. | Icon catalog; domain census; native visual census |
 | OD-9 Elemental re-qualification | Required test: the elemental creator and respec lanes were re-run. | Run table in the report |
-| OD-10 Persistence breadth | Required test: a fresh-process reload of one subject per state/mechanic family (partial and full investment; the selected firearm, performance, revelation and bloodline targets; spent grit with its raised maximum; Nimble; the Undine Monk; owner-local performance and aura areas; companion armor with replacement; revelation and bloodline scaling; Mostly Human identity and human access). The own persistence cases of G05, G06 (Dodge), G11, G17, G21, I01, I05, I07, O04, O05, O08, U02, S04 and S06 are still NOT RUN and are listed as a remaining gap in the report. | L01 families transaction in the report |
+| OD-10 Persistence breadth | Required test: a fresh-process reload of one subject per state/mechanic family (partial and full investment; the selected firearm, performance, revelation and bloodline targets; spent grit with its raised maximum; Nimble; the Undine Monk; owner-local performance and aura areas; companion armor with replacement; revelation and bloodline scaling; Mostly Human identity and human access), and the own persistence case of every remaining scheduled row (G05, G06 Dodge, G11, G17, G21, I01, I05, I07, O04, O05, O08, U02, S04, S06): all SAVE TESTED. | L01 families and rows transactions in the report |
+| OD-11 Host and dependency states | Owner-authorized: a real disabled host through a byte-exact Params.xml stage (H02), simulated host defects on cloned live observations (H02 unsupported and partial, H04, H05), and a missing-dependency fixture save read in the disabled-host profile (L06). | Host-state, host-defects and missing-dependency lanes in the report |
+| OD-12 Turn-based Gunslinger's Dodge window | The adaptation's text promises "+2 dodge bonus to AC for one round"; a round-duration buff ends at the next round's start, so in turn-based mode it covers every actor after the Gunslinger in that round, not one whose turn opens the next round. Native round semantics, consistent with the text; checked at every observation inside the round (each time step and the enemy's turn when it falls there) and gone at the next round's start. | Turn-modes lane |

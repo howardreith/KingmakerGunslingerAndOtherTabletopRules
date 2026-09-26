@@ -8,6 +8,14 @@
 - Exact-binary host contract for Favored Class 1.3.1 and Call of the Wild
   1.14.4c-2.1 (whole-file SHA-256 and MVID); any other binary leaves only this
   integration inactive.
+- Selected-power targets include every threshold-only revelation and
+  Elemental Resistance (charter 8.10); 32 appended identities.
+- A stored level plan (auto-level) keeps a reward whose same-level target it
+  chooses; a precise warning explains a save that needs a missing Favored
+  Class or Call of the Wild.
+- Fixes: a base Gunslinger completes 17th level (Gun Training); Dead Shot
+  threatens and confirms by the tabletop rule; True Grit Dodge at 0 grit; the
+  Pistol-Whip favored-class bonus stays on the deed's own attack roll.
 
 ## 0.0.138-better-vendors-progression
 
