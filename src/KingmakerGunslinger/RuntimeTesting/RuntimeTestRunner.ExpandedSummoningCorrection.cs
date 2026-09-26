@@ -2265,6 +2265,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         private string _expandedSummoningPersistenceLinkDetail = "not run";
         private bool _expandedSummoningPersistenceLinkValid;
         private bool _expandedSummoningPersistenceWasPaused;
+        private bool _expandedSummoningPersistenceHoldsTaken;
+        private int _expandedSummoningPersistenceHoldSettle;
+        /// <summary>Frames between the holds and the save, with the clock stopped.</summary>
+        private const int ExpandedSummoningPersistenceHoldSettleFrames = 8;
 
         private static UnitEntityData ExpandedSummoningPersistenceUnit(UnitEntityData[] units,
             string blueprintName)
@@ -2376,14 +2380,40 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ItemEntityWeapon live = SummonGrappleLinks.EstablishingWeapon(holder, victim);
                 UnitEntityData occupant = SummonGrappleLinks.OccupantOf(holder, expected);
                 bool mouthFree = live == null && occupant == null;
+                // Where the engine did carry the hold, the reload proves the
+                // whole rule: the maintain deals the establishing limb's own
+                // damage with no substitution, and a cat's rake is legal once
+                // the reloaded hold has its round.
+                string maintained = "not-applicable";
+                bool namedLimb = true;
+                bool rakeWhenDue = true;
+                if (engineHold)
+                {
+                    Buff heldState = SummonHoldComponent.HeldState(holder, victim, grab);
+                    UnityEngine.Random.InitState(FindNativeD20Seed(10));
+                    if (heldState != null) heldState.TickMechanics();
+                    int before = victim.Descriptor.Damage;
+                    UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                    maintained = SummonHoldComponent.MaintainLink(holder, victim, grab, null,
+                        holder.Descriptor.Buffs.GetBuff(grab.HoldBuff), heldState);
+                    victim.Descriptor.Damage = before;
+                    namedLimb = expected.Blueprint != null &&
+                        maintained.Contains(";limb=" + expected.Blueprint.name) &&
+                        !maintained.Contains(";substituted");
+                    rakeWhenDue = grab.RakeLimbCount <= 0 ||
+                        (maintained.Contains(";rake=") && !maintained.Contains("not-eligible"));
+                }
                 steps.Add(row[0] + "->" + row[1] + ":engineHold=" + engineHold + ",expected=" +
                     (expected.Blueprint == null ? "?" : expected.Blueprint.name) + ",stored=" +
                     (stored == null || stored.Blueprint == null ? "none" : stored.Blueprint.name) +
                     ",identitySurvived=" + identitySurvived + ",liveLink=" + (live == null ?
-                        "none" : "present") + ",mouthFree=" + mouthFree + ",engine=" +
+                        "none" : "present") + ",mouthFree=" + (engineHold ? "held" :
+                        mouthFree.ToString()) + ",maintain=" + maintained + ",namedLimb=" +
+                    namedLimb + ",rakeWhenDue=" + rakeWhenDue + ",engine=" +
                     DescribeExpandedSummoningHoldState(holder, victim, grab) + ",store=" +
                     SummonGrappleLinks.Describe(holder));
-                ok = ok && identitySurvived && mouthFree;
+                ok = ok && identitySurvived && namedLimb && rakeWhenDue &&
+                    (engineHold || mouthFree);
             }
             UnitEntityData flytrap = ExpandedSummoningPersistenceUnit(units,
                 "KMG_Summoning_Unit_GiantFlytrap");
@@ -2402,10 +2432,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // holds themselves.
                 bool ownershipKept =
                     ReferenceEquals(SummonGrappleLinks.StoredLimbOf(flytrap, horse), mouthA) &&
-                    ReferenceEquals(SummonGrappleLinks.StoredLimbOf(flytrap, owlbear), mouthB) &&
-                    SummonGrappleLinks.OccupantOf(flytrap, mouthA) == null &&
-                    SummonGrappleLinks.OccupantOf(flytrap, mouthB) == null;
-                steps.Add("mouthOwnership:storedPerMouth=" + ownershipKept);
+                    ReferenceEquals(SummonGrappleLinks.StoredLimbOf(flytrap, owlbear), mouthB);
+                steps.Add("mouthOwnership:storedPerMouth=" + ownershipKept + ";liveA=" +
+                    (SummonGrappleLinks.OccupantOf(flytrap, mouthA) == null ? "free" : "shut") +
+                    ";liveB=" + (SummonGrappleLinks.OccupantOf(flytrap, mouthB) == null ?
+                        "free" : "shut"));
                 ok = ok && ownershipKept;
             }
             valid = ok;
