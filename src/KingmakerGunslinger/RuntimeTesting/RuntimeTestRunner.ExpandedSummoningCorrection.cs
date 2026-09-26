@@ -2264,6 +2264,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private string _expandedSummoningPersistenceLinkDetail = "not run";
         private bool _expandedSummoningPersistenceLinkValid;
+        private bool _expandedSummoningPersistenceWasPaused;
 
         private static UnitEntityData ExpandedSummoningPersistenceUnit(UnitEntityData[] units,
             string blueprintName)
@@ -2611,11 +2612,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ok = ok && engulfedNow && engulfedShut && engulfTickInRange;
 
                 // Every mouth occupied: none reaches a fourth foe.
+                var occupied = new List<string>();
                 for (int index = 0; index < 3; index++)
                 {
                     UnityEngine.Random.InitState(FindNativeD20Seed(20));
-                    grab.TryGrab(wolves[index], bites[index + 1], true);
+                    bool took = grab.TryGrab(wolves[index], bites[index + 1], true);
+                    occupied.Add("bite" + (index + 1) + "=" + took);
+                    ok = ok && took;
                 }
+                steps.Add("occupyAll:" + string.Join(",", occupied.ToArray()));
                 UnitEntityData spare = CastExpandedSummoningOwnTier(fixture, "wolf");
                 wolves.Add(spare);
                 PlaceExpandedSummoningUnit(spare, ExpandedSummoningOpenPoint(centre, 2.5f, directions, out chosen));
@@ -2746,16 +2751,31 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static bool ExpandedSummoningMouthStrikes(UnitEntityData owner,
             UnitEntityData target, ItemEntityWeapon weapon, out string detail)
         {
-            UnityEngine.Random.InitState(FindNativeD20Seed(20));
+            // A hit with a grab limb grabs - that is the rule under test - so a
+            // probe that only asks whether the mouth reaches makes its target
+            // immune to combat maneuvers for the one attack. Without that the
+            // probe takes a hold of its own and moves the occupancy it is
+            // measuring.
             int before = target.Descriptor.Damage;
-            var attack = new RuleAttackWithWeapon(owner, target, weapon, 0);
-            Rulebook.Trigger(attack);
-            RuleAttackRoll roll = attack.AttackRoll;
+            target.Descriptor.State.AddCondition(UnitCondition.ImmuneToCombatManeuvers, null);
+            RuleAttackRoll roll;
+            try
+            {
+                UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                var attack = new RuleAttackWithWeapon(owner, target, weapon, 0);
+                Rulebook.Trigger(attack);
+                roll = attack.AttackRoll;
+            }
+            finally
+            {
+                target.Descriptor.State.RemoveConditionAll(
+                    UnitCondition.ImmuneToCombatManeuvers);
+                target.Descriptor.Damage = before;
+            }
             bool struck = roll != null && roll.IsHit && !roll.AutoMiss;
             detail = (weapon.Blueprint == null ? "?" : weapon.Blueprint.name) + ":hit=" +
                 (roll != null && roll.IsHit) + ",autoMiss=" + (roll != null && roll.AutoMiss) +
                 ",logged=" + (roll != null && !roll.SuspendCombatLog);
-            target.Descriptor.Damage = before;
             return struck;
         }
 
