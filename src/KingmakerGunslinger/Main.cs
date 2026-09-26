@@ -156,6 +156,7 @@ namespace KingmakerGunslinger
                 Spells.Teleportation.TeleportationFinalLiveReconciler.AttachFirstUpdate(context);
                 EasternWeaponLatePublicationCoordinator.AttachFirstUpdate(
                     context);
+                FavoredClass.FavoredClassIntegrationCoordinator.AttachFirstUpdate(context);
                 ExpandedSummoningAlignmentModeRuntime.Attach(context);
                 SummonGrappleAreaSafeguard.Attach();
                 RuntimeTestRunner.TryAttach(context);

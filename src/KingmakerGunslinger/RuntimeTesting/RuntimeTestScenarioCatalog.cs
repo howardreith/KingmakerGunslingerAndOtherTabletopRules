@@ -42,6 +42,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal const string DisposableTeleportationCoexistenceGamepad = "disposable-teleportation-coexistence-gamepad";
         internal const string DisposableTeleportationPersistence = "disposable-teleportation-persistence";
         internal const string DisposableTeleportationFamiliarity = "disposable-teleportation-familiarity";
+        internal const string WorkingSaveFavoredClassVisualCensus = "working-save-favored-class-visual-census";
+        internal const string WorkingSaveFavoredClassLifecycle = "working-save-favored-class-lifecycle";
         internal const string ObserveTeleportationWorldMap = "observe-teleportation-world-map";
         internal const string ObserveTeleportationNativeContracts = "observe-teleportation-native-contracts";
         internal const string ObserveKmgCompatibilityAssetAttribution =
@@ -355,6 +357,44 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-firearm-higher-feat-roots";
         internal const string DisposableRapidReloadProficiencyGate =
             "disposable-rapid-reload-proficiency-gate";
+        internal const string DisposableFavoredClassRespec =
+            "disposable-favored-class-respec";
+        internal const string DisposableFavoredClassMulticlass =
+            "disposable-favored-class-multiclass";
+        internal const string ObserveFavoredClassPerformanceVisuals =
+            "observe-favored-class-performance-visuals";
+        internal const string DisposableFavoredClassPerformanceRange =
+            "disposable-favored-class-performance-range";
+        internal const string DisposableFavoredClassOracleRevelations =
+            "disposable-favored-class-oracle-revelations";
+        internal const string DisposableFavoredClassElementalAdvanced =
+            "disposable-favored-class-elemental-advanced";
+        internal const string DisposableFavoredClassMostlyHuman =
+            "disposable-favored-class-mostly-human";
+        internal const string DisposableFavoredClassElementalCore =
+            "disposable-favored-class-elemental-core";
+        internal const string ObserveFavoredClassHostState =
+            "observe-favored-class-host-state";
+        internal const string DisposableFavoredClassInitiativeTiming =
+            "disposable-favored-class-initiative-timing";
+        internal const string DisposableFavoredClassTurnModes =
+            "disposable-favored-class-turn-modes";
+        internal const string DisposableFavoredClassBombs =
+            "disposable-favored-class-bombs";
+        internal const string DisposableFavoredClassAutoLevel =
+            "disposable-favored-class-auto-level";
+        internal const string ObserveFavoredClassHostDefects =
+            "observe-favored-class-host-defects";
+        internal const string ObserveFavoredClassMissingDependency =
+            "observe-favored-class-missing-dependency";
+        internal const string DisposableFavoredClassGunslingerMechanics =
+            "disposable-favored-class-gunslinger-mechanics";
+        internal const string DisposableFavoredClassGunslingerMenus =
+            "disposable-favored-class-gunslinger-menus";
+        internal const string DisposableFavoredClassGrit =
+            "disposable-favored-class-grit";
+        internal const string ObserveFavoredClassContract =
+            "observe-favored-class-contract";
         internal const string DisposableEmptyFirearmCommand =
             "disposable-empty-firearm-command";
         internal const string ObserveVendorTableContracts =
@@ -725,6 +765,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableFirearmDependentFeats,
                 DisposableFirearmHigherFeatRoots,
                 DisposableRapidReloadProficiencyGate,
+                DisposableFavoredClassRespec,
+                DisposableFavoredClassMulticlass,
+                ObserveFavoredClassPerformanceVisuals,
+                DisposableFavoredClassPerformanceRange,
+                DisposableFavoredClassOracleRevelations,
+                DisposableFavoredClassElementalAdvanced,
+                DisposableFavoredClassMostlyHuman,
+                DisposableFavoredClassElementalCore,
+                ObserveFavoredClassHostState,
+                DisposableFavoredClassInitiativeTiming,
+                DisposableFavoredClassTurnModes,
+                DisposableFavoredClassBombs,
+                DisposableFavoredClassAutoLevel,
+                ObserveFavoredClassHostDefects,
+                ObserveFavoredClassMissingDependency,
+                DisposableFavoredClassGunslingerMechanics,
+                DisposableFavoredClassGunslingerMenus,
+                DisposableFavoredClassGrit,
+                ObserveFavoredClassContract,
                 DisposableEmptyFirearmCommand,
                 ObserveVendorTableContracts,
                 ObserveCapitalCordVendor,
@@ -747,6 +806,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableTeleportationCoexistenceGamepad,
                 DisposableTeleportationPersistence,
                 DisposableTeleportationFamiliarity,
+                WorkingSaveFavoredClassVisualCensus,
+                WorkingSaveFavoredClassLifecycle,
                 DisposableTeleportationResources,
                 DisposableTeleportationContext,
                 DisposableTeleportationCasting,

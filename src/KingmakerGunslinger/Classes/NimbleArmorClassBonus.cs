@@ -30,12 +30,17 @@ namespace KingmakerGunslinger.Classes
         {
             Remove();
             if (Owner == null || Owner.Stats == null || Owner.Body == null) return;
-            bool eligible = !Owner.Body.Armor.HasArmor ||
-                Owner.Body.Armor.Armor.Blueprint.Type.ProficiencyGroup ==
-                    ArmorProficiencyGroup.Light;
-            if (eligible)
+            if (IsEligibleArmor(Owner))
                 _modifier = Owner.Stats.AC.AddModifier(1, Fact,
                     GetType().FullName, ModifierDescriptor.Dodge);
+        }
+
+        /// <summary>Nimble's armor condition: light or no armor.</summary>
+        internal static bool IsEligibleArmor(UnitDescriptor owner)
+        {
+            return !owner.Body.Armor.HasArmor ||
+                owner.Body.Armor.Armor.Blueprint.Type.ProficiencyGroup ==
+                    ArmorProficiencyGroup.Light;
         }
         private void Remove()
         {

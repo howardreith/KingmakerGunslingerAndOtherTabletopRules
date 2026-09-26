@@ -81,6 +81,9 @@ namespace KingmakerGunslinger.Diagnostics
             DeadeyeRuntime.BeforeAttackRoll(
                 __instance as RuleAttackRoll);
             FirearmArmorClassRuntime.BeforeAttackRoll(__instance);
+            // After the AC frame, so the confirmation sees touch AC.
+            DeadShotRuntime.ConfirmDelivery(
+                __instance as RuleAttackRoll);
             CombatTraceRuntime.Before(CombatTraceStage.AttackRoll, __instance);
         }
 

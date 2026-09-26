@@ -302,6 +302,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationPersistence ||
                 request.Scenario == FcbPersistenceIdentity.Scenario ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity ||
+                request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveFavoredClassVisualCensus ||
+                request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveFavoredClassLifecycle ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationResources ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationCasting ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationInteraction ||

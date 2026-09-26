@@ -37,7 +37,10 @@ namespace KingmakerGunslinger.DomainTests
                     ExpandedSummoningSprint5Tests.AppendedLedgerIdentities +
                     ExpandedSummoningSprint6Tests.AppendedLedgerIdentities +
                     ExpandedSummoningSprint7Tests.AppendedLedgerIdentities +
-                    (ExpandedSummoningSprint8Tests.AppendedLedgerIdentities + ExpandedSummoningCorrectionTests.AppendedLedgerIdentities), entries.Length,
+                    (ExpandedSummoningSprint8Tests.AppendedLedgerIdentities + ExpandedSummoningCorrectionTests.AppendedLedgerIdentities) +
+                    KingmakerGunslinger.FavoredClass.FavoredClassIdentityCatalog.IdentityCount +
+                    KingmakerGunslinger.ElementalRaces.ElementalMostlyHumanPolicy.IdentityCount,
+                entries.Length,
                 "Current blueprint ledger count changed.");
             Assertions.Equal(1911 + KingmakerGunslinger.Acquisition
                     .ProgressionWeaponCatalog.NewBlueprintCount +
@@ -46,7 +49,9 @@ namespace KingmakerGunslinger.DomainTests
                     ExpandedSummoningSprint5Tests.AppendedLedgerIdentities +
                     ExpandedSummoningSprint6Tests.AppendedLedgerIdentities +
                     ExpandedSummoningSprint7Tests.AppendedLedgerIdentities +
-                    (ExpandedSummoningSprint8Tests.AppendedLedgerIdentities + ExpandedSummoningCorrectionTests.AppendedLedgerIdentities),
+                    (ExpandedSummoningSprint8Tests.AppendedLedgerIdentities + ExpandedSummoningCorrectionTests.AppendedLedgerIdentities) +
+                    KingmakerGunslinger.FavoredClass.FavoredClassIdentityCatalog.IdentityCount +
+                    KingmakerGunslinger.ElementalRaces.ElementalMostlyHumanPolicy.IdentityCount,
                 entries.Count(value => string.Equals(
                 (string)value["status"], "active", StringComparison.Ordinal)),
                 "Current active identity count changed.");

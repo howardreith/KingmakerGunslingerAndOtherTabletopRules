@@ -148,7 +148,9 @@ namespace KingmakerGunslinger.Scatter
                 firearm.Definition.MisfireValue, firearm.EffectiveCondition,
                 Classes.FirearmTrainingRuntime.Resolve(caster,
                     firearm.Definition.Kind).ReducedBrokenMisfire,
-                firearm.Weapon, before.LoadedAmmunition);
+                firearm.Weapon, before.LoadedAmmunition,
+                global::KingmakerGunslinger.FavoredClass.Mechanics.FavoredClassEarnedSteps
+                    .MisfireReduction(caster, firearm.Definition.Kind));
             var attacks = new RuleAttackWithWeapon[plan.TargetCount];
             var observations = new ScatterAttackRollObservation[plan.TargetCount];
             for (int index = 0; index < plan.TargetCount; index++)
@@ -174,8 +176,10 @@ namespace KingmakerGunslinger.Scatter
                 attacks[index] = attack;
             }
 
+            // The all-roll misfire aggregate uses the same effective
+            // threshold that decided each roll, not the base misfire value.
             ScatterAttackVolleyDecision volley = Volleys.Evaluate(
-                firearm.Definition, plan, observations);
+                firearm.Definition, plan, observations, threshold);
             FirearmMisfireConditionDecision condition = null;
             if (volley.AllRollsMisfire)
             {

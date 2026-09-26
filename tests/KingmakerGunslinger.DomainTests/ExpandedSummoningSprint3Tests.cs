@@ -272,7 +272,8 @@ namespace KingmakerGunslinger.DomainTests
                 "Sprint 3 must append exactly its own identities to the ledger.");
             // Append-only: the Sprint 3 block sits directly before the Sprint 4
             // block at the ledger's tail.
-            Assertions.True(entries.Skip(entries.Length - AppendedLedgerIdentities -
+            Assertions.True(entries.Skip(entries.Length - ExpandedSummoningCorrectionTests.LaterLedgerIdentities -
+                    AppendedLedgerIdentities -
                     ExpandedSummoningSprint4Tests.AppendedLedgerIdentities -
                     ExpandedSummoningSprint5Tests.AppendedLedgerIdentities -
                     ExpandedSummoningSprint6Tests.AppendedLedgerIdentities -

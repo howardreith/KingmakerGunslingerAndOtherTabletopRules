@@ -145,13 +145,15 @@ namespace KingmakerGunslinger.DomainTests
                 "Sprint 6 must append exactly its own identities to the ledger.");
             // Append-only: the Sprint 6 block sits directly before the Sprint 7
             // block at the ledger's tail, and directly after the Sprint 5 block.
-            Assertions.True(entries.Skip(entries.Length - AppendedLedgerIdentities -
+            Assertions.True(entries.Skip(entries.Length - ExpandedSummoningCorrectionTests.LaterLedgerIdentities -
+                    AppendedLedgerIdentities -
                     ExpandedSummoningSprint7Tests.AppendedLedgerIdentities -
                     (ExpandedSummoningSprint8Tests.AppendedLedgerIdentities + ExpandedSummoningCorrectionTests.AppendedLedgerIdentities))
                 .Take(AppendedLedgerIdentities)
                 .All(value => appended.Contains(value)),
                 "The ledger is append-only: Sprint 6 identities sit directly before Sprint 7's.");
-            Assertions.True(entries.Skip(entries.Length - AppendedLedgerIdentities -
+            Assertions.True(entries.Skip(entries.Length - ExpandedSummoningCorrectionTests.LaterLedgerIdentities -
+                    AppendedLedgerIdentities -
                     ExpandedSummoningSprint7Tests.AppendedLedgerIdentities -
                     (ExpandedSummoningSprint8Tests.AppendedLedgerIdentities + ExpandedSummoningCorrectionTests.AppendedLedgerIdentities) -
                     ExpandedSummoningSprint5Tests.AppendedLedgerIdentities)

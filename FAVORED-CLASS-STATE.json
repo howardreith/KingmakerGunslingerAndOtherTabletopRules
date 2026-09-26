@@ -1,0 +1,386 @@
+{
+  "schemaVersion": 1,
+  "mission": "gunslinger-favored-class-integration",
+  "charter": {
+    "path": "C:\\Dev\\KingmakerGunslingerLab\\Gunslinger_Favored_Class_Integration_Charter.md",
+    "sha256": "35e5ed5776839e8b1f4007f2d413079e26dac51ba3ab0f77ce4174be39ec7959"
+  },
+  "branch": "claude/favored-class-integration",
+  "worktree": "C:\\Dev\\KingmakerGunslingerLab\\worktrees\\favored-class-integration",
+  "baselineCommit": "996105ed9e72259a220be56e2a74e0cc18e5ef47",
+  "overallStatus": "COMPLETE LOCALLY - AWAITING OWNER REVIEW",
+  "currentPhase": "fourth review and its follow-up: all three findings fixed and requalified (focused lanes and the complete final gate on one exact DLL); owner review pending",
+  "phases": {
+    "phase-0": {
+      "status": "COMPLETE",
+      "gate": "every row has a capability disposition; exact binary identities recorded; load-order and advanced-target discovery supported by source/IL evidence"
+    },
+    "phase-1": {
+      "status": "NATIVE TESTED (CotW-only profiles BLOCKED, B2)",
+      "gate": "H01-H10, basic E/M/L vertical slice for Human G07, actual artifact identity",
+      "evidence": {
+        "candidateCommit": "f2db844c212b313618a950a939e891d0b41d27b9",
+        "dllSha256": "5a278b754b24f75bddce3d5258f4e88b6d88dd3781874c6f14134c72c985f9b0",
+        "dllMvid": "04b7fb78-5fd9-4080-ae7c-36ae87b727fe",
+        "packageSha256": "f3dac054aa99d6a1d990958e78d1443ae4948eef8bfe6ea09777d281061064b4",
+        "nativeRuns": {
+          "observe-favored-class-contract": "20260924T0348360182600Z PASS",
+          "disposable-favored-class-grit": "20260924T0351081263683Z PASS",
+          "observe-favored-class-host-state (full install)": "20260924T0139052668193Z PASS (cf8a66d21)",
+          "observe-favored-class-host-state (gunslinger-only, H01)": "20260924T0140349022134Z PASS (cf8a66d21)",
+          "disposable-word-of-recall-favored-class-persistence (L01)": "20260924T0352059750938Z + 20260924T0353099892035Z PASS"
+        },
+        "remaining": [
+          "CotW-only and CotW+FCB compatibility profiles (B2: reference root missing)",
+          "H02/H04 negative host states natively (domain tested)"
+        ],
+        "finalCandidateRuns": {
+          "contract": "20260924T0603184328859Z PASS",
+          "hostState": "20260924T0604015343603Z PASS",
+          "grit": "20260924T0604457833407Z PASS"
+        }
+      }
+    },
+    "phase-2": {
+      "status": "NATIVE TESTED; Gunslinger counters SAVE TESTED (L01)",
+      "gate": "every available first-party Gunslinger target: positive, negative, fraction/cap, native event, preview, persistence",
+      "evidence": {
+        "menus": "20260924T0605443253994Z PASS",
+        "mechanics": "20260924T0606461797306Z PASS",
+        "initiativeTiming": "20260924T0607291357025Z PASS",
+        "thirdPartyMenus": "20260924T0538189215967Z PASS (9b3db78bf, profile ON)",
+        "persistence": "L01 PASS (f2db844c2)"
+      }
+    },
+    "phase-3": {
+      "status": "NATIVE TESTED",
+      "gate": "no broad leakage; usable target menus; two-owner and negative-target runtime controls",
+      "evidence": {
+        "elementalCore": "20260924T0608135881312Z PASS",
+        "advanced (O06-O08, I08/S06)": "20260924T0609525254026Z PASS",
+        "performanceRange (O01)": "20260924T0602359332310Z PASS"
+      }
+    },
+    "phase-4": {
+      "status": "NATIVE TESTED (PARTIAL: representative values per manifest)",
+      "gate": "each selected-power row has qualified targets when provider exists; complete manifest; neighbors unchanged",
+      "evidence": {
+        "oracle (I06/S04)": "20260924T0601519001416Z PASS",
+        "bloodline (I08/S06)": "20260924T0609525254026Z PASS",
+        "manifest": "docs/FAVORED-CLASS-TARGET-MANIFEST.md"
+      }
+    },
+    "phase-5": {
+      "status": "NATIVE TESTED",
+      "gate": "human access neither missing nor overbroad; prerequisites survive; no multiplied rewards; real Mostly Human",
+      "evidence": {
+        "mostlyHuman": "20260924T0609003356634Z PASS"
+      }
+    },
+    "phase-6": {
+      "status": "NATIVE TESTED",
+      "gate": "third-party profile toggles across restarts without corruption; G19/G22 unpublished",
+      "evidence": {
+        "profiles (07c21f29b)": "third-party-on 20260924T0455537582112Z, mostly-human-off 20260924T0456353591331Z, integration-off 20260924T0457176732605Z, invalid-file 20260924T0458003051455Z; settings file restored absent after each",
+        "thirdPartyMenus": "20260924T0538189215967Z PASS (9b3db78bf)"
+      }
+    },
+    "phase-7": {
+      "status": "PARTIAL - NOT RELEASE QUALIFIED",
+      "gate": "all intended available I/A/O targets and infrastructure qualified on the exact final artifact",
+      "remaining": [
+        "scenario families NOT RUN: E11 E16 L02 L03 (and L06 native); E09 out of scope",
+        "owner decisions OD-1..OD-10, D1, D2",
+        "original art for 127 visible choices (OD-8)",
+        "CotW-only compatibility profiles (B2)"
+      ]
+    }
+  },
+  "installedIdentities": {
+    "game": {
+      "assembly": "Assembly-CSharp.dll",
+      "version": "2.1.7b",
+      "sha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb",
+      "mvid": "07fa1e4d-8618-41b3-9b8d-faa17d3b26f7"
+    },
+    "favoredClass": {
+      "ummId": "ZFavoredClass",
+      "version": "1.3.1",
+      "sha256": "dcd3adf98d1a04c30d772381e7c56ce4beff35a98bcea165aff206a2f0aac26c",
+      "mvid": "3efd38e7-8682-4b4d-8d53-e368a3664919"
+    },
+    "callOfTheWild": {
+      "ummId": "CallOfTheWild",
+      "version": "1.14.4c-2.1",
+      "sha256": "4ebf8e1ed3e66ffed72ea33ea325595629423dacd5bffa23e3c9109144b26915",
+      "mvid": "8caab254-aacf-4811-8093-44b9184e6e53"
+    },
+    "racesUnleashed": {
+      "ummId": "RacesUnleashed",
+      "version": "1.0.11",
+      "sha256": "6d18168cb90ffe60931addc8ee11e42b3ef647ef0e6d4b7ce8980d44659f4cb0",
+      "mvid": "e9b9acb5-9b3f-41ad-bbd7-74494d5d7680"
+    },
+    "kmgInstalledPreMission": {
+      "version": "0.0.136",
+      "sha256": "c6cccdac914ed59fa4d85d020108588d7d12cfb4ac38cf5a162772bacc9b465c",
+      "mvid": "7dce994f-ae50-443b-b893-2b3afaf11574"
+    }
+  },
+  "hostFacts": {
+    "gunslingerHostProgression": {
+      "name": "FavoredClassKMG_Gunslinger_ClassProgression",
+      "guid": "cbe4e1941a5f0fa8229919016a6b283b",
+      "evidence": "native observe-favored-class-contract 20260924T0102047921088Z"
+    },
+    "gunslingerHostBonusSelection": {
+      "name": "FavoredClassKMG_Gunslinger_ClassFeatureSelecion",
+      "guid": "5ffbec509d160a812695bef00c968c9b",
+      "evidence": "native observe-favored-class-contract 20260924T0102047921088Z"
+    },
+    "investmentModel": "N = fullRank + partialRank; next pick is full iff (N+1) % d == 0 (CotW PrerequisiteFeatureFullRank.Check); benefit floor(N/d)",
+    "hostPartialCapacity": "partial.Ranks = full.Ranks * (d-1) (ZFavoredClass Core.addFavoredClassBonus)",
+    "raceCheck": "ZFavoredClass.NewMechanics.PrerequisiteRace.Check: race == unit.Progression.Race; Group=Any",
+    "customJsonParseOutsideTry": true
+  },
+  "candidates": [
+    {
+      "commit": "f2db844c212b313618a950a939e891d0b41d27b9",
+      "packageSha256": "f3dac054aa99d6a1d990958e78d1443ae4948eef8bfe6ea09777d281061064b4",
+      "dllSha256": "5a278b754b24f75bddce3d5258f4e88b6d88dd3781874c6f14134c72c985f9b0",
+      "dllMvid": "04b7fb78-5fd9-4080-ae7c-36ae87b727fe",
+      "deployment": "runtime-evidence\\deployments\\20260924T0347379474215Z",
+      "note": "intermediate candidate; not the final artifact"
+    },
+    {
+      "commit": "ef250f877cda322f75b499b0dec8fbe155e14ce2",
+      "packageSha256": "5947ea172b1a2547e8575007789f242d728818abb35413445a249444195600ea",
+      "dllSha256": "fe451f35dff61c26bb96fd9ff9d8c7eb23bffe177788899e74a57662e10de8bf",
+      "dllMvid": "2c9d8c5f-c424-4179-91cd-72ca85438c54",
+      "deployment": "runtime-evidence\\deployments\\20260924T0601504282380Z",
+      "note": "final local candidate (owner review pending)"
+    },
+    {
+      "commit": "aa298650ecbc7003ce4c4d0ff992984793362462",
+      "packageSha256": "9abc94549073461e966a9c6cc0a8e4093e337666eb4cf586269dbe5e6a2fc526",
+      "dllSha256": "5edb5e424df14b58cfc460782f8b3d7c8f181950a0784b04cc21d77717a064cb",
+      "dllMvid": "ecc3e660-1295-4132-8019-c01b703561d2",
+      "deployment": "runtime-evidence\\deployments\\20260925T0441598369963Z",
+      "note": "final candidate after the PR #24 review"
+    },
+    {
+      "commit": "f7b4ae4f535b38f0e13ac498ee2334f84ef0f427",
+      "packageSha256": "1c4127fcaa0132fabbfe39ce236aaf4f6f3d6b7421f800f02be9305a5d652b12",
+      "dllSha256": "faa7ecad620fa504e68fb29a07463e59dfe60b0f12caa245ef3ead141c9680a4",
+      "dllMvid": "60acfa62-36ed-4722-9bb3-af928f5d8758",
+      "deployment": "runtime-evidence\\deployments\\20260925T1323002022844Z",
+      "note": "final candidate after the second PR #24 review"
+    },
+    {
+      "commit": "4de114511ccba7f2bbd908d13d85984883b3d11e",
+      "packageSha256": "7f01d962fc3970facee5db69518a98dbc62b50e76b00ac353c6e7c5b64cbc687",
+      "dllSha256": "4effec58ab8717857086e13d35b6ebb8f7d39744c71505967ce18755424f98b0",
+      "dllMvid": "02a4d150-8419-4645-92f1-3c407f7585ee",
+      "deployment": "runtime-evidence\\deployments\\20260925T1532361168725Z",
+      "note": "intermediate candidate after the third PR #24 review; its cycle was cut short by the machine's exhausted commit charge (B3) and a reboot, then superseded"
+    },
+    {
+      "commit": "51f56820e90ad126dd5127c51da9d099c8bb073a",
+      "packageSha256": "5c0ccabfadbbdff5ebe50054a4164f1b684f54a1e5b2f3bd4e255afc73afeacb",
+      "dllSha256": "2eb28832841e433d97095ac5c155b20efc1e91f02dff72171e129380469b0b0b",
+      "dllMvid": "229dff67-8bdf-4b41-9c44-e76bbd251da5",
+      "deployment": "runtime-evidence\\deployments\\20260925T2029203755841Z",
+      "note": "intermediate candidate; the new toggle-rollback lane step held two wrong expectations (fixed in 5636d940b)"
+    },
+    {
+      "commit": "5636d940b52c26998f2c5d6e36231956e28dff04",
+      "packageSha256": "e7828df692d9ccb259cc14b6a2a7fda558de7a7ea99dd6c65740ebe3556d1e6c",
+      "dllSha256": "197ba4e5e88f2a9a68b818f90018860508ea6964eaa5a91f13801f24816ac25e",
+      "dllMvid": "76aef19e-962c-427d-b10e-864274b981b0",
+      "deployment": "runtime-evidence\\deployments\\20260925T2042107499390Z",
+      "note": "final candidate after the third PR #24 review (33 guarded runs PASS)"
+    },
+    {
+      "commit": "12651613c6bbf8533884e7f73cf1b5dd0a5eaf39",
+      "packageSha256": "95d57d55c31c829ae4f7175b01df310a2081100af4cc207d49b2e9d9d91d8ec1",
+      "dllSha256": "ee0a67e40ebf5a926ef7df4d84485d3702f3c52e0677ec91b51a00e83bbf9f8f",
+      "dllMvid": "62badef3-342b-409a-9733-20dc6a664578",
+      "deployment": "runtime-evidence\\deployments\\20260926T0424273426492Z",
+      "note": "final candidate of the completion round (40 guarded runs PASS)"
+    },
+    {
+      "commit": "4748a47b2b8f90fb544fde2fbddbbfc7e225102a",
+      "packageSha256": "cbec54d159ce7aec524852d738bd55ae5080df91c0ee42cd0b025c4ba1306237",
+      "dllSha256": "a35f338ccbd6fd92f152af17d98a92b5b58b37ddbedf2e2d4f13f15b66f00981",
+      "dllMvid": "bf422dd9-16e7-4027-9086-b01e1a71b9a5",
+      "deployment": "runtime-evidence\\deployments\\20260926T1114257470410Z",
+      "note": "intermediate candidate after the fourth PR #24 review (41 guarded runs PASS), superseded by the follow-up fix"
+    },
+    {
+      "commit": "1088abb3d66479fbc1cdc0f8ca37ace2a7ffb64b",
+      "packageSha256": "f080f0cb7733d0afcd07ba34843422b389f4b572decaf5ffe941cc0129e3ae4f",
+      "dllSha256": "1661762db344e272138286447b93310f2a0bc3b622a884581244e53508721ce9",
+      "dllMvid": "8f7261f6-9aaa-49fd-9486-3259a88eab0a",
+      "deployment": "runtime-evidence\\deployments\\20260926T1325512654050Z",
+      "note": "final candidate after the fourth review's follow-up (41 guarded runs PASS, after the focused lanes)"
+    }
+  ],
+  "blockers": {
+    "B1": "mitigated (shared-install protocol)",
+    "B2": "resolved (profiles PASS on the final candidate)",
+    "B3": "open (environment risk for qualification batches, outside the favored-class rows): the lanes that drive the native level-up and character-creation screens commit 42-72 GB private while every other lane stays under 5 GB; not the screenshots (the census and respec lanes save none) and not the favored-class integration (an integration-off Ifrit creator run peaked at 70.1 GB against 69.2 and 72.0 GB enabled); cause not isolated"
+  },
+  "preExistingDefects": {
+    "D1": "fixed by the tabletop rule on the owner's decision (bb4dfd674)",
+    "D2": "fixed by the tabletop rule on the owner's decision (bb4dfd674; the confirmation's natural 1 and 20 in 7054b3917)",
+    "D3": "fixed (732cddae3)",
+    "D4": "fixed (b1b93acad)",
+    "D5": "fixed (60c93b319): stored level plans keep a same-level target's reward",
+    "D6": "open (owner decision): Pistol-Whip ignores the firearm's enhancement bonus on its attack roll"
+  },
+  "finalCandidate": {
+    "commit": "1088abb3d66479fbc1cdc0f8ca37ace2a7ffb64b",
+    "packageSha256": "f080f0cb7733d0afcd07ba34843422b389f4b572decaf5ffe941cc0129e3ae4f",
+    "dllSha256": "1661762db344e272138286447b93310f2a0bc3b622a884581244e53508721ce9",
+    "dllMvid": "8f7261f6-9aaa-49fd-9486-3259a88eab0a"
+  },
+  "ownerDecisions": {
+    "status": "resolved by the charter or provider behavior; see FAVORED-CLASS-BLOCKERS.md"
+  },
+  "restoration": {
+    "verified": true,
+    "backup": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20260924T0027014050156Z",
+    "restoredVersion": "0.0.136",
+    "files": {
+      "Info.json": "f66de05d5c6282eece8218b6c4f31d49dfc8ef9efa27dfeceeda712034717e17",
+      "FeatureModules.json": "6e24b2788a0c8f063d6e561a27c93f9c5349f2fc21b5217689da8aefdbb385d0",
+      "KingmakerGunslinger.dll": "c6cccdac914ed59fa4d85d020108588d7d12cfb4ac38cf5a162772bacc9b465c"
+    },
+    "tree": {
+      "backupFiles": 238,
+      "liveFiles": 238,
+      "onlyInBackup": 0,
+      "onlyInLive": 0
+    },
+    "otherModSettings": {
+      "CallOfTheWild\\settings.json": "24cc3f80269992a53ebbfd1f5986e5aab056841d6b2f43d8e22e764cdb73f6e8",
+      "RacesUnleashed\\Settings.json": "270899c3f6c3d29bfe777fc2b55a0bb0404ae50786dbac8f1dccf77e8b9cabbf",
+      "ZFavoredClass\\settings.json": "bdceed77d2bf4a31dd9e4eeb64ef9d55a42ef59d23f46abcb1ddbcc6ef66754b"
+    },
+    "integrationSettingsFilePresent": false,
+    "lastVerifiedUtc": "2026-09-26T14:42:00Z"
+  },
+  "pullRequest": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/24",
+  "reviewFindings": {
+    "1-host-gate": [
+      "ae0f1dafd436b94ee5e63985f03223e82982f904"
+    ],
+    "2-thresholds": [
+      "f9a8e6cfbecd1c80d323e29a98c6b5ea61fe7600",
+      "27176f424f4d4f6e794669367a26a2d01e8cdff2"
+    ],
+    "3-pet-projection": [
+      "078978a4c8e53710ef36de084027f324554bb1ba",
+      "aa298650ecbc7003ce4c4d0ff992984793362462"
+    ],
+    "4-range-transaction": [
+      "da07c4e07bbc2ea47b63310f33131301e2637654"
+    ],
+    "5-exception-safe-scopes": [
+      "f4f5b9931b693e4429a3324a92d2ff960e73f627"
+    ],
+    "6-bootstrap-aggregate": [
+      "719085d518d15c0590e38ba8b122be516d70876b",
+      "7bb4a704085b143225a8067e39bd8f6b5263237b"
+    ]
+  },
+  "secondReviewFindings": {
+    "1-outcome-following-text": [
+      "7f9c781d86e465e9af8e2784a1db8f29454094d5"
+    ],
+    "2-inert-inactive-scopes": [
+      "f7b4ae4f535b38f0e13ac498ee2334f84ef0f427"
+    ]
+  },
+  "thirdReviewFindings": {
+    "1-whole-group-outcomes": [
+      "4de114511ccba7f2bbd908d13d85984883b3d11e"
+    ],
+    "2-verified-rollback": [
+      "4de114511ccba7f2bbd908d13d85984883b3d11e",
+      "a17c2efe7eb673195d2e7eb8f6994c99067e7015",
+      "51f56820e90ad126dd5127c51da9d099c8bb073a",
+      "5636d940b52c26998f2c5d6e36231956e28dff04"
+    ],
+    "3-no-remembered-outcome": [
+      "4de114511ccba7f2bbd908d13d85984883b3d11e"
+    ]
+  },
+  "completionRound": {
+    "ownerAuthorizations": [
+      "fix D1 and D2 by the tabletop rules",
+      "disabled host (H02)",
+      "simulated host defects (H04/H05)",
+      "missing-dependency save (L06)"
+    ],
+    "commits": [
+      "bb4dfd674f8cf956e289a7bf9b9b37c8283c3624",
+      "e7748fff4dd134fb5b36faf50e9d7668e72e9624",
+      "dbe42baa05e4ae5a4bd41853dc28cfe1f6bc3579",
+      "54d545e4b4cae841bd1d20164d6ad984b2c3dbad",
+      "e191d78e1ff074461dafb4d70b9cf5dc4e2ae7f1",
+      "9e927fb0a47eaa4078c16ae11368ca52a957a7cf",
+      "60c93b319e105bde9761fb5de0e0c86c50b32be3",
+      "178225027222e3a9fd7035d2e6b86ad565dc88d5",
+      "313f5b275f4fe4d9d9467afaa08ab5b2ded1f92d",
+      "2609cb60d698215c13811ae874449396fc8965e9",
+      "21c92d9395442595eb75e97f0445d194095e874b",
+      "d8fd0ea4a06d347e49c0af032ae2f62c34e490fa",
+      "5ae4eafc76fc63f5cad8b6c8b4d5f70ce6a22422",
+      "12651613c6bbf8533884e7f73cf1b5dd0a5eaf39"
+    ],
+    "familiesClosed": [
+      "E10",
+      "E15",
+      "H02",
+      "H04",
+      "H05",
+      "L06",
+      "L07",
+      "M07",
+      "M10",
+      "M12",
+      "M13",
+      "M14",
+      "M24"
+    ],
+    "rowsPersisted": [
+      "G05",
+      "G06",
+      "G11",
+      "G17",
+      "G21",
+      "I01",
+      "I05",
+      "I07",
+      "O04",
+      "O05",
+      "O08",
+      "U02",
+      "S04",
+      "S06"
+    ],
+    "targetsPublished": 15
+  },
+  "fourthReviewFindings": {
+    "1-dead-shot-natural-confirmation": [
+      "7054b3917cc8ad0896927e3ffb5c7c2210d5cd73"
+    ],
+    "2-verified-area-ending": [
+      "ff55924c28337195f18094fb2664dfd7d0dcdd7a"
+    ],
+    "3-liveness-unresolved-text": [
+      "1088abb3d66479fbc1cdc0f8ca37ace2a7ffb64b"
+    ]
+  }
+}
