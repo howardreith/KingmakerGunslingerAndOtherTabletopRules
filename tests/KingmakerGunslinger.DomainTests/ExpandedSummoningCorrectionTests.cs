@@ -269,10 +269,8 @@ namespace KingmakerGunslinger.DomainTests
                 "SummonGrappleLinkState.cs");
             RequireTokens("Durable link store", store,
                 "public sealed class UnitPartSummonGrappleLinks : UnitPart",
-                "[JsonProperty] public string TargetId { get; set; }",
-                "[JsonProperty] public int Limb { get; set; }",
-                "[JsonProperty] public int AdditionalIndex { get; set; }",
-                "[JsonProperty] public bool Engulfed { get; set; }",
+                "private List<string> _links", "internal string Encode()",
+                "internal static SummonGrappleLinkRecord Decode(",
                 "public SummonGrappleLinkRecord() { AdditionalIndex = -1; }",
                 "internal static ItemEntityWeapon EstablishingWeapon(UnitEntityData holder,",
                 "internal static bool IsLimbOccupied(UnitEntityData holder, ItemEntityWeapon weapon)",
