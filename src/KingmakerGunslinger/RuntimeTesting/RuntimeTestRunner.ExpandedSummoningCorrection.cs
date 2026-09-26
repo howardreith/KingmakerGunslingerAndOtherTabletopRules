@@ -2305,7 +2305,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ItemEntityWeapon recorded = SummonGrappleLinks.EstablishingWeapon(holder, victim);
                 bool sameLimb = ReferenceEquals(recorded, limb);
                 steps.Add(row[0] + "->" + row[1] + ":limb=" + (limb.Blueprint == null ? "?" :
-                    limb.Blueprint.name) + ",held=" + held + ",recorded=" + sameLimb);
+                    limb.Blueprint.name) + ",held=" + held + ",recorded=" + sameLimb +
+                    ",engine=" + DescribeExpandedSummoningHoldState(holder, victim, grab));
                 ok = ok && held && sameLimb;
             }
             valid = ok;
