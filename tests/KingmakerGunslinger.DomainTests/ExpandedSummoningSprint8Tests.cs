@@ -139,12 +139,14 @@ namespace KingmakerGunslinger.DomainTests
                 value.StartsWith("KMG.Summoning.Special.Cheetah.", StringComparison.Ordinal)).ToArray();
             Assertions.Equal(AppendedLedgerIdentities, appended.Length,
                 "Sprint 8 must append exactly its own identities to the ledger.");
-            Assertions.True(entries.Skip(entries.Length - AppendedLedgerIdentities -
+            Assertions.True(entries.Skip(entries.Length - ExpandedSummoningCorrectionTests.LaterLedgerIdentities -
+                    AppendedLedgerIdentities -
                     ExpandedSummoningCorrectionTests.AppendedLedgerIdentities)
                 .Take(AppendedLedgerIdentities)
                 .All(value => appended.Contains(value)),
                 "The ledger is append-only: Sprint 8 identities sit directly before the correction's.");
-            Assertions.True(entries.Skip(entries.Length - AppendedLedgerIdentities -
+            Assertions.True(entries.Skip(entries.Length - ExpandedSummoningCorrectionTests.LaterLedgerIdentities -
+                    AppendedLedgerIdentities -
                     ExpandedSummoningCorrectionTests.AppendedLedgerIdentities -
                     ExpandedSummoningSprint7Tests.AppendedLedgerIdentities)
                 .Take(ExpandedSummoningSprint7Tests.AppendedLedgerIdentities)
