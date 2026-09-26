@@ -12,7 +12,7 @@ $ErrorActionPreference = 'Stop'
 
 $root = Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
 $info = Get-KmgModInfo -RepositoryRoot $root
-if ($info.Version -ne '0.0.139') { throw "Build-Local supports only active version 0.0.139, observed $($info.Version)." }
+if ($info.Version -ne '0.0.140') { throw "Build-Local supports only active version 0.0.140, observed $($info.Version)." }
 $msbuild = Resolve-KmgMsBuild -ExplicitPath $MSBuildPath
 Write-Host "MSBuild: $msbuild"
 $git = Get-KmgGitState -RepositoryRoot $root
@@ -51,7 +51,7 @@ if (-not (Test-Path -LiteralPath (Join-Path $net47 'mscorlib.dll') -PathType Lea
 & (Join-Path $PSScriptRoot 'validate-repository.ps1')
 & (Join-Path $PSScriptRoot 'test-domain.ps1') -Configuration Release -Clean -MSBuildPath $msbuild
 
-$localRoot = Join-Path $root 'artifacts\local-runtime\0.0.139'
+$localRoot = Join-Path $root 'artifacts\local-runtime\0.0.140'
 $exactRoot = Join-Path $localRoot 'exact-build'
 & $python (Join-Path $root 'tools\build_mod_from_private_references.py') `
     --reference-bundle-dir $ReferenceBundleDir --dotnet $dotnet `
@@ -75,6 +75,11 @@ Copy-Item -LiteralPath (Join-Path $root 'blueprints\blueprints.json') -Destinati
 Copy-Item -LiteralPath (Join-Path $root 'blueprints\blueprints.schema.json') -Destination (Join-Path $buildOutput 'blueprints') -Force
 Copy-Item -Path (Join-Path $root 'assets\game\icons\*.png') -Destination (Join-Path $buildOutput 'assets\icons') -Force
 Copy-Item -Path (Join-Path $root 'assets\game\icons\expanded-summoning\*') -Destination (Join-Path $buildOutput 'assets\icons\expanded-summoning') -Force
+# The Pteranodon replacement visual: mesh data plus its painted albedo, the
+# same two files package.ps1 ships and validate-build-output.ps1 requires.
+New-Item -ItemType Directory -Path (Join-Path $buildOutput 'assets\pteranodon') -Force | Out-Null
+Copy-Item -LiteralPath (Join-Path $root 'assets\pteranodon\pteranodon-mesh.json') -Destination (Join-Path $buildOutput 'assets\pteranodon') -Force
+Copy-Item -LiteralPath (Join-Path $root 'assets\pteranodon\pteranodon-albedo.png') -Destination (Join-Path $buildOutput 'assets\pteranodon') -Force
 $bundleManifest = Get-Content -LiteralPath (Join-Path $root 'assets\bundles\asset-bundle-manifest.json') -Raw | ConvertFrom-Json
 $bundleSource = 'C:\Dev\KingmakerGunslingerLab\unity-asset-build\KingmakerGunslinger-2018.4.10f1\Builds\Windows\kingmakergunslinger.firearms'
 if (-not (Test-Path -LiteralPath $bundleSource -PathType Leaf)) {
@@ -104,9 +109,10 @@ $packagePath = Join-Path $localRoot "$($info.Id)-$($info.Version)-local-runtime.
 New-Item -ItemType Directory -Path $localRoot -Force | Out-Null
 $stagedMod = Join-Path $root 'artifacts\staging\install\KingmakerGunslinger'
 $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $stagedMod 'assets\soundbanks\KMG_Firearms.bnk') -PathType Leaf
-# Existing 135-file package plus 89 original elemental/strategic paintings and
-# the 3 composed strategic scroll item icons.
-$expectedPackageFileCount = if ($hasFirearmSoundBank) { 235 } else { 233 }
+# Existing 135-file package plus 89 original elemental/strategic paintings,
+# the 3 composed strategic scroll item icons, and the Pteranodon mesh data
+# with its painted albedo.
+$expectedPackageFileCount = if ($hasFirearmSoundBank) { 251 } else { 249 }
 & $python (Join-Path $root 'tools\create_deterministic_package.py') --source $stagedMod --output $packagePath --expected-file-count $expectedPackageFileCount
 if ($LASTEXITCODE -ne 0) { throw 'Deterministic package creation failed.' }
 & (Join-Path $PSScriptRoot 'validate-package.ps1') `

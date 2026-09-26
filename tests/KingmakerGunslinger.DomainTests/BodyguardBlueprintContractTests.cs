@@ -32,12 +32,24 @@ namespace KingmakerGunslinger.DomainTests
             // BetterVendorsProgressionTests.ManifestAppendsExactlyTheNewIdentities).
             Assertions.Equal(1913 + KingmakerGunslinger.Acquisition
                     .ProgressionWeaponCatalog.NewBlueprintCount +
+                    ExpandedSummoningSprint3Tests.AppendedLedgerIdentities +
+                    ExpandedSummoningSprint4Tests.AppendedLedgerIdentities +
+                    ExpandedSummoningSprint5Tests.AppendedLedgerIdentities +
+                    ExpandedSummoningSprint6Tests.AppendedLedgerIdentities +
+                    ExpandedSummoningSprint7Tests.AppendedLedgerIdentities +
+                    (ExpandedSummoningSprint8Tests.AppendedLedgerIdentities + ExpandedSummoningCorrectionTests.AppendedLedgerIdentities) +
                     KingmakerGunslinger.FavoredClass.FavoredClassIdentityCatalog.IdentityCount +
                     KingmakerGunslinger.ElementalRaces.ElementalMostlyHumanPolicy.IdentityCount,
                 entries.Length,
                 "Current blueprint ledger count changed.");
             Assertions.Equal(1911 + KingmakerGunslinger.Acquisition
                     .ProgressionWeaponCatalog.NewBlueprintCount +
+                    ExpandedSummoningSprint3Tests.AppendedLedgerIdentities +
+                    ExpandedSummoningSprint4Tests.AppendedLedgerIdentities +
+                    ExpandedSummoningSprint5Tests.AppendedLedgerIdentities +
+                    ExpandedSummoningSprint6Tests.AppendedLedgerIdentities +
+                    ExpandedSummoningSprint7Tests.AppendedLedgerIdentities +
+                    (ExpandedSummoningSprint8Tests.AppendedLedgerIdentities + ExpandedSummoningCorrectionTests.AppendedLedgerIdentities) +
                     KingmakerGunslinger.FavoredClass.FavoredClassIdentityCatalog.IdentityCount +
                     KingmakerGunslinger.ElementalRaces.ElementalMostlyHumanPolicy.IdentityCount,
                 entries.Count(value => string.Equals(

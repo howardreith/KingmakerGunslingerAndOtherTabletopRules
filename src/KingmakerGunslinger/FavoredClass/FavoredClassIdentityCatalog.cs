@@ -21,7 +21,7 @@ namespace KingmakerGunslinger.FavoredClass
     /// <summary>
     /// The exact ordered identity-manifest entries this integration appends
     /// after the Better Vendors block. The committed manifest, this catalog
-    /// and the 0.0.139 validator must agree entry for entry.
+    /// and the 0.0.140 validator must agree entry for entry.
     /// </summary>
     internal static class FavoredClassIdentityCatalog
     {

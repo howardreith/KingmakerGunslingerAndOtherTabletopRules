@@ -834,7 +834,8 @@ qualification are tracked separately in planning/MAGIC-CIRCLE-FOLLOWUP.md.
 ### Better Vendors progression candidate 0.0.138
 
 Forty-three generic magic weapon variants extend the append-only ledger to
-1956 stable IDs: 1954 active and 2 reserved. They complete an explicit
+2244 stable IDs: 2242 active and 2 reserved (2048 before the Expanded Summoning
+Phase 1 creature appends). They complete an explicit
 50-entry progression catalog (`Acquisition/ProgressionWeaponCatalog`): Pistol,
 Musket and Blunderbuss ordinary +1..+5 and Reliable +1..+5, and Elven Branched
 Spear, Wakizashi, Katana and Nodachi +1..+5. The seven existing canonical +1
@@ -859,10 +860,11 @@ entry's one-time grant; merchant inventory never decides eligibility. The
 contract, lifecycle and limits are in
 [BETTER-VENDORS-COMPATIBILITY.md](BETTER-VENDORS-COMPATIBILITY.md).
 
-### Favored Class integration candidate 0.0.139
+### Favored Class integration 0.0.140
 
 The optional Favored Class integration appends its owned leaf identities to
-the ledger, for 2172 stable IDs: 2170 active and 2 reserved. It never compiles
+the ledger after the Expanded Summoning Phase 1 append, for
+2460 stable IDs: 2458 active and 2 reserved (2172 before the merge with 0.0.139). It never compiles
 against Favored Class or Call of the Wild and never executes host code.
 
 - **Pure policy** (`FavoredClass/`): `FavoredClassRankPolicy` (the host's

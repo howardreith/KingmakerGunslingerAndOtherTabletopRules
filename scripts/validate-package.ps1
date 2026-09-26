@@ -43,6 +43,11 @@ try {
         'assets\bundles\kingmakergunslinger.elvenbranchedspear',
         'assets\bundles\kingmakergunslinger.easternweapons',
         'assets\bundles\asset-bundle-manifest.json',
+        # The Pteranodon replacement visual ships as mesh data plus its
+        # painted albedo rather than an AssetBundle: no bind poses, no
+        # material, no editor dependency.
+        'assets\pteranodon\pteranodon-mesh.json',
+        'assets\pteranodon\pteranodon-albedo.png',
         'blueprints\blueprints.json',
         'blueprints\blueprints.schema.json'
     )
@@ -70,7 +75,7 @@ try {
     $summonManifestPath = Join-Path $repositoryRoot `
         'assets\game\icons\expanded-summoning\icon-manifest.json'
     $summonManifest = Get-Content -LiteralPath $summonManifestPath -Raw | ConvertFrom-Json
-    if ($summonManifest.count -ne 77 -or @($summonManifest.icons).Count -ne 77) {
+    if ($summonManifest.count -ne 91 -or @($summonManifest.icons).Count -ne 91) {
         throw 'Expanded Summoning runtime icon manifest is malformed.'
     }
     $expected += 'assets\icons\expanded-summoning\icon-manifest.json'
