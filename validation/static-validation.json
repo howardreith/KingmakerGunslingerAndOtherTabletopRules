@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.138-better-vendors-progression",
+  "milestone": "0.0.139-expanded-summoning-phase1",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.138",
+  "version": "0.0.139",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2021,5 +2021,24 @@
       "closeoutDllSha256": "0706c3306020d31a00c7f81b099b550cfb9f81e8e07c4d7670e4db1e1ccbce46",
       "closeoutLiveMatrixRerun": "not required: the closeout changed no executable behaviour (record text, one profile note and test token names), so the live qualification remains the candidate 145810a5 matrix"
     }
+  },
+  "expandedSummoningPhase1Release139": {
+    "release": "Expanded Summoning Phase 1 (charter Sprints 3-8)",
+    "releaseVersion": "0.0.139",
+    "releaseInformationalVersion": "0.0.139-expanded-summoning-phase1",
+    "package": "KingmakerGunslinger-0.0.139-local-runtime.zip",
+    "deterministicTestCount": 1806,
+    "publicReleaseAuthorized": true,
+    "ownerAuthorizedRelease": true,
+    "ownerReleaseInstruction": "2026-09-26: the owner reviewed and approved PR #23, directed the merge to master and a real (non-alpha) release.",
+    "candidateOnly": false,
+    "mergedPullRequest": 23,
+    "nativeRuntimeQualified": true,
+    "nativeRuntimeEvidence": [
+      "candidate 145810a5: twelve guarded scenarios and two compatibility transactions, all PASS, every restoration verified"
+    ],
+    "compatibilityRuntimeQualificationPending": false,
+    "ownerAcceptedEngineLimitation": "ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD",
+    "humanReview": "ENGINEERING_APPROVED_2026-09-26; owner visual and gameplay spot-check pending"
   }
 }

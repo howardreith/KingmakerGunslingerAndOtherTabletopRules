@@ -173,8 +173,9 @@ def validate(root: Path) -> None:
         "publicReleaseAuthorized": True,
         "ownerAuthorizedRelease": True,
         "candidateOnly": False,
-        "releaseVersion": VERSION,
-        "releaseInformationalVersion": INFORMATIONAL_VERSION,
+        "releaseVersion": "0.0.138",
+        "releaseInformationalVersion":
+            "0.0.138-better-vendors-progression",
         "progressionEntries": 50,
         "reusedCanonicalEntries": 7,
         "newBlueprints": 43,
@@ -208,7 +209,7 @@ def validate(root: Path) -> None:
         raise AssertionError("The Craft Magic Items interaction status must be recorded")
 
     require_tokens(root / "docs/RELEASE-NOTES-0.0.138.md",
-        INFORMATIONAL_VERSION, "Better Vendors",
+        "0.0.138-better-vendors-progression", "Better Vendors",
         "published under explicit owner authorization",
         "NOT RUN, waived by the owner", "2.0.8", "Military", "Reliable",
         "catch-up", "optional", "uninstall")

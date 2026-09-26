@@ -22,7 +22,8 @@ def validate(root: Path) -> None:
     validate_summoning78.validate(root)
 
     package_script = (root / "scripts/package.ps1").read_text(encoding="utf-8")
-    effective_suffix = ("better-vendors-progression" if VERSION == "0.0.138"
+    effective_suffix = ("expanded-summoning-phase1" if VERSION == "0.0.139"
+        else "better-vendors-progression" if VERSION == "0.0.138"
         else "rapid-reload-combat-feat" if VERSION == "0.0.137"
         else "rapid-reload-proficiency-gate" if VERSION == "0.0.136"
         else "magic-circle-alignment-spells" if VERSION == "0.0.134" else "word-of-recall-favored-class"
