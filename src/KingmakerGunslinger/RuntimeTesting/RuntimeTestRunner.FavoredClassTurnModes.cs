@@ -51,8 +51,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ";misc=" + evt.ResultMiscBonus + "(additionalAttack=" +
                     evt.Initiator.Stats.AdditionalAttackBonus.ModifiedValue + ",additionalCmb=" +
                     evt.Initiator.Stats.AdditionalCMB.ModifiedValue + ");bonus=" + evt.AdditionalBonus + "[" +
-                    string.Join(",", evt.BonusSources.Select(value => value.Value + ":" +
-                        (value.Fact == null || value.Fact.Blueprint == null ? "?" : value.Fact.Blueprint.name))
+                    string.Join(",", evt.BonusSources.Select(value => value.Bonus + ":" +
+                        (value.Source == null || value.Source.Blueprint == null ? "?" : value.Source.Blueprint.name))
                         .ToArray()) + "];attackModifiers=" + string.Join(",",
                     evt.Initiator.Stats.AdditionalAttackBonus.Modifiers.Select(value => value.ModValue + ":" +
                         (value.Source == null || value.Source.Blueprint == null ? value.ModDescriptor.ToString() :
