@@ -436,7 +436,7 @@ def validate(root: Path) -> None:
     # maintain makes, the mouth that stays shut and the Web's exact projectile.
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonGrappleLinkState.cs",
         "public sealed class UnitPartSummonGrappleLinks : UnitPart",
-        "[JsonProperty] public string TargetId { get; set; }",
+        "private List<string> _links", "internal string Encode()",
         "internal static ItemEntityWeapon EstablishingWeapon(UnitEntityData holder,",
         "internal static bool IsLimbOccupied(UnitEntityData holder, ItemEntityWeapon weapon)")
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningSpecialCombatComponents.cs",
