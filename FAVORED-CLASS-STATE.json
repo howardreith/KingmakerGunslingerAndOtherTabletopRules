@@ -8,8 +8,8 @@
   "branch": "claude/favored-class-integration",
   "worktree": "C:\\Dev\\KingmakerGunslingerLab\\worktrees\\favored-class-integration",
   "baselineCommit": "996105ed9e72259a220be56e2a74e0cc18e5ef47",
-  "overallStatus": "COMPLETE LOCALLY - AWAITING OWNER REVIEW",
-  "currentPhase": "fourth review: both findings fixed and requalified (focused lanes and the complete final gate on one exact DLL); owner review pending",
+  "overallStatus": "PARTIAL - NOT RELEASE QUALIFIED",
+  "currentPhase": "fourth review follow-up open: a member unresolved only by its liveness read kept widened text; requalification pending",
   "phases": {
     "phase-0": {
       "status": "COMPLETE",
@@ -370,6 +370,7 @@
     ],
     "2-verified-area-ending": [
       "ff55924c28337195f18094fb2664dfd7d0dcdd7a"
-    ]
+    ],
+    "3-liveness-unresolved-text": "open"
   }
 }
