@@ -8,8 +8,8 @@
   "branch": "claude/favored-class-integration",
   "worktree": "C:\\Dev\\KingmakerGunslingerLab\\worktrees\\favored-class-integration",
   "baselineCommit": "996105ed9e72259a220be56e2a74e0cc18e5ef47",
-  "overallStatus": "PARTIAL - NOT RELEASE QUALIFIED",
-  "currentPhase": "fourth review follow-up open: a member unresolved only by its liveness read kept widened text; requalification pending",
+  "overallStatus": "COMPLETE LOCALLY - AWAITING OWNER REVIEW",
+  "currentPhase": "fourth review and its follow-up: all three findings fixed and requalified (focused lanes and the complete final gate on one exact DLL); owner review pending",
   "phases": {
     "phase-0": {
       "status": "COMPLETE",
@@ -214,7 +214,15 @@
       "dllSha256": "a35f338ccbd6fd92f152af17d98a92b5b58b37ddbedf2e2d4f13f15b66f00981",
       "dllMvid": "bf422dd9-16e7-4027-9086-b01e1a71b9a5",
       "deployment": "runtime-evidence\\deployments\\20260926T1114257470410Z",
-      "note": "final candidate after the fourth PR #24 review (41 guarded runs PASS, after the focused lanes)"
+      "note": "intermediate candidate after the fourth PR #24 review (41 guarded runs PASS), superseded by the follow-up fix"
+    },
+    {
+      "commit": "1088abb3d66479fbc1cdc0f8ca37ace2a7ffb64b",
+      "packageSha256": "f080f0cb7733d0afcd07ba34843422b389f4b572decaf5ffe941cc0129e3ae4f",
+      "dllSha256": "1661762db344e272138286447b93310f2a0bc3b622a884581244e53508721ce9",
+      "dllMvid": "8f7261f6-9aaa-49fd-9486-3259a88eab0a",
+      "deployment": "runtime-evidence\\deployments\\20260926T1325512654050Z",
+      "note": "final candidate after the fourth review's follow-up (41 guarded runs PASS, after the focused lanes)"
     }
   ],
   "blockers": {
@@ -231,10 +239,10 @@
     "D6": "open (owner decision): Pistol-Whip ignores the firearm's enhancement bonus on its attack roll"
   },
   "finalCandidate": {
-    "commit": "4748a47b2b8f90fb544fde2fbddbbfc7e225102a",
-    "packageSha256": "cbec54d159ce7aec524852d738bd55ae5080df91c0ee42cd0b025c4ba1306237",
-    "dllSha256": "a35f338ccbd6fd92f152af17d98a92b5b58b37ddbedf2e2d4f13f15b66f00981",
-    "dllMvid": "bf422dd9-16e7-4027-9086-b01e1a71b9a5"
+    "commit": "1088abb3d66479fbc1cdc0f8ca37ace2a7ffb64b",
+    "packageSha256": "f080f0cb7733d0afcd07ba34843422b389f4b572decaf5ffe941cc0129e3ae4f",
+    "dllSha256": "1661762db344e272138286447b93310f2a0bc3b622a884581244e53508721ce9",
+    "dllMvid": "8f7261f6-9aaa-49fd-9486-3259a88eab0a"
   },
   "ownerDecisions": {
     "status": "resolved by the charter or provider behavior; see FAVORED-CLASS-BLOCKERS.md"
@@ -260,7 +268,7 @@
       "ZFavoredClass\\settings.json": "bdceed77d2bf4a31dd9e4eeb64ef9d55a42ef59d23f46abcb1ddbcc6ef66754b"
     },
     "integrationSettingsFilePresent": false,
-    "lastVerifiedUtc": "2026-09-26T12:28:41Z"
+    "lastVerifiedUtc": "2026-09-26T14:42:00Z"
   },
   "pullRequest": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/24",
   "reviewFindings": {
@@ -371,6 +379,8 @@
     "2-verified-area-ending": [
       "ff55924c28337195f18094fb2664dfd7d0dcdd7a"
     ],
-    "3-liveness-unresolved-text": "open"
+    "3-liveness-unresolved-text": [
+      "1088abb3d66479fbc1cdc0f8ca37ace2a7ffb64b"
+    ]
   }
 }

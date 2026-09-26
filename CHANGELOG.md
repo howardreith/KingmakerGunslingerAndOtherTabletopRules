@@ -18,7 +18,8 @@
   fails and a natural 20 succeeds); True Grit Dodge at 0 grit; the
   Pistol-Whip favored-class bonus stays on the deed's own attack roll; a Bard
   performance area whose widening cannot be undone is never forgotten until
-  it is verified native or ended.
+  it is verified native or ended, and the bard's descriptions stay native
+  meanwhile.
 
 ## 0.0.138-better-vendors-progression
 

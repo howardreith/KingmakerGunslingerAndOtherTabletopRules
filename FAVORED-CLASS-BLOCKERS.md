@@ -32,11 +32,11 @@ The profiles were staged from the 2026-09-08 capture of this install's
 optional mods (`C:\Dev\KingmakerGunslingerLab\repo\KingmakerGunslinger\artifacts\teleportation\compatibility-references`),
 verified byte-identical first (CallOfTheWild 266 files, ZFavoredClass 24
 files, no difference; re-verified before each round). On the final candidate
-`4748a47b2`:
+`1088abb3d`:
 
-- `gunslinger-only` / `observe-favored-class-host-state`: `20260926T1218350412229Z-observe-favored-class-host-state` PASS (transaction `compat-20260926T121633Z-5083c0ce5fb9`, restoration verified).
-- `gunslinger-call-of-the-wild` / `observe-favored-class-host-state`: `20260926T1221511486176Z-observe-favored-class-host-state` PASS (transaction `compat-20260926T122004Z-b08da2da404f`, restoration verified).
-- `gunslinger-call-of-the-wild-favored-class` / `observe-favored-class-host-state`: `20260926T1225243181332Z-observe-favored-class-host-state` PASS (transaction `compat-20260926T122336Z-c6fb2faf6f8b`, restoration verified).
+- `gunslinger-only` / `observe-favored-class-host-state`: `20260926T1431570158955Z-observe-favored-class-host-state` PASS (transaction `compat-20260926T142956Z-6372fdc58225`, restoration verified).
+- `gunslinger-call-of-the-wild` / `observe-favored-class-host-state`: `20260926T1435125100725Z-observe-favored-class-host-state` PASS (transaction `compat-20260926T143327Z-cb8bf9fe97a3`, restoration verified).
+- `gunslinger-call-of-the-wild-favored-class` / `observe-favored-class-host-state`: `20260926T1438461776320Z-observe-favored-class-host-state` PASS (transaction `compat-20260926T143658Z-2c2dc5fcc1d6`, restoration verified).
 
 ### B3 - Native character-build lanes inflate the game's committed memory (open: environment risk for qualification batches)
 
