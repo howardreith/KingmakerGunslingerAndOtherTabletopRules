@@ -432,6 +432,21 @@ def validate(root: Path) -> None:
         "IsSummonManeuverSuccess(", "internal static class SummonManeuverChecks",
         "SummonManeuverChecks.Succeeded(maneuver)",
         "UnitCondition.ImmuneToCombatManeuvers))")
+    # Final corrections (2026-09-26): the durable link store, the rake the
+    # maintain makes, the mouth that stays shut and the Web's exact projectile.
+    require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonGrappleLinkState.cs",
+        "public sealed class UnitPartSummonGrappleLinks : UnitPart",
+        "internal static ItemEntityWeapon EstablishingWeapon(UnitEntityData holder,",
+        "internal static bool IsLimbOccupied(UnitEntityData holder, ItemEntityWeapon weapon)")
+    require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningSpecialCombatComponents.cs",
+        "internal static class SummonRakeExecution",
+        "SummonRakeExecution.RakeOnMaintain(owner, target, grab, context)",
+        "SummonGrappleLinks.OccupantOf(Owner.Unit, evt.Weapon)",
+        "IsOccupiedElsewhere(owner, info.Hand, target)")
+    require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningSpecialProfiles.cs",
+        "GiantFlytrapEngulfAcidDiceCount = 2", "GiantFlytrapEngulfAcidDieSides = 6")
+    require_tokens(root / "src/KingmakerGunslinger/Blueprints/ExpandedSummoningSpecialBuilder.cs",
+        "WebProjectileGuid")
     # Sprint 5: the mephit pack's charter boundaries stay in the code.
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningSpecialProfiles.cs",
         "MephitVariants.Length != 6", "MephitVisualTints.Length != 6",

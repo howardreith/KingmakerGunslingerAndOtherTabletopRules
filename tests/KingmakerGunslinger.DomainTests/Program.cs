@@ -497,6 +497,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.correction-grab-sizes", ExpandedSummoningCorrectionTests.GrabSizesAndSwallowLimitsAreUniversal),
             Case("expanded-summoning.correction-mephit-roles", ExpandedSummoningCorrectionTests.MephitRolesAreProjectOwned),
             Case("expanded-summoning.correction-cyclops-web-hooves", ExpandedSummoningCorrectionTests.CyclopsWebAndHoovesAreExact),
+            Case("expanded-summoning.correction-final", ExpandedSummoningCorrectionTests.FinalCorrectionsAreImplemented),
             Case("expanded-summoning.correction-visual-ownership", ExpandedSummoningCorrectionTests.VisualVariantsOwnTheirResources),
             Case("expanded-summoning.correction-ledger-scenarios", ExpandedSummoningCorrectionTests.LedgerAndScenariosAreWired),
             Case("expanded-summoning.coverage-identities-untouched", ExpandedSummoningCoverageTests.ExistingIdentitiesAreUntouched),
