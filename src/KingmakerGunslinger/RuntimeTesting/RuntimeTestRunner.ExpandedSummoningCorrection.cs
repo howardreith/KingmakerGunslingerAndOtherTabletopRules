@@ -543,7 +543,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Rolls.Add("type=" + evt.AttackType + ",natural=" + (int)evt.Roll + ",bonus=" +
                     evt.AttackBonus + ",targetAc=" + evt.TargetAC + ",hit=" + evt.IsHit +
                     ",weapon=" + (evt.Weapon == null || evt.Weapon.Blueprint == null ? "<none>" :
-                        evt.Weapon.Blueprint.name));
+                        evt.Weapon.Blueprint.name) +
+                    ",target=" + (evt.Target == null || evt.Target.Blueprint == null ? "<none>" :
+                        evt.Target.Blueprint.name) +
+                    ",autoMiss=" + evt.AutoMiss + ",logged=" + !evt.SuspendCombatLog);
             }
         }
 
@@ -628,6 +631,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _rulesCases.Add(Assertion("expanded-summoning-correction-hooves",
                         "the pony's and the horse's hooves are both secondary: -5 to hit and half the Strength modifier to damage against the same hooves treated as primary, both listed in the full attack",
                         detail, ok, "RuleCalculateAttackBonus and RuleCalculateWeaponStats with the docile flag on and off; UnitAttack.CreateFullAttack"));
+                    stage = "mouth-ownership";
+                    _rulesSteps.Add("reset:mouths=" + ResetExpandedSummoningHostile(_rulesFixture));
+                    ok = ExerciseExpandedSummoningMouthOwnership(_rulesFixture, out detail);
+                    _rulesCases.Add(Assertion("expanded-summoning-correction-mouth-ownership",
+                        "one target per mouth: a bite that holds or has engulfed a foe auto-misses silently against any other unit and is dropped from the planned full attack, the free bites still strike, four occupied mouths leave none, and releasing one victim frees exactly that mouth; the engulf bundle is the stat block's 1d8+7 crushing and 2d6 acid each round",
+                        detail, ok, "RuleAttackWithWeapon with each bite, UnitAttack.CreateFullAttack, the durable link store and the engulfed buff's own actions"));
+                    stage = "maintain-rake";
+                    _rulesSteps.Add("reset:rake=" + ResetExpandedSummoningHostile(_rulesFixture));
+                    ok = ExerciseExpandedSummoningMaintainRake(_rulesFixture, out detail);
+                    _rulesCases.Add(Assertion("expanded-summoning-correction-maintain-rake",
+                        "a holding cat rakes through the maintain the tabletop gives it: two genuine rake attacks against the exact held foe, logged, never the turn the hold was taken and never against another unit; the maintain damage is the establishing limb's own, bite or foreclaw",
+                        detail, ok, "SummonHoldComponent.MaintainLink with the held state ticked, the global attack-roll observer, and the durable link store"));
+                    stage = "web-projectile";
+                    ok = ExerciseExpandedSummoningWebProjectile(out detail);
+                    _rulesCases.Add(Assertion("expanded-summoning-correction-web-projectile",
+                        "the Web delivers exactly one projectile, the identity the builder pins",
+                        detail, ok, "the published ability's AbilityDeliverProjectile"));
                     stage = "wind-wall-cast";
                     _rulesSteps.Add("reset:windWall=" + ResetExpandedSummoningHostile(_rulesFixture));
                     BeginExpandedSummoningWindWall();
@@ -681,6 +701,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                     EndExpandedSummoningDetachedAbility(_rulesWebCommand);
                     stage = "web";
                     FinishExpandedSummoningWeb();
+                    stage = "rake-command-begin";
+                    BeginExpandedSummoningRakeCommand(false);
+                    _rulesWait = 0;
+                    _rulesPhase = 5;
+                    return;
+                }
+                if (_rulesPhase == 5)
+                {
+                    stage = "rake-command-charge";
+                    if (!FinishExpandedSummoningRakeCommand(false, _rulesWait) &&
+                        _rulesWait++ < ExpandedSummoningCommandFrames) return;
+                    BeginExpandedSummoningRakeCommand(true);
+                    _rulesWait = 0;
+                    _rulesPhase = 6;
+                    return;
+                }
+                if (_rulesPhase == 6)
+                {
+                    stage = "rake-command-ordinary";
+                    if (!FinishExpandedSummoningRakeCommand(true, _rulesWait) &&
+                        _rulesWait++ < ExpandedSummoningCommandFrames) return;
+                    stage = "rake-command";
+                    CompleteExpandedSummoningRakeCommand();
                     CompleteExpandedSummoningRules();
                 }
             }
@@ -2215,6 +2258,130 @@ namespace KingmakerGunslinger.RuntimeTesting
         private string _expandedSummoningPersistenceFlashDetail = "<not evaluated>";
         private bool _expandedSummoningPersistenceFlashValid;
 
+        private string _expandedSummoningPersistenceLinkDetail = "not run";
+        private bool _expandedSummoningPersistenceLinkValid;
+
+        private static UnitEntityData ExpandedSummoningPersistenceUnit(UnitEntityData[] units,
+            string blueprintName)
+        {
+            return units == null ? null : units.FirstOrDefault(value => value != null &&
+                value.Blueprint != null && value.Blueprint.name == blueprintName);
+        }
+
+        /// <summary>
+        /// Prepare: the tiger takes a hold with its bite, the smilodon with a
+        /// foreclaw and the flytrap with two different mouths, so the reload
+        /// has three distinct limb identities to name and one multi-link
+        /// holder whose mouths must stay apart.
+        /// </summary>
+        private static string TakeExpandedSummoningPersistenceHolds(UnitEntityData[] units)
+        {
+            var steps = new List<string>();
+            foreach (string[] row in ExpandedSummoningPersistenceHoldPlan)
+            {
+                UnitEntityData holder = ExpandedSummoningPersistenceUnit(units, row[0]);
+                UnitEntityData victim = ExpandedSummoningPersistenceUnit(units, row[1]);
+                int limbIndex = int.Parse(row[2], System.Globalization.CultureInfo.InvariantCulture);
+                SummonGrabComponent grab = holder == null ? null : SummonGrabComponent.Find(holder);
+                ItemEntityWeapon limb = holder == null ? null : ExpandedSummoningPersistenceLimb(
+                    holder, limbIndex);
+                if (grab == null || victim == null || limb == null)
+                {
+                    steps.Add(row[0] + ":missing");
+                    continue;
+                }
+                UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                bool held = grab.TryGrab(victim, limb, true);
+                steps.Add(row[0] + "->" + row[1] + ":limb=" + (limb.Blueprint == null ? "?" :
+                    limb.Blueprint.name) + ",held=" + held);
+            }
+            return string.Join(";", steps.ToArray());
+        }
+
+        /// <summary>The holder's limb by plan index: -1 is the primary hand, 0+ an additional limb.</summary>
+        private static ItemEntityWeapon ExpandedSummoningPersistenceLimb(UnitEntityData holder,
+            int limbIndex)
+        {
+            if (holder == null || holder.Body == null) return null;
+            if (limbIndex < 0)
+                return holder.Body.PrimaryHand == null ? null : holder.Body.PrimaryHand.MaybeWeapon;
+            List<Kingmaker.Items.Slots.WeaponSlot> limbs = holder.Body.AdditionalLimbs;
+            return limbs == null || limbIndex >= limbs.Count || limbs[limbIndex] == null ? null :
+                limbs[limbIndex].MaybeWeapon;
+        }
+
+        /// <summary>holder blueprint, victim blueprint, limb index (-1 = the primary hand).</summary>
+        private static readonly string[][] ExpandedSummoningPersistenceHoldPlan =
+        {
+            new[] { "KMG_Summoning_Unit_Tiger", "KMG_Summoning_Unit_Wolf", "-1" },
+            new[] { "KMG_Summoning_Unit_DireTiger", "KMG_Summoning_Unit_Pony", "0" },
+            new[] { "KMG_Summoning_Unit_GiantFlytrap", "KMG_Summoning_Unit_Horse", "0" },
+            new[] { "KMG_Summoning_Unit_GiantFlytrap", "KMG_Summoning_Unit_Owlbear", "2" }
+        };
+
+        /// <summary>
+        /// Verify-cleanup: every link the save carried still names the limb
+        /// that established it, the maintain deals that limb's own damage
+        /// without substituting the first grab limb, the flytrap's two mouths
+        /// still own their own victims, and the cat that held through the
+        /// reload still makes its legal rake.
+        /// </summary>
+        private static string DescribeExpandedSummoningReloadedLinks(UnitEntityData[] units,
+            out bool valid)
+        {
+            var steps = new List<string>();
+            bool ok = true;
+            foreach (string[] row in ExpandedSummoningPersistenceHoldPlan)
+            {
+                UnitEntityData holder = ExpandedSummoningPersistenceUnit(units, row[0]);
+                UnitEntityData victim = ExpandedSummoningPersistenceUnit(units, row[1]);
+                int limbIndex = int.Parse(row[2], System.Globalization.CultureInfo.InvariantCulture);
+                SummonGrabComponent grab = holder == null ? null : SummonGrabComponent.Find(holder);
+                ItemEntityWeapon expected = ExpandedSummoningPersistenceLimb(holder, limbIndex);
+                if (grab == null || victim == null || expected == null)
+                {
+                    steps.Add(row[0] + ":missing");
+                    ok = false;
+                    continue;
+                }
+                ItemEntityWeapon resolved = SummonGrappleLinks.EstablishingWeapon(holder, victim);
+                bool sameLimb = ReferenceEquals(resolved, expected);
+                Buff heldState = SummonHoldComponent.HeldState(holder, victim, grab);
+                int before = victim.Descriptor.Damage;
+                UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                string maintained = SummonHoldComponent.MaintainLink(holder, victim, grab, null,
+                    holder.Descriptor.Buffs.GetBuff(grab.HoldBuff), heldState);
+                victim.Descriptor.Damage = before;
+                bool namedLimb = expected.Blueprint != null &&
+                    maintained.Contains(";limb=" + expected.Blueprint.name) &&
+                    !maintained.Contains(";substituted");
+                steps.Add(row[0] + "->" + row[1] + ":expected=" + (expected.Blueprint == null ?
+                    "?" : expected.Blueprint.name) + ",resolved=" + (resolved == null ||
+                    resolved.Blueprint == null ? "none" : resolved.Blueprint.name) +
+                    ",sameLimb=" + sameLimb + ",maintain=" + maintained);
+                ok = ok && sameLimb && namedLimb;
+            }
+            UnitEntityData flytrap = ExpandedSummoningPersistenceUnit(units,
+                "KMG_Summoning_Unit_GiantFlytrap");
+            if (flytrap != null)
+            {
+                steps.Add("flytrapLinks:" + SummonGrappleLinks.Describe(flytrap));
+                UnitEntityData horse = ExpandedSummoningPersistenceUnit(units,
+                    "KMG_Summoning_Unit_Horse");
+                UnitEntityData owlbear = ExpandedSummoningPersistenceUnit(units,
+                    "KMG_Summoning_Unit_Owlbear");
+                ItemEntityWeapon mouthA = ExpandedSummoningPersistenceLimb(flytrap, 0);
+                ItemEntityWeapon mouthB = ExpandedSummoningPersistenceLimb(flytrap, 2);
+                bool ownershipKept =
+                    ReferenceEquals(SummonGrappleLinks.OccupantOf(flytrap, mouthA), horse) &&
+                    ReferenceEquals(SummonGrappleLinks.OccupantOf(flytrap, mouthB), owlbear);
+                steps.Add("mouthOwnership:kept=" + ownershipKept);
+                ok = ok && ownershipKept;
+            }
+            valid = ok;
+            return string.Join(";", steps.ToArray());
+        }
+
         private static UnitEntityData ExpandedSummoningPersistentCyclops(UnitEntityData[] units)
         {
             return units == null ? null : units.FirstOrDefault(value => value != null &&
@@ -2292,6 +2459,446 @@ namespace KingmakerGunslinger.RuntimeTesting
             valid = uses == 0 && !available && armedStates == 1 && untimed && natural == 20 && hit &&
                 spent && nextNatural == 1 && nextMiss;
             return detail;
+        }
+
+        /// <summary>
+        /// One target per mouth (2026-09-26 order). A flytrap bite that holds
+        /// a foe, and one that has engulfed a foe, never strike another unit:
+        /// the attack itself auto-misses and leaves no log line, and the
+        /// game's own planned full attack no longer contains that hand. The
+        /// free mouths keep striking, four occupied mouths leave none, and
+        /// releasing one victim frees exactly its own mouth. The engulf
+        /// bundle is read from the blueprint and applied live.
+        /// </summary>
+        private bool ExerciseExpandedSummoningMouthOwnership(
+            ExpandedSummoningCorrectionFixture fixture, out string detail)
+        {
+            var steps = new List<string>();
+            bool ok = true;
+            UnitEntityData hostile = fixture.Hostile;
+            int damageBefore = hostile.Descriptor.Damage;
+            BlueprintScriptableObject[] blueprints = BlueprintBootstrap.Library.GetAllBlueprints()
+                .Where(value => value != null).ToArray();
+            BlueprintBuff multiHeld = blueprints.OfType<BlueprintBuff>().Single(value =>
+                value.name == "KMG_Summoning_Special_Grapple_MultiHeld");
+            BlueprintBuff engulfed = blueprints.OfType<BlueprintBuff>().Single(value =>
+                value.name == "KMG_Summoning_Special_GiantFlytrap_Engulfed");
+            UnitEntityData flytrap = null;
+            var wolves = new List<UnitEntityData>();
+            try
+            {
+                // The blueprint's own bundle: the stat block's crushing bite
+                // and acid, exactly, before any die is rolled.
+                var rounds = engulfed.ComponentsArray.OfType<Kingmaker.UnitLogic.Mechanics
+                    .Components.AddFactContextActions>().Single();
+                var damages = rounds.NewRound.Actions.OfType<Kingmaker.UnitLogic.Mechanics
+                    .Actions.ContextActionDealDamage>().ToArray();
+                string bundle = string.Join(",", damages.Select(value =>
+                    value.Value.DiceCountValue.Value + "d" + (int)value.Value.DiceType + "+" +
+                    value.Value.BonusValue.Value + ":" + value.DamageType.Type +
+                    (value.DamageType.Type == DamageType.Energy ? "/" + value.DamageType.Energy :
+                        "/" + value.DamageType.Physical.Form)).ToArray());
+                bool bundleExact = damages.Length == 2 &&
+                    damages[0].Value.DiceCountValue.Value ==
+                        ExpandedSummoningSpecialProfiles.GiantFlytrapEngulfDiceCount &&
+                    (int)damages[0].Value.DiceType ==
+                        ExpandedSummoningSpecialProfiles.GiantFlytrapEngulfDieSides &&
+                    damages[0].Value.BonusValue.Value ==
+                        ExpandedSummoningSpecialProfiles.GiantFlytrapEngulfBonus &&
+                    damages[1].Value.DiceCountValue.Value ==
+                        ExpandedSummoningSpecialProfiles.GiantFlytrapEngulfAcidDiceCount &&
+                    (int)damages[1].Value.DiceType ==
+                        ExpandedSummoningSpecialProfiles.GiantFlytrapEngulfAcidDieSides &&
+                    damages[1].Value.BonusValue.Value == 0 &&
+                    damages[1].DamageType.Energy == DamageEnergyType.Acid;
+                steps.Add("engulfBundle:" + bundle + ";exact=" + bundleExact);
+                ok = ok && bundleExact;
+
+                flytrap = CastExpandedSummoningOwnTier(fixture, "giant-flytrap");
+                flytrap.Descriptor.Stats.BaseAttackBonus.BaseValue = 100;
+                SummonGrabComponent grab = SummonGrabComponent.Find(flytrap);
+                List<Kingmaker.Items.Slots.WeaponSlot> flytrapLimbs = flytrap.Body.AdditionalLimbs;
+                var bites = new List<ItemEntityWeapon> { flytrap.Body.PrimaryHand.MaybeWeapon };
+                if (flytrapLimbs != null)
+                    bites.AddRange(flytrapLimbs.Select(value => value.MaybeWeapon));
+                Vector3 centre = flytrap.Position;
+                var directions = new List<int>();
+                string chosen;
+                PlaceExpandedSummoningUnit(hostile, ExpandedSummoningOpenPoint(centre, 2.5f, directions, out chosen));
+                for (int index = 0; index < 3; index++)
+                {
+                    UnitEntityData wolf = CastExpandedSummoningOwnTier(fixture, "wolf");
+                    wolves.Add(wolf);
+                    PlaceExpandedSummoningUnit(wolf, ExpandedSummoningOpenPoint(centre, 2.5f, directions, out chosen));
+                }
+                hostile.Descriptor.State.Size = Size.Medium;
+                bool fourBites = bites.Count == 4;
+                UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                bool held0 = fourBites && grab.TryGrab(hostile, bites[0], true);
+                steps.Add("mouths:bites=" + bites.Count + ";held0=" + held0 + ";" +
+                    SummonGrappleLinks.Describe(flytrap));
+                // The mouth that holds never reaches another unit; a free one does.
+                string shutRoll, freeRoll;
+                bool shut = !ExpandedSummoningMouthStrikes(flytrap, wolves[0], bites[0], out shutRoll);
+                bool free = ExpandedSummoningMouthStrikes(flytrap, wolves[0], bites[2], out freeRoll);
+                var planned = new UnitAttack(wolves[0]);
+                List<AttackHandInfo> plannedHands = planned.CreateFullAttack();
+                bool plannedDropped = !plannedHands.Any(info => info != null && info.Hand != null &&
+                    ReferenceEquals(info.Hand.MaybeWeapon, bites[0]));
+                steps.Add("heldMouth:shut=" + shut + "[" + shutRoll + "];free=" + free + "[" +
+                    freeRoll + "];plannedHands=" + plannedHands.Count + ";plannedDropped=" + plannedDropped);
+                ok = ok && fourBites && held0 && shut && free && plannedDropped;
+
+                // The engulf keeps the mouth shut although the held state ends.
+                Buff heldState = SummonHoldComponent.HeldState(flytrap, hostile, grab);
+                UnityEngine.Random.InitState(FindNativeD20Seed(10));
+                if (heldState != null) heldState.TickMechanics();
+                UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                Buff hold = flytrap.Descriptor.Buffs.GetBuff(grab.HoldBuff);
+                int beforeEngulf = hostile.Descriptor.Damage;
+                if (hold != null) hold.TickMechanics();
+                bool engulfedNow = hostile.Descriptor.HasFact(engulfed) &&
+                    hostile.Descriptor.Damage > beforeEngulf;
+                string engulfedRoll;
+                bool engulfedShut = !ExpandedSummoningMouthStrikes(flytrap, wolves[0], bites[0], out engulfedRoll);
+                int beforeTick = hostile.Descriptor.Damage;
+                Buff engulfState = hostile.Descriptor.Buffs.GetBuff(engulfed);
+                if (engulfState != null) engulfState.TickMechanics();
+                int engulfTick = hostile.Descriptor.Damage - beforeTick;
+                bool engulfTickInRange = engulfTick >= 1 +
+                    ExpandedSummoningSpecialProfiles.GiantFlytrapEngulfBonus +
+                    ExpandedSummoningSpecialProfiles.GiantFlytrapEngulfAcidDiceCount &&
+                    engulfTick <= ExpandedSummoningSpecialProfiles.GiantFlytrapEngulfDieSides +
+                    ExpandedSummoningSpecialProfiles.GiantFlytrapEngulfBonus +
+                    ExpandedSummoningSpecialProfiles.GiantFlytrapEngulfAcidDiceCount *
+                    ExpandedSummoningSpecialProfiles.GiantFlytrapEngulfAcidDieSides;
+                steps.Add("engulfedMouth:engulfed=" + engulfedNow + ";stillShut=" + engulfedShut +
+                    "[" + engulfedRoll + "];roundDamage=" + engulfTick + ";inRange=" +
+                    engulfTickInRange + ";" + SummonGrappleLinks.Describe(flytrap));
+                ok = ok && engulfedNow && engulfedShut && engulfTickInRange;
+
+                // Every mouth occupied: none reaches a fourth foe.
+                for (int index = 0; index < 3; index++)
+                {
+                    UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                    grab.TryGrab(wolves[index], bites[index + 1], true);
+                }
+                UnitEntityData spare = CastExpandedSummoningOwnTier(fixture, "wolf");
+                wolves.Add(spare);
+                PlaceExpandedSummoningUnit(spare, ExpandedSummoningOpenPoint(centre, 2.5f, directions, out chosen));
+                var reached = new List<string>();
+                foreach (ItemEntityWeapon bite in bites)
+                {
+                    string roll;
+                    if (ExpandedSummoningMouthStrikes(flytrap, spare, bite, out roll))
+                        reached.Add(bite.Blueprint == null ? "?" : bite.Blueprint.name);
+                }
+                bool noneReach = reached.Count == 0;
+                var occupiedPlan = new UnitAttack(spare);
+                int occupiedHands = occupiedPlan.CreateFullAttack().Count;
+                steps.Add("allOccupied:reached=" + reached.Count + ";plannedHands=" + occupiedHands +
+                    ";" + SummonGrappleLinks.Describe(flytrap));
+                ok = ok && noneReach && occupiedHands == 0;
+
+                // Releasing one victim frees exactly that mouth.
+                SummonHoldComponent.ReleaseLink(flytrap, wolves[1], grab, false);
+                var freedAgain = new List<string>();
+                foreach (ItemEntityWeapon bite in bites)
+                {
+                    string roll;
+                    if (ExpandedSummoningMouthStrikes(flytrap, spare, bite, out roll))
+                        freedAgain.Add(bites.IndexOf(bite).ToString());
+                }
+                bool exactlyOneFreed = freedAgain.Count == 1 && freedAgain[0] == "2";
+                bool othersStillHeld =
+                    ReferenceEquals(SummonHeldComponent.HolderOf(wolves[0], multiHeld), flytrap) &&
+                    ReferenceEquals(SummonHeldComponent.HolderOf(wolves[2], multiHeld), flytrap) &&
+                    hostile.Descriptor.HasFact(engulfed);
+                steps.Add("releaseOne:freed=" + string.Join("/", freedAgain.ToArray()) +
+                    ";exactlyOne=" + exactlyOneFreed + ";othersHeld=" + othersStillHeld +
+                    ";" + SummonGrappleLinks.Describe(flytrap));
+                ok = ok && exactlyOneFreed && othersStillHeld;
+            }
+            catch (Exception exception)
+            {
+                steps.Add("exception=" + DescribeExpandedSummoningCorrectionException(exception));
+                ok = false;
+            }
+            finally
+            {
+                hostile.Descriptor.Damage = damageBefore;
+                hostile.Descriptor.State.Size = fixture.HostileSize;
+                var created = new List<UnitEntityData>(wolves);
+                if (flytrap != null) created.Add(flytrap);
+                DisposeExpandedSummoningUnits(fixture.Created, created.ToArray());
+            }
+            detail = string.Join(";", steps.ToArray());
+            return ok;
+        }
+
+        /// <summary>One attack with one limb, reported: did it reach the target at all?</summary>
+        private static bool ExpandedSummoningMouthStrikes(UnitEntityData owner,
+            UnitEntityData target, ItemEntityWeapon weapon, out string detail)
+        {
+            UnityEngine.Random.InitState(FindNativeD20Seed(20));
+            int before = target.Descriptor.Damage;
+            var attack = new RuleAttackWithWeapon(owner, target, weapon, 0);
+            Rulebook.Trigger(attack);
+            RuleAttackRoll roll = attack.AttackRoll;
+            bool struck = roll != null && roll.IsHit && !roll.AutoMiss;
+            detail = (weapon.Blueprint == null ? "?" : weapon.Blueprint.name) + ":hit=" +
+                (roll != null && roll.IsHit) + ",autoMiss=" + (roll != null && roll.AutoMiss) +
+                ",logged=" + (roll != null && !roll.SuspendCombatLog);
+            target.Descriptor.Damage = before;
+            return struck;
+        }
+
+        /// <summary>
+        /// The rake a holding cat makes (2026-09-26 order). The game's own
+        /// initiator part gives a holder CantAct and CantMove, so the rake
+        /// comes where the tabletop puts it: as part of the maintain. The
+        /// case proves the two genuine rake rolls against the held foe, the
+        /// establishing limb's own maintain damage for a bite hold and for a
+        /// foreclaw hold, that a hold taken this turn rakes nothing, and that
+        /// a rake never reaches a unit the cat does not hold.
+        /// </summary>
+        private bool ExerciseExpandedSummoningMaintainRake(
+            ExpandedSummoningCorrectionFixture fixture, out string detail)
+        {
+            var steps = new List<string>();
+            bool ok = true;
+            UnitEntityData hostile = fixture.Hostile;
+            int damageBefore = hostile.Descriptor.Damage;
+            UnitEntityData tiger = null;
+            UnitEntityData other = null;
+            ExpandedSummoningAttackRollObserver observer = null;
+            try
+            {
+                steps.Add("mode:paused=" + Game.Instance.IsPaused + ";turnBased=" +
+                    DescribeExpandedSummoningTurnBasedMode());
+                tiger = CastExpandedSummoningOwnTier(fixture, "tiger");
+                tiger.Descriptor.Stats.BaseAttackBonus.BaseValue = 100;
+                SummonGrabComponent grab = SummonGrabComponent.Find(tiger);
+                ItemEntityWeapon bite = SummonLimbs.PrimaryWeapon(tiger);
+                List<ItemEntityWeapon> claws = SummonLimbs.RakeWeapons(tiger, grab.RakeLimbCount);
+                List<Kingmaker.Items.Slots.WeaponSlot> tigerLimbs = tiger.Body.AdditionalLimbs;
+                ItemEntityWeapon foreclaw = tigerLimbs == null ? null : tigerLimbs
+                    .Take(grab.GrabAdditionalLimbCount)
+                    .Select(value => value == null ? null : value.MaybeWeapon)
+                    .FirstOrDefault(value => value != null && !ReferenceEquals(value, bite));
+                other = CastExpandedSummoningOwnTier(fixture, "wolf");
+                PlaceExpandedSummoningUnit(other, tiger.Position + Vector3.forward * 2f);
+                hostile.Descriptor.State.Size = Size.Medium;
+
+                // A hold taken this turn rakes nothing.
+                UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                bool biteHold = grab.TryGrab(hostile, bite, true);
+                string sameTurn = SummonRakeExecution.RakeOnMaintain(tiger, hostile, grab, null);
+                steps.Add("sameTurn:held=" + biteHold + ";rake=" + sameTurn + ";" +
+                    SummonGrappleLinks.Describe(tiger));
+                ok = ok && biteHold && sameTurn.Contains("not-eligible");
+
+                // The next round: the maintain deals the bite's damage and
+                // makes the two rake attacks, and the log carries them.
+                Buff heldState = SummonHoldComponent.HeldState(tiger, hostile, grab);
+                UnityEngine.Random.InitState(FindNativeD20Seed(10));
+                if (heldState != null) heldState.TickMechanics();
+                observer = new ExpandedSummoningAttackRollObserver { Initiator = tiger };
+                EventBus.Subscribe(observer);
+                UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                string maintained = SummonHoldComponent.MaintainLink(tiger, hostile, grab, null,
+                    tiger.Descriptor.Buffs.GetBuff(grab.HoldBuff), heldState);
+                string[] rakeRolls = observer.Rolls.Where(value =>
+                    claws.Any(claw => claw.Blueprint != null &&
+                        value.Contains("weapon=" + claw.Blueprint.name))).ToArray();
+                bool rakeRan = maintained.Contains(";rake=") &&
+                    !maintained.Contains("not-eligible") && rakeRolls.Length == claws.Count &&
+                    rakeRolls.All(value => value.Contains("logged=True") &&
+                        !value.Contains("autoMiss=True"));
+                bool biteMaintain = maintained.Contains(";limb=" + (bite.Blueprint == null ? "?" :
+                    bite.Blueprint.name)) && !maintained.Contains(";substituted");
+                steps.Add("biteHold:maintain=" + maintained + ";rakeRolls=" + rakeRolls.Length +
+                    "[" + string.Join("|", rakeRolls) + "]");
+                ok = ok && rakeRan && biteMaintain && claws.Count == 2;
+
+                // A rake never reaches a unit this cat does not hold.
+                string otherRoll;
+                bool reachedOther = ExpandedSummoningMouthStrikes(tiger, other, claws[0], out otherRoll);
+                steps.Add("otherTarget:reached=" + reachedOther + "[" + otherRoll + "]");
+                ok = ok && !reachedOther;
+
+                // The same cat holding with a foreclaw maintains with claw damage.
+                SummonHoldComponent.ReleaseLink(tiger, hostile, grab, true);
+                ResetExpandedSummoningHostile(fixture);
+                hostile.Descriptor.State.Size = Size.Medium;
+                UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                bool clawHold = foreclaw != null && grab.TryGrab(hostile, foreclaw, true);
+                Buff clawState = SummonHoldComponent.HeldState(tiger, hostile, grab);
+                UnityEngine.Random.InitState(FindNativeD20Seed(10));
+                if (clawState != null) clawState.TickMechanics();
+                UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                string clawMaintained = SummonHoldComponent.MaintainLink(tiger, hostile, grab, null,
+                    tiger.Descriptor.Buffs.GetBuff(grab.HoldBuff), clawState);
+                bool clawMaintain = clawHold && foreclaw != null && foreclaw.Blueprint != null &&
+                    clawMaintained.Contains(";limb=" + foreclaw.Blueprint.name) &&
+                    !clawMaintained.Contains(";substituted");
+                steps.Add("foreclawHold:held=" + clawHold + ";maintain=" + clawMaintained + ";" +
+                    SummonGrappleLinks.Describe(tiger));
+                ok = ok && clawMaintain;
+                SummonHoldComponent.ReleaseLink(tiger, hostile, grab, true);
+            }
+            catch (Exception exception)
+            {
+                steps.Add("exception=" + DescribeExpandedSummoningCorrectionException(exception));
+                ok = false;
+            }
+            finally
+            {
+                if (observer != null)
+                {
+                    try { EventBus.Unsubscribe(observer); } catch (Exception) { }
+                }
+                hostile.Descriptor.Damage = damageBefore;
+                hostile.Descriptor.State.Size = fixture.HostileSize;
+                var created = new List<UnitEntityData>();
+                if (tiger != null) created.Add(tiger);
+                if (other != null) created.Add(other);
+                DisposeExpandedSummoningUnits(fixture.Created, created.ToArray());
+            }
+            detail = string.Join(";", steps.ToArray());
+            return ok;
+        }
+
+        private const int ExpandedSummoningCommandFrames = 600;
+        private UnitEntityData _rulesRakeCat;
+        private UnitAttack _rulesRakeCommand;
+        private ExpandedSummoningAttackRollObserver _rulesRakeObserver;
+        private readonly List<string> _rulesRakeSteps = new List<string>();
+        private bool _rulesRakeChargeValid;
+        private bool _rulesRakeOrdinaryValid;
+
+        /// <summary>
+        /// Issues one real command on a live cat: a charge, which the rake
+        /// rides on the tabletop, and then an ordinary full attack, which
+        /// never does. Nothing here builds an attack list by hand; the game
+        /// starts, runs and finishes the command on its own frames.
+        /// </summary>
+        private void BeginExpandedSummoningRakeCommand(bool ordinary)
+        {
+            UnitEntityData hostile = _rulesFixture.Hostile;
+            if (!ordinary)
+            {
+                _rulesRakeCat = CastExpandedSummoningOwnTier(_rulesFixture, "leopard");
+                _rulesRakeCat.Descriptor.Stats.BaseAttackBonus.BaseValue = 100;
+                _rulesRakeObserver = new ExpandedSummoningAttackRollObserver {
+                    Initiator = _rulesRakeCat };
+                EventBus.Subscribe(_rulesRakeObserver);
+                ExpandedSummoningRakeSequencePatch.ClearOutcomes();
+            }
+            _rulesRakeObserver.Rolls.Clear();
+            // A charge needs room; an ordinary full attack needs none.
+            var used = new List<int>();
+            string chosen;
+            PlaceExpandedSummoningUnit(_rulesRakeCat, ExpandedSummoningOpenPoint(
+                hostile.Position, ordinary ? 2.5f : 9f, used, out chosen));
+            _rulesRakeCommand = new UnitAttack(hostile);
+            if (!ordinary) _rulesRakeCommand.IsCharge = true;
+            else _rulesRakeCommand.ForceFullAttack = true;
+            _rulesRakeSteps.Add((ordinary ? "ordinary" : "charge") + ":placed=" + chosen +
+                ";canStart=" + _rulesRakeCommand.CanStart);
+            _rulesRakeCat.Commands.Run(_rulesRakeCommand);
+        }
+
+        /// <summary>True once the command has finished; the frames are the game's own.</summary>
+        private bool FinishExpandedSummoningRakeCommand(bool ordinary, int frames)
+        {
+            if (_rulesRakeCommand == null) return true;
+            if (!_rulesRakeCommand.IsFinished && frames < ExpandedSummoningCommandFrames)
+                return false;
+            List<ItemEntityWeapon> claws = SummonLimbs.RakeWeapons(_rulesRakeCat,
+                SummonGrabComponent.Find(_rulesRakeCat).RakeLimbCount);
+            string[] rolls = _rulesRakeObserver.Rolls.ToArray();
+            string[] rakeRolls = rolls.Where(value => claws.Any(claw => claw.Blueprint != null &&
+                value.Contains("weapon=" + claw.Blueprint.name))).ToArray();
+            bool ran = _rulesRakeCommand.IsStarted && _rulesRakeCommand.IsFinished;
+            _rulesRakeSteps.Add((ordinary ? "ordinary" : "charge") + ":started=" +
+                _rulesRakeCommand.IsStarted + ";finished=" + _rulesRakeCommand.IsFinished +
+                ";result=" + _rulesRakeCommand.Result + ";frames=" + frames + ";acted=" +
+                _rulesRakeCommand.IsActed + ";attacks=" + rolls.Length + ";rakeRolls=" +
+                rakeRolls.Length + "[" + string.Join("|", rakeRolls) + "];all=" +
+                string.Join("|", rolls));
+            if (ordinary)
+                _rulesRakeOrdinaryValid = ran && rolls.Length > 0 && rakeRolls.Length == 0;
+            else
+                _rulesRakeChargeValid = ran && rakeRolls.Length == claws.Count &&
+                    rakeRolls.All(value => value.Contains("logged=True") &&
+                        !value.Contains("autoMiss=True"));
+            _rulesRakeCommand = null;
+            return true;
+        }
+
+        private void CompleteExpandedSummoningRakeCommand()
+        {
+            _rulesRakeSteps.Add("sequence:" + string.Join(",",
+                ExpandedSummoningRakeSequencePatch.ObservedOutcomes.ToArray()));
+            if (_rulesRakeObserver != null)
+            {
+                try { EventBus.Unsubscribe(_rulesRakeObserver); } catch (Exception) { }
+                _rulesRakeObserver = null;
+            }
+            if (_rulesRakeCat != null)
+                DisposeExpandedSummoningUnits(_rulesFixture.Created, new[] { _rulesRakeCat });
+            _rulesRakeCat = null;
+            _rulesCases.Add(Assertion("expanded-summoning-correction-rake-command",
+                "the game's own command carries the rake on a charge and never on an ordinary full attack: the command starts, runs to a result on the game's frames, and the two rake claws roll their own attacks with damage the combat log carries",
+                string.Join(";", _rulesRakeSteps.ToArray()),
+                _rulesRakeChargeValid && _rulesRakeOrdinaryValid,
+                "UnitCommands.Run on a live cat, the command's own CanStart, Result and IsActed, and the global attack-roll observer"));
+        }
+
+        /// <summary>The game's combat mode, for the record: real time with pause, or the turn-based controller.</summary>
+        private static string DescribeExpandedSummoningTurnBasedMode()
+        {
+            object controller = ReadExpandedSummoningOptionalMember(Game.Instance, "TurnBasedCombatController");
+            if (controller == null) return "controller=absent";
+            object initialized = ReadExpandedSummoningOptionalMember(controller, "Initialized");
+            object turn = ReadExpandedSummoningOptionalMember(controller, "CurrentTurn");
+            return "controller=present,initialized=" + initialized + ",currentTurn=" +
+                (turn == null ? "none" : "active");
+        }
+
+        private static object ReadExpandedSummoningOptionalMember(object instance, string name)
+        {
+            if (instance == null) return null;
+            System.Reflection.PropertyInfo property = instance.GetType().GetProperty(name,
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public |
+                System.Reflection.BindingFlags.NonPublic);
+            if (property != null) return property.GetValue(instance, null);
+            System.Reflection.FieldInfo field = instance.GetType().GetField(name,
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public |
+                System.Reflection.BindingFlags.NonPublic);
+            return field == null ? null : field.GetValue(instance);
+        }
+
+        /// <summary>The Web's projectile: the exact identity the builder pins.</summary>
+        private bool ExerciseExpandedSummoningWebProjectile(out string detail)
+        {
+            BlueprintScriptableObject[] blueprints = BlueprintBootstrap.Library.GetAllBlueprints()
+                .Where(value => value != null).ToArray();
+            BlueprintAbility web = blueprints.OfType<BlueprintAbility>().Single(value =>
+                value.name == "KMG_Summoning_Special_GiantSpider_Web");
+            var delivery = web.ComponentsArray.OfType<Kingmaker.UnitLogic.Abilities.Components
+                .AbilityDeliverProjectile>().Single();
+            BlueprintProjectile[] projectiles = delivery.Projectiles ??
+                Array.Empty<BlueprintProjectile>();
+            bool exact = projectiles.Length == 1 && projectiles[0] != null &&
+                projectiles[0].AssetGuid == ExpandedSummoningSpecialBuilder.WebProjectileGuid;
+            detail = "projectiles=" + projectiles.Length + ";name=" + (projectiles.Length == 1 &&
+                projectiles[0] != null ? projectiles[0].name : "<none>") + ";guid=" +
+                (projectiles.Length == 1 && projectiles[0] != null ? projectiles[0].AssetGuid :
+                    "<none>") + ";pinned=" + ExpandedSummoningSpecialBuilder.WebProjectileGuid +
+                ";exact=" + exact;
+            return exact;
         }
 
         // ---------------------------------------------------------------------------------------------------------

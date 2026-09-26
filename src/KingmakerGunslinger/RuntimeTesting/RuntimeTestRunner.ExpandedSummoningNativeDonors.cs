@@ -67,7 +67,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private static readonly string[] NativeDonorProjectileTerms =
         {
-            "web", "net", "entangle", "spider", "tanglefoot", "snare"
+            "web", "entangle", "spider", "tanglefoot", "snare", "stonethrow"
         };
 
         private const string NativeGrabFeatureGuid =
