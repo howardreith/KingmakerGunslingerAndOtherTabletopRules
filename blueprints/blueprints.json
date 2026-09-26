@@ -15657,6 +15657,2310 @@
       "notes": "+5 Nodachi; canonical-family clone; Better Vendors progression stock only."
     },
     {
+      "symbol": "KMG.Summoning.Unit.Pony",
+      "guid": "67a661d7b39e44bc811ad9ff59120110",
+      "plannedType": "BlueprintUnit",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Unit.Horse",
+      "guid": "629fa53bf40d4b4b9828f57cf81194e9",
+      "plannedType": "BlueprintUnit",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Unit.Owlbear",
+      "guid": "7bde6f94222c47f687ed68c752cb24cb",
+      "plannedType": "BlueprintUnit",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Unit.Cyclops",
+      "guid": "a85dfadbca3340f4aad99c1cc36e40b3",
+      "plannedType": "BlueprintUnit",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier1.Pony.One",
+      "guid": "317c59d12326455fb35402b28719dfd3",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier1.Pony.One.Celestial",
+      "guid": "e9e45cdcfe774f83805408720e1bdfae",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier1.Pony.One.Fiendish",
+      "guid": "7fd5d7464e0045829cf74534f210b59a",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier2.Pony.OneD3",
+      "guid": "a01faa703d374dd99f7e4cfa88e56527",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier2.Pony.OneD3.Celestial",
+      "guid": "d549ae5535ba49c4b62fde0ee343a1dd",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier2.Pony.OneD3.Fiendish",
+      "guid": "ac438525685b4b41b1f2ae3b1ea5248d",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier2.Horse.One",
+      "guid": "22dd279f838443cfb9d65d3868c45549",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier2.Horse.One.Celestial",
+      "guid": "9f552144bd5e4202928c68fbc086f130",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier2.Horse.One.Fiendish",
+      "guid": "feb5352357ff47f69b9b0e73b390c6f6",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier3.Pony.OneD4PlusOne",
+      "guid": "f438cc45db55419b80be5b819365edda",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier3.Pony.OneD4PlusOne.Celestial",
+      "guid": "22ad6ac3f4ef4660a9d6f255b10d7f58",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier3.Pony.OneD4PlusOne.Fiendish",
+      "guid": "084ad05505a64d9fae3a6b62955ae86c",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier3.Horse.OneD3",
+      "guid": "aabf5cbb375e485799686c3133c21e95",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier3.Horse.OneD3.Celestial",
+      "guid": "f417bc58f0fb41dc9a2c2f137d8ea32b",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier3.Horse.OneD3.Fiendish",
+      "guid": "aab2cdf72eea4ad19319fd58dea59592",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier4.Pony.OneD4PlusOne",
+      "guid": "a6220be2482c490d9750624002859df4",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier4.Pony.OneD4PlusOne.Celestial",
+      "guid": "c3468b2f8bb94d1f9121333b8318e06d",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier4.Pony.OneD4PlusOne.Fiendish",
+      "guid": "3d4d5459966940e4a24a51a28b71efbc",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier4.Horse.OneD4PlusOne",
+      "guid": "dd75f2771e0f4b74b8f4cbfcf32967c7",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier4.Horse.OneD4PlusOne.Celestial",
+      "guid": "62dc549ff82b4f71ae84d008707568a7",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier4.Horse.OneD4PlusOne.Fiendish",
+      "guid": "52efd4d9de7e4d319f4cad9c4accda6c",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier5.Pony.OneD4PlusOne",
+      "guid": "853b19daeb9b4a54bbc193a8d47a36f5",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier5.Pony.OneD4PlusOne.Celestial",
+      "guid": "cccabd42e640418eb6f5dd391b3b00b1",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier5.Pony.OneD4PlusOne.Fiendish",
+      "guid": "912d8c9692ce445da76978d4792d4604",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier5.Horse.OneD4PlusOne",
+      "guid": "2e660045bffa49d0af7ae9f5751b8c3e",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier5.Horse.OneD4PlusOne.Celestial",
+      "guid": "889bf1ab72484f6fa2b9564d970fef12",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier5.Horse.OneD4PlusOne.Fiendish",
+      "guid": "fcc1fcf3fdcc45bb967f19c5ee53b182",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier6.Pony.OneD4PlusOne",
+      "guid": "1513bfc815cd4532b2daecde0cde3efa",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier6.Pony.OneD4PlusOne.Celestial",
+      "guid": "e2b49cd8fae248849473175f60c076b6",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier6.Pony.OneD4PlusOne.Fiendish",
+      "guid": "3fab9cb9a7034749bf2e1ed505e0fa08",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier6.Horse.OneD4PlusOne",
+      "guid": "adf92f970fb646f4809b742bcc972dbc",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier6.Horse.OneD4PlusOne.Celestial",
+      "guid": "dc0e9e800f3d42b3b456ec9dd2cf2c99",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier6.Horse.OneD4PlusOne.Fiendish",
+      "guid": "ad6db42c83c14429b229e02de7cd12d7",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier7.Pony.OneD4PlusOne",
+      "guid": "dc22becb8287449f8e91b3435b27c3dd",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier7.Pony.OneD4PlusOne.Celestial",
+      "guid": "8cfe3437543a466f8e92ef5693cbcb0f",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier7.Pony.OneD4PlusOne.Fiendish",
+      "guid": "79da62c69610434d90aa8692fe7f905b",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier7.Horse.OneD4PlusOne",
+      "guid": "e1528209f4ce4c8c9a5ddf61c46b029b",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier7.Horse.OneD4PlusOne.Celestial",
+      "guid": "56b4ad7f8d6a44eab16d00fcf685e138",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier7.Horse.OneD4PlusOne.Fiendish",
+      "guid": "b9eab8995263454d84c9332b5755f611",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier8.Pony.OneD4PlusOne",
+      "guid": "acf12709e641494492c1167661afc62b",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier8.Pony.OneD4PlusOne.Celestial",
+      "guid": "fd43220257414477bf51e331b1dd8644",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier8.Pony.OneD4PlusOne.Fiendish",
+      "guid": "c6eb24374cc74e25bdc82515eb7b709b",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier8.Horse.OneD4PlusOne",
+      "guid": "2c8d8fb226e745f8960e83846fb36e20",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier8.Horse.OneD4PlusOne.Celestial",
+      "guid": "48913b62388a489ea6d22f1e857e679a",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier8.Horse.OneD4PlusOne.Fiendish",
+      "guid": "ef27bf81cd6d4706b0ed4ddcaffd7a3b",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.Pony.OneD4PlusOne",
+      "guid": "3c65c13606a545f29bf4097eb4000154",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.Pony.OneD4PlusOne.Celestial",
+      "guid": "05b0f4728ce645f49f957d16df4345f6",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.Pony.OneD4PlusOne.Fiendish",
+      "guid": "203af45d7b0144f3a143326a7fdea4b9",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.Horse.OneD4PlusOne",
+      "guid": "3aa36d84ec454de388f5a5efd43bc5f1",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.Horse.OneD4PlusOne.Celestial",
+      "guid": "c36cc0cae4114c22ac99c3a223acc6fb",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.Horse.OneD4PlusOne.Fiendish",
+      "guid": "e26c41e9fcaa42c8b75e8df1cab0c054",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier1.Pony.One",
+      "guid": "320582b60f0a4d13a6684cf6c84aef74",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier2.Pony.OneD3",
+      "guid": "b747202d130f48cf83a791fa3b6bfa6e",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier2.Horse.One",
+      "guid": "1cd82938c8b44a37b918a2a21fd99d49",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier3.Pony.OneD4PlusOne",
+      "guid": "1f88acc6c08542bdb0de96a7d90688a0",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier3.Horse.OneD3",
+      "guid": "73725890b5104930a71d09f099712dd5",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier4.Pony.OneD4PlusOne",
+      "guid": "3bf254266e2642fc941b7ffe39f4f531",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier4.Horse.OneD4PlusOne",
+      "guid": "e8e57a5023f44e9ca3b532f78f4e124f",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier4.Owlbear.One",
+      "guid": "d8df6662e6074ce4924f514225168596",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier5.Pony.OneD4PlusOne",
+      "guid": "9f7ec7d1bc5c465a90bfae8a554af621",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier5.Horse.OneD4PlusOne",
+      "guid": "d4b5c882c9c348b791db3a336b223a26",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier5.Owlbear.OneD3",
+      "guid": "e5b2aba45afd45f886db2376f5df478b",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier5.Cyclops.One",
+      "guid": "73913587f7a34fb7983075e5181a38bf",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier6.Pony.OneD4PlusOne",
+      "guid": "877519a63d744827a2cc4904ec0f0457",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier6.Horse.OneD4PlusOne",
+      "guid": "0b66bf1ba23e479b9dedfefdfb4680f4",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier6.Owlbear.OneD4PlusOne",
+      "guid": "485c218c31d748248fb128381576597a",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier6.Cyclops.OneD3",
+      "guid": "503bf184a5d24d41b7c560a0120d8ecb",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier7.Pony.OneD4PlusOne",
+      "guid": "bdb87ce8d66b4df2bcdf806ee205ea70",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier7.Horse.OneD4PlusOne",
+      "guid": "e52fcbb87b664ee097b8a0dc0ce15e60",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier7.Owlbear.OneD4PlusOne",
+      "guid": "4ace3dff5a3b4148bba40252ad227e6a",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier7.Cyclops.OneD4PlusOne",
+      "guid": "2f5a8860a880460b86eadfc4b328a34b",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier8.Pony.OneD4PlusOne",
+      "guid": "a321f1d48844482da14997dc938de55c",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier8.Horse.OneD4PlusOne",
+      "guid": "1f045f2934784e209d70cb3e87a24cae",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier8.Owlbear.OneD4PlusOne",
+      "guid": "720468f04dc84608990821ba5ef6367a",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier8.Cyclops.OneD4PlusOne",
+      "guid": "de12343b979f4767bd3b241eca9021c9",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier9.Pony.OneD4PlusOne",
+      "guid": "19b194447b3c410bb2cd4d3d1c3fac63",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier9.Horse.OneD4PlusOne",
+      "guid": "56330eaf5d9540ba90676918cdd1a28b",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier9.Owlbear.OneD4PlusOne",
+      "guid": "d40fa9c2af7f429aa96424b94227f066",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier9.Cyclops.OneD4PlusOne",
+      "guid": "a5f8960539004f11977ca552f1c81b00",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.NativeOption.SNA.Tier7.FrostGiant.One",
+      "guid": "184cfe9d6203442ebe4af4ac717fdf6d",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.NativeOption.SNA.Tier8.FrostGiant.OneD3",
+      "guid": "3afff2c5ea7943569e3d30457ccc6f3a",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.NativeOption.SNA.Tier9.FrostGiant.OneD4PlusOne",
+      "guid": "52c367cec4b342bd86356769193e8f87",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Cyclops.FlashOfInsight",
+      "guid": "f88d2d8f5a154c4094fec3b01ac1109c",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Cyclops.FlashOfInsightState",
+      "guid": "1c5ddb4bc9ae4929b61682fca8e7ba6e",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Cyclops.FlashOfInsightResource",
+      "guid": "a07046042da74c388c312d7ef5d4bb4a",
+      "plannedType": "BlueprintAbilityResource",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Cyclops.CombatTraits",
+      "guid": "559b9a9a3c53423b87c7281ecc88fbc0",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Cyclops.FlashOfInsightAi",
+      "guid": "591b2ddf91244a4da1dbb5586550e1a6",
+      "plannedType": "BlueprintAiCastSpell",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Cyclops.Brain",
+      "guid": "22dc52d0dfba4c3d8b9c6f49ea6037de",
+      "plannedType": "BlueprintBrain",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Unit.ShamblingMound",
+      "guid": "c0680a67c42f4d17b3b55c011a8f9c56",
+      "plannedType": "BlueprintUnit",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Unit.GiantFlytrap",
+      "guid": "287490e71bed46bd92adef60489ecb4c",
+      "plannedType": "BlueprintUnit",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Unit.PurpleWorm",
+      "guid": "8739fe771e5b4f3fa3acbb10dd969892",
+      "plannedType": "BlueprintUnit",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier6.ShamblingMound.One",
+      "guid": "d9df6491b93b4b97a15014bbc43dcf36",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier7.ShamblingMound.OneD3",
+      "guid": "cab9fbcc770a4ce39020ecaf544937e4",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier7.GiantFlytrap.One",
+      "guid": "085adbcd4ba540f7b73802bb114c6bbf",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier8.ShamblingMound.OneD4PlusOne",
+      "guid": "42c2f703eeb74d84be9614e6cffcd01c",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier8.GiantFlytrap.OneD3",
+      "guid": "2172cc7b9b0e485fa0fa1a0d8d794c93",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier8.PurpleWorm.One",
+      "guid": "ac4f08e655f34b86865d19b4f86cb45f",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier9.ShamblingMound.OneD4PlusOne",
+      "guid": "121d2ae2dc42456bbb789e7ae6095ff8",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier9.GiantFlytrap.OneD4PlusOne",
+      "guid": "2d15592c70ed4969bbaa5df5e13d082f",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier9.PurpleWorm.OneD3",
+      "guid": "4a8be5f2b72f4cc88b781cfdf51b1e18",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Grapple.Hold",
+      "guid": "5af4e99c8e5744a6b978412b126d25f0",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Grapple.Grappled",
+      "guid": "e49fc099e63b4392bb262f1fefa3301b",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Owlbear.CombatTraits",
+      "guid": "1ab3a4951af443409b9eaa190d55f69d",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.ShamblingMound.CombatTraits",
+      "guid": "4ec446a8591a4f169e7c548c089bf63a",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.GiantFlytrap.CombatTraits",
+      "guid": "ea204a20924045ca856de5af350a7194",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.PurpleWorm.CombatTraits",
+      "guid": "ce031441c4fa4f41a142799bbbef3f36",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.PurpleWorm.Swallowed",
+      "guid": "8a25b84199cd42319fa77b0b1d1d5bea",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Unit.DustMephit",
+      "guid": "30f6615badf14d21b41d6468d5c93ac3",
+      "plannedType": "BlueprintUnit",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Unit.IceMephit",
+      "guid": "b37cdd78c8cc43be8799e9ffd6953ba2",
+      "plannedType": "BlueprintUnit",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Unit.MagmaMephit",
+      "guid": "ce9551f1413d4fdcb59941734d4546b1",
+      "plannedType": "BlueprintUnit",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Unit.OozeMephit",
+      "guid": "7cbf19a6c83f4b8e849d17b8a54e6d51",
+      "plannedType": "BlueprintUnit",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Unit.SaltMephit",
+      "guid": "8c8fe6eb536b450a9a2c10b8cbef9fbe",
+      "plannedType": "BlueprintUnit",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Unit.SteamMephit",
+      "guid": "047f68ee53554d8ab1702de189ecd85d",
+      "plannedType": "BlueprintUnit",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier4.DustMephit.One",
+      "guid": "eff27d99ab3b476cbbd1d23e933a6391",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier4.IceMephit.One",
+      "guid": "f7fb199319e0401ebe4a6d78f21b66d3",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier4.MagmaMephit.One",
+      "guid": "7dcc9bc37ddd4b86af4fa448ab687376",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier4.OozeMephit.One",
+      "guid": "24e332e41d8f41488096c18c54dcab65",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier4.SaltMephit.One",
+      "guid": "371461a919fe43e79f3f9af1f9353069",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier4.SteamMephit.One",
+      "guid": "dbd3825fc6684c9494ef99066acb714b",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier5.DustMephit.OneD3",
+      "guid": "2119e7c0505e427f82e4fc83313ca0c2",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier5.IceMephit.OneD3",
+      "guid": "7feeac5c68a14fd2be0fabb5ed0beb6a",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier5.MagmaMephit.OneD3",
+      "guid": "428999d099e9440a9b1ae91d8638a720",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier5.OozeMephit.OneD3",
+      "guid": "7eb49ca4d3b248caa57254cc36e19636",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier5.SaltMephit.OneD3",
+      "guid": "3a5765e8bc304ca899d2f75d7347d896",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier5.SteamMephit.OneD3",
+      "guid": "ed98e96706a94091a3c20be4919e1215",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier6.DustMephit.OneD4PlusOne",
+      "guid": "aa55b6e8af2d417f827331ac5158eaff",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier6.IceMephit.OneD4PlusOne",
+      "guid": "35ccb17c84614dbc803a3f01c1d8ee0a",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier6.MagmaMephit.OneD4PlusOne",
+      "guid": "10f71ecb1ac745a8b281c4b824d494b1",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier6.OozeMephit.OneD4PlusOne",
+      "guid": "238ed4eb12204a5a88b5860c75131363",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier6.SaltMephit.OneD4PlusOne",
+      "guid": "afd91ab9c4824894b39f38b6ba78147b",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier6.SteamMephit.OneD4PlusOne",
+      "guid": "8a9c2eea91724dbcb2d501306a4fe3b7",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier7.DustMephit.OneD4PlusOne",
+      "guid": "353e8c264ae842338e6d78c58fbccd90",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier7.IceMephit.OneD4PlusOne",
+      "guid": "b323c7e8f61648888903185e8229b043",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier7.MagmaMephit.OneD4PlusOne",
+      "guid": "35a596b1345a444da4c5970cd93ea735",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier7.OozeMephit.OneD4PlusOne",
+      "guid": "d9f924cd282c486d95a83cf149635b39",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier7.SaltMephit.OneD4PlusOne",
+      "guid": "48123b1e26784cb18d4dae1edcc91c2e",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier7.SteamMephit.OneD4PlusOne",
+      "guid": "515c1836e8dc419eb934642c2e2e32c8",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier8.DustMephit.OneD4PlusOne",
+      "guid": "e23c829fd8cf426fb9c0c4500d8130d5",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier8.IceMephit.OneD4PlusOne",
+      "guid": "7e847258944749b9b89884b91619ca8c",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier8.MagmaMephit.OneD4PlusOne",
+      "guid": "0ea2d7c472a24fdcbf907bbfb38296b4",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier8.OozeMephit.OneD4PlusOne",
+      "guid": "1b78444899be4226913c494d57c4af76",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier8.SaltMephit.OneD4PlusOne",
+      "guid": "5b5eae63ef0740869438826c21741ab3",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier8.SteamMephit.OneD4PlusOne",
+      "guid": "7954908b932c4a0c803d7a000d47861d",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.DustMephit.OneD4PlusOne",
+      "guid": "ee0bd5e3a1854a75ac465e57c5cd8f09",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.IceMephit.OneD4PlusOne",
+      "guid": "bc7409315f4f462dbef07534663c06c6",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.MagmaMephit.OneD4PlusOne",
+      "guid": "f1eab7a23cd64ae39b6a05ee576f82d0",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.OozeMephit.OneD4PlusOne",
+      "guid": "8a6a699f872d4442acef6f9b28811cbb",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.SaltMephit.OneD4PlusOne",
+      "guid": "c461ccd8ff6a4afc994b0f71758bd4ca",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.SteamMephit.OneD4PlusOne",
+      "guid": "3f41f861e58f4c5b8738bbe10696cae2",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier4.DustMephit.One",
+      "guid": "0124979771724bd8936584b8cc32f7a8",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier4.IceMephit.One",
+      "guid": "09d795dca9c44933a1db09ef40a21e17",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier4.MagmaMephit.One",
+      "guid": "aea3f06b4bcb423a91bd68916d3f6460",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier4.OozeMephit.One",
+      "guid": "99c870fa6cf9489e845c76cbe902dbb1",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier4.SaltMephit.One",
+      "guid": "acf1b770048a4e22a27ac4b2fd716373",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier4.SteamMephit.One",
+      "guid": "b5e5a5d9f2f94ccd9c0d8afea6bb43ff",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier5.DustMephit.OneD3",
+      "guid": "5a1ac2544fa44f55b9094832e4de4f97",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier5.IceMephit.OneD3",
+      "guid": "f81a0239a7bb441b84478e56210b6562",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier5.MagmaMephit.OneD3",
+      "guid": "418f04c5b8a74c969283bcbea5fc5691",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier5.OozeMephit.OneD3",
+      "guid": "2ebc599086784fb7926cb0688399b48b",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier5.SaltMephit.OneD3",
+      "guid": "eff8f3258b72427da6542b4caaf0a8df",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier5.SteamMephit.OneD3",
+      "guid": "4d02ca7da65741d58732096f115d83a6",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier6.DustMephit.OneD4PlusOne",
+      "guid": "dd061d12989b40908b85c881599592d7",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier6.IceMephit.OneD4PlusOne",
+      "guid": "885de0ddb41e4ba8988c10fdde41f906",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier6.MagmaMephit.OneD4PlusOne",
+      "guid": "3a5e545dda0f4515b5eeb41d813d8bab",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier6.OozeMephit.OneD4PlusOne",
+      "guid": "53a0cfec253a4320963f3673178cc32a",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier6.SaltMephit.OneD4PlusOne",
+      "guid": "9a3a0580c29742809c11447771ad2fb5",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier6.SteamMephit.OneD4PlusOne",
+      "guid": "4c42d019e4af4040938114dd92eac207",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier7.DustMephit.OneD4PlusOne",
+      "guid": "28edfd81307d4f36b36c9e4f5ac4f983",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier7.IceMephit.OneD4PlusOne",
+      "guid": "2d447b0867ca41e98c4e4adb4c4c47d6",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier7.MagmaMephit.OneD4PlusOne",
+      "guid": "efac552327fe4f088edbc29afad06b24",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier7.OozeMephit.OneD4PlusOne",
+      "guid": "22260fe9e5cd4a2aa446403bc39ea33e",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier7.SaltMephit.OneD4PlusOne",
+      "guid": "ce79472133de4c4282e5da261bb90c00",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier7.SteamMephit.OneD4PlusOne",
+      "guid": "07b8c7f4937747348c5fe5accb498258",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier8.DustMephit.OneD4PlusOne",
+      "guid": "15b787300ea34934bb7d05e56bc2eb47",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier8.IceMephit.OneD4PlusOne",
+      "guid": "4f6ba3f16d65430b91c241cc05c03df2",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier8.MagmaMephit.OneD4PlusOne",
+      "guid": "3908d0139371499f8d2da327f87b25bc",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier8.OozeMephit.OneD4PlusOne",
+      "guid": "77906868a4764b248ad4373a28374db1",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier8.SaltMephit.OneD4PlusOne",
+      "guid": "724fff9f684e41f9962cae6dc3df70f9",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier8.SteamMephit.OneD4PlusOne",
+      "guid": "3ae72841e5f34705a5f8d0849c511f2e",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier9.DustMephit.OneD4PlusOne",
+      "guid": "1d8b6f45ce644f52bcf0605d10fec3cc",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier9.IceMephit.OneD4PlusOne",
+      "guid": "fdc107675cf34950961ac85c6691a7b2",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier9.MagmaMephit.OneD4PlusOne",
+      "guid": "868445f8949b4093b5d310927375fe8f",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier9.OozeMephit.OneD4PlusOne",
+      "guid": "b7775e03255849bdbeba34c35717833d",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier9.SaltMephit.OneD4PlusOne",
+      "guid": "3b52c9eb1ae7483cbe16e55fa8fc668b",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier9.SteamMephit.OneD4PlusOne",
+      "guid": "116328ca642d4e0997eac89a96d79ebe",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.DustMephit.Breath",
+      "guid": "9bf56be04a0c452fa628136a7a454b22",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.DustMephit.BreathAi",
+      "guid": "319e9603ece140a78dff1d8483cd6685",
+      "plannedType": "BlueprintAiCastSpell",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.DustMephit.Brain",
+      "guid": "176f06382dd347ba920c6ff482a0db5b",
+      "plannedType": "BlueprintBrain",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.DustMephit.CombatTraits",
+      "guid": "1692bbe558154adf8dedbc2e94cf8e7f",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.DustMephit.SpellLikeOne",
+      "guid": "1b2d864de558462a86045a5c667ce296",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.DustMephit.SpellLikeOneResource",
+      "guid": "3e8b23efde2e46bb96b405e45c6553ad",
+      "plannedType": "BlueprintAbilityResource",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.DustMephit.SpellLikeOneAi",
+      "guid": "5d7472e16a72429f928da3caabc2349f",
+      "plannedType": "BlueprintAiCastSpell",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.IceMephit.Breath",
+      "guid": "fe4016ec0ea04b0da8bc2a08c984818c",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.IceMephit.BreathAi",
+      "guid": "f6b453d55cb54806874f624da2aea1f2",
+      "plannedType": "BlueprintAiCastSpell",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.IceMephit.Brain",
+      "guid": "cf16af70f80f4f968fd5969356b19c0a",
+      "plannedType": "BlueprintBrain",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.IceMephit.CombatTraits",
+      "guid": "be63637c7ad646d7b35b52c2929bab5d",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.IceMephit.SpellLikeOne",
+      "guid": "3694bb231deb4603bfe97601e308fe05",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.IceMephit.SpellLikeOneResource",
+      "guid": "e464bb6d092143449c407564935e5bfe",
+      "plannedType": "BlueprintAbilityResource",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.IceMephit.SpellLikeOneAi",
+      "guid": "2d69b4a35093498784ebdaaeaaa8c0cf",
+      "plannedType": "BlueprintAiCastSpell",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.MagmaMephit.Breath",
+      "guid": "512be3e38f524cc4ba045e4b3167c54c",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.MagmaMephit.BreathAi",
+      "guid": "3708db4d4bfc4541b46618dae76212dd",
+      "plannedType": "BlueprintAiCastSpell",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.MagmaMephit.Brain",
+      "guid": "8963c494751644a2b07d8f2143dbcea0",
+      "plannedType": "BlueprintBrain",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.MagmaMephit.CombatTraits",
+      "guid": "cfb1de7a10b041888b8f9b8779e715d2",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.OozeMephit.Breath",
+      "guid": "3d5cd0f7990646eaa6477247b60412dc",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.OozeMephit.BreathAi",
+      "guid": "7da203b6e1a941c2a788a438cb78fdaa",
+      "plannedType": "BlueprintAiCastSpell",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.OozeMephit.Brain",
+      "guid": "1d17e755989b4075870279a9be161ab6",
+      "plannedType": "BlueprintBrain",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.OozeMephit.CombatTraits",
+      "guid": "c373f71f640543b094c4a77f8d2a92f4",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.OozeMephit.SpellLikeOne",
+      "guid": "2c51d416aade4648a3b6a91b772aa66c",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.OozeMephit.SpellLikeOneResource",
+      "guid": "e0b376a3992e4a6bac65a4c038afc8ce",
+      "plannedType": "BlueprintAbilityResource",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.OozeMephit.SpellLikeOneAi",
+      "guid": "17bd5aee21d549b68626b412a9efca8a",
+      "plannedType": "BlueprintAiCastSpell",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.OozeMephit.SpellLikeTwo",
+      "guid": "2b78134358af447f8a874f13b6a25ef6",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.OozeMephit.SpellLikeTwoResource",
+      "guid": "7572abb41b194e67af27c65250a36821",
+      "plannedType": "BlueprintAbilityResource",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.OozeMephit.SpellLikeTwoAi",
+      "guid": "d8c2e71c889f483bb08cabb670bd2f92",
+      "plannedType": "BlueprintAiCastSpell",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.SaltMephit.Breath",
+      "guid": "0082eea8755740dc8a4de5308d9faff8",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.SaltMephit.BreathAi",
+      "guid": "fc117113465e442fa66edb21bbcb4d84",
+      "plannedType": "BlueprintAiCastSpell",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.SaltMephit.Brain",
+      "guid": "04d2ec99fa334b16a2b116cf0843775e",
+      "plannedType": "BlueprintBrain",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.SaltMephit.CombatTraits",
+      "guid": "93880e0d35fb4ea7b5969f7c0a3a7a3d",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.SaltMephit.SpellLikeOne",
+      "guid": "1e83c9cd30764c08b44b3e6e4dfb37fc",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.SaltMephit.SpellLikeOneResource",
+      "guid": "5827a77fd35f4772ba053f7544364b2a",
+      "plannedType": "BlueprintAbilityResource",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.SaltMephit.SpellLikeOneAi",
+      "guid": "129d7a6fb21b4a71af7de9e30803f68e",
+      "plannedType": "BlueprintAiCastSpell",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.SaltMephit.SpellLikeTwo",
+      "guid": "6db971113edf47e4ae4404ac71ba819e",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.SaltMephit.SpellLikeTwoResource",
+      "guid": "9b4ce3e9fe1c4606a83d5c8864b4aae4",
+      "plannedType": "BlueprintAbilityResource",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.SaltMephit.SpellLikeTwoAi",
+      "guid": "397c49078c3945858ca355775e72b2c5",
+      "plannedType": "BlueprintAiCastSpell",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.SteamMephit.Breath",
+      "guid": "146c6326b7c7430c9bf33cad288fceef",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.SteamMephit.BreathAi",
+      "guid": "014bb50badae457998e17b708a3c1bfa",
+      "plannedType": "BlueprintAiCastSpell",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.SteamMephit.Brain",
+      "guid": "b72c6534a9234bb5b1a6ae63632b8ace",
+      "plannedType": "BlueprintBrain",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.SteamMephit.CombatTraits",
+      "guid": "0ea021251fa244228ca3ec54b36c46e8",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.SteamMephit.SpellLikeOne",
+      "guid": "b4a135660e8e4023b58845b825f44228",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.SteamMephit.SpellLikeOneResource",
+      "guid": "5c8f1dc087fc4e028095e6f21b074bc2",
+      "plannedType": "BlueprintAbilityResource",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.SteamMephit.SpellLikeOneAi",
+      "guid": "aaa64536cc8345d78cc5109c055e1ae2",
+      "plannedType": "BlueprintAiCastSpell",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.SteamMephit.SpellLikeTwo",
+      "guid": "ab241b72756a49cab443ef5b1acd23de",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.SteamMephit.SpellLikeTwoResource",
+      "guid": "d8bdd93b25bb45f9b5775ed90df5b61c",
+      "plannedType": "BlueprintAbilityResource",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.SteamMephit.SpellLikeTwoAi",
+      "guid": "3ab58c5239174273892727aa25c6f5cb",
+      "plannedType": "BlueprintAiCastSpell",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.MonitorLizard.CombatTraits",
+      "guid": "45f7552dddaf4322b44a1421cef3a3f2",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.GrizzlyBear.CombatTraits",
+      "guid": "75a7c289e4c643bb93c2155a9f079c34",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.DireBear.CombatTraits",
+      "guid": "74e7cfabb0e14a07b9c0ec9862e8009d",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.GiantSpider.Web",
+      "guid": "ea2845894cb94af19994768602294900",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.GiantSpider.WebResource",
+      "guid": "2f841b1ca74a42d487ad43e1c26f7210",
+      "plannedType": "BlueprintAbilityResource",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.GiantSpider.WebAi",
+      "guid": "67a101d251444047a6f3c15323bff174",
+      "plannedType": "BlueprintAiCastSpell",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.GiantSpider.Brain",
+      "guid": "1b8106c390e64f048043998da1c13875",
+      "plannedType": "BlueprintBrain",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.GiantSpider.CombatTraits",
+      "guid": "c5637ec9346b414087fda9334ec50bf5",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Leopard.CombatTraits",
+      "guid": "da89f9ecc18849edbbad0ee7772c8cd0",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Lion.CombatTraits",
+      "guid": "e7d7d41e2c764fa5a56d33ca4556c65c",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.DireLion.CombatTraits",
+      "guid": "0641d94c18b740f4b7772e8d3205ba96",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.DireTiger.CombatTraits",
+      "guid": "4cbd552217734bbfbc4be0c2c8b97849",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Unit.Tiger",
+      "guid": "5182125341e34ae98491eaf991bc0ef3",
+      "plannedType": "BlueprintUnit",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier4.Tiger.One",
+      "guid": "11803dae3bbd4aa2b724e198723cf823",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier5.Tiger.OneD3",
+      "guid": "78f0199c387545bdb4882ca470758fcb",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier6.Tiger.OneD4PlusOne",
+      "guid": "9744d59cb03d431abaaebaaddf01de75",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier7.Tiger.OneD4PlusOne",
+      "guid": "a73109affc4b41a6bb763bf0f71be396",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier8.Tiger.OneD4PlusOne",
+      "guid": "c01fd035f03f402d81402b8b1f26307f",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier9.Tiger.OneD4PlusOne",
+      "guid": "99ac368e5a6c43b9bdb48327984acebe",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Tiger.CombatTraits",
+      "guid": "87733e5295284048949fbb4b50c533c9",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Cheetah.Sprint",
+      "guid": "a2ae66e5a8ca4bd2bbb8fe7001bd66cd",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Cheetah.SprintResource",
+      "guid": "b1db61f007c547bdb0668ffac3e7b960",
+      "plannedType": "BlueprintAbilityResource",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Cheetah.SprintState",
+      "guid": "c7a7fd6c4c7e4ef29d9a634ed3de995d",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Cheetah.SprintAi",
+      "guid": "4c41608d98f945d0897ff01e5a691cdc",
+      "plannedType": "BlueprintAiCastSpell",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Cheetah.Brain",
+      "guid": "607f8ece3e8943faa13ab95ac611ad54",
+      "plannedType": "BlueprintBrain",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Cheetah.CombatTraits",
+      "guid": "056353ae7a1b4663b4e028e133eb4b8f",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Natural.Claw1d8",
+      "guid": "422318f491354d37aba69dece0004a11",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Grapple.MultiHold",
+      "guid": "a6ff9b2a7c704889a3adf6c28da683fe",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Grapple.MultiHeld",
+      "guid": "c6a4dd2e1c3d401ca464178ffb590452",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.GiantFlytrap.Engulfed",
+      "guid": "6f8239e5e0ad4506b76972cd85a01de7",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Cyclops.HideArmor",
+      "guid": "09b90e2a09ef4bf99c158d816ae8ccba",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Pony.CombatTraits",
+      "guid": "94945076953646e9827fa7dae965e3b9",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Horse.CombatTraits",
+      "guid": "824224c39ac440849414f8a78c5e50b7",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.DustMephit.SpellLikeTwo",
+      "guid": "342914575f204309b3ea64da949a347e",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.DustMephit.SpellLikeTwoResource",
+      "guid": "262dd7ae4bf74db8953698cbd5c3ccca",
+      "plannedType": "BlueprintAbilityResource",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.DustMephit.SpellLikeTwoAi",
+      "guid": "2657bacbca8a4b6cbbb586cbd9546117",
+      "plannedType": "BlueprintAiCastSpell",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.DustMephit.WindWallArea",
+      "guid": "9d08edbf64a84f1aabdce39370774f76",
+      "plannedType": "BlueprintAbilityAreaEffect",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.DustMephit.WindWallState",
+      "guid": "334df80385894c0189212aefecb509cd",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.IceMephit.SpellLikeTwo",
+      "guid": "4a2400396c7544039380104e76613816",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.IceMephit.SpellLikeTwoResource",
+      "guid": "757a99a5d9b8455ebdc4f1eac68db267",
+      "plannedType": "BlueprintAbilityResource",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.IceMephit.SpellLikeTwoAi",
+      "guid": "8dac523325794ed3a767007d2e50eb90",
+      "plannedType": "BlueprintAiCastSpell",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.IceMephit.ChillMetalState",
+      "guid": "fb0e363ae9c440cf8d37d63c9b679e73",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.MagmaMephit.SpellLikeOne",
+      "guid": "bd1ea7fc5dbe4c228a500f757b31c188",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.MagmaMephit.SpellLikeOneResource",
+      "guid": "dbff52927879462d88faaf784e650594",
+      "plannedType": "BlueprintAbilityResource",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.MagmaMephit.SpellLikeOneAi",
+      "guid": "9595136945f6453bbfe9ec16001da54d",
+      "plannedType": "BlueprintAiCastSpell",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.MagmaMephit.SpellLikeTwo",
+      "guid": "1fbf5c29c1974bdfadbbf9109b023420",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.MagmaMephit.SpellLikeTwoResource",
+      "guid": "249fc0db377e47c98c652af72bb5c4a5",
+      "plannedType": "BlueprintAbilityResource",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.MagmaMephit.SpellLikeTwoAi",
+      "guid": "68a29584ba8b4c81a22d29d1782055e0",
+      "plannedType": "BlueprintAiCastSpell",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.MagmaMephit.MagmaFormState",
+      "guid": "38ae68b0102a442f8eda8d85018f4ddc",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.OozeMephit.StinkingCloudArea",
+      "guid": "eb0e5daa5ddd408cbf6fb38acb0e8751",
+      "plannedType": "BlueprintAbilityAreaEffect",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.MagmaMephit.PyrotechnicsBlindedState",
+      "guid": "a507e36761f9478f956d38d2a4b37d0a",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
       "symbol": "KMG.FavoredClass.Gunslinger.Grit.Partial",
       "guid": "718289fb8ab945e48880961722a344fd",
       "plannedType": "BlueprintFeature",

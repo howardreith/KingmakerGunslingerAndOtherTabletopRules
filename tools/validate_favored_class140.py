@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the 0.0.139 Favored Class integration candidate.
+"""Validate the 0.0.140 Favored Class integration release.
 
 Retains every inherited gate. Mechanical acceptance is the domain suite and
 guarded runtime evidence, not these documentation/metadata checks. This is an
@@ -14,14 +14,15 @@ import sys
 from pathlib import Path
 sys.dont_write_bytecode = True
 import validate_better_vendors138 as baseline
+import validate_expanded_summoning139 as release139
 import validate_sprint32
 
-VERSION = "0.0.139"
-INFORMATIONAL_VERSION = "0.0.139-favored-class-integration"
-PACKAGE = "KingmakerGunslinger-0.0.139-local-runtime.zip"
+VERSION = "0.0.140"
+INFORMATIONAL_VERSION = "0.0.140-favored-class-integration"
+PACKAGE = "KingmakerGunslinger-0.0.140-local-runtime.zip"
 PACKAGE_SUFFIX = "favored-class-integration"
-DETERMINISTIC_TEST_COUNT = 1854
-STATIC_KEY = "favoredClassIntegration139"
+DETERMINISTIC_TEST_COUNT = 1918
+STATIC_KEY = "favoredClassIntegration140"
 
 # Exact ordered (symbol, guid) pairs this candidate appends after the
 # Better Vendors block.
@@ -255,12 +256,13 @@ def validate(root: Path) -> None:
     # aggregate use the effective threshold that decided each native roll.
     validate_sprint32.SCATTER_MISFIRE_AGGREGATE_TOKEN = "IsMisfire(misfireThreshold)"
     baseline.AUTHORIZED_APPENDED_AFTER = APPENDED
-    baseline.VERSION = VERSION
-    baseline.INFORMATIONAL_VERSION = INFORMATIONAL_VERSION
-    baseline.PACKAGE = PACKAGE
-    baseline.PACKAGE_SUFFIX = PACKAGE_SUFFIX
-    baseline.DETERMINISTIC_TEST_COUNT = DETERMINISTIC_TEST_COUNT
-    baseline.validate(root)
+    # Chains through the 0.0.139 release, which hands these to its baseline.
+    release139.VERSION = VERSION
+    release139.INFORMATIONAL_VERSION = INFORMATIONAL_VERSION
+    release139.PACKAGE = PACKAGE
+    release139.PACKAGE_SUFFIX = PACKAGE_SUFFIX
+    release139.DETERMINISTIC_TEST_COUNT = DETERMINISTIC_TEST_COUNT
+    release139.validate(root)
 
     # The host stays optional: no UMM requirement or compile-time reference.
     info = json.loads((root / "Info.json").read_text(encoding="utf-8"))
@@ -295,12 +297,12 @@ def validate(root: Path) -> None:
     static = json.loads((root / "validation/static-validation.json").read_text(
         encoding="utf-8"))
     if static.get("version") != VERSION or static.get("milestone") != INFORMATIONAL_VERSION:
-        raise AssertionError("Static validation does not identify the 0.0.139 candidate")
+        raise AssertionError("Static validation does not identify the 0.0.140 release")
     state = static[STATIC_KEY]
     expected = {
         "deterministicTestCount": DETERMINISTIC_TEST_COUNT,
-        "publicReleaseAuthorized": False,
-        "candidateOnly": True,
+        "publicReleaseAuthorized": True,
+        "candidateOnly": False,
         "releaseVersion": VERSION,
         "releaseInformationalVersion": INFORMATIONAL_VERSION,
         "hostVerifiedVersion": "1.3.1",
@@ -320,9 +322,9 @@ def validate(root: Path) -> None:
     if state.get("nativeRuntimeQualified") and not state.get("nativeRuntimeEvidence"):
         raise AssertionError("A native qualification claim needs recorded evidence")
 
-    baseline.require_tokens(root / "docs/RELEASE-NOTES-0.0.139.md",
-        INFORMATIONAL_VERSION, "Favored Class", "optional", "candidate",
-        "not published", "uninstall")
+    baseline.require_tokens(root / "docs/RELEASE-NOTES-0.0.140.md",
+        INFORMATIONAL_VERSION, "Favored Class", "optional", "owner authorized",
+        "uninstall")
 
 
 def main() -> int:

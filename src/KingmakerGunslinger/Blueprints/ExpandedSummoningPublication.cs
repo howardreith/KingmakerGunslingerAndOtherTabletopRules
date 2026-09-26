@@ -102,6 +102,20 @@ namespace KingmakerGunslinger.Blueprints
             }
         }
 
+        /// <summary>
+        /// The eighteen native parents this module publishes under, in the
+        /// order the publisher walks them: Summon Monster I-IX then Summon
+        /// Nature's Ally I-IX.
+        ///
+        /// Exposed so an observer can measure the same surface the publisher
+        /// writes to. Copies of this list already existed in several observers;
+        /// a boundary check that reads its own copy can agree with itself while
+        /// disagreeing with what was actually published.
+        /// </summary>
+        internal static IReadOnlyList<string> CanonicalParentGuids
+        { get { return Array.AsReadOnly(
+            MonsterParents.Concat(AllyParents).ToArray()); } }
+
         internal static bool IsPublishedExpandedParent(BlueprintAbility ability)
         {
             if (ability == null ||
