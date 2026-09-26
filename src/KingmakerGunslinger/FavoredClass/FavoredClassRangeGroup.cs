@@ -203,11 +203,11 @@ namespace KingmakerGunslinger.FavoredClass
 
         /// <summary>
         /// The range the owner's descriptions show (FavoredClassRangePresentation.Feet):
-        /// native while any member's state is unresolved.
+        /// native while any member is unresolved, by its state or its liveness.
         /// </summary>
         internal int? Feet(int? configuredFeet)
         {
-            if (_entries.Any(entry => entry.StateProblem != null))
+            if (_entries.Any(entry => entry.Unresolved))
                 return null;
             return FavoredClassRangePresentation.Feet(_entries.Select(entry =>
                 new FavoredClassLiveRange(entry.Outcome, entry.Feet)).ToList(), configuredFeet);
