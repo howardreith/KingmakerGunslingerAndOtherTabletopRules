@@ -1,11 +1,20 @@
 # Changelog
 
-## Unreleased - Expanded Summoning Phase 1 (charter Sprints 3-8; draft PR #23, not released)
+## 0.0.139-expanded-summoning-phase1
 
-- Not published. Under the 2026-09-24 owner order this work stays on a draft
-  pull request: no release, no permanent deployment, no Sprint 9. Every
-  guarded runtime run restored the live installation to 0.0.117 afterwards.
-  Internal acceptance only; human review NOT_PERFORMED_NONBLOCKING.
+- Expanded Summoning Phase 1, the charter's Sprints 3-8, published under
+  explicit owner authorization on 2026-09-26 after an engineering review of
+  pull request 23, which was merged to `master`. The work was developed under
+  the 2026-09-24 order as a draft, corrected and requalified under the
+  2026-09-25 order on candidate commit `145810a5`, and closed out under the
+  owner's decision of 2026-09-26. The owner's own visual and gameplay
+  spot-check of the new creatures is still to come and was not a blocker.
+- An active summon grab, hold, swallow or engulf, the mouth occupancy that
+  goes with it and the held-target rake are session-scoped. A save and a
+  reload release them cleanly, with no lingering condition, occupied mouth,
+  delayed damage, dangling link, unusable unit or module-disabled
+  deserialization fault. This is the owner-accepted engine limitation
+  `ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD`, not grapple persistence.
 - Sprint 3, Native Publication Pack I: Pony (SM I / SNA I) and Horse (SM II /
   SNA II) with docile secondary hooves, Owlbear (SNA IV), Cyclops (SNA V, +4
   hide armor as a fact at AC 19 and a bounded Flash of Insight: once per

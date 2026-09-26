@@ -1,6 +1,15 @@
 # Kingmaker Gunslinger
 
-The current full release, **0.0.138-better-vendors-progression**, adds
+The current full release, **0.0.139-expanded-summoning-phase1**, brings the
+Expanded Summoning charter's Sprints 3 through 8 to the summoning lists:
+twenty-five creature work items across native publication, the plants and the
+Purple Worm, the six mephits, repaired signature mechanics and the big cats,
+with their visuals owned per view and released with the view. An active grab,
+hold, swallow or engulf is session-scoped and releases cleanly on a reload,
+an engine limitation the owner accepted on 2026-09-26. The release was owner
+authorized. See the [release notes](docs/RELEASE-NOTES-0.0.139.md).
+
+The previous **0.0.138-better-vendors-progression** adds
 optional Better Vendors compatibility. With the exact approved Better Vendors
 2.0.8 binary installed and its vendor progression on, the capital blacksmith
 stocks this mod's Pistol, Musket and Blunderbuss +1 to +5 and their Reliable
