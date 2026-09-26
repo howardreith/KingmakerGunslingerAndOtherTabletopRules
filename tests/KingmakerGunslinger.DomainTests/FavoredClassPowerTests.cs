@@ -105,13 +105,48 @@ namespace KingmakerGunslinger.DomainTests
                 prerequisites.Contains("return Replays.Run(controller, () =>") &&
                 prerequisites.Contains("            Replays.Run(controller, () =>") &&
                 prerequisites.Contains("                action.Apply(state, unit);") &&
-                prerequisites.Contains("if (!Installed || controller == null") &&
+                prerequisites.Contains("LevelUpController replaying = Installed && s_Replays != null ? s_Replays.Current : null;") &&
                 !prerequisites.Contains("s_Replaying") &&
                 replay.Contains("[HarmonyPatch(typeof(LevelUpController), \"ApplyLevelup\")]") &&
                 replay.Contains("FavoredClassCallScoping.ReplaceSingle(values, NativeCheck, ScopedCheck, true)") &&
                 replay.Contains("FavoredClassCallScoping.ReplaceSingle(values, NativeApply, ScopedApply, true)") &&
                 !replay.Contains("Prefix") && !replay.Contains("Postfix"),
                 "A target chosen in the same level-up counts only inside the finally-closed scope of a replayed pick.");
+        }
+
+        // E15: a stored level plan's picks are checked in the plan's own
+        // scope, so its same-level target counts; only the one native call is
+        // replaced, and only the plan's own controller and state count.
+        internal static void StoredPlanScopesItsSameLevelTarget()
+        {
+            string prerequisites = Source("FavoredClassPrerequisites.cs");
+            string plan = Source(Path.Combine("Hooks", "FavoredClassLevelPlanPatch.cs"));
+            foreach (string token in new[]
+            {
+                "[HarmonyPatch(typeof(LevelUpController), \"ApplyLevelUpPlan\")]",
+                "FavoredClassPendingPicks.BindNativeAddAction(NativeAddAction) &&",
+                "FavoredClassCallScoping.ReplaceSingle(values, NativeAddAction, ScopedAddAction, false);",
+                "FavoredClassPendingPicks.PlanInstalled = scoped;",
+                "return scoped ? values : original;",
+                "new[] { typeof(ILevelUpAction), typeof(bool) }"
+            })
+                Assertions.True(plan.Contains(token), "Plan hook token: " + token);
+            Assertions.True(!plan.Contains("Prefix") && !plan.Contains("Postfix"),
+                "The plan scope closes in a finally block, never by a postfix.");
+            foreach (string token in new[]
+            {
+                "return Plans.Run(new PlannedLevel(controller, plan == null ? null : plan.Actions),",
+                "controller.Unit.Progression.GetLevelPlan(controller.State.NextLevel);",
+                "PlannedLevel planned = PlanInstalled && s_Plans != null ? s_Plans.Current : null;",
+                "!ReferenceEquals(controller.State, state)",
+                "return planned != null && ReferenceEquals(planned.Controller, controller) &&",
+                "get { return (s_Replays == null ? 0 : s_Replays.Depth) + (s_Plans == null ? 0 : s_Plans.Depth); }"
+            })
+                Assertions.True(prerequisites.Contains(token), "Plan scope token: " + token);
+            string coordinator = Source("FavoredClassIntegrationCoordinator.cs");
+            Assertions.True(coordinator.Contains("if (!FavoredClassPendingPicks.PlanInstalled)") &&
+                coordinator.Contains("the scoped level plan (LevelUpController.ApplyLevelUpPlan) is not installed"),
+                "A missing plan hook is reported as degraded.");
         }
 
         // One chosen power's own ability only; exact DC delta from its own binding.

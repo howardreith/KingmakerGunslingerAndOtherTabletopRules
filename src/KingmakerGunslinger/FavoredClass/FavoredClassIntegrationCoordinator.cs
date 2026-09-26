@@ -221,6 +221,10 @@ namespace KingmakerGunslinger.FavoredClass
                     context.Logger.Warning(Phase, "native-contract.degraded",
                         "the scoped level-up replay (LevelUpController.ApplyLevelup) is not installed; " +
                         "same-level targets count from the next level-up");
+                if (!FavoredClassPendingPicks.PlanInstalled)
+                    context.Logger.Warning(Phase, "native-contract.degraded",
+                        "the scoped level plan (LevelUpController.ApplyLevelUpPlan) is not installed; " +
+                        "a stored plan's same-level target counts from the next level-up");
                 // I06/S04 read points are scoped from the live provider graph;
                 // a revelation without any found read point is withheld.
                 if (set.Pairs.Any(pair => pair.Effect.Id == FavoredClassCatalog.EffectSelectedRevelation))

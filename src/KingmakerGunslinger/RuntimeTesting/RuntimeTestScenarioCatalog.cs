@@ -328,6 +328,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-favored-class-turn-modes";
         internal const string DisposableFavoredClassBombs =
             "disposable-favored-class-bombs";
+        internal const string DisposableFavoredClassAutoLevel =
+            "disposable-favored-class-auto-level";
         internal const string DisposableFavoredClassGunslingerMechanics =
             "disposable-favored-class-gunslinger-mechanics";
         internal const string DisposableFavoredClassGunslingerMenus =
@@ -710,6 +712,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableFavoredClassInitiativeTiming,
                 DisposableFavoredClassTurnModes,
                 DisposableFavoredClassBombs,
+                DisposableFavoredClassAutoLevel,
                 DisposableFavoredClassGunslingerMechanics,
                 DisposableFavoredClassGunslingerMenus,
                 DisposableFavoredClassGrit,

@@ -613,8 +613,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 failures.Add(resistanceKey + ": the power has no level gate");
                 return row;
             }
+            // The cap is the counter itself: its full leaf holds at most two
+            // ranks (a third is never offered), and the earned steps are
+            // capped again when the gates decide.
             int cap = binding.CapSteps > 0 ? binding.CapSteps : int.MaxValue;
             row["capSteps"] = binding.CapSteps;
+            row["fullLeafRanks"] = leaf.Ranks;
+            if (binding.CapSteps != 2 || leaf.Ranks != binding.CapSteps)
+                failures.Add(resistanceKey + ": the counter is not capped at two steps (leaf ranks " + leaf.Ranks +
+                    ", cap " + binding.CapSteps + ")");
             Func<int, int, UnitEntityData> sorcererAt = (levels, steps) =>
             {
                 UnitEntityData unit = create();
@@ -635,50 +642,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .Enumerable.Select(fact => fact.Blueprint.AssetGuid)
                 .Where(guid => guid != leaf.AssetGuid && !gated.Contains(guid))
                 .OrderBy(guid => guid, StringComparer.Ordinal).ToArray());
-            // (real level, steps): one and two steps below the 9th-level step,
-            // a capped third step, and levels where no step is crossed.
+            // (real level, steps): one and two steps below the 9th-level step
+            // and levels where no step is crossed.
             var cases = new[]
             {
-                Tuple.Create(7, 1), Tuple.Create(7, 2), Tuple.Create(8, 1), Tuple.Create(6, 3),
+                Tuple.Create(7, 1), Tuple.Create(7, 2), Tuple.Create(8, 1), Tuple.Create(6, 2),
                 Tuple.Create(3, 2), Tuple.Create(9, 2)
             };
             var probes = new JArray();
             bool moved = false;
             foreach (var entry in cases)
             {
-                int effective = entry.Item1 + Math.Min(entry.Item2, cap);
-                UnitEntityData control = sorcererAt(entry.Item1, 0);
-                UnitEntityData invested = sorcererAt(entry.Item1, entry.Item2);
-                UnitEntityData reference = sorcererAt(effective, 0);
-                string controlHeld = held(control), investedHeld = held(invested), referenceHeld = held(reference);
-                var probe = new JObject
-                {
-                    ["level"] = entry.Item1,
-                    ["steps"] = entry.Item2,
-                    ["effectiveLevel"] = effective,
-                    ["control"] = controlHeld,
-                    ["invested"] = investedHeld,
-                    ["nativeAtEffective"] = referenceHeld
-                };
                 string at = resistanceKey + " at sorcerer " + entry.Item1 + " with " + entry.Item2 + " steps: ";
-                if (investedHeld != referenceHeld)
-                    failures.Add(at + "held " + investedHeld + ", a native sorcerer " + effective + " holds " +
-                        referenceHeld);
-                if (investedHeld != controlHeld)
-                    moved = true;
-                if (others(invested) != others(control))
-                    failures.Add(at + "another feature changed");
-                if (invested.Stats.BaseAttackBonus.ModifiedValue != control.Stats.BaseAttackBonus.ModifiedValue ||
-                    invested.Stats.SaveFortitude.ModifiedValue != control.Stats.SaveFortitude.ModifiedValue ||
-                    invested.Stats.SaveReflex.ModifiedValue != control.Stats.SaveReflex.ModifiedValue ||
-                    invested.Stats.SaveWill.ModifiedValue != control.Stats.SaveWill.ModifiedValue)
-                    failures.Add(at + "BAB or a save changed");
-                RemoveFavoredClassRanks(invested, leaf);
-                string removed = held(invested);
-                probe["afterRemoval"] = removed;
-                if (removed != controlHeld)
-                    failures.Add(at + "after removal held " + removed + ", control " + controlHeld);
-                probes.Add(probe);
+                try
+                {
+                    probes.Add(FcbResistanceCase(entry.Item1, entry.Item2, entry.Item1 + Math.Min(entry.Item2, cap),
+                        at, sorcererAt, held, others, leaf, failures, ref moved));
+                }
+                catch (Exception exception)
+                {
+                    failures.Add(at + exception.GetType().Name + ": " + exception.Message);
+                }
             }
             row["probes"] = probes;
             if (!moved)
@@ -691,6 +675,48 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (held(neighbor) != held(neighborControl))
                 failures.Add(resistanceKey + ": the Blast counter moved the resistance step");
             return row;
+        }
+
+        /// <summary>
+        /// One Elemental Resistance case: the invested sorcerer holds exactly
+        /// the gate features of a native sorcerer at the effective level,
+        /// nothing else, BAB and saves unchanged, and removal restores control.
+        /// </summary>
+        private static JObject FcbResistanceCase(int level, int steps, int effective, string at,
+            Func<int, int, UnitEntityData> sorcererAt, Func<UnitEntityData, string> held,
+            Func<UnitEntityData, string> others, BlueprintFeature leaf, IList<string> failures, ref bool moved)
+        {
+            UnitEntityData control = sorcererAt(level, 0);
+            UnitEntityData invested = sorcererAt(level, steps);
+            UnitEntityData reference = sorcererAt(effective, 0);
+            string controlHeld = held(control), investedHeld = held(invested), referenceHeld = held(reference);
+            var probe = new JObject
+            {
+                ["level"] = level,
+                ["steps"] = steps,
+                ["effectiveLevel"] = effective,
+                ["control"] = controlHeld,
+                ["invested"] = investedHeld,
+                ["nativeAtEffective"] = referenceHeld
+            };
+            if (investedHeld != referenceHeld)
+                failures.Add(at + "held " + investedHeld + ", a native sorcerer " + effective + " holds " +
+                    referenceHeld);
+            if (investedHeld != controlHeld)
+                moved = true;
+            if (others(invested) != others(control))
+                failures.Add(at + "another feature changed");
+            if (invested.Stats.BaseAttackBonus.ModifiedValue != control.Stats.BaseAttackBonus.ModifiedValue ||
+                invested.Stats.SaveFortitude.ModifiedValue != control.Stats.SaveFortitude.ModifiedValue ||
+                invested.Stats.SaveReflex.ModifiedValue != control.Stats.SaveReflex.ModifiedValue ||
+                invested.Stats.SaveWill.ModifiedValue != control.Stats.SaveWill.ModifiedValue)
+                failures.Add(at + "BAB or a save changed");
+            RemoveFavoredClassRanks(invested, leaf);
+            string removed = held(invested);
+            probe["afterRemoval"] = removed;
+            if (removed != controlHeld)
+                failures.Add(at + "after removal held " + removed + ", control " + controlHeld);
+            return probe;
         }
 
         private static JObject ObserveAuraBonuses(FavoredClassBlueprintSet leaves, IList<string> failures)
