@@ -1159,6 +1159,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassInitiative.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassTurnModes.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassBombs.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassPermissionBounds.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassHostState.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassPersistence.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassElemental.cs" />

@@ -123,7 +123,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                                         neighborControl[point.Key] + " -> " + point.Value);
                             RemoveFavoredClassRanks(invested, leaf);
                             Dictionary<string, int> removed = FcbRevelationReadPoints(invested, scope, victim);
-                            foreach (KeyValuePair<string, int> point in removed)
+                            // Gates are not compared after an in-session removal:
+                            // a replacement chain (a later gated feature removing an
+                            // earlier one on apply, as Bleeding Wounds) never steps
+                            // down in play (respec rebuilds; the native PostLoad heals
+                            // a reload), and the gate lane checks single-step removal.
+                            foreach (KeyValuePair<string, int> point in removed.Where(value =>
+                                !value.Key.StartsWith("gate ", StringComparison.Ordinal)))
                                 if (point.Value != controlValues[point.Key])
                                     mismatches.Add(at + "after removal " + point.Key + ": " + point.Value +
                                         ", control " + controlValues[point.Key]);

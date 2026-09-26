@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.UnitLogic;
 
@@ -18,9 +19,42 @@ namespace KingmakerGunslinger.FavoredClass
         private static readonly object Gate = new object();
         private static FavoredClassProfileState _profile = FavoredClassProfileState.Defaults;
         private static BlueprintFeature _mostlyHumanIdentity;
-        private static readonly FavoredClassPermissionGraph Graph =
+        private static readonly FavoredClassPermissionGraph VerifiedGraph =
             FavoredClassPermissionGraph.CreateVerified(MostlyHumanFactId);
+        private static FavoredClassPermissionGraph _graph = VerifiedGraph;
         private static readonly FavoredClassHostActivation Activation = new FavoredClassHostActivation();
+
+        /// <summary>
+        /// Runtime-test seam (E10): the verified graph plus extra edges (a
+        /// cycle, a chain past the depth bound, an edge on an unverified fact)
+        /// until the returned scope is disposed. No production path calls it.
+        /// </summary>
+        internal static IDisposable ExtendPermissionGraphForRuntimeTest(IEnumerable<FavoredClassPermissionEdge> extra)
+        {
+            if (extra == null)
+                throw new ArgumentNullException("extra");
+            var graph = new FavoredClassPermissionGraph(VerifiedGraph.Edges.Concat(extra));
+            lock (Gate)
+            {
+                if (!ReferenceEquals(_graph, VerifiedGraph))
+                    throw new InvalidOperationException("A permission graph extension is already active.");
+                _graph = graph;
+            }
+            return new PermissionGraphScope();
+        }
+
+        private sealed class PermissionGraphScope : IDisposable
+        {
+            private bool _disposed;
+
+            public void Dispose()
+            {
+                if (_disposed) return;
+                _disposed = true;
+                lock (Gate)
+                    _graph = VerifiedGraph;
+            }
+        }
 
         internal static FavoredClassProfileState Profile
         {
@@ -143,7 +177,10 @@ namespace KingmakerGunslinger.FavoredClass
 
         internal static ISet<string> PermittedAncestries(UnitDescriptor unit)
         {
-            return Graph.PermittedAncestries(Evidence(unit));
+            FavoredClassPermissionGraph graph;
+            lock (Gate)
+                graph = _graph;
+            return graph.PermittedAncestries(Evidence(unit));
         }
 
         /// <summary>

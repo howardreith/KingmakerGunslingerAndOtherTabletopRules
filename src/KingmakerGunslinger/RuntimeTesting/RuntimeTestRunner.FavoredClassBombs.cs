@@ -326,8 +326,11 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             var control = (JArray)throws[0]["damage"];
             var invested = (JArray)throws[1]["damage"];
+            // Only the thrown ability's own damage rolls: a lingering buff an
+            // earlier throw left behind (acid) deals its own, separate damage.
+            string bomb = (string)throws[0]["bomb"];
             Func<JArray, JObject[]> pick = events => events.OfType<JObject>().Where(value =>
-                label == null || (string)value["target"] == label).ToArray();
+                (string)value["source"] == bomb && (label == null || (string)value["target"] == label)).ToArray();
             JObject[] controlEvents = pick(control), investedEvents = pick(invested);
             if (!(bool)throws[0]["completed"] || !(bool)throws[1]["completed"])
             {
