@@ -22,6 +22,10 @@ namespace KingmakerGunslinger.DomainTests
             internal bool Widened;
             internal bool Ended;
             internal bool RestoreFails;
+            internal bool EndThrows;
+            internal bool EndNoOp;
+            internal bool DataUnavailable;
+            internal bool LivenessThrows;
 
             internal Area(string name)
             {
@@ -29,16 +33,26 @@ namespace KingmakerGunslinger.DomainTests
             }
         }
 
+        /// <summary>
+        /// The group as FavoredClassPerformanceInstances drives it: unavailable
+        /// area data counts as live and cannot be ended; a widening attempt
+        /// and a recording are mechanics points (Settle), the text a read-only
+        /// point (Purge).
+        /// </summary>
         private sealed class Group
         {
-            internal readonly FavoredClassRangeGroup<Area> Areas = new FavoredClassRangeGroup<Area>();
+            internal readonly FavoredClassRangeGroup<Area> Areas;
             internal readonly List<string> Ends = new List<string>();
+            internal readonly List<string> Diagnostics = new List<string>();
 
-            internal void Record(Area area, FavoredClassWideningOutcome outcome)
+            internal Group()
             {
-                Areas.Purge(value => !value.Ended);
-                area.Widened = FavoredClassRangePresentation.IsWidened(outcome);
-                Areas.Record(area, outcome, Configured, value => !value.Widened, value =>
+                Areas = new FavoredClassRangeGroup<Area>(value =>
+                {
+                    if (value.LivenessThrows)
+                        throw new InvalidOperationException("injected liveness read failure");
+                    return value.DataUnavailable || !value.Ended;
+                }, value => !value.Widened, value =>
                 {
                     if (value.RestoreFails)
                         throw new InvalidOperationException("injected ring restore failure");
@@ -46,22 +60,39 @@ namespace KingmakerGunslinger.DomainTests
                     return true;
                 }, value =>
                 {
+                    if (value.DataUnavailable)
+                        throw new InvalidOperationException("the area's data is unavailable, so it cannot be ended");
+                    if (value.EndThrows)
+                        throw new InvalidOperationException("injected ending failure");
+                    if (value.EndNoOp)
+                        return;
                     value.Ended = true;
                     Ends.Add(value.Name);
-                });
+                }, (value, message) => Diagnostics.Add(value.Name + ": " + message));
+            }
+
+            internal void Record(Area area, FavoredClassWideningOutcome outcome)
+            {
+                area.Widened = FavoredClassRangePresentation.IsWidened(outcome);
+                Areas.Record(area, outcome, Configured);
             }
 
             /// <summary>The widening transaction: attempted only when the group allows it.</summary>
             internal void Cast(Area area, FavoredClassWideningOutcome attempted)
             {
-                Areas.Purge(value => !value.Ended);
+                Areas.Settle();
                 Record(area, Areas.MayWiden(area) ? attempted : FavoredClassWideningOutcome.Held);
             }
 
             internal int? Feet()
             {
-                Areas.Purge(value => !value.Ended);
+                Areas.Purge();
                 return Areas.Feet(Configured);
+            }
+
+            internal bool Reported(string area, string prefix)
+            {
+                return Diagnostics.Any(value => value.StartsWith(area + ": " + prefix, StringComparison.Ordinal));
             }
         }
 
@@ -159,9 +190,141 @@ namespace KingmakerGunslinger.DomainTests
             // A member recorded native that is not actually native is ended too.
             var fresh = new Group();
             var liar = new Area("liar") { Widened = true };
-            fresh.Areas.Record(liar, FavoredClassWideningOutcome.Failed, Configured, value => !value.Widened,
-                value => true, value => { value.Ended = true; fresh.Ends.Add(value.Name); });
+            fresh.Areas.Record(liar, FavoredClassWideningOutcome.Failed, Configured);
             Assertions.True(liar.Ended && fresh.Areas.Count == 0, "An unverified native member is ended.");
+        }
+
+        // Fourth review, finding 2: an ending that throws leaves the area
+        // tracked and unresolved; a later mechanics point retries it.
+        internal static void AnEndThatThrowsKeepsTheAreaTracked()
+        {
+            var group = new Group();
+            Area a = new Area("A"), b = new Area("B");
+            group.Cast(a, FavoredClassWideningOutcome.Widened);
+            a.RestoreFails = true;
+            a.EndThrows = true;
+            group.Cast(b, FavoredClassWideningOutcome.Failed);
+            Assertions.True(!a.Ended && a.Widened, "A cannot be narrowed or ended: it is still live and widened.");
+            Assertions.True(group.Areas.Contains(a) && group.Areas.ProblemOf(a) != null &&
+                group.Areas.ProblemOf(a).Contains("ending it threw"), "A stays tracked, unresolved, with the reason.");
+            Assertions.True(group.Reported("A", "unresolved: its narrowing was not verified native"),
+                "A diagnostic names the unresolved area.");
+            Assertions.True(group.Feet() == null, "The text is native while A is unresolved.");
+            var c = new Area("C");
+            group.Cast(c, FavoredClassWideningOutcome.Widened);
+            Assertions.True(!c.Widened && group.Areas.OutcomeOf(c) == FavoredClassWideningOutcome.Held,
+                "Widening is blocked while A is unresolved.");
+            // A read-only point never narrows or ends.
+            a.RestoreFails = false;
+            a.EndThrows = false;
+            Assertions.True(group.Feet() == null && a.Widened && group.Areas.ProblemOf(a) != null,
+                "The text point retried nothing.");
+            // The next mechanics point retries and now narrows A.
+            group.Areas.Settle();
+            Assertions.True(!a.Widened && !a.Ended && group.Areas.OutcomeOf(a) == FavoredClassWideningOutcome.Narrowed &&
+                group.Areas.ProblemOf(a) == null, "The retry narrowed A and verified it native.");
+            Assertions.True(group.Reported("A", "resolved"), "The resolution is reported.");
+            Assertions.Equal(0, group.Areas.UnresolvedCount, "Nothing is unresolved.");
+            b.Ended = c.Ended = a.Ended = true;
+            Assertions.Equal(Configured, group.Feet().Value, "Once every area ended, the configured range.");
+        }
+
+        // Fourth review, finding 2: an ending that does nothing is not an ending.
+        internal static void AnEndThatDoesNothingKeepsTheAreaTracked()
+        {
+            var group = new Group();
+            Area a = new Area("A"), b = new Area("B");
+            group.Cast(a, FavoredClassWideningOutcome.Widened);
+            a.RestoreFails = true;
+            a.EndNoOp = true;
+            group.Cast(b, FavoredClassWideningOutcome.Failed);
+            Assertions.True(!a.Ended && group.Areas.Contains(a) && group.Areas.ProblemOf(a) != null &&
+                group.Areas.ProblemOf(a).Contains("still live after ending"),
+                "A no-op ending keeps A tracked and unresolved.");
+            Assertions.True(group.Feet() == null && !group.Areas.MayWiden(new Area("X")),
+                "Native text, no widening.");
+            // The retry: narrowing still fails, the ending now works and is verified.
+            a.EndNoOp = false;
+            var d = new Area("D");
+            group.Cast(d, FavoredClassWideningOutcome.Widened);
+            Assertions.True(a.Ended && !group.Areas.Contains(a) && group.Ends.Contains("A"),
+                "The next widening attempt retried the ending, verified it and forgot A.");
+            Assertions.True(group.Reported("A", "resolved: ended"), "The resolution is reported.");
+            Assertions.True(!d.Widened && group.Areas.OutcomeOf(d) == FavoredClassWideningOutcome.Held,
+                "D was held: B is a live native area.");
+        }
+
+        // Fourth review, finding 2: without area data nothing can be ended,
+        // and the area counts as live.
+        internal static void UnavailableDataKeepsTheAreaTracked()
+        {
+            var group = new Group();
+            Area a = new Area("A"), b = new Area("B");
+            group.Cast(a, FavoredClassWideningOutcome.Widened);
+            a.RestoreFails = true;
+            a.DataUnavailable = true;
+            group.Cast(b, FavoredClassWideningOutcome.Failed);
+            Assertions.True(!a.Ended && group.Areas.Contains(a) && group.Areas.ProblemOf(a) != null &&
+                group.Areas.ProblemOf(a).Contains("data is unavailable"),
+                "Unavailable data keeps A tracked and unresolved.");
+            // Even if A really ended meanwhile, it is never forgotten unverified.
+            a.Ended = true;
+            Assertions.True(group.Feet() == null && group.Areas.Contains(a),
+                "An area whose data is unavailable is never forgotten.");
+            // The data returns: the read-only point verifies the ending.
+            a.DataUnavailable = false;
+            group.Feet();
+            Assertions.True(!group.Areas.Contains(a) && group.Reported("A", "resolved"),
+                "Verified no longer live, A is forgotten and resolved.");
+            // A live area whose data returns is narrowed by the retry.
+            var fresh = new Group();
+            Area e = new Area("E"), f = new Area("F");
+            fresh.Cast(e, FavoredClassWideningOutcome.Widened);
+            e.RestoreFails = true;
+            e.DataUnavailable = true;
+            fresh.Cast(f, FavoredClassWideningOutcome.Failed);
+            e.RestoreFails = false;
+            e.DataUnavailable = false;
+            fresh.Areas.Settle();
+            Assertions.True(!e.Widened && fresh.Areas.OutcomeOf(e) == FavoredClassWideningOutcome.Narrowed &&
+                fresh.Areas.UnresolvedCount == 0, "The retry narrowed E once its data returned.");
+        }
+
+        // Fourth review, finding 2: a liveness read that throws forgets nothing.
+        internal static void ALivenessReadThatThrowsForgetsNothing()
+        {
+            var group = new Group();
+            var a = new Area("A");
+            group.Cast(a, FavoredClassWideningOutcome.Widened);
+            a.LivenessThrows = true;
+            Assertions.True(group.Feet() == Configured && group.Areas.Contains(a),
+                "A stays tracked; its recorded widening still decides the text.");
+            Assertions.True(group.Areas.ProblemOf(a) != null && group.Areas.ProblemOf(a).Contains("liveness"),
+                "A is unresolved: its liveness cannot be read.");
+            Assertions.True(group.Reported("A", "unresolved: its liveness probe threw"), "A diagnostic is reported.");
+            Assertions.True(!group.Areas.MayWiden(new Area("X")), "Widening is blocked meanwhile.");
+            a.LivenessThrows = false;
+            Assertions.True(group.Feet() == Configured && a.Widened && group.Areas.ProblemOf(a) == null,
+                "Readable again, A is kept as it was: never narrowed or forgotten by the read.");
+            Assertions.True(group.Areas.MayWiden(new Area("Y")) && group.Reported("A", "resolved"),
+                "Widening is allowed again and the resolution reported.");
+            // Ended while unreadable: forgotten only once the read works.
+            a.LivenessThrows = true;
+            a.Ended = true;
+            group.Feet();
+            Assertions.True(group.Areas.Contains(a), "An unreadable member is never forgotten.");
+            a.LivenessThrows = false;
+            Assertions.True(group.Feet() == Configured && !group.Areas.Contains(a),
+                "Verified ended, it is forgotten and the configured range shows.");
+            // A new area beside an unreadable widened one is held and narrows it.
+            var fresh = new Group();
+            Area w = new Area("W"), n = new Area("N");
+            fresh.Cast(w, FavoredClassWideningOutcome.Widened);
+            w.LivenessThrows = true;
+            fresh.Cast(n, FavoredClassWideningOutcome.Widened);
+            Assertions.True(!n.Widened && fresh.Areas.OutcomeOf(n) == FavoredClassWideningOutcome.Held &&
+                !w.Widened && fresh.Areas.OutcomeOf(w) == FavoredClassWideningOutcome.Narrowed &&
+                fresh.Feet() == null, "Held beside an unresolved sibling, which the held area narrows.");
         }
 
         /// <summary>A fake mechanics context: the engine clones a buff's context for its area.</summary>
@@ -254,6 +417,84 @@ namespace KingmakerGunslinger.DomainTests
             }
         }
 
+        // Fourth review, finding 2: under every fault (a failed narrowing, an
+        // ending that throws or does nothing, unavailable area data, a
+        // liveness read that throws, and their recovery) no live area is ever
+        // untracked, a widened live area beside native or configured text is
+        // always tracked as unresolved, widened text means every live area is
+        // widened, and an unresolved member blocks widening.
+        internal static void NoUntrackedWidenedAreaBesideNativeText()
+        {
+            var random = new Random(4);
+            FavoredClassWideningOutcome[] attempts =
+            {
+                FavoredClassWideningOutcome.Widened, FavoredClassWideningOutcome.WidenedRingless,
+                FavoredClassWideningOutcome.Failed, FavoredClassWideningOutcome.Deferred
+            };
+            int unresolvedSeen = 0, resolvedSeen = 0;
+            for (int run = 0; run < 400; run++)
+            {
+                var group = new Group();
+                var areas = new List<Area>();
+                for (int step = 0; step < 16; step++)
+                {
+                    int action = random.Next(6);
+                    if (action == 0 || areas.Count == 0)
+                    {
+                        var area = new Area("area" + step)
+                        {
+                            RestoreFails = random.Next(4) == 0,
+                            EndThrows = random.Next(6) == 0,
+                            EndNoOp = random.Next(6) == 0,
+                            DataUnavailable = random.Next(8) == 0
+                        };
+                        areas.Add(area);
+                        group.Cast(area, attempts[random.Next(attempts.Length)]);
+                    }
+                    else if (action == 1)
+                        areas[random.Next(areas.Count)].Ended = true;
+                    else if (action == 2)
+                    {
+                        Area area = areas[random.Next(areas.Count)];
+                        area.LivenessThrows = !area.LivenessThrows;
+                    }
+                    else if (action == 3)
+                    {
+                        // A fault clears: the next mechanics point may resolve it.
+                        Area area = areas[random.Next(areas.Count)];
+                        area.RestoreFails = area.EndThrows = area.EndNoOp = area.DataUnavailable = false;
+                    }
+                    else if (action == 4)
+                        group.Areas.Settle();
+                    else
+                    {
+                        Area area = areas[random.Next(areas.Count)];
+                        if (!area.Ended && !area.Widened)
+                            group.Cast(area, attempts[random.Next(attempts.Length)]);
+                    }
+                    string at = "run " + run + " step " + step + ": ";
+                    Area[] live = areas.Where(value => !value.Ended).ToArray();
+                    int? feet = group.Feet();
+                    foreach (Area area in live)
+                        Assertions.True(group.Areas.Contains(area), at + "the live " + area.Name + " is untracked.");
+                    foreach (Area area in live.Where(value => value.Widened))
+                        Assertions.True(feet == Configured || group.Areas.ProblemOf(area) != null,
+                            at + "the widened " + area.Name + " is live beside native text without being unresolved.");
+                    if (feet == Configured && live.Length > 0)
+                        Assertions.True(live.All(value => value.Widened), at + "the widened text beside a native area.");
+                    if (group.Areas.UnresolvedCount > 0)
+                    {
+                        unresolvedSeen++;
+                        Assertions.True(!group.Areas.MayWiden(new Area("probe")), at + "an unresolved member allowed widening.");
+                    }
+                    if (group.Diagnostics.Any(value => value.Contains(": resolved")))
+                        resolvedSeen++;
+                }
+            }
+            Assertions.True(unresolvedSeen > 0 && resolvedSeen > 0,
+                "The sequences reached unresolved members and resolved them (" + unresolvedSeen + ", " + resolvedSeen + ").");
+        }
+
         private static string Source(params string[] parts)
         {
             return File.ReadAllText(Path.Combine(new[] { Environment.CurrentDirectory, "src",
@@ -276,7 +517,31 @@ namespace KingmakerGunslinger.DomainTests
                 hook.Contains("if (DeferRingsForQualification)"),
                 "Every instance asks its group before widening and records its outcome.");
             string instances = Source("Mechanics", "FavoredClassPerformanceInstances.cs");
-            Assertions.True(instances.Contains("group.Record(view, outcome, feet, VerifyNative, Narrow, End);") &&
+            // Fourth review, finding 2: an ending is verified by the liveness
+            // read; unavailable data counts as live and cannot be ended; a
+            // failed liveness read never skips a recording; the text reads
+            // without narrowing or ending, a widening attempt or recording
+            // retries.
+            Assertions.True(instances.Contains("new FavoredClassRangeGroup<AreaEffectView>(IsLive, VerifyNative, Narrow,") &&
+                instances.Contains("End, Diagnose);") &&
+                instances.Contains("group.Record(view, outcome, feet);") &&
+                instances.Contains("throw new InvalidOperationException(\"the area's data is unavailable, so it cannot be ended\");") &&
+                instances.Contains("return data == null || (!data.Destroyed && !data.IsEnded);") &&
+                instances.Contains("catch (Exception)\n                {\n                    live = true;\n                }") &&
+                instances.Contains("context.Logger.Warning(\"favored-class\""),
+                "Instances are ended only verifiably, never forgotten on a failed read, and diagnosed.");
+            int mayWiden = instances.IndexOf("internal static bool MayWiden(", StringComparison.Ordinal);
+            int record = instances.IndexOf("internal static void Record(", StringComparison.Ordinal);
+            int feet = instances.IndexOf("internal static int? Feet(", StringComparison.Ordinal);
+            Assertions.True(instances.IndexOf("Maintain(true);", mayWiden, StringComparison.Ordinal) < record &&
+                instances.IndexOf("Maintain(true);", record, StringComparison.Ordinal) < feet &&
+                instances.IndexOf("Maintain(false);", feet, StringComparison.Ordinal) > feet &&
+                instances.IndexOf("Maintain(true);", feet, StringComparison.Ordinal) < 0,
+                "Widening attempts and recordings retry unresolved instances; the text and evidence only read.");
+            Assertions.True(
+                !Source("FavoredClassRangeGroup.cs").Contains("// The member is forgotten either way."),
+                "No path forgets a member whose ending failed.");
+            Assertions.True(instances.Contains("group.Record(view, outcome, feet);") &&
                 instances.Contains("FavoredClassPerformanceRing.Restore(ring);") &&
                 instances.Contains("return VerifyNative(view);") &&
                 instances.Contains("data.ForceEnd();") &&
