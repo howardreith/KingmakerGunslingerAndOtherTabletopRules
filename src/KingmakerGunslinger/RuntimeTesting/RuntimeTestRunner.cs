@@ -26113,7 +26113,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // forced 19 confirms and a forced 2 does not. The confirmation
                 // is an attack roll (fourth review): a natural 20 confirms
                 // against an AC 31 above its total, and a natural 1 fails with
-                // a +40 attack bonus against an AC 50 below its total.
+                // a +40 attack bonus against an AC far below its total (the base
+                // AC lowered by 20; the game floors the critical AC, so the
+                // margin is asserted as at least 40).
                 stage = "critical-calibration";
                 criticalFocus = BlueprintLibraryLookup.RequireExact<BlueprintFeature>(
                     BlueprintBootstrap.Library, FavoredClass.FavoredClassBlueprints.CriticalFocusGuid,
@@ -26329,7 +26331,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 natural1.Confirmation.TotalReaches &&
                 natural1.Confirmation.AttackBonus - confirmed.Confirmation.AttackBonus == 40 &&
                 (1 + natural1.Confirmation.AttackBonus + natural1.Confirmation.ConfirmationBonus) -
-                    natural1.Confirmation.CriticalArmorClass >= 50 &&
+                    natural1.Confirmation.CriticalArmorClass >= 40 &&
                 natural1Control.Confirmation.NaturalRoll == 2 && natural1Control.Confirmation.TotalReaches;
             // The party setting blocks before any roll, even a natural 20.
             bool partyContract = targetPartyForSetting && twoThreats(partyOff) && partyOff.Confirmation != null &&
@@ -26374,7 +26376,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     criticalObserved, natural20Contract,
                     "target AC raised by 40; DeadShotConfirmationPolicy.Confirms on the auto-hit delivery"),
                 Assertion("dead-shot-critical-natural-1",
-                    "a forced natural 1 fails with a +40 attack bonus against a critical AC at least 50 below its total, while a forced 2 with the same bonus confirms; the delivery's native critical follows both (fourth review finding 1)",
+                    "a forced natural 1 fails with a +40 attack bonus against a critical AC at least 40 below its total, while a forced 2 with the same bonus confirms; the delivery's native critical follows both (fourth review finding 1)",
                     criticalObserved, natural1Contract,
                     "native AdditionalAttackBonus +40 (untyped) and target AC lowered by 20; DeadShotConfirmationPolicy.Confirms"),
                 Assertion("dead-shot-critical-party-setting",
