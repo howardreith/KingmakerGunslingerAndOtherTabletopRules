@@ -1,7 +1,16 @@
 # Installation, updates, removal, and compatibility
 
-Full release: `0.0.138-better-vendors-progression` (UMM version `0.0.138`).
+Full release: `0.0.139-expanded-summoning-phase1` (UMM version `0.0.139`).
 The installable archive is
+`KingmakerGunslinger-0.0.139-expanded-summoning-phase1.zip`. It brings the
+Expanded Summoning charter's Sprints 3 through 8 to the summoning lists. An
+active grab, hold, swallow or engulf is session-scoped and releases cleanly on
+a reload, an engine limitation the owner accepted on 2026-09-26. It was
+published under explicit owner authorization. See
+[its release notes](docs/RELEASE-NOTES-0.0.139.md).
+
+The previous full release was `0.0.138-better-vendors-progression` (UMM
+version `0.0.138`). Its installable archive is
 `KingmakerGunslinger-0.0.138-better-vendors-progression.zip`. It adds the
 optional Better Vendors progression integration described
 [below](#optional-better-vendors-integration). It was published under explicit
