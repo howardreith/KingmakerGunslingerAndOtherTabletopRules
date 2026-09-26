@@ -376,3 +376,42 @@ comment and the inventory assertion text still carried, and isolated the
 mechanical scenario's sub-cases from one another: each frees the hostile
 of any hold or swallow the previous one left, and each exception keeps its
 frames.
+## 2026-09-26 - the owner accepts the persistence limitation
+
+The last open question of the 2026-09-26 order was the one the engine
+answered for us. A hold established before a save is not there after the
+load: Kingmaker carries no active grapple across one, and it writes a unit
+part on these summons by type without its contents, so neither the native
+link nor the project's record of the establishing limb comes back. Four
+reproducible observations established that, and the item went to the owner
+as BLOCKED rather than as an accepted deviation.
+
+The owner accepted the limitation and drew the line where it belongs: an
+active grab, hold, swallow or engulf, the mouth occupancy that goes with it
+and the held-target rake may be session-scoped, so long as a save and a
+reload resolve to a clean released state - no lingering conditions, no
+occupied mouths, no delayed damage, no dangling links, no unusable units and
+no module-disabled deserialization problem. That is what the persistence
+trio already proves. Re-establishing holds on load would be a persistence
+subsystem of its own, chartered separately if it is ever worth the risk, and
+is not in PR #23.
+
+Recording it took the claims out before it put the decision in. Every
+comment that called the store durable or said the limb and mouth mapping
+survives a reload now says what the store actually is: the owner of the
+establishing attack for the life of that hold, resolved against the holder's
+body when it is read. The same correction ran through the state file, the
+report, the fidelity matrix, the domain tests, the static record, the
+changelog, the manifest note with its regenerated roster and the PR body,
+and took with it the Giant Flytrap's stale 1d8 acid, the stale "nothing is
+BLOCKED" wording, the malformed status lines and the 1799 domain-test count.
+Nothing here is described as grapple persistence and nothing is left
+BLOCKED.
+
+The closeout changed no executable behaviour - its only non-comment edits
+are record text, one profile note and test token names - so the live matrix
+was not rerun. The four gates the decision named ran on the closeout head
+`fd877587` and passed: the domain suite at 1806 tests with no failures,
+repository and manifest and static validation, the exact-reference Release
+build, and strict package validation. Draft PR #23 goes to the owner for
+review and stays unmerged.

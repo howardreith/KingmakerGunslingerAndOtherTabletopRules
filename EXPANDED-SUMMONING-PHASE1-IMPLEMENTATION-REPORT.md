@@ -227,6 +227,41 @@ them. Item 5 (evidence) is this gate list. Nothing was reclassified as an
 accepted deviation. Internal acceptance on this evidence; HumanReview:
 NOT_PERFORMED_NONBLOCKING. OwnerDelegationGranted.
 
+## 5. Owner decision (2026-09-26) - accepted engine limitation and closeout
+
+**OwnerAcceptedEngineLimitation:
+ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD.** An active KMG summon grab,
+hold, swallow or engulf, its mouth occupancy and the held-target rake are
+session-scoped by the owner's decision. On a save and a reload they resolve
+to a clean released state - no lingering conditions, occupied mouths,
+delayed damage, dangling links, unusable units or module-disabled
+deserialization problems - which the persistence trio proves. This is not
+grapple persistence; a project-owned re-establishment of holds on load is
+out of scope for PR #23. No item of the 2026-09-26 order is BLOCKED.
+
+The closeout corrected every source comment that claimed the link store
+serializes or that the limb and mouth mapping survives a reload, removed the
+contradictory persistence claims from the state file, this report, the
+fidelity matrix, the tests, the static validation record and the PR body,
+put 2d6 acid in place of the Giant Flytrap's stale 1d8 everywhere, removed
+the stale "nothing is BLOCKED" wording and the malformed status lines, and
+reconciled the domain-test count at 1806.
+
+Gates on the final closeout head `fd877587`, which changed no
+executable behaviour (record text, one profile note and test token names),
+so the live matrix was not rerun: domain suite PASS (1806 tests, 0
+failures); repository, manifest and static validation PASS; exact-reference
+Release build PASS; strict package validation PASS. Package SHA-256
+`70eadffe2701d7778d8fe1a5dfbc6ca333df4f9c20696bb652b95a27d9871bf6`, DLL SHA-256
+`0706c3306020d31a00c7f81b099b550cfb9f81e8e07c4d7670e4db1e1ccbce46`; these differ from the
+candidate's because the build stamps the commit id into the assembly. The
+live runtime qualification stays the candidate `145810a5` matrix in section
+4. The record of these gate results is a documentation-only delta on top of
+`fd877587`, itemized exactly: this report, the state file, the journal and
+`validation/static-validation.json`; none of them ships in the package, and
+the one validation reads had the suite and both validators rerun on it at
+that head. Draft PR #23 is ready for owner review and unmerged.
+
 ## Appendix A - tabletop stat blocks (fetched 2026-09-24 from the public SRD)
 
 Recorded here so the profiles can be checked against their source without a
