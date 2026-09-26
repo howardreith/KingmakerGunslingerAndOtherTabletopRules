@@ -96,7 +96,7 @@ namespace KingmakerGunslinger.Deeds
                 attack.WeaponStats.Enhancement = enhancement;
                 attack.WeaponStats.EnhancementTotal = enhancement;
                 attack.AutoHit = forceHit;
-                triggerAttack(attack);
+                PistolWhipAttackScope.Run(attack, triggerAttack);
                 RuleCombatManeuver trip = null;
                 if (attack.AttackRoll != null && attack.AttackRoll.IsHit)
                 {
