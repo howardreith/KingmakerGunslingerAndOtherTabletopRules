@@ -929,6 +929,68 @@ them. Item 5 (evidence) is this gate list. Nothing was reclassified as an
 accepted deviation. Internal acceptance on this evidence; HumanReview:
 NOT_PERFORMED_NONBLOCKING. OwnerDelegationGranted.
 
+## Owner decision record - 2026-09-26 (accepted engine limitation)
+
+**OwnerAcceptedEngineLimitation:
+ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD.** The owner accepted that an
+active KMG summon grab, hold, swallow or engulf, the mouth occupancy that
+goes with it and the held-target rake may be session-scoped. What they must
+do on a save and a reload is resolve to a clean released state: no lingering
+conditions, no occupied mouths, no delayed damage, no dangling links, no
+unusable units and no module-disabled deserialization problem. The
+persistence trio proves exactly that. A project-owned re-establishment of
+holds on load is not implemented and is out of scope for PR #23; it would be
+a separately chartered persistence subsystem if it were ever shown to be
+worth the risk. This is not grapple persistence, and no item of the
+2026-09-26 order is left BLOCKED.
+
+The closeout the decision required, all of it done: every source comment
+that claimed `UnitPartSummonGrappleLinks` contents serialize, or that the
+limb and mouth mapping survives a reload, now says what the store is - the
+owner of the establishing attack for the life of that hold, resolved against
+the holder's body when it is read; the contradictory persistence claims are
+gone from this state file, the implementation report, the fidelity matrix,
+the domain tests, the static validation record, the changelog, the manifest
+note with its regenerated roster and the PR body; the Giant Flytrap's stale
+1d8 acid is 2d6 acid everywhere; the stale "nothing is BLOCKED" wording and
+the malformed status lines are gone; and the domain-test count is 1806
+throughout, the validator pin and both static records agreeing with the
+suite.
+
+### Closeout gates on the final closeout head `fd877587`
+
+The closeout changed no executable behaviour - its only non-comment edits
+are record text, one profile note string and test token names - so the full
+live matrix was not rerun, as the decision directed. The four gates it did
+name ran on the closeout head:
+
+| Gate | Result |
+|---|---|
+| Domain suite (`scripts/test-domain.ps1`, Release) | PASS, 1806 tests, 0 failures |
+| Repository, manifest and static validation | PASS (`validate_expanded_summoning_phase1.py`, `validate_better_vendors138.py`, `expanded_summoning_manifest.py`: foundation 1472, active 2242, reserved 2, total 2244; 288 appended identities; Sprint 3-8 pins exact) |
+| Exact-reference Release build (`scripts/Build-Local.ps1`) | PASS, no warnings as errors |
+| Strict package validation | PASS, standalone UMM package and SoundBank artifacts |
+
+Package `KingmakerGunslinger-0.0.138-local-runtime.zip` SHA-256
+`70eadffe2701d7778d8fe1a5dfbc6ca333df4f9c20696bb652b95a27d9871bf6`, DLL SHA-256
+`0706c3306020d31a00c7f81b099b550cfb9f81e8e07c4d7670e4db1e1ccbce46`. These differ from the
+qualified candidate's by construction: the build stamps the commit id into
+the assembly, so every commit produces new hashes. The live runtime
+qualification remains the candidate `145810a5` matrix recorded above, which
+the closeout does not disturb.
+
+The gates above ran on `fd877587`, the last commit that touches anything the
+build reads. The record of their results is a documentation-only delta on top
+of it, itemized exactly: `EXPANDED-SUMMONING-PHASE1-AUTONOMOUS-STATE.md`,
+`EXPANDED-SUMMONING-PHASE1-IMPLEMENTATION-REPORT.md`,
+`EXPANDED-SUMMONING-PHASE1-JOURNAL.md` and
+`validation/static-validation.json`. None of them ships in the package; the
+one that validation reads, `validation/static-validation.json`, had the
+domain suite and both validators rerun on it at that head.
+
+Draft PR #23 is marked ready for owner review and stays unmerged. No
+release publication, no permanent deployment, no Sprint 9.
+
 ## Verified facts carried from Phase 0 (do not re-derive)
 
 - Catalog pins at the start of Phase 1: 67 creatures, SM 66 / 361, SNA 57 /
