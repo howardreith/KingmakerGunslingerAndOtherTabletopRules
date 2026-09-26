@@ -52,6 +52,18 @@ KingmakerBuffPlanner, KingmakerBugfixes, KingmakerDiceRoller,
 KingmakerLastAzlantiPreserver, ProperFlanking2, SkipIntro, TweakOrTreat.
 Favored Class ships nine custom JSON rewards in `ZFavoredClass\Custom\`.
 
+## Fourth review checkpoint
+
+Status: PARTIAL - NOT RELEASE QUALIFIED. The fourth PR #24 review found two
+defects in `12651613c`: Dead Shot's confirmation must fail on a natural 1 and
+succeed on a natural 20 before the total is compared with the critical AC,
+and the Bard range group must keep a member tracked (blocking widening,
+with a diagnostic and a later retry) until its native state or its actual
+ending is verified. Requalification: the full domain suite, two identical
+clean Release builds, the Dead Shot, Bard range, lifecycle, persistence,
+visual-census and smoke lanes on the exact new DLL, then the complete final
+gate.
+
 ## Completion round checkpoint
 
 Candidate `12651613c6bbf8533884e7f73cf1b5dd0a5eaf39` (package `95d57d55c31c829ae4f7175b01df310a2081100af4cc207d49b2e9d9d91d8ec1`, DLL `ee0a67e40ebf5a926ef7df4d84485d3702f3c52e0677ec91b51a00e83bbf9f8f`, MVID `62badef3-342b-409a-9733-20dc6a664578`),
@@ -75,7 +87,7 @@ dependency stagings (H02 disabled host, simulated H04/H05, L06).
   It stays an open environment risk for qualification batches.
 - Final qualification: 40 guarded runs PASS (report section 4).
 
-Status: COMPLETE LOCALLY - AWAITING OWNER REVIEW; QUALIFIED is the owner's decision.
+Status then: COMPLETE LOCALLY - AWAITING OWNER REVIEW (superseded by the fourth review checkpoint above).
 
 ## Continuation checkpoint (repair, qualification and evidence cleanup)
 
@@ -403,11 +415,13 @@ Restoration status: VERIFIED.
 
 ## Next concrete actions
 
-1. Owner review of PR #24 at `12651613c` (and its records commit), including the
+1. Fix the fourth review's two findings (report section 14) with their domain
+   and guarded tests, then requalify as the fourth review checkpoint states.
+2. Owner review of PR #24 at the requalified candidate, including the
    simulated disposition of H04/H05 and the open owner decision D6
    (`FAVORED-CLASS-BLOCKERS.md`).
-2. Nothing is merged, tagged or published; those remain separate owner
+3. Nothing is merged, tagged or published; those remain separate owner
    actions.
-3. B3 follow-up (harness, outside the favored-class rows): isolate the allocation
+4. B3 follow-up (harness, outside the favored-class rows): isolate the allocation
    the native character-build screens retain; until then start qualification
    batches only with a low idle commit charge.
