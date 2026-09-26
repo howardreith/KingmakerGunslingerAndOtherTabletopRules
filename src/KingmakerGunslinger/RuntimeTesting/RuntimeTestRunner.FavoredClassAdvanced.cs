@@ -121,7 +121,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 eidolonFailures.Count == 0,
                 "native AddPet of Call of the Wild's eidolon progression in the save-free fixture scene"));
             assertions.Add(Assertion("fcb-advanced-bloodline-powers",
-                "an Ifrit or Sylph Sorcerer is offered only its own element's owned powers, and its level-1 reward pick counts the ray it chooses in the same level-up only inside that replayed pick's finally-closed scope (a failure injected there leaves nothing marked and the retried replay applies the reward); two steps in Elemental Blast raise exactly its caster level, dice and DC by the effective-level rule and its own extra uses at 17th and 20th level follow the effective bloodline level (at most two steps), two steps in Elemental Ray raise exactly its damage bonus rank, and the other power, Elemental Ray's uses and an unrelated spell are unchanged",
+                "an Ifrit or Sylph Sorcerer is offered only its own element's owned powers, and its level-1 reward pick counts the ray it chooses in the same level-up only inside that replayed pick's finally-closed scope (a failure injected there leaves nothing marked and the retried replay applies the reward); for fire (I08) and air (S06) alike, two steps in Elemental Blast raise exactly its caster level, dice and DC by the effective-level rule and its own extra uses at 17th and 20th level follow the effective bloodline level (at most two steps), two steps in Elemental Ray raise exactly its damage bonus rank, and the other power, Elemental Ray's uses and an unrelated spell are unchanged",
                 Describe(evidence["bloodlinePowers"], powerFailures), powerFailures.Count == 0,
                 "level-1 native Sorcerer visits with the chosen bloodline; AbilityData.CreateExecutionContext params and ranks"));
             assertions.Add(Assertion("external-isolation", "unchanged party and global-unit snapshots",
@@ -385,7 +385,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             result["menus"] = menus;
 
-            // Level-9 probes: real Sorcerer levels and the native power features.
+            // Level-9 probes: real Sorcerer levels and the native power
+            // features, for both elements (I08 fire, S06 air).
             var units = new List<UnitEntityData>();
             try
             {
@@ -395,77 +396,100 @@ namespace KingmakerGunslinger.RuntimeTesting
                     units.Add(unit);
                     return unit;
                 };
-                BlueprintFeature ray = feature(FcbFireRayFeatureGuid);
-                BlueprintFeature blast = feature(FcbFireBlastFeatureGuid);
-                var rayAbility = BlueprintLibraryLookup.RequireExact<Kingmaker.UnitLogic.Abilities.Blueprints.BlueprintAbility>(
-                    library, FcbFireRayAbilityGuid, "fire Elemental Ray");
-                var blastAbility = BlueprintLibraryLookup.RequireExact<Kingmaker.UnitLogic.Abilities.Blueprints.BlueprintAbility>(
-                    library, FcbFireBlastAbilityGuid, "fire Elemental Blast");
                 var fireball = BlueprintLibraryLookup.RequireExact<Kingmaker.UnitLogic.Abilities.Blueprints.BlueprintAbility>(
                     library, FcbFireballGuid, "Fireball");
                 UnitEntityData target = create();
-                Func<UnitEntityData> sorcererAtNine = () =>
+                foreach (var element in new[]
                 {
-                    UnitEntityData unit = create();
-                    for (int added = 0; added < 9; added++)
-                        unit.Descriptor.Progression.AddClassLevel(sorcerer);
-                    unit.Descriptor.AddFact(ray);
-                    unit.Descriptor.AddFact(blast);
-                    return unit;
-                };
-                UnitEntityData control = sorcererAtNine();
-                UnitEntityData rayUnit = sorcererAtNine();
-                UnitEntityData blastUnit = sorcererAtNine();
-                GrantFavoredClassRanks(rayUnit, leaves.Pair(effect, "FireRay").Full, 2);
-                GrantFavoredClassRanks(blastUnit, leaves.Pair(effect, "FireBlast").Full, 2);
-                Func<UnitEntityData, Kingmaker.UnitLogic.Abilities.Blueprints.BlueprintAbility, JObject> probe =
-                    (caster, ability) =>
+                    Tuple.Create("fire", FcbFireBloodlineGuid, "FireRay", "FireBlast"),
+                    Tuple.Create("air", FcbAirBloodlineGuid, "AirRay", "AirBlast"),
+                })
+                {
+                    FavoredClassSelectedPowerLevel rayBinding = leaves.Pair(effect, element.Item3).Full
+                        .GetComponent<FavoredClassSelectedPowerLevel>();
+                    FavoredClassSelectedPowerLevel blastBinding = leaves.Pair(effect, element.Item4).Full
+                        .GetComponent<FavoredClassSelectedPowerLevel>();
+                    if (rayBinding == null || blastBinding == null || rayBinding.Ability == null ||
+                        blastBinding.Ability == null || rayBinding.PowerFeature == null ||
+                        blastBinding.PowerFeature == null)
                     {
-                        var data = new Kingmaker.UnitLogic.Abilities.AbilityData(ability, caster.Descriptor);
-                        var context = data.CreateExecutionContext(new TargetWrapper(target));
-                        context.Recalculate();
-                        return new JObject
-                        {
-                            ["casterLevel"] = context.Params.CasterLevel,
-                            ["dc"] = context.Params.DC,
-                            ["rankBonus"] = context.Params.RankBonus,
-                            ["damageDice"] = context[AbilityRankType.DamageDice],
-                            ["damageBonus"] = context[AbilityRankType.DamageBonus]
-                        };
+                        failures.Add(element.Item1 + ": a power counter has no exact power binding");
+                        continue;
+                    }
+                    BlueprintFeature ray = rayBinding.PowerFeature, blast = blastBinding.PowerFeature;
+                    var rayAbility = rayBinding.Ability;
+                    var blastAbility = blastBinding.Ability;
+                    Func<UnitEntityData> sorcererAtNine = () =>
+                    {
+                        UnitEntityData unit = create();
+                        for (int added = 0; added < 9; added++)
+                            unit.Descriptor.Progression.AddClassLevel(sorcerer);
+                        unit.Descriptor.AddFact(ray);
+                        unit.Descriptor.AddFact(blast);
+                        return unit;
                     };
-                Func<JObject, JObject, string, int> delta = (after, before, key) => (int)after[key] - (int)before[key];
-                JObject blastControl = probe(control, blastAbility), blastInvested = probe(blastUnit, blastAbility),
-                    blastNeighbor = probe(rayUnit, blastAbility), rayControl = probe(control, rayAbility),
-                    rayInvested = probe(rayUnit, rayAbility), rayNeighbor = probe(blastUnit, rayAbility),
-                    fireballControl = probe(control, fireball), fireballInvested = probe(blastUnit, fireball);
-                result["sorcererLevel"] = control.Descriptor.Progression.GetClassLevel(sorcerer);
-                result["blastControl"] = blastControl;
-                result["blastInvested"] = blastInvested;
-                result["blastNeighbor"] = blastNeighbor;
-                result["rayControl"] = rayControl;
-                result["rayInvested"] = rayInvested;
-                result["rayNeighbor"] = rayNeighbor;
-                result["fireballControl"] = fireballControl;
-                result["fireballInvested"] = fireballInvested;
-                if (delta(blastInvested, blastControl, "casterLevel") != 2 ||
-                    delta(blastInvested, blastControl, "rankBonus") != 2 ||
-                    delta(blastInvested, blastControl, "damageDice") != 2)
-                    failures.Add("two Blast steps did not add exactly +2 caster level, rank bonus and dice");
-                int level = (int)result["sorcererLevel"];
-                int expectedDc = FavoredClassMechanicsPolicy.HalfLevelDelta(level, 2);
-                if (delta(blastInvested, blastControl, "dc") != expectedDc)
-                    failures.Add("the Blast DC changed by " + delta(blastInvested, blastControl, "dc") +
-                        ", expected " + expectedDc);
-                int expectedRay = (level + 2) / 2 - level / 2;
-                if (delta(rayInvested, rayControl, "damageBonus") != expectedRay ||
-                    delta(rayInvested, rayControl, "rankBonus") != 2)
-                    failures.Add("two Ray steps did not raise exactly the Ray's damage bonus rank");
-                foreach (var pair in new[] { Tuple.Create(blastNeighbor, blastControl), Tuple.Create(rayNeighbor, rayControl),
-                    Tuple.Create(fireballInvested, fireballControl) })
-                    foreach (string key in new[] { "casterLevel", "dc", "rankBonus", "damageDice", "damageBonus" })
-                        if (delta(pair.Item1, pair.Item2, key) != 0)
-                            failures.Add("an unchosen power or spell changed " + key);
-                result["blastUses"] = ObserveBlastUseThresholds(create, sorcerer, ray, blast, leaves, failures);
+                    UnitEntityData control = sorcererAtNine();
+                    UnitEntityData rayUnit = sorcererAtNine();
+                    UnitEntityData blastUnit = sorcererAtNine();
+                    GrantFavoredClassRanks(rayUnit, leaves.Pair(effect, element.Item3).Full, 2);
+                    GrantFavoredClassRanks(blastUnit, leaves.Pair(effect, element.Item4).Full, 2);
+                    Func<UnitEntityData, Kingmaker.UnitLogic.Abilities.Blueprints.BlueprintAbility, JObject> probe =
+                        (caster, ability) =>
+                        {
+                            var data = new Kingmaker.UnitLogic.Abilities.AbilityData(ability, caster.Descriptor);
+                            var context = data.CreateExecutionContext(new TargetWrapper(target));
+                            context.Recalculate();
+                            return new JObject
+                            {
+                                ["casterLevel"] = context.Params.CasterLevel,
+                                ["dc"] = context.Params.DC,
+                                ["rankBonus"] = context.Params.RankBonus,
+                                ["damageDice"] = context[AbilityRankType.DamageDice],
+                                ["damageBonus"] = context[AbilityRankType.DamageBonus]
+                            };
+                        };
+                    Func<JObject, JObject, string, int> delta = (after, before, key) => (int)after[key] - (int)before[key];
+                    JObject blastControl = probe(control, blastAbility), blastInvested = probe(blastUnit, blastAbility),
+                        blastNeighbor = probe(rayUnit, blastAbility), rayControl = probe(control, rayAbility),
+                        rayInvested = probe(rayUnit, rayAbility), rayNeighbor = probe(blastUnit, rayAbility),
+                        fireballControl = probe(control, fireball), fireballInvested = probe(blastUnit, fireball);
+                    var row = new JObject
+                    {
+                        ["sorcererLevel"] = control.Descriptor.Progression.GetClassLevel(sorcerer),
+                        ["blastAbility"] = blastAbility.AssetGuid,
+                        ["rayAbility"] = rayAbility.AssetGuid,
+                        ["blastControl"] = blastControl,
+                        ["blastInvested"] = blastInvested,
+                        ["blastNeighbor"] = blastNeighbor,
+                        ["rayControl"] = rayControl,
+                        ["rayInvested"] = rayInvested,
+                        ["rayNeighbor"] = rayNeighbor,
+                        ["fireballControl"] = fireballControl,
+                        ["fireballInvested"] = fireballInvested
+                    };
+                    result[element.Item1] = row;
+                    string label = element.Item1 + ": ";
+                    if (delta(blastInvested, blastControl, "casterLevel") != 2 ||
+                        delta(blastInvested, blastControl, "rankBonus") != 2 ||
+                        delta(blastInvested, blastControl, "damageDice") != 2)
+                        failures.Add(label + "two Blast steps did not add exactly +2 caster level, rank bonus and dice");
+                    int level = (int)row["sorcererLevel"];
+                    int expectedDc = FavoredClassMechanicsPolicy.HalfLevelDelta(level, 2);
+                    if (delta(blastInvested, blastControl, "dc") != expectedDc)
+                        failures.Add(label + "the Blast DC changed by " + delta(blastInvested, blastControl, "dc") +
+                            ", expected " + expectedDc);
+                    int expectedRay = (level + 2) / 2 - level / 2;
+                    if (delta(rayInvested, rayControl, "damageBonus") != expectedRay ||
+                        delta(rayInvested, rayControl, "rankBonus") != 2)
+                        failures.Add(label + "two Ray steps did not raise exactly the Ray's damage bonus rank");
+                    foreach (var pair in new[] { Tuple.Create(blastNeighbor, blastControl),
+                        Tuple.Create(rayNeighbor, rayControl), Tuple.Create(fireballInvested, fireballControl) })
+                        foreach (string key in new[] { "casterLevel", "dc", "rankBonus", "damageDice", "damageBonus" })
+                            if (delta(pair.Item1, pair.Item2, key) != 0)
+                                failures.Add(label + "an unchosen power or spell changed " + key);
+                    row["blastUses"] = ObserveBlastUseThresholds(create, sorcerer, element.Item2, element.Item4,
+                        ray, blast, leaves, failures);
+                }
             }
             catch (Exception exception)
             {
@@ -484,12 +508,13 @@ namespace KingmakerGunslinger.RuntimeTesting
         // the effective level of the owner's bloodline, at most two steps;
         // Elemental Ray's uses never change.
         private static JObject ObserveBlastUseThresholds(Func<UnitEntityData> create, BlueprintCharacterClass sorcerer,
-            BlueprintFeature ray, BlueprintFeature blast, FavoredClassBlueprintSet leaves, IList<string> failures)
+            string bloodlineGuid, string blastKey, BlueprintFeature ray, BlueprintFeature blast,
+            FavoredClassBlueprintSet leaves, IList<string> failures)
         {
             var library = BlueprintBootstrap.Library;
             string effect = FavoredClassCatalog.EffectSelectedBloodlinePower;
-            var progression = BlueprintLibraryLookup.RequireExact<BlueprintProgression>(library, FcbFireBloodlineGuid,
-                "Elemental (Fire) bloodline");
+            var progression = BlueprintLibraryLookup.RequireExact<BlueprintProgression>(library, bloodlineGuid,
+                "Elemental bloodline " + blastKey);
             var blastResource = BlueprintLibraryLookup.RequireExact<BlueprintAbilityResource>(library,
                 FcbBlastResourceGuid, "Elemental Blast resource");
             var rayResource = BlueprintLibraryLookup.RequireExact<BlueprintAbilityResource>(library,

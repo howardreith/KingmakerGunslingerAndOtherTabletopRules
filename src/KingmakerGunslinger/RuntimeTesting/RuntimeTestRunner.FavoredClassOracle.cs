@@ -75,6 +75,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var mechanicsFailures = new List<string>();
             var gateFailures = new List<string>();
             var inactiveFailures = new List<string>();
+            var valueFailures = new List<string>();
             bool cleaned = false;
             try
             {
@@ -83,6 +84,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 evidence["mechanics"] = ObserveRevelationMechanics(leaves, mechanicsFailures);
                 evidence["gates"] = ObserveRevelationGates(bonus, leaves, gateFailures);
                 evidence["inactive"] = ObserveInactiveScopes(leaves, inactiveFailures);
+                evidence["values"] = ObserveRevelationValues(leaves, valueFailures);
             }
             catch (Exception exception)
             {
@@ -111,6 +113,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Describe(evidence["gates"] == null ? null : evidence["gates"]["summary"], gateFailures),
                 gateFailures.Count == 0,
                 "AddClassLevel fixtures; the native AddFeatureOnClassLevel gates (HasFact of each gated feature); publication skip evidence"));
+            assertions.Add(Assertion("fcb-oracle-values",
+                "every published revelation (M24, data-driven): at real oracle levels 1, 4, 9, 12 and 17 with 2 or 3 earned steps, each read point its scope scales (resource maxima, its abilities' caster level and DC, its rank reads and its own gates) equals a native oracle at the effective level while BAB stays at the real level; a neighboring revelation on the same units is unchanged; removing the counter restores the real level; and every target shows at least one changed read point",
+                Describe(evidence["values"] == null ? null : evidence["values"]["summary"], valueFailures),
+                valueFailures.Count == 0,
+                "AddClassLevel fixtures; GetMaxAmount, AbilityData.CreateExecutionContext params, MechanicsContext ranks and HasFact of gated features"));
             assertions.Add(Assertion("fcb-oracle-inactive-scopes",
                 "a held rank of the excluded Spirit of the Warrior counter resolves but changes no read point (resources, ability parameters, ranks including the excluded BAB read, gated facts), no feature and no BAB against an uninvested control; a complete published target (Fire Breath) gives its benefit, none while a partial reason is injected into its live scope, and its benefit again once the injection is removed",
                 Describe(evidence["inactive"], inactiveFailures), inactiveFailures.Count == 0,
