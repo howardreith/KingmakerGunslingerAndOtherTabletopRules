@@ -859,3 +859,38 @@ ordinary tier with Better Vendors' own verified quantity), `GetFilterWeapons`
 entry's one-time grant; merchant inventory never decides eligibility. The
 contract, lifecycle and limits are in
 [BETTER-VENDORS-COMPATIBILITY.md](BETTER-VENDORS-COMPATIBILITY.md).
+
+### Favored Class integration 0.0.140
+
+The optional Favored Class integration appends its owned leaf identities to
+the ledger after the Expanded Summoning Phase 1 append, for
+2460 stable IDs: 2458 active and 2 reserved (2172 before the merge with 0.0.139). It never compiles
+against Favored Class or Call of the Wild and never executes host code.
+
+- **Pure policy** (`FavoredClass/`): `FavoredClassRankPolicy` (the host's
+  full/partial alternation, N = fullRank + partialRank, with KMG-owned ceilings
+  T = min(20, d * cap)), `FavoredClassCatalog` (all 54 charter appearances and
+  22 canonical effects), `FavoredClassEligibility` and
+  `FavoredClassRaceIdentities` (exact race-GUID ancestry plus a bounded
+  permission graph for the Half-elf/Half-orc FAQ, the preserved host
+  Aasimar/Tiefling human policy and Mostly Human), and
+  `FavoredClassHostContract` (exact file SHA-256 and MVID for the host and Call
+  of the Wild, method fingerprints, and readiness).
+- **Registration** (`FavoredClassBlueprints`): every full/partial leaf is
+  registered unconditionally in a contained registry, independent of the host,
+  so saved investments always resolve. Leaves carry KMG-owned prerequisites
+  (`PrerequisiteFavoredClassInvestment`, `PrerequisiteFavoredClassAncestry`)
+  and are hidden when not selectable.
+- **Publication** (`FavoredClassIntegrationCoordinator`, `FavoredClassHostAdapter`,
+  `FavoredClassPublication`): on the first UMM update after the LoadDictionary
+  postfix chain, the adapter resolves the exact host by reflection, reads
+  `Main.library` before any `Core` static, proves `Core.load()` completed and
+  that the Gunslinger class was scanned, then appends the owned leaves to the
+  host's per-class bonus selections in one transaction that preserves every
+  foreign entry and rolls back only its own additions.
+- **Mechanics** (`FavoredClass/Mechanics/`): owner-scoped components read the
+  owning leaf's rank; they are suppressed only when the whole integration is
+  disabled.
+
+The host contract and its limits are in
+[FAVORED-CLASS-COMPATIBILITY.md](FAVORED-CLASS-COMPATIBILITY.md).

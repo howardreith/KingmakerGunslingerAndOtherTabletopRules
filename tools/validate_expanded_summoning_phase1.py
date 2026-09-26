@@ -358,7 +358,9 @@ def validate(root: Path) -> None:
         raise AssertionError("The Phase 1 appended identity list is malformed")
     manifest = json.loads((root / "blueprints/blueprints.json").read_text(encoding="utf-8"))
     entries = manifest["entries"]
-    tail = entries[PRESERVED_ENTRIES:]
+    # The Favored Class and Mostly Human blocks follow this append;
+    # validate_better_vendors138 pins them.
+    tail = entries[PRESERVED_ENTRIES:PRESERVED_ENTRIES + len(APPENDED)]
     if [(e["symbol"], e["guid"], e["plannedType"]) for e in tail] != list(APPENDED):
         raise AssertionError("Expanded Summoning Phase 1 identities drifted")
     if any(e["status"] != "active" or e["milestone"] != "Expanded Summoning" for e in tail):

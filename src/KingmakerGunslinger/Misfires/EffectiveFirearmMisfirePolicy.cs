@@ -24,9 +24,21 @@ namespace KingmakerGunslinger.Misfires
             bool trained, ItemEntityWeapon exactWeapon,
             AmmunitionId loadedAmmunition)
         {
+            return Evaluate(baseValue, condition, trained, exactWeapon,
+                loadedAmmunition, 0);
+        }
+
+        /// <summary>
+        /// As above, with the wielder's favored-class reduction for the
+        /// weapon's firearm type applied last (see the value policy).
+        /// </summary>
+        internal static int Evaluate(int baseValue, FirearmCondition condition,
+            bool trained, ItemEntityWeapon exactWeapon,
+            AmmunitionId loadedAmmunition, int favoredClassReduction)
+        {
             int reduction = Enchantments.FirearmMisfireReductionResolver.Resolve(exactWeapon);
-            return EvaluateWithReduction(baseValue, condition, trained,
-                loadedAmmunition, reduction);
+            return EffectiveFirearmMisfireValuePolicy.Evaluate(baseValue, condition,
+                trained, loadedAmmunition, reduction, favoredClassReduction);
         }
 
         internal static int EvaluateWithReduction(int baseValue,

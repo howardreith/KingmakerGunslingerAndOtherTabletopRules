@@ -1,0 +1,590 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints.Classes.Selection;
+using Kingmaker.Blueprints.Root;
+using KingmakerGunslinger.Bootstrap;
+using KingmakerGunslinger.Compatibility;
+using KingmakerGunslinger.FavoredClass;
+using Newtonsoft.Json.Linq;
+
+namespace KingmakerGunslinger.RuntimeTesting
+{
+    internal sealed partial class RuntimeTestRunner
+    {
+        // Review finding 6: the complete registered aggregate (every registry
+        // of the bootstrap) equals its expectation, whose favored-class and
+        // Mostly Human terms are their catalogs' identity counts, and every one
+        // of those catalog identities is live in the library.
+        private JObject DescribeFcbAggregate()
+        {
+            int registered = BlueprintBootstrap.RegisteredBlueprintCount;
+            int expected = BlueprintBootstrap.ExpectedRegisteredBlueprintCountForCurrentRuntime;
+            string manifestPath = System.IO.Path.Combine(_context.ModEntry.Path,
+                KingmakerGunslinger.Blueprints.BlueprintManifest.RelativeManifestPath);
+            JToken[] active = ((JArray)JObject.Parse(System.IO.File.ReadAllText(manifestPath))["entries"])
+                .Where(entry => (string)entry["status"] == "active").ToArray();
+            Func<string, int, JObject> family = (prefix, catalog) =>
+            {
+                string[] guids = active.Where(entry => ((string)entry["symbol"]).StartsWith(prefix,
+                    StringComparison.Ordinal)).Select(entry => (string)entry["guid"]).ToArray();
+                return new JObject
+                {
+                    ["catalog"] = catalog,
+                    ["manifest"] = guids.Length,
+                    ["live"] = guids.Count(guid => BlueprintBootstrap.Library.BlueprintsByAssetId.ContainsKey(guid))
+                };
+            };
+            JObject favoredClass = family("KMG.FavoredClass.", FavoredClassIdentityCatalog.IdentityCount);
+            JObject mostlyHuman = family("KMG.MostlyHuman.",
+                KingmakerGunslinger.ElementalRaces.ElementalMostlyHumanPolicy.IdentityCount);
+            Func<JObject, bool> complete = value => (int)value["manifest"] == (int)value["catalog"] &&
+                (int)value["live"] == (int)value["catalog"];
+            // Informational only (not asserted): active manifest identities that
+            // are not live at the main menu.
+            string[] notLive = active.Where(entry => !BlueprintBootstrap.Library.BlueprintsByAssetId.ContainsKey(
+                (string)entry["guid"])).Select(entry => (string)entry["symbol"]).ToArray();
+            return new JObject
+            {
+                ["registered"] = registered,
+                ["expected"] = expected,
+                ["favoredClass"] = favoredClass,
+                ["mostlyHuman"] = mostlyHuman,
+                ["manifestActive"] = active.Length,
+                ["activeNotLive"] = new JArray(notLive.Cast<object>().ToArray()),
+                ["exact"] = registered == expected && complete(favoredClass) && complete(mostlyHuman)
+            };
+        }
+
+        // Main-menu, save-free observation of the live Favored Class contract
+        // and of the committed publication. Publication is exercised on the
+        // live host graph only at the main menu, where no build session can
+        // hold the menus: rollback, a fault-injected transaction and a fresh
+        // re-publication must each leave the exact expected foreign arrays.
+        private RuntimeTestResult RunFavoredClassContract()
+        {
+            var assertions = new List<RuntimeTestAssertion>();
+            var evidence = new JObject();
+            FavoredClassIntegrationStatus status = FavoredClassIntegrationStatusRegistry.Current;
+            FavoredClassHostHandles host = FavoredClassIntegrationCoordinator.Host;
+            FavoredClassBlueprintSet leaves = BlueprintBootstrap.FavoredClassLeaves;
+            evidence["status"] = status.ToString();
+            evidence["ummOrder"] = ClassCatalogDiagnostics.DescribeUmmOrder(_context.ModEntry);
+            evidence["loadDictionaryPatches"] =
+                ClassCatalogDiagnostics.DescribeLoadDictionaryPatches(_context);
+
+            // Binary identity (H05) and readiness (H02/H03).
+            var binaryFailures = new List<string>();
+            JObject binary = DescribeFcbBinary(host, binaryFailures);
+            evidence["binary"] = binary;
+            assertions.Add(Assertion("fcb-host-binary-identity",
+                "the loaded Favored Class and Call of the Wild assemblies are exactly the qualified files (SHA-256, MVID, member shapes and method fingerprints)",
+                Describe(binary, binaryFailures), binaryFailures.Count == 0,
+                "reflection over the live UMM entries and loaded assemblies"));
+            // L04/L05: the effective profile is exactly the one resolved from
+            // the optional restart-required settings file when the
+            // integration attached (the charter defaults when it is absent).
+            FavoredClassSettingsResult settings = FavoredClassIntegrationCoordinator.Settings;
+            FavoredClassProfileState effective = FavoredClassRuntime.Profile;
+            bool settingsFilePresent = System.IO.File.Exists(System.IO.Path.Combine(
+                _context.ModEntry.Path, FavoredClassSettings.FileName));
+            evidence["settings"] = new JObject
+            {
+                ["file"] = FavoredClassSettings.FileName,
+                ["filePresent"] = settingsFilePresent,
+                ["resolution"] = settings == null ? null : settings.ToString(),
+                ["effectiveProfile"] = effective.ToString()
+            };
+            assertions.Add(Assertion("fcb-settings-profile",
+                "the effective profile is the one resolved once from the optional FavoredClassIntegration.json at attach (charter defaults when absent; a present file is read, never written)",
+                (settings == null ? "unresolved" : settings.ToString()) + ";filePresent=" + settingsFilePresent +
+                    ";effective=" + effective,
+                settings != null && ReferenceEquals(settings.Profile, effective) &&
+                    (settingsFilePresent ? settings.Source != FavoredClassSettingsSource.Defaults
+                        : settings.Source == FavoredClassSettingsSource.Defaults),
+                "FavoredClassIntegrationCoordinator.Settings and FavoredClassRuntime.Profile"));
+            // E05: the Mostly Human companion trait is offered exactly when its
+            // control is on (and the elemental races are published); a saved
+            // choice resolves either way.
+            var mostlyHuman = KingmakerGunslinger.Bootstrap.BlueprintBootstrap.MostlyHuman;
+            var mostlyHumanRows = new JArray();
+            bool mostlyHumanExact = mostlyHuman != null;
+            if (mostlyHuman != null)
+                foreach (var race in mostlyHuman.Races)
+                {
+                    int listed = (race.Race.Features ?? new Kingmaker.Blueprints.Classes.BlueprintFeatureBase[0])
+                        .Count(value => ReferenceEquals(value, race.Selection));
+                    bool expectedListed = effective.MostlyHuman &&
+                        _context.FeatureModules.Active.ElementalRaces;
+                    mostlyHumanRows.Add(race.Definition.RaceName + "=" + listed);
+                    mostlyHumanExact &= listed == (expectedListed ? 1 : 0);
+                }
+            evidence["mostlyHuman"] = mostlyHumanRows;
+            assertions.Add(Assertion("fcb-mostly-human-publication",
+                "each parent race lists its Mostly Human selection exactly once when the control is on and never when it is off; the identities stay registered",
+                "registered=" + (mostlyHuman != null) + ";profileMostlyHuman=" + effective.MostlyHuman +
+                    ";listed=" + string.Join(",", mostlyHumanRows.Select(value => (string)value).ToArray()),
+                mostlyHumanExact, "BlueprintBootstrap.MostlyHuman and live race Features"));
+            // Review finding 6: the complete registered aggregate.
+            JObject aggregate = DescribeFcbAggregate();
+            evidence["aggregate"] = aggregate;
+            assertions.Add(Assertion("fcb-bootstrap-aggregate",
+                "the complete registered aggregate (core, teleportation, Magic Circle, favored-class and Mostly Human registries) equals its expectation, whose favored-class and Mostly Human terms are their catalogs' 171 and 13 identities, and every one of those identities is live in the library",
+                aggregate.ToString(Newtonsoft.Json.Formatting.None), (bool)aggregate["exact"],
+                "BlueprintBootstrap registered and expected counts; installed blueprints/blueprints.json"));
+            var readinessFailures = new List<string>();
+            JObject readiness = DescribeFcbReadiness(host, readinessFailures);
+            evidence["readiness"] = readiness;
+            assertions.Add(Assertion("fcb-host-readiness-and-gunslinger-scan",
+                "Core.load completed (completion marker), the favored class selection exists, and the host scanned the KMG Gunslinger class into exactly one favored progression and bonus selection with the MergeIds identities, twenty levels and the generic rewards",
+                Describe(readiness, readinessFailures), readinessFailures.Count == 0,
+                "host private static maps read after Main.library was observed"));
+            if (host == null || leaves == null || host.GunslingerSelection == null ||
+                status.Availability != FavoredClassIntegrationAvailability.Published)
+            {
+                assertions.Add(Assertion("fcb-integration-published", "Published",
+                    status.ToString(), false, "FavoredClassIntegrationStatusRegistry"));
+                return FinishContract(assertions, evidence);
+            }
+
+            BlueprintFeatureSelection gunslinger = host.GunslingerSelection;
+            BlueprintFeature[] owned = leaves.Pairs.SelectMany(pair => pair.Leaves).ToArray();
+            // The current profile decides which counters are offered: a
+            // counter is published when any of its scheduled routes is enabled
+            // (third-party-only counters are withheld by default). Each
+            // counter goes into its own class's host selection.
+            Func<FavoredClassLeafPair, bool> offered = FcbOfferedByProfile;
+            string[] hostClasses = leaves.Pairs.Select(pair => pair.HostClassGuid)
+                .Distinct(StringComparer.Ordinal).ToArray();
+            var selections = new Dictionary<string, BlueprintFeatureSelection>(StringComparer.Ordinal);
+            var expectedBy = new Dictionary<string, BlueprintFeature[]>(StringComparer.Ordinal);
+            var withheldBy = new Dictionary<string, BlueprintFeature[]>(StringComparer.Ordinal);
+            var foreignBy = new Dictionary<string, BlueprintFeature[]>(StringComparer.Ordinal);
+            var publishedBy = new Dictionary<string, BlueprintFeature[]>(StringComparer.Ordinal);
+            var graphFailures = new List<string>();
+            var graphs = new JObject();
+            foreach (string classGuid in hostClasses)
+            {
+                BlueprintFeatureSelection selection = host.BonusSelectionFor(classGuid);
+                FavoredClassLeafPair[] classPairs = leaves.Pairs.Where(pair =>
+                    pair.HostClassGuid == classGuid).ToArray();
+                if (selection == null)
+                {
+                    graphFailures.Add("host class " + classGuid + " has no bonus selection for " +
+                        string.Join(",", classPairs.Select(pair => pair.Effect.Id).Distinct().ToArray()));
+                    continue;
+                }
+                selections[classGuid] = selection;
+                expectedBy[classGuid] = classPairs.Where(offered).SelectMany(pair => pair.Leaves).ToArray();
+                withheldBy[classGuid] = classPairs.Where(pair => !offered(pair))
+                    .SelectMany(pair => pair.Leaves).ToArray();
+                publishedBy[classGuid] = selection.AllFeatures;
+                foreignBy[classGuid] = selection.AllFeatures.Where(value => !owned.Contains(value)).ToArray();
+                graphs[selection.name] = ReferenceEquals(selection, gunslinger)
+                    ? DescribeFcbPublishedGraph(selection, expectedBy[classGuid], withheldBy[classGuid],
+                        host, graphFailures)
+                    : DescribeFcbSelectionGraph(selection, expectedBy[classGuid], withheldBy[classGuid],
+                        graphFailures);
+            }
+            try
+            {
+                FavoredClassIntegrationCoordinator.Publication.Validate();
+                graphs["foreignPrefixesValidated"] = true;
+            }
+            catch (Exception exception)
+            {
+                graphFailures.Add("live publication validation: " + exception.Message);
+            }
+            BlueprintFeature[] expectedPublished = hostClasses.Where(expectedBy.ContainsKey)
+                .SelectMany(guid => expectedBy[guid]).ToArray();
+            evidence["withheldLeaves"] = new JArray(withheldBy.Values.SelectMany(value => value)
+                .Select(leaf => leaf.name));
+            evidence["graph"] = graphs;
+            assertions.Add(Assertion("fcb-publication-graph",
+                "in every host class selection, each owned leaf of an enabled profile appears exactly once, in registration order, as a suffix after the untouched foreign entries (for the Gunslinger, exactly the host's generic rewards); withheld (profile-off) leaves appear nowhere; full/partial prerequisites match; hidden when unavailable",
+                Describe(graphs, graphFailures), graphFailures.Count == 0,
+                "live host bonus selections AllFeatures, leaf components and FavoredClassPublication.Validate"));
+
+            // H06: repeated publication is idempotent.
+            var idempotentFailures = new List<string>();
+            FavoredClassIntegrationCoordinator.TryResolveAndPublish("qualification-repeat");
+            foreach (KeyValuePair<string, BlueprintFeatureSelection> entry in selections)
+                if (!ReferenceEquals(publishedBy[entry.Key], entry.Value.AllFeatures))
+                    idempotentFailures.Add("repeat publication replaced " + entry.Value.name);
+            FavoredClassPublication repeat = FavoredClassPublication.Plan(leaves, host,
+                FavoredClassRuntime.Profile, _context.FeatureModules.Active.Gunslinger, null);
+            repeat.Commit();
+            if (selections.Any(entry => !ReferenceEquals(publishedBy[entry.Key], entry.Value.AllFeatures)) ||
+                // Surface records carry ";action="; the summary record
+                // "transaction=committed" must not be mistaken for one.
+                !repeat.Evidence.Where(value => value.Contains(";action=")).All(value =>
+                    value.Contains(";action=unchanged")) ||
+                repeat.Evidence.Count(value => value.Contains(";action=")) != expectedPublished.Length)
+                idempotentFailures.Add("second transaction was not a no-op: " +
+                    string.Join("|", repeat.Evidence.ToArray()));
+            assertions.Add(Assertion("fcb-publication-idempotent",
+                "repeating readiness and publication leaves every selection's array reference, identities, order and counts unchanged",
+                string.Join("|", repeat.Evidence.ToArray()) + ";failures=" +
+                    string.Join(",", idempotentFailures.ToArray()),
+                idempotentFailures.Count == 0, "coordinator repeat + second FavoredClassPublication"));
+
+            // H08: rollback, fault injection and re-publication on the live graph.
+            var faultFailures = new List<string>();
+            JObject fault = new JObject();
+            BlueprintComponent[][] hostComponentsBefore = SnapshotHostComponents(host);
+            Func<bool> foreignOnly = () => selections.All(entry =>
+                SameFeatureReferences(entry.Value.AllFeatures, foreignBy[entry.Key]));
+            try
+            {
+                FavoredClassIntegrationCoordinator.Publication.Rollback();
+                fault["afterRollback"] = selections.Sum(entry => entry.Value.AllFeatures.Length);
+                if (!foreignOnly())
+                    faultFailures.Add("rollback did not restore every exact foreign array");
+                FavoredClassPublication faulty = FavoredClassPublication.Plan(leaves, host,
+                    FavoredClassRuntime.Profile, _context.FeatureModules.Active.Gunslinger, 1);
+                try
+                {
+                    faulty.Commit();
+                    faultFailures.Add("the injected fault did not stop publication");
+                }
+                catch (InvalidOperationException injected)
+                {
+                    fault["injected"] = injected.Message;
+                }
+                fault["afterFault"] = selections.Sum(entry => entry.Value.AllFeatures.Length);
+                if (!foreignOnly())
+                    faultFailures.Add("the failed transaction left owned entries or changed foreign ones");
+                FavoredClassPublication fresh = FavoredClassPublication.Plan(leaves, host,
+                    FavoredClassRuntime.Profile, _context.FeatureModules.Active.Gunslinger, null);
+                fresh.Commit();
+                FavoredClassIntegrationCoordinator.AdoptQualificationRepublication(fresh);
+                fault["afterRepublish"] = selections.Sum(entry => entry.Value.AllFeatures.Length);
+                foreach (KeyValuePair<string, BlueprintFeatureSelection> entry in selections)
+                {
+                    BlueprintFeature[] all = entry.Value.AllFeatures;
+                    BlueprintFeature[] foreignEntries = foreignBy[entry.Key];
+                    if (!SameFeatureReferences(all.Take(foreignEntries.Length).ToArray(), foreignEntries) ||
+                        !all.Skip(foreignEntries.Length).SequenceEqual(expectedBy[entry.Key]))
+                        faultFailures.Add("re-publication did not restore the exact graph of " +
+                            entry.Value.name);
+                }
+            }
+            catch (Exception exception)
+            {
+                faultFailures.Add("exception=" + exception);
+            }
+            if (!SameComponentSnapshots(hostComponentsBefore, SnapshotHostComponents(host)))
+                faultFailures.Add("host generic leaf prerequisites/components changed");
+            evidence["fault"] = fault;
+            assertions.Add(Assertion("fcb-publication-fault-rollback",
+                "on the live host graph, rollback restores every exact foreign array, a transaction failing midway leaves no owned entry and no changed foreign entry, and a fresh transaction re-publishes the identical graph in every selection; host leaf components are untouched",
+                Describe(fault, faultFailures), faultFailures.Count == 0,
+                "production FavoredClassPublication with an injected surface fault"));
+
+            // H10: host generic rewards unchanged.
+            var genericFailures = new List<string>();
+            JObject generic = DescribeFcbGenericRewards(host, genericFailures);
+            evidence["generic"] = generic;
+            assertions.Add(Assertion("fcb-host-generic-rewards-unchanged",
+                "the host's hit-point (20 ranks, AddHitPointOnce) and half-rate skill rewards are unchanged and still offered to the Gunslinger and Fighter",
+                Describe(generic, genericFailures), genericFailures.Count == 0,
+                "live host generic features and Harmony patch owners"));
+
+            // Inventories for later phases (recorded, scored for presence only).
+            var inventoryFailures = new List<string>();
+            JObject inventory = DescribeFcbInventory(host, inventoryFailures);
+            evidence["inventory"] = inventory;
+            assertions.Add(Assertion("fcb-host-human-and-race-inventory",
+                "the live human-route leaves of the host's twenty reviewed class families and every source-addressable race identity are recorded; native and KMG races resolve",
+                Describe(inventory, inventoryFailures), inventoryFailures.Count == 0,
+                "host bonus selections and their PrerequisiteRace instances; BlueprintRoot race catalog"));
+            return FinishContract(assertions, evidence);
+        }
+
+        private RuntimeTestResult FinishContract(List<RuntimeTestAssertion> assertions, JObject evidence)
+        {
+            assertions.Add(Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                _context.ModEntry.Info.Version,
+                _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                "Unity Mod Manager ModEntry.Info.Version"));
+            string path = WriteFavoredClassEvidence("favored-class-contract.json", evidence);
+            RuntimeTestResult result = CreateResult(assertions.TrueForAll(value => value.Status == "PASS")
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, assertions, null);
+            result.EvidenceFiles.Add(path);
+            return result;
+        }
+
+        // A counter is published when any of its scheduled routes is enabled by
+        // the profile, unless the O01 or I06/S04 manifest excludes its target.
+        private static bool FcbOfferedByProfile(FavoredClassLeafPair pair)
+        {
+            return pair.Effect.Rows.Select(FavoredClassCatalog.Row).Any(row => row.IsScheduled &&
+                    FavoredClassRuntime.Profile.Offers(row.Profile)) &&
+                !(pair.Effect.Id == FavoredClassCatalog.EffectPerformanceRange && pair.TargetKey != null &&
+                    !FavoredClassPerformanceManifest.For(pair.TargetKey).Published) &&
+                !(pair.Effect.Id == FavoredClassCatalog.EffectSelectedRevelation && pair.TargetKey != null &&
+                    !FavoredClassRevelationManifest.For(pair.TargetKey).Published);
+        }
+
+        private static JObject DescribeFcbBinary(FavoredClassHostHandles host, IList<string> failures)
+        {
+            if (host == null)
+            {
+                failures.Add("host handles unresolved");
+                return new JObject();
+            }
+            FavoredClassHostObservation observed = host.Binary;
+            var row = new JObject
+            {
+                ["decision"] = host.Decision.ToString(),
+                ["hostVersion"] = observed.HostModVersion,
+                ["hostSha256"] = observed.HostFileSha256,
+                ["hostMvid"] = observed.HostModuleVersionId,
+                ["cotwSha256"] = observed.CallOfTheWildFileSha256,
+                ["cotwMvid"] = observed.CallOfTheWildModuleVersionId,
+                ["fingerprints"] = new JObject(observed.MethodIlSha256.OrderBy(value => value.Key,
+                    StringComparer.Ordinal).Select(value => new JProperty(value.Key, value.Value)))
+            };
+            if (!host.Decision.IsReady)
+                failures.Add("host decision " + host.Decision);
+            if (observed.HostFileSha256 != FavoredClassHostContract.VerifiedHostFileSha256 ||
+                observed.HostModuleVersionId != FavoredClassHostContract.VerifiedHostModuleVersionId)
+                failures.Add("host identity differs");
+            if (observed.CallOfTheWildFileSha256 != FavoredClassHostContract.VerifiedCallOfTheWildFileSha256 ||
+                observed.CallOfTheWildModuleVersionId != FavoredClassHostContract.VerifiedCallOfTheWildModuleVersionId)
+                failures.Add("Call of the Wild identity differs");
+            foreach (string key in FavoredClassHostContract.FingerprintKeys)
+            {
+                string value;
+                if (!observed.MethodIlSha256.TryGetValue(key, out value) ||
+                    value != FavoredClassHostContract.VerifiedIlSha256(key))
+                    failures.Add("fingerprint " + key + "=" + value);
+            }
+            return row;
+        }
+
+        private static JObject DescribeFcbReadiness(FavoredClassHostHandles host, IList<string> failures)
+        {
+            if (host == null || host.Readiness == null)
+            {
+                failures.Add("readiness unobserved");
+                return new JObject();
+            }
+            FavoredClassHostReadinessObservation value = host.Readiness;
+            BlueprintCharacterClass gunslinger = BlueprintBootstrap.GunslingerClass.CharacterClass;
+            BlueprintCharacterClass[] classes = BlueprintRoot.Instance.Progression.CharacterClasses;
+            var row = new JObject
+            {
+                ["libraryAssigned"] = value.LibraryAssigned,
+                ["coreLoadCompleted"] = value.CoreLoadCompleted,
+                ["favoredClassSelectionPresent"] = value.FavoredClassSelectionPresent,
+                ["gunslingerClass"] = value.GunslingerClassGuid,
+                ["gunslingerProgression"] = value.GunslingerProgressionGuid,
+                ["gunslingerBonusSelection"] = value.GunslingerBonusSelectionGuid,
+                ["progressionOffered"] = value.GunslingerProgressionOffered,
+                ["progressionLevels"] = value.GunslingerProgressionLevels,
+                ["levelsGrantSelection"] = value.GunslingerLevelsGrantBonusSelection,
+                ["genericHitPoint"] = value.GenericHitPointLeafPresent,
+                ["genericSkill"] = value.GenericSkillLeavesPresent,
+                ["gunslingerDecision"] = host.GunslingerDecision.ToString(),
+                ["gunslingerCatalogIndex"] = Array.IndexOf(classes, gunslinger),
+                ["catalogCount"] = classes.Length
+            };
+            if (!host.GunslingerDecision.IsReady)
+                failures.Add("gunslinger " + host.GunslingerDecision);
+            if (value.GunslingerProgressionGuid !=
+                    FavoredClassHostContract.ExpectedProgressionGuid(gunslinger.AssetGuid) ||
+                value.GunslingerBonusSelectionGuid !=
+                    FavoredClassHostContract.ExpectedBonusSelectionGuid(gunslinger.AssetGuid))
+                failures.Add("gunslinger host identities differ from MergeIds");
+            if (Array.IndexOf(classes, gunslinger) < 0)
+                failures.Add("the Gunslinger class is not in the live class catalog");
+            return row;
+        }
+
+        private static JObject DescribeFcbPublishedGraph(BlueprintFeatureSelection selection,
+            BlueprintFeature[] owned, BlueprintFeature[] withheld, FavoredClassHostHandles host,
+            IList<string> failures)
+        {
+            BlueprintFeature[] all = selection.AllFeatures;
+            var row = new JObject
+            {
+                ["selection"] = selection.name + ":" + selection.AssetGuid,
+                ["entries"] = new JArray(all.Select(value => value.name + ":" + value.AssetGuid)),
+                // Icon evidence for the menu's disposition: host leaves and
+                // owned leaves side by side (null renders the native monogram).
+                ["entryIcons"] = new JArray(all.Select(value => value.name + "=" +
+                    (value.Icon == null ? "<null>" : value.Icon.name))),
+                ["featuresEmpty"] = selection.Features == null || selection.Features.Length == 0
+            };
+            foreach (BlueprintFeature leaf in owned)
+            {
+                int count = all.Count(value => ReferenceEquals(value, leaf));
+                int ids = all.Count(value => value.AssetGuid == leaf.AssetGuid);
+                if (count != 1 || ids != 1)
+                    failures.Add(leaf.name + " appears " + count + "/" + ids);
+                if (!leaf.HideNotAvailibleInUI)
+                    failures.Add(leaf.name + " is shown when unavailable");
+            }
+            foreach (BlueprintFeature leaf in withheld)
+                if (all.Any(value => ReferenceEquals(value, leaf) || value.AssetGuid == leaf.AssetGuid))
+                    failures.Add(leaf.name + " is published although its profile is off");
+            int firstOwned = Array.FindIndex(all, value => owned.Contains(value));
+            if (firstOwned < 0 || !all.Skip(firstOwned).SequenceEqual(owned))
+                failures.Add("owned leaves are not the exact contiguous suffix in registration order");
+            BlueprintFeature[] expectedHost = { host.GenericHitPoint, host.GenericSkillPartial,
+                host.GenericSkillFull };
+            if (firstOwned < 0 || !all.Take(firstOwned).SequenceEqual(expectedHost))
+                failures.Add("foreign prefix is not exactly the host generic rewards in host order");
+            foreach (FavoredClassLeafPair pair in BlueprintBootstrap.FavoredClassLeaves.Pairs)
+            {
+                if (pair.Partial == null)
+                    continue;
+                PrerequisiteFavoredClassAncestry fullAncestry = pair.Full.ComponentsArray
+                    .OfType<PrerequisiteFavoredClassAncestry>().Single();
+                PrerequisiteFavoredClassAncestry partialAncestry = pair.Partial.ComponentsArray
+                    .OfType<PrerequisiteFavoredClassAncestry>().Single();
+                if (fullAncestry.EffectId != partialAncestry.EffectId ||
+                    fullAncestry.Group != partialAncestry.Group)
+                    failures.Add(pair.Effect.Id + " full and partial ancestry restrictions differ");
+            }
+            return row;
+        }
+
+        // A native class selection: the host's own entries stay an untouched
+        // prefix (proved by FavoredClassPublication.Validate); owned leaves
+        // are exactly the registration-order suffix; withheld leaves absent.
+        private static JObject DescribeFcbSelectionGraph(BlueprintFeatureSelection selection,
+            BlueprintFeature[] owned, BlueprintFeature[] withheld, IList<string> failures)
+        {
+            BlueprintFeature[] all = selection.AllFeatures ?? new BlueprintFeature[0];
+            var row = new JObject
+            {
+                ["selection"] = selection.name + ":" + selection.AssetGuid,
+                ["foreignCount"] = all.Count(value => !owned.Contains(value)),
+                ["owned"] = new JArray(all.Where(owned.Contains).Select(value => value.name)),
+                ["ownedIcons"] = new JArray(all.Where(owned.Contains).Select(value => value.name + "=" +
+                    (value.Icon == null ? "<null>" : value.Icon.name)))
+            };
+            foreach (BlueprintFeature leaf in owned)
+                if (all.Count(value => ReferenceEquals(value, leaf)) != 1 ||
+                    all.Count(value => value.AssetGuid == leaf.AssetGuid) != 1 || !leaf.HideNotAvailibleInUI)
+                    failures.Add(selection.name + ": " + leaf.name + " is not exactly once and hidden when unavailable");
+            foreach (BlueprintFeature leaf in withheld)
+                if (all.Any(value => ReferenceEquals(value, leaf) || value.AssetGuid == leaf.AssetGuid))
+                    failures.Add(selection.name + ": " + leaf.name + " is published although its profile is off");
+            int firstOwned = Array.FindIndex(all, value => owned.Contains(value));
+            if (owned.Length > 0 && (firstOwned < 0 || !all.Skip(firstOwned).SequenceEqual(owned)))
+                failures.Add(selection.name + ": owned leaves are not the exact registration-order suffix");
+            return row;
+        }
+
+        private static JObject DescribeFcbGenericRewards(FavoredClassHostHandles host, IList<string> failures)
+        {
+            var row = new JObject
+            {
+                ["hitPoint"] = host.GenericHitPoint == null ? "<absent>" :
+                    host.GenericHitPoint.name + " ranks=" + host.GenericHitPoint.Ranks,
+                ["skillFull"] = host.GenericSkillFull == null ? "<absent>" :
+                    host.GenericSkillFull.name + " ranks=" + host.GenericSkillFull.Ranks,
+                ["skillPartial"] = host.GenericSkillPartial == null ? "<absent>" :
+                    host.GenericSkillPartial.name + " ranks=" + host.GenericSkillPartial.Ranks
+            };
+            if (host.GenericHitPoint == null || host.GenericHitPoint.Ranks != 20 ||
+                !host.GenericHitPoint.ComponentsArray.Any(component =>
+                    component.GetType().FullName == "ZFavoredClass.NewMechanics.AddHitPointOnce"))
+                failures.Add("host hit-point reward changed");
+            if (host.GenericSkillFull == null || host.GenericSkillFull.Ranks != 10)
+                failures.Add("host skill reward changed");
+            BlueprintCharacterClass fighter = BlueprintBootstrap.Library.GetAllBlueprints()
+                .OfType<BlueprintCharacterClass>().SingleOrDefault(value => value.name == "FighterClass");
+            BlueprintFeatureSelection fighterSelection = fighter == null ? null :
+                host.BonusSelectionFor(fighter.AssetGuid);
+            if (fighterSelection == null || !fighterSelection.AllFeatures.Contains(host.GenericHitPoint))
+                failures.Add("the Fighter no longer offers the host hit-point reward");
+            // Diagnostic only: methods with hit points in their name that any
+            // KMG Harmony owner patches (the integration itself installs none;
+            // a domain source check pins that).
+            row["kmgPatchedHitPointMethods"] = new JArray(Harmony12.HarmonyInstance
+                .Create("KingmakerGunslinger.favored-class.probe").GetPatchedMethods()
+                .Where(method => method.Name.IndexOf("HitPoint", StringComparison.OrdinalIgnoreCase) >= 0)
+                .Select(method => method.DeclaringType.FullName + "." + method.Name));
+            return row;
+        }
+
+        private static JObject DescribeFcbInventory(FavoredClassHostHandles host, IList<string> failures)
+        {
+            var human = new JArray();
+            foreach (KeyValuePair<string, BlueprintFeatureSelection> entry in host.BonusSelections)
+            {
+                if (entry.Value == null)
+                    continue;
+                BlueprintScriptableObject classBlueprint;
+                BlueprintBootstrap.Library.BlueprintsByAssetId.TryGetValue(entry.Key, out classBlueprint);
+                foreach (BlueprintFeature leaf in entry.Value.AllFeatures)
+                {
+                    var races = leaf.ComponentsArray.Where(component =>
+                            component.GetType().FullName == FavoredClassHostContract.PrerequisiteRaceTypeName)
+                        .Select(component => host.PrerequisiteRaceField.GetValue(component) as BlueprintRace)
+                        .Where(race => race != null).ToArray();
+                    if (races.Any(race => race.AssetGuid == FcbHumanRace))
+                        human.Add((classBlueprint == null ? entry.Key : classBlueprint.name) + ":" +
+                            leaf.name + ":" + leaf.AssetGuid + ":races=" + races.Length);
+                }
+            }
+            var raceRows = new JArray();
+            BlueprintRace[] playable = BlueprintRoot.Instance.Progression.CharacterRaces;
+            foreach (FavoredClassRaceIdentity identity in FavoredClassRaceIdentities.All)
+            {
+                BlueprintScriptableObject race;
+                BlueprintBootstrap.Library.BlueprintsByAssetId.TryGetValue(identity.RaceGuid, out race);
+                raceRows.Add(identity.Ancestry + ":" + (race == null ? "absent" : race.name) +
+                    ":playable=" + playable.Contains(race as BlueprintRace) + ":provider=" + identity.Provider);
+                if (race == null && identity.Provider != FavoredClassRaceProvider.Optional)
+                    failures.Add(identity.Ancestry + " race missing");
+            }
+            if (human.Count == 0)
+                failures.Add("no human-route host leaves observed");
+            return new JObject { ["humanLeaves"] = human, ["humanLeafCount"] = human.Count,
+                ["races"] = raceRows };
+        }
+
+        // Component arrays (and each component reference) of the host's generic
+        // leaves; publication must never touch another mod's prerequisites.
+        private static BlueprintComponent[][] SnapshotHostComponents(FavoredClassHostHandles host)
+        {
+            return new[] { host.GenericHitPoint, host.GenericSkillFull, host.GenericSkillPartial }
+                .Select(feature => feature == null || feature.ComponentsArray == null
+                    ? new BlueprintComponent[0] : feature.ComponentsArray.ToArray()).ToArray();
+        }
+
+        private static bool SameComponentSnapshots(BlueprintComponent[][] before,
+            BlueprintComponent[][] after)
+        {
+            if (before.Length != after.Length)
+                return false;
+            for (int index = 0; index < before.Length; index++)
+            {
+                if (before[index].Length != after[index].Length)
+                    return false;
+                for (int item = 0; item < before[index].Length; item++)
+                    if (!ReferenceEquals(before[index][item], after[index][item]))
+                        return false;
+            }
+            return true;
+        }
+
+        private static bool SameFeatureReferences(BlueprintFeature[] left, BlueprintFeature[] right)
+        {
+            if (left == null || right == null || left.Length != right.Length)
+                return false;
+            for (int index = 0; index < left.Length; index++)
+                if (!ReferenceEquals(left[index], right[index]))
+                    return false;
+            return true;
+        }
+    }
+}

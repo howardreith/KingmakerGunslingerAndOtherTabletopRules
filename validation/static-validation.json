@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.139-expanded-summoning-phase1",
+  "milestone": "0.0.140-favored-class-integration",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.139",
+  "version": "0.0.140",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2040,5 +2040,27 @@
     "compatibilityRuntimeQualificationPending": false,
     "ownerAcceptedEngineLimitation": "ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD",
     "humanReview": "ENGINEERING_APPROVED_2026-09-26; owner visual and gameplay spot-check pending"
+  },
+  "favoredClassIntegration140": {
+    "branch": "claude/favored-class-integration",
+    "baselineCommit": "996105ed9e72259a220be56e2a74e0cc18e5ef47",
+    "charterSha256": "35e5ed5776839e8b1f4007f2d413079e26dac51ba3ab0f77ce4174be39ec7959",
+    "deterministicTestCount": 1918,
+    "publicReleaseAuthorized": true,
+    "candidateOnly": false,
+    "releaseVersion": "0.0.140",
+    "releaseInformationalVersion": "0.0.140-favored-class-integration",
+    "hostVerifiedVersion": "1.3.1",
+    "hostVerifiedFileSha256": "dcd3adf98d1a04c30d772381e7c56ce4beff35a98bcea165aff206a2f0aac26c",
+    "hostVerifiedMvid": "3efd38e7-8682-4b4d-8d53-e368a3664919",
+    "callOfTheWildVerifiedVersion": "1.14.4c-2.1",
+    "callOfTheWildVerifiedFileSha256": "4ebf8e1ed3e66ffed72ea33ea325595629423dacd5bffa23e3c9109144b26915",
+    "callOfTheWildVerifiedMvid": "8caab254-aacf-4811-8093-44b9184e6e53",
+    "hostRequired": false,
+    "compatibilityRuntimeQualificationPending": false,
+    "nativeRuntimeQualified": true,
+    "nativeRuntimeEvidence": "FAVORED-CLASS-IMPLEMENTATION-REPORT.md: 41/41 guarded runs of the final gate on the pre-merge candidate 1088abb3d; the merged 0.0.140 build passed repository validation, the domain suite and a clean build",
+    "ownerAuthorizedRelease": true,
+    "qualificationStatus": "RELEASED - owner authorized on 2026-09-26 together with the merged Expanded Summoning Phase 1 release"
   }
 }
