@@ -4222,7 +4222,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "the game camera rendered to file with the mod-manager overlay closed; supporting images for internal review, not the mechanical proof"),
                 Assertion("expanded-summoning-grapple-link-persistence",
                     prepare ? "three holds taken with three different limbs before the save: the tiger's bite, the smilodon's foreclaw and two different flytrap mouths" :
-                        verifyCleanup ? "after the reload every link still names the limb that established it, the maintain deals that limb's own damage with no substitution, each flytrap mouth still owns its own victim and the held cat's rake still runs" :
+                        verifyCleanup ? "after the reload every stored link still names the limb that established it, resolved against the rebuilt body, and each flytrap mouth still names its own victim; the live view reports no link and frees every mouth, because Kingmaker does not carry an active grapple across a save - the native target part declares no serialized member, so the held state is absent from the bytes although it stood in the frame that saved" :
                         "not applicable after cleanup",
                     _expandedSummoningPersistenceLinkDetail,
                     writes ? _expandedSummoningPersistenceLinkValid : true,
