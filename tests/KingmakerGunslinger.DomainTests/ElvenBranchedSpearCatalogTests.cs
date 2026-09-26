@@ -56,20 +56,20 @@ namespace KingmakerGunslinger.DomainTests
             string localBuild = File.ReadAllText(Path.Combine(root, "scripts",
                 "Build-Local.ps1"));
 
-            Assertions.True(info.Contains("\"Version\": \"0.0.138\"") &&
-                props.Contains("<KmgVersion>0.0.138</KmgVersion>") &&
-                props.Contains("<KmgInformationalVersion>0.0.138-better-vendors-progression</KmgInformationalVersion>") &&
-                assembly.Contains("AssemblyVersion(\"0.0.138\")") &&
-                assembly.Contains("AssemblyFileVersion(\"0.0.138\")") &&
-                assembly.Contains("AssemblyInformationalVersion(\"0.0.138-better-vendors-progression\")"),
-                "Release and assembly identity are not transactionally pinned to the Better Vendors progression candidate.");
+            Assertions.True(info.Contains("\"Version\": \"0.0.139\"") &&
+                props.Contains("<KmgVersion>0.0.139</KmgVersion>") &&
+                props.Contains("<KmgInformationalVersion>0.0.139-expanded-summoning-phase1</KmgInformationalVersion>") &&
+                assembly.Contains("AssemblyVersion(\"0.0.139\")") &&
+                assembly.Contains("AssemblyFileVersion(\"0.0.139\")") &&
+                assembly.Contains("AssemblyInformationalVersion(\"0.0.139-expanded-summoning-phase1\")"),
+                "Release and assembly identity are not transactionally pinned to the Expanded Summoning Phase 1 release.");
             Assertions.True(package.Contains(
-                "$($info.Id)-$($info.Version)-better-vendors-progression.zip") &&
+                "$($info.Id)-$($info.Version)-expanded-summoning-phase1.zip") &&
                 !package.Contains("expanded-summoning.zip"),
-                "Package identity is not pinned to the Better Vendors progression archive.");
-            Assertions.True(runtime.Contains("active version 0.0.138") &&
-                localBuild.Contains("active version 0.0.138") &&
-                localBuild.Contains("local-runtime\\0.0.138"),
+                "Package identity is not pinned to the Expanded Summoning Phase 1 archive.");
+            Assertions.True(runtime.Contains("active version 0.0.139") &&
+                localBuild.Contains("active version 0.0.139") &&
+                localBuild.Contains("local-runtime\\0.0.139"),
                 "Build or guarded-runtime version enforcement is stale.");
         }
 
