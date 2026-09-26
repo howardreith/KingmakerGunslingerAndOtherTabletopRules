@@ -57,6 +57,7 @@ $expected = @(
     'disposable-favored-class-initiative-timing',
     'disposable-favored-class-turn-modes',
     'disposable-favored-class-bombs',
+    'disposable-favored-class-auto-level',
     'disposable-favored-class-gunslinger-mechanics',
     'disposable-favored-class-gunslinger-menus',
     'disposable-favored-class-grit',
