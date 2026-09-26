@@ -862,7 +862,7 @@ contract, lifecycle and limits are in
 ### Favored Class integration candidate 0.0.139
 
 The optional Favored Class integration appends its owned leaf identities to
-the ledger, for 2140 stable IDs: 2138 active and 2 reserved. It never compiles
+the ledger, for 2172 stable IDs: 2170 active and 2 reserved. It never compiles
 against Favored Class or Call of the Wild and never executes host code.
 
 - **Pure policy** (`FavoredClass/`): `FavoredClassRankPolicy` (the host's

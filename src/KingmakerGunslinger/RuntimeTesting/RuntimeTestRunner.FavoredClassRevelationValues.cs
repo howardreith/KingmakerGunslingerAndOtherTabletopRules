@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints.Classes.Selection;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.UnitLogic;
@@ -76,8 +77,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     for (int added = 0; added < levels; added++)
                         unit.Descriptor.Progression.AddClassLevel(oracle);
                     foreach (FavoredClassRevelationScope scope in owned)
-                        foreach (string guid in scope.Target.FeatureGuids)
-                            unit.Descriptor.AddFact((BlueprintFeature)blueprint(guid));
+                        FcbGrantRevelationRoots(unit, scope, blueprint);
                     return unit;
                 };
                 for (int index = 0; index < active.Length; index++)
@@ -91,7 +91,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     int readPoints = 0;
                     try
                     {
-                        foreach (int[] pair in FcbRevelationValuePairs)
+                        foreach (int[] pair in FcbRevelationValuePairs.Concat(FcbGatePairs(scope)))
                         {
                             int level = pair[0], steps = pair[1];
                             var owned = new[] { scope, neighbor };
@@ -164,6 +164,42 @@ namespace KingmakerGunslinger.RuntimeTesting
                 targets.Sum(value => (int)value["changedPoints"]) + ";mismatched=" +
                 targets.Count(value => value["mismatches"] != null);
             return result;
+        }
+
+        /// <summary>
+        /// Grants a target's revelation features as the native pick does: a
+        /// selection root (Weapon Mastery) adds the selection and its chosen
+        /// item, here the first choice whose own gates are in the scope.
+        /// </summary>
+        private static void FcbGrantRevelationRoots(UnitEntityData unit, FavoredClassRevelationScope scope,
+            Func<string, BlueprintScriptableObject> blueprint)
+        {
+            foreach (string guid in scope.Target.FeatureGuids)
+            {
+                var root = (BlueprintFeature)blueprint(guid);
+                unit.Descriptor.AddFact(root);
+                var selection = root as BlueprintFeatureSelection;
+                if (selection == null)
+                    continue;
+                BlueprintFeature chosen = (selection.AllFeatures ?? new BlueprintFeature[0]).FirstOrDefault(item =>
+                    item != null && scope.Gates.Any(gate => ReferenceEquals(gate.Owner, item)));
+                if (chosen == null)
+                    throw new InvalidOperationException(scope.Target.Key + ": no choice of " + selection.name +
+                        " carries a gate of the scope");
+                unit.Descriptor.AddFact(chosen);
+            }
+        }
+
+        /// <summary>
+        /// One-step pairs for the scope's own gate levels that no fixed pair
+        /// straddles (a gate at level G is crossed by one step from G - 1).
+        /// </summary>
+        private static IEnumerable<int[]> FcbGatePairs(FavoredClassRevelationScope scope)
+        {
+            return scope.Gates.Select(gate => gate.Level).Where(level => level >= 2 && level <= 20)
+                .Distinct().OrderBy(level => level)
+                .Where(level => !FcbRevelationValuePairs.Any(pair => pair[0] < level && pair[0] + pair[1] >= level))
+                .Select(level => new[] { level - 1, 1 }).ToArray();
         }
 
         /// <summary>Every read point a revelation scope scales, as name to value.</summary>
