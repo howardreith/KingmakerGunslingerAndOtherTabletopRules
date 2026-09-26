@@ -255,6 +255,80 @@ namespace KingmakerGunslinger.DomainTests
                 "ConfigureDocileHooves(bySymbol, HorseUnitSymbol, HorseCombatTraitsSymbol, \"Horse\")");
         }
 
+        /// <summary>
+        /// The 2026-09-26 order's four defects, pinned where they live: the
+        /// durable link store, the rake the maintain makes, the mouth that
+        /// stays shut, the engulf bundle and the Web's exact projectile.
+        /// </summary>
+        internal static void FinalCorrectionsAreImplemented()
+        {
+            // 1. The establishing attack is durable. It is a serialized unit
+            // part naming a semantic limb slot and a unit id, never a live
+            // weapon entity and never a process-local table.
+            string store = Source("src", "KingmakerGunslinger", "Summoning",
+                "SummonGrappleLinkState.cs");
+            RequireTokens("Durable link store", store,
+                "public sealed class UnitPartSummonGrappleLinks : UnitPart",
+                "[JsonProperty]", "public string TargetId;", "public int Limb;",
+                "public int AdditionalIndex", "public bool Engulfed;",
+                "internal static ItemEntityWeapon EstablishingWeapon(UnitEntityData holder,",
+                "internal static bool IsLimbOccupied(UnitEntityData holder, ItemEntityWeapon weapon)",
+                "internal static List<SummonGrappleLinkRecord> Reconcile(UnitEntityData holder)",
+                "internal static int Repair(UnitEntityData holder, SummonGrabComponent grab)");
+            Assertions.False(store.Contains("ConditionalWeakTable"),
+                "The durable store keeps no process-local table.");
+            Assertions.False(store.Contains("[JsonProperty] public ItemEntityWeapon") ||
+                store.Contains("JsonProperty] public UnitEntityData"),
+                "No live Unity or item reference is serialized.");
+            string components = Source("src", "KingmakerGunslinger", "Summoning",
+                "ExpandedSummoningSpecialCombatComponents.cs");
+            Assertions.False(components.Contains("ConditionalWeakTable<Buff, LinkInfo>"),
+                "The buff-keyed link table is gone.");
+            RequireTokens("Durable link wiring", components,
+                "SummonGrappleLinks.Record(owner, target, establishing);",
+                "SummonGrappleLinks.EstablishingWeapon(owner, target)",
+                "internal static ItemEntityWeapon WeaponAt(UnitEntityData owner, SummonLimbKind kind,",
+                "SummonGrappleLinks.Release(owner, target);",
+                "SummonGrappleLinks.MarkEngulfed(owner, target);");
+
+            // 2. A holding cat rakes through the maintain, because the game's
+            // own initiator part leaves it unable to act.
+            RequireTokens("Rake through the maintain", components,
+                "internal static class SummonRakeExecution",
+                "internal static string RakeOnMaintain(UnitEntityData owner, UnitEntityData target,",
+                "new RuleAttackWithWeapon(owner, target, claw, 0)",
+                "SummonRakeExecution.RakeOnMaintain(owner, target, grab, context)",
+                "internal static List<ItemEntityWeapon> RakeWeapons(UnitEntityData owner,");
+
+            // 3. One target per mouth, in the attack roll and in the planned
+            // full attack alike.
+            RequireTokens("One target per mouth", components,
+                "IInitiatorRulebookHandler<RuleAttackRoll>",
+                "SummonGrappleLinks.OccupantOf(Owner.Unit, evt.Weapon)",
+                "bool limbBusy = SummonGrappleLinks.IsLimbOccupied(owner, weapon);",
+                "IsOccupiedElsewhere(owner, info.Hand, target)",
+                "mouthsShut=");
+            Assertions.Equal(2, ExpandedSummoningSpecialProfiles.GiantFlytrapEngulfAcidDiceCount,
+                "The engulf deals the stat block's 2d6 acid.");
+            Assertions.Equal(6, ExpandedSummoningSpecialProfiles.GiantFlytrapEngulfAcidDieSides,
+                "The engulf's acid die is a d6.");
+            Assertions.Equal(1, ExpandedSummoningSpecialProfiles.GiantFlytrapEngulfDiceCount,
+                "The engulf's crushing damage stays 1d8+7.");
+            Assertions.Equal(7, ExpandedSummoningSpecialProfiles.GiantFlytrapEngulfBonus,
+                "The engulf's crushing bonus stays +7.");
+            string builder = Source("src", "KingmakerGunslinger", "Blueprints",
+                "ExpandedSummoningSpecialBuilder.cs");
+            RequireTokens("Engulf bundle", builder,
+                ".GiantFlytrapEngulfAcidDieSides,", ".GiantFlytrapEngulfAcidDiceCount)",
+                "1d8+7 crushing damage and 2d6 acid each round");
+
+            // 4. The Web names one projectile exactly.
+            Assertions.False(builder.Contains("value.name.IndexOf(\"Web\", StringComparison.Ordinal)"),
+                "The Web no longer scans blueprint names for a projectile.");
+            RequireTokens("Web projectile identity", builder,
+                "WebProjectileGuid", "RequireExact<BlueprintProjectile>(");
+        }
+
         internal static void VisualVariantsOwnTheirResources()
         {
             string patch = Source("src", "KingmakerGunslinger", "Summoning",

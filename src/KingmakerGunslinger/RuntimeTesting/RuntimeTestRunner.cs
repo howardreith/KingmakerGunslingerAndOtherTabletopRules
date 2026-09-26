@@ -3624,6 +3624,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // use survives exactly once and never doubles.
                     ArmExpandedSummoningPersistenceFlash(
                         _expandedSummoningPersistencePreparedUnits);
+                    // Correction order (2026-09-26): three holds on three
+                    // different limbs, so the reload has to name each one.
+                    _expandedSummoningPersistenceLinkDetail =
+                        TakeExpandedSummoningPersistenceHolds(
+                            _expandedSummoningPersistencePreparedUnits);
                     _expandedSummoningPersistenceFixtureSpawned = true;
                     return;
                 }
@@ -3656,6 +3661,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _expandedSummoningPersistenceFlashDetail =
                     DescribeExpandedSummoningPersistenceFlash(units, prepare, verifyCleanup,
                         caster, out _expandedSummoningPersistenceFlashValid);
+                if (verifyCleanup)
+                    _expandedSummoningPersistenceLinkDetail =
+                        DescribeExpandedSummoningReloadedLinks(units,
+                            out _expandedSummoningPersistenceLinkValid);
+                else if (!prepare)
+                {
+                    _expandedSummoningPersistenceLinkDetail = "not applicable after cleanup";
+                    _expandedSummoningPersistenceLinkValid = true;
+                }
                 // The Pteranodon's visual on the unit as this phase found it:
                 // freshly spawned in prepare, freshly deserialized and
                 // re-attached in verify-cleanup, absent in verify-absent.
@@ -3805,7 +3819,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             // Sprint 7: a cat with the rake gate and the lion's tint
             new[] { "NaturesAlly", "lion", "4" },
             // Sprint 8: the tiger with its procedural coat and view scale
-            new[] { "NaturesAlly", "tiger", "4" }
+            new[] { "NaturesAlly", "tiger", "4" },
+            // Final corrections (2026-09-26): the durable establishing limb
+            // needs a second foreclaw grabber and the multi-mouth holder.
+            new[] { "NaturesAlly", "dire-tiger", "6" },
+            new[] { "NaturesAlly", "giant-flytrap", "7" }
         };
 
         private static int ExpandedSummoningPersistenceFixtureCount
@@ -4185,6 +4203,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     MotionReviewSummary,
                     writes ? MotionReviewValid : true,
                     "the game camera rendered to file with the mod-manager overlay closed; supporting images for internal review, not the mechanical proof"),
+                Assertion("expanded-summoning-grapple-link-persistence",
+                    prepare ? "three holds taken with three different limbs before the save: the tiger's bite, the smilodon's foreclaw and two different flytrap mouths" :
+                        verifyCleanup ? "after the reload every link still names the limb that established it, the maintain deals that limb's own damage with no substitution, each flytrap mouth still owns its own victim and the held cat's rake still runs" :
+                        "not applicable after cleanup",
+                    _expandedSummoningPersistenceLinkDetail,
+                    writes ? _expandedSummoningPersistenceLinkValid : true,
+                    "the serialized link part on each holder, resolved against the reloaded body, and SummonHoldComponent.MaintainLink"),
                 Assertion("expanded-summoning-cyclops-flash-persistence",
                     prepare ? "the Cyclops's Flash of Insight spent and armed (an arming with no duration of its own) before the save" :
                         verifyCleanup ? "after the reload the resource is still spent, the ability unavailable and the arming present exactly once; the next attack's own d20 is the chosen 20 and the arming is gone; the attack after it rolls its own 1 and misses" :
