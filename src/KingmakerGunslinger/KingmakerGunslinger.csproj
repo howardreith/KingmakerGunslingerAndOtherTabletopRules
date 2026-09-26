@@ -600,6 +600,7 @@
     <Compile Include="Deeds\QuickClearService.cs" />
     <Compile Include="Deeds\QuickClearStatus.cs" />
     <Compile Include="Deeds\PistolWhipAbilityLogic.cs" />
+    <Compile Include="Deeds\PistolWhipAttackScope.cs" />
     <Compile Include="Deeds\PistolWhipDecision.cs" />
     <Compile Include="Deeds\PistolWhipRequest.cs" />
     <Compile Include="Deeds\PistolWhipResult.cs" />

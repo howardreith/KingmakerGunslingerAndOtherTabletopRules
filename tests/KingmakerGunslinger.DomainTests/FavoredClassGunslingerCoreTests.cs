@@ -288,6 +288,16 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(whip.Contains("OneHandedSurrogate") && whip.Contains("TwoHandedSurrogate") &&
                 !whip.Contains("RuleCalculateCMB") && !whip.Contains("Damage"),
                 "Pistol-Whip changes only the deed attack.");
+            // M10: only inside the deed's own attack, never a maneuver bonus
+            // derived from the surrogate's attack bonus while the trip resolves.
+            string deed = read("Deeds/PistolWhipRuntime.cs");
+            string scope = read("Deeds/PistolWhipAttackScope.cs");
+            Assertions.True(whip.Contains("RuleAttackWithWeapon deed = Deeds.PistolWhipAttackScope.Current;") &&
+                whip.Contains("if (deed == null || !ReferenceEquals(deed.Weapon, evt.Weapon))") &&
+                deed.Contains("PistolWhipAttackScope.Run(attack, triggerAttack);") &&
+                !deed.Contains("                triggerAttack(attack);") &&
+                scope.Contains("finally") && scope.Contains("s_Current = previous;"),
+                "The Pistol-Whip bonus applies inside the deed's own finally-closed attack scope only.");
         }
 
         private static ScatterTargetPlan Plan(params object[] targets)
