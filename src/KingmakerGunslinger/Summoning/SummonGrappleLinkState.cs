@@ -41,11 +41,14 @@ namespace KingmakerGunslinger.Summoning
     /// has engulfed a target may not attack another one, and that has to
     /// survive both the engulf, which ends the held state, and the reload.
     ///
-    /// Records are reconciled whenever they are read: a link whose target is
-    /// gone, freed, spat out or no longer held by this summon is dropped, so
-    /// escape, death, dismissal, expiry, an area transition, a module-disabled
-    /// load and a repaired load all free precisely the mouth they should
-    /// without a hook in each path.
+    /// Reading filters the records against the game's own state without
+    /// writing: a link whose target is gone, freed, spat out or no longer held
+    /// by this summon answers nothing, so escape, death, dismissal, expiry, an
+    /// area transition, a module-disabled load and a repaired load all free
+    /// precisely the mouth they should without a hook in each path. Records
+    /// leave the store through the release paths, which know the link has
+    /// ended, or when their limb takes a new victim; a read taken before the
+    /// game has re-linked its grapple parts therefore cannot empty it.
     /// </summary>
     public sealed class UnitPartSummonGrappleLinks : UnitPart
     {
@@ -61,7 +64,10 @@ namespace KingmakerGunslinger.Summoning
         {
             if (record == null || string.IsNullOrEmpty(record.TargetId)) return;
             if (_links == null) _links = new List<SummonGrappleLinkRecord>();
-            _links.RemoveAll(value => value != null && value.TargetId == record.TargetId);
+            // One record per target, and one per limb: a limb that takes a new
+            // victim no longer owns the old one.
+            _links.RemoveAll(value => value != null && (value.TargetId == record.TargetId ||
+                (value.Limb == record.Limb && value.AdditionalIndex == record.AdditionalIndex)));
             _links.Add(record);
         }
 
@@ -178,8 +184,14 @@ namespace KingmakerGunslinger.Summoning
         /// <summary>The live records, for the evidence: limb, target and state.</summary>
         internal static string Describe(UnitEntityData holder)
         {
+            UnitPartSummonGrappleLinks stored = holder == null || holder.Descriptor == null ?
+                null : holder.Get<UnitPartSummonGrappleLinks>();
+            string raw = stored == null ? "part=absent" : "part=present,stored=" + stored.Count +
+                "[" + string.Join(",", stored.Links.Select(value => (value.TargetId ?? "?") + ":" +
+                    (SummonLimbKind)value.Limb + (value.AdditionalIndex >= 0 ? "[" +
+                    value.AdditionalIndex + "]" : "") + (value.Engulfed ? ":engulfed" : "")).ToArray()) + "]";
             List<SummonGrappleLinkRecord> records = Reconcile(holder);
-            if (records.Count == 0) return "links=0";
+            if (records.Count == 0) return "links=0;" + raw;
             Dictionary<string, UnitEntityData> units = UnitsById();
             var parts = new List<string>();
             foreach (SummonGrappleLinkRecord record in records)
@@ -196,7 +208,8 @@ namespace KingmakerGunslinger.Summoning
                     (record.Engulfed ? ";engulfed" : "") +
                     (record.Repaired ? ";repaired" : ""));
             }
-            return "links=" + records.Count + ";" + string.Join("|", parts.ToArray());
+            return "links=" + records.Count + ";" + raw + ";" +
+                string.Join("|", parts.ToArray());
         }
 
         /// <summary>
@@ -232,7 +245,15 @@ namespace KingmakerGunslinger.Summoning
             return adopted;
         }
 
-        /// <summary>The records that still describe the game's own state.</summary>
+        /// <summary>
+        /// The records that still describe the game's own state. This never
+        /// writes: a read taken before the game has re-linked its grapple
+        /// parts - an attack roll in the first frames of a load reaches the
+        /// grab component's handler - would otherwise empty the store for
+        /// good. A record whose hold has ended is ignored by every answer and
+        /// leaves the store through the release paths, or when its limb takes
+        /// a new victim.
+        /// </summary>
         internal static List<SummonGrappleLinkRecord> Reconcile(UnitEntityData holder)
         {
             var kept = new List<SummonGrappleLinkRecord>();
@@ -258,7 +279,6 @@ namespace KingmakerGunslinger.Summoning
                     : ReferenceEquals(SummonHoldComponent.HeldTarget(holder), target);
                 if (held) kept.Add(record);
             }
-            if (kept.Count != part.Count) part.Keep(kept);
             return kept;
         }
 

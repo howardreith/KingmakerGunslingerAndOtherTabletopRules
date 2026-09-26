@@ -234,6 +234,25 @@ Decisions (recorded here rather than asked):
   any reason (escape, the holder falling, dispel, the summon's disposal),
   never touching the initiator part itself (the game's controller drops it,
   and removing it from inside its own buff's removal would re-enter). The
+  establishing attack of every link is durable (corrected under the
+  2026-09-26 order): `UnitPartSummonGrappleLinks` on the holder records the
+  limb as a semantic slot - the primary hand, or an additional limb by
+  index - beside the target's unit id, and serializes with the holder, so a
+  reload resolves the same limb against the body the game rebuilds. No live
+  Unity or item reference is stored. The store it replaces was a table keyed
+  by buff instances, which a load left empty, and the maintain then used the
+  holder's first grab limb: not equivalent for a Tiger or a Smilodon, whose
+  bite and foreclaw deal different dice, and no way to tell the Giant
+  Flytrap's four mouths apart. The same store is the mouth occupancy the
+  one-target-per-mouth rule needs: a limb that holds or has engulfed a
+  target never attacks another unit, in the attack roll (the roll
+  auto-misses and leaves no log line) and in the game's own planned full
+  attack (the hand is dropped), and it survives the engulf, which ends the
+  held state, and the reload. Every read reconciles the records against the
+  game's state, so escape, death, dismissal, expiry, an area transition, a
+  module-disabled load and a repaired load each free precisely the mouth
+  they should; an orphan link a save carried without a record is adopted
+  and marked repaired. The
   worm holds on a successful grab and swallows through the native part on
   a later turn's successful maintain check, used as though attempting to
   pin, against a foe up to one size smaller (corrected under the
@@ -270,8 +289,13 @@ Decisions (recorded here rather than asked):
   the flytrap and their establishing bite; a bite that holds cannot take a
   second foe), and engulf as the swallow-whole sequence for a Medium or
   smaller foe held since the round began (the project `GiantFlytrap.Engulfed`
-  state: 1d8+7 bludgeoning and 1d8 acid each round inside). Vital Strike is
-  omitted.
+  state: 1d8+7 bludgeoning and 2d6 acid each round inside, the stat block's
+  own bundle, corrected under the 2026-09-26 order from 1d8 acid). The
+  cadence was audited rather than copied from the worm: swallow whole deals
+  its damage every round the victim stays inside, which is what the engulf
+  does, and Kingmaker resolves rounds on the same six-second clock in real
+  time with pause and in turn-based mode, so neither needs an adaptation.
+  Vital Strike is omitted.
 - Purple Worm (SNA VIII): the native dedicated `PurpleWormSummoned`
   `bf2216f48b3f4d24c9c502007649340d` as donor, rebuilt on the natural
   builder as a 16 HD magical beast, Gargantuan, 35/6/25/1/8/8, speed 20,
@@ -292,6 +316,22 @@ Decisions (recorded here rather than asked):
   Bull Rush, Staggering Critical and Weapon Focus (sting) are omitted.
 - Owlbear: the claw grab deferred in Sprint 3 now rides the shared
   lifecycle (`Owlbear.CombatTraits` with the native `ClawLarge1d6`).
+- The cats' rake is executable (corrected under the 2026-09-26 order). The
+  game's own `UnitPartGrappleInitiator.Init` gives a holder `CantAct` and
+  `CantMove`, so a cat that holds can start no command at all, and a rake
+  proven only by building an attack list would never have run. The tabletop
+  makes the two rake attacks part of the grapple check that maintains the
+  hold, so that is where they are made: a successful later-turn maintain
+  against the exact foe held since the cat's round began triggers two
+  genuine `RuleAttackWithWeapon` rolls with the body's rake claws, with
+  their own damage, criticals and combat log (`SummonRakeExecution`). A
+  hold taken this turn rakes nothing, a rake never reaches a unit the cat
+  does not hold, and an ordinary full attack still carries none. The charge
+  rake stays on the command path and is proven there, through
+  `UnitCommands.Run`, the command's own `CanStart` and result, and the
+  rolls it made. Adaptation: the maintain's rake attacks resolve on the
+  rulebook rather than through a command, so they carry no separate swing
+  animation.
 - Flash of Insight history: round-2 mechanical evidence
   (`20260924T2023157894340Z-disposable-expanded-summoning`) showed that with
   AutoHit set `RuleAttackRoll` takes its automatic-hit path, never rolls the
@@ -739,6 +779,14 @@ Findings and what was done:
    untouched, and the persistence trio proves the single armed use across
    the save and the reload (still spent after the reload, armed once, the
    next attack a 20, the one after it a 1 that misses).
+6a. Web delivery: the installed library carries 170 projectiles and the
+  donor audit found none that depicts a web, so the ability pins one
+  explicit identity by asset id - the native thrown stone
+  `c8e6e6e315030b443b5ab9bc07843bb2`, a physical object that arcs to its
+  target - instead of scanning blueprint names in library order and falling
+  through to the magic missile bolt. The visual is an adaptation and is
+  recorded as one; the ranged touch attack, the size limit and the webbed
+  state are the ability's own components and do not depend on it.
 6. Web: a ranged touch attack through the projectile delivery with the ray
    weapon, 50 feet, a foe up to one size larger, no save, the native
    web-grappled state with its Constitution-based break-free, the native

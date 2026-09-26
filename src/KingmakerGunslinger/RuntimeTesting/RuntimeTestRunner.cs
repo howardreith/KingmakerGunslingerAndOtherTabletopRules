@@ -3628,7 +3628,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // different limbs, so the reload has to name each one.
                     _expandedSummoningPersistenceLinkDetail =
                         TakeExpandedSummoningPersistenceHolds(
-                            _expandedSummoningPersistencePreparedUnits);
+                            _expandedSummoningPersistencePreparedUnits,
+                            out _expandedSummoningPersistenceLinkValid);
                     _expandedSummoningPersistenceFixtureSpawned = true;
                     return;
                 }
