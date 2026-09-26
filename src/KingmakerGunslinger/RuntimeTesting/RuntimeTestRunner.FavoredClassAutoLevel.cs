@@ -170,10 +170,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 FcbSorcererClassGuid, "Sorcerer");
             BlueprintRace ifrit = BlueprintLibraryLookup.RequireExact<BlueprintRace>(library,
                 FavoredClassRaceIdentities.ForAncestry(FavoredClassAncestry.Ifrit).RaceGuid, "Ifrit");
-            BlueprintFeature bloodline = BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library,
+            BlueprintFeature bloodline = BlueprintLibraryLookup.RequireExact<BlueprintProgression>(library,
                 FcbFireBloodlineGuid, "Fire bloodline");
-            BlueprintFeature ray = BlueprintLibraryLookup.RequireExact<BlueprintFeature>(library,
-                FcbFireRayFeatureGuid, "Fire Elemental Ray");
+            BlueprintScriptableObject rayBlueprint;
+            library.BlueprintsByAssetId.TryGetValue(FcbFireRayFeatureGuid, out rayBlueprint);
+            var ray = rayBlueprint as BlueprintFeature;
+            if (ray == null)
+                throw new InvalidOperationException("Missing provider feature " + FcbFireRayFeatureGuid);
             BlueprintFeatureSelection bonus = host.BonusSelectionFor(sorcerer.AssetGuid);
             FavoredClassLeafPair pair = leaves.Pair(FavoredClassCatalog.EffectSelectedBloodlinePower, "FireRay");
 
@@ -304,8 +307,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 FeatureSelectionState reward = FavoredClassLevelUpHarness.FindOpenState(recording, bonus.AssetGuid);
                 if (reward == null)
                     throw new InvalidOperationException("the Fighter's favored-class reward did not open");
-                row["kmgOffered"] = FavoredClassLevelUpHarness.Items(recording, reward)
-                    .Count(item => kmgLeaves.Contains(item.Feature.AssetGuid));
+                IFeatureSelectionItem[] kmgItems = FavoredClassLevelUpHarness.Items(recording, reward)
+                    .Where(item => kmgLeaves.Contains(item.Feature.AssetGuid)).ToArray();
+                row["kmgListed"] = kmgItems.Length;
+                row["kmgOffered"] = new JArray(kmgItems.Where(item =>
+                    FavoredClassLevelUpHarness.CanSelect(recording, reward, item.Feature))
+                    .Select(item => item.Feature.name));
                 if (!FavoredClassLevelUpHarness.Select(recording, reward, host.GenericHitPoint))
                     throw new InvalidOperationException("the host's hit point reward was not selectable");
                 row["recordedComplete"] = recording.State.IsComplete();
@@ -316,8 +323,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 FavoredClassLevelUpHarness.Close(recording);
             }
             row["planActions"] = FcbDescribePlan(plan);
-            if ((int)row["kmgOffered"] != 0)
-                failures.Add("a KMG counter was offered in the Fighter's reward");
+            if (((JArray)row["kmgOffered"]).Count != 0)
+                failures.Add("a KMG counter was offered in the Human Fighter's reward: " + row["kmgOffered"]);
             JObject scoped, native;
             UnitEntityData imported = create();
             FcbMarkImportedPlan(imported, plan.Level);
@@ -407,19 +414,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                     row["result"] = "no stored plan for the next level";
                     continue;
                 }
-                SelectFeature[] rewards = next.Actions.OfType<SelectFeature>().Where(pick =>
-                    bonusSelections.Contains(pick.Selection as BlueprintScriptableObject)).ToArray();
+                int[] rewardIndices = Enumerable.Range(0, next.Actions.Length).Where(index =>
+                    next.Actions[index] is SelectFeature && bonusSelections.Contains(
+                        ((SelectFeature)next.Actions[index]).Selection as BlueprintScriptableObject)).ToArray();
+                SelectFeature[] rewards = rewardIndices.Select(index => (SelectFeature)next.Actions[index]).ToArray();
                 row["hostRewards"] = new JArray(rewards.Select(pick => pick.Item == null || pick.Item.Feature == null ?
                     "<none>" : pick.Item.Feature.name));
                 row["planActions"] = FcbDescribePlan(next);
+                // Each unit created from the blueprint stores its own plan objects.
                 UnitEntityData imported = create();
+                LevelPlanData importedPlan = imported.Descriptor.Progression.GetLevelPlan(next.Level);
                 FcbMarkImportedPlan(imported, next.Level);
                 LevelUpController applied = null;
                 JObject scoped, native;
                 try
                 {
+                    if (importedPlan == null || !JToken.DeepEquals(FcbDescribePlan(importedPlan), row["planActions"]))
+                        throw new InvalidOperationException("the scoped unit's stored plan differs from the probe's");
                     applied = FavoredClassLevelUpHarness.OpenBare(imported.Descriptor);
-                    scoped = FcbPlanAcceptance(applied, next);
+                    scoped = FcbPlanAcceptance(applied, importedPlan);
                     row["scoped"] = scoped;
                     row["scopedAutomatic"] = applied.IsAutoLevelup;
                     row["scopedComplete"] = applied.State.IsComplete();
@@ -432,14 +445,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     FavoredClassLevelUpHarness.Close(applied);
                 }
                 UnitEntityData unscoped = create();
+                LevelPlanData controlPlan = unscoped.Descriptor.Progression.GetLevelPlan(next.Level);
                 unscoped.Descriptor.Progression.DropLevelPlans();
                 LevelUpController control = null;
                 try
                 {
+                    if (controlPlan == null || !JToken.DeepEquals(FcbDescribePlan(controlPlan), row["planActions"]))
+                        throw new InvalidOperationException("the control unit's stored plan differs from the probe's");
                     control = FavoredClassLevelUpHarness.OpenBare(unscoped.Descriptor);
                     row["controlPreapplied"] = control.LevelUpActions.Count;
-                    FcbApplyUnscoped(control, next);
-                    native = FcbPlanAcceptance(control, next);
+                    FcbApplyUnscoped(control, controlPlan);
+                    native = FcbPlanAcceptance(control, controlPlan);
                     row["native"] = native;
                 }
                 finally
@@ -451,7 +467,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!JToken.DeepEquals(scoped["rejectedIndices"], native["rejectedIndices"]))
                     failures.Add(blueprint.name + ": the plan scope changed which stored plan actions were accepted");
                 var rejected = new HashSet<int>(((JArray)scoped["rejectedIndices"]).Select(value => (int)value));
-                if (rewards.Any(pick => rejected.Contains(Array.IndexOf(next.Actions, pick))))
+                if (rewardIndices.Any(rejected.Contains))
                     failures.Add(blueprint.name + ": the host's reward pick was rejected");
                 if ((int)row["scopedKmgPicked"] != 0)
                     failures.Add(blueprint.name + ": a KMG counter was picked in the companion's level");
