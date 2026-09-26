@@ -94,8 +94,10 @@ namespace KingmakerGunslinger.Summoning
     /// area transition, a module-disabled load and a reloaded game all free
     /// precisely the mouth they should without a hook in each path. Records
     /// leave the store through the release paths, which know the link has
-    /// ended, or when their limb takes a new victim; a read taken before the
-    /// game has re-linked its grapple parts therefore cannot empty it.
+    /// ended, or when their limb takes a new victim, so a read taken while the
+    /// game is still wiring up a fresh hold cannot empty the store. A reload
+    /// is not such a moment: the game re-links nothing there, and the store
+    /// comes back empty with the holds it described.
     /// </summary>
     public sealed class UnitPartSummonGrappleLinks : UnitPart
     {
