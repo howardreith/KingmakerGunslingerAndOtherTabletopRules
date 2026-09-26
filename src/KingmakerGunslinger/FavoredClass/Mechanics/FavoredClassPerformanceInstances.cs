@@ -21,7 +21,12 @@ namespace KingmakerGunslinger.FavoredClass.Mechanics
     /// Narrowing restores the ring and the radius independently and then
     /// verifies both; an instance that cannot be verified native is ended,
     /// and the performance toggle whose own buff runs that area is turned
-    /// off. Only live views are kept: nothing survives the end of its area,
+    /// off. An instance is forgotten only once it is verified no longer live
+    /// (its view destroyed, or its area ended or destroyed): an ending that
+    /// throws, does nothing or finds no area data, and a liveness read that
+    /// throws, keep it tracked and unresolved (no widening for its group,
+    /// native descriptions, a logged diagnostic) until a later widening
+    /// attempt or recording retries it. Nothing survives the end of its area,
     /// a save load or a new game, and no outcome is remembered.
     /// </summary>
     internal static class FavoredClassPerformanceInstances
@@ -35,6 +40,8 @@ namespace KingmakerGunslinger.FavoredClass.Mechanics
             new Dictionary<string, FavoredClassRangeGroup<AreaEffectView>>(StringComparer.Ordinal);
         private static readonly Dictionary<AreaEffectView, float> NativeRadii =
             new Dictionary<AreaEffectView, float>();
+        private const int DiagnosticCapacity = 64;
+        private static readonly List<string> Diagnostics = new List<string>();
 
         /// <summary>
         /// Guarded runtime qualification only: runs inside a sibling's
@@ -43,14 +50,27 @@ namespace KingmakerGunslinger.FavoredClass.Mechanics
         /// </summary>
         internal static Action<AreaEffectView> NarrowFaultForQualification;
 
-        /// <summary>Whether a live instance may attempt widening: every other live instance of its group is widened.</summary>
+        /// <summary>
+        /// Guarded runtime qualification only: runs as an instance's ending
+        /// starts; it may throw (an ending that fails) or return false (an
+        /// ending that does nothing). Null in play.
+        /// </summary>
+        internal static Func<AreaEffectView, bool> EndFaultForQualification;
+
+        /// <summary>Guarded runtime qualification only: an instance whose area data reads as unavailable; null in play.</summary>
+        internal static Func<AreaEffectView, bool> DataUnavailableForQualification;
+
+        /// <summary>Guarded runtime qualification only: an instance whose liveness read throws; null in play.</summary>
+        internal static Func<AreaEffectView, bool> LivenessFaultForQualification;
+
+        /// <summary>Whether a live instance may attempt widening: no instance of its group is unresolved and every other one is widened.</summary>
         internal static bool MayWiden(AreaEffectView view, UnitEntityData owner, string key)
         {
             if (view == null || owner == null || key == null)
                 return false;
             lock (Gate)
             {
-                Purge();
+                Maintain(true);
                 if (!IsLive(view))
                     return false;
                 FavoredClassRangeGroup<AreaEffectView> group;
@@ -58,7 +78,7 @@ namespace KingmakerGunslinger.FavoredClass.Mechanics
             }
         }
 
-        /// <summary>Records one live instance's outcome and restores its group's invariant.</summary>
+        /// <summary>Records one instance's outcome and restores its group's invariant.</summary>
         internal static void Record(AreaEffectView view, UnitEntityData owner, string key,
             FavoredClassWideningOutcome outcome, int feet, float native)
         {
@@ -66,15 +86,28 @@ namespace KingmakerGunslinger.FavoredClass.Mechanics
                 return;
             lock (Gate)
             {
-                Purge();
-                if (!IsLive(view))
+                Maintain(true);
+                // Only an instance verified no longer live is skipped; one
+                // whose liveness cannot be read is recorded (its group then
+                // tracks it as unresolved).
+                bool live;
+                try
+                {
+                    live = IsLive(view);
+                }
+                catch (Exception)
+                {
+                    live = true;
+                }
+                if (!live)
                     return;
                 NativeRadii[view] = native;
                 string name = Name(owner.UniqueId, key);
                 FavoredClassRangeGroup<AreaEffectView> group;
                 if (!Groups.TryGetValue(name, out group))
-                    Groups[name] = group = new FavoredClassRangeGroup<AreaEffectView>();
-                group.Record(view, outcome, feet, VerifyNative, Narrow, End);
+                    Groups[name] = group = new FavoredClassRangeGroup<AreaEffectView>(IsLive, VerifyNative, Narrow,
+                        End, Diagnose);
+                group.Record(view, outcome, feet);
             }
         }
 
@@ -86,14 +119,14 @@ namespace KingmakerGunslinger.FavoredClass.Mechanics
                 return configuredFeet;
             lock (Gate)
             {
-                Purge();
+                Maintain(false);
                 FavoredClassRangeGroup<AreaEffectView> group;
                 return Groups.TryGetValue(Name(unit.UniqueId, key), out group) ? group.Feet(configuredFeet) :
                     configuredFeet;
             }
         }
 
-        /// <summary>The owner's live instances of the performance (qualification evidence).</summary>
+        /// <summary>The owner's tracked instances of the performance, unresolved ones included (qualification evidence).</summary>
         internal static int LiveCount(UnitDescriptor owner, string key)
         {
             UnitEntityData unit = owner == null ? null : owner.Unit;
@@ -101,13 +134,27 @@ namespace KingmakerGunslinger.FavoredClass.Mechanics
                 return 0;
             lock (Gate)
             {
-                Purge();
+                Maintain(false);
                 FavoredClassRangeGroup<AreaEffectView> group;
                 return Groups.TryGetValue(Name(unit.UniqueId, key), out group) ? group.Count : 0;
             }
         }
 
-        /// <summary>One live instance's recorded outcome (qualification evidence).</summary>
+        /// <summary>The owner's unresolved instances of the performance (qualification evidence).</summary>
+        internal static int UnresolvedCount(UnitDescriptor owner, string key)
+        {
+            UnitEntityData unit = owner == null ? null : owner.Unit;
+            if (unit == null)
+                return 0;
+            lock (Gate)
+            {
+                Maintain(false);
+                FavoredClassRangeGroup<AreaEffectView> group;
+                return Groups.TryGetValue(Name(unit.UniqueId, key), out group) ? group.UnresolvedCount : 0;
+            }
+        }
+
+        /// <summary>One tracked instance's recorded outcome (qualification evidence).</summary>
         internal static FavoredClassWideningOutcome? OutcomeOf(UnitDescriptor owner, string key, AreaEffectView view)
         {
             UnitEntityData unit = owner == null ? null : owner.Unit;
@@ -115,9 +162,32 @@ namespace KingmakerGunslinger.FavoredClass.Mechanics
                 return null;
             lock (Gate)
             {
-                Purge();
+                Maintain(false);
                 FavoredClassRangeGroup<AreaEffectView> group;
                 return Groups.TryGetValue(Name(unit.UniqueId, key), out group) ? group.OutcomeOf(view) : null;
+            }
+        }
+
+        /// <summary>Why one tracked instance is unresolved, or null (qualification evidence).</summary>
+        internal static string ProblemOf(UnitDescriptor owner, string key, AreaEffectView view)
+        {
+            UnitEntityData unit = owner == null ? null : owner.Unit;
+            if (unit == null)
+                return null;
+            lock (Gate)
+            {
+                Maintain(false);
+                FavoredClassRangeGroup<AreaEffectView> group;
+                return Groups.TryGetValue(Name(unit.UniqueId, key), out group) ? group.ProblemOf(view) : null;
+            }
+        }
+
+        /// <summary>The most recent unresolved and resolved diagnostics (qualification evidence).</summary>
+        internal static string[] RecentDiagnostics()
+        {
+            lock (Gate)
+            {
+                return Diagnostics.ToArray();
             }
         }
 
@@ -126,26 +196,73 @@ namespace KingmakerGunslinger.FavoredClass.Mechanics
             return owner + "|" + key;
         }
 
-        /// <summary>Forgets destroyed views, areas that ended and empty groups.</summary>
-        private static void Purge()
+        /// <summary>
+        /// Every group forgets the instances verified no longer live (a
+        /// read-only point for the descriptions and evidence); a mechanics
+        /// point (a widening attempt or a recording) also retries every
+        /// unresolved instance. Empty groups and untracked radii are dropped.
+        /// </summary>
+        private static void Maintain(bool settle)
         {
             foreach (KeyValuePair<string, FavoredClassRangeGroup<AreaEffectView>> pair in Groups.ToArray())
             {
-                pair.Value.Purge(IsLive);
+                if (settle)
+                    pair.Value.Settle();
+                else
+                    pair.Value.Purge();
                 if (pair.Value.Count == 0)
                     Groups.Remove(pair.Key);
             }
             foreach (AreaEffectView view in NativeRadii.Keys.ToArray())
-                if (!IsLive(view))
+                if (!Groups.Values.Any(group => group.Contains(view)))
                     NativeRadii.Remove(view);
         }
 
+        /// <summary>
+        /// Whether the instance may still be live: false only for a destroyed
+        /// view or an ended or destroyed area; unavailable area data counts as
+        /// live. It throws when the read itself fails.
+        /// </summary>
         private static bool IsLive(AreaEffectView view)
         {
             if (view == null)
                 return false;
-            var data = view.Data as AreaEffectEntityData;
+            Func<AreaEffectView, bool> fault = LivenessFaultForQualification;
+            if (fault != null && fault(view))
+                throw new InvalidOperationException("KMG injected liveness read failure");
+            AreaEffectEntityData data = DataOf(view);
             return data == null || (!data.Destroyed && !data.IsEnded);
+        }
+
+        private static AreaEffectEntityData DataOf(AreaEffectView view)
+        {
+            Func<AreaEffectView, bool> unavailable = DataUnavailableForQualification;
+            if (unavailable != null && unavailable(view))
+                return null;
+            return view.Data as AreaEffectEntityData;
+        }
+
+        private static void Diagnose(AreaEffectView view, string message)
+        {
+            string area = "unknown";
+            try
+            {
+                AreaEffectEntityData data = view == null ? null : view.Data as AreaEffectEntityData;
+                if (data != null && data.Blueprint != null)
+                    area = data.Blueprint.name + "#" + data.UniqueId;
+            }
+            catch (Exception)
+            {
+                // The diagnostic keeps "unknown".
+            }
+            string line = "area=" + area + ";" + message;
+            Diagnostics.Add(line);
+            if (Diagnostics.Count > DiagnosticCapacity)
+                Diagnostics.RemoveAt(0);
+            Bootstrap.ModContext context;
+            if (Bootstrap.ModContext.TryGet(out context))
+                context.Logger.Warning("favored-class", message.StartsWith("resolved", StringComparison.Ordinal)
+                    ? "performance-range.resolved" : "performance-range.unresolved", line);
         }
 
         private static GameObject Ring(AreaEffectView view)
@@ -208,12 +325,17 @@ namespace KingmakerGunslinger.FavoredClass.Mechanics
         /// stops instead of spending rounds on an area that no longer exists;
         /// an older, lingering area never stops the current performance. The
         /// area runs under a clone of its buff's context (CloneFor), so the
-        /// buff is found among the ancestors of the area's context.
+        /// buff is found among the ancestors of the area's context. Without
+        /// area data nothing can be ended, which throws; the group verifies
+        /// every ending with IsLive.
         /// </summary>
         private static void End(AreaEffectView view)
         {
-            var data = view == null ? null : view.Data as AreaEffectEntityData;
+            AreaEffectEntityData data = view == null ? null : DataOf(view);
             if (data == null)
+                throw new InvalidOperationException("the area's data is unavailable, so it cannot be ended");
+            Func<AreaEffectView, bool> fault = EndFaultForQualification;
+            if (fault != null && !fault(view))
                 return;
             MechanicsContext context = data.Context;
             UnitEntityData owner = context == null ? null : context.MaybeCaster;
