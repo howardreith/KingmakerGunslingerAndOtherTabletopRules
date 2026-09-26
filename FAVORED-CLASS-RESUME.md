@@ -52,6 +52,31 @@ KingmakerBuffPlanner, KingmakerBugfixes, KingmakerDiceRoller,
 KingmakerLastAzlantiPreserver, ProperFlanking2, SkipIntro, TweakOrTreat.
 Favored Class ships nine custom JSON rewards in `ZFavoredClass\Custom\`.
 
+## Completion round checkpoint
+
+Candidate `12651613c6bbf8533884e7f73cf1b5dd0a5eaf39` (package `95d57d55c31c829ae4f7175b01df310a2081100af4cc207d49b2e9d9d91d8ec1`, DLL `ee0a67e40ebf5a926ef7df4d84485d3702f3c52e0677ec91b51a00e83bbf9f8f`, MVID `62badef3-342b-409a-9733-20dc6a664578`),
+deployment `C:\Dev\KingmakerGunslingerLab\runtime-evidence\deployments\20260926T0424273426492Z\deployment.json`. The owner's directive was to finish every remaining
+item; the owner decided D1 and D2 (tabletop rules) and authorized the host and
+dependency stagings (H02 disabled host, simulated H04/H05, L06).
+
+- Every charter scenario family is observed natively: E10, E15, M07, M10,
+  M12, M13, M14, M24 and L07 closed; H02 native (disabled host) and simulated
+  (unsupported, partial); H04 and H05 simulated on cloned live observations;
+  L06 save tested (missing-dependency transaction).
+- The own persistence cases of G05, G06 (Dodge), G11, G17, G21, I01, I05, I07,
+  O04, O05, O08, U02, S04 and S06 are save tested.
+- The fifteen deferred targets are published (32 appended identities).
+- Found and fixed: D5 (stored level plans) and the M10 Pistol-Whip CMB leak
+  under the owner's mod stack; recorded for the owner: D6.
+- B3 re-measured: the committed memory comes from the lanes that drive the native
+  character-build screens (the census peaks at 43 GB with no screenshot, the
+  creator lanes at up to 72 GB), not from screenshots and not from the
+  favored-class integration (an integration-off creator run peaked at 70.1 GB).
+  It stays an open environment risk for qualification batches.
+- Final qualification: 40 guarded runs PASS (report section 4).
+
+Status: COMPLETE LOCALLY - AWAITING OWNER REVIEW; QUALIFIED is the owner's decision.
+
 ## Continuation checkpoint (repair, qualification and evidence cleanup)
 
 The owner's continuation brief (2026-09-24) replaced the owner-decision list
@@ -312,22 +337,77 @@ after the last run, and verified byte for byte on 2026-09-25 at 21:51 UTC:
 
 Restoration status: VERIFIED.
 
+Completion round deployments (guarded `scripts\Deploy-Local.ps1`; each backed up the previous tree
+under `C:\Dev\KingmakerGunslingerLab\runtime-backups\live-mod\`; rows marked profile were
+deployed inside an isolated compatibility profile and restored by its transaction):
+
+| Deployment (UTC) | Commit | DLL SHA-256 | MVID | Backup of the previous tree |
+| --- | --- | --- | --- | --- |
+| 20260926T0036028458970Z | `dbe42baa0` | `2451cd04...` | `656c0a1e-167f-4302-bb9c-d05a757fc8b3` | `20260926T0035582634617Z` |
+| 20260926T0046425713667Z | `dbe42baa0` | `ed111fc7...` | `17286783-35c9-4f0d-acb7-9a03d8215aa8` | `20260926T0046380556982Z` |
+| 20260926T0101291732894Z | `54d545e4b` | `2cb031e8...` | `aaf1ffc3-a939-49af-9e76-f4467cfd1ee5` | `20260926T0101235193416Z` |
+| 20260926T0112224611439Z | `e191d78e1` | `27edb5f3...` | `8f6d9a13-dd4b-4c04-a51b-6ce7ac76fe84` | `20260926T0112179795272Z` |
+| 20260926T0140076147763Z | `9e927fb0a` | `be7b1fe7...` | `8c7ebf7b-1806-4695-8082-d0c8deb8b898` | `20260926T0140031717966Z` |
+| 20260926T0205115644947Z | `60c93b319` | `2494f234...` | `405b7662-335c-4720-b081-b18d961ebfb9` | `20260926T0205069682243Z` |
+| 20260926T0223198182138Z | `178225027` | `76119fc4...` | `77c895b7-30c8-453b-9d54-5b6f9850aff9` | `20260926T0223152817628Z` |
+| 20260926T0242075075466Z | `313f5b275` | `23273e68...` | `a90b3199-cd2b-4075-b3c9-8e5ce80c8496` | `20260926T0242030546400Z` |
+| 20260926T0249064487791Z | `21c92d939` | `5c9cd164...` | `f2643fec-7e5a-4744-8cf0-87e5db885051` | `20260926T0249019997030Z` |
+| 20260926T0300241210830Z | `d8fd0ea4a` | `512c2082...` | `d9572312-257e-4fbb-8bb5-7a1054fe5de4` | `20260926T0300196163674Z` |
+| 20260926T0309202181736Z | `5ae4eafc7` | `a07c0715...` | `0a3b187d-2b0d-4b62-8257-fc1b55769eff` | `20260926T0309155539136Z` |
+| 20260926T0412232808729Z | `5ae4eafc7` | `a07c0715...` | `0a3b187d-2b0d-4b62-8257-fc1b55769eff` | `20260926T0412186496114Z` (profile) |
+| 20260926T0415392246601Z | `5ae4eafc7` | `a07c0715...` | `0a3b187d-2b0d-4b62-8257-fc1b55769eff` | `20260926T0415345779462Z` (profile) |
+| 20260926T0419126615836Z | `5ae4eafc7` | `a07c0715...` | `0a3b187d-2b0d-4b62-8257-fc1b55769eff` | `20260926T0419080465981Z` (profile) |
+| 20260926T0424273426492Z | `12651613c` | `ee0a67e4...` | `62badef3-342b-409a-9733-20dc6a664578` | `20260926T0424227072867Z` |
+| 20260926T0528021983878Z | `12651613c` | `ee0a67e4...` | `62badef3-342b-409a-9733-20dc6a664578` | `20260926T0527576132057Z` (profile) |
+| 20260926T0531183393450Z | `12651613c` | `ee0a67e4...` | `62badef3-342b-409a-9733-20dc6a664578` | `20260926T0531137268509Z` (profile) |
+| 20260926T0534504686448Z | `12651613c` | `ee0a67e4...` | `62badef3-342b-409a-9733-20dc6a664578` | `20260926T0534458681249Z` (profile) |
+
+The first `dbe42baa0` deployment was built in the integration worktree; every later one in the
+runner worktree (`claude/favored-class-runner`, fast-forwarded to each candidate), so the same
+commit and source state appear with two DLLs (two clean builds in one worktree are identical).
+
+Final restoration of the owner's install after the completion round:
+
+The owner's pre-mission KMG install (0.0.136, backup
+`C:\Dev\KingmakerGunslingerLab\runtime-backups\live-mod\20260924T0027014050156Z`)
+was restored through `scripts/Restore-Live-Mod.ps1` (under this lab's lease)
+after the last run of the completion round, and verified byte for byte on
+2026-09-26 at 05:44 UTC:
+
+- `Info.json` SHA-256 `f66de05d5c6282eece8218b6c4f31d49dfc8ef9efa27dfeceeda712034717e17` (match True)
+- `FeatureModules.json` SHA-256 `6e24b2788a0c8f063d6e561a27c93f9c5349f2fc21b5217689da8aefdbb385d0` (match True)
+- `KingmakerGunslinger.dll` SHA-256 `c6cccdac914ed59fa4d85d020108588d7d12cfb4ac38cf5a162772bacc9b465c` (match True)
+- whole tree: 238 backup files, 238 live files, 0 only in the backup, 0 only live
+- no `FavoredClassIntegration.json` remains (the default settings apply)
+- other mod files unchanged: `CallOfTheWild\settings.json` `24cc3f80...`, `RacesUnleashed\Settings.json` `270899c3...`,
+  `ZFavoredClass\settings.json` `bdceed77...` and Tweak or Treat's regenerated `loaded_blueprints.txt` `96e13782...` (match True)
+- Unity Mod Manager's `Params.xml`: every disabled-host stage of the round (`20260926T022705Z`, `20260926T030221Z`, `20260926T040626Z`, `20260926T052206Z`) and each L06
+  transaction backed it up, disabled only ZFavoredClass and restored the exact pre-stage bytes after
+  the game exited (SHA-256 match; backups in `C:\Dev\KingmakerGunslingerLab\runtime-backups\umm-params\`
+  and the transaction folders); the regenerated `loaded_blueprints.txt` files were restored byte for byte
+  after each disabled-host run; ZFavoredClass is enabled now
+- each temporary settings profile removed `FavoredClassIntegration.json` after
+  its own runs (verified absent after each profile and at the end)
+- the B3 memory diagnostic wrote the integration-off `FavoredClassIntegration.json` only for its one
+  run and removed it (verified absent)
+- the persistence transaction `20260926T0515255118814Z_3bbf199cd52b4a5eb9d4d430a20064b1` restored the settings and the complete Mods tree;
+  its owned save was deleted from the save folder with hash proof (94 preexisting saves preserved;
+  the prepared save's evidence copy stays in the machine-local transaction folder)
+- the L06 transaction `20260926T0523169075109Z_328953d2b5034ecb8d9ad783de2b1b80` restored `Params.xml` (match True) and deleted its fixture from the save
+  folder with hash proof (its evidence copy stays in the machine-local transaction folder); the lab's
+  only saves are `KMG_AUTOMATION_BASELINE` and `KMG_AUTOMATION_WORKING`
+- each compatibility profile (`compat-20260926T052602Z-a75f8c60d59d`, `compat-20260926T052931Z-3aacec891548`, `compat-20260926T053303Z-0acfe3e6e607`) restored the exact original Mods tree and
+  FeatureModules bytes before releasing the lock (restoration verified)
+
+Restoration status: VERIFIED.
+
 ## Next concrete actions
 
-1. Owner review of PR #24 at `5636d940b` (and its records commit) and of the
-   two pre-existing KMG defects D1 and D2 (`FAVORED-CLASS-BLOCKERS.md`).
-2. To reach COMPLETE, observe natively the partial families E10, E15, M07, M10, M12, M13, M14, M24, L07:
-   turn-based variants of the lanes (L07, M12), True Grit at level 20 (M13),
-   bomb splash and critical (M14), the misfire ammunition and condition
-   matrix (M07), the deed interruption path (M10), native auto-level (E15),
-   per-revelation values for all published revelations (M24) and an injected
-   permission cycle or duplicate fact (E10). H02, H04, H05 and L06 stay
-   domain tested unless the owner authorizes staging a host or dependency state.
-3. The fifteen deferred threshold-only targets (fourteen revelations and
-   Elemental Resistance) need new owned identities before they can be
-   published.
-4. B3 (harness follow-up, outside the favored-class rows): make the native
-   screenshot capture read each completed PNG once, and start qualification
-   batches with a low idle commit charge.
-5. Nothing is merged, tagged or published; those remain separate owner
+1. Owner review of PR #24 at `12651613c` (and its records commit), including the
+   simulated disposition of H04/H05 and the open owner decision D6
+   (`FAVORED-CLASS-BLOCKERS.md`).
+2. Nothing is merged, tagged or published; those remain separate owner
    actions.
+3. B3 follow-up (harness, outside the favored-class rows): isolate the allocation
+   the native character-build screens retain; until then start qualification
+   batches only with a low idle commit charge.

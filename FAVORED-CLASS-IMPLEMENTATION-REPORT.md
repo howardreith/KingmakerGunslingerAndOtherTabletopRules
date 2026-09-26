@@ -1,38 +1,46 @@
 # Favored Class Integration - Implementation Report
 
-## PARTIAL - NOT RELEASE QUALIFIED
+## COMPLETE LOCALLY - AWAITING OWNER REVIEW
 
-This pass addressed the three findings of the third PR #24 review (section
-12), after the two findings of the second review (section 11) and the six of
-the first (section 10), on the same branch. The final candidate `5636d940b`
-passed all 33 guarded native runs of its qualification: the eight lanes the
-reviews changed (contract and bootstrap aggregate, host state, elemental
-core, elemental advanced, Oracle level gates and inactive scopes, the
-performance range transaction with its whole-group outcomes, lifecycle pet
-transitions, toggle rollback and outcome reload, and respec); every other
-favored-class lane; the four elemental creator and two elemental respec
-lanes; the fresh-process persistence transaction (prepare and verify); the
-guarded working-save smoke; the four temporary settings profiles (five runs);
-and the three isolated compatibility profiles. Every run loaded the same DLL
-(SHA-256 and MVID in section 1) from the same deterministic package, and the
-owner's install was restored and verified byte for byte afterwards (section
-8).
+This completion round closed every gap the previous candidate left open.
+The final candidate `12651613c` passed all 40 guarded native runs of
+its qualification (section 4), and the owner's install was restored and
+verified byte for byte afterwards (section 8). Every charter scenario family
+is now observed natively (sections 3 and 13): no family is partial or
+blocked, and QUALIFIED waits only for the owner's review of this local
+candidate.
 
-The candidate remains PARTIAL - NOT RELEASE QUALIFIED. Nine charter scenario
-families are only partly observed natively (E10, E15, M07, M10, M12, M13,
-M14, M24, L07). Fourteen scheduled rows have no persistence case of their
-own (G05, G06 Dodge, G11, G17, G21, I01, I05, I07, O04, O05, O08, U02, S04,
-S06). Four host or dependency states cannot be staged under the mission's
-rules: H02, H04 and H05 would require altering the host, its binary or UMM
-settings, and L06 would require loading a host-dependent campaign with its
-dependency removed. Fifteen selected-power targets whose level thresholds are
-implementable are explicitly deferred because they need owned identities the
-ledger does not contain (section 6). Sections 3, 6 and 9 name each of these
-gaps exactly. No CI runs for this branch; every result here is the local
-guarded evidence named in section 4.
+- The nine partly observed families are native: E10 (permission bounds on
+  real level-1 visits), E15 (a stored level plan applied by the native
+  constructor, with the scope defect D5 found and fixed), M07 (the full
+  misfire matrix), M10, M12, M13 and L07 (real commands in real-time and in a
+  fresh turn-based combat), M14 (production bombs thrown natively) and M24
+  (every published revelation's own values and every bloodline power).
+- The fourteen scheduled rows without a persistence case of their own (G05,
+  G06 Dodge, G11, G17, G21, I01, I05, I07, O04, O05, O08, U02, S04, S06) are
+  SAVE TESTED in the fresh-process transaction.
+- The four host and dependency states were staged with the owner's
+  authorization: a real disabled host through a byte-exact Params.xml stage
+  (H02), simulated host defects on cloned live observations (H02 unsupported
+  and partial, H04, H05), and a missing-dependency fixture save read in the
+  disabled-host profile (L06), for which KMG now shows a precise recovery
+  warning.
+- The fifteen deferred selected-power targets are published (fourteen
+  revelations and Elemental Resistance for both bloodlines) with appended
+  identities.
+- D1 and D2 are fixed by the tabletop rules on the owner's decision; D5 (the
+  stored-plan scope) and an M10 Pistol-Whip leak into the trip's CMB under
+  the owner's mod stack were found and fixed; D6 (Pistol-Whip ignores the
+  firearm's enhancement bonus, outside the favored-class rows) is recorded
+  for the owner (section 9).
+- B3 was re-measured: the memory that exhausted a degraded machine before
+  its reboot comes from the lanes that drive the native character-build
+  screens. Neither the screenshots nor the favored-class integration cause
+  it, so it stays an environment risk for qualification batches (section 9).
 
-The branch was pushed to PR #24 on the owner's instruction; nothing was
-merged, tagged or published.
+The branch is pushed to PR #24; nothing was merged, tagged or published. No
+CI runs for this branch; every result here is the local guarded evidence
+named in section 4.
 
 ## 1. Identity
 
@@ -41,20 +49,20 @@ merged, tagged or published.
 | Worktree | `C:\Dev\KingmakerGunslingerLab\worktrees\favored-class-integration` |
 | Branch | `claude/favored-class-integration` (pushed to PR #24 on the owner's instruction; not merged) |
 | Baseline | `996105ed9e72259a220be56e2a74e0cc18e5ef47` (master, 0.0.138 release record) |
-| Final source commit | `5636d940b52c26998f2c5d6e36231956e28dff04` |
+| Final source commit | `12651613c6bbf8533884e7f73cf1b5dd0a5eaf39` |
 | Evidence and records commit | the commit that adds this report (on top of the source commit) |
-| Package | `artifacts/local-runtime/0.0.139/KingmakerGunslinger-0.0.139-local-runtime.zip`, SHA-256 `e7828df692d9ccb259cc14b6a2a7fda558de7a7ea99dd6c65740ebe3556d1e6c` (identical to the favored-class-integration package; not committed) |
-| Loaded DLL | `KingmakerGunslinger.dll` 0.0.139, SHA-256 `197ba4e5e88f2a9a68b818f90018860508ea6964eaa5a91f13801f24816ac25e`, MVID `76aef19e-962c-427d-b10e-864274b981b0` |
-| Deployment | `C:\Dev\KingmakerGunslingerLab\runtime-evidence\deployments\20260925T2042107499390Z\deployment.json` |
-| Deterministic build | two clean Release builds of `5636d940b` each ran the 1,834-case domain suite (0 failures) and produced the identical package and DLL; strict standalone UMM package validation PASS |
-| Domain suite | 1,834 deterministic cases, all PASS; repository and icon-catalog validation PASS |
+| Package | `artifacts/local-runtime/0.0.139/KingmakerGunslinger-0.0.139-local-runtime.zip`, SHA-256 `95d57d55c31c829ae4f7175b01df310a2081100af4cc207d49b2e9d9d91d8ec1` (not committed) |
+| Loaded DLL | `KingmakerGunslinger.dll` 0.0.139, SHA-256 `ee0a67e40ebf5a926ef7df4d84485d3702f3c52e0677ec91b51a00e83bbf9f8f`, MVID `62badef3-342b-409a-9733-20dc6a664578` |
+| Deployment | `C:\Dev\KingmakerGunslingerLab\runtime-evidence\deployments\20260926T0424273426492Z\deployment.json` |
+| Deterministic build | two clean Release builds of `12651613c` each ran the 1,846-case domain suite (0 failures) and produced the identical package and DLL; strict standalone UMM package validation PASS |
+| Domain suite | 1,846 deterministic cases, all PASS; repository and icon-catalog validation PASS |
 
 Continuation commits (oldest first), after the first pass's records commit
 `fee3f45ec` on the same branch (47 commits since the baseline up to the
 continuation's candidate `15c37695c`, whose records commit `eed717046`
 follows; 57 up to the first review's candidate `aa298650e`, 60 up to the
-second review's `f7b4ae4f5` and 65 up to the final source commit
-`5636d940b`):
+second review's `f7b4ae4f5` and 65 up to the third review's candidate
+`5636d940b` and 80 up to the final source commit `12651613c`):
 
 - `8a46506df72ce79903a1bff94a0968441d9adc3c` Repair Mostly Human identity, power eligibility, thresholds and icons
 - `0138d70b65348d0d2f5ddf2755b70723a95d31d1` Add the O01 performance visual observation
@@ -102,6 +110,23 @@ Third review commits (PR #24), oldest first, after the records commit `d13a1589e
 - `51f56820e90ad126dd5127c51da9d099c8bb073a` Spawn the rollback lane's other areas beside the real toggle
 - `5636d940b52c26998f2c5d6e36231956e28dff04` Hold the rollback lane to native outcomes; document the attach retry
 
+Completion round commits (oldest first), after the third review's records commit `4b838b2a3`:
+
+- `bb4dfd674f8cf956e289a7bf9b9b37c8283c3624` Fix Dead Shot confirmation, the level-17 Gun Training pick and True Grit Dodge
+- `e7748fff4dd134fb5b36faf50e9d7668e72e9624` Widen the misfire and initiative lanes, add row persistence, fix B3 (its screenshot-poll change did not lower the memory peaks; see section 9)
+- `dbe42baa05e4ae5a4bd41853dc28cfe1f6bc3579` Check every published revelation's values and the air bloodline powers
+- `54d545e4b4cae841bd1d20164d6ad984b2c3dbad` Add the turn-modes and real-bomb lanes, widen Pistol-Whip, fix removals
+- `e191d78e1ff074461dafb4d70b9cf5dc4e2ae7f1` Check permission bounds natively (E10) and fix the first lane runs
+- `9e927fb0a47eaa4078c16ae11368ca52a957a7cf` Publish the deferred selected-power targets and end the draw animation
+- `60c93b319e105bde9761fb5de0e0c86c50b32be3` Scope stored level plans (E15) and fix two lane defects
+- `178225027222e3a9fd7035d2e6b86ad565dc88d5` Simulate host defects (H02/H04/H05) and fix the first lane runs
+- `313f5b275f4fe4d9d9467afaa08ab5b2ded1f92d` Warn precisely about missing favored-class dependencies (L06)
+- `2609cb60d698215c13811ae874449396fc8965e9` Record every base CMB term of the turn-modes trips (did not compile; fixed forward in `21c92d939`)
+- `21c92d9395442595eb75e97f0445d194095e874b` Read the base CMB bonus sources by their native members
+- `d8fd0ea4a06d347e49c0af032ae2f62c34e490fa` Keep the Pistol-Whip counter inside the deed's own attack (M10)
+- `5ae4eafc76fc63f5cad8b6c8b4d5f70ce6a22422` Check the turn-based Dodge over every observation in its round
+- `12651613c6bbf8533884e7f73cf1b5dd0a5eaf39` Grant gate-only bloodline powers in the visual census
+
 ## 2. Rows, targets and counts
 
 - Catalog: 54 table appearances, 53 distinct options (46 Paizo, 7 Jon Brazer
@@ -119,16 +144,16 @@ Third review commits (PR #24), oldest first, after the records commit `d13a1589e
 - Not published: 23 (provider-deferred G09 G12 G13 G22; engineering-deferred
   G03 G15 G19 S03 S08 U06 U07; excluded I02 I03 O02 O03 S01 S02 S05 S07 U01
   U03 U05 U08); none appears as a placeholder.
-- Owned identities: 171 favored-class leaves and helpers registered on every
+- Owned identities: 203 favored-class leaves and helpers registered on every
   load (host present or absent), plus 13 Mostly Human identities; identity
-  ledger 2,140 (2,138 active, 2 reserved). The bootstrap's registered
-  aggregate counts every registry including Mostly Human's: 2,085 registered =
-  2,085 expected in the qualified profile.
-- Targets (docs/FAVORED-CLASS-TARGET-MANIFEST.md): I06/S04 52 revelation
-  targets, 51 published and scoped with every audited family and their own
+  ledger 2,172 (2,170 active, 2 reserved). The bootstrap's registered
+  aggregate counts every registry including Mostly Human's: 2,117 registered =
+  2,117 expected in the qualified profile.
+- Targets (docs/FAVORED-CLASS-TARGET-MANIFEST.md): I06/S04 66 revelation
+  targets, 65 published and scoped with every audited family and their own
   level gates, Spirit of the Warrior excluded (its possession sets base attack
-  bonus from oracle level, which a counter must never raise); I08/S06 4 bloodline powers (Fire Ray,
-  Fire Blast, Air Ray, Air Blast) through the fire/air elemental bloodlines
+  bonus from oracle level, which a counter must never raise); I08/S06 6 bloodline powers (Fire and Air
+  Ray, Blast and Resistance) through the fire/air elemental bloodlines
   and their proven Seeker and Crossblooded aliases; O01 16 registered
   performance counters: 14 published (9 Kingmaker, 5 Call of the Wild), 2
   excluded (Storm Call, Mockery) and 14 classified non-targets.
@@ -139,16 +164,19 @@ Ladder: CODE COMPLETE, DOMAIN TESTED, NATIVE TESTED (guarded Steam App ID
 640820 runs), SAVE TESTED (fresh-process reload). QUALIFIED needs the owner's
 review of this local candidate, so it is `no` for every family. `n/a` means
 the gate does not apply to that family; `partial` names what was not observed;
-BLOCKED means the state cannot be staged under the mission's rules. Status is
-the single highest step fully reached.
+BLOCKED means the state cannot be staged under the mission's rules. NATIVE
+TESTED (simulated) means the production gates and planner ran in the game on
+the live host's own observations, cloned with one fact changed, because the
+defective host itself is not staged (owner-authorized for H04 and H05). Status
+is the single highest step fully reached.
 
 | ID | Family | Status | CODE COMPLETE | DOMAIN TESTED | NATIVE TESTED | SAVE TESTED | QUALIFIED | Evidence / note |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | H01 | Host DLL physically absent | NATIVE TESTED | yes | yes | yes | n/a | no (owner review) | gunslinger-only isolated profile: host absent, KMG class/firearms/races load, no FCB UI |
-| H02 | Host installed but disabled, unsupported or partially initialized | DOMAIN TESTED; NATIVE BLOCKED | yes | yes | no | n/a | no (owner review) | AbsentDisabledAndUnloadedHostsAreInactive, ReadinessRequiresCompleteInitializationAndGunslinger; a disabled or partial host cannot be staged without altering the host or UMM settings |
+| H02 | Host installed but disabled, unsupported or partially initialized | NATIVE TESTED | yes | yes | yes | n/a | no (owner review) | disabled host: the host-state lane in a byte-exact Params.xml stage (HostDisabled, every owned identity registered, nothing published); unsupported and partially initialized: the host-defects lane on cloned live observations (UnsupportedBinary, HostIncomplete, nothing planned) |
 | H03 | Class-before-host / registration-after-host order | NATIVE TESTED | yes | yes | yes | n/a | no (owner review) | contract and host-state: one Gunslinger favored progression and one reward per qualifying level |
-| H04 | Gunslinger absent from host map | DOMAIN TESTED; NATIVE BLOCKED | yes | yes | no | n/a | no (owner review) | ReadinessRequiresCompleteInitializationAndGunslinger; removing the Gunslinger from the host map would alter the host |
-| H05 | Same version string, changed hash/MVID/shape | DOMAIN TESTED; NATIVE BLOCKED | yes | yes | no | n/a | no (owner review) | SameVersionDifferentBinaryIsRejected; a changed host binary is never staged (charter: never modify host binaries) |
+| H04 | Gunslinger absent from host map | NATIVE TESTED (simulated) | yes | yes | yes | n/a | no (owner review) | host-defects lane: a host without a Gunslinger entry (not scanned, not offered, wrong shape) blocks exactly the Gunslinger rows, touches no Gunslinger selection and plans every other family as live; the host's global state is unchanged (no second Core.load or rebuild) |
+| H05 | Same version string, changed hash/MVID/shape | NATIVE TESTED (simulated) | yes | yes | yes | n/a | no (owner review) | host-defects lane: the same version label with a changed SHA-256, MVID, Core.load body or required member, another version or a changed dependency is UnsupportedBinary with its own reason and cannot plan; the label alone decides nothing |
 | H06 | Repeat registration or readiness twice | NATIVE TESTED | yes | yes | yes | n/a | no (owner review) | contract: repeat publication is a no-op; stable GUID sets, order and component counts |
 | H07 | Missing optional race or power | NATIVE TESTED | yes | yes | yes | n/a | no (owner review) | AbsentProvidersRemoveOnlyTheirRoute; G08/G20 routes absent natively (no playable Goblin/Orc) |
 | H08 | Exception midway through publication | NATIVE TESTED | yes | yes | yes | n/a | no (owner review) | contract: injected fault restores the owned arrays exactly; foreign entries unchanged |
@@ -163,12 +191,12 @@ the single highest step fully reached.
 | E07 | Mostly Human dual identity | SAVE TESTED | yes | yes | yes | yes | no (owner review) | Mostly Human dual identity and bridge; lifecycle; L01 families |
 | E08 | Visual race/body changes only | NATIVE TESTED | yes | yes | yes | n/a | no (owner review) | ancestry from race GUID only (RaceIdentitiesAreExactAndComplete); the host bridge stays closed to a human-looking standard geniekin natively |
 | E09 | Verified Racial/Planar Heritage provider | OUT OF SCOPE | n/a | n/a | n/a | n/a | no (owner review) | OUT OF SCOPE: no qualified provider installed |
-| E10 | Unknown provider, permission cycle, duplicate facts | PARTIAL (native) | yes | yes | partial | n/a | no (owner review) | UnknownCyclicAndDuplicateEvidenceIsBounded; Races Unleashed Suli Mostly Human stays closed natively |
+| E10 | Unknown provider, permission cycle, duplicate facts | NATIVE TESTED | yes | yes | yes | n/a | no (owner review) | gunslinger-menus permission bounds on real level-1 visits: an unconditional cycle, the depth bound of four, an unverified fact, a duplicated Mostly Human identity and a stray racial fact; Races Unleashed Suli Mostly Human stays closed; UnknownCyclicAndDuplicateEvidenceIsBounded |
 | E11 | Ordinary and Half-elf multiclass progressions | NATIVE TESTED | yes | n/a | yes | n/a | no (owner review) | disposable-favored-class-multiclass |
 | E12 | Future versus permanently replaced feature | NATIVE TESTED | yes | yes | yes | n/a | no (owner review) | ImprovedFeatureRuleExcludesOnlyFullReplacement; advanced/menus archetype exclusions |
 | E13 | Cancel/backtrack/reopen level-up or respec | NATIVE TESTED | yes | n/a | yes | n/a | no (owner review) | respec cancel; lifecycle pet respec cancel; grit cancel |
 | E14 | Empty child set / capped last target | NATIVE TESTED | yes | yes | yes | n/a | no (owner review) | menus: capped counters close; host HP/skill fallback remains |
-| E15 | Mercenary, companion, auto-level and fresh character | PARTIAL (native) | yes | n/a | partial | n/a | no (owner review) | custom-companion respec and fresh characters natively; pets never get favored-class progressions; auto-level not exercised |
+| E15 | Mercenary, companion, auto-level and fresh character | NATIVE TESTED | yes | yes | yes | n/a | no (owner review) | auto-level lane: a recorded level applied by the native constructor keeps its same-level reward (D5 fixed) while the unscoped native calls drop it; a host-only plan and Linzi's stored plan are identical either way; the Gunslinger has no default build; an NPC summon has no plan or favored class; custom-companion respec, fresh characters and pets as before |
 | E16 | Ancestry change with existing fractions | NATIVE TESTED | yes | n/a | yes | n/a | no (owner review) | respec Half-elf -> Human -> Dwarf; Mostly Human -> Standard |
 | M01 | Every supported divisor at N = 0..20 | NATIVE TESTED | yes | yes | yes | n/a | no (owner review) | rank policy; grit 20 levels; menus |
 | M02 | Capped and uncapped partial capacities | NATIVE TESTED | yes | yes | yes | n/a | no (owner review) | UncappedDivisorSixDoesNotStopAtEighteen; menus caps |
@@ -176,14 +204,14 @@ the single highest step fully reached.
 | M04 | Duplicate ancestry source routes | NATIVE TESTED | yes | yes | yes | n/a | no (owner review) | AliasRoutesNeverDuplicateOrMultiply; menus one counter |
 | M05 | Grit with normal and attribute-replacing archetypes | NATIVE TESTED | yes | yes | yes | n/a | no (owner review) | grit lane |
 | M06 | Grit maximum increase/decrease while spent | SAVE TESTED | yes | yes | yes | yes | no (owner review) | fcb-grit-no-refill; L01 spent grit |
-| M07 | Misfire across types, ammo, conditions and reliability | PARTIAL (native) | yes | yes | partial | n/a | no (owner review) | mechanics: per-type threshold and floor; not every ammo/condition combination |
+| M07 | Misfire across types, ammo, conditions and reliability | NATIVE TESTED | yes | yes | yes | n/a | no (owner review) | mechanics: a 31-case misfire matrix (types, both hands, ammunition, Broken with and without Gun Training, Reliable, Dead Shot and Scatter Shot) |
 | M08 | Confirmation below/equal/above Critical Focus | NATIVE TESTED | yes | yes | yes | n/a | no (owner review) | mechanics; ConfirmationPreservesTheBetterBonus |
 | M09 | Attack categories | NATIVE TESTED | yes | yes | yes | n/a | no (owner review) | mechanics: firearm/unarmed/other categories |
-| M10 | Pistol-Whip and deed interruption/custom path | PARTIAL (native) | yes | yes | partial | n/a | no (owner review) | mechanics: Pistol-Whip surrogate attack only; interruption path not exercised |
+| M10 | Pistol-Whip and deed interruption/custom path | NATIVE TESTED | yes | yes | yes | n/a | no (owner review) | mechanics: the surrogate attack and its refusals; turn-modes: an interrupted Pistol-Whip spends and attacks nothing, and the counter moves the attack bonus by exactly its steps and never the trip's CMB (scoped to the deed's own attack) |
 | M11 | Nimble armor and loss-of-Dexterity | SAVE TESTED | yes | yes | yes | yes | no (owner review) | mechanics; lifecycle; L01 Nimble |
-| M12 | Dodge timing in both combat modes | PARTIAL (native) | yes | yes | partial | n/a | no (owner review) | mechanics: deed buff; turn-based timing not separately exercised |
-| M13 | Initiative at zero/nonzero grit and True Grit | PARTIAL (native) | yes | yes | partial | n/a | no (owner review) | initiative timing in real-time and turn-based entry; True Grit not exercised |
-| M14 | Bomb hit/splash/critical/converted damage | PARTIAL (native) | yes | yes | partial | n/a | no (owner review) | elemental core: flat bonus on a direct hit; splash/critical not exercised |
+| M12 | Dodge timing in both combat modes | NATIVE TESTED | yes | yes | yes | n/a | no (owner review) | turn-modes: the real Dodge command in real time and turn-based: swift, one grit, +2 plus the Halfling steps, no movement, no second use while active, active through its round and gone by the next |
+| M13 | Initiative at zero/nonzero grit and True Grit | NATIVE TESTED | yes | yes | yes | n/a | no (owner review) | initiative timing and turn-modes: the deed with and without grit and with True Grit; True Grit Dodge refused at 0 grit and free at 1 |
+| M14 | Bomb hit/splash/critical/converted damage | NATIVE TESTED | yes | yes | yes | n/a | no (owner review) | bombs: production bombs thrown natively; the steps once per damaged creature on a direct hit, splash with failed and passed saves, the miss splash, a critical and converted variants; nothing for Breath Weapon Bomb or the acid bomb's lingering damage |
 | M15 | Two Bards with different range investments | SAVE TESTED | yes | yes | yes | yes | no (owner review) | performance range; lifecycle membership; L01 bard |
 | M16 | Performance selected target and cap | NATIVE TESTED | yes | yes | yes | n/a | no (owner review) | performance range: per-target caps, owner text, ring; exclusions |
 | M17 | Two paladins, aura overlap/unlock/replacement | SAVE TESTED | yes | yes | yes | yes | no (owner review) | lifecycle aura overlap; L01 paladin |
@@ -193,30 +221,28 @@ the single highest step fully reached.
 | M21 | Intimidate/demoralize scope | NATIVE TESTED | yes | yes | yes | n/a | no (owner review) | elemental core |
 | M22 | Actual subtype versus geniekin race | NATIVE TESTED | yes | yes | yes | n/a | no (owner review) | elemental core |
 | M23 | Undine SR checks | NATIVE TESTED | yes | yes | yes | n/a | no (owner review) | elemental core |
-| M24 | Each supported selected-power manifest entry | PARTIAL (native) | yes | yes | partial | yes | no (owner review) | oracle: all 52 scoped, values for Fire Breath and neighbors; advanced: four bloodline powers; L01 revelation and bloodline arithmetic |
+| M24 | Each supported selected-power manifest entry | SAVE TESTED | yes | yes | yes | yes | no (owner review) | oracle: every published revelation (65) equals a native oracle at the effective level at every read point and gate; advanced: six bloodline powers including Elemental Resistance's own gates; L01 revelation and bloodline arithmetic |
 | M25 | Neighboring powers and spellbook unchanged | NATIVE TESTED | yes | yes | yes | n/a | no (owner review) | oracle/advanced neighbors and Fireball unchanged |
 | M26 | Power at unlock boundary and above 20 | NATIVE TESTED | yes | yes | yes | n/a | no (owner review) | oracle thresholds; FCB virtual levels never unlock a power |
 | M27 | No-scaling power or unsupported branch | DOMAIN TESTED (native n/a) | yes | yes | n/a | n/a | no (owner review) | manifest dispositions (not offered) |
 | M28 | Separate 1/3, 1/4, 1/6 racial variants | NATIVE TESTED | yes | yes | yes | n/a | no (owner review) | DistinctVariantsKeepTheirOwnRatesAndProfiles; menus |
-| L01 | Fresh-process save/reload | SAVE TESTED | yes | n/a | yes | yes | no (owner review) | Word of Recall FCB transaction: one subject per state/mechanic family, including a selected firearm target with native shots after the reload; the own persistence cases of G05, G06 (Dodge), G11, G17, G21, I01, I05, I07, O04, O05, O08, U02, S04 and S06 are NOT RUN |
+| L01 | Fresh-process save/reload | SAVE TESTED | yes | n/a | yes | yes | no (owner review) | Word of Recall FCB transaction: one subject per state/mechanic family, including a selected firearm target with native shots after the reload, and the own persistence case of every remaining scheduled row (G05, G06 Dodge, G11, G17, G21, I01, I05, I07, O04, O05, O08, U02, S04, S06) |
 | L02 | Death/resurrection, area transition, polymorph/return | NATIVE TESTED | yes | n/a | yes | n/a | no (owner review) | working-save-favored-class-lifecycle |
 | L03 | Full respec commit and cancellation | NATIVE TESTED | yes | n/a | yes | n/a | no (owner review) | respec lane (Gunslinger, Mostly Human, Sorcerer); lifecycle pet respec |
 | L04 | Module OFF/ON across restarts | NATIVE TESTED | yes | yes | yes | n/a | no (owner review) | settings profiles integration OFF/ON |
 | L05 | Third-party profile OFF with earned choices | NATIVE TESTED | yes | yes | yes | n/a | no (owner review) | third-party ON/OFF menus and mechanics |
-| L06 | Missing external dependency in a saved build | CODE COMPLETE; NATIVE BLOCKED | yes | partial | no | no | no (owner review) | documented recovery; identity retention domain tested; not staged (the mission forbids loading a host-dependent campaign with its dependency removed) |
-| L07 | Real-time-with-pause and turn-based modes | PARTIAL (native) | yes | n/a | partial | n/a | no (owner review) | initiative both modes; other families real-time |
+| L06 | Missing external dependency in a saved build | SAVE TESTED | yes | yes | yes | yes | no (owner review) | missing-dependency transaction: a fixture save made with the host is read in the disabled-host profile; the native converter throws on every missing reference (nothing substituted), the fixture and saves folder are unchanged, KMG's identities resolve and the precise warning precedes the native message; the fixture is deleted with hash proof |
+| L07 | Real-time-with-pause and turn-based modes | NATIVE TESTED | yes | n/a | yes | n/a | no (owner review) | turn-modes: initiative, Dodge, Pistol-Whip, demoralize and grit in real time and in a fresh turn-based combat |
 | L08 | Unity serialization and release GUID manifest | SAVE TESTED | yes | yes | yes | yes | no (owner review) | manifest tests; the L01 fresh-process reload deserializes the components of every reloaded family subject |
 | L09 | Final package versus loaded DLL | NATIVE TESTED | yes | yes | yes | n/a | no (owner review) | every guarded run checks commit, package, DLL and MVID |
 | L10 | Unsupported level-cap/gestalt/respec/provider | DOMAIN TESTED (native n/a) | yes | yes | n/a | n/a | no (owner review) | explicit scope statement; no broad compatibility claim |
 
 | Status | Families |
 | --- | ---: |
-| SAVE TESTED | 11 |
-| NATIVE TESTED | 37 |
-| PARTIAL (native) | 9 |
+| SAVE TESTED | 13 |
+| NATIVE TESTED | 46 |
+| NATIVE TESTED (simulated) | 2 |
 | DOMAIN TESTED (native n/a) | 2 |
-| DOMAIN TESTED; NATIVE BLOCKED | 3 |
-| CODE COMPLETE; NATIVE BLOCKED | 1 |
 | OUT OF SCOPE | 1 |
 | Total | 64 |
 
@@ -224,198 +250,186 @@ the single highest step fully reached.
 
 Every run used the guarded launcher (Steam App ID 640820), verified the
 commit, package, DLL and MVID before launch, and used only
-`KMG_AUTOMATION_WORKING` or request-local disposable fixtures.
+`KMG_AUTOMATION_WORKING` or request-local disposable fixtures (the persistence and missing-dependency transactions' owned saves were deleted with hash proof).
 
 | Scenario | Run | Result | Note |
 | --- | --- | --- | --- |
-| observe-favored-class-contract | 20260925T2042120333525Z-observe-favored-class-contract | PASS |  |
-| observe-favored-class-host-state | 20260925T2042519693304Z-observe-favored-class-host-state | PASS |  |
-| disposable-favored-class-elemental-core | 20260925T2043317409823Z-disposable-favored-class-elemental-core | PASS |  |
-| disposable-favored-class-elemental-advanced | 20260925T2044150219285Z-disposable-favored-class-elemental-advanced | PASS |  |
-| disposable-favored-class-oracle-revelations | 20260925T2044567973816Z-disposable-favored-class-oracle-revelations | PASS |  |
-| disposable-favored-class-performance-range | 20260925T2045379719640Z-disposable-favored-class-performance-range | PASS |  |
-| working-save-favored-class-lifecycle@KMG_AUTOMATION_WORKING | 20260925T2046176703078Z-working-save-favored-class-lifecycle | PASS | includes fcb-lifecycle-toggle-rollback and fcb-lifecycle-outcome-reload |
-| disposable-favored-class-respec | 20260925T2047194098043Z-disposable-favored-class-respec | PASS |  |
-| working-save-favored-class-visual-census@KMG_AUTOMATION_WORKING | 20260925T2048326457443Z-working-save-favored-class-visual-census | PASS |  |
-| disposable-favored-class-grit | 20260925T2050254669887Z-disposable-favored-class-grit | PASS |  |
-| disposable-favored-class-gunslinger-menus | 20260925T2051123820204Z-disposable-favored-class-gunslinger-menus | PASS |  |
-| disposable-favored-class-gunslinger-mechanics | 20260925T2052034733338Z-disposable-favored-class-gunslinger-mechanics | PASS |  |
-| disposable-favored-class-initiative-timing | 20260925T2052448363589Z-disposable-favored-class-initiative-timing | PASS |  |
-| disposable-favored-class-mostly-human | 20260925T2053254896577Z-disposable-favored-class-mostly-human | PASS |  |
-| observe-favored-class-performance-visuals | 20260925T2054217536420Z-observe-favored-class-performance-visuals | PASS |  |
-| disposable-favored-class-multiclass | 20260925T2055150395487Z-disposable-favored-class-multiclass | PASS |  |
-| working-save-elemental-character-creation-regression@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;nativeActionCase=racial-actions;race=Ifrit | 20260925T2056001020492Z-working-save-elemental-character-creation-regression | PASS | parameters allocation=point-buy;class=Fighter;nativeActionCase=racial-actions;race=Ifrit |
-| working-save-elemental-character-creation-regression@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;nativeActionCase=racial-actions;race=Oread | 20260925T2101226212743Z-working-save-elemental-character-creation-regression | PASS | parameters allocation=point-buy;class=Fighter;nativeActionCase=racial-actions;race=Oread |
-| working-save-elemental-character-creation-regression@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;nativeActionCase=racial-actions;race=Sylph | 20260925T2106287918109Z-working-save-elemental-character-creation-regression | PASS | parameters allocation=point-buy;class=Fighter;nativeActionCase=racial-actions;race=Sylph |
-| working-save-elemental-character-creation-regression@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;nativeActionCase=racial-actions;race=Undine | 20260925T2111512826181Z-working-save-elemental-character-creation-regression | PASS | parameters allocation=point-buy;class=Fighter;nativeActionCase=racial-actions;race=Undine |
-| working-save-elemental-native-respec@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;race=Sylph | 20260925T2116212873781Z-working-save-elemental-native-respec | PASS | parameters allocation=point-buy;class=Fighter;race=Sylph |
-| working-save-elemental-native-respec@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;race=Oread | 20260925T2123088572792Z-working-save-elemental-native-respec | PASS | parameters allocation=point-buy;class=Fighter;race=Oread |
-| working-save-smoke@KMG_AUTOMATION_WORKING | 20260925T2133053163044Z-working-save-smoke | PASS |  |
-| observe-favored-class-contract | 20260925T2134547060584Z-observe-favored-class-contract | PASS | settings profile third-party ON (L05; G16/G17/G18/G21 routes offered); the settings file was removed and verified absent |
-| disposable-favored-class-gunslinger-menus | 20260925T2135365440510Z-disposable-favored-class-gunslinger-menus | PASS | settings profile third-party ON (L05; G16/G17/G18/G21 routes offered); the settings file was removed and verified absent |
-| observe-favored-class-contract | 20260925T2136346225147Z-observe-favored-class-contract | PASS | settings profile Mostly Human OFF (the trait not offered; identities registered); the settings file was removed and verified absent |
-| observe-favored-class-host-state | 20260925T2137164575164Z-observe-favored-class-host-state | PASS | settings profile integration OFF (L04; mechanics suppressed, identities registered); the settings file was removed and verified absent |
-| observe-favored-class-contract | 20260925T2137571099119Z-observe-favored-class-contract | PASS | settings profile invalid file (schema 2; charter defaults applied and reported); the settings file was removed and verified absent |
-| L01 fresh-process persistence (prepare) | 20260925T2130294793388Z-disposable-word-of-recall-favored-class-persistence | PASS | transaction 20260925T2130213710790Z_ca397ca4f0124a0c9ddf9fb9a1497c94 |
-| L01 fresh-process persistence (verify) | 20260925T2131319946515Z-disposable-word-of-recall-favored-class-persistence | PASS | one subject per state/mechanic family reloaded, with native firearm shots, the paladin aura, companion replacement and a native companion unlink after the reload; settings and Mods tree restored |
-| profile gunslinger-only / observe-favored-class-host-state | 20260925T2141418629762Z-observe-favored-class-host-state | PASS | compatibility transaction compat-20260925T213940Z-2ad3bc526451 |
-| profile gunslinger-call-of-the-wild / observe-favored-class-host-state | 20260925T2144578093484Z-observe-favored-class-host-state | PASS | compatibility transaction compat-20260925T214311Z-3b10efecc949 |
-| profile gunslinger-call-of-the-wild-favored-class / observe-favored-class-host-state | 20260925T2148287677920Z-observe-favored-class-host-state | PASS | compatibility transaction compat-20260925T214643Z-ffa851fb8dd2 |
+| observe-favored-class-contract | 20260926T0424285521034Z-observe-favored-class-contract | PASS |  |
+| observe-favored-class-host-state | 20260926T0425098817176Z-observe-favored-class-host-state | PASS |  |
+| observe-favored-class-host-defects | 20260926T0425504713383Z-observe-favored-class-host-defects | PASS | H02 unsupported and partial, H04 and H05 simulated on cloned live observations |
+| disposable-favored-class-elemental-core | 20260926T0426304190835Z-disposable-favored-class-elemental-core | PASS |  |
+| disposable-favored-class-elemental-advanced | 20260926T0427143130346Z-disposable-favored-class-elemental-advanced | PASS |  |
+| disposable-favored-class-oracle-revelations | 20260926T0427587131736Z-disposable-favored-class-oracle-revelations | PASS |  |
+| disposable-favored-class-performance-range | 20260926T0429246463836Z-disposable-favored-class-performance-range | PASS |  |
+| working-save-favored-class-lifecycle@KMG_AUTOMATION_WORKING | 20260926T0430061268709Z-working-save-favored-class-lifecycle | PASS | includes fcb-lifecycle-toggle-rollback and fcb-lifecycle-outcome-reload |
+| disposable-favored-class-respec | 20260926T0431104013973Z-disposable-favored-class-respec | PASS |  |
+| working-save-favored-class-visual-census@KMG_AUTOMATION_WORKING | 20260926T0431532259029Z-working-save-favored-class-visual-census | PASS |  |
+| disposable-favored-class-grit | 20260926T0433443953898Z-disposable-favored-class-grit | PASS |  |
+| disposable-favored-class-gunslinger-menus | 20260926T0434326926830Z-disposable-favored-class-gunslinger-menus | PASS |  |
+| disposable-favored-class-gunslinger-mechanics | 20260926T0435266732898Z-disposable-favored-class-gunslinger-mechanics | PASS |  |
+| disposable-favored-class-initiative-timing | 20260926T0436075638631Z-disposable-favored-class-initiative-timing | PASS |  |
+| disposable-favored-class-turn-modes | 20260926T0436472719055Z-disposable-favored-class-turn-modes | PASS | M10, M12, M13 and L07 through real commands in real time and a fresh turn-based combat |
+| disposable-favored-class-bombs | 20260926T0437279321541Z-disposable-favored-class-bombs | PASS | M14: production bombs thrown natively |
+| disposable-favored-class-auto-level | 20260926T0438084070076Z-disposable-favored-class-auto-level | PASS | E15: a recorded level applied by the native plan; D5 scope |
+| disposable-favored-class-mostly-human | 20260926T0438487161591Z-disposable-favored-class-mostly-human | PASS |  |
+| observe-favored-class-performance-visuals | 20260926T0439381382013Z-observe-favored-class-performance-visuals | PASS |  |
+| disposable-favored-class-multiclass | 20260926T0440198691989Z-disposable-favored-class-multiclass | PASS |  |
+| working-save-elemental-character-creation-regression@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;nativeActionCase=racial-actions;race=Ifrit | 20260926T0441000207225Z-working-save-elemental-character-creation-regression | PASS | parameters allocation=point-buy;class=Fighter;nativeActionCase=racial-actions;race=Ifrit |
+| working-save-elemental-character-creation-regression@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;nativeActionCase=racial-actions;race=Oread | 20260926T0446152587603Z-working-save-elemental-character-creation-regression | PASS | parameters allocation=point-buy;class=Fighter;nativeActionCase=racial-actions;race=Oread |
+| working-save-elemental-character-creation-regression@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;nativeActionCase=racial-actions;race=Sylph | 20260926T0451067541490Z-working-save-elemental-character-creation-regression | PASS | parameters allocation=point-buy;class=Fighter;nativeActionCase=racial-actions;race=Sylph |
+| working-save-elemental-character-creation-regression@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;nativeActionCase=racial-actions;race=Undine | 20260926T0456110533371Z-working-save-elemental-character-creation-regression | PASS | parameters allocation=point-buy;class=Fighter;nativeActionCase=racial-actions;race=Undine |
+| working-save-elemental-native-respec@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;race=Sylph | 20260926T0500236878668Z-working-save-elemental-native-respec | PASS | parameters allocation=point-buy;class=Fighter;race=Sylph |
+| working-save-elemental-native-respec@KMG_AUTOMATION_WORKING#class=Fighter;allocation=point-buy;race=Oread | 20260926T0507046815679Z-working-save-elemental-native-respec | PASS | parameters allocation=point-buy;class=Fighter;race=Oread |
+| working-save-smoke@KMG_AUTOMATION_WORKING | 20260926T0514062685374Z-working-save-smoke | PASS |  |
+| L01 fresh-process persistence (prepare) | 20260926T0515338811043Z-disposable-word-of-recall-favored-class-persistence | PASS | transaction 20260926T0515255118814Z_3bbf199cd52b4a5eb9d4d430a20064b1 |
+| L01 fresh-process persistence (verify) | 20260926T0516336684454Z-disposable-word-of-recall-favored-class-persistence | PASS | one subject per state/mechanic family and the own cases of G05, G06 (Dodge), G11, G17, G21, I01, I05, I07, O04, O05, O08, U02, S04 and S06 reloaded in a fresh process; settings and Mods tree restored |
+| observe-favored-class-contract | 20260926T0518031115585Z-observe-favored-class-contract | PASS | settings profile third-party ON (L05; G16/G17/G18/G21 routes offered); the settings file was removed and verified absent |
+| disposable-favored-class-gunslinger-menus | 20260926T0518432350673Z-disposable-favored-class-gunslinger-menus | PASS | settings profile third-party ON (L05; G16/G17/G18/G21 routes offered); the settings file was removed and verified absent |
+| observe-favored-class-contract | 20260926T0519366390443Z-observe-favored-class-contract | PASS | settings profile Mostly Human OFF (the trait not offered; identities registered); the settings file was removed and verified absent |
+| observe-favored-class-host-state | 20260926T0520171147411Z-observe-favored-class-host-state | PASS | settings profile integration OFF (L04; mechanics suppressed, identities registered); the settings file was removed and verified absent |
+| observe-favored-class-contract | 20260926T0520572501435Z-observe-favored-class-contract | PASS | settings profile invalid file (schema 2; charter defaults applied and reported); the settings file was removed and verified absent |
+| observe-favored-class-host-state | 20260926T0522081723639Z-observe-favored-class-host-state | PASS | real disabled host (H02): ZFavoredClass disabled through a byte-exact Params.xml stage; Params.xml and the regenerated loaded_blueprints.txt files restored byte-exact |
+| L06 missing dependency (prepare) | 20260926T0523196350139Z-disposable-word-of-recall-favored-class-persistence | PASS | transaction 20260926T0523169075109Z_328953d2b5034ecb8d9ad783de2b1b80: the fixture saved with the host present |
+| L06 missing dependency (absent host) | 20260926T0524188474485Z-observe-favored-class-missing-dependency | PASS | the fixture read with ZFavoredClass disabled: the native loader refuses it, nothing is substituted or written, and KMG's warning names the missing host and its state; Params.xml and the regenerated loaded_blueprints.txt files restored byte-exact; the fixture deleted with hash proof |
+| profile gunslinger-only / observe-favored-class-host-state | 20260926T0528022419214Z-observe-favored-class-host-state | PASS | compatibility transaction compat-20260926T052602Z-a75f8c60d59d, restoration verified |
+| profile gunslinger-call-of-the-wild / observe-favored-class-host-state | 20260926T0531183716191Z-observe-favored-class-host-state | PASS | compatibility transaction compat-20260926T052931Z-3aacec891548, restoration verified |
+| profile gunslinger-call-of-the-wild-favored-class / observe-favored-class-host-state | 20260926T0534505046553Z-observe-favored-class-host-state | PASS | compatibility transaction compat-20260926T053303Z-0acfe3e6e607, restoration verified |
 
 ## 5. Adversarial audit
 
 | Area | Result | Evidence |
 | --- | --- | --- |
-| Optional-host absence | PASS | isolated `gunslinger-only` and CotW-only profiles: host absent, 171/171 leaves registered, core and grit mechanics unaffected, no favored-class UI (H01, H07) |
-| Unsupported-host rejection | PASS (domain) | a same-version host with a different binary, MVID or shape is rejected (`SameVersionDifferentBinaryIsRejected`); disabled, unloaded or partially initialized hosts stay inactive (H02, H04, H05) |
+| Optional-host absence | PASS | isolated `gunslinger-only` and CotW-only profiles: host absent, 203/203 leaves registered, core and grit mechanics unaffected, no favored-class UI (H01, H07) |
+| Unsupported-host rejection | PASS | a same-version host with a different binary, MVID or shape is rejected (`SameVersionDifferentBinaryIsRejected`); disabled, unloaded or partially initialized hosts stay inactive (H02, H04, H05) |
 | Idempotent registration and exact rollback | PASS | contract lane: a repeated publication is a no-op; an injected fault restores the owned arrays exactly and leaves foreign entries unchanged (H06, H08); contained registry rollback domain tests |
 | Empty optional-race arrays never unrestricted | PASS | an absent provider removes only its route (`AbsentProvidersRemoveOnlyTheirRoute`); G08/G20 routes are absent natively; no route is ever registered as an empty race array (H07) |
 | Duplicate aliases and cap escape | PASS | one canonical ledger per effect and target (`AliasRoutesNeverDuplicateOrMultiply`, M04); the menus lane closes capped counters; the respec lane's ancestry change keeps one counter and no stale access (E16) |
 | Spent-resource refill leakage | PASS | `fcb-grit-no-refill`: every completing pick raises maximum grit without refilling spent grit (M06); the L01 reload keeps spent grit and the raised maximum |
 | Shared-blueprint and cross-owner leakage | PASS | O01 widens only the casting bard's own area instance, ring and text (other performers and the blueprint native); paladin auras carry each paladin's own bonus; the pet projection follows only the current pet and leaves no orphan |
-| Selected-power manifest completeness | PASS | the target manifest classifies every candidate (52 revelations of which 51 are published and Spirit of the Warrior is excluded, 4 bloodline powers, 16 performances plus 14 non-targets); unpublished and excluded targets are withheld with reasons (M24, M27) |
+| Selected-power manifest completeness | PASS | the target manifest classifies every candidate (66 revelations of which 65 are published and Spirit of the Warrior is excluded, 6 bloodline powers, 16 performances plus 14 non-targets); unpublished and excluded targets are withheld with reasons (M24, M27) |
 | Host publication gate (review 1) | PASS | owned effects apply only with the integration enabled and the exact host publication committed; host absent, disabled, unsupported, failed or rolled back gives zero while ranks resolve |
 | Owned-power thresholds (review 2) | PASS | each published revelation's own level gates and each Blast's extra uses follow the effective level; no other revelation, power, progression, spell, BAB, save or capstone early |
 | Pet projection transitions (review 3) | PASS | unlink, relink, qualification loss, dismissal, resummoning, respec and reload leave exactly one projection on the one qualified pet |
 | Range transaction (review 4) | PASS | injected ring failures leave the native radius and ring; the cylinder is never widened alone |
 | Exception-safe scopes (review 5) | PASS | the replay and Demoralize scopes close in finally blocks; injected failures leave nothing marked and retries work |
-| Bootstrap aggregate (review 6) | PASS | the aggregate counts every registry; registered equals expected with the catalogs' 171 and 13 identities live |
+| Bootstrap aggregate (review 6) | PASS | the aggregate counts every registry; registered equals expected with the catalogs' 203 and 13 identities live |
 | Outcome-following descriptions (second review 1) | PASS | after injected failures, a failed second area and a deferred ring, the feature, toggle and action-bar descriptions match the actual area and ring at every step |
 | Inert inactive counters (second review 2) | PASS | a held rank of the excluded Spirit of the Warrior counter or of an injected partial scope changes no read point (including the possession's BAB rank read) and no fact; a complete published target still works |
 | Whole-group range outcomes (third review 1) | PASS | while earlier failed or deferred live areas of the same bard's performance are live, a success is held: every area, every ring and all three descriptions converge on native; a randomized domain invariant keeps the live areas all widened or all native and the text truthful |
 | Verified rollback (third review 2) | PASS | a ring-restore failure injected into a widened sibling's narrowing ends that area, which is never kept live with native text; the real toggle whose own buff runs it is turned off and spends no round at the next round; an older area that toggle's buff does not run is ended without stopping the current performance |
 | No remembered outcome (third review 3) | PASS | after each failed area ends the configured range returns; a same-process forced area unload and reload recreates the area, which widens with its ring and every description, with one live area and nothing left over |
+| Stored level plans (E15) | PASS | a recorded level applied by the native constructor keeps its same-level reward; the unscoped native calls drop exactly that reward (D5 fixed); host-only and story-companion plans are accepted identically either way |
+| Deed attack scope (M10) | PASS | under the owner's mod stack another mod derives the base CMB from a weapon's attack bonus; the Pistol-Whip counter now applies only inside the deed's own attack, and the trip's CMB is equal with and without it |
+| Host and dependency states | PASS | a real disabled host (byte-exact Params.xml stage) and simulated unsupported, partial and Gunslinger-less hosts stay inactive or block only their rows; a save needing the missing host is refused natively with nothing substituted or written, and KMG's warning names the host and its state |
 | Save, respec and lifecycle cleanup | PASS | L01 reloads one subject per state/mechanic family in a fresh process, including a selected firearm target; L02 death, polymorph and party area reload; L03 cancelled and committed respecs including the Mostly Human identity, a companion and a selected power |
 
 ## 6. Unfinished targets, exclusions and provider absences
 
-No scheduled row is unfinished. The remaining gaps are observational and are
-named in the family table (partial entries) and below:
+No scheduled row is unfinished and no charter scenario family is partial or
+blocked. What remains are deliberate exclusions and provider absences:
 
 - O01 exclusions: Storm Call (its text promises 50 feet over a 30-foot area)
   and Mockery (its text is a single selected target while the area hits every
   creature) are registered but never published, because no truthful owner
   range can be displayed.
-- I06/S04 thresholds (review finding 2, charter 8.10): each published
-  revelation's own steps, tiers, breakpoints, single-level uses and own level
-  gates follow the effective level, so it gains its own later abilities and
-  forms earlier (83 gates moved natively); no other revelation, revelation
-  choice, class feature, spell, BAB or save is granted. Spirit of the Warrior
-  is excluded (its possession sets BAB from oracle level). Fourteen
-  threshold-only revelations are explicitly deferred: their thresholds follow
-  the same rules, but publishing them needs owned target identities the ledger
-  does not contain.
-- I08/S06 thresholds: Elemental Blast's extra uses at 17 and 20 follow the
-  effective level (at most two steps) whether the bloodline's level entries
-  (native) or the power's own gates (Call of the Wild) grant them; Elemental
-  Resistance is explicitly deferred for the same identity reason; Primal
-  Elemental bloodlines are not eligible (not fire/air elemental).
-- Partially observed families: E10 (permission cycles and duplicate facts
-  cannot arise from the installed providers; domain tested), E15
-  (auto-level), M07 (every ammunition and condition combination), M10 (deed
-  interruption path), M12 (turn-based Dodge timing), M13 (True Grit), M14
-  (bomb splash and critical), M24 (numerical values for every one of the 52
-  revelations) and L07 (turn-based for every family). Each has a native run
-  of its main path; all but E15 and L07 (no domain component) are also
-  domain tested.
-- Row-level persistence: charter section 11 asks every scheduled row for its
-  own persistence case. L01 reloads one subject per state/mechanic family
-  (the continuation brief's list, including a selected firearm target), which
-  covers the leaves of G01 G02 G04 G06 (Nimble) G07 G08 G10 G14 G16 G18 I06
-  I08 O01 O06 O07 U04. The rows G05, G06 (Dodge), G11, G17, G21, I01, I05,
-  I07, O04, O05, O08, U02, S04 and S06 (and G20, which shares G05's counter
-  and has no playable provider) have no reload of their own counters yet
-  (NOT RUN); they use the same saved feature-rank mechanism, which is not
-  claimed as their own evidence.
-- Not staged natively: H02 (disabled or partially initialized host), H04
-  (Gunslinger absent from the host map) and H05 (changed host binary) would
-  require altering the host, its binary or UMM settings, which no existing
-  authorized workflow does; they are domain tested and fail closed. L06
-  (missing external dependency in a saved build) would mean loading a
-  host-dependent campaign with its dependency removed, which the mission
-  forbids; its recovery is documented and identity retention is domain
-  tested (every KMG leaf registers on every load, host present or absent).
+- I06/S04: every published revelation's own steps, tiers, breakpoints,
+  single-level uses and own level gates follow the effective level, so it
+  gains its own later abilities and forms earlier; no other revelation,
+  revelation choice, class feature, spell, BAB or save is granted. The
+  fourteen formerly deferred threshold-only revelations are published (65 of
+  66 targets); Spirit of the Warrior is excluded (its possession sets BAB
+  from oracle level).
+- I08/S06: Elemental Blast's extra uses at 17 and 20 and Elemental
+  Resistance's step from 10 to 20 at 9th level follow the effective level
+  (at most two steps); Primal Elemental bloodlines are not eligible (not
+  fire/air elemental).
+- G08 (Goblin) and G20 (Orc): EXPECTED PROVIDER ABSENCE. No playable Goblin
+  or Orc exists in the qualified profile; their counters are G02's and G05's,
+  published and tested through their other routes, and neither route is ever
+  registered as an empty race array.
+- E09 (a verified Racial/Planar Heritage provider): OUT OF SCOPE, no
+  qualified provider is installed.
 
-## 7. Pre-existing defects D1 and D2
+## 7. Pre-existing defects D1 and D2 (fixed by the tabletop rules)
 
-Both are pre-existing KMG defects outside the adopted rows; they are
-recorded, not redesigned, and need the owner's decision
-(`FAVORED-CLASS-BLOCKERS.md`).
+Both were pre-existing KMG defects outside the adopted rows. The owner
+decided to fix them by the tabletop rules (2026-09-25); both are fixed in
+`bb4dfd674` and natively tested (`FAVORED-CLASS-BLOCKERS.md`).
 
-- D1: a base Gunslinger cannot complete level 17. `GunslingerClassBlueprints`
-  grants the obligatory Gun Training selection at 5, 9, 13 and 17, but it
-  offers only the three rank-one types (Pistol, Musket, Blunderbuss), so once
-  all three are taken `LevelUpState.IsComplete()` stays false at level 17
-  (native evidence `20260924T0054089932945Z-disposable-favored-class-grit`:
-  `openSelections=[KMG_GunTraining_Selection]`, every other completion term
-  satisfied, for the test and the control unit). The Pistolero and Musket
-  Master replace those picks and the Mysterious Stranger keeps exactly three,
-  so they are not stuck.
-  Effect on this feature: none of the favored-class rules or counters is
-  wrong, but a base Gunslinger never reaches levels 17 to 20 and therefore
-  never earns the favored-class rewards of those levels. The twenty-level
-  favored-class proof uses the Pistolero for that reason.
-- D2: Dead Shot critical confirmation is unreachable. `DeadShotRuntime`
-  probes set `RuleAttackRoll.ImmuneToCriticalHit`, and the native attack rule
-  computes a threat only when the target is not immune, so no probe records
-  a threat and no confirmation is ever rolled. If it were reachable,
-  `DeadShotRuntime.ConfigureDelivery` assigns (rather than adds)
-  `CriticalConfirmationBonus`, discarding Critical Focus and every other
-  confirmation bonus (static evidence: source and the decompiled native
-  rule; not reproduced natively).
-  Effect on this feature: the firearm confirmation counter (G02, and the
-  G08 and G16 routes to the same counter) raises every reachable firearm
-  critical confirmation roll, natively tested on ordinary firearm attacks.
-  Dead Shot makes no confirmation roll today, so the counter never applies
-  to Dead Shot; no favored-class code depends on Dead Shot.
+- D1: a base Gunslinger could not complete level 17: the obligatory Gun
+  Training selection offered only the three rank-one types, so once all three
+  were taken the level never completed. The selection is no longer
+  obligatory; the native gate still requires a pick while an official type is
+  untrained, and a base Gunslinger's 17th level completes with the empty pick
+  (the favored-class grit lane levels a base Gunslinger to 17).
+- D2: Dead Shot's critical confirmation was unreachable (its probes were
+  immune to critical hits, and the delivery would have replaced every other
+  confirmation bonus). Dead Shot now threatens from its natural roll and makes
+  one confirmation with the native rules at the highest attack bonus minus 5
+  (plus 1 per extra threat, at most 0), adding every other confirmation bonus,
+  against the critical AC computed after the firearm AC frame (touch AC when
+  the firearm's rule applies); immunity and the party critical setting block
+  it as they block a native threat. The firearm confirmation counter (G02 and
+  its G08/G16 routes) therefore also applies to Dead Shot's confirmation.
 
 ## 8. Installation restoration
 
 The owner's pre-mission KMG install (0.0.136, backup
 `C:\Dev\KingmakerGunslingerLab\runtime-backups\live-mod\20260924T0027014050156Z`)
 was restored through `scripts/Restore-Live-Mod.ps1` (under this lab's lease)
-after the last run of the third review round, and verified byte for byte on
-2026-09-25 at 21:51 UTC:
+after the last run of the completion round, and verified byte for byte on
+2026-09-26 at 05:44 UTC:
 
 - `Info.json` SHA-256 `f66de05d5c6282eece8218b6c4f31d49dfc8ef9efa27dfeceeda712034717e17` (match True)
 - `FeatureModules.json` SHA-256 `6e24b2788a0c8f063d6e561a27c93f9c5349f2fc21b5217689da8aefdbb385d0` (match True)
 - `KingmakerGunslinger.dll` SHA-256 `c6cccdac914ed59fa4d85d020108588d7d12cfb4ac38cf5a162772bacc9b465c` (match True)
 - whole tree: 238 backup files, 238 live files, 0 only in the backup, 0 only live
 - no `FavoredClassIntegration.json` remains (the default settings apply)
-- other mod settings unchanged: `CallOfTheWild\settings.json` SHA-256 `24cc3f80269992a53ebbfd1f5986e5aab056841d6b2f43d8e22e764cdb73f6e8` (match True)
-- other mod settings unchanged: `RacesUnleashed\Settings.json` SHA-256 `270899c3f6c3d29bfe777fc2b55a0bb0404ae50786dbac8f1dccf77e8b9cabbf` (match True)
-- other mod settings unchanged: `ZFavoredClass\settings.json` SHA-256 `bdceed77d2bf4a31dd9e4eeb64ef9d55a42ef59d23f46abcb1ddbcc6ef66754b` (match True)
+- other mod files unchanged: `CallOfTheWild\settings.json` `24cc3f80...`, `RacesUnleashed\Settings.json` `270899c3...`,
+  `ZFavoredClass\settings.json` `bdceed77...` and Tweak or Treat's regenerated `loaded_blueprints.txt` `96e13782...` (match True)
+- Unity Mod Manager's `Params.xml`: every disabled-host stage of the round (`20260926T022705Z`, `20260926T030221Z`, `20260926T040626Z`, `20260926T052206Z`) and each L06
+  transaction backed it up, disabled only ZFavoredClass and restored the exact pre-stage bytes after
+  the game exited (SHA-256 match; backups in `C:\Dev\KingmakerGunslingerLab\runtime-backups\umm-params\`
+  and the transaction folders); the regenerated `loaded_blueprints.txt` files were restored byte for byte
+  after each disabled-host run; ZFavoredClass is enabled now
 - each temporary settings profile removed `FavoredClassIntegration.json` after
   its own runs (verified absent after each profile and at the end)
-- the persistence transaction restored the settings and the complete Mods tree
-  (`20260925T2130213710790Z_ca397ca4f0124a0c9ddf9fb9a1497c94`: its owned save
-  deleted, the 94 preexisting saves preserved); each compatibility profile
-  (`compat-20260925T213940Z-2ad3bc526451`, `compat-20260925T214311Z-3b10efecc949`,
-  `compat-20260925T214643Z-ffa851fb8dd2`) restored the exact original Mods tree
-  and FeatureModules bytes before releasing the lock (restoration verified).
+- the B3 memory diagnostic wrote the integration-off `FavoredClassIntegration.json` only for its one
+  run and removed it (verified absent)
+- the persistence transaction `20260926T0515255118814Z_3bbf199cd52b4a5eb9d4d430a20064b1` restored the settings and the complete Mods tree;
+  its owned save was deleted from the save folder with hash proof (94 preexisting saves preserved;
+  the prepared save's evidence copy stays in the machine-local transaction folder)
+- the L06 transaction `20260926T0523169075109Z_328953d2b5034ecb8d9ad783de2b1b80` restored `Params.xml` (match True) and deleted its fixture from the save
+  folder with hash proof (its evidence copy stays in the machine-local transaction folder); the lab's
+  only saves are `KMG_AUTOMATION_BASELINE` and `KMG_AUTOMATION_WORKING`
+- each compatibility profile (`compat-20260926T052602Z-a75f8c60d59d`, `compat-20260926T052931Z-3aacec891548`, `compat-20260926T053303Z-0acfe3e6e607`) restored the exact original Mods tree and
+  FeatureModules bytes before releasing the lock (restoration verified)
 
 Restoration status: VERIFIED.
 
 ## 9. Blockers
 
-`FAVORED-CLASS-BLOCKERS.md` keeps only what is genuinely open: the
-pre-existing KMG defects D1 and D2 (owner decisions), the environment notes
-B1 (shared installation) and B3 (the native screenshot harness's committed
-memory, which exhausted a degraded machine's commit limit before a reboot),
-and two suspected host defects. B2 is resolved; D3 and D4 were fixed in
-this mission. Every former owner question (OD-1 to OD-10) is resolved there
-with the charter rule or evidence that decides it.
+`FAVORED-CLASS-BLOCKERS.md` keeps only what is genuinely open:
 
-Remaining qualification gaps (why this candidate is PARTIAL):
+- D6 (owner decision): Pistol-Whip does not add the firearm's enhancement
+  bonus to its attack roll (native `enhancedPistolAttackDelta = 0`), which the
+  tabletop deed requires. It predates the mission, lies outside the
+  favored-class rows and is not changed.
+- B3 (environment risk, open): the lanes that drive the native
+  character-build screens commit up to 72 GB private while every other lane
+  stays under 5 GB. Neither the screenshots (the census and respec lanes save
+  none) nor the favored-class integration (an integration-off creator run
+  peaked at 70.1 GB against 69.2 and 72.0 GB enabled) cause it. Every run
+  passes on this machine; batches start with a low idle commit charge, and
+  isolating the cause is a harness follow-up outside the favored-class rows.
+- B1 (shared installation, mitigated) and two suspected host defects (H-1,
+  H-2; host data, never patched).
 
-- the partially observed families E10, E15, M07, M10, M12, M13, M14, M24 and
-  L07 (section 6);
-- the own persistence cases of G05, G06 (Dodge), G11, G17, G21, I01, I05, I07,
-  O04, O05, O08, U02, S04 and S06 (NOT RUN; section 6);
-- the unstaged states H02, H04, H05 and L06. H02, H04 and H05 would require
-  altering the host, its binary or UMM settings (domain tested, fail closed);
-  L06 would require loading a host-dependent campaign with its dependency
-  removed, which the mission forbids (recovery documented).
+B2 is resolved; D1 and D2 are fixed on the owner's decision; D3, D4 and D5
+were found and fixed in this mission. Every former owner question
+(OD-1 to OD-12) is resolved there with the charter rule, the owner's
+authorization or the evidence that decides it. No qualification gap remains;
+QUALIFIED waits for the owner's review of this local candidate.
 
 ## 10. Review findings (PR #24)
 
@@ -543,3 +557,106 @@ Intermediate candidates of this round (superseded):
   left-over count was sampled after the second scenario's areas existed, and
   the failing area's attach-time retry is held (native) rather than failed.
   Fixed in `5636d940b`.
+
+## 13. Completion round
+
+The owner's directive was to finish every remaining item. The owner decided
+D1 and D2 (fix by the tabletop rules) and authorized the host and dependency
+stagings: a disabled host (H02), simulated host defects (H04/H05) and a
+missing-dependency save (L06), each with a byte-exact restore.
+
+### Families observed natively
+
+- **E10**: a runtime-test seam extends the verified permission graph for one
+  disposed scope (a domain test proves no production path calls it). Real
+  level-1 Gunslinger visits: an unconditional cycle terminates and opens
+  exactly the reachable ancestries' counters; a five-edge chain stops at the
+  depth bound of four; an edge on an unverified fact never applies; a
+  duplicated Mostly Human identity opens each counter once; a stray racial
+  fact proves nothing; one favored-class selection per visit.
+- **E15**: a stored level plan (auto-level for companions, a pregen, an
+  imported companion) is applied by the level-up controller's own
+  constructor, outside the scoped replay, so a reward listed before its
+  same-level target was dropped (D5). Fixed by a transpiler that scopes the
+  plan's one AddAction call. The save-free, settings-free auto-level lane
+  uses the native imported-companion trigger: a recorded Ifrit Sorcerer level
+  is applied whole (the reward kept, the visit complete and automatic, the
+  counter and ray confirmed), while the same native calls without the scope
+  reject exactly the reward; a host-only plan and Linzi's own stored plan are
+  accepted identically either way and never pick a KMG counter; the
+  Gunslinger has no default build; an NPC class leveled by the game (the
+  Erinyes summon) has no plan, favored class, reward or KMG counter.
+- **M07**: a 31-case native misfire matrix (types, both hands, ammunition,
+  Broken with and without Gun Training, Reliable, Dead Shot and Scatter
+  Shot).
+- **M10, M12, M13, L07**: real commands in real time and in a fresh
+  turn-based combat whose initiative is rolled under turn-based rules. The
+  Initiative deed and its steps with and without grit and with True Grit;
+  Gunslinger's Dodge (swift, one grit, +2 plus the Halfling steps, no
+  movement, no second use while active, a one-round buff that covers the
+  rest of its round and ends at the next round's start); an interrupted
+  Pistol-Whip that spends and attacks nothing, and two real ones whose attack
+  bonus differs by exactly the steps while the trip's CMB does not; the
+  native demoralize with and without the Rogue steps; grit never refilling.
+  The lane found that another mod in the owner's stack computes the base CMB
+  from a weapon's attack bonus, so the Pistol-Whip counter (keyed to the
+  surrogate weapon) reached the trip's CMB; it is now keyed to the deed's own
+  attack only.
+- **M14**: the production bombs thrown natively (direct hit, splash with
+  failed and passed saves, the miss splash, a critical, converted variants
+  and the Arcane Bomber's fire bomb): the steps once per damaged creature,
+  nothing for Breath Weapon Bomb or the acid bomb's lingering damage.
+- **M24**: every published revelation (65 of 66; Spirit of the Warrior
+  excluded) equals a native oracle at the effective level at each read point
+  and gate, including the chosen weapon's own gates for Weapon Mastery; the
+  six bloodline powers, including Elemental Resistance's gates.
+
+### Persistence
+
+The fresh-process transaction reloads the own persistence case of every
+remaining scheduled row: G05, G06 (Dodge), G11, G17, G21, I01, I05, I07, O04,
+O05, O08, U02, S04 and S06, each with its numerical effect after the reload.
+
+### Host and dependency states (owner-authorized)
+
+- **H02 (disabled host)**: Unity Mod Manager's Params.xml is backed up, only
+  ZFavoredClass is disabled, the host-state lane runs, and the exact original
+  bytes are restored and verified by SHA-256 after the game exits; mods that
+  list their loaded blueprints at startup regenerate a different list while
+  the host is disabled (Tweak or Treat), so those generated files are
+  restored byte for byte too. The integration is HostDisabled with every owned
+  identity registered and nothing published.
+- **H02 (unsupported, partial), H04, H05 (simulated)**: the live host's own
+  observations are cloned and one fact changed per case; the production gates
+  and planner reject each specifically (UnsupportedBinary, HostIncomplete,
+  GunslingerMissing with only the Gunslinger rows blocked) and nothing live
+  changes.
+- **L06**: a transaction-owned fixture save made with the host is read in the
+  disabled-host profile. The game's own converter throws on every missing
+  reference (nothing is substituted, nothing written), KMG records them and
+  shows a precise recovery warning before the native "Cannot load game"
+  message, KMG's identities in the save still resolve, and the fixture is
+  deleted with hash proof.
+
+### Deferred targets published
+
+Charter 8.10 counts effect thresholds among the level-dependent effects, so
+the fourteen threshold-only revelations and Elemental Resistance (fire and
+air) are published with 32 appended identities (2,172: 2,170 active, 2
+reserved); every earlier identity keeps its position.
+
+### Memory (B3) re-measured
+
+The game's committed memory was sampled every 5 s through both final cycles.
+Only the lanes that drive the native character-build screens exceed 5 GB:
+the census (no screenshots) 41.9 and 43.0 GB, the creator lanes 57-72 GB and
+the respec lanes (no screenshots) 46-47 GB, all released when the game exits.
+The screenshot-poll change in `e7748fff4` did not lower these peaks, so the
+earlier attribution was withdrawn. One extra guarded run after the
+qualification, the Ifrit creator lane with the integration disabled by the
+integration-off profile
+(`20260926T0536579357364Z-working-save-elemental-character-creation-regression`,
+PASS; the game log reports `IntegrationDisabled`, 0 leaves published), peaked
+at 70.1 GB against 69.2 and 72.0 GB enabled: the favored-class integration
+does not cause it. B3 stays an environment risk for qualification batches
+(`FAVORED-CLASS-BLOCKERS.md`).
