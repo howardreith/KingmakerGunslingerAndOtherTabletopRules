@@ -120,7 +120,7 @@ namespace KingmakerGunslinger.DomainTests
                 reused++;
             }
 
-            Assertions.Equal(67, reused,
+            Assertions.Equal(81, reused,
                 "Every project-owned creature must be reused.");
 
             // The retained native wrappers are identities too. Counting only
@@ -133,10 +133,10 @@ namespace KingmakerGunslinger.DomainTests
                     "A wrapper creature must not also be project-owned: " + key);
             }
 
-            Assertions.Equal(67, ExpandedSummoningIdealRosterCatalog.All
+            Assertions.Equal(53, ExpandedSummoningIdealRosterCatalog.All
                 .Count(value => ExpandedSummoningCoveragePolicy.Provenance(value.Key) ==
                     SummonUnitProvenance.None),
-                "The remaining ideal roster needs 67 new creature identities.");
+                "The remaining ideal roster needs 53 new creature identities.");
         }
 
         /// <summary>
@@ -173,19 +173,21 @@ namespace KingmakerGunslinger.DomainTests
                 }
             }
 
-            Assertions.Equal(67, ExpandedSummoningIdealRosterCatalog.All.Count(
+            Assertions.Equal(53, ExpandedSummoningIdealRosterCatalog.All.Count(
                     value => ExpandedSummoningCoveragePolicy.Provenance(value.Key) ==
                         SummonUnitProvenance.None),
-                "67 ideal-roster creatures have no unit identity yet.");
-            Assertions.Equal(78,
+                "53 ideal-roster creatures have no unit identity yet.");
+            Assertions.Equal(92,
                 ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count,
-                "78 creatures already own a unit identity.");
+                "92 creatures already own a unit identity.");
 
-            // The live player-visible surface must be untouched by Sprint 1.
-            Assertions.Equal(693,
+            // The live player-visible surface moves only with the shipped
+            // catalogs, never with the plan: 693 at the Sprint 0 freeze, 828
+            // after Phase 1 Sprint 8.
+            Assertions.Equal(828,
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.Monster) +
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.NaturesAlly),
-                "Sprint 1 must not change the shipped visible choice count.");
+                "The plan must not change the shipped visible choice count.");
         }
 
         /// <summary>

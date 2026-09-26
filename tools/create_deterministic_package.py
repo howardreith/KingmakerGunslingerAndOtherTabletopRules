@@ -16,7 +16,7 @@ def main() -> int:
     parser.add_argument("--expected-file-count", required=True, type=int,
                         choices=(41, 42, 43, 44, 45, 121, 123, 125, 130, 132,
                                  133, 135, 222, 224, 225, 227, 229, 231, 233, 234, 235,
-                                 236, 237))
+                                 236, 237, 239, 241, 242, 244, 248, 249, 250, 251))
     args = parser.parse_args()
     source = args.source.resolve()
     if not source.is_dir() or source.name != "KingmakerGunslinger":

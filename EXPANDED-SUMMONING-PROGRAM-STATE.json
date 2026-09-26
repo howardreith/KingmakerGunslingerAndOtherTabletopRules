@@ -276,7 +276,7 @@
       "detail": "Supplied by the owner and read. The Pteranodon passage confirms the shipped profile rather than changing it: ten-foot reach valued for attacks of opportunity, and a single main bite on which everything stacks (2d6 plus modifiers). The guide also positions multiple Pteranodons as the best single-target aerial attacker at their tier. This informs Sprint 2's acceptance emphasis on correct bite impact timing and location at Large reach; it changes no accepted statistic."
     }
   ],
-  "nextConcreteAction": "Sprint 2 asset implementation: author an original pterosaur mesh skinned to the recorded 72-bone rig (membrane driven by the Feather_1..6 chains), build the deterministic 2018.4.10f1 bundle, implement instance-local binding with an approved native fallback, and qualify live with Eagle/Dire Bat/Roc as donor-sharing negative controls.",
+  "nextConcreteAction": "Sprints 3-8 corrected and requalified on candidate commit `145810a5`, with the closeout delta recorded afterwards. The 2026-09-25 and 2026-09-26 orders are both closed: an active summon grab, hold, swallow, engulf, mouth occupancy and held-target rake are session-scoped under OwnerAcceptedEngineLimitation: ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD, accepted by the owner on 2026-09-26, and a save and reload release them cleanly. Draft PR #23 is marked ready for owner review and stays unmerged. No merge, release publication, permanent deployment or Sprint 9 under the orders of 2026-09-24, 2026-09-25 and 2026-09-26.",
   "deploymentReconciliation": {
     "finding": "The first runs left this mission's 0.0.136 branch build installed over the pre-run 0.0.117 installation. The mission required restoration and did not authorize a permanent installation; a shared version string does not make a branch artifact an accepted release.",
     "ownershipVerified": "The live DLL hash matched this mission's exact build byte for byte, so the tree was unambiguously mission-owned.",
@@ -295,5 +295,145 @@
     },
     "verification": "Post-restore hash equals the pre-run backup hash exactly.",
     "futureRuns": "scripts/Invoke-ExpandedSummoningRuntimeScenario.ps1 snapshots the live tree, runs the scenario, and restores its own snapshot on success, failure and interruption, recording before/after fingerprints to runtime-evidence/expanded-summoning-restoration."
-  }
+  },
+  "phase1": {
+    "order": "2026-09-24 owner order: finalize Phase 0, then complete Sprints 3-8",
+    "branch": "codex/expanded-summoning-phase1-sprints3-8",
+    "draftPr": 23,
+    "records": [
+      "EXPANDED-SUMMONING-PHASE1-AUTONOMOUS-STATE.md",
+      "EXPANDED-SUMMONING-PHASE1-JOURNAL.md",
+      "EXPANDED-SUMMONING-PHASE1-IMPLEMENTATION-REPORT.md"
+    ],
+    "sprint3": {
+      "name": "Native Publication Pack I - Early Creatures and Giant Reuse",
+      "technicalStatus": "COMPLETE",
+      "internalAcceptance": "INTERNAL-ACCEPTED",
+      "humanReview": "NOT_PERFORMED_NONBLOCKING",
+      "creatures": [
+        "pony",
+        "horse",
+        "owlbear",
+        "cyclops",
+        "frost-giant (SNA VII-IX wrappers, unit reused)"
+      ]
+    },
+    "sprint4": {
+      "name": "Native Publication Pack II - Plants and Colossal Reuse",
+      "technicalStatus": "COMPLETE",
+      "internalAcceptance": "INTERNAL-ACCEPTED",
+      "humanReview": "NOT_PERFORMED_NONBLOCKING",
+      "creatures": [
+        "shambling-mound",
+        "giant-flytrap",
+        "purple-worm"
+      ],
+      "sharedCapability": "summon grapple lifecycle: grab, hold, maintain, release, swallow, area safeguard"
+    },
+    "sprint5": {
+      "name": "Mephit Family Expansion",
+      "technicalStatus": "COMPLETE",
+      "internalAcceptance": "INTERNAL-ACCEPTED",
+      "humanReview": "NOT_PERFORMED_NONBLOCKING",
+      "creatures": [
+        "dust-mephit",
+        "ice-mephit",
+        "magma-mephit",
+        "ooze-mephit",
+        "salt-mephit",
+        "steam-mephit"
+      ],
+      "sharedCapability": "enemy-only mephit breaths and bursts with one-use spell-like abilities; a private tinted material clone per view (ExpandedSummoningVisualVariantPatch)"
+    },
+    "sprint6": {
+      "name": "Existing Signature Mechanics Repair",
+      "technicalStatus": "COMPLETE",
+      "internalAcceptance": "INTERNAL-ACCEPTED",
+      "humanReview": "NOT_PERFORMED_NONBLOCKING",
+      "creatures": [
+        "monitor-lizard",
+        "grizzly-bear",
+        "dire-bear",
+        "giant-spider",
+        "pixie (verified)"
+      ],
+      "sharedCapability": "grab carriers on the shared summon grapple lifecycle; bounded ranged Web with the native web-grappled state"
+    },
+    "sprint7": {
+      "name": "Big-Cat Combat System",
+      "technicalStatus": "COMPLETE",
+      "internalAcceptance": "INTERNAL-ACCEPTED",
+      "humanReview": "NOT_PERFORMED_NONBLOCKING",
+      "creatures": [
+        "leopard",
+        "lion",
+        "dire-lion",
+        "dire-tiger"
+      ],
+      "sharedCapability": "grab by limb and target identity on the shared lifecycle (bite only for the leopard, lion and dire lion; bite and foreclaws for the smilodon); rake gate (SummonRakeComponent and the CreateFullAttack sequencing seam: a charge, or the foe held since the round began); lion visual tint; corrected 2026-09-25"
+    },
+    "sprint8": {
+      "name": "Big-Cat Roster Completion",
+      "technicalStatus": "COMPLETE",
+      "internalAcceptance": "INTERNAL-ACCEPTED",
+      "humanReview": "NOT_PERFORMED_NONBLOCKING",
+      "creatures": [
+        "tiger (new, SNA IV)",
+        "cheetah"
+      ],
+      "sharedCapability": "procedural coats (SummonCoatRasterizer) on the shared visual variant; bounded once-per-summoning sprint"
+    },
+    "runtimeQualificationCommit": "145810a5",
+    "runtimeEvidence": [
+      "20260926T0830195163604Z-observe-expanded-summoning-inventory",
+      "20260926T0833495384375Z-observe-expanded-summoning-native-donors",
+      "20260926T0838457786724Z-disposable-expanded-summoning-visual-contracts",
+      "20260926T0844373783638Z-disposable-expanded-summoning",
+      "20260926T0847527151275Z-disposable-expanded-summoning-player-path",
+      "20260926T0903112506775Z-disposable-expanded-summoning-rules",
+      "20260926T0910013397653Z-disposable-expanded-summoning-visual-lifecycle",
+      "20260926T0915501597831Z-working-save-expanded-summoning-prepare",
+      "20260926T0919391993072Z-working-save-expanded-summoning-verify-cleanup",
+      "20260926T0923268632578Z-working-save-expanded-summoning-verify-absent",
+      "20260926T0929095873696Z-working-save-expanded-summoning-creature-review",
+      "20260926T0941347798912Z-working-save-expanded-summoning-creature-review",
+      "20260926T0948097208982Z/20260926T0951509453478Z-disposable-expanded-summoning",
+      "20260926T0948097208982Z/20260926T0957291887929Z-disposable-expanded-summoning"
+    ],
+    "correctionOrder": {
+      "date": "2026-09-25",
+      "reviewedHead": "2569a8eb6aa3fe5200462ebb85c69a7cadfedf68",
+      "candidateCommit": "145810a5",
+      "status": "PASS - corrected and requalified",
+      "items": [
+        "per-view visual resource ownership and teardown (SummonVisualOwnership, UnitEntityView.OnDestroy prefix, failed-attach rollback, ReleaseAll)",
+        "cat grab by limb and target identity; rake gate (charge or foe held since the round began) with the CreateFullAttack sequencing seam",
+        "universal grab size rule, +4/+5 maintain with the establishing limb's damage, later-turn swallow one size smaller, flytrap multi-link hold and engulf",
+        "project Wind Wall, Chill Metal, Pyrotechnics, Magma Form; ally-safe stinking cloud area; enemies-only glitterdust",
+        "Cyclops +4 hide armor fact at AC 19; Flash of Insight as the attack's own d20 chosen as 20 with ordinary confirmation, one use across save and reload",
+        "Web as a ranged touch attack with a size limit, no save, the native break-free and immunity, two uses",
+        "Pony and Horse hooves secondary (Docile)",
+        "documents audited; stale claims removed",
+        "requalification of one candidate commit with the full gate list plus the correction rules and visual lifecycle scenarios",
+        "draft PR #23 unmerged"
+      ],
+      "runtimeEvidence": [
+        "20260926T0830195163604Z-observe-expanded-summoning-inventory",
+        "20260926T0833495384375Z-observe-expanded-summoning-native-donors",
+        "20260926T0838457786724Z-disposable-expanded-summoning-visual-contracts",
+        "20260926T0844373783638Z-disposable-expanded-summoning",
+        "20260926T0847527151275Z-disposable-expanded-summoning-player-path",
+        "20260926T0903112506775Z-disposable-expanded-summoning-rules",
+        "20260926T0910013397653Z-disposable-expanded-summoning-visual-lifecycle",
+        "20260926T0915501597831Z-working-save-expanded-summoning-prepare",
+        "20260926T0919391993072Z-working-save-expanded-summoning-verify-cleanup",
+        "20260926T0923268632578Z-working-save-expanded-summoning-verify-absent",
+        "20260926T0929095873696Z-working-save-expanded-summoning-creature-review",
+        "20260926T0941347798912Z-working-save-expanded-summoning-creature-review",
+        "20260926T0948097208982Z/20260926T0951509453478Z-disposable-expanded-summoning",
+        "20260926T0948097208982Z/20260926T0957291887929Z-disposable-expanded-summoning"
+      ]
+    }
+  },
+  "expandedSummoningPhase1OwnerAcceptedEngineLimitation": "ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD"
 }

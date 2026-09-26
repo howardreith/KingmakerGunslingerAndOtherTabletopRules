@@ -66,22 +66,22 @@ project-owned catalog and so hid eleven of them.
 
 | Unit identity | Creatures | Meaning |
 |---|---|---|
-| Project-owned | 67 | A summon-safe unit in ExpandedSummoningCatalog |
+| Project-owned | 71 | A summon-safe unit in ExpandedSummoningCatalog |
 | Retained native wrapper | 11 | A native unit exposed through a preserved wrapper |
-| None yet | 67 | In the ideal roster; no unit identity exists |
+| None yet | 63 | In the ideal roster; no unit identity exists |
 
 | Family placement | Summon Monster | Nature's Ally |
 |---|---|---|
-| Published | 72 | 60 |
+| Published | 74 | 65 |
 | Registered | 1 | 1 |
-| Planned | 47 | 49 |
+| Planned | 45 | 44 |
 | NotOffered | 25 | 35 |
 
-Represented today: **78** creatures (77 published somewhere, 1 registered but hidden).
+Represented today: **82** creatures (81 published somewhere, 1 registered but hidden).
 
 Frost Giant is the case that makes the split necessary: its unit exists and is published at Summon Monster VIII through a retained wrapper, while its Nature's Ally VII placement is still only planned.
 
-Identity reuse: 78 existing creature identities are reused in place (charter decision D-01, one creature one identity); 67 new identities remain to be allocated.
+Identity reuse: 82 existing creature identities are reused in place (charter decision D-01, one creature one identity); 63 new identities remain to be allocated.
 
 ## Creatures
 
@@ -108,7 +108,7 @@ Identity reuse: 78 existing creature identities are reused in place (charter dec
 | Cloud Giant | - | 8 | S29 | Strong | Medium | None | NotOffered | Planned | Giant humanoids |
 | Constrictor Snake | 3 | 3 | S17 | Strong | High | None | Planned | Planned | Snake rig family |
 | Crocodile | 3 | 3 | S16 | Strong | High | ProjectOwned | Published | Published | Crocodilian rig family |
-| Cyclops | - | 5 | S3 | Essential | Low | None | NotOffered | Planned | Giant humanoids |
+| Cyclops | - | 5 | S3 | Essential | Low | ProjectOwned | NotOffered | Published | Giant humanoids |
 | Deinonychus | 4 | 4 | S24 | Strong | High | None | Planned | Planned | Theropod dinosaurs |
 | Dire Ape | 4 | 4 | S18 | Strong | Medium | None | Planned | Planned | Primate rig family |
 | Dire Bat | 3 | 3 | S9 | Essential | High | ProjectOwned | Registered | Registered | Flying creature rigs |
@@ -134,7 +134,7 @@ Identity reuse: 78 existing creature identities are reused in place (charter dec
 | Fire Beetle | 1 | 1 | S14 | Variety | High | None | Planned | Planned | Insect rig family |
 | Fire Giant | - | 7 | S28 | Essential | Medium | None | NotOffered | Planned | Giant humanoids |
 | Fire Mephit | 4 | 4 | complete | Strong | - | ProjectOwned | Published | Published | Mephit family |
-| Frost Giant | 8 | 7 | S3 | Strong | Low | NativeWrapper | Published | Planned | Giant humanoids |
+| Frost Giant | 8 | 7 | S3 | Strong | Low | NativeWrapper | Published | Published | Giant humanoids |
 | Ghaele Azata | 9 | - | complete | Essential | - | ProjectOwned | Published | NotOffered | Outsiders |
 | Giant Ant (Drone) | 4 | 4 | S15 | Variety | High | None | Planned | Planned | Insect rig family |
 | Giant Ant (Soldier) | 3 | 3 | S14 | Variety | Medium | None | Planned | Planned | Insect rig family |
@@ -161,7 +161,7 @@ Identity reuse: 78 existing creature identities are reused in place (charter dec
 | Hell Hound | 4 | - | complete | Strong | - | ProjectOwned | Published | NotOffered | Outsiders |
 | Hezrou | 8 | - | S36 | Strong | High | None | Planned | NotOffered | Outsiders |
 | Hill Giant | - | 6 | S28 | Variety | Medium | None | NotOffered | Planned | Giant humanoids |
-| Horse | 2 | 2 | S3 | Variety | Low | None | Planned | Planned | Equines & ungulates |
+| Horse | 2 | 2 | S3 | Variety | Low | ProjectOwned | Published | Published | Equines & ungulates |
 | Hound Archon | 4 | - | S30 | Essential | High | None | Planned | NotOffered | Outsiders |
 | Huge Air Elemental | 6 | 6 | complete | Strong | - | ProjectOwned | Published | Published | Classic elementals |
 | Huge Earth Elemental | 6 | 6 | complete | Strong | - | ProjectOwned | Published | Published | Classic elementals |
@@ -194,10 +194,10 @@ Identity reuse: 78 existing creature identities are reused in place (charter dec
 | Nalfeshnee | 9 | - | S39 | Essential | VeryHigh | None | Planned | NotOffered | Outsiders |
 | Nereid | - | 8 | complete | Variety | - | NativeWrapper | NotOffered | Published | Fey |
 | Ooze Mephit | 4 | 4 | S5 | Essential | Low | None | Planned | Planned | Mephit family |
-| Owlbear | - | 4 | S3 | Strong | Low | None | NotOffered | Planned | Hybrid magical beasts |
+| Owlbear | - | 4 | S3 | Strong | Low | ProjectOwned | NotOffered | Published | Hybrid magical beasts |
 | Pixie | - | 9 | S6 | Essential | Medium | ProjectOwned | NotOffered | Published | Fey |
 | Poisonous Frog | 1 | 1 | S13 | Variety | Medium | ProjectOwned | Published | Published | Frog family |
-| Pony | 1 | 1 | S3 | Essential | Low | None | Planned | Planned | Equines & ungulates |
+| Pony | 1 | 1 | S3 | Essential | Low | ProjectOwned | Published | Published | Equines & ungulates |
 | Pteranodon | 4 | 4 | S2 | Essential | High | ProjectOwned | Published | Published | Flying creature rigs |
 | Purple Worm | - | 8 | S4 | Essential | Medium | None | NotOffered | Planned | Burrowers & huge monsters |
 | Redcap | 5 | - | complete | Variety | - | NativeWrapper | Published | NotOffered | Fey |

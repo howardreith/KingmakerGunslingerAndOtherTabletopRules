@@ -113,9 +113,11 @@ namespace KingmakerGunslinger.DomainTests
                 "cross-donor\nmedian", "no procedural" })
                 Assertions.True(guide.Contains(token),
                     "Guide lacks the corrected native-shell contract token: " + token);
-            // Package count carries the three composed icons.
+            // Package count carries the three composed icons (237/235 at the
+            // time; 241/239 once Expanded Summoning Phase 1 Sprint 3 added
+            // four creature icons on top).
             string package = File.ReadAllText(Path.Combine(root, "scripts", "package.ps1"));
-            Assertions.True(package.Contains("{ 237 } else { 235 }"),
+            Assertions.True(package.Contains("{ 251 } else { 249 }"),
                 "Package file count does not include the three composed scroll icons.");
             // The runtime identity check must verify the composed item icon,
             // not the retired spell-matches-item equality.

@@ -42,10 +42,31 @@ namespace KingmakerGunslinger.Blueprints
                     throw new InvalidOperationException(
                         "Native summon umbrella branch count changed: " +
                         spec.SourceAbilityGuid + ".");
-                ContextActionSpawnMonster chosen = spawns.Single(value =>
-                    value.Blueprint != null && string.Equals(
-                        value.Blueprint.AssetGuid, spec.UnitGuid,
-                        StringComparison.Ordinal));
+                ContextActionSpawnMonster chosen;
+                if (spec.ReplacesSpawnUnit)
+                {
+                    // A creature-named option carved from an umbrella whose
+                    // one direct spawn names another creature: the cloned
+                    // spawn keeps the umbrella's count, duration, pool and
+                    // post-spawn actions and points at the retained native
+                    // unit instead. Nothing on the source is touched.
+                    if (spec.Branch != SummonNativeSpawnBranch.Direct ||
+                        spawns.Length != 1 || spawns[0].Blueprint == null ||
+                        string.Equals(spawns[0].Blueprint.AssetGuid,
+                            spec.UnitGuid, StringComparison.Ordinal))
+                        throw new InvalidOperationException(
+                            "Native summon spawn replacement expects one foreign direct spawn: " +
+                            spec.Symbol + ".");
+                    chosen = spawns[0];
+                    chosen.Blueprint = BlueprintLibraryLookup.RequireExact<
+                        BlueprintUnit>(library, spec.UnitGuid,
+                            "retained native unit for " + spec.Symbol);
+                }
+                else
+                    chosen = spawns.Single(value =>
+                        value.Blueprint != null && string.Equals(
+                            value.Blueprint.AssetGuid, spec.UnitGuid,
+                            StringComparison.Ordinal));
                 effect.Actions = new ActionList { Actions = new GameAction[] {
                     chosen } };
                 target.Hidden = false;
