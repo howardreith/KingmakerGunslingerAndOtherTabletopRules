@@ -184,6 +184,8 @@ namespace KingmakerGunslinger.Blueprints
         /// <summary>The ray weapon the game's rays (acid arrow, scorching ray) make their ranged touch attacks with.</summary>
         internal const string NativeRayWeaponGuid = "f6ef95b1f7bb52b408a5b345a330ffe8";
         internal const string NativeMagicMissileProjectileGuid = "2e3992d1695960347a7f9bdf8122966f";
+        /// <summary>The native thrown stone: the Web's pinned delivery visual (correction order, 2026-09-26).</summary>
+        internal const string WebProjectileGuid = "c8e6e6e315030b443b5ab9bc07843bb2";
         internal const string MediumBite1d8Guid = "c988aa874d11ff84d873508ddc9b928f";
         private const string MonitorLizardUnitSymbol = "KMG.Summoning.Unit.MonitorLizard";
         private const string MonitorLizardCombatTraitsSymbol =
@@ -1877,18 +1879,20 @@ namespace KingmakerGunslinger.Blueprints
         }
 
         /// <summary>
-        /// The web's projectile: a native projectile whose name says web if
-        /// the library has one, otherwise the magic missile bolt as a bounded
-        /// stand-in (recorded; the mechanics do not depend on it).
+        /// The web's projectile, by exact identity (correction order,
+        /// 2026-09-26). The donor audit enumerated all 170 projectiles the
+        /// installed library carries and none depicts a web, so the Web
+        /// borrows the native thrown stone - a physical object that arcs to
+        /// its target, the closest native delivery to a thrown web - pinned
+        /// here by asset id rather than found by scanning names in library
+        /// order. The choice is an adaptation and is recorded as one; the
+        /// ranged touch attack, the size limit and the webbed state are the
+        /// ability's own components and do not depend on it.
         /// </summary>
         private static BlueprintProjectile ResolveWebProjectile(LibraryScriptableObject library)
         {
-            BlueprintProjectile named = library.GetAllBlueprints().OfType<BlueprintProjectile>()
-                .Where(value => value != null && value.name != null &&
-                    value.name.IndexOf("Web", StringComparison.Ordinal) >= 0)
-                .OrderBy(value => value.name, StringComparer.Ordinal).FirstOrDefault();
-            return named ?? BlueprintLibraryLookup.RequireExact<BlueprintProjectile>(library,
-                NativeMagicMissileProjectileGuid, "native magic missile projectile");
+            return BlueprintLibraryLookup.RequireExact<BlueprintProjectile>(library,
+                WebProjectileGuid, "native thrown-object projectile for the summoned web");
         }
 
         private static void ConfigureGrabber(LibraryScriptableObject library,
