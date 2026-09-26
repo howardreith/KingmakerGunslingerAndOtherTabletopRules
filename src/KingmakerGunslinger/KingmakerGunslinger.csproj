@@ -232,10 +232,13 @@
     <Compile Include="FavoredClass\Hooks\FavoredClassRevelationGatePatch.cs" />
     <Compile Include="FavoredClass\Hooks\FavoredClassPetUnlinkPatch.cs" />
     <Compile Include="FavoredClass\FavoredClassPerformanceManifest.cs" />
+    <Compile Include="FavoredClass\FavoredClassDependencyPolicy.cs" />
+    <Compile Include="FavoredClass\FavoredClassDependencyWarning.cs" />
     <Compile Include="FavoredClass\FavoredClassIconPolicy.cs" />
     <Compile Include="FavoredClass\FavoredClassLeafIcons.cs" />
     <Compile Include="FavoredClass\Hooks\FavoredClassPerformanceRangePatch.cs" />
     <Compile Include="FavoredClass\Hooks\FavoredClassPerformanceTextPatch.cs" />
+    <Compile Include="FavoredClass\Hooks\FavoredClassDependencyWarningPatches.cs" />
     <Compile Include="FavoredClass\Hooks\FavoredClassLevelPlanPatch.cs" />
     <Compile Include="FavoredClass\Hooks\FavoredClassLevelUpReplayPatch.cs" />
     <Compile Include="FavoredClass\Mechanics\FavoredClassPerformanceRing.cs" />
@@ -1167,6 +1170,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassHostState.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassPersistence.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassElemental.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassMissingDependency.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassMostlyHuman.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassAdvanced.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FavoredClassOracle.cs" />
