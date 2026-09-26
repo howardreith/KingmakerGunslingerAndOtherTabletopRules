@@ -201,12 +201,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
-        internal void ReachCasterTurn() { ReachTurn(_caster); }
+        internal void ReachCasterTurn() { ReachTurn(_caster, null); }
 
         /// <summary>Ends the caster's turn if needed and returns at the enemy's next turn.</summary>
-        internal void ReachEnemyTurn() { ReachTurn(_enemy); }
+        internal void ReachEnemyTurn() { ReachTurn(_enemy, null); }
 
-        private void ReachTurn(UnitEntityData actor)
+        /// <summary>
+        /// As <see cref="ReachEnemyTurn()"/>, calling <paramref name="afterTick"/>
+        /// after each native time step (before that step's turn is handled).
+        /// </summary>
+        internal void ReachEnemyTurn(Action afterTick) { ReachTurn(_enemy, afterTick); }
+
+        private void ReachTurn(UnitEntityData actor, Action afterTick)
         {
             UnitEntityData other = ReferenceEquals(actor, _caster) ? _enemy : _caster;
             var controller = Game.Instance.TurnBasedCombatController;
@@ -217,6 +223,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     foreach (var unit in new[] { _caster, _enemy })
                         if (unit.IsInCombat) { _cooldowns.TickExact(unit); _buffs.TickExact(unit); }
                 });
+                if (afterTick != null) afterTick();
                 var turn = controller.CurrentTurn;
                 if (tick < 12 || tick == 239)
                 {

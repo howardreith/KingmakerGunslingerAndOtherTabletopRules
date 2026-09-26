@@ -16,6 +16,7 @@ namespace KingmakerGunslinger.DomainTests
             "disposable-favored-class-turn-modes",
             "disposable-favored-class-bombs",
             "disposable-favored-class-auto-level",
+            "observe-favored-class-host-defects",
             "observe-favored-class-host-state",
             "disposable-favored-class-elemental-core",
             "disposable-favored-class-mostly-human",
