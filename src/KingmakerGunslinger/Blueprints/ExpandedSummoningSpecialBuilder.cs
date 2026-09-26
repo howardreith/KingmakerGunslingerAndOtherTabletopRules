@@ -1541,10 +1541,20 @@ namespace KingmakerGunslinger.Blueprints
 
         /// <summary>
         /// The Giant Flytrap's engulfed state, the shape of the native
-        /// swallowed state: the engulfed unit takes the flytrap's crushing
-        /// bite (1d8+7) and 1d8 acid each round and suffers the grappled
+        /// swallowed state: the engulfed unit takes the stat block's 1d8+7
+        /// crushing damage and 2d6 acid each round and suffers the grappled
         /// penalties; the native swallowed part carries the unit, its
         /// break-free attempts and the spit-out.
+        ///
+        /// Cadence, audited under the 2026-09-26 order rather than assumed
+        /// from the Purple Worm: swallow whole deals its damage every round
+        /// the victim stays inside, and the engulf is the flytrap's swallow
+        /// whole, so the bundle is applied on each round of the state and
+        /// stops when the victim escapes, is spat out or dies. The worm's
+        /// cadence is the same rule with its own bundle, not a template this
+        /// one copies. Kingmaker resolves rounds on the same six-second clock
+        /// in real time with pause and in turn-based mode, so no adaptation
+        /// of the cadence is needed for either.
         /// </summary>
         private static void ConfigureEngulfed(BlueprintBuff buff)
         {
@@ -1552,16 +1562,22 @@ namespace KingmakerGunslinger.Blueprints
             crush.DamageType = new DamageTypeDescription { Type = DamageType.Physical,
                 Physical = new DamageTypeDescription.PhysicalData {
                     Form = PhysicalDamageForm.Bludgeoning } };
-            crush.Value = new ContextDiceValue { DiceType = DiceType.D8,
-                DiceCountValue = Simple(ExpandedSummoningSpecialProfiles.GiantFlytrapEngulfDiceCount),
+            crush.Value = new ContextDiceValue {
+                DiceType = (DiceType)ExpandedSummoningSpecialProfiles
+                    .GiantFlytrapEngulfDieSides,
+                DiceCountValue = Simple(ExpandedSummoningSpecialProfiles
+                    .GiantFlytrapEngulfDiceCount),
                 BonusValue = Simple(ExpandedSummoningSpecialProfiles.GiantFlytrapEngulfBonus) };
             crush.Duration = new ContextDurationValue { Rate = DurationRate.Rounds,
                 DiceType = DiceType.Zero, DiceCountValue = Simple(0), BonusValue = Simple(0) };
             var acid = ScriptableObject.CreateInstance<ContextActionDealDamage>();
             acid.DamageType = new DamageTypeDescription { Type = DamageType.Energy,
                 Energy = DamageEnergyType.Acid };
-            acid.Value = new ContextDiceValue { DiceType = DiceType.D8,
-                DiceCountValue = Simple(ExpandedSummoningSpecialProfiles.GiantFlytrapEngulfAcidDiceCount),
+            acid.Value = new ContextDiceValue {
+                DiceType = (DiceType)ExpandedSummoningSpecialProfiles
+                    .GiantFlytrapEngulfAcidDieSides,
+                DiceCountValue = Simple(ExpandedSummoningSpecialProfiles
+                    .GiantFlytrapEngulfAcidDiceCount),
                 BonusValue = Simple(0) };
             acid.Duration = new ContextDurationValue { Rate = DurationRate.Rounds,
                 DiceType = DiceType.Zero, DiceCountValue = Simple(0), BonusValue = Simple(0) };
@@ -1586,7 +1602,7 @@ namespace KingmakerGunslinger.Blueprints
                     "KMG.ExpandedSummoning.GiantFlytrap.Engulfed.Name", "Engulfed"),
                 LocalizationService.Create(
                     "KMG.ExpandedSummoning.GiantFlytrap.Engulfed.Description",
-                    "Engulfed by a summoned giant flytrap: crushed and burned by acid each round, unable to act, with a break-free attempt each round."),
+                    "Engulfed by a summoned giant flytrap: 1d8+7 crushing damage and 2d6 acid each round, unable to act, with a break-free attempt each round."),
                 null);
         }
 

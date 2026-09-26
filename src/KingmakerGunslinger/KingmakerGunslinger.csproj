@@ -136,6 +136,7 @@
     <Compile Include="Summoning\SummonTemplateSmitePolicy.cs" />
     <Compile Include="Summoning\ExpandedSummoningSmiteComponent.cs" />
     <Compile Include="Summoning\ExpandedSummoningSpecialCombatComponents.cs" />
+    <Compile Include="Summoning\SummonGrappleLinkState.cs" />
     <Compile Include="Summoning\SummonAlignmentRuntimePolicy.cs" />
     <Compile Include="Summoning\SummonSameTurnActivationPolicy.cs" />
     <Compile Include="Summoning\SummonSameTurnActivationRuntime.cs" />

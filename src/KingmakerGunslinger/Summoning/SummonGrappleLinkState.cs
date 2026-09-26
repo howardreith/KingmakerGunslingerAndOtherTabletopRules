@@ -1,0 +1,321 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Kingmaker;
+using Kingmaker.EntitySystem.Entities;
+using Kingmaker.Items;
+using Kingmaker.UnitLogic;
+using Kingmaker.UnitLogic.Parts;
+using Newtonsoft.Json;
+
+namespace KingmakerGunslinger.Summoning
+{
+    /// <summary>
+    /// One link a summon holds: which of its limbs took which target, and
+    /// whether that target has since been engulfed. Nothing live is stored.
+    /// The limb is a semantic slot - the primary hand, or an additional limb
+    /// by index - so it resolves against the body the game rebuilds on load,
+    /// and the target is its unit id.
+    /// </summary>
+    public sealed class SummonGrappleLinkRecord
+    {
+        [JsonProperty] public string TargetId;
+        [JsonProperty] public int Limb;
+        [JsonProperty] public int AdditionalIndex = -1;
+        [JsonProperty] public string WeaponName;
+        [JsonProperty] public bool Engulfed;
+        /// <summary>The record was rebuilt for a link that had none, not established by a grab.</summary>
+        [JsonProperty] public bool Repaired;
+    }
+
+    /// <summary>
+    /// The summon's own record of which limb holds or has engulfed which
+    /// target, carried on the holder and serialized with it.
+    ///
+    /// It replaces a process-local table keyed by buff instances, which was
+    /// empty after a load: the maintain damage then fell back to the holder's
+    /// first grab limb, which is not equivalent for a Tiger or a Smilodon
+    /// (bite and foreclaw deal different dice) and loses which of the Giant
+    /// Flytrap's four mouths owns which target. It is also the mouth
+    /// occupancy the one-target-per-mouth rule needs: a mouth that holds or
+    /// has engulfed a target may not attack another one, and that has to
+    /// survive both the engulf, which ends the held state, and the reload.
+    ///
+    /// Records are reconciled whenever they are read: a link whose target is
+    /// gone, freed, spat out or no longer held by this summon is dropped, so
+    /// escape, death, dismissal, expiry, an area transition, a module-disabled
+    /// load and a repaired load all free precisely the mouth they should
+    /// without a hook in each path.
+    /// </summary>
+    public sealed class UnitPartSummonGrappleLinks : UnitPart
+    {
+        [JsonProperty]
+        private List<SummonGrappleLinkRecord> _links = new List<SummonGrappleLinkRecord>();
+
+        internal IEnumerable<SummonGrappleLinkRecord> Links
+        {
+            get { return (_links ?? new List<SummonGrappleLinkRecord>()).ToArray(); }
+        }
+
+        internal void Put(SummonGrappleLinkRecord record)
+        {
+            if (record == null || string.IsNullOrEmpty(record.TargetId)) return;
+            if (_links == null) _links = new List<SummonGrappleLinkRecord>();
+            _links.RemoveAll(value => value != null && value.TargetId == record.TargetId);
+            _links.Add(record);
+        }
+
+        internal SummonGrappleLinkRecord Find(string targetId)
+        {
+            if (_links == null || string.IsNullOrEmpty(targetId)) return null;
+            return _links.FirstOrDefault(value => value != null && value.TargetId == targetId);
+        }
+
+        internal bool Drop(string targetId)
+        {
+            if (_links == null || string.IsNullOrEmpty(targetId)) return false;
+            return _links.RemoveAll(value => value != null && value.TargetId == targetId) > 0;
+        }
+
+        internal void Keep(IEnumerable<SummonGrappleLinkRecord> records)
+        {
+            _links = (records ?? Enumerable.Empty<SummonGrappleLinkRecord>())
+                .Where(value => value != null).ToList();
+        }
+
+        internal int Count { get { return _links == null ? 0 : _links.Count; } }
+    }
+
+    /// <summary>
+    /// The durable link store: which limb of a summon established the hold on
+    /// each target, and which mouths are occupied. Every read reconciles the
+    /// records against the game's own state first, so a stale link never
+    /// answers a question.
+    /// </summary>
+    internal static class SummonGrappleLinks
+    {
+        /// <summary>Records the limb that established a hold on this target.</summary>
+        internal static void Record(UnitEntityData holder, UnitEntityData target,
+            ItemEntityWeapon weapon)
+        {
+            if (holder == null || holder.Descriptor == null || target == null) return;
+            int index;
+            SummonLimbKind kind = SummonLimbs.Classify(holder, weapon, out index);
+            holder.Ensure<UnitPartSummonGrappleLinks>().Put(new SummonGrappleLinkRecord {
+                TargetId = target.UniqueId,
+                Limb = (int)kind,
+                AdditionalIndex = index,
+                WeaponName = weapon == null || weapon.Blueprint == null ? null : weapon.Blueprint.name,
+                Engulfed = false,
+                Repaired = false
+            });
+        }
+
+        /// <summary>
+        /// The link survives the engulf: the held state ends there, but the
+        /// mouth stays shut on that victim until it is spat out or freed.
+        /// </summary>
+        internal static void MarkEngulfed(UnitEntityData holder, UnitEntityData target)
+        {
+            if (holder == null || holder.Descriptor == null || target == null) return;
+            UnitPartSummonGrappleLinks part = holder.Get<UnitPartSummonGrappleLinks>();
+            SummonGrappleLinkRecord record = part == null ? null : part.Find(target.UniqueId);
+            if (record == null) return;
+            record.Engulfed = true;
+            part.Put(record);
+        }
+
+        internal static void Release(UnitEntityData holder, UnitEntityData target)
+        {
+            if (holder == null || holder.Descriptor == null || target == null) return;
+            UnitPartSummonGrappleLinks part = holder.Get<UnitPartSummonGrappleLinks>();
+            if (part != null) part.Drop(target.UniqueId);
+        }
+
+        internal static void ReleaseAll(UnitEntityData holder)
+        {
+            if (holder == null || holder.Descriptor == null) return;
+            UnitPartSummonGrappleLinks part = holder.Get<UnitPartSummonGrappleLinks>();
+            if (part != null) part.Keep(null);
+        }
+
+        /// <summary>
+        /// The weapon entity of the limb that established the hold on this
+        /// target, resolved against the body the summon carries now, or null
+        /// when this summon holds no such link.
+        /// </summary>
+        internal static ItemEntityWeapon EstablishingWeapon(UnitEntityData holder,
+            UnitEntityData target)
+        {
+            SummonGrappleLinkRecord record = LiveRecord(holder, target);
+            return record == null ? null : Resolve(holder, record);
+        }
+
+        /// <summary>True when this limb already holds or has engulfed someone.</summary>
+        internal static bool IsLimbOccupied(UnitEntityData holder, ItemEntityWeapon weapon)
+        {
+            return OccupantOf(holder, weapon) != null;
+        }
+
+        /// <summary>The unit this limb holds or has engulfed, or null.</summary>
+        internal static UnitEntityData OccupantOf(UnitEntityData holder, ItemEntityWeapon weapon)
+        {
+            if (holder == null || weapon == null) return null;
+            int index;
+            SummonLimbKind kind = SummonLimbs.Classify(holder, weapon, out index);
+            if (kind == SummonLimbKind.None) return null;
+            Dictionary<string, UnitEntityData> units = null;
+            foreach (SummonGrappleLinkRecord record in Reconcile(holder))
+                if (record.Limb == (int)kind && record.AdditionalIndex == index)
+                {
+                    if (units == null) units = UnitsById();
+                    UnitEntityData unit;
+                    return units.TryGetValue(record.TargetId ?? string.Empty, out unit) ? unit : null;
+                }
+            return null;
+        }
+
+        /// <summary>The live records, for the evidence: limb, target and state.</summary>
+        internal static string Describe(UnitEntityData holder)
+        {
+            List<SummonGrappleLinkRecord> records = Reconcile(holder);
+            if (records.Count == 0) return "links=0";
+            Dictionary<string, UnitEntityData> units = UnitsById();
+            var parts = new List<string>();
+            foreach (SummonGrappleLinkRecord record in records)
+            {
+                UnitEntityData unit;
+                units.TryGetValue(record.TargetId ?? string.Empty, out unit);
+                ItemEntityWeapon weapon = Resolve(holder, record);
+                parts.Add((unit == null || unit.Blueprint == null ? "?" : unit.Blueprint.name) +
+                    ":limb=" + (SummonLimbKind)record.Limb +
+                    (record.AdditionalIndex >= 0 ? "[" + record.AdditionalIndex + "]" : "") +
+                    ";weapon=" + (weapon == null || weapon.Blueprint == null ? "unresolved" :
+                        weapon.Blueprint.name) +
+                    ";recorded=" + (record.WeaponName ?? "?") +
+                    (record.Engulfed ? ";engulfed" : "") +
+                    (record.Repaired ? ";repaired" : ""));
+            }
+            return "links=" + records.Count + ";" + string.Join("|", parts.ToArray());
+        }
+
+        /// <summary>
+        /// Adopts a link that exists in the game's state but carries no
+        /// record - a hold established before this store, or one a repaired
+        /// load rebuilt - so a mouth is never left owning a target it cannot
+        /// name. The adopted record is marked repaired and uses the holder's
+        /// first grab limb, which is all that is knowable then.
+        /// </summary>
+        internal static int Repair(UnitEntityData holder, SummonGrabComponent grab)
+        {
+            if (holder == null || holder.Descriptor == null || grab == null) return 0;
+            List<SummonGrappleLinkRecord> records = Reconcile(holder);
+            var known = new HashSet<string>(records.Select(value => value.TargetId ?? string.Empty));
+            int adopted = 0;
+            foreach (UnitEntityData target in HeldOrEngulfed(holder, grab))
+            {
+                if (target == null || known.Contains(target.UniqueId)) continue;
+                ItemEntityWeapon weapon = grab.FirstGrabWeapon(holder);
+                int index;
+                SummonLimbKind kind = SummonLimbs.Classify(holder, weapon, out index);
+                holder.Ensure<UnitPartSummonGrappleLinks>().Put(new SummonGrappleLinkRecord {
+                    TargetId = target.UniqueId,
+                    Limb = (int)kind,
+                    AdditionalIndex = index,
+                    WeaponName = weapon == null || weapon.Blueprint == null ? null :
+                        weapon.Blueprint.name,
+                    Engulfed = IsEngulfed(holder, target),
+                    Repaired = true
+                });
+                adopted++;
+            }
+            return adopted;
+        }
+
+        /// <summary>The records that still describe the game's own state.</summary>
+        internal static List<SummonGrappleLinkRecord> Reconcile(UnitEntityData holder)
+        {
+            var kept = new List<SummonGrappleLinkRecord>();
+            if (holder == null || holder.Descriptor == null || holder.Destroyed) return kept;
+            UnitPartSummonGrappleLinks part = holder.Get<UnitPartSummonGrappleLinks>();
+            if (part == null || part.Count == 0) return kept;
+            SummonGrabComponent grab = SummonGrabComponent.Find(holder);
+            Dictionary<string, UnitEntityData> units = UnitsById();
+            foreach (SummonGrappleLinkRecord record in part.Links)
+            {
+                UnitEntityData target;
+                if (record == null || string.IsNullOrEmpty(record.TargetId) ||
+                    !units.TryGetValue(record.TargetId, out target) ||
+                    target == null || target.Destroyed) continue;
+                if (record.Engulfed)
+                {
+                    if (IsEngulfed(holder, target)) kept.Add(record);
+                    continue;
+                }
+                if (grab == null) continue;
+                bool held = grab.MultiLink
+                    ? ReferenceEquals(SummonHeldComponent.HolderOf(target, grab.GrappledBuff), holder)
+                    : ReferenceEquals(SummonHoldComponent.HeldTarget(holder), target);
+                if (held) kept.Add(record);
+            }
+            if (kept.Count != part.Count) part.Keep(kept);
+            return kept;
+        }
+
+        private static SummonGrappleLinkRecord LiveRecord(UnitEntityData holder,
+            UnitEntityData target)
+        {
+            if (target == null) return null;
+            return Reconcile(holder).FirstOrDefault(value => value.TargetId == target.UniqueId);
+        }
+
+        private static ItemEntityWeapon Resolve(UnitEntityData holder,
+            SummonGrappleLinkRecord record)
+        {
+            if (holder == null || record == null) return null;
+            return SummonLimbs.WeaponAt(holder, (SummonLimbKind)record.Limb,
+                record.AdditionalIndex);
+        }
+
+        private static bool IsEngulfed(UnitEntityData holder, UnitEntityData target)
+        {
+            UnitPartSwallowWhole part = holder == null ? null : holder.Get<UnitPartSwallowWhole>();
+            if (part == null || part.SwallowedUnits == null || target == null) return false;
+            return part.SwallowedUnits.Any(value => value != null &&
+                ReferenceEquals(value.Value, target));
+        }
+
+        private static IEnumerable<UnitEntityData> HeldOrEngulfed(UnitEntityData holder,
+            SummonGrabComponent grab)
+        {
+            var result = new List<UnitEntityData>();
+            if (holder == null || grab == null) return result;
+            if (grab.MultiLink)
+                result.AddRange(SummonMultiHoldComponent.HeldTargets(holder, grab.GrappledBuff));
+            else
+            {
+                UnitEntityData held = SummonHoldComponent.HeldTarget(holder);
+                if (held != null) result.Add(held);
+            }
+            UnitPartSwallowWhole part = holder.Get<UnitPartSwallowWhole>();
+            if (part != null && part.SwallowedUnits != null)
+                foreach (UnitReference reference in part.SwallowedUnits)
+                    if (reference != null && reference.Value != null &&
+                        !result.Contains(reference.Value))
+                        result.Add(reference.Value);
+            return result;
+        }
+
+        private static Dictionary<string, UnitEntityData> UnitsById()
+        {
+            var units = new Dictionary<string, UnitEntityData>(StringComparer.Ordinal);
+            if (Game.Instance == null || Game.Instance.State == null ||
+                Game.Instance.State.Units == null) return units;
+            foreach (UnitEntityData unit in Game.Instance.State.Units.All)
+                if (unit != null && !string.IsNullOrEmpty(unit.UniqueId) &&
+                    !units.ContainsKey(unit.UniqueId))
+                    units[unit.UniqueId] = unit;
+            return units;
+        }
+    }
+}

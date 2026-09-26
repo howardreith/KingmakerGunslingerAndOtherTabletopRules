@@ -1034,7 +1034,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Func<UnitEntityData, string> linkOf = target =>
                 {
                     Buff state = SummonHoldComponent.HeldState(flytrap, target, grab);
-                    ItemEntityWeapon weapon = SummonGrappleLinks.EstablishingWeapon(state);
+                    ItemEntityWeapon weapon = SummonGrappleLinks.EstablishingWeapon(flytrap, target);
                     return state == null ? "none" : "holder=" + ReferenceEquals(
                         state.Context == null ? null : state.Context.MaybeCaster, flytrap) +
                         ",bite=" + bites.IndexOf(weapon);
