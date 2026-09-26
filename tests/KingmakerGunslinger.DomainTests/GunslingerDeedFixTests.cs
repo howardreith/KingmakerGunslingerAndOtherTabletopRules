@@ -80,6 +80,78 @@ namespace KingmakerGunslinger.DomainTests
                 DeadShotConfirmationPolicy.Confirms(0, 8, 0, 10), "A roll of 0 was accepted.");
         }
 
+        // Fourth review, finding 1: the confirmation is an attack roll, so a
+        // natural 1 always fails and a natural 20 always succeeds before the
+        // total is compared with the critical AC; 2 and 19 follow the total.
+        internal static void DeadShotNaturalConfirmationRolls()
+        {
+            Assertions.True(!DeadShotConfirmationPolicy.Confirms(1, 1000, 1000, -1000),
+                "A natural 1 with an extreme bonus against a trivial AC must fail.");
+            Assertions.True(!DeadShotConfirmationPolicy.Confirms(1, 40, 0, 1),
+                "A natural 1 whose total beats the AC by 40 must fail.");
+            Assertions.True(DeadShotConfirmationPolicy.Confirms(20, -1000, -1000, 1000),
+                "A natural 20 with an insufficient total against an extreme AC must confirm.");
+            Assertions.True(DeadShotConfirmationPolicy.Confirms(20, 0, -5, 100),
+                "A natural 20 whose total misses the AC by 85 must confirm.");
+            Assertions.True(DeadShotConfirmationPolicy.Confirms(2, 8, 0, 10) &&
+                !DeadShotConfirmationPolicy.Confirms(2, 8, 0, 11),
+                "An ordinary 2 follows the total: 2 + 8 confirms against 10, not 11.");
+            Assertions.True(DeadShotConfirmationPolicy.Confirms(19, 8, -5, 22) &&
+                !DeadShotConfirmationPolicy.Confirms(19, 8, -5, 23),
+                "An ordinary 19 follows the total: 19 + 8 - 5 confirms against 22, not 23.");
+            // The record holds the decision and says what decided it.
+            var natural1 = new DeadShotConfirmationRecord(1, 50, 0, -4, 10);
+            Assertions.True(!natural1.Confirmed && natural1.Automatic && natural1.TotalReaches,
+                "The record of a natural 1: failed, automatic, although its total reached the AC.");
+            var natural20 = new DeadShotConfirmationRecord(20, -50, 0, -4, 60);
+            Assertions.True(natural20.Confirmed && natural20.Automatic && !natural20.TotalReaches,
+                "The record of a natural 20: confirmed, automatic, although its total missed the AC.");
+            var ordinary = new DeadShotConfirmationRecord(19, 8, -5, -5, 22);
+            Assertions.True(ordinary.Confirmed && !ordinary.Automatic && ordinary.TotalReaches,
+                "An ordinary confirmation is decided by its total.");
+            var blocked = new DeadShotConfirmationRecord("target immune to critical hits");
+            Assertions.True(!blocked.Confirmed && !blocked.Automatic && !blocked.TotalReaches,
+                "A blocked threat rolls nothing: never confirmed, never automatic.");
+            // The threat rule, the penalty and Critical Focus are unchanged.
+            Assertions.True(!DeadShotConfirmationPolicy.IsThreat(true, false, 19, 20) &&
+                DeadShotConfirmationPolicy.IsThreat(true, false, 20, 20),
+                "Only the confirmation changed: a 19 still does not threaten at edge 20.");
+            Assertions.True(DeadShotConfirmationPolicy.Confirms(6, 8, 4 - 4, 14),
+                "Critical Focus +4 and a -4 penalty still add to 0.");
+        }
+
+        // Fourth review, finding 1: immunity, then the party critical
+        // setting, block a threat before any roll, so neither is overridden
+        // by a natural 20.
+        internal static void DeadShotConfirmationBlocks()
+        {
+            Assertions.Equal("target immune to critical hits",
+                DeadShotConfirmationPolicy.Blocked(true, false, true), "An immune target blocks the threat.");
+            Assertions.Equal("target immune to critical hits",
+                DeadShotConfirmationPolicy.Blocked(true, true, false), "Immunity is reported first.");
+            Assertions.Equal("critical hits against the party are off",
+                DeadShotConfirmationPolicy.Blocked(false, true, false),
+                "Party criticals off block a threat against the party.");
+            Assertions.True(DeadShotConfirmationPolicy.Blocked(false, true, true) == null,
+                "Party criticals on: the party target's threat is confirmed normally.");
+            Assertions.True(DeadShotConfirmationPolicy.Blocked(false, false, false) == null,
+                "The party setting never blocks a threat against a non-party target.");
+            string source = Source("Deeds", "DeadShotRuntime.cs");
+            int blocked = source.IndexOf("string blocked = DeadShotConfirmationPolicy.Blocked(attackRoll.ImmuneToCriticalHit,",
+                StringComparison.Ordinal);
+            int roll = source.IndexOf("int roll = forcedRoll ?? RulebookEvent.Dice.D20.Value;", StringComparison.Ordinal);
+            Assertions.True(blocked >= 0 && roll > blocked &&
+                source.Contains("if (blocked != null)\n                return new DeadShotConfirmationRecord(blocked);"),
+                "The delivery checks immunity and the party setting before it rolls.");
+            Assertions.True(source.Contains("return critsOnParty == Kingmaker.UI.SettingsUI.CriticalHitPower.Weak ||") &&
+                source.Contains("critsOnParty == Kingmaker.UI.SettingsUI.CriticalHitPower.Normal;") &&
+                source.Contains("forcedPartyCriticals ?? PartyCriticalsAllowed()"),
+                "In play the game's setting decides, with the native rule (Weak or Normal allow party criticals).");
+            Assertions.True(!source.Contains("EnemyCriticalHits.CurrentValue =") &&
+                !source.Contains("CritsOnParty =") && !source.Contains(".SetValue("),
+                "Dead Shot never writes the game's EnemyCriticalHits setting.");
+        }
+
         // D2 wiring: probes stay free of native confirmations; the delivery
         // confirms once with the native rules, adding the penalty.
         internal static void DeadShotConfirmationWiring()
@@ -94,7 +166,7 @@ namespace KingmakerGunslinger.DomainTests
                 "The Dead Shot penalty is added to every other confirmation bonus.");
             Assertions.True(source.Contains("new RuleCalculateAttackBonus(attackRoll.Initiator,") &&
                 source.Contains("{ IsCritical = true }).TargetAC") &&
-                source.Contains("if (attackRoll.ImmuneToCriticalHit)") &&
+                source.Contains("DeadShotConfirmationPolicy.Blocked(attackRoll.ImmuneToCriticalHit,") &&
                 source.Contains("Difficulty.CritsOnParty") &&
                 source.Contains("attackRoll.AutoCriticalConfirmation = confirmation.Confirmed;"),
                 "The delivery confirms once with the native rules, immunity and party setting.");

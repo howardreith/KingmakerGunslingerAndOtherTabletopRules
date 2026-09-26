@@ -82,9 +82,24 @@ namespace KingmakerGunslinger.Deeds
             return ExecuteForRuntimeTest(caster, target, confirmationRoll, forcedRolls);
         }
 
+        /// <summary>
+        /// Runtime test: as ExecuteForRuntimeTestConfirming, with the party
+        /// critical setting supplied to this shot's own confirmation only; the
+        /// game's EnemyCriticalHits setting is never read or written.
+        /// </summary>
+        internal static DeadShotExecutionResult ExecuteForRuntimeTestConfirming(
+            UnitEntityData caster, UnitEntityData target, int confirmationRoll,
+            bool partyCriticalsAllowed, params int[] forcedRolls)
+        {
+            if (confirmationRoll < 1 || confirmationRoll > 20)
+                throw new ArgumentOutOfRangeException("confirmationRoll");
+            return ExecuteForRuntimeTest(caster, target, confirmationRoll, forcedRolls,
+                partyCriticalsAllowed);
+        }
+
         private static DeadShotExecutionResult ExecuteForRuntimeTest(
             UnitEntityData caster, UnitEntityData target, int? confirmationRoll,
-            int[] forcedRolls)
+            int[] forcedRolls, bool? partyCriticalsAllowed = null)
         {
             if (caster == null || target == null) throw new ArgumentNullException("caster");
             return Execute(caster.Descriptor, caster, target,
@@ -93,14 +108,15 @@ namespace KingmakerGunslinger.Deeds
                     Rulebook.Trigger(rule);
                 },
                 delegate(RuleAttackWithWeapon rule) { Rulebook.Trigger(rule); },
-                forcedRolls, confirmationRoll);
+                forcedRolls, confirmationRoll, partyCriticalsAllowed);
         }
 
         private static DeadShotExecutionResult Execute(UnitDescriptor caster,
             UnitEntityData casterEntity, UnitEntityData target,
             Action<RuleAttackRoll> triggerProbe,
             Action<RuleAttackWithWeapon> triggerDelivery,
-            int[] forcedRolls = null, int? forcedConfirmationRoll = null)
+            int[] forcedRolls = null, int? forcedConfirmationRoll = null,
+            bool? forcedPartyCriticals = null)
         {
             ExactEquippedFirearmContext firearm;
             string reason;
@@ -186,7 +202,7 @@ namespace KingmakerGunslinger.Deeds
                 RegisterDelivery(delivery, deliveryHit,
                     outcome.ThreatCount > 0 && deliveryHit,
                     outcome.ConfirmationPenalty ?? 0, Math.Max(1, outcome.BaseDamageDicePackets),
-                    forcedConfirmationRoll);
+                    forcedConfirmationRoll, forcedPartyCriticals);
                 DeadShotConfirmationRecord confirmation;
                 try
                 {
@@ -315,7 +331,8 @@ namespace KingmakerGunslinger.Deeds
 
         internal static void RegisterDelivery(RuleAttackWithWeapon attack,
             bool shouldHit, bool criticalThreat, int confirmationPenalty,
-            int hitCount = 1, int? forcedConfirmationRoll = null)
+            int hitCount = 1, int? forcedConfirmationRoll = null,
+            bool? forcedPartyCriticals = null)
         {
             if (attack == null) throw new ArgumentNullException("attack");
             lock (Gate)
@@ -323,7 +340,7 @@ namespace KingmakerGunslinger.Deeds
                 Deliveries.Remove(attack);
                 Deliveries.Add(attack, new DeliveryMarker(shouldHit,
                     criticalThreat, confirmationPenalty, hitCount,
-                    forcedConfirmationRoll));
+                    forcedConfirmationRoll, forcedPartyCriticals));
             }
         }
 
@@ -396,7 +413,7 @@ namespace KingmakerGunslinger.Deeds
             try
             {
                 confirmation = Confirm(attackRoll, marker.ConfirmationPenalty,
-                    marker.ForcedConfirmationRoll);
+                    marker.ForcedConfirmationRoll, marker.ForcedPartyCriticals);
             }
             catch (Exception exception)
             {
@@ -428,18 +445,16 @@ namespace KingmakerGunslinger.Deeds
         }
 
         private static DeadShotConfirmationRecord Confirm(RuleAttackRoll attackRoll, int penalty,
-            int? forcedRoll)
+            int? forcedRoll, bool? forcedPartyCriticals)
         {
             // Target immunity (AddImmunityToCriticalHits) and the party
-            // critical setting apply exactly as to the native threat.
-            if (attackRoll.ImmuneToCriticalHit)
-                return new DeadShotConfirmationRecord("target immune to critical hits");
-            Kingmaker.UI.SettingsUI.CriticalHitPower critsOnParty =
-                Kingmaker.Game.Instance.Player.Difficulty.CritsOnParty;
-            if (attackRoll.Target.IsPlayerFaction &&
-                critsOnParty != Kingmaker.UI.SettingsUI.CriticalHitPower.Weak &&
-                critsOnParty != Kingmaker.UI.SettingsUI.CriticalHitPower.Normal)
-                return new DeadShotConfirmationRecord("critical hits against the party are off");
+            // critical setting apply exactly as to the native threat, before
+            // any roll: a blocked threat never reaches a natural 20.
+            string blocked = DeadShotConfirmationPolicy.Blocked(attackRoll.ImmuneToCriticalHit,
+                attackRoll.Target.IsPlayerFaction,
+                forcedPartyCriticals ?? PartyCriticalsAllowed());
+            if (blocked != null)
+                return new DeadShotConfirmationRecord(blocked);
             int attackBonus = Rulebook.Trigger(new RuleCalculateAttackBonus(attackRoll.Initiator,
                 attackRoll.Target, attackRoll.Weapon, attackRoll.AttackBonusPenalty)).Result;
             int criticalArmorClass = Rulebook.Trigger(new RuleCalculateAC(attackRoll.Initiator,
@@ -447,6 +462,15 @@ namespace KingmakerGunslinger.Deeds
             int roll = forcedRoll ?? RulebookEvent.Dice.D20.Value;
             return new DeadShotConfirmationRecord(roll, attackBonus,
                 attackRoll.CriticalConfirmationBonus, penalty, criticalArmorClass);
+        }
+
+        /// <summary>The native RuleAttackRoll's party rule: criticals on the party only at Weak or Normal.</summary>
+        private static bool PartyCriticalsAllowed()
+        {
+            Kingmaker.UI.SettingsUI.CriticalHitPower critsOnParty =
+                Kingmaker.Game.Instance.Player.Difficulty.CritsOnParty;
+            return critsOnParty == Kingmaker.UI.SettingsUI.CriticalHitPower.Weak ||
+                critsOnParty == Kingmaker.UI.SettingsUI.CriticalHitPower.Normal;
         }
 
         internal static void BeforeSetRoll(RuleAttackRoll attackRoll,
@@ -567,13 +591,15 @@ namespace KingmakerGunslinger.Deeds
         private sealed class DeliveryMarker
         {
             internal DeliveryMarker(bool shouldHit, bool criticalThreat,
-                int confirmationPenalty, int hitCount, int? forcedConfirmationRoll)
+                int confirmationPenalty, int hitCount, int? forcedConfirmationRoll,
+                bool? forcedPartyCriticals)
             {
                 ShouldHit = shouldHit;
                 CriticalThreat = criticalThreat;
                 ConfirmationPenalty = confirmationPenalty;
                 HitCount = hitCount;
                 ForcedConfirmationRoll = forcedConfirmationRoll;
+                ForcedPartyCriticals = forcedPartyCriticals;
             }
             internal bool ShouldHit { get; private set; }
             internal bool CriticalThreat { get; private set; }
@@ -581,6 +607,8 @@ namespace KingmakerGunslinger.Deeds
             internal int HitCount { get; private set; }
             /// <summary>Runtime test only: the confirmation's natural roll; null in play.</summary>
             internal int? ForcedConfirmationRoll { get; private set; }
+            /// <summary>Runtime test only: the party critical setting for this confirmation; null in play (the game setting).</summary>
+            internal bool? ForcedPartyCriticals { get; private set; }
             internal DeadShotConfirmationRecord Confirmation { get; set; }
         }
     }

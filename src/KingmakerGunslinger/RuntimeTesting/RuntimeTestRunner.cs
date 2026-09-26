@@ -26048,12 +26048,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             Deeds.DeadShotExecutionResult mixed = null;
             Deeds.DeadShotExecutionResult allMisfire = null;
             Deeds.DeadShotExecutionResult calibration = null, confirmed = null, unconfirmed = null,
-                immune = null;
+                immune = null, natural20 = null, natural20Control = null, natural1 = null,
+                natural1Control = null, partyOff = null, partyOn = null;
             BlueprintFeature criticalFocus = null, immunity = null;
             BlueprintFaction targetFactionBefore = null, hostileFaction = null;
-            ModifiableValue.Modifier naturalArmor = null;
+            ModifiableValue.Modifier naturalArmor = null, extremeBonus = null;
             int plainCriticalArmorClass = int.MinValue, touchGap = int.MinValue;
-            bool targetPartyDuringCriticals = true;
+            bool targetPartyDuringCriticals = true, targetPartyForSetting = false;
+            string partySettingBefore = null, partySettingAfter = null;
             int targetArmorBefore = int.MinValue;
             int gritBefore = -1, gritAfterMixed = -1, gritAfterMisfire = -1;
             long conditionLogsBefore = FirearmConditionCombatLog.Attempts;
@@ -26107,8 +26109,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // not an aggregate misfire); Critical Focus's +4 and the -4
                 // penalty for two threats add. A calibration volley gives the
                 // native attack bonus, confirmation bonus and critical AC; the
-                // target's AC is then set so a forced 20 confirms and a
-                // forced 1 does not.
+                // target's AC is then set 11 above that total, so an ordinary
+                // forced 19 confirms and a forced 2 does not. The confirmation
+                // is an attack roll (fourth review): a natural 20 confirms
+                // against an AC 31 above its total, and a natural 1 fails with
+                // a +40 attack bonus against an AC 50 below its total.
                 stage = "critical-calibration";
                 criticalFocus = BlueprintLibraryLookup.RequireExact<BlueprintFeature>(
                     BlueprintBootstrap.Library, FavoredClass.FavoredClassBlueprints.CriticalFocusGuid,
@@ -26135,6 +26140,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return Deeds.DeadShotRuntime.ExecuteForRuntimeTestConfirming(attacker,
                         target, confirmationRoll, 20, 20, 1);
                 };
+                // The party critical setting is supplied to the shot's own
+                // confirmation only; the game's setting is never written.
+                Func<int, bool, Deeds.DeadShotExecutionResult> partyVolley = (confirmationRoll, allowed) =>
+                {
+                    target.Damage = 0;
+                    attacker.Descriptor.Resources.Restore(gunslinger.Grit.Resource, 1);
+                    FirearmRuntimeState.Service.Set(weapon, new FirearmState(
+                        FirearmState.CurrentSchemaVersion, 1,
+                        FirearmStateTokenCatalog.DiagnosticLeadBall,
+                        FirearmCondition.Normal));
+                    return Deeds.DeadShotRuntime.ExecuteForRuntimeTestConfirming(attacker,
+                        target, confirmationRoll, allowed, 20, 20, 1);
+                };
+                partySettingBefore = Kingmaker.Game.Instance.Player.Difficulty.CritsOnParty.ToString();
                 calibration = criticalVolley(20);
                 Deeds.DeadShotConfirmationRecord measured = calibration.Confirmation;
                 if (measured == null || measured.Blocked != null)
@@ -26148,9 +26167,30 @@ namespace KingmakerGunslinger.RuntimeTesting
                 target.Descriptor.Stats.AC.BaseValue += measured.AttackBonus +
                     measured.ConfirmationBonus + 11 - measured.CriticalArmorClass;
                 stage = "critical-confirmed";
-                confirmed = criticalVolley(20);
+                confirmed = criticalVolley(19);
                 stage = "critical-unconfirmed";
-                unconfirmed = criticalVolley(1);
+                unconfirmed = criticalVolley(2);
+                stage = "critical-natural-20";
+                target.Descriptor.Stats.AC.BaseValue += 40;
+                natural20 = criticalVolley(20);
+                natural20Control = criticalVolley(19);
+                target.Descriptor.Stats.AC.BaseValue -= 40;
+                stage = "critical-natural-1";
+                extremeBonus = attacker.Descriptor.Stats.AdditionalAttackBonus.AddModifier(40, null,
+                    "dead-shot-extreme-bonus", ModifierDescriptor.UntypedStackable);
+                target.Descriptor.Stats.AC.BaseValue -= 20;
+                natural1 = criticalVolley(1);
+                natural1Control = criticalVolley(2);
+                target.Descriptor.Stats.AC.BaseValue += 20;
+                attacker.Descriptor.Stats.AdditionalAttackBonus.RemoveModifier(extremeBonus);
+                extremeBonus = null;
+                stage = "critical-party-setting";
+                target.Descriptor.Faction = targetFactionBefore;
+                targetPartyForSetting = target.IsPlayerFaction;
+                partyOff = partyVolley(20, false);
+                partyOn = partyVolley(20, true);
+                target.Descriptor.Faction = hostileFaction;
+                partySettingAfter = Kingmaker.Game.Instance.Player.Difficulty.CritsOnParty.ToString();
                 stage = "critical-immune-target";
                 immunity = ScriptableObject.CreateInstance<BlueprintFeature>();
                 immunity.name = "KMG_Runtime_DeadShot_CriticalImmunity";
@@ -26183,6 +26223,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 if (attacker != null && criticalFocus != null)
                     attacker.Descriptor.RemoveFact(criticalFocus);
+                if (attacker != null && extremeBonus != null)
+                    attacker.Descriptor.Stats.AdditionalAttackBonus.RemoveModifier(extremeBonus);
                 if (target != null && targetArmorBefore != int.MinValue)
                     target.Descriptor.Stats.AC.BaseValue = targetArmorBefore;
                 if (target != null && naturalArmor != null)
@@ -26238,13 +26280,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ";roll=" + value.Confirmation.NaturalRoll + ";attackBonus=" + value.Confirmation.AttackBonus +
                     ";confirmationBonus=" + value.Confirmation.ConfirmationBonus +
                     ";criticalAC=" + value.Confirmation.CriticalArmorClass +
+                    ";totalReaches=" + value.Confirmation.TotalReaches +
+                    ";automatic=" + value.Confirmation.Automatic +
                     ";confirmed=" + value.Confirmation.Confirmed) +
                 ";nativeConfirmed=" + (value.Delivery != null && value.Delivery.AttackRoll != null &&
                     value.Delivery.AttackRoll.IsCriticalConfirmed);
             string criticalObserved = "calibration{" + describeCritical(calibration) + "};confirmed{" +
                 describeCritical(confirmed) + "};unconfirmed{" + describeCritical(unconfirmed) +
+                "};natural20{" + describeCritical(natural20) + "};natural20Control{" +
+                describeCritical(natural20Control) + "};natural1{" + describeCritical(natural1) +
+                "};natural1Control{" + describeCritical(natural1Control) + "};partyOff{" +
+                describeCritical(partyOff) + "};partyOn{" + describeCritical(partyOn) +
                 "};immune{" + describeCritical(immune) + "};plainCriticalAC=" + plainCriticalArmorClass +
-                ";touchGap=" + touchGap + ";targetParty=" + targetPartyDuringCriticals;
+                ";touchGap=" + touchGap + ";targetParty=" + targetPartyDuringCriticals +
+                ";targetPartyForSetting=" + targetPartyForSetting + ";gameSetting=" + partySettingBefore +
+                "->" + partySettingAfter;
             // Touch AC: the confirmation's critical AC is the plain critical
             // AC less the ordinary-to-touch gap (FirearmArmorClassService).
             bool touchContract = !targetPartyDuringCriticals && touchGap >= 6 &&
@@ -26260,9 +26310,36 @@ namespace KingmakerGunslinger.RuntimeTesting
                 value.Confirmation.Penalty == -4 && value.Confirmation.ConfirmationBonus == 0 &&
                 value.Confirmation.Confirmed == expected &&
                 value.Delivery.AttackRoll.IsCriticalConfirmed == expected;
-            bool criticalContract = confirmationAs(confirmed, true) && confirmationAs(unconfirmed, false);
+            // Ordinary rolls follow the total: a 19 reaches the AC 11 above
+            // attack bonus + confirmation bonus, a 2 does not.
+            bool criticalContract = confirmationAs(confirmed, true) && confirmationAs(unconfirmed, false) &&
+                confirmed.Confirmation.NaturalRoll == 19 && confirmed.Confirmation.TotalReaches &&
+                unconfirmed.Confirmation.NaturalRoll == 2 && !unconfirmed.Confirmation.TotalReaches;
+            // A natural 20 confirms although its total misses the AC (the 19
+            // beside it fails); a natural 1 fails although its total beats
+            // the AC by far (the 2 beside it confirms).
+            bool natural20Contract = confirmationAs(natural20, true) && confirmationAs(natural20Control, false) &&
+                natural20.Confirmation.NaturalRoll == 20 && natural20.Confirmation.Automatic &&
+                !natural20.Confirmation.TotalReaches &&
+                natural20.Confirmation.CriticalArmorClass - (20 + natural20.Confirmation.AttackBonus +
+                    natural20.Confirmation.ConfirmationBonus) >= 30 &&
+                natural20Control.Confirmation.NaturalRoll == 19 && !natural20Control.Confirmation.TotalReaches;
+            bool natural1Contract = confirmationAs(natural1, false) && confirmationAs(natural1Control, true) &&
+                natural1.Confirmation.NaturalRoll == 1 && natural1.Confirmation.Automatic &&
+                natural1.Confirmation.TotalReaches &&
+                natural1.Confirmation.AttackBonus - confirmed.Confirmation.AttackBonus == 40 &&
+                (1 + natural1.Confirmation.AttackBonus + natural1.Confirmation.ConfirmationBonus) -
+                    natural1.Confirmation.CriticalArmorClass >= 50 &&
+                natural1Control.Confirmation.NaturalRoll == 2 && natural1Control.Confirmation.TotalReaches;
+            // The party setting blocks before any roll, even a natural 20.
+            bool partyContract = targetPartyForSetting && twoThreats(partyOff) && partyOff.Confirmation != null &&
+                partyOff.Confirmation.Blocked == "critical hits against the party are off" &&
+                !partyOff.Delivery.AttackRoll.IsCriticalConfirmed &&
+                confirmationAs(partyOn, true) && partyOn.Confirmation.NaturalRoll == 20 &&
+                partySettingBefore != null && partySettingBefore == partySettingAfter;
             bool immuneContract = twoThreats(immune) && immune.Confirmation != null &&
-                immune.Confirmation.Blocked != null && !immune.Delivery.AttackRoll.IsCriticalConfirmed;
+                immune.Confirmation.Blocked == "target immune to critical hits" &&
+                !immune.Delivery.AttackRoll.IsCriticalConfirmed;
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("dead-shot-progression", "level 7 full-round weapon ability",
@@ -26289,15 +26366,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                     gritAfterMisfire == gritAfterMixed,
                     "native per-unit grit resource"),
                 Assertion("dead-shot-critical-confirmation",
-                    "two natural 20s threaten (penalty -4); Critical Focus's +4 and the penalty add to 0; the shot's one native confirmation (natural roll + attack bonus + 0 against the critical AC) confirms on a forced 20 and fails on a forced 1, and the delivery's native critical follows it (pre-existing defect D2 fixed)",
+                    "two natural 20s threaten (penalty -4); Critical Focus's +4 and the penalty add to 0; the shot's one native confirmation (natural roll + attack bonus + 0 against the critical AC, set 11 above that total) confirms on an ordinary forced 19 and fails on an ordinary forced 2, and the delivery's native critical follows it (pre-existing defect D2 fixed)",
                     criticalObserved, criticalContract,
                     "probe natural rolls against RuleCalculateWeaponStats.CriticalEdge; RuleCalculateAttackBonus and RuleCalculateAC(IsCritical) on the auto-hit delivery"),
-                Assertion("dead-shot-critical-touch-ac",
-                    "adjacent (first range increment), the one confirmation is against the target's touch critical AC: the plain critical AC less the ordinary-to-touch gap (+6 natural armor), as a native firearm roll's would be",
-                    criticalObserved, touchContract,
-                    "RuleCalculateAC(IsCritical) inside the attack's firearm AC frame (FirearmArmorClassRuntime) versus the same rule outside any attack"),
+                Assertion("dead-shot-critical-natural-20",
+                    "the confirmation is an attack roll: a forced natural 20 confirms against a critical AC at least 30 above its total, while a forced 19 against the same AC fails; the delivery's native critical follows both (fourth review finding 1)",
+                    criticalObserved, natural20Contract,
+                    "target AC raised by 40; DeadShotConfirmationPolicy.Confirms on the auto-hit delivery"),
+                Assertion("dead-shot-critical-natural-1",
+                    "a forced natural 1 fails with a +40 attack bonus against a critical AC at least 50 below its total, while a forced 2 with the same bonus confirms; the delivery's native critical follows both (fourth review finding 1)",
+                    criticalObserved, natural1Contract,
+                    "native AdditionalAttackBonus +40 (untyped) and target AC lowered by 20; DeadShotConfirmationPolicy.Confirms"),
+                Assertion("dead-shot-critical-party-setting",
+                    "against a party-faction target, party criticals off block a natural 20 threat before any roll (no confirmation, no critical) and party criticals on let it confirm; the setting is supplied to the shot's own confirmation only and the game's EnemyCriticalHits setting is unchanged",
+                    criticalObserved, partyContract,
+                    "DeadShotConfirmationPolicy.Blocked on the native IsPlayerFaction; runtime-test party setting seam"),
                 Assertion("dead-shot-critical-immune-target",
-                    "against a target immune to critical hits (the native AddImmunityToCriticalHits) the threats roll no confirmation and the delivery is no critical",
+                    "against a target immune to critical hits (the native AddImmunityToCriticalHits) a natural 20 threat rolls no confirmation and the delivery is no critical",
                     criticalObserved, immuneContract,
                     "RuleAttackRoll.ImmuneToCriticalHit set by the target's native component"),
                 Assertion("external-isolation", "unchanged party and global-unit snapshots",
