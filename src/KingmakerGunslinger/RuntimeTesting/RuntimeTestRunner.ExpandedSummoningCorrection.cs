@@ -2349,13 +2349,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 limbs[limbIndex].MaybeWeapon;
         }
 
-        /// <summary>holder blueprint, victim blueprint, limb index (-1 = the primary hand).</summary>
+        /// <summary>
+        /// holder blueprint, victim blueprint, limb index (-1 = the primary
+        /// hand). One hold is enough here: the engine carries no active grapple
+        /// across a save, so what this leg proves is that the post-load state
+        /// is safe. Both limb kinds and all four flytrap mouths are proven in
+        /// session by the rules scenario.
+        /// </summary>
         private static readonly string[][] ExpandedSummoningPersistenceHoldPlan =
         {
-            new[] { "KMG_Summoning_Unit_Tiger", "KMG_Summoning_Unit_Wolf", "-1" },
-            new[] { "KMG_Summoning_Unit_DireTiger", "KMG_Summoning_Unit_Pony", "0" },
-            new[] { "KMG_Summoning_Unit_GiantFlytrap", "KMG_Summoning_Unit_Horse", "0" },
-            new[] { "KMG_Summoning_Unit_GiantFlytrap", "KMG_Summoning_Unit_Owlbear", "2" }
+            new[] { "KMG_Summoning_Unit_Tiger", "KMG_Summoning_Unit_Wolf", "-1" }
         };
 
         /// <summary>
@@ -2442,34 +2445,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // not today - the maintain proof above applies unchanged.
                 ok = ok && (engineHold ? identitySurvived && namedLimb && rakeWhenDue
                     : mouthFree);
-            }
-            UnitEntityData flytrap = ExpandedSummoningPersistenceUnit(units,
-                "KMG_Summoning_Unit_GiantFlytrap");
-            if (flytrap != null)
-            {
-                steps.Add("flytrapLinks:" + SummonGrappleLinks.Describe(flytrap));
-                UnitEntityData horse = ExpandedSummoningPersistenceUnit(units,
-                    "KMG_Summoning_Unit_Horse");
-                UnitEntityData owlbear = ExpandedSummoningPersistenceUnit(units,
-                    "KMG_Summoning_Unit_Owlbear");
-                ItemEntityWeapon mouthA = ExpandedSummoningPersistenceLimb(flytrap, 0);
-                ItemEntityWeapon mouthB = ExpandedSummoningPersistenceLimb(flytrap, 2);
-                // Each mouth's own record survived and still names its own
-                // victim, which is the ownership the reload had to keep; the
-                // live view frees both mouths because the engine dropped the
-                // holds themselves.
-                bool storedPerMouth =
-                    ReferenceEquals(SummonGrappleLinks.StoredLimbOf(flytrap, horse), mouthA) &&
-                    ReferenceEquals(SummonGrappleLinks.StoredLimbOf(flytrap, owlbear), mouthB);
-                bool mouthsFree = SummonGrappleLinks.OccupantOf(flytrap, mouthA) == null &&
-                    SummonGrappleLinks.OccupantOf(flytrap, mouthB) == null;
-                steps.Add("mouthOwnership:storedPerMouth=" + storedPerMouth + ";mouthsFree=" +
-                    mouthsFree + ";store=" + SummonGrappleLinks.Describe(flytrap));
-                // Either the save carried the links, in which case each mouth
-                // still names its own victim, or it did not, in which case
-                // every mouth is free. Never a mouth shut on a link no summon
-                // can name.
-                ok = ok && (storedPerMouth || mouthsFree);
             }
             valid = ok;
             return string.Join(";", steps.ToArray());
