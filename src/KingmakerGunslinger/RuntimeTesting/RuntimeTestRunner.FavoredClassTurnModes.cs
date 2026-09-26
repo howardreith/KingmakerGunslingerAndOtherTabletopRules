@@ -469,11 +469,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // or after five seconds (real time), gone by one round.
                 if (turnBased)
                 {
-                    turns.ReachEnemyTurn();
+                    // Turn-based rounds put every turn at the round's own time:
+                    // a one-round buff covers the rest of the round it was used
+                    // in (any actor after the Gunslinger) and ends at the next
+                    // round's start, before any actor's next turn.
+                    var steps = new JArray();
+                    turns.ReachEnemyTurn(() => steps.Add(new JObject
+                    {
+                        ["seconds"] = Math.Round((Game.Instance.Player.GameTime - castTime).TotalSeconds, 2),
+                        ["ac"] = actor.Stats.AC.ModifiedValue,
+                        ["buff"] = actor.Buffs.GetBuff(gunslinger.Dodge.ArmorClassBuff) != null
+                    }));
+                    dodgeRow["timeSteps"] = steps.Count;
+                    JToken lastInRound = steps.LastOrDefault(value => (double)value["seconds"] < 6.0);
+                    JToken firstAfter = steps.FirstOrDefault(value => (double)value["seconds"] >= 6.0);
+                    dodgeRow["roundEnd"] = lastInRound;
+                    dodgeRow["nextRoundStart"] = firstAfter;
+                    double enemySeconds = (Game.Instance.Player.GameTime - castTime).TotalSeconds;
+                    dodgeRow["enemyTurnSeconds"] = Math.Round(enemySeconds, 2);
                     dodgeRow["enemyTurnAc"] = actor.Stats.AC.ModifiedValue;
                     dodgeRow["enemyTurnBuff"] = actor.Buffs.GetBuff(gunslinger.Dodge.ArmorClassBuff) != null;
+                    if ((bool)dodgeRow["enemyTurnBuff"] != enemySeconds < 6.0)
+                        dodgeFailures.Add("on the enemy's turn " + Math.Round(enemySeconds, 2) +
+                            " s after the Dodge, the buff was " + ((bool)dodgeRow["enemyTurnBuff"] ? "" : "not ") +
+                            "active");
                     turns.ReachCasterTurn();
                     gritAt("caster turn 2");
+                    dodgeRow["casterTurnTwoCosts"] = string.Join(",", FcbCosts(actor));
                 }
                 else
                 {
@@ -487,9 +509,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     for (int tick = 0; tick < 40 && elapsed() < 6.5; tick++) turns.PumpCommands(false);
                     gritAt("after one round");
                 }
-                bool protectedWindow = turnBased ? (bool)dodgeRow["enemyTurnBuff"] &&
-                    (int)dodgeRow["enemyTurnAc"] == acActive : (bool)dodgeRow["fiveSecondsBuff"] &&
-                    (int)dodgeRow["fiveSecondsAc"] == acActive;
+                bool protectedWindow = turnBased ? dodgeRow["roundEnd"] != null &&
+                    dodgeRow["roundEnd"].Type == JTokenType.Object && (double)dodgeRow["roundEnd"]["seconds"] >= 5.5 &&
+                    (bool)dodgeRow["roundEnd"]["buff"] && (int)dodgeRow["roundEnd"]["ac"] == acActive :
+                    (bool)dodgeRow["fiveSecondsBuff"] && (int)dodgeRow["fiveSecondsAc"] == acActive;
                 dodgeRow["expiredBuff"] = actor.Buffs.GetBuff(gunslinger.Dodge.ArmorClassBuff) == null;
                 dodgeRow["expiredAc"] = actor.Stats.AC.ModifiedValue;
                 dodgeRow["elapsedSeconds"] = (Game.Instance.Player.GameTime - castTime).TotalSeconds.ToString("0.##");
@@ -616,6 +639,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             GunslingerClassBlueprintSet gunslinger, BlueprintAbilityResource grit, IList<string> failures, string stage)
         {
             var row = new JObject();
+            // A tripped target stays prone and a later trip against it proves
+            // nothing: the fixture stands it up before each whip.
+            UnitEntityData victim = target.Unit;
+            row["targetProneBefore"] = victim != null && (victim.Descriptor.State.Prone.Active ||
+                victim.Descriptor.State.Prone.ShouldBeActive);
+            if (victim != null)
+            {
+                victim.Descriptor.State.Prone.ShouldBeActive = false;
+                victim.Descriptor.State.Prone.Active = false;
+            }
             int attacks = rules.Attacks.Count, maneuvers = rules.Maneuvers.Count;
             int gritBefore = actor.Descriptor.Resources.GetResourceAmount(grit);
             float[] before = FcbCosts(actor);
@@ -636,7 +669,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 row["natural"] = (int)made[0].AttackRoll.Roll;
                 row["hit"] = made[0].AttackRoll.IsHit;
             }
-            if (trips.Length == 1) row["tripCmb"] = trips[0].InitiatorCMB;
+            if (trips.Length == 1)
+            {
+                RuleCombatManeuver trip = trips[0];
+                bool computed = !trip.AutoFailure && (trip.ConcealmentCheck == null || trip.ConcealmentCheck.Success);
+                row["tripComputed"] = computed;
+                row["tripAutoFailure"] = trip.AutoFailure;
+                row["tripConcealed"] = trip.ConcealmentCheck != null && !trip.ConcealmentCheck.Success;
+                if (computed) row["tripCmb"] = trip.InitiatorCMB;
+            }
             if (made.Length != 1 || rules.Attacks.Count - attacks != 1)
                 failures.Add(stage + ": the command made " + (rules.Attacks.Count - attacks) +
                     " attacks, expected exactly one stand-in attack");
@@ -667,14 +708,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 else
                 {
-                    // Real time: a pump acts the command; the execution
-                    // process it creates is ticked from the next pump on.
+                    // Real time: a pump acts the command. Its execution process
+                    // is ticked directly, as the native ability executor does:
+                    // a finished command leaves the queue the pump walks.
                     for (int tick = 0; !command.IsActed && !command.IsFinished && tick < 60; tick++)
                         turns.PumpCommands(false);
                     if (seed != 0) UnityEngine.Random.InitState(seed);
                     for (int tick = 0; command.ExecutionProcess != null && !command.ExecutionProcess.IsEnded &&
-                        tick < 60; tick++)
-                        turns.PumpCommands(false);
+                        tick < 120; tick++)
+                        turns.Execute(command.ExecutionProcess.Tick);
                 }
                 if (!command.IsActed)
                     throw new InvalidOperationException("The native command never acted: " +
@@ -686,6 +728,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ";canActInCombat=" + caster.CombatState.CanActInCombat + ";cooldown=" +
                         caster.CombatState.HasCooldownForCommand(command) + ";close=" + command.IsUnitEnoughClose +
                         ";costs=" + string.Join(",", FcbCosts(caster)) + ").");
+                // A command still acting when the next turn is prepared would
+                // charge its action again (TurnController.Prepare); a finished
+                // deed command leaves the queue before anything else runs.
+                if (!command.IsFinished && command.IsActed && (command.ExecutionProcess == null ||
+                        command.ExecutionProcess.IsEnded))
+                    caster.Commands.InterruptAll(true);
+                caster.Commands.RemoveFinishedAndUpdateQueue();
+                if (caster.Commands.Raw.Any(value => value != null))
+                    throw new InvalidOperationException("A deed command stayed queued after it finished: " +
+                        string.Join(",", caster.Commands.Raw.Where(value => value != null)
+                            .Select(value => value.GetType().Name + ":" + value.Result).ToArray()));
                 return command;
             }
             finally
