@@ -53,9 +53,9 @@ as the guarded batches complete.
 | Item | Placement | Donor (audit-proven) | Chassis | Signature / deviations | Status |
 |---|---|---|---|---|---|
 | Shambling Mound | SNA VI (1d3 at VII, 1d4+1 at VIII-IX) | `CR6_ShamblingMound` `b98ae409beb5e8543a75b82ecda082a7`, sanitized body | Plant 9 HD, Large, 21/10/17/7/10/9, 20 ft, NA +10, two native 2d6 slams, fire resistance 10, electricity immunity, Power Attack, Iron Will, Lightning Reflexes, Cleave, Weapon Focus (slam) | slam grab and constrict 2d6+7 on the shared lifecycle; Electric Fortitude's Constitution gain, swim and the native poison aura omitted | complete; internally accepted on the Sprints 3-8 evidence |
-| Giant Flytrap | SNA VII (1d3 at VIII, 1d4+1 at IX) | `CR10_GiantFlytrapStandard` `fb824352b7968fb4d8103ac439644633`, sanitized body | Plant 13 HD, Huge, 25/18/25/1/12/6, 10 ft, NA +10, four native 1d8 bites, acid resistance 20, native 60-ft blindsight (tremorsense), trip immunity, Cleave, Great Fortitude, Improved Initiative, Power Attack, Skill Focus (Stealth), Weapon Focus (bite) | one grab link per bite (four at most) on the shared lifecycle; engulf of a Medium or smaller foe held since the round began (1d8+7 bludgeoning plus 1d8 acid each round inside); release on escape, the last link's end, disposal, the swallow lifecycle and the area-leave sweep (corrected 2026-09-25); Vital Strike omitted | complete; corrected and requalified (correction record) |
+| Giant Flytrap | SNA VII (1d3 at VIII, 1d4+1 at IX) | `CR10_GiantFlytrapStandard` `fb824352b7968fb4d8103ac439644633`, sanitized body | Plant 13 HD, Huge, 25/18/25/1/12/6, 10 ft, NA +10, four native 1d8 bites, acid resistance 20, native 60-ft blindsight (tremorsense), trip immunity, Cleave, Great Fortitude, Improved Initiative, Power Attack, Skill Focus (Stealth), Weapon Focus (bite) | one grab link per bite (four at most) on the shared lifecycle; engulf of a Medium or smaller foe held since the round began (1d8+7 bludgeoning plus 2d6 acid each round inside); release on escape, the last link's end, disposal, the swallow lifecycle and the area-leave sweep (corrected 2026-09-25); Vital Strike omitted | complete; corrected and requalified (correction record) |
 | Purple Worm | SNA VIII (1d3 at IX) | native `PurpleWormSummoned` `bf2216f48b3f4d24c9c502007649340d`, dedicated summon, rebuilt on the natural builder | Magical beast 16 HD, Gargantuan, 35/6/25/1/8/8, 20 ft, NA +22, native bite and sting, exact native sting poison, trip immunity, Critical Focus, Improved Critical (bite), Power Attack, Weapon Focus (bite) | bite grab holds; a later turn's successful maintain check swallows a foe up to one size smaller whole through the native part (swallowed state cloned from the native worm; corrected 2026-09-25); burrow, swim, the native brain, Awesome Blow, Improved Bull Rush, Staggering Critical, Weapon Focus (sting) omitted | complete; corrected and requalified (correction record) |
-| Grapple link ownership and mouth ownership (2026-09-26) | every grabber | `UnitPartSummonGrappleLinks` on the holder | limb slot plus target id; mouth occupancy for held and engulfed victims; read-only reconciliation | the establishing limb is owned for the life of the hold and the maintain deals its damage, not the first grab limb's; one target per mouth in the attack roll and in the planned full attack; the cats' rake is made by the maintain, where the tabletop puts it, because the game's initiator part leaves a holder unable to act | complete in session; the post-reload maintain is BLOCKED by the engine (no active grapple survives a save; a unit part is written by type without its contents) with the safe post-load state proven |
+| Grapple link ownership and mouth ownership (2026-09-26) | every grabber | `UnitPartSummonGrappleLinks` on the holder | limb slot plus target id; mouth occupancy for held and engulfed victims; read-only reconciliation | the establishing limb is owned for the life of the hold and the maintain deals its damage, not the first grab limb's; one target per mouth in the attack roll and in the planned full attack; the cats' rake is made by the maintain, where the tabletop puts it, because the game's initiator part leaves a holder unable to act | complete; an active link is session-scoped under OwnerAcceptedEngineLimitation: ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD (owner decision, 2026-09-26), with the clean post-reload reset proven |
 | Shared grapple lifecycle | Owlbear, Shambling Mound, Giant Flytrap, Purple Worm (Sprints 6-8 reuse) | native `UnitPartGrappleInitiator` / `UnitPartGrappleTarget` / `UnitPartSwallowWhole` | `SummonGrabComponent`, `SummonHoldComponent`, `SummonSwallowLifecycleComponent`, `SummonGrappleAreaSafeguard`; shared `Grapple.Hold` and `Grapple.Grappled` buffs | grab by limb identity against a foe of the holder's size or smaller, +4 through the game's check; maintain +5 more each round with the establishing limb's own weapon damage, or release; both checks apply the attack-roll natural 1 and 20 over the engine's sum-only maneuver rule; swallow whole on a later turn's successful check against a foe up to one size smaller; multi-link holds for the Flytrap; hold-buff end releases its own target(s); swallow spit-out on traits end; area leave/load safeguard (corrected 2026-09-25) | complete; corrected and requalified (correction record) |
 
 Placements propagate to the 1d3 / 1d4+1 tiers by construction (9 new
@@ -135,7 +135,7 @@ The 2026-09-25 order on the reviewed head `2569a8eb` (runtime commit
 `30a13445`) found the draft's cats, grab sizes, Flytrap, mephit roles,
 Cyclops, Web, hooves and visual resources short of the charter and the
 rules, and required exact implementation or a BLOCKED mark. Everything was
-implemented; nothing is BLOCKED. The corrected mechanics are those in the
+implemented. The corrected mechanics are those in the
 sprint tables above (marked "corrected 2026-09-25"); the correction record
 in the state file carries the ten items, and the requalification below is
 the same record's evidence.
@@ -206,10 +206,12 @@ unmerged).
 
 Reviewer findings and closure, 2026-09-26 order: item 1 (grapple attack
 identity) is owned per link with mouth occupancy and proven live for a
-bite hold, a foreclaw hold and four flytrap mouths; its post-reload
-maintain is BLOCKED by the engine, which carries no active grapple across
-a save and writes a unit part by type without its contents, with the safe
-post-load state proven instead. Item 2 (held-target rake) is made by the
+bite hold, a foreclaw hold and four flytrap mouths; an active link is
+session-scoped under OwnerAcceptedEngineLimitation:
+ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD, the owner's decision of
+2026-09-26, because Kingmaker carries no active grapple across a save and
+writes a unit part by type without its contents, and the clean
+post-reload reset is proven. Item 2 (held-target rake) is made by the
 maintain check the tabletop puts it in, because the game's own initiator
 part leaves a holder unable to act: two genuine rake attacks against the
 exact held foe, logged, never the turn the hold was taken and never
@@ -223,8 +225,8 @@ audited cadence. Item 4 (Web projectile) pins one exact identity the donor
 audit established, the library carrying 170 projectiles and no web among
 them. Item 5 (evidence) is this gate list. Nothing was reclassified as an
 accepted deviation. Internal acceptance on this evidence; HumanReview:
-NOT_PERFORMED_NONBLOCKING.
-OwnerDelegationGranted.
+NOT_PERFORMED_NONBLOCKING. OwnerDelegationGranted.
+
 ## Appendix A - tabletop stat blocks (fetched 2026-09-24 from the public SRD)
 
 Recorded here so the profiles can be checked against their source without a

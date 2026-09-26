@@ -432,8 +432,8 @@ def validate(root: Path) -> None:
         "IsSummonManeuverSuccess(", "internal static class SummonManeuverChecks",
         "SummonManeuverChecks.Succeeded(maneuver)",
         "UnitCondition.ImmuneToCombatManeuvers))")
-    # Final corrections (2026-09-26): the durable link store, the rake the
-    # maintain makes, the mouth that stays shut and the Web's exact projectile.
+    # Final corrections (2026-09-26): the link store, the rake the maintain
+    # makes, the mouth that stays shut and the Web's exact projectile.
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonGrappleLinkState.cs",
         "public sealed class UnitPartSummonGrappleLinks : UnitPart",
         "private List<string> _links", "internal string Encode()",
