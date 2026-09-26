@@ -35,7 +35,10 @@ namespace KingmakerGunslinger.Summoning
             S("dire-bear", 1.15f),
             S("elephant", 0.90f),
             S("mastodon", 1.15f),
-            S("roc", 1.10f)
+            S("roc", 1.10f),
+            // Sprint 8: the tiger on the leopard rig reads Large; the cheetah lean
+            S("tiger", 1.25f),
+            S("cheetah", 0.92f)
         };
 
         internal static IReadOnlyList<SummonViewScaleSpec> All
@@ -53,7 +56,7 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Values.Length != 8 || Values.Any(value => value.Multiplier <
+            if (Values.Length != 10 || Values.Any(value => value.Multiplier <
                     0.20f || value.Multiplier > 1.25f) ||
                 Values.Select(value => value.CreatureKey).Distinct(
                     StringComparer.Ordinal).Count() != Values.Length ||

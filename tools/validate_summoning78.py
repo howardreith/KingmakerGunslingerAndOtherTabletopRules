@@ -123,20 +123,26 @@ def validate(root: Path) -> None:
     progression_firearm_entries = [entry for entry in manifest["entries"]
         if entry.get("milestone") == "Better Vendors progression" and
         entry.get("symbol", "").startswith("KMG.Firearms.")]
+    # Expanded Summoning Phase 1 appends creature identities beyond the 1181
+    # entries the frozen prefix carries under the "Expanded Summoning"
+    # milestone; validate_expanded_summoning_phase1.py pins the exact append.
+    phase1_count = sum(1 for entry in manifest["entries"]
+        if entry.get("milestone") == "Expanded Summoning") - 1181
     if (len(manifest["entries"]) != 1439 + len(midgame_entries) + len(spear_entries) +
             len(eastern_entries) + len(focused_entries) +
             len(martial_performance_entries) + len(brown_fur_entries) +
             len(urban_barbarian_entries) + len(bodyguard_entries) +
             len(helpful_entries) + len(heirloom_entries) +
             len(elemental_races_entries) + len(teleportation_entries) + len(circle_entries) +
-            len(progression_firearm_entries)
+            len(progression_firearm_entries) + phase1_count
             or len(active) != 1438 + len(midgame_active) + len(spear_entries) +
             len(eastern_entries) + len(focused_entries) +
             len(martial_performance_active) +
             len(brown_fur_active) + len(urban_barbarian_active) +
             len(bodyguard_active) + len(helpful_active) + len(heirloom_active) +
             len(elemental_races_active) + sum(1 for entry in teleportation_entries + circle_entries +
-                progression_firearm_entries if entry.get("status") == "active")
+                progression_firearm_entries if entry.get("status") == "active") +
+            phase1_count
             or len(reserved) != 1 + len(martial_performance_reserved) +
             len(brown_fur_reserved) +
             len(urban_barbarian_reserved) + len(bodyguard_reserved) +

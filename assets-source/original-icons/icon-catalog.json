@@ -5,9 +5,9 @@
     "commit": "db1fccf648b25baa53667dd00ac566e2a0d7f6b9",
     "version": "0.0.127",
     "registryPath": "blueprints/blueprints.json",
-    "registrySha256": "2657089571ab3b6ea2a2fdcab44541eb54b276b766fb1edb18ca308f45bb8f4d",
+    "registrySha256": "317d3249e6f66f4204879953b29acb77bee993a7344895e1cdd53d0173612177",
     "publishedRegistrySha256": "00f454f0704918c6cffd00c047f100e87daa67d4fb6d4eab132a85bd67586d5f",
-    "registryExtensionAuthorization": "Magic Circle follow-up: append three exact family parents after the preserved 1910-entry ledger. validate_magic_circle.py preserves the 1886-entry pre-feature prefix and all 24 accepted Magic Circle identities. Better Vendors progression: append exactly 43 generic magic weapon variant identities (Pistol/Musket/Blunderbuss ordinary +2..+5 and Reliable +1..+5; Elven Branched Spear, Wakizashi, Katana and Nodachi +2..+5) after the preserved 1913-entry ledger. validate_better_vendors138.py preserves that prefix and the exact appended identities. Each variant's item icon is its canonical +1 sibling's existing sprite (intentional-family-share); no art, cache or protected assignment changes."
+    "registryExtensionAuthorization": "Magic Circle follow-up: append three exact family parents after the preserved 1910-entry ledger. validate_magic_circle.py preserves the 1886-entry pre-feature prefix and all 24 accepted Magic Circle identities. Better Vendors progression: append exactly 43 generic magic weapon variant identities (Pistol/Musket/Blunderbuss ordinary +2..+5 and Reliable +1..+5; Elven Branched Spear, Wakizashi, Katana and Nodachi +2..+5) after the preserved 1913-entry ledger. validate_better_vendors138.py preserves that prefix and the exact appended identities. Each variant's item icon is its canonical +1 sibling's existing sprite (intentional-family-share); no art, cache or protected assignment changes. Expanded Summoning Phase 1 Sprint 3: append exactly 92 summoning identities after the preserved 1956-entry ledger (Pony, Horse, Owlbear and Cyclops units with their 45 logical placements and 34 template executions, three Nature's Ally Frost Giant wrappers and six Cyclops Flash of Insight specials); tools/expanded_summoning_manifest.py preserves the prefix and ExpandedSummoningSprint3Tests pins the appended tail. Their icons are four new project-owned Blender renders delegated to the expanded-summoning manifest. Expanded Summoning Phase 1 Sprint 4: append exactly 19 summoning identities after the 2048-entry ledger (Shambling Mound, Giant Flytrap and Purple Worm units with their nine Nature's Ally placements and seven shared summon grapple lifecycle specials); tools/validate_expanded_summoning_phase1.py pins the whole Phase 1 append and ExpandedSummoningSprint4Tests pins the appended tail. Their icons are three new project-owned Blender renders delegated to the expanded-summoning manifest. Expanded Summoning Phase 1 Sprint 5: append exactly 126 summoning identities after the 2067-entry ledger (Dust, Ice, Magma, Ooze, Salt and Steam Mephit units with their seventy-two Monster and Nature's Ally placements and forty-eight breath, spell-like ability, resource, cast action, brain and traits specials); tools/validate_expanded_summoning_phase1.py pins the whole Phase 1 append and ExpandedSummoningSprint5Tests pins the appended tail. Their icons are six new project-owned Blender renders delegated to the expanded-summoning manifest. Expanded Summoning Phase 1 Sprints 6-8: append exactly 27 summoning identities after the 2193-entry ledger (eight Sprint 6 grab-carrier and Giant Spider web specials, four Sprint 7 big-cat grab-and-rake carriers, and the Sprint 8 Tiger unit with its six Nature's Ally placements, the project 1d8 claw weapon, its carrier and the Cheetah's sprint pack); tools/validate_expanded_summoning_phase1.py pins the whole Phase 1 append and ExpandedSummoningSprint6Tests, Sprint7Tests and Sprint8Tests pin the appended tails. The Tiger's icon is one new project-owned Blender render delegated to the expanded-summoning manifest. Expanded Summoning Phase 1 correction order (2026-09-25): append exactly 24 summoning identities after the 2220-entry ledger (the multi-link hold and held states, the Giant Flytrap engulfed state, the Cyclops hide armor, the Pony and Horse docile-hoof carriers, the Dust, Ice and Magma Mephit role abilities, resources, cast actions and states, the wind wall area, the ally-safe stinking cloud area and the pyrotechnics blinded state); tools/validate_expanded_summoning_phase1.py pins the whole Phase 1 append and ExpandedSummoningCorrectionTests pins the appended tail. No new icons: the project mephit abilities wear their mephit's existing summon icon."
   },
   "coveragePrefixes": [
     "KMG.ElementalRaces.",
@@ -73,8 +73,8 @@
     },
     {
       "path": "assets-source/original-icons/expanded-summoning/icon-manifest.json",
-      "sha256": "b135ff1c7e2c109a46c96c7eec760947b7247a876b09d5bc669cc16ca1430674",
-      "scope": "Source/export/consumer authority for all 77 summoning identities."
+      "sha256": "8ffeb716ff790bb2d7d81665868cc15b3a2dccf59637c214e288c12b97d6931d",
+      "scope": "Source/export/consumer authority for all 91 summoning identities (77 roster-mission concepts, the Phase 1 Sprint 3 Pony, Horse, Owlbear and Cyclops, the Sprint 4 Shambling Mound, Giant Flytrap and Purple Worm, the Sprint 5 Dust, Ice, Magma, Ooze, Salt and Steam Mephits, and the Sprint 8 Tiger)."
     },
     {
       "path": "assets-source/original-icons/cord-of-stubborn-resolve/cord-of-stubborn-resolve-assets.json",
@@ -439,6 +439,26 @@
       "reason": "Preserve existing action/item/creature art or non-icon game asset. Protection is not fresh visual approval."
     },
     {
+      "path": "assets/game/icons/expanded-summoning/pony.png",
+      "sha256": "9283971ef0e33c5600bcc95ea7f6c53d8f3c236be69531597a5e65cfdab4a212",
+      "reason": "Project-owned Blender render added by Expanded Summoning Phase 1 Sprint 3; internally reviewed, HumanReview NOT_PERFORMED_NONBLOCKING. Protection is not fresh visual approval."
+    },
+    {
+      "path": "assets/game/icons/expanded-summoning/horse.png",
+      "sha256": "c52d920b00a6dfc0f00763df3cc0a03d340d709f69351b8e0adcd4d459a31ea1",
+      "reason": "Project-owned Blender render added by Expanded Summoning Phase 1 Sprint 3; internally reviewed, HumanReview NOT_PERFORMED_NONBLOCKING. Protection is not fresh visual approval."
+    },
+    {
+      "path": "assets/game/icons/expanded-summoning/owlbear.png",
+      "sha256": "3b43da63e97f4f57c1987fe8fea1ffcaecfa78f1068b04caa63c637d6cdbe699",
+      "reason": "Project-owned Blender render added by Expanded Summoning Phase 1 Sprint 3; internally reviewed, HumanReview NOT_PERFORMED_NONBLOCKING. Protection is not fresh visual approval."
+    },
+    {
+      "path": "assets/game/icons/expanded-summoning/cyclops.png",
+      "sha256": "67b2301b61ee0e645717e6801449626850b18b10e4d24a4594f18aeccc9f9ddb",
+      "reason": "Project-owned Blender render added by Expanded Summoning Phase 1 Sprint 3; internally reviewed, HumanReview NOT_PERFORMED_NONBLOCKING. Protection is not fresh visual approval."
+    },
+    {
       "path": "assets/game/icons/expanded-summoning/redcap.png",
       "sha256": "73fa7c602f5fc9cf7d4b0cd25eb7059012b79d50823bf994e592e46714ea29bc",
       "reason": "Preserve existing action/item/creature art or non-icon game asset. Protection is not fresh visual approval."
@@ -667,6 +687,56 @@
       "path": "assets/bundles/kingmakergunslinger.firearms",
       "sha256": "b3cffb49ba32af10db12470401a58f6dff0ead9f219f87e41d9ec138d62fbaeb",
       "reason": "Protected existing AssetBundle; meshes/materials/VFX/appearances unchanged."
+    },
+    {
+      "path": "assets/game/icons/expanded-summoning/shambling-mound.png",
+      "sha256": "ada7978d2a31da033809a5fb6bd25bc75ea77ee2b9d7712049abca195938ad5d",
+      "reason": "Project-owned Blender render added by Expanded Summoning Phase 1 Sprint 4; internally reviewed, HumanReview NOT_PERFORMED_NONBLOCKING. Protection is not fresh visual approval."
+    },
+    {
+      "path": "assets/game/icons/expanded-summoning/giant-flytrap.png",
+      "sha256": "ac8efbf7cc54e781589b87b06f0dadff3082ab7d245709d6a36afbfa1d5e248c",
+      "reason": "Project-owned Blender render added by Expanded Summoning Phase 1 Sprint 4; internally reviewed, HumanReview NOT_PERFORMED_NONBLOCKING. Protection is not fresh visual approval."
+    },
+    {
+      "path": "assets/game/icons/expanded-summoning/purple-worm.png",
+      "sha256": "cb235f3f9fbb4e865b17982abad1df6faad5c0a7ce884e130027430763f8e20d",
+      "reason": "Project-owned Blender render added by Expanded Summoning Phase 1 Sprint 4; internally reviewed, HumanReview NOT_PERFORMED_NONBLOCKING. Protection is not fresh visual approval."
+    },
+    {
+      "path": "assets/game/icons/expanded-summoning/dust-mephit.png",
+      "sha256": "805eba6909b5ab087a39a027548058caba8a9a0a2dc3444cdbff975a5413f38b",
+      "reason": "Project-owned Blender render added by Expanded Summoning Phase 1 Sprint 5; internally reviewed, HumanReview NOT_PERFORMED_NONBLOCKING. Protection is not fresh visual approval."
+    },
+    {
+      "path": "assets/game/icons/expanded-summoning/ice-mephit.png",
+      "sha256": "075d04d41a82300aa25b2bb00b256fd99ba0e6c3f0f588f28ebf2240b2bc7037",
+      "reason": "Project-owned Blender render added by Expanded Summoning Phase 1 Sprint 5; internally reviewed, HumanReview NOT_PERFORMED_NONBLOCKING. Protection is not fresh visual approval."
+    },
+    {
+      "path": "assets/game/icons/expanded-summoning/magma-mephit.png",
+      "sha256": "b9bf70f00c90ca5f21a83dffa9d0a31aba2d21889f44109be6197927f027d10a",
+      "reason": "Project-owned Blender render added by Expanded Summoning Phase 1 Sprint 5; internally reviewed, HumanReview NOT_PERFORMED_NONBLOCKING. Protection is not fresh visual approval."
+    },
+    {
+      "path": "assets/game/icons/expanded-summoning/ooze-mephit.png",
+      "sha256": "05b85958c8cf46930a65d79ba0cd406d2a851906536d7b2ac318fb7ebe0272f6",
+      "reason": "Project-owned Blender render added by Expanded Summoning Phase 1 Sprint 5; internally reviewed, HumanReview NOT_PERFORMED_NONBLOCKING. Protection is not fresh visual approval."
+    },
+    {
+      "path": "assets/game/icons/expanded-summoning/salt-mephit.png",
+      "sha256": "06dd69fadd0baf907e5d3084fb5d2ed20874902a00a5b17fb9c81ce2f1b6f778",
+      "reason": "Project-owned Blender render added by Expanded Summoning Phase 1 Sprint 5; internally reviewed, HumanReview NOT_PERFORMED_NONBLOCKING. Protection is not fresh visual approval."
+    },
+    {
+      "path": "assets/game/icons/expanded-summoning/steam-mephit.png",
+      "sha256": "10df7e50b2650cc661b5645c43ed28b5850b39dc44ab8590f36951fcd72f51a8",
+      "reason": "Project-owned Blender render added by Expanded Summoning Phase 1 Sprint 5; internally reviewed, HumanReview NOT_PERFORMED_NONBLOCKING. Protection is not fresh visual approval."
+    },
+    {
+      "path": "assets/game/icons/expanded-summoning/tiger.png",
+      "sha256": "0c2c7447cf4c8559f5bc2bd0882aac5140b84c75dd2022edb90d2fe87a1c1ae4",
+      "reason": "Project-owned Blender render added by Expanded Summoning Phase 1 Sprint 8; internally reviewed, HumanReview NOT_PERFORMED_NONBLOCKING. Protection is not fresh visual approval."
     }
   ],
   "protectedAssignmentFiles": [

@@ -14,7 +14,8 @@ namespace KingmakerGunslinger.Blueprints
         {
             if (bySymbol == null) throw new ArgumentNullException("bySymbol");
             SummonIconCatalog.Validate();
-            if (ExpandedSummoningProjectIcons.LoadedCount != 77 ||
+            if (ExpandedSummoningProjectIcons.LoadedCount !=
+                    SummonIconCatalog.All.Count ||
                 ExpandedSummoningProjectIcons.FallbackCount != 0)
                 throw new InvalidOperationException(
                     "Project summon icons were not loaded exactly once.");
@@ -40,6 +41,28 @@ namespace KingmakerGunslinger.Blueprints
                 SummonNativeExpansionCatalog.All)
                 Set(bySymbol, native.Symbol,
                     ExpandedSummoningProjectIcons.Require(native.IconKey));
+            // The Cyclops's own summon icon marks its Flash of Insight on the
+            // action bar; the ability has no separate art of its own.
+            Set(bySymbol, "KMG.Summoning.Special.Cyclops.FlashOfInsight",
+                ExpandedSummoningProjectIcons.Require("cyclops"));
+            // Sprint 8: the Cheetah's project sprint has no art of its own.
+            Set(bySymbol, "KMG.Summoning.Special.Cheetah.Sprint",
+                ExpandedSummoningProjectIcons.Require("cheetah"));
+            // Sprint 6: the Giant Spider's project web has no art of its own.
+            Set(bySymbol, "KMG.Summoning.Special.GiantSpider.Web",
+                ExpandedSummoningProjectIcons.Require("giant-spider"));
+            // Sprint 5: the cloned native breaths and spells keep their native
+            // art; the two project bursts (Dehydrate, Boiling Rain) have none
+            // of their own and wear their mephit's summon icon.
+            foreach (MephitVariantProfile profile in
+                ExpandedSummoningSpecialProfiles.MephitVariants)
+                foreach (KeyValuePair<string, string> slot in
+                    ExpandedSummoningSpecialBuilder.MephitSpellLikeSlots(profile))
+                    if (ExpandedSummoningSpecialBuilder.IsProjectMephitAbility(slot.Value))
+                        Set(bySymbol, "KMG.Summoning.Special." +
+                            ExpandedSummoningSpecialBuilder.MephitToken(profile.Key) +
+                            "." + slot.Key,
+                            ExpandedSummoningProjectIcons.Require(profile.Key));
         }
 
         private static void Set(IDictionary<string, BlueprintScriptableObject>

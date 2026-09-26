@@ -125,6 +125,7 @@
     <Compile Include="Summoning\SummonViewScaleCatalog.cs" />
     <Compile Include="Summoning\ExpandedSummoningViewScalePatch.cs" />
     <Compile Include="Summoning\ExpandedSummoningPteranodonViewPatch.cs" />
+    <Compile Include="Summoning\ExpandedSummoningVisualVariantPatch.cs" />
     <Compile Include="Summoning\ExpandedSummoningVariantMenuPatch.cs" />
     <Compile Include="Summoning\ExpandedSummoningVariantMenuRuntime.cs" />
     <Compile Include="Summoning\SummonIconCatalog.cs" />
@@ -135,6 +136,7 @@
     <Compile Include="Summoning\SummonTemplateSmitePolicy.cs" />
     <Compile Include="Summoning\ExpandedSummoningSmiteComponent.cs" />
     <Compile Include="Summoning\ExpandedSummoningSpecialCombatComponents.cs" />
+    <Compile Include="Summoning\SummonGrappleLinkState.cs" />
     <Compile Include="Summoning\SummonAlignmentRuntimePolicy.cs" />
     <Compile Include="Summoning\SummonSameTurnActivationPolicy.cs" />
     <Compile Include="Summoning\SummonSameTurnActivationRuntime.cs" />
@@ -1054,6 +1056,9 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ProjectedMenu.cs" />
     <Compile Include="RuntimeTesting\ExpandedSummoningProjectedMenuSubject.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.PteranodonReview.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningNativeDonors.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningCorrection.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningCreatureReview.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.PteranodonAttachedView.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircle.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircleEvil.cs" />

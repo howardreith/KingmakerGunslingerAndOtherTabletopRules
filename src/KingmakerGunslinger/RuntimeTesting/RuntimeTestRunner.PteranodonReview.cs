@@ -53,6 +53,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         private const int MotionReviewFadeBudget = 600;
         private const float MotionReviewIntactDissolve = 0.02f;
 
+        private string _motionReviewSubjectName =
+            ExpandedSummoningPteranodonViewPatch.PteranodonBlueprintName;
+        private string _motionReviewFilePrefix = "pteranodon-review";
         private int _motionReviewFrame = -1;
         private int _motionReviewWaited;
         private bool _motionReviewComplete;
@@ -67,6 +70,33 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         internal string MotionReviewSummary { get { return _motionReviewSummary; } }
         internal bool MotionReviewValid { get { return _motionReviewValid; } }
+
+        /// <summary>
+        /// Points the review at another creature and forgets the previous one,
+        /// so one request can review several summons in turn. The persistence
+        /// stages never call this and keep reviewing the Pteranodon.
+        /// </summary>
+        private void ResetExpandedSummoningMotionReview(string subjectBlueprintName,
+            string filePrefix)
+        {
+            if (string.IsNullOrWhiteSpace(subjectBlueprintName))
+                throw new ArgumentException("subjectBlueprintName");
+            if (string.IsNullOrWhiteSpace(filePrefix))
+                throw new ArgumentException("filePrefix");
+            _motionReviewSubjectName = subjectBlueprintName;
+            _motionReviewFilePrefix = filePrefix;
+            _motionReviewFrame = -1;
+            _motionReviewWaited = 0;
+            _motionReviewComplete = false;
+            _motionReviewSubjectResolved = false;
+            _motionReviewSubject = null;
+            _motionReviewAttack = null;
+            _motionReviewOverlayWasOpen = false;
+            _motionReviewCaptures.Clear();
+            _motionReviewFrameSeconds.Clear();
+            _motionReviewSummary = "<not run>";
+            _motionReviewValid = false;
+        }
 
         /// <summary>
         /// One step per update. True once the review has finished (or found no
@@ -86,8 +116,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _motionReviewSubject = (units ?? Array.Empty<UnitEntityData>())
                         .FirstOrDefault(value => value != null &&
                             value.Blueprint != null && value.Blueprint.name ==
-                            ExpandedSummoningPteranodonViewPatch
-                                .PteranodonBlueprintName);
+                            _motionReviewSubjectName);
                     if (_motionReviewSubject == null || _motionReviewSubject.View == null)
                     {
                         _motionReviewSummary = "stage=" + stage + ";no-subject";
@@ -250,7 +279,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private void Capture(UnitEntityData unit, string stage, string moment)
         {
-            string fileName = "pteranodon-review-" + stage + "-" + moment + ".png";
+            string fileName = _motionReviewFilePrefix + "-" + stage + "-" + moment + ".png";
             _motionReviewCaptures.Add(WriteExpandedSummoningPartyCameraCapture(
                 unit, _request.EvidenceDirectory, fileName) + ";moment=" + moment);
         }
@@ -331,6 +360,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         renderer.sharedMesh.name) + ";dissolve=" +
                     DescribeDissolve(renderer) + ";intact=" +
                     (DissolveAmount(unit) <= MotionReviewIntactDissolve ? "true" : "false") +
+                    ";material=" + DescribeMaterialSlots(renderer) +
                     ";visual=" +
                     ExpandedSummoningPteranodonViewPatch.DescribeView(unit.View)
                         .Split(';')[0];
@@ -350,6 +380,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 if (output != null) UnityEngine.Object.Destroy(output);
             }
+        }
+
+        /// <summary>
+        /// Shader name and the colour/tint slots the renderer's material
+        /// declares, so a creature-specific tint can be designed against the
+        /// slots that exist rather than guessed. Unity 2018 cannot enumerate
+        /// a shader's properties, so this is a probe list.
+        /// </summary>
+        private static string DescribeMaterialSlots(SkinnedMeshRenderer renderer)
+        {
+            if (renderer == null || renderer.sharedMaterial == null) return "<none>";
+            Material material = renderer.sharedMaterial;
+            var slots = new List<string>();
+            foreach (string slot in new[] { "_Color", "_MainColor", "_TintColor",
+                "_Tint", "_BaseColor", "_EmissionColor", "_Emissive",
+                "_ColorMask", "_TintMask", "_MainTex", "_DissolveColor",
+                "_Dissolve", "_Metallic", "_Glossiness", "_Smoothness" })
+                if (material.HasProperty(slot)) slots.Add(slot);
+            return (material.shader == null ? "<no-shader>" : material.shader.name)
+                .Replace(';', ',').Replace('|', '/') + "[" +
+                string.Join(",", slots.ToArray()) + "]";
         }
 
         /// <summary>
