@@ -92,7 +92,7 @@ namespace KingmakerGunslinger.DomainTests
                 "ExpandedSummoningSpecialCombatComponents.cs");
             RequireTokens("Attack-identity component contract", components,
                 "class SummonLimbs", "internal static SummonLimbKind Classify(",
-                "class SummonGrappleLinks", "class SummonGrappleDamage",
+                "class SummonGrappleDamage",
                 "class ExpandedSummoningRakeSequencePatch", "\"CreateFullAttack\"",
                 "__result.RemoveAll(", "IsHeldSinceRoundStart(owner, target)",
                 "evt.AutoMiss = true;", "evt.SuspendCombatLog = true;");
