@@ -59,6 +59,7 @@
     <Compile Include="FavoredClassScopeStackTests.cs" />
     <Compile Include="FavoredClassRangePresentationTests.cs" />
     <Compile Include="GunslingerDeedFixTests.cs" />
+    <Compile Include="HarnessEvidenceTests.cs" />
     <Compile Include="FavoredClassScopeActivityTests.cs" />
     <Compile Include="ElementalMostlyHumanTests.cs" />
     <Compile Include="FavoredClassAdvancedTests.cs" />

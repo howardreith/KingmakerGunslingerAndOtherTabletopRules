@@ -557,7 +557,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             };
             try
             {
-                evidence["misfire"] = ObserveFavoredClassMisfire(create, leaves, failures["misfire"]);
+                evidence["misfire"] = ObserveFavoredClassMisfire(create, leaves, gunslinger, failures["misfire"]);
                 evidence["confirmation"] = ObserveFavoredClassConfirmation(create, leaves, gunslinger,
                     failures["confirmation"]);
                 evidence["pistolWhip"] = ObserveFavoredClassPistolWhip(create, leaves, gunslinger,
@@ -595,9 +595,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             string evidencePath = WriteFavoredClassEvidence("favored-class-gunslinger-mechanics.json", evidence);
             assertions.Add(Assertion("fcb-misfire-native-threshold",
-                "native firearm attacks: the wielder's per-type reduction lowers the authoritative threshold after ammunition, never below 1, and never reaches another firearm type",
+                "native firearm attacks (M07): the wielder's per-type reduction lowers the authoritative threshold after the base, Broken (+4, +2 with Gun Training), ammunition and Reliable, never below 1 and never raising a 0; it never reaches another firearm type, follows the fired weapon in either hand, and Dead Shot and Scatter Shot use the same threshold",
                 Describe(evidence["misfire"], failures["misfire"]), failures["misfire"].Count == 0,
-                "RuleAttackRoll with seeded native d20 through FirearmMisfireRuntime; FirearmRuntimeState"));
+                "RuleAttackRoll with seeded native d20 through FirearmMisfireRuntime; DeadShotRuntime and ScatterShotRuntime volleys; FirearmRuntimeState conditions"));
             assertions.Add(Assertion("fcb-confirmation-native-roll",
                 "firearm shots receive only the excess of the earned bonus over Critical Focus on CriticalConfirmationBonus; melee attacks (including the Pistol-Whip surrogate) receive nothing; attack bonus and critical edge are unchanged",
                 Describe(evidence["confirmation"], failures["confirmation"]),
@@ -615,7 +615,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Describe(evidence["dodge"], failures["dodge"]), failures["dodge"].Count == 0,
                 "GunslingerDodgeArmorClassBonus through the exact Dodge buff"));
             assertions.Add(Assertion("fcb-initiative-native-rule",
-                "the Initiative branch raises the deed's bonus only while the deed applies (positive grit)",
+                "the Initiative branch raises the deed's bonus only while the deed applies: positive grit, or 0 grit with True Grit (Initiative); neither the deed nor the improvement at 0 grit without it",
                 Describe(evidence["initiative"], failures["initiative"]), failures["initiative"].Count == 0,
                 "RuleInitiativeRoll with the deed's IUnitInitiativeHandler"));
             assertions.Add(Assertion("fcb-maneuver-native-cmb",
@@ -652,55 +652,230 @@ namespace KingmakerGunslinger.RuntimeTesting
             return feature.GetRank();
         }
 
+        // M07: the authoritative threshold (base, Broken with or without Gun
+        // Training, ammunition, Reliable) less the wielder's reduction for the
+        // fired weapon's type, applied last with a floor of 1 that never
+        // raises a 0; every consumer of the threshold (ordinary shots from
+        // either hand, Dead Shot, Scatter Shot) agrees. Each case is a native
+        // attack with a seeded natural d20; its expectation is the item's
+        // condition afterwards (a misfire breaks a Normal firearm and wrecks
+        // a Broken one).
         private static JObject ObserveFavoredClassMisfire(Func<UnitEntityData> create,
-            FavoredClassBlueprintSet leaves, IList<string> failures)
+            FavoredClassBlueprintSet leaves, GunslingerClassBlueprintSet gunslinger, IList<string> failures)
         {
             var row = new JObject();
+            var cases = new JArray();
             UnitEntityData control = create();
             UnitEntityData invested = create();
+            UnitEntityData trainedControl = create();
+            UnitEntityData trainedInvested = create();
             UnitEntityData target = create();
             target.Descriptor.State.Immortality.Retain();
             AmmunitionId paper = ReloadAmmunitionProfileCatalog.PaperCartridge.LoadedAmmunition;
-            GrantFavoredClassRanks(invested, leaves.Pair(FavoredClassCatalog.EffectMisfire, "Pistol").Full, 1);
-            Func<UnitEntityData, BlueprintItemWeapon, int, FirearmCondition> fire = (attacker, blueprint, roll) =>
+            AmmunitionId loose = ReloadAmmunitionProfileCatalog.LooseBasic.LoadedAmmunition;
+            BlueprintFeature pistolRank = leaves.Pair(FavoredClassCatalog.EffectMisfire, "Pistol").Full;
+            GrantFavoredClassRanks(invested, pistolRank, 1);
+            GrantFavoredClassRanks(trainedInvested, pistolRank, 1);
+            foreach (UnitEntityData unit in new[] { trainedControl, trainedInvested })
+                unit.Descriptor.AddFact(gunslinger.GunTraining.ChoiceFor(FirearmKind.Pistol));
+            BlueprintItemWeapon pistol = BlueprintBootstrap.ProductionFirearms.Pistol.Item;
+            BlueprintItemWeapon musket = BlueprintBootstrap.ProductionFirearms.Musket.Item;
+            BlueprintItemWeapon blunderbuss = BlueprintBootstrap.ProductionFirearms.Blunderbuss.Item;
+            BlueprintItemWeapon reliablePistol = BlueprintBootstrap.MagicFirearms.Entries[3].Item;
+            BlueprintItemWeapon reliableMusket = BlueprintBootstrap.MagicFirearms.Entries[4].Item;
+            Action<string, UnitEntityData, BlueprintItemWeapon, FirearmCondition, AmmunitionId, int,
+                FirearmCondition> shot = (label, attacker, blueprint, condition, ammunition, roll, expected) =>
             {
                 var weapon = new ItemEntityWeapon(blueprint);
-                TriggerReliableMatrixAttack(attacker, target, weapon, roll, FirearmCondition.Normal, paper);
+                RuleAttackRoll attack = TriggerReliableMatrixAttack(attacker, target, weapon, roll, condition,
+                    ammunition);
                 FirearmCondition after = FirearmRuntimeState.Service.GetOrCreate(weapon).Repository.State.Condition;
                 FirearmRuntimeState.Service.Forget(weapon);
                 attacker.Body.PrimaryHand.RemoveItem(false);
-                return after;
+                FcbMisfireCase(cases, failures, label, roll, after, expected, attack.IsHit);
             };
-            BlueprintItemWeapon pistol = BlueprintBootstrap.ProductionFirearms.Pistol.Item;
-            BlueprintItemWeapon musket = BlueprintBootstrap.ProductionFirearms.Musket.Item;
-            // Pistol 1 + paper 1 = 2; musket 2 + paper 1 = 3.
-            FirearmCondition controlPistol2 = fire(control, pistol, 2);
-            FirearmCondition investedPistol2 = fire(invested, pistol, 2);
-            FirearmCondition investedPistol1 = fire(invested, pistol, 1);
-            FirearmCondition investedMusket3 = fire(invested, musket, 3);
+
+            // Ordinary pistol shots: paper +1, loose +0.
+            shot("pistol paper control", control, pistol, FirearmCondition.Normal, paper, 2, FirearmCondition.Broken);
+            shot("pistol paper rank 1", invested, pistol, FirearmCondition.Normal, paper, 2, FirearmCondition.Normal);
+            shot("pistol paper rank 1", invested, pistol, FirearmCondition.Normal, paper, 1, FirearmCondition.Broken);
+            shot("pistol loose control", control, pistol, FirearmCondition.Normal, loose, 1, FirearmCondition.Broken);
+            // The floor: 1 - 1 would be 0, but the reduction never goes below 1.
+            shot("pistol loose rank 1 (floor)", invested, pistol, FirearmCondition.Normal, loose, 1,
+                FirearmCondition.Broken);
+            shot("pistol loose rank 1", invested, pistol, FirearmCondition.Normal, loose, 2, FirearmCondition.Normal);
+            // Broken: +4 untrained, +2 with Gun Training (pistol); the reduction
+            // follows every increase. A Broken misfire wrecks the firearm.
+            shot("broken pistol paper untrained control", control, pistol, FirearmCondition.Broken, paper, 6,
+                FirearmCondition.Wrecked);
+            shot("broken pistol paper untrained rank 1", invested, pistol, FirearmCondition.Broken, paper, 6,
+                FirearmCondition.Broken);
+            shot("broken pistol paper untrained rank 1", invested, pistol, FirearmCondition.Broken, paper, 5,
+                FirearmCondition.Wrecked);
+            shot("broken pistol paper trained control", trainedControl, pistol, FirearmCondition.Broken, paper, 4,
+                FirearmCondition.Wrecked);
+            shot("broken pistol paper trained rank 1", trainedInvested, pistol, FirearmCondition.Broken, paper, 4,
+                FirearmCondition.Broken);
+            shot("broken pistol paper trained rank 1", trainedInvested, pistol, FirearmCondition.Broken, paper, 3,
+                FirearmCondition.Wrecked);
+            // Reliable (Duelist's Rebuttal): loose 1 - 1 = 0 stays 0 (a
+            // natural 1 misses without a misfire); paper 1 + 1 - 1 = 1 keeps
+            // the floor of 1 after the reduction.
+            shot("reliable pistol loose control", control, reliablePistol, FirearmCondition.Normal, loose, 1,
+                FirearmCondition.Normal);
+            shot("reliable pistol loose rank 1 (0 stays 0)", invested, reliablePistol, FirearmCondition.Normal,
+                loose, 1, FirearmCondition.Normal);
+            shot("reliable pistol paper control", control, reliablePistol, FirearmCondition.Normal, paper, 1,
+                FirearmCondition.Broken);
+            shot("reliable pistol paper rank 1 (floor)", invested, reliablePistol, FirearmCondition.Normal, paper, 1,
+                FirearmCondition.Broken);
+            // Type isolation: the pistol counter reaches neither a musket
+            // (2 + 1 = 3) nor a blunderbuss (2 + 1 = 3).
+            shot("musket paper pistol rank", invested, musket, FirearmCondition.Normal, paper, 3,
+                FirearmCondition.Broken);
+            shot("blunderbuss paper pistol rank", invested, blunderbuss, FirearmCondition.Normal, paper, 3,
+                FirearmCondition.Broken);
             GrantFavoredClassRanks(invested, leaves.Pair(FavoredClassCatalog.EffectMisfire, "Musket").Full, 1);
-            FirearmCondition musketCounter3 = fire(invested, musket, 3);
-            FirearmCondition musketCounter2 = fire(invested, musket, 2);
-            row["controlPistolRoll2"] = controlPistol2.ToString();
-            row["investedPistolRoll2"] = investedPistol2.ToString();
-            row["investedPistolRoll1"] = investedPistol1.ToString();
-            row["pistolCounterMusketRoll3"] = investedMusket3.ToString();
-            row["musketCounterRoll3"] = musketCounter3.ToString();
-            row["musketCounterRoll2"] = musketCounter2.ToString();
+            shot("musket paper musket rank", invested, musket, FirearmCondition.Normal, paper, 3,
+                FirearmCondition.Normal);
+            shot("musket paper musket rank", invested, musket, FirearmCondition.Normal, paper, 2,
+                FirearmCondition.Broken);
+            // Reliable musket (River King's Measure): 2 + 1 - 1 = 2, less 1.
+            shot("reliable musket paper control", control, reliableMusket, FirearmCondition.Normal, paper, 2,
+                FirearmCondition.Broken);
+            shot("reliable musket paper musket rank", invested, reliableMusket, FirearmCondition.Normal, paper, 2,
+                FirearmCondition.Normal);
+            // Separate counters never add up: the pistol still reduces by 1.
+            shot("pistol loose both ranks (floor)", invested, pistol, FirearmCondition.Normal, loose, 1,
+                FirearmCondition.Broken);
             row["reduction"] = "Pistol=" + FavoredClassEarnedSteps.MisfireReduction(invested, FirearmKind.Pistol) +
                 ";Musket=" + FavoredClassEarnedSteps.MisfireReduction(invested, FirearmKind.Musket) +
                 ";Blunderbuss=" + FavoredClassEarnedSteps.MisfireReduction(invested, FirearmKind.Blunderbuss);
-            if (controlPistol2 != FirearmCondition.Broken)
-                failures.Add("control pistol natural 2 did not misfire at threshold 2");
-            if (investedPistol2 != FirearmCondition.Normal)
-                failures.Add("the pistol reduction did not lower threshold 2 to 1");
-            if (investedPistol1 != FirearmCondition.Broken)
-                failures.Add("the floor of 1 was not kept");
-            if (investedMusket3 != FirearmCondition.Broken)
-                failures.Add("a pistol investment reached a musket");
-            if (musketCounter3 != FirearmCondition.Normal || musketCounter2 != FirearmCondition.Broken)
-                failures.Add("the separate musket counter did not lower 3 to exactly 2");
+            if ((string)row["reduction"] != "Pistol=1;Musket=1;Blunderbuss=0")
+                failures.Add("per-type reductions " + row["reduction"]);
+
+            // The off hand: the reduction follows the fired firearm's type,
+            // not the hand.
+            foreach (UnitEntityData attacker in new[] { control, invested })
+            {
+                bool isControl = ReferenceEquals(attacker, control);
+                var main = new ItemEntityWeapon(pistol);
+                var off = new ItemEntityWeapon(pistol);
+                attacker.Body.PrimaryHand.InsertItem(main);
+                attacker.Body.SecondaryHand.InsertItem(off);
+                FirearmRuntimeState.Service.Set(off, new FirearmState(FirearmState.CurrentSchemaVersion, 1, paper,
+                    FirearmCondition.Normal));
+                var attack = new RuleAttackRoll(attacker, target, off, -100);
+                UnityEngine.Random.InitState(FindNativeD20Seed(2));
+                Rulebook.Trigger(attack);
+                FirearmCondition after = FirearmRuntimeState.Service.GetOrCreate(off).Repository.State.Condition;
+                FirearmRuntimeState.Service.Forget(off);
+                FirearmRuntimeState.Service.Forget(main);
+                attacker.Body.SecondaryHand.RemoveItem(false);
+                attacker.Body.PrimaryHand.RemoveItem(false);
+                FcbMisfireCase(cases, failures, "off-hand pistol paper " + (isControl ? "control" : "rank 1"), 2,
+                    after, isControl ? FirearmCondition.Broken : FirearmCondition.Normal, attack.IsHit);
+            }
+
+            // Dead Shot: one aggregate misfire when every roll misfires.
+            UnitEntityData deadControl = create(), deadInvested = create();
+            GrantFavoredClassRanks(deadInvested, pistolRank, 1);
+            foreach (UnitEntityData unit in new[] { deadControl, deadInvested })
+            {
+                unit.Descriptor.Stats.BaseAttackBonus.BaseValue = 6;
+                unit.Descriptor.Stats.Wisdom.BaseValue = 14;
+                unit.Descriptor.AddFact(gunslinger.Grit.Feature);
+            }
+            Action<string, UnitEntityData, int, FirearmCondition> deadShot = (label, attacker, roll, expected) =>
+            {
+                var weapon = new ItemEntityWeapon(pistol);
+                attacker.Body.PrimaryHand.InsertItem(weapon);
+                FirearmRuntimeState.Service.Set(weapon, new FirearmState(FirearmState.CurrentSchemaVersion, 1,
+                    paper, FirearmCondition.Normal));
+                attacker.Descriptor.Resources.Restore(gunslinger.Grit.Resource, 1);
+                Deeds.DeadShotExecutionResult result = Deeds.DeadShotRuntime.ExecuteForRuntimeTest(attacker,
+                    target, roll, roll);
+                FirearmCondition after = FirearmRuntimeState.Service.GetOrCreate(weapon).Repository.State.Condition;
+                FirearmRuntimeState.Service.Forget(weapon);
+                attacker.Body.PrimaryHand.RemoveItem(false);
+                FcbMisfireCase(cases, failures, label + " (misfires=" + result.Outcome.Misfires + ")", roll, after,
+                    expected, result.Outcome.IsHit);
+            };
+            deadShot("dead shot paper control rolls 2,2", deadControl, 2, FirearmCondition.Broken);
+            deadShot("dead shot paper rank 1 rolls 2,2", deadInvested, 2, FirearmCondition.Normal);
+            deadShot("dead shot paper rank 1 rolls 1,1 (floor)", deadInvested, 1, FirearmCondition.Broken);
+
+            // Scatter Shot: the volley's one threshold decides every roll.
+            UnitEntityData scatterControl = create(), scatterInvested = create();
+            GrantFavoredClassRanks(scatterInvested, leaves.Pair(FavoredClassCatalog.EffectMisfire,
+                "Blunderbuss").Full, 1);
+            FcbScatterMisfire(create, scatterControl, blunderbuss, paper, 3, FirearmCondition.Broken,
+                "scatter paper control rolls 3,3", cases, failures);
+            FcbScatterMisfire(create, scatterInvested, blunderbuss, paper, 3, FirearmCondition.Normal,
+                "scatter paper blunderbuss rank rolls 3,3", cases, failures);
+            FcbScatterMisfire(create, scatterInvested, blunderbuss, paper, 2, FirearmCondition.Broken,
+                "scatter paper blunderbuss rank rolls 2,2", cases, failures);
+            row["cases"] = cases;
             return row;
+        }
+
+        private static void FcbMisfireCase(JArray cases, IList<string> failures, string label, int roll,
+            FirearmCondition after, FirearmCondition expected, bool hit)
+        {
+            cases.Add(label + " roll " + roll + ": " + after + (hit ? " hit" : " miss") +
+                (after == expected ? "" : " (expected " + expected + ")"));
+            if (after != expected)
+                failures.Add(label + " roll " + roll + ": " + after + ", expected " + expected);
+        }
+
+        // Scatter Shot against two live disposable targets in the attacker's
+        // cone, both rolls forced to the same natural value.
+        private static void FcbScatterMisfire(Func<UnitEntityData> create, UnitEntityData attacker,
+            BlueprintItemWeapon blunderbuss, AmmunitionId ammunition, int roll, FirearmCondition expected,
+            string label, JArray cases, IList<string> failures)
+        {
+            UnitEntityData first = create(), second = create();
+            bool firstRegistered = false, secondRegistered = false;
+            var weapon = new ItemEntityWeapon(blunderbuss);
+            try
+            {
+                first.Descriptor.State.Immortality.Retain();
+                second.Descriptor.State.Immortality.Retain();
+                var origin = new UnityEngine.Vector3(12000f, 0f, 12000f);
+                SetExactProperty(attacker, "Position", origin);
+                SetExactProperty(first, "Position", origin + new UnityEngine.Vector3(2f, 0f, 0.3f));
+                SetExactProperty(second, "Position", origin + new UnityEngine.Vector3(3f, 0f, -0.3f));
+                attacker.Body.PrimaryHand.InsertItem(weapon);
+                SetExactProperty(attacker, "CombatState",
+                    new Kingmaker.Controllers.Combat.UnitCombatState(attacker));
+                firstRegistered = Kingmaker.Game.Instance.State.Units.All.Add(first);
+                secondRegistered = Kingmaker.Game.Instance.State.Units.All.Add(second);
+                FirearmRuntimeState.Service.Set(weapon, new FirearmState(FirearmState.CurrentSchemaVersion, 1,
+                    ammunition, FirearmCondition.Normal));
+                int[] rolls = { roll, roll };
+                int index = 0;
+                Scatter.ScatterShotExecutionResult result = Scatter.ScatterShotRuntime.Execute(attacker, first,
+                    attack =>
+                    {
+                        UnityEngine.Random.InitState(FindNativeD20Seed(rolls[index++]));
+                        Rulebook.Trigger(attack);
+                    }, rolls);
+                FirearmCondition after = FirearmRuntimeState.Service.GetOrCreate(weapon).Repository.State.Condition;
+                FcbMisfireCase(cases, failures, label + " (targets=" + result.Plan.TargetCount + ", misfires=" +
+                    result.Volley.MisfireRollCount + ")", roll, after, expected, false);
+                if (result.Plan.TargetCount != 2)
+                    failures.Add(label + ": " + result.Plan.TargetCount + " scatter targets, expected 2");
+            }
+            finally
+            {
+                FirearmRuntimeState.Service.Forget(weapon);
+                if (attacker.Body.PrimaryHand.MaybeItem != null) attacker.Body.PrimaryHand.RemoveItem(false);
+                SetExactProperty(attacker, "CombatState", null);
+                if (secondRegistered) Kingmaker.Game.Instance.State.Units.All.Remove(second);
+                if (firstRegistered) Kingmaker.Game.Instance.State.Units.All.Remove(first);
+                first.Descriptor.State.Immortality.ReleaseAll();
+                second.Descriptor.State.Immortality.ReleaseAll();
+            }
         }
 
         private static JObject ObserveFavoredClassConfirmation(Func<UnitEntityData> create,
@@ -962,15 +1137,37 @@ namespace KingmakerGunslinger.RuntimeTesting
             GrantFavoredClassRanks(invested, pair.Full, 4);
             int controlDelta = roll(control);
             int investedDelta = roll(invested);
-            invested.Descriptor.Resources.Spend(gunslinger.Grit.Resource,
-                invested.Descriptor.Resources.GetResourceAmount(gunslinger.Grit.Resource));
+            foreach (UnitEntityData unit in new[] { control, invested })
+                unit.Descriptor.Resources.Spend(gunslinger.Grit.Resource,
+                    unit.Descriptor.Resources.GetResourceAmount(gunslinger.Grit.Resource));
             int emptyDelta = roll(invested);
+            int controlEmptyDelta = roll(control);
+            // M13: True Grit (Initiative) lets the deed work at 0 grit, and the
+            // improvement follows the deed's own predicate.
+            BlueprintFeature trueGrit = gunslinger.TrueGrit.ChoiceFor(TrueGritDeed.GunslingerInitiative);
+            foreach (UnitEntityData unit in new[] { control, invested })
+                unit.Descriptor.AddFact(trueGrit);
+            int trueGritControlDelta = roll(control);
+            int trueGritInvestedDelta = roll(invested);
+            invested.Descriptor.RemoveFact(trueGrit);
+            int removedDelta = roll(invested);
             row["controlDelta"] = controlDelta;
             row["investedDelta"] = investedDelta;
             row["zeroGritDelta"] = emptyDelta;
+            row["zeroGritControlDelta"] = controlEmptyDelta;
+            row["trueGritZeroGritControlDelta"] = trueGritControlDelta;
+            row["trueGritZeroGritInvestedDelta"] = trueGritInvestedDelta;
+            row["trueGritRemovedZeroGritDelta"] = removedDelta;
             if (controlDelta != 2) failures.Add("the control deed bonus is not +2");
             if (investedDelta != 6) failures.Add("four Initiative ranks did not raise the deed bonus to +6");
-            if (emptyDelta != 0) failures.Add("the improvement applied without the deed's grit");
+            if (emptyDelta != 0 || controlEmptyDelta != 0)
+                failures.Add("the deed or the improvement applied at 0 grit without True Grit");
+            if (trueGritControlDelta != 2)
+                failures.Add("True Grit (Initiative) did not give the deed's +2 at 0 grit");
+            if (trueGritInvestedDelta != 6)
+                failures.Add("with True Grit at 0 grit the improvement did not follow the deed (+6)");
+            if (removedDelta != 0)
+                failures.Add("the improvement outlived the True Grit choice at 0 grit");
             return row;
         }
 

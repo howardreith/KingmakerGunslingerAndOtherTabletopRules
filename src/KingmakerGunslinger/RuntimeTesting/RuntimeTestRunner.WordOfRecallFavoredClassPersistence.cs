@@ -232,9 +232,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         out gunslingerExpected);
                     // The favored-class families share the same guarded save.
                     JObject familiesExpected = PrepareFcbFamilySubjects(anchor, player);
+                    // The rows no family subject reaches, in the same save.
+                    JObject rowsExpected = PrepareFcbRowSubjects(anchor, player);
                     _fcbPersistenceExpected = new JObject {
                         ["gunslinger"] = gunslingerExpected,
                         ["families"] = familiesExpected,
+                        ["rows"] = rowsExpected,
                         ["unitId"] = unit.UniqueId,
                         ["unitName"] = "KMG FCB Persistence Oracle",
                         ["classId"] = oracle.AssetGuid,
@@ -347,6 +350,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     gunslingerUnit = VerifyGunslingerFcbPersistence(
                         (JObject)plan.Expected["gunslinger"], player);
                     VerifyFcbFamilySubjects((JObject)plan.Expected["families"], player);
+                    if (plan.Expected["rows"] == null)
+                        throw new InvalidOperationException(
+                            "The persistence receipt predates the row subjects; prepare again.");
+                    VerifyFcbRowSubjects((JObject)plan.Expected["rows"], player);
                     // Strategic cast from the reloaded save: exactly one
                     // sixth-level spontaneous slot, no scroll substitution.
                     game.LoadArea(game.BlueprintRoot.GlobalMap.GlobalMapEnterPoint,
