@@ -18,15 +18,16 @@ Read this first; it is the record the journal and the report summarise.
   reset/clean of foreign work, credential or account changes, OS/game/Unity
   upgrades, purchases, or new paid fallbacks; proprietary captures stay in
   permitted local evidence locations; no release, deployment or Sprint 9.
-  This PR stays a draft and is never merged under this order.
+  This PR stayed a draft and was never merged under this order; the owner
+  released it for merge himself on 2026-09-26, after the closeout below.
 
 ## Branch and baseline
 
 - Phase 0 merged into `master` as `b0641a58` (PR #21 at reviewed head
   `ba5e20a7`, 2026-09-24T16:55:50Z). This branch,
   `codex/expanded-summoning-phase1-sprints3-8`, was created from that commit in
-  its own worktree (`.worktrees/expanded-summoning-phase1`); the only draft PR
-  for Sprints 3-8 is opened from it.
+  its own worktree (`.worktrees/expanded-summoning-phase1`); the only PR for
+  Sprints 3-8 is opened from it.
 - Live installation must end at 0.0.117 / 136 files /
   `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3` after
   every guarded run; the restoration records verify it.

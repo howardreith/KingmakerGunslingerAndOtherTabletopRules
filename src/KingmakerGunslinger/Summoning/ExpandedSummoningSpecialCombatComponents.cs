@@ -163,8 +163,9 @@ namespace KingmakerGunslinger.Summoning
     /// Cyclops Flash of Insight (Sprint 3; rebuilt under the correction
     /// order). The tabletop ability chooses the result of one die roll
     /// before it is rolled; here the chosen roll is the next attack's own
-    /// d20, and the chosen result is 20. Lives on the one-round armed state
-    /// the ability applies. When the cyclops's own attack roll is about to
+    /// d20, and the chosen result is 20. Lives on the armed state the ability
+    /// applies, which has no duration of its own and lasts until the next
+    /// attack roll spends it (corrected under the 2026-09-25 order). When the cyclops's own attack roll is about to
     /// trigger, the state arms exactly that attack's first d20; when that
     /// RuleRollD20 is about to trigger, its pre-rolled result becomes 20
     /// (the game's own pre-roll seam, read by Roll()) and the arming is
