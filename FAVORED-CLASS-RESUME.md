@@ -52,9 +52,20 @@ KingmakerBuffPlanner, KingmakerBugfixes, KingmakerDiceRoller,
 KingmakerLastAzlantiPreserver, ProperFlanking2, SkipIntro, TweakOrTreat.
 Favored Class ships nine custom JSON rewards in `ZFavoredClass\Custom\`.
 
+## Fourth review follow-up checkpoint
+
+Status: PARTIAL - NOT RELEASE QUALIFIED. A follow-up to the fourth review found that
+`FavoredClassRangeGroup.Feet` kept widened text for a member unresolved only
+by a failed liveness read. Fix: native text while any member is unresolved;
+the liveness, randomized and guarded tests follow. Requalification: the full
+domain suite, two identical clean Release builds, the Bard range, lifecycle,
+visual-census, smoke and persistence stages on the exact new DLL, then the
+complete final gate.
+
 ## Fourth review checkpoint
 
-Status: COMPLETE LOCALLY - AWAITING OWNER REVIEW. The fourth PR #24 review found two defects in
+Status then: COMPLETE LOCALLY - AWAITING OWNER REVIEW (superseded by the follow-up checkpoint
+above). The fourth PR #24 review found two defects in
 `12651613c`, both fixed and requalified: Dead Shot's confirmation fails on a
 natural 1 and succeeds on a natural 20 before the total is compared with the
 critical AC (`7054b3917`), and the Bard range group keeps a member tracked
@@ -464,11 +475,13 @@ Restoration status: VERIFIED.
 
 ## Next concrete actions
 
-1. Owner review of PR #24 at `4748a47b2` (and its records commit), including the
+1. Fix the fourth review's follow-up finding (report section 14) with its domain
+   and guarded tests, then requalify as the follow-up checkpoint states.
+2. Owner review of PR #24 at the requalified candidate, including the
    simulated disposition of H04/H05 and the open owner decision D6
    (`FAVORED-CLASS-BLOCKERS.md`).
-2. Nothing is merged, tagged or published; those remain separate owner
+3. Nothing is merged, tagged or published; those remain separate owner
    actions.
-3. B3 follow-up (harness, outside the favored-class rows): isolate the allocation
+4. B3 follow-up (harness, outside the favored-class rows): isolate the allocation
    the native character-build screens retain; until then start qualification
    batches only with a low idle commit charge.
