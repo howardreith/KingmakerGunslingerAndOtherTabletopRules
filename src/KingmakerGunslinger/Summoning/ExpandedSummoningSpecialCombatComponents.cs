@@ -328,9 +328,9 @@ namespace KingmakerGunslinger.Summoning
         }
 
         /// <summary>
-        /// The weapon entity standing in a recorded limb slot. This is how a
-        /// durable link finds its limb again on the body the game rebuilt
-        /// after a load, where the entity of the original attack is gone.
+        /// The weapon entity standing in a recorded limb slot: how a link
+        /// finds its limb on the body as the holder carries it now, rather
+        /// than by holding the entity the original attack used.
         /// </summary>
         internal static ItemEntityWeapon WeaponAt(UnitEntityData owner, SummonLimbKind kind,
             int additionalIndex)
@@ -362,9 +362,11 @@ namespace KingmakerGunslinger.Summoning
     }
 
     // The link store used to live here as a table keyed by buff instances,
-    // which a load left empty. It is now the serialized unit part in
-    // SummonGrappleLinkState.cs, which keeps the establishing limb and the
-    // mouth occupancy across a save and a reload.
+    // which the maintain could lose within a session. It is now the unit part
+    // in SummonGrappleLinkState.cs, which owns the establishing limb and the
+    // mouth occupancy for the life of each hold. It is session-scoped: the
+    // owner accepted on 2026-09-26 that an active grapple resets safely on a
+    // reload, because the engine carries none across a save.
 
     /// <summary>
     /// The damage of an attack, as the game computes it: the weapon entity's
@@ -531,9 +533,8 @@ namespace KingmakerGunslinger.Summoning
             bool targetHeld = target.Get<UnitPartGrappleTarget>() != null ||
                 SummonHeldComponent.HolderOf(target, GrappledBuff) != null;
             // One target per mouth: a limb that already holds or has engulfed
-            // someone cannot take a second foe. The durable store answers this
-            // after a load as well as before one, and an engulfed victim keeps
-            // its mouth shut even though its held state is gone.
+            // someone cannot take a second foe. An engulfed victim keeps its
+            // mouth shut even though its held state has ended.
             bool limbBusy = SummonGrappleLinks.IsLimbOccupied(owner, weapon);
             if (!ExpandedSummoningSpecialProfiles.ShouldAttemptSummonGrab(isHit,
                     IsGrabLimb(owner, weapon), HeldCount(owner) >= MaxHeldTargets || limbBusy,
