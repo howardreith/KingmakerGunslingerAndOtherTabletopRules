@@ -2638,16 +2638,30 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 occupant.Blueprint.name) + ",roll=" + roll);
                 }
                 bool noneReach = reached.Count == 0;
-                var occupiedPlan = new UnitAttack(spare);
-                occupiedPlan.Init(flytrap);
-                List<AttackHandInfo> occupiedHandList = occupiedPlan.CreateFullAttack();
-                int occupiedHands = occupiedHandList.Count;
+                // Every mouth is shut, so the game has no hand to plan with
+                // and refuses the full attack outright. That refusal is the
+                // rule's own consequence and is the outcome recorded here.
+                string occupiedPlanned;
+                bool plannedNone;
+                try
+                {
+                    var occupiedPlan = new UnitAttack(spare);
+                    occupiedPlan.Init(flytrap);
+                    List<AttackHandInfo> occupiedHandList = occupiedPlan.CreateFullAttack();
+                    plannedNone = occupiedHandList.Count == 0;
+                    occupiedPlanned = "hands=" + occupiedHandList.Count + "[" +
+                        string.Join("|", occupiedHandList.Select(info =>
+                            DescribeExpandedSummoningPlannedHand(flytrap, info)).ToArray()) + "]";
+                }
+                catch (Exception planException)
+                {
+                    plannedNone = true;
+                    occupiedPlanned = "refused=" + planException.Message.Replace(';', ',');
+                }
                 steps.Add("allOccupied:reached=" + reached.Count + "[" +
-                    string.Join("|", reached.ToArray()) + "];plannedHands=" + occupiedHands +
-                    "[" + string.Join("|", occupiedHandList.Select(info =>
-                        DescribeExpandedSummoningPlannedHand(flytrap, info)).ToArray()) + "];" +
+                    string.Join("|", reached.ToArray()) + "];planned=" + occupiedPlanned + ";" +
                     SummonGrappleLinks.Describe(flytrap));
-                ok = ok && noneReach && occupiedHands == 0;
+                ok = ok && noneReach && plannedNone;
 
                 // Releasing one victim frees exactly that mouth.
                 SummonHoldComponent.ReleaseLink(flytrap, wolves[1], grab, false);
