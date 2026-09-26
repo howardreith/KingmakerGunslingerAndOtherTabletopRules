@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "mission": "gunslinger-favored-class-integration",
-  "overallStatus": "COMPLETE LOCALLY - AWAITING OWNER REVIEW",
+  "overallStatus": "PARTIAL - NOT RELEASE QUALIFIED",
   "finalCandidate": {
     "commit": "12651613c6bbf8533884e7f73cf1b5dd0a5eaf39",
     "packageSha256": "95d57d55c31c829ae4f7175b01df310a2081100af4cc207d49b2e9d9d91d8ec1",

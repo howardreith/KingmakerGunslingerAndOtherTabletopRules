@@ -1,6 +1,14 @@
 # Favored Class Integration - Implementation Report
 
-## COMPLETE LOCALLY - AWAITING OWNER REVIEW
+## PARTIAL - NOT RELEASE QUALIFIED
+
+The fourth PR #24 review found two defects in the completion round's
+candidate `12651613c` (section 14): Dead Shot's critical confirmation
+ignores the automatic results of a natural 1 and a natural 20, and a Bard
+performance area can be forgotten after a forced ending that was never
+verified. Both are being fixed; the status returns to COMPLETE LOCALLY only
+after both fixes are requalified on a new exact build. The completion
+round's record below stands for `12651613c`.
 
 This completion round closed every gap the previous candidate left open.
 The final candidate `12651613c` passed all 40 guarded native runs of
@@ -660,3 +668,13 @@ PASS; the game log reports `IntegrationDisabled`, 0 leaves published), peaked
 at 70.1 GB against 69.2 and 72.0 GB enabled: the favored-class integration
 does not cause it. B3 stays an environment risk for qualification batches
 (`FAVORED-CLASS-BLOCKERS.md`).
+
+## 14. Fourth review findings (PR #24)
+
+The fourth review (at `12651613c`, records `560e41e03`) found two defects.
+Both stay OPEN until they are fixed and requalified on a new exact build.
+
+| Finding | Status |
+| --- | --- |
+| 1. Dead Shot's one critical confirmation compared the total with the critical AC only. A confirmation is an attack roll, so a natural 1 must always fail and a natural 20 must always succeed before that comparison (immunity and the party critical setting still block first). | OPEN |
+| 2. The Bard range group removed a member after a forced ending it never verified (the end threw, did nothing, or found no area data) and whenever its liveness read threw, so a live area left unrestored could become untracked and disagree with the owner's text. | OPEN |
