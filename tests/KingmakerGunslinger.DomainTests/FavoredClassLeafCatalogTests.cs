@@ -9,7 +9,15 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class FavoredClassLeafCatalogTests
     {
-        private const int PrecedingManifestEntries = 1913 + 43;
+        // The Expanded Summoning Phase 1 appends (0.0.139) precede these blocks.
+        private static readonly int PrecedingManifestEntries = 1913 + 43 +
+            ExpandedSummoningSprint3Tests.AppendedLedgerIdentities +
+            ExpandedSummoningSprint4Tests.AppendedLedgerIdentities +
+            ExpandedSummoningSprint5Tests.AppendedLedgerIdentities +
+            ExpandedSummoningSprint6Tests.AppendedLedgerIdentities +
+            ExpandedSummoningSprint7Tests.AppendedLedgerIdentities +
+            ExpandedSummoningSprint8Tests.AppendedLedgerIdentities +
+            ExpandedSummoningCorrectionTests.AppendedLedgerIdentities;
 
         // L08: committed identities only; manifest tail == catalog, in order.
         internal static void ManifestTailIsExactlyTheCommittedIdentities()
