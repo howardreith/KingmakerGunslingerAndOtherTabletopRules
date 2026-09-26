@@ -152,6 +152,23 @@ namespace KingmakerGunslinger.DomainTests
                 "Dead Shot never writes the game's EnemyCriticalHits setting.");
         }
 
+        // The guarded Dead Shot lane keeps asserting every confirmation check:
+        // the fourth review's natural 1 and 20, the party setting and the
+        // unchanged ordinary rolls, touch AC and immunity.
+        internal static void DeadShotLaneKeepsEveryConfirmationCheck()
+        {
+            string lane = Source("RuntimeTesting", "RuntimeTestRunner.cs");
+            foreach (string name in new[]
+            {
+                "dead-shot-critical-confirmation", "dead-shot-critical-touch-ac", "dead-shot-critical-natural-20",
+                "dead-shot-critical-natural-1", "dead-shot-critical-party-setting", "dead-shot-critical-immune-target"
+            })
+                Assertions.True(lane.Contains("Assertion(\"" + name + "\","),
+                    "The Dead Shot lane no longer asserts " + name + ".");
+            Assertions.True(lane.Contains("criticalObserved, touchContract,"),
+                "The touch-AC assertion reads the touch contract.");
+        }
+
         // D2 wiring: probes stay free of native confirmations; the delivery
         // confirms once with the native rules, adding the penalty.
         internal static void DeadShotConfirmationWiring()

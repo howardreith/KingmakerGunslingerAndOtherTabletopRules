@@ -1031,6 +1031,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("dead-shot.confirmation-rule", GunslingerDeedFixTests.DeadShotConfirmationRule),
             Case("dead-shot.confirmation-natural-rolls", GunslingerDeedFixTests.DeadShotNaturalConfirmationRolls),
             Case("dead-shot.confirmation-blocks", GunslingerDeedFixTests.DeadShotConfirmationBlocks),
+            Case("dead-shot.lane-keeps-every-check", GunslingerDeedFixTests.DeadShotLaneKeepsEveryConfirmationCheck),
             Case("dead-shot.confirmation-wiring", GunslingerDeedFixTests.DeadShotConfirmationWiring),
             Case("dead-shot.invalid", DeadShotInvalidInputs),
             Case("startling-shot.eligible", StartlingShotEligible),
