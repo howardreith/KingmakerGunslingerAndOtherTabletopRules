@@ -306,7 +306,7 @@ namespace KingmakerGunslinger.Summoning
                         "GreatFortitude", "ImprovedInitiative", "PowerAttack",
                         "SkillFocusStealth", "WeaponFocusBite"),
                     "Bite grab rides the shared summon grapple lifecycle with one link per bite, four at most (corrected 2026-09-25): every link is a held state on the target that names the flytrap and the bite that established it, and a bite that already holds cannot take a second foe.",
-                    "Engulf is the swallow-whole sequence against a Medium or smaller foe the flytrap has held since the round began (corrected 2026-09-25), dealing 1d8+7 bludgeoning and 1d8 acid each round inside; the project state releases on every end path. Tremorsense 60 feet is represented by the native 60-foot blindsight. Vital Strike is omitted because no exact final-live feature identity was proven.",
+                    "Engulf is the swallow-whole sequence against a Medium or smaller foe the flytrap has held since the round began (corrected 2026-09-25), dealing the stat block's 1d8+7 bludgeoning and 2d6 acid each round inside (the acid corrected 2026-09-26); a mouth that holds or has engulfed a foe attacks no other target, and the link survives a save and a reload; the project state releases on every end path. Tremorsense 60 feet is represented by the native 60-foot blindsight. Vital Strike is omitted because no exact final-live feature identity was proven.",
                     "Kingmaker cannot represent an absent Intelligence score, so Intelligence 1 is used."),
                 P("purple-worm", "Purple Worm", "MagicalBeast", 16, "Gargantuan",
                     35, 6, 25, 1, 8, 8, 20, 22, "PurpleWormBite",
