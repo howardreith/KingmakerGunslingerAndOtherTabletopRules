@@ -34,11 +34,14 @@ namespace KingmakerGunslinger.DomainTests
         {
             string effect = FavoredClassCatalog.EffectSelectedBloodlinePower;
             Assertions.True(FavoredClassLeafCatalog.TargetKeys(effect).SequenceEqual(
-                new[] { "FireRay", "FireBlast", "AirRay", "AirBlast" }), "Four implemented power targets.");
+                new[] { "FireRay", "FireBlast", "AirRay", "AirBlast", "FireResistance", "AirResistance" }),
+                "Six implemented power targets.");
             Assertions.True(FavoredClassLeafCatalog.TargetRows(effect, "FireRay").SequenceEqual(new[] { "I08" }) &&
                 FavoredClassLeafCatalog.TargetRows(effect, "FireBlast").SequenceEqual(new[] { "I08" }) &&
                 FavoredClassLeafCatalog.TargetRows(effect, "AirRay").SequenceEqual(new[] { "S06" }) &&
-                FavoredClassLeafCatalog.TargetRows(effect, "AirBlast").SequenceEqual(new[] { "S06" }),
+                FavoredClassLeafCatalog.TargetRows(effect, "AirBlast").SequenceEqual(new[] { "S06" }) &&
+                FavoredClassLeafCatalog.TargetRows(effect, "FireResistance").SequenceEqual(new[] { "I08" }) &&
+                FavoredClassLeafCatalog.TargetRows(effect, "AirResistance").SequenceEqual(new[] { "S06" }),
                 "Per-target source rows.");
             FavoredClassEffectSpec spec = FavoredClassCatalog.Effect(effect);
             Func<string, string, bool> eligible = (ancestry, target) => FavoredClassEligibility.IsEligible(spec,
@@ -46,7 +49,11 @@ namespace KingmakerGunslinger.DomainTests
                 profile => profile != FavoredClassProfile.None, race => true,
                 FavoredClassLeafCatalog.TargetRows(effect, target));
             Assertions.True(eligible(FavoredClassAncestry.Ifrit, "FireRay") &&
-                eligible(FavoredClassAncestry.Ifrit, "FireBlast"), "Ifrit opens fire powers.");
+                eligible(FavoredClassAncestry.Ifrit, "FireBlast") &&
+                eligible(FavoredClassAncestry.Ifrit, "FireResistance"), "Ifrit opens fire powers.");
+            Assertions.True(eligible(FavoredClassAncestry.Sylph, "AirResistance") &&
+                !eligible(FavoredClassAncestry.Ifrit, "AirResistance") &&
+                !eligible(FavoredClassAncestry.Sylph, "FireResistance"), "Elemental Resistance follows its element.");
             Assertions.False(eligible(FavoredClassAncestry.Ifrit, "AirRay") ||
                 eligible(FavoredClassAncestry.Ifrit, "AirBlast"), "Ifrit never opens air powers.");
             Assertions.True(eligible(FavoredClassAncestry.Sylph, "AirRay") &&
@@ -146,6 +153,47 @@ namespace KingmakerGunslinger.DomainTests
                 "level.BloodlineGuids = FavoredClassLeafCatalog.EligibleBloodlines(targetKey).Value;"
             })
                 Assertions.True(blueprints.Contains(token), "Bloodline power wiring token: " + token);
+        }
+
+        // I08/S06 Elemental Resistance: no ability; only the owned power
+        // feature's own level gates move, at most two steps, and the counter
+        // re-decides them on gain and on a real removal.
+        internal static void ElementalResistanceMovesOnlyItsOwnGates()
+        {
+            string blueprints = Source("FavoredClassBlueprints.cs");
+            foreach (string token in new[]
+            {
+                "{ \"FireResistance\", new KeyValuePair<string, string>(",
+                "\"24980315c1bdcc4478ebb717e9b81961\", null) },",
+                "{ \"AirResistance\", new KeyValuePair<string, string>(",
+                "\"6472c51065d734e4b99ac56694925920\", null) },",
+                "if (power.Value == null)",
+                "FavoredClassSelectedPowerGates.Register(gates);",
+                "gates.Leaf = full;"
+            })
+                Assertions.True(blueprints.Contains(token), "Elemental Resistance wiring token: " + token);
+            string hook = Source("Hooks", "FavoredClassRevelationGatePatch.cs");
+            Assertions.True(hook.Contains("Mechanics.FavoredClassSelectedPowerGates.GateResult(__instance, ref __result);"),
+                "The gate hook consults the power gates, fail-safe.");
+            string gates = Source("Mechanics", "FavoredClassSelectedPowerGates.cs");
+            foreach (string token in new[]
+            {
+                "ByPower.TryGetValue(fact.Blueprint, out registration)",
+                "FavoredClassMechanicsPolicy.GateApplies(level + steps, gate.Level, gate.BeforeThisLevel)",
+                "CapSteps > 0 ? CapSteps : (int?)null",
+                "FavoredClassRevelationScopes.IsDeparting(leaf)",
+                "FavoredClassRevelationScopes.BeginDeparture(fact);",
+                "gate => gate.HandleUnitGainLevel(owner, null)",
+                "!FavoredClassRuntime.MechanicsEnabled"
+            })
+                Assertions.True(gates.Contains(token), "Elemental Resistance gate token: " + token);
+            Assertions.Equal(2, FavoredClassCatalog.Effect(FavoredClassCatalog.EffectSelectedBloodlinePower).Rate.CapSteps.Value,
+                "Bloodline powers are capped at +2.");
+            // Capped: two steps at 7th level reach the 9th-level step; one does not.
+            Assertions.True(KingmakerGunslinger.FavoredClass.FavoredClassMechanicsPolicy.GateApplies(7 + 2, 9, false) &&
+                !KingmakerGunslinger.FavoredClass.FavoredClassMechanicsPolicy.GateApplies(7 + 1, 9, false) &&
+                !KingmakerGunslinger.FavoredClass.FavoredClassMechanicsPolicy.GateApplies(7 + 2, 9, true),
+                "The resistance step moves exactly at the effective 9th level.");
         }
     }
 }

@@ -168,6 +168,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             new[] { "KMG.FavoredClass.Bard.PerformanceRange.InspireHeroics.Full", "199d6fa0de149d044a8ab622a542cc79" },
             new[] { "KMG.FavoredClass.Bard.PerformanceRange.InciteRage.Full", "35ac4bd7990fa0842bfc22e80665c2f9" },
             new[] { "KMG.FavoredClass.Bard.PerformanceRange.FireDance.Full", "3c10a0069e7f110499d2e810f4861a6e" },
+            new[] { "KMG.FavoredClass.Sorcerer.BloodlinePower.FireResistance.Partial", "24980315c1bdcc4478ebb717e9b81961" },
+            new[] { "KMG.FavoredClass.Sorcerer.BloodlinePower.FireResistance.Full", "24980315c1bdcc4478ebb717e9b81961" },
+            new[] { "KMG.FavoredClass.Sorcerer.BloodlinePower.AirResistance.Partial", "6472c51065d734e4b99ac56694925920" },
+            new[] { "KMG.FavoredClass.Sorcerer.BloodlinePower.AirResistance.Full", "6472c51065d734e4b99ac56694925920" },
         };
 
         // Called only by the runner after full validation and exclusive claim.

@@ -8,6 +8,7 @@ using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Selection;
 using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.Blueprints.Root;
+using Kingmaker.Designers.Mechanics.Facts;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Enums;
@@ -401,8 +402,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 UnitEntityData target = create();
                 foreach (var element in new[]
                 {
-                    Tuple.Create("fire", FcbFireBloodlineGuid, "FireRay", "FireBlast"),
-                    Tuple.Create("air", FcbAirBloodlineGuid, "AirRay", "AirBlast"),
+                    Tuple.Create("fire", FcbFireBloodlineGuid, "FireRay", "FireBlast", "FireResistance"),
+                    Tuple.Create("air", FcbAirBloodlineGuid, "AirRay", "AirBlast", "AirResistance"),
                 })
                 {
                     FavoredClassSelectedPowerLevel rayBinding = leaves.Pair(effect, element.Item3).Full
@@ -489,6 +490,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 failures.Add(label + "an unchosen power or spell changed " + key);
                     row["blastUses"] = ObserveBlastUseThresholds(create, sorcerer, element.Item2, element.Item4,
                         ray, blast, leaves, failures);
+                    row["resistance"] = ObserveResistanceGates(create, sorcerer, element.Item5, element.Item4, ray,
+                        blast, leaves, failures);
                 }
             }
             catch (Exception exception)
@@ -578,6 +581,115 @@ namespace KingmakerGunslinger.RuntimeTesting
                     failures.Add(blastKey + ": a Blast investment changed Elemental Ray's uses");
             }
             row["probes"] = probes;
+            return row;
+        }
+
+        // I08/S06 Elemental Resistance (charter 8.10): the power's own level
+        // gates decide at the sorcerer level plus the earned steps, at most
+        // two, exactly as a native sorcerer at that effective level; nothing
+        // else is granted, the Blast counter does not move them, and removal
+        // restores the real level's step.
+        private static JObject ObserveResistanceGates(Func<UnitEntityData> create, BlueprintCharacterClass sorcerer,
+            string resistanceKey, string blastKey, BlueprintFeature ray, BlueprintFeature blast,
+            FavoredClassBlueprintSet leaves, IList<string> failures)
+        {
+            string effect = FavoredClassCatalog.EffectSelectedBloodlinePower;
+            var row = new JObject();
+            BlueprintFeature leaf = leaves.Pair(effect, resistanceKey).Full;
+            FavoredClassSelectedPowerGates binding = leaf.GetComponent<FavoredClassSelectedPowerGates>();
+            if (binding == null || binding.PowerFeature == null)
+            {
+                failures.Add(resistanceKey + ": the counter has no exact power binding");
+                return row;
+            }
+            BlueprintFeature power = binding.PowerFeature;
+            AddFeatureOnClassLevel[] gates = power.GetComponents<AddFeatureOnClassLevel>()
+                .Where(gate => gate.Feature != null).ToArray();
+            row["power"] = power.name + " " + power.AssetGuid;
+            row["gates"] = new JArray(gates.Select(gate => (gate.BeforeThisLevel ? "<" : "@") + gate.Level + ":" +
+                gate.Feature.name));
+            if (gates.Length == 0)
+            {
+                failures.Add(resistanceKey + ": the power has no level gate");
+                return row;
+            }
+            int cap = binding.CapSteps > 0 ? binding.CapSteps : int.MaxValue;
+            row["capSteps"] = binding.CapSteps;
+            Func<int, int, UnitEntityData> sorcererAt = (levels, steps) =>
+            {
+                UnitEntityData unit = create();
+                for (int added = 0; added < levels; added++)
+                    unit.Descriptor.Progression.AddClassLevel(sorcerer);
+                unit.Descriptor.AddFact(ray);
+                unit.Descriptor.AddFact(blast);
+                unit.Descriptor.AddFact(power);
+                if (steps > 0)
+                    GrantFavoredClassRanks(unit, leaf, steps);
+                return unit;
+            };
+            var gated = new HashSet<string>(gates.Select(gate => gate.Feature.AssetGuid), StringComparer.Ordinal);
+            Func<UnitEntityData, string> held = unit => string.Join(",", gates.Select(gate =>
+                unit.Descriptor.HasFact(gate.Feature) ? gate.Feature.name : "-").ToArray());
+            // Every other feature the unit holds (not the counter, not a gate's feature).
+            Func<UnitEntityData, string> others = unit => string.Join(",", unit.Descriptor.Progression.Features
+                .Enumerable.Select(fact => fact.Blueprint.AssetGuid)
+                .Where(guid => guid != leaf.AssetGuid && !gated.Contains(guid))
+                .OrderBy(guid => guid, StringComparer.Ordinal).ToArray());
+            // (real level, steps): one and two steps below the 9th-level step,
+            // a capped third step, and levels where no step is crossed.
+            var cases = new[]
+            {
+                Tuple.Create(7, 1), Tuple.Create(7, 2), Tuple.Create(8, 1), Tuple.Create(6, 3),
+                Tuple.Create(3, 2), Tuple.Create(9, 2)
+            };
+            var probes = new JArray();
+            bool moved = false;
+            foreach (var entry in cases)
+            {
+                int effective = entry.Item1 + Math.Min(entry.Item2, cap);
+                UnitEntityData control = sorcererAt(entry.Item1, 0);
+                UnitEntityData invested = sorcererAt(entry.Item1, entry.Item2);
+                UnitEntityData reference = sorcererAt(effective, 0);
+                string controlHeld = held(control), investedHeld = held(invested), referenceHeld = held(reference);
+                var probe = new JObject
+                {
+                    ["level"] = entry.Item1,
+                    ["steps"] = entry.Item2,
+                    ["effectiveLevel"] = effective,
+                    ["control"] = controlHeld,
+                    ["invested"] = investedHeld,
+                    ["nativeAtEffective"] = referenceHeld
+                };
+                string at = resistanceKey + " at sorcerer " + entry.Item1 + " with " + entry.Item2 + " steps: ";
+                if (investedHeld != referenceHeld)
+                    failures.Add(at + "held " + investedHeld + ", a native sorcerer " + effective + " holds " +
+                        referenceHeld);
+                if (investedHeld != controlHeld)
+                    moved = true;
+                if (others(invested) != others(control))
+                    failures.Add(at + "another feature changed");
+                if (invested.Stats.BaseAttackBonus.ModifiedValue != control.Stats.BaseAttackBonus.ModifiedValue ||
+                    invested.Stats.SaveFortitude.ModifiedValue != control.Stats.SaveFortitude.ModifiedValue ||
+                    invested.Stats.SaveReflex.ModifiedValue != control.Stats.SaveReflex.ModifiedValue ||
+                    invested.Stats.SaveWill.ModifiedValue != control.Stats.SaveWill.ModifiedValue)
+                    failures.Add(at + "BAB or a save changed");
+                RemoveFavoredClassRanks(invested, leaf);
+                string removed = held(invested);
+                probe["afterRemoval"] = removed;
+                if (removed != controlHeld)
+                    failures.Add(at + "after removal held " + removed + ", control " + controlHeld);
+                probes.Add(probe);
+            }
+            row["probes"] = probes;
+            if (!moved)
+                failures.Add(resistanceKey + ": no tested investment moved the resistance step");
+            // The Blast counter never moves the resistance gates.
+            UnitEntityData neighborControl = sorcererAt(7, 0);
+            UnitEntityData neighbor = sorcererAt(7, 0);
+            GrantFavoredClassRanks(neighbor, leaves.Pair(effect, blastKey).Full, 2);
+            row["blastNeighbor"] = held(neighbor);
+            if (held(neighbor) != held(neighborControl))
+                failures.Add(resistanceKey + ": the Blast counter moved the resistance step");
             return row;
         }
 

@@ -356,21 +356,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                     turnBased, true);
                 row["turns"] = rows;
                 UnitEntityData caster = actor;
-                ElementalNativeTurnScope scope = turns;
-                // The pistol was equipped before combat: let the native hands
-                // controller and the draw animation settle before any command.
-                int settleTicks = 0;
-                for (; settleTicks < 40 && (caster.AreHandsBusyWithAnimation ||
-                    Game.Instance.HandsEquipmentController.IsUpdateScheduledFor(caster)); settleTicks++)
-                    scope.Execute(() =>
-                    {
-                        Game.Instance.HandsEquipmentController.Tick();
-                        caster.View.AnimationManager.Tick();
-                        caster.View.AnimationManager.Update(0.25f);
-                    });
-                row["handsSettleTicks"] = settleTicks;
+                // Entering combat starts the view's draw-weapon animation, a
+                // Unity coroutine that only real frames advance; the save-free
+                // host runs none within this update. End that visual animation
+                // through the view's own interrupt (never a rule, cost or
+                // authorization), as the scope supplies animation act cues.
+                bool handsBusyAtEntry = caster.AreHandsBusyWithAnimation;
+                if (handsBusyAtEntry)
+                {
+                    MethodInfo interrupt = typeof(Kingmaker.View.Equipment.UnitViewHandsEquipment).GetMethod(
+                        "InterruptAnimation", BindingFlags.Instance | BindingFlags.NonPublic);
+                    if (interrupt == null)
+                        throw new MissingMethodException("UnitViewHandsEquipment", "InterruptAnimation");
+                    interrupt.Invoke(caster.View.HandsEquipment, null);
+                }
+                row["handsBusyAtEntry"] = handsBusyAtEntry;
                 row["handsBusyAfterSettle"] = caster.AreHandsBusyWithAnimation ||
                     Game.Instance.HandsEquipmentController.IsUpdateScheduledFor(caster);
+                if ((bool)row["handsBusyAfterSettle"])
+                    throw new InvalidOperationException("The Gunslinger's hands stayed busy after the draw animation.");
                 Action<string> gritAt = stage => gritTrail.Add(stage + "=" +
                     caster.Descriptor.Resources.GetResourceAmount(grit));
                 Action waitToAct = () =>

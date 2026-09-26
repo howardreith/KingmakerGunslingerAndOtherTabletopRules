@@ -17025,6 +17025,262 @@
       "notes": "Favored class investment: +5 feet to the radius of Dance of the Dead per rank, max 6 ranks (O01 Oread Bard performance range counter); published only into the Favored Class host's Bard bonus selection."
     },
     {
+      "symbol": "KMG.FavoredClass.Oracle.Revelation.TemporalCelerity.Partial",
+      "guid": "ff19d64783da4b0c8173a7bddc4bc2e8",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class partial investment toward +1 effective oracle level for Temporal Celerity (I06/S04 Ifrit/Sylph Oracle revelation counter); published only into the Favored Class host's Oracle bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Oracle.Revelation.TemporalCelerity.Full",
+      "guid": "86be83fdb6c343e481795f25045d8a2b",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class completing investment: +1 effective oracle level for Temporal Celerity per rank (I06/S04 Ifrit/Sylph Oracle revelation counter)."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Oracle.Revelation.CinderDance.Partial",
+      "guid": "3fe79294fc4f4b1b89886e9c3bda808d",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class partial investment toward +1 effective oracle level for Cinder Dance (I06/S04 Ifrit/Sylph Oracle revelation counter); published only into the Favored Class host's Oracle bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Oracle.Revelation.CinderDance.Full",
+      "guid": "536c30c252a34e6ea104c1839d085d2f",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class completing investment: +1 effective oracle level for Cinder Dance per rank (I06/S04 Ifrit/Sylph Oracle revelation counter)."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Oracle.Revelation.MoltenSkin.Partial",
+      "guid": "8ef2f621d64f4f38b89617df475374c5",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class partial investment toward +1 effective oracle level for Molten Skin (I06/S04 Ifrit/Sylph Oracle revelation counter); published only into the Favored Class host's Oracle bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Oracle.Revelation.MoltenSkin.Full",
+      "guid": "49d22e7992fb45d5b3aeecc2ce22a7be",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class completing investment: +1 effective oracle level for Molten Skin per rank (I06/S04 Ifrit/Sylph Oracle revelation counter)."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Oracle.Revelation.WarSight.Partial",
+      "guid": "f39c7251fbfa4c08afe6554574763e43",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class partial investment toward +1 effective oracle level for War Sight (I06/S04 Ifrit/Sylph Oracle revelation counter); published only into the Favored Class host's Oracle bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Oracle.Revelation.WarSight.Full",
+      "guid": "2ffe92e9f47f4b3e8f447801229b3d98",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class completing investment: +1 effective oracle level for War Sight per rank (I06/S04 Ifrit/Sylph Oracle revelation counter)."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Oracle.Revelation.WeaponMastery.Partial",
+      "guid": "7860a902ae8a4c16a149dd5fe10d56e5",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class partial investment toward +1 effective oracle level for Weapon Mastery (I06/S04 Ifrit/Sylph Oracle revelation counter); published only into the Favored Class host's Oracle bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Oracle.Revelation.WeaponMastery.Full",
+      "guid": "4cb85e3e80aa4e44809b3554ef16c56a",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class completing investment: +1 effective oracle level for Weapon Mastery per rank (I06/S04 Ifrit/Sylph Oracle revelation counter)."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Oracle.Revelation.SparkSkin.Partial",
+      "guid": "59c5ceaf438f4f95b1a8c2515166ef55",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class partial investment toward +1 effective oracle level for Spark Skin (I06/S04 Ifrit/Sylph Oracle revelation counter); published only into the Favored Class host's Oracle bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Oracle.Revelation.SparkSkin.Full",
+      "guid": "d177cf03db0447179e8bc269cd61aac7",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class completing investment: +1 effective oracle level for Spark Skin per rank (I06/S04 Ifrit/Sylph Oracle revelation counter)."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Oracle.Revelation.DragonSenses.Partial",
+      "guid": "c1a4d832049d4922b1a6fc32e1d5b8cc",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class partial investment toward +1 effective oracle level for Dragon Senses (I06/S04 Ifrit/Sylph Oracle revelation counter); published only into the Favored Class host's Oracle bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Oracle.Revelation.DragonSenses.Full",
+      "guid": "87b2096c1aec455f96dfddf52ddf6de3",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class completing investment: +1 effective oracle level for Dragon Senses per rank (I06/S04 Ifrit/Sylph Oracle revelation counter)."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Oracle.Revelation.DraconicResistances.Partial",
+      "guid": "2ea09410b7a340fe8df00a1e49f4bb62",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class partial investment toward +1 effective oracle level for Draconic Resistances (I06/S04 Ifrit/Sylph Oracle revelation counter); published only into the Favored Class host's Oracle bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Oracle.Revelation.DraconicResistances.Full",
+      "guid": "94a7461b045c4235b6a8d7486ff70c39",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class completing investment: +1 effective oracle level for Draconic Resistances per rank (I06/S04 Ifrit/Sylph Oracle revelation counter)."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Oracle.Revelation.FluidNature.Partial",
+      "guid": "0066a79f465a486fa55ea12143e1aa03",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class partial investment toward +1 effective oracle level for Fluid Nature (I06/S04 Ifrit/Sylph Oracle revelation counter); published only into the Favored Class host's Oracle bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Oracle.Revelation.FluidNature.Full",
+      "guid": "c1af9d8a87a8421a91abc0caa1eec89c",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class completing investment: +1 effective oracle level for Fluid Nature per rank (I06/S04 Ifrit/Sylph Oracle revelation counter)."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Oracle.Revelation.FreezingSpells.Partial",
+      "guid": "f21558bc39ef4882a3cdc08e0dd3f56d",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class partial investment toward +1 effective oracle level for Freezing Spells (I06/S04 Ifrit/Sylph Oracle revelation counter); published only into the Favored Class host's Oracle bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Oracle.Revelation.FreezingSpells.Full",
+      "guid": "3a2fbbd0a87a45f8ae339d1b7039d47c",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class completing investment: +1 effective oracle level for Freezing Spells per rank (I06/S04 Ifrit/Sylph Oracle revelation counter)."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Oracle.Revelation.IcySkin.Partial",
+      "guid": "4eb55f672da34b469a466a72d6771059",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class partial investment toward +1 effective oracle level for Icy Skin (I06/S04 Ifrit/Sylph Oracle revelation counter); published only into the Favored Class host's Oracle bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Oracle.Revelation.IcySkin.Full",
+      "guid": "1de898d3313441e988f48842cc16709c",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class completing investment: +1 effective oracle level for Icy Skin per rank (I06/S04 Ifrit/Sylph Oracle revelation counter)."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Oracle.Revelation.SpiritOfNature.Partial",
+      "guid": "f1ad446e8bde4f329dd9a1fe026b7655",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class partial investment toward +1 effective oracle level for Spirit of Nature (I06/S04 Ifrit/Sylph Oracle revelation counter); published only into the Favored Class host's Oracle bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Oracle.Revelation.SpiritOfNature.Full",
+      "guid": "d1f37dbdc0de4130bb43439f8dd2cae9",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class completing investment: +1 effective oracle level for Spirit of Nature per rank (I06/S04 Ifrit/Sylph Oracle revelation counter)."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Oracle.Revelation.NearDeath.Partial",
+      "guid": "4f28a4cbd96f4fcaa03daeb7c8159ef0",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class partial investment toward +1 effective oracle level for Near Death (I06/S04 Ifrit/Sylph Oracle revelation counter); published only into the Favored Class host's Oracle bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Oracle.Revelation.NearDeath.Full",
+      "guid": "564c644c23c443059f42cb30f1439e35",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class completing investment: +1 effective oracle level for Near Death per rank (I06/S04 Ifrit/Sylph Oracle revelation counter)."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Oracle.Revelation.ResistLife.Partial",
+      "guid": "e15f9ee3eff6424c94a6f98a0b75c19d",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class partial investment toward +1 effective oracle level for Resist Life (I06/S04 Ifrit/Sylph Oracle revelation counter); published only into the Favored Class host's Oracle bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Oracle.Revelation.ResistLife.Full",
+      "guid": "cf9410d941a04b5b8702a547b8aab11c",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class completing investment: +1 effective oracle level for Resist Life per rank (I06/S04 Ifrit/Sylph Oracle revelation counter)."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Sorcerer.BloodlinePower.FireResistance.Partial",
+      "guid": "3a0f8d1ffa5a4903891fe00da20ea803",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class partial investment toward +1 effective sorcerer level for Elemental Resistance (Fire) (I08 Ifrit Sorcerer counter; one counter per power); published only into the Favored Class host's Sorcerer bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Sorcerer.BloodlinePower.FireResistance.Full",
+      "guid": "d9a8ab6c61444a00aefc844892f8e559",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class completing investment: +1 effective sorcerer level for Elemental Resistance (Fire) per rank, max +2 (I08 Ifrit Sorcerer counter)."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Sorcerer.BloodlinePower.AirResistance.Partial",
+      "guid": "37ffaa6b72fe4c41a5e0de10c37b2f9b",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class partial investment toward +1 effective sorcerer level for Elemental Resistance (Air) (S06 Sylph Sorcerer counter; one counter per power); published only into the Favored Class host's Sorcerer bonus selection."
+    },
+    {
+      "symbol": "KMG.FavoredClass.Sorcerer.BloodlinePower.AirResistance.Full",
+      "guid": "16a88cccfb7e4131a626b2c5437b3f60",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Favored Class integration",
+      "notes": "Favored class completing investment: +1 effective sorcerer level for Elemental Resistance (Air) per rank, max +2 (S06 Sylph Sorcerer counter)."
+    },
+    {
       "symbol": "KMG.MostlyHuman.Identity",
       "guid": "d71a4b4250914a7aa6d4bec53dfc768f",
       "plannedType": "BlueprintFeature",

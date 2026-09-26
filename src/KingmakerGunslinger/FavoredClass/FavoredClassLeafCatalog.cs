@@ -199,7 +199,7 @@ namespace KingmakerGunslinger.FavoredClass
                 "It applies to your current eidolon, stacks with its own natural armor and never changes your own AC. The Summoner is provided by Call of the Wild."),
             new FavoredClassLeafFamily(FavoredClassCatalog.EffectSelectedBloodlinePower,
                 "Sorcerer.BloodlinePower", "Bloodline Power", null,
-                "Only the chosen power's own level-based values change: Elemental Ray's damage bonus, and Elemental Blast's damage dice, save DC, caster level checks and the extra daily uses it gains at 17th and 20th level. You must already have the power. It never grants a power early, and never changes other powers, spells, spell slots, other caster level checks, BAB, saves or Elemental Resistance's 9th-level step. The efreeti and djinni bloodlines do not exist in this game."),
+                "Only the chosen power's own level-based values change: Elemental Ray's damage bonus; Elemental Blast's damage dice, save DC, caster level checks and the extra daily uses it gains at 17th and 20th level; and Elemental Resistance's step from 10 to 20 at 9th level. You must already have the power. It never grants a power early, and never changes other powers, spells, spell slots, other caster level checks, BAB or saves. The efreeti and djinni bloodlines do not exist in this game."),
             new FavoredClassLeafFamily(FavoredClassCatalog.EffectSelectedRevelation,
                 "Oracle.Revelation", "Revelation", null,
                 "Every value the chosen revelation computes from oracle level (damage dice, durations, bonuses and their level steps, uses per day, save DCs and caster level) uses your oracle level plus the earned steps, and so do the abilities and forms the revelation itself gains at later oracle levels. You must already have the revelation. It never grants another revelation or revelation choice, never satisfies a level prerequisite, and never changes other revelations, spells, spell slots, BAB or saves. The Oracle is provided by Call of the Wild."),
@@ -247,6 +247,10 @@ namespace KingmakerGunslinger.FavoredClass
                 "+1 effective sorcerer level for Elemental Ray (Air)", new[] { "S06" }),
             new FavoredClassTargetSpec("AirBlast", "Elemental Blast (Air)",
                 "+1 effective sorcerer level for Elemental Blast (Air)", new[] { "S06" }),
+            new FavoredClassTargetSpec("FireResistance", "Elemental Resistance (Fire)",
+                "+1 effective sorcerer level for Elemental Resistance (Fire)", new[] { "I08" }),
+            new FavoredClassTargetSpec("AirResistance", "Elemental Resistance (Air)",
+                "+1 effective sorcerer level for Elemental Resistance (Air)", new[] { "S06" }),
         };
 
         /// <summary>
@@ -273,10 +277,10 @@ namespace KingmakerGunslinger.FavoredClass
         /// <summary>The bloodline identities that make a power target eligible, and their name.</summary>
         internal static KeyValuePair<string, string[]> EligibleBloodlines(string targetKey)
         {
-            if (targetKey == "FireRay" || targetKey == "FireBlast")
+            if (targetKey == "FireRay" || targetKey == "FireBlast" || targetKey == "FireResistance")
                 return new KeyValuePair<string, string[]>("the fire elemental bloodline",
                     (string[])FireElementalBloodlines.Clone());
-            if (targetKey == "AirRay" || targetKey == "AirBlast")
+            if (targetKey == "AirRay" || targetKey == "AirBlast" || targetKey == "AirResistance")
                 return new KeyValuePair<string, string[]>("the air elemental bloodline",
                     (string[])AirElementalBloodlines.Clone());
             throw new KeyNotFoundException("No bloodline power target " + targetKey);

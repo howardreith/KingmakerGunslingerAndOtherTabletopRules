@@ -132,8 +132,8 @@ namespace KingmakerGunslinger.DomainTests
                     StringComparison.Ordinal))
                 registries++;
             Assertions.Equal(5, registries, "The bootstrap aggregates exactly its five registries.");
-            Assertions.Equal(171, KingmakerGunslinger.FavoredClass.FavoredClassIdentityCatalog.IdentityCount,
-                "The favored-class registry is expected to hold all 171 manifest identities.");
+            Assertions.Equal(203, KingmakerGunslinger.FavoredClass.FavoredClassIdentityCatalog.IdentityCount,
+                "The favored-class registry is expected to hold all 203 manifest identities.");
             string publication = Read("src", "KingmakerGunslinger", "FavoredClass", "FavoredClassPublication.cs");
             Assertions.True(publication.Contains("feature => feature.AssetGuid, true);"),
                 "Publication appends by stable identity and tolerates foreign multiplicity.");

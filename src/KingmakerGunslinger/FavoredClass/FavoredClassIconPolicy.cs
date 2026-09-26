@@ -115,6 +115,8 @@ namespace KingmakerGunslinger.FavoredClass
                 { "FireBlast", "b2d1d39cd406e0f4185c52fecc73c3b5" },
                 { "AirRay", "4729c2ac98d02004fb440d17f7786e28" },
                 { "AirBlast", "6d005cc9c3ad3f24e8769aad2fbfdf3f" },
+                { "FireResistance", "24980315c1bdcc4478ebb717e9b81961" },
+                { "AirResistance", "6472c51065d734e4b99ac56694925920" },
             };
 
         /// <summary>The icon donor of one counter; throws for an unmapped counter.</summary>

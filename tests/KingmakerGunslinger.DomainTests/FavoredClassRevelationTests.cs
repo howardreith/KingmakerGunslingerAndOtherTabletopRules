@@ -19,15 +19,16 @@ namespace KingmakerGunslinger.DomainTests
                 "KingmakerGunslinger", "FavoredClass" }.Concat(parts).ToArray()));
         }
 
-        // The generated manifest is the audit's implementable set: 52 targets,
+        // The generated manifest is the audit's implementable set plus the 14
+        // formerly deferred threshold-only revelations: 66 targets,
         // Dragon revelations one feature per colour; every published target
         // implements its level gates, and only the possession BAB target is
         // excluded (review finding 2, charter 8.10).
         internal static void ManifestIsTheAuditedImplementableSet()
         {
             IList<FavoredClassRevelationTarget> all = FavoredClassRevelationManifest.All;
-            Assertions.Equal(52, all.Count, "Audited implementable revelations.");
-            Assertions.Equal(52, all.Select(target => target.Key).Distinct(StringComparer.Ordinal).Count(),
+            Assertions.Equal(66, all.Count, "Audited implementable and threshold-only revelations.");
+            Assertions.Equal(66, all.Select(target => target.Key).Distinct(StringComparer.Ordinal).Count(),
                 "Unique target keys.");
             Assertions.Equal(1, all.Count(target => !target.Published),
                 "Only one target is excluded rather than published partially.");
@@ -40,7 +41,8 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(target.FeatureGuids.Length > 0 && target.FeatureGuids.All(Guid.IsMatch),
                     target.Key + " lists exact revelation identities.");
                 Assertions.True(target.Families.Length > 0 && target.Families.Trim().Length > 0 &&
-                    (target.HasFamily('A') || target.HasFamily('B') || target.HasFamily('C')),
+                    (target.HasFamily('A') || target.HasFamily('B') || target.HasFamily('C') ||
+                        target.HasFamily('D')),
                     target.Key + " has an audited adapter family.");
                 Assertions.True(target.ExtraRoots.All(Guid.IsMatch) && target.ExcludedRanks.All(RankRead.IsMatch),
                     target.Key + " scope overrides are exact.");
@@ -62,7 +64,7 @@ namespace KingmakerGunslinger.DomainTests
                 "Call of the Wild Oracle identity.");
         }
 
-        // 104 committed leaves at 1/6 uncapped (full 3, partial 17), one counter per revelation.
+        // 132 committed leaves at 1/6 uncapped (full 3, partial 17), one counter per revelation.
         internal static void RevelationLeavesAreCommittedCounters()
         {
             string effect = FavoredClassCatalog.EffectSelectedRevelation;
@@ -71,7 +73,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(keys.SequenceEqual(FavoredClassRevelationManifest.All.Select(target => target.Key)),
                 "Targets follow the manifest order.");
             IList<FavoredClassLeafSpec> leaves = FavoredClassLeafCatalog.LeavesFor(effect);
-            Assertions.Equal(104, leaves.Count, "Revelation leaves.");
+            Assertions.Equal(132, leaves.Count, "Revelation leaves.");
             foreach (FavoredClassLeafSpec leaf in leaves)
             {
                 bool full = leaf.Role == FavoredClassInvestmentRole.Full;
@@ -98,7 +100,7 @@ namespace KingmakerGunslinger.DomainTests
                 "Shared names carry their mystery.");
             Assertions.Equal("Fire Breath", FavoredClassLeafCatalog.TargetTitle(effect, "FireBreath"),
                 "Unique names stay plain.");
-            Assertions.Equal(104, leaves.Select(leaf => leaf.Name).Distinct(StringComparer.Ordinal).Count(),
+            Assertions.Equal(132, leaves.Select(leaf => leaf.Name).Distinct(StringComparer.Ordinal).Count(),
                 "Every revelation leaf has its own name.");
         }
 

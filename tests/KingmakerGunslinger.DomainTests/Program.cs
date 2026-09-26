@@ -295,6 +295,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("favored-class.improved-feature-availability", FavoredClassAdvancedTests.ImprovedFeatureRuleExcludesOnlyFullReplacement),
             Case("favored-class.power-half-level-dc", FavoredClassPowerTests.HalfLevelDcDeltaIsExact),
             Case("favored-class.power-target-rows", FavoredClassPowerTests.PowerTargetsFollowTheirOwnRows),
+            Case("favored-class.power-elemental-resistance-gates", FavoredClassPowerTests.ElementalResistanceMovesOnlyItsOwnGates),
             Case("favored-class.power-effective-level-scope", FavoredClassPowerTests.EffectiveLevelIsScopedToTheChosenPower),
             Case("favored-class.power-eligible-bloodlines", FavoredClassPowerTests.EligibleBloodlinesAreExact),
             Case("favored-class.icon-domain-census", FavoredClassIconTests.EveryLeafHasAnIconDonor),
