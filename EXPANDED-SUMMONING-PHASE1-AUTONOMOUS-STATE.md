@@ -786,16 +786,26 @@ records under `runtime-evidence/expanded-summoning-restoration`, one per batch o
 The branch carries a documentation-only delta after the candidate: the
 requalification record itself - this section, the implementation report's
 correction section, `EXPANDED-SUMMONING-PROGRAM-STATE.json` and
-`validation/static-validation.json`. Nothing executable changes with it: no
-source, test, tool, blueprint, asset or packaged file differs from the
-candidate, the package and the DLL built from the branch head hash
-identically to the candidate's
-(`bb12daef63a78c9ebcd1af9b3f0f51d7ea5d193c3f46028d425dbf443009de12` and
-`1753c235d42b9f23569a5608837e290b0ab1b77ea20cb006d9a7e1c7d395bb81`), and the
-static gates that read the validation data - the repository validation, the
-Phase 1 validator, the manifest tool and the 1805-test domain suite - were
-rerun on the branch head and pass. The guarded runtime evidence above
-therefore stands for the branch head exactly as for `2f04baf4`.
+`validation/static-validation.json`. Nothing executable changes with it:
+`git diff --name-only 2f04baf4..HEAD` lists those four records and nothing
+else, and none of them is compiled or packaged (the packaged documents are
+`CHANGELOG.md`, `README.md`, `INSTALLATION-COMPATIBILITY.md`,
+`SMOKE-TEST-GUIDE.md` and `THIRD-PARTY-ASSETS.md`, all untouched). The
+package and DLL hashes do differ at the branch head, and necessarily so:
+the exact-reference build stamps the commit into the assembly as
+provenance (`tools/build_mod_from_private_references.py --git-commit`
+writes `[assembly: AssemblyMetadata("GitCommit", ...)]`), so every commit
+produces its own artifact identity. Those hashes name the commit, not a
+change in behaviour; the build is otherwise deterministic, and a rebuild
+of the candidate's own tree reproduces the candidate's DLL. The
+qualification therefore stands on the candidate's package - SHA-256
+`bb12daef63a78c9ebcd1af9b3f0f51d7ea5d193c3f46028d425dbf443009de12` and
+DLL `1753c235d42b9f23569a5608837e290b0ab1b77ea20cb006d9a7e1c7d395bb81`,
+recorded in the deployment manifest of every batch of the set - and the
+static gates that read the records (the repository validation, the Phase 1
+validator, the manifest tool and the 1805-test domain suite) were rerun on
+the branch head and pass. The guarded runtime evidence above stands for
+the branch head as for `2f04baf4`.
 
 Live observations carried into the record (each the assertion's own observed
 string, clipped):
