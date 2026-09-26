@@ -19,19 +19,52 @@ namespace KingmakerGunslinger.Summoning
     /// </summary>
     public sealed class SummonGrappleLinkRecord
     {
-        // Auto-properties carrying JsonProperty, with an explicit
-        // parameterless constructor: the shape the game's serializer writes,
-        // as the project's other persisted records do. Public fields were
-        // skipped and the list reached the save empty.
-        [JsonProperty] public string TargetId { get; set; }
-        [JsonProperty] public int Limb { get; set; }
-        [JsonProperty] public int AdditionalIndex { get; set; }
-        [JsonProperty] public string WeaponName { get; set; }
-        [JsonProperty] public bool Engulfed { get; set; }
+        public string TargetId { get; set; }
+        public int Limb { get; set; }
+        public int AdditionalIndex { get; set; }
+        public string WeaponName { get; set; }
+        public bool Engulfed { get; set; }
         /// <summary>The record was rebuilt for a link that had none, not established by a grab.</summary>
-        [JsonProperty] public bool Repaired { get; set; }
+        public bool Repaired { get; set; }
 
         public SummonGrappleLinkRecord() { AdditionalIndex = -1; }
+
+        /// <summary>
+        /// One line of text per link. The game's serializer writes a list of
+        /// strings on a unit part - the project's battered-firearm receipts
+        /// prove it - and does not write this list of a custom class, whatever
+        /// shape the class takes, so the store keeps its records as text.
+        /// </summary>
+        internal string Encode()
+        {
+            return string.Join(Separator, new[] { TargetId ?? string.Empty,
+                Limb.ToString(System.Globalization.CultureInfo.InvariantCulture),
+                AdditionalIndex.ToString(System.Globalization.CultureInfo.InvariantCulture),
+                WeaponName ?? string.Empty, Engulfed ? "1" : "0", Repaired ? "1" : "0" });
+        }
+
+        internal static SummonGrappleLinkRecord Decode(string line)
+        {
+            if (string.IsNullOrEmpty(line)) return null;
+            string[] parts = line.Split(new[] { Separator }, StringSplitOptions.None);
+            if (parts.Length < 6 || string.IsNullOrEmpty(parts[0])) return null;
+            int limb, index;
+            if (!int.TryParse(parts[1], System.Globalization.NumberStyles.Integer,
+                    System.Globalization.CultureInfo.InvariantCulture, out limb) ||
+                !int.TryParse(parts[2], System.Globalization.NumberStyles.Integer,
+                    System.Globalization.CultureInfo.InvariantCulture, out index))
+                return null;
+            return new SummonGrappleLinkRecord {
+                TargetId = parts[0],
+                Limb = limb,
+                AdditionalIndex = index,
+                WeaponName = string.IsNullOrEmpty(parts[3]) ? null : parts[3],
+                Engulfed = parts[4] == "1",
+                Repaired = parts[5] == "1"
+            };
+        }
+
+        private const string Separator = "|";
     }
 
     /// <summary>
@@ -59,40 +92,49 @@ namespace KingmakerGunslinger.Summoning
     public sealed class UnitPartSummonGrappleLinks : UnitPart
     {
         [JsonProperty]
-        private List<SummonGrappleLinkRecord> _links = new List<SummonGrappleLinkRecord>();
+        private List<string> _links = new List<string>();
 
         internal IEnumerable<SummonGrappleLinkRecord> Links
         {
-            get { return (_links ?? new List<SummonGrappleLinkRecord>()).ToArray(); }
+            get
+            {
+                return (_links ?? new List<string>()).Select(SummonGrappleLinkRecord.Decode)
+                    .Where(value => value != null).ToArray();
+            }
         }
 
         internal void Put(SummonGrappleLinkRecord record)
         {
             if (record == null || string.IsNullOrEmpty(record.TargetId)) return;
-            if (_links == null) _links = new List<SummonGrappleLinkRecord>();
             // One record per target, and one per limb: a limb that takes a new
             // victim no longer owns the old one.
-            _links.RemoveAll(value => value != null && (value.TargetId == record.TargetId ||
-                (value.Limb == record.Limb && value.AdditionalIndex == record.AdditionalIndex)));
-            _links.Add(record);
+            List<SummonGrappleLinkRecord> kept = Links.Where(value =>
+                value.TargetId != record.TargetId &&
+                !(value.Limb == record.Limb &&
+                    value.AdditionalIndex == record.AdditionalIndex)).ToList();
+            kept.Add(record);
+            _links = kept.Select(value => value.Encode()).ToList();
         }
 
         internal SummonGrappleLinkRecord Find(string targetId)
         {
-            if (_links == null || string.IsNullOrEmpty(targetId)) return null;
-            return _links.FirstOrDefault(value => value != null && value.TargetId == targetId);
+            if (string.IsNullOrEmpty(targetId)) return null;
+            return Links.FirstOrDefault(value => value.TargetId == targetId);
         }
 
         internal bool Drop(string targetId)
         {
             if (_links == null || string.IsNullOrEmpty(targetId)) return false;
-            return _links.RemoveAll(value => value != null && value.TargetId == targetId) > 0;
+            int before = _links.Count;
+            _links = Links.Where(value => value.TargetId != targetId)
+                .Select(value => value.Encode()).ToList();
+            return _links.Count != before;
         }
 
         internal void Keep(IEnumerable<SummonGrappleLinkRecord> records)
         {
             _links = (records ?? Enumerable.Empty<SummonGrappleLinkRecord>())
-                .Where(value => value != null).ToList();
+                .Where(value => value != null).Select(value => value.Encode()).ToList();
         }
 
         internal int Count { get { return _links == null ? 0 : _links.Count; } }
