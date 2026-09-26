@@ -35,10 +35,29 @@ namespace KingmakerGunslinger.RuntimeTesting
     {
         /// <summary>Records the attacks and maneuvers the native commands make.</summary>
         private sealed class FcbTurnModeRuleObserver : IGlobalRulebookHandler<RuleAttackWithWeapon>,
-            IGlobalRulebookHandler<RuleCombatManeuver>
+            IGlobalRulebookHandler<RuleCombatManeuver>, IGlobalRulebookHandler<RuleCalculateBaseCMB>
         {
             internal readonly List<RuleAttackWithWeapon> Attacks = new List<RuleAttackWithWeapon>();
             internal readonly List<RuleCombatManeuver> Maneuvers = new List<RuleCombatManeuver>();
+            internal readonly List<string> BaseCmb = new List<string>();
+
+            public void OnEventAboutToTrigger(RuleCalculateBaseCMB evt) { }
+
+            // Every term of the native base CMB, for the trip comparison.
+            public void OnEventDidTrigger(RuleCalculateBaseCMB evt)
+            {
+                if (evt == null) return;
+                BaseCmb.Add("bab=" + evt.ResultBAB + ";str=" + evt.ResultStrengthBonus + ";size=" + evt.ResultSizeBonus +
+                    ";misc=" + evt.ResultMiscBonus + "(additionalAttack=" +
+                    evt.Initiator.Stats.AdditionalAttackBonus.ModifiedValue + ",additionalCmb=" +
+                    evt.Initiator.Stats.AdditionalCMB.ModifiedValue + ");bonus=" + evt.AdditionalBonus + "[" +
+                    string.Join(",", evt.BonusSources.Select(value => value.Value + ":" +
+                        (value.Fact == null || value.Fact.Blueprint == null ? "?" : value.Fact.Blueprint.name))
+                        .ToArray()) + "];attackModifiers=" + string.Join(",",
+                    evt.Initiator.Stats.AdditionalAttackBonus.Modifiers.Select(value => value.ModValue + ":" +
+                        (value.Source == null || value.Source.Blueprint == null ? value.ModDescriptor.ToString() :
+                            value.Source.Blueprint.name)).ToArray()) + ";result=" + evt.Result);
+            }
 
             public void OnEventAboutToTrigger(RuleAttackWithWeapon evt) { }
 
@@ -650,7 +669,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 victim.Descriptor.State.Prone.ShouldBeActive = false;
                 victim.Descriptor.State.Prone.Active = false;
             }
-            int attacks = rules.Attacks.Count, maneuvers = rules.Maneuvers.Count;
+            int attacks = rules.Attacks.Count, maneuvers = rules.Maneuvers.Count, baseCmb = rules.BaseCmb.Count;
             int gritBefore = actor.Descriptor.Resources.GetResourceAmount(grit);
             float[] before = FcbCosts(actor);
             UnitUseAbility command = FcbRunCommand(turns, turnBased, actor, data, target, FindNativeD20Seed(20));
@@ -678,6 +697,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 row["tripAutoFailure"] = trip.AutoFailure;
                 row["tripConcealed"] = trip.ConcealmentCheck != null && !trip.ConcealmentCheck.Success;
                 if (computed) row["tripCmb"] = trip.InitiatorCMB;
+                row["tripBaseCmb"] = new JArray(rules.BaseCmb.Skip(baseCmb));
             }
             if (made.Length != 1 || rules.Attacks.Count - attacks != 1)
                 failures.Add(stage + ": the command made " + (rules.Attacks.Count - attacks) +
