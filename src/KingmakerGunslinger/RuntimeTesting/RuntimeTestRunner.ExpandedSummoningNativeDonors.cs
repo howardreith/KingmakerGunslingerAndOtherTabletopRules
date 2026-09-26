@@ -65,6 +65,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             "sleep", "paralyz", "sprint", "flash", "insight", "pounce"
         };
 
+        private static readonly string[] NativeDonorProjectileTerms =
+        {
+            "web", "net", "entangle", "spider", "tanglefoot", "snare"
+        };
+
         private const string NativeGrabFeatureGuid =
             "efc1e80fb41e06544be46604983806d6";
 
@@ -149,6 +154,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 named[name] = entry;
             }
             document["namedGraphs"] = named;
+            // Correction order (2026-09-26): the Web's delivery must name one
+            // exact projectile, so the audit records every projectile the
+            // installed library carries whose name could name a web, with its
+            // asset id, and the total the library holds.
+            BlueprintProjectile[] projectiles = all.OfType<BlueprintProjectile>()
+                .OrderBy(value => value.name, StringComparer.Ordinal).ToArray();
+            var webProjectiles = new JArray();
+            foreach (BlueprintProjectile projectile in projectiles)
+                if (Matches(projectile.name, NativeDonorProjectileTerms))
+                    webProjectiles.Add(new JObject {
+                        ["name"] = projectile.name,
+                        ["guid"] = projectile.AssetGuid,
+                        ["type"] = projectile.GetType().Name });
+            document["projectiles"] = new JObject {
+                ["total"] = projectiles.Length,
+                ["webCandidates"] = webProjectiles };
 
             string path = Path.Combine(_request.EvidenceDirectory,
                 "native-donor-audit.json");
@@ -165,6 +186,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ";abilities=" + ((JArray)document["abilities"]).Count +
                     ";buffs=" + ((JArray)document["buffs"]).Count +
                     ";nativeGrab=" + (grab == null ? "missing" : grab.name) +
+                    ";projectiles=" + projectiles.Length +
+                    ";webCandidates=" + string.Join("|", webProjectiles
+                        .Select(value => (string)value["name"] + ":" + (string)value["guid"])
+                        .ToArray()) +
                     ";file=native-donor-audit.json",
                     units.Count > 0 && classes.Count > 0 && grab != null &&
                         File.Exists(path),

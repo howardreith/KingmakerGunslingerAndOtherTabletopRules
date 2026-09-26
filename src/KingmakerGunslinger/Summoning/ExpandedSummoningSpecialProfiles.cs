@@ -544,8 +544,9 @@ namespace KingmakerGunslinger.Summoning
         internal const int GiantFlytrapEngulfDiceCount = 1;
         internal const int GiantFlytrapEngulfDieSides = 8;
         internal const int GiantFlytrapEngulfBonus = 7;
-        internal const int GiantFlytrapEngulfAcidDiceCount = 1;
-        internal const int GiantFlytrapEngulfAcidDieSides = 8;
+        /// <summary>The stat block's engulf: 1d8+7 crushing and 2d6 acid each round inside.</summary>
+        internal const int GiantFlytrapEngulfAcidDiceCount = 2;
+        internal const int GiantFlytrapEngulfAcidDieSides = 6;
         /// <summary>The Purple Worm swallows up to one size category smaller (Huge).</summary>
         internal const int PurpleWormSwallowSizeDelta = -1;
 
@@ -637,7 +638,10 @@ namespace KingmakerGunslinger.Summoning
                 IsSummonManeuverSuccess(1, true) || !IsSummonManeuverSuccess(20, false) ||
                 !IsSummonManeuverSuccess(10, true) || IsSummonManeuverSuccess(10, false) ||
                 !IsHeldSinceRoundStart(true, 1) || GiantFlytrapBiteCount != 4 ||
-                GiantFlytrapEngulfMaxSize != 4 || PurpleWormSwallowSizeDelta != -1)
+                GiantFlytrapEngulfMaxSize != 4 || PurpleWormSwallowSizeDelta != -1 ||
+                GiantFlytrapEngulfDiceCount != 1 || GiantFlytrapEngulfDieSides != 8 ||
+                GiantFlytrapEngulfBonus != 7 ||
+                GiantFlytrapEngulfAcidDiceCount != 2 || GiantFlytrapEngulfAcidDieSides != 6)
                 throw new InvalidOperationException("Sprint 7 rake / grapple identity profile changed.");
             if (GiantSpiderWebUses != 2 || GiantSpiderWebRangeFeet != 50 ||
                 GiantSpiderWebRounds != 10 || GiantSpiderWebSpellLevel != 1 ||

@@ -326,35 +326,45 @@ namespace KingmakerGunslinger.Summoning
             return owner == null || owner.Body == null || owner.Body.PrimaryHand == null
                 ? null : owner.Body.PrimaryHand.MaybeWeapon;
         }
-    }
 
-    /// <summary>
-    /// The in-memory side of a hold link: the limb that established it, keyed
-    /// by the held unit's grappled-state buff instance. Buff instances are the
-    /// durable state (they save and load); after a load this table is empty
-    /// and the holder's first grab limb stands in for the maintain damage.
-    /// </summary>
-    internal static class SummonGrappleLinks
-    {
-        private sealed class LinkInfo { internal ItemEntityWeapon Weapon; }
-
-        private static readonly ConditionalWeakTable<Buff, LinkInfo> Links =
-            new ConditionalWeakTable<Buff, LinkInfo>();
-
-        internal static void Record(Buff heldState, ItemEntityWeapon weapon)
+        /// <summary>
+        /// The weapon entity standing in a recorded limb slot. This is how a
+        /// durable link finds its limb again on the body the game rebuilt
+        /// after a load, where the entity of the original attack is gone.
+        /// </summary>
+        internal static ItemEntityWeapon WeaponAt(UnitEntityData owner, SummonLimbKind kind,
+            int additionalIndex)
         {
-            if (heldState == null) return;
-            LinkInfo info;
-            if (Links.TryGetValue(heldState, out info)) info.Weapon = weapon;
-            else Links.Add(heldState, new LinkInfo { Weapon = weapon });
+            if (owner == null || owner.Body == null) return null;
+            if (kind == SummonLimbKind.PrimaryHand) return PrimaryWeapon(owner);
+            if (kind != SummonLimbKind.Additional) return null;
+            List<Kingmaker.Items.Slots.WeaponSlot> limbs = owner.Body.AdditionalLimbs;
+            if (limbs == null || additionalIndex < 0 || additionalIndex >= limbs.Count)
+                return null;
+            return limbs[additionalIndex] == null ? null : limbs[additionalIndex].MaybeWeapon;
         }
 
-        internal static ItemEntityWeapon EstablishingWeapon(Buff heldState)
+        /// <summary>The rake claws: the last rake slots of the body's additional limbs.</summary>
+        internal static List<ItemEntityWeapon> RakeWeapons(UnitEntityData owner,
+            int rakeLimbCount)
         {
-            LinkInfo info;
-            return heldState != null && Links.TryGetValue(heldState, out info) ? info.Weapon : null;
+            var result = new List<ItemEntityWeapon>();
+            if (owner == null || owner.Body == null || owner.Body.AdditionalLimbs == null ||
+                rakeLimbCount <= 0) return result;
+            List<Kingmaker.Items.Slots.WeaponSlot> limbs = owner.Body.AdditionalLimbs;
+            for (int index = 0; index < limbs.Count; index++)
+                if (ExpandedSummoningSpecialProfiles.IsRakeSlot(index, limbs.Count,
+                        rakeLimbCount) && limbs[index] != null &&
+                        limbs[index].MaybeWeapon != null)
+                    result.Add(limbs[index].MaybeWeapon);
+            return result;
         }
     }
+
+    // The link store used to live here as a table keyed by buff instances,
+    // which a load left empty. It is now the serialized unit part in
+    // SummonGrappleLinkState.cs, which keeps the establishing limb and the
+    // mouth occupancy across a save and a reload.
 
     /// <summary>
     /// The damage of an attack, as the game computes it: the weapon entity's
@@ -402,7 +412,8 @@ namespace KingmakerGunslinger.Summoning
     /// </summary>
     [Serializable]
     public sealed class SummonGrabComponent :
-        RuleInitiatorLogicComponent<RuleAttackWithWeapon>
+        RuleInitiatorLogicComponent<RuleAttackWithWeapon>,
+        IInitiatorRulebookHandler<RuleAttackRoll>
     {
         public bool GrabWithPrimaryHand;
         public int GrabAdditionalLimbCount;
@@ -519,11 +530,11 @@ namespace KingmakerGunslinger.Summoning
                 MaxTargetSizeDelta);
             bool targetHeld = target.Get<UnitPartGrappleTarget>() != null ||
                 SummonHeldComponent.HolderOf(target, GrappledBuff) != null;
-            // One link per limb: a bite that already holds someone cannot
-            // take a second foe (the flytrap's four bites, one each).
-            bool limbBusy = MultiLink && SummonMultiHoldComponent.HeldTargets(owner, GrappledBuff)
-                .Any(held => ReferenceEquals(SummonGrappleLinks.EstablishingWeapon(
-                    SummonHoldComponent.HeldState(owner, held, this)), weapon));
+            // One target per mouth: a limb that already holds or has engulfed
+            // someone cannot take a second foe. The durable store answers this
+            // after a load as well as before one, and an engulfed victim keeps
+            // its mouth shut even though its held state is gone.
+            bool limbBusy = SummonGrappleLinks.IsLimbOccupied(owner, weapon);
             if (!ExpandedSummoningSpecialProfiles.ShouldAttemptSummonGrab(isHit,
                     IsGrabLimb(owner, weapon), HeldCount(owner) >= MaxHeldTargets || limbBusy,
                     targetHeld, target.Get<UnitPartSwallowed>() != null,
@@ -531,30 +542,47 @@ namespace KingmakerGunslinger.Summoning
                 return false;
             if (HoldBuff == null || GrappledBuff == null) return false;
             MechanicsContext context = Fact == null ? null : Fact.MaybeContext;
+            ItemEntityWeapon establishing = weapon;
             var maneuver = new RuleCombatManeuver(owner, target,
                 CombatManeuver.Grapple);
             if (context != null) context.TriggerRule(maneuver);
             else Rulebook.Trigger(maneuver);
             if (!SummonManeuverChecks.Succeeded(maneuver)) return false;
-            Buff heldState;
             if (!MultiLink)
             {
                 owner.Ensure<UnitPartGrappleInitiator>().Init(target, HoldBuff, context);
                 target.Ensure<UnitPartGrappleTarget>().Init(owner, GrappledBuff, context);
-                heldState = target.Descriptor.Buffs.GetBuff(GrappledBuff);
             }
             else
             {
                 if (owner.Descriptor.Buffs.GetBuff(HoldBuff) == null)
                     owner.Descriptor.Buffs.AddBuff(HoldBuff, context, null);
-                heldState = target.Descriptor.Buffs.AddBuff(GrappledBuff,
+                target.Descriptor.Buffs.AddBuff(GrappledBuff,
                     new MechanicsContext(owner, target.Descriptor, GrappledBuff, context,
                         target), null);
             }
-            SummonGrappleLinks.Record(heldState, weapon);
+            SummonGrappleLinks.Record(owner, target, establishing);
             DealConstrict(owner, target, context);
             return true;
         }
+
+        /// <summary>
+        /// One target per mouth, in the attack itself: a limb that holds or
+        /// has engulfed someone never strikes another unit. The suppressed
+        /// swing is silent, as the rake gate's are, so a shut mouth leaves no
+        /// log line for an attack it never made.
+        /// </summary>
+        public void OnEventAboutToTrigger(RuleAttackRoll evt)
+        {
+            if (evt == null || Owner == null || Owner.Unit == null || evt.Weapon == null)
+                return;
+            UnitEntityData occupant = SummonGrappleLinks.OccupantOf(Owner.Unit, evt.Weapon);
+            if (occupant == null || ReferenceEquals(occupant, evt.Target)) return;
+            evt.AutoMiss = true;
+            evt.SuspendCombatLog = true;
+        }
+
+        public void OnEventDidTrigger(RuleAttackRoll evt) { }
 
         internal void DealConstrict(UnitEntityData owner, UnitEntityData target,
             MechanicsContext context)
@@ -579,11 +607,17 @@ namespace KingmakerGunslinger.Summoning
             MechanicsContext context)
         {
             if (owner == null || target == null || SwallowedBuff == null) return 0;
-            int damage = SummonGrappleDamage.DealWeaponDamage(owner, target,
-                SummonLimbs.PrimaryWeapon(owner), context);
+            // The limb that established the hold is the one that swallows.
+            ItemEntityWeapon mouth = SummonGrappleLinks.EstablishingWeapon(owner, target) ??
+                SummonLimbs.PrimaryWeapon(owner);
+            int damage = SummonGrappleDamage.DealWeaponDamage(owner, target, mouth, context);
             if (target.Descriptor.State.IsDead || target.Destroyed) return damage;
             SummonHoldComponent.ReleaseLink(owner, target, this, false);
             owner.Ensure<UnitPartSwallowWhole>().Swallow(target, SwallowedBuff);
+            // The held state ends with the engulf; the mouth stays shut on
+            // that victim until it is spat out or breaks free.
+            SummonGrappleLinks.Record(owner, target, mouth);
+            SummonGrappleLinks.MarkEngulfed(owner, target);
             return damage;
         }
     }
@@ -639,11 +673,17 @@ namespace KingmakerGunslinger.Summoning
                     grab.SwallowedBuff != null, success, roundsHeld,
                     grab.IsSwallowSizeAllowed(owner, target)))
                 return "swallowed:" + grab.SwallowHeld(owner, target, context);
-            ItemEntityWeapon weapon = SummonGrappleLinks.EstablishingWeapon(heldState) ??
-                (grab == null ? SummonLimbs.PrimaryWeapon(owner) : grab.FirstGrabWeapon(owner));
+            ItemEntityWeapon weapon = SummonGrappleLinks.EstablishingWeapon(owner, target);
+            bool substituted = weapon == null;
+            if (substituted)
+                weapon = grab == null ? SummonLimbs.PrimaryWeapon(owner) :
+                    grab.FirstGrabWeapon(owner);
             int damage = SummonGrappleDamage.DealWeaponDamage(owner, target, weapon, context);
             if (grab != null) grab.DealConstrict(owner, target, context);
-            return "maintained:" + damage;
+            string rake = grab == null ? string.Empty :
+                SummonRakeExecution.RakeOnMaintain(owner, target, grab, context);
+            return "maintained:" + damage + ";limb=" + (weapon == null || weapon.Blueprint == null ?
+                "none" : weapon.Blueprint.name) + (substituted ? ";substituted" : "") + rake;
         }
 
         public void OnEventAboutToTrigger(RuleCalculateCMB evt)
@@ -762,6 +802,7 @@ namespace KingmakerGunslinger.Summoning
             SummonGrabComponent grab, bool dropHoldWhenLast)
         {
             if (owner == null || target == null) return;
+            SummonGrappleLinks.Release(owner, target);
             if (grab == null || !grab.MultiLink)
             {
                 Release(owner, target);
@@ -780,6 +821,7 @@ namespace KingmakerGunslinger.Summoning
         internal static void Release(UnitEntityData owner, UnitEntityData target)
         {
             if (owner == null || target == null) return;
+            SummonGrappleLinks.Release(owner, target);
             UnitPartGrappleTarget held = target.Get<UnitPartGrappleTarget>();
             if (held != null && ReferenceEquals(held.Initiator.Value, owner))
                 target.Remove<UnitPartGrappleTarget>();
@@ -1105,6 +1147,49 @@ namespace KingmakerGunslinger.Summoning
     }
 
     /// <summary>
+    /// The rake a cat makes while it holds. On the tabletop the two rake
+    /// attacks come as part of the grapple check that maintains the hold, and
+    /// that is the only moment a holding cat can act at all: the game's own
+    /// initiator part gives the holder CantAct and CantMove, so no command it
+    /// could issue would start. A successful later-turn maintain against the
+    /// exact held target therefore makes the rake attacks here - genuine
+    /// attack rolls with the rake claws, their own damage, their own
+    /// criticals and their own combat log. A hold established this turn has
+    /// not ticked a round, so its first maintain is the next round; a rake
+    /// never reaches a unit this cat does not hold; and the claws are the
+    /// body's rake slots, never the primary claws. The attacks resolve on the
+    /// rulebook rather than through a command, so they carry no separate
+    /// swing animation, which is recorded as the adaptation it is.
+    /// </summary>
+    internal static class SummonRakeExecution
+    {
+        internal static string RakeOnMaintain(UnitEntityData owner, UnitEntityData target,
+            SummonGrabComponent grab, MechanicsContext context)
+        {
+            if (owner == null || target == null || grab == null || grab.RakeLimbCount <= 0)
+                return string.Empty;
+            if (!SummonHoldComponent.IsHeldSinceRoundStart(owner, target))
+                return ";rake=not-eligible";
+            List<ItemEntityWeapon> claws = SummonLimbs.RakeWeapons(owner, grab.RakeLimbCount);
+            if (claws.Count == 0) return ";rake=no-claws";
+            var outcomes = new List<string>();
+            foreach (ItemEntityWeapon claw in claws)
+            {
+                if (target.Descriptor.State.IsDead || target.Destroyed) break;
+                var attack = new RuleAttackWithWeapon(owner, target, claw, 0);
+                if (context != null) context.TriggerRule(attack);
+                else Rulebook.Trigger(attack);
+                RuleAttackRoll roll = attack.AttackRoll;
+                int dealt = attack.MeleeDamage == null ? 0 : attack.MeleeDamage.Damage;
+                outcomes.Add((claw.Blueprint == null ? "?" : claw.Blueprint.name) + ":" +
+                    (roll == null ? "no-roll" : "natural=" + (int)roll.Roll + ",hit=" +
+                        roll.IsHit + ",critical=" + roll.IsCriticalConfirmed + ",damage=" + dealt));
+            }
+            return ";rake=" + string.Join(",", outcomes.ToArray());
+        }
+    }
+
+    /// <summary>
     /// The attack-sequencing seam for the rake: when the game builds a full
     /// attack for a cat that is neither charging nor holding its target since
     /// its round began, the rake claws are removed from the planned attacks,
@@ -1131,8 +1216,15 @@ namespace KingmakerGunslinger.Summoning
                 if (__instance == null || __result == null) return;
                 UnitEntityData owner = __instance.Executor;
                 SummonGrabComponent grab = SummonGrabComponent.Find(owner);
-                if (grab == null || grab.RakeLimbCount <= 0) return;
+                if (grab == null) return;
                 UnitEntityData target = __instance.TargetUnit;
+                // One target per mouth: a limb holding or engulfing someone
+                // else is not part of this full attack at all.
+                int shut = __result.RemoveAll(info => info != null && info.Hand != null &&
+                    IsOccupiedElsewhere(owner, info.Hand, target));
+                if (shut > 0)
+                    Record(owner, "mouthsShut=" + shut + ";attacks=" + __result.Count);
+                if (grab.RakeLimbCount <= 0) return;
                 bool heldSinceRoundStart = SummonHoldComponent.IsHeldSinceRoundStart(owner, target);
                 if (ExpandedSummoningSpecialProfiles.ShouldRakeApply(true, __instance.IsCharge,
                         heldSinceRoundStart))
@@ -1149,6 +1241,14 @@ namespace KingmakerGunslinger.Summoning
             {
                 // The rake gate never interrupts the game's own attack command.
             }
+        }
+
+        private static bool IsOccupiedElsewhere(UnitEntityData owner,
+            Kingmaker.Items.Slots.WeaponSlot hand, UnitEntityData target)
+        {
+            ItemEntityWeapon weapon = hand == null ? null : hand.MaybeWeapon;
+            UnitEntityData occupant = SummonGrappleLinks.OccupantOf(owner, weapon);
+            return occupant != null && !ReferenceEquals(occupant, target);
         }
 
         private static void Record(UnitEntityData owner, string outcome)
