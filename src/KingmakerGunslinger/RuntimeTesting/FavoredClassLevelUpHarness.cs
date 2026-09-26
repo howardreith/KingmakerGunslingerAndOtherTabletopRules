@@ -86,6 +86,20 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         /// <summary>
+        /// Opens one native visit and makes no choice: a stored plan the
+        /// constructor applies (auto-level, a pregen, an imported companion)
+        /// makes them.
+        /// </summary>
+        internal static LevelUpController OpenBare(UnitDescriptor unit)
+        {
+            var controller = (LevelUpController)Start.Invoke(null,
+                new object[] { unit, false, null, null, LevelUpMode });
+            if (controller == null)
+                throw new InvalidOperationException("No native level-up controller was created.");
+            return controller;
+        }
+
+        /// <summary>
         /// Settles one native visit of an existing controller (an ordinary
         /// level-up or the native respec's): race and identity choices while
         /// they are open, then the class and its mechanics.

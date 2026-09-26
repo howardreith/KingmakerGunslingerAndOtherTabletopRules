@@ -356,24 +356,37 @@ namespace KingmakerGunslinger.RuntimeTesting
                     turnBased, true);
                 row["turns"] = rows;
                 UnitEntityData caster = actor;
-                // Entering combat starts the view's draw-weapon animation, a
-                // Unity coroutine that only real frames advance; the save-free
-                // host runs none within this update. End that visual animation
-                // through the view's own interrupt (never a rule, cost or
-                // authorization), as the scope supplies animation act cues.
-                bool handsBusyAtEntry = caster.AreHandsBusyWithAnimation;
-                if (handsBusyAtEntry)
+                // Entering combat schedules the hands controller's update; its
+                // tick starts the view's draw-weapon animation, a Unity
+                // coroutine that only real frames advance, and the save-free
+                // host runs none within this update. Inside the scope (whose
+                // hands controller the command gate reads) the controller's own
+                // update runs, then that visual animation ends through the
+                // view's own interrupt (never a rule, cost or authorization),
+                // as the scope supplies animation act cues.
+                MethodInfo interrupt = typeof(Kingmaker.View.Equipment.UnitViewHandsEquipment).GetMethod(
+                    "InterruptAnimation", BindingFlags.Instance | BindingFlags.NonPublic);
+                if (interrupt == null)
+                    throw new MissingMethodException("UnitViewHandsEquipment", "InterruptAnimation");
+                var hands = new JObject();
+                turns.Execute(() =>
                 {
-                    MethodInfo interrupt = typeof(Kingmaker.View.Equipment.UnitViewHandsEquipment).GetMethod(
-                        "InterruptAnimation", BindingFlags.Instance | BindingFlags.NonPublic);
-                    if (interrupt == null)
-                        throw new MissingMethodException("UnitViewHandsEquipment", "InterruptAnimation");
-                    interrupt.Invoke(caster.View.HandsEquipment, null);
-                }
-                row["handsBusyAtEntry"] = handsBusyAtEntry;
-                row["handsBusyAfterSettle"] = caster.AreHandsBusyWithAnimation ||
-                    Game.Instance.HandsEquipmentController.IsUpdateScheduledFor(caster);
-                if ((bool)row["handsBusyAfterSettle"])
+                    UnitHandEquipmentController controller = Game.Instance.HandsEquipmentController;
+                    hands["scheduledAtEntry"] = controller.IsUpdateScheduledFor(caster);
+                    hands["busyAtEntry"] = caster.AreHandsBusyWithAnimation;
+                    int ticks = 0;
+                    for (; ticks < 4 && controller.IsUpdateScheduledFor(caster); ticks++)
+                        controller.Tick();
+                    hands["controllerTicks"] = ticks;
+                    hands["busyAfterUpdate"] = caster.AreHandsBusyWithAnimation;
+                    if (caster.AreHandsBusyWithAnimation)
+                        interrupt.Invoke(caster.View.HandsEquipment, null);
+                    hands["inCombatView"] = caster.View.HandsEquipment.InCombat;
+                    hands["busyAfterSettle"] = caster.AreHandsBusyWithAnimation ||
+                        controller.IsUpdateScheduledFor(caster);
+                });
+                row["hands"] = hands;
+                if ((bool)hands["busyAfterSettle"])
                     throw new InvalidOperationException("The Gunslinger's hands stayed busy after the draw animation.");
                 Action<string> gritAt = stage => gritTrail.Add(stage + "=" +
                     caster.Descriptor.Resources.GetResourceAmount(grit));
