@@ -2329,8 +2329,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (grab == null || victim == null) { parts.Add(row[0] + ":missing"); continue; }
                 ItemEntityWeapon stored = SummonGrappleLinks.StoredLimbOf(holder, victim);
                 parts.Add(row[0] + "->" + row[1] + ":stored=" + (stored == null ||
-                    stored.Blueprint == null ? "none" : stored.Blueprint.name) + "," +
-                    DescribeExpandedSummoningHoldState(holder, victim, grab));
+                    stored.Blueprint == null ? "none" : stored.Blueprint.name) + ",victimId=" +
+                    victim.UniqueId + ",holderId=" + holder.UniqueId + "," +
+                    DescribeExpandedSummoningHoldState(holder, victim, grab) + ",store=" +
+                    SummonGrappleLinks.Describe(holder));
             }
             return string.Join("|", parts.ToArray());
         }
@@ -2428,7 +2430,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "none" : "present") + ",mouthFree=" + (engineHold ? "held" :
                         mouthFree.ToString()) + ",maintain=" + maintained + ",namedLimb=" +
                     namedLimb + ",rakeWhenDue=" + rakeWhenDue + ",engine=" +
-                    DescribeExpandedSummoningHoldState(holder, victim, grab) + ",store=" +
+                    DescribeExpandedSummoningHoldState(holder, victim, grab) + ",victimId=" +
+                    victim.UniqueId + ",holderId=" + holder.UniqueId + ",store=" +
                     SummonGrappleLinks.Describe(holder));
                 ok = ok && identitySurvived && namedLimb && rakeWhenDue &&
                     (engineHold || mouthFree);
