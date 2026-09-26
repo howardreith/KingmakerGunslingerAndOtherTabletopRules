@@ -3624,12 +3624,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // use survives exactly once and never doubles.
                     ArmExpandedSummoningPersistenceFlash(
                         _expandedSummoningPersistencePreparedUnits);
-                    // Correction order (2026-09-26): three holds on three
-                    // different limbs, so the reload has to name each one.
-                    _expandedSummoningPersistenceLinkDetail =
-                        TakeExpandedSummoningPersistenceHolds(
-                            _expandedSummoningPersistencePreparedUnits,
-                            out _expandedSummoningPersistenceLinkValid);
                     _expandedSummoningPersistenceFixtureSpawned = true;
                     return;
                 }
@@ -3761,6 +3755,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 CompleteExpandedSummoningPersistence(RuntimeTestStatuses.Pass, "");
                 return;
             }
+            // Correction order (2026-09-26): the holds whose establishing limb
+            // the reload must name are taken in this frame, the one that
+            // saves. Taken at spawn time they would not survive the settle and
+            // the motion review: rounds pass there, and the reach check and
+            // the victims' own break-free attempts end links, correctly.
+            if (prepare)
+                _expandedSummoningPersistenceLinkDetail =
+                    TakeExpandedSummoningPersistenceHolds(
+                        _expandedSummoningPersistencePreparedUnits,
+                        out _expandedSummoningPersistenceLinkValid);
             _workingSaveSmoke.ArmExactWorkingSaveWrite();
             MethodInfo saveGame = typeof(Game).GetMethods(BindingFlags.Instance |
                 BindingFlags.Public | BindingFlags.NonPublic).Single(value =>
