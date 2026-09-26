@@ -237,50 +237,58 @@ Decisions (recorded here rather than asked):
   establishing attack of every link is owned (corrected under the
   2026-09-26 order): `UnitPartSummonGrappleLinks` on the holder records the
   limb as a semantic slot - the primary hand, or an additional limb by
-  index - beside the target's unit id, and serializes with the holder, so a
-  reload resolves the same limb against the body the game rebuilds. No live
-  Unity or item reference is stored. The store it replaces was a table keyed
-  by buff instances, which a load left empty, and the maintain then used the
+  index - beside the target's unit id, on the holder, and resolves against
+  the body the holder carries when it is read. No live Unity or item
+  reference is kept. The store it replaces was a table keyed by buff
+  instances, which the maintain could lose within a session, and the
+  damage then used the
   holder's first grab limb: not equivalent for a Tiger or a Smilodon, whose
   bite and foreclaw deal different dice, and no way to tell the Giant
   Flytrap's four mouths apart. The same store is the mouth occupancy the
   one-target-per-mouth rule needs: a limb that holds or has engulfed a
   target never attacks another unit, in the attack roll (the roll
   auto-misses and leaves no log line) and in the game's own planned full
-  attack (the hand is dropped), and it survives the engulf, which ends the
-  held state, and the reload. Every read reconciles the records against the
-  game's state, so escape, death, dismissal, expiry, an area transition, a
-  module-disabled load and a repaired load each free precisely the mouth
-  they should; an orphan link a save carried without a record is adopted
-  and marked repaired.
+  attack (the hand is dropped), and it outlives the engulf, which ends the
+  held state. Every read reconciles the records against the game's state,
+  so escape, death, dismissal, expiry, an area transition, a
+  module-disabled load and a reloaded game each free precisely the mouth
+  they should; an orphan link with no record is adopted and marked
+  repaired.
 
-  What that store cannot do is survive a save, and the reason is the
-  engine's, established by four reproducible observations in the
-  persistence trio and in the save's own bytes. In the frame that saves,
+  An active link is session-scoped, and the owner accepted that on
+  2026-09-26: **OwnerAcceptedEngineLimitation:
+  ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD**. A KMG summon's grab,
+  hold, swallow or engulf, the mouth occupancy that goes with it and the
+  held-target rake need not cross a save; on a save and a reload they must
+  resolve to a clean released state, with no lingering conditions, no
+  occupied mouths, no delayed damage, no dangling links, no unusable units
+  and no module-disabled deserialization problem. This is not grapple
+  persistence, and it is not a blocked item: a project-owned
+  re-establishment of holds on load is out of scope for PR #23 and would be
+  a separately chartered persistence subsystem if it were ever shown to be
+  worth the risk.
+
+  The engine facts behind the acceptance, each reproducible in the
+  persistence trio and in the save's own bytes: in the frame that saves,
   every hold is complete on both sides - the victim's held state present
   with its context naming the holder, the holder's hold buff present, both
   native grapple parts pointing at each other - and the store names the
-  establishing limb. The unit ids are identical before and after the load,
-  so the store's keying is sound. The bytes carry the holder's hold buff
+  establishing limb; the unit ids are identical before and after the load,
+  so the store's keying is sound; the bytes carry the holder's hold buff
   and the Cyclops arming, and carry no victim-side held state and no
-  native grapple part; the link part is written by type with an empty
+  native grapple part, and the link part is written by type with an empty
   list, whatever shape its records take (public fields, auto-properties
   with `JsonProperty`, or lines of text - a list of strings on another
-  project part is written, so the obstacle is not the element type alone).
-  After the load neither side of any hold is there.
+  project part is written, so the obstacle is not the element type alone);
+  after the load neither side of any hold is there. So Kingmaker carries no
+  active grapple across a save, and a unit part on these summons is written
+  by type without its contents.
 
-  So Kingmaker does not carry an active grapple across a save, and a unit
-  part on these summons is written by type without its contents. A
-  maintain after a reload cannot be demonstrated for want of a hold to
-  maintain, and the substitution the order forbids is unreachable there
-  rather than corrected. The persistence trio proves instead that nothing
-  is left in a bad state: after the load no link is live, every mouth is
-  free, and no summon holds a victim it cannot name. This is recorded as a
-  BLOCKED item of the 2026-09-26 order, not as an accepted deviation; the
-  smallest owner decision is whether to accept the store as
-  session-scoped with that safe post-load state, or to authorise a
-  project-owned re-establishment of holds on load, which is new behaviour
-  beyond this order's scope.
+  What the persistence trio proves, and what the acceptance requires, is
+  the clean reset: after the load no link is live, every mouth is free, no
+  condition or delayed damage lingers on any unit, no summon holds a victim
+  it cannot name, and the module-disabled leg loads with no KMG units and
+  no deserialization fault.
 
   The
   worm holds on a successful grab and swallows through the native part on
@@ -900,10 +908,12 @@ unmerged).
 
 Reviewer findings and closure, 2026-09-26 order: item 1 (grapple attack
 identity) is owned per link with mouth occupancy and proven live for a
-bite hold, a foreclaw hold and four flytrap mouths; its post-reload
-maintain is BLOCKED by the engine, which carries no active grapple across
-a save and writes a unit part by type without its contents, with the safe
-post-load state proven instead. Item 2 (held-target rake) is made by the
+bite hold, a foreclaw hold and four flytrap mouths; an active link is
+session-scoped under OwnerAcceptedEngineLimitation:
+ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD, the owner's decision of
+2026-09-26, because Kingmaker carries no active grapple across a save and
+writes a unit part by type without its contents, and the clean
+post-reload reset is proven. Item 2 (held-target rake) is made by the
 maintain check the tabletop puts it in, because the game's own initiator
 part leaves a holder unable to act: two genuine rake attacks against the
 exact held foe, logged, never the turn the hold was taken and never
@@ -917,8 +927,8 @@ audited cadence. Item 4 (Web projectile) pins one exact identity the donor
 audit established, the library carrying 170 projectiles and no web among
 them. Item 5 (evidence) is this gate list. Nothing was reclassified as an
 accepted deviation. Internal acceptance on this evidence; HumanReview:
-NOT_PERFORMED_NONBLOCKING.
-OwnerDelegationGranted.
+NOT_PERFORMED_NONBLOCKING. OwnerDelegationGranted.
+
 ## Verified facts carried from Phase 0 (do not re-derive)
 
 - Catalog pins at the start of Phase 1: 67 creatures, SM 66 / 361, SNA 57 /
@@ -948,4 +958,4 @@ OwnerDelegationGranted.
 
 ## Next executable action
 
-Sprints 3-8 corrected and requalified on candidate commit `145810a5`. The 2026-09-25 order is closed in full. The 2026-09-26 order is closed except one item BLOCKED by the engine: a maintain after a reload cannot be shown, because Kingmaker carries no active grapple across a save and writes a unit part by type without its contents; the post-load state is proven safe instead. Draft PR #23 is ready for owner review. No merge, release, permanent deployment or Sprint 9 under the orders of 2026-09-24, 2026-09-25 and 2026-09-26.
+Sprints 3-8 corrected and requalified on candidate commit `145810a5`, with the closeout delta recorded afterwards. The 2026-09-25 and 2026-09-26 orders are both closed: an active summon grab, hold, swallow, engulf, mouth occupancy and held-target rake are session-scoped under OwnerAcceptedEngineLimitation: ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD, accepted by the owner on 2026-09-26, and a save and reload release them cleanly. Draft PR #23 is marked ready for owner review and stays unmerged. No merge, release publication, permanent deployment or Sprint 9 under the orders of 2026-09-24, 2026-09-25 and 2026-09-26.
