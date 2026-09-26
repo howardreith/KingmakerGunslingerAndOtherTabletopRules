@@ -121,7 +121,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 if (point.Value != neighborControl[point.Key])
                                     mismatches.Add(at + "neighbor " + neighbor.Target.Key + " " + point.Key + ": " +
                                         neighborControl[point.Key] + " -> " + point.Value);
-                            invested.Descriptor.RemoveFact(leaf);
+                            RemoveFavoredClassRanks(invested, leaf);
                             Dictionary<string, int> removed = FcbRevelationReadPoints(invested, scope, victim);
                             foreach (KeyValuePair<string, int> point in removed)
                                 if (point.Value != controlValues[point.Key])

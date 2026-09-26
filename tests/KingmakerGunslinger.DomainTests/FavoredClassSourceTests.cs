@@ -13,6 +13,8 @@ namespace KingmakerGunslinger.DomainTests
             "disposable-favored-class-gunslinger-menus",
             "disposable-favored-class-gunslinger-mechanics",
             "disposable-favored-class-initiative-timing",
+            "disposable-favored-class-turn-modes",
+            "disposable-favored-class-bombs",
             "observe-favored-class-host-state",
             "disposable-favored-class-elemental-core",
             "disposable-favored-class-mostly-human",

@@ -55,7 +55,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal bool Restored { get; private set; }
         internal readonly JArray Turns = new JArray();
 
-        internal ElementalNativeTurnScope(UnitEntityData caster, UnitEntityData enemy, JArray observations, string label, bool turnBased = true)
+        internal ElementalNativeTurnScope(UnitEntityData caster, UnitEntityData enemy, JArray observations, string label,
+            bool turnBased = true, bool freshTurnBasedEntry = false)
         {
             _caster = caster; _enemy = enemy;
             _ownedHands = Game.Instance.HandsEquipmentController ?? new UnitHandEquipmentController();
@@ -102,6 +103,30 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // despite there being no offensive command. The normal toggle
                 // callback uses Reset(true, false) and preserves existing combat.
                 _entered = true;
+                if (turnBased && freshTurnBasedEntry)
+                {
+                    // A fresh turn-based combat: the controller is enabled and
+                    // subscribed before the actors join, so the join raises the
+                    // party combat change (HandleCombatStart(true)) and the
+                    // prepare controller rolls initiative under turn-based rules.
+                    // The fixture clock moves past the native surprise window,
+                    // which compares the seconds component of GameTime -
+                    // LastSurpriseActionTime with 6 (both zero at main-menu time).
+                    TimeSpan last = new[] { caster, enemy }.Max(unit => unit.CombatState.LastSurpriseActionTime);
+                    Game.Instance.Player.GameTime = last + TimeSpan.FromSeconds(10);
+                    Tick(() => {
+                        SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = true;
+                        Game.Instance.TurnBasedCombatController.Activate();
+                    });
+                    EventBus.Subscribe(Game.Instance.TurnBasedCombatController); _subscribed = true;
+                    Tick(() => {
+                        caster.JoinCombat(); enemy.JoinCombat();
+                        _join.Tick(); _prepare.Tick();
+                    });
+                    Turns.Add(new JObject { ["combatEntry"] = "fresh native turn-based combat; initiative rolled under turn-based rules",
+                        ["round"] = Game.Instance.TurnBasedCombatController.RoundNumber });
+                }
+                else
                 Tick(() => {
                     SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
                     Game.Instance.TurnBasedCombatController.Activate();
@@ -118,13 +143,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                         throw new InvalidOperationException("Native RTWP fixture enrollment failed.");
                     return;
                 }
-                EventBus.Subscribe(Game.Instance.TurnBasedCombatController); _subscribed = true;
+                if (!_subscribed) { EventBus.Subscribe(Game.Instance.TurnBasedCombatController); _subscribed = true; }
                 if (Game.Instance.TurnBasedCombatController.RoundNumber != 1 ||
                     Game.Instance.TurnBasedCombatController.IsSurprised(caster) ||
                     Game.Instance.TurnBasedCombatController.IsSurprised(enemy))
                     throw new InvalidOperationException("Native mode toggle did not establish ordinary combat.");
-                Turns.Add(new JObject { ["combatEntry"] = "native turn-based toggle after owned combat enrollment",
-                    ["round"] = Game.Instance.TurnBasedCombatController.RoundNumber, ["surpriseRound"] = false });
+                if (!freshTurnBasedEntry)
+                    Turns.Add(new JObject { ["combatEntry"] = "native turn-based toggle after owned combat enrollment",
+                        ["round"] = Game.Instance.TurnBasedCombatController.RoundNumber, ["surpriseRound"] = false });
                 if (!CombatController.IsInTurnBasedCombat() || !Game.Instance.Player.IsInCombat ||
                     !Game.Instance.TurnBasedCombatController.SortedUnits.Contains(caster) ||
                     !Game.Instance.TurnBasedCombatController.SortedUnits.Contains(enemy))
@@ -175,8 +201,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
-        internal void ReachCasterTurn()
+        internal void ReachCasterTurn() { ReachTurn(_caster); }
+
+        /// <summary>Ends the caster's turn if needed and returns at the enemy's next turn.</summary>
+        internal void ReachEnemyTurn() { ReachTurn(_enemy); }
+
+        private void ReachTurn(UnitEntityData actor)
         {
+            UnitEntityData other = ReferenceEquals(actor, _caster) ? _enemy : _caster;
             var controller = Game.Instance.TurnBasedCombatController;
             for (int tick = 0; tick < 240; ++tick)
             {
@@ -204,16 +236,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException("A foreign actor entered the owned turn scope.");
                 if (turn.Status == TurnController.TurnStatus.None && _prepared.Add(turn))
                     Tick(turn.Prepare);
-                if (ReferenceEquals(turn.Unit, _caster) &&
+                if (ReferenceEquals(turn.Unit, actor) &&
                     (turn.Status == TurnController.TurnStatus.Preparing || turn.Status == TurnController.TurnStatus.Acting))
                 {
                     Turns.Add(new JObject { ["round"] = controller.RoundNumber, ["actorId"] = turn.Unit.UniqueId,
                         ["status"] = turn.Status.ToString(), ["nativeCurrentActorExact"] = true });
                     return;
                 }
-                if (ReferenceEquals(turn.Unit, _enemy)) EndCurrentTurn();
+                if (ReferenceEquals(turn.Unit, other)) EndCurrentTurn();
             }
-            throw new InvalidOperationException("The native turn loop did not reach the exact disposable caster.");
+            throw new InvalidOperationException("The native turn loop did not reach the exact disposable " +
+                (ReferenceEquals(actor, _caster) ? "caster." : "enemy."));
         }
 
         internal void EndCurrentTurn()

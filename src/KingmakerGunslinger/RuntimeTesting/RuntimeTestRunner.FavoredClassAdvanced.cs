@@ -533,7 +533,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             int[] useLevels = thresholds.Select(value => value.Key).Concat(gates.Where(value =>
                 !value.Key.BeforeThisLevel).Select(value => value.Key.Level)).OrderBy(value => value).ToArray();
             if (!useLevels.SequenceEqual(new[] { 17, 20 }) || gates.Any(value => value.Key.BeforeThisLevel))
-                failures.Add("the fire Blast's own use thresholds were not exactly 17 and 20");
+                failures.Add(blastKey + ": the Blast's own use thresholds were not exactly 17 and 20");
             Func<int, int, UnitEntityData> sorcererAt = (levels, steps) =>
             {
                 UnitEntityData unit = create();
@@ -543,7 +543,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 unit.Descriptor.AddFact(ray);
                 unit.Descriptor.AddFact(blast);
                 if (steps > 0)
-                    GrantFavoredClassRanks(unit, leaves.Pair(effect, "FireBlast").Full, steps);
+                    GrantFavoredClassRanks(unit, leaves.Pair(effect, blastKey).Full, steps);
                 return unit;
             };
             // (real level, steps, extra uses beyond the native ones)
@@ -572,10 +572,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["rayInvested"] = rayInvested
                 });
                 if (blastInvested - blastControl != entry.Item3)
-                    failures.Add("Blast at sorcerer " + entry.Item1 + " with " + entry.Item2 + " steps gained " +
+                    failures.Add(blastKey + " at sorcerer " + entry.Item1 + " with " + entry.Item2 + " steps gained " +
                         (blastInvested - blastControl) + " uses, expected " + entry.Item3);
                 if (rayInvested != rayControl)
-                    failures.Add("a Blast investment changed Elemental Ray's uses");
+                    failures.Add(blastKey + ": a Blast investment changed Elemental Ray's uses");
             }
             row["probes"] = probes;
             return row;

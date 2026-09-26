@@ -254,9 +254,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     int stepsNow = FavoredClassEarnedSteps.For(unit.Descriptor, row[2], row[3]);
                     FcbRowMeasure measure = probes.For(row[0], unit, lightningBreath, airRay);
                     int withOwn = measure.Own(), withNeighbor = measure.Neighbor();
-                    if (unit.Descriptor.HasFact(pair.Full)) unit.Descriptor.RemoveFact(pair.Full);
-                    if (pair.Partial != null && unit.Descriptor.HasFact(pair.Partial))
-                        unit.Descriptor.RemoveFact(pair.Partial);
+                    RemoveFavoredClassRanks(unit, pair.Full);
+                    RemoveFavoredClassRanks(unit, pair.Partial);
                     int withoutOwn = measure.Own(), withoutNeighbor = measure.Neighbor();
                     FcbPersistenceAssert("row-" + row[0] + "-mechanic-after-reload",
                         "after the fresh-process reload the row's own native mechanic (" + measure.Description +
