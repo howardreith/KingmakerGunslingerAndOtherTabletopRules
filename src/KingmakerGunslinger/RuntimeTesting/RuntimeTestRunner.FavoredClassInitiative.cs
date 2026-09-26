@@ -29,11 +29,13 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             internal readonly List<RuleInitiativeRoll> Rules = new List<RuleInitiativeRoll>();
             internal readonly List<int> StoredAtHandler = new List<int>();
+            internal readonly List<bool> TurnBasedAtHandler = new List<bool>();
 
             public void HandleUnitRollsInitiative(RuleInitiativeRoll rule)
             {
                 if (rule == null) return;
                 Rules.Add(rule);
+                TurnBasedAtHandler.Add(CombatController.IsInTurnBasedCombat());
                 UnitEntityData unit = ((RulebookEvent)rule).Initiator;
                 StoredAtHandler.Add(unit == null || unit.CombatState == null ? int.MinValue :
                     unit.CombatState.Initiative);
