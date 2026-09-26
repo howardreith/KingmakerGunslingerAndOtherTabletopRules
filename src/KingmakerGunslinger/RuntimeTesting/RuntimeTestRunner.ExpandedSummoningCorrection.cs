@@ -2297,6 +2297,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ok = false;
                     continue;
                 }
+                PlaceExpandedSummoningUnit(victim, holder.Position +
+                    UnityEngine.Vector3.forward * (1f + 0.4f * steps.Count));
                 UnityEngine.Random.InitState(FindNativeD20Seed(20));
                 bool held = grab.TryGrab(victim, limb, true);
                 ItemEntityWeapon recorded = SummonGrappleLinks.EstablishingWeapon(holder, victim);
@@ -2355,8 +2357,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ok = false;
                     continue;
                 }
+                bool stillHeld = grab.MultiLink
+                    ? ReferenceEquals(SummonHeldComponent.HolderOf(victim, grab.GrappledBuff), holder)
+                    : ReferenceEquals(SummonHoldComponent.HeldTarget(holder), victim);
                 ItemEntityWeapon resolved = SummonGrappleLinks.EstablishingWeapon(holder, victim);
-                bool sameLimb = ReferenceEquals(resolved, expected);
+                bool sameLimb = stillHeld && ReferenceEquals(resolved, expected);
                 Buff heldState = SummonHoldComponent.HeldState(holder, victim, grab);
                 // The reloaded hold gets its round, so a cat's rake is legal
                 // on this maintain exactly as it would be in play.
@@ -2372,13 +2377,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !maintained.Contains(";substituted");
                 bool rakeWhenDue = grab.RakeLimbCount <= 0 ||
                     (maintained.Contains(";rake=") && !maintained.Contains("not-eligible"));
-                steps.Add(row[0] + "->" + row[1] + ":expected=" + (expected.Blueprint == null ?
-                    "?" : expected.Blueprint.name) + ",resolved=" + (resolved == null ||
-                    resolved.Blueprint == null ? "none" : resolved.Blueprint.name) +
+                steps.Add(row[0] + "->" + row[1] + ":stillHeld=" + stillHeld + ",expected=" +
+                    (expected.Blueprint == null ? "?" : expected.Blueprint.name) + ",resolved=" +
+                    (resolved == null || resolved.Blueprint == null ? "none" :
+                        resolved.Blueprint.name) +
                     ",sameLimb=" + sameLimb + ",rakeWhenDue=" + rakeWhenDue +
                     ",maintain=" + maintained + ",store=" +
                     SummonGrappleLinks.Describe(holder));
-                ok = ok && sameLimb && namedLimb && rakeWhenDue;
+                ok = ok && stillHeld && sameLimb && namedLimb && rakeWhenDue;
             }
             UnitEntityData flytrap = ExpandedSummoningPersistenceUnit(units,
                 "KMG_Summoning_Unit_GiantFlytrap");
@@ -2610,8 +2616,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (ItemEntityWeapon bite in bites)
                 {
                     string roll;
+                    UnitEntityData occupant = SummonGrappleLinks.OccupantOf(flytrap, bite);
+                    int limbIndex;
+                    SummonLimbKind kind = SummonLimbs.Classify(flytrap, bite, out limbIndex);
                     if (ExpandedSummoningMouthStrikes(flytrap, spare, bite, out roll))
-                        reached.Add(bite.Blueprint == null ? "?" : bite.Blueprint.name);
+                        reached.Add("bite" + bites.IndexOf(bite) + "=" + kind +
+                            (limbIndex >= 0 ? "[" + limbIndex + "]" : "") + ",occupant=" +
+                            (occupant == null || occupant.Blueprint == null ? "none" :
+                                occupant.Blueprint.name) + ",roll=" + roll);
                 }
                 bool noneReach = reached.Count == 0;
                 var occupiedPlan = new UnitAttack(spare);
@@ -2796,6 +2808,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private const int ExpandedSummoningCommandFrames = 600;
+        private UnitEntityData[] _rulesAwakeSnapshot;
         private UnitEntityData _rulesRakeCat;
         private UnitAttack _rulesRakeCommand;
         private ExpandedSummoningAttackRollObserver _rulesRakeObserver;
@@ -2827,6 +2840,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             string chosen;
             PlaceExpandedSummoningUnit(_rulesRakeCat, ExpandedSummoningOpenPoint(
                 hostile.Position, ordinary ? 2.5f : 9f, used, out chosen));
+            // The game ticks commands for the units it holds awake, and a
+            // freshly cast summon is not one of them. Exactly the cat and its
+            // target join that collection for the frames the command needs;
+            // the snapshot goes back afterwards and is verified.
+            if (_rulesAwakeSnapshot == null)
+                _rulesAwakeSnapshot = Game.Instance.State.AwakeUnits.ToArray();
+            foreach (UnitEntityData unit in new[] { _rulesRakeCat, hostile })
+                if (!Game.Instance.State.AwakeUnits.Contains(unit))
+                    Game.Instance.State.AwakeUnits.Add(unit);
             _rulesRakeCommand = new UnitAttack(hostile);
             _rulesRakeCommand.Init(_rulesRakeCat);
             if (!ordinary) _rulesRakeCommand.IsCharge = true;
@@ -2868,6 +2890,17 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             _rulesRakeSteps.Add("sequence:" + string.Join(",",
                 ExpandedSummoningRakeSequencePatch.ObservedOutcomes.ToArray()));
+            bool awakeRestored = true;
+            if (_rulesAwakeSnapshot != null)
+            {
+                Game.Instance.State.AwakeUnits.Clear();
+                Game.Instance.State.AwakeUnits.AddRange(_rulesAwakeSnapshot);
+                awakeRestored = Game.Instance.State.AwakeUnits.SequenceEqual(
+                    _rulesAwakeSnapshot);
+                _rulesAwakeSnapshot = null;
+            }
+            _rulesRakeSteps.Add("awakeRestored=" + awakeRestored);
+            _rulesRakeChargeValid = _rulesRakeChargeValid && awakeRestored;
             if (_rulesRakeObserver != null)
             {
                 try { EventBus.Unsubscribe(_rulesRakeObserver); } catch (Exception) { }
