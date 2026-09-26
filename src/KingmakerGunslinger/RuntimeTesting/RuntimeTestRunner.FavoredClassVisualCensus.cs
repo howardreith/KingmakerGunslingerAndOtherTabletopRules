@@ -460,9 +460,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                         guids.Add(FavoredClassRevelationManifest.For(pair.TargetKey).FeatureGuids[0]);
                         break;
                     case FavoredClassCatalog.EffectSelectedBloodlinePower:
+                        // A power with an ability (Ray, Blast) or with only its own
+                        // level gates (Elemental Resistance).
                         FavoredClassSelectedPowerLevel power = pair.Full.GetComponent<FavoredClassSelectedPowerLevel>();
-                        if (power != null && power.PowerFeature != null)
-                            guids.Add(power.PowerFeature.AssetGuid);
+                        FavoredClassSelectedPowerGates gated = pair.Full.GetComponent<FavoredClassSelectedPowerGates>();
+                        BlueprintFeature powerFeature = power != null ? power.PowerFeature :
+                            gated != null ? gated.PowerFeature : null;
+                        if (powerFeature != null)
+                            guids.Add(powerFeature.AssetGuid);
                         guids.Add(FavoredClassLeafCatalog.EligibleBloodlines(pair.TargetKey).Value.First(guid =>
                             library.BlueprintsByAssetId.ContainsKey(guid)));
                         break;
