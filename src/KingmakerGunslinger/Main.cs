@@ -157,6 +157,7 @@ namespace KingmakerGunslinger
                 EasternWeaponLatePublicationCoordinator.AttachFirstUpdate(
                     context);
                 ExpandedSummoningAlignmentModeRuntime.Attach(context);
+                SummonGrappleAreaSafeguard.Attach();
                 RuntimeTestRunner.TryAttach(context);
                 logger.Info("bootstrap", "load.complete", "Lifecycle bootstrap completed; the full-round Repair Firearm ability restores exactly one equipped Broken project firearm straight to Normal outside combat while retaining the accepted firearm attack, reload, persistence, natural-d20 misfire, condition, and native 5-foot burst paths. Repair requires one reusable Gunsmith's Kit in the shared inventory and no active combat, consumes nothing, preserves surviving loaded rounds and the exact runtime item and item-owned token identity, and advances state exactly once; a Wrecked firearm is restored only by a completed full rest. The hidden legacy Overhaul ability identity delegates to this same repair for save compatibility. The process-local qualification fixture prepares a second independent Test Musket and required resources, then reports concise identity, resource, counter, fault, duplicate, and second-item PASS/FAIL evidence through Repair and Reload. Cancellation before delivery, a missing Gunsmith's Kit, invalid states, ambiguous equipped targets, native Heavy Crossbows, and unrelated firearms remain fail-closed.");
                 return true;

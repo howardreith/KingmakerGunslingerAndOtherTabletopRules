@@ -53,6 +53,18 @@ the roster's projected size against `docs/EXPANDED-SUMMONING-PROJECTED-MENU-RUBR
 `scripts/Invoke-ExpandedSummoningCompatibilityMechanical.ps1` runs the
 mechanical scenario inside the two required compatibility transactions on a
 fixture derived from the protected baseline and restores the working save.
+Phase 1 adds `observe-expanded-summoning-native-donors`, a mod-load audit
+that writes `native-donor-audit.json` - names, GUIDs, statistics, class
+levels, facts, body weapons, component type names and view asset ids for the
+units, classes, facts, buffs and abilities the Sprint 3-8 creatures may
+reuse, plus the native Grab feature's action graph; metadata only, no asset
+content. It also adds `working-save-expanded-summoning-creature-review`
+(`-ScenarioParameters @{creatures='pony,horse,owlbear,cyclops'}`), which
+casts each named creature one at a time into the working save through its
+real parent chain, renders it from the party camera idle, moving and
+attacking (`<key>-review-summoned-*.png` in the evidence directory), and
+dismisses it before the next; the save is read, never written. Every visual
+creature of Sprints 3-8 is reviewed through it before its sprint closes.
 
 The historical Expanded Summoning authorization allowed working-save writes;
 it does not apply to this hardening pass. Every pre-existing save, including
