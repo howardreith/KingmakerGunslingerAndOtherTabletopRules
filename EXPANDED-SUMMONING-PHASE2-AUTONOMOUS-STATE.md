@@ -14,9 +14,9 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
   Class integration. The owner packet's expected `2943a02d` is its ancestor.
 - Branch head at intake: `2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a`;
   first pushed intake checkpoint: `359e346ecb6a094552f096869ecb9c81a2d291bf`.
-- Current Sprint 9 sub-item: Dire Bat-only imprecise blindsense feature at
-  40 feet. Source/build-qualified and guarded disposable-cast PASS. Eagle
-  and Bat visual work, icon integration, and Bat publication remain planned.
+- Current Sprint 9 sub-item: Dire Bat-only imprecise blindsense and original
+  skinned visual. Both source/build-qualified and guarded disposable-cast PASS.
+  Eagle visual work, Bat icon integration and publication remain planned.
   No Phase 2 creature has been claimed complete.
 - HumanReview: NOT_PERFORMED_NONBLOCKING. Internal Phase 2 reviews: pending.
 - Blockers: none established. A difficult rig is not by itself a blocker.
@@ -92,15 +92,47 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
   It is not integrated or published. Restore it to the approved source family
   when the Bat is ready; do not mistake the bitmap for owner visual approval.
 
+## Sprint 9 Dire Bat visual checkpoint, 2026-09-27
+
+- The project-owned Bat generator reuses the accepted Pteranodon bind-frame
+  parser, 46 reviewed bone names, instance-local material/mesh swap, and
+  same-frame donor fallback. Its private measured 72-bone rig and Blender
+  preview files remain ignored; the shipped JSON contains original geometry,
+  weights, UVs, structural bone names, and an albedo hash, not donor transforms.
+  The editable generator/painting/review scripts are retained. Regenerating
+  the Pteranodon with the same input produced byte-for-byte mesh SHA-256
+  `CC80E28589F5644C86E870C672CD8F188312920F7092CACBD6CB3DFF4007DE3C`,
+  matching the protected asset. Bat mesh SHA-256
+  `3C488CD4838812C12946410B9BBA3283917F9B005904D4B237FEDAAC508F0819`;
+  painted albedo SHA-256
+  `C84011DA7D1CA446191632ED1330892ED320EDF253F1AB6DCDB17E76DF21E335`.
+- Repository validation PASS; 1,920/1,920 full domain tests PASS; clean
+  exact-reference Release build PASS; strict 253-file installable package
+  PASS. Candidate package SHA-256
+  `6dc7d121dfa74d41e73eded069dd5306f77ef4d47a17b528e7d7e671f3cbcf5d`;
+  DLL SHA-256 `0806e60aee39367cb1c6c111ab8c51989c726eccb501c6854f3d80289d27f75a`.
+- Guarded Steam App ID 640820 run on the disposable working save PASS:
+  `20260927T0412311065438Z-disposable-expanded-summoning`. It completed
+  177/177 casts; `expanded-summoning-dire-bat-visual-attached` PASS (2/2);
+  sense PASS (2/2, bird controls 13/13); Eagle/Roc donor isolation PASS
+  (4/4); Pteranodon attachment/crowding/repeated lifecycle PASS (9 views,
+  11 total Bat/Pteranodon patch outcomes). This proves attachment and
+  instance isolation on live spawned views, not motion, impact, navigation,
+  save/load, icon, or human visual acceptance.
+- Restoration record
+  `20260927T0416020406571Z-disposable-expanded-summoning.json` verifies the
+  136-file live mod tree had SHA-256
+  `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`
+  before and after. Kingmaker exited. Dire Bat remains hidden in 14 placements.
+
 ## Standing boundaries and next action
 
 `OwnerAcceptedEngineLimitation: ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD`.
 Active holds and mouth occupancy return cleanly released on reload. Do not
 implement hold re-establishment or call this grapple persistence.
 
-Next: design and validate an instance-local Eagle/Bat visual extension with
-native fallback, using the approved Pteranodon skinned-mesh pipeline and
-measured private rig. Then integrate the Bat icon and qualify the full Sprint 9
+Next: create and qualify a true Eagle silhouette on the shared flying rig,
+then integrate the Bat icon and qualify the full Sprint 9
 publication and player path.
 Do not unhide Dire Bat until its model, blindsense, icon, mechanics, and live
 qualification pass. Continue through A, B and C without an intermediate owner
