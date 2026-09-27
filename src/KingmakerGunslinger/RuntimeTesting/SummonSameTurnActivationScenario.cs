@@ -1669,8 +1669,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }).ToArray());
                 string weightedSurface = DescribeFlightWeightedSurface(
                     mesh, targetBounds, anchors);
+                Vector3 toward = targetBounds.center - source.transform.position;
+                toward.y = 0f;
+                Vector3 facing = source.transform.forward;
+                facing.y = 0f;
+                float facingDot = toward.sqrMagnitude < 0.0001f ||
+                    facing.sqrMagnitude < 0.0001f ? 0f :
+                    Vector3.Dot(toward.normalized, facing.normalized);
                 _flightImpactSamples.Add("weapon=" + weapon +
                     ";mesh=" + mesh.sharedMesh.name +
+                    ";sourceBounds=" + mesh.bounds.center.ToString("F2") +
+                    "/" + mesh.bounds.size.ToString("F2") +
+                    ";rendererScale=" + mesh.transform.lossyScale.ToString("F2") +
+                    ";viewForwardDot=" + facingDot.ToString("0.###",
+                        CultureInfo.InvariantCulture) +
                     ";targetRenderer=" + targetRenderer.name +
                     ";targetMesh=" + targetRenderer.sharedMesh.name +
                     ";targetBones=" + targetRenderer.bones.Length +
@@ -1697,13 +1709,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (vertices == null || weights == null ||
                         vertices.Length != weights.Length)
                         return "unavailable:vertex-weight-count";
-                    return string.Join(",", anchors.Select(name =>
+                    Vector3 minimum = new Vector3(float.MaxValue,
+                        float.MaxValue, float.MaxValue);
+                    Vector3 maximum = new Vector3(float.MinValue,
+                        float.MinValue, float.MinValue);
+                    for (int index = 0; index < vertices.Length; index++)
+                    {
+                        Vector3 world = BakedFlightVertexWorld(renderer,
+                            vertices[index]);
+                        minimum = Vector3.Min(minimum, world);
+                        maximum = Vector3.Max(maximum, world);
+                    }
+                    string surfaces = string.Join(",", anchors.Select(name =>
                     {
                         int bone = Array.FindIndex(bones, value =>
                             value != null && value.name == name);
                         if (bone < 0) return name + "=missing";
                         int count = 0;
                         float nearest = float.MaxValue;
+                        Vector3 nearestPoint = Vector3.zero;
                         for (int index = 0; index < vertices.Length; index++)
                         {
                             BoneWeight weight = weights[index];
@@ -1713,16 +1737,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 (weight.boneIndex2 == bone && weight.weight2 >= 0.25f) ||
                                 (weight.boneIndex3 == bone && weight.weight3 >= 0.25f);
                             if (!influenced) continue;
-                            Vector3 point = renderer.transform.TransformPoint(
+                            Vector3 point = BakedFlightVertexWorld(renderer,
                                 vertices[index]);
-                            nearest = Mathf.Min(nearest, Vector3.Distance(point,
-                                targetBounds.ClosestPoint(point)));
+                            float distance = Vector3.Distance(point,
+                                targetBounds.ClosestPoint(point));
+                            if (distance < nearest)
+                            {
+                                nearest = distance;
+                                nearestPoint = point;
+                            }
                             count++;
                         }
                         return name + "=" + count + "/" +
                             (count == 0 ? "none" : nearest.ToString("0.###",
-                                CultureInfo.InvariantCulture));
+                                CultureInfo.InvariantCulture) + "@" +
+                                nearestPoint.ToString("F2"));
                     }).ToArray());
+                    return "bakedBounds=" + ((minimum + maximum) * 0.5f)
+                        .ToString("F2") + "/" + (maximum - minimum)
+                        .ToString("F2") + ";tips=" + surfaces;
                 }
                 catch (Exception error)
                 {
@@ -1732,6 +1765,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     UnityEngine.Object.Destroy(baked);
                 }
+            }
+
+            private static Vector3 BakedFlightVertexWorld(
+                SkinnedMeshRenderer renderer, Vector3 vertex)
+            {
+                // Unity's BakeMesh has already applied the renderer's scale.
+                // TransformPoint would apply the 0.30 Eagle view scale again.
+                return renderer.transform.position +
+                    renderer.transform.rotation * vertex;
             }
 
             private void ForceTurnOnce(TurnController turn)
