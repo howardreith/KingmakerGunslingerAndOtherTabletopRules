@@ -4,6 +4,9 @@
   "phase2Mission": {
     "authority": "Kingmaker_Expanded_Summoning_Phase2_Sprints9-21_Codex_Mission.md in the owner-supplied Phase 2 starter packet",
     "authorizedSprints": [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21],
+    "completedSprints": [9],
+    "currentSprint": 10,
+    "automaticContinuationAllowed": true,
     "supersedesHistoricalMissionAuthorization": true,
     "acceptedMaster": "2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a",
     "trancheA": "codex/expanded-summoning-phase2a-sprints9-13",
@@ -289,7 +292,7 @@
       "detail": "Supplied by the owner and read. The Pteranodon passage confirms the shipped profile rather than changing it: ten-foot reach valued for attacks of opportunity, and a single main bite on which everything stacks (2d6 plus modifiers). The guide also positions multiple Pteranodons as the best single-target aerial attacker at their tier. This informs Sprint 2's acceptance emphasis on correct bite impact timing and location at Large reach; it changes no accepted statistic."
     }
   ],
-  "nextConcreteAction": "Sprints 3-8 corrected and requalified on candidate commit `145810a5`, with the closeout delta recorded afterwards. The 2026-09-25 and 2026-09-26 orders are both closed: an active summon grab, hold, swallow, engulf, mouth occupancy and held-target rake are session-scoped under OwnerAcceptedEngineLimitation: ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD, accepted by the owner on 2026-09-26, and a save and reload release them cleanly. Draft PR #23 is marked ready for owner review and stays unmerged. No merge, release publication, permanent deployment or Sprint 9 under the orders of 2026-09-24, 2026-09-25 and 2026-09-26.",
+  "nextConcreteAction": "Phase 2 Sprint 9 Eagle and Dire Bat internally qualified; continue owner-authorized Sprint 10 Stirge and Giant Wasp, then Sprints 11-21 under the Phase 2 mission. Three stacked draft PRs remain the endpoint; no merge, release, permanent deployment, or Sprint 22.",
   "deploymentReconciliation": {
     "finding": "The first runs left this mission's 0.0.136 branch build installed over the pre-run 0.0.117 installation. The mission required restoration and did not authorize a permanent installation; a shared version string does not make a branch artifact an accepted release.",
     "ownershipVerified": "The live DLL hash matched this mission's exact build byte for byte, so the tree was unambiguously mission-owned.",
