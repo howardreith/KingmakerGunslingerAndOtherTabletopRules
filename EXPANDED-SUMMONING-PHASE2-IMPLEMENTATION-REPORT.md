@@ -6,8 +6,9 @@ open-floor and room-opening movement, exact-hostile native combat in RTWP
 and turn-based mode, visual impact contact, save/load/expiry, module-disabled
 safety, and installation restoration. Their original bird/bat models, Bat
 icon and bounded Bat blindsense are published on the Phase 2A feature branch.
-Human visual approval remains pending and nonblocking. Stirge and Giant Wasp
-are not yet implemented; the Phase 2A draft PR is not ready for review.
+Human visual approval remains pending and nonblocking. Giant Wasp is
+registered under suppression, with poison and cast qualification outstanding;
+Stirge is not yet implemented. The Phase 2A draft PR is not ready for review.
 
 The accepted baseline is `master` at `2ce70e4` (0.0.140), which advanced after
 the owner packet was written. The baseline passes 1,918 domain tests, the
@@ -260,3 +261,16 @@ DLL SHA-256 is
 `b4750c30d0e69b809755040ff8acdde0f2dd32cfc511f45025761eb90d3ba4a0`.
 This is an asset-loader checkpoint only: Wasp is not a registered or
 published summon and no poison or combat qualification is claimed.
+
+The next pushed source checkpoint, `9f011014e9f0b574a8c10fff14e75088b4569818`,
+registers the Wasp unit, its dedicated 1d8 sting and all 24 logical/template
+ability identities. It preserves the prior ledger and suppresses all twelve
+legal placements. Full repository validation, 1,932 domain tests, clean
+Release and strict package validation passed. The guarded fresh-process
+inventory `20260927T1804369885102Z` passed all 48 assertions, including
+82 registered units, 1,290 abilities, exact menu counts and distinct icons
+for published creatures. The initial observer run timed out and exposed an
+assertion that expected a Wasp icon despite suppression; it was repaired and
+is excluded as a qualification pass. The passing run restored the original
+136-file installation exactly (`20260927T1808371924124Z`). Poison, live
+Wasp cast/combat/view and Stirge remain pending, so Sprint 10 is not complete.
