@@ -251,8 +251,8 @@ contamination. No save was accessed.
 
 | Surface | Final disposition | Evidence |
 |---|---|---|
-| Dire Bat | Hidden from publication; all identities retained. Roc is not an acceptable bat proxy and no installed bat-compatible rig passed inventory. | 14 exact placements suppressed; 667/667 remaining roots PASS. |
-| Eagle / Poisonous Frog | View-only scale 0.58 / 0.48. Mechanical size, reach, and navigation unchanged. | Live bounds 5.919 < Roc 11.226 and 1.475 < Giant Frog 3.073. |
+| Dire Bat | Phase 2 Sprint 9 publishes 14 preserved SM/SNA identities with an original skinned Bat mesh, albedo and distinct creature icon; dedicated native imprecise blindsense at 40 feet, no precise blindsight or immunity. Motion/contact, combat-mode and save/load gates remain. | Guarded cast Bat sense/visual 2/2; player path 813/813 generated roots; live inventory 48/48 assertions including 813 published placements, menu/icon counts and zero prohibited references (`20260927T0623527812622Z`). Owner visual approval pending. |
+| Eagle / Poisonous Frog | Eagle has an original feathered skinned mesh/albedo at 0.30 view scale; Poisonous Frog retains 0.48. Mechanical size/reach unchanged. | Guarded Eagle visual 2/2; live height 1.360 < Medium humanoid 1.926; selection/navigation, locomotion, attack and hit/death contracts 81/81 (`20260927T0446552603378Z`). Motion/contact review pending. |
 | Dire Boar / Dire Bear | View-only scale 1.15; each reads larger than its non-dire analogue. | Live bounds 2.845 > 2.474 and 3.768 > 3.277. |
 | Pteranodon | View-only scale 0.82 to keep the Roc rig bounded. | Live bound 8.368 < Roc 11.226. |
 | Elephant / Mastodon | View-only 0.90 / 1.15; Elephant remains on shared Mastodon material rather than mutate a native asset. | Live bounds 9.568 < 12.226. Gray recolor intentionally deferred. |

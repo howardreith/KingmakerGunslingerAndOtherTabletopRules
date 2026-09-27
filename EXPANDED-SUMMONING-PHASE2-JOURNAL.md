@@ -1,5 +1,37 @@
 # Expanded Summoning Phase 2 journal
 
+## Sprint 9: preserved Dire Bat publication checkpoint, 2026-09-27
+
+Published the 14 existing Dire Bat logical placements without allocating new
+unit or ability identities. Both summon families retain tiers III-IX with one,
+1d3 and later 1d4+1 quantities. The published generated total is 813 and the
+combined menu total is 842. The focused publication test checks every tier,
+quantity and the absence of suppressed placements. The live menu audit now
+requires the Dire Bat's own non-null, distinct project sprite.
+
+Repository validation, 1,922 domain tests, exact-reference clean Release and
+strict 256-file package passed. Precommit publication candidate package
+`05b2558f573575ddbbdb34a87e09a58e677cf45576dc6f302bfd52231c70db92`
+and DLL `bdd3ab38fc74896ea51fa1c5918799d5e22c3417325fbdb214b5a994abc8d6dc`
+produced guarded Steam PASS runs `20260927T0551063528146Z` (177 casts,
+Bat sense/visual 2/2) and `20260927T0554347181180Z` (813/813 native
+spellbook logical paths, 29/29 wrapper paths). The batch restoration record
+`20260927T0608158839124Z` confirms the prior live tree hash `216A9DC2...5AAF3`.
+
+The first unattended live inventory audit `20260927T0612429996748Z` was FAIL:
+its exact natural-fact map reported `DireBatBlindsense` unknown and its allowed
+project-reference map counted one prohibited reference. It still passed menu
+order, counts, 813 placements and distinct icon sprites. I corrected only the
+audit's exact Bat sense GUID/name. The new source-qualified package
+`ad2e43bc0354acc25e7af8615000d02e94ed25ef1e80cde83aafba46f366c043`
+and DLL `02374e67217b07e5cdd772e07e35bb457d734ccce1c658eb7e7123d55e4e151d`
+passed `20260927T0623527812622Z-observe-expanded-summoning-inventory` with
+48/48 assertions: exact natural profile, zero prohibited references, 813
+published placements, menu reconciliation, order/counts and distinct icons.
+Restoration record `20260927T0627357893276Z` confirms the same original tree.
+This resolves the inventory audit but does not qualify motion/contact,
+RTWP/turn-based, save/load or module-disabled behavior for Sprint 9.
+
 ## Sprint 9: Dire Bat icon checkpoint, 2026-09-27
 
 Added an original 1254x1254 Dire Bat source painting and exported one 128x128
