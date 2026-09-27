@@ -9,6 +9,76 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class ExpandedSummoningSprint10Tests
     {
+        internal const int AppendedLedgerIdentities = 26;
+
+        internal static void GiantWaspRegisteredUnderSuppressionAtExactTiers()
+        {
+            SummonCreatureSpec wasp = ExpandedSummoningCatalog.All.Single(value =>
+                value.Key == "giant-wasp");
+            Assertions.Equal(4, wasp.MonsterTier.Value,
+                "Wasp belongs at Summon Monster IV.");
+            Assertions.Equal(4, wasp.NaturesAllyTier.Value,
+                "Wasp belongs at Nature's Ally IV.");
+            Assertions.True(wasp.MonsterTemplated,
+                "Summon Monster Wasp keeps the native template policy.");
+            foreach (SummonFamily family in new[] { SummonFamily.Monster,
+                SummonFamily.NaturesAlly })
+            {
+                SummonVariantSpec[] variants = ExpandedSummoningCatalog
+                    .GenerateVariants(family).Where(value =>
+                        value.Creature.Key == wasp.Key).OrderBy(value =>
+                            value.ParentTier).ToArray();
+                Assertions.Equal(6, variants.Length,
+                    "Wasp has one identity at each legal tier in each family.");
+                Assertions.Equal(SummonMultiplicity.One, variants[0].Multiplicity,
+                    "Wasp's own tier is a single creature.");
+                Assertions.Equal(SummonMultiplicity.OneD3, variants[1].Multiplicity,
+                    "Wasp's next tier is 1d3.");
+                Assertions.True(variants.Skip(2).All(value =>
+                    value.Multiplicity == SummonMultiplicity.OneD4PlusOne),
+                    "Later Wasp tiers use 1d4+1.");
+                Assertions.True(variants.All(value =>
+                    !SummonVisibilityCatalog.IsPublished(value)),
+                    "Wasp must stay hidden until poison and combat pass live gates.");
+            }
+            NaturalSummonProfile profile = ExpandedSummoningNaturalProfiles
+                .For("giant-wasp");
+            Assertions.Equal("Vermin", profile.HitDieClass,
+                "Vermin racial hit dice carry Wasp immunities.");
+            Assertions.Equal(4, profile.HitDice, "Wasp has four racial hit dice.");
+            Assertions.Equal("Large", profile.Size, "Wasp is Large.");
+            Assertions.Equal("WaspSting1d8", profile.PrimaryWeapon,
+                "Wasp requires its exact sting weapon.");
+            Assertions.Equal(60, profile.SpeedFeet,
+                "Wasp uses its flying speed on Kingmaker maps.");
+            Assertions.True(profile.Facts.Contains("Airborne"),
+                "Wasp must navigate as an airborne creature.");
+            Assertions.Equal("406c1e1af5400ac4881e330502ccbd9e",
+                ExpandedSummoningDonorCatalog.For("giant-wasp").Guid,
+                "Wasp must bind against the audited Giant Eagle skeleton.");
+            Assertions.True(ExpandedSummoningIdentityCatalog.Build().Any(value =>
+                value.Symbol == "KMG.Summoning.Natural.WaspSting1d8" &&
+                value.PlannedType == "BlueprintItemWeapon"),
+                "Wasp sting has its own append-only blueprint identity.");
+            Assertions.Equal(12,
+                SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
+                "Only Wasp's twelve legal placements may be suppressed.");
+        }
+
+        internal static void SuppressedWaspHasNoVisibleIconConsumer()
+        {
+            Assertions.True(!SummonIconCatalog.All.Any(value =>
+                value.Key == "giant-wasp"),
+                "A suppressed Wasp is not yet a player-visible icon consumer.");
+            string runtime = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestRunner.cs"));
+            Assertions.True(runtime.Contains(
+                    ".Where(SummonIconCatalog.IsPublishedSomewhere)") &&
+                runtime.Contains("creatureIcons.Count &&"),
+                "The live menu icon audit must check only published creatures.");
+        }
+
         internal static void GiantWaspOriginalVisualUsesAuditedInstanceBinding()
         {
             string root = Environment.CurrentDirectory;

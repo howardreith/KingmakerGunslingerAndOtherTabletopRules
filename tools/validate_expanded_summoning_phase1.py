@@ -372,20 +372,21 @@ def validate(root: Path) -> None:
     # ledger order is sprint order, not the plan's category order).
     plan = expanded_summoning_manifest.planned()
     prefix = {e["symbol"] for e in entries[:PRESERVED_ENTRIES]}
+    phase2_additions = PHASE2_ADDITIONS | {
+        symbol for symbol, _ in plan if ".GiantWasp" in symbol or
+        symbol == "KMG.Summoning.Natural.WaspSting1d8"}
     expected = sorted((symbol, planned_type) for symbol, planned_type in plan
-                      if symbol not in prefix and symbol not in PHASE2_ADDITIONS)
+                      if symbol not in prefix and symbol not in phase2_additions)
     if expected != sorted((symbol, planned_type) for symbol, _, planned_type in APPENDED):
         raise AssertionError("Phase 1 append is not the manifest plan minus the preserved prefix")
-    if len(plan) != SPRINT3["foundationIdentities"] + len(PHASE2_ADDITIONS):
+    if len(plan) != SPRINT3["foundationIdentities"] + len(phase2_additions):
         raise AssertionError("Expanded Summoning foundation identity count changed")
     expanded_summoning_manifest.validate(manifest, plan)
 
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningCatalog.cs",
-        "Creatures.Length != %d" % SPRINT3["uniqueCreatures"],
-        "ValidateFamily(SummonFamily.Monster, %d, %d)" % (
-            SPRINT3["summonMonsterEntries"], SPRINT3["summonMonsterPlacements"]),
-        "ValidateFamily(SummonFamily.NaturesAlly, %d, %d)" % (
-            SPRINT3["summonNaturesAllyEntries"], SPRINT3["summonNaturesAllyPlacements"]),
+        "Creatures.Length != 82",
+        "ValidateFamily(SummonFamily.Monster, 75, 420)",
+        "ValidateFamily(SummonFamily.NaturesAlly, 72, 405)",
         'C("pony","Pony",1,true,1)', 'C("horse","Horse",2,true,2)',
         'C("owlbear","Owlbear",null,false,4)', 'C("cyclops","Cyclops",null,false,5)',
         'C("shambling-mound","Shambling Mound",null,false,6)',
@@ -396,12 +397,12 @@ def validate(root: Path) -> None:
         'C("salt-mephit","Salt Mephit",4,false,4)', 'C("steam-mephit","Steam Mephit",4,false,4)',
         'C("tiger","Tiger",null,false,4,"Leopard")')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs",
-        "RegisteredLogicalPlacementCount = %d;" % SPRINT3["registeredLogicalPlacements"],
-        "SuppressedLogicalPlacementCount = 0;")
+        "RegisteredLogicalPlacementCount = 825;",
+        "SuppressedLogicalPlacementCount = 12;")
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningIdentityCatalog.cs",
-        "UnitCount = %d;" % SPRINT3["uniqueCreatures"],
-        "LogicalAbilityCount = %d;" % SPRINT3["registeredLogicalPlacements"],
-        "TemplatedPlacementCount = %d;" % SPRINT3["templatedPlacements"],
+        "UnitCount = 82;",
+        "LogicalAbilityCount = 825;",
+        "TemplatedPlacementCount = 205;",
         "NativeExpandedOptionIdentityCount = %d;" % SPRINT3["nativeExpansionWrappers"])
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonNativeExpansionCatalog.cs",
         "Values.Length != %d" % SPRINT3["nativeExpansionWrappers"],
@@ -409,7 +410,7 @@ def validate(root: Path) -> None:
         '"256739c1e61e3f64eaf71734d271f4be","590cd3d5e76fdc649a5f97bc984cd3c4",true',
         '"9bd8cb6180842f44e9302c58e47b91f0","590cd3d5e76fdc649a5f97bc984cd3c4",true')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningNaturalProfiles.cs",
-        "Values.Length != %d" % SPRINT3["naturalProfiles"],
+        "Values.Length != 35",
         '"Animal", "Vermin", "MagicalBeast", "Humanoid", "Plant"')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonIconCatalog.cs",
         "Values.Length != %d" % (SPRINT3["projectIcons"] + 1))
