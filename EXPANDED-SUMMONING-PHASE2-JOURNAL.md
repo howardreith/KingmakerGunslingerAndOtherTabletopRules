@@ -355,3 +355,11 @@ The wrapper restored the original live mod exactly (`20260927T1603474656325Z`).
 The supplied rules materials establish tiers and signature roles but do not
 contain exact stat blocks. I am examining existing local mechanics and source
 availability before implementing creature profiles or declaring a blocker.
+
+The local audit and source review found no exact Stirge/Wasp numeric rules
+and no named native shortcut. I examined the existing vermin/poison builder
+and summon grapple lifecycle; they are possible implementation seams but
+cannot supply the missing attack, attach, drain and poison values. Because
+`AGENTS.md` forbids network access without explicit authorization, I recorded
+the smallest source-access decision in the Phase 2 blocker file. No Sprint 10
+creature was published and no candidate was left installed.
