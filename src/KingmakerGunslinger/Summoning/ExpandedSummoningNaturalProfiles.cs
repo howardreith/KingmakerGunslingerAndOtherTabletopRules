@@ -318,8 +318,8 @@ namespace KingmakerGunslinger.Summoning
                     "Awesome Blow, Improved Bull Rush, Staggering Critical and Weapon Focus (sting) are omitted because exact final-live feature identities were not proven; Kingmaker cannot represent an absent Intelligence score, so Intelligence 1 is used."),
                 P("giant-wasp", "Giant Wasp", "Vermin", 4, "Large",
                     18, 12, 18, 1, 13, 11, 60, 4, "WaspSting1d8",
-                    Array.Empty<string>(), A("Airborne"),
-                    "The 60-foot fly speed uses airborne navigation; 20-foot ground speed is omitted because Kingmaker exposes one movement speed. An absent Intelligence score is represented as 1. Poison remains under construction, and all Wasp placements are suppressed until the exact six-exposure Dexterity poison is qualified.")
+                    Array.Empty<string>(), A("Airborne", "WaspPoison"),
+                    "The 60-foot fly speed uses airborne navigation; 20-foot ground speed is omitted because Kingmaker exposes one movement speed. An absent Intelligence score is represented as 1. The exact poison graph is installed but awaits live combat qualification; all Wasp placements remain suppressed.")
             };
         }
 

@@ -316,10 +316,19 @@ policy. Dedicated Large 4-HD Vermin unit, Str 18/Dex 12/Con 18/Int 1
 (engine substitute for no Intelligence score)/Wis 13/Cha 11, natural armor
 +4, 60-foot airborne travel, and dedicated 1d8 sting. The 20-foot ground
 speed is unavailable in the single-speed engine profile. Wasp has an
-original project-owned six-leg/four-wing visual asset, but live summon
-motion/impact has not been qualified. Poison remains unimplemented. All
-twelve placements are registered and suppressed; no published player choice
-or Wasp combat qualification is claimed. Source commit `9f011014` and
-guarded inventory `20260927T1804369885102Z` passed 48/48 structural/menu
-assertions with exact live-tree restoration. Source rules:
+original project-owned six-leg/four-wing visual asset. A cloned native
+poison lifecycle now applies an injury Fortitude DC 18 effect on a sting hit:
+1d2 Dexterity damage, six total exposures, one successful save to cure.
+The +2 racial DC is set on the on-hit poison context, which the native buff
+retains for round saves. Guarded mechanical run
+`20260927T1912579609072Z` passed the Wasp sting, DC, initial damage,
+failed-save continuation, successful-save cure, and private 16-bone visual
+attachment (2/2); the working save's enemy-damage scale of 0.8 truncated
+one rolled 1 to zero on the next round, so that single tick is not evidence
+of positive subsequent damage. Motion, impact alignment, lifecycle and
+quantity review remain open. All twelve placements stay suppressed; no
+published player choice or full Wasp combat qualification is claimed.
+Source commit `9f011014` and guarded inventory
+`20260927T1804369885102Z` passed 48/48 structural/menu assertions with
+exact live-tree restoration. Source rules:
 [Paizo Giant Wasp](https://legacy.aonprd.com/bestiary/wasp.html).

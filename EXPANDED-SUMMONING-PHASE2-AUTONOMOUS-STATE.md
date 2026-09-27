@@ -13,7 +13,9 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
 - Accepted dependency: `master` / `origin/master` at
   `2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a`, the merged PR #24 Favored
   Class integration. The owner packet's expected `2943a02d` is its ancestor.
-- Latest pushed source checkpoint: `9f011014e9f0b574a8c10fff14e75088b4569818`.
+- Latest pushed source checkpoint before Wasp poison:
+  `9f011014e9f0b574a8c10fff14e75088b4569818`; latest pushed branch head
+  before this checkpoint: `0c1b5e24bef0cbdf2a4bd7d392917e3de408712d`.
   Branch head at intake: `2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a`;
   first pushed intake checkpoint: `359e346ecb6a094552f096869ecb9c81a2d291bf`.
 - Sprint 9 Eagle and Dire Bat passed the internal technical gate. The 14
@@ -23,8 +25,9 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
   RTWP/turn-based native combat, impact contact, open-floor and obstructed
   room-opening travel, visual lifecycle, save/load/expiry, module-disabled
   safety, donor controls and exact installation restoration are qualified.
-  Sprint 10 is in progress. Giant Wasp is registered at SM IV and SNA IV
-  with all twelve logical placements suppressed; Stirge is not registered.
+  Sprint 10 is in progress. Giant Wasp is registered at SM IV and SNA IV,
+  and its sting-delivered poison has a guarded mechanical PASS. All twelve
+  logical placements remain suppressed; Stirge is not registered.
   Neither creature is published.
 - HumanReview: NOT_PERFORMED_NONBLOCKING. Sprint 9 internal engineering,
   fidelity, visual and evidence/restoration reviews passed with the bounded
@@ -638,3 +641,45 @@ are published after its model, blindsense, icon and guarded live cast gate.
 Continue through A, B and C without an intermediate owner
 decision. Open three stacked PRs as the tranche gates pass. No merge, release,
 permanent deployment, or Sprint 22.
+
+## Sprint 10 Wasp poison checkpoint, 2026-09-27
+
+The dedicated Wasp poison feature and venom buff are append-only active
+identities `7f023db3e8db404880511ea354f8a4fa` and
+`9eda79a310ab49f7b1e59defe30b5579`. The manifest is now 2,489 total,
+2,487 active and two reserved. A cloned native Spider poison lifecycle is
+scoped to the Wasp sting: Fortitude, Dexterity 1d2, six total exposures and
+one successful save to cure. A Wasp-only action sets the 4-HD, Con-based
+DC including the stat block's +2 racial bonus on the poison context before
+the native save; that same context is retained by the buff. The native
+Spider icon is provisional only while every Wasp placement remains hidden;
+it must receive its own icon disposition before publication.
+
+The final guarded `disposable-expanded-summoning` run
+`20260927T1912579609072Z` passed 21/21 assertions, including 179/179
+structural casts, Wasp visual attachment 2/2 and Wasp poison: sting hit,
+DC 18, initial Dexterity damage 1, a failed round save with poison active,
+and removal after a successful save. The next round's rolled 1 produced
+zero integer stat damage under the working save's `DamageToParty=0.8`
+enemy-damage scale. Earlier runs
+`20260927T1841288896478Z`, `20260927T1853108579217Z`, and
+`20260927T1903352617466Z` are excluded as qualification passes; they
+exposed DC, visual-rig expectation and one-tick assertion defects that were
+corrected. Final restoration
+`20260927T1916362556609Z-disposable-expanded-summoning.json` verified the
+original 136-file live tree and SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+
+Repository PowerShell validation, 1,933/1,933 full domain cases, clean
+Release build and strict installable package validation passed after the
+final source change. Clean package SHA-256:
+`5E7AC1E0DE325AD4F531AB09BCDF8DA8A24E843E6263CE27427B51C3308B5A90`;
+clean DLL SHA-256:
+`A4742CA4E7A845E1AA9C38B62066E9BAA2BEE79B3717C1C15845F27B3A6C2AEF`.
+The guarded exact-reference runtime package was
+`0AC6AD7F5819687FA47DD3F45253BF81FC2CF2228400C65FB4873DD59287FC58`;
+its DLL was
+`0DCDF4AD275BC052BDB67827E8A0C603620C0129AFF627E216866736C53514C1`.
+No full Wasp qualification or publication is claimed. Next: Wasp motion,
+attack-contact, immunities, quantity, cleanup and save/load checks, then
+Stirge attach and blood drain. Continue Sprint 10.
