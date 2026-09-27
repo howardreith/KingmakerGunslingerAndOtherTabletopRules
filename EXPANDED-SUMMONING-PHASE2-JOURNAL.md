@@ -473,3 +473,23 @@ per-cast snapshot restored after each command; the wrapper then restored
 the original 136-file installation exactly. Repository validation,
 1,935 domain tests, clean Release and strict package checks passed.
 Mind-affecting immunity, real strike cadence/contact, and Stirge remain.
+
+## Sprint 10: Wasp Vermin immunity checkpoint, 2026-09-27
+
+The live Wasp has the native VerminType feature, including native
+BuffDescriptorImmunity and SpellImmunityToSpellDescriptor components. A
+paired native RuleApplyBuff probe reported Wasp `CanApply=False` and
+`Immunity=True`, while the human control reported `CanApply=True` and
+`Immunity=False`. Neither target actually received the confusion buff in
+this request-local fixture, so the result establishes the rule's immunity
+decision only. The cloned Eagle donor's `EagleGiant` species marker remains
+an unresolved classification defect; the functional Vermin fact is present.
+
+Guarded result `20260927T2115391949167Z` passed 23/23 assertions and
+restoration `20260927T2119178826656Z` verified the original 136-file live
+tree at SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+Three earlier diagnostic runs are excluded from qualification. Repository
+validation, 1,936 domain cases, clean Release and strict package validation
+passed. Wasp remains suppressed pending species identity, live strike
+cadence/contact, lifecycle and visual clarity; Stirge remains pending.

@@ -326,3 +326,17 @@ validation passed (SHA-256
 `E30157BF6100441F6D0278B14FCB89F28292AF26C7A935BD71DB982581124BB4`).
 Wasp publication remains blocked by unqualified immunity, real strike
 cadence/contact, lifecycle and visual clarity; Stirge is pending.
+
+The next guarded result `20260927T2115391949167Z` passed 23/23 assertions.
+The live Wasp has native VerminType, and a paired native RuleApplyBuff probe
+reported Wasp immune/ineligible versus human nonimmune/eligible for a
+mind-affecting confusion buff. Neither target received the buff in this
+fixture; the claim is limited to the native immunity decision. The cloned
+unit still reports donor species marker `EagleGiant`, which needs correction
+before publication. Three diagnostic failures are excluded. Exact live-tree
+restoration passed (`20260927T2119178826656Z`). Repository validation,
+1,936/1,936 domain cases, clean Release and strict package validation passed
+(package SHA-256
+`CD34E6E571BF39D15F5A848C59E5FA708038DB4FDFE9681CBBAD240200FEFE93`).
+Wasp remains suppressed pending species identity, strike cadence/contact,
+lifecycle, icon and visual clarity; Stirge is pending.

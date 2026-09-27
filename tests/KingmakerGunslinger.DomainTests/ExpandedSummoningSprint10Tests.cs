@@ -157,6 +157,25 @@ namespace KingmakerGunslinger.DomainTests
                 "The guarded cast loop must exercise all four private Wasp quantity variants.");
         }
 
+        internal static void WaspVerminProbeUsesTheNativeTypeFeature()
+        {
+            string runtime = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestRunner.cs"));
+            Assertions.True(runtime.Contains(
+                    "09478937695300944a179530664e42ec") &&
+                runtime.Contains("wasp.Descriptor.HasFact(verminType)") &&
+                runtime.Contains("expanded-summoning-giant-wasp-vermin-immunity") &&
+                runtime.Contains("SpellImmunityToSpellDescriptor") &&
+                runtime.Contains("Rulebook.Trigger(waspRule)") &&
+                runtime.Contains("Rulebook.Trigger(humanRule)") &&
+                runtime.Contains("waspRule.Immunity && !waspRule.CanApply") &&
+                runtime.Contains("!humanRule.Immunity && humanRule.CanApply") &&
+                runtime.Contains("RemoveFact(onWasp)") &&
+                runtime.Contains("RemoveFact(onHuman)"),
+                "The guarded Wasp immunity check must compare native mind-affecting buff outcomes and clean both units.");
+        }
+
         internal static void GiantWaspOriginalVisualUsesAuditedInstanceBinding()
         {
             string root = Environment.CurrentDirectory;
