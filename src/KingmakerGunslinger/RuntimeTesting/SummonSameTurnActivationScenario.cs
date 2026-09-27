@@ -1740,6 +1740,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _diagnostics.Add("wasp-tail-aim-probe=" +
                             ProbeWaspTailAim(attack, mesh, targetBounds,
                                 tailName));
+                        string frameName = fileName.Replace(".png",
+                            "-tail-frame.png");
+                        WaspTailAimFrameProbe frameProbe = source.gameObject
+                            .AddComponent<WaspTailAimFrameProbe>();
+                        frameProbe.Begin(mesh, targetBounds, attack.Initiator,
+                            attack.Target, _request.EvidenceDirectory,
+                            frameName, result =>
+                            {
+                                _diagnostics.Add("wasp-tail-frame-probe=" +
+                                    result);
+                                if (result.Contains("png=" + frameName + ";"))
+                                    _files.Add(Path.Combine(
+                                        _request.EvidenceDirectory,
+                                        frameName));
+                            });
                     }
                     catch (Exception error)
                     {
@@ -3577,5 +3592,158 @@ namespace KingmakerGunslinger.RuntimeTesting
                 { session.ObserveFailure("RuleAttackWithWeapon", exception); }
             }
         }
+    }
+
+    /// <summary>Guarded fixture only: hold one Tail pose through rendering,
+    /// capture after two frames, then restore the animated bone. This never
+    /// changes a published Wasp or persists with the summon.</summary>
+    [DefaultExecutionOrder(10000)]
+    internal sealed class WaspTailAimFrameProbe : MonoBehaviour
+    {
+        private SkinnedMeshRenderer _renderer;
+        private Transform _tail;
+        private Vector3 _tipLocal;
+        private Bounds _targetBounds;
+        private UnitEntityData _attacker;
+        private UnitEntityData _target;
+        private string _directory;
+        private string _fileName;
+        private Action<string> _record;
+        private Quaternion _native;
+        private Quaternion _applied;
+        private bool _hasApplied;
+        private int _tipIndex = -1;
+        private float _beforeGap;
+
+        internal void Begin(SkinnedMeshRenderer renderer, Bounds targetBounds,
+            UnitEntityData attacker, UnitEntityData target, string directory,
+            string fileName, Action<string> record)
+        {
+            _renderer = renderer;
+            _targetBounds = targetBounds;
+            _attacker = attacker;
+            _target = target;
+            _directory = directory;
+            _fileName = fileName;
+            _record = record;
+            Transform[] bones = renderer.bones;
+            int tailIndex = Array.FindIndex(bones, value => value != null &&
+                value.name == "Tail");
+            if (tailIndex < 0 || renderer.sharedMesh == null)
+            {
+                Finish("unavailable:tail");
+                return;
+            }
+            _tail = bones[tailIndex];
+            BoneWeight[] weights = renderer.sharedMesh.boneWeights;
+            Mesh baked = new Mesh();
+            try
+            {
+                renderer.BakeMesh(baked);
+                Vector3[] vertices = baked.vertices;
+                if (weights == null || weights.Length != vertices.Length)
+                {
+                    Finish("unavailable:weights");
+                    return;
+                }
+                float longest = -1f;
+                for (int index = 0; index < vertices.Length; index++)
+                {
+                    BoneWeight weight = weights[index];
+                    bool owned =
+                        (weight.boneIndex0 == tailIndex && weight.weight0 >= 0.75f) ||
+                        (weight.boneIndex1 == tailIndex && weight.weight1 >= 0.75f) ||
+                        (weight.boneIndex2 == tailIndex && weight.weight2 >= 0.75f) ||
+                        (weight.boneIndex3 == tailIndex && weight.weight3 >= 0.75f);
+                    if (!owned) continue;
+                    Vector3 point = World(vertices[index]);
+                    float length = (point - _tail.position).sqrMagnitude;
+                    if (length <= longest) continue;
+                    longest = length;
+                    _tipIndex = index;
+                }
+                if (_tipIndex < 0)
+                {
+                    Finish("unavailable:tip");
+                    return;
+                }
+                Vector3 before = World(vertices[_tipIndex]);
+                _tipLocal = _tail.InverseTransformPoint(before);
+                _beforeGap = Vector3.Distance(before,
+                    targetBounds.ClosestPoint(before));
+            }
+            finally { UnityEngine.Object.Destroy(baked); }
+            StartCoroutine(CaptureAfterFrames());
+        }
+
+        private void LateUpdate()
+        {
+            if (_tail == null || _tipIndex < 0) return;
+            Restore();
+            _native = _tail.rotation;
+            Vector3 tip = _tail.TransformPoint(_tipLocal);
+            Vector3 desired = _targetBounds.ClosestPoint(_tail.position) -
+                _tail.position;
+            Vector3 current = tip - _tail.position;
+            if (desired.sqrMagnitude < 0.001f ||
+                current.sqrMagnitude < 0.001f) return;
+            _applied = Quaternion.FromToRotation(current, desired) * _native;
+            _tail.rotation = _applied;
+            _hasApplied = true;
+        }
+
+        private System.Collections.IEnumerator CaptureAfterFrames()
+        {
+            yield return new WaitForEndOfFrame();
+            yield return new WaitForEndOfFrame();
+            string outcome;
+            Mesh baked = new Mesh();
+            try
+            {
+                _renderer.BakeMesh(baked);
+                Vector3 after = World(baked.vertices[_tipIndex]);
+                float gap = Vector3.Distance(after,
+                    _targetBounds.ClosestPoint(after));
+                string capture = RuntimeTestRunner
+                    .WriteExpandedSummoningOverheadStrikeCapture(_attacker,
+                        _target, _directory, _fileName);
+                outcome = "tipVertex=" + _tipIndex + ";angle=" +
+                    Quaternion.Angle(_native, _applied).ToString("0.#",
+                        CultureInfo.InvariantCulture) + ";gap=" +
+                    _beforeGap.ToString("0.###", CultureInfo.InvariantCulture) +
+                    "->" + gap.ToString("0.###", CultureInfo.InvariantCulture) +
+                    ";" + capture;
+            }
+            catch (Exception error)
+            { outcome = "unavailable:" + error.GetType().Name; }
+            finally { UnityEngine.Object.Destroy(baked); }
+            Finish(outcome);
+        }
+
+        private Vector3 World(Vector3 bakedVertex)
+        { return _renderer.transform.position +
+            _renderer.transform.rotation * bakedVertex; }
+
+        private void Finish(string result)
+        {
+            Restore();
+            if (_record != null) _record(result);
+            UnityEngine.Object.Destroy(this);
+        }
+
+        private void Restore()
+        {
+            if (!_hasApplied || _tail == null) return;
+            if (Quaternion.Angle(_tail.rotation, _applied) <=
+                Quaternion.Angle(_tail.rotation, _native))
+                _tail.rotation = _native;
+            _hasApplied = false;
+        }
+
+        private void OnDisable()
+        { Restore(); }
+
+        private void OnDestroy()
+        { Restore(); }
     }
 }
