@@ -142,3 +142,14 @@ clean Release and strict package passed. Doorway and impact checks remain.
 Draft tranche PR #25 tracks Phase 2A. All Sprints 10-21 remain planned. Human visual and
 gameplay review has not been performed and remains nonblocking for internal
 technical acceptance under the owner mission.
+
+The latest guarded Eagle and Dire Bat combat runs
+`20260927T1219166168032Z` and `20260927T1226258599811Z` both passed native
+attack correlation and exact live-tree restoration. New read-only geometry
+samples show Eagle's jaw and nearest claw-foot rig bones roughly 2 m from the
+hostile bounds at six weapon events, versus Bat's jaw roughly 0.44 m away at
+two bite events. This is an anchor diagnostic, not proof of mesh-tip contact.
+Rendered-surface measurement and doorway traversal remain Sprint 9 gates.
+The candidate passed repository validation, 1,927/1,927 domain tests, clean
+Release and strict package validation (package SHA-256
+`666e32b5c8f3b7bffddce3dead39170c46be6269ebfa663f6a3d35eac990d2e9`).
