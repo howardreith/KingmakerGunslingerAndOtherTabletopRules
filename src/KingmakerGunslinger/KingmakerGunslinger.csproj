@@ -1453,6 +1453,14 @@
       <Link>assets\flying-animals\dire-bat-albedo.png</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="..\..\assets\flying-animals\eagle-mesh.json">
+      <Link>assets\flying-animals\eagle-mesh.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\flying-animals\eagle-albedo.png">
+      <Link>assets\flying-animals\eagle-albedo.png</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="..\..\assets\game\icons\expanded-summoning\*.png">
       <Link>assets\icons\expanded-summoning\%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
