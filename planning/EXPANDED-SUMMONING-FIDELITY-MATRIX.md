@@ -307,3 +307,19 @@ restored the exact original live tree; repository validation, 1,928 domain
 tests, clean Release and strict package passed. Eagle's body-contact and
 Bat's bite-contact gates had already passed. Sprint 9 internal technical
 status: PASS; HumanReview: NOT_PERFORMED_NONBLOCKING. Sprint 10 remains next.
+
+## Phase 2 Sprint 10 provisional Wasp row
+
+Giant Wasp: SM IV and SNA IV; six legal quantity placements in each family;
+Celestial/Fiendish Monster execution policy, caster-alignment Nature's Ally
+policy. Dedicated Large 4-HD Vermin unit, Str 18/Dex 12/Con 18/Int 1
+(engine substitute for no Intelligence score)/Wis 13/Cha 11, natural armor
++4, 60-foot airborne travel, and dedicated 1d8 sting. The 20-foot ground
+speed is unavailable in the single-speed engine profile. Wasp has an
+original project-owned six-leg/four-wing visual asset, but live summon
+motion/impact has not been qualified. Poison remains unimplemented. All
+twelve placements are registered and suppressed; no published player choice
+or Wasp combat qualification is claimed. Source commit `9f011014` and
+guarded inventory `20260927T1804369885102Z` passed 48/48 structural/menu
+assertions with exact live-tree restoration. Source rules:
+[Paizo Giant Wasp](https://legacy.aonprd.com/bestiary/wasp.html).
