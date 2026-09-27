@@ -13,7 +13,7 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
 - Accepted dependency: `master` / `origin/master` at
   `2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a`, the merged PR #24 Favored
   Class integration. The owner packet's expected `2943a02d` is its ancestor.
-- Latest pushed branch head: `9933c40e354155ca9a66610e30d310c7a2eab96b`.
+- Latest pushed source checkpoint: `9f011014e9f0b574a8c10fff14e75088b4569818`.
   Branch head at intake: `2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a`;
   first pushed intake checkpoint: `359e346ecb6a094552f096869ecb9c81a2d291bf`.
 - Sprint 9 Eagle and Dire Bat passed the internal technical gate. The 14
@@ -23,7 +23,9 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
   RTWP/turn-based native combat, impact contact, open-floor and obstructed
   room-opening travel, visual lifecycle, save/load/expiry, module-disabled
   safety, donor controls and exact installation restoration are qualified.
-  Sprint 10 intake is under way; no Stirge or Giant Wasp creature is published.
+  Sprint 10 is in progress. Giant Wasp is registered at SM IV and SNA IV
+  with all twelve logical placements suppressed; Stirge is not registered.
+  Neither creature is published.
 - HumanReview: NOT_PERFORMED_NONBLOCKING. Sprint 9 internal engineering,
   fidelity, visual and evidence/restoration reviews passed with the bounded
   limitations below; tranche and later-sprint reviews remain pending.
@@ -592,12 +594,36 @@ record `20260927T1712231807937Z` verified the exact original 136-file live
 tree at SHA-256
 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
 
-Next: implement Wasp's exact 1d8 sting and Dexterity poison through a bounded
-game-rule seam, register its SM IV/SNA IV identities under suppression, then
-qualify attack cadence, immunities, view motion/contact, lifecycle, direct and
-quantity casts before publishing. Stirge still requires its own attach,
-blood-drain, escape and cleanup implementation. Continue Sprint 10 before
-advancing to Sprint 11.
+## Sprint 10 suppressed Wasp registration checkpoint, 2026-09-27
+
+Pushed source commit `9f011014e9f0b574a8c10fff14e75088b4569818`
+appends 26 exact identities after the preserved 2,461-entry ledger: one
+Giant Wasp unit, 24 logical/template ability identities and one 1d8 sting.
+The manifest is 2,487 entries, 2,485 active and two reserved. The roster is
+82 registered units, 75 SM entries / 420 placements and 72 SNA entries /
+405 placements. Wasp's twelve placements remain suppressed, leaving the
+player-visible 813 unchanged. Its dedicated sting is registered but poison
+is not implemented; no Wasp cast, combat or view qualification is claimed.
+
+Repository validation, all 1,932 domain cases, clean Release, and strict
+258-file package validation passed. Package SHA-256:
+`357A4CF091445BC826A6AFA6FB4D1C190A9E3B18AA12AC557E2781BA84BB405C`;
+DLL SHA-256:
+`E38C4F208E614DB05B234C05CA3AF48FC2E04CFD3504A48B648E19D327F3574D`.
+Guarded inventory `20260927T1804369885102Z` passed all 48 live assertions:
+82 units, 1,290 abilities, exact menu order and quantity counts, zero
+missing published icons, distinct visible category icons and unchanged
+foreign choices. Its 420-second window was required because the first run
+completed after the default 120-second result window and found that the
+observer incorrectly required a suppressed Wasp icon. The corrected run
+passed. Restoration `20260927T1808371924124Z` verified the original
+136-file tree at SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+
+Next: add Wasp's exact Dexterity poison, then qualify attack cadence,
+vermin immunities, view motion/contact, lifecycle, direct and quantity
+casts before publishing. Stirge still requires attach, blood drain, escape
+and cleanup. Continue Sprint 10 before Sprint 11.
 
 ## Standing boundaries and next action
 
