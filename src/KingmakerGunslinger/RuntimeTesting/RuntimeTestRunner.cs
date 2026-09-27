@@ -16266,7 +16266,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         SummonVisibilityCatalog.PublishedLogicalPlacementCount +
                         " visible roots live with one-slot and quantity contracts; " +
                         SummonVisibilityCatalog.SuppressedLogicalPlacementCount +
-                        " Dire Bat identities registered but unpublished",
+                        " registered identities unpublished",
                     broadCases.Count(value => value.LiveContract &&
                         value.SlotContract && value.QuantityContract) + "/" +
                         broadCases.Count, allBroadPlayerPaths,
@@ -20306,12 +20306,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                             representative)));
                 creatureIcons.Add(creature.Key, ability.Icon);
             }
-            result.CategoryIconsDistinct = creatureIcons.Where(value =>
-                value.Key != "dire-bat").All(value => value.Value != null &&
+            result.CategoryIconsDistinct = creatureIcons.All(value =>
+                value.Value != null &&
                     value.Value.name == "KMG_SummonIcon_" + value.Key) &&
-                creatureIcons.Where(value => value.Key != "dire-bat")
-                    .Select(value => value.Value).Distinct().Count() ==
-                    ExpandedSummoningCatalog.All.Count - 1 &&
+                creatureIcons.Select(value => value.Value).Distinct().Count() ==
+                    ExpandedSummoningCatalog.All.Count &&
                 ExpandedSummoningCreatureIconsDistinct(creatureIcons,
                     "dog", "wolf", "hyena", "goblin-dog") &&
                 ExpandedSummoningCreatureIconsDistinct(creatureIcons,
@@ -20754,6 +20753,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "MonitorLizardPoison", "d88236a83413baa45ae9c8e5ddce5a6c" },
                     { "ImprovedInitiative", "797f25d709f559546b29e7bcb181cc74" },
                     { "Stealthy", "c7e1d5ef809325943af97f093e149c4f" },
+                    { "DireBatBlindsense", "5dcc039bc9674208a51e4babcd8a30ee" },
                     { "WeaponFocusBite", "b97edcf55321a814ea6b7807d246726c" },
                     { "Dodge", "97e216dbb46ae3c4faef90cf6bbe6fd5" },
                     { "WeaponFocusClaw", "153937f44fcd42a429a286a10babd82d" },
@@ -21628,6 +21628,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             if (blueprint == null) return true;
             if (blueprint.name == "KMG_Summoning_Subtype_Extraplanar" ||
+                blueprint.name ==
+                    "KMG_Summoning_Natural_DireBat_Blindsense" ||
                 blueprint.name ==
                     "KMG_Summoning_Special_LanternArchon_LightRay" ||
                 blueprint.name ==

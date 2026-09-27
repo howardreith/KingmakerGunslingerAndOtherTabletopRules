@@ -397,7 +397,7 @@ def validate(root: Path) -> None:
         'C("tiger","Tiger",null,false,4,"Leopard")')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs",
         "RegisteredLogicalPlacementCount = %d;" % SPRINT3["registeredLogicalPlacements"],
-        "SuppressedLogicalPlacementCount = 14;")
+        "SuppressedLogicalPlacementCount = 0;")
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningIdentityCatalog.cs",
         "UnitCount = %d;" % SPRINT3["uniqueCreatures"],
         "LogicalAbilityCount = %d;" % SPRINT3["registeredLogicalPlacements"],

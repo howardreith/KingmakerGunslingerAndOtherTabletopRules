@@ -1,7 +1,9 @@
 # Expanded Summoning Phase 2 implementation report
 
-Status: Sprint 9 in progress. The Dire Bat sense is source/build-qualified and
-guarded disposable-cast PASS; visual work and publication remain pending. No
+Status: Sprint 9 in progress. The Dire Bat sense, original Bat/Eagle visuals,
+Bat icon and preserved-choice publication are source/build-qualified with
+guarded casts, player path and live inventory PASS. Motion/contact, combat-mode,
+save/load and module-disabled gates remain. No
 Phase 2 creature is yet accepted or ready for owner review.
 
 The accepted baseline is `master` at `2ce70e4` (0.0.140), which advanced after
@@ -52,7 +54,26 @@ attack animation and hit/death paths. Lifecycle retry
 game result passed but exit exceeded the lease window; the exact candidate
 tree was manually restored with the guarded script after game exit. A clean
 player-path retry, Bat icon/publication, and Sprint 9-specific motion/contact,
-RTWP, turn-based and save/load checks are still required.
+RTWP, turn-based and save/load checks were still required at that checkpoint.
+
+The original Bat icon now ships as the 92nd distinct summon concept; all 91
+older export hashes are unchanged. Publication exposes the 14 preserved Bat
+placements, raising generated visible roots from 799 to 813 and combined
+choices from 828 to 842. The guarded cast run
+`20260927T0551063528146Z` passed Bat sense and visual attachment 2/2 each.
+The player-path run `20260927T0554347181180Z` passed all 813/813 published
+logical roots and 29/29 native wrappers; both runs shared a candidate package
+and restored the live installation in record `20260927T0608158839124Z`.
+The first inventory audit `20260927T0612429996748Z` found its old exact-fact
+and allowed-reference maps omitted the new Bat-only sense; it returned FAIL
+while placement and icon assertions passed. After adding only the exact sense
+GUID/name, `20260927T0623527812622Z` passed all 48 assertions, including
+813 published placements, menu order/counts, zero missing icons, distinct
+creature sprites and zero prohibited references. Restoration record
+`20260927T0627357893276Z` verifies the original live tree. Repository
+validation, 1,922/1,922 domain tests, clean Release build and strict 256-file
+package pass on this audit-corrected candidate. This is a publication
+checkpoint, not final Sprint 9 acceptance or owner visual approval.
 
 Draft tranche PR #25 tracks Phase 2A. All Sprints 10-21 remain planned. Human visual and
 gameplay review has not been performed and remains nonblocking for internal
