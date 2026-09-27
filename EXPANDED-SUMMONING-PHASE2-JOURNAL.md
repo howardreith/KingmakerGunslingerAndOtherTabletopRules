@@ -271,10 +271,27 @@ attack-impact alignment remain open.
 I added read-only weapon-event geometry to the own-tier Quickened fixture and
 ran Eagle and Dire Bat separately through the guarded Steam path. Both passed
 the exact-hostile combat gate and restored the original live installation.
-Eagle's bite jaw and nearest claw-foot bones remained about 2 m from the
-hostile renderer at their weapon events; Bat's jaw was about 0.44 m away.
-These are donor-rig anchor readings, not yet authored mesh-tip measurements.
+Eagle's bite jaw and nearest claw-foot bones were about 2 m from the selected
+target renderer at their weapon events; Bat's jaw was about 0.44 m away.
+The next baked-surface Eagle run `20260927T1240150768739Z` revealed that
+the selected renderer was `L_WeaponMarker`, not the hostile body. The geometry
+comparison is excluded from contact qualification. The native attack rules
+remain valid, and the original installation was restored exactly.
 The state file carries both run IDs, package hash and restoration records.
 Repository validation, all 1,927 domain cases, clean Release and strict
-package passed. I will measure skinned contact vertices before adjusting
-Eagle visual presentation. Doorway traversal also remains open.
+package passed. I corrected the probe to select a substantial skinned body
+renderer before assessing Eagle or Bat visual contact. Doorway traversal also
+remains open.
+
+## Sprint 9: hostile-body attack contact, 2026-09-27
+
+I reran the guarded Eagle/Bat own-tier combat fixture after requiring the
+hostile's substantial skinned `Character` body renderer. Both runs passed
+the native attack rules and exact live-tree restoration. Eagle's authored
+beak and talon weighted vertices remained 1.27-1.39 m from the body bounds
+at its six weapon events; Bat's beak vertices intersected the bounds at both
+bites. This isolates an Eagle visual impact defect. The state file carries
+exact run IDs, hashes and restoration records. Repository validation, all
+1,927 domain cases, clean Release and strict package passed. I will correct
+Eagle's instance-local attack presentation without changing combat reach or
+the shared donor, then qualify doorway movement.

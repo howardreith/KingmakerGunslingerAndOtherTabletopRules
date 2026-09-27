@@ -262,10 +262,18 @@ contamination. No save was accessed.
 ### Sprint 9 attack-anchor qualification update, 2026-09-27
 
 Guarded own-tier Eagle combat `20260927T1219166168032Z` passed six
-exact-hostile weapon rules, but its jaw and nearest claw-foot rig anchors
-were roughly 2 m from the hostile renderer bounds at those events. Guarded
-Dire Bat combat `20260927T1226258599811Z` passed two exact-hostile bite
-rules with jaw anchors 0.436-0.454 m from the bounds. These are donor-rig
-anchors, so neither result alone establishes authored mesh-tip contact.
-Rendered-contact and doorway behavior remain open for both flyers. Both runs
-restored the original live mod tree exactly.
+exact-hostile weapon rules. Dire Bat combat `20260927T1226258599811Z`
+passed two exact-hostile bites. The first geometry probe reported roughly
+2 m for Eagle rig anchors and 0.436-0.454 m for Bat jaw anchors, but the
+baked-surface repeat `20260927T1240150768739Z` exposed that these distances
+were measured to the hostile's `L_WeaponMarker`, not its body. The geometry
+values are excluded from visual contact qualification; native attack evidence
+remains valid. Both runs restored the original live mod tree exactly.
+
+Corrected Eagle and Bat runs `20260927T1252224741767Z` and
+`20260927T1259362389907Z` passed native combat and measured the same
+substantial `Character` body renderer. Eagle's beak/talon weighted vertices
+were 1.27-1.39 m from its bounds at six weapon events, a visual impact defect.
+Bat's beak weighted vertices intersected the bounds at two bites (0 m).
+Both runs restored the original live mod tree. Eagle impact and doorway
+behavior remain open; Bat bite contact passed this bounded fixture.

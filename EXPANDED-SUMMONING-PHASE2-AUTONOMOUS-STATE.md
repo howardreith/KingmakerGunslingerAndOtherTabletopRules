@@ -365,18 +365,18 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
 
 ## Sprint 9 attack-anchor diagnostic checkpoint, 2026-09-27
 
-- The own-tier Quickened combat fixture now records Eagle/Bat jaw, head and
-  foot bone distances to the exact hostile's enabled renderer bounds at each
-  native weapon rule. This is read-only anchor evidence, not authored mesh-tip
-  measurement.
+- The own-tier Quickened combat fixture recorded Eagle/Bat jaw, head and foot
+  bone distances at native weapon rules. The first selector took the hostile's
+  `L_WeaponMarker` renderer, not its body; those geometry values are excluded
+  from visual alignment qualification. The exact-target combat results remain
+  valid.
 - Guarded Steam Eagle result `20260927T1219166168032Z` passed with six
   exact-target attacks. Jaw distances at two bites were 2.007 and 2.003 m;
-  nearest-foot distances at four claws were 1.996-2.109 m. Visual contact
-  remains unresolved despite valid native attack rules.
+  nearest-foot distances at four claws were 1.996-2.109 m to that weapon
+  marker. Visual contact remains unresolved despite valid attack rules.
 - Guarded Steam Dire Bat result `20260927T1226258599811Z` passed with two
-  exact-target bites; jaw distances were 0.454 and 0.436 m. The large anchor
-  gap is Eagle-specific. Measure skinned surfaces and animation timing before
-  changing the rig.
+  exact-target bites; jaw distances to the same weapon marker were 0.454 and
+  0.436 m. No Eagle-versus-Bat contact conclusion follows from these values.
 - Both runs passed repository validation, 1,927/1,927 domain tests, clean
   Release and strict package validation. Package SHA-256:
   `666e32b5c8f3b7bffddce3dead39170c46be6269ebfa663f6a3d35eac990d2e9`;
@@ -387,8 +387,32 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
   The portable .NET 8 fallback could not restore offline framework packages;
   the repository's standard offline MSBuild suite passed.
 
-Next: measure rendered, weighted beak/talon vertices against the hostile at
-native attack events, resolve Eagle contact, then qualify doorway traversal.
+Guarded Eagle repeat `20260927T1240150768739Z` passed native combat and
+restored the original tree in record `20260927T1243233634861Z`. Its baked
+surface probe revealed the marker selection explicitly: `targetRenderer=
+L_WeaponMarker`. The distances to that marker are also excluded. Repository
+validation, 1,927 domain cases, clean Release, strict package passed; package
+SHA-256 `5928202557b68b5afe7f832dadacaf5211d6187e462cd1295bca49f79fd53329`.
+
+The corrected body-renderer selector passed repository validation,
+1,927/1,927 domain tests, clean Release and strict package validation.
+Package SHA-256 `e82b3444df52066691ca9be20ce316d65c92dbfa3f77acd9132cf410acd0c5bc`;
+DLL SHA-256 `58903da59c883993f919c63f2174d54e22190265801811522c06cb71148ff714`.
+Guarded Eagle result `20260927T1252224741767Z` passed six exact-target
+weapon rules and measured the hostile's `Character` skinned body renderer
+(1,819 bones, about 1.54 x 1.96 x 1.31 m). Beak-weighted vertices were
+1.271-1.292 m from its bounds at two bites; nearest talon-weighted vertices
+were 1.297-1.330 m away at four claws. Guarded Dire Bat result
+`20260927T1259362389907Z` passed two exact-target bites against the same
+body contract; beak-weighted vertices intersected its bounds at both (0 m).
+Restoration records `20260927T1255324566498Z` and
+`20260927T1302410049391Z` verify the original 136-file live tree SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+Eagle attack-impact alignment is a measured open defect; Bat bite contact
+passed this bounded fixture. Doorway traversal remains open.
+
+Next: fix Eagle's instance-local attack presentation without changing combat
+reach or shared donor assets, prove contact, then qualify doorway traversal.
 Sprints 10-21 remain planned; this checkpoint is not Sprint 9 completion.
 
 ## Standing boundaries and next action
