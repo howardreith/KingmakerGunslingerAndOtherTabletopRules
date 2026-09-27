@@ -75,8 +75,8 @@
     },
     {
       "path": "assets-source/original-icons/expanded-summoning/icon-manifest.json",
-      "sha256": "9e3d56570456c6970e96cf14ca7bf06ab7feb5c7da548af560138b3e7f68ed1c",
-      "scope": "Source/export/consumer authority for all 91 summoning identities (77 roster-mission concepts, the Phase 1 Sprint 3 Pony, Horse, Owlbear and Cyclops, the Sprint 4 Shambling Mound, Giant Flytrap and Purple Worm, the Sprint 5 Dust, Ice, Magma, Ooze, Salt and Steam Mephits, and the Sprint 8 Tiger)."
+      "sha256": "c96b16b1df83bc17785b3f5ecccf1b4b2ca4923f288806df5046eafa03e73f74",
+      "scope": "Source/export/consumer authority for all 92 summoning identities (77 roster-mission concepts, 14 Phase 1 additions, and the Phase 2 Sprint 9 original Dire Bat painting). The 29 Bat unit/ability/template symbols in the delegated manifest share one creature concept; 14 logical placements become player-visible when publication is qualified. Owner visual approval remains pending."
     },
     {
       "path": "assets-source/original-icons/cord-of-stubborn-resolve/cord-of-stubborn-resolve-assets.json",
@@ -12568,6 +12568,12 @@
       "module": "Expanded summoning",
       "disposition": "protected-existing",
       "finding": "77 original creature exports/693 placements delegated; preserve species artwork and parent spell/variant conventions.",
+      "source": "assets-source/original-icons/expanded-summoning/icon-manifest.json"
+    },
+    {
+      "module": "Expanded summoning Phase 2 Dire Bat",
+      "disposition": "original-required",
+      "finding": "Original 1254x1254 Dire Bat painting exports to one 128x128 production icon. The unit and all 28 generated ability/template symbols share the same creature identity intentionally; each published variant receives the bat sprite through the project cache. Technical export and live assignment require validation; owner visual approval is separate.",
       "source": "assets-source/original-icons/expanded-summoning/icon-manifest.json"
     },
     {

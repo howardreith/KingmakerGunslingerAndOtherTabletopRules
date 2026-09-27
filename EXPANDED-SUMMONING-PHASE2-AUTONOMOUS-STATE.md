@@ -16,7 +16,9 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
   first pushed intake checkpoint: `359e346ecb6a094552f096869ecb9c81a2d291bf`.
 - Current Sprint 9 sub-item: Dire Bat blindsense and original Bat/Eagle
   skinned visuals. Source/build-qualified; guarded cast and visual contracts
-  PASS. Bat icon integration, publication and final player-path cleanup remain.
+  PASS. The original Bat icon is now source/export/consumer-qualified in a
+  92-icon package; the guarded cast scenario passes. Bat publication and final
+  player-path cleanup remain.
   No Phase 2 creature has been claimed complete.
 - HumanReview: NOT_PERFORMED_NONBLOCKING. Internal Phase 2 reviews: pending.
 - Blockers: none established. A difficult rig is not by itself a blocker.
