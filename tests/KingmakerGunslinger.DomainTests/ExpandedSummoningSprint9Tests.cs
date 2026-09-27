@@ -125,6 +125,10 @@ namespace KingmakerGunslinger.DomainTests
                 source.Contains("targetBounds.ClosestPoint(point)") &&
                 source.Contains("target.GetComponentsInChildren<SkinnedMeshRenderer>(true)") &&
                 source.Contains("value.sharedMesh.vertexCount >= 100") &&
+                source.Contains("sourceBounds=") &&
+                source.Contains("bakedBounds=") &&
+                source.Contains("BakedFlightVertexWorld(renderer,") &&
+                source.Contains("renderer.transform.rotation * vertex") &&
                 request.Contains("flight-activation-creature-invalid") &&
                 request.Contains("creatureReview || flightActivation ? 2 : 1") &&
                 launcher.Contains("$Parameters.ContainsKey('flightCreature')") &&
