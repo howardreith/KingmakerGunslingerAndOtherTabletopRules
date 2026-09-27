@@ -420,3 +420,29 @@ registered identities and menu order. Restoration
 SHA-256 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
 Source commit `9f011014e9f0b574a8c10fff14e75088b4569818` is pushed.
 Next: Wasp poison, then live combat and view, then Stirge.
+
+## Sprint 10: Wasp poison mechanical checkpoint, 2026-09-27
+
+I cloned the native Spider poison-on-hit and saved poison-buff lifecycle for
+the Wasp's dedicated 1d8 sting, changing the effect to Dexterity 1d2,
+Fortitude, six total exposures and a one-save cure. The first guarded run
+showed DC 16 rather than the Wasp's DC 18. A passive rule-event component
+never fired in this context, so I replaced it with a Wasp-only action that
+sets the poison context's DC before the native save and buff application.
+The next guarded run observed DC 18. The asset attached on the Wasp's
+16-bone rig; I corrected an observer expectation inherited from the bird
+rig. A failed-save round advanced the poison tick but produced zero integer
+stat damage from a rolled 1 under the working save's 0.8 enemy-damage scale;
+the final assertion records that scale and checks the native poison rules,
+failed-save continuation, and one-save cure without treating a random tick
+as guaranteed positive damage.
+
+Final guarded run `20260927T1912579609072Z` passed 21/21 assertions,
+including 179/179 casts, Wasp visual 2/2 and the live sting/poison/cure
+sequence. Earlier diagnostic failures are excluded. Restoration record
+`20260927T1916362556609Z` returned the original 136-file live tree and
+SHA-256 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+Repository validation, 1,933 full domain tests, clean Release and strict
+package validation passed. Wasp remains suppressed pending motion, impact,
+immunity, lifecycle, quantity, save/load and icon review; Stirge remains
+unimplemented. Continue Sprint 10.

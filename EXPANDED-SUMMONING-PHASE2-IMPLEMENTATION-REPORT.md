@@ -274,3 +274,28 @@ assertion that expected a Wasp icon despite suppression; it was repaired and
 is excluded as a qualification pass. The passing run restored the original
 136-file installation exactly (`20260927T1808371924124Z`). Poison, live
 Wasp cast/combat/view and Stirge remain pending, so Sprint 10 is not complete.
+
+The next Sprint 10 checkpoint adds two append-only identities for the
+Wasp's poison feature and venom buff. The native saved poison lifecycle is
+cloned and scoped to the dedicated sting, with Dexterity 1d2, six total
+exposures and one successful Fortitude save to cure. A Wasp-only on-hit
+action sets the poison context to DC 18, including its +2 racial bonus;
+the buff retains that context for later saves. The native Spider poison
+icon is a temporary hidden-identity disposition only and must be replaced
+or expressly reviewed before any Wasp menu publication.
+
+The final guarded live run `20260927T1912579609072Z` passed all 21
+assertions. It cast 179/179 registered placements and directly observed a
+Wasp sting hit, DC 18, immediate Dexterity damage, a continued poison
+after a failed round save, and removal after a successful save. Both Wasp
+views carried the original mesh and material on their private 16-bone
+renderer. The working save's enemy-damage scale of 0.8 truncated a rolled
+1 to zero on the failed round, so the run does not claim positive damage
+on every round. Diagnostic failures `20260927T1841288896478Z`,
+`20260927T1853108579217Z` and `20260927T1903352617466Z` drove fixes and
+are excluded as qualification passes. Restoration
+`20260927T1916362556609Z` verified the exact original 136-file live tree.
+The final source passed repository validation, 1,933/1,933 domain tests,
+clean Release and strict package checks (clean package SHA-256
+`5E7AC1E0DE325AD4F531AB09BCDF8DA8A24E843E6263CE27427B51C3308B5A90`).
+This is a poison checkpoint, not full Wasp or Sprint 10 qualification.

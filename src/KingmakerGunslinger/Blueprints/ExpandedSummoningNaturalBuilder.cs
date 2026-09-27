@@ -7,13 +7,20 @@ using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.Blueprints.Items;
 using Kingmaker.Blueprints.Items.Weapons;
+using Kingmaker.Designers.Mechanics.Buffs;
+using Kingmaker.Designers.Mechanics.Facts;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Enums;
+using Kingmaker.ElementsSystem;
 using Kingmaker.Localization;
 using Kingmaker.RuleSystem;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Buffs.Blueprints;
+using Kingmaker.UnitLogic.Mechanics.Actions;
+using Kingmaker.UnitLogic.Mechanics.Components;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Summoning;
+using UnityEngine;
 
 namespace KingmakerGunslinger.Blueprints
 {
@@ -37,6 +44,10 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Summoning.Natural.Talon2d6";
         private const string WaspSting1d8Symbol =
             "KMG.Summoning.Natural.WaspSting1d8";
+        private const string WaspPoisonSymbol =
+            "KMG.Summoning.Natural.GiantWasp.Poison";
+        private const string WaspVenomSymbol =
+            "KMG.Summoning.Natural.GiantWasp.Venom";
         private const string NativeBite1d6Guid =
             "a000716f88c969c499a535dadcf09286";
         private const string NativeBite1d8Guid =
@@ -84,6 +95,10 @@ namespace KingmakerGunslinger.Blueprints
             "7e4b9b41a9358264d9e3c69c183ca0a2";
         private const string NativePurpleWormStingGuid =
             "287cd06241fdaf8408410b226f744093";
+        private const string NativeSpiderPoisonFeatureGuid =
+            "094714bb08f4e1943a8e9d2384ebe573";
+        private const string NativeSpiderPoisonBuffGuid =
+            "56ec8788092b6314e8f3c1c502e8433f";
         private const string NativeSmallHoof1d3Guid =
             "085547b82eded104ba7e1870dd0563bf";
         private const string NativeHoof1d4Guid =
@@ -200,6 +215,10 @@ namespace KingmakerGunslinger.Blueprints
                     "native sting animation weapon"),
                 Require<BlueprintItemWeapon>(bySymbol, WaspSting1d8Symbol),
                 WaspSting1d8Symbol, 1, DiceType.D8);
+            ConfigureWaspPoison(library,
+                Require<BlueprintFeature>(bySymbol, WaspPoisonSymbol),
+                Require<BlueprintBuff>(bySymbol, WaspVenomSymbol),
+                Require<BlueprintItemWeapon>(bySymbol, WaspSting1d8Symbol));
             foreach (NaturalSummonProfile profile in
                 ExpandedSummoningNaturalProfiles.All)
                 ConfigureUnit(library, Require<BlueprintUnit>(bySymbol,
@@ -221,6 +240,70 @@ namespace KingmakerGunslinger.Blueprints
             SetField(target, "m_DamageDice", new DiceFormula(rolls, dice));
             SetField(target, "m_Enchantments", Array.Empty<Kingmaker.Blueprints
                 .Items.Ecnchantments.BlueprintWeaponEnchantment>());
+        }
+
+        private static void ConfigureWaspPoison(LibraryScriptableObject library,
+            BlueprintFeature feature, BlueprintBuff venom,
+            BlueprintItemWeapon sting)
+        {
+            BlueprintBuff nativeBuff = BlueprintLibraryLookup.RequireExact<
+                BlueprintBuff>(library, NativeSpiderPoisonBuffGuid,
+                    "native saved poison lifecycle");
+            CopyFields(nativeBuff, venom);
+            venom.name = InternalName(WaspVenomSymbol);
+            venom.ComponentsArray = (nativeBuff.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Select(
+                    ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
+            venom.Stacking = StackingType.Poison;
+            BuffPoisonStatDamage damage = venom.ComponentsArray.OfType<
+                BuffPoisonStatDamage>().Single();
+            damage.Stat = StatType.Dexterity;
+            damage.Value = new DiceFormula(1, DiceType.D2);
+            damage.Ticks = GiantWaspPoisonPolicy.Exposures;
+            damage.SuccesfullSaves = GiantWaspPoisonPolicy.SavesToCure;
+            damage.SaveType = SavingThrowType.Fortitude;
+            BlueprintUnitFactAccess.Resolve().Configure(venom,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.GiantWasp.Venom.Name",
+                    "Giant Wasp Venom"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.GiantWasp.Venom.Description",
+                    "Injury poison: Fortitude DC 18; 1d2 Dexterity damage each round for six total exposures; one successful save cures it."),
+                nativeBuff.Icon);
+
+            BlueprintFeature nativeFeature = BlueprintLibraryLookup.RequireExact<
+                BlueprintFeature>(library, NativeSpiderPoisonFeatureGuid,
+                    "native poison-on-hit feature");
+            CopyFields(nativeFeature, feature);
+            feature.name = InternalName(WaspPoisonSymbol);
+            feature.HideInUI = true;
+            feature.IsClassFeature = false;
+            BlueprintComponent[] components = (nativeFeature.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Select(
+                    ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
+            AddInitiatorAttackWithWeaponTrigger trigger = components.OfType<
+                AddInitiatorAttackWithWeaponTrigger>().Single();
+            trigger.WeaponType = sting.Type;
+            trigger.OnlyHit = true;
+            ContextActionSavingThrow save = trigger.Action.Actions.OfType<
+                ContextActionSavingThrow>().Single();
+            ContextActionConditionalSaved outcome = save.Actions.Actions.OfType<
+                ContextActionConditionalSaved>().Single();
+            ContextActionApplyBuff apply = outcome.Failed.Actions.OfType<
+                ContextActionApplyBuff>().Single();
+            apply.Buff = venom;
+            trigger.Action.Actions = (new GameAction[] {
+                new ContextActionSetWaspPoisonDc() }).Concat(
+                    trigger.Action.Actions).ToArray();
+            feature.ComponentsArray = components;
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.GiantWasp.Poison.Name",
+                    "Giant Wasp Poison"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.GiantWasp.Poison.Description",
+                    "A sting delivers Giant Wasp venom on a hit."),
+                null);
         }
 
         private static void ConfigureUnit(LibraryScriptableObject library,
@@ -294,7 +377,9 @@ namespace KingmakerGunslinger.Blueprints
             }
             foreach (string fact in profile.Facts)
             {
-                BlueprintUnitFact value = fact == "DireBatBlindsense"
+                BlueprintUnitFact value = fact == "WaspPoison"
+                    ? Require<BlueprintFeature>(bySymbol, WaspPoisonSymbol)
+                    : fact == "DireBatBlindsense"
                     ? Require<BlueprintFeature>(bySymbol, DireBatBlindsenseSymbol)
                     : BaseUnitFactKeys.Contains(fact)
                     ? BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(

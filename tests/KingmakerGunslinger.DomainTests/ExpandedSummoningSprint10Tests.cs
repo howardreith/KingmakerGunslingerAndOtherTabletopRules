@@ -9,7 +9,7 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class ExpandedSummoningSprint10Tests
     {
-        internal const int AppendedLedgerIdentities = 26;
+        internal const int AppendedLedgerIdentities = 28;
 
         internal static void GiantWaspRegisteredUnderSuppressionAtExactTiers()
         {
@@ -63,6 +63,33 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(12,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
                 "Only Wasp's twelve legal placements may be suppressed.");
+        }
+
+        internal static void GiantWaspPoisonTracksConstitutionAndTabletopExposure()
+        {
+            Assertions.Equal(18, GiantWaspPoisonPolicy.DifficultyClass(4),
+                "The baseline 4-HD/Con 18 Wasp poison DC is 18.");
+            Assertions.Equal(16, GiantWaspPoisonPolicy.DifficultyClass(2),
+                "Constitution loss must lower the poison DC by the same amount.");
+            Assertions.Equal(20, GiantWaspPoisonPolicy.DifficultyClass(6),
+                "Constitution gains must raise the poison DC by the same amount.");
+            Assertions.Equal(6, GiantWaspPoisonPolicy.Exposures,
+                "Wasp poison has six total exposures, including the initial hit.");
+            Assertions.Equal(1, GiantWaspPoisonPolicy.SavesToCure,
+                "One successful later save cures Wasp venom.");
+            Assertions.True(ExpandedSummoningNaturalProfiles.For("giant-wasp")
+                .Facts.Contains("WaspPoison"),
+                "The Wasp unit must carry its dedicated poison feature.");
+            SummoningIdentitySpec[] poison = ExpandedSummoningIdentityCatalog
+                .Build().Where(value => value.Symbol.StartsWith(
+                    "KMG.Summoning.Natural.GiantWasp.",
+                    StringComparison.Ordinal)).ToArray();
+            Assertions.Equal(2, poison.Length,
+                "The poison feature and saved venom buff have separate identities.");
+            Assertions.True(poison.Any(value => value.PlannedType ==
+                    "BlueprintFeature") && poison.Any(value =>
+                    value.PlannedType == "BlueprintBuff"),
+                "Poison identities must preserve their blueprint types.");
         }
 
         internal static void SuppressedWaspHasNoVisibleIconConsumer()
