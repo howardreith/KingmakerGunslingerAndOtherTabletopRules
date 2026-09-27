@@ -38,15 +38,14 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            string[] visibleCatalog = ExpandedSummoningCatalog.All.Where(value =>
-                !string.Equals(value.Key, "dire-bat", StringComparison.Ordinal))
+            string[] visibleCatalog = ExpandedSummoningCatalog.All
                 .Select(value => value.Key).ToArray();
             string[] split = { "redcap", "axiomite", "soul-eater", "bogeyman",
                 "movanic-deva", "frost-giant", "thanadaemon" };
             string[] preserved = { "mite", "manticore", "nereid", "hamadryad" };
             string[] expected = visibleCatalog.Concat(split).Concat(preserved)
                 .ToArray();
-            if (Values.Length != 91 || expected.Length != 91 ||
+            if (Values.Length != 92 || expected.Length != 92 ||
                 Values.Any(value => value == null ||
                     string.IsNullOrWhiteSpace(value.Key) ||
                     string.IsNullOrWhiteSpace(value.DisplayName)) ||
@@ -62,8 +61,7 @@ namespace KingmakerGunslinger.Summoning
 
         private static SummonProjectIconSpec[] Build()
         {
-            var result = ExpandedSummoningCatalog.All.Where(value =>
-                value.Key != "dire-bat").Select(value => new SummonProjectIconSpec(
+            var result = ExpandedSummoningCatalog.All.Select(value => new SummonProjectIconSpec(
                     value.Key, value.DisplayName, SummonProjectIconScope.KmgCatalog))
                 .ToList();
             Add(result, SummonProjectIconScope.SplitNative,

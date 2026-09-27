@@ -412,7 +412,7 @@ def validate(root: Path) -> None:
         "Values.Length != %d" % SPRINT3["naturalProfiles"],
         '"Animal", "Vermin", "MagicalBeast", "Humanoid", "Plant"')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonIconCatalog.cs",
-        "Values.Length != %d" % SPRINT3["projectIcons"])
+        "Values.Length != %d" % (SPRINT3["projectIcons"] + 1))
     # Correction order: the chartered mephit roles and the ally-safe cloud stay in the code.
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningSpecialProfiles.cs",
         '"Blur", "WindWall"', '"MagicMissile", "ChillMetal"', '"Pyrotechnics", "MagmaForm"',
@@ -488,8 +488,8 @@ def validate(root: Path) -> None:
             raise AssertionError("No Lightning Mephit may enter the catalogs: " + path.name)
     runtime_icons = json.loads((root / "assets/game/icons/expanded-summoning/icon-manifest.json")
                                .read_text(encoding="utf-8-sig"))
-    if runtime_icons["count"] != SPRINT3["projectIcons"] or \
-            len(runtime_icons["icons"]) != SPRINT3["projectIcons"] or \
+    if runtime_icons["count"] != SPRINT3["projectIcons"] + 1 or \
+            len(runtime_icons["icons"]) != SPRINT3["projectIcons"] + 1 or \
             not {"pony", "horse", "owlbear", "cyclops", "shambling-mound", "giant-flytrap",
                  "purple-worm", "dust-mephit", "ice-mephit", "magma-mephit", "ooze-mephit",
                  "salt-mephit", "steam-mephit", "tiger"} <= {row["key"] for row in runtime_icons["icons"]}:
@@ -500,10 +500,10 @@ def validate(root: Path) -> None:
         if not (root / "assets/game/icons/expanded-summoning" / (key + ".png")).is_file() or \
                 not (root / "assets-source/original-icons/expanded-summoning/sources" / (key + ".png")).is_file():
             raise AssertionError("Phase 1 icon file missing: " + key)
-    # Phase 2 adds the original Bat mesh and albedo to the installable tree.
+    # Phase 2 adds the Bat/Eagle meshes and albedos and Bat icon to the installable tree.
     # Keep the accepted Phase 1 metadata at 251, but validate the current
-    # package count against those two new required files.
-    package_count = SPRINT3["packageFileCountWithSoundBank"] + 4
+    # package count against the five new required files.
+    package_count = SPRINT3["packageFileCountWithSoundBank"] + 5
     for script in ("Build-Local.ps1", "package.ps1"):
         require_tokens(root / "scripts" / script,
             "{ %d } else { %d }" % (package_count, package_count - 2),

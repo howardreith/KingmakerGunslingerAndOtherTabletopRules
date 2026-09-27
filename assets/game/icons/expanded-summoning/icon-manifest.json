@@ -1,6 +1,6 @@
 ﻿{
     "schemaVersion":  1,
-    "count":  91,
+    "count":  92,
     "icons":  [
                   {
                       "key":  "dog",
@@ -15,6 +15,15 @@
                       "key":  "eagle",
                       "file":  "eagle.png",
                       "sha256":  "525942badf1442e1032be07d6d8ebfbfdfc53858f35783ca95620c1534ebd125",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "dire-bat",
+                      "file":  "dire-bat.png",
+                      "sha256":  "5c2deea29d590ba3c024063d209b69108103bdf726ec9decb9889eccc8d6b16a",
                       "width":  128,
                       "height":  128,
                       "format":  "RGBA PNG",
