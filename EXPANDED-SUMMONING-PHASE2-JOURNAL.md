@@ -515,3 +515,21 @@ tree at SHA-256
 Repository validation, 1,937/1,937 domain cases, clean Release and strict
 package validation passed. Wasp remains hidden pending combat contact,
 cadence, lifecycle and art; Stirge remains pending.
+
+## Sprint 10: Wasp native strike cadence, 2026-09-27
+
+I admitted only the hidden Wasp to the existing guarded flight-combat
+fixture. It cast the own-tier Summon Monster IV variant in both turn-based
+and RTWP sessions, correlated native RuleAttackWithWeapon events to the
+exact disposable hostile, and required two Wasp stings per mode. The
+turn-based run `20260927T2217134616132Z` passed with two exact strikes;
+RTWP `20260927T2220168994981Z` also passed with two after 145 wait frames.
+At both turn-based impacts the closest weighted Tail/stinger surface was
+0.643–0.654 m from the hostile's rendered body. RTWP samples were 0.743 m
+and 2.04 m. Native combat cadence is qualified in this bounded fixture;
+visible sting contact is not. No global attack behavior was changed and
+the Wasp remains suppressed. The shared guarded batch restored the exact
+original 136-file live tree at SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`;
+restoration `20260927T2223192246293Z`. Repository validation, 1,938
+domain cases, clean Release and strict package validation passed.

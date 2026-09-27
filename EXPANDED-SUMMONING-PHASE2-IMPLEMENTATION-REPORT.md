@@ -354,3 +354,15 @@ made. Neither control buff installed in the fixture. The failed diagnostic
 passed (`20260927T2155531149844Z`). Repository validation, 1,937/1,937
 domain tests, clean Release and strict package checks passed. Wasp remains
 suppressed pending combat, lifecycle and visual acceptance; Stirge is pending.
+
+The existing guarded flight-combat fixture now accepts only the named,
+still-hidden Wasp in addition to its Eagle/Bat controls. The Wasp casts its
+own-tier Summon Monster IV variant and must land two native weapon rules on
+the exact hostile in each combat mode. Turn-based
+`20260927T2217134616132Z` and RTWP `20260927T2220168994981Z` both passed.
+The measured weighted Tail/stinger surface was 0.643–0.654 m from the
+hostile body in turn-based and 0.743/2.04 m away in RTWP. Mechanical cadence
+passes; visual contact does not. The shared batch restored the original
+installation exactly (`20260927T2223192246293Z`). Repository validation,
+1,938/1,938 domain cases, clean Release and strict package checks passed.
+Wasp publication remains closed pending contact, lifecycle and visual review.
