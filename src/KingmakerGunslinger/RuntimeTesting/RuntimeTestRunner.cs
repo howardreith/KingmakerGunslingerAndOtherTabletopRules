@@ -17259,6 +17259,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                             else _direBatVisualDetail.Add(outcome + ":" + renderers);
                         }
                     }
+                    else if (variant.Creature.Key == "giant-wasp")
+                    {
+                        foreach (UnitEntityData unit in spawned)
+                        {
+                            if (unit == null || unit.View == null) continue;
+                            _giantWaspVisualChecked++;
+                            string outcome = ExpandedSummoningPteranodonViewPatch
+                                .DescribeView(unit.View);
+                            string renderers = DescribePteranodonRenderers(unit.View);
+                            if (outcome.StartsWith("visual:attached;",
+                                    StringComparison.Ordinal) &&
+                                IsGiantWaspAttached(renderers))
+                                _giantWaspVisualAttached++;
+                            else _giantWaspVisualDetail.Add(outcome + ":" + renderers);
+                        }
+                    }
                     else if (PteranodonDonorSharers.Contains(variant.Creature.Key))
                     {
                         // Isolation: the creatures that share the GiantEagle
@@ -17529,9 +17545,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _pteranodonVisualOutcomes.Count >= _pteranodonCastsSeen &&
                         patchOutcomesAfterCoverage - patchOutcomesBefore ==
                             _pteranodonVisualOutcomes.Count +
-                                _direBatVisualChecked + _eagleVisualChecked &&
+                                _direBatVisualChecked + _eagleVisualChecked +
+                                _giantWaspVisualChecked &&
                         pteranodonAttachedClean,
                     "one patch outcome per attached view; per-cast cleanup is enforced by the cast loop itself"),
+                Assertion("expanded-summoning-giant-wasp-visual-attached",
+                    "every registered Wasp cast carries the project mesh and material on its private view",
+                    "checked=" + _giantWaspVisualChecked + ";attached=" +
+                        _giantWaspVisualAttached + (_giantWaspVisualDetail.Count == 0 ?
+                            "" : ";detail=" + string.Join("|",
+                                _giantWaspVisualDetail.ToArray())),
+                    _giantWaspVisualChecked >= 2 &&
+                        _giantWaspVisualAttached == _giantWaspVisualChecked,
+                    "live skinned renderer mesh, material and bone count"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,
@@ -17939,6 +17965,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool sprintEightPack = ExerciseExpandedSummoningSprintEightPack(blueprints,
                     caster, hostile, created, result, out sprintEightDetail);
 
+                // Sprint 10: prove the registered, still-suppressed Wasp
+                // actually delivers its poison through a sting in the engine.
+                string waspPoisonDetail;
+                ResetExpandedSummoningMechanicalHostile(hostile, blueprints);
+                bool waspPoison = ExerciseExpandedSummoningWaspPoison(blueprints,
+                    caster, hostile, created, result, out waspPoisonDetail);
+
                 result.RepresentativeCombat = animalAttack && proxyAttack &&
                     elementalAttack && stalkerAttack && shadowAttack &&
                     salamanderAttack && succubusAttack && pixieAttack &&
@@ -17948,12 +17981,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     sleepBefore == 16 && sleepAfter == 15 && sleepApplied &&
                     bebelithFirst && bebelithSecond && dismantledApplied &&
                     armorUnchanged && cyclopsFlash && grappleLifecycle && mephitPack &&
-                    sprintSixPack && rakeCadence && sprintEightPack;
+                    sprintSixPack && rakeCadence && sprintEightPack && waspPoison;
                 result.Diagnostics.Add("grapple[" + grappleDetail + "]");
                 result.Diagnostics.Add("mephits[" + mephitDetail + "]");
                 result.Diagnostics.Add("sprintSix[" + sprintSixDetail + "]");
                 result.Diagnostics.Add("rake[" + rakeDetail + "]");
                 result.Diagnostics.Add("sprintEight[" + sprintEightDetail + "]");
+                result.Diagnostics.Add("waspPoison[" + waspPoisonDetail + "]");
                 result.Diagnostics.Add("cyclops[granted=" + flashGranted +
                     ";resource=" + flashBefore + "->" + flashAfter + ";armed=" +
                     flashArmed + ";armedNatural1=" + flashArmedDetail +
@@ -18771,6 +18805,104 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             detail = string.Join(";", steps.ToArray());
             return ok;
+        }
+
+        /// <summary>
+        /// A suppressed Wasp's sting and native saved-poison lifecycle on a
+        /// disposable hostile in the guarded mechanical fixture.
+        /// </summary>
+        private static bool ExerciseExpandedSummoningWaspPoison(
+            BlueprintScriptableObject[] blueprints, UnitEntityData caster,
+            UnitEntityData hostile, List<UnitEntityData> created,
+            ExpandedSummoningMechanicalEvidence evidence, out string detail)
+        {
+            BlueprintBuff venom = blueprints.OfType<BlueprintBuff>().Single(value =>
+                value.name == "KMG_Summoning_Natural_GiantWasp_Venom");
+            UnitEntityData wasp = CastExpandedSummoningCombatUnit(blueprints,
+                caster, SummonFamily.NaturesAlly, "giant-wasp", 4,
+                created, evidence);
+            int fortBefore = hostile.Descriptor.Stats.SaveFortitude.BaseValue;
+            int dexBaseBefore = hostile.Descriptor.Stats.Dexterity.BaseValue;
+            int dexDamageBefore = hostile.Descriptor.Stats.Dexterity.Damage;
+            int hitPointsBefore = hostile.Descriptor.Damage;
+            try
+            {
+                RemoveExpandedSummoningAppearanceBuffs(wasp);
+                hostile.Descriptor.Stats.SaveFortitude.BaseValue = -100;
+                hostile.Descriptor.Stats.Dexterity.BaseValue = 30;
+                int dexBefore = hostile.Descriptor.Stats.Dexterity.ModifiedValue;
+                string attackDetail;
+                bool hit = ExerciseExpandedSummoningAttack(wasp, hostile,
+                    out attackDetail);
+                Buff applied = hostile.Descriptor.Buffs.GetBuff(venom);
+                int dexAfterHit = hostile.Descriptor.Stats.Dexterity.ModifiedValue;
+                int dc = applied == null || applied.Context == null ? -1 :
+                    applied.Context.Params.DC;
+                var poisonLogic = applied == null ? null : applied.Components
+                    .OfType<Kingmaker.Designers.Mechanics.Buffs.BuffPoisonStatDamage>()
+                    .SingleOrDefault();
+                int ticksBefore = poisonLogic == null ? -1 :
+                    (int)ReadExactMember(poisonLogic, "m_TicksPassed");
+                int savesBefore = poisonLogic == null ? -1 :
+                    (int)ReadExactMember(poisonLogic, "m_SavesSucceeded");
+                int damageAfterHit = hostile.Descriptor.Stats.Dexterity.Damage;
+                bool activeBefore = applied != null && applied.Active;
+                bool suppressedBefore = applied != null && applied.IsSuppressed;
+                if (applied != null) applied.TickMechanics();
+                int dexAfterFailedRound = hostile.Descriptor.Stats.Dexterity.ModifiedValue;
+                int ticksAfter = poisonLogic == null ? -1 :
+                    (int)ReadExactMember(poisonLogic, "m_TicksPassed");
+                int savesAfter = poisonLogic == null ? -1 :
+                    (int)ReadExactMember(poisonLogic, "m_SavesSucceeded");
+                int damageAfterFailedRound = hostile.Descriptor.Stats.Dexterity.Damage;
+                bool presentAfterFailure = hostile.Descriptor.HasFact(venom);
+                hostile.Descriptor.Stats.SaveFortitude.BaseValue = 100;
+                Buff beforeCure = hostile.Descriptor.Buffs.GetBuff(venom);
+                if (beforeCure != null) beforeCure.TickMechanics();
+                bool cured = !hostile.Descriptor.HasFact(venom);
+                int dexAfterCure = hostile.Descriptor.Stats.Dexterity.ModifiedValue;
+                float enemyDamageScale = Game.Instance.Player.Difficulty.DamageToParty;
+                bool poisonRules = poisonLogic != null &&
+                    poisonLogic.Value.Rolls == 1 &&
+                    poisonLogic.Value.Dice == DiceType.D2 &&
+                    poisonLogic.Ticks == GiantWaspPoisonPolicy.Exposures &&
+                    poisonLogic.SuccesfullSaves ==
+                        GiantWaspPoisonPolicy.SavesToCure &&
+                    poisonLogic.SaveType == SavingThrowType.Fortitude;
+                bool passed = hit && dc == GiantWaspPoisonPolicy.DifficultyClass(
+                    wasp.Descriptor.Stats.Constitution.Bonus) &&
+                    dexBefore - dexAfterHit >= 1 && dexBefore - dexAfterHit <= 2 &&
+                    poisonRules && activeBefore && !suppressedBefore &&
+                    ticksBefore == 1 && ticksAfter == 2 &&
+                    savesBefore == 0 && savesAfter == 0 &&
+                    damageAfterFailedRound >= damageAfterHit &&
+                    damageAfterFailedRound - damageAfterHit <= 2 &&
+                    presentAfterFailure && cured &&
+                    dexAfterCure == dexAfterFailedRound;
+                detail = "attack=" + attackDetail + ";dc=" + dc +
+                    ";dex=" + dexBefore + "->" + dexAfterHit + "->" +
+                    dexAfterFailedRound + "->" + dexAfterCure +
+                    ";statDamage=" + dexDamageBefore + "->" +
+                    damageAfterHit + "->" + damageAfterFailedRound +
+                    ";ticks=" + ticksBefore + "->" + ticksAfter +
+                    ";saves=" + savesBefore + "->" + savesAfter +
+                    ";active=" + activeBefore + ";suppressed=" +
+                    suppressedBefore + ";rules=" + poisonRules +
+                    ";enemyDamageScale=" + enemyDamageScale +
+                    ";enemyTarget=" + hostile.IsPlayersEnemy +
+                    ";afterFailedRound=" + presentAfterFailure +
+                    ";cured=" + cured;
+                return passed;
+            }
+            finally
+            {
+                Buff remaining = hostile.Descriptor.Buffs.GetBuff(venom);
+                if (remaining != null) hostile.Descriptor.Buffs.RemoveFact(remaining);
+                hostile.Descriptor.Stats.SaveFortitude.BaseValue = fortBefore;
+                hostile.Descriptor.Stats.Dexterity.BaseValue = dexBaseBefore;
+                hostile.Descriptor.Stats.Dexterity.Damage = dexDamageBefore;
+                hostile.Descriptor.Damage = hitPointsBefore;
+            }
         }
 
         /// <summary>

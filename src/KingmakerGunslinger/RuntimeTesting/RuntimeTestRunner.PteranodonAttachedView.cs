@@ -53,6 +53,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         private readonly List<string> _eagleVisualDetail = new List<string>();
         private int _eagleVisualChecked;
         private int _eagleVisualAttached;
+        private int _giantWaspVisualChecked;
+        private int _giantWaspVisualAttached;
+        private readonly List<string> _giantWaspVisualDetail = new List<string>();
         private IDisposable _pteranodonWithdrawal;
         private int _pteranodonCastsSeen;
         private int _pteranodonCrowdMax;
@@ -124,6 +127,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ";bones=46;", StringComparison.Ordinal) ||
                 renderers.StartsWith("mesh=" + name + ";material=" + name +
                     " (Instance);bones=46;", StringComparison.Ordinal);
+        }
+
+        private static bool IsGiantWaspAttached(string renderers)
+        {
+            string name = ExpandedSummoningPteranodonViewPatch.GiantWaspVisualName;
+            return renderers.StartsWith("mesh=" + name + ";material=" + name +
+                    ";bones=16;", StringComparison.Ordinal) ||
+                renderers.StartsWith("mesh=" + name + ";material=" + name +
+                    " (Instance);bones=16;", StringComparison.Ordinal);
         }
 
         /// <summary>

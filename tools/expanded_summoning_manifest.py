@@ -97,7 +97,7 @@ SPECIAL_NOTES = {
     "tiger": "New Large animal on the leopard rig (1.25 view scale, procedural striped coat); 2d6 bite, two 1d8 claws and two 1d8 rake claws; pounce; grab with the bite and both foreclaws by limb identity on the shared lifecycle; rake gate: a charge, or the foe held since the round began (Sprint 8; corrected 2026-09-25).",
     "cheetah": "Animal chassis on the leopard rig with a procedural spotted coat at a lean view scale; trip bite; bounded once-per-summoning sprint (+30 feet for one round) with its own brain (Sprint 8).",
     "lion": "Animal chassis on the leopard rig with a tawny visual tint; bite and two claws plus two rake claws; pounce; bite grab by limb identity on the shared lifecycle; rake gate: a charge, or the foe held since the round began (Sprint 7; corrected 2026-09-25).",
-    "giant-wasp": "Sprint 10 Phase 2 registration only: native sting damage and original flying visual; suppressed until Dexterity poison, live combat and view qualification pass.",
+    "giant-wasp": "Sprint 10 Phase 2 native sting, original flying visual and dedicated Dexterity poison graph; suppressed until poison, live combat and view qualification pass.",
     "dire-lion": "Animal chassis with bite, two claws and a secondary rake pair; pounce; bite grab by limb identity on the shared lifecycle; rake gate: a charge, or the foe held since the round began (Sprint 7; corrected 2026-09-25).",
     "dire-tiger": "Smilodon chassis with bite, two claws and a secondary rake pair; pounce; grab with the bite and both foreclaws by limb identity on the shared lifecycle; rake gate: a charge, or the foe held since the round began (Sprint 7; corrected 2026-09-25).",
     "grizzly-bear": "Animal chassis with bite and two claws; claw grab on the shared summon grapple lifecycle (Sprint 6).",
@@ -333,8 +333,10 @@ def planned():
         ("KMG.Summoning.Natural.Claw1d8", "BlueprintItemWeapon"),
         ("KMG.Summoning.Subtype.Extraplanar", "BlueprintFeature"),
         ("KMG.Summoning.Natural.WaspSting1d8", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Natural.GiantWasp.Poison", "BlueprintFeature"),
+        ("KMG.Summoning.Natural.GiantWasp.Venom", "BlueprintBuff"),
     ))
-    if len(rows) != 1499 or len({symbol for symbol, _ in rows}) != 1499:
+    if len(rows) != 1501 or len({symbol for symbol, _ in rows}) != 1501:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 
