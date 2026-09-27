@@ -555,3 +555,18 @@ original 136-file installation at SHA-256
 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
 Repository validation, 1,938 domain cases, clean Release and strict package
 validation passed. Next: reversible target-directed tail-pose probe.
+
+## Sprint 10: Wasp temporary Tail aim probe, 2026-09-27
+
+I added a bounded, request-local Tail-bone rotation at the first two native
+sting events, with baked stinger-tip distance, overhead capture, and exact
+rotation restoration. Turn-based `20260927T2310527552766Z` and RTWP
+`20260927T2314172123373Z` both passed two exact stings. Baked turn-based
+tips entered target bounds; RTWP improved but the second gap remained
+1.198 m. The images do not prove the altered pose rendered on that same
+frame, and the test pose has not been promoted to gameplay. The Wasp stays
+hidden. Restoration `20260927T2317241914821Z` returned the original
+136-file installation exactly. Repository validation, 1,938 domain tests,
+clean Release and strict package validation passed. Next I will test a
+frame-persistent, bounded visual pose and continue the remaining Sprint 10
+requirements.

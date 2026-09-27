@@ -811,3 +811,25 @@ DLL SHA-256:
 `E6E757498CC15D6ED7CC71F4EFEE8F17C89487C5CB3DD457D7AB9DA74EC924CD`.
 Next: a reversible target-directed tail-pose probe, then contact/lifecycle,
 icon and visual clarity, then Stirge.
+
+## Sprint 10 Wasp request-local tail probe, 2026-09-27
+
+Guarded turn-based `20260927T2310527552766Z` and RTWP
+`20260927T2314172123373Z` each passed two exact-target native stings.
+A request-local probe rotated only the Wasp Tail bone, baked/measured the
+mesh, captured an overhead image and restored the exact native rotation in
+`finally`. The selected tip moved from 2.04/2.049 m to inside the target
+bounds in turn-based. RTWP gaps changed 2.137 to 0.012 m and 3.51 to
+1.198 m. The same-frame renders did not show a convincing changed pose;
+the second RTWP strike remained geometrically short. No production tail
+animation is claimed. All twelve Wasp placements stay suppressed.
+Shared restoration `20260927T2317241914821Z-summon-same-turn-activation.json`
+verified the original 136-file tree at SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+Repository validation, 1,938/1,938 domain cases, clean Release and strict
+package checks passed. Package SHA-256:
+`F2C33C487DE6A6DA4034899159CEF58CF2017E935331642942BF9A94CDC601B1`;
+DLL SHA-256:
+`1156B6674026687DA24C4FD1B76C4BF91181A7199506FCC31C5C000E4BF9903A`.
+Next: frame-persistent visual contact strategy, Wasp lifecycle/art review,
+then Stirge.
