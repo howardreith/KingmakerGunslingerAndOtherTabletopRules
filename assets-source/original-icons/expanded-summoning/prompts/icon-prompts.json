@@ -15,6 +15,11 @@
       "subjectPrompt": "A small golden-brown eagle in a compact banking pose, wings partly folded rather than fully spread, hooked beak and keen amber eye, mountain air backdrop that emphasizes a small bird silhouette."
     },
     {
+      "key": "dire-bat",
+      "displayName": "Dire Bat",
+      "subjectPrompt": "A single large brown dire bat in flight, broad dark membrane wings with distinct finger struts, pointed ears and a short leaf-shaped nose, dramatic cave light; original painting for the Expanded Summoning creature choice."
+    },
+    {
       "key": "poisonous-frog",
       "displayName": "Poisonous Frog",
       "subjectPrompt": "A tiny vivid poisonous frog perched on one wet leaf, jewel-like cobalt and amber skin, compact crouched silhouette, oversized raindrops and foliage conveying very small scale."
