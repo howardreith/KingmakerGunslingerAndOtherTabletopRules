@@ -25,7 +25,9 @@ $requiredFiles = @(
     # albedo rather than an AssetBundle: no bind poses, no material, no
     # editor dependency.
     'assets\pteranodon\pteranodon-mesh.json',
-    'assets\pteranodon\pteranodon-albedo.png'
+    'assets\pteranodon\pteranodon-albedo.png',
+    'assets\flying-animals\dire-bat-mesh.json',
+    'assets\flying-animals\dire-bat-albedo.png'
 )
 $requiredIcons = @('gunslinger-class','firearm-proficiency','gunsmithing','grit',
     'deeds','nimble','bonus-feat','gun-training','true-grit','rapid-reload',
@@ -76,6 +78,8 @@ $allowedRelativePaths = @{
     'assets\bundles\asset-bundle-manifest.json' = $true
     'assets\pteranodon\pteranodon-mesh.json' = $true
     'assets\pteranodon\pteranodon-albedo.png' = $true
+    'assets\flying-animals\dire-bat-mesh.json' = $true
+    'assets\flying-animals\dire-bat-albedo.png' = $true
 }
 
 $unexpected = @()

@@ -31,6 +31,7 @@ param(
     [string]$LiveModDirectory = 'C:\Program Files (x86)\Steam\steamapps\common\Pathfinder Kingmaker\Mods\KingmakerGunslinger',
     [string]$RestorationRecordRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-evidence\expanded-summoning-restoration',
     [hashtable]$ScenarioParameters = @{},
+    [switch]$AllowDirtyGit,
     [int]$TimeoutSeconds = 120
 )
 
@@ -122,6 +123,7 @@ try {
                 ExitAfterCompletion = $true
                 Confirm = $false
             }
+            if ($AllowDirtyGit) { $arguments.AllowDirtyGit = $true }
             if ($SaveName) { $arguments.SaveName = $SaveName }
             # Only the first scenario needs to build and deploy; the rest run
             # against the artifact it installed. Reuse is refused unless the

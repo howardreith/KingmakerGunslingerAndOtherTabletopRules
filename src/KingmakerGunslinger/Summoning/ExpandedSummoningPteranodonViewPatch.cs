@@ -44,11 +44,14 @@ namespace KingmakerGunslinger.Summoning
     {
         internal const string PteranodonBlueprintName =
             "KMG_Summoning_Unit_Pteranodon";
+        internal const string DireBatBlueprintName =
+            "KMG_Summoning_Unit_DireBat";
         /// <summary>
         /// The name carried by the private mesh and material the swap installs;
         /// observers recognise the attached state by it.
         /// </summary>
         internal const string CustomVisualName = "KMG_PteranodonMembrane";
+        internal const string DireBatVisualName = "KMG_DireBatMembrane";
         private const string MainTexture = "_MainTex";
 
         /// <summary>
@@ -84,6 +87,7 @@ namespace KingmakerGunslinger.Summoning
         private sealed class Attachment
         {
             internal string Outcome;
+            internal string VisualKey;
             internal SkinnedMeshRenderer Donor;
             internal Mesh OriginalMesh;
             internal Transform[] OriginalBones;
@@ -146,14 +150,20 @@ namespace KingmakerGunslinger.Summoning
         {
             if (__instance == null || __instance.EntityData == null ||
                 __instance.EntityData.Blueprint == null) return;
-            if (!string.Equals(__instance.EntityData.Blueprint.name,
-                PteranodonBlueprintName, StringComparison.Ordinal)) return;
+            string blueprintName = __instance.EntityData.Blueprint.name;
+            string visualKey = string.Equals(blueprintName,
+                PteranodonBlueprintName, StringComparison.Ordinal)
+                ? "pteranodon" : string.Equals(blueprintName,
+                    DireBatBlueprintName, StringComparison.Ordinal)
+                    ? "dire-bat" : null;
+            if (visualKey == null) return;
 
             lock (Applied)
             {
                 Attachment existing;
                 if (Applied.TryGetValue(__instance, out existing)) return;
                 Attachment attachment = new Attachment();
+                attachment.VisualKey = visualKey;
                 Applied.Add(__instance, attachment);
                 attachment.Outcome = Attach(__instance, attachment);
                 Record(attachment.Outcome);
@@ -168,11 +178,21 @@ namespace KingmakerGunslinger.Summoning
         {
             Mesh source;
             string[] boneNames;
-            if (!PteranodonAssetRuntime.TryGetMembrane(out source, out boneNames))
-                return Fallback(PteranodonAssetRuntime.Status);
             Texture2D albedo;
-            if (!PteranodonAssetRuntime.TryGetAlbedo(out albedo))
-                return Fallback(PteranodonAssetRuntime.Status);
+            if (attachment.VisualKey == "dire-bat")
+            {
+                if (!PteranodonAssetRuntime.TryGetDireBatVisual(out source,
+                    out boneNames, out albedo))
+                    return Fallback(PteranodonAssetRuntime.DireBatStatus);
+            }
+            else
+            {
+                if (!PteranodonAssetRuntime.TryGetMembrane(out source,
+                    out boneNames))
+                    return Fallback(PteranodonAssetRuntime.Status);
+                if (!PteranodonAssetRuntime.TryGetAlbedo(out albedo))
+                    return Fallback(PteranodonAssetRuntime.Status);
+            }
 
             SkinnedMeshRenderer[] donors = view
                 .GetComponentsInChildren<SkinnedMeshRenderer>(true)
@@ -215,14 +235,16 @@ namespace KingmakerGunslinger.Summoning
                 // A copy, so the cached asset keeps its identity bind poses and
                 // a second unit binds from the same clean source.
                 mesh = UnityEngine.Object.Instantiate(source);
-                mesh.name = CustomVisualName;
+                string visualName = attachment.VisualKey == "dire-bat"
+                    ? DireBatVisualName : CustomVisualName;
+                mesh.name = visualName;
                 mesh.bindposes = bindposes;
 
                 // Cloned from the donor's material so the creature is shaded by
                 // the game's own pipeline rather than a bundled stand-in; then
                 // the eagle's textures are replaced by the painting.
                 material = new Material(donorMaterial);
-                material.name = CustomVisualName;
+                material.name = visualName;
                 string dressing = DressMaterial(material, albedo);
 
                 // The swap, on this one instance's renderer component: the

@@ -48,6 +48,8 @@ try {
         # material, no editor dependency.
         'assets\pteranodon\pteranodon-mesh.json',
         'assets\pteranodon\pteranodon-albedo.png',
+        'assets\flying-animals\dire-bat-mesh.json',
+        'assets\flying-animals\dire-bat-albedo.png',
         'blueprints\blueprints.json',
         'blueprints\blueprints.schema.json'
     )
