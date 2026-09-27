@@ -265,3 +265,16 @@ once to clean the fixture. Final enabled-module load found no KMG summons and
 wrote nothing. Original live-tree SHA-256 was restored after every run. The
 state file carries hashes and restoration IDs. Doorway movement and visual
 attack-impact alignment remain open.
+
+## Sprint 9: measured native attack anchors, 2026-09-27
+
+I added read-only weapon-event geometry to the own-tier Quickened fixture and
+ran Eagle and Dire Bat separately through the guarded Steam path. Both passed
+the exact-hostile combat gate and restored the original live installation.
+Eagle's bite jaw and nearest claw-foot bones remained about 2 m from the
+hostile renderer at their weapon events; Bat's jaw was about 0.44 m away.
+These are donor-rig anchor readings, not yet authored mesh-tip measurements.
+The state file carries both run IDs, package hash and restoration records.
+Repository validation, all 1,927 domain cases, clean Release and strict
+package passed. I will measure skinned contact vertices before adjusting
+Eagle visual presentation. Doorway traversal also remains open.
