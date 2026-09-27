@@ -378,3 +378,13 @@ RTWP frame was still partly dissolved, while the second was intact. This
 supports the measured contact defect. A bounded tail-pose correction needs
 testing before any Wasp publication. Repository validation, 1,938 domain
 cases, clean Release and strict package validation passed.
+
+The request-local Tail aim probe added after those captures is diagnostic
+only. Guarded turn-based `20260927T2310527552766Z` and RTWP
+`20260927T2314172123373Z` each passed two exact stings. Baked tip gaps
+improved to 0/0 m in turn-based and 0.012/1.198 m in RTWP; same-frame
+overhead images did not establish a corrected visible pose. The Tail bone
+was restored after each sample, and the original installed mod was restored
+exactly (`20260927T2317241914821Z`). Repository validation, 1,938 domain
+cases, clean Release and strict package validation passed. Visual contact
+remains unresolved and Wasp publication remains closed.
