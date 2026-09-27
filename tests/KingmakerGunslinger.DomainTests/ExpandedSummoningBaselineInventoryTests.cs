@@ -25,16 +25,16 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(399, ExpandedSummoningBaselineInventory
                 .RegisteredPlacements(SummonFamily.NaturesAlly),
                 "Baseline SNA registered placements changed.");
-            Assertions.Equal(424, ExpandedSummoningBaselineInventory
+            Assertions.Equal(431, ExpandedSummoningBaselineInventory
                 .VisibleChoices(SummonFamily.Monster),
                 "Baseline SM visible choice count changed.");
-            Assertions.Equal(404, ExpandedSummoningBaselineInventory
+            Assertions.Equal(411, ExpandedSummoningBaselineInventory
                 .VisibleChoices(SummonFamily.NaturesAlly),
                 "Baseline SNA visible choice count changed.");
         }
 
         /// <summary>
-        /// The 828 headline figure (693 at the Sprint 0 freeze) must decompose
+        /// The 842 headline figure (693 at the Sprint 0 freeze) must decompose
         /// exactly, so a sprint cannot quietly move a choice between the
         /// generated and native pools.
         /// </summary>
@@ -42,11 +42,11 @@ namespace KingmakerGunslinger.DomainTests
         {
             int generated = SummonVisibilityCatalog.PublishedLogicalPlacementCount;
             int wrappers = SummonNativeExpansionCatalog.All.Count;
-            Assertions.Equal(799, generated, "Published generated placements changed.");
+            Assertions.Equal(813, generated, "Published generated placements changed.");
             Assertions.Equal(29, wrappers, "Native wrapper count changed.");
-            Assertions.Equal(828, generated + wrappers,
+            Assertions.Equal(842, generated + wrappers,
                 "The combined visible choice total changed.");
-            Assertions.Equal(828,
+            Assertions.Equal(842,
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.Monster) +
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.NaturesAlly),
                 "Per-parent census disagrees with the catalog totals.");
@@ -85,17 +85,14 @@ namespace KingmakerGunslinger.DomainTests
         }
 
         /// <summary>
-        /// Dire Bat is the one frozen registered-but-hidden identity. Recording
-        /// it keeps Sprint 9's unhide from looking like a new creature.
+        /// Sprint 9 publishes the preserved Dire Bat identity and leaves no
+        /// registered creature hidden.
         /// </summary>
         internal static void HiddenAndProxyCreaturesAreRecorded()
         {
-            Assertions.Equal(1,
+            Assertions.Equal(0,
                 ExpandedSummoningBaselineInventory.RegisteredButHiddenCreatures.Count,
                 "The registered-but-hidden creature set changed.");
-            Assertions.Equal("dire-bat",
-                ExpandedSummoningBaselineInventory.RegisteredButHiddenCreatures[0],
-                "Dire Bat is the only frozen suppressed identity.");
             Assertions.True(ExpandedSummoningBaselineInventory.ProxyVisualCreatures
                 .Contains("pteranodon<Roc"),
                 "Pteranodon must still be recorded as a Roc-policy visual proxy.");
@@ -146,7 +143,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(first.StartsWith(
                 "{\n  \"schema\": \"" + ExpandedSummoningBaselineInventory.BaselineSchema + "\""),
                 "The census must declare its schema first so evidence stays comparable.");
-            Assertions.True(first.Contains("\"totalVisibleChoices\": 828"),
+            Assertions.True(first.Contains("\"totalVisibleChoices\": 842"),
                 "The emitted census lost the frozen visible-choice total.");
         }
     }

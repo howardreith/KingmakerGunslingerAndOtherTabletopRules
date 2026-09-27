@@ -14,11 +14,12 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
   Class integration. The owner packet's expected `2943a02d` is its ancestor.
 - Branch head at intake: `2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a`;
   first pushed intake checkpoint: `359e346ecb6a094552f096869ecb9c81a2d291bf`.
-- Current Sprint 9 sub-item: Dire Bat blindsense and original Bat/Eagle
-  skinned visuals. Source/build-qualified; guarded cast and visual contracts
-  PASS. The original Bat icon is now source/export/consumer-qualified in a
-  92-icon package; the guarded cast scenario passes. Bat publication and final
-  player-path cleanup remain.
+- Current Sprint 9 sub-item: Dire Bat blindsense, original Bat/Eagle skinned
+  visuals and Bat icon. The 14 preserved Bat placements are now published:
+  all 813 generated roots and 29 native wrappers passed the guarded native
+  player path; the 18-parent inventory/menu/icon audit passed after an exact
+  Bat feature audit correction. Remaining Sprint 9 gates are explicit
+  motion/contact, both combat modes, save/load and module-disabled safety.
   No Phase 2 creature has been claimed complete.
 - HumanReview: NOT_PERFORMED_NONBLOCKING. Internal Phase 2 reviews: pending.
 - Blockers: none established. A difficult rig is not by itself a blocker.
@@ -88,11 +89,11 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
   Package SHA-256 `ac939b2bfe88c24cc2d20f1f4429d0b91701d6e6c4f08e0457a96d963e2c7af2`;
   DLL SHA-256 `a1a5021b6552fb77cce9ca77b3f8f81e6a143952e7d2962032db95b8e1a601ef`.
   These are source-qualified hashes; no game correctness claim follows.
-- A generated original Dire Bat icon source is temporarily held under ignored
-  `artifacts/phase2/dire-bat-icon-source.png` (SHA-256
-  `CC1B58F8802B5795198F37548786E84CA133F084C38CF9AB3167E17866607510`).
-  It is not integrated or published. Restore it to the approved source family
-  when the Bat is ready; do not mistake the bitmap for owner visual approval.
+- The original Dire Bat icon source is integrated at
+  `assets-source/original-icons/expanded-summoning/sources/dire-bat.png`
+  (SHA-256 `CC1B58F8802B5795198F37548786E84CA133F084C38CF9AB3167E17866607510`).
+  Its 128px export and 29 consumer symbols are in the 92-icon manifests.
+  Owner visual approval remains separate.
 
 ## Sprint 9 Dire Bat visual checkpoint, 2026-09-27
 
@@ -177,15 +178,41 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
   player-path run is **PASS with teardown fault**, not a clean qualification;
   retry after the Bat icon/publication change with a longer guarded lease.
 
+## Sprint 9 Bat publication checkpoint, 2026-09-27
+
+- Preserved identities: 14 Bat placements (seven each SM and SNA, tiers III-IX)
+  published with the original `dire-bat.png` icon. The catalog remains 81
+  project-owned units and 813 logical abilities; no new unit/ability GUIDs.
+- Repository validation, 1,922/1,922 domain tests, clean exact-reference
+  Release build and strict 256-file package PASS. Final local package SHA-256
+  `ad2e43bc0354acc25e7af8615000d02e94ed25ef1e80cde83aafba46f366c043`;
+  DLL SHA-256
+  `02374e67217b07e5cdd772e07e35bb457d734ccce1c658eb7e7123d55e4e151d`.
+- Guarded cast `20260927T0551063528146Z` PASS; player path
+  `20260927T0554347181180Z` PASS 813/813 generated roots and 29/29 native
+  wrappers. Their shared wrapper restoration record
+  `20260927T0608158839124Z` confirms the 136-file pre-run hash below.
+- The first inventory run `20260927T0612429996748Z` FAIL exposed stale
+  exact-fact and allowed-reference maps for the new Bat sense, while its menu
+  order/count/icon/placement checks passed. The exact audit correction then
+  passed all 48 inventory assertions in
+  `20260927T0623527812622Z-observe-expanded-summoning-inventory`, including
+  813 visible placements, distinct non-null project icons and zero prohibited
+  references. Wrapper restoration record `20260927T0627357893276Z` confirms
+  the live tree returned to
+  `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+- Publication is source and guarded-runtime qualified. Sprint 9 final
+  qualification and owner visual approval remain open.
+
 ## Standing boundaries and next action
 
 `OwnerAcceptedEngineLimitation: ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD`.
 Active holds and mouth occupancy return cleanly released on reload. Do not
 implement hold re-establishment or call this grapple persistence.
 
-Next: integrate the original Bat icon, unhide its preserved placements, then
-qualify Sprint 9 publication and player path.
-Do not unhide Dire Bat until its model, blindsense, icon, mechanics, and live
-qualification pass. Continue through A, B and C without an intermediate owner
+Next: finish Sprint 9 motion, impact, RTWP, turn-based, save/load and
+module-disabled gates, then advance to Sprint 10. The Bat's preserved placements
+are published only after its model, blindsense, icon and guarded live cast gate.
+Continue through A, B and C without an intermediate owner
 decision. Open three stacked PRs as the tranche gates pass. No merge, release,
 permanent deployment, or Sprint 22.

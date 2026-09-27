@@ -9,6 +9,39 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class ExpandedSummoningSprint9Tests
     {
+        internal static void DireBatPublishesOnlyItsPreservedPlacements()
+        {
+            SummonVariantSpec[] all = ExpandedSummoningCatalog
+                .GenerateVariants(SummonFamily.Monster).Concat(
+                    ExpandedSummoningCatalog.GenerateVariants(
+                        SummonFamily.NaturesAlly)).ToArray();
+            SummonVariantSpec[] bat = all.Where(value =>
+                value.Creature.Key == "dire-bat").ToArray();
+            Assertions.Equal(813, all.Length,
+                "Sprint 9 must not create or remove logical placements.");
+            Assertions.Equal(14, bat.Length,
+                "Dire Bat retains seven placements in each summon family.");
+            Assertions.True(all.All(SummonVisibilityCatalog.IsPublished),
+                "Only the preserved Dire Bat placements may change visibility.");
+            foreach (SummonFamily family in new[] {
+                SummonFamily.Monster, SummonFamily.NaturesAlly })
+            {
+                SummonVariantSpec[] familyBat = bat.Where(value =>
+                    value.Family == family).OrderBy(value => value.ParentTier)
+                    .ToArray();
+                Assertions.Equal("3|4|5|6|7|8|9",
+                    string.Join("|", familyBat.Select(value => value.ParentTier)),
+                    "Every published Bat tier must retain its old placement.");
+                Assertions.Equal(SummonMultiplicity.One,
+                    familyBat[0].Multiplicity, "Bat starts as one summon.");
+                Assertions.Equal(SummonMultiplicity.OneD3,
+                    familyBat[1].Multiplicity, "The next Bat tier uses 1d3.");
+                Assertions.True(familyBat.Skip(2).All(value =>
+                    value.Multiplicity == SummonMultiplicity.OneD4PlusOne),
+                    "Later Bat tiers use 1d4+1.");
+            }
+        }
+
         internal static void DireBatSenseHasASeparateBoundedIdentity()
         {
             var bat = ExpandedSummoningNaturalProfiles.For("dire-bat");
@@ -28,8 +61,10 @@ namespace KingmakerGunslinger.DomainTests
                 Environment.CurrentDirectory, "src", "KingmakerGunslinger",
                 "RuntimeTesting", "RuntimeTestRunner.cs"));
             Assertions.True(runner.Contains("expanded-summoning-dire-bat-blindsense") &&
-                runner.Contains("part.Reach(caster)"),
-                "The guarded scenario checks the live sense part and donor-sharing birds.");
+                runner.Contains("part.Reach(caster)") &&
+                runner.Contains("{ \"DireBatBlindsense\", \"5dcc039bc9674208a51e4babcd8a30ee\" }") &&
+                runner.Contains("\"KMG_Summoning_Natural_DireBat_Blindsense\""),
+                "Guarded cast and inventory audits must recognize only the Bat-owned sense fact.");
         }
 
         internal static void DireBatOriginalMeshAndPaintingAreBound()

@@ -74,12 +74,12 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(92,
                 ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count,
                 "Represented creatures must be 81 project-owned plus 11 native wrappers.");
-            Assertions.Equal(91,
+            Assertions.Equal(92,
                 ExpandedSummoningCoveragePolicy.PublishedSomewhere.Count,
-                "91 creatures are published somewhere; Dire Bat is registered only.");
-            Assertions.False(
+                "All represented creatures are published somewhere after Sprint 9.");
+            Assertions.True(
                 ExpandedSummoningCoveragePolicy.PublishedSomewhere.Contains("dire-bat"),
-                "Dire Bat must not count as published.");
+                "Dire Bat must count as published in both families.");
 
             int notRepresented = ExpandedSummoningIdealRosterCatalog.All.Count(
                 value => ExpandedSummoningCoveragePolicy.Provenance(value.Key) ==
@@ -209,11 +209,11 @@ namespace KingmakerGunslinger.DomainTests
                     "A wrapper lost its exact source ability GUID: " + wrapper.CreatureKey);
             }
 
-            // The visible surface is unchanged by a bookkeeping correction.
-            Assertions.Equal(828,
+            // Sprint 9 adds only the fourteen preserved Dire Bat choices.
+            Assertions.Equal(842,
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.Monster) +
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.NaturesAlly),
-                "Coverage derivation must not change the shipped visible surface.");
+                "The published visible surface must include the preserved Bat choices.");
         }
     }
 }
