@@ -1019,6 +1019,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    ObserveExpandedSummoningModuleBoundary)
+                {
+                    Complete(RunExpandedSummoningModuleBoundaryObservation());
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
                     ObserveUrbanBarbarianRageInventory)
                 {
                     Complete(UrbanBarbarianRageInventoryObserver.Run(

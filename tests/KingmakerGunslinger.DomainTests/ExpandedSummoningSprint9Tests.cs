@@ -35,6 +35,35 @@ namespace KingmakerGunslinger.DomainTests
                 "Eagle and Bat must fail the runtime review when measured travel is absent.");
         }
 
+        internal static void ModuleBoundaryObservationIsNarrowAndTyped()
+        {
+            string root = Environment.CurrentDirectory;
+            string runtime = Path.Combine(root, "src", "KingmakerGunslinger",
+                "RuntimeTesting");
+            string catalog = File.ReadAllText(Path.Combine(runtime,
+                "RuntimeTestScenarioCatalog.cs"));
+            string request = File.ReadAllText(Path.Combine(runtime,
+                "RuntimeTestRequest.cs"));
+            string boundary = File.ReadAllText(Path.Combine(runtime,
+                "RuntimeTestRunner.ExpandedSummoningBoundary.cs"));
+            string automation = File.ReadAllText(Path.Combine(root, "scripts",
+                "RuntimeAutomation.Common.ps1"));
+            string profile = File.ReadAllText(Path.Combine(root, "scripts",
+                "compatibility", "Invoke-KingmakerCompatibilityProfile.ps1"));
+            Assertions.True(catalog.Contains("ObserveExpandedSummoningModuleBoundary,") &&
+                request.Contains("expanded-summoning-module-boundary-parameters-invalid") &&
+                request.Contains("request.Parameters.Count != 1") &&
+                request.Contains("request.Parameters[\"expandedSummoning\"].Type != JTokenType.Boolean") &&
+                boundary.Contains("ObserveExpandedSummoningBoundary(expected)") &&
+                boundary.Contains("expectedReading == actualReading") &&
+                boundary.Contains("expanded-summoning-module-boundary") &&
+                !boundary.Contains("RunFeatureModuleSettingsObservation()") &&
+                automation.Contains("exactly one Boolean expandedSummoning parameter") &&
+                automation.Contains("[ordered]@{ expandedSummoning = [bool]$Parameters.expandedSummoning }") &&
+                profile.Contains("expandedSummoning = [bool]$Parameters.expandedSummoning"),
+                "The guarded read-only boundary must preserve an exact Boolean request and judge only the live summon publication surface.");
+        }
+
         internal static void FlyingCombatFixtureUsesOwnTierAndExactTarget()
         {
             foreach (var entry in new[] { new { Key = "eagle", Tier = 1 },

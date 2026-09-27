@@ -5,7 +5,7 @@ Bat icon and preserved-choice publication are source/build-qualified with
 guarded casts, player path and live inventory PASS. Open-floor Eagle/Bat travel
 and save/load/expiry are also guarded-runtime qualified. Quickened own-tier
 combat is qualified in RTWP and turn-based mode for both creatures.
-Doorway/contact and module-disabled gates remain. No Phase 2 creature is
+Doorway/contact and save-backed module-disabled gates remain. No Phase 2 creature is
 yet accepted or ready for owner review.
 
 The accepted baseline is `master` at `2ce70e4` (0.0.140), which advanced after
@@ -114,6 +114,15 @@ Dog; it was excluded, and the serializer now preserves an exact allowlisted
 hashes and restoration records. A Roc donor control also shows the same cyan
 wall-occlusion silhouette seen on Bat in the corridor. Visual attack-impact
 alignment and doorway behavior remain unqualified.
+
+The module-disabled publication boundary now has a narrow guarded Steam
+runtime PASS (`20260927T1046174341970Z`): all eighteen native parents have
+zero expanded placements and options while retaining 46 native variants.
+The compatibility transaction restored the original module settings and live
+mod tree. The earlier broad settings result was overall FAIL on unrelated
+Brown Fur and teleportation-scroll checks and is not counted as a pass.
+Loading an existing Eagle/Bat summon with Expanded Summoning off remains an
+open safety check; doorway traversal and attack-impact alignment also remain.
 
 Draft tranche PR #25 tracks Phase 2A. All Sprints 10-21 remain planned. Human visual and
 gameplay review has not been performed and remains nonblocking for internal

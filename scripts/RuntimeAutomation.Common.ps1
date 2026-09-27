@@ -593,6 +593,12 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
         UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
     }
+    'observe-expanded-summoning-module-boundary' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
     'observe-urban-barbarian-rage-inventory' = [pscustomobject]@{
         RequiresSaveName = $false; PermittedSaveName = $null
         RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
@@ -2102,6 +2108,13 @@ function Assert-KmgRuntimeScenarioPreflight {
             throw "$Scenario requires exact Boolean gunslinger, acadamaeGraduate, shieldOther, expandedSummoning, elvenBranchedSpears, easternWeapons, brownFurTransmuter, urbanBarbarian, bodyguardFeats, protectionFromAlignmentControlImmunity, elementalRaces, teleportationSpells, and magicCircleSpells parameters."
         }
     }
+    elseif ($Scenario -ceq 'observe-expanded-summoning-module-boundary') {
+        if ($Parameters.Count -ne 1 -or
+            -not $Parameters.ContainsKey('expandedSummoning') -or
+            $Parameters.expandedSummoning -isnot [bool]) {
+            throw "$Scenario requires exactly one Boolean expandedSummoning parameter."
+        }
+    }
     elseif ($Scenario -ceq 'observe-kmg-compatibility-asset-attribution') {
         $allowedConfigurations = @('all-suppressed', 'firearms-only',
             'spears-only', 'eastern-only', 'all-enabled')
@@ -2286,6 +2299,8 @@ function New-KmgRuntimeRequest {
                 teleportationSpells = [bool]$Parameters.teleportationSpells
                 magicCircleSpells = [bool]$Parameters.magicCircleSpells
             }
+        } elseif ($Scenario -ceq 'observe-expanded-summoning-module-boundary') {
+            [ordered]@{ expandedSummoning = [bool]$Parameters.expandedSummoning }
         } elseif ($Scenario -ceq
             'observe-kmg-compatibility-asset-attribution') {
             [ordered]@{
