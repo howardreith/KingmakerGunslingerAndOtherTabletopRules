@@ -139,9 +139,10 @@ namespace KingmakerGunslinger.DomainTests
                     ExpandedSummoningSprint7Tests.AppendedLedgerIdentities +
                     (ExpandedSummoningSprint8Tests.AppendedLedgerIdentities + ExpandedSummoningCorrectionTests.AppendedLedgerIdentities) +
                     KingmakerGunslinger.FavoredClass.FavoredClassIdentityCatalog.IdentityCount +
-                    KingmakerGunslinger.ElementalRaces.ElementalMostlyHumanPolicy.IdentityCount + 1,
+                    KingmakerGunslinger.ElementalRaces.ElementalMostlyHumanPolicy.IdentityCount + 1 +
+                    ExpandedSummoningSprint10Tests.AppendedLedgerIdentities,
                 entries.Length,
-                "Manifest preserves accepted blocks and adds one Phase 2 Dire Bat sense feature.");
+                "Manifest preserves accepted blocks and appends only approved Phase 2 identities.");
             string prefix = string.Concat(entries.Take(PreservedManifestEntries)
                 .Select(value => string.Join("|", new[] {
                     (string)value["symbol"], (string)value["guid"],

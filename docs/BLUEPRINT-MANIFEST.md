@@ -472,3 +472,8 @@ register on every load in a contained registry, independently of the host and
 of the publication profile, so saved investments always resolve. The exact
 ordered list is enforced by `tools/validate_favored_class140.py` and
 `FavoredClassIdentityCatalog`.
+
+Expanded Summoning Phase 2 Sprint 10 appends 26 Giant Wasp identities after
+the accepted 0.0.140 ledger: 2487 stable identifiers: 2485 active and 2 reserved.
+Existing GUIDs are unchanged, and all new Wasp placements are
+registered but withheld from menus until their signature mechanics pass.

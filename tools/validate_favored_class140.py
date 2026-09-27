@@ -9,6 +9,7 @@ observed.
 """
 from __future__ import annotations
 import argparse
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -21,7 +22,7 @@ VERSION = "0.0.140"
 INFORMATIONAL_VERSION = "0.0.140-favored-class-integration"
 PACKAGE = "KingmakerGunslinger-0.0.140-local-runtime.zip"
 PACKAGE_SUFFIX = "favored-class-integration"
-DETERMINISTIC_TEST_COUNT = 1929
+DETERMINISTIC_TEST_COUNT = 1932
 STATIC_KEY = "favoredClassIntegration140"
 
 # Exact ordered (symbol, guid) pairs this candidate appends after the
@@ -255,9 +256,19 @@ def validate(root: Path) -> None:
     # Favored-class misfire reductions (G01/G18) made the scatter all-roll
     # aggregate use the effective threshold that decided each native roll.
     validate_sprint32.SCATTER_MISFIRE_AGGREGATE_TOKEN = "IsMisfire(misfireThreshold)"
+    entries = json.loads((root / "blueprints/blueprints.json").read_text(
+        encoding="utf-8"))["entries"]
+    wasp = entries[2461:2487]
+    wasp_pinned = [(entry["symbol"], entry["guid"],
+                    entry["plannedType"], entry["status"]) for entry in wasp]
+    wasp_hash = hashlib.sha256(json.dumps(wasp_pinned,
+        separators=(",", ":")).encode()).hexdigest()
+    if len(entries) != 2487 or len(wasp) != 26 or wasp_hash != (
+            "8a9dac72a9e83675765d8fc850901f76976bf6191418c6cf7f1c4ff6af261ef3"):
+        raise AssertionError("Expanded Summoning Phase 2 Wasp append drifted")
     baseline.AUTHORIZED_APPENDED_AFTER = APPENDED + (
         ("KMG.Summoning.Natural.DireBat.Blindsense", "5dcc039bc9674208a51e4babcd8a30ee"),
-    )
+    ) + tuple((entry["symbol"], entry["guid"]) for entry in wasp)
     # Chains through the 0.0.139 release, which hands these to its baseline.
     release139.VERSION = VERSION
     release139.INFORMATIONAL_VERSION = INFORMATIONAL_VERSION

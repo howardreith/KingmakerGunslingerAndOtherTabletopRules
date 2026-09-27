@@ -27,10 +27,11 @@ namespace KingmakerGunslinger.DomainTests
         /// </summary>
         internal const int AppendedLedgerIdentities = 24;
         // The Favored Class and Mostly Human blocks (0.0.140), then the
-        // Dire Bat sense feature (Phase 2), follow the Phase 1 appends.
+        // Dire Bat sense and the suppressed Wasp identities follow Phase 1.
         internal static readonly int LaterLedgerIdentities =
             KingmakerGunslinger.FavoredClass.FavoredClassIdentityCatalog.IdentityCount +
-            KingmakerGunslinger.ElementalRaces.ElementalMostlyHumanPolicy.IdentityCount + 1;
+            KingmakerGunslinger.ElementalRaces.ElementalMostlyHumanPolicy.IdentityCount + 1 +
+            ExpandedSummoningSprint10Tests.AppendedLedgerIdentities;
 
         private static readonly string[] AppendedSymbols = {
             "KMG.Summoning.Special.Grapple.MultiHold", "KMG.Summoning.Special.Grapple.MultiHeld",
