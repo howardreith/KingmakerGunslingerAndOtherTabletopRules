@@ -369,3 +369,14 @@ I read Paizo's legacy Pathfinder 1e Stirge and Giant Wasp entries, recorded
 their exact signature baselines and URLs in the blocker history, and removed
 the source-access stop. This does not itself qualify either creature; next
 is implementation and guarded runtime evidence.
+
+I ran a second guarded donor audit (`20260927T1629242113136Z`) to inspect
+insect-style rig names and the actual native poison buff fields. No flying
+insect unit appeared; the six name matches were Giant Flytrap variants.
+The Spider poison buff is a configurable native poison cadence, but its
+unmodified Strength/1d6/two-save contract is wrong for Wasp. All 1,929
+domain cases, repository validation, clean Release and strict package
+checks passed; the wrapper restored the exact live tree
+(`20260927T1631336749721Z`). The next implementation path is an original
+wasp visual on a bounded flying rig and a Wasp-only poison graph whose
+initial and subsequent DC, damage, duration and cure are proven live.

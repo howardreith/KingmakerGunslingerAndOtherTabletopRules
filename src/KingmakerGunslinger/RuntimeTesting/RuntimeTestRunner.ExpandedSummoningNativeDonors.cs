@@ -41,7 +41,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "shambl", "flytrap", "worm", "mephit", "tiger", "smilodon",
             "leopard", "cheetah", "bear", "monitor", "lizard", "spider",
             "pixie", "nixie", "mound", "giant", "wasp", "stirge",
-            "mosquito"
+            "mosquito", "fly", "beetle", "mantis", "insect",
+            "vargouille"
         };
 
         private static readonly string[] NativeDonorFactTerms =
@@ -342,6 +343,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             "bb72a758112438e4a9c62f7637c974ae", // WebBuffSlowMovement
             "3051e7002c803fc47a11bcfa381b9fbd", // SpiderWebImmunity
             "094714bb08f4e1943a8e9d2384ebe573", // GiantSpiderPoisonFeature
+            "56ec8788092b6314e8f3c1c502e8433f", // GiantSpiderPoisonBuff, candidate graph for Wasp poison
             "ef60cd888b834a549898824e6b684918", // HuntingSpiderPoisonFeature
             "d88236a83413baa45ae9c8e5ddce5a6c", // MonitorLizardPoisonFeature
             "5e0cd801bac0e95429bb7e4d1bc61a23", // Sleeping
