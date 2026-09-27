@@ -133,6 +133,30 @@ namespace KingmakerGunslinger.DomainTests
                 "Prepublication review cannot make Wasp a player-visible choice.");
         }
 
+        internal static void WaspQuantityCoverageRemainsPrivate()
+        {
+            SummonVariantSpec[] crowd = new[] { SummonFamily.Monster,
+                    SummonFamily.NaturesAlly }
+                .SelectMany(ExpandedSummoningCatalog.GenerateVariants)
+                .Where(value => value.Creature.Key == "giant-wasp" &&
+                    value.Multiplicity != SummonMultiplicity.One)
+                .GroupBy(value => new { value.Family, value.Multiplicity })
+                .Select(group => group.OrderBy(value => value.ParentTier).First())
+                .ToArray();
+            Assertions.Equal(4, crowd.Length,
+                "Both Wasp families must offer 1d3 and 1d4+1 for the guarded quantity fixture.");
+            Assertions.True(crowd.All(value =>
+                    !SummonVisibilityCatalog.IsPublished(value)),
+                "Mechanical quantity casts cannot publish a Wasp menu choice.");
+            string runtime = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestRunner.cs"));
+            Assertions.True(runtime.Contains("expanded-summoning-giant-wasp-quantity") &&
+                runtime.Contains(".Concat(waspCrowd).ToArray()") &&
+                runtime.Contains("waspCrowdLegal == 4"),
+                "The guarded cast loop must exercise all four private Wasp quantity variants.");
+        }
+
         internal static void GiantWaspOriginalVisualUsesAuditedInstanceBinding()
         {
             string root = Environment.CurrentDirectory;

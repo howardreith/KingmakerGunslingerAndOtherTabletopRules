@@ -461,3 +461,15 @@ The recorded attack is only an animation handle, not a real strike, so
 contact/cadence and clipping remain open. All Wasp placements are still
 suppressed. Repository validation, 1,934 domain tests, clean Release and
 strict package checks passed; the wrapper restored the original live tree.
+
+## Sprint 10: Wasp private quantity casts, 2026-09-27
+
+I added both quantity modes in both families to the guarded mechanical
+cast loop while the Wasp remains hidden from the player menu. The final
+`20260927T2015561300256Z` run passed 22/22 assertions and 183/183 native
+commands. Four Wasp crowd commands produced legal exact-kind counts, and
+all 14 Wasp units had their private original visual. The loop's existing
+per-cast snapshot restored after each command; the wrapper then restored
+the original 136-file installation exactly. Repository validation,
+1,935 domain tests, clean Release and strict package checks passed.
+Mind-affecting immunity, real strike cadence/contact, and Stirge remain.

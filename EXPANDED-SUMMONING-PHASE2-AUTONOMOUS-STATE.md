@@ -705,3 +705,21 @@ DLL SHA-256:
 `7C21C3FC8A31E2D078FF56DC2E3873D989326626767471DE5A641D71256F5BEA`.
 Wasp remains suppressed. Next: real target-contact and cadence fixture,
 immunities and quantity/lifecycle checks, then Stirge.
+
+## Sprint 10 Wasp quantity checkpoint, 2026-09-27
+
+The disposable mechanical fixture now exercises 1d3 and 1d4+1 Wasp casts
+in both SM and SNA under suppression, in addition to all own-tier singles.
+The final guarded run `20260927T2015561300256Z` passed 22/22 assertions:
+183/183 native commands, all four Wasp quantity variants with legal counts
+and exact Wasp blueprint identity, 14/14 private visual attachments and
+exact per-cast cleanup. The original 136-file installation was restored at
+SHA-256 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`;
+record `20260927T2019330163598Z-disposable-expanded-summoning.json`.
+Repository validation, 1,935/1,935 domain cases, clean Release and strict
+package validation passed. Package SHA-256:
+`E30157BF6100441F6D0278B14FCB89F28292AF26C7A935BD71DB982581124BB4`;
+DLL SHA-256:
+`A9E03627FDFEDD4562C88257C4842CCDFE0D99252D1D705FB592DC68D40DDD33`.
+Wasp remains suppressed. Next: prove vermin mind-affecting immunity,
+real strike cadence/contact and safe lifecycle, then Stirge.
