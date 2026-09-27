@@ -148,6 +148,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 renderers.EndsWith(";renderers=1", StringComparison.Ordinal);
         }
 
+        private static bool IsUsableDisabledSummonDonor(string renderers)
+        {
+            return IsDonorUntouched(renderers) &&
+                !renderers.StartsWith("mesh=<none>;", StringComparison.Ordinal) &&
+                renderers.IndexOf(";material=<none>;", StringComparison.Ordinal) < 0 &&
+                renderers.IndexOf(";enabled=true;", StringComparison.Ordinal) >= 0;
+        }
+
         /// <summary>
         /// The presentation contract of the attached visual on the donor's own
         /// component: the attached outcome and state, every one of the 46

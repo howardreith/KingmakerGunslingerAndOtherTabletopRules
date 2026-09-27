@@ -51,6 +51,27 @@ function Assert-Equal {
     $script:Passed++
 }
 
+$enabledSettings = '{"schemaVersion":10,"expanded-summoning":true,"gunslinger":true}'
+$disabledBytes = ConvertTo-KmgDisabledExpandedSummoningSettingsBytes `
+    -OriginalBytes ([Text.Encoding]::UTF8.GetBytes($enabledSettings))
+Assert-Equal '{"schemaVersion":10,"expanded-summoning":false,"gunslinger":true}' `
+    ([Text.Encoding]::UTF8.GetString($disabledBytes)) `
+    'module-off staging changes only the one explicit JSON Boolean'
+foreach ($invalidSettings in @(
+    '{"schemaVersion":10,"gunslinger":true}',
+    '{"schemaVersion":10,"expanded-summoning":false}',
+    '{"schemaVersion":10,"expanded-summoning":"true"}',
+    '{"expanded-summoning":true,"expanded-summoning":true}')) {
+    $rejected = $false
+    try {
+        ConvertTo-KmgDisabledExpandedSummoningSettingsBytes `
+            -OriginalBytes ([Text.Encoding]::UTF8.GetBytes($invalidSettings)) |
+            Out-Null
+    }
+    catch { $rejected = $true }
+    Assert-True $rejected 'module-off staging rejects absent, disabled, mistyped or duplicate settings'
+}
+
 $scenario = 'disposable-expanded-summoning'
 $started = [DateTime]::SpecifyKind(
     [DateTime]::ParseExact('20260923T163838', 'yyyyMMddTHHmmss',

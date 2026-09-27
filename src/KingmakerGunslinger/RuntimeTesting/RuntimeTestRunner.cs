@@ -3832,10 +3832,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ";" + DescribePteranodonRenderers(value.View)).ToArray());
                 _expandedSummoningPersistencePteranodonVisualValid = prepare || verifyCleanup
                     ? pteranodons.Length == 1 && pteranodons.All(value =>
-                        value.View != null && ExpandedSummoningPteranodonViewPatch
-                            .DescribeView(value.View).StartsWith("visual:attached;",
-                                StringComparison.Ordinal) &&
-                        IsPteranodonAttached(DescribePteranodonRenderers(value.View)))
+                        value.View != null && (active ?
+                            ExpandedSummoningPteranodonViewPatch
+                                .DescribeView(value.View).StartsWith("visual:attached;",
+                                    StringComparison.Ordinal) &&
+                            IsPteranodonAttached(DescribePteranodonRenderers(value.View)) :
+                            ExpandedSummoningPteranodonViewPatch
+                                .DescribeView(value.View) ==
+                                    "donor-visual:module-disabled" &&
+                            IsUsableDisabledSummonDonor(
+                                DescribePteranodonRenderers(value.View))))
                     : pteranodons.Length == 0;
                 string eagleName = "KMG_Summoning_Unit_Eagle";
                 string batName = "KMG_Summoning_Unit_DireBat";
@@ -3847,6 +3853,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     : string.Join("|", flying.Select(value => value.Blueprint.name +
                         ";view=" + (value.View != null &&
                             ReferenceEquals(value.View.Data, value)) +
+                        ";visual=" + (value.View == null ? "no-view" :
+                            ExpandedSummoningPteranodonViewPatch.DescribeView(value.View)) +
                         ";renderer=" + (value.View == null ? "no-view" :
                             DescribePteranodonRenderers(value.View))).ToArray());
                 _expandedSummoningPersistenceFlyingVisualValid = prepare ||
@@ -3855,10 +3863,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                         flying.Count(value => value.Blueprint.name == batName) == 1 &&
                         flying.All(value => value.View != null &&
                             ReferenceEquals(value.View.Data, value) &&
-                            (value.Blueprint.name == eagleName
+                            (active ? (value.Blueprint.name == eagleName
                                 ? IsEagleAttached(
                                     DescribePteranodonRenderers(value.View))
                                 : IsDireBatAttached(
+                                    DescribePteranodonRenderers(value.View))) :
+                                ExpandedSummoningPteranodonViewPatch
+                                    .DescribeView(value.View) ==
+                                        "donor-visual:module-disabled" &&
+                                IsUsableDisabledSummonDonor(
                                     DescribePteranodonRenderers(value.View))))
                     : flying.Length == 0;
             }
@@ -4368,19 +4381,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _expandedSummoningPersistencePublicationValid,
                     "required base parents with always-registered identities"),
                 Assertion("expanded-summoning-persistent-pteranodon-visual",
-                    writes ? "one Pteranodon whose view carries the original mesh and albedo on the donor's renderer" +
-                        (verifyCleanup ? ", re-attached on the freshly deserialized unit" : "")
+                    writes ? (_context.FeatureModules.Active.ExpandedSummoning ?
+                        "one Pteranodon whose view carries the original mesh and albedo on the donor's renderer" +
+                            (verifyCleanup ? ", re-attached on the freshly deserialized unit" : "") :
+                        "one freshly deserialized Pteranodon with a visible native donor renderer and no project-owned visual")
                         : "no Pteranodon after cleanup",
                     _expandedSummoningPersistencePteranodonVisual,
                     _expandedSummoningPersistencePteranodonVisualValid,
                     "ExpandedSummoningPteranodonViewPatch.DescribeView and the renderer state on the persistent unit"),
                 Assertion("expanded-summoning-persistent-eagle-bat-visuals",
-                    writes ? "one Eagle and one Dire Bat with their own skinned mesh/material on attached views" +
-                        (verifyCleanup ? ", reattached after loading the working save" : "")
+                    writes ? (_context.FeatureModules.Active.ExpandedSummoning ?
+                        "one Eagle and one Dire Bat with their own skinned mesh/material on attached views" +
+                            (verifyCleanup ? ", reattached after loading the working save" : "") :
+                        "one freshly deserialized Eagle and Dire Bat each with a visible native donor renderer and no project-owned visual")
                         : "no Eagle or Dire Bat after cleanup",
                     _expandedSummoningPersistenceFlyingVisual,
                     _expandedSummoningPersistenceFlyingVisualValid,
-                    "exact unit identities, attached view.Data, and original renderer mesh/material after native save/load"),
+                    "exact unit identities, attached view.Data, and module-appropriate renderer state after native save/load"),
                 Assertion("expanded-summoning-pteranodon-motion-review",
                     writes ? "four party-camera renders of the " + (prepare ? "freshly cast" : "freshly deserialized") +
                         " Pteranodon - idle, moving twice, attacking - each with the creature in frame"

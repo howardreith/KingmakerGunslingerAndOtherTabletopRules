@@ -64,6 +64,29 @@ namespace KingmakerGunslinger.DomainTests
                 "The guarded read-only boundary must preserve an exact Boolean request and judge only the live summon publication surface.");
         }
 
+        internal static void ModuleOffPersistenceRequiresUsableDonorViews()
+        {
+            string root = Path.Combine(Environment.CurrentDirectory, "src",
+                "KingmakerGunslinger", "RuntimeTesting");
+            string runner = File.ReadAllText(Path.Combine(root,
+                "RuntimeTestRunner.cs"));
+            string views = File.ReadAllText(Path.Combine(root,
+                "RuntimeTestRunner.PteranodonAttachedView.cs"));
+            string assets = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
+                "src", "KingmakerGunslinger", "Assets",
+                "PteranodonAssetRuntime.cs"));
+            Assertions.True(assets.Contains("donor-visual:module-disabled") &&
+                runner.Contains("IsUsableDisabledSummonDonor(") &&
+                runner.Contains("_expandedSummoningPersistencePteranodonVisualValid = prepare || verifyCleanup") &&
+                runner.Contains("_expandedSummoningPersistenceFlyingVisualValid = prepare ||") &&
+                runner.Contains("DescribeView(value.View) ==") &&
+                views.Contains("IsDonorUntouched(renderers)") &&
+                views.Contains(";enabled=true;") &&
+                views.Contains(";material=<none>;") &&
+                views.Contains("mesh=<none>;"),
+                "A disabled fresh load must retain usable native donor bodies for all three saved flyers while their custom assets stay off.");
+        }
+
         internal static void FlyingCombatFixtureUsesOwnTierAndExactTarget()
         {
             foreach (var entry in new[] { new { Key = "eagle", Tier = 1 },
