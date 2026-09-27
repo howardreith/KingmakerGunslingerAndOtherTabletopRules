@@ -45,3 +45,10 @@ Bodyguard, Better Vendors, and Phase 1 ledger tests were updated to preserve
 their accepted blocks while allowing exactly this appended Phase 2 identity.
 The icon catalog registry hash was advanced for the single append. A generated
 original Bat icon remains unintegrated under ignored local artifacts.
+
+The clean-tree candidate `b32c00f0` was pushed and run through the guarded
+Steam disposable summoning scenario. The game reported PASS for 177/177 casts
+and the new Dire Bat sense assertion (`2/2` Bat units, `13/13` bird controls).
+The wrapper restored the same 136-file live tree hash it snapshotted. Exact
+runtime IDs and hashes are in the state file. The sense checkpoint is closed;
+Sprint 9 remains open for models, icon, publication, and full player paths.
