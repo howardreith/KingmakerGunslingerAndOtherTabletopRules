@@ -17167,6 +17167,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                             _pteranodonWithdrawal = null;
                         }
                     }
+                    else if (variant.Creature.Key == "dire-bat")
+                    {
+                        foreach (UnitEntityData unit in spawned)
+                        {
+                            if (unit == null || unit.View == null) continue;
+                            _direBatVisualChecked++;
+                            string outcome = ExpandedSummoningPteranodonViewPatch
+                                .DescribeView(unit.View);
+                            string renderers = DescribePteranodonRenderers(unit.View);
+                            if (outcome.StartsWith("visual:attached;",
+                                    StringComparison.Ordinal) &&
+                                IsDireBatAttached(renderers))
+                                _direBatVisualAttached++;
+                            else _direBatVisualDetail.Add(outcome + ":" + renderers);
+                        }
+                    }
                     else if (PteranodonDonorSharers.Contains(variant.Creature.Key))
                     {
                         // Isolation: the creatures that share the GiantEagle
@@ -17393,13 +17409,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                     pteranodonAttachedCount > 0 && pteranodonAttachedClean,
                     "ExpandedSummoningPteranodonViewPatch.DescribeView plus the live renderer states on each spawned unit's view"),
                 Assertion("expanded-summoning-pteranodon-donor-isolation",
-                    "eagle, dire bat and roc keep the donor visual: not-attempted, the eagle's own mesh and material on the 72-bone rig",
+                    "eagle and roc keep the donor visual: not-attempted, the eagle's own mesh and material on the 72-bone rig",
                     "checked=" + _donorIsolationChecked + ";clean=" + _donorIsolationClean +
                         (_donorIsolationDetail.Count == 0 ? string.Empty :
                             ";detail=" + string.Join("|", _donorIsolationDetail.ToArray())),
                     _donorIsolationChecked > 0 &&
                         _donorIsolationClean == _donorIsolationChecked,
-                    "the same GiantEagle donor prefab, observed on every unit of the three sharing creatures"),
+                    "the same GiantEagle donor prefab, observed on every Eagle and Roc unit"),
+                Assertion("expanded-summoning-dire-bat-visual-attached",
+                    "each live Dire Bat carries its original skinned mesh and painting on a private material and the donor's renderer",
+                    "checked=" + _direBatVisualChecked + ";attached=" +
+                        _direBatVisualAttached + (_direBatVisualDetail.Count == 0 ?
+                            string.Empty : ";detail=" + string.Join("|",
+                                _direBatVisualDetail.ToArray())),
+                    _direBatVisualChecked >= 2 &&
+                        _direBatVisualAttached == _direBatVisualChecked,
+                    "guarded UnitUseAbility spawns and live renderer state"),
                 Assertion("expanded-summoning-pteranodon-crowding",
                     "a multi-unit Pteranodon cast attaches the visual to every unit at once",
                     "maxSimultaneous=" + _pteranodonCrowdMax + ";casts=" +
@@ -17417,7 +17442,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _pteranodonCastsSeen >= 4 &&
                         _pteranodonVisualOutcomes.Count >= _pteranodonCastsSeen &&
                         ExpandedSummoningPteranodonViewPatch.ObservedOutcomes.Count -
-                            patchOutcomesBefore == _pteranodonVisualOutcomes.Count &&
+                            patchOutcomesBefore == _pteranodonVisualOutcomes.Count +
+                                _direBatVisualChecked &&
                         pteranodonAttachedClean,
                     "one patch outcome per attached view; per-cast cleanup is enforced by the cast loop itself"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,

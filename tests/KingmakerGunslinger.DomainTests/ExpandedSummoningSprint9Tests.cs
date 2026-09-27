@@ -1,7 +1,9 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using KingmakerGunslinger.Summoning;
+using Newtonsoft.Json.Linq;
 
 namespace KingmakerGunslinger.DomainTests
 {
@@ -28,6 +30,66 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(runner.Contains("expanded-summoning-dire-bat-blindsense") &&
                 runner.Contains("part.Reach(caster)"),
                 "The guarded scenario checks the live sense part and donor-sharing birds.");
+        }
+
+        internal static void DireBatOriginalMeshAndPaintingAreBound()
+        {
+            string root = Environment.CurrentDirectory;
+            string directory = Path.Combine(root, "assets", "flying-animals");
+            string meshPath = Path.Combine(directory, "dire-bat-mesh.json");
+            Assertions.True(File.Exists(meshPath),
+                "The bat's original skinned mesh must ship beside its albedo.");
+            JObject document = JObject.Parse(File.ReadAllText(meshPath));
+            Assertions.Equal(2, (int)document["schemaVersion"],
+                "The shared skinned-mesh runtime accepts schema 2.");
+            Assertions.True(((string)document["space"]).Contains("donor renderer local"),
+                "The bat is authored in the measured donor bind frame.");
+            JArray bones = (JArray)document["bones"];
+            Assertions.Equal(46, bones.Count, "Bat weights use the audited flying rig.");
+            Assertions.Equal(46, bones.Select(value => (string)value)
+                .Distinct(StringComparer.Ordinal).Count(), "No ambiguous bat bones.");
+            int vertices = (int)document["vertexCount"];
+            int triangles = (int)document["triangleCount"];
+            Assertions.True(vertices > 1000 && triangles > 1000,
+                "The bat has a skinned body, fingers and two-sided membranes.");
+            byte[] bytes = Convert.FromBase64String((string)document["data"]);
+            int expected = vertices * (12 + 12 + 8 + 4 * 8) + triangles * 3 * 4;
+            Assertions.Equal(expected, bytes.Length,
+                "The mesh payload exactly matches its declared vertex/triangle counts.");
+            int weightOffset = vertices * (12 + 12 + 8) + triangles * 3 * 4;
+            for (int vertex = 0; vertex < vertices; vertex++)
+            {
+                double total = 0;
+                for (int slot = 0; slot < 4; slot++)
+                {
+                    int offset = weightOffset + vertex * 32 + slot * 8;
+                    int bone = BitConverter.ToInt32(bytes, offset);
+                    float weight = BitConverter.ToSingle(bytes, offset + 4);
+                    Assertions.True(!float.IsNaN(weight) && weight >= 0f &&
+                        (weight == 0f || bone >= 0 && bone < bones.Count),
+                        "Bat vertex " + vertex + " has a valid bone weight.");
+                    total += weight;
+                }
+                Assertions.True(Math.Abs(total - 1.0) < 0.001,
+                    "Bat vertex " + vertex + " weights sum to one.");
+            }
+            JObject albedo = (JObject)document["albedo"];
+            Assertions.Equal("dire-bat-albedo.png", (string)albedo["file"],
+                "The mesh names only the adjacent original painting.");
+            string pngPath = Path.Combine(directory, (string)albedo["file"]);
+            Assertions.True(File.Exists(pngPath), "The bat painting must ship.");
+            using (var sha = SHA256.Create())
+            {
+                string actual = string.Concat(sha.ComputeHash(File.ReadAllBytes(pngPath))
+                    .Select(value => value.ToString("x2")));
+                Assertions.Equal((string)albedo["sha256"], actual,
+                    "The bat mesh is bound to the exact painted bytes.");
+            }
+            Assertions.True(File.Exists(Path.Combine(root, "assets-source",
+                "original-models", "flying-animals", "generate_dire_bat.py")) &&
+                File.Exists(Path.Combine(root, "assets-source", "original-models",
+                    "flying-animals", "paint_dire_bat_albedo.py")),
+                "Editable original mesh and painting generators are retained.");
         }
     }
 }

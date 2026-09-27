@@ -56,6 +56,8 @@ namespace KingmakerGunslinger.Assets
     {
         internal const string MeshDataRelativePath =
             "assets/pteranodon/pteranodon-mesh.json";
+        internal const string DireBatMeshDataRelativePath =
+            "assets/flying-animals/dire-bat-mesh.json";
         internal const int SupportedSchemaVersion = 2;
 
         /// <summary>
@@ -102,6 +104,10 @@ namespace KingmakerGunslinger.Assets
         private static string[] _boneNames;
         private static Texture2D _albedo;
         private static string _status = "donor-visual:not-configured";
+        private static Mesh _direBatMesh;
+        private static string[] _direBatBoneNames;
+        private static Texture2D _direBatAlbedo;
+        private static string _direBatStatus = "donor-visual:not-configured";
 
         internal static string Status { get { lock (Sync) return _status; } }
 
@@ -136,6 +142,23 @@ namespace KingmakerGunslinger.Assets
             {
                 albedo = _albedo;
                 return albedo != null;
+            }
+        }
+
+        internal static string DireBatStatus
+        { get { lock (Sync) return _direBatStatus; } }
+
+        /// <summary>The Bat uses the same audited rig, parser and binding path.</summary>
+        internal static bool TryGetDireBatVisual(out Mesh mesh,
+            out string[] boneNames, out Texture2D albedo)
+        {
+            lock (Sync)
+            {
+                mesh = _direBatMesh;
+                boneNames = _direBatBoneNames == null ? null :
+                    (string[])_direBatBoneNames.Clone();
+                albedo = _direBatAlbedo;
+                return mesh != null && boneNames != null && albedo != null;
             }
         }
 
@@ -190,6 +213,12 @@ namespace KingmakerGunslinger.Assets
         }
 
         internal static void Configure(ModContext context)
+        {
+            ConfigurePteranodon(context);
+            ConfigureDireBat(context);
+        }
+
+        private static void ConfigurePteranodon(ModContext context)
         {
             if (context == null) throw new ArgumentNullException("context");
             if (!context.FeatureModules.Active.ExpandedSummoning)
@@ -273,6 +302,73 @@ namespace KingmakerGunslinger.Assets
                 }
                 context.Logger.Warning("pteranodon", "mesh.rejected",
                     "The Pteranodon mesh data was rejected; the donor visual remains active: " +
+                    error.Message);
+            }
+        }
+
+        private static void ConfigureDireBat(ModContext context)
+        {
+            if (context == null) throw new ArgumentNullException("context");
+            if (!context.FeatureModules.Active.ExpandedSummoning)
+            {
+                lock (Sync) _direBatStatus = "donor-visual:module-disabled";
+                return;
+            }
+            lock (Sync)
+            {
+                if (_direBatMesh != null && _direBatBoneNames != null &&
+                    _direBatAlbedo != null) return;
+            }
+            string path = Path.Combine(context.ModEntry.Path,
+                DireBatMeshDataRelativePath.Replace('/', Path.DirectorySeparatorChar));
+            if (!File.Exists(path))
+            {
+                lock (Sync) _direBatStatus = "donor-visual:mesh-data-missing";
+                context.Logger.Warning("dire-bat", "mesh.missing",
+                    "The original Bat visual is unavailable; the donor remains active: " + path);
+                return;
+            }
+            Mesh mesh = null;
+            Texture2D albedo = null;
+            try
+            {
+                string[] names;
+                AlbedoRequirement requirement;
+                mesh = BuildMesh(File.ReadAllText(path), out names,
+                    out requirement);
+                string reason;
+                albedo = LoadAlbedo(Path.GetDirectoryName(path), requirement,
+                    out reason);
+                if (albedo == null)
+                    throw new InvalidDataException("albedo:" + reason);
+                mesh.name = "KMG_DireBat";
+                albedo.name = "KMG_DireBat_Albedo";
+                lock (Sync)
+                {
+                    _direBatMesh = mesh;
+                    _direBatBoneNames = names;
+                    _direBatAlbedo = albedo;
+                    _direBatStatus = "visual:published";
+                }
+                context.Logger.Info("dire-bat", "mesh.published",
+                    "Validated original Bat mesh: vertices=" + mesh.vertexCount +
+                    ";triangles=" + mesh.triangles.Length / 3 +
+                    ";bones=" + names.Length + ";albedo=" +
+                    albedo.width + "x" + albedo.height);
+            }
+            catch (Exception error)
+            {
+                if (mesh != null) UnityEngine.Object.Destroy(mesh);
+                if (albedo != null) UnityEngine.Object.Destroy(albedo);
+                lock (Sync)
+                {
+                    _direBatMesh = null;
+                    _direBatBoneNames = null;
+                    _direBatAlbedo = null;
+                    _direBatStatus = "donor-visual:invalid-mesh-data";
+                }
+                context.Logger.Warning("dire-bat", "mesh.rejected",
+                    "The original Bat visual was rejected; the donor remains active: " +
                     error.Message);
             }
         }

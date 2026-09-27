@@ -29,6 +29,18 @@ guarded game scenario passed on exact candidate `b32c00f0`: 177/177 casts,
 restoration. The state file carries the evidence ID and package/DLL hashes.
 This is not a Sprint 9 pass.
 
+The next checkpoint adds an original Bat mesh and albedo, generated on the
+measured flying rig and attached instance-locally through the Pteranodon
+visual seam. The Pteranodon regenerated mesh is byte-for-byte unchanged.
+Repository validation, 1,920/1,920 domain tests, clean Release compilation,
+and the strict 253-file package pass. The guarded Steam run
+`20260927T0412311065438Z-disposable-expanded-summoning` passes 177 casts,
+2/2 Bat visual attachments, 4/4 Eagle/Roc donor controls and the existing
+Pteranodon visual checks; restoration is verified by record
+`20260927T0416020406571Z-disposable-expanded-summoning.json`. This is
+attachment and isolation evidence. Eagle art, Bat icon/publication, movement,
+impact, RTWP/turn-based and save/load qualification remain open.
+
 Draft tranche PR #25 tracks Phase 2A. All Sprints 10-21 remain planned. Human visual and
 gameplay review has not been performed and remains nonblocking for internal
 technical acceptance under the owner mission.

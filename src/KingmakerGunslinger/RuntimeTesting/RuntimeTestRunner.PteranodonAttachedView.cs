@@ -47,6 +47,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         private readonly List<string> _pteranodonVisualSteps = new List<string>();
         private readonly List<string> _pteranodonFaultDrill = new List<string>();
         private readonly List<string> _donorIsolationDetail = new List<string>();
+        private readonly List<string> _direBatVisualDetail = new List<string>();
+        private int _direBatVisualChecked;
+        private int _direBatVisualAttached;
         private IDisposable _pteranodonWithdrawal;
         private int _pteranodonCastsSeen;
         private int _pteranodonCrowdMax;
@@ -59,7 +62,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// must never touch them.
         /// </summary>
         private static readonly string[] PteranodonDonorSharers =
-        { "eagle", "dire-bat", "roc" };
+        { "eagle", "roc" };
 
         /// <summary>
         /// The one skinned renderer on a GiantEagle-donor view, as the swap
@@ -102,6 +105,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     " (Instance);bones=46;", StringComparison.Ordinal);
         }
 
+        private static bool IsDireBatAttached(string renderers)
+        {
+            string name = ExpandedSummoningPteranodonViewPatch.DireBatVisualName;
+            return renderers.StartsWith("mesh=" + name + ";material=" + name +
+                    ";bones=46;", StringComparison.Ordinal) ||
+                renderers.StartsWith("mesh=" + name + ";material=" + name +
+                    " (Instance);bones=46;", StringComparison.Ordinal);
+        }
+
         /// <summary>
         /// The donor exactly as the prefab gives it: its own mesh and material
         /// on the 72-bone rig, and one renderer.
@@ -110,6 +122,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             return renderers.IndexOf("mesh=" +
                     ExpandedSummoningPteranodonViewPatch.CustomVisualName,
+                    StringComparison.Ordinal) < 0 &&
+                renderers.IndexOf("mesh=" +
+                    ExpandedSummoningPteranodonViewPatch.DireBatVisualName,
                     StringComparison.Ordinal) < 0 &&
                 renderers.IndexOf("material=" +
                     ExpandedSummoningPteranodonViewPatch.CustomVisualName,
