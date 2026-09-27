@@ -363,6 +363,34 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
   Sprint 9 fixture. Doorway navigation and visual attack-impact alignment
   remain open; owner visual approval remains separate.
 
+## Sprint 9 attack-anchor diagnostic checkpoint, 2026-09-27
+
+- The own-tier Quickened combat fixture now records Eagle/Bat jaw, head and
+  foot bone distances to the exact hostile's enabled renderer bounds at each
+  native weapon rule. This is read-only anchor evidence, not authored mesh-tip
+  measurement.
+- Guarded Steam Eagle result `20260927T1219166168032Z` passed with six
+  exact-target attacks. Jaw distances at two bites were 2.007 and 2.003 m;
+  nearest-foot distances at four claws were 1.996-2.109 m. Visual contact
+  remains unresolved despite valid native attack rules.
+- Guarded Steam Dire Bat result `20260927T1226258599811Z` passed with two
+  exact-target bites; jaw distances were 0.454 and 0.436 m. The large anchor
+  gap is Eagle-specific. Measure skinned surfaces and animation timing before
+  changing the rig.
+- Both runs passed repository validation, 1,927/1,927 domain tests, clean
+  Release and strict package validation. Package SHA-256:
+  `666e32b5c8f3b7bffddce3dead39170c46be6269ebfa663f6a3d35eac990d2e9`;
+  DLL SHA-256: `17df838f3ef184dc8cfb8b8f8d8fae68c091e30a6e5136b043568f1867b8410e`.
+  Restoration records `20260927T1222257744521Z` and
+  `20260927T1229286678632Z` verify the original 136-file live-tree SHA-256
+  `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+  The portable .NET 8 fallback could not restore offline framework packages;
+  the repository's standard offline MSBuild suite passed.
+
+Next: measure rendered, weighted beak/talon vertices against the hostile at
+native attack events, resolve Eagle contact, then qualify doorway traversal.
+Sprints 10-21 remain planned; this checkpoint is not Sprint 9 completion.
+
 ## Standing boundaries and next action
 
 `OwnerAcceptedEngineLimitation: ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD`.
