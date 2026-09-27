@@ -594,6 +594,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint8-tiger", ExpandedSummoningSprint8Tests.TigerIsANewNaturesAllyFourOption),
             Case("expanded-summoning.sprint9-dire-bat-sense", ExpandedSummoningSprint9Tests.DireBatSenseHasASeparateBoundedIdentity),
             Case("expanded-summoning.sprint9-flight-travel-review", ExpandedSummoningSprint9Tests.FlyingReviewRejectsStaticAnimationCaptures),
+            Case("expanded-summoning.sprint9-flight-combat-fixture", ExpandedSummoningSprint9Tests.FlyingCombatFixtureUsesOwnTierAndExactTarget),
             Case("expanded-summoning.sprint9-dire-bat-publication", ExpandedSummoningSprint9Tests.DireBatPublishesOnlyItsPreservedPlacements),
             Case("expanded-summoning.sprint9-flying-persistence", ExpandedSummoningSprint9Tests.EagleAndBatPersistWithTheirOwnViews),
             Case("expanded-summoning.sprint9-dire-bat-asset", ExpandedSummoningSprint9Tests.DireBatOriginalMeshAndPaintingAreBound),

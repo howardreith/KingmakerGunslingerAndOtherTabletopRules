@@ -115,6 +115,18 @@ if ($scenarioMetadata.RequiresSaveName) {
             throw 'The creature review requires typed -SaveName plus exactly creatures (comma-separated creature keys).'
         }
         $Parameters = @{ saveName = $SaveName; creatures = [string]$Parameters.creatures }
+    } elseif ($Scenario -cin @('summon-same-turn-activation',
+            'summon-same-turn-rtwp-control')) {
+        if ($Parameters.Count -eq 0) {
+            $Parameters = @{ saveName = $SaveName }
+        } elseif ($Parameters.Count -eq 1 -and
+            $Parameters.ContainsKey('flightCreature') -and
+            [string]$Parameters.flightCreature -cin @('eagle', 'dire-bat')) {
+            $Parameters = @{ saveName = $SaveName;
+                flightCreature = [string]$Parameters.flightCreature }
+        } else {
+            throw 'Summon activation permits typed -SaveName and only the bounded Eagle/Dire Bat flightCreature.'
+        }
     } elseif (Test-KmgNereidPersistenceScope $Scenario $Parameters) {
         if (Test-KmgTreacherousEffectScope $Scenario $Parameters) {
             $sceneRoundtrip = Test-KmgCompletionSceneScope $Scenario $Parameters

@@ -204,3 +204,26 @@ output. Repository validation, all 1,924 domain tests, clean Release build,
 strict package validation and exact live-tree restoration passed. The state
 file records the package hash and restoration ID. This establishes open-floor
 travel; doorway, impact, combat modes and module-disabled gates remain open.
+
+## Sprint 9: exact-species combat-mode checkpoint, 2026-09-27
+
+Extended the guarded Quickened summon activation fixture to choose only the
+published own-tier Eagle or Dire Bat by request, then require an exact-species
+spawn and a native `RuleAttackWithWeapon` on the fixture's exact hostile.
+The typed-save launcher, preflight and request serializer were all narrowed
+to that one allowlisted parameter. A first Eagle control run returned PASS
+while the serializer had dropped the parameter; its on-disk request and Dog
+spawn exposed the omission. It was not counted as Eagle evidence.
+
+The corrected working-save runs passed Eagle turn-based (six target weapon
+rules), Dire Bat turn-based (two), Dire Bat RTWP (one) and Eagle RTWP (one).
+The source, test and exact runtime identifiers, package hashes and live-tree
+restoration records are in the state file. The RTWP fixtures also passed
+their native appearance/command/no-turn-order controls. This closes a
+bounded combat-mode gate for Quickened own-tier casts; doorway traversal,
+visual attack-impact alignment and module-disabled behavior remain open.
+
+A Roc donor control was captured in the same corridor. Its native wing also
+shows the cyan overlay where it crosses the wall, identifying the overlay as
+the game's occlusion presentation rather than a unique Bat material defect.
+The Bat's actual behavior at a doorway still needs a dedicated check.

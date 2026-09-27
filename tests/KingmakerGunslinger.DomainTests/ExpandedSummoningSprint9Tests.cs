@@ -35,6 +35,45 @@ namespace KingmakerGunslinger.DomainTests
                 "Eagle and Bat must fail the runtime review when measured travel is absent.");
         }
 
+        internal static void FlyingCombatFixtureUsesOwnTierAndExactTarget()
+        {
+            foreach (var entry in new[] { new { Key = "eagle", Tier = 1 },
+                new { Key = "dire-bat", Tier = 3 } })
+            {
+                SummonVariantSpec variant = ExpandedSummoningCatalog
+                    .GenerateVariants(SummonFamily.Monster).Single(value =>
+                        value.Creature.Key == entry.Key &&
+                        value.ParentTier == entry.Tier &&
+                        value.Multiplicity == SummonMultiplicity.One);
+                Assertions.True(SummonVisibilityCatalog.IsPublished(variant),
+                    entry.Key + " must remain a published own-tier single cast.");
+            }
+            string source = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "RuntimeTesting", "SummonSameTurnActivationScenario.cs"));
+            string request = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestRequest.cs"));
+            string launcher = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "scripts",
+                "Invoke-KingmakerRuntimeTest.ps1"));
+            string automation = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "scripts",
+                "RuntimeAutomation.Common.ps1"));
+            Assertions.True(source.Contains("_flightCreature == \"eagle\" ? 1 : 3") &&
+                source.Contains("ExpandedSummoningIdentityCatalog") &&
+                source.Contains("PrepareQuickenedSummon(_spellbook,") &&
+                source.Contains("attack.Target, _enemy") &&
+                source.Contains("AllUnitsAtLeast(_flightTargetAttacksByUnit, 1)") &&
+                request.Contains("flight-activation-creature-invalid") &&
+                request.Contains("creatureReview || flightActivation ? 2 : 1") &&
+                launcher.Contains("$Parameters.ContainsKey('flightCreature')") &&
+                launcher.Contains("flightCreature = [string]$Parameters.flightCreature") &&
+                automation.Contains("$Parameters.flightCreature -cnotin @('eagle', 'dire-bat')") &&
+                automation.Contains("flightCreature = [string]$Parameters.flightCreature"),
+                "The guarded combat fixture must select only the published own-tier flyers and correlate a native attack to its exact hostile.");
+        }
+
         internal static void DireBatPublishesOnlyItsPreservedPlacements()
         {
             SummonVariantSpec[] all = ExpandedSummoningCatalog

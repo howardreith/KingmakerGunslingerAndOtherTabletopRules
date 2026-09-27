@@ -3,9 +3,10 @@
 Status: Sprint 9 in progress. The Dire Bat sense, original Bat/Eagle visuals,
 Bat icon and preserved-choice publication are source/build-qualified with
 guarded casts, player path and live inventory PASS. Open-floor Eagle/Bat travel
-and save/load/expiry are also guarded-runtime qualified. Doorway/contact,
-combat-mode and module-disabled gates remain. No
-Phase 2 creature is yet accepted or ready for owner review.
+and save/load/expiry are also guarded-runtime qualified. Quickened own-tier
+combat is qualified in RTWP and turn-based mode for both creatures.
+Doorway/contact and module-disabled gates remain. No Phase 2 creature is
+yet accepted or ready for owner review.
 
 The accepted baseline is `master` at `2ce70e4` (0.0.140), which advanced after
 the owner packet was written. The baseline passes 1,918 domain tests, the
@@ -102,6 +103,17 @@ to within 1.26 m. Both commands were accepted and start-eligible. The
 remains uncertain. Validation, all 1,924 domain tests, clean Release build,
 strict package and exact restoration passed. This is an open-floor movement
 checkpoint; doorway travel and actual attack contact remain open.
+
+The guarded summon activation fixture now selects each flying creature's
+published own-tier Quickened spell and correlates its native weapon rules to
+the exact hostile. Corrected Eagle and Dire Bat runs passed in turn-based
+mode (six and two target attacks) and RTWP (one each). The first nominal
+Eagle control had silently serialized only the save name and actually cast
+Dog; it was excluded, and the serializer now preserves an exact allowlisted
+`flightCreature`. The state file records four corrected result IDs, package
+hashes and restoration records. A Roc donor control also shows the same cyan
+wall-occlusion silhouette seen on Bat in the corridor. Visual attack-impact
+alignment and doorway behavior remain unqualified.
 
 Draft tranche PR #25 tracks Phase 2A. All Sprints 10-21 remain planned. Human visual and
 gameplay review has not been performed and remains nonblocking for internal
