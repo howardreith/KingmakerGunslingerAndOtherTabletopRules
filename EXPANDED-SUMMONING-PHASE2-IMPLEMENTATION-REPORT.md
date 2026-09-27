@@ -366,3 +366,15 @@ passes; visual contact does not. The shared batch restored the original
 installation exactly (`20260927T2223192246293Z`). Repository validation,
 1,938/1,938 domain cases, clean Release and strict package checks passed.
 Wasp publication remains closed pending contact, lifecycle and visual review.
+
+Optional real-impact camera captures now supplement the native combat
+fixture. The first party-camera set was valid but occluded by the doorway
+wall. Final guarded turn-based `20260927T2251029714353Z` and RTWP
+`20260927T2254096344270Z` produced two party and two overhead frames each,
+with mechanics still passing and one exact installation restoration
+(`20260927T2257092555149Z`). The overhead view shows the original Wasp
+abdomen and stinger pointing away from the hostile at impact; the first
+RTWP frame was still partly dissolved, while the second was intact. This
+supports the measured contact defect. A bounded tail-pose correction needs
+testing before any Wasp publication. Repository validation, 1,938 domain
+cases, clean Release and strict package validation passed.

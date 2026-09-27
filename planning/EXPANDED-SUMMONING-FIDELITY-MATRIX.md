@@ -355,6 +355,13 @@ Guarded own-tier Summon Monster IV combat runs
 sting rules. Baked stinger surface gaps were 0.643–0.654 m and
 0.743/2.04 m respectively. Cadence is qualified in those fixtures, but
 visual sting contact remains a defect. Wasp stays unpublished.
+At native impact, guarded overhead captures from
+`20260927T2251029714353Z` and `20260927T2254096344270Z` show the
+abdomen/stinger pointing away from the hostile. The party-camera frames
+are wall-occluded; the first RTWP overhead frame is partly dissolved.
+The intact second RTWP frame confirms the pose defect. A forward body
+lunge alone is insufficient; target-directed tail motion remains to be
+proved. Mechanical two-mode cadence continues to pass.
 Source commit `9f011014` and guarded inventory
 `20260927T1804369885102Z` passed 48/48 structural/menu assertions with
 exact live-tree restoration. Source rules:
