@@ -19,8 +19,9 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
   all 813 generated roots and 29 native wrappers passed the guarded native
   player path; the 18-parent inventory/menu/icon audit passed after an exact
   Bat feature audit correction. Remaining Sprint 9 gates are explicit
-  doorway/contact, both combat modes and module-disabled safety. Open-floor
-  native movement is now guarded-runtime qualified for Eagle and Dire Bat.
+  doorway/contact and module-disabled safety. Open-floor native movement and
+  Quickened own-tier combat in RTWP and turn-based mode are now guarded-runtime
+  qualified for Eagle and Dire Bat.
   No Phase 2 creature has been claimed complete.
 - HumanReview: NOT_PERFORMED_NONBLOCKING. Internal Phase 2 reviews: pending.
 - Blockers: none established. A difficult rig is not by itself a blocker.
@@ -259,13 +260,46 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
 - Doorway navigation, actual attack contact and impact alignment, both combat
   modes, module-disabled safety and owner visual approval remain open.
 
+## Sprint 9 flying combat-mode checkpoint, 2026-09-27
+
+- Extended the existing guarded working-save summon activation fixture with
+  only `flightCreature=eagle|dire-bat` on the turn-based and RTWP controls.
+  The typed-save launcher, preflight and on-disk request serializer each
+  allowlist that exact field. The first successful control run silently
+  omitted it during serialization and summoned Dog; it is excluded from
+  Eagle evidence. The corrected request files carry the exact creature key.
+- Corrected guarded own-tier Quickened runs passed for Eagle turn-based
+  (`20260927T1000134559074Z`, six exact-hostile weapon rules), Dire Bat
+  turn-based (`20260927T1007223013777Z`, two), Dire Bat RTWP
+  (`20260927T1010235825673Z`, one) and Eagle RTWP
+  (`20260927T1017190134756Z`, one). Each exact species assertion passed.
+  The turn-based fixture observed native summon turns and commands; RTWP
+  observed native AI command, appearance clearing, no turn order and no
+  `CurrentTurn`. This proves active Quickened combat in both modes. It does
+  not prove visual contact or attack-impact alignment.
+- Repository validation, 1,925/1,925 domain tests, clean exact-reference
+  Release build and strict package validation passed. Package SHA-256
+  `49ac8b3815ffa6be1265feb55b0baaba8ce6c725db791699361421aee8cfd9e6`;
+  DLL SHA-256
+  `28bef843f8454360f0620dab7a8e7c514438d17969ee74a0c858a2e045130a48`.
+  Both batches restored the original 136-file live tree SHA-256
+  `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`;
+  the final records are `20260927T1013217931852Z` and
+  `20260927T1020168331178Z`.
+- A guarded Roc negative-control party-camera review
+  (`20260927T0928318357033Z`) passed and showed the same cyan wing
+  occlusion silhouette where a native donor body crosses the corridor wall.
+  This makes the cyan overlay an engine/camera occlusion effect rather than
+  evidence of a Bat-only material swap failure; doorway geometry and
+  normal-camera visual acceptance remain open.
+
 ## Standing boundaries and next action
 
 `OwnerAcceptedEngineLimitation: ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD`.
 Active holds and mouth occupancy return cleanly released on reload. Do not
 implement hold re-establishment or call this grapple persistence.
 
-Next: finish Sprint 9 doorway navigation, impact, RTWP, turn-based and module-disabled
+Next: finish Sprint 9 doorway navigation, impact alignment and module-disabled
 gates, then advance to Sprint 10. The Bat's preserved placements
 are published only after its model, blindsense, icon and guarded live cast gate.
 Continue through A, B and C without an intermediate owner
