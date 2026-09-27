@@ -1,8 +1,8 @@
 ﻿{
     "schemaVersion":  1,
-    "provenance":  "Project-owned original artwork: 77 AI-assisted roster-mission concepts and Phase 1 additions rendered procedurally in Blender; no source images or third-party pixels.",
+    "provenance":  "Project-owned original artwork: 77 AI-assisted roster-mission concepts, Phase 1 additions rendered procedurally in Blender, and Phase 2 Dire Bat original painting; no source images or third-party pixels.",
     "generator":  "tools/New-ExpandedSummoningIcons.ps1",
-    "count":  91,
+    "count":  92,
     "icons":  [
                   {
                       "key":  "dog",
@@ -104,6 +104,49 @@
                                                "KMG.Summoning.Ability.SNA.Tier8.Eagle.OneD4PlusOne",
                                                "KMG.Summoning.Ability.SNA.Tier9.Eagle.OneD4PlusOne",
                                                "KMG.Summoning.Unit.Eagle"
+                                           ]
+                  },
+                  {
+                      "key":  "dire-bat",
+                      "displayName":  "Dire Bat",
+                      "sourceFile":  "assets-source/original-icons/expanded-summoning/sources/dire-bat.png",
+                      "productionFile":  "assets/game/icons/expanded-summoning/dire-bat.png",
+                      "sourceSha256":  "cc1b58f8802b5795198f37548786e84ca133f084c38cf9ab3167e17866607510",
+                      "outputSha256":  "5c2deea29d590ba3c024063d209b69108103bdf726ec9decb9889eccc8d6b16a",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog",
+                      "blueprintSymbols":  [
+                                               "KMG.Summoning.Ability.SM.Tier3.DireBat.One",
+                                               "KMG.Summoning.Ability.SM.Tier3.DireBat.One.Celestial",
+                                               "KMG.Summoning.Ability.SM.Tier3.DireBat.One.Fiendish",
+                                               "KMG.Summoning.Ability.SM.Tier4.DireBat.OneD3",
+                                               "KMG.Summoning.Ability.SM.Tier4.DireBat.OneD3.Celestial",
+                                               "KMG.Summoning.Ability.SM.Tier4.DireBat.OneD3.Fiendish",
+                                               "KMG.Summoning.Ability.SM.Tier5.DireBat.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SM.Tier5.DireBat.OneD4PlusOne.Celestial",
+                                               "KMG.Summoning.Ability.SM.Tier5.DireBat.OneD4PlusOne.Fiendish",
+                                               "KMG.Summoning.Ability.SM.Tier6.DireBat.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SM.Tier6.DireBat.OneD4PlusOne.Celestial",
+                                               "KMG.Summoning.Ability.SM.Tier6.DireBat.OneD4PlusOne.Fiendish",
+                                               "KMG.Summoning.Ability.SM.Tier7.DireBat.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SM.Tier7.DireBat.OneD4PlusOne.Celestial",
+                                               "KMG.Summoning.Ability.SM.Tier7.DireBat.OneD4PlusOne.Fiendish",
+                                               "KMG.Summoning.Ability.SM.Tier8.DireBat.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SM.Tier8.DireBat.OneD4PlusOne.Celestial",
+                                               "KMG.Summoning.Ability.SM.Tier8.DireBat.OneD4PlusOne.Fiendish",
+                                               "KMG.Summoning.Ability.SM.Tier9.DireBat.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SM.Tier9.DireBat.OneD4PlusOne.Celestial",
+                                               "KMG.Summoning.Ability.SM.Tier9.DireBat.OneD4PlusOne.Fiendish",
+                                               "KMG.Summoning.Ability.SNA.Tier3.DireBat.One",
+                                               "KMG.Summoning.Ability.SNA.Tier4.DireBat.OneD3",
+                                               "KMG.Summoning.Ability.SNA.Tier5.DireBat.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SNA.Tier6.DireBat.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SNA.Tier7.DireBat.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SNA.Tier8.DireBat.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SNA.Tier9.DireBat.OneD4PlusOne",
+                                               "KMG.Summoning.Unit.DireBat"
                                            ]
                   },
                   {

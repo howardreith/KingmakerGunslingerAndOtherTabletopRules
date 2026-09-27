@@ -114,8 +114,10 @@ namespace KingmakerGunslinger.DomainTests
         {
             SummonIconCatalog.Validate();
             SummonViewScaleCatalog.Validate();
-            Assertions.Equal(91, SummonIconCatalog.All.Count,
+            Assertions.Equal(92, SummonIconCatalog.All.Count,
                 "Project icon concept count changed.");
+            Assertions.Equal("Dire Bat", SummonIconCatalog.For("dire-bat")
+                .DisplayName, "Dire Bat requires its own creature icon identity.");
             Assertions.Equal("Smilodon", SummonIconCatalog.For("dire-tiger")
                 .DisplayName, "Smilodon icon identity changed.");
             Assertions.True(new[] { "air-mephit", "earth-mephit",

@@ -1,5 +1,31 @@
 # Expanded Summoning Phase 2 journal
 
+## Sprint 9: Dire Bat icon checkpoint, 2026-09-27
+
+Added an original 1254x1254 Dire Bat source painting and exported one 128x128
+RGBA creature-choice icon. The 92-row provenance manifest maps its unit and
+28 generated ability/template symbols to that one creature concept. All 91
+earlier production hashes remain byte-identical. The icon catalog now includes
+Bat while the 14 registered placements remain hidden pending publication.
+The icon authoring catalog records the new consumer disposition and pending
+owner visual approval.
+
+Repository and icon-catalog validation passed; all 1,921 domain cases passed;
+clean exact-reference Release build and strict 256-file package passed. Local
+precommit package SHA-256 is
+`4b6629632342fd5b3b64e14108634bfaa6f9719787d5c36154e90b14955b6dab`;
+DLL SHA-256 is
+`6628733c4381cf85fe39bf49afe1f759154dad71652e8380efd194d04ad095f8`.
+The guarded Steam `disposable-expanded-summoning` run
+`20260927T0532168732741Z-disposable-expanded-summoning` returned PASS on
+0.0.140: 177 casts, Bat/Eagle attachment 2/2 each, Bat sense 2/2, and donor
+isolation 2/2. The wrapper restored the live mod tree to its pre-run
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`
+hash in record
+`20260927T0535489979402Z-disposable-expanded-summoning.json`. This checks
+runtime loading but does not prove the hidden Bat icon appears in the UI;
+that requires the later publication/player-path scenario.
+
 ## Intake: 2026-09-26/27
 
 The owner authorized Sprints 9-21 in three stacked tranches. The packet named
