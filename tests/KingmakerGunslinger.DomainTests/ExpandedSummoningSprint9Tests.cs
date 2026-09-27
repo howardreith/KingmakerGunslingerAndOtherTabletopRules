@@ -138,6 +138,47 @@ namespace KingmakerGunslinger.DomainTests
                 "The guarded combat fixture must select only the published own-tier flyers and correlate a native attack to its exact hostile.");
         }
 
+        internal static void EagleVisualLungeIsBoundedAndRestored()
+        {
+            Assertions.True(EagleAttackLungePolicy.MaximumMeters <= 1f,
+                "The Eagle attack pose must remain a short visual motion.");
+            Assertions.Equal(0f, EagleAttackLungePolicy.Weight(-1f, -1f),
+                "Invalid attack time cannot move the skeleton.");
+            Assertions.Equal(0f, EagleAttackLungePolicy.Weight(0f, -1f),
+                "The visual starts at its native pose.");
+            Assertions.True(Math.Abs(EagleAttackLungePolicy.Weight(0.08f,
+                -1f) - 0.5f) < 0.001f,
+                "The visual approaches the target during the swing.");
+            Assertions.Equal(1f, EagleAttackLungePolicy.Weight(0.3f, -1f),
+                "The swing reaches its bounded impact position.");
+            Assertions.Equal(0f, EagleAttackLungePolicy.Weight(2f, -1f),
+                "An interrupted swing returns to native pose.");
+            Assertions.Equal(1f, EagleAttackLungePolicy.Weight(0.4f, 0f),
+                "The impact pose is held for the native weapon event.");
+            Assertions.True(Math.Abs(EagleAttackLungePolicy.Weight(0.5f,
+                0.21f) - 0.5f) < 0.001f,
+                "The impact pose returns smoothly.");
+            Assertions.Equal(0f, EagleAttackLungePolicy.Weight(0.7f, 0.5f),
+                "The impact pose cannot persist after the attack.");
+
+            string root = Environment.CurrentDirectory;
+            string visual = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Summoning",
+                "EagleAttackVisualLunge.cs"));
+            string attachment = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Summoning",
+                "ExpandedSummoningPteranodonViewPatch.cs"));
+            Assertions.True(visual.Contains("TryStartNextAttack") &&
+                visual.Contains("TriggerAttackRule") &&
+                visual.Contains("_root.position = _lastAppliedWorld") &&
+                visual.Contains("private void OnDisable()") &&
+                visual.Contains("private void OnDestroy()") &&
+                !visual.Contains("_view.transform.position =") &&
+                attachment.Contains("attachment.EagleLunge.Configure(view, donor)") &&
+                attachment.Contains("UnityEngine.Object.Destroy(attachment.EagleLunge)"),
+                "The Eagle lunge must move only its attached skeleton and restore on failure or teardown.");
+        }
+
         internal static void DireBatPublishesOnlyItsPreservedPlacements()
         {
             SummonVariantSpec[] all = ExpandedSummoningCatalog

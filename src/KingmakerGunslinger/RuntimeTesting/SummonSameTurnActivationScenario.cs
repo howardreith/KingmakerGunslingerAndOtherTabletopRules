@@ -1669,6 +1669,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }).ToArray());
                 string weightedSurface = DescribeFlightWeightedSurface(
                     mesh, targetBounds, anchors);
+                EagleAttackVisualLunge lunge = source
+                    .GetComponent<EagleAttackVisualLunge>();
                 Vector3 toward = targetBounds.center - source.transform.position;
                 toward.y = 0f;
                 Vector3 facing = source.transform.forward;
@@ -1681,6 +1683,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ";sourceBounds=" + mesh.bounds.center.ToString("F2") +
                     "/" + mesh.bounds.size.ToString("F2") +
                     ";rendererScale=" + mesh.transform.lossyScale.ToString("F2") +
+                    ";eagleLunge=" + (lunge == null ? "<none>" :
+                        lunge.Describe()) +
                     ";viewForwardDot=" + facingDot.ToString("0.###",
                         CultureInfo.InvariantCulture) +
                     ";targetRenderer=" + targetRenderer.name +

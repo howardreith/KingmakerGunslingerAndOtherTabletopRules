@@ -285,3 +285,15 @@ weapon events with facing dot 1; head/beak surface was 0.739-0.798 m from
 the body on bites and nearest talon surface 0.864-0.906 m away on claws.
 This is the valid Eagle attack-contact gap to resolve. Exact original-tree
 restoration and 1,927 domain, clean Release, strict package PASS.
+
+An Eagle-only, instance-local skeleton lunge now closes the measured contact
+gap without altering native attack reach. Guarded six-attack turn-based result
+`20260927T1345424022344Z` measured 0-0.144 m beak/head and 0-0.226 m talon
+weighted-surface gap to the hostile body. Guarded Eagle/Bat creature review
+`20260927T1353291620814Z` passed both native-travel and cleanup gates;
+the Bat remains unchanged. Both wrappers restored the original live tree.
+Repository validation, 1,928 domain tests, clean Release and strict package
+passed. Guarded RTWP result `20260927T1404176347439Z` passed an exact
+native bite with the Eagle head-weighted surface 0.106 m from the hostile
+body, followed by verified live-tree restoration. A doorway route remains
+open for Sprint 9.
