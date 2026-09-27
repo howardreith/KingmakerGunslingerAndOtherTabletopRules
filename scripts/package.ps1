@@ -87,6 +87,8 @@ if (Test-Path -LiteralPath $batSource -PathType Container) {
     New-Item -ItemType Directory -Path $batDestination -Force | Out-Null
     Copy-Item -LiteralPath (Join-Path $batSource 'dire-bat-mesh.json') -Destination $batDestination
     Copy-Item -LiteralPath (Join-Path $batSource 'dire-bat-albedo.png') -Destination $batDestination
+    Copy-Item -LiteralPath (Join-Path $batSource 'eagle-mesh.json') -Destination $batDestination
+    Copy-Item -LiteralPath (Join-Path $batSource 'eagle-albedo.png') -Destination $batDestination
 }
 $soundBankSource=Join-Path $repositoryRoot 'assets\soundbanks'
 if(Test-Path -LiteralPath (Join-Path $soundBankSource 'KMG_Firearms.bnk') -PathType Leaf){
@@ -109,7 +111,7 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
 # Existing 135-file package plus 89 original elemental/strategic paintings,
 # the 3 composed strategic scroll item icons, and the Pteranodon mesh data
 # with its painted albedo.
-$expectedPackageFileCount = if ($hasFirearmSoundBank) { 253 } else { 251 }
+$expectedPackageFileCount = if ($hasFirearmSoundBank) { 255 } else { 253 }
 & $python (Join-Path $repositoryRoot 'tools\create_deterministic_package.py') `
     --source $modDirectory --output $packagePath `
     --expected-file-count $expectedPackageFileCount

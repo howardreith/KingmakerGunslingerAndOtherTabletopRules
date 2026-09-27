@@ -594,6 +594,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint8-tiger", ExpandedSummoningSprint8Tests.TigerIsANewNaturesAllyFourOption),
             Case("expanded-summoning.sprint9-dire-bat-sense", ExpandedSummoningSprint9Tests.DireBatSenseHasASeparateBoundedIdentity),
             Case("expanded-summoning.sprint9-dire-bat-asset", ExpandedSummoningSprint9Tests.DireBatOriginalMeshAndPaintingAreBound),
+            Case("expanded-summoning.sprint9-eagle-asset", ExpandedSummoningSprint9Tests.EagleOriginalMeshAndPaintingAreBound),
             Case("expanded-summoning.sprint8-cheetah-sprint", ExpandedSummoningSprint8Tests.CheetahSprintIsBounded),
             Case("expanded-summoning.sprint8-coats", ExpandedSummoningSprint8Tests.ProceduralCoatsAreBounded),
             Case("expanded-summoning.sprint8-ledger-icons", ExpandedSummoningSprint8Tests.LedgerAndIconsCoverTheTiger),

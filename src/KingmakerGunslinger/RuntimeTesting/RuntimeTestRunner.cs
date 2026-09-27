@@ -16817,6 +16817,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             int patchOutcomesBefore =
                 ExpandedSummoningPteranodonViewPatch.ObservedOutcomes.Count;
+            int patchOutcomesAfterCoverage = -1;
             BlueprintScriptableObject[] blueprints = BlueprintBootstrap.Library
                 .GetAllBlueprints().Where(value => value != null).ToArray();
             BlueprintFeature direBatSense = blueprints.OfType<BlueprintFeature>()
@@ -17167,6 +17168,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                             _pteranodonWithdrawal = null;
                         }
                     }
+                    else if (variant.Creature.Key == "eagle")
+                    {
+                        foreach (UnitEntityData unit in spawned)
+                        {
+                            if (unit == null || unit.View == null) continue;
+                            _eagleVisualChecked++;
+                            string outcome = ExpandedSummoningPteranodonViewPatch
+                                .DescribeView(unit.View);
+                            string renderers = DescribePteranodonRenderers(unit.View);
+                            if (outcome.StartsWith("visual:attached;",
+                                    StringComparison.Ordinal) &&
+                                IsEagleAttached(renderers))
+                                _eagleVisualAttached++;
+                            else _eagleVisualDetail.Add(outcome + ":" + renderers);
+                        }
+                    }
                     else if (variant.Creature.Key == "dire-bat")
                     {
                         foreach (UnitEntityData unit in spawned)
@@ -17238,6 +17255,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ";after=" + DescribeExpandedSummoningReferences(
                                 afterCleanup) + ".");
                 }
+                patchOutcomesAfterCoverage =
+                    ExpandedSummoningPteranodonViewPatch.ObservedOutcomes.Count;
                 stage = "mechanical-contracts";
                 mechanics = ExerciseExpandedSummoningMechanicalContracts(
                     blueprints, caster, scene, sceneEntities);
@@ -17409,13 +17428,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                     pteranodonAttachedCount > 0 && pteranodonAttachedClean,
                     "ExpandedSummoningPteranodonViewPatch.DescribeView plus the live renderer states on each spawned unit's view"),
                 Assertion("expanded-summoning-pteranodon-donor-isolation",
-                    "eagle and roc keep the donor visual: not-attempted, the eagle's own mesh and material on the 72-bone rig",
+                    "roc keeps the donor visual: not-attempted, the eagle's own mesh and material on the 72-bone rig",
                     "checked=" + _donorIsolationChecked + ";clean=" + _donorIsolationClean +
                         (_donorIsolationDetail.Count == 0 ? string.Empty :
                             ";detail=" + string.Join("|", _donorIsolationDetail.ToArray())),
                     _donorIsolationChecked > 0 &&
                         _donorIsolationClean == _donorIsolationChecked,
-                    "the same GiantEagle donor prefab, observed on every Eagle and Roc unit"),
+                    "the same GiantEagle donor prefab, observed on every Roc unit"),
+                Assertion("expanded-summoning-eagle-visual-attached",
+                    "each live Small Eagle carries its original feathered mesh and painting on the donor's renderer",
+                    "checked=" + _eagleVisualChecked + ";attached=" +
+                        _eagleVisualAttached + (_eagleVisualDetail.Count == 0 ?
+                            string.Empty : ";detail=" + string.Join("|",
+                                _eagleVisualDetail.ToArray())),
+                    _eagleVisualChecked >= 2 &&
+                        _eagleVisualAttached == _eagleVisualChecked,
+                    "guarded UnitUseAbility spawns and live renderer state"),
                 Assertion("expanded-summoning-dire-bat-visual-attached",
                     "each live Dire Bat carries its original skinned mesh and painting on a private material and the donor's renderer",
                     "checked=" + _direBatVisualChecked + ";attached=" +
@@ -17437,13 +17465,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "several Pteranodon casts in one lifecycle, each view attached exactly once, each cast cleaned to the exact snapshot",
                     "casts=" + _pteranodonCastsSeen + ";views=" +
                         _pteranodonVisualOutcomes.Count + ";patchOutcomes=" +
-                        (ExpandedSummoningPteranodonViewPatch.ObservedOutcomes.Count -
-                            patchOutcomesBefore),
+                        (patchOutcomesAfterCoverage - patchOutcomesBefore),
                     _pteranodonCastsSeen >= 4 &&
                         _pteranodonVisualOutcomes.Count >= _pteranodonCastsSeen &&
-                        ExpandedSummoningPteranodonViewPatch.ObservedOutcomes.Count -
-                            patchOutcomesBefore == _pteranodonVisualOutcomes.Count +
-                                _direBatVisualChecked &&
+                        patchOutcomesAfterCoverage - patchOutcomesBefore ==
+                            _pteranodonVisualOutcomes.Count +
+                                _direBatVisualChecked + _eagleVisualChecked &&
                         pteranodonAttachedClean,
                     "one patch outcome per attached view; per-cast cleanup is enforced by the cast loop itself"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,

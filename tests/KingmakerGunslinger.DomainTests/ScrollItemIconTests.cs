@@ -117,8 +117,8 @@ namespace KingmakerGunslinger.DomainTests
             // time; 241/239 once Expanded Summoning Phase 1 Sprint 3 added
             // four creature icons on top).
             string package = File.ReadAllText(Path.Combine(root, "scripts", "package.ps1"));
-            Assertions.True(package.Contains("{ 253 } else { 251 }"),
-                "Package file count does not include the scroll icons and original Bat visual.");
+            Assertions.True(package.Contains("{ 255 } else { 253 }"),
+                "Package file count does not include the scroll icons and flying visuals.");
             // The runtime identity check must verify the composed item icon,
             // not the retired spell-matches-item equality.
             string runner = File.ReadAllText(Path.Combine(root, "src",
