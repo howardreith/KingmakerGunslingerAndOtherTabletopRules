@@ -299,3 +299,18 @@ The final source passed repository validation, 1,933/1,933 domain tests,
 clean Release and strict package checks (clean package SHA-256
 `5E7AC1E0DE325AD4F531AB09BCDF8DA8A24E843E6263CE27427B51C3308B5A90`).
 This is a poison checkpoint, not full Wasp or Sprint 10 qualification.
+
+The next guarded working-save review admitted the suppressed Wasp to the
+private creature-review fixture only. The final result
+`20260927T1955333075608Z` passed native 12.345 m movement through a connected
+doorway, intact camera frames and cleanup. A fifth frame with the sole
+auxiliary view renderer temporarily hidden retained cyan silhouettes; the
+native occlusion display is a plausible but unproven explanation. The
+Wasp's body and wings were visible, but the destination camera was crowded
+by a wall and bookcase. Attack frames exercised an animation handle, not a
+target strike; live cadence, body contact and collision remain unqualified.
+The 136-file installation was restored exactly. Repository validation,
+1,934/1,934 domain tests, clean Release and strict package checks passed
+(package SHA-256
+`5AE609E8C383588C294DE9CFB9CB00113B6C823AA548CD94C748AE9B9309C01A`).
+No full Wasp qualification or publication is claimed.
