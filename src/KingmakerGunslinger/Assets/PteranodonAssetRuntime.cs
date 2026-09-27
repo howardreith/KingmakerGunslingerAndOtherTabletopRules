@@ -58,6 +58,8 @@ namespace KingmakerGunslinger.Assets
             "assets/pteranodon/pteranodon-mesh.json";
         internal const string DireBatMeshDataRelativePath =
             "assets/flying-animals/dire-bat-mesh.json";
+        internal const string EagleMeshDataRelativePath =
+            "assets/flying-animals/eagle-mesh.json";
         internal const int SupportedSchemaVersion = 2;
 
         /// <summary>
@@ -108,6 +110,10 @@ namespace KingmakerGunslinger.Assets
         private static string[] _direBatBoneNames;
         private static Texture2D _direBatAlbedo;
         private static string _direBatStatus = "donor-visual:not-configured";
+        private static Mesh _eagleMesh;
+        private static string[] _eagleBoneNames;
+        private static Texture2D _eagleAlbedo;
+        private static string _eagleStatus = "donor-visual:not-configured";
 
         internal static string Status { get { lock (Sync) return _status; } }
 
@@ -158,6 +164,22 @@ namespace KingmakerGunslinger.Assets
                 boneNames = _direBatBoneNames == null ? null :
                     (string[])_direBatBoneNames.Clone();
                 albedo = _direBatAlbedo;
+                return mesh != null && boneNames != null && albedo != null;
+            }
+        }
+
+        internal static string EagleStatus
+        { get { lock (Sync) return _eagleStatus; } }
+
+        internal static bool TryGetEagleVisual(out Mesh mesh,
+            out string[] boneNames, out Texture2D albedo)
+        {
+            lock (Sync)
+            {
+                mesh = _eagleMesh;
+                boneNames = _eagleBoneNames == null ? null :
+                    (string[])_eagleBoneNames.Clone();
+                albedo = _eagleAlbedo;
                 return mesh != null && boneNames != null && albedo != null;
             }
         }
@@ -216,6 +238,7 @@ namespace KingmakerGunslinger.Assets
         {
             ConfigurePteranodon(context);
             ConfigureDireBat(context);
+            ConfigureEagle(context);
         }
 
         private static void ConfigurePteranodon(ModContext context)
@@ -369,6 +392,73 @@ namespace KingmakerGunslinger.Assets
                 }
                 context.Logger.Warning("dire-bat", "mesh.rejected",
                     "The original Bat visual was rejected; the donor remains active: " +
+                    error.Message);
+            }
+        }
+
+        private static void ConfigureEagle(ModContext context)
+        {
+            if (context == null) throw new ArgumentNullException("context");
+            if (!context.FeatureModules.Active.ExpandedSummoning)
+            {
+                lock (Sync) _eagleStatus = "donor-visual:module-disabled";
+                return;
+            }
+            lock (Sync)
+            {
+                if (_eagleMesh != null && _eagleBoneNames != null &&
+                    _eagleAlbedo != null) return;
+            }
+            string path = Path.Combine(context.ModEntry.Path,
+                EagleMeshDataRelativePath.Replace('/', Path.DirectorySeparatorChar));
+            if (!File.Exists(path))
+            {
+                lock (Sync) _eagleStatus = "donor-visual:mesh-data-missing";
+                context.Logger.Warning("eagle", "mesh.missing",
+                    "The original Eagle visual is unavailable; the donor remains active: " + path);
+                return;
+            }
+            Mesh mesh = null;
+            Texture2D albedo = null;
+            try
+            {
+                string[] names;
+                AlbedoRequirement requirement;
+                mesh = BuildMesh(File.ReadAllText(path), out names,
+                    out requirement);
+                string reason;
+                albedo = LoadAlbedo(Path.GetDirectoryName(path), requirement,
+                    out reason);
+                if (albedo == null)
+                    throw new InvalidDataException("albedo:" + reason);
+                mesh.name = "KMG_Eagle";
+                albedo.name = "KMG_Eagle_Albedo";
+                lock (Sync)
+                {
+                    _eagleMesh = mesh;
+                    _eagleBoneNames = names;
+                    _eagleAlbedo = albedo;
+                    _eagleStatus = "visual:published";
+                }
+                context.Logger.Info("eagle", "mesh.published",
+                    "Validated original Eagle mesh: vertices=" + mesh.vertexCount +
+                    ";triangles=" + mesh.triangles.Length / 3 +
+                    ";bones=" + names.Length + ";albedo=" +
+                    albedo.width + "x" + albedo.height);
+            }
+            catch (Exception error)
+            {
+                if (mesh != null) UnityEngine.Object.Destroy(mesh);
+                if (albedo != null) UnityEngine.Object.Destroy(albedo);
+                lock (Sync)
+                {
+                    _eagleMesh = null;
+                    _eagleBoneNames = null;
+                    _eagleAlbedo = null;
+                    _eagleStatus = "donor-visual:invalid-mesh-data";
+                }
+                context.Logger.Warning("eagle", "mesh.rejected",
+                    "The original Eagle visual was rejected; the donor remains active: " +
                     error.Message);
             }
         }

@@ -21,7 +21,7 @@ VERSION = "0.0.140"
 INFORMATIONAL_VERSION = "0.0.140-favored-class-integration"
 PACKAGE = "KingmakerGunslinger-0.0.140-local-runtime.zip"
 PACKAGE_SUFFIX = "favored-class-integration"
-DETERMINISTIC_TEST_COUNT = 1920
+DETERMINISTIC_TEST_COUNT = 1921
 STATIC_KEY = "favoredClassIntegration140"
 
 # Exact ordered (symbol, guid) pairs this candidate appends after the

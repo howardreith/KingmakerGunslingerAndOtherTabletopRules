@@ -14,9 +14,9 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
   Class integration. The owner packet's expected `2943a02d` is its ancestor.
 - Branch head at intake: `2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a`;
   first pushed intake checkpoint: `359e346ecb6a094552f096869ecb9c81a2d291bf`.
-- Current Sprint 9 sub-item: Dire Bat-only imprecise blindsense and original
-  skinned visual. Both source/build-qualified and guarded disposable-cast PASS.
-  Eagle visual work, Bat icon integration and publication remain planned.
+- Current Sprint 9 sub-item: Dire Bat blindsense and original Bat/Eagle
+  skinned visuals. Source/build-qualified; guarded cast and visual contracts
+  PASS. Bat icon integration, publication and final player-path cleanup remain.
   No Phase 2 creature has been claimed complete.
 - HumanReview: NOT_PERFORMED_NONBLOCKING. Internal Phase 2 reviews: pending.
 - Blockers: none established. A difficult rig is not by itself a blocker.
@@ -125,15 +125,64 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
   `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`
   before and after. Kingmaker exited. Dire Bat remains hidden in 14 placements.
 
+## Sprint 9 Eagle visual checkpoint, 2026-09-27
+
+- The original feathered Eagle uses the same private measured bind frame and
+  shared validated mesh parser/instance-local renderer swap. Its geometry has
+  1,696 vertices, 46 weighted bone names and three or fewer influences per
+  vertex; the private Blender 4.5.10 LTS preview and FBX stay ignored. Shipped
+  Eagle mesh SHA-256
+  `A45D0CD203C9742E6DAA64B86BCF642906AE08B41A4B8285B51D33050A760753`;
+  original albedo SHA-256
+  `A17C7891AEEBB4B879D7D53C43F39920AFF11E375070DA4743DA951F16C08F47`.
+  The focused Eagle asset test failed with a missing mesh before staging.
+- Repository validation PASS, all 1,921 domain tests PASS, clean
+  exact-reference Release build PASS, strict 255-file package PASS. Runtime
+  candidate package SHA-256
+  `45F0DB76FAF98A6CF51590A507251E4D233E61A2E30204C774140DA62860A7EE`;
+  DLL SHA-256 `2E811EC9D965D1B29AB35199B8A2FFAA028600BFF340617A996D866AC4F23229`.
+- Guarded Steam cast run
+  `20260927T0443251559393Z-disposable-expanded-summoning` PASS: 177 casts,
+  Eagle visual 2/2, Bat visual 2/2, Roc donor isolation 2/2, Pteranodon
+  repeated lifecycle 5 views/9 flying patch outcomes. The prior run
+  `20260927T0435314466298Z` failed only because its assertion counted an
+  additional Eagle summoned in a later mechanical contract; the counter was
+  narrowed to the coverage loop and the full run rerun PASS.
+- Guarded visual-contract run
+  `20260927T0446552603378Z-disposable-expanded-summoning-visual-contracts`
+  PASS: 81/81 selection/navigation, locomotion, attack animation and
+  hit/death checks; Eagle live height 1.3596102 below Medium humanoid
+  1.92633152, max bound 3.06158566. Its live-camera silhouette is supporting
+  art evidence only, not proof of animation or impact alignment.
+- Guarded visual lifecycle retry
+  `20260927T0510593955723Z-disposable-expanded-summoning-visual-lifecycle`
+  PASS with a 600-second timeout; restoration record
+  `20260927T0513506556485Z-disposable-expanded-summoning-visual-lifecycle.json`
+  verified the 136-file baseline SHA-256
+  `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+  The first lifecycle game result was PASS but its 120-second launcher wait
+  timed out, so that first attempt is not counted as qualified.
+- Player-path game result
+  `20260927T0452347967456Z-disposable-expanded-summoning-player-path` was
+  PASS, but Kingmaker did not exit within the launcher/wrapper teardown window;
+  the batch record `20260927T0506085646355Z-disposable-expanded-summoning.json`
+  correctly marks restoration FAILED. After Kingmaker exited on its own, the
+  exact 258-file deployed tree SHA-256
+  `D9C779DC7807EAA6556CD632BC55575E98615F6B9FC14BB0317C474F63991304`
+  was verified, then `Restore-Live-Mod.ps1` restored the snapshot at
+  `20260927T0440037530378Z`. The live tree was verified at the original
+  136-file SHA above, with no game process or compatibility lock. This
+  player-path run is **PASS with teardown fault**, not a clean qualification;
+  retry after the Bat icon/publication change with a longer guarded lease.
+
 ## Standing boundaries and next action
 
 `OwnerAcceptedEngineLimitation: ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD`.
 Active holds and mouth occupancy return cleanly released on reload. Do not
 implement hold re-establishment or call this grapple persistence.
 
-Next: create and qualify a true Eagle silhouette on the shared flying rig,
-then integrate the Bat icon and qualify the full Sprint 9
-publication and player path.
+Next: integrate the original Bat icon, unhide its preserved placements, then
+qualify Sprint 9 publication and player path.
 Do not unhide Dire Bat until its model, blindsense, icon, mechanics, and live
 qualification pass. Continue through A, B and C without an intermediate owner
 decision. Open three stacked PRs as the tranche gates pass. No merge, release,
