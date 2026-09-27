@@ -19,8 +19,8 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
   all 813 generated roots and 29 native wrappers passed the guarded native
   player path; the 18-parent inventory/menu/icon audit passed after an exact
   Bat feature audit correction. Remaining Sprint 9 gates are explicit
-  doorway/contact and save-backed module-disabled safety. Disabled publication,
-  open-floor native movement and
+  doorway traversal and visual attack contact. Disabled publication,
+  save-backed module-off recovery, open-floor native movement and
   Quickened own-tier combat in RTWP and turn-based mode are now guarded-runtime
   qualified for Eagle and Dire Bat.
   No Phase 2 creature has been claimed complete.
@@ -320,14 +320,57 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
   This proves the disabled publication boundary at mod load. It does not yet
   establish safe loading of an existing Eagle/Bat summon with the module off.
 
+## Sprint 9 save-backed module-off checkpoint, 2026-09-27
+
+- The first `gunslinger-only` off-load attempt
+  `20260927T1108473787599Z` timed out before `Player.PostLoad`. Its game log
+  shows the known missing Craft Magic Items blueprint dependency when that
+  profile removes the mod referenced by the working save. The prepared save
+  was not altered by the failed load; the compatibility transaction restored.
+  This is excluded from summon mechanics evidence.
+- The mission runtime wrapper now permits one exact
+  `working-save-expanded-summoning-verify-cleanup` request to stage
+  `expanded-summoning=false` after snapshotting the live KMG tree. It changes
+  only that JSON Boolean, retains the original installed mod graph (including
+  Craft Magic Items), and restores the exact original tree in `finally`.
+  Focused orchestration tests passed 46 assertions, including malformed,
+  absent, duplicate and already-disabled setting rejection.
+- An initial full-mod off load `20260927T1130267838290Z` loaded and cleaned
+  all 16 fixture summons with one working-save write, but returned FAIL only
+  because the existing visual assertions still expected custom meshes with
+  the module disabled. The asset runtime intentionally leaves a visible native
+  donor in that state. The assertions now demand an enabled, nonempty native
+  donor renderer and no project visual for the three saved flyers.
+- The corrected guarded trio passed: prepare
+  `20260927T1143486900326Z` (16 exact summons, one authorized write),
+  module-off fresh-load/cleanup `20260927T1151452804617Z` (14/14 assertions,
+  16 exact summons, zero published placements, original Pteranodon/Eagle/Bat
+  identities on visible 72-bone native donors, session hold safely released,
+  one authorized write), and final enabled-module absence
+  `20260927T1159482067877Z` (14/14, zero KMG summons and zero save writes).
+  Exact off-run restoration record `20260927T1155391539509Z` and final record
+  `20260927T1202300608552Z` both verify the original 136-file live tree SHA-256
+  `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+  The original FeatureModules.json SHA-256
+  `A06601C52F1B98AC54EED309F7415677A3C55FE4C51DAA2556DDE5206C687F17`
+  is contained in the verified restored tree.
+- Repository validation, 1,927/1,927 domain tests, clean Release build and
+  strict package validation passed. Package SHA-256
+  `f214756442d18ef94e3da0bd98c8c783c619836c327a18e4cf0b52e865576014`;
+  DLL SHA-256
+  `1476c5acb2d748f64e391fccdca65dd6a9bd042602fd2fa69f1f3d9109799d2a`.
+  This closes the save-backed module-disabled safety gate for the current
+  Sprint 9 fixture. Doorway navigation and visual attack-impact alignment
+  remain open; owner visual approval remains separate.
+
 ## Standing boundaries and next action
 
 `OwnerAcceptedEngineLimitation: ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD`.
 Active holds and mouth occupancy return cleanly released on reload. Do not
 implement hold re-establishment or call this grapple persistence.
 
-Next: finish Sprint 9 doorway navigation, impact alignment and save-backed
-module-disabled safety, then advance to Sprint 10. The Bat's preserved placements
+Next: finish Sprint 9 doorway navigation and impact alignment, then advance
+to Sprint 10. The Bat's preserved placements
 are published only after its model, blindsense, icon and guarded live cast gate.
 Continue through A, B and C without an intermediate owner
 decision. Open three stacked PRs as the tranche gates pass. No merge, release,
