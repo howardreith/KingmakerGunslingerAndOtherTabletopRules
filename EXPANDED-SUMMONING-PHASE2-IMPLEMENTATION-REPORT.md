@@ -231,3 +231,15 @@ This establishes the need for a dedicated bounded Stirge lifecycle; it
 does not establish engine infeasibility. The supplied charter/workbook/guide
 give tiers and roles but no numeric stat blocks, so rules fidelity remains
 open pending an authorized source for exact stats and poison progression.
+
+The owner subsequently authorized network lookup. The primary Pathfinder
+1e rules baselines are https://legacy.aonprd.com/bestiary/stirge.html and
+https://legacy.aonprd.com/bestiary/wasp.html; the earlier source gate is
+resolved. A second guarded live blueprint audit
+`20260927T1629242113136Z` found no named insect flight rig beyond Giant
+Flytrap variants and inspected the native Spider poison buff's component
+fields. Its current Strength/1d6/two-save behavior is not Giant Wasp poison;
+a scoped reconfiguration or dedicated component is required. The source
+passed repository validation, 1,929/1,929 domain tests, clean Release and
+strict package checks. Restoration record `20260927T1631336749721Z`
+verified the exact pre-run live installation.

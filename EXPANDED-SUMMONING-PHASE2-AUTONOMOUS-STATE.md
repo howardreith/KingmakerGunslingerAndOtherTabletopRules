@@ -550,6 +550,20 @@ Stirge and Giant Wasp. No tranche candidate or PR-ready claim yet.
   authorization. I am checking the local rules/engine seams before
   declaring whether a source-material decision is required. Sprint 10 is
   not qualified and no claim of creature correctness is made.
+- The follow-up guarded metadata audit `20260927T1629242113136Z` widened
+  the search to fly, beetle, mantis, insect and vargouille rigs and read the
+  native Giant Spider poison buff component graph. Among selected units,
+  only six Giant Flytrap names matched these terms; no separate native
+  flying insect rig was found. The native `BuffPoisonStatDamage` graph has
+  Strength, 1d6, six round ticks and two successful saves, so it cannot be
+  reused unaltered for Giant Wasp's Dexterity 1d2, six total exposures and
+  one-save cure. Repository validation, 1,929/1,929 domain tests, clean
+  Release and strict package checks passed; package SHA-256
+  `034706D6AB5C20F1E9AA65A75ECFF8C17031B2A499AD275BDB9FBF034DC8F93C`.
+  Restoration record `20260927T1631336749721Z` verifies the original
+  136-file live mod tree at SHA-256
+  `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+  This is design evidence, not Wasp poison qualification.
 
 ## Standing boundaries and next action
 

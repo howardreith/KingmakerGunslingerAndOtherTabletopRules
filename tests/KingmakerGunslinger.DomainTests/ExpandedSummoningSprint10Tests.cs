@@ -13,6 +13,9 @@ namespace KingmakerGunslinger.DomainTests
                 "RuntimeTestRunner.ExpandedSummoningNativeDonors.cs"));
             Assertions.True(source.Contains("\"wasp\", \"stirge\"") &&
                 source.Contains("\"mosquito\"") &&
+                source.Contains("\"beetle\"") &&
+                source.Contains("\"mantis\"") &&
+                source.Contains("56ec8788092b6314e8f3c1c502e8433f") &&
                 source.Contains("\"blood\"") &&
                 source.Contains("\"attach\"") &&
                 source.Contains("\"drain\"") &&
