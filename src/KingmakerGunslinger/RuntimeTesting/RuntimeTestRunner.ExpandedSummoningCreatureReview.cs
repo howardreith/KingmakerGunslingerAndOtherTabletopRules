@@ -185,12 +185,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                             "Summon Nature's Ally ") + variant.ParentTier +
                         " single cast through the real parent chain; party-camera renders"));
                     if (key == "eagle" || key == "dire-bat")
+                    {
                         _creatureReviewAssertions.Add(Assertion(
                             "expanded-summoning-flight-travel-" + key,
                             "native move command accepted; at least 0.75 m planar travel and nonzero movement-agent velocity",
                             MotionReviewSummary,
                             MotionReviewTravelValid,
                             "cross-frame native UnitMoveTo and unit-position samples; animation callbacks are insufficient"));
+                        _creatureReviewAssertions.Add(Assertion(
+                            "expanded-summoning-doorway-travel-" + key,
+                            "the native move crosses the surveyed room opening and approaches a connected floor node in the adjacent room",
+                            MotionReviewSummary,
+                            MotionReviewDoorwayValid,
+                            "named native area landmark, same-area endpoints, native UnitMoveTo and cross-frame position samples"));
+                    }
                     foreach (UnitEntityData unit in _creatureReviewUnits)
                         CleanupExpandedSummoningUnit(unit);
                     Game.Instance.EntityDestroyer.Tick();
