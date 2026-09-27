@@ -26,10 +26,10 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
 - HumanReview: NOT_PERFORMED_NONBLOCKING. Sprint 9 internal engineering,
   fidelity, visual and evidence/restoration reviews passed with the bounded
   limitations below; tranche and later-sprint reviews remain pending.
-- Blocker: exact numeric Stirge/Giant Wasp rules are absent from supplied
-  local materials, and `AGENTS.md` requires explicit authorization before
-  consulting public rules pages over the network. The narrow source-access
-  decision and evidence are in `EXPANDED-SUMMONING-PHASE2-BLOCKERS.md`.
+- Blockers: none established. The Sprint 10 rules-source access gate is
+  resolved by the owner's standing network authorization; exact Stirge and
+  Giant Wasp baseline rules are cited in
+  `EXPANDED-SUMMONING-PHASE2-BLOCKERS.md`.
 
 ## Verified intake and baseline
 
@@ -557,8 +557,8 @@ Stirge and Giant Wasp. No tranche candidate or PR-ready claim yet.
 Active holds and mouth occupancy return cleanly released on reload. Do not
 implement hold re-establishment or call this grapple persistence.
 
-Next: after the exact Stirge/Wasp rules source is authorized or supplied,
-implement and qualify Sprint 10 Stirge and Giant Wasp, then continue through
+Next: implement and qualify Sprint 10 Stirge and Giant Wasp from the cited
+Pathfinder 1e rules, then continue through
 the remaining authorized Phase 2 work. The Bat's preserved placements
 are published after its model, blindsense, icon and guarded live cast gate.
 Continue through A, B and C without an intermediate owner
