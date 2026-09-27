@@ -52,3 +52,21 @@ and the new Dire Bat sense assertion (`2/2` Bat units, `13/13` bird controls).
 The wrapper restored the same 136-file live tree hash it snapshotted. Exact
 runtime IDs and hashes are in the state file. The sense checkpoint is closed;
 Sprint 9 remains open for models, icon, publication, and full player paths.
+
+## Sprint 9: Dire Bat original visual checkpoint, 2026-09-27
+
+Extended the existing Pteranodon mesh pipeline with an original scalloped
+Bat mesh and procedural painting. The accepted Pteranodon output remained
+byte-for-byte identical in a regeneration control. The Bat source uses the
+private measured rig; only original geometry, weights and painted albedo ship.
+The loader validates both files, and the view patch swaps a private mesh and
+material on one summoned Bat's donor renderer. Eagle/Roc remain controls.
+
+A focused asset test failed before the files were staged and then passed.
+Repository validation, 1,920 domain tests, clean Release compilation and the
+253-file package passed. The guarded Steam disposable scenario passed 177
+casts, Bat visual attachment 2/2, Bat sense 2/2, Eagle/Roc donor isolation
+4/4, and Pteranodon visual regression. The wrapper restored the exact
+136-file live tree hash. Evidence IDs and hashes are in the state file.
+Bat is still hidden; icon, Eagle, motion/impact, player path and persistence
+remain Sprint 9 work.

@@ -352,7 +352,7 @@ def sheet_normal(columns, i, j):
         else normal.normalized()
 
 
-def wing_grid(bones, side):
+def wing_grid(bones, side, subdivisions=SPAN_SUBDIVISIONS):
     flip = (side == "R")
     leading_raw = [head(bones, n) for n in LEADING_CHAIN]
     trailing_raw = [head(bones, n) for n in TRAILING_CHAIN]
@@ -360,14 +360,14 @@ def wing_grid(bones, side):
         leading_raw = [mirror(p) for p in leading_raw]
         trailing_raw = [mirror(p) for p in trailing_raw]
 
-    stations = (len(TRAILING_CHAIN) - 1) * SPAN_SUBDIVISIONS + 1
+    stations = (len(TRAILING_CHAIN) - 1) * subdivisions + 1
     sampled = resample(leading_raw, stations)
     leading = [position for position, _ in sampled]
     leading_segment = [segment for _, segment in sampled]
 
     trailing, trailing_bone_of = [], []
     for index in range(stations):
-        position = index / float(SPAN_SUBDIVISIONS)
+        position = index / float(subdivisions)
         low = min(int(math.floor(position)), len(trailing_raw) - 2)
         factor = position - low
         trailing.append(trailing_raw[low].lerp(trailing_raw[low + 1], factor))
@@ -400,8 +400,10 @@ def wing_grid(bones, side):
     return columns, assignments
 
 
-def add_membrane(bm, weights, uvs, bones, side):
-    columns, assignments = wing_grid(bones, side)
+def add_membrane(bm, weights, uvs, bones, side, grid_builder=None):
+    # A flying-animal sibling may supply a different trailing-edge shape
+    # while retaining the proven two-sided skin, weights and atlas mapping.
+    columns, assignments = (grid_builder or wing_grid)(bones, side)
     stations = len(columns)
     sheets = []
     for sign in (1.0, -1.0):
