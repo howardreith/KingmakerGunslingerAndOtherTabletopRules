@@ -242,3 +242,26 @@ FeatureModules.json byte-for-byte and the original live mod tree. Repository
 validation, 1,926 domain tests, clean Release build and strict package passed.
 Save-backed module-off behavior remains untested, along with doorway and
 attack-impact alignment.
+
+## Sprint 9: save-backed module-off recovery, 2026-09-27
+
+The first off-load under `gunslinger-only` timed out in native `Player.PostLoad`:
+that profile removed Craft Magic Items blueprints referenced by the working
+save, before the summoning fixture could run. I replaced that strategy with a
+single-scenario setting transition inside the mission's exact-tree snapshot
+wrapper. It retains the original installed mod graph, stages only
+`expanded-summoning=false`, and restores the full KMG tree afterward. A first
+full-mod run loaded and cleaned all 16 summons but failed two visual checks
+that still demanded custom assets in the intentionally disabled state. The
+native donor views were alive and enabled; I made that the explicit off-state
+contract.
+
+The corrected prepare, off-load/cleanup and final-absence sequence passed at
+`20260927T1143486900326Z`, `20260927T1151452804617Z`, and
+`20260927T1159482067877Z`. The off run passed 14/14, retained the exact saved
+Eagle and Bat identities on native 72-bone donor views, reported zero added
+publication, released the session hold safely, and wrote the working save
+once to clean the fixture. Final enabled-module load found no KMG summons and
+wrote nothing. Original live-tree SHA-256 was restored after every run. The
+state file carries hashes and restoration IDs. Doorway movement and visual
+attack-impact alignment remain open.

@@ -32,6 +32,7 @@ param(
     [string]$RestorationRecordRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-evidence\expanded-summoning-restoration',
     [hashtable]$ScenarioParameters = @{},
     [switch]$AllowDirtyGit,
+    [switch]$ExpandedSummoningDisabled,
     [int]$TimeoutSeconds = 120
 )
 
@@ -45,6 +46,13 @@ $ErrorActionPreference = 'Stop'
 # belongs to this batch - live in one dot-sourced file so the bounded test
 # suite exercises the shipped rules rather than a second copy of them.
 . (Join-Path $PSScriptRoot 'ExpandedSummoningOrchestration.Common.ps1')
+
+if ($ExpandedSummoningDisabled -and
+    ($Scenario.Count -ne 1 -or
+        $Scenario[0] -cne 'working-save-expanded-summoning-verify-cleanup' -or
+        $SaveName -cne 'KMG_AUTOMATION_WORKING')) {
+    throw 'The temporary module-off setting is allowed only for the exact working-save Expanded Summoning verify/cleanup stage.'
+}
 
 Assert-KmgNotRunning
 
@@ -74,6 +82,26 @@ $deploymentRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-evidence\deployments'
 $repositoryRoot = Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
 
 try {
+    if ($ExpandedSummoningDisabled) {
+        $settingsPath = Join-Path $LiveModDirectory 'FeatureModules.json'
+        if (-not (Test-Path -LiteralPath $settingsPath -PathType Leaf)) {
+            throw 'The installed FeatureModules.json is missing; no module-off test was staged.'
+        }
+        $settingsBefore = [IO.File]::ReadAllBytes($settingsPath)
+        $settingsBeforeSha = (Get-FileHash -LiteralPath $settingsPath -Algorithm SHA256).Hash
+        $settingsOff = ConvertTo-KmgDisabledExpandedSummoningSettingsBytes `
+            -OriginalBytes $settingsBefore
+        $settingsTemporary = $settingsPath + '.kmg-phase2-test.tmp'
+        [IO.File]::WriteAllBytes($settingsTemporary, $settingsOff)
+        Move-Item -LiteralPath $settingsTemporary -Destination $settingsPath -Force
+        $record.featureModuleTransition = [ordered]@{
+            name = 'expanded-summoning'
+            beforeSha256 = $settingsBeforeSha
+            stagedSha256 = (Get-FileHash -LiteralPath $settingsPath -Algorithm SHA256).Hash
+            restoredBy = 'verified live-tree snapshot'
+        }
+        Write-Host 'Staged Expanded Summoning OFF for one guarded working-save verify/cleanup; the outer snapshot will restore the exact original setting.'
+    }
     # Each scenario is attempted even if an earlier one fails, so one bad
     # scenario cannot hide the rest of a baseline suite. Restoration still
     # happens exactly once, in the finally below.

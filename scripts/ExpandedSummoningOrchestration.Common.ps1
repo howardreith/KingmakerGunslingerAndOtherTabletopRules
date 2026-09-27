@@ -21,6 +21,29 @@ branch without a runtime lease, a deployment, or a launch.
 
 Set-StrictMode -Version Latest
 
+function ConvertTo-KmgDisabledExpandedSummoningSettingsBytes {
+    param([Parameter(Mandatory = $true)][byte[]]$OriginalBytes)
+    $encoding = New-Object System.Text.UTF8Encoding($false, $true)
+    $original = $encoding.GetString($OriginalBytes)
+    $settings = $original | ConvertFrom-Json -ErrorAction Stop
+    if ($null -eq $settings -or
+        $null -eq $settings.PSObject.Properties['expanded-summoning'] -or
+        $settings.'expanded-summoning' -isnot [bool] -or
+        -not $settings.'expanded-summoning') {
+        throw 'The installed Expanded Summoning setting must be explicitly enabled before the module-off test.'
+    }
+    $pattern = '("expanded-summoning"\s*:\s*)true\b'
+    $matches = [regex]::Matches($original, $pattern)
+    if ($matches.Count -ne 1) {
+        throw 'The installed Expanded Summoning setting must contain one exact true JSON token.'
+    }
+    $match = $matches[0]
+    $disabled = $original.Substring(0, $match.Index) +
+        $match.Groups[1].Value + 'false' +
+        $original.Substring($match.Index + $match.Length)
+    return ,$encoding.GetBytes($disabled)
+}
+
 <#
 .SYNOPSIS
 Fingerprints a directory tree: one order-stable digest over every relative path

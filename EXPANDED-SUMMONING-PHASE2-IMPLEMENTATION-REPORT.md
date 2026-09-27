@@ -5,7 +5,7 @@ Bat icon and preserved-choice publication are source/build-qualified with
 guarded casts, player path and live inventory PASS. Open-floor Eagle/Bat travel
 and save/load/expiry are also guarded-runtime qualified. Quickened own-tier
 combat is qualified in RTWP and turn-based mode for both creatures.
-Doorway/contact and save-backed module-disabled gates remain. No Phase 2 creature is
+Doorway traversal and visual attack-contact gates remain. No Phase 2 creature is
 yet accepted or ready for owner review.
 
 The accepted baseline is `master` at `2ce70e4` (0.0.140), which advanced after
@@ -121,8 +121,23 @@ zero expanded placements and options while retaining 46 native variants.
 The compatibility transaction restored the original module settings and live
 mod tree. The earlier broad settings result was overall FAIL on unrelated
 Brown Fur and teleportation-scroll checks and is not counted as a pass.
-Loading an existing Eagle/Bat summon with Expanded Summoning off remains an
-open safety check; doorway traversal and attack-impact alignment also remain.
+At the publication-only checkpoint, loading an existing Eagle/Bat summon
+with Expanded Summoning off was still open. Doorway traversal and
+attack-impact alignment remain open.
+
+The save-backed module-off gate is now qualified by the guarded prepare,
+disabled fresh-load/cleanup, and enabled final-absence results
+`20260927T1143486900326Z`, `20260927T1151452804617Z`, and
+`20260927T1159482067877Z`. The disabled run passed all 14 assertions:
+16 exact saved summons loaded and cleaned, Eagle/Bat/Pteranodon retained
+enabled native donor renderers while custom assets stayed off, zero expanded
+placements remained published, and cleanup wrote the working save once.
+The final load found zero KMG summons and wrote nothing. All live-mod tree
+restorations were exact. The first reduced profile timed out on the known
+Craft Magic Items save dependency; it is excluded. A later full-mod run
+completed mechanics but failed only stale visual expectations; it also is not
+counted as a qualified PASS. Repository validation, 1,927 domain cases,
+clean Release and strict package passed. Doorway and impact checks remain.
 
 Draft tranche PR #25 tracks Phase 2A. All Sprints 10-21 remain planned. Human visual and
 gameplay review has not been performed and remains nonblocking for internal
