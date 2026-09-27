@@ -19,7 +19,8 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
   all 813 generated roots and 29 native wrappers passed the guarded native
   player path; the 18-parent inventory/menu/icon audit passed after an exact
   Bat feature audit correction. Remaining Sprint 9 gates are explicit
-  doorway/contact and module-disabled safety. Open-floor native movement and
+  doorway/contact and save-backed module-disabled safety. Disabled publication,
+  open-floor native movement and
   Quickened own-tier combat in RTWP and turn-based mode are now guarded-runtime
   qualified for Eagle and Dire Bat.
   No Phase 2 creature has been claimed complete.
@@ -293,14 +294,40 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
   evidence of a Bat-only material swap failure; doorway geometry and
   normal-camera visual acceptance remain open.
 
+## Sprint 9 disabled publication checkpoint, 2026-09-27
+
+- The broad `observe-feature-module-settings` run
+  `20260927T1030110774186Z` returned FAIL on unrelated Brown Fur and
+  teleportation-scroll assertions. Its Expanded Summoning publication gate
+  passed, but the overall run is excluded as qualification. A new guarded,
+  read-only `observe-expanded-summoning-module-boundary` request accepts one
+  exact Boolean and compares only the active module state and the eighteen
+  native summon parents, plus loaded mod version.
+- `gunslinger-only` compatibility transaction
+  `compat-20260927T104207Z-b887ecd1ad31` ran the narrow scenario via Steam;
+  result `20260927T1046174341970Z-observe-expanded-summoning-module-boundary`
+  is PASS. With the module disabled, expected and observed were exactly
+  `publishedParents=0;placements=0;nativeOptions=0;preservation=0;unclassified=0;placementsExact=True;nativeVariants=46`.
+  Version `0.0.140` passed. Transaction status is `Restored`,
+  `restorationVerified=True`, and the original FeatureModules.json SHA-256
+  `A06601C52F1B98AC54EED309F7415677A3C55FE4C51DAA2556DDE5206C687F17`
+  was restored byte-for-byte. The launcher restored the original live mod tree.
+- Repository validation, 1,926/1,926 domain tests, clean Release build and
+  strict package validation passed. Package SHA-256
+  `bb615ca3479d4aae79950b0fe0a56c6ad463cdb3946eb1c4f82ee5f1e6c4e64b`;
+  DLL SHA-256
+  `955ec69de75f0a4035dba5332d91712bcbde442a98650366fc38c008114f9797`.
+  This proves the disabled publication boundary at mod load. It does not yet
+  establish safe loading of an existing Eagle/Bat summon with the module off.
+
 ## Standing boundaries and next action
 
 `OwnerAcceptedEngineLimitation: ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD`.
 Active holds and mouth occupancy return cleanly released on reload. Do not
 implement hold re-establishment or call this grapple persistence.
 
-Next: finish Sprint 9 doorway navigation, impact alignment and module-disabled
-gates, then advance to Sprint 10. The Bat's preserved placements
+Next: finish Sprint 9 doorway navigation, impact alignment and save-backed
+module-disabled safety, then advance to Sprint 10. The Bat's preserved placements
 are published only after its model, blindsense, icon and guarded live cast gate.
 Continue through A, B and C without an intermediate owner
 decision. Open three stacked PRs as the tranche gates pass. No merge, release,

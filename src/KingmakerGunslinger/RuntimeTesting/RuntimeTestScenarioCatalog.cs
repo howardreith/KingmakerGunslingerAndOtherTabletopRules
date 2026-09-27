@@ -50,6 +50,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "observe-kmg-compatibility-asset-attribution";
         internal const string ObserveFeatureModuleSettings =
             "observe-feature-module-settings";
+        internal const string ObserveExpandedSummoningModuleBoundary =
+            "observe-expanded-summoning-module-boundary";
         internal const string ObserveUrbanBarbarianRageInventory =
             "observe-urban-barbarian-rage-inventory";
         internal const string DisposableUrbanBarbarianFocused =
@@ -627,6 +629,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableFirearmBreakInterruption,
                 ObserveKmgCompatibilityAssetAttribution,
                 ObserveFeatureModuleSettings,
+                ObserveExpandedSummoningModuleBoundary,
                 ObserveUrbanBarbarianRageInventory,
                 DisposableUrbanBarbarianFocused,
                 ObserveBodyguardNativeContracts,

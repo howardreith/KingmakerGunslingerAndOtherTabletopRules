@@ -90,6 +90,7 @@ param(
         'disposable-teleportation-destinations',
         'disposable-teleportation-disabled',
         'observe-expanded-summoning-inventory',
+        'observe-expanded-summoning-module-boundary',
         'observe-expanded-summoning-variant-menu',
         'disposable-expanded-summoning',
         'summon-same-turn-activation',
@@ -185,6 +186,7 @@ if ($CotwProgressionMode -cne 'unchanged' -and
 
 $moduleScenario = @($Scenario | Where-Object { $_ -in @(
     'observe-feature-module-settings',
+    'observe-expanded-summoning-module-boundary',
     'elemental-races-races-unleashed-compatibility') }).Count -gt 0 -or
     (@($Scenario | Where-Object { $_ -ceq
         'observe-vendor-table-contracts' }).Count -gt 0 -and
@@ -353,6 +355,11 @@ try {
         }
         if ($name -ceq 'observe-feature-module-settings') {
             $arguments.Parameters = $Parameters
+        }
+        if ($name -ceq 'observe-expanded-summoning-module-boundary') {
+            $arguments.Parameters = @{
+                expandedSummoning = [bool]$Parameters.expandedSummoning
+            }
         }
         if ($name -ceq 'observe-kmg-compatibility-asset-attribution') {
             $arguments.Parameters = $Parameters

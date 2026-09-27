@@ -227,3 +227,18 @@ A Roc donor control was captured in the same corridor. Its native wing also
 shows the cyan overlay where it crosses the wall, identifying the overlay as
 the game's occlusion presentation rather than a unique Bat material defect.
 The Bat's actual behavior at a doorway still needs a dedicated check.
+
+## Sprint 9: disabled publication boundary, 2026-09-27
+
+The broad feature-module-settings compatibility run observed zero Expanded
+Summoning parents, placements and native options with the module off, but
+returned overall FAIL on unrelated Brown Fur and teleportation-scroll checks.
+I added a one-Boolean, read-only summon boundary request and ran it under the
+guarded `gunslinger-only` compatibility transaction. The exact result
+`20260927T1046174341970Z` passed: zero Expanded Summoning publication on all
+eighteen canonical parents, 46 native variants retained, loaded version
+`0.0.140`. Transaction `compat-20260927T104207Z-b887ecd1ad31` restored
+FeatureModules.json byte-for-byte and the original live mod tree. Repository
+validation, 1,926 domain tests, clean Release build and strict package passed.
+Save-backed module-off behavior remains untested, along with doorway and
+attack-impact alignment.
