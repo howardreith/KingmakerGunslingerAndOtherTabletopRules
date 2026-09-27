@@ -1,7 +1,7 @@
 # Expanded Summoning Phase 2 implementation report
 
-Status: Sprint 9 in progress. The Dire Bat sense is source/build-qualified;
-guarded live qualification, visual work and publication remain pending. No
+Status: Sprint 9 in progress. The Dire Bat sense is source/build-qualified and
+guarded disposable-cast PASS; visual work and publication remain pending. No
 Phase 2 creature is yet accepted or ready for owner review.
 
 The accepted baseline is `master` at `2ce70e4` (0.0.140), which advanced after
@@ -24,7 +24,10 @@ summon test now checks the live unit and donor-sharing bird controls.
 The implementation checkpoint passes repository validation, 1,919 domain
 tests, exact-reference clean Release compilation and strict package validation.
 Its local package and DLL hashes are recorded in the autonomous state; the
-game scenario has not yet run. This is not a Sprint 9 pass.
+guarded game scenario passed on exact candidate `b32c00f0`: 177/177 casts,
+`definition=True;bat=2/2;birds=13/13`, exact unit cleanup and live-install
+restoration. The state file carries the evidence ID and package/DLL hashes.
+This is not a Sprint 9 pass.
 
 Draft tranche PR #25 tracks Phase 2A. All Sprints 10-21 remain planned. Human visual and
 gameplay review has not been performed and remains nonblocking for internal
