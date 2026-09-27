@@ -408,8 +408,24 @@ body contract; beak-weighted vertices intersected its bounds at both (0 m).
 Restoration records `20260927T1255324566498Z` and
 `20260927T1302410049391Z` verify the original 136-file live tree SHA-256
 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
-Eagle attack-impact alignment is a measured open defect; Bat bite contact
-passed this bounded fixture. Doorway traversal remains open.
+The first baked Eagle probe applied its 0.30 view scale twice. Calibration
+run `20260927T1314477538739Z` passed native combat and showed
+`viewForwardDot=1`, but its doubly scaled bounds (about 0.31 x 0.16 x 0.58 m)
+did not match the live rendered presentation; restoration record
+`20260927T1317535013252Z` verifies the original tree. Those weighted
+distances are excluded. The scale-corrected probe passed repository
+validation, 1,927/1,927 domain tests, clean Release and strict package
+validation (package SHA-256
+`d8c66bed8222d7c2fab82cc258a96462c65f029818e3a3f5a1ee524e84d95932`,
+DLL SHA-256 `8f134eb67fabe938afb0200a959bb7a3361b4268d7fdede01323c980515e4c1f`).
+Guarded Eagle result `20260927T1326061196128Z` passed six exact-target
+weapon rules. The beak/head-weighted surface was 0.739-0.798 m from the
+hostile body at two bites; nearest talon-weighted surface was 0.864-0.906 m
+away at four claws. Baked bounds were consistent with a Small rendered bird,
+and view facing dot was 1. Restoration record `20260927T1329140002404Z`
+verifies the original 136-file tree hash above. Eagle attack-impact alignment
+is a measured open defect. Bat bite contact passed its bounded fixture;
+doorway traversal remains open.
 
 Next: fix Eagle's instance-local attack presentation without changing combat
 reach or shared donor assets, prove contact, then qualify doorway traversal.

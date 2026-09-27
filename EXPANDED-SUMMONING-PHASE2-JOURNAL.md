@@ -295,3 +295,16 @@ exact run IDs, hashes and restoration records. Repository validation, all
 1,927 domain cases, clean Release and strict package passed. I will correct
 Eagle's instance-local attack presentation without changing combat reach or
 the shared donor, then qualify doorway movement.
+
+## Sprint 9: Eagle contact coordinate calibration, 2026-09-27
+
+I checked the weighted mesh probe against Unity's live renderer bounds. The
+first baked Eagle vertex conversion applied its 0.30 view scale again, making
+the apparent 1.3 m miss too large; I excluded those distances. The corrected
+guarded run `20260927T1326061196128Z` passed six exact-hostile attacks and
+restored the original live tree. The displayed bird faced the hostile, but
+its beak/head surface stopped 0.739-0.798 m from the body on bites, and its
+nearest talon surface stopped 0.864-0.906 m away on claws. That is the
+bounded visual-travel defect to fix. All 1,927 domain cases, clean Release
+and strict package passed. I will add a bounded instance-local attack lunge,
+then rerun the contact and noncombat visual gates.

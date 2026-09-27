@@ -277,3 +277,11 @@ were 1.27-1.39 m from its bounds at six weapon events, a visual impact defect.
 Bat's beak weighted vertices intersected the bounds at two bites (0 m).
 Both runs restored the original live mod tree. Eagle impact and doorway
 behavior remain open; Bat bite contact passed this bounded fixture.
+
+The first baked Eagle values above applied its 0.30 view scale twice and are
+excluded. Calibration `20260927T1314477538739Z` exposed this. Corrected
+guarded Eagle combat `20260927T1326061196128Z` passed six exact-hostile
+weapon events with facing dot 1; head/beak surface was 0.739-0.798 m from
+the body on bites and nearest talon surface 0.864-0.906 m away on claws.
+This is the valid Eagle attack-contact gap to resolve. Exact original-tree
+restoration and 1,927 domain, clean Release, strict package PASS.
