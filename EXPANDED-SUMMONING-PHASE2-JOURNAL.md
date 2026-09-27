@@ -363,3 +363,9 @@ cannot supply the missing attack, attach, drain and poison values. Because
 `AGENTS.md` forbids network access without explicit authorization, I recorded
 the smallest source-access decision in the Phase 2 blocker file. No Sprint 10
 creature was published and no candidate was left installed.
+
+The owner then authorized network rules lookups for this and future work.
+I read Paizo's legacy Pathfinder 1e Stirge and Giant Wasp entries, recorded
+their exact signature baselines and URLs in the blocker history, and removed
+the source-access stop. This does not itself qualify either creature; next
+is implementation and guarded runtime evidence.

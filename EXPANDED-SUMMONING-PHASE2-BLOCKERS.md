@@ -2,12 +2,23 @@
 
 ## Sprint 10: exact Stirge and Giant Wasp rules source, 2026-09-27
 
-Status: awaiting explicit authorization for a narrow public Pathfinder 1e
-rules lookup, or owner-supplied exact stat blocks. This is a source-access
-gate, not an engine-infeasibility claim. Sprint 9 is internally technically
-qualified; Sprint 10 and later sprints are not complete. Draft PR #25 is open
-and not ready for owner review. No merge, release or permanent deployment
-occurred.
+Status: RESOLVED by the owner's standing network authorization and the
+public Pathfinder 1e reference pages below. This records the historical
+source-access gate, not a current blocker. Sprint 9 is internally technically
+qualified; Sprint 10 and later sprints are not complete. Draft PR #25 remains
+open and unfinished. No merge, release or permanent deployment occurred.
+
+Rules sources: Paizo's legacy Pathfinder Reference Document at
+https://legacy.aonprd.com/bestiary/stirge.html and
+https://legacy.aonprd.com/bestiary/wasp.html (the site states Paizo has
+partnered with Archives of Nethys for the current public rules reference).
+The Stirge is a Tiny magical beast with a touch attack, +8 to maintain an
+established attachment, 1 Constitution damage at the end of each attached
+turn, automatic detach after 4 cumulative damage, and a 10% disease exposure
+on blood drain. The Giant Wasp is a Large vermin with one sting and a
+Constitution-based injury poison at Fortitude DC 18: 1d2 Dexterity damage
+each round for at most six rounds, cured by one successful save. These are
+the required primary stat-block baselines, not an owner balance decision.
 
 The blocked requirements are the Stirge flying touch-attack, attach and
 blood-drain rules and Giant Wasp's stat profile and poison (including exact
@@ -38,21 +49,18 @@ the original 136-file live mod tree; restoration record
 No save was selected, loaded or written by this metadata audit. The feature
 worktree is clean after the blocker record is committed and pushed.
 
-Smallest owner action: authorize network access solely to consult public
-Pathfinder 1e Stirge and Giant Wasp stat/rules pages (prefer the official
-Paizo PRD or an authorized public rules reference), or provide the exact
-creature stat blocks and poison/attach text. This does not request a balance
-decision, art approval, test-operation assistance, or permission to advance
-between the already-authorized sprints.
+Owner action: completed. On 2026-09-27 the owner authorized network lookups
+without further permission requests. No further source-access confirmation
+is needed for the authorized Phase 2 mission.
 
 Ready-to-paste continuation prompt:
 
 > Resume the Expanded Summoning Phase 2 Sprints 9-21 mission from the pushed
 > `codex/expanded-summoning-phase2a-sprints9-13` branch and draft PR #25.
 > Sprint 9 is internally technically qualified; Sprint 10 has a guarded
-> native-donor audit and exact restoration. [I authorize network access only
-> for public Pathfinder 1e Stirge and Giant Wasp rules/stat pages / I provide
-> the exact stat blocks here: ...]. Use that source to implement and qualify
+> native-donor audit and exact restoration. The owner has authorized network
+> rules lookup, and the Stirge/Giant Wasp primary sources are recorded above.
+> Use those sources to implement and qualify
 > Stirge and Giant Wasp, then continue the authorized Sprints 11-21 and three
 > stacked draft PRs under the mission. Do not merge, release, permanently
 > deploy, or begin Sprint 22.
