@@ -60,6 +60,8 @@ namespace KingmakerGunslinger.Assets
             "assets/flying-animals/dire-bat-mesh.json";
         internal const string EagleMeshDataRelativePath =
             "assets/flying-animals/eagle-mesh.json";
+        internal const string GiantWaspMeshDataRelativePath =
+            "assets/flying-animals/giant-wasp-mesh.json";
         internal const int SupportedSchemaVersion = 2;
 
         /// <summary>
@@ -114,6 +116,10 @@ namespace KingmakerGunslinger.Assets
         private static string[] _eagleBoneNames;
         private static Texture2D _eagleAlbedo;
         private static string _eagleStatus = "donor-visual:not-configured";
+        private static Mesh _giantWaspMesh;
+        private static string[] _giantWaspBoneNames;
+        private static Texture2D _giantWaspAlbedo;
+        private static string _giantWaspStatus = "donor-visual:not-configured";
 
         internal static string Status { get { lock (Sync) return _status; } }
 
@@ -184,6 +190,22 @@ namespace KingmakerGunslinger.Assets
             }
         }
 
+        internal static string GiantWaspStatus
+        { get { lock (Sync) return _giantWaspStatus; } }
+
+        internal static bool TryGetGiantWaspVisual(out Mesh mesh,
+            out string[] boneNames, out Texture2D albedo)
+        {
+            lock (Sync)
+            {
+                mesh = _giantWaspMesh;
+                boneNames = _giantWaspBoneNames == null ? null :
+                    (string[])_giantWaspBoneNames.Clone();
+                albedo = _giantWaspAlbedo;
+                return mesh != null && boneNames != null && albedo != null;
+            }
+        }
+
         /// <summary>
         /// Takes the published visual away for the life of the returned scope,
         /// so a guarded scenario can prove the fallback on a live summon without
@@ -239,6 +261,7 @@ namespace KingmakerGunslinger.Assets
             ConfigurePteranodon(context);
             ConfigureDireBat(context);
             ConfigureEagle(context);
+            ConfigureGiantWasp(context);
         }
 
         private static void ConfigurePteranodon(ModContext context)
@@ -459,6 +482,73 @@ namespace KingmakerGunslinger.Assets
                 }
                 context.Logger.Warning("eagle", "mesh.rejected",
                     "The original Eagle visual was rejected; the donor remains active: " +
+                    error.Message);
+            }
+        }
+
+        private static void ConfigureGiantWasp(ModContext context)
+        {
+            if (context == null) throw new ArgumentNullException("context");
+            if (!context.FeatureModules.Active.ExpandedSummoning)
+            {
+                lock (Sync) _giantWaspStatus = "donor-visual:module-disabled";
+                return;
+            }
+            lock (Sync)
+            {
+                if (_giantWaspMesh != null && _giantWaspBoneNames != null &&
+                    _giantWaspAlbedo != null) return;
+            }
+            string path = Path.Combine(context.ModEntry.Path,
+                GiantWaspMeshDataRelativePath.Replace('/', Path.DirectorySeparatorChar));
+            if (!File.Exists(path))
+            {
+                lock (Sync) _giantWaspStatus = "donor-visual:mesh-data-missing";
+                context.Logger.Warning("giant-wasp", "mesh.missing",
+                    "The original Wasp visual is unavailable; the donor remains active: " + path);
+                return;
+            }
+            Mesh mesh = null;
+            Texture2D albedo = null;
+            try
+            {
+                string[] names;
+                AlbedoRequirement requirement;
+                mesh = BuildMesh(File.ReadAllText(path), out names,
+                    out requirement);
+                string reason;
+                albedo = LoadAlbedo(Path.GetDirectoryName(path), requirement,
+                    out reason);
+                if (albedo == null)
+                    throw new InvalidDataException("albedo:" + reason);
+                mesh.name = "KMG_GiantWasp";
+                albedo.name = "KMG_GiantWasp_Albedo";
+                lock (Sync)
+                {
+                    _giantWaspMesh = mesh;
+                    _giantWaspBoneNames = names;
+                    _giantWaspAlbedo = albedo;
+                    _giantWaspStatus = "visual:published";
+                }
+                context.Logger.Info("giant-wasp", "mesh.published",
+                    "Validated original Wasp mesh: vertices=" + mesh.vertexCount +
+                    ";triangles=" + mesh.triangles.Length / 3 +
+                    ";bones=" + names.Length + ";albedo=" +
+                    albedo.width + "x" + albedo.height);
+            }
+            catch (Exception error)
+            {
+                if (mesh != null) UnityEngine.Object.Destroy(mesh);
+                if (albedo != null) UnityEngine.Object.Destroy(albedo);
+                lock (Sync)
+                {
+                    _giantWaspMesh = null;
+                    _giantWaspBoneNames = null;
+                    _giantWaspAlbedo = null;
+                    _giantWaspStatus = "donor-visual:invalid-mesh-data";
+                }
+                context.Logger.Warning("giant-wasp", "mesh.rejected",
+                    "The original Wasp visual was rejected; the donor remains active: " +
                     error.Message);
             }
         }

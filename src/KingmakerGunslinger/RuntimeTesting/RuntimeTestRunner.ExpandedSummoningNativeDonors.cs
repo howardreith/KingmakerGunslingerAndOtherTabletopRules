@@ -12,6 +12,7 @@ using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.FactLogic;
 using KingmakerGunslinger.Bootstrap;
+using KingmakerGunslinger.Assets;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -175,6 +176,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             document["projectiles"] = new JObject {
                 ["total"] = projectiles.Length,
                 ["webCandidates"] = webProjectiles };
+            document["giantWaspVisualStatus"] = PteranodonAssetRuntime.GiantWaspStatus;
 
             string path = Path.Combine(_request.EvidenceDirectory,
                 "native-donor-audit.json");
@@ -202,7 +204,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _context.ModEntry.Info.Version == _request.ExpectedModVersion,
-                    "Unity Mod Manager ModEntry.Info.Version")
+                    "Unity Mod Manager ModEntry.Info.Version"),
+                Assertion("giant-wasp-original-asset-loader",
+                    "visual:published", PteranodonAssetRuntime.GiantWaspStatus,
+                    PteranodonAssetRuntime.GiantWaspStatus == "visual:published",
+                    "shared mesh and albedo parser during mod configuration")
             };
             return CreateResult(assertions.All(value =>
                 value.Status == RuntimeTestStatuses.Pass) ? RuntimeTestStatuses.Pass :

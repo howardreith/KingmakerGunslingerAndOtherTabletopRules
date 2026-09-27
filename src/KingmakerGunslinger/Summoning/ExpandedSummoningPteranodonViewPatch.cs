@@ -48,6 +48,8 @@ namespace KingmakerGunslinger.Summoning
             "KMG_Summoning_Unit_DireBat";
         internal const string EagleBlueprintName =
             "KMG_Summoning_Unit_Eagle";
+        internal const string GiantWaspBlueprintName =
+            "KMG_Summoning_Unit_GiantWasp";
         /// <summary>
         /// The name carried by the private mesh and material the swap installs;
         /// observers recognise the attached state by it.
@@ -55,6 +57,7 @@ namespace KingmakerGunslinger.Summoning
         internal const string CustomVisualName = "KMG_PteranodonMembrane";
         internal const string DireBatVisualName = "KMG_DireBatMembrane";
         internal const string EagleVisualName = "KMG_EagleFeathers";
+        internal const string GiantWaspVisualName = "KMG_GiantWaspMembrane";
         private const string MainTexture = "_MainTex";
 
         /// <summary>
@@ -161,7 +164,9 @@ namespace KingmakerGunslinger.Summoning
                     DireBatBlueprintName, StringComparison.Ordinal)
                     ? "dire-bat" : string.Equals(blueprintName,
                         EagleBlueprintName, StringComparison.Ordinal)
-                        ? "eagle" : null;
+                    ? "eagle" : string.Equals(blueprintName,
+                        GiantWaspBlueprintName, StringComparison.Ordinal)
+                        ? "giant-wasp" : null;
             if (visualKey == null) return;
 
             lock (Applied)
@@ -196,6 +201,12 @@ namespace KingmakerGunslinger.Summoning
                 if (!PteranodonAssetRuntime.TryGetEagleVisual(out source,
                     out boneNames, out albedo))
                     return Fallback(PteranodonAssetRuntime.EagleStatus);
+            }
+            else if (attachment.VisualKey == "giant-wasp")
+            {
+                if (!PteranodonAssetRuntime.TryGetGiantWaspVisual(out source,
+                    out boneNames, out albedo))
+                    return Fallback(PteranodonAssetRuntime.GiantWaspStatus);
             }
             else
             {
@@ -249,7 +260,8 @@ namespace KingmakerGunslinger.Summoning
                 mesh = UnityEngine.Object.Instantiate(source);
                 string visualName = attachment.VisualKey == "dire-bat"
                     ? DireBatVisualName : attachment.VisualKey == "eagle"
-                        ? EagleVisualName : CustomVisualName;
+                        ? EagleVisualName : attachment.VisualKey == "giant-wasp"
+                            ? GiantWaspVisualName : CustomVisualName;
                 mesh.name = visualName;
                 mesh.bindposes = bindposes;
 

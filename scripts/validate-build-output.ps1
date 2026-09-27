@@ -29,7 +29,9 @@ $requiredFiles = @(
     'assets\flying-animals\dire-bat-mesh.json',
     'assets\flying-animals\dire-bat-albedo.png',
     'assets\flying-animals\eagle-mesh.json',
-    'assets\flying-animals\eagle-albedo.png'
+    'assets\flying-animals\eagle-albedo.png',
+    'assets\flying-animals\giant-wasp-mesh.json',
+    'assets\flying-animals\giant-wasp-albedo.png'
 )
 $requiredIcons = @('gunslinger-class','firearm-proficiency','gunsmithing','grit',
     'deeds','nimble','bonus-feat','gun-training','true-grit','rapid-reload',
@@ -84,6 +86,8 @@ $allowedRelativePaths = @{
     'assets\flying-animals\dire-bat-albedo.png' = $true
     'assets\flying-animals\eagle-mesh.json' = $true
     'assets\flying-animals\eagle-albedo.png' = $true
+    'assets\flying-animals\giant-wasp-mesh.json' = $true
+    'assets\flying-animals\giant-wasp-albedo.png' = $true
 }
 
 $unexpected = @()

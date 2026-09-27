@@ -19,8 +19,16 @@ def main():
     parser.add_argument("--out", required=True)
     parser.add_argument("--view", choices=("top", "front", "side"),
                         default="top")
+    parser.add_argument("--scale", type=float, default=11.5)
+    parser.add_argument("--rest-mesh", action="store_true",
+                        help="show authored vertices without the Blender pose")
     args = parser.parse_args(argv)
     bpy.ops.wm.open_mainfile(filepath=str(Path(args.blend).resolve()))
+    if args.rest_mesh:
+        for obj in bpy.data.objects:
+            for modifier in obj.modifiers:
+                if modifier.type == "ARMATURE":
+                    modifier.show_render = False
     scene = bpy.context.scene
     scene.render.engine = "CYCLES"
     scene.cycles.samples = 32
@@ -48,7 +56,7 @@ def main():
     camera.rotation_euler = (target - camera.location).to_track_quat(
         "-Z", "Y").to_euler()
     camera_data.type = "ORTHO"
-    camera_data.ortho_scale = 11.5
+    camera_data.ortho_scale = args.scale
     scene.camera = camera
     for name, location, energy, size in (
             ("Key", (2.0, 8.0, -2.0), 1400, 7),
