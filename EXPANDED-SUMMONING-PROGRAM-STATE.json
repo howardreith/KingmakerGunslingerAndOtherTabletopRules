@@ -1,6 +1,19 @@
 {
   "schemaVersion": 1,
   "program": "Kingmaker Expanded Summoning Ideal Roster",
+  "phase2Mission": {
+    "authority": "Kingmaker_Expanded_Summoning_Phase2_Sprints9-21_Codex_Mission.md in the owner-supplied Phase 2 starter packet",
+    "authorizedSprints": [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21],
+    "supersedesHistoricalMissionAuthorization": true,
+    "acceptedMaster": "2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a",
+    "trancheA": "codex/expanded-summoning-phase2a-sprints9-13",
+    "trancheB": "codex/expanded-summoning-phase2b-sprints14-17",
+    "trancheC": "codex/expanded-summoning-phase2c-sprints18-21",
+    "ownerAcceptedEngineLimitation": "ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD",
+    "releaseAuthorized": false,
+    "mergeAuthorized": false,
+    "sprint22Authorized": false
+  },
   "charter": {
     "title": "Kingmaker_Expanded_Summoning_Implementation_Charter_v1.0.docx",
     "version": "1.0",
