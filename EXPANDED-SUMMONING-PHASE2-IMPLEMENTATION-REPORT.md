@@ -166,3 +166,14 @@ impact therefore remains a measured Sprint 9 defect. Bat bite contact passed
 this bounded fixture. Repository validation, 1,927/1,927 domain tests, clean
 Release and strict package passed (SHA-256
 `e82b3444df52066691ca9be20ce316d65c92dbfa3f77acd9132cf410acd0c5bc`).
+
+The first baked Eagle distances above applied the 0.30 view scale twice and
+are excluded. Guarded calibration `20260927T1314477538739Z` exposed the
+implausibly small baked bounds. With the corrected baked-to-world conversion,
+guarded Eagle run `20260927T1326061196128Z` passed six native attacks and
+measured the actual head/beak surface 0.739-0.798 m from the hostile body at
+two bites and nearest talon surface 0.864-0.906 m away at four claws. Facing
+dot was 1; the remaining visual travel gap is real. The original installation
+was restored exactly. Repository validation, 1,927 domain cases, clean
+Release and strict package passed (SHA-256
+`d8c66bed8222d7c2fab82cc258a96462c65f029818e3a3f5a1ee524e84d95932`).
