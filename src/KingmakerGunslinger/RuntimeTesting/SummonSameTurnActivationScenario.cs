@@ -177,6 +177,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 new Dictionary<UnitEntityData, int>();
             private readonly Dictionary<UnitEntityData, int> _flightTargetAttacksByUnit =
                 new Dictionary<UnitEntityData, int>();
+            private readonly List<string> _flightImpactSamples =
+                new List<string>();
             private readonly List<UnitEntityData> _requestLocalCooldownUnits =
                 new List<UnitEntityData>();
             private UnitEntityData _areaAnchor;
@@ -1614,11 +1616,58 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _nextRoundSummonAttacks++;
                 if (_flightCreature != null && ReferenceEquals(
                     attack.Target, _enemy) && attack.Weapon != null)
+                {
                     Increment(_flightTargetAttacksByUnit, attack.Initiator);
+                    ObserveFlightImpactGeometry(attack);
+                }
                 _diagnostics.Add("summon-attack=round=" + round +
                     ";target=" + Identity(attack.Target) +
                     ";weapon=" + (attack.Weapon == null ? "<none>" :
                         attack.Weapon.Blueprint.name));
+            }
+
+            private void ObserveFlightImpactGeometry(RuleAttackWithWeapon attack)
+            {
+                if (_flightImpactSamples.Count >= 8) return;
+                UnitEntityView source = attack.Initiator.View;
+                UnitEntityView target = attack.Target.View;
+                SkinnedMeshRenderer mesh = source == null ? null : source
+                    .GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                    .FirstOrDefault(value => value != null &&
+                        value.sharedMesh != null);
+                Renderer targetRenderer = target == null ? null : target
+                    .GetComponentsInChildren<Renderer>(true)
+                    .FirstOrDefault(value => value != null && value.enabled);
+                string weapon = attack.Weapon.Blueprint == null ? "<null>" :
+                    attack.Weapon.Blueprint.name;
+                if (mesh == null || targetRenderer == null)
+                {
+                    _flightImpactSamples.Add("weapon=" + weapon +
+                        ";sourceView=" + (source != null) +
+                        ";targetView=" + (target != null) +
+                        ";sourceMesh=" + (mesh != null) +
+                        ";targetRenderer=" + (targetRenderer != null));
+                    return;
+                }
+                Bounds targetBounds = targetRenderer.bounds;
+                string[] anchors = { "Jaw", "Head", "L_Foot0", "R_Foot0" };
+                string distances = string.Join(",", anchors.Select(name =>
+                {
+                    Transform bone = (mesh.bones ?? Array.Empty<Transform>())
+                        .FirstOrDefault(value => value != null &&
+                            value.name == name);
+                    return name + "=" + (bone == null ? "missing" :
+                        Vector3.Distance(bone.position,
+                            targetBounds.ClosestPoint(bone.position))
+                            .ToString("0.###", CultureInfo.InvariantCulture));
+                }).ToArray());
+                _flightImpactSamples.Add("weapon=" + weapon +
+                    ";mesh=" + mesh.sharedMesh.name +
+                    ";target=" + targetBounds.center.ToString("F2") +
+                    ";source=" + source.transform.position.ToString("F2") +
+                    ";distances=" + distances);
+                _diagnostics.Add("flight-impact-geometry=" +
+                    _flightImpactSamples[_flightImpactSamples.Count - 1]);
             }
 
             private void ForceTurnOnce(TurnController turn)

@@ -258,3 +258,14 @@ contamination. No save was accessed.
 | Elephant / Mastodon | View-only 0.90 / 1.15; Elephant remains on shared Mastodon material rather than mutate a native asset. | Live bounds 9.568 < 12.226. Gray recolor intentionally deferred. |
 | Roc | View-only scale 1.10; bounded camera/selection/navigation checks pass. | 67-view visual scenario PASS. |
 | Icons | Exact donor/item/ability sprite, then immutable base-game category fallback. | Called-out canine, feline, reptile, flying, celestial and fiend group distinctions PASS live inventory. |
+
+### Sprint 9 attack-anchor qualification update, 2026-09-27
+
+Guarded own-tier Eagle combat `20260927T1219166168032Z` passed six
+exact-hostile weapon rules, but its jaw and nearest claw-foot rig anchors
+were roughly 2 m from the hostile renderer bounds at those events. Guarded
+Dire Bat combat `20260927T1226258599811Z` passed two exact-hostile bite
+rules with jaw anchors 0.436-0.454 m from the bounds. These are donor-rig
+anchors, so neither result alone establishes authored mesh-tip contact.
+Rendered-contact and doorway behavior remain open for both flyers. Both runs
+restored the original live mod tree exactly.

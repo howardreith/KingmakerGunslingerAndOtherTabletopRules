@@ -117,6 +117,9 @@ namespace KingmakerGunslinger.DomainTests
                 source.Contains("PrepareQuickenedSummon(_spellbook,") &&
                 source.Contains("attack.Target, _enemy") &&
                 source.Contains("AllUnitsAtLeast(_flightTargetAttacksByUnit, 1)") &&
+                source.Contains("ObserveFlightImpactGeometry(attack)") &&
+                source.Contains("targetBounds.ClosestPoint(bone.position)") &&
+                source.Contains("\"Jaw\", \"Head\", \"L_Foot0\", \"R_Foot0\"") &&
                 request.Contains("flight-activation-creature-invalid") &&
                 request.Contains("creatureReview || flightActivation ? 2 : 1") &&
                 launcher.Contains("$Parameters.ContainsKey('flightCreature')") &&
