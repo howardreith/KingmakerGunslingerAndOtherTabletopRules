@@ -598,6 +598,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint9-module-off-visuals", ExpandedSummoningSprint9Tests.ModuleOffPersistenceRequiresUsableDonorViews),
             Case("expanded-summoning.sprint9-flight-combat-fixture", ExpandedSummoningSprint9Tests.FlyingCombatFixtureUsesOwnTierAndExactTarget),
             Case("expanded-summoning.sprint9-eagle-lunge", ExpandedSummoningSprint9Tests.EagleVisualLungeIsBoundedAndRestored),
+            Case("expanded-summoning.sprint10-native-vermin-audit", ExpandedSummoningSprint10Tests.NativeFlyingVerminSurveyStaysMetadataOnly),
             Case("expanded-summoning.sprint9-dire-bat-publication", ExpandedSummoningSprint9Tests.DireBatPublishesOnlyItsPreservedPlacements),
             Case("expanded-summoning.sprint9-flying-persistence", ExpandedSummoningSprint9Tests.EagleAndBatPersistWithTheirOwnViews),
             Case("expanded-summoning.sprint9-dire-bat-asset", ExpandedSummoningSprint9Tests.DireBatOriginalMeshAndPaintingAreBound),

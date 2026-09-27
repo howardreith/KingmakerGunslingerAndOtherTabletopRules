@@ -342,3 +342,16 @@ tests, clean Release and strict package passed. I reviewed source safety,
 rules/roster fidelity, actual renders and corrected contact measurements,
 and restoration evidence. Sprint 9 is internally qualified; owner visual
 approval remains pending and nonblocking. Next is Sprint 10 Stirge/Wasp.
+
+## Sprint 10: native flying-vermin intake, 2026-09-27
+
+I extended the read-only guarded donor audit to named Stirge/Wasp/mosquito
+units and attach, drain and blood mechanic identities. Repository validation,
+all 1,929 domain tests, clean Release and strict package checks passed.
+Guarded runtime result `20260927T1601519083199Z` passed and found no named
+native flying-vermin unit or attach/blood-drain fact or ability among its
+selected blueprints; the sole matching buff was generic ConstitutionDrain.
+The wrapper restored the original live mod exactly (`20260927T1603474656325Z`).
+The supplied rules materials establish tiers and signature roles but do not
+contain exact stat blocks. I am examining existing local mechanics and source
+availability before implementing creature profiles or declaring a blocker.
