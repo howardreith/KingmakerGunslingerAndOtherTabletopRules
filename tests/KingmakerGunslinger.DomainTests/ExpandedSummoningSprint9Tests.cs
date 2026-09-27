@@ -120,6 +120,11 @@ namespace KingmakerGunslinger.DomainTests
                 source.Contains("ObserveFlightImpactGeometry(attack)") &&
                 source.Contains("targetBounds.ClosestPoint(bone.position)") &&
                 source.Contains("\"Jaw\", \"Head\", \"L_Foot0\", \"R_Foot0\"") &&
+                source.Contains("renderer.BakeMesh(baked)") &&
+                source.Contains("renderer.sharedMesh.boneWeights") &&
+                source.Contains("targetBounds.ClosestPoint(point)") &&
+                source.Contains("target.GetComponentsInChildren<SkinnedMeshRenderer>(true)") &&
+                source.Contains("value.sharedMesh.vertexCount >= 100") &&
                 request.Contains("flight-activation-creature-invalid") &&
                 request.Contains("creatureReview || flightActivation ? 2 : 1") &&
                 launcher.Contains("$Parameters.ContainsKey('flightCreature')") &&

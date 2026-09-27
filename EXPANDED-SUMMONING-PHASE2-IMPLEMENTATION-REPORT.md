@@ -146,10 +146,23 @@ technical acceptance under the owner mission.
 The latest guarded Eagle and Dire Bat combat runs
 `20260927T1219166168032Z` and `20260927T1226258599811Z` both passed native
 attack correlation and exact live-tree restoration. New read-only geometry
-samples show Eagle's jaw and nearest claw-foot rig bones roughly 2 m from the
-hostile bounds at six weapon events, versus Bat's jaw roughly 0.44 m away at
-two bite events. This is an anchor diagnostic, not proof of mesh-tip contact.
-Rendered-surface measurement and doorway traversal remain Sprint 9 gates.
+samples initially showed Eagle's jaw and nearest claw-foot rig bones roughly
+2 m away, versus Bat's jaw roughly 0.44 m away. The follow-up baked-surface
+run `20260927T1240150768739Z` revealed that the target selector measured the
+hostile's `L_WeaponMarker`, not its body. All these geometry distances are
+excluded from visual alignment qualification; the native attack correlation
+remains valid. Body-renderer contact and doorway traversal remain Sprint 9 gates.
 The candidate passed repository validation, 1,927/1,927 domain tests, clean
 Release and strict package validation (package SHA-256
 `666e32b5c8f3b7bffddce3dead39170c46be6269ebfa663f6a3d35eac990d2e9`).
+
+Corrected guarded body-renderer runs `20260927T1252224741767Z` (Eagle) and
+`20260927T1259362389907Z` (Bat) both passed exact-target native combat and
+restored the original live tree. The target was the 1,819-bone `Character`
+renderer, not a marker. At two Eagle bites and four claws, weighted beak and
+talon surface vertices remained 1.27-1.39 m from the body bounds; Bat's
+weighted beak intersected those bounds at both bites (0 m). Eagle visual
+impact therefore remains a measured Sprint 9 defect. Bat bite contact passed
+this bounded fixture. Repository validation, 1,927/1,927 domain tests, clean
+Release and strict package passed (SHA-256
+`e82b3444df52066691ca9be20ce316d65c92dbfa3f77acd9132cf410acd0c5bc`).
