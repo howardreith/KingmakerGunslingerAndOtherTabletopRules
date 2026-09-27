@@ -362,6 +362,14 @@ are wall-occluded; the first RTWP overhead frame is partly dissolved.
 The intact second RTWP frame confirms the pose defect. A forward body
 lunge alone is insufficient; target-directed tail motion remains to be
 proved. Mechanical two-mode cadence continues to pass.
+Guarded request-local Tail-bone probes `20260927T2310527552766Z`
+(turn-based) and `20260927T2314172123373Z` (RTWP) passed their native
+two-sting scenarios. The probe restored the bone after each capture. Its
+baked tip moved from 2.04/2.049 m to inside the target bounds in turn-based;
+RTWP moved from 2.137 to 0.012 m and 3.51 to 1.198 m. Same-frame overhead
+renders did not establish a visibly improved sting pose, and the second
+RTWP geometry still missed. This is diagnostic only, not a contact pass or
+a production animation. All twelve Wasp choices remain suppressed.
 Source commit `9f011014` and guarded inventory
 `20260927T1804369885102Z` passed 48/48 structural/menu assertions with
 exact live-tree restoration. Source rules:

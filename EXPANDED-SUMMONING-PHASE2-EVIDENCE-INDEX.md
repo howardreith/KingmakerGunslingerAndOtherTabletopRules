@@ -47,3 +47,9 @@ was present, but an added direct `SpellDescriptor.MindAffecting` mask
 assertion failed. Native `VerminType` instead grants `VerminImmunities`;
 the passing run tests the observed rule decision and records the mask as
 diagnostic only. Its restoration also passed.
+
+Request-local Wasp Tail-pose diagnostic: guarded turn-based
+`20260927T2310527552766Z`, RTWP `20260927T2314172123373Z`, and exact
+restoration `20260927T2317241914821Z-summon-same-turn-activation.json`.
+Both combat modes passed two exact stings. Baked geometry improved but the
+same-frame images did not establish visible contact; Wasp remains hidden.
