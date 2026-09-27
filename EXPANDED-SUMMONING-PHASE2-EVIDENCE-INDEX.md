@@ -12,6 +12,7 @@ original 136-file live tree has SHA-256
 | Sprint 10 Wasp hidden registration and menu | `20260927T1804369885102Z-observe-expanded-summoning-inventory` | `20260927T1808371924124Z-observe-expanded-summoning-inventory.json` | Wasp placements suppressed; no visible choice. |
 | Sprint 10 Wasp poison and private view | `20260927T1912579609072Z-disposable-expanded-summoning` | `20260927T1916362556609Z-disposable-expanded-summoning.json` | 21/21 assertions; DC 18, sting/poison/cure and visual 2/2; full Wasp qualification pending. |
 | Sprint 10 Wasp suppressed movement and camera review | `20260927T1955333075608Z-working-save-expanded-summoning-creature-review` | `20260927T1959253902969Z-working-save-expanded-summoning-creature-review.json` | Native 12.345 m travel through a connected doorway and cleanup passed; crowded camera frames do not qualify target contact or visual acceptance. |
+| Sprint 10 Wasp private quantity casts | `20260927T2015561300256Z-disposable-expanded-summoning` | `20260927T2019330163598Z-disposable-expanded-summoning.json` | 22/22 assertions, 183 casts, four Wasp quantity commands across SM/SNA and 14/14 private visual attachments; placements remain hidden. |
 
 Diagnostic failures `20260927T1841288896478Z`,
 `20260927T1853108579217Z` and `20260927T1903352617466Z` are excluded
