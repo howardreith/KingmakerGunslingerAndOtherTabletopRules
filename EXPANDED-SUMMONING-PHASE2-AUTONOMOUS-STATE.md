@@ -431,6 +431,40 @@ Next: fix Eagle's instance-local attack presentation without changing combat
 reach or shared donor assets, prove contact, then qualify doorway traversal.
 Sprints 10-21 remain planned; this checkpoint is not Sprint 9 completion.
 
+## Sprint 9 Eagle attack presentation checkpoint, 2026-09-27
+
+An Eagle-only component now offsets its attached skeleton root by at most
+0.95 m during native attacks, with bounded approach, impact hold and return.
+The entity, view root, movement agent, selection and mechanical reach stay
+unchanged; Bat and native donor views have no component. The component restores
+its offset on disable/destruction and the donor visual remains the attach
+fallback. Focused policy/source tests, repository validation, 1,928/1,928
+domain tests, clean Release and strict package validation passed. Package
+SHA-256 `2eeb725842c9e3329dce8967b5f22031aab0f1d580cae2e655a7bab0f2796b69`;
+DLL SHA-256 `a38afad258f86e4fd59bb0bf9915260f58ee8db210a22ca7a7694a5f6154c4ca`.
+
+Guarded Steam turn-based Eagle result `20260927T1345424022344Z` passed six
+exact-hostile native attacks. At the weapon events the beak/head weighted
+surface was 0-0.144 m from the hostile body for bites, and the nearest talon
+surface was 0-0.226 m away for claws. The lunge reported 0.95 m at each
+impact. The original 136-file live tree was restored in
+`20260927T1348486221199Z` to SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+Guarded working-save Eagle/Bat creature review
+`20260927T1353291620814Z` passed live renderer, native travel and cleanup
+for both: Eagle travelled 7.945 m to within 0.176 m of destination; Bat
+travelled 6.255 m to within 1.2 m. Both had four intact party-camera renders
+and zero surviving reviewed summons after dismissal. The original tree was
+restored in `20260927T1358060993442Z` to the same hash. These renders do not
+establish the visual appearance of the live combat lunge; measured attack
+contact is the mechanical visual-geometry evidence. RTWP contact was
+separately qualified by guarded result
+`20260927T1404176347439Z`: one exact-hostile native bite, 0.106 m
+head-weighted surface gap to the hostile body, 0.95 m visual offset, facing
+dot 1. Restoration record `20260927T1407214071366Z` returned the original
+tree to the same hash. Doorway traversal remains open. HumanReview:
+NOT_PERFORMED_NONBLOCKING.
+
 ## Standing boundaries and next action
 
 `OwnerAcceptedEngineLimitation: ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD`.

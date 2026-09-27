@@ -177,3 +177,24 @@ dot was 1; the remaining visual travel gap is real. The original installation
 was restored exactly. Repository validation, 1,927 domain cases, clean
 Release and strict package passed (SHA-256
 `d8c66bed8222d7c2fab82cc258a96462c65f029818e3a3f5a1ee524e84d95932`).
+
+The Eagle-only visual skeleton lunge keeps the entity, view root, movement
+agent, selection and native attack reach fixed while adding no more than
+0.95 m of visual reach during a swing. It returns after impact and on view
+disable/destruction. Bat and native donors have no lunge component. Focused
+tests and the full 1,928-case domain suite, repository validation, clean
+Release and strict package passed (package SHA-256
+`2eeb725842c9e3329dce8967b5f22031aab0f1d580cae2e655a7bab0f2796b69`,
+DLL SHA-256 `a38afad258f86e4fd59bb0bf9915260f58ee8db210a22ca7a7694a5f6154c4ca`).
+Guarded Eagle combat `20260927T1345424022344Z` passed six exact-hostile
+native weapon rules; weighted beak and talon surfaces lay within 0-0.226 m
+of the hostile body at impact. Guarded working-save creature review
+`20260927T1353291620814Z` passed Eagle/Bat native travel, intact renders and
+zero surviving reviewed summons after dismissal. Both runtime wrappers
+restored the exact pre-run live tree; records `20260927T1348486221199Z` and
+`20260927T1358060993442Z`. Guarded RTWP result
+`20260927T1404176347439Z` passed an exact-hostile native bite with the
+head-weighted surface 0.106 m from the hostile body; restoration record
+`20260927T1407214071366Z` returned the original live tree. Actual doorway
+traversal remains open. Technical visual evidence does not constitute owner approval;
+HumanReview: NOT_PERFORMED_NONBLOCKING.
