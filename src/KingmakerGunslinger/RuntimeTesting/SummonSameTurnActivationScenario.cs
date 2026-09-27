@@ -133,6 +133,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             private readonly ModContext _context;
             private readonly RuntimeTestRequest _request;
             private readonly ScenarioKind _kind;
+            private readonly string _flightCreature;
             private readonly bool _requestLocalFixture;
             private readonly DateTime _started = DateTime.UtcNow;
             private readonly Stopwatch _elapsed = Stopwatch.StartNew();
@@ -173,6 +174,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             private readonly Dictionary<UnitEntityData, int> _nextCommandsByUnit =
                 new Dictionary<UnitEntityData, int>();
             private readonly Dictionary<UnitEntityData, int> _sameAttacksByUnit =
+                new Dictionary<UnitEntityData, int>();
+            private readonly Dictionary<UnitEntityData, int> _flightTargetAttacksByUnit =
                 new Dictionary<UnitEntityData, int>();
             private readonly List<UnitEntityData> _requestLocalCooldownUnits =
                 new List<UnitEntityData>();
@@ -256,6 +259,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             private int _nextRoundSummonCommands;
             private int _firstSummonAttackRound;
             private int _sameRoundSummonAttacks;
+            private int _flightRtwpAttackWaitFrames;
             private int _nextRoundSummonAttacks;
             private bool _castCaptureActive;
             private int _acadamaeCompletedBefore;
@@ -272,6 +276,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _context = context;
                 _request = request;
                 _kind = ResolveKind(request.Scenario);
+                _flightCreature = (string)request.Parameters?["flightCreature"];
                 _requestLocalFixture = RuntimeTestScenarioCatalog
                     .IsSummonSameTurnCompatibilityScenario(request.Scenario);
                 _evidence.Case = _kind.ToString();
@@ -1346,7 +1351,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _evidence.DuplicateDisposition = string.Join(",",
                     duplicateDispositions.ToArray());
                 _evidence.DuplicateNoOp = duplicateNoOp;
-                _evidence.ExactSummonKind = _kind != ScenarioKind.Multiple ||
+                _evidence.ExactSummonKind = _flightCreature != null ?
+                    _summons.All(value => value.Blueprint != null &&
+                        value.Blueprint.name == (_flightCreature == "eagle" ?
+                            "KMG_Summoning_Unit_Eagle" :
+                            "KMG_Summoning_Unit_DireBat")) :
+                    _kind != ScenarioKind.Multiple ||
                     _summons.All(value => value.Blueprint != null &&
                         value.Blueprint.name == "KMG_Summoning_Unit_Eagle");
                 _evidence.AccelerationCorrelationTrace =
@@ -1394,6 +1404,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         value.Descriptor.Buffs.GetBuff(BlueprintRoot.Instance
                             .SystemMechanics.SummonedUnitAppearBuff) == null);
                     if (!live || !active || !appearanceCleared) return;
+                    if (_flightCreature != null &&
+                        !AllUnitsAtLeast(_flightTargetAttacksByUnit, 1) &&
+                        _flightRtwpAttackWaitFrames++ < 600) return;
                     _evidence.RtwpNativeActive = true;
                     _evidence.RtwpNativeAppearanceCleared = true;
                     _evidence.RtwpCurrentTurnAbsent =
@@ -1599,6 +1612,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 else if (round == _castRound + 1)
                     _nextRoundSummonAttacks++;
+                if (_flightCreature != null && ReferenceEquals(
+                    attack.Target, _enemy) && attack.Weapon != null)
+                    Increment(_flightTargetAttacksByUnit, attack.Initiator);
                 _diagnostics.Add("summon-attack=round=" + round +
                     ";target=" + Identity(attack.Target) +
                     ";weapon=" + (attack.Weapon == null ? "<none>" :
@@ -1891,6 +1907,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                     path, realPath,
                     "exact installed runtime objects and reference identity");
 
+                if (_flightCreature != null)
+                    Add("sprint9-flight-" + _flightCreature + "-" +
+                            (_kind == ScenarioKind.RtwpControl ? "rtwp" : "turn-based"),
+                        "the exact Eagle or Dire Bat is summoned through its own-tier parent and lands a native weapon rule on the exact hostile in the requested combat mode",
+                        "creature=" + _flightCreature + ";exact=" +
+                            _evidence.ExactSummonKind + ";turnBased=" +
+                            _evidence.TurnBasedAtCast + ";targetAttacks=" +
+                            string.Join(",", _summons.Select(value =>
+                                Count(_flightTargetAttacksByUnit, value))
+                                .ToArray()) + ";rtwpWaitFrames=" +
+                            _flightRtwpAttackWaitFrames,
+                        _summons.Count == 1 && _evidence.ExactSummonKind &&
+                            _evidence.TurnBasedAtCast ==
+                                (_kind != ScenarioKind.RtwpControl) &&
+                            AllUnitsAtLeast(_flightTargetAttacksByUnit, 1),
+                        "RuleSummonUnit, native combat mode and correlated RuleAttackWithWeapon target identity");
+
                 if (_kind == ScenarioKind.RtwpControl)
                 {
                     Add("rtwp-native-summon-activation",
@@ -2084,7 +2117,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             AllUnitsAtLeast(_sameCommandsByUnit, 1) &&
                             AllUnitsAtLeast(_nextCommandsByUnit, 1),
                             "UnitCommands.Run correlated to exact summon and CurrentTurn");
-                        if (_kind == ScenarioKind.Quickened)
+                        if (_kind == ScenarioKind.Quickened &&
+                            _flightCreature == null)
                             Add("accelerated-summon-single-action",
                                 "tier-one dog resolves exactly one weapon rule in its one cast-round opportunity",
                                 "first=" + _firstSummonAttackRound +
@@ -2416,7 +2450,23 @@ namespace KingmakerGunslinger.RuntimeTesting
             private AbilityData PrepareCaseAbility()
             {
                 AbilityData result;
-                if (_kind == ScenarioKind.Multiple)
+                if (_flightCreature != null)
+                {
+                    int tier = _flightCreature == "eagle" ? 1 : 3;
+                    SummonVariantSpec variant = ExpandedSummoningCatalog
+                        .GenerateVariants(SummonFamily.Monster).Single(value =>
+                            value.Creature.Key == _flightCreature &&
+                            value.ParentTier == tier &&
+                            value.Multiplicity == SummonMultiplicity.One);
+                    string selected = ExpandedSummoningIdentityCatalog
+                        .AbilitySymbol(variant).Replace('.', '_')
+                        .Replace('-', '_');
+                    result = PrepareQuickenedSummon(_spellbook,
+                        tier == 1 ? SummonMonsterOneGuid :
+                            SummonMonsterThreeGuid,
+                        selected, tier, tier + 4, out _castSlot);
+                }
+                else if (_kind == ScenarioKind.Multiple)
                     result = PrepareQuickenedSummon(_spellbook,
                         SummonMonsterThreeGuid, ExpandedEagleMultipleName,
                         3, 7, out _castSlot);
@@ -2431,7 +2481,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     result = PrepareQuickenedSummon(_spellbook,
                         SummonMonsterOneGuid, NativeDogName, 1, 5,
                         out _castSlot);
-                _evidence.SpellLevel = _kind == ScenarioKind.Multiple ? 7 :
+                _evidence.SpellLevel = _flightCreature == "dire-bat" ||
+                    _kind == ScenarioKind.Multiple ? 7 :
                     _kind == ScenarioKind.Quickened ||
                     _kind == ScenarioKind.RtwpControl ? 5 : 1;
                 _evidence.SlotAvailableBefore = _castSlot != null &&
