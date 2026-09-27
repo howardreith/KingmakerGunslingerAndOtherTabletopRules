@@ -712,7 +712,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// renderer was enabled, so a black or half-dissolved frame cannot
         /// pass as a review image.
         /// </summary>
-        private static string WriteExpandedSummoningPartyCameraCapture(
+        internal static string WriteExpandedSummoningPartyCameraCapture(
             UnitEntityData unit, string evidenceDirectory, string fileName)
         {
             if (unit == null || unit.View == null ||
@@ -791,6 +791,70 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
+                RenderTexture.active = priorActive;
+                if (renderTexture != null)
+                {
+                    renderTexture.Release();
+                    UnityEngine.Object.Destroy(renderTexture);
+                }
+                if (output != null) UnityEngine.Object.Destroy(output);
+            }
+        }
+
+        /// <summary>Request-local overhead view of a live strike; restores the
+        /// game's exact camera pose and render targets before returning.</summary>
+        internal static string WriteExpandedSummoningOverheadStrikeCapture(
+            UnitEntityData attacker, UnitEntityData target,
+            string evidenceDirectory, string fileName)
+        {
+            if (attacker == null || attacker.View == null || target == null ||
+                target.View == null || string.IsNullOrWhiteSpace(evidenceDirectory))
+                return "png=<none>;reason=missing-unit";
+            CameraRig rig = TeleportationCastingCamera();
+            Camera camera = rig == null ? null : rig.Camera;
+            if (camera == null) camera = Camera.main;
+            if (camera == null) return "png=<none>;reason=no-camera";
+            Vector3 priorPosition = camera.transform.position;
+            Quaternion priorRotation = camera.transform.rotation;
+            RenderTexture priorTarget = camera.targetTexture;
+            RenderTexture priorActive = RenderTexture.active;
+            RenderTexture renderTexture = null;
+            Texture2D output = null;
+            try
+            {
+                Vector3 midpoint = (attacker.Position + target.Position) * 0.5f;
+                camera.transform.position = midpoint + Vector3.up * 9f;
+                camera.transform.rotation = Quaternion.LookRotation(
+                    Vector3.down, Vector3.forward);
+                renderTexture = new RenderTexture(MotionReviewCaptureWidth,
+                    MotionReviewCaptureHeight, 24, RenderTextureFormat.ARGB32);
+                camera.targetTexture = renderTexture;
+                camera.Render();
+                Vector3 attackerViewport = camera.WorldToViewportPoint(
+                    attacker.View.transform.position);
+                Vector3 targetViewport = camera.WorldToViewportPoint(
+                    target.View.transform.position);
+                RenderTexture.active = renderTexture;
+                output = new Texture2D(MotionReviewCaptureWidth,
+                    MotionReviewCaptureHeight, TextureFormat.RGBA32, false, false);
+                output.ReadPixels(new Rect(0, 0, MotionReviewCaptureWidth,
+                    MotionReviewCaptureHeight), 0, 0);
+                output.Apply(false, false);
+                byte[] png = EncodeExpandedSummoningPng(output);
+                if (png == null || png.Length < 4096)
+                    return "png=<none>;reason=empty-render";
+                File.WriteAllBytes(Path.Combine(evidenceDirectory, fileName), png);
+                return "png=" + fileName + ";bytes=" + png.Length +
+                    ";attackerViewport=" + attackerViewport.ToString("F2") +
+                    ";targetViewport=" + targetViewport.ToString("F2");
+            }
+            catch (Exception error)
+            { return "png=<none>;reason=" + error.GetType().Name; }
+            finally
+            {
+                camera.targetTexture = priorTarget;
+                camera.transform.position = priorPosition;
+                camera.transform.rotation = priorRotation;
                 RenderTexture.active = priorActive;
                 if (renderTexture != null)
                 {

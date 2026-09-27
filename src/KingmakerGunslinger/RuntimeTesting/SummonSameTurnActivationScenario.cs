@@ -181,6 +181,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 new Dictionary<UnitEntityData, int>();
             private readonly List<string> _flightImpactSamples =
                 new List<string>();
+            private int _waspImpactCaptures;
             private readonly List<UnitEntityData> _requestLocalCooldownUnits =
                 new List<UnitEntityData>();
             private UnitEntityData _areaAnchor;
@@ -1704,6 +1705,43 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ";weightedSurface=" + weightedSurface);
                 _diagnostics.Add("flight-impact-geometry=" +
                     _flightImpactSamples[_flightImpactSamples.Count - 1]);
+                if (_flightCreature == "giant-wasp" &&
+                    _waspImpactCaptures < 2)
+                {
+                    string fileName = "giant-wasp-" +
+                        (_kind == ScenarioKind.RtwpControl ? "rtwp" :
+                            "turn-based") + "-impact-" +
+                        (_waspImpactCaptures + 1) + ".png";
+                    _waspImpactCaptures++;
+                    try
+                    {
+                        string capture = RuntimeTestRunner
+                            .WriteExpandedSummoningPartyCameraCapture(
+                                attack.Initiator, _request.EvidenceDirectory,
+                                fileName);
+                        _diagnostics.Add("wasp-impact-camera=" + capture);
+                        if (capture.StartsWith("png=" + fileName + ";",
+                                StringComparison.Ordinal))
+                            _files.Add(Path.Combine(_request.EvidenceDirectory,
+                                fileName));
+                        string overheadName = fileName.Replace(".png",
+                            "-overhead.png");
+                        string overhead = RuntimeTestRunner
+                            .WriteExpandedSummoningOverheadStrikeCapture(
+                                attack.Initiator, attack.Target,
+                                _request.EvidenceDirectory, overheadName);
+                        _diagnostics.Add("wasp-impact-overhead=" + overhead);
+                        if (overhead.StartsWith("png=" + overheadName + ";",
+                                StringComparison.Ordinal))
+                            _files.Add(Path.Combine(_request.EvidenceDirectory,
+                                overheadName));
+                    }
+                    catch (Exception error)
+                    {
+                        _diagnostics.Add("wasp-impact-camera=unavailable:" +
+                            error.GetType().Name);
+                    }
+                }
             }
 
             private static string DescribeFlightWeightedSurface(
