@@ -59,3 +59,9 @@ RTWP `20260927T2334367843649Z`, exact restoration
 `20260927T2337441522077Z-summon-same-turn-activation.json`. Both combat
 modes passed two exact stings. Delayed images change pose, but doorway
 clipping and a 1.193 m second RTWP gap prevent visual qualification.
+
+Stirge rules-policy checkpoint: repository validation, 1,939 domain tests,
+clean Release and strict package PASS. Guarded working-save smoke
+`20260927T2353348639066Z` PASS and exact original installation restoration
+`20260927T2356206464811Z-working-save-smoke.json` PASS. This is only a
+load/safety check; no Stirge runtime mechanics are installed yet.
