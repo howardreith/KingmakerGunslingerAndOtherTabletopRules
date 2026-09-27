@@ -180,3 +180,27 @@ long shutdown outlasted the guarded lease and prevented wrapper restoration.
 After the game exited naturally, verified the exact deployed hash and used
 the guarded restore tool; the 136-file baseline hash was recovered. Player
 path needs a clean rerun after Bat icon/publication. Sprint 9 is still open.
+
+## Sprint 9: publication, persistence and open-floor travel, 2026-09-27
+
+The original Bat icon and all 14 preserved Bat placements are published.
+Guarded player path passed 813/813 generated roots and 29/29 native wrappers;
+inventory passed 48/48 assertions. A working-save prepare/reload/expiry trio
+passed 14/14 each with original Eagle and Bat views reattached after load
+and removed after native expiry. The state file records exact run IDs and
+package hashes for these checkpoints.
+
+The creature review previously labeled captures "moving" without measuring
+travel. A focused flight assertion now selects a reachable same-graph point
+and records actual unit position and native agent velocity. Early runs
+disproved an awake-registration theory. Waiting for the native appearance
+buff to clear mattered. A temporary forced-path probe moved the summons but
+could not attribute travel to the command, so the final harness removed it.
+Guarded result `20260927T0911579435138Z` passed without a forced path: Eagle
+moved 7.943 m to within 0.18 m of the target; Dire Bat moved 6.195 m to
+within 1.26 m. Both native commands were accepted and start-eligible. The
+`IsStarted` flag was not sampled true in this run, and remains diagnostic
+output. Repository validation, all 1,924 domain tests, clean Release build,
+strict package validation and exact live-tree restoration passed. The state
+file records the package hash and restoration ID. This establishes open-floor
+travel; doorway, impact, combat modes and module-disabled gates remain open.

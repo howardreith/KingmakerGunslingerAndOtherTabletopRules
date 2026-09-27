@@ -9,6 +9,32 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class ExpandedSummoningSprint9Tests
     {
+        internal static void FlyingReviewRejectsStaticAnimationCaptures()
+        {
+            string root = Path.Combine(Environment.CurrentDirectory, "src",
+                "KingmakerGunslinger", "RuntimeTesting");
+            string review = File.ReadAllText(Path.Combine(root,
+                "RuntimeTestRunner.PteranodonReview.cs"));
+            string scenario = File.ReadAllText(Path.Combine(root,
+                "RuntimeTestRunner.ExpandedSummoningCreatureReview.cs"));
+            Assertions.True(review.Contains("MovementAgent.TickMovement(delta)") &&
+                review.Contains("_motionReviewMaxPlanarTravel >= 0.75f") &&
+                review.Contains("_motionReviewMaxDestinationApproach >= 0.75f") &&
+                review.Contains("_motionReviewMinDestinationGap <= 2f") &&
+                review.Contains("_motionReviewMaxVelocity > 0.01f") &&
+                !review.Contains(".ForcePath(") &&
+                review.Contains("_motionReviewAppearanceCleared &&") &&
+                review.Contains("_motionReviewAwakeRestored &&") &&
+                review.Contains("PrepareSprint9FlightMovement(unit)") &&
+                review.Contains("Sprint9FlightLineClear(graph, start, value)") &&
+                review.Contains("value.nearest.clampedPosition) >= 2.5f"),
+                "The flight review must move a native agent and measure travel, not accept static animation frames.");
+            Assertions.True(scenario.Contains(
+                "expanded-summoning-flight-travel-") &&
+                scenario.Contains("MotionReviewTravelValid"),
+                "Eagle and Bat must fail the runtime review when measured travel is absent.");
+        }
+
         internal static void DireBatPublishesOnlyItsPreservedPlacements()
         {
             SummonVariantSpec[] all = ExpandedSummoningCatalog

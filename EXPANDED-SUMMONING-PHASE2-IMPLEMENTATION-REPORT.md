@@ -2,8 +2,9 @@
 
 Status: Sprint 9 in progress. The Dire Bat sense, original Bat/Eagle visuals,
 Bat icon and preserved-choice publication are source/build-qualified with
-guarded casts, player path and live inventory PASS. Motion/contact, combat-mode,
-module-disabled gates remain. No
+guarded casts, player path and live inventory PASS. Open-floor Eagle/Bat travel
+and save/load/expiry are also guarded-runtime qualified. Doorway/contact,
+combat-mode and module-disabled gates remain. No
 Phase 2 creature is yet accepted or ready for owner review.
 
 The accepted baseline is `master` at `2ce70e4` (0.0.140), which advanced after
@@ -90,6 +91,17 @@ Repository validation, 1,923/1,923 domain tests, clean Release compilation
 and strict package validation passed on this fixture checkpoint. The result
 proves save/load and expiry safety for the two visuals, not real doorway travel
 or attack contact.
+
+The Sprint 9 creature review now gates Eagle/Bat on native move acceptance,
+appearance readiness, measured travel toward a reachable same-graph target,
+target proximity and nonzero movement-agent velocity. The final harness does
+not force a path. Guarded result `20260927T0911579435138Z` passed: Eagle
+traveled 7.943 m to within 0.18 m of its target; Dire Bat traveled 6.195 m
+to within 1.26 m. Both commands were accepted and start-eligible. The
+`IsStarted` flag was not observed in this run, so exact command lifecycle
+remains uncertain. Validation, all 1,924 domain tests, clean Release build,
+strict package and exact restoration passed. This is an open-floor movement
+checkpoint; doorway travel and actual attack contact remain open.
 
 Draft tranche PR #25 tracks Phase 2A. All Sprints 10-21 remain planned. Human visual and
 gameplay review has not been performed and remains nonblocking for internal
