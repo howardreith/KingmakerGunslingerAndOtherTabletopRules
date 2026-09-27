@@ -533,3 +533,25 @@ original 136-file live tree at SHA-256
 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`;
 restoration `20260927T2223192246293Z`. Repository validation, 1,938
 domain cases, clean Release and strict package validation passed.
+
+## Sprint 10: Wasp actual-impact visual diagnosis, 2026-09-27
+
+The first guarded image batch `20260927T2235521854887Z` (turn-based) and
+`20260927T2238573277718Z` (RTWP) captured two party-camera frames at real
+native sting rules in each mode. They were valid, lit renders, but the
+doorway wall occluded the Wasp and hostile. I added a request-local overhead
+camera render that restores its exact camera pose and render targets before
+returning. Final guarded runs `20260927T2251029714353Z` and
+`20260927T2254096344270Z` both passed mechanics and produced two overhead
+plus two party-camera PNGs per mode. The overhead views show the original
+Wasp mesh but its abdomen and stinger extend away from the hostile during
+the native attack. The first RTWP frame remains partly dissolved; the
+second is intact and displays the misaligned pose clearly. A whole-body
+forward lunge alone would not correct the backwards stinger. This is a
+visual contact defect, not a native attack-cadence failure. All Wasp
+placements remain suppressed. Restoration
+`20260927T2257092555149Z-summon-same-turn-activation.json` returned the
+original 136-file installation at SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+Repository validation, 1,938 domain cases, clean Release and strict package
+validation passed. Next: reversible target-directed tail-pose probe.

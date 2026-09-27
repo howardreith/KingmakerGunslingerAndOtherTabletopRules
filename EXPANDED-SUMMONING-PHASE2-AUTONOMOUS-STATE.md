@@ -790,3 +790,24 @@ DLL SHA-256:
 `404653BC60B5FC371FB56156E64C3F5C027A924C7D5A56E8C9FF99FDF2C31281`.
 Next: view-target contact, clipping, lifecycle, icon and visual clarity;
 then Stirge.
+
+## Sprint 10 Wasp real-impact camera diagnosis, 2026-09-27
+
+Final guarded turn-based `20260927T2251029714353Z` and RTWP
+`20260927T2254096344270Z` both passed exact two-sting mechanics and each
+produced two party-camera and two overhead PNGs at native impact. The
+party camera has a doorway wall in front of the Wasp; the temporary overhead
+camera is restored after every capture. Overhead frames show the Wasp's
+abdomen/stinger pointed away from the target, including the intact second
+RTWP strike. The first RTWP frame was partly dissolved. Visual strike
+contact is a real defect; Wasp remains suppressed. Shared restoration
+`20260927T2257092555149Z-summon-same-turn-activation.json` returned the
+original 136-file live tree at SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+Repository validation, 1,938 full domain cases, clean Release and strict
+package checks passed. Package SHA-256:
+`1F1EB4B50AD94D59F0E767002891BB569111E2A11D663D23BE61A1A2A6910954`;
+DLL SHA-256:
+`E6E757498CC15D6ED7CC71F4EFEE8F17C89487C5CB3DD457D7AB9DA74EC924CD`.
+Next: a reversible target-directed tail-pose probe, then contact/lifecycle,
+icon and visual clarity, then Stirge.

@@ -210,6 +210,9 @@ namespace KingmakerGunslinger.DomainTests
                 scenario.Contains("_flightCreature == \"giant-wasp\" ? 2 : 1") &&
                 scenario.Contains("new[] { \"Tail\" }") &&
                 scenario.Contains("sprint10-flight-") &&
+                scenario.Contains("_waspImpactCaptures < 2") &&
+                scenario.Contains("WriteExpandedSummoningPartyCameraCapture(") &&
+                scenario.Contains("WriteExpandedSummoningOverheadStrikeCapture(") &&
                 request.Contains("\"eagle\", \"dire-bat\", \"giant-wasp\"") &&
                 launcher.Contains("@('eagle', 'dire-bat', 'giant-wasp')") &&
                 automation.Contains("@('eagle', 'dire-bat', 'giant-wasp')"),
