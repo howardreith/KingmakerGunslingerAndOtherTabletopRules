@@ -80,12 +80,12 @@ namespace KingmakerGunslinger.DomainTests
                         SummonFamily.NaturesAlly))
                     .Count(SummonVisibilityCatalog.IsPublished),
                 "Visible summon placement count changed.");
-            Assertions.Equal(0,
+            Assertions.Equal(12,
                 ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
                     .Concat(ExpandedSummoningCatalog.GenerateVariants(
                         SummonFamily.NaturesAlly))
                     .Count(value => !SummonVisibilityCatalog.IsPublished(value)),
-                "No registered summon placement may remain suppressed.");
+                "Only Giant Wasp's unfinished placements may remain suppressed.");
         }
 
         internal static void DisplayOrderGroupsSinglesBeforeQuantities()

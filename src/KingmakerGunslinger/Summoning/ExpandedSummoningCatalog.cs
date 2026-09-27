@@ -26,11 +26,11 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Creatures.Length != 81) throw new InvalidOperationException("Expanded Summoning unique creature count must be 81.");
+            if (Creatures.Length != 82) throw new InvalidOperationException("Expanded Summoning unique creature count must be 82.");
             if (Creatures.Select(v => v.Key).Distinct(StringComparer.Ordinal).Count() != Creatures.Length)
                 throw new InvalidOperationException("Duplicate creature key.");
-            ValidateFamily(SummonFamily.Monster, 74, 414);
-            ValidateFamily(SummonFamily.NaturesAlly, 71, 399);
+            ValidateFamily(SummonFamily.Monster, 75, 420);
+            ValidateFamily(SummonFamily.NaturesAlly, 72, 405);
         }
 
         private static void ValidateFamily(SummonFamily family, int roster, int placements)
@@ -56,7 +56,8 @@ namespace KingmakerGunslinger.Summoning
                 C("dire-bear","Dire Bear",6,true,6), C("dire-tiger","Smilodon",6,true,6,"Smilodon"), C("huge-air-elemental","Huge Air Elemental",6,false,6), C("huge-earth-elemental","Huge Earth Elemental",6,false,6), C("huge-fire-elemental","Huge Fire Elemental",6,false,6), C("huge-water-elemental","Huge Water Elemental",6,false,6), C("elephant","Elephant",6,true,6,"Mastodon"), C("erinyes-devil","Erinyes Devil",6,false,null), C("invisible-stalker","Invisible Stalker",6,false,null,"Air Elemental"), C("shadow-demon","Shadow Demon",6,false,null,"Soul Eater / Ankou"), C("succubus","Succubus",6,false,null,"Nymph / Tiefling"), C("shambling-mound","Shambling Mound",null,false,6),
                 C("greater-air-elemental","Greater Air Elemental",7,false,7), C("greater-earth-elemental","Greater Earth Elemental",7,false,7), C("greater-fire-elemental","Greater Fire Elemental",7,false,7), C("greater-water-elemental","Greater Water Elemental",7,false,7), C("mastodon","Mastodon",7,true,7), C("roc","Roc",7,true,7), C("bebelith","Bebelith",7,false,null,"Doomspider"), C("giant-flytrap","Giant Flytrap",null,false,7),
                 C("elder-air-elemental","Elder Air Elemental",8,false,8), C("elder-earth-elemental","Elder Earth Elemental",8,false,8), C("elder-fire-elemental","Elder Fire Elemental",8,false,8), C("elder-water-elemental","Elder Water Elemental",8,false,8), C("purple-worm","Purple Worm",null,false,8),
-                C("ghaele-azata","Ghaele Azata",9,false,null), C("pixie","Pixie",null,false,9,"Pixie / Nixie / Nymph")
+                C("ghaele-azata","Ghaele Azata",9,false,null), C("pixie","Pixie",null,false,9,"Pixie / Nixie / Nymph"),
+                C("giant-wasp","Giant Wasp",4,true,4)
             };
         }
 

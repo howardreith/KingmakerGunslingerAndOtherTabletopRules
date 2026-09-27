@@ -39,6 +39,7 @@ namespace KingmakerGunslinger.Summoning
         internal static void Validate()
         {
             string[] visibleCatalog = ExpandedSummoningCatalog.All
+                .Where(IsPublishedSomewhere)
                 .Select(value => value.Key).ToArray();
             string[] split = { "redcap", "axiomite", "soul-eater", "bogeyman",
                 "movanic-deva", "frost-giant", "thanadaemon" };
@@ -61,7 +62,8 @@ namespace KingmakerGunslinger.Summoning
 
         private static SummonProjectIconSpec[] Build()
         {
-            var result = ExpandedSummoningCatalog.All.Select(value => new SummonProjectIconSpec(
+            var result = ExpandedSummoningCatalog.All.Where(IsPublishedSomewhere)
+                .Select(value => new SummonProjectIconSpec(
                     value.Key, value.DisplayName, SummonProjectIconScope.KmgCatalog))
                 .ToList();
             Add(result, SummonProjectIconScope.SplitNative,
@@ -73,6 +75,15 @@ namespace KingmakerGunslinger.Summoning
                 "mite", "Mite", "manticore", "Manticore", "nereid",
                 "Nereid", "hamadryad", "Hamadryad");
             return result.ToArray();
+        }
+
+        internal static bool IsPublishedSomewhere(SummonCreatureSpec creature)
+        {
+            return ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
+                .Concat(ExpandedSummoningCatalog.GenerateVariants(
+                    SummonFamily.NaturesAlly))
+                .Any(value => value.Creature.Key == creature.Key &&
+                    SummonVisibilityCatalog.IsPublished(value));
         }
 
         private static void Add(ICollection<SummonProjectIconSpec> values,
