@@ -683,3 +683,25 @@ its DLL was
 No full Wasp qualification or publication is claimed. Next: Wasp motion,
 attack-contact, immunities, quantity, cleanup and save/load checks, then
 Stirge attach and blood drain. Continue Sprint 10.
+
+## Sprint 10 Wasp guarded movement and visual diagnostic, 2026-09-27
+
+The suppressed Wasp is now admitted only to its guarded working-save creature
+review. The final run `20260927T1955333075608Z` passed native 12.345 m planar
+movement, a connected doorway crossing, four lit/intact camera captures and
+zero surviving summons. Its attack capture is animation-only, not a live
+strike. A fifth diagnostic frame temporarily hid and restored the one
+auxiliary `AttackLine` renderer; cyan silhouettes persisted, including one
+at a distant wall. Native occlusion display is an inference, not proven.
+The crowded frames do not qualify visual clarity or target contact.
+Installation restoration `20260927T1959253902969Z` verified the original
+136-file tree, SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+
+Repository validation, 1,934/1,934 domain tests, clean Release and strict
+package validation passed. Package SHA-256:
+`5AE609E8C383588C294DE9CFB9CB00113B6C823AA548CD94C748AE9B9309C01A`;
+DLL SHA-256:
+`7C21C3FC8A31E2D078FF56DC2E3873D989326626767471DE5A641D71256F5BEA`.
+Wasp remains suppressed. Next: real target-contact and cadence fixture,
+immunities and quantity/lifecycle checks, then Stirge.

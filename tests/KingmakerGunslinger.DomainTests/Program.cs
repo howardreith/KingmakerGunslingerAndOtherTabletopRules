@@ -603,6 +603,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint10-wasp-poison-policy", ExpandedSummoningSprint10Tests.GiantWaspPoisonTracksConstitutionAndTabletopExposure),
             Case("expanded-summoning.sprint10-wasp-original-visual", ExpandedSummoningSprint10Tests.GiantWaspOriginalVisualUsesAuditedInstanceBinding),
             Case("expanded-summoning.sprint10-suppressed-icon", ExpandedSummoningSprint10Tests.SuppressedWaspHasNoVisibleIconConsumer),
+            Case("expanded-summoning.sprint10-wasp-hidden-review", ExpandedSummoningSprint10Tests.WaspPrepublicationReviewKeepsTheMenuHidden),
             Case("expanded-summoning.sprint9-dire-bat-publication", ExpandedSummoningSprint9Tests.DireBatPublishesOnlyItsPreservedPlacements),
             Case("expanded-summoning.sprint9-flying-persistence", ExpandedSummoningSprint9Tests.EagleAndBatPersistWithTheirOwnViews),
             Case("expanded-summoning.sprint9-dire-bat-asset", ExpandedSummoningSprint9Tests.DireBatOriginalMeshAndPaintingAreBound),

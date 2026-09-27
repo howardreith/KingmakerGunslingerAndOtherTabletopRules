@@ -448,7 +448,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             string name = unit == null || unit.Blueprint == null ? null :
                 unit.Blueprint.name;
             return name == ExpandedSummoningPteranodonViewPatch.EagleBlueprintName ||
-                name == ExpandedSummoningPteranodonViewPatch.DireBatBlueprintName;
+                name == ExpandedSummoningPteranodonViewPatch.DireBatBlueprintName ||
+                name == ExpandedSummoningPteranodonViewPatch.GiantWaspBlueprintName;
         }
 
         private Vector3 PrepareSprint9FlightMovement(UnitEntityData unit)
