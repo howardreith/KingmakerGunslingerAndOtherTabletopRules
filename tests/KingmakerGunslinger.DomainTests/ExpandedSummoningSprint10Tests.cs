@@ -9,7 +9,7 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class ExpandedSummoningSprint10Tests
     {
-        internal const int AppendedLedgerIdentities = 28;
+        internal const int AppendedLedgerIdentities = 29;
 
         internal static void GiantWaspRegisteredUnderSuppressionAtExactTiers()
         {
@@ -81,9 +81,10 @@ namespace KingmakerGunslinger.DomainTests
                 .Facts.Contains("WaspPoison"),
                 "The Wasp unit must carry its dedicated poison feature.");
             SummoningIdentitySpec[] poison = ExpandedSummoningIdentityCatalog
-                .Build().Where(value => value.Symbol.StartsWith(
-                    "KMG.Summoning.Natural.GiantWasp.",
-                    StringComparison.Ordinal)).ToArray();
+                .Build().Where(value => value.Symbol ==
+                    "KMG.Summoning.Natural.GiantWasp.Poison" ||
+                    value.Symbol ==
+                    "KMG.Summoning.Natural.GiantWasp.Venom").ToArray();
             Assertions.Equal(2, poison.Length,
                 "The poison feature and saved venom buff have separate identities.");
             Assertions.True(poison.Any(value => value.PlannedType ==
@@ -174,6 +175,22 @@ namespace KingmakerGunslinger.DomainTests
                 runtime.Contains("RemoveFact(onWasp)") &&
                 runtime.Contains("RemoveFact(onHuman)"),
                 "The guarded Wasp immunity check must compare native mind-affecting buff outcomes and clean both units.");
+        }
+
+        internal static void WaspHasAnOwnedSpeciesMarker()
+        {
+            SummoningIdentitySpec marker = ExpandedSummoningIdentityCatalog
+                .Build().Single(value => value.Symbol ==
+                    "KMG.Summoning.Natural.GiantWasp.UnitType");
+            Assertions.Equal("BlueprintUnitType", marker.PlannedType,
+                "Wasp must have an append-only inspectable species identity.");
+            string builder = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "Blueprints", "ExpandedSummoningNaturalBuilder.cs"));
+            Assertions.True(builder.Contains("unit.Type = Require<BlueprintUnitType>") &&
+                builder.Contains("type.KnowledgeStat = StatType.SkillLoreNature") &&
+                builder.Contains("type.Image = null"),
+                "Wasp must not inherit the Eagle donor's type or image.");
         }
 
         internal static void GiantWaspOriginalVisualUsesAuditedInstanceBinding()
