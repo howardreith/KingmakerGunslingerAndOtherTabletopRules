@@ -40,7 +40,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "horse", "pony", "owlbear", "cyclop", "frostgiant", "giantfrost",
             "shambl", "flytrap", "worm", "mephit", "tiger", "smilodon",
             "leopard", "cheetah", "bear", "monitor", "lizard", "spider",
-            "pixie", "nixie", "mound", "giant"
+            "pixie", "nixie", "mound", "giant", "wasp", "stirge",
+            "mosquito"
         };
 
         private static readonly string[] NativeDonorFactTerms =
@@ -48,7 +49,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "grab", "grapple", "constrict", "swallow", "tremorsense",
             "blindsense", "web", "pounce", "rake", "trip", "sprint", "flash",
             "insight", "breath", "poison", "naturalarmor", "plant", "regenerat",
-            "fasthealing", "ferocity", "rockthrow", "rock"
+            "fasthealing", "ferocity", "rockthrow", "rock", "blood",
+            "attach", "drain"
         };
 
         private static readonly string[] NativeDonorAbilityTerms =
@@ -56,13 +58,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             "web", "breath", "stinkingcloud", "glitterdust", "acidarrow",
             "blur", "magicmissile", "windwall", "chillmetal", "heatmetal",
             "pyrotechnics", "gaseous", "softenearth", "gustofwind",
-            "scorchingray", "swallow", "grapple", "grab", "flash", "sprint"
+            "scorchingray", "swallow", "grapple", "grab", "flash", "sprint",
+            "blood", "attach", "drain"
         };
 
         private static readonly string[] NativeDonorBuffTerms =
         {
             "grapple", "grab", "swallow", "web", "entangle", "constrict",
-            "sleep", "paralyz", "sprint", "flash", "insight", "pounce"
+            "sleep", "paralyz", "sprint", "flash", "insight", "pounce",
+            "blood", "attach", "drain"
         };
 
         private static readonly string[] NativeDonorProjectileTerms =
