@@ -493,3 +493,25 @@ Three earlier diagnostic runs are excluded from qualification. Repository
 validation, 1,936 domain cases, clean Release and strict package validation
 passed. Wasp remains suppressed pending species identity, live strike
 cadence/contact, lifecycle and visual clarity; Stirge remains pending.
+
+## Sprint 10: Wasp species identity checkpoint, 2026-09-27
+
+The Eagle visual donor left an `EagleGiant` inspectable unit-type marker on
+the Wasp. I appended one owned `BlueprintUnitType` identity and assigned it
+only to the Wasp, with a Giant Wasp name, Lore (Nature) knowledge category,
+and no borrowed Eagle image. The type image remains unassigned while the
+summon is suppressed and needs its own disposition before publication.
+
+The final guarded result `20260927T2152154541742Z` passed 23/23 assertions:
+the live type is `KMG_Summoning_Natural_GiantWasp_UnitType`, native
+`VerminType` grants `VerminImmunities`, and paired RuleApplyBuff decisions
+remain Wasp immune/ineligible versus human nonimmune/eligible. The control
+buff did not install in this fixture. A diagnostic run with an additional
+direct component-mask assertion failed and is excluded from qualification;
+the native granted fact and rule outcome are the relevant evidence.
+Restoration `20260927T2155531149844Z` returned the original 136-file live
+tree at SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+Repository validation, 1,937/1,937 domain cases, clean Release and strict
+package validation passed. Wasp remains hidden pending combat contact,
+cadence, lifecycle and art; Stirge remains pending.
