@@ -12,10 +12,12 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
 - Accepted dependency: `master` / `origin/master` at
   `2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a`, the merged PR #24 Favored
   Class integration. The owner packet's expected `2943a02d` is its ancestor.
-- Branch head at intake: `2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a`.
-- Exact Phase 2 tested candidate: none yet. Implementation status: planned;
-  publication status: unchanged from accepted master. No Phase 2 creature has
-  been claimed complete.
+- Branch head at intake: `2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a`;
+  first pushed intake checkpoint: `359e346ecb6a094552f096869ecb9c81a2d291bf`.
+- Current Sprint 9 sub-item: Dire Bat-only imprecise blindsense feature at
+  40 feet. Source/build-qualified, pending guarded in-game assertion. Eagle
+  and Bat visual work, icon integration, and Bat publication remain planned.
+  No Phase 2 creature has been claimed complete.
 - HumanReview: NOT_PERFORMED_NONBLOCKING. Internal Phase 2 reviews: pending.
 - Blockers: none established. A difficult rig is not by itself a blocker.
 
@@ -55,15 +57,38 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
   the detailed charter, generated traceability ledger, and controlling Phase 2
   mission all place it in Sprint 9. Follow Sprint 9.
 
+## Sprint 9 mechanical checkpoint in progress
+
+- One new append-only identity, `KMG.Summoning.Natural.DireBat.Blindsense` /
+  `5dcc039bc9674208a51e4babcd8a30ee` (`BlueprintFeature`), is registered
+  in all module states and attached only to Dire Bat. It carries the native
+  `Blindsense` component with `Blindsight=false` and range 40 feet. The native
+  Blindsight feature was rejected because it also grants blindness immunity.
+- The guarded `disposable-expanded-summoning` scenario now asserts the
+  exact feature and native live sense part on every Bat cast, and absence from
+  Eagle, Pteranodon, and Roc. It has not yet been run on this candidate.
+- The new focused test was observed failing before implementation. Current
+  `scripts/Build-Local.ps1`: repository wrapper PASS, domain 1,919/1,919
+  PASS, exact-reference clean Release build PASS, strict UMM package PASS.
+  Package SHA-256 `ac939b2bfe88c24cc2d20f1f4429d0b91701d6e6c4f08e0457a96d963e2c7af2`;
+  DLL SHA-256 `a1a5021b6552fb77cce9ca77b3f8f81e6a143952e7d2962032db95b8e1a601ef`.
+  These are source-qualified hashes; no game correctness claim follows.
+- A generated original Dire Bat icon source is temporarily held under ignored
+  `artifacts/phase2/dire-bat-icon-source.png` (SHA-256
+  `CC1B58F8802B5795198F37548786E84CA133F084C38CF9AB3167E17866607510`).
+  It is not integrated or published. Restore it to the approved source family
+  when the Bat is ready; do not mistake the bitmap for owner visual approval.
+
 ## Standing boundaries and next action
 
 `OwnerAcceptedEngineLimitation: ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD`.
 Active holds and mouth occupancy return cleanly released on reload. Do not
 implement hold re-establishment or call this grapple persistence.
 
-Next: inspect the local approved Pteranodon rig capture and source generator;
-design an instance-local Eagle/Bat visual extension with native fallback;
-write focused failing Sprint 9 tests; implement and validate each narrow change.
+Next: commit and push the source-qualified blinded-sense candidate, then run
+guarded `disposable-expanded-summoning` through the Steam harness on the clean
+candidate and inspect its sense assertion and restoration. Continue with an
+instance-local Eagle/Bat visual extension with native fallback.
 Do not unhide Dire Bat until its model, blindsense, icon, mechanics, and live
 qualification pass. Continue through A, B and C without an intermediate owner
 decision. Open three stacked PRs as the tranche gates pass. No merge, release,

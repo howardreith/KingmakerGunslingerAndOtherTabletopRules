@@ -21,7 +21,7 @@ VERSION = "0.0.140"
 INFORMATIONAL_VERSION = "0.0.140-favored-class-integration"
 PACKAGE = "KingmakerGunslinger-0.0.140-local-runtime.zip"
 PACKAGE_SUFFIX = "favored-class-integration"
-DETERMINISTIC_TEST_COUNT = 1918
+DETERMINISTIC_TEST_COUNT = 1919
 STATIC_KEY = "favoredClassIntegration140"
 
 # Exact ordered (symbol, guid) pairs this candidate appends after the
@@ -255,7 +255,9 @@ def validate(root: Path) -> None:
     # Favored-class misfire reductions (G01/G18) made the scatter all-roll
     # aggregate use the effective threshold that decided each native roll.
     validate_sprint32.SCATTER_MISFIRE_AGGREGATE_TOKEN = "IsMisfire(misfireThreshold)"
-    baseline.AUTHORIZED_APPENDED_AFTER = APPENDED
+    baseline.AUTHORIZED_APPENDED_AFTER = APPENDED + (
+        ("KMG.Summoning.Natural.DireBat.Blindsense", "5dcc039bc9674208a51e4babcd8a30ee"),
+    )
     # Chains through the 0.0.139 release, which hands these to its baseline.
     release139.VERSION = VERSION
     release139.INFORMATIONAL_VERSION = INFORMATIONAL_VERSION
