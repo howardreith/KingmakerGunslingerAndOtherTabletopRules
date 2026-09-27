@@ -139,9 +139,9 @@ namespace KingmakerGunslinger.DomainTests
                     ExpandedSummoningSprint7Tests.AppendedLedgerIdentities +
                     (ExpandedSummoningSprint8Tests.AppendedLedgerIdentities + ExpandedSummoningCorrectionTests.AppendedLedgerIdentities) +
                     KingmakerGunslinger.FavoredClass.FavoredClassIdentityCatalog.IdentityCount +
-                    KingmakerGunslinger.ElementalRaces.ElementalMostlyHumanPolicy.IdentityCount,
+                    KingmakerGunslinger.ElementalRaces.ElementalMostlyHumanPolicy.IdentityCount + 1,
                 entries.Length,
-                "Manifest must be the preserved ledger plus 43 progression identities, the Expanded Summoning Phase 1 appends and the later Favored Class and Mostly Human blocks.");
+                "Manifest preserves accepted blocks and adds one Phase 2 Dire Bat sense feature.");
             string prefix = string.Concat(entries.Take(PreservedManifestEntries)
                 .Select(value => string.Join("|", new[] {
                     (string)value["symbol"], (string)value["guid"],

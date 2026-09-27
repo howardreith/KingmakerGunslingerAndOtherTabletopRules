@@ -466,7 +466,7 @@ and listed with family, module, enhancement, Reliable flag and price in
 
 The optional Favored Class integration appends its owned full/partial leaves
 after the Expanded Summoning Phase 1 append (0.0.140), for
-2460 stable identifiers: 2458 active and 2 reserved (2172 before the merge with 0.0.139). Every pre-existing GUID is unchanged. The symbols use the
+2461 stable identifiers: 2459 active and 2 reserved (2172 before the merge with 0.0.139). Every pre-existing GUID is unchanged. The symbols use the
 `KMG.FavoredClass.<Class>.<Effect>[.<Target>].{Full|Partial}` pattern. They
 register on every load in a contained registry, independently of the host and
 of the publication profile, so saved investments always resolve. The exact

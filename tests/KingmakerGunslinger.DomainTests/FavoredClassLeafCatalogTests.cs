@@ -19,7 +19,8 @@ namespace KingmakerGunslinger.DomainTests
             ExpandedSummoningSprint8Tests.AppendedLedgerIdentities +
             ExpandedSummoningCorrectionTests.AppendedLedgerIdentities;
 
-        // L08: committed identities only; manifest tail == catalog, in order.
+        // L08: the committed Favored Class block remains exact and in order;
+        // the separately authorized Phase 2 feature follows Mostly Human.
         internal static void ManifestTailIsExactlyTheCommittedIdentities()
         {
             JToken[] entries = JObject.Parse(File.ReadAllText(Path.Combine(
@@ -27,8 +28,14 @@ namespace KingmakerGunslinger.DomainTests
             IList<FavoredClassIdentity> identities = FavoredClassIdentityCatalog.All;
             // The Mostly Human companion block follows (ElementalMostlyHumanTests).
             Assertions.Equal(PrecedingManifestEntries + identities.Count +
-                KingmakerGunslinger.ElementalRaces.ElementalMostlyHumanPolicy.IdentityCount,
-                entries.Length, "Favored-class and Mostly Human blocks are the manifest tail.");
+                KingmakerGunslinger.ElementalRaces.ElementalMostlyHumanPolicy.IdentityCount + 1,
+                entries.Length, "Phase 2 adds one feature after the accepted blocks.");
+            Assertions.Equal("KMG.Summoning.Natural.DireBat.Blindsense",
+                (string)entries[entries.Length - 1]["symbol"],
+                "The only new tail identity is Dire Bat blindsense.");
+            Assertions.Equal("5dcc039bc9674208a51e4babcd8a30ee",
+                (string)entries[entries.Length - 1]["guid"],
+                "The Dire Bat sense identity is stable.");
             JToken[] tail = entries.Skip(PrecedingManifestEntries).Take(identities.Count).ToArray();
             Assertions.Equal(identities.Count, tail.Length, "Favored-class manifest block size.");
             for (int index = 0; index < identities.Count; index++)

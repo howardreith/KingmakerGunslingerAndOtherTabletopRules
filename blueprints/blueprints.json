@@ -19687,6 +19687,14 @@
       "status": "active",
       "milestone": "Mostly Human companion trait",
       "notes": "Save-bearing visible Mostly Human racial trait for Undine; grants the shared identity; the Aquan language portion is documented as nonfunctional."
+    },
+    {
+      "symbol": "KMG.Summoning.Natural.DireBat.Blindsense",
+      "guid": "5dcc039bc9674208a51e4babcd8a30ee",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
     }
   ]
 }
