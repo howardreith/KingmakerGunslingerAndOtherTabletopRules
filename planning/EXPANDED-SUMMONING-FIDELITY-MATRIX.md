@@ -325,8 +325,14 @@ retains for round saves. Guarded mechanical run
 failed-save continuation, successful-save cure, and private 16-bone visual
 attachment (2/2); the working save's enemy-damage scale of 0.8 truncated
 one rolled 1 to zero on the next round, so that single tick is not evidence
-of positive subsequent damage. Motion, impact alignment, lifecycle and
-quantity review remain open. All twelve placements stay suppressed; no
+of positive subsequent damage. Guarded working-save review
+`20260927T1955333075608Z` passed native 12.345 m planar travel, connected
+doorway crossing and complete cleanup. The four camera frames show the
+original striped body and moving wings but are crowded by walls and shelves;
+a fifth frame with its auxiliary renderer hidden retained cyan silhouettes,
+consistent with native occlusion display. Clean attack-to-target contact,
+combat cadence, immunities, lifecycle and quantity review remain open. All
+twelve placements stay suppressed; no
 published player choice or full Wasp combat qualification is claimed.
 Source commit `9f011014` and guarded inventory
 `20260927T1804369885102Z` passed 48/48 structural/menu assertions with

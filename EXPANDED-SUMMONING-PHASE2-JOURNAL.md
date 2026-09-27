@@ -446,3 +446,18 @@ Repository validation, 1,933 full domain tests, clean Release and strict
 package validation passed. Wasp remains suppressed pending motion, impact,
 immunity, lifecycle, quantity, save/load and icon review; Stirge remains
 unimplemented. Continue Sprint 10.
+
+## Sprint 10: suppressed Wasp movement review, 2026-09-27
+
+I extended the guarded working-save review only for the hidden Wasp and
+required its native move to reach the connected room through the surveyed
+doorway. The final `20260927T1955333075608Z` run passed 12.345 m planar
+travel and cleanup. Four camera frames showed the original striped Wasp;
+the destination was visually crowded by a bookcase and wall. A diagnostic
+fifth frame hid the view's one auxiliary renderer in `try/finally`, but cyan
+silhouettes remained in front of the Wasp and at a distant wall. Native
+occlusion is plausible; the renderer source was not conclusively identified.
+The recorded attack is only an animation handle, not a real strike, so
+contact/cadence and clipping remain open. All Wasp placements are still
+suppressed. Repository validation, 1,934 domain tests, clean Release and
+strict package checks passed; the wrapper restored the original live tree.
