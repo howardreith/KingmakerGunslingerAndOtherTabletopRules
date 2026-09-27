@@ -16819,6 +16819,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ExpandedSummoningPteranodonViewPatch.ObservedOutcomes.Count;
             BlueprintScriptableObject[] blueprints = BlueprintBootstrap.Library
                 .GetAllBlueprints().Where(value => value != null).ToArray();
+            BlueprintFeature direBatSense = blueprints.OfType<BlueprintFeature>()
+                .Single(value => value.name == ExpandedSummoningInternalName(
+                    "KMG.Summoning.Natural.DireBat.Blindsense"));
+            var direBatSenseComponents = direBatSense.ComponentsArray.OfType<
+                Kingmaker.Designers.Mechanics.Facts.Blindsense>().ToArray();
+            bool direBatSenseDefinition = direBatSense.ComponentsArray.Length == 1 &&
+                direBatSenseComponents.Length == 1 &&
+                !direBatSenseComponents[0].Blindsight &&
+                Math.Abs(direBatSenseComponents[0].Range.Meters -
+                    new Kingmaker.Utility.Feet(40).Meters) < 0.001f;
             IReadOnlyList<SummonVariantSpec> monster =
                 ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster);
             IReadOnlyList<SummonVariantSpec> ally =
@@ -16865,7 +16875,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             int completed = 0, spawnedTotal = 0, singleExact = 0,
                 oneD3Legal = 0, oneD4PlusOneLegal = 0, sameKind = 0,
                 durationExact = 0, legalPlacement = 0,
-                illegalPlacementRejected = 0, pteranodonCrowdLegal = 0;
+                illegalPlacementRejected = 0, pteranodonCrowdLegal = 0,
+                direBatSenseChecked = 0, direBatSensePassed = 0,
+                birdSenseChecked = 0, birdSenseClean = 0;
             var observedCounts = new List<string>();
             var durationObservations = new List<string>();
             var durationProfiles = new HashSet<string>(StringComparer.Ordinal);
@@ -17084,6 +17096,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                         throw new InvalidOperationException(
                             "Spawn result mismatch: count=" + count + ";kind=" +
                             exactKind + ";expected=" + expectedUnit.name + ".");
+                    if (variant.Creature.Key == "dire-bat")
+                    {
+                        foreach (UnitEntityData unit in spawned)
+                        {
+                            direBatSenseChecked++;
+                            var part = unit.Get<Kingmaker.UnitLogic.Parts.UnitPartBlindsense>();
+                            if (unit.Descriptor.HasFact(direBatSense) && part != null &&
+                                part.Reach(caster)) direBatSensePassed++;
+                        }
+                    }
+                    else if (variant.Creature.Key == "eagle" ||
+                        variant.Creature.Key == "pteranodon" ||
+                        variant.Creature.Key == "roc")
+                    {
+                        foreach (UnitEntityData unit in spawned)
+                        {
+                            birdSenseChecked++;
+                            if (!unit.Descriptor.HasFact(direBatSense)) birdSenseClean++;
+                        }
+                    }
                     // Sprint 2 needs the Pteranodon's attached view contract -
                     // the controller, clips, attack and impact event frames, and
                     // effect anchors that only exist once a view attaches to a
@@ -17323,6 +17355,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("expanded-summoning-disposable-cleanup",
                     "exact party and global-unit snapshots restored", observed,
                     cleaned, "per-cast UnitEntityData.Dispose and final exact snapshots"),
+                Assertion("expanded-summoning-dire-bat-blindsense",
+                    "every live Dire Bat has only imprecise native blindsense at 40 feet, with no feature leak to donor-sharing birds",
+                    "definition=" + direBatSenseDefinition + ";bat=" +
+                        direBatSensePassed + "/" + direBatSenseChecked +
+                        ";birds=" + birdSenseClean + "/" + birdSenseChecked,
+                    direBatSenseDefinition && direBatSenseChecked >= 2 &&
+                        direBatSensePassed == direBatSenseChecked &&
+                        birdSenseChecked >= 2 && birdSenseClean == birdSenseChecked,
+                    "exact registered feature, live UnitPartBlindsense.Reach, and Eagle/Pteranodon/Roc negative controls"),
                 // Sprint 2 authoring input, captured from a live attached view
                 // during this run's Pteranodon cast. The controller and clips
                 // only exist once a view attaches to a unit, so this is the one

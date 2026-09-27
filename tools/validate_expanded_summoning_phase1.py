@@ -342,6 +342,7 @@ PHASE1 = {
     "packageFileCountWithSoundBank": 251,
 }
 SPRINT3 = PHASE1  # the pins below read the current figures
+PHASE2_ADDITIONS = {"KMG.Summoning.Natural.DireBat.Blindsense"}
 
 
 def require_tokens(path: Path, *tokens: str) -> None:
@@ -372,10 +373,10 @@ def validate(root: Path) -> None:
     plan = expanded_summoning_manifest.planned()
     prefix = {e["symbol"] for e in entries[:PRESERVED_ENTRIES]}
     expected = sorted((symbol, planned_type) for symbol, planned_type in plan
-                      if symbol not in prefix)
+                      if symbol not in prefix and symbol not in PHASE2_ADDITIONS)
     if expected != sorted((symbol, planned_type) for symbol, _, planned_type in APPENDED):
         raise AssertionError("Phase 1 append is not the manifest plan minus the preserved prefix")
-    if len(plan) != SPRINT3["foundationIdentities"]:
+    if len(plan) != SPRINT3["foundationIdentities"] + len(PHASE2_ADDITIONS):
         raise AssertionError("Expanded Summoning foundation identity count changed")
     expanded_summoning_manifest.validate(manifest, plan)
 

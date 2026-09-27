@@ -21,6 +21,8 @@ namespace KingmakerGunslinger.Blueprints
     {
         private const string Bite1d4Symbol =
             "KMG.Summoning.Natural.Bite1d4";
+        private const string DireBatBlindsenseSymbol =
+            "KMG.Summoning.Natural.DireBat.Blindsense";
         private const string Bite1d3Symbol =
             "KMG.Summoning.Natural.Bite1d3";
         private const string Tail1d12Symbol =
@@ -156,6 +158,8 @@ namespace KingmakerGunslinger.Blueprints
             if (bySymbol == null) throw new ArgumentNullException("bySymbol");
             if (extraplanar == null) throw new ArgumentNullException("extraplanar");
             ExpandedSummoningNaturalProfiles.Validate();
+            ConfigureDireBatBlindsense(Require<BlueprintFeature>(bySymbol,
+                DireBatBlindsenseSymbol));
             BlueprintItemWeapon nativeBite = BlueprintLibraryLookup.RequireExact<
                 BlueprintItemWeapon>(library, NativeBite1d6Guid,
                     "native bite animation weapon");
@@ -283,7 +287,9 @@ namespace KingmakerGunslinger.Blueprints
             }
             foreach (string fact in profile.Facts)
             {
-                BlueprintUnitFact value = BaseUnitFactKeys.Contains(fact)
+                BlueprintUnitFact value = fact == "DireBatBlindsense"
+                    ? Require<BlueprintFeature>(bySymbol, DireBatBlindsenseSymbol)
+                    : BaseUnitFactKeys.Contains(fact)
                     ? BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(
                         library, FactGuids[fact], profile.DisplayName + " " + fact)
                     : BlueprintLibraryLookup.RequireExact<BlueprintFeature>(
@@ -292,6 +298,26 @@ namespace KingmakerGunslinger.Blueprints
             }
             facts.Add(extraplanar);
             unit.AddFacts = facts.ToArray();
+        }
+
+        private static void ConfigureDireBatBlindsense(BlueprintFeature feature)
+        {
+            var nativeSense = UnityEngine.ScriptableObject.CreateInstance<
+                Kingmaker.Designers.Mechanics.Facts.Blindsense>();
+            nativeSense.Blindsight = false;
+            nativeSense.Range = new Feet(40);
+            feature.name = InternalName(DireBatBlindsenseSymbol);
+            feature.IsClassFeature = false;
+            feature.HideInUI = true;
+            feature.ComponentsArray = new BlueprintComponent[] { nativeSense };
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.DireBat.Blindsense.Name",
+                    "Blindsense (40 feet)"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.DireBat.Blindsense.Description",
+                    "This dire bat can detect creatures within 40 feet by sound, without seeing them precisely."),
+                null);
         }
 
         internal static string HitDieClassGuid(string hitDieClass)

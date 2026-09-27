@@ -25,7 +25,7 @@ namespace KingmakerGunslinger.Summoning
         internal const int TemplatedPlacementCount = 199;
         internal const int TemplateExecutionAbilityCount = TemplatedPlacementCount * 2;
         internal const int TemplateBuffCount = 8;
-        internal const int SpecialIdentityCount = 138;
+        internal const int SpecialIdentityCount = 139;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -210,6 +210,7 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.MagmaMephit.PyrotechnicsBlindedState", "BlueprintBuff"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.OozeMephit.StinkingCloudArea", "BlueprintAbilityAreaEffect"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Bite1d4", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.DireBat.Blindsense", "BlueprintFeature"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Bite1d3", "BlueprintItemWeapon"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Tail1d12", "BlueprintItemWeapon"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Tail3d6", "BlueprintItemWeapon"));

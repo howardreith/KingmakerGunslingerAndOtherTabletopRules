@@ -864,7 +864,7 @@ contract, lifecycle and limits are in
 
 The optional Favored Class integration appends its owned leaf identities to
 the ledger after the Expanded Summoning Phase 1 append, for
-2460 stable IDs: 2458 active and 2 reserved (2172 before the merge with 0.0.139). It never compiles
+2461 stable IDs: 2459 active and 2 reserved (2172 before the merge with 0.0.139). It never compiles
 against Favored Class or Call of the Wild and never executes host code.
 
 - **Pure policy** (`FavoredClass/`): `FavoredClassRankPolicy` (the host's
