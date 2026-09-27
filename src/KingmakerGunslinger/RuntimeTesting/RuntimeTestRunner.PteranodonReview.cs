@@ -90,6 +90,14 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool _motionReviewChangedPause;
         private bool _motionReviewTravelValid;
         private bool _motionReviewOverlayWasOpen;
+        private string _motionReviewNearbyDoors = "<not scanned>";
+        private string _motionReviewFloorGrid = "<not scanned>";
+        private bool _motionReviewDoorwayRoute;
+        private bool _motionReviewDoorwayCrossed;
+        private bool _motionReviewDoorwayValid;
+        private float _motionReviewDoorwayCrossingZ;
+        private float _motionReviewDoorwayCrossingX;
+        private bool _motionReviewDoorwayDirectClear;
         private readonly List<string> _motionReviewCaptures = new List<string>();
         private readonly List<float> _motionReviewFrameSeconds = new List<float>();
         private string _motionReviewSummary = "<not run>";
@@ -98,6 +106,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal string MotionReviewSummary { get { return _motionReviewSummary; } }
         internal bool MotionReviewValid { get { return _motionReviewValid; } }
         internal bool MotionReviewTravelValid { get { return _motionReviewTravelValid; } }
+        internal bool MotionReviewDoorwayValid { get { return _motionReviewDoorwayValid; } }
 
         /// <summary>
         /// Points the review at another creature and forgets the previous one,
@@ -144,6 +153,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             _motionReviewChangedPause = false;
             _motionReviewTravelValid = false;
             _motionReviewOverlayWasOpen = false;
+            _motionReviewNearbyDoors = "<not scanned>";
+            _motionReviewFloorGrid = "<not scanned>";
+            _motionReviewDoorwayRoute = false;
+            _motionReviewDoorwayCrossed = false;
+            _motionReviewDoorwayValid = false;
+            _motionReviewDoorwayCrossingZ = float.NaN;
+            _motionReviewDoorwayCrossingX = float.NaN;
+            _motionReviewDoorwayDirectClear = false;
             _motionReviewCaptures.Clear();
             _motionReviewFrameSeconds.Clear();
             _motionReviewSummary = "<not run>";
@@ -275,6 +292,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Vector2.Distance(new Vector2(_motionReviewMoveOrigin.x,
                         _motionReviewMoveOrigin.z), new Vector2(position.x,
                         position.z)));
+                if (_motionReviewDoorwayRoute &&
+                    position.x > _motionReviewDoorwayCrossingX &&
+                    position.z < _motionReviewDoorwayCrossingZ)
+                    _motionReviewDoorwayCrossed = true;
                 float startGap = Vector2.Distance(new Vector2(
                     _motionReviewMoveOrigin.x, _motionReviewMoveOrigin.z),
                     new Vector2(_motionReviewMoveDestination.x,
@@ -297,11 +318,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                             _motionReviewMoveOrigin.z), new Vector2(
                             viewPosition.x, viewPosition.z)));
                 }
-                if (_motionReviewFrame == MotionReviewMoveFrames)
+                int moveFrames = _motionReviewDoorwayRoute ? 100 :
+                    MotionReviewMoveFrames;
+                if (_motionReviewFrame == moveFrames)
                 {
                     Capture(unit, stage, "moving-a");
                 }
-                else if (_motionReviewFrame == MotionReviewMoveFrames * 2)
+                else if (_motionReviewFrame == moveFrames * 2)
                 {
                     Capture(unit, stage, "moving-b");
                     unit.Commands.InterruptMove();
@@ -311,7 +334,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         manager.CreateHandle(UnitAnimationType.MainHandAttack, false);
                     if (_motionReviewAttack != null) manager.Execute(_motionReviewAttack);
                 }
-                else if (_motionReviewFrame >= MotionReviewAttackFrame)
+                else if (_motionReviewFrame >= (_motionReviewDoorwayRoute ?
+                    moveFrames * 2 + 6 : MotionReviewAttackFrame))
                 {
                     Capture(unit, stage, "attack");
                     if (_motionReviewAttack != null)
@@ -370,6 +394,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _motionReviewMaxDestinationApproach >= 0.75f &&
                 _motionReviewMinDestinationGap <= 2f &&
                 _motionReviewMaxVelocity > 0.01f;
+            _motionReviewDoorwayValid = _motionReviewTravelValid &&
+                _motionReviewDoorwayRoute && _motionReviewDoorwayCrossed &&
+                !_motionReviewDoorwayDirectClear;
             _motionReviewSummary = "stage=" + stage + ";waited=" + _motionReviewWaited +
                 ";frames=" + _motionReviewFrame + ";frameMs=" + frameMs.ToString("0.#",
                     CultureInfo.InvariantCulture) + ";moveAccepted=" +
@@ -403,7 +430,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _motionReviewWasPaused + ";awakeAdded=" +
                 _motionReviewAwakeAdded + ";awakeRestored=" +
                 _motionReviewAwakeRestored + ";pausedAfter=" +
-                Game.Instance.IsPaused + ";captures=" +
+                Game.Instance.IsPaused + ";nearbyDoors=" +
+                _motionReviewNearbyDoors + ";doorwayRoute=" +
+                _motionReviewDoorwayRoute + ";doorwayCrossed=" +
+                _motionReviewDoorwayCrossed + ";doorwayValid=" +
+                _motionReviewDoorwayValid + ";doorwayDirectClear=" +
+                _motionReviewDoorwayDirectClear + ";floorGrid=" +
+                _motionReviewFloorGrid + ";captures=" +
                 _motionReviewCaptures.Count + (error == null ? "" :
                     ";fault=" + error.GetType().Name + ":" + error.Message) +
                 ";" + string.Join("|", _motionReviewCaptures.ToArray());
@@ -440,18 +473,27 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (graph == null)
                 throw new InvalidOperationException(
                     "Sprint 9 flight review graph cannot verify a clear route.");
+            _motionReviewNearbyDoors = DescribeSprint9NearbyDoors(
+                anchor, graph);
+            _motionReviewFloorGrid = DescribeSprint9FloorGrid(anchor);
+            // The disposable working save's surveyed floor has connected
+            // nodes on both sides of the room opening. Let native A* select
+            // its path; never install a forced path or relocate the party.
+            Vector3 requestedDestination = anchor.clampedPosition +
+                new Vector3(9f, 0f, -3f);
+            Pathfinding.NNInfo destination = AstarPath.active.GetNearest(
+                requestedDestination);
             UnitEntityData[] party = Game.Instance.Player.Party.Where(value =>
                 value != null && value.IsInGame).ToArray();
-            Vector3 across = MotionReviewAcross(unit);
-            Vector3 forward = Vector3.Cross(Vector3.up, across);
-            Vector3[] directions = { across, -across, forward, -forward,
-                (across + forward).normalized,
-                (across - forward).normalized,
-                (-across + forward).normalized,
-                (-across - forward).normalized };
-            Pathfinding.NNInfo[] open = new[] { 3f, 4f, 5f }
-                .SelectMany(radius => directions.Select(direction =>
-                    anchor.clampedPosition + direction * radius))
+            Pathfinding.NNInfo[] starts = new[]
+                {
+                    new Vector3(3f, 0f, 0f),
+                    new Vector3(-3f, 0f, 0f),
+                    new Vector3(-6f, 0f, 0f),
+                    new Vector3(0f, 0f, 3f),
+                    new Vector3(6f, 0f, 0f)
+                }
+                .Select(offset => anchor.clampedPosition + offset)
                 .Select(requested => new { requested,
                     nearest = AstarPath.active.GetNearest(requested) })
                 .Where(value => value.nearest.node != null &&
@@ -461,27 +503,35 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Vector3.Distance(value.requested,
                         value.nearest.clampedPosition) <= 0.5f &&
                     party.All(member => Vector3.Distance(member.Position,
-                        value.nearest.clampedPosition) >= 2.5f) &&
-                    Sprint9FlightLineClear(graph, anchor, value.nearest))
+                        value.nearest.clampedPosition) >= 2.5f))
                 .Select(value => value.nearest).ToArray();
-            if (open.Length < 2)
+            Pathfinding.NNInfo start = starts.FirstOrDefault();
+            bool doorLandmark = UnityEngine.Object.FindObjectsOfType<Transform>()
+                .Any(value => value != null && value.gameObject.activeInHierarchy &&
+                    value.name == "Palace_SmallWall_01_Door_05" &&
+                    Vector3.Distance(value.position, anchor.clampedPosition +
+                        new Vector3(1f, -0.36f, -4.5f)) <= 1f);
+            bool endpoints = start.node != null && destination.node != null &&
+                start.node.Walkable && destination.node.Walkable &&
+                start.node.Area == anchor.node.Area &&
+                destination.node.Area == anchor.node.Area &&
+                start.node.GraphIndex == anchor.node.GraphIndex &&
+                destination.node.GraphIndex == anchor.node.GraphIndex &&
+                Vector3.Distance(requestedDestination,
+                    destination.clampedPosition) <= 0.5f &&
+                party.All(member => Vector3.Distance(member.Position,
+                    destination.clampedPosition) >= 2.5f);
+            if (!doorLandmark || !endpoints)
                 throw new InvalidOperationException(
-                    "Sprint 9 flight review has fewer than two clear party-area nodes.");
-            Pathfinding.NNInfo start = open.OrderBy(value =>
-                Vector3.Distance(value.clampedPosition,
-                    anchor.clampedPosition)).First();
-            Pathfinding.NNInfo[] destinations = open.Where(value =>
-                    Vector3.Distance(value.clampedPosition,
-                        start.clampedPosition) >= 2f &&
-                    Sprint9FlightLineClear(graph, start, value))
-                .OrderByDescending(value => Vector3.Distance(
-                    value.clampedPosition, start.clampedPosition)).ToArray();
-            if (destinations.Length == 0)
-                throw new InvalidOperationException(
-                    "Sprint 9 flight review has no clear party-free movement span.");
+                    "Sprint 9 doorway route is not the surveyed connected native path.");
+            _motionReviewDoorwayRoute = true;
+            _motionReviewDoorwayCrossingX = anchor.clampedPosition.x + 7f;
+            _motionReviewDoorwayCrossingZ = anchor.clampedPosition.z - 2f;
+            _motionReviewDoorwayDirectClear =
+                Sprint9FlightLineClear(graph, start, destination);
             unit.Position = start.clampedPosition;
             unit.View.transform.position = start.clampedPosition;
-            return destinations[0].clampedPosition;
+            return destination.clampedPosition;
         }
 
         private static bool Sprint9FlightLineClear(
@@ -492,6 +542,93 @@ namespace KingmakerGunslinger.RuntimeTesting
             var trace = new List<Pathfinding.GraphNode>();
             return !graph.Linecast(from.clampedPosition, to.clampedPosition,
                 from.node, out hit, trace);
+        }
+
+        /// <summary>Read-only native scene/navmesh survey for a real doorway route.</summary>
+        private static string DescribeSprint9NearbyDoors(Pathfinding.NNInfo anchor,
+            Pathfinding.IRaycastableGraph graph)
+        {
+            Transform[] doors = UnityEngine.Object.FindObjectsOfType<Transform>()
+                .Where(value => value != null && value.gameObject.activeInHierarchy &&
+                    (value.name.IndexOf("_door_", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                     value.name.IndexOf("_arch_", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                     value.name.StartsWith("door", StringComparison.OrdinalIgnoreCase)) &&
+                    Vector3.Distance(value.position, anchor.clampedPosition) <= 25f)
+                .OrderBy(value => Vector3.Distance(value.position,
+                    anchor.clampedPosition))
+                .Take(32).ToArray();
+            if (doors.Length == 0) return "<none within 25m>";
+            return string.Join("|", doors.Select(door =>
+            {
+                string[] axes = { "forward", "right" };
+                Vector3[] directions = { door.forward, door.right };
+                string sides = string.Join(",", axes.Select((axis, index) =>
+                {
+                    Vector3 direction = directions[index];
+                    direction.y = 0f;
+                    if (direction.sqrMagnitude < 0.0001f)
+                        return axis + ":no-horizontal-axis";
+                    direction.Normalize();
+                    Vector3 left = door.position - direction * 2.5f;
+                    Vector3 right = door.position + direction * 2.5f;
+                    Pathfinding.NNInfo a = AstarPath.active.GetNearest(left);
+                    Pathfinding.NNInfo b = AstarPath.active.GetNearest(right);
+                    bool connected = a.node != null && b.node != null &&
+                        a.node.Walkable && b.node.Walkable &&
+                        a.node.Area == b.node.Area &&
+                        a.node.GraphIndex == anchor.node.GraphIndex &&
+                        b.node.GraphIndex == anchor.node.GraphIndex;
+                    float gapA = Vector3.Distance(left, a.clampedPosition);
+                    float gapB = Vector3.Distance(right, b.clampedPosition);
+                    bool straight = connected &&
+                        Sprint9FlightLineClear(graph, a, b);
+                    return axis + ":connected=" + connected +
+                        "/offsets=" + gapA.ToString("0.##",
+                            CultureInfo.InvariantCulture) + "/" +
+                        gapB.ToString("0.##", CultureInfo.InvariantCulture) +
+                        "/areas=" + (a.node == null ? "none" :
+                            a.node.Area.ToString()) + "/" +
+                        (b.node == null ? "none" : b.node.Area.ToString()) +
+                        "/straight=" + straight + "/a=" +
+                        a.clampedPosition.ToString("F2") + "/b=" +
+                        b.clampedPosition.ToString("F2");
+                }).ToArray());
+                return door.name + "@" + door.position.ToString("F2") +
+                    ";distance=" + Vector3.Distance(door.position,
+                        anchor.clampedPosition)
+                        .ToString("0.##", CultureInfo.InvariantCulture) +
+                    ";" + sides;
+            }).ToArray());
+        }
+
+        /// <summary>Read-only local native floor connectivity around the party.</summary>
+        private static string DescribeSprint9FloorGrid(Pathfinding.NNInfo anchor)
+        {
+            var rows = new List<string>();
+            for (int dz = -18; dz <= 18; dz += 3)
+            {
+                var cells = new List<string>();
+                for (int dx = -18; dx <= 18; dx += 3)
+                {
+                    Vector3 requested = anchor.clampedPosition +
+                        new Vector3(dx, 0f, dz);
+                    Pathfinding.NNInfo nearest = AstarPath.active.GetNearest(
+                        requested);
+                    float gap = Vector2.Distance(
+                        new Vector2(requested.x, requested.z),
+                        new Vector2(nearest.clampedPosition.x,
+                            nearest.clampedPosition.z));
+                    string cell = nearest.node == null ||
+                        !nearest.node.Walkable || gap > 0.6f ? "X" :
+                        nearest.node.GraphIndex != anchor.node.GraphIndex ?
+                        "G" : nearest.node.Area.ToString();
+                    cells.Add(cell);
+                }
+                rows.Add(dz + ":" + string.Join(",", cells.ToArray()));
+            }
+            return "center=" + anchor.clampedPosition.ToString("F2") +
+                ";step=3;dx=-18..18;rows=" +
+                string.Join("/", rows.ToArray());
         }
 
         /// <summary>

@@ -26,12 +26,26 @@ namespace KingmakerGunslinger.DomainTests
                 review.Contains("_motionReviewAppearanceCleared &&") &&
                 review.Contains("_motionReviewAwakeRestored &&") &&
                 review.Contains("PrepareSprint9FlightMovement(unit)") &&
-                review.Contains("Sprint9FlightLineClear(graph, start, value)") &&
-                review.Contains("value.nearest.clampedPosition) >= 2.5f"),
+                review.Contains("Sprint9FlightLineClear(graph, start, destination)") &&
+                review.Contains("value.nearest.clampedPosition) >= 2.5f") &&
+                review.Contains("value.name == \"Palace_SmallWall_01_Door_05\"") &&
+                review.Contains("_motionReviewDoorwayCrossed") &&
+                review.Contains("!_motionReviewDoorwayDirectClear") &&
+                review.Contains("position.x > _motionReviewDoorwayCrossingX") &&
+                review.Contains("position.z < _motionReviewDoorwayCrossingZ") &&
+                review.Contains("MotionReviewDoorwayValid") &&
+                review.Contains("DescribeSprint9NearbyDoors(") &&
+                review.Contains("value.name.IndexOf(\"_door_\",") &&
+                review.Contains("value.name.IndexOf(\"_arch_\",") &&
+                review.Contains("a.node.GraphIndex == anchor.node.GraphIndex") &&
+                review.Contains(";nearbyDoors=") &&
+                review.Contains("DescribeSprint9FloorGrid(anchor)") &&
+                review.Contains(";floorGrid="),
                 "The flight review must move a native agent and measure travel, not accept static animation frames.");
             Assertions.True(scenario.Contains(
                 "expanded-summoning-flight-travel-") &&
-                scenario.Contains("MotionReviewTravelValid"),
+                scenario.Contains("MotionReviewTravelValid") &&
+                scenario.Contains("MotionReviewDoorwayValid"),
                 "Eagle and Bat must fail the runtime review when measured travel is absent.");
         }
 

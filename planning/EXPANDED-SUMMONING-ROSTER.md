@@ -165,4 +165,12 @@ Every placement has a distinct frozen ability identity so parent spell level, ca
 
 ## Explicit exclusions
 
-No aquatic-only entries, unapproved ants, apes, rhinoceroses, extra dinosaurs, campaign spawns, companions, pets, vendors, loot, or external assets are added. The Pony, Horse, Owlbear and Cyclops joined in Phase 1 Sprint 3, the Shambling Mound, Giant Flytrap and Purple Worm in Sprint 4, the six new mephits in Sprint 5 (no Lightning Mephit), the Tiger in Sprint 8, and the Frost Giant is reused, never duplicated, as a retained native unit under creature-named wrappers. Existing vanilla and third-party entries are preserved by reference and order.
+No aquatic-only entries, extra dinosaurs, campaign spawns, companions, pets, vendors, loot, or external assets are added. Ants, apes and rhinoceroses were excluded from Phase 1 but are explicitly authorized by the later Phase 2 Sprints 11, 14-15 and 18 charter. The Pony, Horse, Owlbear and Cyclops joined in Phase 1 Sprint 3, the Shambling Mound, Giant Flytrap and Purple Worm in Sprint 4, the six new mephits in Sprint 5 (no Lightning Mephit), the Tiger in Sprint 8, and the Frost Giant is reused, never duplicated, as a retained native unit under creature-named wrappers. Existing vanilla and third-party entries are preserved by reference and order.
+
+Phase 2 Sprint 9 internally qualified Eagle and the 14 preserved Dire Bat
+placements on `20260927T1536450257132Z`. Their existing roster identities
+remain unchanged. Original bird/bat visuals, Bat imprecise blindsense, live
+body-contact measurements, own-tier native combat, working-save persistence,
+module-disabled safety and an obstructed room-opening route passed. The
+program state and fidelity matrix carry exact evidence. Owner visual approval
+remains pending; Sprint 10 Stirge and Giant Wasp are next.

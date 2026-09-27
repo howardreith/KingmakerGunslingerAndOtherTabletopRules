@@ -6,7 +6,8 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
 
 ## Current position
 
-- Tranche: 2A, Sprints 9-13. Current sprint: 9, Eagle and Dire Bat.
+- Tranche: 2A, Sprints 9-13. Sprint 9 is internally qualified; current
+  sprint: 10, Stirge and Giant Wasp.
 - Branch: `codex/expanded-summoning-phase2a-sprints9-13` in
   `.worktrees/expanded-summoning-phase2a`.
 - Accepted dependency: `master` / `origin/master` at
@@ -14,17 +15,17 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
   Class integration. The owner packet's expected `2943a02d` is its ancestor.
 - Branch head at intake: `2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a`;
   first pushed intake checkpoint: `359e346ecb6a094552f096869ecb9c81a2d291bf`.
-- Current Sprint 9 sub-item: Dire Bat blindsense, original Bat/Eagle skinned
-  visuals and Bat icon. The 14 preserved Bat placements are now published:
-  all 813 generated roots and 29 native wrappers passed the guarded native
-  player path; the 18-parent inventory/menu/icon audit passed after an exact
-  Bat feature audit correction. Remaining Sprint 9 gates are explicit
-  doorway traversal and visual attack contact. Disabled publication,
-  save-backed module-off recovery, open-floor native movement and
-  Quickened own-tier combat in RTWP and turn-based mode are now guarded-runtime
-  qualified for Eagle and Dire Bat.
-  No Phase 2 creature has been claimed complete.
-- HumanReview: NOT_PERFORMED_NONBLOCKING. Internal Phase 2 reviews: pending.
+- Sprint 9 Eagle and Dire Bat passed the internal technical gate. The 14
+  preserved Bat placements are published; all 813 generated roots and 29
+  native wrappers passed the guarded player path. Original skinned bird/bat
+  visuals, Bat icon, Bat 40-foot imprecise blindsense, direct/quantity casts,
+  RTWP/turn-based native combat, impact contact, open-floor and obstructed
+  room-opening travel, visual lifecycle, save/load/expiry, module-disabled
+  safety, donor controls and exact installation restoration are qualified.
+  Sprint 10 work has not yet started.
+- HumanReview: NOT_PERFORMED_NONBLOCKING. Sprint 9 internal engineering,
+  fidelity, visual and evidence/restoration reviews passed with the bounded
+  limitations below; tranche and later-sprint reviews remain pending.
 - Blockers: none established. A difficult rig is not by itself a blocker.
 
 ## Verified intake and baseline
@@ -465,15 +466,66 @@ dot 1. Restoration record `20260927T1407214071366Z` returned the original
 tree to the same hash. Doorway traversal remains open. HumanReview:
 NOT_PERFORMED_NONBLOCKING.
 
+## Sprint 9 doorway and internal closeout, 2026-09-27
+
+- Native working-save scene/navmesh surveys `20260927T1423188619526Z`
+  and `20260927T1435573645955Z` identified closed named doors in different
+  path areas and a connected adjacent room across an obstructed direct line.
+  A first destination beyond another blocked boundary failed in
+  `20260927T1503558530369Z`: the Eagle moved 15.57 m but finished 8.688 m
+  short. That result is excluded from doorway qualification. The wrapper
+  restored the original installation in each survey and failed fixture run.
+- Narrowed Eagle result `20260927T1516313231221Z` and Dire Bat result
+  `20260927T1524129109534Z` each passed native movement to within 0.068 m
+  and 0.066 m of the adjacent-room node, respectively, with cross-frame
+  travel, native velocity and zero surviving reviewed summons after cleanup.
+- The final stricter, combined fresh-process result
+  `20260927T1536450257132Z` passed 12/12 assertions. The same-area
+  endpoints had a blocked direct native line; native `UnitMoveTo` crossed
+  the measured opening. Eagle travelled 12.357 m and finished 0.021 m from
+  destination; Dire Bat travelled 12.360 m and finished 0.024 m away. Both
+  moves started and finished, both renderers were intact in four captures,
+  and both cleanup counts were zero. Restoration record
+  `20260927T1541351948729Z` verifies the original 136-file live tree at
+  SHA-256 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+  Repository validation, 1,928/1,928 domain tests, clean Release and strict
+  package validation passed on the final source; package SHA-256
+  `c329103885331df5e9f81346bc33af8a2fd0d473f42a4744b1eb0deedbd0b56b`,
+  DLL SHA-256 `c952c065a25553c17940d0ff932837736836c03faa24d159520af453ae64f578`.
+- Engineering/runtime-safety review: the doorway fixture uses only the
+  named disposable working save, guards the scene landmark and navmesh
+  endpoints, issues native movement without a forced path, restores pause
+  and awake-unit state, dismisses each summon, writes no save and restores
+  the live mod tree. The Eagle lunge changes only its private skeleton root.
+- Rules/roster review: Eagle keeps its accepted Small three-attack role;
+  Dire Bat uses its preserved identities, Large presentation and bounded
+  imprecise blindsense. No attack reach, hit chance, spell tier, quantity or
+  balance decision changed in the doorway/contact work.
+- Visual/player review: original feather and membrane models, material
+  controller, intact party-camera frames, live body-contact measurements,
+  ordinary and obstructed movement, hit/death/expiry and native donor
+  controls were inspected. Cyan wall occlusion also appeared on native Roc
+  and is treated as the game's silhouette overlay, not mechanical contact
+  evidence. HumanReview: NOT_PERFORMED_NONBLOCKING; aesthetic approval remains
+  with the owner.
+- Evidence/restoration review: invalid weapon-marker and doubly scaled
+  contact samples and the overlong doorway route are explicitly excluded;
+  the corrected body/weighted-surface and final native movement records are
+  the acceptance basis. This fixture proves one actual room opening in the
+  working save, not every map geometry or a general flight pathing guarantee.
+
+Sprint 9 internal technical status: PASS. Next authorized item: Sprint 10
+Stirge and Giant Wasp. No tranche candidate or PR-ready claim yet.
+
 ## Standing boundaries and next action
 
 `OwnerAcceptedEngineLimitation: ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD`.
 Active holds and mouth occupancy return cleanly released on reload. Do not
 implement hold re-establishment or call this grapple persistence.
 
-Next: finish Sprint 9 doorway navigation and impact alignment, then advance
-to Sprint 10. The Bat's preserved placements
-are published only after its model, blindsense, icon and guarded live cast gate.
+Next: implement and qualify Sprint 10 Stirge and Giant Wasp, then continue
+through the remaining authorized Phase 2 work. The Bat's preserved placements
+are published after its model, blindsense, icon and guarded live cast gate.
 Continue through A, B and C without an intermediate owner
 decision. Open three stacked PRs as the tranche gates pass. No merge, release,
 permanent deployment, or Sprint 22.
