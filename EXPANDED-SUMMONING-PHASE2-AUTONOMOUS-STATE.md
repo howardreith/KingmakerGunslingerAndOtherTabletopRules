@@ -22,7 +22,7 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
   RTWP/turn-based native combat, impact contact, open-floor and obstructed
   room-opening travel, visual lifecycle, save/load/expiry, module-disabled
   safety, donor controls and exact installation restoration are qualified.
-  Sprint 10 work has not yet started.
+  Sprint 10 intake is under way; no Stirge or Giant Wasp creature is published.
 - HumanReview: NOT_PERFORMED_NONBLOCKING. Sprint 9 internal engineering,
   fidelity, visual and evidence/restoration reviews passed with the bounded
   limitations below; tranche and later-sprint reviews remain pending.
@@ -516,6 +516,37 @@ NOT_PERFORMED_NONBLOCKING.
 
 Sprint 9 internal technical status: PASS. Next authorized item: Sprint 10
 Stirge and Giant Wasp. No tranche candidate or PR-ready claim yet.
+
+## Sprint 10 intake: native flying-vermin and signature-mechanic audit
+
+- The charter and ideal-roster workbook list Stirge only at SNA I and Giant
+  Wasp at SM IV/SNA IV. Their signature roles are attach/blood drain and
+  flying poison strike, respectively. Neither is in the current creature
+  catalog or native-donor catalog.
+- I extended the existing metadata-only live blueprint audit to search
+  `wasp`, `stirge`, `mosquito`, `blood`, `attach`, and `drain`. This changes
+  only the diagnostic query; no unit or mechanic has been published. The
+  focused intake test, repository validator, 1,929/1,929 domain cases,
+  clean Release build and strict package validation passed. Candidate
+  package SHA-256: `16866C3F109BD2A99ED642A2FC6F5A6146EFF807DF9A0B058AE35CBB7F727F94`.
+- Guarded fresh-process `observe-expanded-summoning-native-donors` result
+  `20260927T1601519083199Z` passed. Its 306 selected unit blueprints
+  contain no name matching Stirge, Wasp or mosquito. The 2,462 selected
+  facts and 328 selected abilities contain no matching attach/blood-drain
+  identity; of 366 selected buffs, the only matching identity is generic
+  `ConstitutionDrain` (`8081f8edc11aa29478ded59d1ca3d194`). This
+  rules out a named native creature/attach shortcut, not every possible
+  component-level implementation. No game-owned assets were exported.
+  Restoration record `20260927T1603474656325Z` verifies the original
+  136-file live tree at SHA-256
+  `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+- The supplied charter, roster workbook, and summoning guide give tiers
+  and tactical roles, but no numeric Stirge/Wasp stat block or poison
+  progression. The charter cites external spell-list URLs; repository
+  machine-safety instructions prohibit network access without explicit
+  authorization. I am checking the local rules/engine seams before
+  declaring whether a source-material decision is required. Sprint 10 is
+  not qualified and no claim of creature correctness is made.
 
 ## Standing boundaries and next action
 
