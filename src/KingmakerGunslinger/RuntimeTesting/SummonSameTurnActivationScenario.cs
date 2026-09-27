@@ -1635,9 +1635,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .GetComponentsInChildren<SkinnedMeshRenderer>(true)
                     .FirstOrDefault(value => value != null &&
                         value.sharedMesh != null);
-                Renderer targetRenderer = target == null ? null : target
-                    .GetComponentsInChildren<Renderer>(true)
-                    .FirstOrDefault(value => value != null && value.enabled);
+                SkinnedMeshRenderer targetRenderer = target == null ? null :
+                    target.GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                    .Where(value => value != null && value.enabled &&
+                        value.sharedMesh != null &&
+                        value.sharedMesh.vertexCount >= 100 &&
+                        value.bones != null && value.bones.Length >= 8)
+                    .OrderByDescending(value => value.bones.Length)
+                    .ThenByDescending(value => value.bounds.size.sqrMagnitude)
+                    .FirstOrDefault();
                 string weapon = attack.Weapon.Blueprint == null ? "<null>" :
                     attack.Weapon.Blueprint.name;
                 if (mesh == null || targetRenderer == null)
@@ -1661,13 +1667,71 @@ namespace KingmakerGunslinger.RuntimeTesting
                             targetBounds.ClosestPoint(bone.position))
                             .ToString("0.###", CultureInfo.InvariantCulture));
                 }).ToArray());
+                string weightedSurface = DescribeFlightWeightedSurface(
+                    mesh, targetBounds, anchors);
                 _flightImpactSamples.Add("weapon=" + weapon +
                     ";mesh=" + mesh.sharedMesh.name +
+                    ";targetRenderer=" + targetRenderer.name +
+                    ";targetMesh=" + targetRenderer.sharedMesh.name +
+                    ";targetBones=" + targetRenderer.bones.Length +
+                    ";targetSize=" + targetBounds.size.ToString("F2") +
                     ";target=" + targetBounds.center.ToString("F2") +
                     ";source=" + source.transform.position.ToString("F2") +
-                    ";distances=" + distances);
+                    ";distances=" + distances +
+                    ";weightedSurface=" + weightedSurface);
                 _diagnostics.Add("flight-impact-geometry=" +
                     _flightImpactSamples[_flightImpactSamples.Count - 1]);
+            }
+
+            private static string DescribeFlightWeightedSurface(
+                SkinnedMeshRenderer renderer, Bounds targetBounds,
+                string[] anchors)
+            {
+                Mesh baked = new Mesh();
+                try
+                {
+                    renderer.BakeMesh(baked);
+                    Vector3[] vertices = baked.vertices;
+                    BoneWeight[] weights = renderer.sharedMesh.boneWeights;
+                    Transform[] bones = renderer.bones;
+                    if (vertices == null || weights == null ||
+                        vertices.Length != weights.Length)
+                        return "unavailable:vertex-weight-count";
+                    return string.Join(",", anchors.Select(name =>
+                    {
+                        int bone = Array.FindIndex(bones, value =>
+                            value != null && value.name == name);
+                        if (bone < 0) return name + "=missing";
+                        int count = 0;
+                        float nearest = float.MaxValue;
+                        for (int index = 0; index < vertices.Length; index++)
+                        {
+                            BoneWeight weight = weights[index];
+                            bool influenced =
+                                (weight.boneIndex0 == bone && weight.weight0 >= 0.25f) ||
+                                (weight.boneIndex1 == bone && weight.weight1 >= 0.25f) ||
+                                (weight.boneIndex2 == bone && weight.weight2 >= 0.25f) ||
+                                (weight.boneIndex3 == bone && weight.weight3 >= 0.25f);
+                            if (!influenced) continue;
+                            Vector3 point = renderer.transform.TransformPoint(
+                                vertices[index]);
+                            nearest = Mathf.Min(nearest, Vector3.Distance(point,
+                                targetBounds.ClosestPoint(point)));
+                            count++;
+                        }
+                        return name + "=" + count + "/" +
+                            (count == 0 ? "none" : nearest.ToString("0.###",
+                                CultureInfo.InvariantCulture));
+                    }).ToArray());
+                }
+                catch (Exception error)
+                {
+                    return "unavailable:" + error.GetType().Name;
+                }
+                finally
+                {
+                    UnityEngine.Object.Destroy(baked);
+                }
             }
 
             private void ForceTurnOnce(TurnController turn)
