@@ -503,11 +503,12 @@ def validate(root: Path) -> None:
     # Phase 2 adds the original Bat mesh and albedo to the installable tree.
     # Keep the accepted Phase 1 metadata at 251, but validate the current
     # package count against those two new required files.
-    package_count = SPRINT3["packageFileCountWithSoundBank"] + 2
+    package_count = SPRINT3["packageFileCountWithSoundBank"] + 4
     for script in ("Build-Local.ps1", "package.ps1"):
         require_tokens(root / "scripts" / script,
             "{ %d } else { %d }" % (package_count, package_count - 2),
-            "dire-bat-mesh.json", "dire-bat-albedo.png")
+            "dire-bat-mesh.json", "dire-bat-albedo.png",
+            "eagle-mesh.json", "eagle-albedo.png")
 
     state = json.loads((root / "validation/static-validation.json").read_text(
         encoding="utf-8"))[STATIC_KEY]

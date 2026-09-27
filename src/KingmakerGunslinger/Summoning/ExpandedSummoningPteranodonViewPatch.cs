@@ -46,12 +46,15 @@ namespace KingmakerGunslinger.Summoning
             "KMG_Summoning_Unit_Pteranodon";
         internal const string DireBatBlueprintName =
             "KMG_Summoning_Unit_DireBat";
+        internal const string EagleBlueprintName =
+            "KMG_Summoning_Unit_Eagle";
         /// <summary>
         /// The name carried by the private mesh and material the swap installs;
         /// observers recognise the attached state by it.
         /// </summary>
         internal const string CustomVisualName = "KMG_PteranodonMembrane";
         internal const string DireBatVisualName = "KMG_DireBatMembrane";
+        internal const string EagleVisualName = "KMG_EagleFeathers";
         private const string MainTexture = "_MainTex";
 
         /// <summary>
@@ -155,7 +158,9 @@ namespace KingmakerGunslinger.Summoning
                 PteranodonBlueprintName, StringComparison.Ordinal)
                 ? "pteranodon" : string.Equals(blueprintName,
                     DireBatBlueprintName, StringComparison.Ordinal)
-                    ? "dire-bat" : null;
+                    ? "dire-bat" : string.Equals(blueprintName,
+                        EagleBlueprintName, StringComparison.Ordinal)
+                        ? "eagle" : null;
             if (visualKey == null) return;
 
             lock (Applied)
@@ -184,6 +189,12 @@ namespace KingmakerGunslinger.Summoning
                 if (!PteranodonAssetRuntime.TryGetDireBatVisual(out source,
                     out boneNames, out albedo))
                     return Fallback(PteranodonAssetRuntime.DireBatStatus);
+            }
+            else if (attachment.VisualKey == "eagle")
+            {
+                if (!PteranodonAssetRuntime.TryGetEagleVisual(out source,
+                    out boneNames, out albedo))
+                    return Fallback(PteranodonAssetRuntime.EagleStatus);
             }
             else
             {
@@ -236,7 +247,8 @@ namespace KingmakerGunslinger.Summoning
                 // a second unit binds from the same clean source.
                 mesh = UnityEngine.Object.Instantiate(source);
                 string visualName = attachment.VisualKey == "dire-bat"
-                    ? DireBatVisualName : CustomVisualName;
+                    ? DireBatVisualName : attachment.VisualKey == "eagle"
+                        ? EagleVisualName : CustomVisualName;
                 mesh.name = visualName;
                 mesh.bindposes = bindposes;
 

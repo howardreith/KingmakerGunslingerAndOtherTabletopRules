@@ -41,6 +41,19 @@ Pteranodon visual checks; restoration is verified by record
 attachment and isolation evidence. Eagle art, Bat icon/publication, movement,
 impact, RTWP/turn-based and save/load qualification remain open.
 
+The Eagle now has an original feathered skinned mesh and painted albedo on
+the same instance-local flying rig seam. The 255-file package, repository
+validation, 1,921 domain tests and clean Release build pass. Guarded cast
+evidence `20260927T0443251559393Z` verifies Eagle 2/2, Bat 2/2 and Roc
+donor isolation 2/2; visual-contract evidence
+`20260927T0446552603378Z` verifies 81/81 selection/navigation, locomotion,
+attack animation and hit/death paths. Lifecycle retry
+`20260927T0510593955723Z` passed with verified restoration. The player-path
+game result passed but exit exceeded the lease window; the exact candidate
+tree was manually restored with the guarded script after game exit. A clean
+player-path retry, Bat icon/publication, and Sprint 9-specific motion/contact,
+RTWP, turn-based and save/load checks are still required.
+
 Draft tranche PR #25 tracks Phase 2A. All Sprints 10-21 remain planned. Human visual and
 gameplay review has not been performed and remains nonblocking for internal
 technical acceptance under the owner mission.

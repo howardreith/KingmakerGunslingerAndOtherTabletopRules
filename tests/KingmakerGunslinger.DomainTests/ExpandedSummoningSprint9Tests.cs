@@ -91,5 +91,43 @@ namespace KingmakerGunslinger.DomainTests
                     "flying-animals", "paint_dire_bat_albedo.py")),
                 "Editable original mesh and painting generators are retained.");
         }
+
+        internal static void EagleOriginalMeshAndPaintingAreBound()
+        {
+            string root = Environment.CurrentDirectory;
+            string directory = Path.Combine(root, "assets", "flying-animals");
+            string meshPath = Path.Combine(directory, "eagle-mesh.json");
+            Assertions.True(File.Exists(meshPath),
+                "The Small Eagle must have its own feathered mesh.");
+            JObject document = JObject.Parse(File.ReadAllText(meshPath));
+            Assertions.Equal(2, (int)document["schemaVersion"],
+                "Eagle mesh must use the audited skinned-mesh schema.");
+            Assertions.Equal(46, ((JArray)document["bones"]).Count,
+                "Eagle uses the same measured flying-animal binding.");
+            int vertices = (int)document["vertexCount"];
+            int triangles = (int)document["triangleCount"];
+            Assertions.True(vertices > 1500 && triangles > 1500,
+                "Eagle must contain feather vanes, fan and body, not a donor skin.");
+            byte[] bytes = Convert.FromBase64String((string)document["data"]);
+            Assertions.Equal(vertices * 64 + triangles * 12, bytes.Length,
+                "Eagle payload must contain exact vertices, faces and weights.");
+            JObject albedo = (JObject)document["albedo"];
+            Assertions.Equal("eagle-albedo.png", (string)albedo["file"],
+                "Eagle mesh names its own painting.");
+            string pngPath = Path.Combine(directory, (string)albedo["file"]);
+            Assertions.True(File.Exists(pngPath), "Eagle painting must ship.");
+            using (var sha = SHA256.Create())
+            {
+                string actual = string.Concat(sha.ComputeHash(File.ReadAllBytes(pngPath))
+                    .Select(value => value.ToString("x2")));
+                Assertions.Equal((string)albedo["sha256"], actual,
+                    "The Eagle mesh is bound to its exact painting.");
+            }
+            Assertions.True(File.Exists(Path.Combine(root, "assets-source",
+                "original-models", "flying-animals", "generate_eagle.py")) &&
+                File.Exists(Path.Combine(root, "assets-source", "original-models",
+                    "flying-animals", "paint_eagle_albedo.py")),
+                "Retain editable original Eagle geometry and paint generation.");
+        }
     }
 }

@@ -50,6 +50,8 @@ try {
         'assets\pteranodon\pteranodon-albedo.png',
         'assets\flying-animals\dire-bat-mesh.json',
         'assets\flying-animals\dire-bat-albedo.png',
+        'assets\flying-animals\eagle-mesh.json',
+        'assets\flying-animals\eagle-albedo.png',
         'blueprints\blueprints.json',
         'blueprints\blueprints.schema.json'
     )
