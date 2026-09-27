@@ -342,6 +342,13 @@ mind-affecting immunity on the Wasp against an eligible human control;
 neither control buff was installed, so only native rule eligibility is
 claimed. The native VerminType fact is present, but the cloned donor's
 `EagleGiant` species marker requires correction before publication.
+The subsequent owned unit type `682c4c25e772495e882fc2cacddc0c38`
+replaces that marker on the Wasp only. Guarded
+`20260927T2152154541742Z` passed the live type and native
+`VerminImmunities` grant with paired Wasp-immune/human-eligible
+RuleApplyBuff results. The native component mask did not directly match
+the `MindAffecting` bit; the claim rests on the actual rule result and
+granted fact. The type image is unassigned while the creature is hidden.
 Source commit `9f011014` and guarded inventory
 `20260927T1804369885102Z` passed 48/48 structural/menu assertions with
 exact live-tree restoration. Source rules:

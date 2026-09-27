@@ -14,6 +14,7 @@ original 136-file live tree has SHA-256
 | Sprint 10 Wasp suppressed movement and camera review | `20260927T1955333075608Z-working-save-expanded-summoning-creature-review` | `20260927T1959253902969Z-working-save-expanded-summoning-creature-review.json` | Native 12.345 m travel through a connected doorway and cleanup passed; crowded camera frames do not qualify target contact or visual acceptance. |
 | Sprint 10 Wasp private quantity casts | `20260927T2015561300256Z-disposable-expanded-summoning` | `20260927T2019330163598Z-disposable-expanded-summoning.json` | 22/22 assertions, 183 casts, four Wasp quantity commands across SM/SNA and 14/14 private visual attachments; placements remain hidden. |
 | Sprint 10 Wasp native Vermin immunity | `20260927T2115391949167Z-disposable-expanded-summoning` | `20260927T2119178826656Z-disposable-expanded-summoning.json` | 23/23 assertions. Native RuleApplyBuff: Wasp immune/ineligible, human control eligible; the fixture installed no buff on either target. Species marker still reads EagleGiant. |
+| Sprint 10 owned Wasp species type and immunity | `20260927T2152154541742Z-disposable-expanded-summoning` | `20260927T2155531149844Z-disposable-expanded-summoning.json` | 23/23 assertions. Owned Wasp type replaces EagleGiant; native VerminType grants VerminImmunities and paired RuleApplyBuff remains Wasp immune/human eligible. No control buff installation is claimed. |
 
 Diagnostic failures `20260927T1841288896478Z`,
 `20260927T1853108579217Z` and `20260927T1903352617466Z` are excluded
@@ -36,3 +37,9 @@ from qualification. They established the native VerminType fact graph and
 showed why direct buff insertion and control installation were unsuitable
 assertions. The final paired RuleApplyBuff check reports only native
 eligibility/immunity, not a successful control debuff application.
+
+Species diagnostic `20260927T2140542227252Z` is excluded: the owned type
+was present, but an added direct `SpellDescriptor.MindAffecting` mask
+assertion failed. Native `VerminType` instead grants `VerminImmunities`;
+the passing run tests the observed rule decision and records the mask as
+diagnostic only. Its restoration also passed.

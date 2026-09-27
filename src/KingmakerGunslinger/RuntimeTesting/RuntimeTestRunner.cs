@@ -18977,10 +18977,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .Select(value => value.Descriptor.Value.ToString()).ToArray());
             bool descriptor = verminType.ComponentsArray.OfType<
                 Kingmaker.UnitLogic.FactLogic.SpellImmunityToSpellDescriptor>()
-                .Any(value => value.Descriptor.HasAnyFlag(
-                    SpellDescriptor.MindAffecting));
+                .Any(value => (value.Descriptor.Value &
+                    SpellDescriptor.MindAffecting) != 0);
+            string grantedByType = string.Join(",", verminType.ComponentsArray
+                .OfType<AddFacts>().SelectMany(value => value.Facts ??
+                    Array.Empty<BlueprintUnitFact>()).Where(value => value != null)
+                .Select(value => value.name).ToArray());
             bool granted = wasp.Descriptor.HasFact(verminType) &&
                 !humanControl.Descriptor.HasFact(verminType);
+            bool species = wasp.Blueprint.Type != null &&
+                wasp.Blueprint.Type.name ==
+                    "KMG_Summoning_Natural_GiantWasp_UnitType" &&
+                wasp.Blueprint.Type.KnowledgeStat == StatType.SkillLoreNature;
             Buff onWasp = null;
             Buff onHuman = null;
             RuleApplyBuff waspRule = null;
@@ -19008,8 +19016,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool controlEligible = !humanRule.Immunity && humanRule.CanApply;
                 detail = "species=" + (wasp.Blueprint.Type == null ?
                     "<none>" : wasp.Blueprint.Type.name) +
-                    ";verminGranted=" + granted + ";mindDescriptor=" +
-                    descriptor + ";buffImmunity=" + buffImmunity +
+                    ";verminGranted=" + granted + ";nativeMaskMatchesMind=" +
+                    descriptor + ";grantedByType=" + grantedByType +
+                    ";buffImmunity=" + buffImmunity +
                     ";spellImmunity=" + spellImmunity +
                     ";waspRule=" + waspRule.CanApply + "/" +
                     waspRule.Immunity + "/" + (onWasp != null) +
@@ -19018,7 +19027,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ";waspBlocked=" + waspBlocked + ";humanEligible=" +
                     controlEligible + ";buffInstalledOnControl=" +
                     (onHuman != null);
-                return granted && waspBlocked && controlEligible;
+                return species && granted && waspBlocked &&
+                    controlEligible;
             }
             finally
             {

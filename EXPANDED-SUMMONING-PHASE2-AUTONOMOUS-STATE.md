@@ -744,3 +744,29 @@ DLL SHA-256:
 `FCEFCCB9387D4E2A096856FE9DF3C2CDF5E26F219C8D1ADF5F256774679951CB`.
 Wasp stays suppressed. Next: species identity, real strike cadence/contact,
 safe lifecycle, icon and visual review; then Stirge.
+
+## Sprint 10 owned Wasp species type, 2026-09-27
+
+The Wasp now uses append-only `BlueprintUnitType` identity
+`682c4c25e772495e882fc2cacddc0c38`, replacing the inherited
+`EagleGiant` inspectable type only on the Wasp. It has a Giant Wasp name
+and Lore (Nature) category. Its image is deliberately null under menu
+suppression; final type-image and summon-icon disposition remain open.
+The manifest is 2,490 total, 2,488 active and two reserved.
+
+Guarded result `20260927T2152154541742Z` passed 23/23 assertions.
+The live type matched, native `VerminType` granted `VerminImmunities`, and
+RuleApplyBuff marked the Wasp immune/ineligible versus a human
+nonimmune/eligible. Neither target received the fixture's control buff.
+Diagnostic `20260927T2140542227252Z` is excluded because its extra direct
+component-mask condition failed; it did not show an immunity regression.
+Restoration `20260927T2155531149844Z-disposable-expanded-summoning.json`
+verified the original 136-file tree at SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+Repository validation, 1,937 full domain cases, clean Release and strict
+package validation passed. Package SHA-256:
+`5DE73D3947814762CFBA25DE56F817D60D4C3FCC1B1B11A4DADF8439B623CB72`;
+DLL SHA-256:
+`89DB9B4A6336E26719C42425D004061A79B145CFC9FE03AC017ABF9F5FB2E7E4`.
+Wasp stays hidden; next are real strike contact,
+cadence, lifecycle, art, then Stirge.
