@@ -18,7 +18,7 @@ forbids an automatic Sprint 46.
 | S6 | 1 | Existing Signature Mechanics Repair | 7 | Dire Bear, Giant Spider, Grizzly Bear, Monitor Lizard, Pixie | Not started |
 | S7 | 1 | Big-Cat Combat System | 8 | Dire Lion, Dire Tiger (Smilodon), Leopard, Lion | Not started |
 | S8 | 1 | Big-Cat Roster Completion | 4 | Cheetah, Tiger | Not started |
-| S9 | 2 | Flying Animal Rig - Eagle and Dire Bat | 5 | Dire Bat, Eagle | Not started |
+| S9 | 2 | Flying Animal Rig - Eagle and Dire Bat | 5 | Dire Bat, Eagle | In progress: Dire Bat imprecise 40-foot blindsense live PASS; both models and Bat publication pending |
 | S10 | 2 | Flying Vermin - Stirge and Giant Wasp | 6 | Giant Wasp, Stirge | Not started |
 | S11 | 2 | Equines and Ungulates | 7 | Aurochs, Bison, Rhinoceros, Woolly Rhinoceros | Not started |
 | S12 | 2 | Canines and Small Quadrupeds I | 8 | Dire Rat, Dog, Goblin Dog, Hyena | Not started |

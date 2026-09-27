@@ -15,7 +15,7 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
 - Branch head at intake: `2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a`;
   first pushed intake checkpoint: `359e346ecb6a094552f096869ecb9c81a2d291bf`.
 - Current Sprint 9 sub-item: Dire Bat-only imprecise blindsense feature at
-  40 feet. Source/build-qualified, pending guarded in-game assertion. Eagle
+  40 feet. Source/build-qualified and guarded disposable-cast PASS. Eagle
   and Bat visual work, icon integration, and Bat publication remain planned.
   No Phase 2 creature has been claimed complete.
 - HumanReview: NOT_PERFORMED_NONBLOCKING. Internal Phase 2 reviews: pending.
@@ -64,9 +64,22 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
   in all module states and attached only to Dire Bat. It carries the native
   `Blindsense` component with `Blindsight=false` and range 40 feet. The native
   Blindsight feature was rejected because it also grants blindness immunity.
-- The guarded `disposable-expanded-summoning` scenario now asserts the
-  exact feature and native live sense part on every Bat cast, and absence from
-  Eagle, Pteranodon, and Roc. It has not yet been run on this candidate.
+- The guarded `disposable-expanded-summoning` scenario asserts the exact
+  feature and native live sense part on every Bat cast, and absence from
+  Eagle, Pteranodon, and Roc. Commit
+  `b32c00f0ad9999f8d469363f12694729e5f5d300` passed on 2026-09-27:
+  evidence `20260927T0336278524107Z-disposable-expanded-summoning`, result
+  `expanded-summoning-dire-bat-blindsense` PASS (`definition=True;bat=2/2;birds=13/13`),
+  177/177 casts, 230 spawned, exact per-cast cleanup. The guard used Steam
+  App ID 640820 and `KMG_AUTOMATION_WORKING`. This validates the bounded
+  sense on spawned units, not completed Bat presentation or publication.
+- Restoration record
+  `20260927T0339582427042Z-disposable-expanded-summoning.json`: 136 live
+  files, SHA-256
+  `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`
+  both before and after. Kingmaker process absent after the run. Runtime
+  package SHA-256 `1e79c904f38724657a768e4e8664e89302dc788ae8aed547147c48f53e6babe1`;
+  DLL SHA-256 `166360c55c0456a897bde37ad36f8a20a1e95b415830ab8ee83cef790a7986ec`.
 - The new focused test was observed failing before implementation. Current
   `scripts/Build-Local.ps1`: repository wrapper PASS, domain 1,919/1,919
   PASS, exact-reference clean Release build PASS, strict UMM package PASS.
@@ -85,10 +98,10 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
 Active holds and mouth occupancy return cleanly released on reload. Do not
 implement hold re-establishment or call this grapple persistence.
 
-Next: commit and push the source-qualified blinded-sense candidate, then run
-guarded `disposable-expanded-summoning` through the Steam harness on the clean
-candidate and inspect its sense assertion and restoration. Continue with an
-instance-local Eagle/Bat visual extension with native fallback.
+Next: design and validate an instance-local Eagle/Bat visual extension with
+native fallback, using the approved Pteranodon skinned-mesh pipeline and
+measured private rig. Then integrate the Bat icon and qualify the full Sprint 9
+publication and player path.
 Do not unhide Dire Bat until its model, blindsense, icon, mechanics, and live
 qualification pass. Continue through A, B and C without an intermediate owner
 decision. Open three stacked PRs as the tranche gates pass. No merge, release,
