@@ -13,7 +13,8 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
 - Accepted dependency: `master` / `origin/master` at
   `2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a`, the merged PR #24 Favored
   Class integration. The owner packet's expected `2943a02d` is its ancestor.
-- Branch head at intake: `2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a`;
+- Latest pushed branch head: `9933c40e354155ca9a66610e30d310c7a2eab96b`.
+  Branch head at intake: `2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a`;
   first pushed intake checkpoint: `359e346ecb6a094552f096869ecb9c81a2d291bf`.
 - Sprint 9 Eagle and Dire Bat passed the internal technical gate. The 14
   preserved Bat placements are published; all 813 generated roots and 29
@@ -564,6 +565,39 @@ Stirge and Giant Wasp. No tranche candidate or PR-ready claim yet.
   136-file live mod tree at SHA-256
   `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
   This is design evidence, not Wasp poison qualification.
+
+## Sprint 10 Giant Wasp original visual checkpoint, 2026-09-27
+
+Pushed commit `9933c40e354155ca9a66610e30d310c7a2eab96b` adds
+project-owned procedural Wasp mesh and albedo, their deterministic scripts
+and provenance, package integration, and the established flying renderer's
+instance-local swap. The Wasp creature remains unregistered and unpublished;
+no poison, attack or live view claim is made by this checkpoint. The private
+Blender/FBX products stay in ignored local evidence because they encode the
+measured donor rig. Top and side renders were reviewed locally; the revised
+waist connection is coherent at close inspection, but party-camera and motion
+review of a summoned Wasp remain outstanding.
+
+Repository validation, all 1,929 domain cases, exact-reference Release and
+strict 258-file package validation passed. The final dirty-tree candidate
+had source-state SHA-256
+`8fa680d4443937cca382f4203b8ea2fd5225d622c3edf511c51856bfe44d4c61`,
+package SHA-256
+`89f75a7c4ec22d3f657e42643f242a459ea31f0f64f18f66908fc2041987a75d`,
+and DLL SHA-256
+`b4750c30d0e69b809755040ff8acdde0f2dd32cfc511f45025761eb90d3ba4a0`.
+Guarded runtime result `20260927T1710239929046Z` explicitly reported
+`giant-wasp-original-asset-loader: visual:published` and PASS. Restoration
+record `20260927T1712231807937Z` verified the exact original 136-file live
+tree at SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+
+Next: implement Wasp's exact 1d8 sting and Dexterity poison through a bounded
+game-rule seam, register its SM IV/SNA IV identities under suppression, then
+qualify attack cadence, immunities, view motion/contact, lifecycle, direct and
+quantity casts before publishing. Stirge still requires its own attach,
+blood-drain, escape and cleanup implementation. Continue Sprint 10 before
+advancing to Sprint 11.
 
 ## Standing boundaries and next action
 
