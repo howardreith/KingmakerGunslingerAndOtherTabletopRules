@@ -97,6 +97,7 @@ namespace KingmakerGunslinger.Summoning
             internal Material[] OriginalMaterials;
             internal Material Material;
             internal Mesh Mesh;
+            internal EagleAttackVisualLunge EagleLunge;
         }
 
         private static readonly ConditionalWeakTable<UnitEntityView, Attachment>
@@ -281,6 +282,12 @@ namespace KingmakerGunslinger.Summoning
 
                 Action fault = PostSuppressionFaultForTest;
                 if (fault != null) fault();
+                if (attachment.VisualKey == "eagle")
+                {
+                    attachment.EagleLunge = view.gameObject
+                        .AddComponent<EagleAttackVisualLunge>();
+                    attachment.EagleLunge.Configure(view, donor);
+                }
                 return "visual:attached;bones=" + bones.Length +
                     ";vertices=" + mesh.vertexCount + ";albedo=" +
                     albedo.width + "x" + albedo.height + ";rendererEnabled=" +
@@ -289,6 +296,11 @@ namespace KingmakerGunslinger.Summoning
             }
             catch (Exception error)
             {
+                if (attachment.EagleLunge != null)
+                {
+                    UnityEngine.Object.Destroy(attachment.EagleLunge);
+                    attachment.EagleLunge = null;
+                }
                 if (swapped) Revert(attachment);
                 if (material != null) UnityEngine.Object.Destroy(material);
                 if (mesh != null) UnityEngine.Object.Destroy(mesh);

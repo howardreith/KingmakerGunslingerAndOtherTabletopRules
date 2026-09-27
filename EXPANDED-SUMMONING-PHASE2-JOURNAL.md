@@ -308,3 +308,20 @@ nearest talon surface stopped 0.864-0.906 m away on claws. That is the
 bounded visual-travel defect to fix. All 1,927 domain cases, clean Release
 and strict package passed. I will add a bounded instance-local attack lunge,
 then rerun the contact and noncombat visual gates.
+
+## Sprint 9: bounded Eagle attack presentation, 2026-09-27
+
+I attached a visual-only lunge to the exact Eagle instance. It translates the
+skeleton root at most 0.95 m and returns it after each native attack; no game
+entity, movement agent or attack reach changes. Focused tests and all 1,928
+domain cases, repository validation, clean Release and strict package passed.
+The guarded turn-based run `20260927T1345424022344Z` landed six native
+attacks on the exact hostile and measured beak/talon weighted surfaces within
+0-0.226 m of its body at impact. The guarded working-save creature review
+`20260927T1353291620814Z` passed Eagle and Bat native travel, intact renders
+and zero-live-unit cleanup. Both wrappers restored the original 136-file
+live mod tree exactly. RTWP result `20260927T1404176347439Z` then passed an
+exact-hostile native bite with the head-weighted surface 0.106 m from its
+body; the wrapper restored the original live tree. I still need a doorway
+route before closing Sprint 9. Human visual approval remains unperformed
+and nonblocking.
