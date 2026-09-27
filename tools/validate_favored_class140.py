@@ -22,7 +22,7 @@ VERSION = "0.0.140"
 INFORMATIONAL_VERSION = "0.0.140-favored-class-integration"
 PACKAGE = "KingmakerGunslinger-0.0.140-local-runtime.zip"
 PACKAGE_SUFFIX = "favored-class-integration"
-DETERMINISTIC_TEST_COUNT = 1936
+DETERMINISTIC_TEST_COUNT = 1937
 STATIC_KEY = "favoredClassIntegration140"
 
 # Exact ordered (symbol, guid) pairs this candidate appends after the
@@ -269,15 +269,20 @@ def validate(root: Path) -> None:
                      for entry in poison]
     poison_hash = hashlib.sha256(json.dumps(poison_pinned,
         separators=(",", ":")).encode()).hexdigest()
-    if len(entries) != 2489 or len(wasp) != 26 or wasp_hash != (
+    unit_type = entries[2489:2490]
+    if len(entries) != 2490 or len(wasp) != 26 or wasp_hash != (
             "8a9dac72a9e83675765d8fc850901f76976bf6191418c6cf7f1c4ff6af261ef3"):
         raise AssertionError("Expanded Summoning Phase 2 Wasp append drifted")
     if len(poison) != 2 or poison_hash != (
             "92e7a5cfbf28ce94938eef6c16451d5688d47247d222b2a64f6c3db362e02adb"):
         raise AssertionError("Expanded Summoning Wasp poison identities drifted")
+    if [(entry["symbol"], entry["guid"], entry["plannedType"], entry["status"])
+            for entry in unit_type] != [("KMG.Summoning.Natural.GiantWasp.UnitType",
+            "682c4c25e772495e882fc2cacddc0c38", "BlueprintUnitType", "active")]:
+        raise AssertionError("Expanded Summoning Wasp species identity drifted")
     baseline.AUTHORIZED_APPENDED_AFTER = APPENDED + (
         ("KMG.Summoning.Natural.DireBat.Blindsense", "5dcc039bc9674208a51e4babcd8a30ee"),
-    ) + tuple((entry["symbol"], entry["guid"]) for entry in wasp + poison)
+    ) + tuple((entry["symbol"], entry["guid"]) for entry in wasp + poison + unit_type)
     # Chains through the 0.0.139 release, which hands these to its baseline.
     release139.VERSION = VERSION
     release139.INFORMATIONAL_VERSION = INFORMATIONAL_VERSION

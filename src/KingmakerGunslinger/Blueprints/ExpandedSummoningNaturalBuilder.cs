@@ -48,6 +48,8 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Summoning.Natural.GiantWasp.Poison";
         private const string WaspVenomSymbol =
             "KMG.Summoning.Natural.GiantWasp.Venom";
+        private const string WaspUnitTypeSymbol =
+            "KMG.Summoning.Natural.GiantWasp.UnitType";
         private const string NativeBite1d6Guid =
             "a000716f88c969c499a535dadcf09286";
         private const string NativeBite1d8Guid =
@@ -219,6 +221,8 @@ namespace KingmakerGunslinger.Blueprints
                 Require<BlueprintFeature>(bySymbol, WaspPoisonSymbol),
                 Require<BlueprintBuff>(bySymbol, WaspVenomSymbol),
                 Require<BlueprintItemWeapon>(bySymbol, WaspSting1d8Symbol));
+            ConfigureWaspUnitType(Require<BlueprintUnitType>(bySymbol,
+                WaspUnitTypeSymbol));
             foreach (NaturalSummonProfile profile in
                 ExpandedSummoningNaturalProfiles.All)
                 ConfigureUnit(library, Require<BlueprintUnit>(bySymbol,
@@ -306,6 +310,20 @@ namespace KingmakerGunslinger.Blueprints
                 null);
         }
 
+        private static void ConfigureWaspUnitType(BlueprintUnitType type)
+        {
+            type.name = InternalName(WaspUnitTypeSymbol);
+            type.KnowledgeStat = StatType.SkillLoreNature;
+            type.Name = LocalizationService.Create(
+                "KMG.ExpandedSummoning.GiantWasp.UnitType.Name",
+                "Giant Wasp");
+            type.Description = LocalizationService.Create(
+                "KMG.ExpandedSummoning.GiantWasp.UnitType.Description",
+                "A large flying vermin with a venomous sting.");
+            type.Image = null;
+            type.SignatureAbilities = Array.Empty<BlueprintUnitFact>();
+        }
+
         private static void ConfigureUnit(LibraryScriptableObject library,
             BlueprintUnit unit, NaturalSummonProfile profile,
             IDictionary<string, BlueprintScriptableObject> bySymbol,
@@ -350,6 +368,9 @@ namespace KingmakerGunslinger.Blueprints
                 "KMG.ExpandedSummoning." + Token(profile.Key) + ".Unit.Name",
                 profile.DisplayName);
             unit.LocalizedName = name;
+            if (profile.Key == "giant-wasp")
+                unit.Type = Require<BlueprintUnitType>(bySymbol,
+                    WaspUnitTypeSymbol);
             unit.Alignment = Alignment.TrueNeutral;
             unit.Size = ParseSize(profile.Size);
             unit.Strength = profile.Strength;

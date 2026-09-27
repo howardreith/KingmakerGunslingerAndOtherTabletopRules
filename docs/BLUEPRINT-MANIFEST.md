@@ -473,8 +473,9 @@ of the publication profile, so saved investments always resolve. The exact
 ordered list is enforced by `tools/validate_favored_class140.py` and
 `FavoredClassIdentityCatalog`.
 
-Expanded Summoning Phase 2 Sprint 10 appends 28 Giant Wasp identities after
-the accepted 0.0.140 ledger: 2489 stable identifiers: 2487 active and 2 reserved.
+Expanded Summoning Phase 2 Sprint 10 appends 29 Giant Wasp identities after
+the accepted 0.0.140 ledger: 2490 stable identifiers: 2488 active and 2 reserved.
 Existing GUIDs are unchanged, and all new Wasp placements are
 registered but withheld from menus until their signature mechanics pass. The
-last two identities are a dedicated poison feature and saved venom buff.
+last three identities are a dedicated poison feature, saved venom buff,
+and owned Giant Wasp unit type.

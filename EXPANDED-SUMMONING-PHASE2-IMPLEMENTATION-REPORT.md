@@ -340,3 +340,17 @@ restoration passed (`20260927T2119178826656Z`). Repository validation,
 `CD34E6E571BF39D15F5A848C59E5FA708038DB4FDFE9681CBBAD240200FEFE93`).
 Wasp remains suppressed pending species identity, strike cadence/contact,
 lifecycle, icon and visual clarity; Stirge is pending.
+
+One owned `BlueprintUnitType` identity now replaces the Eagle donor's
+inspectable `EagleGiant` marker on the Wasp only. Its name and Lore (Nature)
+category are Wasp-specific; its image remains null while suppressed and
+requires an art disposition before publication. The guarded result
+`20260927T2152154541742Z` passed 23/23 assertions, including the exact
+live species type, native `VerminType` grant of `VerminImmunities`, and the
+paired RuleApplyBuff outcome. The direct native component-mask diagnostic
+did not match the simple MindAffecting flag, so no component-mask claim is
+made. Neither control buff installed in the fixture. The failed diagnostic
+`20260927T2140542227252Z` is excluded; the final installation restoration
+passed (`20260927T2155531149844Z`). Repository validation, 1,937/1,937
+domain tests, clean Release and strict package checks passed. Wasp remains
+suppressed pending combat, lifecycle and visual acceptance; Stirge is pending.
