@@ -1,12 +1,13 @@
 # Expanded Summoning Phase 2 implementation report
 
-Status: Sprint 9 in progress. The Dire Bat sense, original Bat/Eagle visuals,
-Bat icon and preserved-choice publication are source/build-qualified with
-guarded casts, player path and live inventory PASS. Open-floor Eagle/Bat travel
-and save/load/expiry are also guarded-runtime qualified. Quickened own-tier
-combat is qualified in RTWP and turn-based mode for both creatures.
-Doorway traversal and visual attack-contact gates remain. No Phase 2 creature is
-yet accepted or ready for owner review.
+Status: Sprint 9 internally technically qualified; Sprint 10 intake under
+way. Eagle and Dire Bat passed guarded casts, player path, live inventory,
+open-floor and room-opening movement, exact-hostile native combat in RTWP
+and turn-based mode, visual impact contact, save/load/expiry, module-disabled
+safety, and installation restoration. Their original bird/bat models, Bat
+icon and bounded Bat blindsense are published on the Phase 2A feature branch.
+Human visual approval remains pending and nonblocking. Stirge and Giant Wasp
+are not yet implemented; the Phase 2A draft PR is not ready for review.
 
 The accepted baseline is `master` at `2ce70e4` (0.0.140), which advanced after
 the owner packet was written. The baseline passes 1,918 domain tests, the
@@ -218,3 +219,15 @@ body-contact measurements, intact party-camera renders and Roc/donor
 negative controls; human aesthetic approval is still pending and
 nonblocking. The room-opening fixture establishes one map route, not a
 general guarantee for every Kingmaker doorway.
+
+Sprint 10 opened with a metadata-only native blueprint audit. Source and
+focused test `ed5a3901` passed repository validation, 1,929/1,929 domain
+tests, clean Release and strict package checks; guarded runtime result
+`20260927T1601519083199Z` passed and restored the original live tree
+(`20260927T1603474656325Z`). No named native Stirge, Wasp, mosquito,
+attach, or blood-drain unit/fact/ability was present in the selected
+blueprints. Generic ConstitutionDrain is not an attach implementation.
+This establishes the need for a dedicated bounded Stirge lifecycle; it
+does not establish engine infeasibility. The supplied charter/workbook/guide
+give tiers and roles but no numeric stat blocks, so rules fidelity remains
+open pending an authorized source for exact stats and poison progression.
