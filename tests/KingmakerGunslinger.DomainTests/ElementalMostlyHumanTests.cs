@@ -63,9 +63,12 @@ namespace KingmakerGunslinger.DomainTests
         {
             JToken[] entries = JObject.Parse(Read("blueprints", "blueprints.json"))["entries"].ToArray();
             int start = PrecedingManifestEntries + FavoredClassIdentityCatalog.IdentityCount;
-            JToken[] block = entries.Skip(start).ToArray();
+            JToken[] block = entries.Skip(start).Take(ElementalMostlyHumanPolicy.IdentityCount).ToArray();
             IList<ElementalMostlyHumanIdentity> identities = ElementalMostlyHumanPolicy.All;
-            Assertions.Equal(identities.Count, block.Length, "Mostly Human block is the manifest tail.");
+            Assertions.Equal(identities.Count, block.Length, "Mostly Human identity block remains exact.");
+            Assertions.Equal("KMG.Summoning.Natural.DireBat.Blindsense",
+                (string)entries[start + identities.Count]["symbol"],
+                "The next append belongs to Expanded Summoning Phase 2.");
             for (int index = 0; index < identities.Count; index++)
             {
                 Assertions.Equal(identities[index].Symbol, (string)block[index]["symbol"], "Symbol at " + index);

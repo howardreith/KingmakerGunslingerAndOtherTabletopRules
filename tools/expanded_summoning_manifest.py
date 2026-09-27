@@ -323,6 +323,7 @@ def planned():
         ("KMG.Summoning.Special.MagmaMephit.PyrotechnicsBlindedState", "BlueprintBuff"),
         ("KMG.Summoning.Special.OozeMephit.StinkingCloudArea", "BlueprintAbilityAreaEffect"),
         ("KMG.Summoning.Natural.Bite1d4", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Natural.DireBat.Blindsense", "BlueprintFeature"),
         ("KMG.Summoning.Natural.Bite1d3", "BlueprintItemWeapon"),
         ("KMG.Summoning.Natural.Tail1d12", "BlueprintItemWeapon"),
         ("KMG.Summoning.Natural.Tail3d6", "BlueprintItemWeapon"),
@@ -331,7 +332,7 @@ def planned():
         ("KMG.Summoning.Natural.Claw1d8", "BlueprintItemWeapon"),
         ("KMG.Summoning.Subtype.Extraplanar", "BlueprintFeature"),
     ))
-    if len(rows) != 1472 or len({symbol for symbol, _ in rows}) != 1472:
+    if len(rows) != 1473 or len({symbol for symbol, _ in rows}) != 1473:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 
