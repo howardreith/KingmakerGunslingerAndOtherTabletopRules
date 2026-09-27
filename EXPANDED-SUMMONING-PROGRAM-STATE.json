@@ -292,7 +292,7 @@
       "detail": "Supplied by the owner and read. The Pteranodon passage confirms the shipped profile rather than changing it: ten-foot reach valued for attacks of opportunity, and a single main bite on which everything stacks (2d6 plus modifiers). The guide also positions multiple Pteranodons as the best single-target aerial attacker at their tier. This informs Sprint 2's acceptance emphasis on correct bite impact timing and location at Large reach; it changes no accepted statistic."
     }
   ],
-  "nextConcreteAction": "Phase 2 Sprint 9 Eagle and Dire Bat internally qualified; continue owner-authorized Sprint 10 Stirge and Giant Wasp, then Sprints 11-21 under the Phase 2 mission. Three stacked draft PRs remain the endpoint; no merge, release, permanent deployment, or Sprint 22.",
+  "nextConcreteAction": "Phase 2 Sprint 9 Eagle and Dire Bat internally qualified. Sprint 10 needs exact Stirge/Giant Wasp stat blocks: obtain explicit authorization for a narrow public Pathfinder 1e rules lookup or owner-supplied blocks, then implement and qualify Sprint 10 and continue Sprints 11-21. Three stacked draft PRs remain the endpoint; no merge, release, permanent deployment, or Sprint 22.",
   "deploymentReconciliation": {
     "finding": "The first runs left this mission's 0.0.136 branch build installed over the pre-run 0.0.117 installation. The mission required restoration and did not authorize a permanent installation; a shared version string does not make a branch artifact an accepted release.",
     "ownershipVerified": "The live DLL hash matched this mission's exact build byte for byte, so the tree was unambiguously mission-owned.",
