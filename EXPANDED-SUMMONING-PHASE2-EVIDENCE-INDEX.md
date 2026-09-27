@@ -53,3 +53,9 @@ Request-local Wasp Tail-pose diagnostic: guarded turn-based
 restoration `20260927T2317241914821Z-summon-same-turn-activation.json`.
 Both combat modes passed two exact stings. Baked geometry improved but the
 same-frame images did not establish visible contact; Wasp remains hidden.
+
+Two-frame Wasp Tail diagnostic: turn-based `20260927T2331283868029Z`,
+RTWP `20260927T2334367843649Z`, exact restoration
+`20260927T2337441522077Z-summon-same-turn-activation.json`. Both combat
+modes passed two exact stings. Delayed images change pose, but doorway
+clipping and a 1.193 m second RTWP gap prevent visual qualification.

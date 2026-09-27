@@ -570,3 +570,18 @@ hidden. Restoration `20260927T2317241914821Z` returned the original
 clean Release and strict package validation passed. Next I will test a
 frame-persistent, bounded visual pose and continue the remaining Sprint 10
 requirements.
+
+## Sprint 10: Wasp delayed Tail pose diagnosis, 2026-09-27
+
+I held the aimed Tail through two rendered frames in a guarded request-local
+component and restored it on completion/teardown. Turn-based
+`20260927T2331283868029Z` and RTWP `20260927T2334367843649Z` passed two
+native exact-target stings each. The baked tip reached target bounds in both
+turn-based samples and the first RTWP sample; second RTWP remained 1.193 m
+short. Delayed images show a changed pose, but the doorway clips the Wasp
+body and wings, while impact effects obscure contact. No visual or
+production animation PASS is claimed. Wasp remains hidden. The guarded
+batch restored the exact original 136-file live tree
+(`20260927T2337441522077Z`); validation, 1,938 domain cases, clean
+Release and strict package checks passed. Next is Stirge attach and blood
+drain, then a revised Wasp visual rig/open-space contact fixture.

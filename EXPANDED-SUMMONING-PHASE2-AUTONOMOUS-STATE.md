@@ -833,3 +833,25 @@ DLL SHA-256:
 `1156B6674026687DA24C4FD1B76C4BF91181A7199506FCC31C5C000E4BF9903A`.
 Next: frame-persistent visual contact strategy, Wasp lifecycle/art review,
 then Stirge.
+
+## Sprint 10 Wasp two-frame tail diagnosis, 2026-09-27
+
+The request-local `WaspTailAimFrameProbe` held an aimed Tail transform
+through two rendered frames, captured overhead, and restored it on finish,
+disable or destruction. Guarded turn-based `20260927T2331283868029Z` and
+RTWP `20260927T2334367843649Z` both passed two native exact-target stings.
+The delayed pose had a baked tip gap of 0/0 m in turn-based, 0/1.193 m in
+RTWP. Delayed images show changed geometry, but the doorway clips the Wasp
+body and wings, impact effects obscure the target, and the second RTWP
+strike still visibly lacks contact. This is no production animation or
+visual PASS. All Wasp choices stay suppressed. Shared restoration
+`20260927T2337441522077Z-summon-same-turn-activation.json` returned the
+original 136-file installation at SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+Repository validation, 1,938/1,938 domain cases, clean Release and strict
+package validation passed. Package SHA-256:
+`857C4A165E57FCDB4D28F41E2F555CC82101B142DB9857F1223B11BD24E0E26B`;
+DLL SHA-256:
+`23B7891F480AB812A7348791CC184E3BFAEA8D6972761ADCB4A6677FFBE28CD3`.
+Next: Stirge attach/blood-drain implementation, then revisit Wasp visual
+contact in an unobstructed fixture and with a revised rig.

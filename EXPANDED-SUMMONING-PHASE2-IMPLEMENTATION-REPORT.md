@@ -388,3 +388,14 @@ was restored after each sample, and the original installed mod was restored
 exactly (`20260927T2317241914821Z`). Repository validation, 1,938 domain
 cases, clean Release and strict package validation passed. Visual contact
 remains unresolved and Wasp publication remains closed.
+
+A two-frame request-local Tail pose diagnostic then ran in guarded
+turn-based `20260927T2331283868029Z` and RTWP `20260927T2334367843649Z`.
+Both passed native two-sting cadence. The delayed baked tip reached target
+bounds in both turn-based samples and the first RTWP sample; the second
+RTWP gap remained 1.193 m. The delayed overhead renders show the changed
+pose but body/wing doorway clipping and obscured impact contact. It is not
+a production animation or visual acceptance. Wasp stays unpublished.
+Exact installation restoration `20260927T2337441522077Z`, repository
+validation, 1,938 domain cases, clean Release and strict package checks
+passed.

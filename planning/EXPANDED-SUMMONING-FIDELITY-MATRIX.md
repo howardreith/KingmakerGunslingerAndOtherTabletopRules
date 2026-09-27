@@ -370,6 +370,13 @@ RTWP moved from 2.137 to 0.012 m and 3.51 to 1.198 m. Same-frame overhead
 renders did not establish a visibly improved sting pose, and the second
 RTWP geometry still missed. This is diagnostic only, not a contact pass or
 a production animation. All twelve Wasp choices remain suppressed.
+The follow-up two-frame request-local pose runs `20260927T2331283868029Z`
+and `20260927T2334367843649Z` again passed two native stings in each mode.
+The baked tip entered target bounds in both turn-based samples and the first
+RTWP sample, but the second RTWP gap stayed 1.193 m. Delayed renders show
+a changed pose, yet the doorway clips the Wasp body/wings and the target
+contact is obscured by impact effects. This pose is not a credible, clear
+production sting. Wasp remains hidden pending a visual-rig/contact repair.
 Source commit `9f011014` and guarded inventory
 `20260927T1804369885102Z` passed 48/48 structural/menu assertions with
 exact live-tree restoration. Source rules:
