@@ -855,3 +855,25 @@ DLL SHA-256:
 `23B7891F480AB812A7348791CC184E3BFAEA8D6972761ADCB4A6677FFBE28CD3`.
 Next: Stirge attach/blood-drain implementation, then revisit Wasp visual
 contact in an unobstructed fixture and with a revised rig.
+
+## Sprint 10 Stirge rules boundary, 2026-09-27
+
+The [Pathfinder 1e Stirge stat block](https://legacy.aonprd.com/bestiary/stirge.html)
+grounds a touch-hit attachment, a +8
+racial bonus to maintain a grapple after attachment, one Constitution damage
+at the end of each attached turn, detachment after four actual damage, and
+10% disease exposure per Stirge. A small `StirgeAttachPolicy` now encodes
+the touch/meal boundary and distinguishes requested from actual ability
+damage so immune prey cannot advance the meal. It is not wired to a unit,
+turn event, grapple/escape or disease lifecycle. Stirge is still unregistered
+and unpublished; no gameplay qualification is claimed. Repository validation,
+1,939/1,939 domain tests, clean Release and strict package validation passed.
+Guarded working-save smoke `20260927T2353348639066Z` passed, and restoration
+`20260927T2356206464811Z-working-save-smoke.json` returned the exact
+original 136-file installed mod tree at SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+Package SHA-256:
+`F67E0861D80C882E6CF94AEE24FC415101F72A08ED819B33DDBDF2A84BD3E55A`;
+DLL SHA-256:
+`6A8A39F0F7F5DD0CE8096555630AD012EA1EA44A502CC4E7A9279A0C630C1853`.
+Next: wire and qualify Stirge's dedicated live attachment lifecycle.

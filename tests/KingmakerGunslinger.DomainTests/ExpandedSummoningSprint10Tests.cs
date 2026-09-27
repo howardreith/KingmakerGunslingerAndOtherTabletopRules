@@ -11,6 +11,59 @@ namespace KingmakerGunslinger.DomainTests
     {
         internal const int AppendedLedgerIdentities = 29;
 
+        internal static void StirgeAttachRulesBoundDrainAndDetachment()
+        {
+            Assertions.Equal(8, StirgeAttachPolicy.MaintainGrappleRacialBonus,
+                "An attached Stirge has the printed grapple bonus.");
+            Assertions.Equal(10, StirgeAttachPolicy.DiseaseChancePercent,
+                "One Stirge's blood drain has the printed disease chance.");
+            Assertions.True(StirgeAttachPolicy.MayAttach(true, false, true),
+                "A touch hit against a live prey establishes attachment.");
+            Assertions.False(StirgeAttachPolicy.MayAttach(false, false, true),
+                "A missed touch attack cannot attach.");
+            Assertions.False(StirgeAttachPolicy.MayAttach(true, true, true),
+                "One Stirge cannot establish a second simultaneous link.");
+            Assertions.False(StirgeAttachPolicy.MayAttach(true, false, false),
+                "A dead target cannot become a new attachment.");
+
+            int cumulative = 0;
+            for (int turn = 1; turn <= 4; turn++)
+            {
+                Assertions.Equal(1, StirgeAttachPolicy.RequestedDamage(true,
+                    true, cumulative),
+                    "A live attached prey receives one drain attempt.");
+                StirgeDrainStep step = StirgeAttachPolicy.EndTurn(true,
+                    true, cumulative, 1);
+                Assertions.Equal(1, step.Damage,
+                    "Each attached end turn drains exactly one Constitution.");
+                Assertions.Equal(turn, step.CumulativeDamage,
+                    "The same Stirge's drain tracks its four-point meal.");
+                Assertions.Equal(turn == 4, step.Detach,
+                    "The Stirge detaches only on reaching four points.");
+                cumulative = step.CumulativeDamage;
+            }
+            StirgeDrainStep immune = StirgeAttachPolicy.EndTurn(true,
+                true, 2, 0);
+            Assertions.True(immune.Damage == 0 &&
+                immune.CumulativeDamage == 2 && !immune.Detach,
+                "An immune target cannot advance the four-point meal.");
+            StirgeDrainStep dead = StirgeAttachPolicy.EndTurn(true, false,
+                2, 0);
+            Assertions.True(dead.Detach && dead.Damage == 0 &&
+                dead.CumulativeDamage == 2,
+                "Prey death releases the Stirge without an extra drain.");
+            StirgeDrainStep escaped = StirgeAttachPolicy.EndTurn(false,
+                true, 2, 0);
+            Assertions.True(!escaped.Detach && escaped.Damage == 0,
+                "Escape ends future blood drain.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                StirgeAttachPolicy.EndTurn(true, true, 5, 1),
+                "Out-of-range cumulative damage must fail closed.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                StirgeAttachPolicy.EndTurn(false, true, 2, 1),
+                "Detached Stirges cannot claim blood drain.");
+        }
+
         internal static void GiantWaspRegisteredUnderSuppressionAtExactTiers()
         {
             SummonCreatureSpec wasp = ExpandedSummoningCatalog.All.Single(value =>

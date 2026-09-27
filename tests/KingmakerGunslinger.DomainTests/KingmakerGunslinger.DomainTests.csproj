@@ -224,6 +224,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ExpandedSummoningSpecialProfiles.cs"><Link>Summoning\ExpandedSummoningSpecialProfiles.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ExpandedSummoningNaturalProfiles.cs"><Link>Summoning\ExpandedSummoningNaturalProfiles.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\GiantWaspPoisonPolicy.cs"><Link>Summoning\GiantWaspPoisonPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\StirgeAttachPolicy.cs"><Link>Summoning\StirgeAttachPolicy.cs</Link></Compile>
     <Compile Include="ArchetypeFoundationTests.cs" />
     <Compile Include="RapidReloadPrerequisiteTests.cs" />
     <Compile Include="RapidReloadGateEvidenceTests.cs" />

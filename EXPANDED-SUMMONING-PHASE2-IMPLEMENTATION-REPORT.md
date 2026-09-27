@@ -389,6 +389,15 @@ exactly (`20260927T2317241914821Z`). Repository validation, 1,938 domain
 cases, clean Release and strict package validation passed. Visual contact
 remains unresolved and Wasp publication remains closed.
 
+The Stirge rules boundary is now implemented as an isolated policy and
+covered by a four-turn meal test, including zero actual damage on immune
+prey. It has no unit or runtime attachment integration and is not a
+Stirge qualification. Repository validation, 1,939 domain cases, clean
+Release and strict package validation passed. Guarded working-save smoke
+`20260927T2353348639066Z` and exact restoration `20260927T2356206464811Z`
+passed. The next work is the dedicated attach/escape/end-turn/drain and
+cleanup lifecycle, then a hidden Stirge unit and full runtime review.
+
 A two-frame request-local Tail pose diagnostic then ran in guarded
 turn-based `20260927T2331283868029Z` and RTWP `20260927T2334367843649Z`.
 Both passed native two-sting cadence. The delayed baked tip reached target

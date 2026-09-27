@@ -585,3 +585,17 @@ batch restored the exact original 136-file live tree
 (`20260927T2337441522077Z`); validation, 1,938 domain cases, clean
 Release and strict package checks passed. Next is Stirge attach and blood
 drain, then a revised Wasp visual rig/open-space contact fixture.
+
+## Sprint 10: Stirge attachment rules boundary, 2026-09-27
+
+I separated the verified Stirge rules from the existing summon grab path:
+Stirge attaches on a touch hit without the extra grab check, drains one
+actual Constitution point per attached end turn, and detaches after four
+points or prey death. The policy records the printed +8 maintain bonus and
+10% disease chance; it does not yet install gameplay. Its domain sequence
+tests include hit/miss, duplicate link, four-turn meal, death, escape and
+immune prey. Repository validation, 1,939 domain tests, clean Release and
+strict package checks passed. Guarded working-save smoke
+`20260927T2353348639066Z` passed and exact installation restoration
+`20260927T2356206464811Z` passed. Stirge remains unregistered and hidden;
+the next step is a dedicated runtime lifecycle and live scenario.
