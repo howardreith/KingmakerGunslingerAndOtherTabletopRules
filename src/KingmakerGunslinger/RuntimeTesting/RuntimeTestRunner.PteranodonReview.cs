@@ -4,6 +4,9 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Kingmaker;
+using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Root;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.EntitySystem.Persistence;
 using Kingmaker.UI;
@@ -62,6 +65,30 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool _motionReviewSubjectResolved;
         private UnitEntityData _motionReviewSubject;
         private UnitAnimationActionHandle _motionReviewAttack;
+        private Vector3 _motionReviewMoveOrigin;
+        private Vector3 _motionReviewMoveDestination;
+        private bool _motionReviewMoveAccepted;
+        private bool _motionReviewMoveCanStart;
+        private bool _motionReviewAppearanceCleared;
+        private UnitMoveTo _motionReviewMoveCommand;
+        private bool _motionReviewMoveStarted;
+        private bool _motionReviewMoveRunning;
+        private bool _motionReviewMoveFinished;
+        private bool _motionReviewUnitInGame;
+        private bool _motionReviewViewInGame;
+        private UnitEntityData[] _motionReviewAwakeBefore;
+        private bool _motionReviewAwakeAdded;
+        private bool _motionReviewAwakeRestored;
+        private float _motionReviewMaxPlanarTravel;
+        private float _motionReviewMaxDestinationApproach;
+        private float _motionReviewMinDestinationGap;
+        private float _motionReviewMaxViewPlanarTravel;
+        private float _motionReviewMaxVelocity;
+        private float _motionReviewMaxDeltaTime;
+        private bool _motionReviewAgentWantsMove;
+        private bool _motionReviewWasPaused;
+        private bool _motionReviewChangedPause;
+        private bool _motionReviewTravelValid;
         private bool _motionReviewOverlayWasOpen;
         private readonly List<string> _motionReviewCaptures = new List<string>();
         private readonly List<float> _motionReviewFrameSeconds = new List<float>();
@@ -70,6 +97,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         internal string MotionReviewSummary { get { return _motionReviewSummary; } }
         internal bool MotionReviewValid { get { return _motionReviewValid; } }
+        internal bool MotionReviewTravelValid { get { return _motionReviewTravelValid; } }
 
         /// <summary>
         /// Points the review at another creature and forgets the previous one,
@@ -91,6 +119,30 @@ namespace KingmakerGunslinger.RuntimeTesting
             _motionReviewSubjectResolved = false;
             _motionReviewSubject = null;
             _motionReviewAttack = null;
+            _motionReviewMoveOrigin = Vector3.zero;
+            _motionReviewMoveDestination = Vector3.zero;
+            _motionReviewMoveAccepted = false;
+            _motionReviewMoveCanStart = false;
+            _motionReviewAppearanceCleared = false;
+            _motionReviewMoveCommand = null;
+            _motionReviewMoveStarted = false;
+            _motionReviewMoveRunning = false;
+            _motionReviewMoveFinished = false;
+            _motionReviewUnitInGame = false;
+            _motionReviewViewInGame = false;
+            _motionReviewAwakeBefore = null;
+            _motionReviewAwakeAdded = false;
+            _motionReviewAwakeRestored = false;
+            _motionReviewMaxPlanarTravel = 0f;
+            _motionReviewMaxDestinationApproach = 0f;
+            _motionReviewMinDestinationGap = float.MaxValue;
+            _motionReviewMaxViewPlanarTravel = 0f;
+            _motionReviewMaxVelocity = 0f;
+            _motionReviewMaxDeltaTime = 0f;
+            _motionReviewAgentWantsMove = false;
+            _motionReviewWasPaused = false;
+            _motionReviewChangedPause = false;
+            _motionReviewTravelValid = false;
             _motionReviewOverlayWasOpen = false;
             _motionReviewCaptures.Clear();
             _motionReviewFrameSeconds.Clear();
@@ -136,7 +188,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (rig != null) rig.ScrollToImmediately(unit.Position);
                     if (_motionReviewWaited < MotionReviewFadeBudget &&
                         (LoadingOrScreenFadeActive() || !EntityFadedIn(unit) ||
-                            DissolveAmount(unit) > MotionReviewIntactDissolve))
+                            DissolveAmount(unit) > MotionReviewIntactDissolve ||
+                            IsSprint9FlightReview(unit) &&
+                            unit.Descriptor.Buffs.GetBuff(BlueprintRoot.Instance
+                                .SystemMechanics.SummonedUnitAppearBuff) != null))
                     {
                         _motionReviewWaited++;
                         return false;
@@ -150,10 +205,97 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_motionReviewFrame == 0)
                 {
                     Capture(unit, stage, "idle");
-                    Vector3 across = MotionReviewAcross(unit);
-                    unit.Commands.Run(new UnitMoveTo(unit.Position + across * 6f, 0.5f));
+                    bool flight = IsSprint9FlightReview(unit);
+                    Vector3 destination = unit.Position +
+                        MotionReviewAcross(unit) * 6f;
+                    if (flight)
+                    {
+                        _motionReviewAwakeBefore = Game.Instance.State
+                            .AwakeUnits.ToArray();
+                        if (!Game.Instance.State.AwakeUnits.Contains(unit))
+                        {
+                            Game.Instance.State.AwakeUnits.Add(unit);
+                            _motionReviewAwakeAdded = true;
+                        }
+                        _motionReviewWasPaused = Game.Instance.IsPaused;
+                        if (_motionReviewWasPaused)
+                        {
+                            Game.Instance.IsPaused = false;
+                            _motionReviewChangedPause = true;
+                        }
+                        destination = PrepareSprint9FlightMovement(unit);
+                    }
+                    _motionReviewMoveOrigin = unit.Position;
+                    _motionReviewMoveDestination = destination;
+                    var move = new UnitMoveTo(destination, 0.5f);
+                    move.Init(unit);
+                    _motionReviewMoveCanStart = move.CanStart;
+                    _motionReviewAppearanceCleared = unit.Descriptor.Buffs
+                        .GetBuff(BlueprintRoot.Instance.SystemMechanics
+                            .SummonedUnitAppearBuff) == null;
+                    unit.Commands.Run(move);
+                    _motionReviewMoveCommand = move;
+                    _motionReviewMoveAccepted = unit.Commands.Contains(move) &&
+                        ReferenceEquals(move.Executor, unit);
+                    _motionReviewMoveStarted |= move.IsStarted;
+                    _motionReviewMoveRunning |= move.IsRunning;
+                    _motionReviewMoveFinished |= move.IsFinished;
+                    if (flight && unit.View.MovementAgent != null)
+                        _motionReviewAgentWantsMove =
+                            unit.View.MovementAgent.WantsToMove;
                     _motionReviewFrame++;
                     return false;
+                }
+                // Animation callbacks alone do not establish travel. Sample the
+                // native movement agent and the unit's ground-plane position
+                // while the real move command is active.
+                Vector3 position = unit.Position;
+                _motionReviewMoveStarted |= _motionReviewMoveCommand != null &&
+                    _motionReviewMoveCommand.IsStarted;
+                _motionReviewMoveRunning |= _motionReviewMoveCommand != null &&
+                    _motionReviewMoveCommand.IsRunning;
+                _motionReviewMoveFinished |= _motionReviewMoveCommand != null &&
+                    _motionReviewMoveCommand.IsFinished;
+                _motionReviewUnitInGame |= unit.IsInGame;
+                _motionReviewViewInGame |= unit.View != null &&
+                    unit.View.IsInGame;
+                if (IsSprint9FlightReview(unit) && unit.View != null &&
+                    unit.View.MovementAgent != null)
+                {
+                    float delta = Game.Instance.TimeController.DeltaTime;
+                    _motionReviewMaxDeltaTime = Mathf.Max(
+                        _motionReviewMaxDeltaTime, delta);
+                    unit.View.MovementAgent.TickMovement(delta);
+                    _motionReviewAgentWantsMove |=
+                        unit.View.MovementAgent.WantsToMove;
+                    position = unit.Position;
+                }
+                _motionReviewMaxPlanarTravel = Mathf.Max(
+                    _motionReviewMaxPlanarTravel,
+                    Vector2.Distance(new Vector2(_motionReviewMoveOrigin.x,
+                        _motionReviewMoveOrigin.z), new Vector2(position.x,
+                        position.z)));
+                float startGap = Vector2.Distance(new Vector2(
+                    _motionReviewMoveOrigin.x, _motionReviewMoveOrigin.z),
+                    new Vector2(_motionReviewMoveDestination.x,
+                        _motionReviewMoveDestination.z));
+                float currentGap = Vector2.Distance(new Vector2(position.x,
+                    position.z), new Vector2(_motionReviewMoveDestination.x,
+                    _motionReviewMoveDestination.z));
+                _motionReviewMinDestinationGap = Mathf.Min(
+                    _motionReviewMinDestinationGap, currentGap);
+                _motionReviewMaxDestinationApproach = Mathf.Max(
+                    _motionReviewMaxDestinationApproach, startGap - currentGap);
+                if (unit.View != null && unit.View.MovementAgent != null)
+                {
+                    _motionReviewMaxVelocity = Mathf.Max(_motionReviewMaxVelocity,
+                        unit.View.MovementAgent.Velocity.magnitude);
+                    Vector3 viewPosition = unit.View.transform.position;
+                    _motionReviewMaxViewPlanarTravel = Mathf.Max(
+                        _motionReviewMaxViewPlanarTravel,
+                        Vector2.Distance(new Vector2(_motionReviewMoveOrigin.x,
+                            _motionReviewMoveOrigin.z), new Vector2(
+                            viewPosition.x, viewPosition.z)));
                 }
                 if (_motionReviewFrame == MotionReviewMoveFrames)
                 {
@@ -194,6 +336,19 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private void Finish(string stage, Exception error)
         {
+            if (_motionReviewAwakeBefore != null)
+            {
+                if (_motionReviewAwakeAdded)
+                    Game.Instance.State.AwakeUnits.Remove(_motionReviewSubject);
+                _motionReviewAwakeRestored = Game.Instance.State.AwakeUnits
+                    .SequenceEqual(_motionReviewAwakeBefore);
+                _motionReviewAwakeBefore = null;
+            }
+            if (_motionReviewChangedPause)
+            {
+                Game.Instance.IsPaused = _motionReviewWasPaused;
+                _motionReviewChangedPause = false;
+            }
             if (_motionReviewOverlayWasOpen) SetModManagerOverlay(true);
             double frameMs = _motionReviewFrameSeconds.Count == 0 ? 0d :
                 _motionReviewFrameSeconds.Average() * 1000d;
@@ -204,13 +359,139 @@ namespace KingmakerGunslinger.RuntimeTesting
                     value.IndexOf(";screenLit=true", StringComparison.Ordinal) >= 0 &&
                     value.IndexOf(";intact=true", StringComparison.Ordinal) >= 0);
             _motionReviewValid = error == null && inFrame;
+            _motionReviewTravelValid = error == null &&
+                _motionReviewMoveAccepted &&
+                _motionReviewMoveCanStart &&
+                _motionReviewAppearanceCleared &&
+                _motionReviewAwakeRestored &&
+                _motionReviewAgentWantsMove &&
+                _motionReviewMaxDeltaTime > 0f &&
+                _motionReviewMaxPlanarTravel >= 0.75f &&
+                _motionReviewMaxDestinationApproach >= 0.75f &&
+                _motionReviewMinDestinationGap <= 2f &&
+                _motionReviewMaxVelocity > 0.01f;
             _motionReviewSummary = "stage=" + stage + ";waited=" + _motionReviewWaited +
                 ";frames=" + _motionReviewFrame + ";frameMs=" + frameMs.ToString("0.#",
-                    CultureInfo.InvariantCulture) + ";captures=" +
+                    CultureInfo.InvariantCulture) + ";moveAccepted=" +
+                _motionReviewMoveAccepted + ";moveCanStart=" +
+                _motionReviewMoveCanStart + ";appearanceCleared=" +
+                _motionReviewAppearanceCleared + ";moveOrigin=" +
+                _motionReviewMoveOrigin.ToString("F2") + ";moveDestination=" +
+                _motionReviewMoveDestination.ToString("F2") +
+                ";moveFinal=" + (_motionReviewSubject == null ? "<null>" :
+                    _motionReviewSubject.Position.ToString("F2")) +
+                ";agentWantsMove=" +
+                _motionReviewAgentWantsMove + ";maxDeltaTime=" +
+                _motionReviewMaxDeltaTime.ToString("0.###",
+                    CultureInfo.InvariantCulture) + ";maxPlanarTravel=" +
+                _motionReviewMaxPlanarTravel.ToString("0.###",
+                    CultureInfo.InvariantCulture) + ";maxDestinationApproach=" +
+                _motionReviewMaxDestinationApproach.ToString("0.###",
+                    CultureInfo.InvariantCulture) + ";minDestinationGap=" +
+                _motionReviewMinDestinationGap.ToString("0.###",
+                    CultureInfo.InvariantCulture) + ";maxViewPlanarTravel=" +
+                _motionReviewMaxViewPlanarTravel.ToString("0.###",
+                    CultureInfo.InvariantCulture) + ";maxVelocity=" +
+                _motionReviewMaxVelocity.ToString("0.###",
+                    CultureInfo.InvariantCulture) + ";travelValid=" +
+                _motionReviewTravelValid + ";moveStarted=" +
+                _motionReviewMoveStarted + ";moveRunning=" +
+                _motionReviewMoveRunning + ";moveFinished=" +
+                _motionReviewMoveFinished + ";unitInGame=" +
+                _motionReviewUnitInGame + ";viewInGame=" +
+                _motionReviewViewInGame + ";pausedBefore=" +
+                _motionReviewWasPaused + ";awakeAdded=" +
+                _motionReviewAwakeAdded + ";awakeRestored=" +
+                _motionReviewAwakeRestored + ";pausedAfter=" +
+                Game.Instance.IsPaused + ";captures=" +
                 _motionReviewCaptures.Count + (error == null ? "" :
                     ";fault=" + error.GetType().Name + ":" + error.Message) +
                 ";" + string.Join("|", _motionReviewCaptures.ToArray());
             _motionReviewComplete = true;
+        }
+
+        private static bool IsSprint9FlightReview(UnitEntityData unit)
+        {
+            string name = unit == null || unit.Blueprint == null ? null :
+                unit.Blueprint.name;
+            return name == ExpandedSummoningPteranodonViewPatch.EagleBlueprintName ||
+                name == ExpandedSummoningPteranodonViewPatch.DireBatBlueprintName;
+        }
+
+        private Vector3 PrepareSprint9FlightMovement(UnitEntityData unit)
+        {
+            if (AstarPath.active == null || unit.View == null ||
+                unit.View.AgentASP == null || unit.View.MovementAgent == null ||
+                _creatureReviewCaster == null ||
+                !ReferenceEquals(unit.HoldingState,
+                    _creatureReviewCaster.HoldingState))
+                throw new InvalidOperationException(
+                    "Sprint 9 flight review lacks a live party-area navigation anchor.");
+            // The summon may initially appear at an edge of the room. Use the
+            // party member's visible floor node as a search anchor, then place
+            // the summon on a clear nearby node away from all party bodies.
+            Pathfinding.NNInfo anchor = AstarPath.active.GetNearest(
+                _creatureReviewCaster.Position);
+            if (anchor.node == null || !anchor.node.Walkable)
+                throw new InvalidOperationException(
+                    "Sprint 9 flight review has no walkable party anchor.");
+            var graph = AstarPath.active.graphs[
+                (int)anchor.node.GraphIndex] as Pathfinding.IRaycastableGraph;
+            if (graph == null)
+                throw new InvalidOperationException(
+                    "Sprint 9 flight review graph cannot verify a clear route.");
+            UnitEntityData[] party = Game.Instance.Player.Party.Where(value =>
+                value != null && value.IsInGame).ToArray();
+            Vector3 across = MotionReviewAcross(unit);
+            Vector3 forward = Vector3.Cross(Vector3.up, across);
+            Vector3[] directions = { across, -across, forward, -forward,
+                (across + forward).normalized,
+                (across - forward).normalized,
+                (-across + forward).normalized,
+                (-across - forward).normalized };
+            Pathfinding.NNInfo[] open = new[] { 3f, 4f, 5f }
+                .SelectMany(radius => directions.Select(direction =>
+                    anchor.clampedPosition + direction * radius))
+                .Select(requested => new { requested,
+                    nearest = AstarPath.active.GetNearest(requested) })
+                .Where(value => value.nearest.node != null &&
+                    value.nearest.node.Walkable &&
+                    value.nearest.node.Area == anchor.node.Area &&
+                    value.nearest.node.GraphIndex == anchor.node.GraphIndex &&
+                    Vector3.Distance(value.requested,
+                        value.nearest.clampedPosition) <= 0.5f &&
+                    party.All(member => Vector3.Distance(member.Position,
+                        value.nearest.clampedPosition) >= 2.5f) &&
+                    Sprint9FlightLineClear(graph, anchor, value.nearest))
+                .Select(value => value.nearest).ToArray();
+            if (open.Length < 2)
+                throw new InvalidOperationException(
+                    "Sprint 9 flight review has fewer than two clear party-area nodes.");
+            Pathfinding.NNInfo start = open.OrderBy(value =>
+                Vector3.Distance(value.clampedPosition,
+                    anchor.clampedPosition)).First();
+            Pathfinding.NNInfo[] destinations = open.Where(value =>
+                    Vector3.Distance(value.clampedPosition,
+                        start.clampedPosition) >= 2f &&
+                    Sprint9FlightLineClear(graph, start, value))
+                .OrderByDescending(value => Vector3.Distance(
+                    value.clampedPosition, start.clampedPosition)).ToArray();
+            if (destinations.Length == 0)
+                throw new InvalidOperationException(
+                    "Sprint 9 flight review has no clear party-free movement span.");
+            unit.Position = start.clampedPosition;
+            unit.View.transform.position = start.clampedPosition;
+            return destinations[0].clampedPosition;
+        }
+
+        private static bool Sprint9FlightLineClear(
+            Pathfinding.IRaycastableGraph graph, Pathfinding.NNInfo from,
+            Pathfinding.NNInfo to)
+        {
+            Pathfinding.GraphHitInfo hit;
+            var trace = new List<Pathfinding.GraphNode>();
+            return !graph.Linecast(from.clampedPosition, to.clampedPosition,
+                from.node, out hit, trace);
         }
 
         /// <summary>
