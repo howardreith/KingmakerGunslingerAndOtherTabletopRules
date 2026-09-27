@@ -337,6 +337,11 @@ commands (1d3 and 1d4+1 in both families), exact-kind counts, 14/14 visual
 attachments and per-cast cleanup. All
 twelve placements stay suppressed; no
 published player choice or full Wasp combat qualification is claimed.
+The guarded `20260927T2115391949167Z` probe passed native RuleApplyBuff
+mind-affecting immunity on the Wasp against an eligible human control;
+neither control buff was installed, so only native rule eligibility is
+claimed. The native VerminType fact is present, but the cloned donor's
+`EagleGiant` species marker requires correction before publication.
 Source commit `9f011014` and guarded inventory
 `20260927T1804369885102Z` passed 48/48 structural/menu assertions with
 exact live-tree restoration. Source rules:

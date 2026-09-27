@@ -723,3 +723,24 @@ DLL SHA-256:
 `A9E03627FDFEDD4562C88257C4842CCDFE0D99252D1D705FB592DC68D40DDD33`.
 Wasp remains suppressed. Next: prove vermin mind-affecting immunity,
 real strike cadence/contact and safe lifecycle, then Stirge.
+
+## Sprint 10 Wasp Vermin immunity checkpoint, 2026-09-27
+
+The final guarded `disposable-expanded-summoning` result
+`20260927T2115391949167Z` passed 23/23 assertions. A paired native
+RuleApplyBuff probe found the Wasp immune/ineligible to a mind-affecting
+confusion buff and the human control nonimmune/eligible. Neither target
+received the buff through this fixture; only the native rule decision is
+qualified. The Wasp carries native VerminType and its immunity components,
+but its cloned donor species marker still reads `EagleGiant` and needs
+correction. Three failed diagnostics are excluded from qualification.
+Restoration `20260927T2119178826656Z-disposable-expanded-summoning.json`
+verified the original 136-file live tree at SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+Repository validation, 1,936/1,936 domain cases, clean Release and strict
+package checks passed. Package SHA-256:
+`CD34E6E571BF39D15F5A848C59E5FA708038DB4FDFE9681CBBAD240200FEFE93`;
+DLL SHA-256:
+`FCEFCCB9387D4E2A096856FE9DF3C2CDF5E26F219C8D1ADF5F256774679951CB`.
+Wasp stays suppressed. Next: species identity, real strike cadence/contact,
+safe lifecycle, icon and visual review; then Stirge.
