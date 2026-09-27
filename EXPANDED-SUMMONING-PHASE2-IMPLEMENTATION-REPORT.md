@@ -3,7 +3,7 @@
 Status: Sprint 9 in progress. The Dire Bat sense, original Bat/Eagle visuals,
 Bat icon and preserved-choice publication are source/build-qualified with
 guarded casts, player path and live inventory PASS. Motion/contact, combat-mode,
-save/load and module-disabled gates remain. No
+module-disabled gates remain. No
 Phase 2 creature is yet accepted or ready for owner review.
 
 The accepted baseline is `master` at `2ce70e4` (0.0.140), which advanced after
@@ -74,6 +74,22 @@ creature sprites and zero prohibited references. Restoration record
 validation, 1,922/1,922 domain tests, clean Release build and strict 256-file
 package pass on this audit-corrected candidate. This is a publication
 checkpoint, not final Sprint 9 acceptance or owner visual approval.
+
+The published-candidate visual/rules regression batch passed guarded runs
+`20260927T0634285980681Z`, `20260927T0637208226656Z` and
+`20260927T0640079411062Z`, with exact wrapper restoration
+`20260927T0643575276053Z`. Sprint 9's save/load fixture then added one Eagle
+and one Dire Bat to the established disposable working-save trio. Guarded
+prepare `20260927T0655003623332Z` passed 14/14 assertions, including both
+46-bone original views and one exact working-save write. Fresh-load cleanup
+`20260927T0659022955480Z` passed 14/14 with those views reattached, then
+expired the fixture and wrote the cleaned save once. Final absence
+`20260927T0703025930540Z` passed 14/14, Eagle/Bat zero and no save write.
+The original live mod tree was restored in record `20260927T0705405909889Z`.
+Repository validation, 1,923/1,923 domain tests, clean Release compilation
+and strict package validation passed on this fixture checkpoint. The result
+proves save/load and expiry safety for the two visuals, not real doorway travel
+or attack contact.
 
 Draft tranche PR #25 tracks Phase 2A. All Sprints 10-21 remain planned. Human visual and
 gameplay review has not been performed and remains nonblocking for internal

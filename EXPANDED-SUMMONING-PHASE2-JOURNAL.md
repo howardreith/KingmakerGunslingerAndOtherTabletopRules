@@ -1,5 +1,36 @@
 # Expanded Summoning Phase 2 journal
 
+## Sprint 9: flying-animal save/load checkpoint, 2026-09-27
+
+The published-candidate visual-contract, repeated-lifecycle and rules batch
+passed guarded Steam runs `20260927T0634285980681Z`,
+`20260927T0637208226656Z` and `20260927T0640079411062Z`. The wrapper
+restored the 136-file live mod tree exactly in record
+`20260927T0643575276053Z`. These checks exercise view callbacks, animation
+handles, donor isolation and representative rules; actual doorway travel and
+attack impact alignment remain unmeasured.
+
+Added Eagle and Dire Bat to the existing working-save persistence fixture,
+with a new exact attached-view/rendered-mesh assertion in prepare, reloaded
+cleanup and final absence. Repository validation, 1,923/1,923 domain tests,
+clean exact-reference Release and strict 256-file package passed. Precommit
+package SHA-256 is
+`21c06b3c03c90e4d56ac18f4707e18d1b05b476e1d3e7d527b9d3308eaaa8305`;
+DLL SHA-256 is
+`9d909f7a2ebb8741f5c6bbfa0abe8168f8b3d42b564df5ae7e34db2220d664c9`.
+
+Guarded `KMG_AUTOMATION_WORKING` prepare
+`20260927T0655003623332Z`, fresh-load cleanup
+`20260927T0659022955480Z`, and final absence
+`20260927T0703025930540Z` each passed 14/14 assertions. Both flying
+creatures carried their own private 46-bone mesh/material before the save and
+after fresh deserialization. The two writing stages each had exactly one
+authorized SaveRoutine; final absence had zero save writes and no Eagle/Bat
+fixture. Restoration record `20260927T0705405909889Z` returned the live mod
+to `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+This closes the visual save/load and expiry gate, with Sprint 9 motion/contact,
+RTWP/turn-based and module-disabled checks still open.
+
 ## Sprint 9: preserved Dire Bat publication checkpoint, 2026-09-27
 
 Published the 14 existing Dire Bat logical placements without allocating new

@@ -19,7 +19,7 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
   all 813 generated roots and 29 native wrappers passed the guarded native
   player path; the 18-parent inventory/menu/icon audit passed after an exact
   Bat feature audit correction. Remaining Sprint 9 gates are explicit
-  motion/contact, both combat modes, save/load and module-disabled safety.
+  motion/contact, both combat modes and module-disabled safety.
   No Phase 2 creature has been claimed complete.
 - HumanReview: NOT_PERFORMED_NONBLOCKING. Internal Phase 2 reviews: pending.
 - Blockers: none established. A difficult rig is not by itself a blocker.
@@ -204,14 +204,38 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
 - Publication is source and guarded-runtime qualified. Sprint 9 final
   qualification and owner visual approval remain open.
 
+## Sprint 9 flying save/load checkpoint, 2026-09-27
+
+- Published-candidate visual-contract, view-lifecycle and rules runs PASS:
+  `20260927T0634285980681Z`, `20260927T0637208226656Z`,
+  `20260927T0640079411062Z`. Wrapper restoration record
+  `20260927T0643575276053Z` confirms the original live tree.
+- The persistence fixture now includes one Eagle and one Dire Bat, with exact
+  private renderer attachment checks. Repository validation, 1,923/1,923
+  domain tests, clean Release build and strict 256-file package PASS. Local
+  package SHA-256
+  `21c06b3c03c90e4d56ac18f4707e18d1b05b476e1d3e7d527b9d3308eaaa8305`;
+  DLL SHA-256
+  `9d909f7a2ebb8741f5c6bbfa0abe8168f8b3d42b564df5ae7e34db2220d664c9`.
+- Guarded working-save prepare `20260927T0655003623332Z`, fresh-load cleanup
+  `20260927T0659022955480Z` and final absence
+  `20260927T0703025930540Z` each PASS 14/14. The original Eagle and Bat
+  meshes were bound before save and after reload, then both were absent after
+  native expiry. Each writing stage had exactly one authorized SaveRoutine;
+  final absence had none. Wrapper record `20260927T0705405909889Z` confirms
+  the same pre-run live tree hash.
+- Actual doorway travel, impact contact, RTWP/turn-based and module-disabled
+  qualification remain open. The existing visual-contract probe is an
+  animation/view contract, not proof of movement through geometry.
+
 ## Standing boundaries and next action
 
 `OwnerAcceptedEngineLimitation: ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD`.
 Active holds and mouth occupancy return cleanly released on reload. Do not
 implement hold re-establishment or call this grapple persistence.
 
-Next: finish Sprint 9 motion, impact, RTWP, turn-based, save/load and
-module-disabled gates, then advance to Sprint 10. The Bat's preserved placements
+Next: finish Sprint 9 motion, impact, RTWP, turn-based and module-disabled
+gates, then advance to Sprint 10. The Bat's preserved placements
 are published only after its model, blindsense, icon and guarded live cast gate.
 Continue through A, B and C without an intermediate owner
 decision. Open three stacked PRs as the tranche gates pass. No merge, release,
