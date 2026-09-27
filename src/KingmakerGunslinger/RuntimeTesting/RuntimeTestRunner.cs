@@ -332,6 +332,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal bool SuperiorSummoning;
             internal bool RepresentativeCombat;
             internal bool SpecialAdaptations;
+            internal bool WaspVerminImmunity;
+            internal string WaspVerminImmunityDetail;
             internal bool HostileAbilityTarget;
             internal int AdditionalCasts;
             internal readonly List<string> Diagnostics = new List<string>();
@@ -17477,6 +17479,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         mechanics.SpecialAdaptations &&
                         mechanics.HostileAbilityTarget,
                     "RuleAttackWithWeapon plus native special AbilityData/UnitUseAbility paths"),
+                Assertion("expanded-summoning-giant-wasp-vermin-immunity",
+                    "native RuleApplyBuff reports mind-affecting immunity for a live Wasp and eligibility for a human control",
+                    mechanics == null ? "not-run" : mechanics.WaspVerminImmunityDetail,
+                    mechanics != null && mechanics.WaspVerminImmunity,
+                    "live granted feature and paired native AddBuff outcomes on disposable units"),
                 Assertion("expanded-summoning-disposable-cleanup",
                     "exact party and global-unit snapshots restored", observed,
                     cleaned, "per-cast UnitEntityData.Dispose and final exact snapshots"),
@@ -17995,6 +18002,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ResetExpandedSummoningMechanicalHostile(hostile, blueprints);
                 bool waspPoison = ExerciseExpandedSummoningWaspPoison(blueprints,
                     caster, hostile, created, result, out waspPoisonDetail);
+                UnitEntityData waspForImmunity = created.Last(value =>
+                    value.Blueprint != null && value.Blueprint.name ==
+                        "KMG_Summoning_Unit_GiantWasp");
+                result.WaspVerminImmunity =
+                    ExerciseExpandedSummoningWaspVerminImmunity(blueprints,
+                        waspForImmunity, caster, hostile,
+                        out result.WaspVerminImmunityDetail);
 
                 result.RepresentativeCombat = animalAttack && proxyAttack &&
                     elementalAttack && stalkerAttack && shadowAttack &&
@@ -18845,6 +18859,22 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData wasp = CastExpandedSummoningCombatUnit(blueprints,
                 caster, SummonFamily.NaturesAlly, "giant-wasp", 4,
                 created, evidence);
+            BlueprintFeature verminType = blueprints.OfType<BlueprintFeature>()
+                .Single(value => value.AssetGuid ==
+                    "09478937695300944a179530664e42ec");
+            string verminProbe = "species=" +
+                (wasp.Blueprint.Type == null ? "<none>" :
+                    wasp.Blueprint.Type.name) + ";verminFact=" +
+                wasp.Descriptor.HasFact(verminType) + ";typeComponents=" +
+                string.Join(",", (verminType.ComponentsArray ??
+                    Array.Empty<BlueprintComponent>()).Select(value =>
+                    value == null ? "<null>" : value.GetType().FullName)
+                    .ToArray()) + ";grantedTypeFacts=" +
+                string.Join(",", wasp.Descriptor.Progression.Features.Enumerable
+                    .Where(value => value != null && value.Blueprint != null &&
+                        value.Blueprint.name.IndexOf("Type",
+                            StringComparison.OrdinalIgnoreCase) >= 0)
+                    .Select(value => value.Blueprint.name).ToArray());
             int fortBefore = hostile.Descriptor.Stats.SaveFortitude.BaseValue;
             int dexBaseBefore = hostile.Descriptor.Stats.Dexterity.BaseValue;
             int dexDamageBefore = hostile.Descriptor.Stats.Dexterity.Damage;
@@ -18903,7 +18933,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     damageAfterFailedRound - damageAfterHit <= 2 &&
                     presentAfterFailure && cured &&
                     dexAfterCure == dexAfterFailedRound;
-                detail = "attack=" + attackDetail + ";dc=" + dc +
+                detail = "verminProbe=" + verminProbe + ";attack=" + attackDetail + ";dc=" + dc +
                     ";dex=" + dexBefore + "->" + dexAfterHit + "->" +
                     dexAfterFailedRound + "->" + dexAfterCure +
                     ";statDamage=" + dexDamageBefore + "->" +
@@ -18926,6 +18956,75 @@ namespace KingmakerGunslinger.RuntimeTesting
                 hostile.Descriptor.Stats.Dexterity.BaseValue = dexBaseBefore;
                 hostile.Descriptor.Stats.Dexterity.Damage = dexDamageBefore;
                 hostile.Descriptor.Damage = hitPointsBefore;
+            }
+        }
+
+        private static bool ExerciseExpandedSummoningWaspVerminImmunity(
+            BlueprintScriptableObject[] blueprints, UnitEntityData wasp,
+            UnitEntityData humanControl, UnitEntityData source,
+            out string detail)
+        {
+            BlueprintFeature verminType = blueprints.OfType<BlueprintFeature>()
+                .Single(value => value.AssetGuid ==
+                    "09478937695300944a179530664e42ec");
+            BlueprintBuff confusion = BlueprintBootstrap.GunslingerClass
+                .TargetingHead.ConfusionBuff;
+            string buffImmunity = string.Join(",", verminType.ComponentsArray.OfType<
+                Kingmaker.UnitLogic.FactLogic.BuffDescriptorImmunity>()
+                .Select(value => value.Descriptor.Value.ToString()).ToArray());
+            string spellImmunity = string.Join(",", verminType.ComponentsArray.OfType<
+                Kingmaker.UnitLogic.FactLogic.SpellImmunityToSpellDescriptor>()
+                .Select(value => value.Descriptor.Value.ToString()).ToArray());
+            bool descriptor = verminType.ComponentsArray.OfType<
+                Kingmaker.UnitLogic.FactLogic.SpellImmunityToSpellDescriptor>()
+                .Any(value => value.Descriptor.HasAnyFlag(
+                    SpellDescriptor.MindAffecting));
+            bool granted = wasp.Descriptor.HasFact(verminType) &&
+                !humanControl.Descriptor.HasFact(verminType);
+            Buff onWasp = null;
+            Buff onHuman = null;
+            RuleApplyBuff waspRule = null;
+            RuleApplyBuff humanRule = null;
+            try
+            {
+                waspRule = new RuleApplyBuff(wasp, confusion,
+                    new MechanicsContext(source, source.Descriptor, confusion,
+                        null, new TargetWrapper(wasp)),
+                    TimeSpan.FromSeconds(6d), (buff, context, duration) =>
+                        wasp.Descriptor.Buffs.AddBuff(buff, context, duration));
+                Rulebook.Trigger(waspRule);
+                onWasp = waspRule.AppliedBuff;
+                humanRule = new RuleApplyBuff(humanControl, confusion,
+                    new MechanicsContext(source, source.Descriptor, confusion,
+                        null, new TargetWrapper(humanControl)),
+                    TimeSpan.FromSeconds(6d), (buff, context, duration) =>
+                        humanControl.Descriptor.Buffs.AddBuff(buff, context,
+                            duration));
+                Rulebook.Trigger(humanRule);
+                onHuman = humanRule.AppliedBuff;
+                bool waspBlocked = waspRule.Immunity && !waspRule.CanApply &&
+                    onWasp == null &&
+                    !wasp.Descriptor.State.HasCondition(UnitCondition.Confusion);
+                bool controlEligible = !humanRule.Immunity && humanRule.CanApply;
+                detail = "species=" + (wasp.Blueprint.Type == null ?
+                    "<none>" : wasp.Blueprint.Type.name) +
+                    ";verminGranted=" + granted + ";mindDescriptor=" +
+                    descriptor + ";buffImmunity=" + buffImmunity +
+                    ";spellImmunity=" + spellImmunity +
+                    ";waspRule=" + waspRule.CanApply + "/" +
+                    waspRule.Immunity + "/" + (onWasp != null) +
+                    ";humanRule=" + humanRule.CanApply + "/" +
+                    humanRule.Immunity + "/" + (onHuman != null) +
+                    ";waspBlocked=" + waspBlocked + ";humanEligible=" +
+                    controlEligible + ";buffInstalledOnControl=" +
+                    (onHuman != null);
+                return granted && waspBlocked && controlEligible;
+            }
+            finally
+            {
+                if (onWasp != null) wasp.Descriptor.Buffs.RemoveFact(onWasp);
+                if (onHuman != null)
+                    humanControl.Descriptor.Buffs.RemoveFact(onHuman);
             }
         }
 
