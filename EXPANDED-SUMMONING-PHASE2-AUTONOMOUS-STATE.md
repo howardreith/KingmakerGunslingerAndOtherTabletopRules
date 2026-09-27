@@ -19,7 +19,8 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
   all 813 generated roots and 29 native wrappers passed the guarded native
   player path; the 18-parent inventory/menu/icon audit passed after an exact
   Bat feature audit correction. Remaining Sprint 9 gates are explicit
-  motion/contact, both combat modes and module-disabled safety.
+  doorway/contact, both combat modes and module-disabled safety. Open-floor
+  native movement is now guarded-runtime qualified for Eagle and Dire Bat.
   No Phase 2 creature has been claimed complete.
 - HumanReview: NOT_PERFORMED_NONBLOCKING. Internal Phase 2 reviews: pending.
 - Blockers: none established. A difficult rig is not by itself a blocker.
@@ -228,13 +229,43 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
   qualification remain open. The existing visual-contract probe is an
   animation/view contract, not proof of movement through geometry.
 
+## Sprint 9 flying travel checkpoint, 2026-09-27
+
+- Added a guarded review assertion that requires the summoned Eagle and Dire
+  Bat to accept a native `UnitMoveTo`, clear their native appearance buff,
+  advance at least 0.75 m toward a reachable same-graph destination, finish
+  within 2 m, and show nonzero movement-agent velocity. The fixture uses a
+  party-area navmesh linecast and does not inject a forced path. It restores
+  temporary pause/awake state and dismisses the summons. Animation captures
+  alone cannot pass this assertion.
+- The first attempts showed zero travel before appearance readiness. A
+  temporary forced-path probe later measured travel, but could not attribute
+  it to the command. With that probe removed, the final guarded result
+  `20260927T0911579435138Z-working-save-expanded-summoning-creature-review`
+  was PASS: Eagle traveled 7.943 m toward its target, minimum target gap
+  0.18 m, peak velocity 8.124; Dire Bat traveled 6.195 m toward its target,
+  minimum gap 1.26 m, peak velocity 4.064. Both native move commands were
+  accepted and `CanStart` was true. `IsStarted` was not sampled true in that
+  run, so this is evidence of live open-floor travel, not a claim about the
+  precise command lifecycle or doorway behavior.
+- Repository validation, 1,924/1,924 domain tests, clean exact-reference
+  Release build and strict local package validation passed. Package SHA-256
+  `35216de8c114f046fd89a4341a7e960270dbc9405c449a911db0fddcc467eb95`;
+  DLL SHA-256
+  `278ca237fbdece7b3b68ba45e1b73763002f3c4ec5d376880a8277955684a729`.
+  The wrapper restored the original 136-file live tree with SHA-256
+  `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`
+  in restoration record `20260927T0916296796822Z`.
+- Doorway navigation, actual attack contact and impact alignment, both combat
+  modes, module-disabled safety and owner visual approval remain open.
+
 ## Standing boundaries and next action
 
 `OwnerAcceptedEngineLimitation: ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD`.
 Active holds and mouth occupancy return cleanly released on reload. Do not
 implement hold re-establishment or call this grapple persistence.
 
-Next: finish Sprint 9 motion, impact, RTWP, turn-based and module-disabled
+Next: finish Sprint 9 doorway navigation, impact, RTWP, turn-based and module-disabled
 gates, then advance to Sprint 10. The Bat's preserved placements
 are published only after its model, blindsense, icon and guarded live cast gate.
 Continue through A, B and C without an intermediate owner
