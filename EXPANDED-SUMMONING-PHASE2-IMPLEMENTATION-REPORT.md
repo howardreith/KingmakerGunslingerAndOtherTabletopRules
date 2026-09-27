@@ -198,3 +198,23 @@ head-weighted surface 0.106 m from the hostile body; restoration record
 `20260927T1407214071366Z` returned the original live tree. Actual doorway
 traversal remains open. Technical visual evidence does not constitute owner approval;
 HumanReview: NOT_PERFORMED_NONBLOCKING.
+
+Sprint 9 doorway qualification used a surveyed connected floor route in the
+named disposable working save. An overlong first route
+`20260927T1503558530369Z` failed and is excluded. The corrected individual
+Eagle/Bat routes passed, and final combined fresh-process result
+`20260927T1536450257132Z` passed 12/12 assertions: native `UnitMoveTo`
+started and finished through a blocked direct line, Eagle/Bat travelled
+12.357/12.360 m to within 0.021/0.024 m of the adjacent-room node, both
+renderers remained intact and both cleanup counts were zero. Restoration
+record `20260927T1541351948729Z` verified the original 136-file tree hash
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+The final source passed repository validation, 1,928 domain tests, clean
+Release and strict package validation (SHA-256
+`c329103885331df5e9f81346bc33af8a2fd0d473f42a4744b1eb0deedbd0b56b`).
+Engineering, rules, visual and evidence/restoration reviews found no open
+technical Sprint 9 gate. The visual review used original meshes, corrected
+body-contact measurements, intact party-camera renders and Roc/donor
+negative controls; human aesthetic approval is still pending and
+nonblocking. The room-opening fixture establishes one map route, not a
+general guarantee for every Kingmaker doorway.

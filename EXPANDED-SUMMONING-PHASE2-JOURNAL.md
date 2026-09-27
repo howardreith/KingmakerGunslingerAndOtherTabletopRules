@@ -325,3 +325,20 @@ exact-hostile native bite with the head-weighted surface 0.106 m from its
 body; the wrapper restored the original live tree. I still need a doorway
 route before closing Sprint 9. Human visual approval remains unperformed
 and nonblocking.
+
+## Sprint 9: native doorway closeout and internal review, 2026-09-27
+
+The working save's named closed doors separated navmesh areas, so I surveyed
+native floor nodes and tried a connected room route. The first endpoint was
+too far beyond a blocked boundary: guarded result `20260927T1503558530369Z`
+measured 15.57 m of Eagle movement but an 8.688 m final gap, and is excluded.
+I narrowed the destination to the adjacent room. Eagle and Dire Bat each
+passed separate runs, then the stricter combined fresh-process run
+`20260927T1536450257132Z` passed 12/12 assertions. Their native moves
+covered 12.357 and 12.360 m across a blocked direct line, finished 0.021
+and 0.024 m from destination, and cleaned up with zero survivors. The wrapper
+restored the exact pre-run live tree. Repository validation, 1,928 domain
+tests, clean Release and strict package passed. I reviewed source safety,
+rules/roster fidelity, actual renders and corrected contact measurements,
+and restoration evidence. Sprint 9 is internally qualified; owner visual
+approval remains pending and nonblocking. Next is Sprint 10 Stirge/Wasp.
