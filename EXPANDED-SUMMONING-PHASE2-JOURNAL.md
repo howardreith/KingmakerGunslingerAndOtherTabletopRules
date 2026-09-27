@@ -399,3 +399,24 @@ asset-status assertion, so I narrowed the fixture and reran. Guarded result
 SHA-256 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
 The pushed checkpoint is `9933c40e354155ca9a66610e30d310c7a2eab96b`.
 Next: exact Wasp sting/poison and suppressed identity registration; then Stirge.
+
+## Sprint 10: Wasp registered under suppression, 2026-09-27
+
+I appended the Wasp unit, 24 logical/template ability identities and its
+dedicated 1d8 sting without changing earlier GUIDs. SM IV and SNA IV each
+have six legal quantity placements. All twelve remain suppressed while
+poison, strike cadence and live view are unfinished. The menu remains at
+813 published choices; 825 are registered. The icon catalog records the
+hidden disposition and the live icon observer now checks published
+creatures only. The Wasp has no player-visible icon consumer yet.
+
+Full validation, 1,932 domain tests, clean Release and strict package
+passed. The first guarded inventory timed out before its late result and
+exposed a stale icon-observer assertion; it was not counted as a pass.
+After the focused correction, guarded inventory
+`20260927T1804369885102Z` passed 48/48 assertions, including exact
+registered identities and menu order. Restoration
+`20260927T1808371924124Z` returned the original 136-file live tree at
+SHA-256 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+Source commit `9f011014e9f0b574a8c10fff14e75088b4569818` is pushed.
+Next: Wasp poison, then live combat and view, then Stirge.
