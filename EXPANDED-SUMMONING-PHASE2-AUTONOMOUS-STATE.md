@@ -770,3 +770,23 @@ DLL SHA-256:
 `89DB9B4A6336E26719C42425D004061A79B145CFC9FE03AC017ABF9F5FB2E7E4`.
 Wasp stays hidden; next are real strike contact,
 cadence, lifecycle, art, then Stirge.
+
+## Sprint 10 Wasp two-mode strike cadence, 2026-09-27
+
+The bounded hidden-Wasp flight fixture now requires two native sting rules
+on the exact hostile in both modes. Turn-based
+`20260927T2217134616132Z` and RTWP `20260927T2220168994981Z` passed;
+RTWP needed 145 wait frames. Baked weighted Tail/stinger surface distances
+to the target's rendered body bounds were 0.643–0.654 m in turn-based and
+0.743/2.04 m in RTWP. These prove real attack cadence but fail visual
+contact. Keep all twelve Wasp placements suppressed. The batch's single
+restoration `20260927T2223192246293Z-summon-same-turn-activation.json`
+returned the original 136-file tree at SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+Repository validation, 1,938/1,938 domain cases, clean Release and strict
+package validation passed. Package SHA-256:
+`D1DA510EB2504FB597F6B804FE6C99FBF05F6EF309B1FDF3E3720D26066029F0`;
+DLL SHA-256:
+`404653BC60B5FC371FB56156E64C3F5C027A924C7D5A56E8C9FF99FDF2C31281`.
+Next: view-target contact, clipping, lifecycle, icon and visual clarity;
+then Stirge.

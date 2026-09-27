@@ -193,6 +193,29 @@ namespace KingmakerGunslinger.DomainTests
                 "Wasp must not inherit the Eagle donor's type or image.");
         }
 
+        internal static void HiddenWaspUsesBoundedNativeFlightCombatReview()
+        {
+            string root = Environment.CurrentDirectory;
+            string scenario = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "SummonSameTurnActivationScenario.cs"));
+            string request = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "RuntimeTestRequest.cs"));
+            string launcher = File.ReadAllText(Path.Combine(root, "scripts",
+                "Invoke-KingmakerRuntimeTest.ps1"));
+            string automation = File.ReadAllText(Path.Combine(root, "scripts",
+                "RuntimeAutomation.Common.ps1"));
+            Assertions.True(scenario.Contains("SummonMonsterFourGuid") &&
+                scenario.Contains("_flightCreature == \"giant-wasp\" ? 2 : 1") &&
+                scenario.Contains("new[] { \"Tail\" }") &&
+                scenario.Contains("sprint10-flight-") &&
+                request.Contains("\"eagle\", \"dire-bat\", \"giant-wasp\"") &&
+                launcher.Contains("@('eagle', 'dire-bat', 'giant-wasp')") &&
+                automation.Contains("@('eagle', 'dire-bat', 'giant-wasp')"),
+                "Only the named hidden Wasp may enter the guarded native flight-combat fixture, with two exact hostile strikes and stinger geometry.");
+        }
+
         internal static void GiantWaspOriginalVisualUsesAuditedInstanceBinding()
         {
             string root = Environment.CurrentDirectory;

@@ -349,6 +349,12 @@ replaces that marker on the Wasp only. Guarded
 RuleApplyBuff results. The native component mask did not directly match
 the `MindAffecting` bit; the claim rests on the actual rule result and
 granted fact. The type image is unassigned while the creature is hidden.
+Guarded own-tier Summon Monster IV combat runs
+`20260927T2217134616132Z` (turn-based) and
+`20260927T2220168994981Z` (RTWP) each passed two exact-target native
+sting rules. Baked stinger surface gaps were 0.643–0.654 m and
+0.743/2.04 m respectively. Cadence is qualified in those fixtures, but
+visual sting contact remains a defect. Wasp stays unpublished.
 Source commit `9f011014` and guarded inventory
 `20260927T1804369885102Z` passed 48/48 structural/menu assertions with
 exact live-tree restoration. Source rules:
