@@ -16913,8 +16913,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .Where(value => !oneD3.Contains(value) &&
                     !oneD4PlusOne.Contains(value))
                 .ToArray();
+            // The alphabetical tier sample cannot establish Wasp's own
+            // quantity contract. Cast both quantities in both families while
+            // every Wasp menu placement remains suppressed.
+            SummonVariantSpec[] waspCrowd = monster.Concat(ally)
+                .Where(value => value.Creature.Key == "giant-wasp" &&
+                    value.Multiplicity != SummonMultiplicity.One)
+                .GroupBy(value => new { value.Family, value.Multiplicity })
+                .Select(group => group.OrderBy(value => value.ParentTier).First())
+                .Where(value => !oneD3.Contains(value) &&
+                    !oneD4PlusOne.Contains(value))
+                .ToArray();
             SummonVariantSpec[] casts = oneCreature.Concat(oneD3)
-                .Concat(oneD4PlusOne).Concat(pteranodonCrowd).ToArray();
+                .Concat(oneD4PlusOne).Concat(pteranodonCrowd)
+                .Concat(waspCrowd).ToArray();
             // One own-tier single per roster entry in each family, plus the
             // alphabetical 1d3 / 1d4+1 coverage samples; both move with the roster.
             int rosterEntries = ExpandedSummoningCatalog.All.Count(value =>
@@ -16936,6 +16948,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 oneD3Legal = 0, oneD4PlusOneLegal = 0, sameKind = 0,
                 durationExact = 0, legalPlacement = 0,
                 illegalPlacementRejected = 0, pteranodonCrowdLegal = 0,
+                waspCrowdLegal = 0,
                 direBatSenseChecked = 0, direBatSensePassed = 0,
                 birdSenseChecked = 0, birdSenseClean = 0;
             var observedCounts = new List<string>();
@@ -17297,6 +17310,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     completed++;
                     spawnedTotal += count;
                     if (pteranodonCrowd.Contains(variant)) pteranodonCrowdLegal++;
+                    else if (waspCrowd.Contains(variant)) waspCrowdLegal++;
                     else if (variant.Multiplicity == SummonMultiplicity.One) singleExact++;
                     else if (variant.Multiplicity == SummonMultiplicity.OneD3)
                         oneD3Legal++;
@@ -17423,9 +17437,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     sameKind.ToString(), sameKind == casts.Length,
                     "spawned BlueprintUnit reference equality for every command"),
                 Assertion("expanded-summoning-command-total",
-                    (coverageCasts + 2) + ": " + coverageCasts +
-                        " coverage casts plus the two Pteranodon crowd casts",
-                    completed.ToString(), casts.Length == coverageCasts + pteranodonCrowd.Length &&
+                    (coverageCasts + 2 + waspCrowd.Length) + ": " + coverageCasts +
+                        " coverage casts plus two Pteranodon and four Wasp crowd casts",
+                    completed.ToString(), casts.Length == coverageCasts +
+                        pteranodonCrowd.Length + waspCrowd.Length &&
                         pteranodonCrowd.Length == 2 && completed == casts.Length,
                     "native AbilityData, UnitUseAbility command, RuleCastSpell, and execution-process completion"),
                 Assertion("expanded-summoning-caster-level-duration",
@@ -17536,6 +17551,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     pteranodonCrowd.Length == 2 && pteranodonCrowdLegal == 2 &&
                         _pteranodonCrowdMax >= 2 && pteranodonAttachedClean,
                     "the 1d3 and 1d4+1 Pteranodon casts added to the quantity coverage"),
+                Assertion("expanded-summoning-giant-wasp-quantity",
+                    "four native quantity commands: 1d3 and 1d4+1 in both SM and SNA",
+                    "casts=" + waspCrowdLegal + "/" + waspCrowd.Length +
+                        ";families=" + string.Join(",", waspCrowd.Select(value =>
+                            value.Family + "/" + value.Multiplicity).ToArray()),
+                    waspCrowd.Length == 4 && waspCrowdLegal == 4 &&
+                        waspCrowd.Select(value => value.Family).Distinct().Count() == 2 &&
+                        waspCrowd.Select(value => value.Multiplicity).Distinct().Count() == 2,
+                    "exact-kind native counts and per-cast cleanup are checked by the common cast loop"),
                 Assertion("expanded-summoning-pteranodon-repeated-lifecycle",
                     "several Pteranodon casts in one lifecycle, each view attached exactly once, each cast cleaned to the exact snapshot",
                     "casts=" + _pteranodonCastsSeen + ";views=" +

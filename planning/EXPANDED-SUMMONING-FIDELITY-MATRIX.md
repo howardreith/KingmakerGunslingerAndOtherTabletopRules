@@ -331,7 +331,10 @@ doorway crossing and complete cleanup. The four camera frames show the
 original striped body and moving wings but are crowded by walls and shelves;
 a fifth frame with its auxiliary renderer hidden retained cyan silhouettes,
 consistent with native occlusion display. Clean attack-to-target contact,
-combat cadence, immunities, lifecycle and quantity review remain open. All
+combat cadence, immunities and lifecycle review remain open. The guarded
+`20260927T2015561300256Z` fixture passed all four private Wasp quantity
+commands (1d3 and 1d4+1 in both families), exact-kind counts, 14/14 visual
+attachments and per-cast cleanup. All
 twelve placements stay suppressed; no
 published player choice or full Wasp combat qualification is claimed.
 Source commit `9f011014` and guarded inventory

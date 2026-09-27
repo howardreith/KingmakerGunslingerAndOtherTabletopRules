@@ -314,3 +314,15 @@ The 136-file installation was restored exactly. Repository validation,
 (package SHA-256
 `5AE609E8C383588C294DE9CFB9CB00113B6C823AA548CD94C748AE9B9309C01A`).
 No full Wasp qualification or publication is claimed.
+
+Private Wasp quantity coverage now adds 1d3 and 1d4+1 casts in both SM
+and SNA to the existing disposable fixture. The guarded result
+`20260927T2015561300256Z` passed 22/22 assertions: 183/183 commands,
+four Wasp quantity variants with legal exact-kind counts and per-cast
+cleanup, and 14/14 original Wasp visual attachments. The wrapper restored
+the original 136-file installation (`20260927T2019330163598Z`). Repository
+validation, 1,935/1,935 domain cases, clean Release and strict package
+validation passed (SHA-256
+`E30157BF6100441F6D0278B14FCB89F28292AF26C7A935BD71DB982581124BB4`).
+Wasp publication remains blocked by unqualified immunity, real strike
+cadence/contact, lifecycle and visual clarity; Stirge is pending.
