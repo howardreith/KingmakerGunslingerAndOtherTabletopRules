@@ -6,9 +6,9 @@
     "authorizedSprints": [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21],
     "completedSprints": [9],
     "currentSprint": 10,
-    "currentSubItem": "Giant Wasp poison mechanically qualified; Wasp motion, impact, immunities, lifecycle, quantity, icon and publication remain; Stirge is not registered",
-    "lastGuardedRuntimePass": "20260927T1912579609072Z-disposable-expanded-summoning",
-    "lastGuardedRestoration": "20260927T1916362556609Z-disposable-expanded-summoning.json",
+    "currentSubItem": "Giant Wasp poison, vermin identity, quantity and two-mode native sting cadence qualified; visual contact and publication remain open. Stirge rules policy is tested but has no unit, attachment runtime or publication yet.",
+    "lastGuardedRuntimePass": "20260927T2353348639066Z-working-save-smoke",
+    "lastGuardedRestoration": "20260927T2356206464811Z-working-save-smoke.json",
     "giantWaspPublished": false,
     "stirgeRegistered": false,
     "automaticContinuationAllowed": true,
@@ -297,7 +297,7 @@
       "detail": "Supplied by the owner and read. The Pteranodon passage confirms the shipped profile rather than changing it: ten-foot reach valued for attacks of opportunity, and a single main bite on which everything stacks (2d6 plus modifiers). The guide also positions multiple Pteranodons as the best single-target aerial attacker at their tier. This informs Sprint 2's acceptance emphasis on correct bite impact timing and location at Large reach; it changes no accepted statistic."
     }
   ],
-  "nextConcreteAction": "Phase 2 Sprint 9 Eagle and Dire Bat internally qualified. Owner authorized network rules lookup; exact Stirge/Giant Wasp Pathfinder 1e rules sources are recorded. Implement and qualify Sprint 10, then continue Sprints 11-21. Three stacked draft PRs remain the endpoint; no merge, release, permanent deployment, or Sprint 22.",
+  "nextConcreteAction": "Integrate the tested Stirge attach/drain policy with a dedicated session-scoped runtime lifecycle and hidden unit, then qualify touch hit, escape, drain, cleanup and save/load. Giant Wasp remains hidden pending a revised visual rig and clear contact evidence. Continue authorized Sprints 11-21 and prepare three stacked draft PRs; no merge, release, permanent deployment, or Sprint 22.",
   "deploymentReconciliation": {
     "finding": "The first runs left this mission's 0.0.136 branch build installed over the pre-run 0.0.117 installation. The mission required restoration and did not authorize a permanent installation; a shared version string does not make a branch artifact an accepted release.",
     "ownershipVerified": "The live DLL hash matched this mission's exact build byte for byte, so the tree was unambiguously mission-owned.",
