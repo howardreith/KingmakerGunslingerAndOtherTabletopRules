@@ -213,6 +213,8 @@ namespace KingmakerGunslinger.DomainTests
                 scenario.Contains("_waspImpactCaptures < 2") &&
                 scenario.Contains("WriteExpandedSummoningPartyCameraCapture(") &&
                 scenario.Contains("WriteExpandedSummoningOverheadStrikeCapture(") &&
+                scenario.Contains("ProbeWaspTailAim(attack, mesh, targetBounds") &&
+                scenario.Contains("tail.rotation = native;") &&
                 request.Contains("\"eagle\", \"dire-bat\", \"giant-wasp\"") &&
                 launcher.Contains("@('eagle', 'dire-bat', 'giant-wasp')") &&
                 automation.Contains("@('eagle', 'dire-bat', 'giant-wasp')"),
