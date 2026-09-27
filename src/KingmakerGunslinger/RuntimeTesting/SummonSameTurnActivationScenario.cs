@@ -64,6 +64,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "8fd74eddd9b6c224693d9ab241f25e84";
         private const string SummonMonsterThreeGuid =
             "5d61dde0020bbf54ba1521f7ca0229dc";
+        private const string SummonMonsterFourGuid =
+            "7ed74a3ec8c458d4fb50b192fd7be6ef";
         private const string NativeDogName =
             "KMG_Summoning_Native_SM_Tier1";
         private const string ExpandedEagleMultipleName =
@@ -1357,7 +1359,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _summons.All(value => value.Blueprint != null &&
                         value.Blueprint.name == (_flightCreature == "eagle" ?
                             "KMG_Summoning_Unit_Eagle" :
-                            "KMG_Summoning_Unit_DireBat")) :
+                            _flightCreature == "dire-bat" ?
+                            "KMG_Summoning_Unit_DireBat" :
+                            "KMG_Summoning_Unit_GiantWasp")) :
                     _kind != ScenarioKind.Multiple ||
                     _summons.All(value => value.Blueprint != null &&
                         value.Blueprint.name == "KMG_Summoning_Unit_Eagle");
@@ -1407,7 +1411,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             .SystemMechanics.SummonedUnitAppearBuff) == null);
                     if (!live || !active || !appearanceCleared) return;
                     if (_flightCreature != null &&
-                        !AllUnitsAtLeast(_flightTargetAttacksByUnit, 1) &&
+                        !AllUnitsAtLeast(_flightTargetAttacksByUnit,
+                            _flightCreature == "giant-wasp" ? 2 : 1) &&
                         _flightRtwpAttackWaitFrames++ < 600) return;
                     _evidence.RtwpNativeActive = true;
                     _evidence.RtwpNativeAppearanceCleared = true;
@@ -1656,7 +1661,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 }
                 Bounds targetBounds = targetRenderer.bounds;
-                string[] anchors = { "Jaw", "Head", "L_Foot0", "R_Foot0" };
+                string[] anchors = _flightCreature == "giant-wasp" ?
+                    new[] { "Tail" } :
+                    new[] { "Jaw", "Head", "L_Foot0", "R_Foot0" };
                 string distances = string.Join(",", anchors.Select(name =>
                 {
                     Transform bone = (mesh.bones ?? Array.Empty<Transform>())
@@ -2067,9 +2074,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "exact installed runtime objects and reference identity");
 
                 if (_flightCreature != null)
-                    Add("sprint9-flight-" + _flightCreature + "-" +
+                    Add((_flightCreature == "giant-wasp" ? "sprint10-flight-" :
+                            "sprint9-flight-") + _flightCreature + "-" +
                             (_kind == ScenarioKind.RtwpControl ? "rtwp" : "turn-based"),
-                        "the exact Eagle or Dire Bat is summoned through its own-tier parent and lands a native weapon rule on the exact hostile in the requested combat mode",
+                        "the exact flying creature is summoned through its own-tier parent and lands the required native weapon rules on the exact hostile in the requested combat mode",
                         "creature=" + _flightCreature + ";exact=" +
                             _evidence.ExactSummonKind + ";turnBased=" +
                             _evidence.TurnBasedAtCast + ";targetAttacks=" +
@@ -2080,7 +2088,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _summons.Count == 1 && _evidence.ExactSummonKind &&
                             _evidence.TurnBasedAtCast ==
                                 (_kind != ScenarioKind.RtwpControl) &&
-                            AllUnitsAtLeast(_flightTargetAttacksByUnit, 1),
+                            AllUnitsAtLeast(_flightTargetAttacksByUnit,
+                                _flightCreature == "giant-wasp" ? 2 : 1),
                         "RuleSummonUnit, native combat mode and correlated RuleAttackWithWeapon target identity");
 
                 if (_kind == ScenarioKind.RtwpControl)
@@ -2611,7 +2620,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 AbilityData result;
                 if (_flightCreature != null)
                 {
-                    int tier = _flightCreature == "eagle" ? 1 : 3;
+                    int tier = _flightCreature == "eagle" ? 1 :
+                        _flightCreature == "dire-bat" ? 3 : 4;
                     SummonVariantSpec variant = ExpandedSummoningCatalog
                         .GenerateVariants(SummonFamily.Monster).Single(value =>
                             value.Creature.Key == _flightCreature &&
@@ -2622,7 +2632,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .Replace('-', '_');
                     result = PrepareQuickenedSummon(_spellbook,
                         tier == 1 ? SummonMonsterOneGuid :
-                            SummonMonsterThreeGuid,
+                            tier == 3 ? SummonMonsterThreeGuid :
+                            SummonMonsterFourGuid,
                         selected, tier, tier + 4, out _castSlot);
                 }
                 else if (_kind == ScenarioKind.Multiple)
@@ -2640,7 +2651,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     result = PrepareQuickenedSummon(_spellbook,
                         SummonMonsterOneGuid, NativeDogName, 1, 5,
                         out _castSlot);
-                _evidence.SpellLevel = _flightCreature == "dire-bat" ||
+                _evidence.SpellLevel = _flightCreature == "giant-wasp" ? 8 :
+                    _flightCreature == "dire-bat" ||
                     _kind == ScenarioKind.Multiple ? 7 :
                     _kind == ScenarioKind.Quickened ||
                     _kind == ScenarioKind.RtwpControl ? 5 : 1;

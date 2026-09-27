@@ -411,7 +411,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     request.Parameters?["flightCreature"]?.Type ==
                         JTokenType.String;
                 if (flightActivation &&
-                    !new[] { "eagle", "dire-bat" }.Contains(
+                    !new[] { "eagle", "dire-bat", "giant-wasp" }.Contains(
                         (string)request.Parameters["flightCreature"]))
                     return "flight-activation-creature-invalid";
                 if (creatureReview && (!request.ExitAfterCompletion ||

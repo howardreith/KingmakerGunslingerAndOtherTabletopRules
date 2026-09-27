@@ -126,11 +126,12 @@ namespace KingmakerGunslinger.DomainTests
             string automation = File.ReadAllText(Path.Combine(
                 Environment.CurrentDirectory, "scripts",
                 "RuntimeAutomation.Common.ps1"));
-            Assertions.True(source.Contains("_flightCreature == \"eagle\" ? 1 : 3") &&
+            Assertions.True(source.Contains("_flightCreature == \"eagle\" ? 1 :") &&
+                source.Contains("_flightCreature == \"dire-bat\" ? 3 : 4") &&
                 source.Contains("ExpandedSummoningIdentityCatalog") &&
                 source.Contains("PrepareQuickenedSummon(_spellbook,") &&
                 source.Contains("attack.Target, _enemy") &&
-                source.Contains("AllUnitsAtLeast(_flightTargetAttacksByUnit, 1)") &&
+                source.Contains("AllUnitsAtLeast(_flightTargetAttacksByUnit,") &&
                 source.Contains("ObserveFlightImpactGeometry(attack)") &&
                 source.Contains("targetBounds.ClosestPoint(bone.position)") &&
                 source.Contains("\"Jaw\", \"Head\", \"L_Foot0\", \"R_Foot0\"") &&
@@ -147,7 +148,7 @@ namespace KingmakerGunslinger.DomainTests
                 request.Contains("creatureReview || flightActivation ? 2 : 1") &&
                 launcher.Contains("$Parameters.ContainsKey('flightCreature')") &&
                 launcher.Contains("flightCreature = [string]$Parameters.flightCreature") &&
-                automation.Contains("$Parameters.flightCreature -cnotin @('eagle', 'dire-bat')") &&
+                automation.Contains("$Parameters.flightCreature -cnotin @('eagle', 'dire-bat', 'giant-wasp')") &&
                 automation.Contains("flightCreature = [string]$Parameters.flightCreature"),
                 "The guarded combat fixture must select only the published own-tier flyers and correlate a native attack to its exact hostile.");
         }
