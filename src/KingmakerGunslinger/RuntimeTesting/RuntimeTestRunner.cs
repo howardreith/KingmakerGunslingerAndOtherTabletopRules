@@ -20355,7 +20355,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             var countRows = new List<string>();
             var creatureIcons = new Dictionary<string, Sprite>(
                 StringComparer.Ordinal);
-            foreach (SummonCreatureSpec creature in ExpandedSummoningCatalog.All)
+            foreach (SummonCreatureSpec creature in ExpandedSummoningCatalog.All
+                .Where(SummonIconCatalog.IsPublishedSomewhere))
             {
                 SummonVariantSpec representative = logicalVariants.First(value =>
                     ReferenceEquals(value.Creature, creature));
@@ -20369,7 +20370,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 value.Value != null &&
                     value.Value.name == "KMG_SummonIcon_" + value.Key) &&
                 creatureIcons.Select(value => value.Value).Distinct().Count() ==
-                    ExpandedSummoningCatalog.All.Count &&
+                    creatureIcons.Count &&
                 ExpandedSummoningCreatureIconsDistinct(creatureIcons,
                     "dog", "wolf", "hyena", "goblin-dog") &&
                 ExpandedSummoningCreatureIconsDistinct(creatureIcons,

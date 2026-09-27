@@ -867,6 +867,10 @@ the ledger after the Expanded Summoning Phase 1 append, for
 2461 stable IDs: 2459 active and 2 reserved (2172 before the merge with 0.0.139). It never compiles
 against Favored Class or Call of the Wild and never executes host code.
 
+Expanded Summoning Phase 2 Sprint 10 appends 26 Giant Wasp identities after
+that accepted ledger: 2487 stable IDs: 2485 active and 2 reserved. All Wasp
+placements remain registered but suppressed until mechanics and visual review.
+
 - **Pure policy** (`FavoredClass/`): `FavoredClassRankPolicy` (the host's
   full/partial alternation, N = fullRank + partialRank, with KMG-owned ceilings
   T = min(20, d * cap)), `FavoredClassCatalog` (all 54 charter appearances and

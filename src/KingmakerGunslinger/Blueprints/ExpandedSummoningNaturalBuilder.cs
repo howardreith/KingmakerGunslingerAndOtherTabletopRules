@@ -35,6 +35,8 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Summoning.Natural.Claw1d8";
         private const string Talon2d6Symbol =
             "KMG.Summoning.Natural.Talon2d6";
+        private const string WaspSting1d8Symbol =
+            "KMG.Summoning.Natural.WaspSting1d8";
         private const string NativeBite1d6Guid =
             "a000716f88c969c499a535dadcf09286";
         private const string NativeBite1d8Guid =
@@ -193,6 +195,11 @@ namespace KingmakerGunslinger.Blueprints
                     "native large claw animation weapon"),
                 Require<BlueprintItemWeapon>(bySymbol, Claw1d8Symbol),
                 Claw1d8Symbol, 1, DiceType.D8);
+            ConfigureWeapon(BlueprintLibraryLookup.RequireExact<
+                BlueprintItemWeapon>(library, NativePurpleWormStingGuid,
+                    "native sting animation weapon"),
+                Require<BlueprintItemWeapon>(bySymbol, WaspSting1d8Symbol),
+                WaspSting1d8Symbol, 1, DiceType.D8);
             foreach (NaturalSummonProfile profile in
                 ExpandedSummoningNaturalProfiles.All)
                 ConfigureUnit(library, Require<BlueprintUnit>(bySymbol,
@@ -391,6 +398,8 @@ namespace KingmakerGunslinger.Blueprints
                 Talon2d6Symbol);
             if (key == "Claw1d8") return Require<BlueprintItemWeapon>(bySymbol,
                 Claw1d8Symbol);
+            if (key == "WaspSting1d8") return Require<BlueprintItemWeapon>(
+                bySymbol, WaspSting1d8Symbol);
             if (key == "Gore2d8") return BlueprintLibraryLookup.RequireExact<
                 BlueprintItemWeapon>(library, NativeMastodonGoreGuid,
                     "mastodon 2d8 gore");

@@ -20,12 +20,12 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class ExpandedSummoningIdentityCatalog
     {
-        internal const int UnitCount = 81;
-        internal const int LogicalAbilityCount = 813;
-        internal const int TemplatedPlacementCount = 199;
+        internal const int UnitCount = 82;
+        internal const int LogicalAbilityCount = 825;
+        internal const int TemplatedPlacementCount = 205;
         internal const int TemplateExecutionAbilityCount = TemplatedPlacementCount * 2;
         internal const int TemplateBuffCount = 8;
-        internal const int SpecialIdentityCount = 139;
+        internal const int SpecialIdentityCount = 140;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -218,6 +218,7 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Talon2d6", "BlueprintItemWeapon"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Claw1d8", "BlueprintItemWeapon"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Subtype.Extraplanar", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.WaspSting1d8", "BlueprintItemWeapon"));
             Validate(result);
             return result.AsReadOnly();
         }
