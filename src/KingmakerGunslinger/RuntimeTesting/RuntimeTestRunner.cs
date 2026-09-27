@@ -207,6 +207,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool _expandedSummoningPersistenceIdentityValid;
         private string _expandedSummoningPersistencePteranodonVisual = "<not observed>";
         private bool _expandedSummoningPersistencePteranodonVisualValid;
+        private string _expandedSummoningPersistenceFlyingVisual = "<not observed>";
+        private bool _expandedSummoningPersistenceFlyingVisualValid;
         private bool _expandedSummoningPersistenceContextValid;
         private bool _expandedSummoningPersistenceDurationValid;
         private bool _expandedSummoningPersistenceControlValid;
@@ -3829,6 +3831,30 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 StringComparison.Ordinal) &&
                         IsPteranodonAttached(DescribePteranodonRenderers(value.View)))
                     : pteranodons.Length == 0;
+                string eagleName = "KMG_Summoning_Unit_Eagle";
+                string batName = "KMG_Summoning_Unit_DireBat";
+                UnitEntityData[] flying = units.Where(value => value != null &&
+                    value.Blueprint != null && (value.Blueprint.name == eagleName ||
+                        value.Blueprint.name == batName)).ToArray();
+                _expandedSummoningPersistenceFlyingVisual = flying.Length == 0
+                    ? "eagle=0;direBat=0"
+                    : string.Join("|", flying.Select(value => value.Blueprint.name +
+                        ";view=" + (value.View != null &&
+                            ReferenceEquals(value.View.Data, value)) +
+                        ";renderer=" + (value.View == null ? "no-view" :
+                            DescribePteranodonRenderers(value.View))).ToArray());
+                _expandedSummoningPersistenceFlyingVisualValid = prepare ||
+                    verifyCleanup
+                    ? flying.Count(value => value.Blueprint.name == eagleName) == 1 &&
+                        flying.Count(value => value.Blueprint.name == batName) == 1 &&
+                        flying.All(value => value.View != null &&
+                            ReferenceEquals(value.View.Data, value) &&
+                            (value.Blueprint.name == eagleName
+                                ? IsEagleAttached(
+                                    DescribePteranodonRenderers(value.View))
+                                : IsDireBatAttached(
+                                    DescribePteranodonRenderers(value.View))))
+                    : flying.Length == 0;
             }
 
             if (verifyCleanup)
@@ -3948,6 +3974,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static readonly string[][] ExpandedSummoningPersistenceFixture =
         {
             new[] { "Monster", "pteranodon", "4" },
+            // Sprint 9: the bird and bat visuals must reattach on load.
+            new[] { "Monster", "eagle", "1" },
+            new[] { "NaturesAlly", "dire-bat", "3" },
             new[] { "Monster", "small-air-elemental", "2" },
             new[] { "NaturesAlly", "wolf", "2" },
             // Sprint 3
@@ -4339,6 +4368,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _expandedSummoningPersistencePteranodonVisual,
                     _expandedSummoningPersistencePteranodonVisualValid,
                     "ExpandedSummoningPteranodonViewPatch.DescribeView and the renderer state on the persistent unit"),
+                Assertion("expanded-summoning-persistent-eagle-bat-visuals",
+                    writes ? "one Eagle and one Dire Bat with their own skinned mesh/material on attached views" +
+                        (verifyCleanup ? ", reattached after loading the working save" : "")
+                        : "no Eagle or Dire Bat after cleanup",
+                    _expandedSummoningPersistenceFlyingVisual,
+                    _expandedSummoningPersistenceFlyingVisualValid,
+                    "exact unit identities, attached view.Data, and original renderer mesh/material after native save/load"),
                 Assertion("expanded-summoning-pteranodon-motion-review",
                     writes ? "four party-camera renders of the " + (prepare ? "freshly cast" : "freshly deserialized") +
                         " Pteranodon - idle, moving twice, attacking - each with the creature in frame"

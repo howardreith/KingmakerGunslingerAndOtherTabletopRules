@@ -42,6 +42,21 @@ namespace KingmakerGunslinger.DomainTests
             }
         }
 
+        internal static void EagleAndBatPersistWithTheirOwnViews()
+        {
+            string runner = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestRunner.cs"));
+            Assertions.True(runner.Contains(
+                    "new[] { \"Monster\", \"eagle\", \"1\" }") &&
+                runner.Contains(
+                    "new[] { \"NaturesAlly\", \"dire-bat\", \"3\" }") &&
+                runner.Contains("expanded-summoning-persistent-eagle-bat-visuals") &&
+                runner.Contains("IsEagleAttached(") &&
+                runner.Contains("IsDireBatAttached("),
+                "The save/reload fixture must verify both original flying visuals.");
+        }
+
         internal static void DireBatSenseHasASeparateBoundedIdentity()
         {
             var bat = ExpandedSummoningNaturalProfiles.For("dire-bat");
