@@ -106,6 +106,33 @@ namespace KingmakerGunslinger.DomainTests
                 "The live menu icon audit must check only published creatures.");
         }
 
+        internal static void WaspPrepublicationReviewKeepsTheMenuHidden()
+        {
+            string root = Path.Combine(Environment.CurrentDirectory,
+                "src", "KingmakerGunslinger", "RuntimeTesting");
+            string review = File.ReadAllText(Path.Combine(root,
+                "RuntimeTestRunner.ExpandedSummoningCreatureReview.cs"));
+            string movement = File.ReadAllText(Path.Combine(root,
+                "RuntimeTestRunner.PteranodonReview.cs"));
+            Assertions.True(review.Contains("suppressedWaspCandidate = key == \"giant-wasp\"") &&
+                review.Contains("!SummonVisibilityCatalog.IsPublished(variant)") &&
+                review.Contains("!suppressedWaspCandidate") &&
+                review.Contains("key == \"giant-wasp\"") &&
+                review.Contains("MotionReviewTravelValid") &&
+                review.Contains("MotionReviewDoorwayValid") &&
+                movement.Contains("GiantWaspBlueprintName") &&
+                movement.Contains("PrepareSprint9FlightMovement(unit)"),
+                "The hidden Wasp may enter only its guarded review and must use native flight travel checks.");
+            Assertions.True(review.Contains("CaptureWaspWithoutAuxiliaryRenderer") &&
+                review.Contains("giant-wasp-review-summoned-attack-no-auxiliary.png") &&
+                review.Contains("finally") &&
+                review.Contains("renderer.enabled = true"),
+                "The isolated Wasp frame must restore every temporarily hidden auxiliary renderer.");
+            Assertions.Equal(12,
+                SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
+                "Prepublication review cannot make Wasp a player-visible choice.");
+        }
+
         internal static void GiantWaspOriginalVisualUsesAuditedInstanceBinding()
         {
             string root = Environment.CurrentDirectory;

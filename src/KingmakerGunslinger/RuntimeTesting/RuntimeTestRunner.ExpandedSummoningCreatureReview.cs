@@ -16,7 +16,7 @@ namespace KingmakerGunslinger.RuntimeTesting
     /// <summary>
     /// In-game images of any summon for internal review (Phase 1, Sprint 3
     /// onward). The request names creature keys; each is cast, one at a time,
-    /// through its real parent chain into the loaded working save, held across
+    /// through its registered execution into the loaded working save, held across
     /// frames while the Phase 0 party-camera review renders it idle, moving
     /// and attacking, then dismissed through the same cleanup the synchronous
     /// fixtures use, before the next creature is cast. Nothing is saved: the
@@ -76,7 +76,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .GenerateVariants(family).Single(value =>
                         value.Creature.Key == key && value.ParentTier == tier &&
                         value.Multiplicity == SummonMultiplicity.One);
-                if (!SummonVisibilityCatalog.IsPublished(variant))
+                // Sprint 10 pre-publication visual qualification must inspect
+                // the exact registered Wasp while its menu remains hidden.
+                // Keep every other suppressed creature behind this gate.
+                bool suppressedWaspCandidate = key == "giant-wasp" &&
+                    !SummonVisibilityCatalog.IsPublished(variant);
+                if (!SummonVisibilityCatalog.IsPublished(variant) &&
+                    !suppressedWaspCandidate)
                     throw new InvalidOperationException(
                         "A suppressed creature cannot be reviewed through a parent: " +
                         key + ".");
@@ -174,17 +180,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                         retainedAll = retainedAll && retained;
                     }
                     bool retainedValid = !variantRegistered || retainedAll;
+                    string waspIsolatedView = key == "giant-wasp"
+                        ? CaptureWaspWithoutAuxiliaryRenderer(_creatureReviewUnits[0])
+                        : "<not applicable>";
                     _creatureReviewAssertions.Add(Assertion(
                         "expanded-summoning-creature-review-" + key,
                         "idle, moving-a, moving-b and attack captures in frame, lit, renderer enabled, intact" +
                             (variantRegistered ? "; registered visual variant applied at attach and retained on the view at capture" : ""),
                         MotionReviewSummary + ";visualVariant=" + variantOutcome +
-                            ";materialsAtCapture=" + string.Join("|", materialsNow.ToArray()),
+                            ";materialsAtCapture=" + string.Join("|", materialsNow.ToArray()) +
+                            ";waspIsolatedView=" + waspIsolatedView,
                         MotionReviewValid && variantValid && retainedValid,
                         (variant.Family == SummonFamily.Monster ? "Summon Monster " :
                             "Summon Nature's Ally ") + variant.ParentTier +
-                        " single cast through the real parent chain; party-camera renders"));
-                    if (key == "eagle" || key == "dire-bat")
+                        " single cast through its registered execution; party-camera renders"));
+                    if (key == "eagle" || key == "dire-bat" ||
+                        key == "giant-wasp")
                     {
                         _creatureReviewAssertions.Add(Assertion(
                             "expanded-summoning-flight-travel-" + key,
@@ -218,6 +229,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _creatureReviewIndex++;
                     _creatureReviewPhase = 0;
                     return;
+            }
+        }
+
+        private string CaptureWaspWithoutAuxiliaryRenderer(UnitEntityData unit)
+        {
+            if (unit == null || unit.View == null) return "<no-view>";
+            Renderer[] auxiliary = unit.View.GetComponentsInChildren<Renderer>(true)
+                .Where(value => value != null &&
+                    !(value is SkinnedMeshRenderer) && value.enabled).ToArray();
+            try
+            {
+                foreach (Renderer renderer in auxiliary) renderer.enabled = false;
+                return "hidden=" + auxiliary.Length + ";" +
+                    WriteExpandedSummoningPartyCameraCapture(unit,
+                        _request.EvidenceDirectory,
+                        "giant-wasp-review-summoned-attack-no-auxiliary.png");
+            }
+            finally
+            {
+                foreach (Renderer renderer in auxiliary) renderer.enabled = true;
             }
         }
 
