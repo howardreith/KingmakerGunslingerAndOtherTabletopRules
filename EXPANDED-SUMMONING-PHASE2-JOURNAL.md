@@ -380,3 +380,22 @@ checks passed; the wrapper restored the exact live tree
 (`20260927T1631336749721Z`). The next implementation path is an original
 wasp visual on a bounded flying rig and a Wasp-only poison graph whose
 initial and subsequent DC, damage, duration and cure are proven live.
+
+## Sprint 10: Giant Wasp original asset-loader checkpoint, 2026-09-27
+
+I authored an original six-leg/four-wing Wasp mesh and striped translucent
+painting, rebuilt the mesh after closing its neck gap, and reviewed top and
+side renders. I extended the existing Pteranodon/Eagle/Bat loader and
+per-view swap without adding an asset system. The local Blender/FBX products
+remain private because they carry the measured donor bind rig; source scripts
+and shipped mesh/albedo are committed. Wasp is still unregistered and hidden.
+
+Repository validation, 1,929 domain cases, exact-reference Release and strict
+258-file package checks passed. A first guarded audit passed but lacked an
+asset-status assertion, so I narrowed the fixture and reran. Guarded result
+`20260927T1710239929046Z` passed with
+`giant-wasp-original-asset-loader=visual:published`. Restoration record
+`20260927T1712231807937Z` returned the exact original 136-file live mod tree,
+SHA-256 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+The pushed checkpoint is `9933c40e354155ca9a66610e30d310c7a2eab96b`.
+Next: exact Wasp sting/poison and suppressed identity registration; then Stirge.

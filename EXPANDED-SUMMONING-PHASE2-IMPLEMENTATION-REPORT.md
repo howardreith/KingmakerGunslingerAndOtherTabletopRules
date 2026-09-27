@@ -243,3 +243,20 @@ a scoped reconfiguration or dedicated component is required. The source
 passed repository validation, 1,929/1,929 domain tests, clean Release and
 strict package checks. Restoration record `20260927T1631336749721Z`
 verified the exact pre-run live installation.
+
+The Giant Wasp original asset-loader checkpoint is pushed as `9933c40e`.
+Its project-owned 528-vertex, 376-polygon mesh and 1024-pixel painting load
+through the established flying renderer parser and per-instance view swap.
+The ship payload carries neither native rig transforms nor a donor texture;
+editable source scripts and provenance are retained. Top and side local
+renders passed internal silhouette review, while party-camera motion and
+impact remain untested. Repository validation, 1,929 domain cases, clean
+Release and strict 258-file package validation passed. Guarded native audit
+`20260927T1710239929046Z` asserted the packaged Wasp asset loader reported
+`visual:published`; restoration `20260927T1712231807937Z` verified the
+original 136-file live installation. Candidate package SHA-256 is
+`89f75a7c4ec22d3f657e42643f242a459ea31f0f64f18f66908fc2041987a75d`;
+DLL SHA-256 is
+`b4750c30d0e69b809755040ff8acdde0f2dd32cfc511f45025761eb90d3ba4a0`.
+This is an asset-loader checkpoint only: Wasp is not a registered or
+published summon and no poison or combat qualification is claimed.
