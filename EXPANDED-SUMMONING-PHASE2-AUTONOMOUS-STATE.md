@@ -128,6 +128,21 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
   No new ungulate registered or qualified yet; next implement bounded
   unpublished fixture, charge increment and trample movement/rules, then
   original visual and full player-path gates.
+- Sprint 11 summon-scoped charge component checkpoint: implemented exact-owner,
+  exact-gore, first-native-charge, non-opportunity gating with configured
+  dice/bonus increments from the printed Rhino profiles. Guarded Mastodon
+  control `20260928T1638254604120Z` passed 17/17: `2d8+24` ordinary,
+  `4d8+27` first charge, normal later/opportunity/post-marker. Repository
+  validation, 1,945 domain tests, clean Release and strict package passed.
+  Package SHA-256
+  `8e1d307aef89ea5910389392c53ff337e8029ce27411edb92bafb4acab683ad9`;
+  DLL SHA-256
+  `a0cd789b4ffaf790d5d5ce1e43eabc4c8889f784fe7cf760b5e5df9934fbb55a`.
+  Exact original mod-tree restoration passed at `20260928T1642382480272Z`.
+  Earlier Dire Boar diagnostic `20260928T1628286600311Z` failed because
+  that donor already adds two charge dice, was excluded, and restored at
+  `20260928T1632448318962Z`. No new Rhino is registered; live Rhino and
+  Woolly Rhino baselines, trample, visuals and publication remain open.
 - Blockers: none established. The Sprint 10 rules-source access gate is
   resolved by the owner's standing network authorization; exact Stirge and
   Giant Wasp baseline rules are cited in

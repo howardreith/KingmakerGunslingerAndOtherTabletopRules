@@ -144,6 +144,7 @@
     <Compile Include="Summoning\GiantWaspPoisonPolicy.cs" />
     <Compile Include="Summoning\StirgeAttachPolicy.cs" />
     <Compile Include="Summoning\UngulateRulesPolicy.cs" />
+    <Compile Include="Summoning\UngulatePowerfulCharge.cs" />
     <Compile Include="Summoning\SummonGrappleLinkState.cs" />
     <Compile Include="Summoning\SummonAlignmentRuntimePolicy.cs" />
     <Compile Include="Summoning\SummonSameTurnActivationPolicy.cs" />

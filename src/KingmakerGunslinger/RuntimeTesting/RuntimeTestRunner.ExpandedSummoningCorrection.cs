@@ -639,6 +639,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _rulesCases.Add(Assertion("expanded-summoning-sprint11-native-charge",
                         "the installed PowerfulCharge component adds two gore dice and another 1.5 times the Strength modifier on the first native charge, never on follow-up or opportunity attacks; that excess is not the Rhino stat-block bonus",
                         detail, ok, "request-local Mastodon with a request-local native PowerfulCharge feature; RuleCalculateWeaponStats on first charge, ordinary, follow-up and opportunity attacks"));
+                    stage = "owned-charge";
+                    _rulesSteps.Add("reset:ownedCharge=" + ResetExpandedSummoningHostile(_rulesFixture));
+                    ok = ExerciseExpandedSummoningOwnedCharge(_rulesFixture, out detail);
+                    _rulesCases.Add(Assertion("expanded-summoning-sprint11-owned-charge",
+                        "a request-local Mastodon with the summon-local charge component adds exactly two gore dice and +3 damage on its first native charge, and nothing on later or opportunity attacks; removing the native charge marker ends the boost",
+                        detail, ok, "temporary UngulatePowerfulCharge feature on a disposable Mastodon; RuleCalculateWeaponStats with native charge marker and exact first/later/opportunity gates"));
                     stage = "mouth-ownership";
                     _rulesSteps.Add("reset:mouths=" + ResetExpandedSummoningHostile(_rulesFixture));
                     ok = ExerciseExpandedSummoningMouthOwnership(_rulesFixture, out detail);
@@ -2332,6 +2338,101 @@ namespace KingmakerGunslinger.RuntimeTesting
                     later.DamageDescription[0].Bonus + ";opportunity=" +
                     offTurn.DamageDescription[0].Dice.Rolls + "d8+" +
                     offTurn.DamageDescription[0].Bonus);
+                detail = string.Join(";", steps.ToArray());
+                return valid;
+            }
+            catch (Exception exception)
+            {
+                steps.Add("exception=" +
+                    DescribeExpandedSummoningCorrectionException(exception));
+                detail = string.Join(";", steps.ToArray());
+                return false;
+            }
+            finally
+            {
+                if (animal != null && animal.Descriptor != null)
+                {
+                    if (nativeCharge != null && animal.Descriptor.HasFact(nativeCharge))
+                        animal.Descriptor.RemoveFact(nativeCharge);
+                    if (feature != null && animal.Descriptor.HasFact(feature))
+                        animal.Descriptor.RemoveFact(feature);
+                    DisposeExpandedSummoningUnits(fixture.Created,
+                        new[] { animal });
+                }
+                if (component != null) UnityEngine.Object.DestroyImmediate(component);
+                if (feature != null) UnityEngine.Object.DestroyImmediate(feature);
+            }
+        }
+
+        private static bool ExerciseExpandedSummoningOwnedCharge(
+            ExpandedSummoningCorrectionFixture fixture, out string detail)
+        {
+            var steps = new List<string>();
+            UnitEntityData animal = null;
+            BlueprintFeature feature = null;
+            UngulatePowerfulCharge component = null;
+            BlueprintBuff nativeCharge = BlueprintRoot.Instance.SystemMechanics
+                .ChargeBuff;
+            try
+            {
+                animal = CastExpandedSummoningOwnTier(fixture, "mastodon");
+                ItemEntityWeapon gore = SummonLimbs.PrimaryWeapon(animal);
+                if (gore == null || nativeCharge == null)
+                    throw new InvalidOperationException(
+                        "The Mastodon gore or installed charge buff is absent.");
+                int strength = animal.Descriptor.Stats.Strength.Bonus;
+                UngulateRulesProfile rhino = UngulateRulesPolicy.For("rhinoceros");
+                component = ScriptableObject.CreateInstance<UngulatePowerfulCharge>();
+                component.Gore = gore.Blueprint;
+                component.AdditionalDiceRolls = rhino.ChargeDiceIncrement;
+                component.AdditionalDamageBonus = rhino.ChargeBonusIncrement;
+                feature = ScriptableObject.CreateInstance<BlueprintFeature>();
+                feature.name = "KMG_Runtime_Sprint11_OwnedChargeOnly";
+                feature.Ranks = 1;
+                feature.ComponentsArray = new BlueprintComponent[] { component };
+                if (animal.Descriptor.AddFact(feature) == null)
+                    throw new InvalidOperationException(
+                        "The request-local owned charge feature was not applied.");
+
+                var first = new RuleAttackWithWeapon(animal, fixture.Hostile,
+                    gore, 0) { IsFirstAttack = true, IsCharge = true };
+                RuleCalculateWeaponStats ordinary = Rulebook.Trigger(
+                    new RuleCalculateWeaponStats(animal, gore, first));
+                if (animal.Descriptor.AddFact(nativeCharge) == null)
+                    throw new InvalidOperationException(
+                        "The request-local native charge marker was not applied.");
+                RuleCalculateWeaponStats boosted = Rulebook.Trigger(
+                    new RuleCalculateWeaponStats(animal, gore, first));
+                var followUp = new RuleAttackWithWeapon(animal, fixture.Hostile,
+                    gore, 0) { IsFirstAttack = false, IsCharge = true };
+                RuleCalculateWeaponStats later = Rulebook.Trigger(
+                    new RuleCalculateWeaponStats(animal, gore, followUp));
+                var opportunity = new RuleAttackWithWeapon(animal,
+                    fixture.Hostile, gore, 0) {
+                        IsFirstAttack = true,
+                        IsCharge = true,
+                        IsAttackOfOpportunity = true
+                    };
+                RuleCalculateWeaponStats offTurn = Rulebook.Trigger(
+                    new RuleCalculateWeaponStats(animal, gore, opportunity));
+                animal.Descriptor.RemoveFact(nativeCharge);
+                RuleCalculateWeaponStats after = Rulebook.Trigger(
+                    new RuleCalculateWeaponStats(animal, gore, first));
+                Func<RuleCalculateWeaponStats, string> format = value =>
+                    value.DamageDescription[0].Dice.Rolls +
+                    value.DamageDescription[0].Dice.Dice.ToString()
+                        .ToLowerInvariant() + "+" +
+                    value.DamageDescription[0].Bonus;
+                bool valid = strength == 12 &&
+                    format(ordinary) == "2d8+24" &&
+                    format(boosted) == "4d8+27" &&
+                    format(later) == format(ordinary) &&
+                    format(offTurn) == format(ordinary) &&
+                    format(after) == format(ordinary);
+                steps.Add("strength=" + strength + ";ordinary=" +
+                    format(ordinary) + ";first=" + format(boosted) +
+                    ";later=" + format(later) + ";opportunity=" +
+                    format(offTurn) + ";afterMarker=" + format(after));
                 detail = string.Join(";", steps.ToArray());
                 return valid;
             }
