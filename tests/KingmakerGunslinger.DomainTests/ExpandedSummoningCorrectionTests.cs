@@ -33,7 +33,7 @@ namespace KingmakerGunslinger.DomainTests
             KingmakerGunslinger.ElementalRaces.ElementalMostlyHumanPolicy.IdentityCount + 1 +
             ExpandedSummoningSprint10Tests.AppendedLedgerIdentities +
             ExpandedSummoningSprint10Tests.StirgeAppendedLedgerIdentities +
-            ExpandedSummoningSprint11Tests.HiddenUngulateIdentityCount;
+            ExpandedSummoningSprint11Tests.AppendedLedgerIdentities;
 
         private static readonly string[] AppendedSymbols = {
             "KMG.Summoning.Special.Grapple.MultiHold", "KMG.Summoning.Special.Grapple.MultiHeld",
