@@ -2264,6 +2264,8 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private string _expandedSummoningPersistenceLinkDetail = "not run";
         private bool _expandedSummoningPersistenceLinkValid;
+        private string _expandedSummoningPersistenceStirgeDetail = "not run";
+        private bool _expandedSummoningPersistenceStirgeValid;
 
 
         private static UnitEntityData ExpandedSummoningPersistenceUnit(UnitEntityData[] units,
@@ -2271,6 +2273,74 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             return units == null ? null : units.FirstOrDefault(value => value != null &&
                 value.Blueprint != null && value.Blueprint.name == blueprintName);
+        }
+
+        private static bool PrepareExpandedSummoningPersistentStirge(
+            UnitEntityData[] units, out string detail)
+        {
+            UnitEntityData stirge = ExpandedSummoningPersistenceUnit(units,
+                "KMG_Summoning_Unit_Stirge");
+            UnitEntityData pony = ExpandedSummoningPersistenceUnit(units,
+                "KMG_Summoning_Unit_Pony");
+            StirgeAttachComponent attach = StirgeAttachComponent.Find(stirge);
+            ItemEntityWeapon touch = stirge == null || stirge.Body == null ||
+                stirge.Body.PrimaryHand == null ? null :
+                stirge.Body.PrimaryHand.MaybeWeapon;
+            if (stirge == null || pony == null || attach == null || touch == null)
+            {
+                detail = "missing-holder-victim-attach-or-touch";
+                return false;
+            }
+            PlaceExpandedSummoningUnit(pony, stirge.Position +
+                UnityEngine.Vector3.forward);
+            bool attached = attach.TryAttach(pony, touch, true);
+            bool reciprocal = ReferenceEquals(
+                SummonHoldComponent.HeldTarget(stirge), pony) &&
+                pony.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>() != null;
+            bool holderBuff = stirge.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                .Any(value => value.Blueprint != null && value.Blueprint.name ==
+                    "KMG_Summoning_Special_Stirge_Hold");
+            bool victimBuff = pony.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                .Any(value => value.Blueprint != null && value.Blueprint.name ==
+                    "KMG_Summoning_Special_Grapple_Grappled");
+            detail = "attached=" + attached + ";reciprocal=" + reciprocal +
+                ";holderBuff=" + holderBuff + ";victimBuff=" + victimBuff +
+                ";holderId=" + stirge.UniqueId + ";victimId=" + pony.UniqueId;
+            return attached && reciprocal && holderBuff && victimBuff;
+        }
+
+        private static bool VerifyExpandedSummoningReloadedStirge(
+            UnitEntityData[] units, out string detail)
+        {
+            UnitEntityData stirge = ExpandedSummoningPersistenceUnit(units,
+                "KMG_Summoning_Unit_Stirge");
+            UnitEntityData pony = ExpandedSummoningPersistenceUnit(units,
+                "KMG_Summoning_Unit_Pony");
+            if (stirge == null || pony == null)
+            {
+                detail = "missing-reloaded-holder-or-victim";
+                return false;
+            }
+            bool holderPart = stirge.Get<Kingmaker.UnitLogic.Parts
+                .UnitPartGrappleInitiator>() != null;
+            bool victimPart = pony.Get<Kingmaker.UnitLogic.Parts
+                .UnitPartGrappleTarget>() != null;
+            bool holderBuff = stirge.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                .Any(value => value.Blueprint != null && value.Blueprint.name ==
+                    "KMG_Summoning_Special_Stirge_Hold");
+            bool victimBuff = pony.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                .Any(value => value.Blueprint != null && value.Blueprint.name ==
+                    "KMG_Summoning_Special_Grapple_Grappled");
+            bool holderCantAct = stirge.Descriptor.State.HasCondition(
+                UnitCondition.CantAct);
+            bool victimCantMove = pony.Descriptor.State.HasCondition(
+                UnitCondition.CantMove);
+            detail = "holderPart=" + holderPart + ";victimPart=" + victimPart +
+                ";holderBuff=" + holderBuff + ";victimBuff=" + victimBuff +
+                ";holderCantAct=" + holderCantAct +
+                ";victimCantMove=" + victimCantMove;
+            return !holderPart && !victimPart && !holderBuff && !victimBuff &&
+                !holderCantAct && !victimCantMove;
         }
 
         /// <summary>
