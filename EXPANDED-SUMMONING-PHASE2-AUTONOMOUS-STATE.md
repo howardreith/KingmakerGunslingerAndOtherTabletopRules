@@ -946,3 +946,30 @@ DLL SHA-256:
 `05B7CF3AE20D2E71978EFEC4F52579CBEF4389139741063E91375D54008BB2F8`.
 Attachment, blood drain, escape, cleanup, original Stirge visual and icon
 remain open, and all nine choices stay hidden.
+
+## Sprint 10 hidden Stirge attachment and first drain, 2026-09-28
+
+Two append-only buff identities now carry Stirge's attack trait and attached
+hold. A successful native primary touch hit establishes reciprocal native
+grapple parts without a second maneuver. The holder loses Dexterity to AC;
+the target receives the shared held state. The dedicated hold component
+requests one Constitution damage each round, tracks actual rather than
+requested damage, and releases at four actual points or prey death. The
+existing area-transition safeguard covers the same native parts. Disease,
+multi-round and interruption behavior still require implementation or proof.
+
+Guarded disposable combat `20260928T0232376506044Z` passed the touch,
+attachment and first-drain assertions: touch AC 6 versus ordinary AC 14,
+no HP damage, reciprocal link, holder/target buffs, lost Dexterity to AC,
+one actual Constitution damage (0 to 1), cumulative meal 1 and retained
+link. Explicit release cleared both parts and buffs. An earlier attachment
+run `20260928T0220384662621Z` passed touch, reciprocal link and cleanup
+before the drain assertion was added. Both restored the original 136-file
+installation; final restoration `20260928T0236160392850Z` recorded SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+Repository validation, 1,940 domain tests, clean Release and strict package
+checks passed. Package SHA-256:
+`D10EC168E99A24568DDDFDFADF50EA09C2FF60B178C5212637205CD33D84C28F`;
+DLL SHA-256:
+`FADEBD91075C5BE4042152A168FD0242D8061B207FF49930634B73BEB7375D05`.
+All nine Stirge choices remain hidden; this is not full Sprint 10 acceptance.

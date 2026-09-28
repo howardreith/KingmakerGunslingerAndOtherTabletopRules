@@ -11,13 +11,13 @@ namespace KingmakerGunslinger.DomainTests
         {
             var first = ExpandedSummoningIdentityCatalog.Build();
             var second = ExpandedSummoningIdentityCatalog.Build();
-            Assertions.Equal(1513, first.Count, "Foundation identity count changed.");
+            Assertions.Equal(1515, first.Count, "Foundation identity count changed.");
             Assertions.Equal(83, first.Count(value => value.PlannedType == "BlueprintUnit"), "Unit identity count changed.");
             Assertions.Equal(1299, first.Count(value => value.PlannedType == "BlueprintAbility"), "Ability identity count changed.");
             Assertions.Equal(2, first.Count(value => value.Symbol.StartsWith(
                 "KMG.Summoning.Native.", StringComparison.Ordinal)),
                 "Native tier-one preservation identity count changed.");
-            Assertions.Equal(54, first.Count(value => value.PlannedType == "BlueprintBuff"), "Buff identity count changed.");
+            Assertions.Equal(56, first.Count(value => value.PlannedType == "BlueprintBuff"), "Buff identity count changed.");
             Assertions.Equal(24, first.Count(value => value.PlannedType == "BlueprintAiCastSpell"), "AI identity count changed.");
             Assertions.Equal(12, first.Count(value => value.PlannedType == "BlueprintBrain"), "Brain identity count changed.");
             Assertions.Equal(13, first.Count(value => value.PlannedType == "BlueprintItemWeapon"), "Weapon identity count changed.");
