@@ -68,7 +68,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             "grapple", "grab", "swallow", "web", "entangle", "constrict",
             "sleep", "paralyz", "sprint", "flash", "insight", "pounce",
-            "blood", "attach", "drain"
+            "blood", "attach", "drain", "disease", "filth", "blinding"
         };
 
         private static readonly string[] NativeDonorProjectileTerms =
@@ -411,7 +411,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             "BlurBuff", "StinkingCloudArea", "StinkingCloudBuff", "MagicMissile",
             "AcidArrow", "Glitterdust", "Blur", "MephitAirBlur",
             "MephitWaterStinkingCloud", "ScorchingRay", "PixieSleepArrowBuff",
-            "IrresistibleDance", "PixieDance"
+            "IrresistibleDance", "PixieDance", "FilthFever"
         };
 
         private static JToken DescribeGraph(object value, int depth, HashSet<object> seen)
