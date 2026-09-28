@@ -334,6 +334,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal bool SpecialAdaptations;
             internal bool WaspVerminImmunity;
             internal string WaspVerminImmunityDetail;
+            internal bool StirgeTouchAttack;
+            internal string StirgeTouchAttackDetail;
             internal bool HostileAbilityTarget;
             internal int AdditionalCasts;
             internal readonly List<string> Diagnostics = new List<string>();
@@ -17500,6 +17502,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     mechanics == null ? "not-run" : mechanics.WaspVerminImmunityDetail,
                     mechanics != null && mechanics.WaspVerminImmunity,
                     "live granted feature and paired native AddBuff outcomes on disposable units"),
+                Assertion("expanded-summoning-stirge-native-touch-attack",
+                    "Stirge's own-tier primary attack resolves touch AC below armored melee AC, hits, and deals no HP damage",
+                    mechanics == null ? "not-run" : mechanics.StirgeTouchAttackDetail,
+                    mechanics != null && mechanics.StirgeTouchAttack,
+                    "native RuleCalculateAC controls and RuleAttackWithWeapon on a disposable hostile"),
                 Assertion("expanded-summoning-disposable-cleanup",
                     "exact party and global-unit snapshots restored", observed,
                     cleaned, "per-cast UnitEntityData.Dispose and final exact snapshots"),
@@ -18026,6 +18033,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         waspForImmunity, caster, hostile,
                         out result.WaspVerminImmunityDetail);
 
+                ResetExpandedSummoningMechanicalHostile(hostile, blueprints);
+                result.StirgeTouchAttack =
+                    ExerciseExpandedSummoningStirgeTouchAttack(blueprints,
+                        caster, hostile, created, result,
+                        out result.StirgeTouchAttackDetail);
+
                 result.RepresentativeCombat = animalAttack && proxyAttack &&
                     elementalAttack && stalkerAttack && shadowAttack &&
                     salamanderAttack && succubusAttack && pixieAttack &&
@@ -18042,6 +18055,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 result.Diagnostics.Add("rake[" + rakeDetail + "]");
                 result.Diagnostics.Add("sprintEight[" + sprintEightDetail + "]");
                 result.Diagnostics.Add("waspPoison[" + waspPoisonDetail + "]");
+                result.Diagnostics.Add("stirgeTouch[" +
+                    result.StirgeTouchAttackDetail + "]");
                 result.Diagnostics.Add("cyclops[granted=" + flashGranted +
                     ";resource=" + flashBefore + "->" + flashAfter + ";armed=" +
                     flashArmed + ";armedNatural1=" + flashArmedDetail +
@@ -18859,6 +18874,55 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             detail = string.Join(";", steps.ToArray());
             return ok;
+        }
+
+        /// <summary>
+        /// A hidden Stirge's own-tier attack against an armored, disposable
+        /// hostile. The native attack roll must use touch AC while the empty
+        /// carrier leaves hit points unchanged; attachment is tested apart.
+        /// </summary>
+        private static bool ExerciseExpandedSummoningStirgeTouchAttack(
+            BlueprintScriptableObject[] blueprints, UnitEntityData caster,
+            UnitEntityData hostile, List<UnitEntityData> created,
+            ExpandedSummoningMechanicalEvidence evidence, out string detail)
+        {
+            UnitEntityData stirge = CastExpandedSummoningCombatUnit(blueprints,
+                caster, SummonFamily.NaturesAlly, "stirge", 1,
+                created, evidence);
+            RemoveExpandedSummoningAppearanceBuffs(stirge);
+            ItemEntityWeapon weapon = stirge.Body.PrimaryHand.MaybeWeapon;
+            int damageBefore = hostile.Descriptor.Damage;
+            int babBefore = stirge.Descriptor.Stats.BaseAttackBonus.BaseValue;
+            try
+            {
+                int ordinaryAc = Rulebook.Trigger(new RuleCalculateAC(stirge,
+                    hostile, AttackType.Melee)).TargetAC;
+                int touchAc = Rulebook.Trigger(new RuleCalculateAC(stirge,
+                    hostile, AttackType.Touch)).TargetAC;
+                stirge.Descriptor.Stats.BaseAttackBonus.BaseValue = 100;
+                UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                var attack = new RuleAttackWithWeapon(stirge, hostile, weapon, 0);
+                Rulebook.Trigger(attack);
+                RuleAttackRoll roll = attack.AttackRoll;
+                int damageAfter = hostile.Descriptor.Damage;
+                detail = "weapon=" + (weapon == null ? "<null>" :
+                    weapon.Blueprint.name) + ";attackType=" +
+                    (roll == null ? "<none>" : roll.AttackType.ToString()) +
+                    ";ordinaryAc=" + ordinaryAc + ";touchAc=" + touchAc +
+                    ";resolvedAc=" + (roll == null ? -1 : roll.TargetAC) +
+                    ";hit=" + (roll != null && roll.IsHit) + ";hpDamage=" +
+                    damageBefore + "->" + damageAfter;
+                return weapon != null && weapon.Blueprint.name ==
+                    "KMG_Summoning_Natural_StirgeTouch" &&
+                    roll != null && roll.AttackType == AttackType.Touch &&
+                    ordinaryAc > touchAc && roll.TargetAC == touchAc &&
+                    roll.IsHit && damageAfter == damageBefore;
+            }
+            finally
+            {
+                stirge.Descriptor.Stats.BaseAttackBonus.BaseValue = babBefore;
+                hostile.Descriptor.Damage = damageBefore;
+            }
         }
 
         /// <summary>
