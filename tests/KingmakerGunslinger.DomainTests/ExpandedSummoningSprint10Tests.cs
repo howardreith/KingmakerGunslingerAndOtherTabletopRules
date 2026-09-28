@@ -234,6 +234,16 @@ namespace KingmakerGunslinger.DomainTests
                 special.Contains(".SystemMechanics.SummonedUnitBuff) == null") &&
                 special.Contains("Detach(owner, target);"),
                 "The guarded fixture must drive native death and timed-marker expiry, and the holder must release after that marker expires.");
+            string correction = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestRunner.ExpandedSummoningCorrection.cs"));
+            Assertions.True(runtime.Contains("new[] { \"NaturesAlly\", \"stirge\", \"1\" }") &&
+                runtime.Contains("expanded-summoning-stirge-attached-save-load") &&
+                runtime.Contains("PrepareExpandedSummoningPersistentStirge(units,") &&
+                runtime.Contains("VerifyExpandedSummoningReloadedStirge(units,") &&
+                correction.Contains("attach.TryAttach(pony, touch, true)") &&
+                correction.Contains("!holderPart && !victimPart && !holderBuff && !victimBuff"),
+                "The exact working-save fixture must attach a Stirge before saving and inspect both sides after reloading.");
             string specialBuilder = File.ReadAllText(Path.Combine(
                 Environment.CurrentDirectory, "src", "KingmakerGunslinger",
                 "Blueprints", "ExpandedSummoningSpecialBuilder.cs"));

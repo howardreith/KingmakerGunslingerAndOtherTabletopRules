@@ -1074,3 +1074,25 @@ installation SHA-256
 Next: native disease cure timing and active-attachment save/load; original
 Stirge visual/icon and Wasp visual contact before publication. Continue
 Sprint 10; Sprints 11-21 remain authorized.
+
+## Sprint 10 Stirge active-attachment persistence, 2026-09-28
+
+The guarded working-save trio passed on the hidden Stirge candidate:
+`20260928T0629198538034Z-working-save-expanded-summoning-prepare` saved
+17 exact summons, including a Stirge reciprocally attached to the Pony;
+`20260928T0633408624544Z-working-save-expanded-summoning-verify-cleanup`
+freshly loaded both without holder/target grapple parts, hold buffs or
+immobilizing conditions, then destroyed the fixture and saved; and
+`20260928T0637555596273Z-working-save-expanded-summoning-verify-absent`
+found zero fixture summons and made zero saves. This matches
+`ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD`; the hold is not preserved.
+Each writing stage used one exact guarded `KMG_AUTOMATION_WORKING` save
+routine. Repository validation, 1,940 domain tests, clean Release and
+strict package checks passed. Package SHA-256
+`BB9673C873C8F60AAF0772DDAE5D0B82185308150D4135BA41A59441373F6D24`;
+DLL SHA-256
+`1B6E5D3DF2A551C2D1D9914D565BD9EF436FB168D9FD801CCBCC545324014463`.
+Restoration `20260928T0640454534765Z-working-save-expanded-summoning-prepare.json`
+returned the original 136-file installed tree exactly. Next: native disease
+cure timing and original Stirge visual/icon; Wasp's credible contact and
+doorway-safe silhouette remain open. Continue Sprint 10.
