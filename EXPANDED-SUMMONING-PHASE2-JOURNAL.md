@@ -902,3 +902,20 @@ restored the exact original 136-file mod tree; final restoration
 `20260928T1409073917030Z`. Sprint 10 is technically complete, with native
 Filth Fever cure timing recorded as unmeasured rather than claimed. Sprint 11
 is next under the existing owner authorization.
+
+## Sprint 11: native ungulate movement audit, 2026-09-28
+
+The guarded `observe-expanded-summoning-native-donors` surveys
+`20260928T1436375418005Z` and `20260928T1448501815730Z` both passed.
+The latter deep graph shows a game-defined `AbilityCustomOverrun` path used
+by `FlyTrampleTest` and `OverrunAbility`, and a game-defined `PowerfulCharge`
+component. The installed `MammothTrample` feature demonstrates an overrun
+trigger, while `PowerfulChargeDouble` is supplied by an optional mod and is
+not a project dependency. This is an engineering seam, not a completed
+trample: size, target choice, Reflex DC/half damage, once-per-round gating
+and full-round cadence still need direct proof. Paizo profiles and precise
+audit details are in `planning/EXPANDED-SUMMONING-SPRINT11-RULES-AND-DONORS.md`.
+All 1,943 domain tests, clean Release and strict package validation passed.
+The wrapper restored the pre-run mod tree exactly at
+`20260928T1450570230422Z`; no save was loaded or written. Sprint 11 source
+implementation is next.
