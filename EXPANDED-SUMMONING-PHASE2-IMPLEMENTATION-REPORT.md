@@ -9,8 +9,9 @@ icon and bounded Bat blindsense are published on the Phase 2A feature branch.
 Human visual approval remains pending and nonblocking. Giant Wasp's twelve
 SM/SNA choices are published with an original icon; its poison, native sting
 cadence, visual contact, movement, cleanup, live menu and player path passed.
-Stirge's nine SNA choices remain hidden while its attack-pose visual, disease
-cure timing and choice icon/UI review are completed. The Phase 2A draft PR is
+Stirge's nine SNA choices remain hidden while its choice icon/UI review is
+completed. Native Filth Fever exposure is qualified; cure timing has not yet
+been measured. The Phase 2A draft PR is
 not ready for owner review.
 
 The accepted baseline is `master` at `2ce70e4` (0.0.140), which advanced after
@@ -585,3 +586,35 @@ The wrapper restored the original 136-file live installation at
 `20260928T1048297337580Z`. This qualifies Wasp publication technically;
 Sprint 10 remains open for Stirge's attach-pose visual and choice UI review,
 native disease cure timing, and nine-choice publication.
+
+## Sprint 10 Stirge mechanics and view-contact checkpoint, 2026-09-28
+
+The hidden Stirge now attaches after its own native UnitAttack touch hit through
+an exact Stirge/weapon rule hook. The game's ordinary buff event callback did
+not run on this path, so the hook retries only when the target has no existing
+hold. The native reciprocal grapple parts and buff cleanup remain authoritative.
+An instance-local view component aims the 15-bone skinned rig and approaches
+only the target surface, with a 0.05 m clearance; it restores the donor pose on
+release and destroys its private baked mesh on teardown. Logical unit position,
+navigation and collision are not moved by this visual adjustment.
+
+Guarded turn-based `20260928T1227208122214Z` and RTWP
+`20260928T1230343024504Z` passed actual SNA I player casts, native touch hits,
+reciprocal holds, forward proboscis aim and baked-tip gaps of 0.05 m without
+entering the target bounds. Both overhead frames were inspected. The lifecycle
+run `20260928T1239005533999Z` passed idle, movement and attack captures,
+dismissal, zero private meshes/materials and exact request-local cleanup.
+The final disposable run `20260928T1307116237968Z` passed 33/33 assertions:
+184 casts/258 spawned; 15-bone Stirge and 16-bone Wasp views; one actual
+Constitution damage per round and automatic release at four; escape, area
+transition, dismissal, timed expiry and prey-death release; native Filth Fever
+DC 12 on the one selected exposure branch; exact roster cleanup. Repository
+validation, 1,942 domain cases, clean Release and strict package passed for
+the final candidate. Package SHA-256 is
+`c3ff161e6cad7a9c50605b7278af23723e3745aee9b8c3382d91fdab01768d8e`;
+DLL SHA-256 is
+`ac84fe4552b507c481a33fa1f13c4484acbac5eb39b27a3b9cc07136bbe8e296`.
+The wrapper restored the original 136-file installation at
+`20260928T1311121870023Z`. Native Filth Fever cure timing was not measured;
+the exact installed buff owns progression. The Stirge choices remain hidden
+until icon export and live menu qualification.

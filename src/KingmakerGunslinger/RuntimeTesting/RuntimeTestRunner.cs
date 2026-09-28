@@ -17383,6 +17383,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                             else _giantWaspVisualDetail.Add(outcome + ":" + renderers);
                         }
                     }
+                    else if (variant.Creature.Key == "stirge")
+                    {
+                        foreach (UnitEntityData unit in spawned)
+                        {
+                            if (unit == null || unit.View == null) continue;
+                            _stirgeVisualChecked++;
+                            string outcome = ExpandedSummoningPteranodonViewPatch
+                                .DescribeView(unit.View);
+                            string renderers = DescribePteranodonRenderers(unit.View);
+                            if (outcome.StartsWith("visual:attached;",
+                                    StringComparison.Ordinal) &&
+                                IsStirgeAttached(renderers))
+                                _stirgeVisualAttached++;
+                            else _stirgeVisualDetail.Add(outcome + ":" + renderers);
+                        }
+                    }
                     else if (PteranodonDonorSharers.Contains(variant.Creature.Key))
                     {
                         // Isolation: the creatures that share the GiantEagle
@@ -17715,9 +17731,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                         patchOutcomesAfterCoverage - patchOutcomesBefore ==
                             _pteranodonVisualOutcomes.Count +
                                 _direBatVisualChecked + _eagleVisualChecked +
-                                _giantWaspVisualChecked &&
+                                _giantWaspVisualChecked + _stirgeVisualChecked &&
                         pteranodonAttachedClean,
                     "one patch outcome per attached view; per-cast cleanup is enforced by the cast loop itself"),
+                Assertion("expanded-summoning-stirge-visual-attached",
+                    "every hidden Stirge cast carries its private skinned view",
+                    "checked=" + _stirgeVisualChecked + ";attached=" +
+                        _stirgeVisualAttached + (_stirgeVisualDetail.Count == 0 ?
+                            "" : ";detail=" + string.Join("|",
+                                _stirgeVisualDetail.ToArray())),
+                    _stirgeVisualChecked >= 1 &&
+                        _stirgeVisualAttached == _stirgeVisualChecked,
+                    "exact mesh, material and rig on each guarded summon"),
                 Assertion("expanded-summoning-giant-wasp-visual-attached",
                     "every registered Wasp cast carries the project mesh and material on its private view",
                     "checked=" + _giantWaspVisualChecked + ";attached=" +

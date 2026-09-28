@@ -863,3 +863,25 @@ DLL SHA-256
 `e3dcbe169858adc4875719bcb4700ff86c1b6527302b23a1dd26da637f986fc1`.
 Both successful game runs restored the original 136-file installation;
 the final restoration is `20260928T1048297337580Z`. Stirge stays hidden.
+
+## Sprint 10: Stirge visible touch and complete disposable lifecycle, 2026-09-28
+
+The native UnitAttack path did not dispatch the ordinary buff hit handler. An
+exact Stirge-only touch-hit postfix now establishes the reciprocal hold once.
+An instance-local 15-bone view pose aims the proboscis and closes only the
+visible gap; logical unit coordinates and collision stay native. Turn-based
+`20260928T1227208122214Z` and RTWP `20260928T1230343024504Z` passed native
+touch, attach and 0.05 m baked-tip clearance with forward aim. Both overhead
+frames were inspected. Lifecycle `20260928T1239005533999Z` passed movement,
+attack, dismissal and zero private resource leaks.
+
+The first complete disposable run `20260928T1247471379888Z` passed every
+Stirge mechanic but failed an older Pteranodon patch-outcome total that omitted
+one Stirge view. The corrected counter run `20260928T1257599433048Z` passed
+that total but exposed a 16-bone expectation copied from Wasp. Its live Stirge
+view and the authored source both measured 15 bones. The final
+`20260928T1307116237968Z` passed all 33 assertions, 184 casts and 258 spawned
+units. Source validation, 1,942 domain tests, clean Release and strict package
+passed; original live tree restoration was exact at `20260928T1311121870023Z`.
+The native Filth Fever exposure branch and DC 12 passed; cure timing remains
+unmeasured. Icon export and nine-choice publication are next.

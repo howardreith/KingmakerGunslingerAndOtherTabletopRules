@@ -18,6 +18,7 @@ using Kingmaker.Controllers.Rest;
 using Kingmaker.Controllers.Units;
 using Kingmaker.EntitySystem;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker.Enums;
 using Kingmaker.GameModes;
 using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem;
@@ -66,6 +67,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "5d61dde0020bbf54ba1521f7ca0229dc";
         private const string SummonMonsterFourGuid =
             "7ed74a3ec8c458d4fb50b192fd7be6ef";
+        private const string SummonNaturesAllyOneGuid =
+            "c6147854641924442a3bb736080cfeb6";
         private const string NativeDogName =
             "KMG_Summoning_Native_SM_Tier1";
         private const string ExpandedEagleMultipleName =
@@ -182,6 +185,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             private readonly List<string> _flightImpactSamples =
                 new List<string>();
             private readonly List<float> _waspBakedGaps =
+                new List<float>();
+            private readonly List<float> _stirgeBakedGaps =
+                new List<float>();
+            private readonly List<bool> _stirgeTipInside =
+                new List<bool>();
+            private readonly List<float> _stirgeForwardDots =
                 new List<float>();
             private int _waspImpactCaptures;
             private readonly List<UnitEntityData> _requestLocalCooldownUnits =
@@ -773,7 +782,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             "The guarded working save has no live party area " +
                             "anchor.");
                     casterPosition = _areaAnchor.Position;
-                    if (_flightCreature == "giant-wasp")
+                    if (_flightCreature == "giant-wasp" ||
+                        _flightCreature == "stirge")
                     {
                         // The working-save anchor is beside a room opening.
                         // The original +3 m target straddles that wall, so a
@@ -782,7 +792,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         // for this request-local visual fixture only.
                         if (AstarPath.active == null)
                             throw new InvalidOperationException(
-                                "Wasp visual fixture has no native navigation graph.");
+                                "Flying-creature visual fixture has no native navigation graph.");
                         Pathfinding.NNInfo anchor = AstarPath
                             .active.GetNearest(casterPosition);
                         Vector3 requested = anchor.clampedPosition +
@@ -814,10 +824,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 target.clampedPosition, open.node, out hit);
                         if (!valid)
                             throw new InvalidOperationException(
-                                "Wasp visual fixture has no surveyed open-floor " +
+                                "Flying-creature visual fixture has no surveyed open-floor " +
                                 "caster and target pair.");
                         casterPosition = open.clampedPosition;
-                        _diagnostics.Add("wasp-open-floor=caster=" +
+                        _diagnostics.Add(_flightCreature + "-open-floor=caster=" +
                             casterPosition.ToString("F2") + ";target=" +
                             target.clampedPosition.ToString("F2"));
                     }
@@ -1412,6 +1422,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             "KMG_Summoning_Unit_Eagle" :
                             _flightCreature == "dire-bat" ?
                             "KMG_Summoning_Unit_DireBat" :
+                            _flightCreature == "stirge" ?
+                            "KMG_Summoning_Unit_Stirge" :
                             "KMG_Summoning_Unit_GiantWasp")) :
                     _kind != ScenarioKind.Multiple ||
                     _summons.All(value => value.Blueprint != null &&
@@ -1713,7 +1725,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 Bounds targetBounds = targetRenderer.bounds;
                 string[] anchors = _flightCreature == "giant-wasp" ?
-                    new[] { "Tail" } :
+                    new[] { "Tail" } : _flightCreature == "stirge" ?
+                    new[] { "Head" } :
                     new[] { "Jaw", "Head", "L_Foot0", "R_Foot0" };
                 string distances = string.Join(",", anchors.Select(name =>
                 {
@@ -1731,9 +1744,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .GetComponent<EagleAttackVisualLunge>();
                 GiantWaspVisualSting waspSting = source
                     .GetComponent<GiantWaspVisualSting>();
+                StirgeVisualTouch stirgeTouch = source
+                    .GetComponent<StirgeVisualTouch>();
                 if (_flightCreature == "giant-wasp")
                     _waspBakedGaps.Add(waspSting == null ?
                         float.PositiveInfinity : waspSting.BakedGapAfter);
+                if (_flightCreature == "stirge")
+                {
+                    _stirgeBakedGaps.Add(stirgeTouch == null ?
+                        float.PositiveInfinity : stirgeTouch.BakedGap);
+                    _stirgeTipInside.Add(stirgeTouch == null ||
+                        stirgeTouch.TipInside);
+                    _stirgeForwardDots.Add(stirgeTouch == null ? -1f :
+                        stirgeTouch.ModelForwardDot);
+                }
                 Vector3 toward = targetBounds.center - source.transform.position;
                 toward.y = 0f;
                 Vector3 facing = source.transform.forward;
@@ -1750,6 +1774,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         lunge.Describe()) +
                     ";waspSting=" + (waspSting == null ? "<none>" :
                         waspSting.Describe()) +
+                    ";stirgeTouch=" + (stirgeTouch == null ? "<none>" :
+                        stirgeTouch.Describe()) +
                     ";viewForwardDot=" + facingDot.ToString("0.###",
                         CultureInfo.InvariantCulture) +
                     ";targetRenderer=" + targetRenderer.name +
@@ -1762,6 +1788,48 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ";weightedSurface=" + weightedSurface);
                 _diagnostics.Add("flight-impact-geometry=" +
                     _flightImpactSamples[_flightImpactSamples.Count - 1]);
+                if (_flightCreature == "stirge" &&
+                    _flightTargetAttacksByUnit.Count <= 1 &&
+                    Count(_flightTargetAttacksByUnit, attack.Initiator) == 1)
+                {
+                    string fileName = "stirge-native-attack-overhead.png";
+                    string capture = RuntimeTestRunner
+                        .WriteExpandedSummoningOverheadStrikeCapture(
+                            attack.Initiator, attack.Target,
+                            _request.EvidenceDirectory, fileName);
+                    StirgeAttachComponent attach = StirgeAttachComponent.Find(
+                        attack.Initiator);
+                    bool primaryExact = attach != null &&
+                        ReferenceEquals(attach.TouchWeapon,
+                            attack.Weapon.Blueprint) &&
+                        ReferenceEquals(attack.Initiator.Body.PrimaryHand
+                            .MaybeWeapon, attack.Weapon);
+                    bool initiatorBusy = attack.Initiator.Get<Kingmaker.UnitLogic
+                        .Parts.UnitPartGrappleInitiator>() != null;
+                    bool targetBusy = attack.Target.Get<Kingmaker.UnitLogic
+                        .Parts.UnitPartGrappleTarget>() != null;
+                    _diagnostics.Add("stirge-native-attack-overhead=" +
+                        capture + ";touch=" +
+                        (attack.AttackRoll != null &&
+                            attack.AttackRoll.AttackType == AttackType.Touch) +
+                        ";hit=" + (attack.AttackRoll != null &&
+                            attack.AttackRoll.IsHit) + ";attached=" +
+                        ReferenceEquals(SummonHoldComponent.HeldTarget(
+                            attack.Initiator), attack.Target) +
+                        ";attachComponent=" + (attach != null) +
+                        ";nativeEventCalls=" + (attach == null ? -1 :
+                            attach.NativeEventCalls) +
+                        ";nativeFallbackCalls=" + (attach == null ? -1 :
+                            attach.NativeFallbackCalls) +
+                        ";primaryExact=" + primaryExact +
+                        ";initiatorPart=" + initiatorBusy +
+                        ";targetPart=" + targetBusy +
+                        ";targetDead=" + attack.Target.Descriptor.State.IsDead);
+                    if (capture.StartsWith("png=" + fileName + ";",
+                            StringComparison.Ordinal))
+                        _files.Add(Path.Combine(_request.EvidenceDirectory,
+                            fileName));
+                }
                 if (_flightCreature == "giant-wasp" &&
                     _waspImpactCaptures < 2)
                 {
@@ -2277,7 +2345,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "exact installed runtime objects and reference identity");
 
                 if (_flightCreature != null)
-                    Add((_flightCreature == "giant-wasp" ? "sprint10-flight-" :
+                    Add((_flightCreature == "giant-wasp" ||
+                            _flightCreature == "stirge" ? "sprint10-flight-" :
                             "sprint9-flight-") + _flightCreature + "-" +
                             (_kind == ScenarioKind.RtwpControl ? "rtwp" : "turn-based"),
                         "the exact flying creature is summoned through its own-tier parent and lands the required native weapon rules on the exact hostile in the requested combat mode",
@@ -2308,6 +2377,41 @@ namespace KingmakerGunslinger.RuntimeTesting
                             _waspBakedGaps.Take(2).All(value =>
                                 value >= 0f && value <= 0.25f),
                         "instance-local pose sampled in each native RuleAttackWithWeapon.OnTrigger, not a cached prior attack");
+
+                if (_flightCreature == "stirge")
+                    Add("sprint10-stirge-visible-contact",
+                        "the original proboscis reaches within 0.20 m of the hostile renderer without entering its bounds on a native touch attack",
+                        "bakedGaps=" + string.Join(",",
+                            _stirgeBakedGaps.Select(value => value.ToString(
+                                "0.###", CultureInfo.InvariantCulture))
+                                .ToArray()) + ";inside=" +
+                            string.Join(",", _stirgeTipInside.Select(value =>
+                                value.ToString()).ToArray()) +
+                            ";modelForwardDots=" + string.Join(",",
+                                _stirgeForwardDots.Select(value =>
+                                    value.ToString("0.###",
+                                        CultureInfo.InvariantCulture))
+                                    .ToArray()),
+                        _stirgeBakedGaps.Count >= 1 &&
+                            _stirgeBakedGaps.Count == _stirgeTipInside.Count &&
+                            _stirgeBakedGaps.Count == _stirgeForwardDots.Count &&
+                            _stirgeBakedGaps.All(value =>
+                                value >= 0f && value <= 0.20f) &&
+                            _stirgeTipInside.All(value => !value) &&
+                            _stirgeForwardDots.All(value => value >= 0.80f),
+                        "instance-local baked mesh sampled in the exact native RuleAttackWithWeapon event");
+
+                if (_flightCreature == "stirge")
+                    Add("sprint10-stirge-native-attack-overhead",
+                        "one native touch attack against the exact hostile has a live overhead visual capture",
+                        string.Join("|", _diagnostics.Where(value =>
+                            value.StartsWith("stirge-native-attack-overhead=",
+                                StringComparison.Ordinal)).ToArray()),
+                        _files.Any(value => Path.GetFileName(value) ==
+                            "stirge-native-attack-overhead.png") &&
+                            _diagnostics.Any(value => value.Contains(
+                                ";touch=True;hit=True;attached=True")),
+                        "native RuleAttackWithWeapon, reciprocal attach and read-only camera capture; art image requires visual inspection");
 
                 if (_kind == ScenarioKind.RtwpControl)
                 {
@@ -2835,7 +2939,21 @@ namespace KingmakerGunslinger.RuntimeTesting
             private AbilityData PrepareCaseAbility()
             {
                 AbilityData result;
-                if (_flightCreature != null)
+                if (_flightCreature == "stirge")
+                {
+                    SummonVariantSpec variant = ExpandedSummoningCatalog
+                        .GenerateVariants(SummonFamily.NaturesAlly).Single(value =>
+                            value.Creature.Key == "stirge" &&
+                            value.ParentTier == 1 &&
+                            value.Multiplicity == SummonMultiplicity.One);
+                    string selected = ExpandedSummoningIdentityCatalog
+                        .AbilitySymbol(variant).Replace('.', '_')
+                        .Replace('-', '_');
+                    result = PrepareQuickenedSummon(_spellbook,
+                        SummonNaturesAllyOneGuid, selected, 1, 5,
+                        out _castSlot);
+                }
+                else if (_flightCreature != null)
                 {
                     int tier = _flightCreature == "eagle" ? 1 :
                         _flightCreature == "dire-bat" ? 3 : 4;

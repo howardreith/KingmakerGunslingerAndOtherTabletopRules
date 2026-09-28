@@ -105,6 +105,7 @@ namespace KingmakerGunslinger.Summoning
             internal Mesh Mesh;
             internal EagleAttackVisualLunge EagleLunge;
             internal GiantWaspVisualSting WaspSting;
+            internal StirgeVisualTouch StirgeTouch;
         }
 
         private static readonly ConditionalWeakTable<UnitEntityView, Attachment>
@@ -319,6 +320,12 @@ namespace KingmakerGunslinger.Summoning
                         .AddComponent<GiantWaspVisualSting>();
                     attachment.WaspSting.Configure(view, donor);
                 }
+                if (attachment.VisualKey == "stirge")
+                {
+                    attachment.StirgeTouch = view.gameObject
+                        .AddComponent<StirgeVisualTouch>();
+                    attachment.StirgeTouch.Configure(view, donor);
+                }
                 return "visual:attached;bones=" + bones.Length +
                     ";vertices=" + mesh.vertexCount + ";albedo=" +
                     albedo.width + "x" + albedo.height + ";rendererEnabled=" +
@@ -336,6 +343,11 @@ namespace KingmakerGunslinger.Summoning
                 {
                     UnityEngine.Object.Destroy(attachment.WaspSting);
                     attachment.WaspSting = null;
+                }
+                if (attachment.StirgeTouch != null)
+                {
+                    UnityEngine.Object.Destroy(attachment.StirgeTouch);
+                    attachment.StirgeTouch = null;
                 }
                 if (swapped) Revert(attachment);
                 if (material != null) UnityEngine.Object.Destroy(material);
@@ -441,6 +453,12 @@ namespace KingmakerGunslinger.Summoning
                 ? StirgeVisualName : GiantWaspVisualName;
             if (attachment.WaspSting != null)
                 attachment.WaspSting.enabled = false;
+            if (attachment.StirgeTouch != null)
+            {
+                attachment.StirgeTouch.enabled = false;
+                UnityEngine.Object.DestroyImmediate(attachment.StirgeTouch);
+                attachment.StirgeTouch = null;
+            }
             var materials = new HashSet<Material>();
             if (attachment.Material != null)
                 materials.Add(attachment.Material);

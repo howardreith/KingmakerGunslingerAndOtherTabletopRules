@@ -640,6 +640,13 @@ namespace KingmakerGunslinger.Summoning
 
         [JsonProperty]
         private List<string> m_DiseaseCheckedVictims = new List<string>();
+        [JsonIgnore]
+        private int m_NativeEventCalls;
+        [JsonIgnore]
+        private int m_NativeFallbackCalls;
+
+        internal int NativeEventCalls { get { return m_NativeEventCalls; } }
+        internal int NativeFallbackCalls { get { return m_NativeFallbackCalls; } }
 
         internal int DiseaseCheckedVictimCount
         {
@@ -701,9 +708,21 @@ namespace KingmakerGunslinger.Summoning
 
         public override void OnEventDidTrigger(RuleAttackWithWeapon evt)
         {
+            m_NativeEventCalls++;
             if (evt == null || evt.AttackRoll == null || evt.Weapon == null)
                 return;
             TryAttach(evt.Target, evt.Weapon, evt.AttackRoll.IsHit);
+        }
+
+        internal void AttachAfterNativeRule(RuleAttackWithWeapon attack)
+        {
+            if (attack == null || attack.AttackRoll == null ||
+                !attack.AttackRoll.IsHit || attack.Weapon == null ||
+                !ReferenceEquals(attack.Weapon.Blueprint, TouchWeapon) ||
+                ReferenceEquals(SummonHoldComponent.HeldTarget(attack.Initiator),
+                    attack.Target)) return;
+            m_NativeFallbackCalls++;
+            TryAttach(attack.Target, attack.Weapon, true);
         }
 
         internal bool TryAttach(UnitEntityData target, ItemEntityWeapon weapon,
@@ -728,6 +747,25 @@ namespace KingmakerGunslinger.Summoning
                 context);
             return ReferenceEquals(SummonHoldComponent.HeldTarget(owner),
                 target);
+        }
+    }
+
+    /// <summary>Native UnitAttack can complete a Stirge touch rule without
+    /// dispatching its buff's initiator callback. Retry only that exact owned
+    /// touch weapon after the native rule; an existing link is left alone.</summary>
+    [HarmonyPatch(typeof(RuleAttackWithWeapon), "OnTrigger",
+        new[] { typeof(RulebookEventContext) })]
+    internal static class StirgeNativeTouchAttachPatch
+    {
+        [HarmonyPriority(Priority.First)]
+        private static void Postfix(RuleAttackWithWeapon __instance)
+        {
+            UnitEntityData owner = __instance == null ? null :
+                __instance.Initiator;
+            if (owner == null || owner.Blueprint == null ||
+                owner.Blueprint.name != "KMG_Summoning_Unit_Stirge") return;
+            StirgeAttachComponent attach = StirgeAttachComponent.Find(owner);
+            if (attach != null) attach.AttachAfterNativeRule(__instance);
         }
     }
 

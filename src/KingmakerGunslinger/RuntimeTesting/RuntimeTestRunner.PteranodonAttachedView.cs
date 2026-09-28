@@ -56,6 +56,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         private int _giantWaspVisualChecked;
         private int _giantWaspVisualAttached;
         private readonly List<string> _giantWaspVisualDetail = new List<string>();
+        private int _stirgeVisualChecked;
+        private int _stirgeVisualAttached;
+        private readonly List<string> _stirgeVisualDetail = new List<string>();
         private IDisposable _pteranodonWithdrawal;
         private int _pteranodonCastsSeen;
         private int _pteranodonCrowdMax;
@@ -136,6 +139,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ";bones=16;", StringComparison.Ordinal) ||
                 renderers.StartsWith("mesh=" + name + ";material=" + name +
                     " (Instance);bones=16;", StringComparison.Ordinal);
+        }
+
+        private static bool IsStirgeAttached(string renderers)
+        {
+            string name = ExpandedSummoningPteranodonViewPatch.StirgeVisualName;
+            return renderers.StartsWith("mesh=" + name + ";material=" + name +
+                    ";bones=15;", StringComparison.Ordinal) ||
+                renderers.StartsWith("mesh=" + name + ";material=" + name +
+                    " (Instance);bones=15;", StringComparison.Ordinal);
         }
 
         /// <summary>

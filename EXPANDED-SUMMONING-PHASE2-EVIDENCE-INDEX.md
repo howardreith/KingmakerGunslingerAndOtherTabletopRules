@@ -93,3 +93,8 @@ the existing owned Wasp poison fact as a prohibited summon reference. The
 exact Wasp poison identity was allowlisted after confirming the live fact;
 the passing repeat above reports zero prohibited references. Both attempts
 restored the original 136-file installation exactly.
+
+| Sprint 10 Stirge native turn-based contact | `20260928T1227208122214Z-summon-same-turn-activation` | `20260928T1233447628378Z-summon-same-turn-activation.json` (paired RTWP batch) | SNA I native touch hit and reciprocal hold; baked tip 0.05 m outside target, forward dot at least 0.999, inspected overhead frame. |
+| Sprint 10 Stirge native RTWP contact | `20260928T1230343024504Z-summon-same-turn-rtwp-control` | `20260928T1233447628378Z-summon-same-turn-activation.json` | Same package as turn-based; native touch hit and hold, 0.05 m baked clearance, forward dot 1.0, inspected overhead frame. |
+| Sprint 10 Stirge visual lifecycle | `20260928T1239005533999Z-working-save-expanded-summoning-creature-review` | `20260928T1243077450297Z-working-save-expanded-summoning-creature-review.json` | PASS idle/move/attack/dismissal; zero private view meshes/materials and exact cleanup. |
+| Sprint 10 Stirge final disposable mechanics | `20260928T1307116237968Z-disposable-expanded-summoning` | `20260928T1311121870023Z-disposable-expanded-summoning.json` | 33/33 PASS, 184 casts/258 spawned; native touch, reciprocal hold, blood drain, exposure/DC, release paths, 15-bone view, roster cleanup. Native disease cure timing remains unmeasured. |
