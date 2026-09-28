@@ -448,3 +448,11 @@ Repository validation, 1,940 domain cases, clean Release and strict package
 checks passed; exact installation restoration was recorded at
 `20260928T0236160392850Z`. Four-point detach, independent escape/death/
 dismissal/transition cleanup, disease, persistence and visuals remain open.
+
+The four-point meal then passed guarded combat `20260928T0247164550495Z`:
+each of four ticks dealt exactly one actual Constitution damage, the native
+link persisted through the third, and the fourth automatically removed both
+parts, both buffs and the holder's lost-Dexterity state. Repository validation,
+1,940 domain cases, clean Release and strict package checks passed; exact
+installation restoration is `20260928T0250550544603Z`. Interruption paths,
+disease, persistence and visual publication remain open.

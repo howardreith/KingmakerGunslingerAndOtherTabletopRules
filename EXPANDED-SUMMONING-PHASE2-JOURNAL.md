@@ -659,3 +659,14 @@ tree exactly; final restoration was `20260928T0236160392850Z`. Repository
 validation, 1,940 domain tests, clean Release and strict package checks
 passed. Next are full meal detachment, escapes, interruption cleanup and
 disease, followed by Stirge and Wasp visual publication gates.
+
+## Sprint 10: four-point Stirge meal, 2026-09-28
+
+I extended the disposable combat fixture through all four blood-drain ticks.
+`20260928T0247164550495Z` passed: each tick caused one actual Constitution
+damage; the link remained for points one through three; the fourth point
+automatically removed holder and target parts, both buffs and the lost-Dexterity
+condition. Repository validation, 1,940 domain tests, clean Release and strict
+package checks passed. The wrapper restored the original installation exactly
+(`20260928T0250550544603Z`). Next are interrupted holds and disease, then
+visual and icon qualification. Stirge remains hidden.
