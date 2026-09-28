@@ -695,3 +695,17 @@ damage stayed unchanged. Repository validation, 1,940 domain tests, clean
 Release and strict package checks passed. Restoration
 `20260928T0336376497673Z` returned the original installed bytes. Timer
 expiry, prey death, disease, persistence and visuals remain open.
+
+## Sprint 10: native filth fever donor, 2026-09-28
+
+Paizo's Stirge entry calls for one 10% disease-exposure check per victim per
+Stirge after blood drain. The guarded installed-library audit
+`20260928T0350195802140Z` found one exact native `FilthFever` buff, GUID
+`9545a5550d89feb47a84edaeb4e63d0b`. A narrower graph audit
+`20260928T0400164475676Z` confirmed its disease descriptor and native
+new-round saving action. This establishes a native disease target, not a
+Stirge exposure result or proof of save/cure behavior. Repository validation,
+1,940 domain tests, clean Release and strict package checks passed; the
+second wrapper restored the original installation exactly at
+`20260928T0402206238799Z`. Next is a bounded once-per-victim exposure
+component and live application test. Stirge remains hidden.
