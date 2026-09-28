@@ -503,3 +503,17 @@ strict package checks, and original-installation restoration passed
 (`20260928T0614436226623Z`). Native disease cure timing, active attachment
 save/load, original visual/icon and Wasp contact remain open. Neither
 creature is published.
+
+The guarded working-save persistence trio then qualified the hidden
+Stirge's active-attachment save/load result. Prepare
+`20260928T0629198538034Z` saved 17 exact summons with Stirge attached to
+the Pony and both native hold buffs present. A fresh launch for
+verify-cleanup `20260928T0633408624544Z` found the two summons intact but
+neither grapple part, hold buff nor immobilizing condition present; it
+destroyed and saved the fixture. Verify-absent `20260928T0637555596273Z`
+found zero fixture summons. This is the accepted safe reset of the active
+hold, not preserved attachment. Both writing stages used exactly one guarded
+working-save routine; the last used none. Repository validation, 1,940 domain
+tests, clean Release, strict package validation and exact live-installation
+restoration passed (`20260928T0640454534765Z`). Native disease cure timing,
+original Stirge visual/icon and Wasp target contact remain open.

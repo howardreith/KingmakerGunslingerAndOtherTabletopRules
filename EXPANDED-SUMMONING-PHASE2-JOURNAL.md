@@ -753,3 +753,23 @@ Restoration `20260928T0614436226623Z` returned the original 136-file
 installation exactly. Native disease cure timing, active-attachment
 save/load, original Stirge visual/icon, and Wasp visual contact remain open;
 both creatures stay hidden.
+
+## Sprint 10: attached Stirge working-save round trip, 2026-09-28
+
+The guarded persistence trio passed on one exact candidate: prepare
+`20260928T0629198538034Z` saved 17 expected summons, with the hidden
+Stirge reciprocally attached to the summoned Pony at the save boundary;
+verify-cleanup `20260928T0633408624544Z` freshly loaded both units with no
+holder/target grapple parts, hold buffs, `CantAct` or `CantMove`; verify-absent
+`20260928T0637555596273Z` found zero fixture summons after the cleanup save.
+The two writing stages each recorded one exact `KMG_AUTOMATION_WORKING`
+save routine; the final stage recorded zero. This is the owner-accepted safe
+reset of an active grapple, not preservation of the hold across reload.
+Repository validation, 1,940 domain tests, clean Release and strict package
+validation passed. Package SHA-256
+`BB9673C873C8F60AAF0772DDAE5D0B82185308150D4135BA41A59441373F6D24`;
+DLL SHA-256
+`1B6E5D3DF2A551C2D1D9914D565BD9EF436FB168D9FD801CCBCC545324014463`.
+Restoration `20260928T0640454534765Z` returned the original 136-file
+installed tree exactly. Native filth fever cure timing, original Stirge
+visual/icon and Wasp visual contact remain open. Both creatures stay hidden.
