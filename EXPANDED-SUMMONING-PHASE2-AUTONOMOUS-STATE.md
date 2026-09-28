@@ -973,3 +973,22 @@ checks passed. Package SHA-256:
 DLL SHA-256:
 `FADEBD91075C5BE4042152A168FD0242D8061B207FF49930634B73BEB7375D05`.
 All nine Stirge choices remain hidden; this is not full Sprint 10 acceptance.
+
+## Sprint 10 four-point Stirge meal, 2026-09-28
+
+Guarded disposable combat `20260928T0247164550495Z` passed the complete
+four-tick meal: actual Constitution damage progressed 0 to 1 to 2 to 3 to 4,
+the reciprocal native link remained through point three, and point four
+automatically removed both grapple parts, holder/target buffs, and Stirge's
+lost-Dexterity condition. The fixture's fallback release was not needed for
+that automatic-cleanup assertion. Repository validation, 1,940 domain tests,
+clean Release and strict package checks passed. Restoration
+`20260928T0250550544603Z` returned the original 136-file installed tree at
+SHA-256 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+Package SHA-256:
+`822970FA0AB43765AFA6AA0F872DB8C8A3A458E9120F1C6581ECEC2EC59DB087`;
+DLL SHA-256:
+`E19F45CC51D54C23889E35594EA3D502CEFF825F3AA8E49277050EB9A0812EAB`.
+Independent escape, death, dismissal, expiry, area transition, disease,
+save/load, original visual and icon still need qualification or implementation.
+Stirge stays unpublished.

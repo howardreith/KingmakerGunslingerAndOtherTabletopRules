@@ -392,7 +392,9 @@ ground speed is omitted because the engine exposes one unit speed. The
 direct touch hit and reciprocal native attachment are live-qualified, as
 is one actual Constitution drain tick and explicit link cleanup. The +8
 maintain bonus is installed but has not been exercised in a native grapple
-check. Four-point detachment, 10% disease, escape, death/dismissal/expiry/
+check. Four-point detachment passed guarded `20260928T0247164550495Z`: four
+actual one-point losses and automatic reciprocal-part/buff cleanup. The 10%
+disease chance, escape, death/dismissal/expiry/
 transition cleanup, save/load safety, original visual and icon remain open.
 The registered primary
 carrier now clones the native held-touch weapon; live inventory
