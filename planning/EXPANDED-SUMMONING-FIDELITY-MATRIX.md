@@ -394,8 +394,14 @@ is one actual Constitution drain tick and explicit link cleanup. The +8
 maintain bonus is installed but has not been exercised in a native grapple
 check. Four-point detachment passed guarded `20260928T0247164550495Z`: four
 actual one-point losses and automatic reciprocal-part/buff cleanup. The 10%
-disease chance, prey death and actual timer-expiry cleanup, save/load safety, original
-visual and icon remain open. Guarded `20260928T0304163413890Z` passed the
+disease chance uses one per-victim check on first actual drain; guarded
+`20260928T0434428779441Z` forced an eligible exposure, observed a failed
+native Fortitude save and applied exact `FilthFever` with retained DC 12,
+then rejected a
+repeat check and retained that result through another drain. Native cure
+timing, prey death and actual timer-expiry cleanup, active-summon save/load
+safety, original visual and icon remain open. Guarded
+`20260928T0304163413890Z` passed the
 victim's native break-free rule with controller-equivalent target-part removal
 and a separate area-leave safeguard sweep. Actual controller timing remains
 to be observed.

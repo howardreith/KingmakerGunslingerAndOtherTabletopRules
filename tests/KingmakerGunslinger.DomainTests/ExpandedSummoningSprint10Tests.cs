@@ -18,6 +18,19 @@ namespace KingmakerGunslinger.DomainTests
                 "An attached Stirge has the printed grapple bonus.");
             Assertions.Equal(10, StirgeAttachPolicy.DiseaseChancePercent,
                 "One Stirge's blood drain has the printed disease chance.");
+            Assertions.Equal(12, StirgeAttachPolicy.FilthFeverFortitudeDc,
+                "Native filth fever exposure uses the printed Fortitude DC.");
+            Assertions.True(StirgeAttachPolicy.DiseaseExposureSelected(0) &&
+                StirgeAttachPolicy.DiseaseExposureSelected(9) &&
+                !StirgeAttachPolicy.DiseaseExposureSelected(10) &&
+                !StirgeAttachPolicy.DiseaseExposureSelected(99),
+                "Exactly ten of the hundred percentile outcomes expose prey.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                StirgeAttachPolicy.DiseaseExposureSelected(-1),
+                "Negative disease rolls fail closed.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                StirgeAttachPolicy.DiseaseExposureSelected(100),
+                "Out-of-range disease rolls fail closed.");
             Assertions.True(StirgeAttachPolicy.MayAttach(true, false, true),
                 "A touch hit against a live prey establishes attachment.");
             Assertions.False(StirgeAttachPolicy.MayAttach(false, false, true),
@@ -187,6 +200,10 @@ namespace KingmakerGunslinger.DomainTests
                 runtime.Contains("liveHold.OnNewRound()") &&
                 runtime.Contains("liveHold.CumulativeDamage == 1 && stillAttached"),
                 "The first live round must measure actual Constitution loss and persistent attachment.");
+            Assertions.True(runtime.Contains("expanded-summoning-stirge-native-disease") &&
+                runtime.Contains("attach.TryDiseaseExposure(hostile, 0)") &&
+                runtime.Contains("attach.DiseaseCheckedVictimCount"),
+                "The guarded fixture must force one native disease exposure and reject repeat checks.");
             Assertions.True(runtime.Contains("expanded-summoning-stirge-four-point-detach") &&
                 runtime.Contains("for (int round = 2; round <= 4") &&
                 runtime.Contains("fourPointDetach = mealExact && automaticCleanup"),
@@ -212,7 +229,8 @@ namespace KingmakerGunslinger.DomainTests
                 special.Contains("StirgeAttachPolicy.EndTurn") &&
                 special.Contains("new RuleDealStatDamage(owner, target,") &&
                 special.Contains("target.Ensure<UnitPartGrappleTarget>().Init") &&
-                specialBuilder.Contains("ConfigureStirgeAttachment(bySymbol)") &&
+                specialBuilder.Contains("ConfigureStirgeAttachment(library, bySymbol)") &&
+                specialBuilder.Contains("9545a5550d89feb47a84edaeb4e63d0b") &&
                 specialBuilder.Contains("UnitCondition.LoseDexterityToAC"),
                 "The hidden unit must own a direct-hit native link and bounded actual-Constitution drain.");
             Assertions.Equal(21,

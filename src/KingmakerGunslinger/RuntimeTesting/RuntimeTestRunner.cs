@@ -340,6 +340,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal string StirgeAttachmentDetail;
             internal bool StirgeFirstDrain;
             internal string StirgeFirstDrainDetail;
+            internal bool StirgeDisease;
+            internal string StirgeDiseaseDetail;
             internal bool StirgeFourPointDetach;
             internal string StirgeFourPointDetachDetail;
             internal bool StirgeEscapeAndTransition;
@@ -17527,6 +17529,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     mechanics == null ? "not-run" : mechanics.StirgeFirstDrainDetail,
                     mechanics != null && mechanics.StirgeFirstDrain,
                     "live StirgeHoldComponent round tick and target Constitution damage"),
+                Assertion("expanded-summoning-stirge-native-disease",
+                    "one eligible Stirge exposure applies the native filth fever buff with DC 12 and later drains do not reroll that victim",
+                    mechanics == null ? "not-run" : mechanics.StirgeDiseaseDetail,
+                    mechanics != null && mechanics.StirgeDisease,
+                    "live attached Stirge, native Fortitude saving rule and RuleApplyBuff on a disposable hostile"),
                 Assertion("expanded-summoning-stirge-four-point-detach",
                     "each of four attached rounds deals one actual Constitution damage; the fourth releases both native parts and buffs",
                     mechanics == null ? "not-run" : mechanics.StirgeFourPointDetachDetail,
@@ -18082,6 +18089,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         out result.StirgeEscapeAndTransition,
                         out result.StirgeEscapeAndTransitionDetail);
                 ResetExpandedSummoningMechanicalHostile(hostile, blueprints);
+                result.StirgeDisease =
+                    ExerciseExpandedSummoningStirgeDisease(blueprints,
+                        caster, hostile, created, result,
+                        out result.StirgeDiseaseDetail);
+                ResetExpandedSummoningMechanicalHostile(hostile, blueprints);
                 result.StirgeDismissal =
                     ExerciseExpandedSummoningStirgeDismissal(blueprints,
                         caster, hostile, created, result,
@@ -18109,6 +18121,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     result.StirgeAttachmentDetail + "]");
                 result.Diagnostics.Add("stirgeDrain[" +
                     result.StirgeFirstDrainDetail + "]");
+                result.Diagnostics.Add("stirgeDisease[" +
+                    result.StirgeDiseaseDetail + "]");
                 result.Diagnostics.Add("stirgeMeal[" +
                     result.StirgeFourPointDetachDetail + "]");
                 result.Diagnostics.Add("stirgeInterrupt[" +
@@ -19002,6 +19016,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 StirgeHoldComponent liveHold = holderBuff ?
                     ExpandedSummoningRuntimeComponent<StirgeHoldComponent>(
                         stirge, hold) : null;
+                StirgeAttachComponent liveAttach = StirgeAttachComponent.Find(stirge);
                 int constitutionBeforeTick =
                     hostile.Descriptor.Stats.Constitution.Damage;
                 if (liveHold != null) liveHold.OnNewRound();
@@ -19011,13 +19026,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     SummonHoldComponent.HeldTarget(stirge), hostile);
                 firstDrain = liveHold != null &&
                     constitutionAfterTick - constitutionBeforeTick == 1 &&
-                    liveHold.CumulativeDamage == 1 && stillAttached;
+                    liveHold.CumulativeDamage == 1 && stillAttached &&
+                    liveAttach != null &&
+                    liveAttach.DiseaseCheckedVictimCount == 1;
                 drainDetail = "component=" + (liveHold != null) +
                     ";constitutionDamage=" + constitutionBeforeTick + "->" +
                     constitutionAfterTick + ";cumulative=" +
                     (liveHold == null ? -1 : liveHold.CumulativeDamage) +
                     ";stillAttached=" + stillAttached + ";difficultyScale=" +
-                    Game.Instance.Player.Difficulty.DamageToParty;
+                    Game.Instance.Player.Difficulty.DamageToParty +
+                    ";diseaseChecks=" + (liveAttach == null ? -1 :
+                        liveAttach.DiseaseCheckedVictimCount);
                 var mealSteps = new List<string>();
                 bool mealExact = firstDrain;
                 for (int round = 2; round <= 4 && liveHold != null; round++)
@@ -19042,7 +19061,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         UnitCondition.LoseDexterityToAC);
                 fourPointDetach = mealExact && automaticCleanup &&
                     hostile.Descriptor.Stats.Constitution.Damage -
-                        constitutionDamageBefore == 4;
+                        constitutionDamageBefore == 4 && liveAttach != null &&
+                    liveAttach.DiseaseCheckedVictimCount == 1;
                 mealDetail = "ticks=" + string.Join("|", mealSteps.ToArray()) +
                     ";automaticCleanup=" + automaticCleanup;
                 hostile.Descriptor.Stats.Constitution.Damage =
@@ -19123,6 +19143,81 @@ namespace KingmakerGunslinger.RuntimeTesting
                 hostile.Descriptor.Stats.Constitution.Damage =
                     constitutionDamageBefore;
                 hostile.Descriptor.Damage = damageBefore;
+            }
+        }
+
+        /// <summary>Force the eligible branch of the printed 10% exposure
+        /// without changing production odds, then let the real hold tick
+        /// prove the same victim is never checked twice.</summary>
+        private static bool ExerciseExpandedSummoningStirgeDisease(
+            BlueprintScriptableObject[] blueprints, UnitEntityData caster,
+            UnitEntityData hostile, List<UnitEntityData> created,
+            ExpandedSummoningMechanicalEvidence evidence, out string detail)
+        {
+            BlueprintBuff hold = blueprints.OfType<BlueprintBuff>().Single(value =>
+                value.name == "KMG_Summoning_Special_Stirge_Hold");
+            BlueprintBuff fever = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(
+                BlueprintBootstrap.Library, "9545a5550d89feb47a84edaeb4e63d0b",
+                "native filth fever exposure control");
+            UnitEntityData stirge = CastExpandedSummoningCombatUnit(blueprints,
+                caster, SummonFamily.NaturesAlly, "stirge", 1,
+                created, evidence);
+            RemoveExpandedSummoningAppearanceBuffs(stirge);
+            int babBefore = stirge.Descriptor.Stats.BaseAttackBonus.BaseValue;
+            int fortBefore = hostile.Descriptor.Stats.SaveFortitude.BaseValue;
+            int constitutionBefore = hostile.Descriptor.Stats.Constitution.Damage;
+            detail = "not-run";
+            try
+            {
+                Buff prior = hostile.Descriptor.Buffs.GetBuff(fever);
+                if (prior != null) hostile.Descriptor.Buffs.RemoveFact(prior);
+                stirge.Descriptor.Stats.BaseAttackBonus.BaseValue = 100;
+                UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                Rulebook.Trigger(new RuleAttackWithWeapon(stirge, hostile,
+                    stirge.Body.PrimaryHand.MaybeWeapon, 0));
+                bool attached = ReferenceEquals(
+                    SummonHoldComponent.HeldTarget(stirge), hostile);
+                StirgeAttachComponent attach = StirgeAttachComponent.Find(stirge);
+                hostile.Descriptor.Stats.SaveFortitude.BaseValue = -100;
+                UnityEngine.Random.InitState(FindNativeD20Seed(1));
+                bool first = attach != null &&
+                    attach.TryDiseaseExposure(hostile, 0);
+                Buff infected = hostile.Descriptor.Buffs.GetBuff(fever);
+                bool repeat = attach != null &&
+                    attach.TryDiseaseExposure(hostile, 0);
+                StirgeHoldComponent liveHold = attached ?
+                    ExpandedSummoningRuntimeComponent<StirgeHoldComponent>(
+                        stirge, hold) : null;
+                if (liveHold != null) liveHold.OnNewRound();
+                int checkedVictims = attach == null ? -1 :
+                    attach.DiseaseCheckedVictimCount;
+                bool retained = infected != null &&
+                    ReferenceEquals(hostile.Descriptor.Buffs.GetBuff(fever),
+                        infected);
+                int nativeDc = infected == null || infected.MaybeContext == null ||
+                    infected.MaybeContext.Params == null ? -1 :
+                    infected.MaybeContext.Params.DC;
+                detail = "attached=" + attached + ";firstCheck=" + first +
+                    ";nativeBuff=" + (infected != null) +
+                    ";nativeDc=" + nativeDc +
+                    ";repeatCheck=" + repeat + ";checkedVictims=" +
+                    checkedVictims + ";buffRetained=" + retained +
+                    ";drain=" + constitutionBefore + "->" +
+                    hostile.Descriptor.Stats.Constitution.Damage;
+                return attached && first && infected != null && !repeat &&
+                    nativeDc == StirgeAttachPolicy.FilthFeverFortitudeDc &&
+                    checkedVictims == 1 && retained && liveHold != null &&
+                    hostile.Descriptor.Stats.Constitution.Damage ==
+                        constitutionBefore + 1;
+            }
+            finally
+            {
+                ReleaseExpandedSummoningHold(stirge, hostile, hold);
+                Buff infected = hostile.Descriptor.Buffs.GetBuff(fever);
+                if (infected != null) hostile.Descriptor.Buffs.RemoveFact(infected);
+                stirge.Descriptor.Stats.BaseAttackBonus.BaseValue = babBefore;
+                hostile.Descriptor.Stats.SaveFortitude.BaseValue = fortBefore;
+                hostile.Descriptor.Stats.Constitution.Damage = constitutionBefore;
             }
         }
 
