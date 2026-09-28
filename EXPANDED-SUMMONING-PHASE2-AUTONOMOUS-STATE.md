@@ -13,9 +13,8 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
 - Accepted dependency: `master` / `origin/master` at
   `2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a`, the merged PR #24 Favored
   Class integration. The owner packet's expected `2943a02d` is its ancestor.
-- Latest pushed source checkpoint before Wasp poison:
-  `9f011014e9f0b574a8c10fff14e75088b4569818`; latest pushed branch head
-  before this checkpoint: `0c1b5e24bef0cbdf2a4bd7d392917e3de408712d`.
+- Latest pushed branch head before this checkpoint:
+  `9ec774d718d2a87ca2be97b134727a5e04b267aa`.
   Branch head at intake: `2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a`;
   first pushed intake checkpoint: `359e346ecb6a094552f096869ecb9c81a2d291bf`.
 - Sprint 9 Eagle and Dire Bat passed the internal technical gate. The 14
@@ -1054,3 +1053,24 @@ DLL SHA-256:
 Native disease cure timing and active-summon save/load still need direct
 qualification; prey death, timer expiry, original visual and icon remain
 open. Stirge and Wasp placements remain suppressed. Continue Sprint 10.
+
+## Sprint 10 Stirge lifecycle, 2026-09-28
+
+Guarded disposable combat `20260928T0610511271269Z` passed native prey
+death and no further blood drain, plus victim release on the Stirge's next
+round callback after its exact timed summon marker expired. The paused
+request-local fixture did not queue native unit destruction on marker removal
+alone; the normal turn-based lifecycle scenario is a separate retirement
+witness. The hidden Stirge now has native `Unlootable`, preventing its
+nonremovable touch proboscis from dropping into scene loot. Exact scene
+cleanup passed. Repository validation, 1,940 domain tests, clean Release
+and strict package checks passed. Package SHA-256
+`1144FC0D4085227CD1B0AD29E553106652798A1F0A496768788E32109800DB58`;
+DLL SHA-256
+`D3209E8F9F569E10527E56196D733027008B02959D1F12C2F22F6EF6F80D2348`.
+Restoration `20260928T0614436226623Z` returned the original 136-file
+installation SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+Next: native disease cure timing and active-attachment save/load; original
+Stirge visual/icon and Wasp visual contact before publication. Continue
+Sprint 10; Sprints 11-21 remain authorized.

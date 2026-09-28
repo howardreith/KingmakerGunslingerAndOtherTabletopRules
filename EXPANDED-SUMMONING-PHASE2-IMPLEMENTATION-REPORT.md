@@ -487,3 +487,19 @@ later drain; original installation restoration was exact at
 clean Release and strict package checks passed. Disease cure timing,
 active-attachment save/load, prey death, timer expiry and visual publication
 remain open.
+
+The guarded `20260928T0610511271269Z` fixture passed two more Stirge
+lifecycle paths. Native lethal damage and a life-controller tick marked
+disposable prey dead; the holder's next round callback released both sides
+without another Constitution loss. The exact timed summon marker then
+expired while a separate Stirge remained attached. Its next callback released
+the victim after that marker disappeared. In the paused fixture the native
+destroy queue did not run from buff removal alone, so this result proves
+victim release, not automatic unit destruction at that instant. The existing
+turn-based summon scenario supplies separate retirement evidence. The hidden
+Stirge also carries native `Unlootable`; exact scene cleanup found no
+dropped proboscis. Repository validation, 1,940 domain tests, clean Release,
+strict package checks, and original-installation restoration passed
+(`20260928T0614436226623Z`). Native disease cure timing, active attachment
+save/load, original visual/icon and Wasp contact remain open. Neither
+creature is published.

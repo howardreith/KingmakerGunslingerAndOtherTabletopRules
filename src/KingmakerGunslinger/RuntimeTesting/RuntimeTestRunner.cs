@@ -348,6 +348,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal string StirgeEscapeAndTransitionDetail;
             internal bool StirgeDismissal;
             internal string StirgeDismissalDetail;
+            internal bool StirgePreyDeath;
+            internal string StirgePreyDeathDetail;
+            internal bool StirgeExpiry;
+            internal string StirgeExpiryDetail;
             internal bool HostileAbilityTarget;
             internal int AdditionalCasts;
             internal readonly List<string> Diagnostics = new List<string>();
@@ -17549,6 +17553,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     mechanics == null ? "not-run" : mechanics.StirgeDismissalDetail,
                     mechanics != null && mechanics.StirgeDismissal,
                     "summoned-unit marker removal and actual UnitEntityData.Destroy lifecycle"),
+                Assertion("expanded-summoning-stirge-prey-death-release",
+                    "an attached Stirge releases dead prey without another Constitution drain",
+                    mechanics == null ? "not-run" : mechanics.StirgePreyDeathDetail,
+                    mechanics != null && mechanics.StirgePreyDeath,
+                    "live dead-state check, holder round tick and reciprocal native grapple cleanup"),
+                Assertion("expanded-summoning-stirge-timed-expiry-release",
+                    "the native timed summon lifecycle expires and releases an attached victim",
+                    mechanics == null ? "not-run" : mechanics.StirgeExpiryDetail,
+                    mechanics != null && mechanics.StirgeExpiry,
+                    "actual SummonedUnitBuff deadline, BuffCollection.Tick and native destroyer queue"),
                 Assertion("expanded-summoning-disposable-cleanup",
                     "exact party and global-unit snapshots restored", observed,
                     cleaned, "per-cast UnitEntityData.Dispose and final exact snapshots"),
@@ -18098,6 +18112,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ExerciseExpandedSummoningStirgeDismissal(blueprints,
                         caster, hostile, created, result,
                         out result.StirgeDismissalDetail);
+                ResetExpandedSummoningMechanicalHostile(hostile, blueprints);
+                result.StirgeExpiry =
+                    ExerciseExpandedSummoningStirgeExpiry(blueprints,
+                        caster, hostile, created, result,
+                        out result.StirgeExpiryDetail);
+                ResetExpandedSummoningMechanicalHostile(hostile, blueprints);
+                result.StirgePreyDeath =
+                    ExerciseExpandedSummoningStirgePreyDeath(blueprints,
+                        caster, hostile, created, result,
+                        out result.StirgePreyDeathDetail);
 
                 result.RepresentativeCombat = animalAttack && proxyAttack &&
                     elementalAttack && stalkerAttack && shadowAttack &&
@@ -18129,6 +18153,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     result.StirgeEscapeAndTransitionDetail + "]");
                 result.Diagnostics.Add("stirgeDismiss[" +
                     result.StirgeDismissalDetail + "]");
+                result.Diagnostics.Add("stirgeExpiry[" +
+                    result.StirgeExpiryDetail + "]");
+                result.Diagnostics.Add("stirgePreyDeath[" +
+                    result.StirgePreyDeathDetail + "]");
                 result.Diagnostics.Add("cyclops[granted=" + flashGranted +
                     ";resource=" + flashBefore + "->" + flashAfter + ";armed=" +
                     flashArmed + ";armedNatural1=" + flashArmedDetail +
@@ -18175,7 +18203,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 throw new InvalidOperationException(
                     "Mechanical-contract cleanup did not restore the exact area snapshot: before=" +
                     DescribeExpandedSummoningReferences(exactStart) +
-                    ";after=" + DescribeExpandedSummoningReferences(exactEnd) + ".");
+                    ";after=" + DescribeExpandedSummoningReferences(exactEnd) +
+                    ";stirgeExpiry=" + result.StirgeExpiryDetail +
+                    ";stirgePreyDeath=" + result.StirgePreyDeathDetail + ".");
             return result;
         }
 
@@ -19274,6 +19304,182 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Game.Instance.EntityDestroyer.Tick();
                 }
                 if (stirge.Destroyed) created.Remove(stirge);
+            }
+        }
+
+        /// <summary>The actual timed native summon marker, not a manual
+        /// dismissal, reaches its recorded deadline while Stirge is holding
+        /// disposable prey. Only the fixture's clock is advanced and restored.</summary>
+        private static bool ExerciseExpandedSummoningStirgeExpiry(
+            BlueprintScriptableObject[] blueprints, UnitEntityData caster,
+            UnitEntityData hostile, List<UnitEntityData> created,
+            ExpandedSummoningMechanicalEvidence evidence, out string detail)
+        {
+            BlueprintBuff hold = blueprints.OfType<BlueprintBuff>().Single(value =>
+                value.name == "KMG_Summoning_Special_Stirge_Hold");
+            BlueprintBuff grappled = blueprints.OfType<BlueprintBuff>().Single(
+                value => value.name == "KMG_Summoning_Special_Grapple_Grappled");
+            UnitEntityData stirge = CastExpandedSummoningCombatUnit(blueprints,
+                caster, SummonFamily.NaturesAlly, "stirge", 1,
+                created, evidence);
+            RemoveExpandedSummoningAppearanceBuffs(stirge);
+            TimeSpan clock = Game.Instance.Player.GameTime;
+            int damageBefore = hostile.Descriptor.Stats.Constitution.Damage;
+            detail = "not-run";
+            try
+            {
+                bool naturalCarrier = stirge.Body.PrimaryHand.MaybeWeapon != null &&
+                    stirge.Body.PrimaryHand.MaybeWeapon.Blueprint.IsNonRemovable;
+                BlueprintBuff unlootable = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(
+                    BlueprintBootstrap.Library, "0f775c7d5d8b6494197e1ce937754482",
+                    "native Stirge no-loot control");
+                bool nativeNoLoot = stirge.Descriptor.HasFact(unlootable) &&
+                    stirge.Descriptor.State.HasCondition(UnitCondition.Unlootable);
+                BlueprintBuff summoned = BlueprintRoot.Instance.SystemMechanics
+                    .SummonedUnitBuff;
+                Buff[] markers = stirge.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                    .Where(value => ReferenceEquals(value.Blueprint, summoned))
+                    .ToArray();
+                Buff marker = markers.Length == 1 ? markers[0] : null;
+                bool timed = marker != null && !marker.IsPermanent &&
+                    marker.EndTime > clock + TimeSpan.FromSeconds(1);
+                bool beforeStill = false;
+                if (timed)
+                {
+                    Game.Instance.Player.GameTime = marker.EndTime -
+                        TimeSpan.FromSeconds(0.1);
+                    stirge.Descriptor.Buffs.Tick();
+                }
+                stirge.Descriptor.Stats.BaseAttackBonus.BaseValue = 100;
+                UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                Rulebook.Trigger(new RuleAttackWithWeapon(stirge, hostile,
+                    stirge.Body.PrimaryHand.MaybeWeapon, 0));
+                bool attached = ReferenceEquals(
+                    SummonHoldComponent.HeldTarget(stirge), hostile);
+                StirgeHoldComponent liveHold = attached ?
+                    ExpandedSummoningRuntimeComponent<StirgeHoldComponent>(
+                        stirge, hold) : null;
+                if (timed)
+                {
+                    beforeStill = !stirge.Destroyed && marker.Active &&
+                        ReferenceEquals(SummonHoldComponent.HeldTarget(stirge),
+                            hostile);
+                    Game.Instance.Player.GameTime = marker.EndTime +
+                        TimeSpan.FromSeconds(0.1);
+                    stirge.Descriptor.Buffs.Tick();
+                    Game.Instance.EntityCreator.Tick();
+                    Game.Instance.EntityDestroyer.Tick();
+                    if (liveHold != null) liveHold.OnNewRound();
+                }
+                bool markerGone = marker != null &&
+                    !stirge.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                        .Any(value => ReferenceEquals(value, marker));
+                bool victimFree = hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>() == null &&
+                    !hostile.Descriptor.HasFact(grappled) &&
+                    (stirge.Destroyed ||
+                        stirge.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleInitiator>() == null);
+                detail = "attached=" + attached + ";nonRemovable=" +
+                    naturalCarrier + ";nativeNoLoot=" + nativeNoLoot +
+                    ";timed=" + timed +
+                    ";beforeStill=" + beforeStill + ";markerGone=" +
+                    markerGone + ";nativeDestroyQueued=" +
+                    stirge.ShouldBeDestroyed + ";summonDestroyed=" + stirge.Destroyed +
+                    ";victimFree=" + victimFree + ";constitutionDamage=" +
+                    damageBefore + "->" +
+                    hostile.Descriptor.Stats.Constitution.Damage;
+                return attached && naturalCarrier && nativeNoLoot && timed &&
+                    beforeStill && markerGone && victimFree;
+            }
+            finally
+            {
+                Game.Instance.Player.GameTime = clock;
+                if (!stirge.Destroyed)
+                {
+                    ReleaseExpandedSummoningHold(stirge, hostile, hold);
+                    CleanupExpandedSummoningUnit(stirge);
+                    Game.Instance.EntityDestroyer.Tick();
+                }
+                if (stirge.Destroyed) created.Remove(stirge);
+                hostile.Descriptor.Stats.Constitution.Damage = damageBefore;
+            }
+        }
+
+        /// <summary>A dead disposable victim causes the holder's next native
+        /// round callback to release both sides without another meal tick.</summary>
+        private static bool ExerciseExpandedSummoningStirgePreyDeath(
+            BlueprintScriptableObject[] blueprints, UnitEntityData caster,
+            UnitEntityData hostile, List<UnitEntityData> created,
+            ExpandedSummoningMechanicalEvidence evidence, out string detail)
+        {
+            BlueprintBuff hold = blueprints.OfType<BlueprintBuff>().Single(value =>
+                value.name == "KMG_Summoning_Special_Stirge_Hold");
+            BlueprintBuff grappled = blueprints.OfType<BlueprintBuff>().Single(
+                value => value.name == "KMG_Summoning_Special_Grapple_Grappled");
+            UnitEntityData stirge = CastExpandedSummoningCombatUnit(blueprints,
+                caster, SummonFamily.NaturesAlly, "stirge", 1,
+                created, evidence);
+            RemoveExpandedSummoningAppearanceBuffs(stirge);
+            int hitPointsBefore = hostile.Descriptor.Damage;
+            int constitutionBefore = hostile.Descriptor.Stats.Constitution.Damage;
+            bool cheater = hostile.Blueprint.IsCheater;
+            detail = "not-run";
+            try
+            {
+                stirge.Descriptor.Stats.BaseAttackBonus.BaseValue = 100;
+                UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                Rulebook.Trigger(new RuleAttackWithWeapon(stirge, hostile,
+                    stirge.Body.PrimaryHand.MaybeWeapon, 0));
+                bool attached = ReferenceEquals(
+                    SummonHoldComponent.HeldTarget(stirge), hostile);
+                StirgeHoldComponent liveHold = attached ?
+                    ExpandedSummoningRuntimeComponent<StirgeHoldComponent>(
+                        stirge, hold) : null;
+                // Native damage followed by the life controller transitions
+                // UnitState to dead in this paused disposable fixture.
+                // The disposable target's fixture armor remains owned by the
+                // outer cleanup and must not materialize as dropped loot.
+                hostile.Blueprint.IsCheater = false;
+                if (hostile.Body.Armor.HasArmor)
+                    hostile.Body.Armor.RemoveItem(false);
+                Rulebook.Trigger(new RuleDealDamage(caster, hostile,
+                    new DamageBundle(new DirectDamage(
+                        new DiceFormula(0, DiceType.D6), hostile.MaxHP + 100)))
+                {
+                    DisablePrecisionDamage = true,
+                    IgnoreDamageReduction = true
+                });
+                typeof(Kingmaker.Controllers.Units.UnitLifeController)
+                    .GetMethod("TickOnUnit", BindingFlags.Instance |
+                        BindingFlags.Public | BindingFlags.NonPublic)
+                    .Invoke(new Kingmaker.Controllers.Units.UnitLifeController(),
+                        new object[] { hostile });
+                bool preyDead = hostile.Descriptor.State.IsDead;
+                if (liveHold != null) liveHold.OnNewRound();
+                bool released = stirge.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleInitiator>() == null &&
+                    hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>() == null &&
+                    !stirge.Descriptor.HasFact(hold) &&
+                    !hostile.Descriptor.HasFact(grappled);
+                bool noDrain = hostile.Descriptor.Stats.Constitution.Damage ==
+                    constitutionBefore;
+                detail = "attached=" + attached + ";preyDead=" + preyDead +
+                    ";damage=" + hitPointsBefore + "->" +
+                    hostile.Descriptor.Damage + ";hpLeft=" + hostile.HPLeft +
+                    ";cheater=" + cheater + "->" +
+                    hostile.Blueprint.IsCheater +
+                    ";released=" + released + ";noDrain=" + noDrain;
+                return attached && preyDead && released && noDrain;
+            }
+            finally
+            {
+                ReleaseExpandedSummoningHold(stirge, hostile, hold);
+                hostile.Descriptor.Damage = hitPointsBefore;
+                hostile.Descriptor.Stats.Constitution.Damage = constitutionBefore;
+                typeof(Kingmaker.Controllers.Units.UnitLifeController)
+                    .GetMethod("TickOnUnit", BindingFlags.Instance |
+                        BindingFlags.Public | BindingFlags.NonPublic)
+                    .Invoke(new Kingmaker.Controllers.Units.UnitLifeController(),
+                        new object[] { hostile });
+                hostile.Blueprint.IsCheater = cheater;
             }
         }
 

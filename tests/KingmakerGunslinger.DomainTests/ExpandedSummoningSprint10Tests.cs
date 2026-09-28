@@ -178,8 +178,9 @@ namespace KingmakerGunslinger.DomainTests
             string builder = File.ReadAllText(Path.Combine(
                 Environment.CurrentDirectory, "src", "KingmakerGunslinger",
                 "Blueprints", "ExpandedSummoningNaturalBuilder.cs"));
-            Assertions.True(builder.Contains("StirgeTouchSymbol), StirgeTouchSymbol, 0, DiceType.Zero"),
-                "The carrier cannot inflict ordinary weapon damage during attachment.");
+            Assertions.True(builder.Contains("ConfigureWeapon(nativeTouch, stirgeTouch, StirgeTouchSymbol, 0,") &&
+                builder.Contains("stirgeTouch.IsNonRemovable = true"),
+                "The proboscis has zero ordinary damage and cannot become dropped equipment on expiry.");
             Assertions.True(builder.Contains("17451c1327c571641a1345bd31155209") &&
                 builder.Contains("nativeTouch.AttackType != AttackType.Touch") &&
                 builder.Contains("ConfigureWeapon(nativeTouch"),
@@ -187,6 +188,9 @@ namespace KingmakerGunslinger.DomainTests
             string runtime = File.ReadAllText(Path.Combine(
                 Environment.CurrentDirectory, "src", "KingmakerGunslinger",
                 "RuntimeTesting", "RuntimeTestRunner.cs"));
+            string special = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "Summoning", "ExpandedSummoningSpecialCombatComponents.cs"));
             Assertions.True(runtime.Contains("expanded-summoning-stirge-native-touch-attack") &&
                 runtime.Contains("roll.AttackType == AttackType.Touch") &&
                 runtime.Contains("ordinaryAc > touchAc && roll.TargetAC == touchAc") &&
@@ -219,9 +223,17 @@ namespace KingmakerGunslinger.DomainTests
                 runtime.Contains("Game.Instance.EntityDestroyer.Tick();") &&
                 runtime.Contains("return attached && stirge.Destroyed && victimFree"),
                 "The guarded fixture must destroy an attached summon and verify its victim is free.");
-            string special = File.ReadAllText(Path.Combine(
-                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
-                "Summoning", "ExpandedSummoningSpecialCombatComponents.cs"));
+            Assertions.True(runtime.Contains("expanded-summoning-stirge-prey-death-release") &&
+                runtime.Contains("ExerciseExpandedSummoningStirgePreyDeath") &&
+                runtime.Contains("hostile.Descriptor.State.IsDead") &&
+                runtime.Contains("new Kingmaker.Controllers.Units.UnitLifeController()") &&
+                runtime.Contains("expanded-summoning-stirge-timed-expiry-release") &&
+                runtime.Contains("ExerciseExpandedSummoningStirgeExpiry") &&
+                runtime.Contains("marker.EndTime +") &&
+                runtime.Contains("stirge.Descriptor.Buffs.Tick()") &&
+                special.Contains(".SystemMechanics.SummonedUnitBuff) == null") &&
+                special.Contains("Detach(owner, target);"),
+                "The guarded fixture must drive native death and timed-marker expiry, and the holder must release after that marker expires.");
             string specialBuilder = File.ReadAllText(Path.Combine(
                 Environment.CurrentDirectory, "src", "KingmakerGunslinger",
                 "Blueprints", "ExpandedSummoningSpecialBuilder.cs"));
@@ -231,6 +243,7 @@ namespace KingmakerGunslinger.DomainTests
                 special.Contains("target.Ensure<UnitPartGrappleTarget>().Init") &&
                 specialBuilder.Contains("ConfigureStirgeAttachment(library, bySymbol)") &&
                 specialBuilder.Contains("9545a5550d89feb47a84edaeb4e63d0b") &&
+                specialBuilder.Contains("0f775c7d5d8b6494197e1ce937754482") &&
                 specialBuilder.Contains("UnitCondition.LoseDexterityToAC"),
                 "The hidden unit must own a direct-hit native link and bounded actual-Constitution drain.");
             Assertions.Equal(21,

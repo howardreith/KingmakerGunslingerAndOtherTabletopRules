@@ -729,3 +729,27 @@ DLL SHA-256
 `3AD45725DB43D2D4A7DDC3734858CEE8DC3977D7D93F5241D66A483DB6B78F41`.
 Prey death, actual timer expiry, active-attachment save/load, original visual
 and icon remain open. Stirge stays hidden.
+
+## Sprint 10: Stirge prey death and timed victim release, 2026-09-28
+
+Guarded disposable combat `20260928T0610511271269Z` passed native prey
+death after `RuleDealDamage` and `UnitLifeController.TickOnUnit`: the
+Stirge's next round callback removed both native grapple parts and buffs
+without another Constitution drain. A separate attached Stirge retained its
+hold just before the native `SummonedUnitBuff` deadline; at the deadline the
+marker expired, and the Stirge's next round callback freed the victim with
+zero additional drain. The paused fixture did not queue native summon
+destruction at that deadline; normal turn-based retirement is separately
+covered by the existing same-turn activation scenario. Native `Unlootable`
+on the hidden unit prevented its touch proboscis from dropping into scene
+loot, and exact scene/player cleanup passed. The preceding diagnostic runs
+`20260928T0454409737311Z`, `20260928T0508385338486Z`,
+`20260928T0523472208127Z` and `20260928T0539492717891Z` are excluded:
+they exposed the loot and paused-controller fixture gaps. Repository
+validation, 1,940 domain tests, clean Release and strict package validation
+passed. Package SHA-256 `1144FC0D4085227CD1B0AD29E553106652798A1F0A496768788E32109800DB58`;
+DLL SHA-256 `D3209E8F9F569E10527E56196D733027008B02959D1F12C2F22F6EF6F80D2348`.
+Restoration `20260928T0614436226623Z` returned the original 136-file
+installation exactly. Native disease cure timing, active-attachment
+save/load, original Stirge visual/icon, and Wasp visual contact remain open;
+both creatures stay hidden.
