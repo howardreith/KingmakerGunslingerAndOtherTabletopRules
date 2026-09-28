@@ -127,9 +127,9 @@ namespace KingmakerGunslinger.DomainTests
                 value.Symbol == "KMG.Summoning.Natural.WaspSting1d8" &&
                 value.PlannedType == "BlueprintItemWeapon"),
                 "Wasp sting has its own append-only blueprint identity.");
-            Assertions.Equal(0,
+            Assertions.Equal(48,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "The qualified Wasp and Stirge placements are both published.");
+                "Only the Sprint 11 ungulate placements remain suppressed.");
         }
 
         internal static void StirgeRegisteredAtAllNinePublishedNatureTiers()
@@ -255,9 +255,9 @@ namespace KingmakerGunslinger.DomainTests
                 specialBuilder.Contains("0f775c7d5d8b6494197e1ce937754482") &&
                 specialBuilder.Contains("UnitCondition.LoseDexterityToAC"),
                 "The hidden unit must own a direct-hit native link and bounded actual-Constitution drain.");
-            Assertions.Equal(0,
+            Assertions.Equal(48,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "Stirge's nine placements are published.");
+                "Stirge is published while the Sprint 11 ungulates remain suppressed.");
         }
 
         internal static void GiantWaspPoisonTracksConstitutionAndTabletopExposure()
@@ -338,9 +338,9 @@ namespace KingmakerGunslinger.DomainTests
                 review.Contains("finally") &&
                 review.Contains("renderer.enabled = true"),
                 "The isolated Wasp frame must restore every temporarily hidden auxiliary renderer.");
-            Assertions.Equal(0,
+            Assertions.Equal(48,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "The review scenario remains bounded after publication.");
+                "The review scenario remains bounded after Sprint 11 registration.");
         }
 
         internal static void WaspQuantityCoveragePublishesAllLegalVariants()
