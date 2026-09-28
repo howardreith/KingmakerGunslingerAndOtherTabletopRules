@@ -10,7 +10,7 @@ namespace KingmakerGunslinger.DomainTests
     internal static class ExpandedSummoningSprint10Tests
     {
         internal const int AppendedLedgerIdentities = 29;
-        internal const int StirgeAppendedLedgerIdentities = 11;
+        internal const int StirgeAppendedLedgerIdentities = 13;
 
         internal static void StirgeAttachRulesBoundDrainAndDetachment()
         {
@@ -166,7 +166,7 @@ namespace KingmakerGunslinger.DomainTests
                 Environment.CurrentDirectory, "src", "KingmakerGunslinger",
                 "Blueprints", "ExpandedSummoningNaturalBuilder.cs"));
             Assertions.True(builder.Contains("StirgeTouchSymbol), StirgeTouchSymbol, 0, DiceType.Zero"),
-                "The carrier cannot inflict ordinary weapon damage while attach is unfinished.");
+                "The carrier cannot inflict ordinary weapon damage during attachment.");
             Assertions.True(builder.Contains("17451c1327c571641a1345bd31155209") &&
                 builder.Contains("nativeTouch.AttackType != AttackType.Touch") &&
                 builder.Contains("ConfigureWeapon(nativeTouch"),
@@ -179,6 +179,27 @@ namespace KingmakerGunslinger.DomainTests
                 runtime.Contains("ordinaryAc > touchAc && roll.TargetAC == touchAc") &&
                 runtime.Contains("roll.IsHit && damageAfter == damageBefore"),
                 "The guarded combat fixture must demand a real zero-HP touch hit against armored AC controls.");
+            Assertions.True(runtime.Contains("expanded-summoning-stirge-native-attachment") &&
+                runtime.Contains("SummonHoldComponent.HeldTarget(stirge)") &&
+                runtime.Contains("ReleaseExpandedSummoningHold(stirge, hostile, hold)"),
+                "The guarded fixture must inspect and release both ends of the Stirge's native link.");
+            Assertions.True(runtime.Contains("expanded-summoning-stirge-first-blood-drain") &&
+                runtime.Contains("liveHold.OnNewRound()") &&
+                runtime.Contains("liveHold.CumulativeDamage == 1 && stillAttached"),
+                "The first live round must measure actual Constitution loss and persistent attachment.");
+            string special = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "Summoning", "ExpandedSummoningSpecialCombatComponents.cs"));
+            string specialBuilder = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "Blueprints", "ExpandedSummoningSpecialBuilder.cs"));
+            Assertions.True(special.Contains("StirgeAttachPolicy.MayAttach") &&
+                special.Contains("StirgeAttachPolicy.EndTurn") &&
+                special.Contains("new RuleDealStatDamage(owner, target,") &&
+                special.Contains("target.Ensure<UnitPartGrappleTarget>().Init") &&
+                specialBuilder.Contains("ConfigureStirgeAttachment(bySymbol)") &&
+                specialBuilder.Contains("UnitCondition.LoseDexterityToAC"),
+                "The hidden unit must own a direct-hit native link and bounded actual-Constitution drain.");
             Assertions.Equal(21,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
                 "All 12 Wasp and nine Stirge placements remain private.");

@@ -6,7 +6,7 @@
     "authorizedSprints": [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21],
     "completedSprints": [9],
     "currentSprint": 10,
-    "currentSubItem": "Giant Wasp mechanics remain hidden pending credible visual contact. Stirge's hidden native melee-touch carrier passed live inventory and direct native hit against touch AC with zero HP damage; attachment lifecycle, original visual, icon and publication remain open.",
+    "currentSubItem": "Giant Wasp remains hidden pending credible visual contact. Hidden Stirge passed live touch hit, reciprocal native attachment, first actual one-Constitution drain and explicit cleanup; four-point detach, interruption, disease, original visual, icon and publication remain open.",
     "lastGuardedRuntimePass": "20260928T0125544188038Z-observe-expanded-summoning-inventory",
     "lastGuardedRestoration": "20260928T0129418890710Z-observe-expanded-summoning-inventory.json",
     "giantWaspPublished": false,

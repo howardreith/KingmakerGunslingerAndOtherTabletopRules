@@ -643,3 +643,19 @@ while the ordinary melee control was AC 14, and dealt zero HP damage.
 validation, 1,940 domain tests, clean Release and strict package checks
 passed. Restoration `20260928T0146022240699Z` returned the exact original
 installed tree. Attachment and drain remain the next mechanical work.
+
+## Sprint 10: hidden Stirge attach and first drain, 2026-09-28
+
+I added two append-only Stirge buff identities and a dedicated native
+attachment lifecycle. Its zero-HP touch hit establishes the native holder
+and target parts directly, without the grab maneuver used by other summons.
+The holder loses Dexterity to AC; each attached round requests one
+Constitution damage and advances the four-point meal by actual damage.
+The guarded fixture `20260928T0232376506044Z` passed the touch, link,
+first drain and explicit cleanup assertions. It observed actual Constitution
+damage 0 to 1, meal 1 and the link still active. The earlier attach-only
+run `20260928T0220384662621Z` also passed. Both restored the installed
+tree exactly; final restoration was `20260928T0236160392850Z`. Repository
+validation, 1,940 domain tests, clean Release and strict package checks
+passed. Next are full meal detachment, escapes, interruption cleanup and
+disease, followed by Stirge and Wasp visual publication gates.
