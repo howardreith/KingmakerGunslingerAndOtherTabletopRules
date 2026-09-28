@@ -8,9 +8,11 @@
   published with an original choice icon. Its flying model, 1d8 sting,
   DC 18 Dexterity poison, two-mode target contact, movement, cleanup,
   quantity casts, 825-root player path and live menu passed guarded checks.
-- Stirge is registered but its nine choices remain hidden while attack-pose,
-  disease-timing and icon/UI review continues. The remaining Phase 2
-  creatures are still in progress. No
+- Stirge's nine Nature's Ally choices are published with an original icon.
+  Its native touch, attachment, four-point blood drain, detach and cleanup,
+  two-mode visual contact, 834-root player path and live menu passed guarded
+  checks. Native Filth Fever cure timing remains unmeasured; the remaining
+  Phase 2 creatures are still in progress. No
   public version, release or permanent installation is authorized.
 
 ## 0.0.140-favored-class-integration

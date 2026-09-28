@@ -28,13 +28,13 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(437, ExpandedSummoningBaselineInventory
                 .VisibleChoices(SummonFamily.Monster),
                 "Baseline SM visible choice count changed.");
-            Assertions.Equal(417, ExpandedSummoningBaselineInventory
+            Assertions.Equal(426, ExpandedSummoningBaselineInventory
                 .VisibleChoices(SummonFamily.NaturesAlly),
                 "Baseline SNA visible choice count changed.");
         }
 
         /// <summary>
-        /// The 854 headline figure (693 at the Sprint 0 freeze) must decompose
+        /// The 863 headline figure (693 at the Sprint 0 freeze) must decompose
         /// exactly, so a sprint cannot quietly move a choice between the
         /// generated and native pools.
         /// </summary>
@@ -42,11 +42,11 @@ namespace KingmakerGunslinger.DomainTests
         {
             int generated = SummonVisibilityCatalog.PublishedLogicalPlacementCount;
             int wrappers = SummonNativeExpansionCatalog.All.Count;
-            Assertions.Equal(825, generated, "Published generated placements changed.");
+            Assertions.Equal(834, generated, "Published generated placements changed.");
             Assertions.Equal(29, wrappers, "Native wrapper count changed.");
-            Assertions.Equal(854, generated + wrappers,
+            Assertions.Equal(863, generated + wrappers,
                 "The combined visible choice total changed.");
-            Assertions.Equal(854,
+            Assertions.Equal(863,
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.Monster) +
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.NaturesAlly),
                 "Per-parent census disagrees with the catalog totals.");
@@ -85,16 +85,13 @@ namespace KingmakerGunslinger.DomainTests
         }
 
         /// <summary>
-        /// Sprint 10 publishes Wasp while Stirge remains hidden for visual review.
+        /// Sprint 10 publishes Wasp and Stirge after their qualification.
         /// </summary>
         internal static void HiddenAndProxyCreaturesAreRecorded()
         {
-            Assertions.Equal(1,
+            Assertions.Equal(0,
                 ExpandedSummoningBaselineInventory.RegisteredButHiddenCreatures.Count,
                 "The registered-but-hidden creature set changed.");
-            Assertions.Equal("stirge",
-                ExpandedSummoningBaselineInventory.RegisteredButHiddenCreatures[0],
-                "The Stirge remains hidden.");
             Assertions.True(ExpandedSummoningBaselineInventory.ProxyVisualCreatures
                 .Contains("pteranodon<Roc"),
                 "Pteranodon must still be recorded as a Roc-policy visual proxy.");
@@ -145,7 +142,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(first.StartsWith(
                 "{\n  \"schema\": \"" + ExpandedSummoningBaselineInventory.BaselineSchema + "\""),
                 "The census must declare its schema first so evidence stays comparable.");
-            Assertions.True(first.Contains("\"totalVisibleChoices\": 854"),
+            Assertions.True(first.Contains("\"totalVisibleChoices\": 863"),
                 "The emitted census lost the frozen visible-choice total.");
         }
     }
