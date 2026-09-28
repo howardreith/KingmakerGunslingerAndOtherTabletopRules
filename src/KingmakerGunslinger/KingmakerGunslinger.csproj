@@ -126,6 +126,7 @@
     <Compile Include="Summoning\ExpandedSummoningViewScalePatch.cs" />
     <Compile Include="Summoning\EagleAttackLungePolicy.cs" />
     <Compile Include="Summoning\EagleAttackVisualLunge.cs" />
+    <Compile Include="Summoning\GiantWaspVisualSting.cs" />
     <Compile Include="Summoning\ExpandedSummoningPteranodonViewPatch.cs" />
     <Compile Include="Summoning\ExpandedSummoningVisualVariantPatch.cs" />
     <Compile Include="Summoning\ExpandedSummoningVariantMenuPatch.cs" />

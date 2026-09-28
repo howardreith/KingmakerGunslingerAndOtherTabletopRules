@@ -224,6 +224,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "expanded-summoning-creature-review-cleanup-" + key, "0",
                         live.ToString(), live == 0,
                         "reviewed summon dismissed and destroyed before the next cast"));
+                    if (key == "giant-wasp")
+                    {
+                        int ownedMeshes = Resources.FindObjectsOfTypeAll<Mesh>()
+                            .Count(value => value != null &&
+                                (value.name == ExpandedSummoningPteranodonViewPatch
+                                    .GiantWaspVisualName || value.name ==
+                                    "KMG_GiantWaspStingProbe"));
+                        int ownedMaterials = Resources
+                            .FindObjectsOfTypeAll<Material>()
+                            .Count(value => value != null && value.name != null &&
+                                value.name.StartsWith(
+                                    ExpandedSummoningPteranodonViewPatch
+                                        .GiantWaspVisualName,
+                                    StringComparison.Ordinal));
+                        _creatureReviewAssertions.Add(Assertion(
+                            "expanded-summoning-giant-wasp-owned-view-resources",
+                            "0 private visual/probe meshes and 0 private materials after view destruction",
+                            "meshes=" + ownedMeshes + ";materials=" +
+                                ownedMaterials,
+                            ownedMeshes == 0 && ownedMaterials == 0,
+                            "live Unity resource enumeration after the one reviewed view is destroyed; cached source mesh has a distinct name"));
+                    }
                     WriteLifecycleStage("creature-review-" + key + "-complete");
                     _creatureReviewUnits = Array.Empty<UnitEntityData>();
                     _creatureReviewIndex++;

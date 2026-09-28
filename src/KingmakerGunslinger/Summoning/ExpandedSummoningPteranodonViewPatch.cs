@@ -101,6 +101,7 @@ namespace KingmakerGunslinger.Summoning
             internal Material Material;
             internal Mesh Mesh;
             internal EagleAttackVisualLunge EagleLunge;
+            internal GiantWaspVisualSting WaspSting;
         }
 
         private static readonly ConditionalWeakTable<UnitEntityView, Attachment>
@@ -300,6 +301,12 @@ namespace KingmakerGunslinger.Summoning
                         .AddComponent<EagleAttackVisualLunge>();
                     attachment.EagleLunge.Configure(view, donor);
                 }
+                if (attachment.VisualKey == "giant-wasp")
+                {
+                    attachment.WaspSting = view.gameObject
+                        .AddComponent<GiantWaspVisualSting>();
+                    attachment.WaspSting.Configure(view, donor);
+                }
                 return "visual:attached;bones=" + bones.Length +
                     ";vertices=" + mesh.vertexCount + ";albedo=" +
                     albedo.width + "x" + albedo.height + ";rendererEnabled=" +
@@ -312,6 +319,11 @@ namespace KingmakerGunslinger.Summoning
                 {
                     UnityEngine.Object.Destroy(attachment.EagleLunge);
                     attachment.EagleLunge = null;
+                }
+                if (attachment.WaspSting != null)
+                {
+                    UnityEngine.Object.Destroy(attachment.WaspSting);
+                    attachment.WaspSting = null;
                 }
                 if (swapped) Revert(attachment);
                 if (material != null) UnityEngine.Object.Destroy(material);
@@ -404,6 +416,44 @@ namespace KingmakerGunslinger.Summoning
             if (controller != null) ReinitMaterials(controller);
         }
 
+        /// <summary>Release only the Wasp's per-view clones on view death.
+        /// The cached source mesh/painting and the native donor stay owned by
+        /// their existing systems; no accepted Phase 1 view is changed here.</summary>
+        internal static void ReleaseWaspView(UnitEntityView view)
+        {
+            Attachment attachment;
+            if (view == null || !Applied.TryGetValue(view, out attachment) ||
+                attachment.VisualKey != "giant-wasp") return;
+            if (attachment.WaspSting != null)
+                attachment.WaspSting.enabled = false;
+            var materials = new HashSet<Material>();
+            if (attachment.Material != null)
+                materials.Add(attachment.Material);
+            if (attachment.Donor != null)
+            {
+                foreach (Material material in attachment.Donor.sharedMaterials)
+                    if (material != null && material.name.StartsWith(
+                        GiantWaspVisualName, StringComparison.Ordinal))
+                        materials.Add(material);
+                StandardMaterialController controller = attachment.Donor
+                    .GetComponentInParent<StandardMaterialController>();
+                IList<Material> driven = ControllerMaterials(controller);
+                if (driven != null)
+                    foreach (Material material in driven)
+                        if (material != null && material.name.StartsWith(
+                            GiantWaspVisualName, StringComparison.Ordinal))
+                            materials.Add(material);
+                Revert(attachment);
+            }
+            foreach (Material material in materials)
+                if (material != null) UnityEngine.Object.DestroyImmediate(material);
+            if (attachment.Mesh != null)
+                UnityEngine.Object.DestroyImmediate(attachment.Mesh);
+            attachment.Material = null;
+            attachment.Mesh = null;
+            Applied.Remove(view);
+        }
+
         private const string DissolveProperty = "_Dissolve";
 
         /// <summary>
@@ -475,6 +525,20 @@ namespace KingmakerGunslinger.Summoning
             if (method == null) return false;
             method.Invoke(controller, null);
             return true;
+        }
+    }
+
+
+    [HarmonyPatch(typeof(UnitEntityView), "OnDestroy")]
+    internal static class ExpandedSummoningWaspVisualTeardownPatch
+    {
+        private static void Prefix(UnitEntityView __instance)
+        {
+            try { ExpandedSummoningPteranodonViewPatch.ReleaseWaspView(__instance); }
+            catch (Exception)
+            {
+                // Resource release must never interrupt native view teardown.
+            }
         }
     }
 }

@@ -382,6 +382,21 @@ Source commit `9f011014` and guarded inventory
 exact live-tree restoration. Source rules:
 [Paizo Giant Wasp](https://legacy.aonprd.com/bestiary/wasp.html).
 
+The original Wasp now uses a sword-length Tail-weighted stinger and a
+view-local, native-weapon-event pose. The guarded open-floor turn-based run
+`20260928T0751193161358Z` placed its baked stinger at the hostile on both
+native hits (0/0 m); RTWP `20260928T0754382265441Z` recorded 0/0.191 m.
+The 0.25 m contact gate passed in both modes. The earlier shorter-stinger
+diagnostics `20260928T0738095891433Z` and `20260928T0741288985771Z`
+failed that gate at 0.418 and 0.775 m respectively and are excluded from
+qualification. The guarded creature review `20260928T0817537337846Z`
+passed 12.334 m native travel, connected doorway crossing, retained painted
+renderer, full unit cleanup and zero private Wasp meshes/materials after
+view destruction. Normal party-camera renders read as a striped flying
+wasp; overhead impact frames still carry native effects that obscure the
+needle. The Wasp remains hidden pending its own icon, publication checks
+and the complete Sprint 10 review. HumanReview: NOT_PERFORMED_NONBLOCKING.
+
 ## Phase 2 Sprint 10 provisional Stirge row
 
 Stirge: SNA I with nine legal quantity placements through SNA IX. The

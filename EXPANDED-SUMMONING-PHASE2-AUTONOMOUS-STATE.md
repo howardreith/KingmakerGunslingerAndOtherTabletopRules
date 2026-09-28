@@ -14,7 +14,7 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
   `2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a`, the merged PR #24 Favored
   Class integration. The owner packet's expected `2943a02d` is its ancestor.
 - Latest pushed branch head before this checkpoint:
-  `9ec774d718d2a87ca2be97b134727a5e04b267aa`.
+  `6c1d7425bb76a65e57a8df818d65a755d13f582c`.
   Branch head at intake: `2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a`;
   first pushed intake checkpoint: `359e346ecb6a094552f096869ecb9c81a2d291bf`.
 - Sprint 9 Eagle and Dire Bat passed the internal technical gate. The 14
@@ -25,7 +25,10 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
   room-opening travel, visual lifecycle, save/load/expiry, module-disabled
   safety, donor controls and exact installation restoration are qualified.
   Sprint 10 is in progress. Giant Wasp is registered at SM IV and SNA IV,
-  and its sting-delivered poison has a guarded mechanical PASS. All twelve
+  and its sting-delivered poison, native two-mode attack cadence, baked
+  stinger contact (0/0 m turn-based; 0/0.191 m RTWP), doorway travel,
+  rendered lifecycle and zero-owned-resource teardown have guarded PASS
+  evidence. Its original icon and publication checks remain open; all twelve
   logical placements remain suppressed. Stirge is registered at SNA I-IX
   with a hidden Tiny unit and zero-damage touch carrier; all nine placements
   remain suppressed. Neither creature is published.

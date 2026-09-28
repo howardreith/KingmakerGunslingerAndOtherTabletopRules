@@ -474,6 +474,24 @@ namespace KingmakerGunslinger.DomainTests
                 view.Contains("donor.sharedMaterials = new[] { material }") &&
                 view.Contains("Revert(attachment)"),
                 "Wasp must share the validated per-instance swap and rollback.");
+            string stingPose = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Summoning",
+                "GiantWaspVisualSting.cs"));
+            Assertions.True(view.Contains("AddComponent<GiantWaspVisualSting>()") &&
+                view.Contains("attachment.WaspSting.Configure(view, donor)") &&
+                view.Contains("Destroy(attachment.WaspSting)") &&
+                view.Contains("ReleaseWaspView(UnitEntityView view)") &&
+                view.Contains("DestroyImmediate(attachment.Mesh)") &&
+                stingPose.Contains("MaximumApproachMeters = 0.25f") &&
+                stingPose.Contains("owner.Blueprint.name != ExpandedSummoningPteranodonViewPatch") &&
+                stingPose.Contains("RestoreNative();") &&
+                stingPose.Contains("typeof(RuleAttackWithWeapon), \"OnTrigger\"") &&
+                stingPose.Contains("KMG_Summoning_Natural_WaspSting1d8") &&
+                stingPose.Contains("pose.enabled = false") &&
+                stingPose.Contains("Destroy(_baked)") &&
+                stingPose.Contains("_gapAfter = Vector3.Distance") &&
+                stingPose.Contains("_bakedGapAfter = Vector3.Distance"),
+                "The Wasp's native strike must drive a bounded instance-only Tail pose and restore it on teardown.");
             string loader = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "Assets", "PteranodonAssetRuntime.cs"));
             Assertions.True(loader.Contains(
