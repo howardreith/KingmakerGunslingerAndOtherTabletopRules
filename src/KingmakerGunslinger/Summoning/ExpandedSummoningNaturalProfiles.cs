@@ -69,7 +69,7 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Values.Length != 36 || Values.Select(value => value.Key)
+            if (Values.Length != 40 || Values.Select(value => value.Key)
                     .Distinct(StringComparer.Ordinal).Count() != Values.Length)
                 throw new InvalidOperationException(
                     "The natural reconstruction catalog is incomplete or duplicated.");
@@ -323,7 +323,27 @@ namespace KingmakerGunslinger.Summoning
                 P("stirge", "Stirge", "MagicalBeast", 1, "Tiny",
                     3, 19, 10, 1, 12, 6, 40, 0, "StirgeTouch",
                     Array.Empty<string>(), A("Airborne", "WeaponFinesse"),
-                    "The 40-foot fly speed uses airborne navigation; 10-foot ground speed is omitted because Kingmaker exposes one movement speed. Its native melee-touch carrier has zero base dice; the touch hit, attachment lifecycle, blood drain and visual contact passed guarded runtime checks.")
+                    "The 40-foot fly speed uses airborne navigation; 10-foot ground speed is omitted because Kingmaker exposes one movement speed. Its native melee-touch carrier has zero base dice; the touch hit, attachment lifecycle, blood drain and visual contact passed guarded runtime checks."),
+                P("aurochs", "Aurochs", "Animal", 3, "Large",
+                    23, 10, 17, 2, 11, 4, 40, 4, "Gore1d8",
+                    Array.Empty<string>(), A("ReducedReach", "TripDefenseFourLegs",
+                        "SkillFocusPerception"),
+                    "Registered but hidden in Sprint 11: trample and stampede are not installed yet; Endurance is omitted pending an exact summon-safe feat identity. The Horse donor supplies only the temporary movement and view rig."),
+                P("bison", "Bison", "Animal", 5, "Large",
+                    27, 10, 19, 2, 11, 4, 40, 8, "Gore2d6",
+                    Array.Empty<string>(), A("ReducedReach", "TripDefenseFourLegs",
+                        "PowerAttack"),
+                    "Registered but hidden in Sprint 11: trample and stampede are not installed yet; Endurance and Improved Bull Rush await exact summon-safe identities. The Horse donor supplies only the temporary movement and view rig."),
+                P("rhinoceros", "Rhinoceros", "Animal", 5, "Large",
+                    22, 10, 19, 2, 13, 5, 40, 7, "Gore2d6",
+                    Array.Empty<string>(), A("ReducedReach", "TripDefenseFourLegs",
+                        "GreatFortitude", "SkillFocusPerception"),
+                    "Registered but hidden in Sprint 11: the summon-local powerful charge is not attached yet; Endurance awaits an exact summon-safe identity. The Mastodon donor supplies only the temporary movement and view rig."),
+                P("woolly-rhinoceros", "Woolly Rhinoceros", "Animal", 8,
+                    "Large", 28, 10, 21, 2, 13, 3, 30, 10, "Gore2d8",
+                    Array.Empty<string>(), A("ReducedReach", "TripDefenseFourLegs",
+                        "GreatFortitude", "SkillFocusPerception"),
+                    "Registered but hidden in Sprint 11: trample and summon-local powerful charge are not attached yet; Diehard and Endurance await exact summon-safe identities. The Mastodon donor supplies only the temporary movement and view rig.")
             };
         }
 

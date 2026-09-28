@@ -998,3 +998,23 @@ DLL SHA-256
 Wrapper restoration `20260928T1642382480272Z` verified the original
 136-file tree exactly. This is component behavior only; no new Rhino is
 registered, and no trample or visual contract is qualified.
+
+## Sprint 11: four hidden ungulate registrations, 2026-09-28
+
+Registered Aurochs, Bison, Rhinoceros and Woolly Rhinoceros at their
+authorized SM/SNA III, IV, IV and V tiers. Their 100 append-only identities
+create 48 hidden placements; the published menu remains at 834. Four exact
+natural profiles and temporary Horse/Mastodon donor bindings are installed.
+Repository validation, 1,945 domain tests, clean Release and strict package
+validation passed. Package SHA-256:
+`c71315aa2af8e7dd3189d0bc87853667180fe54890d74bfc283409492709d628`;
+DLL SHA-256:
+`a6534ffa0227eeb95010ac3015d879a8243b7c2ab2d9e927978dccbd63c20552`.
+An initial guarded inventory timed out at 180 seconds and is excluded even
+though its late game result was PASS; exact restoration passed. The 420-second
+retry `20260928T1724419577973Z` passed cleanly: 87 unit identities,
+882 executable roots, 834 published parents, 18 exact menu equations and
+zero prohibited references or shared donor components. The wrapper restored
+the original 136-file tree exactly at `20260928T1728545901562Z`.
+Next: attach scoped charge to the hidden Rhinos, live-qualify their ordinary
+and charged gore, then implement trample and original ungulate views.

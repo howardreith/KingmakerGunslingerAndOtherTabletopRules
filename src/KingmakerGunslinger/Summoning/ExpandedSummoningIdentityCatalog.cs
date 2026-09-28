@@ -20,9 +20,9 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class ExpandedSummoningIdentityCatalog
     {
-        internal const int UnitCount = 83;
-        internal const int LogicalAbilityCount = 834;
-        internal const int TemplatedPlacementCount = 205;
+        internal const int UnitCount = 87;
+        internal const int LogicalAbilityCount = 882;
+        internal const int TemplatedPlacementCount = 229;
         internal const int TemplateExecutionAbilityCount = TemplatedPlacementCount * 2;
         internal const int TemplateBuffCount = 8;
         internal const int SpecialIdentityCount = 146;
