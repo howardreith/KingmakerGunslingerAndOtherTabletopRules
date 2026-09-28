@@ -11,10 +11,12 @@ namespace KingmakerGunslinger.Summoning
     internal static class SummonVisibilityCatalog
     {
         private static readonly HashSet<string> SuppressedCreatureKeys =
-            new HashSet<string>(StringComparer.Ordinal) { };
+            new HashSet<string>(StringComparer.Ordinal) {
+                "aurochs", "bison", "rhinoceros", "woolly-rhinoceros"
+            };
 
-        internal const int RegisteredLogicalPlacementCount = 834;
-        internal const int SuppressedLogicalPlacementCount = 0;
+        internal const int RegisteredLogicalPlacementCount = 882;
+        internal const int SuppressedLogicalPlacementCount = 48;
         internal const int PublishedLogicalPlacementCount =
             RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount;
 

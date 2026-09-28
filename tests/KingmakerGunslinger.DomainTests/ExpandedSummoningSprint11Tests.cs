@@ -1,11 +1,59 @@
 using System;
 using System.IO;
+using System.Linq;
 using KingmakerGunslinger.Summoning;
 
 namespace KingmakerGunslinger.DomainTests
 {
     internal static class ExpandedSummoningSprint11Tests
     {
+        internal const int HiddenUngulateIdentityCount = 100;
+
+        internal static void FourUngulatesRegisterAtPrintedTiersButRemainHidden()
+        {
+            var expected = new[] {
+                new { Key = "aurochs", Tier = 3, Hd = 3, Strength = 23,
+                    Speed = 40, Armor = 4, Weapon = "Gore1d8" },
+                new { Key = "bison", Tier = 4, Hd = 5, Strength = 27,
+                    Speed = 40, Armor = 8, Weapon = "Gore2d6" },
+                new { Key = "rhinoceros", Tier = 4, Hd = 5, Strength = 22,
+                    Speed = 40, Armor = 7, Weapon = "Gore2d6" },
+                new { Key = "woolly-rhinoceros", Tier = 5, Hd = 8,
+                    Strength = 28, Speed = 30, Armor = 10, Weapon = "Gore2d8" }
+            };
+            var all = ExpandedSummoningCatalog
+                .GenerateVariants(SummonFamily.Monster).Concat(
+                    ExpandedSummoningCatalog.GenerateVariants(
+                        SummonFamily.NaturesAlly)).ToArray();
+            foreach (var value in expected)
+            {
+                SummonCreatureSpec creature = ExpandedSummoningCatalog.All
+                    .Single(item => item.Key == value.Key);
+                NaturalSummonProfile profile = ExpandedSummoningNaturalProfiles
+                    .For(value.Key);
+                Assertions.True(creature.MonsterTier == value.Tier &&
+                    creature.NaturesAllyTier == value.Tier &&
+                    creature.MonsterTemplated && profile.HitDieClass == "Animal" &&
+                    profile.HitDice == value.Hd && profile.Size == "Large" &&
+                    profile.Strength == value.Strength &&
+                    profile.SpeedFeet == value.Speed &&
+                    profile.NaturalArmor == value.Armor &&
+                    profile.PrimaryWeapon == value.Weapon &&
+                    profile.Facts.Contains("ReducedReach"),
+                    "The hidden " + value.Key + " has its own printed animal profile.");
+                var variants = all.Where(item => item.Creature.Key == value.Key)
+                    .ToArray();
+                int perFamily = 10 - value.Tier;
+                Assertions.True(variants.Length == perFamily * 2 &&
+                    variants.All(item => !SummonVisibilityCatalog.IsPublished(item)),
+                    "Every placement of " + value.Key +
+                    " remains registered but hidden before qualification.");
+            }
+            Assertions.True(all.Length == 882 &&
+                all.Count(SummonVisibilityCatalog.IsPublished) == 834,
+                "The 48 new placements must not change the accepted menu.");
+        }
+
         internal static void UngulateDonorSurveyRecordsNativeMechanicGraphs()
         {
             string source = File.ReadAllText(Path.Combine(

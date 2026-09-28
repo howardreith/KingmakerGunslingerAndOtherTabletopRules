@@ -26,11 +26,11 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Creatures.Length != 83) throw new InvalidOperationException("Expanded Summoning unique creature count must be 83.");
+            if (Creatures.Length != 87) throw new InvalidOperationException("Expanded Summoning unique creature count must be 87.");
             if (Creatures.Select(v => v.Key).Distinct(StringComparer.Ordinal).Count() != Creatures.Length)
                 throw new InvalidOperationException("Duplicate creature key.");
-            ValidateFamily(SummonFamily.Monster, 75, 420);
-            ValidateFamily(SummonFamily.NaturesAlly, 73, 414);
+            ValidateFamily(SummonFamily.Monster, 79, 444);
+            ValidateFamily(SummonFamily.NaturesAlly, 77, 438);
         }
 
         private static void ValidateFamily(SummonFamily family, int roster, int placements)
@@ -58,7 +58,11 @@ namespace KingmakerGunslinger.Summoning
                 C("elder-air-elemental","Elder Air Elemental",8,false,8), C("elder-earth-elemental","Elder Earth Elemental",8,false,8), C("elder-fire-elemental","Elder Fire Elemental",8,false,8), C("elder-water-elemental","Elder Water Elemental",8,false,8), C("purple-worm","Purple Worm",null,false,8),
                 C("ghaele-azata","Ghaele Azata",9,false,null), C("pixie","Pixie",null,false,9,"Pixie / Nixie / Nymph"),
                 C("giant-wasp","Giant Wasp",4,true,4),
-                C("stirge","Stirge",null,false,1)
+                C("stirge","Stirge",null,false,1),
+                C("aurochs","Aurochs",3,true,3,"Horse"),
+                C("bison","Bison",4,true,4,"Horse"),
+                C("rhinoceros","Rhinoceros",4,true,4,"Mastodon"),
+                C("woolly-rhinoceros","Woolly Rhinoceros",5,true,5,"Mastodon")
             };
         }
 

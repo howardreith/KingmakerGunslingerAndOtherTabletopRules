@@ -69,11 +69,11 @@ namespace KingmakerGunslinger.DomainTests
         /// </summary>
         internal static void RepresentationIsTheUnionOfBothCatalogs()
         {
-            Assertions.Equal(83, ExpandedSummoningCatalog.All.Count,
+            Assertions.Equal(87, ExpandedSummoningCatalog.All.Count,
                 "Project-owned identities must be preserved.");
-            Assertions.Equal(94,
+            Assertions.Equal(98,
                 ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count,
-                "Represented creatures must be 83 project-owned plus 11 native wrappers.");
+                "Represented creatures must be 87 project-owned plus 11 native wrappers.");
             Assertions.Equal(94,
                 ExpandedSummoningCoveragePolicy.PublishedSomewhere.Count,
                 "All represented creatures are published after Stirge qualification.");
@@ -84,8 +84,8 @@ namespace KingmakerGunslinger.DomainTests
             int notRepresented = ExpandedSummoningIdealRosterCatalog.All.Count(
                 value => ExpandedSummoningCoveragePolicy.Provenance(value.Key) ==
                     SummonUnitProvenance.None);
-            Assertions.Equal(51, notRepresented,
-                "51 ideal-roster creatures are not represented in the summon roster yet.");
+            Assertions.Equal(47, notRepresented,
+                "47 ideal-roster creatures are not represented in the summon roster yet.");
             Assertions.Equal(145,
                 ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count + notRepresented,
                 "Represented plus unrepresented must account for the whole roster.");

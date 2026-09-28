@@ -473,9 +473,9 @@ of the publication profile, so saved investments always resolve. The exact
 ordered list is enforced by `tools/validate_favored_class140.py` and
 `FavoredClassIdentityCatalog`.
 
-Expanded Summoning Phase 2 Sprint 10 appends 29 Giant Wasp identities after
-the accepted 0.0.140 ledger: 2503 stable identifiers: 2501 active and 2 reserved.
-Existing GUIDs are unchanged, and all new Wasp placements are
-registered but withheld from menus until their signature mechanics pass. The
-last three identities are a dedicated poison feature, saved venom buff,
-and owned Giant Wasp unit type.
+Expanded Summoning Phase 2 preserves every accepted 0.0.140 ledger GUID,
+appends the Dire Bat, Giant Wasp and Stirge identities, then appends 100
+Sprint 11 ungulate unit and placement identities: 2603 stable identifiers: 2601 active and 2 reserved.
+The Wasp and Stirge choices are now published;
+all 48 Aurochs, Bison, Rhinoceros and Woolly Rhinoceros placements remain
+registered but hidden until their mechanics and visual contracts pass.

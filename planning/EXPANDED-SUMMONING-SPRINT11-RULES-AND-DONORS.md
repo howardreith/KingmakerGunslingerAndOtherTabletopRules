@@ -159,3 +159,36 @@ verified the original 136-file tree before and after SHA-256
 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
 Next: register unpublished Rhino and Woolly Rhino, confirm their own ordinary
 and charged gore, and prove real attacks in both combat modes before release.
+
+## Four-unit hidden registration and live inventory
+
+Aurochs, Bison, Rhinoceros and Woolly Rhinoceros now have append-only unit,
+ability and template identities: 100 new manifest entries. All 48 new logical
+placements are registered but suppressed. The total is 87 project units,
+882 registered logical placements and the unchanged 834 published placements.
+Each unit has its own printed racial hit dice, size, abilities, natural armor,
+speed and gore weapon; Horse/Mastodon views are temporary hidden donors.
+Charge, trample, stampede and original 3D visuals remain uninstalled, so none
+of these choices is ready for publication.
+
+Repository validation, all 1,945 domain tests, a clean exact-reference
+Release build and strict package checks passed. The candidate package SHA-256
+is `c71315aa2af8e7dd3189d0bc87853667180fe54890d74bfc283409492709d628`;
+DLL SHA-256 is
+`a6534ffa0227eeb95010ac3015d879a8243b7c2ab2d9e927978dccbd63c20552`.
+The first guarded inventory request `20260928T1715167922950Z` is excluded:
+the game produced an all-PASS result after 235 seconds, but orchestration
+timed out at 180 seconds and recorded `PASS-WITH-TEARDOWN-FAULT`. Its wrapper
+restored the original installation exactly at `20260928T1719410127955Z`.
+The safe retry increased the request window to 420 seconds. Guarded Steam
+inventory `20260928T1724419577973Z` then passed cleanly: 87/87 units,
+1,395/1,395 ability identities, 882/882 registered executable contracts,
+834/834 published parent placements, 18 exact menu equations, zero
+prohibited references, zero donor-component sharing, zero inherited spells
+or starting inventory. The wrapper reported `launcherOutcome=Clean` and
+`outcome=PASS`. Restoration
+`20260928T1728545901562Z-observe-expanded-summoning-inventory.json`
+verified the pre/post original 136-file tree SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`;
+no Kingmaker process remained. This proves hidden registration and menu
+isolation, not the new species' combat damage or visual fidelity.

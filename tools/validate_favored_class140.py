@@ -277,7 +277,15 @@ def validate(root: Path) -> None:
     stirge_hash = hashlib.sha256(json.dumps(stirge_pinned,
         separators=(",", ":")).encode()).hexdigest()
     stirge_attachment = entries[2501:2503]
-    if len(entries) != 2503 or len(wasp) != 26 or wasp_hash != (
+    ungulates = entries[2503:2603]
+    ungulate_tokens = (".Aurochs", ".Bison", ".Rhinoceros",
+                       ".WoollyRhinoceros")
+    expected_ungulates = {
+        symbol: planned_type for symbol, planned_type in
+        baseline.validate_expanded_summoning_phase1.expanded_summoning_manifest.planned()
+        if any(token in symbol for token in ungulate_tokens)
+    }
+    if len(entries) != 2603 or len(wasp) != 26 or wasp_hash != (
             "8a9dac72a9e83675765d8fc850901f76976bf6191418c6cf7f1c4ff6af261ef3"):
         raise AssertionError("Expanded Summoning Phase 2 Wasp append drifted")
     if len(poison) != 2 or poison_hash != (
@@ -297,10 +305,15 @@ def validate(root: Path) -> None:
                 ("KMG.Summoning.Special.Stirge.Hold",
                  "13c3b690a91f4431b2b5044dec026e4f", "BlueprintBuff", "active")]:
         raise AssertionError("Expanded Summoning Stirge attachment identities drifted")
+    if len(ungulates) != 100 or len(expected_ungulates) != 100 or {
+            entry["symbol"]: entry["plannedType"] for entry in ungulates
+            } != expected_ungulates or any(entry["status"] != "active" or
+            entry["milestone"] != "Expanded Summoning" for entry in ungulates):
+        raise AssertionError("Expanded Summoning Sprint 11 hidden identity append drifted")
     baseline.AUTHORIZED_APPENDED_AFTER = APPENDED + (
         ("KMG.Summoning.Natural.DireBat.Blindsense", "5dcc039bc9674208a51e4babcd8a30ee"),
     ) + tuple((entry["symbol"], entry["guid"]) for entry in
-              wasp + poison + unit_type + stirge + stirge_attachment)
+              wasp + poison + unit_type + stirge + stirge_attachment + ungulates)
     # Chains through the 0.0.139 release, which hands these to its baseline.
     release139.VERSION = VERSION
     release139.INFORMATIONAL_VERSION = INFORMATIONAL_VERSION

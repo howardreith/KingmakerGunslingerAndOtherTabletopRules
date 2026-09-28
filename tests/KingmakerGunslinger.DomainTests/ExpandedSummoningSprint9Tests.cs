@@ -207,7 +207,11 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(14, bat.Length,
                 "Dire Bat retains seven placements in each summon family.");
             Assertions.True(all.Where(value => value.Creature.Key != "giant-wasp" &&
-                    value.Creature.Key != "stirge")
+                    value.Creature.Key != "stirge" &&
+                    value.Creature.Key != "aurochs" &&
+                    value.Creature.Key != "bison" &&
+                    value.Creature.Key != "rhinoceros" &&
+                    value.Creature.Key != "woolly-rhinoceros")
                     .All(SummonVisibilityCatalog.IsPublished),
                 "Every Sprint 9 placement remains published.");
             foreach (SummonFamily family in new[] {

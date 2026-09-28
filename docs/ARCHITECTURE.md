@@ -867,11 +867,12 @@ the ledger after the Expanded Summoning Phase 1 append, for
 2461 stable IDs: 2459 active and 2 reserved (2172 before the merge with 0.0.139). It never compiles
 against Favored Class or Call of the Wild and never executes host code.
 
-Expanded Summoning Phase 2 Sprint 10 appends 29 Giant Wasp identities after
-that accepted ledger: 2503 stable IDs: 2501 active and 2 reserved. The final
-three identities are the poison feature, its saved venom buff, and an owned
-inspectable Wasp unit type. All Wasp
-placements remain registered but suppressed until combat and visual review.
+Expanded Summoning Phase 2 preserves the accepted ledger prefix and appends
+the Dire Bat, Giant Wasp and Stirge identities, then 100 Sprint 11 ungulate
+unit and placement identities: 2603 stable IDs: 2601 active and 2 reserved.
+The Wasp and Stirge choices are published after their technical qualification;
+the four Sprint 11 ungulates are registered but all 48 placements remain
+suppressed until their mechanics and visual contracts pass.
 
 - **Pure policy** (`FavoredClass/`): `FavoredClassRankPolicy` (the host's
   full/partial alternation, N = fullRank + partialRank, with KMG-owned ceilings
