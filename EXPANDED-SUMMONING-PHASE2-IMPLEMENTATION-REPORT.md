@@ -466,3 +466,12 @@ Release and strict package checks passed; restoration was exact
 (`20260928T0307556510922Z`). The fixture does not prove the controller's
 actual tick scheduling. Death, dismissal, expiry, disease and visual gates
 remain open.
+
+The attached-summon teardown run `20260928T0332419433992Z` passed once the
+fixture advanced Kingmaker's queued entity destruction: the summon was
+destroyed, the victim was free, and no extra HP or Constitution damage was
+dealt. The earlier immediate check `20260928T0320014996249Z` failed before
+the destruction queue advanced and is excluded. Repository validation,
+1,940 domain cases, clean Release and strict package checks passed; exact
+restoration is `20260928T0336376497673Z`. Actual timer expiry, prey death,
+disease, persistence and visuals remain open.

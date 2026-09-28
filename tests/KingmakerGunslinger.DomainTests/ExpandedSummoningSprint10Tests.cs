@@ -196,6 +196,12 @@ namespace KingmakerGunslinger.DomainTests
                 runtime.Contains("SummonGrappleAreaSafeguard.Sweep(true,") &&
                 runtime.Contains("escapeAndTransition = reattachedForEscape && nativeEscape"),
                 "Victim escape and area leave must re-establish and release real native Stirge links.");
+            Assertions.True(runtime.Contains("expanded-summoning-stirge-dismissal-release") &&
+                runtime.Contains("ExerciseExpandedSummoningStirgeDismissal") &&
+                runtime.Contains("CleanupExpandedSummoningUnit(stirge);") &&
+                runtime.Contains("Game.Instance.EntityDestroyer.Tick();") &&
+                runtime.Contains("return attached && stirge.Destroyed && victimFree"),
+                "The guarded fixture must destroy an attached summon and verify its victim is free.");
             string special = File.ReadAllText(Path.Combine(
                 Environment.CurrentDirectory, "src", "KingmakerGunslinger",
                 "Summoning", "ExpandedSummoningSpecialCombatComponents.cs"));

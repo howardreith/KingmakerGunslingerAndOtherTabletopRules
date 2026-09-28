@@ -344,6 +344,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal string StirgeFourPointDetachDetail;
             internal bool StirgeEscapeAndTransition;
             internal string StirgeEscapeAndTransitionDetail;
+            internal bool StirgeDismissal;
+            internal string StirgeDismissalDetail;
             internal bool HostileAbilityTarget;
             internal int AdditionalCasts;
             internal readonly List<string> Diagnostics = new List<string>();
@@ -17535,6 +17537,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     mechanics == null ? "not-run" : mechanics.StirgeEscapeAndTransitionDetail,
                     mechanics != null && mechanics.StirgeEscapeAndTransition,
                     "UnitHelper.TryBreakFree, the native target-part removal and SummonGrappleAreaSafeguard.Sweep"),
+                Assertion("expanded-summoning-stirge-dismissal-release",
+                    "destroying an attached disposable summon leaves its former victim free, without an extra blood-drain tick",
+                    mechanics == null ? "not-run" : mechanics.StirgeDismissalDetail,
+                    mechanics != null && mechanics.StirgeDismissal,
+                    "summoned-unit marker removal and actual UnitEntityData.Destroy lifecycle"),
                 Assertion("expanded-summoning-disposable-cleanup",
                     "exact party and global-unit snapshots restored", observed,
                     cleaned, "per-cast UnitEntityData.Dispose and final exact snapshots"),
@@ -18074,6 +18081,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         out result.StirgeFourPointDetachDetail,
                         out result.StirgeEscapeAndTransition,
                         out result.StirgeEscapeAndTransitionDetail);
+                ResetExpandedSummoningMechanicalHostile(hostile, blueprints);
+                result.StirgeDismissal =
+                    ExerciseExpandedSummoningStirgeDismissal(blueprints,
+                        caster, hostile, created, result,
+                        out result.StirgeDismissalDetail);
 
                 result.RepresentativeCombat = animalAttack && proxyAttack &&
                     elementalAttack && stalkerAttack && shadowAttack &&
@@ -18101,6 +18113,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     result.StirgeFourPointDetachDetail + "]");
                 result.Diagnostics.Add("stirgeInterrupt[" +
                     result.StirgeEscapeAndTransitionDetail + "]");
+                result.Diagnostics.Add("stirgeDismiss[" +
+                    result.StirgeDismissalDetail + "]");
                 result.Diagnostics.Add("cyclops[granted=" + flashGranted +
                     ";resource=" + flashBefore + "->" + flashAfter + ";armed=" +
                     flashArmed + ";armedNatural1=" + flashArmedDetail +
@@ -19109,6 +19123,62 @@ namespace KingmakerGunslinger.RuntimeTesting
                 hostile.Descriptor.Stats.Constitution.Damage =
                     constitutionDamageBefore;
                 hostile.Descriptor.Damage = damageBefore;
+            }
+        }
+
+        /// <summary>Destroy one attached, disposable Stirge through the same
+        /// summoned-unit marker and unit teardown path used by dismissal.
+        /// The target must immediately lose its native held state.</summary>
+        private static bool ExerciseExpandedSummoningStirgeDismissal(
+            BlueprintScriptableObject[] blueprints, UnitEntityData caster,
+            UnitEntityData hostile, List<UnitEntityData> created,
+            ExpandedSummoningMechanicalEvidence evidence, out string detail)
+        {
+            BlueprintBuff hold = blueprints.OfType<BlueprintBuff>().Single(value =>
+                value.name == "KMG_Summoning_Special_Stirge_Hold");
+            BlueprintBuff grappled = blueprints.OfType<BlueprintBuff>().Single(
+                value => value.name == "KMG_Summoning_Special_Grapple_Grappled");
+            UnitEntityData stirge = CastExpandedSummoningCombatUnit(blueprints,
+                caster, SummonFamily.NaturesAlly, "stirge", 1,
+                created, evidence);
+            int constitutionBefore = hostile.Descriptor.Stats.Constitution.Damage;
+            int hitPointsBefore = hostile.Descriptor.Damage;
+            detail = "not-run";
+            try
+            {
+                RemoveExpandedSummoningAppearanceBuffs(stirge);
+                stirge.Descriptor.Stats.BaseAttackBonus.BaseValue = 100;
+                UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                Rulebook.Trigger(new RuleAttackWithWeapon(stirge, hostile,
+                    stirge.Body.PrimaryHand.MaybeWeapon, 0));
+                bool attached = ReferenceEquals(
+                    SummonHoldComponent.HeldTarget(stirge), hostile) &&
+                    stirge.Descriptor.HasFact(hold) &&
+                    hostile.Descriptor.HasFact(grappled);
+                CleanupExpandedSummoningUnit(stirge);
+                // UnitEntityData.Destroy queues its fact teardown. Advance
+                // the same destroyer the guarded fixture drains at its end.
+                Game.Instance.EntityDestroyer.Tick();
+                bool victimFree = hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>() == null &&
+                    !hostile.Descriptor.HasFact(grappled) &&
+                    !hostile.Descriptor.State.HasCondition(UnitCondition.CantMove) &&
+                    hostile.Descriptor.Stats.Constitution.Damage ==
+                        constitutionBefore &&
+                    hostile.Descriptor.Damage == hitPointsBefore;
+                detail = "attached=" + attached + ";summonDestroyed=" +
+                    stirge.Destroyed + ";victimFree=" + victimFree +
+                    ";constitutionDamage=" + constitutionBefore + "->" +
+                    hostile.Descriptor.Stats.Constitution.Damage;
+                return attached && stirge.Destroyed && victimFree;
+            }
+            finally
+            {
+                if (!stirge.Destroyed)
+                {
+                    CleanupExpandedSummoningUnit(stirge);
+                    Game.Instance.EntityDestroyer.Tick();
+                }
+                if (stirge.Destroyed) created.Remove(stirge);
             }
         }
 
