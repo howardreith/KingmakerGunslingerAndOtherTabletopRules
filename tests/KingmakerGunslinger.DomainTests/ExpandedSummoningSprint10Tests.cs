@@ -187,6 +187,10 @@ namespace KingmakerGunslinger.DomainTests
                 runtime.Contains("liveHold.OnNewRound()") &&
                 runtime.Contains("liveHold.CumulativeDamage == 1 && stillAttached"),
                 "The first live round must measure actual Constitution loss and persistent attachment.");
+            Assertions.True(runtime.Contains("expanded-summoning-stirge-four-point-detach") &&
+                runtime.Contains("for (int round = 2; round <= 4") &&
+                runtime.Contains("fourPointDetach = mealExact && automaticCleanup"),
+                "The guarded fixture must require four actual drains and automatic native release.");
             string special = File.ReadAllText(Path.Combine(
                 Environment.CurrentDirectory, "src", "KingmakerGunslinger",
                 "Summoning", "ExpandedSummoningSpecialCombatComponents.cs"));
