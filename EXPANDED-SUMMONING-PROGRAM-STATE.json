@@ -6,10 +6,10 @@
     "authorizedSprints": [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21],
     "completedSprints": [9],
     "currentSprint": 10,
-    "currentSubItem": "Giant Wasp passed two-mode native sting contact, doorway travel, rendered lifecycle and private resource teardown. Hidden Stirge passed touch, attachment, four-point detach, break-free, area and summon teardown, native disease exposure, prey death, timed victim release, safe active-attachment save/load reset, original view attachment, doorway travel and zero private visual resources after teardown. Original icon sources exist for both creatures; icon export and actual UI use, native Stirge disease cure timing, and publication remain open. Both creatures are suppressed.",
-    "lastGuardedRuntimePass": "20260928T0919388380835Z-working-save-expanded-summoning-creature-review",
-    "lastGuardedRestoration": "20260928T0923459655430Z-working-save-expanded-summoning-creature-review.json",
-    "giantWaspPublished": false,
+    "currentSubItem": "Giant Wasp's 12 SM/SNA choices are published with one original 93rd icon and 26 exact consumers. Guarded player path passed 825/825 published logical roots; live inventory passed all 50 assertions including Wasp inspectable-type image and zero prohibited references. Hidden Stirge passed touch, attachment, four-point detach, break-free, area and summon teardown, native disease exposure, prey death, timed victim release, safe active-attachment save/load reset, original view attachment, doorway travel and zero private visual resources. Stirge attack-pose visual review, disease cure timing, icon export/actual UI use, and its nine-choice publication remain open.",
+    "lastGuardedRuntimePass": "20260928T1044279887208Z-observe-expanded-summoning-inventory",
+    "lastGuardedRestoration": "20260928T1048297337580Z-observe-expanded-summoning-inventory.json",
+    "giantWaspPublished": true,
     "stirgeRegistered": true,
     "stirgeOriginalVisualQualified": true,
     "sprint10OriginalIconSourcesPainted": true,
@@ -299,7 +299,7 @@
       "detail": "Supplied by the owner and read. The Pteranodon passage confirms the shipped profile rather than changing it: ten-foot reach valued for attacks of opportunity, and a single main bite on which everything stacks (2d6 plus modifiers). The guide also positions multiple Pteranodons as the best single-target aerial attacker at their tier. This informs Sprint 2's acceptance emphasis on correct bite impact timing and location at Large reach; it changes no accepted statistic."
     }
   ],
-  "nextConcreteAction": "Integrate the tested Stirge attach/drain policy with a dedicated session-scoped runtime lifecycle and hidden unit, then qualify touch hit, escape, drain, cleanup and save/load. Giant Wasp remains hidden pending a revised visual rig and clear contact evidence. Continue authorized Sprints 11-21 and prepare three stacked draft PRs; no merge, release, permanent deployment, or Sprint 22.",
+  "nextConcreteAction": "Keep Giant Wasp published. Finish Stirge's live attach-pose visual and native disease cure timing check, export its original icon, qualify the exact UI consumers and publish its nine Nature's Ally choices. Then close Sprint 10 internal reviews and continue authorized Sprints 11-21 across the three stacked PRs; no merge, release, permanent deployment, or Sprint 22.",
   "deploymentReconciliation": {
     "finding": "The first runs left this mission's 0.0.136 branch build installed over the pre-run 0.0.117 installation. The mission required restoration and did not authorize a permanent installation; a shared version string does not make a branch artifact an accepted release.",
     "ownershipVerified": "The live DLL hash matched this mission's exact build byte for byte, so the tree was unambiguously mission-owned.",

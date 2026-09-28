@@ -836,3 +836,30 @@ DLL SHA-256 is
 `f58d91df927b245abb2205847a61817eb85d11ca1fdfdfe56362478fcc721016`;
 restoration is `20260928T0923459655430Z`. Disease cure timing, icon
 export/actual UI use, and Sprint 10 publication remain open.
+
+## Sprint 10: Giant Wasp icon and published player path, 2026-09-28
+
+The original Giant Wasp painting was exported at 128 px through the
+manifest-backed pipeline; all 92 earlier icon exports remained byte-identical.
+Its 26 consumers include the inspectable unit type. Twelve Wasp placements
+were published, leaving only Stirge's nine suppressed placements. The
+repository wrapper, 1,941 domain cases, clean Release, strict package,
+icon exporter and catalog validator passed.
+
+The guarded player-path result `20260928T0955440745921Z` passed 825/825
+published generated roots and 29/29 native wrappers. A mistakenly grouped
+inventory request was rejected before launch because the mod-load observer
+must not receive `-SaveName`; the working-save player path continued and
+passed. The first standalone inventory run then found two references in an
+audit allowlist written before the Stirge trait and native `Unlootable` fact
+were installed. A diagnostic rerun identified `Unlootable` exactly. I kept
+the sanitizer strict and added only the owned Stirge trait and installed
+`Unlootable` GUID to the observer's exact allowance. The final standalone
+inventory `20260928T1044279887208Z` passed 50/50 assertions, including
+zero prohibited references, 18 menu equations, no missing icons and the
+Wasp inspectable-type sprite. Package SHA-256
+`defbd7bbee93ba6dc5778ae5a0cd906738711b527146622a6187d6b4c93ac442`,
+DLL SHA-256
+`e3dcbe169858adc4875719bcb4700ff86c1b6527302b23a1dd26da637f986fc1`.
+Both successful game runs restored the original 136-file installation;
+the final restoration is `20260928T1048297337580Z`. Stirge stays hidden.
