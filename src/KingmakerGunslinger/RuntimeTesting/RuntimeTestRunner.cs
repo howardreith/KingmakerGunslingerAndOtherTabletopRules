@@ -3896,6 +3896,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                     : flying.Length == 0;
             }
 
+            if (!cleanupContinuation)
+            {
+                if (prepare)
+                    _expandedSummoningPersistenceStirgeValid =
+                        PrepareExpandedSummoningPersistentStirge(units,
+                            out _expandedSummoningPersistenceStirgeDetail);
+                else if (verifyCleanup)
+                    _expandedSummoningPersistenceStirgeValid =
+                        VerifyExpandedSummoningReloadedStirge(units,
+                            out _expandedSummoningPersistenceStirgeDetail);
+                else
+                {
+                    _expandedSummoningPersistenceStirgeValid = units.Length == 0;
+                    _expandedSummoningPersistenceStirgeDetail =
+                        "post-cleanup-units=" + units.Length;
+                }
+            }
+
             if (verifyCleanup)
             {
                 if (!_expandedSummoningPersistenceCleanupStarted)
@@ -3947,6 +3965,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _expandedSummoningPersistenceDurationValid &&
                 _expandedSummoningPersistenceControlValid &&
                 _expandedSummoningPersistenceCleanupValid &&
+                _expandedSummoningPersistenceStirgeValid &&
                 (prepare || verifyCleanup ?
                     _expandedSummoningPersistenceUnitCount ==
                         ExpandedSummoningPersistenceFixtureCount :
@@ -4016,6 +4035,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             // Sprint 9: the bird and bat visuals must reattach on load.
             new[] { "Monster", "eagle", "1" },
             new[] { "NaturesAlly", "dire-bat", "3" },
+            // Sprint 10: save while this Stirge is attached to the Pony.
+            new[] { "NaturesAlly", "stirge", "1" },
             new[] { "Monster", "small-air-elemental", "2" },
             new[] { "NaturesAlly", "wolf", "2" },
             // Sprint 3
@@ -4432,6 +4453,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _expandedSummoningPersistenceLinkDetail,
                     writes ? _expandedSummoningPersistenceLinkValid : true,
                     "the serialized link part on each holder, resolved against the reloaded body, and SummonHoldComponent.MaintainLink"),
+                Assertion("expanded-summoning-stirge-attached-save-load",
+                    prepare ? "one Stirge attached to a disposable summoned Pony at the save boundary" :
+                        verifyCleanup ? "after reload neither side retains a grapple part, hold buff or immobilizing condition" :
+                        "after cleanup neither summon remains",
+                    _expandedSummoningPersistenceStirgeDetail,
+                    _expandedSummoningPersistenceStirgeValid,
+                    "exact working-save write and fresh-load native grapple parts, buffs and conditions"),
                 Assertion("expanded-summoning-cyclops-flash-persistence",
                     prepare ? "the Cyclops's Flash of Insight spent and armed (an arming with no duration of its own) before the save" :
                         verifyCleanup ? "after the reload the resource is still spent, the ability unavailable and the arming present exactly once; the next attack's own d20 is the chosen 20 and the arming is gone; the attack after it rolls its own 1 and misses" :

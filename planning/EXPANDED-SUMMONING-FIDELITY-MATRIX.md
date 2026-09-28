@@ -399,7 +399,7 @@ disease chance uses one per-victim check on first actual drain; guarded
 native Fortitude save and applied exact `FilthFever` with retained DC 12,
 then rejected a
 repeat check and retained that result through another drain. Native cure
-timing, active-summon save/load safety, original visual and icon remain open.
+timing, original visual and icon remain open.
 Guarded `20260928T0610511271269Z` passed native prey death through
 `UnitLifeController` and Stirge release without another drain. It also
 passed exact timed-marker expiry while attached, followed by the Stirge's
@@ -407,6 +407,12 @@ next round callback releasing both sides. The paused fixture did not observe
 native destruction at that boundary; the existing turn-based summon-lifecycle
 scenario is the separate native retirement witness. Native `Unlootable`
 prevents the touch proboscis from becoming scene loot; exact cleanup passed.
+The guarded working-save trio `20260928T0629198538034Z` / `0633408624544Z`
+/ `0637555596273Z` saved an attached Stirge and Pony, then found both
+freshly loaded without grapple parts, hold buffs or immobilizing conditions;
+the cleanup save left zero fixture summons. This is a safe grapple reset on
+load, as allowed by the accepted engine limitation, not preservation of an
+active hold through reload.
 Guarded
 `20260928T0304163413890Z` passed the
 victim's native break-free rule with controller-equivalent target-part removal
