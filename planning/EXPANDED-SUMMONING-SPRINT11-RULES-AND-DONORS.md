@@ -125,3 +125,37 @@ Restoration `20260928T1606565388180Z-disposable-expanded-summoning-rules.json`
 verified the original mod tree before/after SHA-256
 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
 This qualifies only the native donor behavior, not new ungulate mechanics.
+
+## Summon-scoped powerful charge seam
+
+`UngulatePowerfulCharge` now applies configured extra gore dice and damage
+only when the exact owning unit and gore weapon make the first native marked
+charge attack, never on follow-up or opportunity attacks. The Rhino profiles
+derive increments from their printed ordinary and powerful damage: two dice
+and +3 for Rhinoceros, two dice and +5 for Woolly Rhinoceros. This component
+is implemented but is not attached to a published or hidden new Rhino yet.
+
+The first guarded disposable check `20260928T1628286600311Z` failed its
+owned-charge assertion: an existing Dire Boar had ordinary `2d6+9`, but its
+first marked charge with the new component became `6d6+12`. That donor has an
+additional two charge dice through a still-unisolated existing game effect;
+it is unsafe as the component control and is excluded from qualification.
+All other 16 assertions passed. Its wrapper restored the original live mod
+tree exactly at `20260928T1632448318962Z`. The narrowed control uses the
+previously measured Mastodon and does not claim Rhino's baseline.
+
+Guarded Steam `20260928T1638254604120Z-disposable-expanded-summoning-rules`
+passed 17/17 assertions. The temporary project component changed Mastodon
+gore from `2d8+24` to `4d8+27` on the first charge; later, opportunity and
+post-marker attacks were all `2d8+24`. This proves the configured +2 dice
+and +3 damage without native component's +18 Strength scaling. Repository
+validation, all 1,945 domain tests, clean Release and strict package passed;
+tested package SHA-256
+`8e1d307aef89ea5910389392c53ff337e8029ce27411edb92bafb4acab683ad9`,
+DLL SHA-256
+`a0cd789b4ffaf790d5d5ce1e43eabc4c8889f784fe7cf760b5e5df9934fbb55a`.
+Restoration `20260928T1642382480272Z-disposable-expanded-summoning-rules.json`
+verified the original 136-file tree before and after SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+Next: register unpublished Rhino and Woolly Rhino, confirm their own ordinary
+and charged gore, and prove real attacks in both combat modes before release.

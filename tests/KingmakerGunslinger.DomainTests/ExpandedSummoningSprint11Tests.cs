@@ -45,12 +45,15 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(rhino.HitDice == 5 && rhino.Strength == 22 &&
                 rhino.GoreBonus == 9 && !rhino.HasTrample &&
                 rhino.ChargeDiceCount == 4 && rhino.ChargeDieSides == 6 &&
-                rhino.ChargeBonus == 12,
+                rhino.ChargeBonus == 12 && rhino.ChargeDiceIncrement == 2 &&
+                rhino.ChargeBonusIncrement == 3,
                 "Ordinary Rhinoceros has charge but no invented trample.");
             Assertions.True(woolly.HitDice == 8 && woolly.Strength == 28 &&
                 woolly.GoreDiceCount == 2 && woolly.GoreDieSides == 8 &&
                 woolly.GoreBonus == 13 && woolly.ChargeDiceCount == 4 &&
                 woolly.ChargeDieSides == 8 && woolly.ChargeBonus == 18 &&
+                woolly.ChargeDiceIncrement == 2 &&
+                woolly.ChargeBonusIncrement == 5 &&
                 woolly.TrampleDiceCount == 2 && woolly.TrampleBonus == 13 &&
                 woolly.TrampleDc == 23 && !woolly.Stampede,
                 "Woolly Rhinoceros has its distinct charge and trample profile.");
