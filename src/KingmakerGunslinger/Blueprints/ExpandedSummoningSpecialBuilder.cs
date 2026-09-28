@@ -227,6 +227,11 @@ namespace KingmakerGunslinger.Blueprints
         private const string CheetahBrainSymbol = "KMG.Summoning.Special.Cheetah.Brain";
         private const string CheetahCombatTraitsSymbol =
             "KMG.Summoning.Special.Cheetah.CombatTraits";
+        private const string StirgeUnitSymbol = "KMG.Summoning.Unit.Stirge";
+        private const string StirgeTouchSymbol = "KMG.Summoning.Natural.StirgeTouch";
+        private const string StirgeCombatTraitsSymbol =
+            "KMG.Summoning.Special.Stirge.CombatTraits";
+        private const string StirgeHoldSymbol = "KMG.Summoning.Special.Stirge.Hold";
         internal const string SmallClawGuid = "800092a2b9a743b48ae8aeeb5d243dcc";
         internal const string MediumClawGuid = "118fdd03e569a66459ab01a20af6811a";
         internal const string Claw2d4Guid = "8afc47748d00b3e4a8aff2787d9ee350";
@@ -425,6 +430,7 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureDocileHooves(bySymbol, PonyUnitSymbol, PonyCombatTraitsSymbol, "Pony");
             ConfigureDocileHooves(bySymbol, HorseUnitSymbol, HorseCombatTraitsSymbol, "Horse");
             ConfigureGrapplers(library, bySymbol);
+            ConfigureStirgeAttachment(bySymbol);
             ConfigureMephitVariants(library, bySymbol);
         }
 
@@ -1539,6 +1545,55 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureCheetahSprint(bySymbol);
             ExpandedSummoningVisualVariantPatch.Register(new SummonVisualVariant(
                 InternalName(CheetahUnitSymbol), ExpandedSummoningSpecialProfiles.CheetahCoat));
+        }
+
+        private static void ConfigureStirgeAttachment(
+            IDictionary<string, BlueprintScriptableObject> bySymbol)
+        {
+            BlueprintUnit unit = Require<BlueprintUnit>(bySymbol, StirgeUnitSymbol);
+            BlueprintItemWeapon touch = Require<BlueprintItemWeapon>(bySymbol,
+                StirgeTouchSymbol);
+            BlueprintBuff traits = Require<BlueprintBuff>(bySymbol,
+                StirgeCombatTraitsSymbol);
+            BlueprintBuff hold = Require<BlueprintBuff>(bySymbol,
+                StirgeHoldSymbol);
+            BlueprintBuff grappled = Require<BlueprintBuff>(bySymbol,
+                GrappleGrappledSymbol);
+            if (unit.Body == null || !ReferenceEquals(unit.Body.PrimaryHand, touch))
+                throw new InvalidOperationException(
+                    "Stirge attachment requires the exact touch carrier.");
+            var attach = ScriptableObject.CreateInstance<StirgeAttachComponent>();
+            attach.TouchWeapon = touch;
+            attach.HoldBuff = hold;
+            attach.GrappledBuff = grappled;
+            traits.name = InternalName(StirgeCombatTraitsSymbol);
+            traits.Stacking = StackingType.Replace;
+            traits.IsClassFeature = true;
+            traits.ComponentsArray = new BlueprintComponent[] { attach };
+            BlueprintUnitFactAccess.Resolve().Configure(traits,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Stirge.CombatTraits.Name",
+                    "Stirge Attach"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Stirge.CombatTraits.Description",
+                    "A touch hit attaches to one living foe without a second grapple check."),
+                null);
+            var loseDexterity = ScriptableObject.CreateInstance<AddCondition>();
+            loseDexterity.Condition = UnitCondition.LoseDexterityToAC;
+            hold.name = InternalName(StirgeHoldSymbol);
+            hold.Stacking = StackingType.Replace;
+            hold.IsClassFeature = false;
+            hold.ComponentsArray = new BlueprintComponent[] { loseDexterity,
+                ScriptableObject.CreateInstance<StirgeHoldComponent>() };
+            BlueprintUnitFactAccess.Resolve().Configure(hold,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Stirge.Hold.Name", "Attached"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Stirge.Hold.Description",
+                    "Attached to prey: loses Dexterity to AC and drains one Constitution per round until four points are taken or the prey escapes."),
+                null);
+            unit.AddFacts = (unit.AddFacts ?? Array.Empty<BlueprintUnitFact>())
+                .Concat(new BlueprintUnitFact[] { traits }).ToArray();
         }
 
         /// <summary>

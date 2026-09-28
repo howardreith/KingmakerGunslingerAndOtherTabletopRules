@@ -20015,6 +20015,22 @@
       "status": "active",
       "milestone": "Expanded Summoning",
       "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Stirge.CombatTraits",
+      "guid": "a081012ee90f4f34a35ea3bf63c5402c",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Stirge.Hold",
+      "guid": "13c3b690a91f4431b2b5044dec026e4f",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
     }
   ]
 }

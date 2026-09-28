@@ -336,6 +336,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal string WaspVerminImmunityDetail;
             internal bool StirgeTouchAttack;
             internal string StirgeTouchAttackDetail;
+            internal bool StirgeAttachment;
+            internal string StirgeAttachmentDetail;
+            internal bool StirgeFirstDrain;
+            internal string StirgeFirstDrainDetail;
             internal bool HostileAbilityTarget;
             internal int AdditionalCasts;
             internal readonly List<string> Diagnostics = new List<string>();
@@ -17507,6 +17511,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     mechanics == null ? "not-run" : mechanics.StirgeTouchAttackDetail,
                     mechanics != null && mechanics.StirgeTouchAttack,
                     "native RuleCalculateAC controls and RuleAttackWithWeapon on a disposable hostile"),
+                Assertion("expanded-summoning-stirge-native-attachment",
+                    "the touch hit establishes reciprocal native grapple parts and its dedicated hold, then releases without a residual state",
+                    mechanics == null ? "not-run" : mechanics.StirgeAttachmentDetail,
+                    mechanics != null && mechanics.StirgeAttachment,
+                    "live Stirge attack event, UnitPartGrappleInitiator/Target and hold-buff lifecycle"),
+                Assertion("expanded-summoning-stirge-first-blood-drain",
+                    "the first attached round deals exactly one actual Constitution damage and retains the native link",
+                    mechanics == null ? "not-run" : mechanics.StirgeFirstDrainDetail,
+                    mechanics != null && mechanics.StirgeFirstDrain,
+                    "live StirgeHoldComponent round tick and target Constitution damage"),
                 Assertion("expanded-summoning-disposable-cleanup",
                     "exact party and global-unit snapshots restored", observed,
                     cleaned, "per-cast UnitEntityData.Dispose and final exact snapshots"),
@@ -18037,7 +18051,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 result.StirgeTouchAttack =
                     ExerciseExpandedSummoningStirgeTouchAttack(blueprints,
                         caster, hostile, created, result,
-                        out result.StirgeTouchAttackDetail);
+                        out result.StirgeTouchAttackDetail,
+                        out result.StirgeAttachment,
+                        out result.StirgeAttachmentDetail,
+                        out result.StirgeFirstDrain,
+                        out result.StirgeFirstDrainDetail);
 
                 result.RepresentativeCombat = animalAttack && proxyAttack &&
                     elementalAttack && stalkerAttack && shadowAttack &&
@@ -18057,6 +18075,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 result.Diagnostics.Add("waspPoison[" + waspPoisonDetail + "]");
                 result.Diagnostics.Add("stirgeTouch[" +
                     result.StirgeTouchAttackDetail + "]");
+                result.Diagnostics.Add("stirgeAttach[" +
+                    result.StirgeAttachmentDetail + "]");
+                result.Diagnostics.Add("stirgeDrain[" +
+                    result.StirgeFirstDrainDetail + "]");
                 result.Diagnostics.Add("cyclops[granted=" + flashGranted +
                     ";resource=" + flashBefore + "->" + flashAfter + ";armed=" +
                     flashArmed + ";armedNatural1=" + flashArmedDetail +
@@ -18884,14 +18906,26 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static bool ExerciseExpandedSummoningStirgeTouchAttack(
             BlueprintScriptableObject[] blueprints, UnitEntityData caster,
             UnitEntityData hostile, List<UnitEntityData> created,
-            ExpandedSummoningMechanicalEvidence evidence, out string detail)
+            ExpandedSummoningMechanicalEvidence evidence, out string detail,
+            out bool attachmentEstablished, out string attachmentDetail,
+            out bool firstDrain, out string drainDetail)
         {
+            detail = "not-run";
+            attachmentEstablished = false;
+            attachmentDetail = "not-run";
+            firstDrain = false;
+            drainDetail = "not-run";
+            BlueprintBuff hold = blueprints.OfType<BlueprintBuff>().Single(value =>
+                value.name == "KMG_Summoning_Special_Stirge_Hold");
+            BlueprintBuff grappled = blueprints.OfType<BlueprintBuff>().Single(
+                value => value.name == "KMG_Summoning_Special_Grapple_Grappled");
             UnitEntityData stirge = CastExpandedSummoningCombatUnit(blueprints,
                 caster, SummonFamily.NaturesAlly, "stirge", 1,
                 created, evidence);
             RemoveExpandedSummoningAppearanceBuffs(stirge);
             ItemEntityWeapon weapon = stirge.Body.PrimaryHand.MaybeWeapon;
             int damageBefore = hostile.Descriptor.Damage;
+            int constitutionDamageBefore = hostile.Descriptor.Stats.Constitution.Damage;
             int babBefore = stirge.Descriptor.Stats.BaseAttackBonus.BaseValue;
             try
             {
@@ -18912,6 +18946,36 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ";resolvedAc=" + (roll == null ? -1 : roll.TargetAC) +
                     ";hit=" + (roll != null && roll.IsHit) + ";hpDamage=" +
                     damageBefore + "->" + damageAfter;
+                bool reciprocal = ReferenceEquals(
+                    SummonHoldComponent.HeldTarget(stirge), hostile);
+                bool holderBuff = stirge.Descriptor.HasFact(hold);
+                bool targetBuff = hostile.Descriptor.HasFact(grappled);
+                bool losesDexterity = stirge.Descriptor.State.HasCondition(
+                    UnitCondition.LoseDexterityToAC);
+                attachmentEstablished = reciprocal && holderBuff &&
+                    targetBuff && losesDexterity;
+                attachmentDetail = "reciprocal=" + reciprocal +
+                    ";holderBuff=" + holderBuff + ";targetBuff=" +
+                    targetBuff + ";losesDexterity=" + losesDexterity;
+                StirgeHoldComponent liveHold = holderBuff ?
+                    ExpandedSummoningRuntimeComponent<StirgeHoldComponent>(
+                        stirge, hold) : null;
+                int constitutionBeforeTick =
+                    hostile.Descriptor.Stats.Constitution.Damage;
+                if (liveHold != null) liveHold.OnNewRound();
+                int constitutionAfterTick =
+                    hostile.Descriptor.Stats.Constitution.Damage;
+                bool stillAttached = ReferenceEquals(
+                    SummonHoldComponent.HeldTarget(stirge), hostile);
+                firstDrain = liveHold != null &&
+                    constitutionAfterTick - constitutionBeforeTick == 1 &&
+                    liveHold.CumulativeDamage == 1 && stillAttached;
+                drainDetail = "component=" + (liveHold != null) +
+                    ";constitutionDamage=" + constitutionBeforeTick + "->" +
+                    constitutionAfterTick + ";cumulative=" +
+                    (liveHold == null ? -1 : liveHold.CumulativeDamage) +
+                    ";stillAttached=" + stillAttached + ";difficultyScale=" +
+                    Game.Instance.Player.Difficulty.DamageToParty;
                 return weapon != null && weapon.Blueprint.name ==
                     "KMG_Summoning_Natural_StirgeTouch" &&
                     roll != null && roll.AttackType == AttackType.Touch &&
@@ -18920,7 +18984,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
+                ReleaseExpandedSummoningHold(stirge, hostile, hold);
+                bool clean = stirge.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleInitiator>() == null &&
+                    hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>() == null &&
+                    !stirge.Descriptor.HasFact(hold) &&
+                    !hostile.Descriptor.HasFact(grappled) &&
+                    !stirge.Descriptor.State.HasCondition(
+                        UnitCondition.LoseDexterityToAC);
+                attachmentEstablished = attachmentEstablished && clean;
+                attachmentDetail += ";releasedClean=" + clean;
                 stirge.Descriptor.Stats.BaseAttackBonus.BaseValue = babBefore;
+                hostile.Descriptor.Stats.Constitution.Damage =
+                    constitutionDamageBefore;
                 hostile.Descriptor.Damage = damageBefore;
             }
         }

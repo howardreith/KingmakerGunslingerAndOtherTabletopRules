@@ -276,7 +276,8 @@ def validate(root: Path) -> None:
                      for entry in stirge]
     stirge_hash = hashlib.sha256(json.dumps(stirge_pinned,
         separators=(",", ":")).encode()).hexdigest()
-    if len(entries) != 2501 or len(wasp) != 26 or wasp_hash != (
+    stirge_attachment = entries[2501:2503]
+    if len(entries) != 2503 or len(wasp) != 26 or wasp_hash != (
             "8a9dac72a9e83675765d8fc850901f76976bf6191418c6cf7f1c4ff6af261ef3"):
         raise AssertionError("Expanded Summoning Phase 2 Wasp append drifted")
     if len(poison) != 2 or poison_hash != (
@@ -289,10 +290,17 @@ def validate(root: Path) -> None:
     if len(stirge) != 11 or stirge_hash != (
             "b3ae7a67e47587ff55ae251f753a50f1c7d7cf5e676ddc82cd09f0bae2128339"):
         raise AssertionError("Expanded Summoning Phase 2 Stirge append drifted")
+    if [(entry["symbol"], entry["guid"], entry["plannedType"], entry["status"])
+            for entry in stirge_attachment] != [
+                ("KMG.Summoning.Special.Stirge.CombatTraits",
+                 "a081012ee90f4f34a35ea3bf63c5402c", "BlueprintBuff", "active"),
+                ("KMG.Summoning.Special.Stirge.Hold",
+                 "13c3b690a91f4431b2b5044dec026e4f", "BlueprintBuff", "active")]:
+        raise AssertionError("Expanded Summoning Stirge attachment identities drifted")
     baseline.AUTHORIZED_APPENDED_AFTER = APPENDED + (
         ("KMG.Summoning.Natural.DireBat.Blindsense", "5dcc039bc9674208a51e4babcd8a30ee"),
     ) + tuple((entry["symbol"], entry["guid"]) for entry in
-              wasp + poison + unit_type + stirge)
+              wasp + poison + unit_type + stirge + stirge_attachment)
     # Chains through the 0.0.139 release, which hands these to its baseline.
     release139.VERSION = VERSION
     release139.INFORMATIONAL_VERSION = INFORMATIONAL_VERSION

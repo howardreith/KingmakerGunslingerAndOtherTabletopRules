@@ -338,8 +338,10 @@ def planned():
         ("KMG.Summoning.Natural.GiantWasp.Venom", "BlueprintBuff"),
         ("KMG.Summoning.Natural.GiantWasp.UnitType", "BlueprintUnitType"),
         ("KMG.Summoning.Natural.StirgeTouch", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Special.Stirge.CombatTraits", "BlueprintBuff"),
+        ("KMG.Summoning.Special.Stirge.Hold", "BlueprintBuff"),
     ))
-    if len(rows) != 1513 or len({symbol for symbol, _ in rows}) != 1513:
+    if len(rows) != 1515 or len({symbol for symbol, _ in rows}) != 1515:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 

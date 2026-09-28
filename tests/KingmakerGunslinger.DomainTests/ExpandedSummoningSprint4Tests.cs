@@ -221,10 +221,12 @@ namespace KingmakerGunslinger.DomainTests
                 "IsGrabSizeAllowed", "IsSwallowSizeAllowed", "IsHeldSinceRoundStart" })
                 Assertions.True(components.Contains(token),
                     "Grapple lifecycle component contract is missing: " + token);
-            Assertions.False(components.Contains("Remove<UnitPartGrappleInitiator>()") &&
-                components.IndexOf("Remove<UnitPartGrappleInitiator>()", StringComparison.Ordinal) <
-                    components.IndexOf("class SummonGrappleAreaSafeguard", StringComparison.Ordinal),
-                "The hold buff never removes its own initiator part (re-entrant removal); only the safeguard does.");
+            string sharedHold = components.Substring(
+                components.IndexOf("class SummonHoldComponent", StringComparison.Ordinal),
+                components.IndexOf("class SummonMultiHoldComponent", StringComparison.Ordinal) -
+                    components.IndexOf("class SummonHoldComponent", StringComparison.Ordinal));
+            Assertions.False(sharedHold.Contains("Remove<UnitPartGrappleInitiator>()"),
+                "The shared hold buff never removes its own initiator part (re-entrant removal).");
             string builder = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
                 "src", "KingmakerGunslinger", "Blueprints",
                 "ExpandedSummoningSpecialBuilder.cs"));
