@@ -602,6 +602,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint11-native-ungulate-audit", ExpandedSummoningSprint11Tests.UngulateDonorSurveyRecordsNativeMechanicGraphs),
             Case("expanded-summoning.sprint11-ungulate-rules", ExpandedSummoningSprint11Tests.UngulateProfilesMatchPrintedRoles),
             Case("expanded-summoning.sprint11-trample-targets", ExpandedSummoningSprint11Tests.TrampleTargetsAndRoundsAreBounded),
+            Case("expanded-summoning.sprint11-hidden-ungulates", ExpandedSummoningSprint11Tests.FourUngulatesRegisterAtPrintedTiersButRemainHidden),
+            Case("expanded-summoning.sprint11-rhino-charge-facts", ExpandedSummoningSprint11Tests.HiddenRhinosOwnDistinctPowerfulChargeFacts),
             Case("expanded-summoning.sprint10-stirge-attach-policy", ExpandedSummoningSprint10Tests.StirgeAttachRulesBoundDrainAndDetachment),
             Case("expanded-summoning.sprint10-stirge-published-registration", ExpandedSummoningSprint10Tests.StirgeRegisteredAtAllNinePublishedNatureTiers),
             Case("expanded-summoning.sprint10-wasp-registration", ExpandedSummoningSprint10Tests.GiantWaspRegisteredUnderSuppressionAtExactTiers),

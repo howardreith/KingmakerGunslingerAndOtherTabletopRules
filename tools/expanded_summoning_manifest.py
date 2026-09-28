@@ -340,8 +340,10 @@ def planned():
         ("KMG.Summoning.Natural.StirgeTouch", "BlueprintItemWeapon"),
         ("KMG.Summoning.Special.Stirge.CombatTraits", "BlueprintBuff"),
         ("KMG.Summoning.Special.Stirge.Hold", "BlueprintBuff"),
+        ("KMG.Summoning.Special.Rhinoceros.PowerfulCharge", "BlueprintFeature"),
+        ("KMG.Summoning.Special.WoollyRhinoceros.PowerfulCharge", "BlueprintFeature"),
     ))
-    if len(rows) != 1615 or len({symbol for symbol, _ in rows}) != 1615:
+    if len(rows) != 1617 or len({symbol for symbol, _ in rows}) != 1617:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 

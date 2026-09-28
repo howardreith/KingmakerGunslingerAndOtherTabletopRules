@@ -192,3 +192,46 @@ verified the pre/post original 136-file tree SHA-256
 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`;
 no Kingmaker process remained. This proves hidden registration and menu
 isolation, not the new species' combat damage or visual fidelity.
+
+## Registered Rhino powerful charge damage
+
+Two append-only hidden feature identities attach `UngulatePowerfulCharge` to
+the exact Rhinoceros and Woolly Rhinoceros units and primary gore weapons.
+The initial guarded live check `20260928T1754133569009Z` failed one of 18
+assertions: ordinary Rhino gore was `2d6+9`, but the first marked charge was
+`6d6+12` rather than printed `4d6+12`. Woolly Rhino already passed
+`2d8+13` to `4d8+18`; later/opportunity/post-marker cases and exact cleanup
+passed. The original 136-file installation was restored at
+`20260928T1758359171925Z`. A reversible Mastodon-gore clone diagnostic
+`20260928T1820184232276Z` also failed: Rhino reached `8d6+12`; Bison was
+`2d6+14` both ordinarily and when charging, while Woolly remained correct.
+Its wrapper restored the original tree at `20260928T1824380823076Z`.
+The clone was not retained, and its uncommitted identity was removed.
+
+Installed `Assembly-CSharp` IL shows why: after a fact sets
+`RuleCalculateWeaponStats.WeaponDamageDiceOverride`, the native calculation
+scales that override a second time unless `DoNotScaleDamage` is set. The
+summon-owned component now sets that flag only for its exact first gore
+charge, using the printed final dice; ordinary, later and opportunity
+attacks remain on native handling. This diagnosis replaced the earlier
+working hypothesis that a native 2d6 weapon itself added charge dice.
+
+Guarded Steam `20260928T1840088844180Z-disposable-expanded-summoning-rules`
+passed 18/18 assertions on the final candidate. Rhinoceros ordinary/first/
+later/opportunity/post-marker were `2d6+9`, `4d6+12`, `2d6+9`, `2d6+9`,
+`2d6+9`. Woolly Rhinoceros measured `2d8+13`, `4d8+18`, `2d8+13`,
+`2d8+13`, `2d8+13`. Bison with its granted native Power Attack feat measured
+`2d6+14`; removing that feat only in the disposable fixture restored its
+printed `2d6+12`, and a native charge marker added no dice. Repository
+validation, all 1,947 domain tests, clean exact-reference Release, strict
+package, request-local cleanup and version 0.0.140 passed. Package SHA-256:
+`224796490e3200be7adb9039f7c1eb0f383c7cdc6a9a92ec24cbfd924414aa7b`;
+DLL SHA-256:
+`5157eb9b2d5beaa43af8461c97a84d9faf31a9bcc07298855bd4a59cdb08d526`.
+Restoration `20260928T1844262522767Z-disposable-expanded-summoning-rules.json`
+records `launcherOutcome=Clean`, `outcome=PASS`, no remaining Kingmaker
+process, and the identical pre/post original 136-file mod tree SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+The rule-stat calculations and owner-unit scope are qualified. Real
+turn-based/RTWP attack cadence, charge path/contact, trample, original views,
+quantity summons, and publication remain pending.
