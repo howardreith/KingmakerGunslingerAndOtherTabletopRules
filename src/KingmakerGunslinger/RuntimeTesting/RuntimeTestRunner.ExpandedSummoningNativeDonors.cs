@@ -43,7 +43,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "leopard", "cheetah", "bear", "monitor", "lizard", "spider",
             "pixie", "nixie", "mound", "giant", "wasp", "stirge",
             "mosquito", "fly", "beetle", "mantis", "insect",
-            "vargouille"
+            "vargouille", "aurochs", "bison", "rhinoceros", "rhino",
+            "woolly", "mastodon", "elephant", "buffalo", "bull"
         };
 
         private static readonly string[] NativeDonorFactTerms =
@@ -52,7 +53,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             "blindsense", "web", "pounce", "rake", "trip", "sprint", "flash",
             "insight", "breath", "poison", "naturalarmor", "plant", "regenerat",
             "fasthealing", "ferocity", "rockthrow", "rock", "blood",
-            "attach", "drain"
+            "attach", "drain", "trample", "powerfulcharge", "stampede"
         };
 
         private static readonly string[] NativeDonorAbilityTerms =
@@ -61,14 +62,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             "blur", "magicmissile", "windwall", "chillmetal", "heatmetal",
             "pyrotechnics", "gaseous", "softenearth", "gustofwind",
             "scorchingray", "swallow", "grapple", "grab", "flash", "sprint",
-            "blood", "attach", "drain"
+            "blood", "attach", "drain", "trample", "powerfulcharge",
+            "overrun"
         };
 
         private static readonly string[] NativeDonorBuffTerms =
         {
             "grapple", "grab", "swallow", "web", "entangle", "constrict",
             "sleep", "paralyz", "sprint", "flash", "insight", "pounce",
-            "blood", "attach", "drain", "disease", "filth", "blinding"
+            "blood", "attach", "drain", "disease", "filth", "blinding",
+            "trample", "powerfulcharge"
         };
 
         private static readonly string[] NativeDonorProjectileTerms =
@@ -416,7 +419,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             "BlurBuff", "StinkingCloudArea", "StinkingCloudBuff", "MagicMissile",
             "AcidArrow", "Glitterdust", "Blur", "MephitAirBlur",
             "MephitWaterStinkingCloud", "ScorchingRay", "PixieSleepArrowBuff",
-            "IrresistibleDance", "PixieDance", "FilthFever"
+            "IrresistibleDance", "PixieDance", "FilthFever",
+            "Trample", "TrampleAbility", "TrampleFeature", "PowerfulCharge",
+            "PowerfulChargeFeature", "MastodonTrample", "ElephantTrample",
+            "CR11_MastodonStandard", "MastodonSummoned", "ElephantSummoned",
+            "CR9_MastodonStandard", "MastodonSummon", "MammothTrample",
+            "FlyTrampleTest", "GreaterAtavismTrample", "OverrunAbility",
+            "OverrunNotTrampleAbility", "PowerfulChargeSharedStrengthBuff",
+            "PowerfulChargeSharedStrengthBuffToggleAbilityFeature"
         };
 
         private static JToken DescribeGraph(object value, int depth, HashSet<object> seen)
