@@ -9,6 +9,7 @@ using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Area;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.Blueprints.Items.Weapons;
+using Kingmaker.Blueprints.Root;
 using Kingmaker.Controllers.Units;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.EntitySystem.Stats;
@@ -748,6 +749,14 @@ namespace KingmakerGunslinger.Summoning
             UnitEntityData owner = Owner == null ? null : Owner.Unit;
             UnitEntityData target = SummonHoldComponent.HeldTarget(owner);
             if (owner == null) return;
+            // A timed marker can expire before the game's summon controller
+            // retires the unit. Never let that gap keep prey grappled.
+            if (owner.Descriptor.Buffs.GetBuff(BlueprintRoot.Instance
+                    .SystemMechanics.SummonedUnitBuff) == null)
+            {
+                Detach(owner, target);
+                return;
+            }
             if (target == null || target.Destroyed ||
                 target.Descriptor.State.IsDead)
             {

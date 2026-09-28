@@ -399,8 +399,15 @@ disease chance uses one per-victim check on first actual drain; guarded
 native Fortitude save and applied exact `FilthFever` with retained DC 12,
 then rejected a
 repeat check and retained that result through another drain. Native cure
-timing, prey death and actual timer-expiry cleanup, active-summon save/load
-safety, original visual and icon remain open. Guarded
+timing, active-summon save/load safety, original visual and icon remain open.
+Guarded `20260928T0610511271269Z` passed native prey death through
+`UnitLifeController` and Stirge release without another drain. It also
+passed exact timed-marker expiry while attached, followed by the Stirge's
+next round callback releasing both sides. The paused fixture did not observe
+native destruction at that boundary; the existing turn-based summon-lifecycle
+scenario is the separate native retirement witness. Native `Unlootable`
+prevents the touch proboscis from becoming scene loot; exact cleanup passed.
+Guarded
 `20260928T0304163413890Z` passed the
 victim's native break-free rule with controller-equivalent target-part removal
 and a separate area-leave safeguard sweep. Actual controller timing remains
