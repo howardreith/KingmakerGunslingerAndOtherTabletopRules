@@ -177,6 +177,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["total"] = projectiles.Length,
                 ["webCandidates"] = webProjectiles };
             document["giantWaspVisualStatus"] = PteranodonAssetRuntime.GiantWaspStatus;
+            document["stirgeVisualStatus"] = PteranodonAssetRuntime.StirgeStatus;
 
             string path = Path.Combine(_request.EvidenceDirectory,
                 "native-donor-audit.json");
@@ -208,6 +209,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Assertion("giant-wasp-original-asset-loader",
                     "visual:published", PteranodonAssetRuntime.GiantWaspStatus,
                     PteranodonAssetRuntime.GiantWaspStatus == "visual:published",
+                    "shared mesh and albedo parser during mod configuration"),
+                Assertion("stirge-original-asset-loader",
+                    "visual:published", PteranodonAssetRuntime.StirgeStatus,
+                    PteranodonAssetRuntime.StirgeStatus == "visual:published",
                     "shared mesh and albedo parser during mod configuration")
             };
             return CreateResult(assertions.All(value =>

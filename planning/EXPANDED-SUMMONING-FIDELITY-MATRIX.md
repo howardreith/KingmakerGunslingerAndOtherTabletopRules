@@ -452,3 +452,12 @@ startup smoke `20260928T0029440999424Z` passed; the corrected live
 inventory `20260928T0052069434655Z` passed 48/48 structural assertions
 with exact installation restoration. Rules baseline:
 [Paizo Stirge](https://legacy.aonprd.com/bestiary/stirge.html).
+Original 512-vertex Stirge skinned mesh, rust-red/ochre 1024 px albedo,
+four fleshy wings, six legs, forward proboscis and 0.25 view-only scale
+are now installed on the private Eagle-donor renderer swap. Guarded
+`20260928T0919388380835Z` passed exact attachment, 12.339 m native
+travel/doorway crossing, render lifecycle and zero private view resources
+after cleanup; its read-only overhead frame shows the creature with a
+small furniture-occlusion patch. The original summon icon is source-only.
+Actual menu use, native disease cure timing, and owner visual judgment
+remain open; all nine placements stay hidden.

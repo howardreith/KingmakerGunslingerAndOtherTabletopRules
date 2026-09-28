@@ -311,9 +311,10 @@ namespace KingmakerGunslinger.DomainTests
                 "RuntimeTestRunner.ExpandedSummoningCreatureReview.cs"));
             string movement = File.ReadAllText(Path.Combine(root,
                 "RuntimeTestRunner.PteranodonReview.cs"));
-            Assertions.True(review.Contains("suppressedWaspCandidate = key == \"giant-wasp\"") &&
+            Assertions.True(review.Contains("suppressedSprint10Candidate =") &&
+                review.Contains("(key == \"giant-wasp\" || key == \"stirge\")") &&
                 review.Contains("!SummonVisibilityCatalog.IsPublished(variant)") &&
-                review.Contains("!suppressedWaspCandidate") &&
+                review.Contains("!suppressedSprint10Candidate") &&
                 review.Contains("key == \"giant-wasp\"") &&
                 review.Contains("MotionReviewTravelValid") &&
                 review.Contains("MotionReviewDoorwayValid") &&
@@ -480,7 +481,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(view.Contains("AddComponent<GiantWaspVisualSting>()") &&
                 view.Contains("attachment.WaspSting.Configure(view, donor)") &&
                 view.Contains("Destroy(attachment.WaspSting)") &&
-                view.Contains("ReleaseWaspView(UnitEntityView view)") &&
+                view.Contains("ReleasePhase2View(UnitEntityView view)") &&
                 view.Contains("DestroyImmediate(attachment.Mesh)") &&
                 stingPose.Contains("MaximumApproachMeters = 0.25f") &&
                 stingPose.Contains("owner.Blueprint.name != ExpandedSummoningPteranodonViewPatch") &&
@@ -506,6 +507,70 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(audit.Contains("giant-wasp-original-asset-loader") &&
                 audit.Contains("PteranodonAssetRuntime.GiantWaspStatus == \"visual:published\""),
                 "The guarded audit must fail if the packaged Wasp mesh or painting is rejected in game.");
+        }
+
+        internal static void StirgeOriginalVisualIsBoundAndPackaged()
+        {
+            string root = Environment.CurrentDirectory;
+            string directory = Path.Combine(root, "assets", "flying-animals");
+            JObject mesh = JObject.Parse(File.ReadAllText(Path.Combine(
+                directory, "stirge-mesh.json")));
+            Assertions.Equal(2, (int)mesh["schemaVersion"],
+                "Stirge uses the audited skinned-mesh format.");
+            int vertices = (int)mesh["vertexCount"];
+            int triangles = (int)mesh["triangleCount"];
+            Assertions.True(vertices >= 500 && triangles >= 500,
+                "Stirge carries a body, six legs, proboscis and four wings.");
+            byte[] payload = Convert.FromBase64String((string)mesh["data"]);
+            Assertions.Equal(vertices * 64 + triangles * 12, payload.Length,
+                "Stirge mesh payload is complete.");
+            string[] bones = ((JArray)mesh["bones"])
+                .Select(value => (string)value).ToArray();
+            Assertions.True(bones.Contains("Head") &&
+                bones.Contains("L_Arm_Upper") &&
+                bones.Contains("R_Arm_Upper") &&
+                bones.Distinct(StringComparer.Ordinal).Count() == bones.Length,
+                "Stirge's proboscis and four wings have unambiguous bindings.");
+            JObject albedo = (JObject)mesh["albedo"];
+            Assertions.Equal("stirge-albedo.png", (string)albedo["file"],
+                "Stirge uses its own adjacent painting.");
+            using (var sha = SHA256.Create())
+            {
+                string actual = string.Concat(sha.ComputeHash(
+                    File.ReadAllBytes(Path.Combine(directory,
+                        (string)albedo["file"])))
+                    .Select(value => value.ToString("x2")));
+                Assertions.Equal((string)albedo["sha256"], actual,
+                    "Stirge albedo is the painting pinned by its mesh.");
+            }
+            float scale;
+            Assertions.True(SummonViewScaleCatalog.TryGetMultiplier(
+                "KMG_Summoning_Unit_Stirge", out scale) && scale == 0.25f,
+                "The Tiny Stirge uses a view-only scale.");
+            string view = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Summoning",
+                "ExpandedSummoningPteranodonViewPatch.cs"));
+            string loader = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Assets",
+                "PteranodonAssetRuntime.cs"));
+            Assertions.True(view.Contains("TryGetStirgeVisual") &&
+                view.Contains("StirgeVisualName") &&
+                view.Contains("ReleasePhase2View(UnitEntityView view)") &&
+                loader.Contains("ConfigureStirge(context)") &&
+                loader.Contains("stirge-mesh.json"),
+                "Stirge uses the validated per-view swap and teardown.");
+            string audit = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "RuntimeTestRunner.ExpandedSummoningNativeDonors.cs"));
+            Assertions.True(audit.Contains("stirge-original-asset-loader") &&
+                audit.Contains("PteranodonAssetRuntime.StirgeStatus == \"visual:published\""),
+                "Guarded startup must reject a missing Stirge mesh or painting.");
+            Assertions.True(File.Exists(Path.Combine(root, "assets-source",
+                "original-models", "flying-animals", "generate_stirge.py")) &&
+                File.Exists(Path.Combine(root, "assets-source",
+                    "original-models", "flying-animals",
+                    "paint_stirge_albedo.py")),
+                "Stirge retains its editable original geometry and painting.");
         }
 
         internal static void NativeFlyingVerminSurveyStaysMetadataOnly()

@@ -76,13 +76,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .GenerateVariants(family).Single(value =>
                         value.Creature.Key == key && value.ParentTier == tier &&
                         value.Multiplicity == SummonMultiplicity.One);
-                // Sprint 10 pre-publication visual qualification must inspect
-                // the exact registered Wasp while its menu remains hidden.
-                // Keep every other suppressed creature behind this gate.
-                bool suppressedWaspCandidate = key == "giant-wasp" &&
+                // Sprint 10 visual qualification inspects each registered
+                // creature before its parent menu entry is published.
+                bool suppressedSprint10Candidate =
+                    (key == "giant-wasp" || key == "stirge") &&
                     !SummonVisibilityCatalog.IsPublished(variant);
                 if (!SummonVisibilityCatalog.IsPublished(variant) &&
-                    !suppressedWaspCandidate)
+                    !suppressedSprint10Candidate)
                     throw new InvalidOperationException(
                         "A suppressed creature cannot be reviewed through a parent: " +
                         key + ".");
@@ -194,8 +194,43 @@ namespace KingmakerGunslinger.RuntimeTesting
                         (variant.Family == SummonFamily.Monster ? "Summon Monster " :
                             "Summon Nature's Ally ") + variant.ParentTier +
                         " single cast through its registered execution; party-camera renders"));
+                    if (key == "giant-wasp" || key == "stirge")
+                    {
+                        string expectedName = key == "stirge"
+                            ? ExpandedSummoningPteranodonViewPatch.StirgeVisualName
+                            : ExpandedSummoningPteranodonViewPatch.GiantWaspVisualName;
+                        string attach = ExpandedSummoningPteranodonViewPatch
+                            .DescribeView(_creatureReviewUnits[0].View);
+                        bool exactMesh = _creatureReviewUnits.All(unit =>
+                            unit.View != null && unit.View
+                                .GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                                .Any(renderer => renderer != null &&
+                                    renderer.sharedMesh != null &&
+                                    renderer.sharedMesh.name == expectedName));
+                        _creatureReviewAssertions.Add(Assertion(
+                            "expanded-summoning-original-view-" + key,
+                            "validated original mesh attached on the donor renderer",
+                            attach + ";mesh=" + expectedName + ";present=" + exactMesh,
+                            attach.StartsWith("visual:attached", StringComparison.Ordinal) &&
+                                exactMesh,
+                            "exact blueprint identity, loader status and live renderer mesh"));
+                        if (key == "stirge")
+                        {
+                            string fileName = "stirge-review-overhead-open-view.png";
+                            string capture = WriteExpandedSummoningOverheadStrikeCapture(
+                                _creatureReviewUnits[0], _creatureReviewUnits[0],
+                                _request.EvidenceDirectory, fileName);
+                            _creatureReviewAssertions.Add(Assertion(
+                                "expanded-summoning-stirge-overhead-view",
+                                "live overhead frame written for independent visual inspection",
+                                capture,
+                                capture.StartsWith("png=" + fileName + ";",
+                                    StringComparison.Ordinal),
+                                "request-local camera pose restored; image is supporting art evidence, not mechanical proof"));
+                        }
+                    }
                     if (key == "eagle" || key == "dire-bat" ||
-                        key == "giant-wasp")
+                        key == "giant-wasp" || key == "stirge")
                     {
                         _creatureReviewAssertions.Add(Assertion(
                             "expanded-summoning-flight-travel-" + key,
@@ -224,22 +259,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "expanded-summoning-creature-review-cleanup-" + key, "0",
                         live.ToString(), live == 0,
                         "reviewed summon dismissed and destroyed before the next cast"));
-                    if (key == "giant-wasp")
+                    if (key == "giant-wasp" || key == "stirge")
                     {
+                        string visualName = key == "stirge"
+                            ? ExpandedSummoningPteranodonViewPatch.StirgeVisualName
+                            : ExpandedSummoningPteranodonViewPatch.GiantWaspVisualName;
                         int ownedMeshes = Resources.FindObjectsOfTypeAll<Mesh>()
                             .Count(value => value != null &&
-                                (value.name == ExpandedSummoningPteranodonViewPatch
-                                    .GiantWaspVisualName || value.name ==
-                                    "KMG_GiantWaspStingProbe"));
+                                (value.name == visualName || (key == "giant-wasp" &&
+                                    value.name == "KMG_GiantWaspStingProbe")));
                         int ownedMaterials = Resources
                             .FindObjectsOfTypeAll<Material>()
                             .Count(value => value != null && value.name != null &&
                                 value.name.StartsWith(
-                                    ExpandedSummoningPteranodonViewPatch
-                                        .GiantWaspVisualName,
+                                    visualName,
                                     StringComparison.Ordinal));
                         _creatureReviewAssertions.Add(Assertion(
-                            "expanded-summoning-giant-wasp-owned-view-resources",
+                            "expanded-summoning-" + key + "-owned-view-resources",
                             "0 private visual/probe meshes and 0 private materials after view destruction",
                             "meshes=" + ownedMeshes + ";materials=" +
                                 ownedMaterials,

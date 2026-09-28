@@ -14,7 +14,7 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
   `2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a`, the merged PR #24 Favored
   Class integration. The owner packet's expected `2943a02d` is its ancestor.
 - Latest pushed branch head before this checkpoint:
-  `6c1d7425bb76a65e57a8df818d65a755d13f582c`.
+  `1f364355d88e351572f0fa4b3baa50ba4504061c`.
   Branch head at intake: `2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a`;
   first pushed intake checkpoint: `359e346ecb6a094552f096869ecb9c81a2d291bf`.
 - Sprint 9 Eagle and Dire Bat passed the internal technical gate. The 14
@@ -32,6 +32,15 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
   logical placements remain suppressed. Stirge is registered at SNA I-IX
   with a hidden Tiny unit and zero-damage touch carrier; all nine placements
   remain suppressed. Neither creature is published.
+- Sprint 10 Stirge now has a project-owned 512-vertex skinned visual,
+  1024 px albedo, Tiny 0.25 view scale, and 1254 px original summon icon
+  source; Wasp has its own 1254 px icon source. The Stirge's exact view,
+  12.339 m native travel, doorway crossing, rendered lifecycle, zero
+  private-mesh/material teardown, and read-only overhead visual capture
+  passed guarded Steam review `20260928T0919388380835Z`. The overhead
+  frame shows red body and four wings; furniture still adds a small cyan
+  occlusion patch. Icon export, actual UI, disease cure timing and choice
+  publication remain open. Both creatures stay suppressed.
 - HumanReview: NOT_PERFORMED_NONBLOCKING. Sprint 9 internal engineering,
   fidelity, visual and evidence/restoration reviews passed with the bounded
   limitations below; tranche and later-sprint reviews remain pending.

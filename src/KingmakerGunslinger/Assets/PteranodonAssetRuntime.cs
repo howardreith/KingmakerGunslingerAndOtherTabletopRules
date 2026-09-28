@@ -62,6 +62,8 @@ namespace KingmakerGunslinger.Assets
             "assets/flying-animals/eagle-mesh.json";
         internal const string GiantWaspMeshDataRelativePath =
             "assets/flying-animals/giant-wasp-mesh.json";
+        internal const string StirgeMeshDataRelativePath =
+            "assets/flying-animals/stirge-mesh.json";
         internal const int SupportedSchemaVersion = 2;
 
         /// <summary>
@@ -120,6 +122,10 @@ namespace KingmakerGunslinger.Assets
         private static string[] _giantWaspBoneNames;
         private static Texture2D _giantWaspAlbedo;
         private static string _giantWaspStatus = "donor-visual:not-configured";
+        private static Mesh _stirgeMesh;
+        private static string[] _stirgeBoneNames;
+        private static Texture2D _stirgeAlbedo;
+        private static string _stirgeStatus = "donor-visual:not-configured";
 
         internal static string Status { get { lock (Sync) return _status; } }
 
@@ -206,6 +212,22 @@ namespace KingmakerGunslinger.Assets
             }
         }
 
+        internal static string StirgeStatus
+        { get { lock (Sync) return _stirgeStatus; } }
+
+        internal static bool TryGetStirgeVisual(out Mesh mesh,
+            out string[] boneNames, out Texture2D albedo)
+        {
+            lock (Sync)
+            {
+                mesh = _stirgeMesh;
+                boneNames = _stirgeBoneNames == null ? null :
+                    (string[])_stirgeBoneNames.Clone();
+                albedo = _stirgeAlbedo;
+                return mesh != null && boneNames != null && albedo != null;
+            }
+        }
+
         /// <summary>
         /// Takes the published visual away for the life of the returned scope,
         /// so a guarded scenario can prove the fallback on a live summon without
@@ -262,6 +284,7 @@ namespace KingmakerGunslinger.Assets
             ConfigureDireBat(context);
             ConfigureEagle(context);
             ConfigureGiantWasp(context);
+            ConfigureStirge(context);
         }
 
         private static void ConfigurePteranodon(ModContext context)
@@ -549,6 +572,73 @@ namespace KingmakerGunslinger.Assets
                 }
                 context.Logger.Warning("giant-wasp", "mesh.rejected",
                     "The original Wasp visual was rejected; the donor remains active: " +
+                    error.Message);
+            }
+        }
+
+        private static void ConfigureStirge(ModContext context)
+        {
+            if (context == null) throw new ArgumentNullException("context");
+            if (!context.FeatureModules.Active.ExpandedSummoning)
+            {
+                lock (Sync) _stirgeStatus = "donor-visual:module-disabled";
+                return;
+            }
+            lock (Sync)
+            {
+                if (_stirgeMesh != null && _stirgeBoneNames != null &&
+                    _stirgeAlbedo != null) return;
+            }
+            string path = Path.Combine(context.ModEntry.Path,
+                StirgeMeshDataRelativePath.Replace('/', Path.DirectorySeparatorChar));
+            if (!File.Exists(path))
+            {
+                lock (Sync) _stirgeStatus = "donor-visual:mesh-data-missing";
+                context.Logger.Warning("stirge", "mesh.missing",
+                    "The original Stirge visual is unavailable; the donor remains active: " + path);
+                return;
+            }
+            Mesh mesh = null;
+            Texture2D albedo = null;
+            try
+            {
+                string[] names;
+                AlbedoRequirement requirement;
+                mesh = BuildMesh(File.ReadAllText(path), out names,
+                    out requirement);
+                string reason;
+                albedo = LoadAlbedo(Path.GetDirectoryName(path), requirement,
+                    out reason);
+                if (albedo == null)
+                    throw new InvalidDataException("albedo:" + reason);
+                mesh.name = "KMG_Stirge";
+                albedo.name = "KMG_Stirge_Albedo";
+                lock (Sync)
+                {
+                    _stirgeMesh = mesh;
+                    _stirgeBoneNames = names;
+                    _stirgeAlbedo = albedo;
+                    _stirgeStatus = "visual:published";
+                }
+                context.Logger.Info("stirge", "mesh.published",
+                    "Validated original Stirge mesh: vertices=" + mesh.vertexCount +
+                    ";triangles=" + mesh.triangles.Length / 3 +
+                    ";bones=" + names.Length + ";albedo=" +
+                    albedo.width + "x" + albedo.height);
+            }
+            catch (Exception error)
+            {
+                if (mesh != null) UnityEngine.Object.Destroy(mesh);
+                if (albedo != null) UnityEngine.Object.Destroy(albedo);
+                lock (Sync)
+                {
+                    _stirgeMesh = null;
+                    _stirgeBoneNames = null;
+                    _stirgeAlbedo = null;
+                    _stirgeStatus = "donor-visual:invalid-mesh-data";
+                }
+                context.Logger.Warning("stirge", "mesh.rejected",
+                    "The original Stirge visual was rejected; the donor remains active: " +
                     error.Message);
             }
         }
