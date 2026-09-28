@@ -12577,6 +12577,12 @@
       "source": "assets-source/original-icons/expanded-summoning/icon-manifest.json"
     },
     {
+      "module": "Expanded summoning Phase 2 Stirge filth fever",
+      "disposition": "native-semantic-reuse",
+      "finding": "The hidden Stirge's disease rider applies the exact installed FilthFever BlueprintBuff (9545a5550d89feb47a84edaeb4e63d0b). Any resulting disease UI uses that native buff's own art; no unrelated donor icon or new disease identity is introduced. The Stirge summon, trait and hold remain suppressed pending original creature and visible-consumer review.",
+      "source": "src/KingmakerGunslinger/Summoning/ExpandedSummoningSpecialCombatComponents.cs"
+    },
+    {
       "module": "Shield Other",
       "disposition": "protected-existing",
       "finding": "Original project painting; preserve spell/buff assignment and source/export bytes.",
