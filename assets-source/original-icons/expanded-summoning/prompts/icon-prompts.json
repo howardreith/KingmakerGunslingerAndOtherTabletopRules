@@ -484,6 +484,13 @@
       "subjectPrompt": "An original horse-sized black-and-gold wasp in flight with four translucent wings, six legs, and a long rear stinger, inside the summon portrait family frame; distinct from the Stirge.",
       "generator": "built-in-imagegen",
       "exactPromptSource": "assets-source/original-icons/expanded-summoning/PHASE2-SPRINT10-SOURCES.md"
+    },
+    {
+      "key": "stirge",
+      "displayName": "Stirge",
+      "subjectPrompt": "An original tiny rust-red blood-drinking insectoid in flight, with four fleshy wings, thin barbed legs, and a long forward proboscis, inside the summon portrait family frame; distinct from the striped Giant Wasp.",
+      "generator": "built-in-imagegen",
+      "exactPromptSource": "assets-source/original-icons/expanded-summoning/PHASE2-SPRINT10-SOURCES.md"
     }
   ]
 }

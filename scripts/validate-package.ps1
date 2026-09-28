@@ -83,7 +83,7 @@ try {
     $summonManifestPath = Join-Path $repositoryRoot `
         'assets\game\icons\expanded-summoning\icon-manifest.json'
     $summonManifest = Get-Content -LiteralPath $summonManifestPath -Raw | ConvertFrom-Json
-    if ($summonManifest.count -ne 93 -or @($summonManifest.icons).Count -ne 93) {
+    if ($summonManifest.count -ne 94 -or @($summonManifest.icons).Count -ne 94) {
         throw 'Expanded Summoning runtime icon manifest is malformed.'
     }
     $expected += 'assets\icons\expanded-summoning\icon-manifest.json'

@@ -74,18 +74,18 @@ namespace KingmakerGunslinger.DomainTests
                     "86f4287572bef49449b9d06c66adf456")
                     .EquivalentCreatureKey,
                 "Native SNA Smilodon reconciliation changed.");
-            Assertions.Equal(825,
+            Assertions.Equal(834,
                 ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
                     .Concat(ExpandedSummoningCatalog.GenerateVariants(
                         SummonFamily.NaturesAlly))
                     .Count(SummonVisibilityCatalog.IsPublished),
                 "Visible summon placement count changed.");
-            Assertions.Equal(9,
+            Assertions.Equal(0,
                 ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
                     .Concat(ExpandedSummoningCatalog.GenerateVariants(
                         SummonFamily.NaturesAlly))
                     .Count(value => !SummonVisibilityCatalog.IsPublished(value)),
-                "Wasp and Stirge's unfinished placements remain suppressed.");
+                "All qualified Phase 2 flying placements are published.");
         }
 
         internal static void DisplayOrderGroupsSinglesBeforeQuantities()
@@ -114,7 +114,7 @@ namespace KingmakerGunslinger.DomainTests
         {
             SummonIconCatalog.Validate();
             SummonViewScaleCatalog.Validate();
-            Assertions.Equal(93, SummonIconCatalog.All.Count,
+            Assertions.Equal(94, SummonIconCatalog.All.Count,
                 "Project icon concept count changed.");
             Assertions.Equal("Dire Bat", SummonIconCatalog.For("dire-bat")
                 .DisplayName, "Dire Bat requires its own creature icon identity.");

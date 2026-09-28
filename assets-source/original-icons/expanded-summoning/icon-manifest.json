@@ -2,7 +2,7 @@
     "schemaVersion":  1,
     "provenance":  "Project-owned original artwork: 77 AI-assisted roster-mission concepts, Phase 1 procedural Blender additions, and Phase 2 original creature paintings; no copied game or third-party pixels.",
     "generator":  "tools/New-ExpandedSummoningIcons.ps1",
-    "count":  93,
+    "count":  94,
     "icons":  [
                   {
                       "key":  "dog",
@@ -2651,6 +2651,30 @@
                                                "KMG.Summoning.Ability.SNA.Tier9.GiantWasp.OneD4PlusOne",
                                                "KMG.Summoning.Natural.GiantWasp.UnitType",
                                                "KMG.Summoning.Unit.GiantWasp"
+                                           ]
+                  },
+                  {
+                      "key":  "stirge",
+                      "displayName":  "Stirge",
+                      "sourceFile":  "assets-source/original-icons/expanded-summoning/sources/stirge.png",
+                      "productionFile":  "assets/game/icons/expanded-summoning/stirge.png",
+                      "sourceSha256":  "089966cd5bf7c1da26c67d0206a50c1e0cd3c89867403fe64e2b1587b1a5d3d1",
+                      "outputSha256":  "2238a7599b8e254bc1675ba98711667a27079c7f8d15c660089f1017ce061ff1",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog",
+                      "blueprintSymbols":  [
+                                               "KMG.Summoning.Ability.SNA.Tier1.Stirge.One",
+                                               "KMG.Summoning.Ability.SNA.Tier2.Stirge.OneD3",
+                                               "KMG.Summoning.Ability.SNA.Tier3.Stirge.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SNA.Tier4.Stirge.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SNA.Tier5.Stirge.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SNA.Tier6.Stirge.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SNA.Tier7.Stirge.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SNA.Tier8.Stirge.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SNA.Tier9.Stirge.OneD4PlusOne",
+                                               "KMG.Summoning.Unit.Stirge"
                                            ]
                   }
               ]

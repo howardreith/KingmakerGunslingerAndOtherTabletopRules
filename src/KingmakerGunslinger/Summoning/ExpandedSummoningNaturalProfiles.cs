@@ -323,7 +323,7 @@ namespace KingmakerGunslinger.Summoning
                 P("stirge", "Stirge", "MagicalBeast", 1, "Tiny",
                     3, 19, 10, 1, 12, 6, 40, 0, "StirgeTouch",
                     Array.Empty<string>(), A("Airborne", "WeaponFinesse"),
-                    "The 40-foot fly speed uses airborne navigation; 10-foot ground speed is omitted because Kingmaker exposes one movement speed. Its native melee-touch carrier has zero base dice and is live-inventory verified, but a direct hit and attachment lifecycle are not yet qualified; all Stirge placements remain suppressed.")
+                    "The 40-foot fly speed uses airborne navigation; 10-foot ground speed is omitted because Kingmaker exposes one movement speed. Its native melee-touch carrier has zero base dice; the touch hit, attachment lifecycle, blood drain and visual contact passed guarded runtime checks.")
             };
         }
 
