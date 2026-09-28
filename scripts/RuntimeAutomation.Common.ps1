@@ -1996,8 +1996,8 @@ function Assert-KmgRuntimeScenarioPreflight {
             throw 'The creature review requires creatures: comma-separated creature keys.'
         }
         if ($flightActivation -and ($Parameters.flightCreature -isnot [string] -or
-            [string]$Parameters.flightCreature -cnotin @('eagle', 'dire-bat', 'giant-wasp'))) {
-            throw 'The flight activation fixture permits only Eagle, Dire Bat, or hidden Giant Wasp.'
+            [string]$Parameters.flightCreature -cnotin @('eagle', 'dire-bat', 'giant-wasp', 'stirge'))) {
+            throw 'The flight activation fixture permits only Eagle, Dire Bat, Giant Wasp, or hidden Stirge.'
         }
         if ($nativeActionCase -and ([string]$Parameters['nativeActionCase'] -cne 'racial-actions' -or
             [string]$Parameters['class'] -cne 'Fighter' -or

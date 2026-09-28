@@ -430,10 +430,78 @@ namespace KingmakerGunslinger.DomainTests
                 scenario.Contains("class WaspTailAimFrameProbe : MonoBehaviour") &&
                 scenario.Contains("yield return new WaitForEndOfFrame()") &&
                 scenario.Contains("private void OnDisable()") &&
-                request.Contains("\"eagle\", \"dire-bat\", \"giant-wasp\"") &&
-                launcher.Contains("@('eagle', 'dire-bat', 'giant-wasp')") &&
-                automation.Contains("@('eagle', 'dire-bat', 'giant-wasp')"),
-                "Only the named hidden Wasp may enter the guarded native flight-combat fixture, with two exact hostile strikes and stinger geometry.");
+                request.Contains("\"eagle\", \"dire-bat\", \"giant-wasp\", \"stirge\"") &&
+                launcher.Contains("@('eagle', 'dire-bat', 'giant-wasp', 'stirge')") &&
+                automation.Contains("@('eagle', 'dire-bat', 'giant-wasp', 'stirge')"),
+                "Only named flying summons may enter the guarded combat fixture; Wasp retains its two exact hostile strikes and stinger geometry.");
+        }
+
+        internal static void HiddenStirgeHasBoundedNativeAttackVisualReview()
+        {
+            string root = Environment.CurrentDirectory;
+            string scenario = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "SummonSameTurnActivationScenario.cs"));
+            string request = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "RuntimeTestRequest.cs"));
+            Assertions.True(scenario.Contains("SummonNaturesAllyOneGuid") &&
+                scenario.Contains("GenerateVariants(SummonFamily.NaturesAlly)") &&
+                scenario.Contains("value.Creature.Key == \"stirge\"") &&
+                scenario.Contains("sprint10-stirge-native-attack-overhead") &&
+                scenario.Contains("stirge-native-attack-overhead.png") &&
+                scenario.Contains(";touch=True;hit=True;attached=True") &&
+                scenario.Contains("WriteExpandedSummoningOverheadStrikeCapture(") &&
+                request.Contains("\"giant-wasp\", \"stirge\""),
+                "The guarded hidden-Stirge fixture must cast its own SNA I variant, correlate a native touch hit and reciprocal attachment, and capture the live pose.");
+            string special = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Summoning",
+                "ExpandedSummoningSpecialCombatComponents.cs"));
+            Assertions.True(special.Contains("class StirgeNativeTouchAttachPatch") &&
+                special.Contains("attach.AttachAfterNativeRule(__instance)") &&
+                special.Contains("ReferenceEquals(attack.Weapon.Blueprint, TouchWeapon)") &&
+                special.Contains("ReferenceEquals(SummonHoldComponent.HeldTarget(attack.Initiator),") &&
+                scenario.Contains("attach.NativeFallbackCalls"),
+                "Only an exact, otherwise unattached Stirge touch hit may retry the native attach rule after UnitAttack.");
+            string pose = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Summoning", "StirgeVisualTouch.cs"));
+            string view = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Summoning",
+                "ExpandedSummoningPteranodonViewPatch.cs"));
+            string project = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "KingmakerGunslinger.csproj"));
+            Assertions.True(project.Contains("Summoning\\StirgeVisualTouch.cs") &&
+                view.Contains("attachment.StirgeTouch.Configure(view, donor)") &&
+                view.Contains("DestroyImmediate(attachment.StirgeTouch)") &&
+                pose.Contains("class StirgeVisualTouch : MonoBehaviour") &&
+                pose.Contains("SummonHoldComponent.HeldTarget(") &&
+                pose.Contains("MaximumApproachMeters = 2.5f") &&
+                pose.Contains("SurfaceClearanceMeters = 0.05f") &&
+                pose.Contains("Vector3 forward = -_root.forward") &&
+                pose.Contains("private void RestoreNative()") &&
+                pose.Contains("private void OnDestroy()") &&
+                scenario.Contains("sprint10-stirge-visible-contact") &&
+                scenario.Contains("value >= 0f && value <= 0.20f") &&
+                scenario.Contains("_stirgeTipInside.All(value => !value)") &&
+                scenario.Contains("_stirgeForwardDots.All(value => value >= 0.80f)"),
+                "Stirge's exact skinned view must use a bounded target-facing touch pose, retain it only while attached, restore it on teardown, and prove baked contact without clipping.");
+            string disposable = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting", "RuntimeTestRunner.cs"));
+            string viewAudit = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "RuntimeTestRunner.PteranodonAttachedView.cs"));
+            int waspAudit = viewAudit.IndexOf("private static bool IsGiantWaspAttached",
+                StringComparison.Ordinal);
+            int stirgeAudit = viewAudit.IndexOf("private static bool IsStirgeAttached",
+                StringComparison.Ordinal);
+            Assertions.True(disposable.Contains("_giantWaspVisualChecked + _stirgeVisualChecked") &&
+                disposable.Contains("expanded-summoning-stirge-visual-attached") &&
+                disposable.Contains("IsStirgeAttached(renderers)") &&
+                waspAudit >= 0 && stirgeAudit > waspAudit &&
+                viewAudit.Substring(waspAudit, stirgeAudit - waspAudit)
+                    .Contains("(Instance);bones=16;") &&
+                viewAudit.Substring(stirgeAudit).Contains("(Instance);bones=15;"),
+                "The full disposable roster must account for Stirge's view in the shared lifecycle count and verify its renderer separately.");
         }
 
         internal static void GiantWaspOriginalVisualUsesAuditedInstanceBinding()

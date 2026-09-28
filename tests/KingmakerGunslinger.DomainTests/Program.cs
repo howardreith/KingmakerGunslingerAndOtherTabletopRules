@@ -611,6 +611,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint10-wasp-vermin-probe", ExpandedSummoningSprint10Tests.WaspVerminProbeUsesTheNativeTypeFeature),
             Case("expanded-summoning.sprint10-wasp-owned-species-marker", ExpandedSummoningSprint10Tests.WaspHasAnOwnedSpeciesMarker),
             Case("expanded-summoning.sprint10-wasp-native-flight-combat", ExpandedSummoningSprint10Tests.HiddenWaspUsesBoundedNativeFlightCombatReview),
+            Case("expanded-summoning.sprint10-stirge-native-attack-visual", ExpandedSummoningSprint10Tests.HiddenStirgeHasBoundedNativeAttackVisualReview),
             Case("expanded-summoning.sprint9-dire-bat-publication", ExpandedSummoningSprint9Tests.DireBatPublishesOnlyItsPreservedPlacements),
             Case("expanded-summoning.sprint9-flying-persistence", ExpandedSummoningSprint9Tests.EagleAndBatPersistWithTheirOwnViews),
             Case("expanded-summoning.sprint9-dire-bat-asset", ExpandedSummoningSprint9Tests.DireBatOriginalMeshAndPaintingAreBound),
