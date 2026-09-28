@@ -232,6 +232,13 @@ namespace KingmakerGunslinger.Blueprints
         private const string StirgeCombatTraitsSymbol =
             "KMG.Summoning.Special.Stirge.CombatTraits";
         private const string StirgeHoldSymbol = "KMG.Summoning.Special.Stirge.Hold";
+        private const string RhinocerosUnitSymbol = "KMG.Summoning.Unit.Rhinoceros";
+        private const string RhinocerosPowerfulChargeSymbol =
+            "KMG.Summoning.Special.Rhinoceros.PowerfulCharge";
+        private const string WoollyRhinocerosUnitSymbol =
+            "KMG.Summoning.Unit.WoollyRhinoceros";
+        private const string WoollyRhinocerosPowerfulChargeSymbol =
+            "KMG.Summoning.Special.WoollyRhinoceros.PowerfulCharge";
         internal const string SmallClawGuid = "800092a2b9a743b48ae8aeeb5d243dcc";
         internal const string MediumClawGuid = "118fdd03e569a66459ab01a20af6811a";
         internal const string Claw2d4Guid = "8afc47748d00b3e4a8aff2787d9ee350";
@@ -431,7 +438,45 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureDocileHooves(bySymbol, HorseUnitSymbol, HorseCombatTraitsSymbol, "Horse");
             ConfigureGrapplers(library, bySymbol);
             ConfigureStirgeAttachment(library, bySymbol);
+            ConfigureUngulatePowerfulCharge(bySymbol, RhinocerosUnitSymbol,
+                RhinocerosPowerfulChargeSymbol, "rhinoceros");
+            ConfigureUngulatePowerfulCharge(bySymbol, WoollyRhinocerosUnitSymbol,
+                WoollyRhinocerosPowerfulChargeSymbol, "woolly-rhinoceros");
             ConfigureMephitVariants(library, bySymbol);
+        }
+
+        private static void ConfigureUngulatePowerfulCharge(
+            IDictionary<string, BlueprintScriptableObject> bySymbol,
+            string unitSymbol, string featureSymbol, string creatureKey)
+        {
+            BlueprintUnit unit = Require<BlueprintUnit>(bySymbol, unitSymbol);
+            BlueprintFeature feature = Require<BlueprintFeature>(bySymbol,
+                featureSymbol);
+            UngulateRulesProfile rules = UngulateRulesPolicy.For(creatureKey);
+            BlueprintItemWeapon gore = unit.Body == null ? null :
+                unit.Body.PrimaryHand as BlueprintItemWeapon;
+            if (gore == null || rules.ChargeDiceIncrement <= 0 ||
+                rules.ChargeBonusIncrement < 0)
+                throw new InvalidOperationException(
+                    "Ungulate charge requires a configured primary gore and printed increment: " +
+                    creatureKey);
+            var charge = ScriptableObject.CreateInstance<UngulatePowerfulCharge>();
+            charge.Gore = gore;
+            charge.AdditionalDiceRolls = rules.ChargeDiceIncrement;
+            charge.AdditionalDamageBonus = rules.ChargeBonusIncrement;
+            feature.name = InternalName(featureSymbol);
+            feature.IsClassFeature = true;
+            feature.HideInUI = true;
+            feature.ComponentsArray = new BlueprintComponent[] { charge };
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create("KMG.ExpandedSummoning." +
+                    creatureKey + ".PowerfulCharge.Name", "Powerful Charge"),
+                LocalizationService.Create("KMG.ExpandedSummoning." +
+                    creatureKey + ".PowerfulCharge.Description",
+                    "The first gore attack on a charge uses this creature's printed powerful-charge damage."),
+                null);
+            unit.AddFacts = (unit.AddFacts ?? Array.Empty<BlueprintUnitFact>())
+                .Concat(new BlueprintUnitFact[] { feature }).ToArray();
         }
 
         /// <summary>

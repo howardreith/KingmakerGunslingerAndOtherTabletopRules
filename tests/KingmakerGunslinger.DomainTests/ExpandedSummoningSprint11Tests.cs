@@ -8,6 +8,9 @@ namespace KingmakerGunslinger.DomainTests
     internal static class ExpandedSummoningSprint11Tests
     {
         internal const int HiddenUngulateIdentityCount = 100;
+        internal const int PowerfulChargeIdentityCount = 2;
+        internal const int AppendedLedgerIdentities =
+            HiddenUngulateIdentityCount + PowerfulChargeIdentityCount;
 
         internal static void FourUngulatesRegisterAtPrintedTiersButRemainHidden()
         {
@@ -52,6 +55,38 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(all.Length == 882 &&
                 all.Count(SummonVisibilityCatalog.IsPublished) == 834,
                 "The 48 new placements must not change the accepted menu.");
+        }
+
+        internal static void HiddenRhinosOwnDistinctPowerfulChargeFacts()
+        {
+            string[] symbols = {
+                "KMG.Summoning.Special.Rhinoceros.PowerfulCharge",
+                "KMG.Summoning.Special.WoollyRhinoceros.PowerfulCharge"
+            };
+            var identities = ExpandedSummoningIdentityCatalog.Build();
+            Assertions.True(symbols.All(symbol => identities.Count(item =>
+                item.Symbol == symbol && item.PlannedType ==
+                    "BlueprintFeature") == 1),
+                "Each hidden Rhino must own one distinct charge feature identity.");
+            string builder = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "Blueprints", "ExpandedSummoningSpecialBuilder.cs"));
+            Assertions.True(builder.Contains(
+                    "ConfigureUngulatePowerfulCharge(bySymbol, RhinocerosUnitSymbol,") &&
+                builder.Contains(
+                    "ConfigureUngulatePowerfulCharge(bySymbol, WoollyRhinocerosUnitSymbol,") &&
+                builder.Contains("UngulateRulesPolicy.For(creatureKey)") &&
+                builder.Contains("charge.Gore = gore;") &&
+                builder.Contains("charge.AdditionalDiceRolls = rules.ChargeDiceIncrement;") &&
+                builder.Contains("charge.AdditionalDamageBonus = rules.ChargeBonusIncrement;") &&
+                builder.Contains(".Concat(new BlueprintUnitFact[] { feature }).ToArray()"),
+                "Both owned facts must use the printed per-species increment and exact primary gore.");
+            string charge = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "Summoning", "UngulatePowerfulCharge.cs"));
+            Assertions.True(charge.Contains("evt.DoNotScaleDamage = true;") &&
+                charge.Contains("ReferenceEquals(evt.Weapon.Blueprint, Gore)"),
+                "The exact gore's printed charge dice must bypass Kingmaker's second size scale.");
         }
 
         internal static void UngulateDonorSurveyRecordsNativeMechanicGraphs()

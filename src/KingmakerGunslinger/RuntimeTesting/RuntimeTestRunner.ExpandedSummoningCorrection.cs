@@ -645,6 +645,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _rulesCases.Add(Assertion("expanded-summoning-sprint11-owned-charge",
                         "a request-local Mastodon with the summon-local charge component adds exactly two gore dice and +3 damage on its first native charge, and nothing on later or opportunity attacks; removing the native charge marker ends the boost",
                         detail, ok, "temporary UngulatePowerfulCharge feature on a disposable Mastodon; RuleCalculateWeaponStats with native charge marker and exact first/later/opportunity gates"));
+                    stage = "registered-rhino-charge";
+                    _rulesSteps.Add("reset:registeredRhinoCharge=" +
+                        ResetExpandedSummoningHostile(_rulesFixture));
+                    ok = ExerciseExpandedSummoningRegisteredRhinoCharge(
+                        _rulesFixture, out detail);
+                    _rulesCases.Add(Assertion(
+                        "expanded-summoning-sprint11-registered-rhino-charge",
+                        "the hidden Rhinoceros and Woolly Rhinoceros each own one charge feature; ordinary gore is 2d6+9 and 2d8+13, first marked charge is 4d6+12 and 4d8+18, follow-up, opportunity and post-marker attacks return to ordinary damage; Bison's Power Attack adds +2 without granting charge dice, and removing that feat restores printed 2d6+12 on a charge",
+                        detail, ok, "own-tier disposable summons with registered Rhino feature facts and Bison's native gore; RuleCalculateWeaponStats on first charge, ordinary, follow-up, opportunity and marker removal"));
                     stage = "mouth-ownership";
                     _rulesSteps.Add("reset:mouths=" + ResetExpandedSummoningHostile(_rulesFixture));
                     ok = ExerciseExpandedSummoningMouthOwnership(_rulesFixture, out detail);
@@ -2457,6 +2466,166 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (component != null) UnityEngine.Object.DestroyImmediate(component);
                 if (feature != null) UnityEngine.Object.DestroyImmediate(feature);
             }
+        }
+
+        private static bool ExerciseExpandedSummoningRegisteredRhinoCharge(
+            ExpandedSummoningCorrectionFixture fixture, out string detail)
+        {
+            var steps = new List<string>();
+            BlueprintBuff nativeCharge = BlueprintRoot.Instance.SystemMechanics
+                .ChargeBuff;
+            bool valid = nativeCharge != null;
+            foreach (string[] row in new[] {
+                new[] { "rhinoceros", "Rhinoceros", "2d6+9", "4d6+12" },
+                new[] { "woolly-rhinoceros", "WoollyRhinoceros",
+                    "2d8+13", "4d8+18" }
+            })
+            {
+                UnitEntityData animal = null;
+                try
+                {
+                    animal = CastExpandedSummoningOwnTier(fixture, row[0]);
+                    ItemEntityWeapon gore = SummonLimbs.PrimaryWeapon(animal);
+                    BlueprintFeature feature = fixture.Blueprints
+                        .OfType<BlueprintFeature>().Single(value => value.name ==
+                            "KMG_Summoning_Special_" + row[1] +
+                            "_PowerfulCharge");
+                    UngulatePowerfulCharge component = feature
+                        .GetComponent<UngulatePowerfulCharge>();
+                    UngulateRulesProfile rules = UngulateRulesPolicy.For(row[0]);
+                    if (gore == null || component == null ||
+                        !animal.Descriptor.HasFact(feature) ||
+                        !ReferenceEquals(component.Gore, gore.Blueprint) ||
+                        component.AdditionalDiceRolls !=
+                            rules.ChargeDiceIncrement ||
+                        component.AdditionalDamageBonus !=
+                            rules.ChargeBonusIncrement)
+                        throw new InvalidOperationException(
+                            "Registered Rhino charge fact or exact gore is absent: " +
+                            row[0]);
+                    var first = new RuleAttackWithWeapon(animal,
+                        fixture.Hostile, gore, 0) {
+                            IsFirstAttack = true, IsCharge = true
+                        };
+                    RuleCalculateWeaponStats ordinary = Rulebook.Trigger(
+                        new RuleCalculateWeaponStats(animal, gore, first));
+                    if (animal.Descriptor.AddFact(nativeCharge) == null)
+                        throw new InvalidOperationException(
+                            "Native charge marker could not be applied: " +
+                            row[0]);
+                    RuleCalculateWeaponStats boosted = Rulebook.Trigger(
+                        new RuleCalculateWeaponStats(animal, gore, first));
+                    var followUp = new RuleAttackWithWeapon(animal,
+                        fixture.Hostile, gore, 0) {
+                            IsFirstAttack = false, IsCharge = true
+                        };
+                    RuleCalculateWeaponStats later = Rulebook.Trigger(
+                        new RuleCalculateWeaponStats(animal, gore, followUp));
+                    var opportunity = new RuleAttackWithWeapon(animal,
+                        fixture.Hostile, gore, 0) {
+                            IsFirstAttack = true, IsCharge = true,
+                            IsAttackOfOpportunity = true
+                        };
+                    RuleCalculateWeaponStats offTurn = Rulebook.Trigger(
+                        new RuleCalculateWeaponStats(animal, gore, opportunity));
+                    animal.Descriptor.RemoveFact(nativeCharge);
+                    RuleCalculateWeaponStats after = Rulebook.Trigger(
+                        new RuleCalculateWeaponStats(animal, gore, first));
+                    Func<RuleCalculateWeaponStats, string> format = value =>
+                        value.DamageDescription[0].Dice.Rolls +
+                        value.DamageDescription[0].Dice.Dice.ToString()
+                            .ToLowerInvariant() + "+" +
+                        value.DamageDescription[0].Bonus;
+                    string baseDamage = format(ordinary);
+                    string chargeDamage = format(boosted);
+                    bool rowValid = baseDamage == row[2] &&
+                        chargeDamage == row[3] &&
+                        format(later) == baseDamage &&
+                        format(offTurn) == baseDamage &&
+                        format(after) == baseDamage;
+                    valid &= rowValid;
+                    steps.Add(row[0] + ":fact=True;ordinary=" + baseDamage +
+                        ";first=" + chargeDamage + ";later=" +
+                        format(later) + ";opportunity=" + format(offTurn) +
+                        ";afterMarker=" + format(after) +
+                        ";pass=" + rowValid);
+                }
+                catch (Exception exception)
+                {
+                    valid = false;
+                    steps.Add(row[0] + ":exception=" +
+                        DescribeExpandedSummoningCorrectionException(exception));
+                }
+                finally
+                {
+                    if (animal != null && animal.Descriptor != null)
+                    {
+                        if (nativeCharge != null &&
+                            animal.Descriptor.HasFact(nativeCharge))
+                            animal.Descriptor.RemoveFact(nativeCharge);
+                        DisposeExpandedSummoningUnits(fixture.Created,
+                            new[] { animal });
+                    }
+                }
+            }
+            UnitEntityData bison = null;
+            try
+            {
+                bison = CastExpandedSummoningOwnTier(fixture, "bison");
+                ItemEntityWeapon gore = SummonLimbs.PrimaryWeapon(bison);
+                if (gore == null)
+                    throw new InvalidOperationException(
+                        "Bison has no primary gore weapon.");
+                var first = new RuleAttackWithWeapon(bison, fixture.Hostile,
+                    gore, 0) { IsFirstAttack = true, IsCharge = true };
+                BlueprintFeature powerAttack = bison.Blueprint.AddFacts
+                    .OfType<BlueprintFeature>().Single(value => value.name ==
+                        "PowerAttackFeature");
+                bool hasPowerAttack = bison.Descriptor.HasFact(powerAttack);
+                RuleCalculateWeaponStats withPowerAttack = Rulebook.Trigger(
+                    new RuleCalculateWeaponStats(bison, gore, first));
+                bison.Descriptor.RemoveFact(powerAttack);
+                RuleCalculateWeaponStats ordinary = Rulebook.Trigger(
+                    new RuleCalculateWeaponStats(bison, gore, first));
+                if (bison.Descriptor.AddFact(nativeCharge) == null)
+                    throw new InvalidOperationException(
+                        "Bison charge marker could not be applied.");
+                RuleCalculateWeaponStats charged = Rulebook.Trigger(
+                    new RuleCalculateWeaponStats(bison, gore, first));
+                Func<RuleCalculateWeaponStats, string> format = value =>
+                    value.DamageDescription[0].Dice.Rolls +
+                    value.DamageDescription[0].Dice.Dice.ToString()
+                        .ToLowerInvariant() + "+" +
+                    value.DamageDescription[0].Bonus;
+                bool rowValid = hasPowerAttack &&
+                    format(withPowerAttack) == "2d6+14" &&
+                    format(ordinary) == "2d6+12" &&
+                    format(charged) == "2d6+12";
+                valid &= rowValid;
+                steps.Add("bison:powerAttack=" + hasPowerAttack +
+                    ";withFeat=" + format(withPowerAttack) +
+                    ";withoutFeat=" + format(ordinary) +
+                    ";charge=" + format(charged) + ";pass=" + rowValid);
+            }
+            catch (Exception exception)
+            {
+                valid = false;
+                steps.Add("bison:exception=" +
+                    DescribeExpandedSummoningCorrectionException(exception));
+            }
+            finally
+            {
+                if (bison != null && bison.Descriptor != null)
+                {
+                    if (nativeCharge != null &&
+                        bison.Descriptor.HasFact(nativeCharge))
+                        bison.Descriptor.RemoveFact(nativeCharge);
+                    DisposeExpandedSummoningUnits(fixture.Created,
+                        new[] { bison });
+                }
+            }
+            detail = string.Join(";", steps.ToArray());
+            return valid;
         }
 
         // ---------------------------------------------------------------------------------------------------------

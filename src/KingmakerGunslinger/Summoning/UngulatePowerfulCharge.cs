@@ -38,6 +38,9 @@ namespace KingmakerGunslinger.Summoning
             if (baseDice.Rolls <= 0) return;
             evt.WeaponDamageDiceOverride = new DiceFormula(
                 baseDice.Rolls + AdditionalDiceRolls, baseDice.Dice);
+            // These are printed final dice for this exact Large summon.
+            // Kingmaker otherwise scales an override again after fact logic.
+            evt.DoNotScaleDamage = true;
             evt.AddBonusDamage(AdditionalDamageBonus);
         }
 

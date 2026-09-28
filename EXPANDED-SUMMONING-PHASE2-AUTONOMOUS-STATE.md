@@ -13,8 +13,8 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
 - Accepted dependency: `master` / `origin/master` at
   `2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a`, the merged PR #24 Favored
   Class integration. The owner packet's expected `2943a02d` is its ancestor.
-- Last pushed checkpoint before hidden registration, Sprint 11
-  summon-scoped charge seam: `87b8c4e2325d0de6c826727dc6fc46524ad45ff7`.
+- Last pushed checkpoint before Rhino charge, Sprint 11 hidden registration:
+  `7b9cdc7a1c2305804b0b60e6db3bb438e0c91d75`.
   Branch head at intake: `2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a`;
   first pushed intake checkpoint: `359e346ecb6a094552f096869ecb9c81a2d291bf`.
 - Sprint 9 Eagle and Dire Bat passed the internal technical gate. The 14
@@ -94,6 +94,27 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
   The earlier 180-second inventory attempt timed out in orchestration and
   is excluded despite a late game PASS; exact restoration passed. Continue
   with hidden Rhino charge and trample before any publication.
+- Sprint 11 Rhino charge rule-stat checkpoint: two new hidden features own
+  the Rhino/Woolly first-gore-charge increments. Installed game IL showed
+  that `WeaponDamageDiceOverride` otherwise receives a second size scale;
+  exact owner-gore charge now sets `DoNotScaleDamage`. Guarded Steam
+  `20260928T1840088844180Z` passed 18/18: Rhino `2d6+9 → 4d6+12`, Woolly
+  `2d8+13 → 4d8+18`, later/opportunity/post-marker ordinary. Bison's native
+  Power Attack explains its active +2; removing the feat in the disposable
+  control restored printed `2d6+12` without charge dice. The failed
+  `20260928T1754133569009Z` and `20260928T1820184232276Z` diagnostics
+  were excluded and their original installations restored exactly; the
+  uncommitted Mastodon-gore clone identity was discarded. Repository
+  validation, 1,947 domain tests, clean Release and strict package passed.
+  Package SHA-256
+  `224796490e3200be7adb9039f7c1eb0f383c7cdc6a9a92ec24cbfd924414aa7b`,
+  DLL SHA-256
+  `5157eb9b2d5beaa43af8461c97a84d9faf31a9bcc07298855bd4a59cdb08d526`.
+  Restoration `20260928T1844262522767Z` verified clean launcher, exact
+  request-local cleanup and original 136-file tree SHA-256
+  `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+  Real attack cadence, trample, original 3D ungulate views and publication
+  remain outstanding; continue Sprint 11.
 - Sprint 11 native ungulate audit: metadata-only guarded surveys
   `20260928T1436375418005Z` and `20260928T1448501815730Z` PASS. The latter
   identified the game's `AbilityCustomOverrun`, turn-based full-round marker,
