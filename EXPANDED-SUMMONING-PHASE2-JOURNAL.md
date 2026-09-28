@@ -670,3 +670,15 @@ condition. Repository validation, 1,940 domain tests, clean Release and strict
 package checks passed. The wrapper restored the original installation exactly
 (`20260928T0250550544603Z`). Next are interrupted holds and disease, then
 visual and icon qualification. Stirge remains hidden.
+
+## Sprint 10: Stirge break-free and area transition, 2026-09-28
+
+I reattached Stirge after the four-point meal and ran the victim's native
+`TryBreakFree` rule. It succeeded; removing the target part as the native
+controller does, then ticking the holder, cleared the source without another
+drain. A second reattachment was released by the existing area-leave sweep
+with exactly one target swept. `20260928T0304163413890Z` passed both cases,
+all prior Stirge assertions and exact installation restoration
+(`20260928T0307556510922Z`). Repository validation, 1,940 domain tests,
+clean Release and strict package checks passed. Controller scheduling,
+death/dismissal/expiry, disease, persistence and visual gates remain open.

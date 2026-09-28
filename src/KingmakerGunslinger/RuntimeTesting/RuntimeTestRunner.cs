@@ -342,6 +342,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal string StirgeFirstDrainDetail;
             internal bool StirgeFourPointDetach;
             internal string StirgeFourPointDetachDetail;
+            internal bool StirgeEscapeAndTransition;
+            internal string StirgeEscapeAndTransitionDetail;
             internal bool HostileAbilityTarget;
             internal int AdditionalCasts;
             internal readonly List<string> Diagnostics = new List<string>();
@@ -17528,6 +17530,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     mechanics == null ? "not-run" : mechanics.StirgeFourPointDetachDetail,
                     mechanics != null && mechanics.StirgeFourPointDetach,
                     "four live StirgeHoldComponent round ticks with per-tick stat and link checks"),
+                Assertion("expanded-summoning-stirge-escape-and-transition",
+                    "a native victim break-free check and the area-leave safeguard each release Stirge's re-established hold without another drain",
+                    mechanics == null ? "not-run" : mechanics.StirgeEscapeAndTransitionDetail,
+                    mechanics != null && mechanics.StirgeEscapeAndTransition,
+                    "UnitHelper.TryBreakFree, the native target-part removal and SummonGrappleAreaSafeguard.Sweep"),
                 Assertion("expanded-summoning-disposable-cleanup",
                     "exact party and global-unit snapshots restored", observed,
                     cleaned, "per-cast UnitEntityData.Dispose and final exact snapshots"),
@@ -18064,7 +18071,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         out result.StirgeFirstDrain,
                         out result.StirgeFirstDrainDetail,
                         out result.StirgeFourPointDetach,
-                        out result.StirgeFourPointDetachDetail);
+                        out result.StirgeFourPointDetachDetail,
+                        out result.StirgeEscapeAndTransition,
+                        out result.StirgeEscapeAndTransitionDetail);
 
                 result.RepresentativeCombat = animalAttack && proxyAttack &&
                     elementalAttack && stalkerAttack && shadowAttack &&
@@ -18090,6 +18099,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     result.StirgeFirstDrainDetail + "]");
                 result.Diagnostics.Add("stirgeMeal[" +
                     result.StirgeFourPointDetachDetail + "]");
+                result.Diagnostics.Add("stirgeInterrupt[" +
+                    result.StirgeEscapeAndTransitionDetail + "]");
                 result.Diagnostics.Add("cyclops[granted=" + flashGranted +
                     ";resource=" + flashBefore + "->" + flashAfter + ";armed=" +
                     flashArmed + ";armedNatural1=" + flashArmedDetail +
@@ -18920,7 +18931,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             ExpandedSummoningMechanicalEvidence evidence, out string detail,
             out bool attachmentEstablished, out string attachmentDetail,
             out bool firstDrain, out string drainDetail,
-            out bool fourPointDetach, out string mealDetail)
+            out bool fourPointDetach, out string mealDetail,
+            out bool escapeAndTransition, out string interruptDetail)
         {
             detail = "not-run";
             attachmentEstablished = false;
@@ -18929,6 +18941,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             drainDetail = "not-run";
             fourPointDetach = false;
             mealDetail = "not-run";
+            escapeAndTransition = false;
+            interruptDetail = "not-run";
             BlueprintBuff hold = blueprints.OfType<BlueprintBuff>().Single(value =>
                 value.name == "KMG_Summoning_Special_Stirge_Hold");
             BlueprintBuff grappled = blueprints.OfType<BlueprintBuff>().Single(
@@ -19017,6 +19031,63 @@ namespace KingmakerGunslinger.RuntimeTesting
                         constitutionDamageBefore == 4;
                 mealDetail = "ticks=" + string.Join("|", mealSteps.ToArray()) +
                     ";automaticCleanup=" + automaticCleanup;
+                hostile.Descriptor.Stats.Constitution.Damage =
+                    constitutionDamageBefore;
+                UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                Rulebook.Trigger(new RuleAttackWithWeapon(stirge, hostile,
+                    weapon, 0));
+                bool reattachedForEscape = ReferenceEquals(
+                    SummonHoldComponent.HeldTarget(stirge), hostile);
+                StirgeHoldComponent escapeHold = reattachedForEscape ?
+                    ExpandedSummoningRuntimeComponent<StirgeHoldComponent>(
+                        stirge, hold) : null;
+                var targetPart = hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>();
+                int targetBabBefore = hostile.Descriptor.Stats.BaseAttackBonus.BaseValue;
+                bool nativeEscape;
+                try
+                {
+                    hostile.Descriptor.Stats.BaseAttackBonus.BaseValue = 100;
+                    UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                    nativeEscape = targetPart != null &&
+                        Kingmaker.UnitLogic.UnitHelper.TryBreakFree(hostile,
+                            stirge, Kingmaker.UnitLogic.UnitHelper.BreakFreeFlags.Default,
+                            targetPart.Context, null);
+                }
+                finally
+                {
+                    hostile.Descriptor.Stats.BaseAttackBonus.BaseValue =
+                        targetBabBefore;
+                }
+                if (nativeEscape)
+                    hostile.Remove<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>();
+                if (escapeHold != null) escapeHold.OnNewRound();
+                bool escapeClean = stirge.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleInitiator>() == null &&
+                    hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>() == null &&
+                    !stirge.Descriptor.HasFact(hold) &&
+                    !hostile.Descriptor.HasFact(grappled) &&
+                    hostile.Descriptor.Stats.Constitution.Damage ==
+                        constitutionDamageBefore;
+                UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                Rulebook.Trigger(new RuleAttackWithWeapon(stirge, hostile,
+                    weapon, 0));
+                bool reattachedForTransition = ReferenceEquals(
+                    SummonHoldComponent.HeldTarget(stirge), hostile);
+                int swept = SummonGrappleAreaSafeguard.Sweep(true,
+                    new[] { hostile });
+                bool transitionClean = swept == 1 &&
+                    stirge.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleInitiator>() == null &&
+                    hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>() == null &&
+                    !stirge.Descriptor.HasFact(hold) &&
+                    !hostile.Descriptor.HasFact(grappled) &&
+                    !stirge.Descriptor.State.HasCondition(
+                        UnitCondition.LoseDexterityToAC);
+                escapeAndTransition = reattachedForEscape && nativeEscape &&
+                    escapeClean && reattachedForTransition && transitionClean;
+                interruptDetail = "escapeAttach=" + reattachedForEscape +
+                    ";nativeBreakFree=" + nativeEscape +
+                    ";escapeClean=" + escapeClean +
+                    ";transitionAttach=" + reattachedForTransition +
+                    ";swept=" + swept + ";transitionClean=" + transitionClean;
                 return weapon != null && weapon.Blueprint.name ==
                     "KMG_Summoning_Natural_StirgeTouch" &&
                     roll != null && roll.AttackType == AttackType.Touch &&

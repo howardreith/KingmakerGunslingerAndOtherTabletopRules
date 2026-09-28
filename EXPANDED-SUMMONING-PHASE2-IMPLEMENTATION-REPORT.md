@@ -456,3 +456,13 @@ parts, both buffs and the holder's lost-Dexterity state. Repository validation,
 1,940 domain cases, clean Release and strict package checks passed; exact
 installation restoration is `20260928T0250550544603Z`. Interruption paths,
 disease, persistence and visual publication remain open.
+
+The subsequent interruption run `20260928T0304163413890Z` passed native
+victim `TryBreakFree` followed by controller-equivalent target-part removal,
+with no further drain and clean holder release. A separate reattachment was
+released by the area-leave safeguard with exactly one target swept and no
+residual parts or buffs. Repository validation, 1,940 domain cases, clean
+Release and strict package checks passed; restoration was exact
+(`20260928T0307556510922Z`). The fixture does not prove the controller's
+actual tick scheduling. Death, dismissal, expiry, disease and visual gates
+remain open.
