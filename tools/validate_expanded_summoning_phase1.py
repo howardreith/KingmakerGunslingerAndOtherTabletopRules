@@ -502,16 +502,17 @@ def validate(root: Path) -> None:
         if not (root / "assets/game/icons/expanded-summoning" / (key + ".png")).is_file() or \
                 not (root / "assets-source/original-icons/expanded-summoning/sources" / (key + ".png")).is_file():
             raise AssertionError("Phase 1 icon file missing: " + key)
-    # Phase 2 adds Bat/Eagle/Wasp meshes and albedos and the Bat icon.
+    # Phase 2 adds Bat/Eagle/Wasp/Stirge meshes and albedos and the Bat icon.
     # Keep the accepted Phase 1 metadata at 251, but validate the current
     # package count against the seven new required files.
-    package_count = SPRINT3["packageFileCountWithSoundBank"] + 7
+    package_count = SPRINT3["packageFileCountWithSoundBank"] + 9
     for script in ("Build-Local.ps1", "package.ps1"):
         require_tokens(root / "scripts" / script,
             "{ %d } else { %d }" % (package_count, package_count - 2),
             "dire-bat-mesh.json", "dire-bat-albedo.png",
             "eagle-mesh.json", "eagle-albedo.png",
-            "giant-wasp-mesh.json", "giant-wasp-albedo.png")
+            "giant-wasp-mesh.json", "giant-wasp-albedo.png",
+            "stirge-mesh.json", "stirge-albedo.png")
 
     state = json.loads((root / "validation/static-validation.json").read_text(
         encoding="utf-8"))[STATIC_KEY]

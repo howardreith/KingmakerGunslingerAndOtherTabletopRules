@@ -532,3 +532,19 @@ clones. Repository validation, 1,940 domain cases, clean Release, strict
 package validation and exact restoration passed. The Wasp still has no
 approved own icon or published menu choice. Stirge's disease cure timing,
 original visual and icon remain open; Sprint 10 remains in progress.
+
+The Stirge now uses a new 512-vertex skinned mesh and its own 1024 px
+rust-red albedo through the validated flying-animal parser and an instance
+local donor-renderer swap. Its 0.25 view scale presents a Tiny creature
+without changing mechanical size, reach, collision, or unit speed.
+Guarded `20260928T0908572885513Z` and
+`20260928T0919388380835Z` passed exact mesh attachment, 12.339 m native
+travel, a surveyed doorway crossing, idle/move/attack render stages, complete
+unit cleanup, and zero private view meshes/materials after destruction. The
+overhead frame shows the four-winged red Stirge in game; a small cyan
+furniture-occlusion patch remains. The source render alone does not qualify
+live attack or grapple pose. Both runs passed 1,941 domain cases, clean
+Release, strict package and exact 136-file live-tree restoration. Original
+Stirge and Wasp icon paintings are source-only pending export and actual UI
+review. Native filth fever cure timing is still unverified; neither creature
+is yet published.

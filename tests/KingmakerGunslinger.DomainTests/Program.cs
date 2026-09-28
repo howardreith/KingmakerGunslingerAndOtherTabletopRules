@@ -604,6 +604,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint10-wasp-registration", ExpandedSummoningSprint10Tests.GiantWaspRegisteredUnderSuppressionAtExactTiers),
             Case("expanded-summoning.sprint10-wasp-poison-policy", ExpandedSummoningSprint10Tests.GiantWaspPoisonTracksConstitutionAndTabletopExposure),
             Case("expanded-summoning.sprint10-wasp-original-visual", ExpandedSummoningSprint10Tests.GiantWaspOriginalVisualUsesAuditedInstanceBinding),
+            Case("expanded-summoning.sprint10-stirge-original-visual", ExpandedSummoningSprint10Tests.StirgeOriginalVisualIsBoundAndPackaged),
             Case("expanded-summoning.sprint10-suppressed-icon", ExpandedSummoningSprint10Tests.SuppressedWaspHasNoVisibleIconConsumer),
             Case("expanded-summoning.sprint10-wasp-hidden-review", ExpandedSummoningSprint10Tests.WaspPrepublicationReviewKeepsTheMenuHidden),
             Case("expanded-summoning.sprint10-wasp-quantity", ExpandedSummoningSprint10Tests.WaspQuantityCoverageRemainsPrivate),
