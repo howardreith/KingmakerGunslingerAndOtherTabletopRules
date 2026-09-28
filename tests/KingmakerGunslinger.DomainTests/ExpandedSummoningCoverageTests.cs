@@ -74,9 +74,9 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(94,
                 ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count,
                 "Represented creatures must be 83 project-owned plus 11 native wrappers.");
-            Assertions.Equal(92,
+            Assertions.Equal(93,
                 ExpandedSummoningCoveragePolicy.PublishedSomewhere.Count,
-                "All represented creatures are published somewhere after Sprint 9.");
+                "All represented creatures except Stirge are published somewhere after the Wasp release.");
             Assertions.True(
                 ExpandedSummoningCoveragePolicy.PublishedSomewhere.Contains("dire-bat"),
                 "Dire Bat must count as published in both families.");
@@ -209,11 +209,11 @@ namespace KingmakerGunslinger.DomainTests
                     "A wrapper lost its exact source ability GUID: " + wrapper.CreatureKey);
             }
 
-            // Sprint 9 adds only the fourteen preserved Dire Bat choices.
-            Assertions.Equal(842,
+            // Sprint 9 adds fourteen Dire Bat and Sprint 10 adds twelve Wasp choices.
+            Assertions.Equal(854,
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.Monster) +
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.NaturesAlly),
-                "The published visible surface must include the preserved Bat choices.");
+                "The published visible surface must include the Bat and Wasp choices.");
         }
     }
 }

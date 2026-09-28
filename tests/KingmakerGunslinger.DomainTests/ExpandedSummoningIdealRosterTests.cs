@@ -183,8 +183,8 @@ namespace KingmakerGunslinger.DomainTests
 
             // The live player-visible surface moves only with the shipped
             // catalogs, never with the plan: 693 at the Sprint 0 freeze, 828
-            // after Phase 1 Sprint 8 and 842 after publishing Dire Bat.
-            Assertions.Equal(842,
+            // after Phase 1 Sprint 8, 842 after Dire Bat and 854 after Giant Wasp.
+            Assertions.Equal(854,
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.Monster) +
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.NaturesAlly),
                 "The plan must not change the shipped visible choice count.");

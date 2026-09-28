@@ -14927,6 +14927,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             int sharedComponents = 0, prohibitedReferences = 0,
                 nonemptyInventories = 0, inheritedSpellArrays = 0,
                 extraplanarMarkers = 0;
+            var prohibitedReferenceDetails = new List<string>();
             foreach (SummonCreatureSpec creature in ExpandedSummoningCatalog.All)
             {
                 BlueprintUnit unit = all.OfType<BlueprintUnit>().Single(value =>
@@ -14950,15 +14951,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                             values != null && values.Length != 0) inheritedSpellArrays++;
                         if (values == null || !typeof(BlueprintScriptableObject)
                             .IsAssignableFrom(field.FieldType.GetElementType())) continue;
-                        prohibitedReferences += values.Cast<object>()
-                            .OfType<BlueprintScriptableObject>().Count(value =>
-                                ExpandedSummoningIsForbiddenReference(value));
+                        foreach (BlueprintScriptableObject value in values
+                            .Cast<object>().OfType<BlueprintScriptableObject>()
+                            .Where(ExpandedSummoningIsForbiddenReference))
+                        {
+                            prohibitedReferences++;
+                            prohibitedReferenceDetails.Add(unit.name + "/" +
+                                component.GetType().Name + "." + field.Name +
+                                "=" + value.name + ":" + value.AssetGuid);
+                        }
                     }
                 }
                 if (unit.AddFacts != null)
                 {
-                    prohibitedReferences += unit.AddFacts.Count(value => value == null ||
-                        ExpandedSummoningIsForbiddenReference(value));
+                    foreach (BlueprintUnitFact value in unit.AddFacts.Where(
+                        value => value == null ||
+                            ExpandedSummoningIsForbiddenReference(value)))
+                    {
+                        prohibitedReferences++;
+                        prohibitedReferenceDetails.Add(unit.name + "/AddFacts=" +
+                            (value == null ? "<null>" :
+                                value.name + ":" + value.AssetGuid));
+                    }
                     extraplanarMarkers += unit.AddFacts.Count(value => value != null &&
                         value.name == "KMG_Summoning_Subtype_Extraplanar");
                 }
@@ -15086,6 +15100,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             ExpandedSummoningMenuAudit menuAudit =
                 AuditExpandedSummoningMenus(all, canonicalSummonParents,
                     logicalVariants);
+            BlueprintUnitType publishedWaspType = all.OfType<BlueprintUnitType>()
+                .Single(value => value.name ==
+                    "KMG_Summoning_Natural_GiantWasp_UnitType");
+            BlueprintUnit publishedWasp = all.OfType<BlueprintUnit>()
+                .Single(value => value.name == "KMG_Summoning_Unit_GiantWasp");
+            bool publishedWaspTypeIconExact =
+                ReferenceEquals(publishedWasp.Type, publishedWaspType) &&
+                ReferenceEquals(publishedWaspType.Image,
+                    ExpandedSummoningProjectIcons.Require("giant-wasp"));
             string menuContactSheetEvidence =
                 WriteExpandedSummoningMenuEvidenceIndex(
                     canonicalSummonParents, _request.EvidenceDirectory);
@@ -15843,6 +15866,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         menuAudit.CategoryIconsDistinct,
                     menuAudit.PresentationExact,
                     "reference-exact display sequence, immutable creature icon catalog, and localized quantity suffixes"),
+                Assertion("expanded-summoning-wasp-inspectable-type-icon",
+                    "original Giant Wasp sprite on the summoned unit's inspectable type",
+                    publishedWaspTypeIconExact ? "exact" : "mismatch",
+                    publishedWaspTypeIconExact,
+                    "final-live BlueprintUnit.Type and BlueprintUnitType.Image reference identity"),
                 Assertion("expanded-summoning-menu-counts",
                     "18 exact before/after tier and multiplicity equations",
                     menuAudit.Counts, menuAudit.CountMismatches == 0,
@@ -15867,7 +15895,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "all " + ExpandedSummoningCatalog.All.Count +
                         " KMG units versus frozen donor component references"),
                 Assertion("expanded-summoning-prohibited-references", "0",
-                    prohibitedReferences.ToString(), prohibitedReferences == 0,
+                    prohibitedReferences == 0 ? "0" :
+                        prohibitedReferences + ":" + string.Join("|",
+                            prohibitedReferenceDetails.ToArray()),
+                    prohibitedReferences == 0,
                     "direct facts and component blueprint-array grants"),
                 Assertion("expanded-summoning-extraplanar-markers",
                     ExpandedSummoningCatalog.All.Count.ToString(),
@@ -22624,6 +22655,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 blueprint.name ==
                     "KMG_Summoning_Natural_GiantWasp_Poison" ||
                 blueprint.name ==
+                    "KMG_Summoning_Special_Stirge_CombatTraits" ||
+                blueprint.name ==
                     "KMG_Summoning_Special_LanternArchon_LightRay" ||
                 blueprint.name ==
                     "KMG_Summoning_Special_LanternArchon_Defenses" ||
@@ -22669,6 +22702,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 blueprint.name ==
                     "KMG_Summoning_Special_PurpleWorm_CombatTraits" ||
                 blueprint.name == "KMG_Summoning_Special_PurpleWorm_Swallowed")
+                return false;
+            // The hidden Stirge's native Unlootable fact prevents its touch
+            // carrier from becoming a dropped item. Require the installed
+            // blueprint identity; the general "loot" sanitizer stays strict.
+            if (blueprint.AssetGuid == "0f775c7d5d8b6494197e1ce937754482" &&
+                blueprint.name == "Unlootable")
                 return false;
             // Correction order: the Cyclops hide armor fact and the docile-hoof carriers.
             if (blueprint.name == "KMG_Summoning_Special_Cyclops_HideArmor" ||

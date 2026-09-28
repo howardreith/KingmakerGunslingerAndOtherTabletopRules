@@ -105,8 +105,8 @@ namespace KingmakerGunslinger.DomainTests
                     value.Multiplicity == SummonMultiplicity.OneD4PlusOne),
                     "Later Wasp tiers use 1d4+1.");
                 Assertions.True(variants.All(value =>
-                    !SummonVisibilityCatalog.IsPublished(value)),
-                    "Wasp must stay hidden until poison and combat pass live gates.");
+                    SummonVisibilityCatalog.IsPublished(value)),
+                    "All Wasp placements publish after their live combat and icon gates.");
             }
             NaturalSummonProfile profile = ExpandedSummoningNaturalProfiles
                 .For("giant-wasp");
@@ -127,9 +127,9 @@ namespace KingmakerGunslinger.DomainTests
                 value.Symbol == "KMG.Summoning.Natural.WaspSting1d8" &&
                 value.PlannedType == "BlueprintItemWeapon"),
                 "Wasp sting has its own append-only blueprint identity.");
-            Assertions.Equal(21,
+            Assertions.Equal(9,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "Wasp and Stirge's 21 legal placements remain suppressed.");
+                "Only Stirge's nine placements remain suppressed.");
         }
 
         internal static void StirgeRegisteredAtAllNineHiddenNatureTiers()
@@ -256,9 +256,9 @@ namespace KingmakerGunslinger.DomainTests
                 specialBuilder.Contains("0f775c7d5d8b6494197e1ce937754482") &&
                 specialBuilder.Contains("UnitCondition.LoseDexterityToAC"),
                 "The hidden unit must own a direct-hit native link and bounded actual-Constitution drain.");
-            Assertions.Equal(21,
+            Assertions.Equal(9,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "All 12 Wasp and nine Stirge placements remain private.");
+                "Stirge's nine placements remain private.");
         }
 
         internal static void GiantWaspPoisonTracksConstitutionAndTabletopExposure()
@@ -289,11 +289,24 @@ namespace KingmakerGunslinger.DomainTests
                 "Poison identities must preserve their blueprint types.");
         }
 
-        internal static void SuppressedWaspHasNoVisibleIconConsumer()
+        internal static void PublishedWaspHasOwnIconConsumers()
         {
-            Assertions.True(!SummonIconCatalog.All.Any(value =>
-                value.Key == "giant-wasp"),
-                "A suppressed Wasp is not yet a player-visible icon consumer.");
+            Assertions.Equal("Giant Wasp",
+                SummonIconCatalog.For("giant-wasp").DisplayName,
+                "Published Wasp must have its own creature concept.");
+            JObject manifest = JObject.Parse(File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "assets-source", "original-icons",
+                "expanded-summoning", "icon-manifest.json")));
+            JToken row = ((JArray)manifest["icons"]).Single(value =>
+                (string)value["key"] == "giant-wasp");
+            string[] consumers = ((JArray)row["blueprintSymbols"])
+                .Select(value => (string)value).ToArray();
+            Assertions.Equal(26, consumers.Length,
+                "Wasp unit, type and 24 ability/template consumers share one icon.");
+            Assertions.True(consumers.Contains(
+                    "KMG.Summoning.Natural.GiantWasp.UnitType") &&
+                consumers.Contains("KMG.Summoning.Unit.GiantWasp"),
+                "The inspectable Wasp type and unit must be recorded.");
             string runtime = File.ReadAllText(Path.Combine(
                 Environment.CurrentDirectory, "src", "KingmakerGunslinger",
                 "RuntimeTesting", "RuntimeTestRunner.cs"));
@@ -303,7 +316,7 @@ namespace KingmakerGunslinger.DomainTests
                 "The live menu icon audit must check only published creatures.");
         }
 
-        internal static void WaspPrepublicationReviewKeepsTheMenuHidden()
+        internal static void Sprint10CreatureReviewKeepsStirgeHidden()
         {
             string root = Path.Combine(Environment.CurrentDirectory,
                 "src", "KingmakerGunslinger", "RuntimeTesting");
@@ -326,12 +339,12 @@ namespace KingmakerGunslinger.DomainTests
                 review.Contains("finally") &&
                 review.Contains("renderer.enabled = true"),
                 "The isolated Wasp frame must restore every temporarily hidden auxiliary renderer.");
-            Assertions.Equal(21,
+            Assertions.Equal(9,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "Prepublication review cannot make Wasp or Stirge visible.");
+                "Prepublication review cannot make Stirge visible.");
         }
 
-        internal static void WaspQuantityCoverageRemainsPrivate()
+        internal static void WaspQuantityCoveragePublishesAllLegalVariants()
         {
             SummonVariantSpec[] crowd = new[] { SummonFamily.Monster,
                     SummonFamily.NaturesAlly }
@@ -344,8 +357,8 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(4, crowd.Length,
                 "Both Wasp families must offer 1d3 and 1d4+1 for the guarded quantity fixture.");
             Assertions.True(crowd.All(value =>
-                    !SummonVisibilityCatalog.IsPublished(value)),
-                "Mechanical quantity casts cannot publish a Wasp menu choice.");
+                    SummonVisibilityCatalog.IsPublished(value)),
+                "Qualified Wasp quantity variants must appear in both menus.");
             string runtime = File.ReadAllText(Path.Combine(
                 Environment.CurrentDirectory, "src", "KingmakerGunslinger",
                 "RuntimeTesting", "RuntimeTestRunner.cs"));
