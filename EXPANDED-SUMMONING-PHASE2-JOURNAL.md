@@ -958,3 +958,23 @@ passed. The unreferenced source paintings do not enter the game package;
 `f45f04eccec0af36077277713204beb9dab2c665e06b72e09695f1a7a21bb89e`;
 DLL SHA-256
 `bbd582817ea99b4da72009673f04d8e4920d5c5e515ee59dfedaf3917c90088c`.
+
+## Sprint 11: native Powerful Charge live donor check, 2026-09-28
+
+Guarded request-local `disposable-expanded-summoning-rules`
+`20260928T1602214306773Z` passed 16/16 assertions. The installed
+`PowerfulCharge` feature, temporarily fitted to a Mastodon, changed
+`2d8+24` ordinary gore to `4d8+42` on the first native charge and did not
+alter a later or opportunity attack. Its +18 is 1.5 times the Mastodon's
+Strength modifier 12, too much for either printed Rhino profile. The
+earlier `20260928T1548555422577Z` diagnostic assumed the Mastodon's
+ordinary bonus was +18, failed that one assertion and timed out at 120
+seconds; it is excluded. The final run used a 360-second timeout.
+Repository validation, all 1,945 domain tests, clean Release and strict
+package checks passed; package SHA-256
+`6625a1159e4b29e698e87783cf948e66be6d63dc2757300a37b466c3e06cf741`,
+DLL SHA-256
+`95ee11ca240a540cd57f11ab8768a9f08c4d670d0d990071667421dcadd17819`.
+The wrapper restored the original 136-file mod tree exactly at
+`20260928T1606565388180Z`. New Rhino baselines and full Trample still need
+implementation and live qualification.

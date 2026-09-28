@@ -59,9 +59,9 @@ asset-name presence alone is not evidence of base-game provenance.
 The game's own `PowerfulCharge` component changes charge weapon dice and
 Strength scaling for a first attack. A separate `PowerfulChargeDouble`
 component is present in the installed library and in the Call of the Wild
-assembly; this project must not depend on it. Neither native charge component
-has yet been shown to yield exactly the rhinoceros stat-block damage in both
-combat modes.
+assembly; this project must not depend on it. The native component is now
+measured and is unsuitable for either printed Rhinoceros charge profile;
+no Rhinoceros charge is yet implemented or qualified in either combat mode.
 
 Read-only dnlib inspection of the installed `AbilityCustomOverrun.Deliver`
 state machine confirms it forces a navmesh path, iterates nearby living units,
@@ -80,13 +80,10 @@ or executing game code; the private IL transcription is uncommitted evidence.
 The same read-only IL check narrows the charge gap: the game's `PowerfulCharge`
 component requires the native charge buff, first attack and no opportunity
 attack, then adds its configured dice and **1.5 more Strength multipliers**.
-`RuleCalculateWeaponStats.OnTrigger` gives a lone primary natural weapon a
-1.5 Strength multiplier and adds any component multiplier to it. Thus the
-native component would produce 3x Strength on an ordinary single-gore rhino,
-versus the Paizo stat blocks' 2x Strength on powerful charge. This is an
-inference from the installed IL, still requiring a live rulebook check. A
-summon-local `+0.5` multiplier and two extra gore dice is the precise
-candidate; no global change to the native component is justified.
+`RuleCalculateWeaponStats.OnTrigger` adds the component multiplier to the
+weapon's existing multiplier. The existing multiplier is donor-dependent,
+so a live new-Rhinoceros baseline must be measured before choosing the
+summon-local increment. No global change to the native component is justified.
 
 The first pure rules-policy source checkpoint passed repository validation,
 1,945 domain tests, clean Release, strict package, guarded Steam working-save
@@ -102,3 +99,29 @@ existing natural builder and donor/visual safety contracts. Measure native
 charge and overrun delivery in turn-based and RTWP, then add narrowly scoped
 rules components for the gaps. Publish choices only after mechanics, art,
 quantity, player path, persistence, and negative controls pass.
+
+## Native charge live measurement
+
+The guarded Steam `disposable-expanded-summoning-rules` run
+`20260928T1602214306773Z` passed all 16 assertions on mod `0.0.140`.
+A request-local Mastodon with a temporary native `PowerfulCharge` feature
+had Strength modifier 12, ordinary gore `2d8+24`, first native charge
+`4d8+42`, later attack `2d8+24`, and opportunity attack `2d8+24`.
+The native component therefore adds two dice and +18, precisely 1.5 times
+that donor's Strength modifier. It is too strong for the printed Rhino
+increment (+2 dice, +3 damage) and Woolly Rhino increment (+2 dice, +5
+damage). The Mastodon already had a 2x Strength baseline; do not extrapolate
+its base damage to either new species. The earlier diagnostic
+`20260928T1548555422577Z` assumed an incorrect +18 Mastodon baseline and
+is excluded; its 120-second orchestration timeout was also below the
+observed four-minute fixture duration. The passing rerun used a 360-second
+timeout. The temporary feature, charge marker and unit were removed.
+Repository validation, all 1,945 domain tests, clean Release and strict
+package validation passed. Tested package SHA-256
+`6625a1159e4b29e698e87783cf948e66be6d63dc2757300a37b466c3e06cf741`;
+DLL SHA-256
+`95ee11ca240a540cd57f11ab8768a9f08c4d670d0d990071667421dcadd17819`.
+Restoration `20260928T1606565388180Z-disposable-expanded-summoning-rules.json`
+verified the original mod tree before/after SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+This qualifies only the native donor behavior, not new ungulate mechanics.
