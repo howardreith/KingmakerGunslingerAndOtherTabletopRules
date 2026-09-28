@@ -9,8 +9,10 @@ namespace KingmakerGunslinger.DomainTests
     {
         internal const int HiddenUngulateIdentityCount = 100;
         internal const int PowerfulChargeIdentityCount = 2;
+        internal const int TrampleIdentityCount = 3;
         internal const int AppendedLedgerIdentities =
-            HiddenUngulateIdentityCount + PowerfulChargeIdentityCount;
+            HiddenUngulateIdentityCount + PowerfulChargeIdentityCount +
+            TrampleIdentityCount;
 
         internal static void FourUngulatesRegisterAtPrintedTiersButRemainHidden()
         {
@@ -87,6 +89,50 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(charge.Contains("evt.DoNotScaleDamage = true;") &&
                 charge.Contains("ReferenceEquals(evt.Weapon.Blueprint, Gore)"),
                 "The exact gore's printed charge dice must bypass Kingmaker's second size scale.");
+        }
+
+        internal static void HiddenTrampleAbilitiesUseNativePathWithSummonRules()
+        {
+            string[] keys = { "Aurochs", "Bison", "WoollyRhinoceros" };
+            var identities = ExpandedSummoningIdentityCatalog.Build();
+            Assertions.True(keys.All(key => identities.Count(item =>
+                item.Symbol == "KMG.Summoning.Special." + key + ".Trample" &&
+                item.PlannedType == "BlueprintAbility") == 1),
+                "Only the three printed tramplers receive distinct hidden abilities.");
+            Assertions.False(identities.Any(item => item.Symbol ==
+                "KMG.Summoning.Special.Rhinoceros.Trample"),
+                "Ordinary Rhinoceros must not gain an invented trample.");
+            string builder = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "Blueprints", "ExpandedSummoningSpecialBuilder.cs"));
+            string action = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "Summoning", "ContextActionUngulateTrample.cs"));
+            Assertions.True(builder.Contains("overrun.AutoSuccess = true;") &&
+                builder.Contains("overrun.FirstTargetOnly = false;") &&
+                builder.Contains("ability.SetIsFullRoundAction(true);") &&
+                builder.Contains("UngulateTramplePathChecker") &&
+                action.Contains("target.IsEnemy(caster)") &&
+                action.Contains("ledger.TryClaim(round, target.UniqueId)") &&
+                action.Contains("SavingThrowType.Reflex") &&
+                action.Contains("damage.Half = save.IsPassed;") &&
+                action.Contains("ReferenceEquals(caster.Blueprint, SourceUnit)"),
+                "Native multi-contact movement must use a full-round, speed-bound action with exact owner, enemy, size, per-round, Reflex and half-damage gates.");
+            string inventory = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestRunner.cs"));
+            int whitelist = inventory.IndexOf(
+                "private static bool ExpandedSummoningIsApprovedUngulateDirectFact(",
+                StringComparison.Ordinal);
+            int forbidden = inventory.IndexOf(
+                "private static bool ExpandedSummoningIsForbiddenReference(",
+                StringComparison.Ordinal);
+            Assertions.True(whitelist >= 0 && forbidden > whitelist &&
+                inventory.Substring(whitelist, forbidden - whitelist)
+                    .Contains("owner == \"8c4a8e045ca844a8bd42f614707b8e74\"") &&
+                inventory.Contains("!ExpandedSummoningIsApprovedUngulateDirectFact(") &&
+                inventory.Contains("granted == \"0f12c70e9b264ae484fb720d0c6845aa\""),
+                "The live inventory must allow only exact owner-to-trample fact pairs, leaving unrelated donor references prohibited.");
         }
 
         internal static void UngulateDonorSurveyRecordsNativeMechanicGraphs()
