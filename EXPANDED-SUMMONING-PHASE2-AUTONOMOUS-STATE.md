@@ -13,8 +13,8 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
 - Accepted dependency: `master` / `origin/master` at
   `2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a`, the merged PR #24 Favored
   Class integration. The owner packet's expected `2943a02d` is its ancestor.
-- Last pushed mechanical checkpoint before Stirge publication:
-  `207b71e20da2765ac213029c45d4fc98f4db7cef`.
+- Last pushed checkpoint, Sprint 10 Stirge publication:
+  `703c3e1a74d4ae3c3d6a9be98b8253623bb27a5e`.
   Branch head at intake: `2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a`;
   first pushed intake checkpoint: `359e346ecb6a094552f096869ecb9c81a2d291bf`.
 - Sprint 9 Eagle and Dire Bat passed the internal technical gate. The 14
@@ -75,6 +75,19 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
 - HumanReview: NOT_PERFORMED_NONBLOCKING. Sprint 9 internal engineering,
   fidelity, visual and evidence/restoration reviews passed with the bounded
   limitations below; tranche and later-sprint reviews remain pending.
+- Sprint 11 native ungulate audit: metadata-only guarded surveys
+  `20260928T1436375418005Z` and `20260928T1448501815730Z` PASS. The latter
+  identified the game's `AbilityCustomOverrun`, turn-based full-round marker,
+  `ManeuverTrigger`, and `PowerfulCharge` component. It did not qualify a
+  Trample/Charge creature. Source gate: repository validation, 1,943 domain
+  tests, clean Release, strict package; package SHA-256
+  `75ed87ab09a24f6cae6200fae35eb5321acbf8a2d0e11b8c99240151d0068351`,
+  DLL SHA-256
+  `0a0d1390bae236903077a9ca528e1be5f5ac4613d7d0f7bb48c8175ce9ff06e3`.
+  Original live mod tree restored to SHA-256
+  `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`
+  at `20260928T1450570230422Z`. Rules, provenance caveat and exact
+  remaining contracts: `planning/EXPANDED-SUMMONING-SPRINT11-RULES-AND-DONORS.md`.
 - Blockers: none established. The Sprint 10 rules-source access gate is
   resolved by the owner's standing network authorization; exact Stirge and
   Giant Wasp baseline rules are cited in
