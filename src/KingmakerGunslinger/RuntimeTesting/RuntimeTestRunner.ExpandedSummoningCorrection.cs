@@ -5,10 +5,12 @@ using System.Reflection;
 using Harmony12;
 using Kingmaker;
 using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.Blueprints.Items.Armors;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Blueprints.Root;
+using Kingmaker.Designers.Mechanics.Buffs;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Enums;
@@ -631,6 +633,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _rulesCases.Add(Assertion("expanded-summoning-correction-hooves",
                         "the pony's and the horse's hooves are both secondary: -5 to hit and half the Strength modifier to damage against the same hooves treated as primary, both listed in the full attack",
                         detail, ok, "RuleCalculateAttackBonus and RuleCalculateWeaponStats with the docile flag on and off; UnitAttack.CreateFullAttack"));
+                    stage = "native-charge";
+                    _rulesSteps.Add("reset:nativeCharge=" + ResetExpandedSummoningHostile(_rulesFixture));
+                    ok = ExerciseExpandedSummoningNativeCharge(_rulesFixture, out detail);
+                    _rulesCases.Add(Assertion("expanded-summoning-sprint11-native-charge",
+                        "the installed PowerfulCharge component adds two gore dice and another 1.5 times the Strength modifier on the first native charge, never on follow-up or opportunity attacks; that excess is not the Rhino stat-block bonus",
+                        detail, ok, "request-local Mastodon with a request-local native PowerfulCharge feature; RuleCalculateWeaponStats on first charge, ordinary, follow-up and opportunity attacks"));
                     stage = "mouth-ownership";
                     _rulesSteps.Add("reset:mouths=" + ResetExpandedSummoningHostile(_rulesFixture));
                     ok = ExerciseExpandedSummoningMouthOwnership(_rulesFixture, out detail);
@@ -2253,6 +2261,101 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             detail = string.Join(";", steps.ToArray());
             return ok;
+        }
+
+        /// <summary>
+        /// The installed component is a donor measurement, never a new Rhino
+        /// mechanic. The feature and unit exist only until this request ends.
+        /// </summary>
+        private static bool ExerciseExpandedSummoningNativeCharge(
+            ExpandedSummoningCorrectionFixture fixture, out string detail)
+        {
+            var steps = new List<string>();
+            UnitEntityData animal = null;
+            BlueprintFeature feature = null;
+            PowerfulCharge component = null;
+            BlueprintBuff nativeCharge = BlueprintRoot.Instance.SystemMechanics
+                .ChargeBuff;
+            try
+            {
+                animal = CastExpandedSummoningOwnTier(fixture, "mastodon");
+                ItemEntityWeapon gore = SummonLimbs.PrimaryWeapon(animal);
+                if (gore == null || nativeCharge == null)
+                    throw new InvalidOperationException(
+                        "The Mastodon gore or installed charge buff is absent.");
+                int strength = animal.Descriptor.Stats.Strength.Bonus;
+                component = ScriptableObject.CreateInstance<PowerfulCharge>();
+                component.AdditionalDiceRolls = 2;
+                feature = ScriptableObject.CreateInstance<BlueprintFeature>();
+                feature.name = "KMG_Runtime_Sprint11_NativeChargeOnly";
+                feature.Ranks = 1;
+                feature.ComponentsArray = new BlueprintComponent[] { component };
+                if (animal.Descriptor.AddFact(feature) == null)
+                    throw new InvalidOperationException(
+                        "The request-local charge feature was not applied.");
+
+                var first = new RuleAttackWithWeapon(animal, fixture.Hostile,
+                    gore, 0) { IsFirstAttack = true, IsCharge = true };
+                RuleCalculateWeaponStats ordinary = Rulebook.Trigger(
+                    new RuleCalculateWeaponStats(animal, gore, first));
+                if (animal.Descriptor.AddFact(nativeCharge) == null)
+                    throw new InvalidOperationException(
+                        "The request-local native charge marker was not applied.");
+                RuleCalculateWeaponStats boosted = Rulebook.Trigger(
+                    new RuleCalculateWeaponStats(animal, gore, first));
+                var followUp = new RuleAttackWithWeapon(animal, fixture.Hostile,
+                    gore, 0) { IsFirstAttack = false, IsCharge = true };
+                RuleCalculateWeaponStats later = Rulebook.Trigger(
+                    new RuleCalculateWeaponStats(animal, gore, followUp));
+                var opportunity = new RuleAttackWithWeapon(animal,
+                    fixture.Hostile, gore, 0) {
+                        IsFirstAttack = true,
+                        IsAttackOfOpportunity = true
+                    };
+                RuleCalculateWeaponStats offTurn = Rulebook.Trigger(
+                    new RuleCalculateWeaponStats(animal, gore, opportunity));
+                int ordinaryRolls = ordinary.DamageDescription[0].Dice.Rolls;
+                int ordinaryBonus = ordinary.DamageDescription[0].Bonus;
+                int boostedRolls = boosted.DamageDescription[0].Dice.Rolls;
+                int boostedBonus = boosted.DamageDescription[0].Bonus;
+                bool valid = strength == 12 && ordinaryRolls == 2 &&
+                    boostedRolls == 4 && boostedBonus - ordinaryBonus ==
+                    strength * 3 / 2 && later.DamageDescription[0].Dice.Rolls ==
+                    ordinaryRolls && later.DamageDescription[0].Bonus ==
+                    ordinaryBonus && offTurn.DamageDescription[0].Dice.Rolls ==
+                    ordinaryRolls && offTurn.DamageDescription[0].Bonus ==
+                    ordinaryBonus;
+                steps.Add("strength=" + strength + ";ordinary=" +
+                    ordinaryRolls + "d8+" + ordinaryBonus + ";nativeFirst=" +
+                    boostedRolls + "d8+" + boostedBonus + ";later=" +
+                    later.DamageDescription[0].Dice.Rolls + "d8+" +
+                    later.DamageDescription[0].Bonus + ";opportunity=" +
+                    offTurn.DamageDescription[0].Dice.Rolls + "d8+" +
+                    offTurn.DamageDescription[0].Bonus);
+                detail = string.Join(";", steps.ToArray());
+                return valid;
+            }
+            catch (Exception exception)
+            {
+                steps.Add("exception=" +
+                    DescribeExpandedSummoningCorrectionException(exception));
+                detail = string.Join(";", steps.ToArray());
+                return false;
+            }
+            finally
+            {
+                if (animal != null && animal.Descriptor != null)
+                {
+                    if (nativeCharge != null && animal.Descriptor.HasFact(nativeCharge))
+                        animal.Descriptor.RemoveFact(nativeCharge);
+                    if (feature != null && animal.Descriptor.HasFact(feature))
+                        animal.Descriptor.RemoveFact(feature);
+                    DisposeExpandedSummoningUnits(fixture.Created,
+                        new[] { animal });
+                }
+                if (component != null) UnityEngine.Object.DestroyImmediate(component);
+                if (feature != null) UnityEngine.Object.DestroyImmediate(feature);
+            }
         }
 
         // ---------------------------------------------------------------------------------------------------------
