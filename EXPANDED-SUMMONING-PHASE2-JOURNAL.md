@@ -919,3 +919,26 @@ All 1,943 domain tests, clean Release and strict package validation passed.
 The wrapper restored the pre-run mod tree exactly at
 `20260928T1450570230422Z`; no save was loaded or written. Sprint 11 source
 implementation is next.
+
+## Sprint 11: ungulate rules policy and guarded smoke, 2026-09-28
+
+The four Paizo stat-block profiles now have a summon-local policy for gore,
+trample, powerful charge, three-creature stampede, legal size, exact save DC,
+and one target contact per trampler per round. It registers no creature and
+changes no combat runtime behavior yet. Repository validation, 1,945 domain
+tests, clean Release and strict package passed. The guarded Steam working-save
+smoke `20260928T1517172841252Z` passed twelve save/catalog/version/no-write
+assertions. Package SHA-256
+`9e38c53fbc9918a9017c88be570690d33f68816143e99873d225b491d2a183cc`,
+DLL SHA-256
+`96b353a407475e55f1b6fbc163629f849ebd30874b8bf8780a41ca9788a12390`.
+The wrapper restored the original 136-file installation at
+`20260928T1520212559754Z` with SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+
+A read-only dnlib IL audit of the installed `AbilityCustomOverrun` delivery
+shows navmesh movement, nearby-unit iteration, and an `Actions` callback, but
+also a temporary native charge state; with `AutoSuccess=false` it uses a CMB
+check. Its default graph does not implement Paizo's Reflex/AoO choice, target
+size rule, or round ledger. Continue with a bounded adapter and live mode
+qualification before publishing any ungulate.

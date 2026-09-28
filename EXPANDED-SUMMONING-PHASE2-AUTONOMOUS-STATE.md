@@ -88,6 +88,21 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
   `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`
   at `20260928T1450570230422Z`. Rules, provenance caveat and exact
   remaining contracts: `planning/EXPANDED-SUMMONING-SPRINT11-RULES-AND-DONORS.md`.
+- Sprint 11 rules-policy checkpoint: exact Paizo Aurochs, Bison, Rhinoceros,
+  and Woolly Rhinoceros damage/DC profiles, the three-adjacent-creature
+  stampede condition, size gate, first-gore-charge gate, and a one-contact-
+  per-target-per-round ledger are implemented as a pure policy. The repository
+  gate, all 1,945 domain tests, clean Release and strict package passed.
+  Guarded Steam `working-save-smoke` result
+  `20260928T1517172841252Z-working-save-smoke` PASS: exact working save and
+  baseline identified, version 0.0.140, no save-writing API observed.
+  Package SHA-256 `9e38c53fbc9918a9017c88be570690d33f68816143e99873d225b491d2a183cc`;
+  DLL SHA-256 `96b353a407475e55f1b6fbc163629f849ebd30874b8bf8780a41ca9788a12390`.
+  Wrapper restoration `20260928T1520212559754Z` returned the original
+  136-file live tree to SHA-256
+  `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+  No ungulate unit or trample ability is registered yet. The native overrun
+  delivery's movement is a candidate seam, not rules qualification.
 - Blockers: none established. The Sprint 10 rules-source access gate is
   resolved by the owner's standing network authorization; exact Stirge and
   Giant Wasp baseline rules are cited in
