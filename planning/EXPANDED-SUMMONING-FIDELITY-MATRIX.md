@@ -394,11 +394,15 @@ is one actual Constitution drain tick and explicit link cleanup. The +8
 maintain bonus is installed but has not been exercised in a native grapple
 check. Four-point detachment passed guarded `20260928T0247164550495Z`: four
 actual one-point losses and automatic reciprocal-part/buff cleanup. The 10%
-disease chance, death/dismissal/expiry cleanup, save/load safety, original
+disease chance, prey death and actual timer-expiry cleanup, save/load safety, original
 visual and icon remain open. Guarded `20260928T0304163413890Z` passed the
 victim's native break-free rule with controller-equivalent target-part removal
 and a separate area-leave safeguard sweep. Actual controller timing remains
 to be observed.
+Guarded `20260928T0332419433992Z` passed destruction of an attached summon
+after the native entity-destroyer queue advanced: victim held state and part
+were gone with no extra damage. This exercises the shared teardown path,
+not the timer's scheduling.
 The registered primary
 carrier now clones the native held-touch weapon; live inventory
 `20260928T0113159269094Z` verifies `AttackType.Touch`, zero base dice and

@@ -6,7 +6,7 @@
     "authorizedSprints": [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21],
     "completedSprints": [9],
     "currentSprint": 10,
-    "currentSubItem": "Giant Wasp remains hidden pending credible visual contact. Hidden Stirge passed touch hit, native attachment, four-point detach, native victim break-free and area-leave cleanup; death/dismissal/expiry, disease, persistence, original visual, icon and publication remain open.",
+    "currentSubItem": "Giant Wasp remains hidden pending credible visual contact. Hidden Stirge passed touch hit, native attachment, four-point detach, native victim break-free, area-leave cleanup and attached-summon teardown; prey death, actual timer expiry, disease, persistence, original visual, icon and publication remain open.",
     "lastGuardedRuntimePass": "20260928T0125544188038Z-observe-expanded-summoning-inventory",
     "lastGuardedRestoration": "20260928T0129418890710Z-observe-expanded-summoning-inventory.json",
     "giantWaspPublished": false,
