@@ -810,3 +810,29 @@ tests, clean Release, strict package and exact restoration passed. Final
 package SHA-256 `2c59c9788ebde9834d632dd98d424b976462924c2dd91bf1612b3fbcd4f165fd`;
 DLL SHA-256 `0fef1002fec991a4dc3d619e579e176e548c2eb577f6afe51d4c90d0ed36b229`;
 restoration `20260928T0834423340342Z`.
+
+## Sprint 10: original Stirge art and guarded view lifecycle, 2026-09-28
+
+An original project-owned Stirge mesh and albedo were built on the measured
+flying rig: 512 vertices, four separate fleshy wings, six barbed legs, a
+forward proboscis, and rust-red/ochre painting. Its view-only scale is 0.25.
+Original Wasp and Stirge summon icon sources were painted with the built-in
+imagegen skill and reviewed at 128 px; they are not yet exported or assigned
+to published choices. Source rights, hashes, prompts, and visual review limits
+are recorded beside the paintings.
+
+The first guarded Stirge review `20260928T0908572885513Z` passed exact
+original view attachment, native 12.339 m doorway travel, four rendered
+states, zero remaining unit and zero private view meshes/materials. Its
+party-camera images showed cyan wall occlusion, so a second guarded review
+`20260928T0919388380835Z` added a read-only overhead frame. It shows a
+red-bodied four-winged Stirge at live game scale, with a small furniture
+occlusion patch; it is supporting visual evidence, not mechanical proof.
+Both runs passed repository validation, 1,941 domain tests, clean Release,
+strict package, no save write, and exact restoration of the original 136-file
+installation. The second candidate package SHA-256 is
+`e5eceaf694c8cea80d1a348480384066b61c2abc40b30d17c0fc13abd0708983`;
+DLL SHA-256 is
+`f58d91df927b245abb2205847a61817eb85d11ca1fdfdfe56362478fcc721016`;
+restoration is `20260928T0923459655430Z`. Disease cure timing, icon
+export/actual UI use, and Sprint 10 publication remain open.

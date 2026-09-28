@@ -29,6 +29,7 @@ namespace KingmakerGunslinger.Summoning
     {
         private static readonly SummonViewScaleSpec[] Values = {
             S("eagle", 0.30f),
+            S("stirge", 0.25f),
             S("poisonous-frog", 0.48f),
             S("dire-boar", 1.15f),
             S("pteranodon", 0.82f),
@@ -56,7 +57,7 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Values.Length != 10 || Values.Any(value => value.Multiplier <
+            if (Values.Length != 11 || Values.Any(value => value.Multiplier <
                     0.20f || value.Multiplier > 1.25f) ||
                 Values.Select(value => value.CreatureKey).Distinct(
                     StringComparer.Ordinal).Count() != Values.Length ||
