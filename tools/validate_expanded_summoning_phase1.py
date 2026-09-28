@@ -399,7 +399,7 @@ def validate(root: Path) -> None:
         'C("tiger","Tiger",null,false,4,"Leopard")')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs",
         "RegisteredLogicalPlacementCount = 834;",
-        "SuppressedLogicalPlacementCount = 9;")
+        "SuppressedLogicalPlacementCount = 0;")
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningIdentityCatalog.cs",
         "UnitCount = 83;",
         "LogicalAbilityCount = 834;",
@@ -414,7 +414,7 @@ def validate(root: Path) -> None:
         "Values.Length != 36",
         '"Animal", "Vermin", "MagicalBeast", "Humanoid", "Plant"')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonIconCatalog.cs",
-        "Values.Length != %d" % (SPRINT3["projectIcons"] + 2))
+        "Values.Length != %d" % (SPRINT3["projectIcons"] + 3))
     # Correction order: the chartered mephit roles and the ally-safe cloud stay in the code.
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningSpecialProfiles.cs",
         '"Blur", "WindWall"', '"MagicMissile", "ChillMetal"', '"Pyrotechnics", "MagmaForm"',
@@ -490,8 +490,8 @@ def validate(root: Path) -> None:
             raise AssertionError("No Lightning Mephit may enter the catalogs: " + path.name)
     runtime_icons = json.loads((root / "assets/game/icons/expanded-summoning/icon-manifest.json")
                                .read_text(encoding="utf-8-sig"))
-    if runtime_icons["count"] != SPRINT3["projectIcons"] + 2 or \
-            len(runtime_icons["icons"]) != SPRINT3["projectIcons"] + 2 or \
+    if runtime_icons["count"] != SPRINT3["projectIcons"] + 3 or \
+            len(runtime_icons["icons"]) != SPRINT3["projectIcons"] + 3 or \
             not {"pony", "horse", "owlbear", "cyclops", "shambling-mound", "giant-flytrap",
                  "purple-worm", "dust-mephit", "ice-mephit", "magma-mephit", "ooze-mephit",
                  "salt-mephit", "steam-mephit", "tiger", "giant-wasp"} <= {row["key"] for row in runtime_icons["icons"]}:
@@ -504,8 +504,8 @@ def validate(root: Path) -> None:
             raise AssertionError("Phase 1 icon file missing: " + key)
     # Phase 2 adds Bat/Eagle/Wasp/Stirge meshes and albedos and the Bat icon.
     # Keep the accepted Phase 1 metadata at 251, but validate the current
-    # package count against the seven new required files.
-    package_count = SPRINT3["packageFileCountWithSoundBank"] + 10
+    # package count with the Phase 2 bird, vermin and icon additions.
+    package_count = SPRINT3["packageFileCountWithSoundBank"] + 11
     for script in ("Build-Local.ps1", "package.ps1"):
         require_tokens(root / "scripts" / script,
             "{ %d } else { %d }" % (package_count, package_count - 2),

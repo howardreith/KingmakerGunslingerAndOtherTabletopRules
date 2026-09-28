@@ -6,15 +6,15 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
 
 ## Current position
 
-- Tranche: 2A, Sprints 9-13. Sprint 9 is internally qualified; current
-  sprint: 10, Stirge and Giant Wasp.
+- Tranche: 2A, Sprints 9-13. Sprints 9 and 10 are internally technically
+  qualified; current sprint: 11, Aurochs/Bison/Rhinoceros/Woolly Rhinoceros.
 - Branch: `codex/expanded-summoning-phase2a-sprints9-13` in
   `.worktrees/expanded-summoning-phase2a`.
 - Accepted dependency: `master` / `origin/master` at
   `2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a`, the merged PR #24 Favored
   Class integration. The owner packet's expected `2943a02d` is its ancestor.
-- Latest pushed branch head before this checkpoint:
-  `4f50e3d926d2d6bed25c843505a8be50e2526890`.
+- Last pushed mechanical checkpoint before Stirge publication:
+  `207b71e20da2765ac213029c45d4fc98f4db7cef`.
   Branch head at intake: `2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a`;
   first pushed intake checkpoint: `359e346ecb6a094552f096869ecb9c81a2d291bf`.
 - Sprint 9 Eagle and Dire Bat passed the internal technical gate. The 14
@@ -24,17 +24,19 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
   RTWP/turn-based native combat, impact contact, open-floor and obstructed
   room-opening travel, visual lifecycle, save/load/expiry, module-disabled
   safety, donor controls and exact installation restoration are qualified.
-  Sprint 10 is in progress. Giant Wasp is registered at SM IV and SNA IV,
+  Sprint 10 is internally technically qualified. Giant Wasp is registered at SM IV and SNA IV,
   and its sting-delivered poison, native two-mode attack cadence, baked
   stinger contact (0/0 m turn-based; 0/0.191 m RTWP), doorway travel,
   rendered lifecycle and zero-owned-resource teardown have guarded PASS
   evidence. Its original icon is exported and all twelve logical placements
-  are published. Stirge is registered at SNA I-IX
-  with a hidden Tiny unit and zero-damage touch carrier; all nine placements
-  remain suppressed. Live player path passed 825/825 published roots and
-  29/29 native wrappers; the live inventory passed 50/50 assertions with
-  93 project icons, exact Wasp inspectable-type art, zero missing menu icons,
-  and zero prohibited references.
+  are published. Stirge is registered at SNA I-IX with a Tiny unit and
+  zero-damage touch carrier; all nine placements are published with its own
+  original icon. Final guarded player path `20260928T1344385887684Z` passed
+  834/834 generated roots and 29/29 native wrappers. Live inventory
+  `20260928T1405023387599Z` passed 50/50 assertions with 94 project icons,
+  zero missing or misordered menu icons, exact Wasp inspectable-type art and
+  zero prohibited references; the wrapper restored the original installation
+  at `20260928T1409073917030Z`.
 - Last runtime-tested Wasp publication candidate: package SHA-256
   `defbd7bbee93ba6dc5778ae5a0cd906738711b527146622a6187d6b4c93ac442`,
   DLL SHA-256
@@ -67,8 +69,9 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
   cleanup. Its 15-bone Stirge view and the Wasp's 16-bone control were both
   measured. The lifecycle run `20260928T1239005533999Z` left zero private
   meshes/materials; each wrapper restored the original 136-file installation.
-  Icon export/actual UI and choice publication remain open. Native Filth Fever
-  cure timing is not yet measured; exposure uses the installed buff.
+  Icon export, actual UI use and all nine visible choices passed the player-path
+  and inventory gates above. Native Filth Fever cure timing is not yet measured;
+  exposure uses the installed buff.
 - HumanReview: NOT_PERFORMED_NONBLOCKING. Sprint 9 internal engineering,
   fidelity, visual and evidence/restoration reviews passed with the bounded
   limitations below; tranche and later-sprint reviews remain pending.

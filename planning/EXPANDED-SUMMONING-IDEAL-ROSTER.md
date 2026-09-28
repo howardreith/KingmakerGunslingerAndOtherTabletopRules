@@ -72,12 +72,12 @@ project-owned catalog and so hid eleven of them.
 
 | Family placement | Summon Monster | Nature's Ally |
 |---|---|---|
-| Published | 82 | 77 |
-| Registered | 0 | 1 |
+| Published | 82 | 78 |
+| Registered | 0 | 0 |
 | Planned | 38 | 32 |
 | NotOffered | 25 | 35 |
 
-Represented today: **94** creatures (93 published somewhere, 1 registered but hidden).
+Represented today: **94** creatures (94 published somewhere, 0 registered but hidden).
 
 Frost Giant has one retained native unit identity and published Summon Monster and Nature's Ally wrappers in both families.
 
@@ -216,7 +216,7 @@ Identity reuse: 94 existing creature identities are reused in place (charter dec
 | Soul Eater | 6 | - | complete | Strong | - | NativeWrapper | Published | NotOffered | Outsiders |
 | Steam Mephit | 4 | 4 | S5 | Strong | Low | ProjectOwned | Published | Published | Mephit family |
 | Stegosaurus | - | 6 | S23 | Strong | High | None | NotOffered | Planned | Armored dinosaurs |
-| Stirge | - | 1 | S10 | Strong | High | ProjectOwned | NotOffered | Registered | Flying creature rigs |
+| Stirge | - | 1 | S10 | Strong | High | ProjectOwned | NotOffered | Published | Flying creature rigs |
 | Stone Giant | - | 6 | S28 | Essential | Medium | None | NotOffered | Planned | Giant humanoids |
 | Storm Giant | - | 9 | S29 | Essential | Medium | None | NotOffered | Planned | Giant humanoids |
 | Succubus | 6 | - | S33 | Strong | Medium | ProjectOwned | Published | NotOffered | Outsiders |

@@ -121,7 +121,7 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $stagedMod 'assets\soun
 # Existing 135-file package plus 89 original elemental/strategic paintings,
 # the 3 composed strategic scroll item icons, and the Pteranodon mesh data
 # with its painted albedo.
-$expectedPackageFileCount = if ($hasFirearmSoundBank) { 261 } else { 259 }
+$expectedPackageFileCount = if ($hasFirearmSoundBank) { 262 } else { 260 }
 & $python (Join-Path $root 'tools\create_deterministic_package.py') --source $stagedMod --output $packagePath --expected-file-count $expectedPackageFileCount
 if ($LASTEXITCODE -ne 0) { throw 'Deterministic package creation failed.' }
 & (Join-Path $PSScriptRoot 'validate-package.ps1') `

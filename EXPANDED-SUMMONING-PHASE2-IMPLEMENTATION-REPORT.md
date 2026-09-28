@@ -1,6 +1,6 @@
 # Expanded Summoning Phase 2 implementation report
 
-Status: Sprint 9 internally technically qualified; Sprint 10 in progress.
+Status: Sprints 9 and 10 internally technically qualified; Sprint 11 in progress.
 Eagle and Dire Bat passed guarded casts, player path, live inventory,
 open-floor and room-opening movement, exact-hostile native combat in RTWP
 and turn-based mode, visual impact contact, save/load/expiry, module-disabled
@@ -9,9 +9,9 @@ icon and bounded Bat blindsense are published on the Phase 2A feature branch.
 Human visual approval remains pending and nonblocking. Giant Wasp's twelve
 SM/SNA choices are published with an original icon; its poison, native sting
 cadence, visual contact, movement, cleanup, live menu and player path passed.
-Stirge's nine SNA choices remain hidden while its choice icon/UI review is
-completed. Native Filth Fever exposure is qualified; cure timing has not yet
-been measured. The Phase 2A draft PR is
+Stirge's nine SNA choices are published with an original icon after guarded
+834-root player-path and 50-assertion live-menu gates. Native Filth Fever
+exposure is qualified; cure timing has not yet been measured. The Phase 2A draft PR is
 not ready for owner review.
 
 The accepted baseline is `master` at `2ce70e4` (0.0.140), which advanced after
@@ -618,3 +618,30 @@ The wrapper restored the original 136-file installation at
 `20260928T1311121870023Z`. Native Filth Fever cure timing was not measured;
 the exact installed buff owns progression. The Stirge choices remain hidden
 until icon export and live menu qualification.
+
+## Sprint 10 Stirge published choices, 2026-09-28
+
+The original Stirge painting exported as a distinct 128 px summon icon (SHA-256
+`2238a7599b8e254bc1675ba98711667a27079c7f8d15c660089f1017ce061ff1`).
+The 94-concept source manifest assigns it to the unit and nine Nature's Ally
+abilities; the touch weapon and attach trait remain mechanics-only, the hold
+is internal, and Filth Fever keeps its native buff art. The source and export
+were reviewed at full and 128 px scale; owner visual approval remains pending.
+
+All nine Stirge placements are published. Guarded working-save player path
+`20260928T1344385887684Z` passed 834/834 generated roots and 29/29 native
+wrappers, one-slot and quantity contracts, and request-local cleanup. Guarded
+no-save inventory `20260928T1405023387599Z` passed all 50 assertions:
+834 parent placements and exact native ability contracts, all 18 final-live
+menu equations, zero missing or misordered menu icons, distinct project species
+icons, 205 template logical choices, and zero prohibited references. The
+player-path restoration `20260928T1400087550989Z` and inventory restoration
+`20260928T1409073917030Z` verified the same original 136-file installation.
+Repository validation, all 1,942 domain tests, clean Release and strict
+262-file package validation passed. The publication candidate package SHA-256
+is `fb71bde212d9cd4e5441899e9d73664a5e7a267f96227cee235392a7ad6e076d`;
+DLL SHA-256 is
+`6b866d3629ba822a5c9907238af8ce2f067a683ae4928c0153330f2e753a2d65`.
+Sprint 10 is internally technically qualified. Native Filth Fever cure timing
+was not measured; its exact installed buff owns progression. Owner visual
+review remains pending and does not block the already-authorized Sprint 11.
