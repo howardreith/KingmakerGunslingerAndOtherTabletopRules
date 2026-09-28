@@ -1562,6 +1562,9 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintBuff filthFever = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(
                 library, "9545a5550d89feb47a84edaeb4e63d0b",
                 "native Filth Fever disease");
+            BlueprintBuff unlootable = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(
+                library, "0f775c7d5d8b6494197e1ce937754482",
+                "native Unlootable condition");
             if (unit.Body == null || !ReferenceEquals(unit.Body.PrimaryHand, touch))
                 throw new InvalidOperationException(
                     "Stirge attachment requires the exact touch carrier.");
@@ -1597,7 +1600,7 @@ namespace KingmakerGunslinger.Blueprints
                     "Attached to prey: loses Dexterity to AC and drains one Constitution per round until four points are taken or the prey escapes."),
                 null);
             unit.AddFacts = (unit.AddFacts ?? Array.Empty<BlueprintUnitFact>())
-                .Concat(new BlueprintUnitFact[] { traits }).ToArray();
+                .Concat(new BlueprintUnitFact[] { traits, unlootable }).ToArray();
         }
 
         /// <summary>
