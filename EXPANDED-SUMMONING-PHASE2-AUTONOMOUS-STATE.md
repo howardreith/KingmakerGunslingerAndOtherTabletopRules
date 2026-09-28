@@ -1013,3 +1013,22 @@ DLL SHA-256:
 `52B0F26DEDA2B1088507E5548928975813C4B8E99D684154C81301DA0C8D7DD3`.
 Death, dismissal, expiry, disease, save/load, original visual and icon remain
 open, and Stirge remains unpublished.
+
+## Sprint 10 attached-summon teardown, 2026-09-28
+
+Guarded disposable combat `20260928T0332419433992Z` passed teardown of a
+newly attached Stirge: after the native queued entity-destroyer tick, the
+summon was destroyed, its victim's target part and held state were gone,
+and no further HP or Constitution damage occurred. An earlier immediate
+diagnostic `20260928T0320014996249Z` failed because
+`UnitEntityData.Destroy()` had only queued teardown; it is excluded from
+qualification. Repository validation, 1,940 domain tests, clean Release and
+strict package checks passed. Restoration `20260928T0336376497673Z`
+returned the original 136-file tree at SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+Package SHA-256:
+`AB5609EC38EA31228145B5C7259880979D1200B8E8FA39BFCCDB549F5C8981A1`;
+DLL SHA-256:
+`037600735E5E74F368F4DCDD0FD7A33CE08B2D338E3BE4ED8BDB721947E3545D`.
+Actual summon timer expiry, prey death, disease, save/load, original visual
+and icon still require qualification or implementation. Stirge remains hidden.

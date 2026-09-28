@@ -682,3 +682,16 @@ all prior Stirge assertions and exact installation restoration
 (`20260928T0307556510922Z`). Repository validation, 1,940 domain tests,
 clean Release and strict package checks passed. Controller scheduling,
 death/dismissal/expiry, disease, persistence and visual gates remain open.
+
+## Sprint 10: attached Stirge teardown, 2026-09-28
+
+I attached a separate disposable Stirge and destroyed it through the
+summoned-unit teardown path. An immediate diagnostic
+`20260928T0320014996249Z` saw neither `Destroyed` nor victim release,
+because Kingmaker queues entity destruction. After advancing the native
+destroyer, `20260928T0332419433992Z` passed: the summon was destroyed,
+the victim's grapple part and held state disappeared, and HP and Constitution
+damage stayed unchanged. Repository validation, 1,940 domain tests, clean
+Release and strict package checks passed. Restoration
+`20260928T0336376497673Z` returned the original installed bytes. Timer
+expiry, prey death, disease, persistence and visuals remain open.
