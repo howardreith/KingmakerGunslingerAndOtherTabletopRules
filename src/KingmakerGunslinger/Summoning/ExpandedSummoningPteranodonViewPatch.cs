@@ -50,6 +50,8 @@ namespace KingmakerGunslinger.Summoning
             "KMG_Summoning_Unit_Eagle";
         internal const string GiantWaspBlueprintName =
             "KMG_Summoning_Unit_GiantWasp";
+        internal const string StirgeBlueprintName =
+            "KMG_Summoning_Unit_Stirge";
         /// <summary>
         /// The name carried by the private mesh and material the swap installs;
         /// observers recognise the attached state by it.
@@ -58,6 +60,7 @@ namespace KingmakerGunslinger.Summoning
         internal const string DireBatVisualName = "KMG_DireBatMembrane";
         internal const string EagleVisualName = "KMG_EagleFeathers";
         internal const string GiantWaspVisualName = "KMG_GiantWaspMembrane";
+        internal const string StirgeVisualName = "KMG_StirgeMembrane";
         private const string MainTexture = "_MainTex";
 
         /// <summary>
@@ -167,7 +170,9 @@ namespace KingmakerGunslinger.Summoning
                         EagleBlueprintName, StringComparison.Ordinal)
                     ? "eagle" : string.Equals(blueprintName,
                         GiantWaspBlueprintName, StringComparison.Ordinal)
-                        ? "giant-wasp" : null;
+                        ? "giant-wasp" : string.Equals(blueprintName,
+                            StirgeBlueprintName, StringComparison.Ordinal)
+                            ? "stirge" : null;
             if (visualKey == null) return;
 
             lock (Applied)
@@ -208,6 +213,12 @@ namespace KingmakerGunslinger.Summoning
                 if (!PteranodonAssetRuntime.TryGetGiantWaspVisual(out source,
                     out boneNames, out albedo))
                     return Fallback(PteranodonAssetRuntime.GiantWaspStatus);
+            }
+            else if (attachment.VisualKey == "stirge")
+            {
+                if (!PteranodonAssetRuntime.TryGetStirgeVisual(out source,
+                    out boneNames, out albedo))
+                    return Fallback(PteranodonAssetRuntime.StirgeStatus);
             }
             else
             {
@@ -262,7 +273,8 @@ namespace KingmakerGunslinger.Summoning
                 string visualName = attachment.VisualKey == "dire-bat"
                     ? DireBatVisualName : attachment.VisualKey == "eagle"
                         ? EagleVisualName : attachment.VisualKey == "giant-wasp"
-                            ? GiantWaspVisualName : CustomVisualName;
+                            ? GiantWaspVisualName : attachment.VisualKey == "stirge"
+                                ? StirgeVisualName : CustomVisualName;
                 mesh.name = visualName;
                 mesh.bindposes = bindposes;
 
@@ -416,14 +428,17 @@ namespace KingmakerGunslinger.Summoning
             if (controller != null) ReinitMaterials(controller);
         }
 
-        /// <summary>Release only the Wasp's per-view clones on view death.
+        /// <summary>Release the new flying creatures' per-view clones on death.
         /// The cached source mesh/painting and the native donor stay owned by
         /// their existing systems; no accepted Phase 1 view is changed here.</summary>
-        internal static void ReleaseWaspView(UnitEntityView view)
+        internal static void ReleasePhase2View(UnitEntityView view)
         {
             Attachment attachment;
             if (view == null || !Applied.TryGetValue(view, out attachment) ||
-                attachment.VisualKey != "giant-wasp") return;
+                (attachment.VisualKey != "giant-wasp" &&
+                 attachment.VisualKey != "stirge")) return;
+            string visualName = attachment.VisualKey == "stirge"
+                ? StirgeVisualName : GiantWaspVisualName;
             if (attachment.WaspSting != null)
                 attachment.WaspSting.enabled = false;
             var materials = new HashSet<Material>();
@@ -433,7 +448,7 @@ namespace KingmakerGunslinger.Summoning
             {
                 foreach (Material material in attachment.Donor.sharedMaterials)
                     if (material != null && material.name.StartsWith(
-                        GiantWaspVisualName, StringComparison.Ordinal))
+                        visualName, StringComparison.Ordinal))
                         materials.Add(material);
                 StandardMaterialController controller = attachment.Donor
                     .GetComponentInParent<StandardMaterialController>();
@@ -441,7 +456,7 @@ namespace KingmakerGunslinger.Summoning
                 if (driven != null)
                     foreach (Material material in driven)
                         if (material != null && material.name.StartsWith(
-                            GiantWaspVisualName, StringComparison.Ordinal))
+                            visualName, StringComparison.Ordinal))
                             materials.Add(material);
                 Revert(attachment);
             }
@@ -484,7 +499,7 @@ namespace KingmakerGunslinger.Summoning
             int count = materials == null ? -1 : materials.Count;
             bool adopted = materials != null && driven != null &&
                 materials.Contains(driven) && driven.name.StartsWith(
-                    CustomVisualName, StringComparison.Ordinal);
+                    material.name, StringComparison.Ordinal);
             return "clonedDissolve=" + dissolve + ";materialController=" +
                 (reinitialized ? "reinitialized" : "reinit-unavailable") +
                 ";controllerMaterials=" + count + ";adopted=" +
@@ -534,7 +549,7 @@ namespace KingmakerGunslinger.Summoning
     {
         private static void Prefix(UnitEntityView __instance)
         {
-            try { ExpandedSummoningPteranodonViewPatch.ReleaseWaspView(__instance); }
+            try { ExpandedSummoningPteranodonViewPatch.ReleasePhase2View(__instance); }
             catch (Exception)
             {
                 // Resource release must never interrupt native view teardown.
