@@ -421,3 +421,11 @@ validation, 1,940 domain tests, clean Release and strict package checks;
 the installation was restored exactly. The touch-AC and attach/drain
 lifecycle, original Stirge visual and icon remain unimplemented, and all
 Stirge choices stay hidden.
+
+The hidden Stirge primary weapon now clones the native held-touch weapon
+from Shocking Grasp delivery. The builder requires `AttackType.Touch`;
+live inventory on the final candidate observed `type=Touch;dice=0;primary=True`
+and passed all 49 assertions (`20260928T0125544188038Z`). Repository
+validation, 1,940 domain cases, clean Release and strict package validation
+passed, with exact installation restoration. This is attack-type routing,
+not a direct hit or attach/drain qualification. Publication remains closed.
