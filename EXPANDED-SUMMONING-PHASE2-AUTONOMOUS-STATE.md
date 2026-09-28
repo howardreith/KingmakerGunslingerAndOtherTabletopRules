@@ -103,6 +103,17 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
   `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
   No ungulate unit or trample ability is registered yet. The native overrun
   delivery's movement is a candidate seam, not rules qualification.
+- Sprint 11 art-source checkpoint: four original 1254 px Aurochs, Bison,
+  Rhinoceros and Woolly Rhinoceros icon paintings have byte-verified source
+  hashes and distinct composition briefs in
+  `assets-source/original-icons/expanded-summoning/PHASE2-SPRINT11-SOURCES.md`.
+  They are unpublished candidates. Icon catalog validation and all 24 icon
+  tests, repository validation, 1,945 domain tests, clean Release, and strict
+  package validation passed. Package SHA-256
+  `f45f04eccec0af36077277713204beb9dab2c665e06b72e09695f1a7a21bb89e`;
+  DLL SHA-256
+  `bbd582817ea99b4da72009673f04d8e4920d5c5e515ee59dfedaf3917c90088c`.
+  No deployment was performed for this art-only checkpoint.
 - Blockers: none established. The Sprint 10 rules-source access gate is
   resolved by the owner's standing network authorization; exact Stirge and
   Giant Wasp baseline rules are cited in

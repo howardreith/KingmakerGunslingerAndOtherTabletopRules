@@ -77,6 +77,17 @@ claims, use the correct action economy, and prove charge-state cleanup in
 both modes. The installed library's dnlib metadata was read without loading
 or executing game code; the private IL transcription is uncommitted evidence.
 
+The same read-only IL check narrows the charge gap: the game's `PowerfulCharge`
+component requires the native charge buff, first attack and no opportunity
+attack, then adds its configured dice and **1.5 more Strength multipliers**.
+`RuleCalculateWeaponStats.OnTrigger` gives a lone primary natural weapon a
+1.5 Strength multiplier and adds any component multiplier to it. Thus the
+native component would produce 3x Strength on an ordinary single-gore rhino,
+versus the Paizo stat blocks' 2x Strength on powerful charge. This is an
+inference from the installed IL, still requiring a live rulebook check. A
+summon-local `+0.5` multiplier and two extra gore dice is the precise
+candidate; no global change to the native component is justified.
+
 The first pure rules-policy source checkpoint passed repository validation,
 1,945 domain tests, clean Release, strict package, guarded Steam working-save
 smoke `20260928T1517172841252Z`, and exact original-install restoration

@@ -942,3 +942,19 @@ also a temporary native charge state; with `AutoSuccess=false` it uses a CMB
 check. Its default graph does not implement Paizo's Reflex/AoO choice, target
 size rule, or round ledger. Continue with a bounded adapter and live mode
 qualification before publishing any ungulate.
+
+## Sprint 11: four original icon-source candidates, 2026-09-28
+
+Four 1254 px project-original Aurochs, Bison, Rhinoceros and Woolly
+Rhinoceros raster masters are stored under
+`assets-source/original-icons/expanded-summoning/sources/`; exact hashes,
+species briefs and their unpublished status are in
+`PHASE2-SPRINT11-SOURCES.md`. The reference index records each as a candidate,
+without claiming an exported sprite or owner visual approval. Source hash and
+dimension checks, the icon-catalog validator, all 24 icon-catalog tests,
+repository validation, 1,945 domain tests, clean Release and strict package
+passed. The unreferenced source paintings do not enter the game package;
+`Build-Local.ps1` performed no deployment. Its package SHA-256 is
+`f45f04eccec0af36077277713204beb9dab2c665e06b72e09695f1a7a21bb89e`;
+DLL SHA-256
+`bbd582817ea99b4da72009673f04d8e4920d5c5e515ee59dfedaf3917c90088c`.
