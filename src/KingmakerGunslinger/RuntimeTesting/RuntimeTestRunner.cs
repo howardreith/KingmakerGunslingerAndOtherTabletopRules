@@ -21956,6 +21956,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 blueprint.name ==
                     "KMG_Summoning_Natural_DireBat_Blindsense" ||
                 blueprint.name ==
+                    "KMG_Summoning_Natural_GiantWasp_Poison" ||
+                blueprint.name ==
                     "KMG_Summoning_Special_LanternArchon_LightRay" ||
                 blueprint.name ==
                     "KMG_Summoning_Special_LanternArchon_Defenses" ||

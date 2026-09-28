@@ -13,16 +13,16 @@ namespace KingmakerGunslinger.DomainTests
     {
         internal static void ShippedSurfaceMatchesFrozenBaseline()
         {
-            Assertions.Equal(82, ExpandedSummoningBaselineInventory.UniqueCreatures,
+            Assertions.Equal(83, ExpandedSummoningBaselineInventory.UniqueCreatures,
                 "Baseline unique creature count changed.");
             Assertions.Equal(75, ExpandedSummoningBaselineInventory.RosterEntries(
                 SummonFamily.Monster), "Baseline SM roster count changed.");
-            Assertions.Equal(72, ExpandedSummoningBaselineInventory.RosterEntries(
+            Assertions.Equal(73, ExpandedSummoningBaselineInventory.RosterEntries(
                 SummonFamily.NaturesAlly), "Baseline SNA roster count changed.");
             Assertions.Equal(420, ExpandedSummoningBaselineInventory
                 .RegisteredPlacements(SummonFamily.Monster),
                 "Baseline SM registered placements changed.");
-            Assertions.Equal(405, ExpandedSummoningBaselineInventory
+            Assertions.Equal(414, ExpandedSummoningBaselineInventory
                 .RegisteredPlacements(SummonFamily.NaturesAlly),
                 "Baseline SNA registered placements changed.");
             Assertions.Equal(431, ExpandedSummoningBaselineInventory
@@ -85,16 +85,19 @@ namespace KingmakerGunslinger.DomainTests
         }
 
         /// <summary>
-        /// Sprint 10 registers Wasp identities without exposing incomplete poison.
+        /// Sprint 10 registers Wasp and Stirge without exposing incomplete mechanics.
         /// </summary>
         internal static void HiddenAndProxyCreaturesAreRecorded()
         {
-            Assertions.Equal(1,
+            Assertions.Equal(2,
                 ExpandedSummoningBaselineInventory.RegisteredButHiddenCreatures.Count,
                 "The registered-but-hidden creature set changed.");
             Assertions.Equal("giant-wasp",
                 ExpandedSummoningBaselineInventory.RegisteredButHiddenCreatures[0],
-                "Only the unfinished Wasp may be hidden.");
+                "The unfinished Wasp remains hidden.");
+            Assertions.Equal("stirge",
+                ExpandedSummoningBaselineInventory.RegisteredButHiddenCreatures[1],
+                "The unfinished Stirge remains hidden.");
             Assertions.True(ExpandedSummoningBaselineInventory.ProxyVisualCreatures
                 .Contains("pteranodon<Roc"),
                 "Pteranodon must still be recorded as a Roc-policy visual proxy.");

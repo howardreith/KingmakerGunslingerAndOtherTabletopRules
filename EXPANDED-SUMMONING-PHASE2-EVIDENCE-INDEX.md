@@ -19,6 +19,8 @@ original 136-file live tree has SHA-256
 | Sprint 10 Wasp native RTWP strike cadence | `20260927T2220168994981Z-summon-same-turn-rtwp-control` | `20260927T2223192246293Z-summon-same-turn-activation.json` | Two exact-target native sting rules after 145 wait frames; stinger surface 0.743 m and 2.04 m from body bounds at impact. Both runs shared one exact restoration. |
 | Sprint 10 Wasp impact camera diagnosis, turn-based | `20260927T2251029714353Z-summon-same-turn-activation` | `20260927T2257092555149Z-summon-same-turn-activation.json` | Two valid overhead and two party-camera PNGs at native strikes; overhead shows stinger pointing away from target, and party-camera wall occlusion prevents visual acceptance. Mechanical assertions passed. |
 | Sprint 10 Wasp impact camera diagnosis, RTWP | `20260927T2254096344270Z-summon-same-turn-rtwp-control` | `20260927T2257092555149Z-summon-same-turn-activation.json` | Two valid overhead and two party-camera PNGs; second RTWP frame shows abdomen/stinger extended away from target. First RTWP frame was partly dissolved. Both modes shared one exact restoration. |
+| Sprint 10 Stirge hidden-registration startup smoke | `20260928T0029440999424Z-working-save-smoke` | `20260928T0032440302923Z-working-save-smoke.json` | PASS on the working save; proves startup safety only. |
+| Sprint 10 Stirge/Wasp hidden-registration live inventory | `20260928T0052069434655Z-observe-expanded-summoning-inventory` | `20260928T0055527257092Z-observe-expanded-summoning-inventory.json` | 48/48 PASS; 83 units, 834 executable roots, 813 visible parents, zero shared donor components or prohibited references. Stirge remains suppressed; no attach mechanics are claimed. |
 
 Diagnostic failures `20260927T1841288896478Z`,
 `20260927T1853108579217Z` and `20260927T1903352617466Z` are excluded
@@ -65,3 +67,10 @@ clean Release and strict package PASS. Guarded working-save smoke
 `20260927T2353348639066Z` PASS and exact original installation restoration
 `20260927T2356206464811Z-working-save-smoke.json` PASS. This is only a
 load/safety check; no Stirge runtime mechanics are installed yet.
+
+Hidden-registration inventory diagnostic `20260928T0037477029671Z` is
+excluded from qualification: 47/48 assertions passed, but the audit flagged
+the existing owned Wasp poison fact as a prohibited summon reference. The
+exact Wasp poison identity was allowlisted after confirming the live fact;
+the passing repeat above reports zero prohibited references. Both attempts
+restored the original 136-file installation exactly.

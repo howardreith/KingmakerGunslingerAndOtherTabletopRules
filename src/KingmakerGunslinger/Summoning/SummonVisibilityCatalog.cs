@@ -11,10 +11,10 @@ namespace KingmakerGunslinger.Summoning
     internal static class SummonVisibilityCatalog
     {
         private static readonly HashSet<string> SuppressedCreatureKeys =
-            new HashSet<string>(StringComparer.Ordinal) { "giant-wasp" };
+            new HashSet<string>(StringComparer.Ordinal) { "giant-wasp", "stirge" };
 
-        internal const int RegisteredLogicalPlacementCount = 825;
-        internal const int SuppressedLogicalPlacementCount = 12;
+        internal const int RegisteredLogicalPlacementCount = 834;
+        internal const int SuppressedLogicalPlacementCount = 21;
         internal const int PublishedLogicalPlacementCount =
             RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount;
 
@@ -34,7 +34,8 @@ namespace KingmakerGunslinger.Summoning
                 !IsPublished(value)).ToArray();
             if (all.Length != RegisteredLogicalPlacementCount ||
                 suppressed.Length != SuppressedLogicalPlacementCount ||
-                suppressed.Any(value => value.Creature.Key != "giant-wasp") ||
+                suppressed.Any(value => value.Creature.Key != "giant-wasp" &&
+                    value.Creature.Key != "stirge") ||
                 all.Count(IsPublished) != PublishedLogicalPlacementCount)
                 throw new InvalidOperationException(
                     "Frozen summon publication visibility catalog changed.");

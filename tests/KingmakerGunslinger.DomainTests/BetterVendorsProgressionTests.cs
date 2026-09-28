@@ -140,7 +140,8 @@ namespace KingmakerGunslinger.DomainTests
                     (ExpandedSummoningSprint8Tests.AppendedLedgerIdentities + ExpandedSummoningCorrectionTests.AppendedLedgerIdentities) +
                     KingmakerGunslinger.FavoredClass.FavoredClassIdentityCatalog.IdentityCount +
                     KingmakerGunslinger.ElementalRaces.ElementalMostlyHumanPolicy.IdentityCount + 1 +
-                    ExpandedSummoningSprint10Tests.AppendedLedgerIdentities,
+                    ExpandedSummoningSprint10Tests.AppendedLedgerIdentities +
+                    ExpandedSummoningSprint10Tests.StirgeAppendedLedgerIdentities,
                 entries.Length,
                 "Manifest preserves accepted blocks and appends only approved Phase 2 identities.");
             string prefix = string.Concat(entries.Take(PreservedManifestEntries)

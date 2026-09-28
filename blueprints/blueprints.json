@@ -19927,6 +19927,94 @@
       "status": "active",
       "milestone": "Expanded Summoning",
       "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Unit.Stirge",
+      "guid": "c49f994ea2a840d98108b2848781774c",
+      "plannedType": "BlueprintUnit",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier1.Stirge.One",
+      "guid": "ab2ea4d32e3645198a6cb95643dad9c4",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier2.Stirge.OneD3",
+      "guid": "ea019fa0428a439bb05c1ef789852519",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier3.Stirge.OneD4PlusOne",
+      "guid": "0b2352e707f441dcb1fb27fecef083ba",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier4.Stirge.OneD4PlusOne",
+      "guid": "0e41716f22964fd7b304a0bc56d80a72",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier5.Stirge.OneD4PlusOne",
+      "guid": "101fc37d523143149686f9e1bf47dbf8",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier6.Stirge.OneD4PlusOne",
+      "guid": "cdff8bfdf5914f3aab33f37b2137f93d",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier7.Stirge.OneD4PlusOne",
+      "guid": "aad15f9a71344fc9a5c8b0f1c3550b06",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier8.Stirge.OneD4PlusOne",
+      "guid": "71d5ca1d97664cff8208852ea62c1bdb",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier9.Stirge.OneD4PlusOne",
+      "guid": "7ccb846a948849f6a69e3b58982aa4dd",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Natural.StirgeTouch",
+      "guid": "ebf16ae835ea40c7afaaf90277c013bf",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
     }
   ]
 }
