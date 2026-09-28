@@ -47,7 +47,11 @@ namespace KingmakerGunslinger.Summoning
                 "greater-air-elemental|e770cfbb96b528c4db258d7d03fe6533|1", "greater-earth-elemental|cda7013db24f4c547b79bfc5c617066b|1", "greater-fire-elemental|b0b4091bdaebb464e903857a95189dea|1", "greater-water-elemental|fcc939e3acf355b458ddf9617d8c6c28|1", "mastodon|028cc6f46e7998f46855a33ffde89567|1", "roc|406c1e1af5400ac4881e330502ccbd9e|0", "bebelith|51c66b0783a748c4b9538f0f0678c4d7|0", "giant-flytrap|fb824352b7968fb4d8103ac439644633|0",
                 "elder-air-elemental|33bb90ffd13c87b4c8e45d920313752a|1", "elder-earth-elemental|6b4cb9b6116f2194192e1e7e379c48d7|1", "elder-fire-elemental|ea0f0bbc6e5e471428d535501b21eb26|1", "purple-worm|bf2216f48b3f4d24c9c502007649340d|1", "elder-water-elemental|3bd31a0b4d800f04a8c5b7b1a6d7061e|1", "ghaele-azata|bc8ca1437c0f48948b317b7e64febf0d|1", "pixie|394610e32cfbc4f43a0efaab16faae49|0",
                 "giant-wasp|406c1e1af5400ac4881e330502ccbd9e|0",
-                "stirge|406c1e1af5400ac4881e330502ccbd9e|0"
+                "stirge|406c1e1af5400ac4881e330502ccbd9e|0",
+                "aurochs|5bb9579fdb2b26b48bb10d61c81cfdfb|1",
+                "bison|5bb9579fdb2b26b48bb10d61c81cfdfb|1",
+                "rhinoceros|028cc6f46e7998f46855a33ffde89567|1",
+                "woolly-rhinoceros|028cc6f46e7998f46855a33ffde89567|1"
             });
         }
 

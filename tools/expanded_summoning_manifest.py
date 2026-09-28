@@ -153,8 +153,8 @@ def parsed_creatures():
             "ally": None if ally == "null" else int(ally),
             "visual": visual or name,
         })
-    if len(values) != 83:
-        raise SystemExit(f"Expected 83 parsed creatures; observed {len(values)}")
+    if len(values) != 87:
+        raise SystemExit(f"Expected 87 parsed creatures; observed {len(values)}")
     return values
 
 
@@ -341,7 +341,7 @@ def planned():
         ("KMG.Summoning.Special.Stirge.CombatTraits", "BlueprintBuff"),
         ("KMG.Summoning.Special.Stirge.Hold", "BlueprintBuff"),
     ))
-    if len(rows) != 1515 or len({symbol for symbol, _ in rows}) != 1515:
+    if len(rows) != 1615 or len({symbol for symbol, _ in rows}) != 1615:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 
@@ -353,14 +353,14 @@ def generated_roster(manifest):
         for key, guid, dedicated in DONOR.findall(DONORS.read_text(encoding="utf-8"))
     }
     creatures = parsed_creatures()
-    if len(donors) != 83 or set(donors) != {value["key"] for value in creatures}:
+    if len(donors) != 87 or set(donors) != {value["key"] for value in creatures}:
         raise SystemExit("Roster generation requires one exact donor per creature")
     lines = [
         "# Expanded Summoning roster and identity ledger",
         "",
         "Generated deterministically by `tools/expanded_summoning_manifest.py`; do not edit by hand.",
         "",
-        "Registered totals: 75 Summon Monster entries / 420 placements; 73 Summon Nature's Ally entries / 414 placements; 83 unique units; all 834 logical placements published. Giant Wasp's twelve and Stirge's nine are available after their Sprint 10 gates. The Frost Giant remains a retained native unit under Summon Monster VIII-IX and Summon Nature's Ally VII-IX wrappers.",
+        "Registered totals: 79 Summon Monster entries / 444 placements; 77 Summon Nature's Ally entries / 438 placements; 87 unique units; 48 Sprint 11 ungulate placements hidden and the earlier 834 published. Giant Wasp's twelve and Stirge's nine remain available after their Sprint 10 gates. The Frost Giant remains a retained native unit under Summon Monster VIII-IX and Summon Nature's Ally VII-IX wrappers.",
         "",
         "Final native qualification source: `5205805eab3fe0115d6888c53bce73c80474d1b7`. Structural run `20260812T1327062696968Z-bd09acfba08942df8f7c42e5c70252f4`; native cast run `20260812T1330147883834Z-ec8896f1d65b43e0913a6bea7cba4405`; visual run `20260812T1151394827201Z-add45a04f5de44c1a39e3251f7ff0778`; enabled/disabled persistence runs `20260812T1155220523013Z-6d2a18f9b33344d08d3127ffce7e5cb6` through `20260812T1208449380302Z-65c9b7056d97483fb48a4a9b76c22ea6`; all eight required final compatibility transactions PASS and restored their profiles.",
         "",
@@ -407,7 +407,8 @@ def generated_roster(manifest):
                        "and summon/conjure surfaces removed; ")
             adaptation = SPECIAL_NOTES.get(creature["key"],
                 "Dedicated mechanics reused only where exact; otherwise donor is view/rig only and the checked-in tabletop profile owns stats, attacks, facts, and deviations.")
-            qualification = ("Published; Sprint 10 Wasp mechanics, view, menu and player path technical PASS; owner visual review pending" if creature["key"] == "giant-wasp" else
+            qualification = ("Registered; Sprint 11 mechanics, original visual, quantity, player path and persistence pending; all placements hidden" if creature["key"] in ("aurochs", "bison", "rhinoceros", "woolly-rhinoceros") else
+                "Published; Sprint 10 Wasp mechanics, view, menu and player path technical PASS; owner visual review pending" if creature["key"] == "giant-wasp" else
                 "Published; Stirge attach, drain, visual contact, icon, player path and live menu technical PASS; owner visual review pending" if creature["key"] == "stirge" else
                 "Structural PASS; native cast PASS; visual contract PASS; required profiles PASS")
             lines.append(
@@ -419,7 +420,7 @@ def generated_roster(manifest):
     lines.extend((
         "## Explicit exclusions",
         "",
-        "No aquatic-only entries, unapproved ants, apes, rhinoceroses, extra dinosaurs, campaign spawns, companions, pets, vendors, loot, or external assets are added. The Pony, Horse, Owlbear and Cyclops joined in Phase 1 Sprint 3, the Shambling Mound, Giant Flytrap and Purple Worm in Sprint 4, the six new mephits in Sprint 5 (no Lightning Mephit), the Tiger in Sprint 8, and the Frost Giant is reused, never duplicated, as a retained native unit under creature-named wrappers. Existing vanilla and third-party entries are preserved by reference and order.",
+        "No aquatic-only entries, unapproved ants, apes, extra dinosaurs, campaign spawns, companions, pets, vendors, loot, or external assets are added. The four authorized Sprint 11 ungulates are registered but hidden. The Pony, Horse, Owlbear and Cyclops joined in Phase 1 Sprint 3, the Shambling Mound, Giant Flytrap and Purple Worm in Sprint 4, the six new mephits in Sprint 5 (no Lightning Mephit), the Tiger in Sprint 8, and the Frost Giant is reused, never duplicated, as a retained native unit under creature-named wrappers. Existing vanilla and third-party entries are preserved by reference and order.",
         "",
     ))
     return "\n".join(lines)

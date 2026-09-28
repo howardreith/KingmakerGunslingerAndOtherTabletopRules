@@ -80,12 +80,12 @@ namespace KingmakerGunslinger.DomainTests
                         SummonFamily.NaturesAlly))
                     .Count(SummonVisibilityCatalog.IsPublished),
                 "Visible summon placement count changed.");
-            Assertions.Equal(0,
+            Assertions.Equal(48,
                 ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
                     .Concat(ExpandedSummoningCatalog.GenerateVariants(
                         SummonFamily.NaturesAlly))
                     .Count(value => !SummonVisibilityCatalog.IsPublished(value)),
-                "All qualified Phase 2 flying placements are published.");
+                "Only the 48 unqualified Sprint 11 ungulate placements are hidden.");
         }
 
         internal static void DisplayOrderGroupsSinglesBeforeQuantities()

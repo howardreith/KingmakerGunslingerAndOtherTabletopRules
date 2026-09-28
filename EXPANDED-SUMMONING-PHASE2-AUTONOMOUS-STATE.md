@@ -13,8 +13,8 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
 - Accepted dependency: `master` / `origin/master` at
   `2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a`, the merged PR #24 Favored
   Class integration. The owner packet's expected `2943a02d` is its ancestor.
-- Last pushed checkpoint, Sprint 10 Stirge publication:
-  `703c3e1a74d4ae3c3d6a9be98b8253623bb27a5e`.
+- Last pushed checkpoint before hidden registration, Sprint 11
+  summon-scoped charge seam: `87b8c4e2325d0de6c826727dc6fc46524ad45ff7`.
   Branch head at intake: `2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a`;
   first pushed intake checkpoint: `359e346ecb6a094552f096869ecb9c81a2d291bf`.
 - Sprint 9 Eagle and Dire Bat passed the internal technical gate. The 14
@@ -75,6 +75,25 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
 - HumanReview: NOT_PERFORMED_NONBLOCKING. Sprint 9 internal engineering,
   fidelity, visual and evidence/restoration reviews passed with the bounded
   limitations below; tranche and later-sprint reviews remain pending.
+- Sprint 11 hidden registration: four new ungulates are registered with 100
+  append-only identities, 48 suppressed placements, and printed natural
+  profiles. There are 87 project units, 882 registered logical placements,
+  and the accepted 834 published placements remain unchanged. Horse/Mastodon
+  views are temporary unpublished donors; charge and trample are not yet
+  attached. Repository validation, 1,945 domain tests, clean Release and
+  strict package passed. Guarded Steam inventory
+  `20260928T1724419577973Z` PASS, clean launcher: 87 units, 882 executable
+  contracts, 834 published parents, 18 exact menu equations, zero prohibited
+  references/shared donor components. Candidate package SHA-256
+  `c71315aa2af8e7dd3189d0bc87853667180fe54890d74bfc283409492709d628`,
+  DLL SHA-256
+  `a6534ffa0227eeb95010ac3015d879a8243b7c2ab2d9e927978dccbd63c20552`.
+  Restoration `20260928T1728545901562Z` returned the original 136-file tree
+  to SHA-256
+  `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+  The earlier 180-second inventory attempt timed out in orchestration and
+  is excluded despite a late game PASS; exact restoration passed. Continue
+  with hidden Rhino charge and trample before any publication.
 - Sprint 11 native ungulate audit: metadata-only guarded surveys
   `20260928T1436375418005Z` and `20260928T1448501815730Z` PASS. The latter
   identified the game's `AbilityCustomOverrun`, turn-based full-round marker,
