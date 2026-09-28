@@ -929,3 +929,20 @@ DLL SHA-256:
 `A66F95442A6641AFF4763177A77E06C8F6FD0BCDE73A10B2DBFC0E9B09F7704F`.
 This proves blueprint attack-type routing, not a direct native hit, HP-damage
 absence or the attach/drain lifecycle. All nine Stirge choices remain hidden.
+
+## Sprint 10 direct Stirge touch hit, 2026-09-28
+
+The guarded disposable combat fixture summoned the hidden Stirge through its
+own Nature's Ally I command and triggered its primary `RuleAttackWithWeapon`
+against an armored hostile. The actual attack roll used `AttackType.Touch`,
+resolved AC 6 rather than ordinary melee AC 14, hit, and changed HP damage
+from 0 to 0. The scenario `20260928T0142219533559Z` passed; restoration
+`20260928T0146022240699Z` returned the original 136-file installed tree at
+SHA-256 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+Repository validation, 1,940 domain tests, clean Release and strict package
+checks passed. Package SHA-256:
+`03579CB0E9B57AC0E60BF9759267493D72C0EC247DC33D0742F140576D2EA473`;
+DLL SHA-256:
+`05B7CF3AE20D2E71978EFEC4F52579CBEF4389139741063E91375D54008BB2F8`.
+Attachment, blood drain, escape, cleanup, original Stirge visual and icon
+remain open, and all nine choices stay hidden.
