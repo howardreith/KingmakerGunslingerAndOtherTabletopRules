@@ -14966,6 +14966,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     foreach (BlueprintUnitFact value in unit.AddFacts.Where(
                         value => value == null ||
+                            !ExpandedSummoningIsApprovedUngulateDirectFact(
+                                unit, value) &&
                             ExpandedSummoningIsForbiddenReference(value)))
                     {
                         prohibitedReferences++;
@@ -22668,6 +22670,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 damage.Value.DiceType == (profile.BreathDieSides == 8 ? DiceType.D8 :
                     DiceType.D4) &&
                 damage.Value.DiceCountValue.Value == profile.BreathDice;
+        }
+
+        private static bool ExpandedSummoningIsApprovedUngulateDirectFact(
+            BlueprintUnit unit, BlueprintUnitFact fact)
+        {
+            if (unit == null || fact == null) return false;
+            string owner = unit.AssetGuid;
+            string granted = fact.AssetGuid;
+            return owner == "40bf3f1e2b094e83ba2ab498c3d5d603" &&
+                    granted == "e58bb2d887ad435eaaa220c1c4528211" ||
+                owner == "d1f0439382454d908f2086dda33eafcc" &&
+                    granted == "48d90c0f49c54e84a463b006e507e322" ||
+                owner == "e0d2c0f0589e467792aff319fdb2b6f9" &&
+                    granted == "8441491856fc46a4837c80c89f5472d5" ||
+                owner == "8c4a8e045ca844a8bd42f614707b8e74" &&
+                    (granted == "9b73615998e94f308e1325153ee08a19" ||
+                     granted == "0f12c70e9b264ae484fb720d0c6845aa");
         }
 
         private static bool ExpandedSummoningIsForbiddenReference(

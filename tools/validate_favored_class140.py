@@ -22,7 +22,7 @@ VERSION = "0.0.140"
 INFORMATIONAL_VERSION = "0.0.140-favored-class-integration"
 PACKAGE = "KingmakerGunslinger-0.0.140-local-runtime.zip"
 PACKAGE_SUFFIX = "favored-class-integration"
-DETERMINISTIC_TEST_COUNT = 1947
+DETERMINISTIC_TEST_COUNT = 1948
 STATIC_KEY = "favoredClassIntegration140"
 
 # Exact ordered (symbol, guid) pairs this candidate appends after the
@@ -279,6 +279,7 @@ def validate(root: Path) -> None:
     stirge_attachment = entries[2501:2503]
     ungulates = entries[2503:2603]
     charge = entries[2603:2605]
+    trample = entries[2605:2608]
     ungulate_tokens = (".Aurochs", ".Bison", ".Rhinoceros",
                        ".WoollyRhinoceros")
     expected_ungulates = {
@@ -288,7 +289,7 @@ def validate(root: Path) -> None:
              symbol.startswith("KMG.Summoning.Ability.")) and
             any(token in symbol for token in ungulate_tokens))
     }
-    if len(entries) != 2605 or len(wasp) != 26 or wasp_hash != (
+    if len(entries) != 2608 or len(wasp) != 26 or wasp_hash != (
             "8a9dac72a9e83675765d8fc850901f76976bf6191418c6cf7f1c4ff6af261ef3"):
         raise AssertionError("Expanded Summoning Phase 2 Wasp append drifted")
     if len(poison) != 2 or poison_hash != (
@@ -320,11 +321,20 @@ def validate(root: Path) -> None:
             ("KMG.Summoning.Special.WoollyRhinoceros.PowerfulCharge",
              "9b73615998e94f308e1325153ee08a19", "BlueprintFeature", "active")]:
         raise AssertionError("Expanded Summoning Rhino charge identities drifted")
+    if [(entry["symbol"], entry["guid"], entry["plannedType"],
+         entry["status"]) for entry in trample] != [
+            ("KMG.Summoning.Special.Aurochs.Trample",
+             "e58bb2d887ad435eaaa220c1c4528211", "BlueprintAbility", "active"),
+            ("KMG.Summoning.Special.Bison.Trample",
+             "48d90c0f49c54e84a463b006e507e322", "BlueprintAbility", "active"),
+            ("KMG.Summoning.Special.WoollyRhinoceros.Trample",
+             "0f12c70e9b264ae484fb720d0c6845aa", "BlueprintAbility", "active")]:
+        raise AssertionError("Expanded Summoning hidden trample identities drifted")
     baseline.AUTHORIZED_APPENDED_AFTER = APPENDED + (
         ("KMG.Summoning.Natural.DireBat.Blindsense", "5dcc039bc9674208a51e4babcd8a30ee"),
     ) + tuple((entry["symbol"], entry["guid"]) for entry in
               wasp + poison + unit_type + stirge + stirge_attachment +
-              ungulates + charge)
+              ungulates + charge + trample)
     # Chains through the 0.0.139 release, which hands these to its baseline.
     release139.VERSION = VERSION
     release139.INFORMATIONAL_VERSION = INFORMATIONAL_VERSION

@@ -6,6 +6,7 @@ using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.Blueprints.Facts;
+using Kingmaker.Blueprints.TurnBasedModifiers;
 using Kingmaker.Blueprints.Items;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Controllers.Brain.Blueprints;
@@ -239,6 +240,14 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Summoning.Unit.WoollyRhinoceros";
         private const string WoollyRhinocerosPowerfulChargeSymbol =
             "KMG.Summoning.Special.WoollyRhinoceros.PowerfulCharge";
+        private const string AurochsTrampleSymbol =
+            "KMG.Summoning.Special.Aurochs.Trample";
+        private const string BisonTrampleSymbol =
+            "KMG.Summoning.Special.Bison.Trample";
+        private const string WoollyRhinocerosTrampleSymbol =
+            "KMG.Summoning.Special.WoollyRhinoceros.Trample";
+        private const string NativeOverrunAbilityGuid =
+            "1a3b471ecea51f7439a946b23577fd70";
         internal const string SmallClawGuid = "800092a2b9a743b48ae8aeeb5d243dcc";
         internal const string MediumClawGuid = "118fdd03e569a66459ab01a20af6811a";
         internal const string Claw2d4Guid = "8afc47748d00b3e4a8aff2787d9ee350";
@@ -442,7 +451,82 @@ namespace KingmakerGunslinger.Blueprints
                 RhinocerosPowerfulChargeSymbol, "rhinoceros");
             ConfigureUngulatePowerfulCharge(bySymbol, WoollyRhinocerosUnitSymbol,
                 WoollyRhinocerosPowerfulChargeSymbol, "woolly-rhinoceros");
+            ConfigureUngulateTrample(library, bySymbol, "KMG.Summoning.Unit.Aurochs",
+                AurochsTrampleSymbol, "aurochs");
+            ConfigureUngulateTrample(library, bySymbol, "KMG.Summoning.Unit.Bison",
+                BisonTrampleSymbol, "bison");
+            ConfigureUngulateTrample(library, bySymbol,
+                WoollyRhinocerosUnitSymbol, WoollyRhinocerosTrampleSymbol,
+                "woolly-rhinoceros");
             ConfigureMephitVariants(library, bySymbol);
+        }
+
+        private static void ConfigureUngulateTrample(
+            LibraryScriptableObject library,
+            IDictionary<string, BlueprintScriptableObject> bySymbol,
+            string unitSymbol, string abilitySymbol, string creatureKey)
+        {
+            BlueprintUnit unit = Require<BlueprintUnit>(bySymbol, unitSymbol);
+            BlueprintAbility ability = Require<BlueprintAbility>(bySymbol,
+                abilitySymbol);
+            UngulateRulesProfile rules = UngulateRulesPolicy.For(creatureKey);
+            if (!rules.HasTrample)
+                throw new InvalidOperationException(
+                    "A non-trampling ungulate cannot own a trample ability: " +
+                    creatureKey);
+            BlueprintAbility native = BlueprintLibraryLookup.RequireExact<
+                BlueprintAbility>(library, NativeOverrunAbilityGuid,
+                    "native path-following overrun ability");
+            ExpandedSummoningAbilityBuilder.CopyFields(native, ability);
+            ability.name = InternalName(abilitySymbol);
+            ability.Type = AbilityType.Extraordinary;
+            ability.Parent = null;
+            ability.Hidden = false;
+            ability.ActionBarAutoFillIgnored = false;
+            ability.Range = AbilityRange.DoubleMove;
+            ability.CanTargetPoint = true;
+            ability.CanTargetSelf = false;
+            ability.CanTargetFriends = false;
+            ability.CanTargetEnemies = false;
+            ability.EffectOnEnemy = AbilityEffectOnUnit.Harmful;
+            ability.EffectOnAlly = AbilityEffectOnUnit.None;
+            ability.SpellResistance = false;
+            ability.ActionType = UnitCommand.CommandType.Standard;
+            ability.SetIsFullRoundAction(true);
+            var contact = ScriptableObject.CreateInstance<
+                ContextActionUngulateTrample>();
+            contact.SourceUnit = unit;
+            contact.CreatureKey = creatureKey;
+            var overrun = ScriptableObject.CreateInstance<AbilityCustomOverrun>();
+            overrun.AutoSuccess = true;
+            overrun.FirstTargetOnly = false;
+            overrun.StopOnCorpulence = false;
+            overrun.DelayBeforeStart = 0f;
+            overrun.DelayAfterFinish = 0f;
+            overrun.Actions = new ActionList {
+                Actions = new GameAction[] { contact }
+            };
+            var fullRound = ScriptableObject.CreateInstance<
+                AbilityIsFullRoundInTurnBased>();
+            fullRound.FullRoundIfTurnBased = true;
+            var path = ScriptableObject.CreateInstance<
+                UngulateTramplePathChecker>();
+            ability.ComponentsArray = new BlueprintComponent[] {
+                overrun, fullRound, path
+            };
+            BlueprintUnitFactAccess.Resolve().Configure(ability,
+                LocalizationService.Create("KMG.ExpandedSummoning." +
+                    creatureKey + ".Trample.Name", "Trample"),
+                LocalizationService.Create("KMG.ExpandedSummoning." +
+                    creatureKey + ".Trample.Description",
+                    "As a full-round action, move up to twice speed through " +
+                    "smaller enemies. Each target takes " +
+                    rules.TrampleDiceCount + "d" + rules.TrampleDieSides +
+                    "+" + rules.TrampleBonus + " bludgeoning damage " +
+                    "(Reflex DC " + rules.TrampleDc + " half), at most " +
+                    "once per round."), native.Icon);
+            unit.AddFacts = (unit.AddFacts ?? Array.Empty<BlueprintUnitFact>())
+                .Concat(new BlueprintUnitFact[] { ability }).ToArray();
         }
 
         private static void ConfigureUngulatePowerfulCharge(
