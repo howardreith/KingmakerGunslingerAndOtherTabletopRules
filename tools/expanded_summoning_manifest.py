@@ -98,6 +98,7 @@ SPECIAL_NOTES = {
     "cheetah": "Animal chassis on the leopard rig with a procedural spotted coat at a lean view scale; trip bite; bounded once-per-summoning sprint (+30 feet for one round) with its own brain (Sprint 8).",
     "lion": "Animal chassis on the leopard rig with a tawny visual tint; bite and two claws plus two rake claws; pounce; bite grab by limb identity on the shared lifecycle; rake gate: a charge, or the foe held since the round began (Sprint 7; corrected 2026-09-25).",
     "giant-wasp": "Sprint 10 Phase 2 native sting, original flying visual and dedicated Dexterity poison graph; suppressed until poison, live combat and view qualification pass.",
+    "stirge": "Sprint 10 Phase 2 Tiny flyer with a zero-damage touch carrier; attach, blood drain, escape, cleanup, visual and icon remain unimplemented and all placements are suppressed.",
     "dire-lion": "Animal chassis with bite, two claws and a secondary rake pair; pounce; bite grab by limb identity on the shared lifecycle; rake gate: a charge, or the foe held since the round began (Sprint 7; corrected 2026-09-25).",
     "dire-tiger": "Smilodon chassis with bite, two claws and a secondary rake pair; pounce; grab with the bite and both foreclaws by limb identity on the shared lifecycle; rake gate: a charge, or the foe held since the round began (Sprint 7; corrected 2026-09-25).",
     "grizzly-bear": "Animal chassis with bite and two claws; claw grab on the shared summon grapple lifecycle (Sprint 6).",
@@ -152,8 +153,8 @@ def parsed_creatures():
             "ally": None if ally == "null" else int(ally),
             "visual": visual or name,
         })
-    if len(values) != 82:
-        raise SystemExit(f"Expected 82 parsed creatures; observed {len(values)}")
+    if len(values) != 83:
+        raise SystemExit(f"Expected 83 parsed creatures; observed {len(values)}")
     return values
 
 
@@ -336,8 +337,9 @@ def planned():
         ("KMG.Summoning.Natural.GiantWasp.Poison", "BlueprintFeature"),
         ("KMG.Summoning.Natural.GiantWasp.Venom", "BlueprintBuff"),
         ("KMG.Summoning.Natural.GiantWasp.UnitType", "BlueprintUnitType"),
+        ("KMG.Summoning.Natural.StirgeTouch", "BlueprintItemWeapon"),
     ))
-    if len(rows) != 1502 or len({symbol for symbol, _ in rows}) != 1502:
+    if len(rows) != 1513 or len({symbol for symbol, _ in rows}) != 1513:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 
@@ -349,14 +351,14 @@ def generated_roster(manifest):
         for key, guid, dedicated in DONOR.findall(DONORS.read_text(encoding="utf-8"))
     }
     creatures = parsed_creatures()
-    if len(donors) != 82 or set(donors) != {value["key"] for value in creatures}:
+    if len(donors) != 83 or set(donors) != {value["key"] for value in creatures}:
         raise SystemExit("Roster generation requires one exact donor per creature")
     lines = [
         "# Expanded Summoning roster and identity ledger",
         "",
         "Generated deterministically by `tools/expanded_summoning_manifest.py`; do not edit by hand.",
         "",
-        "Registered totals: 75 Summon Monster entries / 420 placements; 72 Summon Nature's Ally entries / 405 placements; 82 unique units; 825 logical placements. Giant Wasp has 12 registered but suppressed placements pending Sprint 10 qualification, leaving 813 published logical placements (the accepted Phase 1 total). The Frost Giant remains a retained native unit under Summon Monster VIII-IX and Summon Nature's Ally VII-IX wrappers.",
+        "Registered totals: 75 Summon Monster entries / 420 placements; 73 Summon Nature's Ally entries / 414 placements; 83 unique units; 834 logical placements. Giant Wasp has 12 and Stirge has nine registered but suppressed placements pending Sprint 10 qualification, leaving 813 published logical placements (the accepted Phase 1 total). The Frost Giant remains a retained native unit under Summon Monster VIII-IX and Summon Nature's Ally VII-IX wrappers.",
         "",
         "Final native qualification source: `5205805eab3fe0115d6888c53bce73c80474d1b7`. Structural run `20260812T1327062696968Z-bd09acfba08942df8f7c42e5c70252f4`; native cast run `20260812T1330147883834Z-ec8896f1d65b43e0913a6bea7cba4405`; visual run `20260812T1151394827201Z-add45a04f5de44c1a39e3251f7ff0778`; enabled/disabled persistence runs `20260812T1155220523013Z-6d2a18f9b33344d08d3127ffce7e5cb6` through `20260812T1208449380302Z-65c9b7056d97483fb48a4a9b76c22ea6`; all eight required final compatibility transactions PASS and restored their profiles.",
         "",
@@ -403,7 +405,7 @@ def generated_roster(manifest):
                        "and summon/conjure surfaces removed; ")
             adaptation = SPECIAL_NOTES.get(creature["key"],
                 "Dedicated mechanics reused only where exact; otherwise donor is view/rig only and the checked-in tabletop profile owns stats, attacks, facts, and deviations.")
-            qualification = ("Registered, suppressed; Sprint 10 mechanics and live view pending" if creature["key"] == "giant-wasp" else
+            qualification = ("Registered, suppressed; Sprint 10 mechanics and live view pending" if creature["key"] in ("giant-wasp", "stirge") else
                 "Structural PASS; native cast PASS; visual contract PASS; required profiles PASS")
             lines.append(
                 f"| {source} / {creature['name']} | {policy} | {donor_text} | "

@@ -600,6 +600,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint9-eagle-lunge", ExpandedSummoningSprint9Tests.EagleVisualLungeIsBoundedAndRestored),
             Case("expanded-summoning.sprint10-native-vermin-audit", ExpandedSummoningSprint10Tests.NativeFlyingVerminSurveyStaysMetadataOnly),
             Case("expanded-summoning.sprint10-stirge-attach-policy", ExpandedSummoningSprint10Tests.StirgeAttachRulesBoundDrainAndDetachment),
+            Case("expanded-summoning.sprint10-stirge-hidden-registration", ExpandedSummoningSprint10Tests.StirgeRegisteredAtAllNineHiddenNatureTiers),
             Case("expanded-summoning.sprint10-wasp-registration", ExpandedSummoningSprint10Tests.GiantWaspRegisteredUnderSuppressionAtExactTiers),
             Case("expanded-summoning.sprint10-wasp-poison-policy", ExpandedSummoningSprint10Tests.GiantWaspPoisonTracksConstitutionAndTabletopExposure),
             Case("expanded-summoning.sprint10-wasp-original-visual", ExpandedSummoningSprint10Tests.GiantWaspOriginalVisualUsesAuditedInstanceBinding),

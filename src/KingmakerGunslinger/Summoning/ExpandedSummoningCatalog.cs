@@ -26,11 +26,11 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Creatures.Length != 82) throw new InvalidOperationException("Expanded Summoning unique creature count must be 82.");
+            if (Creatures.Length != 83) throw new InvalidOperationException("Expanded Summoning unique creature count must be 83.");
             if (Creatures.Select(v => v.Key).Distinct(StringComparer.Ordinal).Count() != Creatures.Length)
                 throw new InvalidOperationException("Duplicate creature key.");
             ValidateFamily(SummonFamily.Monster, 75, 420);
-            ValidateFamily(SummonFamily.NaturesAlly, 72, 405);
+            ValidateFamily(SummonFamily.NaturesAlly, 73, 414);
         }
 
         private static void ValidateFamily(SummonFamily family, int roster, int placements)
@@ -57,7 +57,8 @@ namespace KingmakerGunslinger.Summoning
                 C("greater-air-elemental","Greater Air Elemental",7,false,7), C("greater-earth-elemental","Greater Earth Elemental",7,false,7), C("greater-fire-elemental","Greater Fire Elemental",7,false,7), C("greater-water-elemental","Greater Water Elemental",7,false,7), C("mastodon","Mastodon",7,true,7), C("roc","Roc",7,true,7), C("bebelith","Bebelith",7,false,null,"Doomspider"), C("giant-flytrap","Giant Flytrap",null,false,7),
                 C("elder-air-elemental","Elder Air Elemental",8,false,8), C("elder-earth-elemental","Elder Earth Elemental",8,false,8), C("elder-fire-elemental","Elder Fire Elemental",8,false,8), C("elder-water-elemental","Elder Water Elemental",8,false,8), C("purple-worm","Purple Worm",null,false,8),
                 C("ghaele-azata","Ghaele Azata",9,false,null), C("pixie","Pixie",null,false,9,"Pixie / Nixie / Nymph"),
-                C("giant-wasp","Giant Wasp",4,true,4)
+                C("giant-wasp","Giant Wasp",4,true,4),
+                C("stirge","Stirge",null,false,1)
             };
         }
 
