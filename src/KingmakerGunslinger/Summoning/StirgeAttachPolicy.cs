@@ -10,6 +10,14 @@ namespace KingmakerGunslinger.Summoning
         internal const int DamagePerAttachedTurn = 1;
         internal const int MaintainGrappleRacialBonus = 8;
         internal const int DiseaseChancePercent = 10;
+        internal const int FilthFeverFortitudeDc = 12;
+
+        internal static bool DiseaseExposureSelected(int percentileRoll)
+        {
+            if (percentileRoll < 0 || percentileRoll >= 100)
+                throw new ArgumentOutOfRangeException("percentileRoll");
+            return percentileRoll < DiseaseChancePercent;
+        }
 
         internal static bool MayAttach(bool touchHit, bool alreadyAttached,
             bool targetAlive)

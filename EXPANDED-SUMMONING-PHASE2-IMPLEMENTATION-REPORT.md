@@ -475,3 +475,15 @@ the destruction queue advanced and is excluded. Repository validation,
 1,940 domain cases, clean Release and strict package checks passed; exact
 restoration is `20260928T0336376497673Z`. Actual timer expiry, prey death,
 disease, persistence and visuals remain open.
+
+Stirge's first actual blood drain now records a once-per-victim 10% disease
+exposure check on the summoned attack trait. The eligible branch uses a
+DC 12 Fortitude save whose reason is the exact installed native `FilthFever`
+context; a failed save applies that native buff with retained DC 12. Guarded
+disposable combat `20260928T0434428779441Z` passed the normal first check,
+a forced eligible native application, suppression of repeated checks and a
+later drain; original installation restoration was exact at
+`20260928T0438370422836Z`. Repository validation, 1,940 domain cases,
+clean Release and strict package checks passed. Disease cure timing,
+active-attachment save/load, prey death, timer expiry and visual publication
+remain open.

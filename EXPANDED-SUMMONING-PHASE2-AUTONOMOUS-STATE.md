@@ -1032,3 +1032,25 @@ DLL SHA-256:
 `037600735E5E74F368F4DCDD0FD7A33CE08B2D338E3BE4ED8BDB721947E3545D`.
 Actual summon timer expiry, prey death, disease, save/load, original visual
 and icon still require qualification or implementation. Stirge remains hidden.
+
+## Sprint 10 native Stirge disease exposure, 2026-09-28
+
+The exact installed native `FilthFever` buff is
+`9545a5550d89feb47a84edaeb4e63d0b`. The Stirge attack trait now holds a
+serialized per-victim exposure record; the first actual blood-drain tick
+makes one 10% roll, then a selected victim receives a DC 12 Fortitude save
+with a native disease mechanics context. The native application rule carries
+that context into the buff. Guarded disposable combat
+`20260928T0434428779441Z` passed the normal first-drain check and a separate
+forced eligible branch: native buff present, retained DC 12, repeat check
+rejected and later drain without a second check. Repository validation,
+1,940 domain tests, clean Release and strict package validation passed.
+Restoration `20260928T0438370422836Z` returned the original installed hash
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+Package SHA-256:
+`1A309DB594881DC378A421B5B7A75EE341447007C6D7230A690D955FE4469BD3`;
+DLL SHA-256:
+`3AD45725DB43D2D4A7DDC3734858CEE8DC3977D7D93F5241D66A483DB6B78F41`.
+Native disease cure timing and active-summon save/load still need direct
+qualification; prey death, timer expiry, original visual and icon remain
+open. Stirge and Wasp placements remain suppressed. Continue Sprint 10.

@@ -430,7 +430,7 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureDocileHooves(bySymbol, PonyUnitSymbol, PonyCombatTraitsSymbol, "Pony");
             ConfigureDocileHooves(bySymbol, HorseUnitSymbol, HorseCombatTraitsSymbol, "Horse");
             ConfigureGrapplers(library, bySymbol);
-            ConfigureStirgeAttachment(bySymbol);
+            ConfigureStirgeAttachment(library, bySymbol);
             ConfigureMephitVariants(library, bySymbol);
         }
 
@@ -1547,7 +1547,7 @@ namespace KingmakerGunslinger.Blueprints
                 InternalName(CheetahUnitSymbol), ExpandedSummoningSpecialProfiles.CheetahCoat));
         }
 
-        private static void ConfigureStirgeAttachment(
+        private static void ConfigureStirgeAttachment(LibraryScriptableObject library,
             IDictionary<string, BlueprintScriptableObject> bySymbol)
         {
             BlueprintUnit unit = Require<BlueprintUnit>(bySymbol, StirgeUnitSymbol);
@@ -1559,6 +1559,9 @@ namespace KingmakerGunslinger.Blueprints
                 StirgeHoldSymbol);
             BlueprintBuff grappled = Require<BlueprintBuff>(bySymbol,
                 GrappleGrappledSymbol);
+            BlueprintBuff filthFever = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(
+                library, "9545a5550d89feb47a84edaeb4e63d0b",
+                "native Filth Fever disease");
             if (unit.Body == null || !ReferenceEquals(unit.Body.PrimaryHand, touch))
                 throw new InvalidOperationException(
                     "Stirge attachment requires the exact touch carrier.");
@@ -1566,6 +1569,7 @@ namespace KingmakerGunslinger.Blueprints
             attach.TouchWeapon = touch;
             attach.HoldBuff = hold;
             attach.GrappledBuff = grappled;
+            attach.DiseaseBuff = filthFever;
             traits.name = InternalName(StirgeCombatTraitsSymbol);
             traits.Stacking = StackingType.Replace;
             traits.IsClassFeature = true;
