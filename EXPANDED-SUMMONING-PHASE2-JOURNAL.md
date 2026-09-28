@@ -633,3 +633,13 @@ also passed repository validation, 1,940 domain tests, clean Release and
 strict package checks. The wrapper restored the original installation
 exactly (`20260928T0129418890710Z`). The result does not yet prove a
 real attack hit, absence of HP damage, attachment, blood drain or cleanup.
+
+## Sprint 10: direct native Stirge touch hit, 2026-09-28
+
+I added a guarded combat assertion using the own-tier Stirge summon and an
+armored disposable hostile. Its native primary attack hit at touch AC 6,
+while the ordinary melee control was AC 14, and dealt zero HP damage.
+`20260928T0142219533559Z` passed the full disposable scenario. Repository
+validation, 1,940 domain tests, clean Release and strict package checks
+passed. Restoration `20260928T0146022240699Z` returned the exact original
+installed tree. Attachment and drain remain the next mechanical work.

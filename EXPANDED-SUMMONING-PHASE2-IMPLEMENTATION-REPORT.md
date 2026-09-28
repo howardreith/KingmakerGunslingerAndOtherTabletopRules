@@ -429,3 +429,11 @@ and passed all 49 assertions (`20260928T0125544188038Z`). Repository
 validation, 1,940 domain cases, clean Release and strict package validation
 passed, with exact installation restoration. This is attack-type routing,
 not a direct hit or attach/drain qualification. Publication remains closed.
+
+The next guarded disposable combat run (`20260928T0142219533559Z`) summoned
+the hidden own-tier Stirge and resolved its primary attack with the native
+rulebook. It hit touch AC 6 against ordinary melee AC 14 and did no HP damage
+(0 to 0). Repository validation, 1,940 domain cases, clean Release and strict
+package checks passed; the wrapper restored the original installation
+exactly (`20260928T0146022240699Z`). This qualifies direct touch delivery,
+not attachment, drain or publication.
