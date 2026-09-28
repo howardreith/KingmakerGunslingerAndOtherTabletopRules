@@ -56,10 +56,19 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
   source; Wasp has its own 1254 px icon source. The Stirge's exact view,
   12.339 m native travel, doorway crossing, rendered lifecycle, zero
   private-mesh/material teardown, and read-only overhead visual capture
-  passed guarded Steam review `20260928T0919388380835Z`. The overhead
-  frame shows red body and four wings; furniture still adds a small cyan
-  occlusion patch. Stirge attack-pose visual, icon export/actual UI, disease
-  cure timing and choice publication remain open.
+  passed guarded Steam review `20260928T0919388380835Z`. The final guarded
+  touch-combat run `20260928T1227208122214Z` and RTWP run
+  `20260928T1230343024504Z` proved native touch hit, reciprocal attachment,
+  bounded baked-tip clearance (0.05 m), no target clipping and forward aim;
+  their overhead frames were inspected. The final disposable scenario
+  `20260928T1307116237968Z` passed 33/33 assertions including 184 casts,
+  258 summons, first and fourth blood-drain ticks, native DC 12 Filth Fever
+  exposure, escape, area transition, dismissal, expiry, prey death, and exact
+  cleanup. Its 15-bone Stirge view and the Wasp's 16-bone control were both
+  measured. The lifecycle run `20260928T1239005533999Z` left zero private
+  meshes/materials; each wrapper restored the original 136-file installation.
+  Icon export/actual UI and choice publication remain open. Native Filth Fever
+  cure timing is not yet measured; exposure uses the installed buff.
 - HumanReview: NOT_PERFORMED_NONBLOCKING. Sprint 9 internal engineering,
   fidelity, visual and evidence/restoration reviews passed with the bounded
   limitations below; tranche and later-sprint reviews remain pending.

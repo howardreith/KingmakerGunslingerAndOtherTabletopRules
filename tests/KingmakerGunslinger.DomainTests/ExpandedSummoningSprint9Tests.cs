@@ -148,7 +148,7 @@ namespace KingmakerGunslinger.DomainTests
                 request.Contains("creatureReview || flightActivation ? 2 : 1") &&
                 launcher.Contains("$Parameters.ContainsKey('flightCreature')") &&
                 launcher.Contains("flightCreature = [string]$Parameters.flightCreature") &&
-                automation.Contains("$Parameters.flightCreature -cnotin @('eagle', 'dire-bat', 'giant-wasp')") &&
+                automation.Contains("$Parameters.flightCreature -cnotin @('eagle', 'dire-bat', 'giant-wasp', 'stirge')") &&
                 automation.Contains("flightCreature = [string]$Parameters.flightCreature"),
                 "The guarded combat fixture must select only the published own-tier flyers and correlate a native attack to its exact hostile.");
         }
