@@ -114,6 +114,20 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
   DLL SHA-256
   `bbd582817ea99b4da72009673f04d8e4920d5c5e515ee59dfedaf3917c90088c`.
   No deployment was performed for this art-only checkpoint.
+- Sprint 11 native charge donor checkpoint: guarded request-local Mastodon
+  `20260928T1602214306773Z` passed 16/16 assertions. Native
+  `PowerfulCharge` changed ordinary `2d8+24` to first-charge `4d8+42`, with
+  ordinary later/opportunity attacks; the +18 is 1.5 times Strength modifier
+  12 and exceeds both Rhino printed increments. Earlier wrong-baseline
+  diagnostic `20260928T1548555422577Z` is excluded. Repository validation,
+  1,945 domain tests, clean Release and strict package passed. Package SHA-256
+  `6625a1159e4b29e698e87783cf948e66be6d63dc2757300a37b466c3e06cf741`,
+  DLL SHA-256
+  `95ee11ca240a540cd57f11ab8768a9f08c4d670d0d990071667421dcadd17819`.
+  Exact original-install restoration passed at `20260928T1606565388180Z`.
+  No new ungulate registered or qualified yet; next implement bounded
+  unpublished fixture, charge increment and trample movement/rules, then
+  original visual and full player-path gates.
 - Blockers: none established. The Sprint 10 rules-source access gate is
   resolved by the owner's standing network authorization; exact Stirge and
   Giant Wasp baseline rules are cited in
