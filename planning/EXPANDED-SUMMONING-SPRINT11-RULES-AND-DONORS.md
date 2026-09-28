@@ -235,3 +235,59 @@ process, and the identical pre/post original 136-file mod tree SHA-256
 The rule-stat calculations and owner-unit scope are qualified. Real
 turn-based/RTWP attack cadence, charge path/contact, trample, original views,
 quantity summons, and publication remain pending.
+
+## Hidden trample path and command-fixture boundary
+
+The installed `AbilityCustomOverrun` provides a forced path and calls its
+`Actions` once for each contacted unit. Its ordinary mode performs an Overrun
+CMB check, so the hidden Aurochs, Bison and Woolly Rhinoceros abilities use
+`AutoSuccess=true` solely to bypass that maneuver. A summon-owned contact
+action filters exact caster blueprint, enemies, living targets and printed
+size, claims a target once per combat round, rolls the printed Reflex DC and
+applies the printed bludgeoning damage with the native half-damage flag on a
+successful save. A separate path checker restores the twice-current-speed
+range that the native Overrun checker otherwise bypasses in AutoSuccess mode.
+The three abilities are full-round and carry append-only identities. Their
+unit grants remain inside the 48 hidden Sprint 11 placements. The action uses
+the installed Overrun icon provisionally; no new public menu consumer exists.
+
+This is a hidden implementation checkpoint, not a trample qualification.
+The target's choice between an attack of opportunity and a Reflex save has
+not been proven against native movement, and the code conservatively awards
+no Stampede same-size/+2 benefit until a coordinated three-creature route is
+implemented and demonstrated. Actual path contact, damage cadence, target
+choice, multiple-unit navigation and both combat modes still require live
+qualification. The four original 3D ungulate views and icon exports are also
+pending.
+
+A request-local Rhino `UnitAttack` charge probe in guarded run
+`20260928T1906471936890Z-disposable-expanded-summoning-rules` recorded
+`CanStart=True` but `started=False`, `finished=False`, no attack rolls and no
+damage events after 600 frames. The pre-existing cat command in that same
+fixture had the same queued-only outcome: its frame loop does not drive the
+native action controller. Its runtime result was PASS only for recording and
+restoring the diagnostic, not for charge cadence. The source probe was
+reversed before this checkpoint. A real command must use a native turn/RTWP
+controller fixture rather than treating that queued command as evidence.
+
+The first guarded inventory with the three new abilities,
+`20260928T1937339123190Z-observe-expanded-summoning-inventory`, failed its
+prohibited-reference assertion on five expected direct grants: the two
+earlier Rhino charge facts and the three trample abilities. Its wrapper
+restored the original installation exactly. The inventory now permits only
+those five exact unit/fact GUID pairs. Repository validation, all 1,948
+domain tests, the clean exact-reference Release build and strict package
+validation passed; package SHA-256 is
+`890fbe2d10412b6759056d6385528e6bfc29bf427899c1676cbd57d3ca28c937`,
+DLL SHA-256 is
+`9cc10de013c3a51f04906418c78a1623dd87f7a205df0c79686b9784e661cc27`.
+Guarded Steam inventory `20260928T1951390082664Z-observe-expanded-summoning-inventory`
+then passed 50/50 assertions: 87 units, 1,398 registered ability identities,
+882 executable summon contracts, 834 published parent placements, 18 exact
+menu equations, zero prohibited references and no missing icons in the
+published menu. Restoration
+`20260928T1955506906568Z-observe-expanded-summoning-inventory.json`
+records `launcherOutcome=Clean`, `outcome=PASS`, no remaining Kingmaker
+process, and the original 136-file tree SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`
+both before and after the run.
