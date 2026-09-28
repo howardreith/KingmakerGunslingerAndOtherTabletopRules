@@ -374,6 +374,7 @@ def validate(root: Path) -> None:
     prefix = {e["symbol"] for e in entries[:PRESERVED_ENTRIES]}
     phase2_additions = PHASE2_ADDITIONS | {
         symbol for symbol, _ in plan if ".GiantWasp" in symbol or
+        ".Stirge" in symbol or symbol == "KMG.Summoning.Natural.StirgeTouch" or
         symbol == "KMG.Summoning.Natural.WaspSting1d8"}
     expected = sorted((symbol, planned_type) for symbol, planned_type in plan
                       if symbol not in prefix and symbol not in phase2_additions)
@@ -384,9 +385,9 @@ def validate(root: Path) -> None:
     expanded_summoning_manifest.validate(manifest, plan)
 
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningCatalog.cs",
-        "Creatures.Length != 82",
+        "Creatures.Length != 83",
         "ValidateFamily(SummonFamily.Monster, 75, 420)",
-        "ValidateFamily(SummonFamily.NaturesAlly, 72, 405)",
+        "ValidateFamily(SummonFamily.NaturesAlly, 73, 414)",
         'C("pony","Pony",1,true,1)', 'C("horse","Horse",2,true,2)',
         'C("owlbear","Owlbear",null,false,4)', 'C("cyclops","Cyclops",null,false,5)',
         'C("shambling-mound","Shambling Mound",null,false,6)',
@@ -397,11 +398,11 @@ def validate(root: Path) -> None:
         'C("salt-mephit","Salt Mephit",4,false,4)', 'C("steam-mephit","Steam Mephit",4,false,4)',
         'C("tiger","Tiger",null,false,4,"Leopard")')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs",
-        "RegisteredLogicalPlacementCount = 825;",
-        "SuppressedLogicalPlacementCount = 12;")
+        "RegisteredLogicalPlacementCount = 834;",
+        "SuppressedLogicalPlacementCount = 21;")
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningIdentityCatalog.cs",
-        "UnitCount = 82;",
-        "LogicalAbilityCount = 825;",
+        "UnitCount = 83;",
+        "LogicalAbilityCount = 834;",
         "TemplatedPlacementCount = 205;",
         "NativeExpandedOptionIdentityCount = %d;" % SPRINT3["nativeExpansionWrappers"])
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonNativeExpansionCatalog.cs",
@@ -410,7 +411,7 @@ def validate(root: Path) -> None:
         '"256739c1e61e3f64eaf71734d271f4be","590cd3d5e76fdc649a5f97bc984cd3c4",true',
         '"9bd8cb6180842f44e9302c58e47b91f0","590cd3d5e76fdc649a5f97bc984cd3c4",true')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningNaturalProfiles.cs",
-        "Values.Length != 35",
+        "Values.Length != 36",
         '"Animal", "Vermin", "MagicalBeast", "Humanoid", "Plant"')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonIconCatalog.cs",
         "Values.Length != %d" % (SPRINT3["projectIcons"] + 1))

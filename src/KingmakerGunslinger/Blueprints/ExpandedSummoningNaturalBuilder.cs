@@ -44,6 +44,8 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Summoning.Natural.Talon2d6";
         private const string WaspSting1d8Symbol =
             "KMG.Summoning.Natural.WaspSting1d8";
+        private const string StirgeTouchSymbol =
+            "KMG.Summoning.Natural.StirgeTouch";
         private const string WaspPoisonSymbol =
             "KMG.Summoning.Natural.GiantWasp.Poison";
         private const string WaspVenomSymbol =
@@ -186,6 +188,8 @@ namespace KingmakerGunslinger.Blueprints
                 Bite1d4Symbol), Bite1d4Symbol, 1, DiceType.D4);
             ConfigureWeapon(nativeBite, Require<BlueprintItemWeapon>(bySymbol,
                 Bite1d3Symbol), Bite1d3Symbol, 1, DiceType.D3);
+            ConfigureWeapon(nativeBite, Require<BlueprintItemWeapon>(bySymbol,
+                StirgeTouchSymbol), StirgeTouchSymbol, 0, DiceType.Zero);
             ConfigureWeapon(BlueprintLibraryLookup.RequireExact<
                 BlueprintItemWeapon>(library, NativeTail1d8Guid,
                     "native animated tail weapon"),
@@ -506,6 +510,8 @@ namespace KingmakerGunslinger.Blueprints
                 Claw1d8Symbol);
             if (key == "WaspSting1d8") return Require<BlueprintItemWeapon>(
                 bySymbol, WaspSting1d8Symbol);
+            if (key == "StirgeTouch") return Require<BlueprintItemWeapon>(
+                bySymbol, StirgeTouchSymbol);
             if (key == "Gore2d8") return BlueprintLibraryLookup.RequireExact<
                 BlueprintItemWeapon>(library, NativeMastodonGoreGuid,
                     "mastodon 2d8 gore");

@@ -27,8 +27,9 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
   safety, donor controls and exact installation restoration are qualified.
   Sprint 10 is in progress. Giant Wasp is registered at SM IV and SNA IV,
   and its sting-delivered poison has a guarded mechanical PASS. All twelve
-  logical placements remain suppressed; Stirge is not registered.
-  Neither creature is published.
+  logical placements remain suppressed. Stirge is registered at SNA I-IX
+  with a hidden Tiny unit and zero-damage touch carrier; all nine placements
+  remain suppressed. Neither creature is published.
 - HumanReview: NOT_PERFORMED_NONBLOCKING. Sprint 9 internal engineering,
   fidelity, visual and evidence/restoration reviews passed with the bounded
   limitations below; tranche and later-sprint reviews remain pending.
@@ -877,3 +878,32 @@ Package SHA-256:
 DLL SHA-256:
 `6A8A39F0F7F5DD0CE8096555630AD012EA1EA44A502CC4E7A9279A0C630C1853`.
 Next: wire and qualify Stirge's dedicated live attachment lifecycle.
+
+## Sprint 10 hidden Stirge registration, 2026-09-28
+
+The append-only ledger now has 2,501 identities, including a hidden Stirge
+unit, nine Nature's Ally placements, and a zero-damage touch carrier. All
+nine Stirge and twelve Wasp placements remain suppressed; the published
+surface stays at 813 generated choices. The Stirge's touch-AC override,
+attachment, end-turn blood drain, disease, cleanup, original visual and icon
+are still absent. The temporary Eagle donor is a rig candidate, not an
+approved Stirge visual. The current weapon audit records the carrier as a
+summoning-only exclusion; no player-visible icon or weapon assignment moved.
+
+Repository validation, 1,940/1,940 domain tests, clean exact-reference
+Release build and strict standalone package validation passed. Guarded
+working-save smoke `20260928T0029440999424Z` passed. The first inventory
+run `20260928T0037477029671Z` found the expected 83 units and 834 logical
+abilities but exposed a stale safety-audit exception for the existing owned
+Wasp poison fact; it is excluded. After an exact fact-name exception, the
+repeat `20260928T0052069434655Z` passed 48/48 assertions: 813 visible
+placements, zero shared donor components and zero prohibited references.
+Restoration `20260928T0055527257092Z` returned the original 136-file live
+mod tree at SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+Final package SHA-256:
+`44512D7EF942D2D19CD470FF2CB70899D522537E789DCEEE24A243DDF26A138A`;
+DLL SHA-256:
+`587969E44A60626CD87AD8098FDFA1804E27410B9071A9E6C705B0DCA839EA18`.
+Next: implement and prove Stirge's dedicated touch/attachment lifecycle,
+then qualify its original visual and return to Wasp impact contact.

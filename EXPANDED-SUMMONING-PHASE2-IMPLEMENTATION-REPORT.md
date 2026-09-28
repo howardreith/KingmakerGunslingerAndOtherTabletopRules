@@ -7,8 +7,10 @@ and turn-based mode, visual impact contact, save/load/expiry, module-disabled
 safety, and installation restoration. Their original bird/bat models, Bat
 icon and bounded Bat blindsense are published on the Phase 2A feature branch.
 Human visual approval remains pending and nonblocking. Giant Wasp is
-registered under suppression, with poison and cast qualification outstanding;
-Stirge is not yet implemented. The Phase 2A draft PR is not ready for review.
+registered under suppression with its poison and native sting cadence
+qualified; visual contact remains open. Stirge is registered under suppression
+with a tested rules boundary and zero-damage carrier, but no live attach
+lifecycle or final visual. The Phase 2A draft PR is not ready for review.
 
 The accepted baseline is `master` at `2ce70e4` (0.0.140), which advanced after
 the owner packet was written. The baseline passes 1,918 domain tests, the
@@ -408,3 +410,14 @@ a production animation or visual acceptance. Wasp stays unpublished.
 Exact installation restoration `20260927T2337441522077Z`, repository
 validation, 1,938 domain cases, clean Release and strict package checks
 passed.
+
+The next bounded Sprint 10 checkpoint registers Stirge as a suppressed
+SNA I-IX unit with a zero-damage touch carrier. It appends 11 stable
+identities after the preserved Wasp block. The live inventory reports
+83 units, 834 executable roots, 813 visible parents and zero prohibited
+references (48/48 assertions, `20260928T0052069434655Z`). Guarded
+working-save smoke also passed. The candidate package passed repository
+validation, 1,940 domain tests, clean Release and strict package checks;
+the installation was restored exactly. The touch-AC and attach/drain
+lifecycle, original Stirge visual and icon remain unimplemented, and all
+Stirge choices stay hidden.

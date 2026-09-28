@@ -599,3 +599,25 @@ strict package checks passed. Guarded working-save smoke
 `20260927T2353348639066Z` passed and exact installation restoration
 `20260927T2356206464811Z` passed. Stirge remains unregistered and hidden;
 the next step is a dedicated runtime lifecycle and live scenario.
+
+## Sprint 10: hidden Stirge registration, 2026-09-28
+
+I appended a Stirge unit, nine SNA logical placements and a zero-damage
+carrier weapon behind publication suppression. The profile is Tiny,
+one-HD magical beast with the printed physical scores and airborne speed;
+the Eagle donor is temporary rigging. The original 2,490-entry ledger
+prefix and published 813-choice menu remain exact. Focused tests pin the
+new tail, tiers, profile, carrier and suppression. The generated weapon
+audit now includes the hidden carrier. Repository validation, 1,940 domain
+tests, clean Release and strict package checks passed.
+
+Guarded working-save smoke `20260928T0029440999424Z` passed. The first
+inventory run `20260928T0037477029671Z` was a diagnostic failure: it
+found an existing Wasp poison fact missing from the exact safety-audit
+allowlist. After an exact-name exception, repeat inventory
+`20260928T0052069434655Z` passed 48/48 assertions, including 83 units,
+834 executable roots, 813 visible placements and zero prohibited
+references. All runs restored the original installed mod bytes; final
+restoration is `20260928T0055527257092Z`. Stirge mechanics and final
+visual identity remain unqualified; the next work is touch attack and
+attachment, not publication.
