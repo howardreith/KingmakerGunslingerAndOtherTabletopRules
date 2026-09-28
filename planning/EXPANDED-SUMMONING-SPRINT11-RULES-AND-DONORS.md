@@ -63,6 +63,29 @@ assembly; this project must not depend on it. Neither native charge component
 has yet been shown to yield exactly the rhinoceros stat-block damage in both
 combat modes.
 
+Read-only dnlib inspection of the installed `AbilityCustomOverrun.Deliver`
+state machine confirms it forces a navmesh path, iterates nearby living units,
+and runs its `Actions` in each contact's target scope. `AutoSuccess=false`
+triggers `RuleCombatManeuver(Overrun)` and only successful contacts reach
+`Actions`; `AutoSuccess=true` skips the maneuver. The delivery temporarily
+adds the native charge buff and changes `UnitState.IsCharging`, resets the
+movement agent in `Cleanup`, and provides no built-in enemy/size filtering or
+Reflex/AoO decision. The callable seam is real, but using it unmodified would
+give a trample the wrong combat rules and could expose unrelated charge
+modifiers. A request-local adapter must filter exact targets, enforce round
+claims, use the correct action economy, and prove charge-state cleanup in
+both modes. The installed library's dnlib metadata was read without loading
+or executing game code; the private IL transcription is uncommitted evidence.
+
+The first pure rules-policy source checkpoint passed repository validation,
+1,945 domain tests, clean Release, strict package, guarded Steam working-save
+smoke `20260928T1517172841252Z`, and exact original-install restoration
+`20260928T1520212559754Z`. This is startup safety only. The tested package
+SHA-256 is
+`9e38c53fbc9918a9017c88be570690d33f68816143e99873d225b491d2a183cc`;
+DLL SHA-256
+`96b353a407475e55f1b6fbc163629f849ebd30874b8bf8780a41ca9788a12390`.
+
 Next: register a request-local, unpublished four-creature fixture using the
 existing natural builder and donor/visual safety contracts. Measure native
 charge and overrun delivery in turn-based and RTWP, then add narrowly scoped
