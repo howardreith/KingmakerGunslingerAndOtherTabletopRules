@@ -181,6 +181,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 new Dictionary<UnitEntityData, int>();
             private readonly List<string> _flightImpactSamples =
                 new List<string>();
+            private readonly List<float> _waspBakedGaps =
+                new List<float>();
             private int _waspImpactCaptures;
             private readonly List<UnitEntityData> _requestLocalCooldownUnits =
                 new List<UnitEntityData>();
@@ -771,6 +773,54 @@ namespace KingmakerGunslinger.RuntimeTesting
                             "The guarded working save has no live party area " +
                             "anchor.");
                     casterPosition = _areaAnchor.Position;
+                    if (_flightCreature == "giant-wasp")
+                    {
+                        // The working-save anchor is beside a room opening.
+                        // The original +3 m target straddles that wall, so a
+                        // strike image there cannot qualify contact geometry.
+                        // Survey two connected floor nodes in the same room
+                        // for this request-local visual fixture only.
+                        if (AstarPath.active == null)
+                            throw new InvalidOperationException(
+                                "Wasp visual fixture has no native navigation graph.");
+                        Pathfinding.NNInfo anchor = AstarPath
+                            .active.GetNearest(casterPosition);
+                        Vector3 requested = anchor.clampedPosition +
+                            new Vector3(-5f, 0f, 0f);
+                        Pathfinding.NNInfo open = AstarPath
+                            .active.GetNearest(requested);
+                        Pathfinding.NNInfo target = AstarPath
+                            .active.GetNearest(open.clampedPosition +
+                                new Vector3(3f, 0f, 0f));
+                        var graph = anchor.node == null ? null :
+                            AstarPath.active.graphs[
+                                (int)anchor.node.GraphIndex] as
+                                Pathfinding.IRaycastableGraph;
+                        Pathfinding.GraphHitInfo hit;
+                        bool valid = anchor.node != null &&
+                            open.node != null && target.node != null &&
+                            graph != null && open.node.Walkable &&
+                            target.node.Walkable &&
+                            open.node.Area == anchor.node.Area &&
+                            target.node.Area == anchor.node.Area &&
+                            open.node.GraphIndex == anchor.node.GraphIndex &&
+                            target.node.GraphIndex == anchor.node.GraphIndex &&
+                            Vector3.Distance(requested,
+                                open.clampedPosition) <= 0.5f &&
+                            Vector3.Distance(open.clampedPosition +
+                                new Vector3(3f, 0f, 0f),
+                                target.clampedPosition) <= 0.5f &&
+                            !graph.Linecast(open.clampedPosition,
+                                target.clampedPosition, open.node, out hit);
+                        if (!valid)
+                            throw new InvalidOperationException(
+                                "Wasp visual fixture has no surveyed open-floor " +
+                                "caster and target pair.");
+                        casterPosition = open.clampedPosition;
+                        _diagnostics.Add("wasp-open-floor=caster=" +
+                            casterPosition.ToString("F2") + ";target=" +
+                            target.clampedPosition.ToString("F2"));
+                    }
                     holdingState = _areaAnchor.HoldingState;
                 }
 
@@ -1679,6 +1729,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     mesh, targetBounds, anchors);
                 EagleAttackVisualLunge lunge = source
                     .GetComponent<EagleAttackVisualLunge>();
+                GiantWaspVisualSting waspSting = source
+                    .GetComponent<GiantWaspVisualSting>();
+                if (_flightCreature == "giant-wasp")
+                    _waspBakedGaps.Add(waspSting == null ?
+                        float.PositiveInfinity : waspSting.BakedGapAfter);
                 Vector3 toward = targetBounds.center - source.transform.position;
                 toward.y = 0f;
                 Vector3 facing = source.transform.forward;
@@ -1693,6 +1748,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ";rendererScale=" + mesh.transform.lossyScale.ToString("F2") +
                     ";eagleLunge=" + (lunge == null ? "<none>" :
                         lunge.Describe()) +
+                    ";waspSting=" + (waspSting == null ? "<none>" :
+                        waspSting.Describe()) +
                     ";viewForwardDot=" + facingDot.ToString("0.###",
                         CultureInfo.InvariantCulture) +
                     ";targetRenderer=" + targetRenderer.name +
@@ -2237,6 +2294,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                             AllUnitsAtLeast(_flightTargetAttacksByUnit,
                                 _flightCreature == "giant-wasp" ? 2 : 1),
                         "RuleSummonUnit, native combat mode and correlated RuleAttackWithWeapon target identity");
+
+                if (_flightCreature == "giant-wasp")
+                    Add("sprint10-giant-wasp-visible-sting-" +
+                            (_kind == ScenarioKind.RtwpControl ? "rtwp" :
+                                "turn-based"),
+                        "both native sting hits place the baked original stinger within 0.25 m of the hostile renderer in the same weapon event",
+                        "bakedGaps=" + string.Join(",",
+                            _waspBakedGaps.Select(value => value.ToString(
+                                "0.###", CultureInfo.InvariantCulture))
+                            .ToArray()),
+                        _waspBakedGaps.Count >= 2 &&
+                            _waspBakedGaps.Take(2).All(value =>
+                                value >= 0f && value <= 0.25f),
+                        "instance-local pose sampled in each native RuleAttackWithWeapon.OnTrigger, not a cached prior attack");
 
                 if (_kind == ScenarioKind.RtwpControl)
                 {

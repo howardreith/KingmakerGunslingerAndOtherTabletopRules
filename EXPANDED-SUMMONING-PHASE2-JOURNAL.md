@@ -773,3 +773,40 @@ DLL SHA-256
 Restoration `20260928T0640454534765Z` returned the original 136-file
 installed tree exactly. Native filth fever cure timing, original Stirge
 visual/icon and Wasp visual contact remain open. Both creatures stay hidden.
+
+## Sprint 10: Giant Wasp native sting contact and owned-view teardown, 2026-09-28
+
+The original Wasp mesh's Tail-weighted stinger was lengthened in the editable
+Blender generator. A view-local pose now follows each native Wasp sting
+`RuleAttackWithWeapon`, aims the animated Tail and bounds the visual root
+approach to 0.25 m. The fixture measures the actual baked tip on each hit,
+not a cached pose estimate. The guarded open-floor turn-based
+`20260928T0751193161358Z` and RTWP `20260928T0754382265441Z` runs passed
+two native hits each, with baked gaps 0/0 m and 0/0.191 m. The earlier
+short-stinger runs `20260928T0738095891433Z` and
+`20260928T0741288985771Z` failed the stricter visual gate and are excluded.
+Both passing runs restored the original 136-file installation exactly;
+final restoration `20260928T0758082329733Z`.
+
+Guarded creature review `20260928T0817537337846Z` passed idle, moving and
+attack render capture, 12.334 m native travel through the connected doorway,
+view and unit cleanup, and a new live Unity count of zero private Wasp
+meshes/materials after teardown. The Wasp-only view-destruction hook restores
+the donor renderer and destroys those clones; the cached source art and
+accepted Phase 1 views remain untouched. Repository validation, all 1,940
+domain tests, clean Release and strict package checks passed. The final
+review package SHA-256 is
+`39166621da882e4295ec03afb8244f9f5231af3ec89370eda153a36db3388883`;
+DLL SHA-256 is
+`a0b720074dccef4327d5a8f9505a473dc20ceba4c479b532c75fa82c639b6e20`.
+Restoration `20260928T0821587958659Z` returned the original live tree.
+Wasp icon and publication checks remain open; both Sprint 10 creatures stay
+hidden. HumanReview: NOT_PERFORMED_NONBLOCKING.
+
+The final owned-resource repeat `20260928T0830347918382Z` also counted the
+named baked-sting probe after view destruction: zero private visual/probe
+meshes and zero private materials. Repository validation, all 1,940 domain
+tests, clean Release, strict package and exact restoration passed. Final
+package SHA-256 `2c59c9788ebde9834d632dd98d424b976462924c2dd91bf1612b3fbcd4f165fd`;
+DLL SHA-256 `0fef1002fec991a4dc3d619e579e176e548c2eb577f6afe51d4c90d0ed36b229`;
+restoration `20260928T0834423340342Z`.
