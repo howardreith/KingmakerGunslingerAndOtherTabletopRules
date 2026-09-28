@@ -621,3 +621,15 @@ references. All runs restored the original installed mod bytes; final
 restoration is `20260928T0055527257092Z`. Stirge mechanics and final
 visual identity remain unqualified; the next work is touch attack and
 attachment, not publication.
+
+## Sprint 10: native Stirge touch routing, 2026-09-28
+
+I replaced the hidden Stirge carrier's bite donor with the exact native
+held-touch weapon from Shocking Grasp delivery, gated on `AttackType.Touch`.
+The final live inventory `20260928T0125544188038Z` passed 49/49 and
+observed `type=Touch;dice=0;primary=True`; the preceding run
+`20260928T0113159269094Z` passed the same assertion. The final source
+also passed repository validation, 1,940 domain tests, clean Release and
+strict package checks. The wrapper restored the original installation
+exactly (`20260928T0129418890710Z`). The result does not yet prove a
+real attack hit, absence of HP damage, attachment, blood drain or cleanup.

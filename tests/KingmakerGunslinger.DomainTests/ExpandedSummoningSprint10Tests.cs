@@ -167,6 +167,10 @@ namespace KingmakerGunslinger.DomainTests
                 "Blueprints", "ExpandedSummoningNaturalBuilder.cs"));
             Assertions.True(builder.Contains("StirgeTouchSymbol), StirgeTouchSymbol, 0, DiceType.Zero"),
                 "The carrier cannot inflict ordinary weapon damage while attach is unfinished.");
+            Assertions.True(builder.Contains("17451c1327c571641a1345bd31155209") &&
+                builder.Contains("nativeTouch.AttackType != AttackType.Touch") &&
+                builder.Contains("ConfigureWeapon(nativeTouch"),
+                "Stirge must clone the game's verified held-touch weapon, not a bite AC type.");
             Assertions.Equal(21,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
                 "All 12 Wasp and nine Stirge placements remain private.");

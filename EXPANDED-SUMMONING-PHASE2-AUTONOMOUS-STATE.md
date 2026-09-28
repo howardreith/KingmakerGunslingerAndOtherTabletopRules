@@ -907,3 +907,25 @@ DLL SHA-256:
 `587969E44A60626CD87AD8098FDFA1804E27410B9071A9E6C705B0DCA839EA18`.
 Next: implement and prove Stirge's dedicated touch/attachment lifecycle,
 then qualify its original visual and return to Wasp impact contact.
+
+## Sprint 10 native Stirge touch routing, 2026-09-28
+
+The hidden `StirgeTouch` weapon now clones the installed Shocking Grasp
+delivery's native held-touch weapon rather than the bite weapon. Registration
+fails closed unless that donor reports `AttackType.Touch`. A new live
+inventory assertion requires the Stirge unit's primary hand to reference
+that exact weapon with `AttackType.Touch` and zero base dice. Guarded
+inventory `20260928T0113159269094Z` and the exact final wording candidate
+`20260928T0125544188038Z` each passed 49/49; the latter observed
+`type=Touch;dice=0;primary=True`. Restoration
+`20260928T0129418890710Z` returned the original 136-file installation
+at SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+The final source passed repository validation, 1,940/1,940 domain tests,
+clean exact-reference Release and strict standalone package checks.
+Package SHA-256:
+`6F4B2A312DFAF2600222DDAE9CA88F7E9503BA266FE3272D2D0B372EAEDAFFAB`;
+DLL SHA-256:
+`A66F95442A6641AFF4763177A77E06C8F6FD0BCDE73A10B2DBFC0E9B09F7704F`.
+This proves blueprint attack-type routing, not a direct native hit, HP-damage
+absence or the attach/drain lifecycle. All nine Stirge choices remain hidden.

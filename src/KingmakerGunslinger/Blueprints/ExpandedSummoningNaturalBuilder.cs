@@ -15,6 +15,7 @@ using Kingmaker.ElementsSystem;
 using Kingmaker.Localization;
 using Kingmaker.RuleSystem;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Mechanics.Actions;
 using Kingmaker.UnitLogic.Mechanics.Components;
@@ -46,6 +47,8 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Summoning.Natural.WaspSting1d8";
         private const string StirgeTouchSymbol =
             "KMG.Summoning.Natural.StirgeTouch";
+        private const string NativeShockingGraspDeliveryGuid =
+            "17451c1327c571641a1345bd31155209";
         private const string WaspPoisonSymbol =
             "KMG.Summoning.Natural.GiantWasp.Poison";
         private const string WaspVenomSymbol =
@@ -188,7 +191,18 @@ namespace KingmakerGunslinger.Blueprints
                 Bite1d4Symbol), Bite1d4Symbol, 1, DiceType.D4);
             ConfigureWeapon(nativeBite, Require<BlueprintItemWeapon>(bySymbol,
                 Bite1d3Symbol), Bite1d3Symbol, 1, DiceType.D3);
-            ConfigureWeapon(nativeBite, Require<BlueprintItemWeapon>(bySymbol,
+            BlueprintAbility nativeTouchDelivery = BlueprintLibraryLookup
+                .RequireExact<BlueprintAbility>(library,
+                    NativeShockingGraspDeliveryGuid,
+                    "native held-touch weapon delivery");
+            AbilityDeliverTouch touchComponent = nativeTouchDelivery
+                .GetComponent<AbilityDeliverTouch>();
+            BlueprintItemWeapon nativeTouch = touchComponent == null ? null :
+                touchComponent.TouchWeapon;
+            if (nativeTouch == null || nativeTouch.AttackType != AttackType.Touch)
+                throw new InvalidOperationException(
+                    "Native held-touch donor has no melee touch weapon.");
+            ConfigureWeapon(nativeTouch, Require<BlueprintItemWeapon>(bySymbol,
                 StirgeTouchSymbol), StirgeTouchSymbol, 0, DiceType.Zero);
             ConfigureWeapon(BlueprintLibraryLookup.RequireExact<
                 BlueprintItemWeapon>(library, NativeTail1d8Guid,

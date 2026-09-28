@@ -15631,6 +15631,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             int distinctDonors = ExpandedSummoningDonorCatalog.All
                 .Select(value => value.Guid).Distinct(StringComparer.Ordinal)
                 .Count();
+            BlueprintUnit stirge = all.OfType<BlueprintUnit>().Single(value =>
+                value.name == "KMG_Summoning_Unit_Stirge");
+            BlueprintItemWeapon stirgeTouch = all.OfType<BlueprintItemWeapon>()
+                .Single(value => value.name ==
+                    "KMG_Summoning_Natural_StirgeTouch");
+            bool stirgeTouchExact = stirgeTouch.AttackType == AttackType.Touch &&
+                stirgeTouch.Damage.Rolls == 0 &&
+                stirgeTouch.Damage.Dice == DiceType.Zero &&
+                ReferenceEquals(stirge.Body.PrimaryHand, stirgeTouch);
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("summon-family-ability-candidates", ">=18",
@@ -15660,6 +15669,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         kmgAbilities == expectedKmgAbilities &&
                         BlueprintBootstrap.RegisteredBlueprintCount == BlueprintBootstrap.ExpectedRegisteredBlueprintCountForCurrentRuntime,
                     "exact final-live KMG blueprint identity scan"),
+                Assertion("expanded-summoning-stirge-touch-carrier",
+                    "hidden Stirge primary attack uses native melee touch AC and zero base dice",
+                    "type=" + stirgeTouch.AttackType + ";dice=" +
+                        stirgeTouch.Damage + ";primary=" +
+                        ReferenceEquals(stirge.Body.PrimaryHand, stirgeTouch),
+                    stirgeTouchExact,
+                    "live Stirge body and exact project weapon blueprint"),
                 Assertion("expanded-summoning-lantern-archon", "exact",
                     lanternExact ? "exact" : "mismatch", lanternExact,
                     "2-HD Small LG Will-o'-Wisp view, bounded dual 1d6 touch rays, native aura, and KMG defenses"),
