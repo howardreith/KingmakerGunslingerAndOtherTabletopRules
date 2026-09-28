@@ -389,14 +389,16 @@ hidden unit is Tiny, one-HD magical beast with Str 3/Dex 19/Con 10/Int 1/
 Wis 12/Cha 6, 40-foot airborne speed, Weapon Finesse and a zero-base-dice
 touch carrier. Its Eagle donor is temporary rigging only. The 10-foot
 ground speed is omitted because the engine exposes one unit speed. The
-direct touch hit has not yet been qualified, and the attach, +8 maintain,
+direct touch hit is qualified, while attach, +8 maintain,
 one-Constitution-per-end-turn drain, four-point detachment, 10% disease,
 escape, death/dismissal/expiry/transition cleanup, save/load safety,
 original visual and icon are not implemented. The registered primary
 carrier now clones the native held-touch weapon; live inventory
 `20260928T0113159269094Z` verifies `AttackType.Touch`, zero base dice and
 the exact unit binding (49/49 assertions). This is structural touch-AC
-qualification only, not a direct hit, attach or damage test. No gameplay
+qualification. Guarded own-tier combat `20260928T0142219533559Z` then
+resolved a native hit at touch AC 6 against ordinary melee AC 14 with no
+HP damage (0 to 0). This does not qualify attach or drain. No full gameplay
 fidelity or publication is claimed. All nine choices stay suppressed. The guarded
 startup smoke `20260928T0029440999424Z` passed; the corrected live
 inventory `20260928T0052069434655Z` passed 48/48 structural assertions

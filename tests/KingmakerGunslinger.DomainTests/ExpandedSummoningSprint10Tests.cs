@@ -171,6 +171,14 @@ namespace KingmakerGunslinger.DomainTests
                 builder.Contains("nativeTouch.AttackType != AttackType.Touch") &&
                 builder.Contains("ConfigureWeapon(nativeTouch"),
                 "Stirge must clone the game's verified held-touch weapon, not a bite AC type.");
+            string runtime = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestRunner.cs"));
+            Assertions.True(runtime.Contains("expanded-summoning-stirge-native-touch-attack") &&
+                runtime.Contains("roll.AttackType == AttackType.Touch") &&
+                runtime.Contains("ordinaryAc > touchAc && roll.TargetAC == touchAc") &&
+                runtime.Contains("roll.IsHit && damageAfter == damageBefore"),
+                "The guarded combat fixture must demand a real zero-HP touch hit against armored AC controls.");
             Assertions.Equal(21,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
                 "All 12 Wasp and nine Stirge placements remain private.");
