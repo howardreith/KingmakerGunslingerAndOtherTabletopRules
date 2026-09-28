@@ -340,6 +340,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal string StirgeAttachmentDetail;
             internal bool StirgeFirstDrain;
             internal string StirgeFirstDrainDetail;
+            internal bool StirgeFourPointDetach;
+            internal string StirgeFourPointDetachDetail;
             internal bool HostileAbilityTarget;
             internal int AdditionalCasts;
             internal readonly List<string> Diagnostics = new List<string>();
@@ -17521,6 +17523,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     mechanics == null ? "not-run" : mechanics.StirgeFirstDrainDetail,
                     mechanics != null && mechanics.StirgeFirstDrain,
                     "live StirgeHoldComponent round tick and target Constitution damage"),
+                Assertion("expanded-summoning-stirge-four-point-detach",
+                    "each of four attached rounds deals one actual Constitution damage; the fourth releases both native parts and buffs",
+                    mechanics == null ? "not-run" : mechanics.StirgeFourPointDetachDetail,
+                    mechanics != null && mechanics.StirgeFourPointDetach,
+                    "four live StirgeHoldComponent round ticks with per-tick stat and link checks"),
                 Assertion("expanded-summoning-disposable-cleanup",
                     "exact party and global-unit snapshots restored", observed,
                     cleaned, "per-cast UnitEntityData.Dispose and final exact snapshots"),
@@ -18055,7 +18062,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         out result.StirgeAttachment,
                         out result.StirgeAttachmentDetail,
                         out result.StirgeFirstDrain,
-                        out result.StirgeFirstDrainDetail);
+                        out result.StirgeFirstDrainDetail,
+                        out result.StirgeFourPointDetach,
+                        out result.StirgeFourPointDetachDetail);
 
                 result.RepresentativeCombat = animalAttack && proxyAttack &&
                     elementalAttack && stalkerAttack && shadowAttack &&
@@ -18079,6 +18088,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     result.StirgeAttachmentDetail + "]");
                 result.Diagnostics.Add("stirgeDrain[" +
                     result.StirgeFirstDrainDetail + "]");
+                result.Diagnostics.Add("stirgeMeal[" +
+                    result.StirgeFourPointDetachDetail + "]");
                 result.Diagnostics.Add("cyclops[granted=" + flashGranted +
                     ";resource=" + flashBefore + "->" + flashAfter + ";armed=" +
                     flashArmed + ";armedNatural1=" + flashArmedDetail +
@@ -18908,13 +18919,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData hostile, List<UnitEntityData> created,
             ExpandedSummoningMechanicalEvidence evidence, out string detail,
             out bool attachmentEstablished, out string attachmentDetail,
-            out bool firstDrain, out string drainDetail)
+            out bool firstDrain, out string drainDetail,
+            out bool fourPointDetach, out string mealDetail)
         {
             detail = "not-run";
             attachmentEstablished = false;
             attachmentDetail = "not-run";
             firstDrain = false;
             drainDetail = "not-run";
+            fourPointDetach = false;
+            mealDetail = "not-run";
             BlueprintBuff hold = blueprints.OfType<BlueprintBuff>().Single(value =>
                 value.name == "KMG_Summoning_Special_Stirge_Hold");
             BlueprintBuff grappled = blueprints.OfType<BlueprintBuff>().Single(
@@ -18976,6 +18990,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                     (liveHold == null ? -1 : liveHold.CumulativeDamage) +
                     ";stillAttached=" + stillAttached + ";difficultyScale=" +
                     Game.Instance.Player.Difficulty.DamageToParty;
+                var mealSteps = new List<string>();
+                bool mealExact = firstDrain;
+                for (int round = 2; round <= 4 && liveHold != null; round++)
+                {
+                    int beforeRound = hostile.Descriptor.Stats.Constitution.Damage;
+                    liveHold.OnNewRound();
+                    int afterRound = hostile.Descriptor.Stats.Constitution.Damage;
+                    bool linked = ReferenceEquals(
+                        SummonHoldComponent.HeldTarget(stirge), hostile);
+                    mealSteps.Add(round + ":" + beforeRound + "->" + afterRound +
+                        "/" + liveHold.CumulativeDamage + "/linked=" + linked);
+                    mealExact &= afterRound - beforeRound == 1 &&
+                        liveHold.CumulativeDamage == round &&
+                        linked == (round < 4);
+                }
+                bool automaticCleanup =
+                    stirge.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleInitiator>() == null &&
+                    hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>() == null &&
+                    !stirge.Descriptor.HasFact(hold) &&
+                    !hostile.Descriptor.HasFact(grappled) &&
+                    !stirge.Descriptor.State.HasCondition(
+                        UnitCondition.LoseDexterityToAC);
+                fourPointDetach = mealExact && automaticCleanup &&
+                    hostile.Descriptor.Stats.Constitution.Damage -
+                        constitutionDamageBefore == 4;
+                mealDetail = "ticks=" + string.Join("|", mealSteps.ToArray()) +
+                    ";automaticCleanup=" + automaticCleanup;
                 return weapon != null && weapon.Blueprint.name ==
                     "KMG_Summoning_Natural_StirgeTouch" &&
                     roll != null && roll.AttackType == AttackType.Touch &&
