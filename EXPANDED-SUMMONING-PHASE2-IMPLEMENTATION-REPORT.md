@@ -437,3 +437,14 @@ rulebook. It hit touch AC 6 against ordinary melee AC 14 and did no HP damage
 package checks passed; the wrapper restored the original installation
 exactly (`20260928T0146022240699Z`). This qualifies direct touch delivery,
 not attachment, drain or publication.
+
+The hidden Stirge now owns two more stable buff identities: a touch-hit
+attachment trait and a hold state. It uses reciprocal native grapple parts
+without an extra grab roll, removes its Dexterity bonus to AC while attached,
+and tracks actual Constitution loss toward four points. The guarded
+disposable run `20260928T0232376506044Z` passed attachment, an exact first
+Constitution drain (0 to 1) with the link retained, and explicit cleanup.
+Repository validation, 1,940 domain cases, clean Release and strict package
+checks passed; exact installation restoration was recorded at
+`20260928T0236160392850Z`. Four-point detach, independent escape/death/
+dismissal/transition cleanup, disease, persistence and visuals remain open.

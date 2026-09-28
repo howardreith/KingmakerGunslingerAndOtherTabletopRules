@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Linq;
+using Newtonsoft.Json;
 using Harmony12;
 using Kingmaker;
 using Kingmaker.Blueprints;
@@ -624,21 +625,129 @@ namespace KingmakerGunslinger.Summoning
         }
     }
 
-    /// <summary>
-    /// The holder's side of a single-link hold (Sprint 4), carried by the hold
-    /// buff the native initiator part applies. Each new round the holder
-    /// makes a grapple check to maintain at the tabletop +5 (on top of the
-    /// +4 grab bonus): success deals the damage of the attack that
-    /// established the hold - the establishing limb's weapon entity through
-    /// the game's own weapon-stats rule, the first grab limb after a load -
-    /// plus any constrict; a swallower that began the round holding uses the
-    /// successful check as though attempting to pin and swallows instead
-    /// (bite damage, swallowed state); failure releases. When the hold state
-    /// ends for any reason - the target broke free, the holder fell, the
-    /// summon expired or was dismissed, the buff was dispelled - the target
-    /// this summon holds is released too, and only that target: the link is
-    /// owned here and never inferred from the target's side.
-    /// </summary>
+    /// <summary>The Stirge's touch hit establishes one native grapple link
+    /// without a second grab maneuver. The attack's own zero-damage touch
+    /// weapon is the only eligible limb.</summary>
+    [Serializable]
+    public sealed class StirgeAttachComponent :
+        RuleInitiatorLogicComponent<RuleAttackWithWeapon>
+    {
+        public BlueprintItemWeapon TouchWeapon;
+        public BlueprintBuff HoldBuff;
+        public BlueprintBuff GrappledBuff;
+
+        public override void OnEventAboutToTrigger(RuleAttackWithWeapon evt) { }
+
+        public override void OnEventDidTrigger(RuleAttackWithWeapon evt)
+        {
+            if (evt == null || evt.AttackRoll == null || evt.Weapon == null)
+                return;
+            TryAttach(evt.Target, evt.Weapon, evt.AttackRoll.IsHit);
+        }
+
+        internal bool TryAttach(UnitEntityData target, ItemEntityWeapon weapon,
+            bool touchHit)
+        {
+            UnitEntityData owner = Owner == null ? null : Owner.Unit;
+            if (owner == null || target == null || target.Descriptor == null ||
+                weapon == null || TouchWeapon == null || HoldBuff == null ||
+                GrappledBuff == null ||
+                !ReferenceEquals(weapon.Blueprint, TouchWeapon) ||
+                !ReferenceEquals(owner.Body.PrimaryHand.MaybeWeapon, weapon) ||
+                ReferenceEquals(owner, target) || target.Destroyed)
+                return false;
+            bool busy = owner.Get<UnitPartGrappleInitiator>() != null ||
+                target.Get<UnitPartGrappleTarget>() != null;
+            if (!StirgeAttachPolicy.MayAttach(touchHit, busy,
+                    !target.Descriptor.State.IsDead)) return false;
+            MechanicsContext context = Fact == null ? null : Fact.MaybeContext;
+            owner.Ensure<UnitPartGrappleInitiator>().Init(target, HoldBuff,
+                context);
+            target.Ensure<UnitPartGrappleTarget>().Init(owner, GrappledBuff,
+                context);
+            return ReferenceEquals(SummonHoldComponent.HeldTarget(owner),
+                target);
+        }
+    }
+
+    /// <summary>One attached Stirge's bounded Constitution meal. Native
+    /// grapple parts own victim escape and the two buff lifetimes; the
+    /// recorded meal survives a normal save without a separate persistence
+    /// store.</summary>
+    [Serializable]
+    public sealed class StirgeHoldComponent : BuffLogic, ITickEachRound,
+        IInitiatorRulebookHandler<RuleCalculateCMB>
+    {
+        [JsonProperty]
+        private int m_CumulativeDamage;
+
+        internal int CumulativeDamage { get { return m_CumulativeDamage; } }
+
+        public void OnNewRound()
+        {
+            UnitEntityData owner = Owner == null ? null : Owner.Unit;
+            UnitEntityData target = SummonHoldComponent.HeldTarget(owner);
+            if (owner == null) return;
+            if (target == null || target.Destroyed ||
+                target.Descriptor.State.IsDead)
+            {
+                Detach(owner, target);
+                return;
+            }
+            int requested = StirgeAttachPolicy.RequestedDamage(true, true,
+                m_CumulativeDamage);
+            int before = target.Descriptor.Stats.Constitution.Damage;
+            if (requested > 0)
+            {
+                var rule = new RuleDealStatDamage(owner, target,
+                    StatType.Constitution, new DiceFormula(0, DiceType.D6),
+                    requested);
+                MechanicsContext context = Fact == null ? null : Fact.MaybeContext;
+                if (context != null) context.TriggerRule(rule);
+                else Rulebook.Trigger(rule);
+            }
+            int actual = Math.Max(0, Math.Min(requested,
+                target.Descriptor.Stats.Constitution.Damage - before));
+            StirgeDrainStep step = StirgeAttachPolicy.EndTurn(true,
+                !target.Descriptor.State.IsDead, m_CumulativeDamage, actual);
+            m_CumulativeDamage = step.CumulativeDamage;
+            if (step.Detach) Detach(owner, target);
+        }
+
+        public void OnEventAboutToTrigger(RuleCalculateCMB evt)
+        {
+            if (evt == null || evt.Type != CombatManeuver.Grapple ||
+                Owner == null || Owner.Unit == null ||
+                !ReferenceEquals(evt.Initiator, Owner.Unit) ||
+                !ReferenceEquals(evt.Target,
+                    SummonHoldComponent.HeldTarget(Owner.Unit))) return;
+            evt.AddBonus(StirgeAttachPolicy.MaintainGrappleRacialBonus, Fact);
+        }
+
+        public void OnEventDidTrigger(RuleCalculateCMB evt) { }
+
+        public override void OnTurnOff()
+        {
+            base.OnTurnOff();
+            UnitEntityData owner = Owner == null ? null : Owner.Unit;
+            UnitPartGrappleInitiator part = owner == null ? null :
+                owner.Get<UnitPartGrappleInitiator>();
+            UnitEntityData target = part == null ? null : part.Target.Value;
+            if (target != null) SummonHoldComponent.Release(owner, target);
+        }
+
+        private static void Detach(UnitEntityData owner, UnitEntityData target)
+        {
+            if (owner == null) return;
+            if (target != null) SummonHoldComponent.Release(owner, target);
+            if (owner.Get<UnitPartGrappleInitiator>() != null)
+                owner.Remove<UnitPartGrappleInitiator>();
+        }
+    }
+
+    /// <summary>The shared single-link grab hold. A native grapple part owns
+    /// its target, and each round a successful maintain check deals the
+    /// establishing limb's weapon damage or swallows when applicable.</summary>
     [Serializable]
     public sealed class SummonHoldComponent : BuffLogic, ITickEachRound,
         IInitiatorRulebookHandler<RuleCalculateCMB>
