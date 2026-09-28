@@ -599,6 +599,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint9-flight-combat-fixture", ExpandedSummoningSprint9Tests.FlyingCombatFixtureUsesOwnTierAndExactTarget),
             Case("expanded-summoning.sprint9-eagle-lunge", ExpandedSummoningSprint9Tests.EagleVisualLungeIsBoundedAndRestored),
             Case("expanded-summoning.sprint10-native-vermin-audit", ExpandedSummoningSprint10Tests.NativeFlyingVerminSurveyStaysMetadataOnly),
+            Case("expanded-summoning.sprint11-native-ungulate-audit", ExpandedSummoningSprint11Tests.UngulateDonorSurveyRecordsNativeMechanicGraphs),
             Case("expanded-summoning.sprint10-stirge-attach-policy", ExpandedSummoningSprint10Tests.StirgeAttachRulesBoundDrainAndDetachment),
             Case("expanded-summoning.sprint10-stirge-published-registration", ExpandedSummoningSprint10Tests.StirgeRegisteredAtAllNinePublishedNatureTiers),
             Case("expanded-summoning.sprint10-wasp-registration", ExpandedSummoningSprint10Tests.GiantWaspRegisteredUnderSuppressionAtExactTiers),
