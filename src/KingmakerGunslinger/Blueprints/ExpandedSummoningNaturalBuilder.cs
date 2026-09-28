@@ -202,8 +202,12 @@ namespace KingmakerGunslinger.Blueprints
             if (nativeTouch == null || nativeTouch.AttackType != AttackType.Touch)
                 throw new InvalidOperationException(
                     "Native held-touch donor has no melee touch weapon.");
-            ConfigureWeapon(nativeTouch, Require<BlueprintItemWeapon>(bySymbol,
-                StirgeTouchSymbol), StirgeTouchSymbol, 0, DiceType.Zero);
+            BlueprintItemWeapon stirgeTouch = Require<BlueprintItemWeapon>(
+                bySymbol, StirgeTouchSymbol);
+            ConfigureWeapon(nativeTouch, stirgeTouch, StirgeTouchSymbol, 0,
+                DiceType.Zero);
+            // This is the creature's proboscis, not lootable held equipment.
+            stirgeTouch.IsNonRemovable = true;
             ConfigureWeapon(BlueprintLibraryLookup.RequireExact<
                 BlueprintItemWeapon>(library, NativeTail1d8Guid,
                     "native animated tail weapon"),
