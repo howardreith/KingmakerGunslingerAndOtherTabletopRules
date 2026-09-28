@@ -992,3 +992,24 @@ DLL SHA-256:
 Independent escape, death, dismissal, expiry, area transition, disease,
 save/load, original visual and icon still need qualification or implementation.
 Stirge stays unpublished.
+
+## Sprint 10 Stirge break-free and area leave, 2026-09-28
+
+Guarded disposable combat `20260928T0304163413890Z` passed two interruption
+paths after the full meal. A new touch hit reattached; the victim's native
+`UnitHelper.TryBreakFree` succeeded, and the fixture performed the same
+target-part removal as the native grapple controller. The Stirge hold then
+cleared without another Constitution drain. Another reattachment was
+released by `SummonGrappleAreaSafeguard.Sweep(true)` with exactly one target
+swept and no remaining parts, buffs or lost-Dexterity state. This proves
+the native rule decision and cleanup path; it does not observe the controller's
+real-time scheduling. Repository validation, 1,940 domain tests, clean Release
+and strict package checks passed. Restoration `20260928T0307556510922Z`
+returned the original 136-file tree at SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+Package SHA-256:
+`AB0BC4A2E926DD21D3792429AE58478B2296DB4F54820877EA9C7D9FDB58CB08`;
+DLL SHA-256:
+`52B0F26DEDA2B1088507E5548928975813C4B8E99D684154C81301DA0C8D7DD3`.
+Death, dismissal, expiry, disease, save/load, original visual and icon remain
+open, and Stirge remains unpublished.
