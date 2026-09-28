@@ -19,7 +19,7 @@ forbids an automatic Sprint 46.
 | S7 | 1 | Big-Cat Combat System | 8 | Dire Lion, Dire Tiger (Smilodon), Leopard, Lion | Not started |
 | S8 | 1 | Big-Cat Roster Completion | 4 | Cheetah, Tiger | Not started |
 | S9 | 2 | Flying Animal Rig - Eagle and Dire Bat | 5 | Dire Bat, Eagle | Internal technical PASS: original models, Bat 40-foot imprecise blindsense and preserved publication, native combat/contact, obstructed doorway travel, lifecycle, persistence and controls; owner visual review pending |
-| S10 | 2 | Flying Vermin - Stirge and Giant Wasp | 6 | Giant Wasp, Stirge | Not started |
+| S10 | 2 | Flying Vermin - Stirge and Giant Wasp | 6 | Giant Wasp, Stirge | In progress: Giant Wasp published and technically qualified; Stirge hidden pending attack-pose, disease timing and icon/UI review |
 | S11 | 2 | Equines and Ungulates | 7 | Aurochs, Bison, Rhinoceros, Woolly Rhinoceros | Not started |
 | S12 | 2 | Canines and Small Quadrupeds I | 8 | Dire Rat, Dog, Goblin Dog, Hyena | Not started |
 | S13 | 2 | Canines and Small Quadrupeds II plus Tiny Frog | 6 | Poisonous Frog, Shadow Mastiff, Wolverine | Not started |

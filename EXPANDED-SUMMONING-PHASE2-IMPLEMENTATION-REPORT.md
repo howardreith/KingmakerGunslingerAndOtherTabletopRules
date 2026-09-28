@@ -1,16 +1,17 @@
 # Expanded Summoning Phase 2 implementation report
 
-Status: Sprint 9 internally technically qualified; Sprint 10 intake under
-way. Eagle and Dire Bat passed guarded casts, player path, live inventory,
+Status: Sprint 9 internally technically qualified; Sprint 10 in progress.
+Eagle and Dire Bat passed guarded casts, player path, live inventory,
 open-floor and room-opening movement, exact-hostile native combat in RTWP
 and turn-based mode, visual impact contact, save/load/expiry, module-disabled
 safety, and installation restoration. Their original bird/bat models, Bat
 icon and bounded Bat blindsense are published on the Phase 2A feature branch.
-Human visual approval remains pending and nonblocking. Giant Wasp is
-registered under suppression with its poison and native sting cadence
-qualified; visual contact remains open. Stirge is registered under suppression
-with a tested rules boundary and zero-damage carrier, but no live attach
-lifecycle or final visual. The Phase 2A draft PR is not ready for review.
+Human visual approval remains pending and nonblocking. Giant Wasp's twelve
+SM/SNA choices are published with an original icon; its poison, native sting
+cadence, visual contact, movement, cleanup, live menu and player path passed.
+Stirge's nine SNA choices remain hidden while its attack-pose visual, disease
+cure timing and choice icon/UI review are completed. The Phase 2A draft PR is
+not ready for owner review.
 
 The accepted baseline is `master` at `2ce70e4` (0.0.140), which advanced after
 the owner packet was written. The baseline passes 1,918 domain tests, the
@@ -548,3 +549,39 @@ Release, strict package and exact 136-file live-tree restoration. Original
 Stirge and Wasp icon paintings are source-only pending export and actual UI
 review. Native filth fever cure timing is still unverified; neither creature
 is yet published.
+
+## Sprint 10 Giant Wasp publication checkpoint, 2026-09-28
+
+The twelve Giant Wasp placements are now published under Summon Monster IV
+and Summon Nature's Ally IV, including their legal higher-tier quantity
+variants. Its original 1254 px painting exports to one 128 px icon and the
+93-concept summon manifest records 26 exact Wasp consumers: unit, inspectable
+unit type, and generated ability/template symbols. The natural sting and
+hidden poison feature are mechanics-only; the saved venom buff keeps its
+native poison-family icon. Stirge's nine Nature's Ally placements remain
+suppressed and its original painting remains source-only. Owner visual
+approval is pending for the Wasp painting.
+
+The guarded player-path run
+`20260928T0955440745921Z-disposable-expanded-summoning-player-path`
+passed 825/825 published generated roots and 29/29 native wrappers, with
+one-slot and quantity contracts and exact request-local cleanup. Its batch
+also attempted an inventory observer with an invalid save-name parameter;
+that preflight attempt is excluded from qualification. The final guarded
+inventory `20260928T1044279887208Z-observe-expanded-summoning-inventory`
+passed 50/50 assertions: all 18 menu equations, zero missing or misordered
+icons, exact Wasp inspectable-type sprite, and zero prohibited references.
+The first two inventory diagnostics exposed a stale audit allowlist, not a
+production reference leak: Stirge's owned attach trait and the exact native
+`Unlootable` fact were intentionally bound to its hidden unit. The audit now
+names those references narrowly and reports each unexpected reference.
+
+Final source validation passed all 1,941 domain tests, the repository
+wrapper, clean Release build, 93-icon source/export verification, catalog
+validation, and strict standalone package check. The final inventory package
+SHA-256 is `defbd7bbee93ba6dc5778ae5a0cd906738711b527146622a6187d6b4c93ac442`;
+DLL SHA-256 is `e3dcbe169858adc4875719bcb4700ff86c1b6527302b23a1dd26da637f986fc1`.
+The wrapper restored the original 136-file live installation at
+`20260928T1048297337580Z`. This qualifies Wasp publication technically;
+Sprint 10 remains open for Stirge's attach-pose visual and choice UI review,
+native disease cure timing, and nine-choice publication.

@@ -74,13 +74,13 @@ namespace KingmakerGunslinger.DomainTests
                     "86f4287572bef49449b9d06c66adf456")
                     .EquivalentCreatureKey,
                 "Native SNA Smilodon reconciliation changed.");
-            Assertions.Equal(813,
+            Assertions.Equal(825,
                 ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
                     .Concat(ExpandedSummoningCatalog.GenerateVariants(
                         SummonFamily.NaturesAlly))
                     .Count(SummonVisibilityCatalog.IsPublished),
                 "Visible summon placement count changed.");
-            Assertions.Equal(21,
+            Assertions.Equal(9,
                 ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
                     .Concat(ExpandedSummoningCatalog.GenerateVariants(
                         SummonFamily.NaturesAlly))
@@ -114,7 +114,7 @@ namespace KingmakerGunslinger.DomainTests
         {
             SummonIconCatalog.Validate();
             SummonViewScaleCatalog.Validate();
-            Assertions.Equal(92, SummonIconCatalog.All.Count,
+            Assertions.Equal(93, SummonIconCatalog.All.Count,
                 "Project icon concept count changed.");
             Assertions.Equal("Dire Bat", SummonIconCatalog.For("dire-bat")
                 .DisplayName, "Dire Bat requires its own creature icon identity.");
