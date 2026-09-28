@@ -5,16 +5,16 @@ using System.Linq;
 namespace KingmakerGunslinger.Summoning
 {
     /// <summary>
-    /// Publication-only exclusions. Sprint 9 publishes the preserved Dire Bat
-    /// placements after its own visual, icon, sense and live cast qualification.
+    /// Publication-only exclusions. Sprints 9 and 10 publish the previously
+    /// hidden Dire Bat, Giant Wasp and Stirge placements after qualification.
     /// </summary>
     internal static class SummonVisibilityCatalog
     {
         private static readonly HashSet<string> SuppressedCreatureKeys =
-            new HashSet<string>(StringComparer.Ordinal) { "stirge" };
+            new HashSet<string>(StringComparer.Ordinal) { };
 
         internal const int RegisteredLogicalPlacementCount = 834;
-        internal const int SuppressedLogicalPlacementCount = 9;
+        internal const int SuppressedLogicalPlacementCount = 0;
         internal const int PublishedLogicalPlacementCount =
             RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount;
 
@@ -34,7 +34,6 @@ namespace KingmakerGunslinger.Summoning
                 !IsPublished(value)).ToArray();
             if (all.Length != RegisteredLogicalPlacementCount ||
                 suppressed.Length != SuppressedLogicalPlacementCount ||
-                suppressed.Any(value => value.Creature.Key != "stirge") ||
                 all.Count(IsPublished) != PublishedLogicalPlacementCount)
                 throw new InvalidOperationException(
                     "Frozen summon publication visibility catalog changed.");

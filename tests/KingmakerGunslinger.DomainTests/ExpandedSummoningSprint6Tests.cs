@@ -161,7 +161,7 @@ namespace KingmakerGunslinger.DomainTests
                 .All(value => !appended.Contains(value)),
                 "The Sprint 5 append stays exactly before the Sprint 6 append.");
             SummonIconCatalog.Validate();
-            Assertions.Equal(93, SummonIconCatalog.All.Count,
+            Assertions.Equal(94, SummonIconCatalog.All.Count,
                 "The current catalog includes the Phase 2 Dire Bat and Giant Wasp icons without changing Sprint 6 identities.");
         }
     }

@@ -407,7 +407,7 @@ inspectable unit-type sprite and zero prohibited references. The original
 136-file live installation was restored after both runs. This closes the
 Wasp technical publication gate; owner visual approval remains pending.
 
-## Phase 2 Sprint 10 provisional Stirge row
+## Phase 2 Sprint 10 Stirge row
 
 Stirge: SNA I with nine legal quantity placements through SNA IX. The
 hidden unit is Tiny, one-HD magical beast with Str 3/Dex 19/Con 10/Int 1/
@@ -468,6 +468,27 @@ are now installed on the private Eagle-donor renderer swap. Guarded
 `20260928T0919388380835Z` passed exact attachment, 12.339 m native
 travel/doorway crossing, render lifecycle and zero private view resources
 after cleanup; its read-only overhead frame shows the creature with a
-small furniture-occlusion patch. The original summon icon is source-only.
-Actual menu use, native disease cure timing, and owner visual judgment
-remain open; all nine placements stay hidden.
+small furniture-occlusion patch. At that checkpoint the icon was source-only
+and all nine placements were hidden.
+
+Final guarded turn-based `20260928T1227208122214Z` and RTWP
+`20260928T1230343024504Z` native UnitAttack runs passed touch hit,
+reciprocal attach, forward proboscis aim and 0.05 m baked clearance outside
+the target bounds. The final disposable run `20260928T1307116237968Z`
+passed 33/33 assertions, including four-point drain, native DC 12 disease
+exposure, escape, prey death, dismissal, timed expiry, area sweep, visual
+attachment and exact cleanup. Its per-view rig has 15 bones and released
+zero private meshes/materials in the lifecycle run.
+
+The original 128 px Stirge icon is distinct from Giant Wasp and is assigned
+to the unit and all nine SNA choices; its source/export hashes and exact
+symbols are in the icon manifest. The zero-damage touch weapon and attack
+trait are mechanics-only; the hold buff is internal and Filth Fever keeps
+its native icon. All nine choices are published. The guarded player path
+`20260928T1344385887684Z` passed 834/834 generated roots and 29/29 native
+wrappers. The no-save live inventory `20260928T1405023387599Z` passed 50/50
+assertions, all 18 menu equations, zero missing or misordered icons and zero
+prohibited references. Original installation restoration was exact after
+both runs. Sprint 10 internal technical status: PASS. Native Filth Fever cure
+timing was not measured; exposure uses the exact installed buff. Owner visual
+approval is pending and nonblocking.

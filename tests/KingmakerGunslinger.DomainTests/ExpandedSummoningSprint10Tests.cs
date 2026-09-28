@@ -127,12 +127,12 @@ namespace KingmakerGunslinger.DomainTests
                 value.Symbol == "KMG.Summoning.Natural.WaspSting1d8" &&
                 value.PlannedType == "BlueprintItemWeapon"),
                 "Wasp sting has its own append-only blueprint identity.");
-            Assertions.Equal(9,
+            Assertions.Equal(0,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "Only Stirge's nine placements remain suppressed.");
+                "The qualified Wasp and Stirge placements are both published.");
         }
 
-        internal static void StirgeRegisteredAtAllNineHiddenNatureTiers()
+        internal static void StirgeRegisteredAtAllNinePublishedNatureTiers()
         {
             SummonCreatureSpec stirge = ExpandedSummoningCatalog.All.Single(value =>
                 value.Key == "stirge");
@@ -154,8 +154,8 @@ namespace KingmakerGunslinger.DomainTests
                     tier == 2 ? SummonMultiplicity.OneD3 :
                     SummonMultiplicity.OneD4PlusOne, variant.Multiplicity,
                     "Stirge follows the preserved summon quantity ladder.");
-                Assertions.False(SummonVisibilityCatalog.IsPublished(variant),
-                    "Incomplete Stirge mechanics and visual cannot enter a menu.");
+                Assertions.True(SummonVisibilityCatalog.IsPublished(variant),
+                    "Qualified Stirge belongs in every Nature's Ally menu tier.");
             }
             NaturalSummonProfile profile = ExpandedSummoningNaturalProfiles
                 .For("stirge");
@@ -164,17 +164,16 @@ namespace KingmakerGunslinger.DomainTests
                 profile.SpeedFeet == 40 && profile.PrimaryWeapon ==
                 "StirgeTouch" && profile.Facts.Contains("Airborne") &&
                 profile.Facts.Contains("WeaponFinesse"),
-                "The hidden profile must retain Stirge's physical and touch-carrier role.");
+                "The published profile must retain Stirge's physical and touch-carrier role.");
             Assertions.Equal("406c1e1af5400ac4881e330502ccbd9e",
                 ExpandedSummoningDonorCatalog.For("stirge").Guid,
-                "The hidden candidate uses the audited flying donor rig.");
+                "Stirge uses the audited flying donor rig.");
             Assertions.True(ExpandedSummoningIdentityCatalog.Build().Any(value =>
                 value.Symbol == "KMG.Summoning.Natural.StirgeTouch" &&
                 value.PlannedType == "BlueprintItemWeapon"),
                 "The zero-damage touch carrier needs its own stable identity.");
-            Assertions.False(SummonIconCatalog.All.Any(value =>
-                value.Key == "stirge"),
-                "A hidden candidate has no player-visible icon consumer yet.");
+            Assertions.Equal("Stirge", SummonIconCatalog.For("stirge")
+                .DisplayName, "The published Stirge choices need original species art.");
             string builder = File.ReadAllText(Path.Combine(
                 Environment.CurrentDirectory, "src", "KingmakerGunslinger",
                 "Blueprints", "ExpandedSummoningNaturalBuilder.cs"));
@@ -256,9 +255,9 @@ namespace KingmakerGunslinger.DomainTests
                 specialBuilder.Contains("0f775c7d5d8b6494197e1ce937754482") &&
                 specialBuilder.Contains("UnitCondition.LoseDexterityToAC"),
                 "The hidden unit must own a direct-hit native link and bounded actual-Constitution drain.");
-            Assertions.Equal(9,
+            Assertions.Equal(0,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "Stirge's nine placements remain private.");
+                "Stirge's nine placements are published.");
         }
 
         internal static void GiantWaspPoisonTracksConstitutionAndTabletopExposure()
@@ -339,9 +338,9 @@ namespace KingmakerGunslinger.DomainTests
                 review.Contains("finally") &&
                 review.Contains("renderer.enabled = true"),
                 "The isolated Wasp frame must restore every temporarily hidden auxiliary renderer.");
-            Assertions.Equal(9,
+            Assertions.Equal(0,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "Prepublication review cannot make Stirge visible.");
+                "The review scenario remains bounded after publication.");
         }
 
         internal static void WaspQuantityCoveragePublishesAllLegalVariants()

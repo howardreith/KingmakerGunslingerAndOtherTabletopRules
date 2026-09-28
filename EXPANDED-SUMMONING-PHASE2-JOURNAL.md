@@ -885,3 +885,20 @@ units. Source validation, 1,942 domain tests, clean Release and strict package
 passed; original live tree restoration was exact at `20260928T1311121870023Z`.
 The native Filth Fever exposure branch and DC 12 passed; cure timing remains
 unmeasured. Icon export and nine-choice publication are next.
+
+## Sprint 10: Stirge icon, player path and menu publication, 2026-09-28
+
+The original 1254 px Stirge painting exported at 128 px with SHA-256
+`2238a7599b8e254bc1675ba98711667a27079c7f8d15c660089f1017ce061ff1`.
+The generated manifest lists its unit and nine SNA abilities, and the live
+cache gives each species a distinct sprite. Source and 128 px art were
+inspected; owner visual judgment remains pending. All nine choices are now
+published. Repository validation, all 1,942 domain tests, clean Release and
+strict 262-file package passed. Guarded player path `20260928T1344385887684Z`
+passed 834/834 roots, 29/29 native wrappers and cleanup. No-save inventory
+`20260928T1405023387599Z` passed 50/50 assertions, all 18 menu equations,
+zero missing or misordered icons and zero prohibited references. Both runs
+restored the exact original 136-file mod tree; final restoration
+`20260928T1409073917030Z`. Sprint 10 is technically complete, with native
+Filth Fever cure timing recorded as unmeasured rather than claimed. Sprint 11
+is next under the existing owner authorization.
