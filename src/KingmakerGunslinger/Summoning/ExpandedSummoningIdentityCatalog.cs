@@ -25,7 +25,7 @@ namespace KingmakerGunslinger.Summoning
         internal const int TemplatedPlacementCount = 229;
         internal const int TemplateExecutionAbilityCount = TemplatedPlacementCount * 2;
         internal const int TemplateBuffCount = 8;
-        internal const int SpecialIdentityCount = 148;
+        internal const int SpecialIdentityCount = 151;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -227,6 +227,9 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Stirge.Hold", "BlueprintBuff"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Rhinoceros.PowerfulCharge", "BlueprintFeature"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.WoollyRhinoceros.PowerfulCharge", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Aurochs.Trample", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Bison.Trample", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.WoollyRhinoceros.Trample", "BlueprintAbility"));
             Validate(result);
             return result.AsReadOnly();
         }

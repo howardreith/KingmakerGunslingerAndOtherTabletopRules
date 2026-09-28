@@ -342,8 +342,11 @@ def planned():
         ("KMG.Summoning.Special.Stirge.Hold", "BlueprintBuff"),
         ("KMG.Summoning.Special.Rhinoceros.PowerfulCharge", "BlueprintFeature"),
         ("KMG.Summoning.Special.WoollyRhinoceros.PowerfulCharge", "BlueprintFeature"),
+        ("KMG.Summoning.Special.Aurochs.Trample", "BlueprintAbility"),
+        ("KMG.Summoning.Special.Bison.Trample", "BlueprintAbility"),
+        ("KMG.Summoning.Special.WoollyRhinoceros.Trample", "BlueprintAbility"),
     ))
-    if len(rows) != 1617 or len({symbol for symbol, _ in rows}) != 1617:
+    if len(rows) != 1620 or len({symbol for symbol, _ in rows}) != 1620:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 
