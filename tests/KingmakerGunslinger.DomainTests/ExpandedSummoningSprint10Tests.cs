@@ -191,6 +191,11 @@ namespace KingmakerGunslinger.DomainTests
                 runtime.Contains("for (int round = 2; round <= 4") &&
                 runtime.Contains("fourPointDetach = mealExact && automaticCleanup"),
                 "The guarded fixture must require four actual drains and automatic native release.");
+            Assertions.True(runtime.Contains("expanded-summoning-stirge-escape-and-transition") &&
+                runtime.Contains("Kingmaker.UnitLogic.UnitHelper.TryBreakFree(hostile,") &&
+                runtime.Contains("SummonGrappleAreaSafeguard.Sweep(true,") &&
+                runtime.Contains("escapeAndTransition = reattachedForEscape && nativeEscape"),
+                "Victim escape and area leave must re-establish and release real native Stirge links.");
             string special = File.ReadAllText(Path.Combine(
                 Environment.CurrentDirectory, "src", "KingmakerGunslinger",
                 "Summoning", "ExpandedSummoningSpecialCombatComponents.cs"));
