@@ -1018,3 +1018,29 @@ zero prohibited references or shared donor components. The wrapper restored
 the original 136-file tree exactly at `20260928T1728545901562Z`.
 Next: attach scoped charge to the hidden Rhinos, live-qualify their ordinary
 and charged gore, then implement trample and original ungulate views.
+
+## Sprint 11: registered Rhino charge damage, 2026-09-28
+
+Two hidden charge-feature identities now attach the summon-scoped component
+to Rhinoceros and Woolly Rhinoceros. The first guarded diagnostic
+`20260928T1754133569009Z` found Rhino `6d6+12` on a first charge rather
+than printed `4d6+12`; a reversible Mastodon-gore clone diagnostic
+`20260928T1820184232276Z` reached `8d6+12` and was not retained. Installed
+game IL showed the true cause: Kingmaker scaled the damage-dice override
+again after the project component. Restricting `DoNotScaleDamage` to the exact
+first owner-gore charge resolved it without a new weapon identity.
+
+Final guarded disposable run `20260928T1840088844180Z` passed 18/18.
+Rhino measured ordinary `2d6+9`, first charge `4d6+12`, then ordinary on
+later, opportunity and post-marker attacks. Woolly measured `2d8+13` to
+`4d8+18` and the same off-path reversion. Bison's native Power Attack feat
+explained its active `2d6+14`; removing the feat in the disposable fixture
+restored printed `2d6+12`, with no charge dice. Repository validation,
+1,947 domain tests, clean Release, strict package and request-local cleanup
+passed. Package SHA-256
+`224796490e3200be7adb9039f7c1eb0f383c7cdc6a9a92ec24cbfd924414aa7b`;
+DLL SHA-256
+`5157eb9b2d5beaa43af8461c97a84d9faf31a9bcc07298855bd4a59cdb08d526`.
+The wrapper's clean outcome and exact original 136-file restoration are
+recorded at `20260928T1844262522767Z`. Real attack cadence, trample and
+visuals are still unqualified; all four ungulates remain hidden.

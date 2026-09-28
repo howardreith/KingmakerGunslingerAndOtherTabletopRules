@@ -338,12 +338,12 @@ namespace KingmakerGunslinger.Summoning
                     22, 10, 19, 2, 13, 5, 40, 7, "Gore2d6",
                     Array.Empty<string>(), A("ReducedReach", "TripDefenseFourLegs",
                         "GreatFortitude", "SkillFocusPerception"),
-                    "Registered but hidden in Sprint 11: the summon-local powerful charge is not attached yet; Endurance awaits an exact summon-safe identity. The Mastodon donor supplies only the temporary movement and view rig."),
+                    "Registered but hidden in Sprint 11: the summon-local powerful charge is attached pending live new-unit qualification; Endurance awaits an exact summon-safe identity. The Mastodon donor supplies only the temporary movement and view rig."),
                 P("woolly-rhinoceros", "Woolly Rhinoceros", "Animal", 8,
                     "Large", 28, 10, 21, 2, 13, 3, 30, 10, "Gore2d8",
                     Array.Empty<string>(), A("ReducedReach", "TripDefenseFourLegs",
                         "GreatFortitude", "SkillFocusPerception"),
-                    "Registered but hidden in Sprint 11: trample and summon-local powerful charge are not attached yet; Diehard and Endurance await exact summon-safe identities. The Mastodon donor supplies only the temporary movement and view rig.")
+                    "Registered but hidden in Sprint 11: trample is not installed and summon-local powerful charge awaits live new-unit qualification; Diehard and Endurance await exact summon-safe identities. The Mastodon donor supplies only the temporary movement and view rig.")
             };
         }
 

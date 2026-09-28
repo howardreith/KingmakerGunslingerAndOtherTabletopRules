@@ -475,7 +475,7 @@ ordered list is enforced by `tools/validate_favored_class140.py` and
 
 Expanded Summoning Phase 2 preserves every accepted 0.0.140 ledger GUID,
 appends the Dire Bat, Giant Wasp and Stirge identities, then appends 100
-Sprint 11 ungulate unit and placement identities: 2603 stable identifiers: 2601 active and 2 reserved.
+Sprint 11 ungulate unit, placement and Rhino charge identities: 2605 stable identifiers: 2603 active and 2 reserved.
 The Wasp and Stirge choices are now published;
 all 48 Aurochs, Bison, Rhinoceros and Woolly Rhinoceros placements remain
 registered but hidden until their mechanics and visual contracts pass.
