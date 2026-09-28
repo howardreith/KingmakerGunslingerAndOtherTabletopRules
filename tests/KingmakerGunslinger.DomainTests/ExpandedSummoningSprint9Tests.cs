@@ -202,7 +202,7 @@ namespace KingmakerGunslinger.DomainTests
                         SummonFamily.NaturesAlly)).ToArray();
             SummonVariantSpec[] bat = all.Where(value =>
                 value.Creature.Key == "dire-bat").ToArray();
-            Assertions.Equal(813, all.Count(SummonVisibilityCatalog.IsPublished),
+            Assertions.Equal(825, all.Count(SummonVisibilityCatalog.IsPublished),
                 "Sprint 9's accepted logical placements remain intact.");
             Assertions.Equal(14, bat.Length,
                 "Dire Bat retains seven placements in each summon family.");

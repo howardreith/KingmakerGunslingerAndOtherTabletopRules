@@ -394,8 +394,18 @@ passed 12.334 m native travel, connected doorway crossing, retained painted
 renderer, full unit cleanup and zero private Wasp meshes/materials after
 view destruction. Normal party-camera renders read as a striped flying
 wasp; overhead impact frames still carry native effects that obscure the
-needle. The Wasp remains hidden pending its own icon, publication checks
-and the complete Sprint 10 review. HumanReview: NOT_PERFORMED_NONBLOCKING.
+needle. The Wasp remained hidden at this visual checkpoint. HumanReview:
+NOT_PERFORMED_NONBLOCKING.
+
+The later original painting has a manifest-backed 128 px export with 26
+exact consumers. All twelve SM/SNA Wasp placements are now published.
+Guarded `20260928T0955440745921Z` passed all 825 published generated
+spellbook roots, 29 native wrappers, one-slot/quantity contracts, and
+request-local cleanup. Guarded `20260928T1044279887208Z` passed 50/50
+inventory assertions: all 18 menu equations, zero missing icons, exact
+inspectable unit-type sprite and zero prohibited references. The original
+136-file live installation was restored after both runs. This closes the
+Wasp technical publication gate; owner visual approval remains pending.
 
 ## Phase 2 Sprint 10 provisional Stirge row
 

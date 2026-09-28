@@ -1,6 +1,6 @@
 ﻿{
     "schemaVersion":  1,
-    "count":  92,
+    "count":  93,
     "icons":  [
                   {
                       "key":  "dog",
@@ -825,6 +825,15 @@
                       "key":  "tiger",
                       "file":  "tiger.png",
                       "sha256":  "0c2c7447cf4c8559f5bc2bd0882aac5140b84c75dd2022edb90d2fe87a1c1ae4",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "giant-wasp",
+                      "file":  "giant-wasp.png",
+                      "sha256":  "1f7159733556a13fdbc9a985441141e2e9f7cf1af092147c8945ae49cee64058",
                       "width":  128,
                       "height":  128,
                       "format":  "RGBA PNG",

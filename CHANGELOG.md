@@ -4,11 +4,13 @@
 
 - Sprint 9 Eagle and Dire Bat visual, sense, motion and guarded runtime
   qualification is complete internally; owner visual review remains pending.
-- Giant Wasp is registered but hidden at Summon Monster IV and Nature's
-  Ally IV. Its original flying model, 1d8 sting and DC 18 Dexterity poison
-  have passed guarded structural and focused mechanical runtime checks.
-  Motion, impact, lifecycle, quantity, icon and publication gates remain.
-- Stirge and the remaining Phase 2 creatures are still in progress. No
+- Giant Wasp's twelve Summon Monster IV and Nature's Ally IV placements are
+  published with an original choice icon. Its flying model, 1d8 sting,
+  DC 18 Dexterity poison, two-mode target contact, movement, cleanup,
+  quantity casts, 825-root player path and live menu passed guarded checks.
+- Stirge is registered but its nine choices remain hidden while attack-pose,
+  disease-timing and icon/UI review continues. The remaining Phase 2
+  creatures are still in progress. No
   public version, release or permanent installation is authorized.
 
 ## 0.0.140-favored-class-integration

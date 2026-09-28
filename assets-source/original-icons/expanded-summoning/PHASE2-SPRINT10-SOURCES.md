@@ -5,7 +5,9 @@ the installed built-in `imagegen` tool on 2026-09-28. They are new concepts;
 the reference paintings were supplied for family composition only. Neither
 source incorporates Kingmaker art, a donor crop, or third-party pixels. Export
 them through `tools/New-ExpandedSummoningIcons.ps1` when their choices are
-published. Technical and in-game review do not constitute owner visual approval.
+published. The Wasp has a manifest-backed 128 px export and published choice;
+Stirge remains source-only while its choice is suppressed. Technical and
+in-game review do not constitute owner visual approval.
 
 | Concept | Source SHA-256 | Family / anatomy references | 128 px source downsample review |
 |---|---|---|---|
@@ -16,7 +18,8 @@ Both sources use `original-required` for the creature choice and
 `intentional-family-share` for its quantity and template variants. The parent
 summon spell retains its established identity. Internal poison, attach, and
 disease facts are `hidden-internal`. The actual variant consumer symbols will
-be recorded by the generated icon manifest at publication.
+be recorded by the generated icon manifest at publication. The Wasp manifest
+currently records its 26 unit, inspectable-type, ability, and template consumers.
 
 ## Exact generation prompts
 

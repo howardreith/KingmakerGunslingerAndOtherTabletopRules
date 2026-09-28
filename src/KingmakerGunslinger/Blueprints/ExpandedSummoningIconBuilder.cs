@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Classes;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using KingmakerGunslinger.Summoning;
 using UnityEngine;
@@ -41,6 +42,16 @@ namespace KingmakerGunslinger.Blueprints
                 SummonNativeExpansionCatalog.All)
                 Set(bySymbol, native.Symbol,
                     ExpandedSummoningProjectIcons.Require(native.IconKey));
+            // The published Wasp's inspectable creature type is its own
+            // visible consumer, separate from the summon menu abilities.
+            BlueprintScriptableObject waspType;
+            if (!bySymbol.TryGetValue(
+                    "KMG.Summoning.Natural.GiantWasp.UnitType", out waspType) ||
+                !(waspType is BlueprintUnitType))
+                throw new InvalidOperationException(
+                    "Published Giant Wasp unit type is missing.");
+            ((BlueprintUnitType)waspType).Image =
+                ExpandedSummoningProjectIcons.Require("giant-wasp");
             // The Cyclops's own summon icon marks its Flash of Insight on the
             // action bar; the ability has no separate art of its own.
             Set(bySymbol, "KMG.Summoning.Special.Cyclops.FlashOfInsight",
