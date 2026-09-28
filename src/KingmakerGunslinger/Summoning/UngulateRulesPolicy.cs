@@ -40,6 +40,10 @@ namespace KingmakerGunslinger.Summoning
         internal int ChargeDiceCount { get; private set; }
         internal int ChargeDieSides { get; private set; }
         internal int ChargeBonus { get; private set; }
+        internal int ChargeBonusIncrement
+        { get { return HasPowerfulCharge ? ChargeBonus - GoreBonus : 0; } }
+        internal int ChargeDiceIncrement
+        { get { return HasPowerfulCharge ? ChargeDiceCount - GoreDiceCount : 0; } }
         internal bool Stampede { get; private set; }
 
         internal bool StampedeActive(int adjacentStampedingCreatures)

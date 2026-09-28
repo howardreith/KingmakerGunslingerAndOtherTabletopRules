@@ -978,3 +978,23 @@ DLL SHA-256
 The wrapper restored the original 136-file mod tree exactly at
 `20260928T1606565388180Z`. New Rhino baselines and full Trample still need
 implementation and live qualification.
+
+## Sprint 11: summon-local charge component, 2026-09-28
+
+`UngulatePowerfulCharge` now gates a configured gore dice/bonus increment
+to the owning unit's first native charge and exact gore weapon. A failed
+guarded diagnostic `20260928T1628286600311Z` showed the Dire Boar donor
+already contributes another two charge dice: `2d6+9` ordinary became
+`6d6+12` with the project component. That diagnostic is excluded, and its
+wrapper restored the original installation at `20260928T1632448318962Z`.
+The narrowed Mastodon control passed 17/17 assertions in guarded Steam run
+`20260928T1638254604120Z`: `2d8+24` ordinary, `4d8+27` first charge, and
+`2d8+24` on later, opportunity, and post-marker attacks. Repository
+validation, 1,945 domain tests, clean Release and strict package passed.
+Package SHA-256
+`8e1d307aef89ea5910389392c53ff337e8029ce27411edb92bafb4acab683ad9`,
+DLL SHA-256
+`a0cd789b4ffaf790d5d5ce1e43eabc4c8889f784fe7cf760b5e5df9934fbb55a`.
+Wrapper restoration `20260928T1642382480272Z` verified the original
+136-file tree exactly. This is component behavior only; no new Rhino is
+registered, and no trample or visual contract is qualified.
