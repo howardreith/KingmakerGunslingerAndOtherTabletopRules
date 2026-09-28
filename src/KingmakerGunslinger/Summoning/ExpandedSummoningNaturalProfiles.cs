@@ -69,7 +69,7 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Values.Length != 35 || Values.Select(value => value.Key)
+            if (Values.Length != 36 || Values.Select(value => value.Key)
                     .Distinct(StringComparer.Ordinal).Count() != Values.Length)
                 throw new InvalidOperationException(
                     "The natural reconstruction catalog is incomplete or duplicated.");
@@ -319,7 +319,11 @@ namespace KingmakerGunslinger.Summoning
                 P("giant-wasp", "Giant Wasp", "Vermin", 4, "Large",
                     18, 12, 18, 1, 13, 11, 60, 4, "WaspSting1d8",
                     Array.Empty<string>(), A("Airborne", "WaspPoison"),
-                    "The 60-foot fly speed uses airborne navigation; 20-foot ground speed is omitted because Kingmaker exposes one movement speed. An absent Intelligence score is represented as 1. The exact poison graph is installed but awaits live combat qualification; all Wasp placements remain suppressed.")
+                    "The 60-foot fly speed uses airborne navigation; 20-foot ground speed is omitted because Kingmaker exposes one movement speed. An absent Intelligence score is represented as 1. The exact poison graph is installed but awaits live combat qualification; all Wasp placements remain suppressed."),
+                P("stirge", "Stirge", "MagicalBeast", 1, "Tiny",
+                    3, 19, 10, 1, 12, 6, 40, 0, "StirgeTouch",
+                    Array.Empty<string>(), A("Airborne", "WeaponFinesse"),
+                    "The 40-foot fly speed uses airborne navigation; 10-foot ground speed is omitted because Kingmaker exposes one movement speed. Its zero-damage touch carrier is reserved for an exact touch-AC and attachment lifecycle that is not yet installed; all Stirge placements remain suppressed.")
             };
         }
 

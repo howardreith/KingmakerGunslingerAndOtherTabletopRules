@@ -868,7 +868,7 @@ the ledger after the Expanded Summoning Phase 1 append, for
 against Favored Class or Call of the Wild and never executes host code.
 
 Expanded Summoning Phase 2 Sprint 10 appends 29 Giant Wasp identities after
-that accepted ledger: 2490 stable IDs: 2488 active and 2 reserved. The final
+that accepted ledger: 2501 stable IDs: 2499 active and 2 reserved. The final
 three identities are the poison feature, its saved venom buff, and an owned
 inspectable Wasp unit type. All Wasp
 placements remain registered but suppressed until combat and visual review.

@@ -18,8 +18,8 @@ namespace KingmakerGunslinger.DomainTests
                 (string)value["status"] == "active").ToArray();
             JToken[] actual = audit["items"].ToArray();
             // 70 pre-existing weapons, the Sprint 8 claw, the Sprint 10 Wasp
-            // sting, plus the 43 Better Vendors progression variants.
-            Assertions.Equal(72 + KingmakerGunslinger.Acquisition
+            // sting and hidden Stirge carrier, plus 43 Better Vendors variants.
+            Assertions.Equal(73 + KingmakerGunslinger.Acquisition
                     .ProgressionWeaponCatalog.NewBlueprintCount, expected.Length,
                 "The active custom-weapon baseline changed without an audit update.");
             Assertions.Equal(expected.Length, actual.Length,
@@ -69,7 +69,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(2, audit["items"].Count(value =>
                 (string)value["mappingScope"] == "mechanics-only exclusion"),
                 "Pistol-Whip preserve-only scope changed.");
-            Assertions.Equal(12, audit["items"].Count(value =>
+            Assertions.Equal(13, audit["items"].Count(value =>
                 (string)value["mappingScope"] == "summoning-only exclusion"),
                 "Expanded Summoning weapon scope changed.");
             Assertions.True(audit["items"].Where(value =>
