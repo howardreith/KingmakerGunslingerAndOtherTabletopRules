@@ -517,3 +517,18 @@ working-save routine; the last used none. Repository validation, 1,940 domain
 tests, clean Release, strict package validation and exact live-installation
 restoration passed (`20260928T0640454534765Z`). Native disease cure timing,
 original Stirge visual/icon and Wasp target contact remain open.
+
+The original Wasp's Tail-weighted stinger and view-local per-weapon-hit pose
+now pass a strict baked-mesh contact check in both native combat modes.
+Guarded turn-based `20260928T0751193161358Z` measured 0/0 m on its first
+two stings; RTWP `20260928T0754382265441Z` measured 0/0.191 m. The pose
+limits visual root displacement to 0.25 m and leaves the native unit,
+collision, selection and weapon rule authoritative. Guarded creature review
+`20260928T0817537337846Z` passed 12.334 m movement, connected doorway
+crossing, idle/move/attack render capture, complete summon cleanup and zero
+remaining private Wasp meshes/materials. The Wasp-only view teardown returns
+the donor renderer to its original references and destroys the project-owned
+clones. Repository validation, 1,940 domain cases, clean Release, strict
+package validation and exact restoration passed. The Wasp still has no
+approved own icon or published menu choice. Stirge's disease cure timing,
+original visual and icon remain open; Sprint 10 remains in progress.

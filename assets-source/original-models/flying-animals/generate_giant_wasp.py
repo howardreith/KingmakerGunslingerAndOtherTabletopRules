@@ -51,8 +51,8 @@ def body(bm, weights, uvs, rig):
           Vector((0, 1.31, 1.30))],
          [0.29, 0.49, 0.18], ["Tail", "Tail", "Tail"], "body", 16)
     tube(bm, weights, uvs,
-         [Vector((0, 1.31, 1.27)), Vector((0, 1.19, 1.62)),
-          Vector((0, 1.13, 1.80))],
+         [Vector((0, 1.31, 1.27)), Vector((0, 1.06, 1.90)),
+          Vector((0, 0.92, 2.38))],
          [0.14, 0.055, 0.004], ["Tail", "Tail", "Tail"], "beak", 10)
     # Dark compound eyes, antennae and paired mandibles identify the insect
     # at camera distance, independently of the striped abdomen.
