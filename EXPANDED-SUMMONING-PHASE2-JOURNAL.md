@@ -709,3 +709,23 @@ Stirge exposure result or proof of save/cure behavior. Repository validation,
 second wrapper restored the original installation exactly at
 `20260928T0402206238799Z`. Next is a bounded once-per-victim exposure
 component and live application test. Stirge remains hidden.
+
+## Sprint 10: Stirge native disease exposure, 2026-09-28
+
+The hidden Stirge now records the first blood-drain disease check per victim
+on its persistent attack-trait component. Exactly ten percentile results
+select exposure; a selected victim gets a DC 12 Fortitude save in the native
+filth fever mechanics context, and a failed save applies the installed native
+`FilthFever` buff through `RuleApplyBuff`. The guarded disposable fixture
+`20260928T0434428779441Z` passed a normal first drain with one recorded check,
+then a separate forced eligible exposure: native buff present, retained DC 12,
+repeat check suppressed, and a later drain did not reroll. This does not
+qualify disease cure timing or save/load persistence of an active Stirge.
+Repository validation, 1,940 domain tests, clean Release and strict package
+checks passed. The wrapper restored the original installation exactly at
+`20260928T0438370422836Z`; package SHA-256
+`1A309DB594881DC378A421B5B7A75EE341447007C6D7230A690D955FE4469BD3`,
+DLL SHA-256
+`3AD45725DB43D2D4A7DDC3734858CEE8DC3977D7D93F5241D66A483DB6B78F41`.
+Prey death, actual timer expiry, active-attachment save/load, original visual
+and icon remain open. Stirge stays hidden.

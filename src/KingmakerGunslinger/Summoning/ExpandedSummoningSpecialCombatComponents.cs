@@ -635,6 +635,66 @@ namespace KingmakerGunslinger.Summoning
         public BlueprintItemWeapon TouchWeapon;
         public BlueprintBuff HoldBuff;
         public BlueprintBuff GrappledBuff;
+        public BlueprintBuff DiseaseBuff;
+
+        [JsonProperty]
+        private List<string> m_DiseaseCheckedVictims = new List<string>();
+
+        internal int DiseaseCheckedVictimCount
+        {
+            get { return m_DiseaseCheckedVictims == null ? 0 :
+                m_DiseaseCheckedVictims.Count; }
+        }
+
+        internal static StirgeAttachComponent Find(UnitEntityData owner)
+        {
+            if (owner == null || owner.Descriptor == null) return null;
+            foreach (Buff buff in owner.Descriptor.Buffs.RawFacts.OfType<Buff>())
+            {
+                StirgeAttachComponent live = buff == null || buff.Components == null ?
+                    null : buff.Components.OfType<StirgeAttachComponent>()
+                        .FirstOrDefault();
+                if (live != null) return live;
+            }
+            return null;
+        }
+
+        internal bool TryDiseaseExposure(UnitEntityData target)
+        {
+            if (target == null || string.IsNullOrEmpty(target.UniqueId) ||
+                m_DiseaseCheckedVictims != null &&
+                    m_DiseaseCheckedVictims.Contains(target.UniqueId)) return false;
+            return TryDiseaseExposure(target, UnityEngine.Random.Range(0, 100));
+        }
+
+        internal bool TryDiseaseExposure(UnitEntityData target,
+            int percentileRoll)
+        {
+            UnitEntityData owner = Owner == null ? null : Owner.Unit;
+            if (owner == null || target == null || target.Descriptor == null ||
+                DiseaseBuff == null || string.IsNullOrEmpty(target.UniqueId))
+                return false;
+            if (m_DiseaseCheckedVictims == null)
+                m_DiseaseCheckedVictims = new List<string>();
+            if (m_DiseaseCheckedVictims.Contains(target.UniqueId)) return false;
+            m_DiseaseCheckedVictims.Add(target.UniqueId);
+            if (!StirgeAttachPolicy.DiseaseExposureSelected(percentileRoll))
+                return true;
+            var context = new MechanicsContext(owner, target.Descriptor,
+                DiseaseBuff, Fact == null ? null : Fact.MaybeContext,
+                new TargetWrapper(target));
+            context.Params.DC = StirgeAttachPolicy.FilthFeverFortitudeDc;
+            var saving = new RuleSavingThrow(target, SavingThrowType.Fortitude,
+                StirgeAttachPolicy.FilthFeverFortitudeDc);
+            saving.Reason = context;
+            context.TriggerRule(saving);
+            if (saving.IsPassed) return true;
+            var apply = new RuleApplyBuff(target, DiseaseBuff, context,
+                null, (buff, source, duration) =>
+                    target.Descriptor.Buffs.AddBuff(buff, source, duration));
+            Rulebook.Trigger(apply);
+            return true;
+        }
 
         public override void OnEventAboutToTrigger(RuleAttackWithWeapon evt) { }
 
@@ -708,6 +768,11 @@ namespace KingmakerGunslinger.Summoning
             }
             int actual = Math.Max(0, Math.Min(requested,
                 target.Descriptor.Stats.Constitution.Damage - before));
+            if (actual > 0 && !target.Descriptor.State.IsDead)
+            {
+                StirgeAttachComponent attach = StirgeAttachComponent.Find(owner);
+                if (attach != null) attach.TryDiseaseExposure(target);
+            }
             StirgeDrainStep step = StirgeAttachPolicy.EndTurn(true,
                 !target.Descriptor.State.IsDead, m_CumulativeDamage, actual);
             m_CumulativeDamage = step.CumulativeDamage;
