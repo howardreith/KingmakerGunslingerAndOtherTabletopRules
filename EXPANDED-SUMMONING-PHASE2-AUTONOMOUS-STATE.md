@@ -1,6 +1,79 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## Current checkpoint: Remove Stirge method and +8, 2026-09-29
+## Current checkpoint: corrected Stirge requalified and published, 2026-09-29
+
+Branch `codex/expanded-summoning-phase2a-sprints9-13`, draft PR #25;
+checkpoint parent `288af63178f2ef91c3a962ddd8d2f5e4e416e106`. Sprint 10 is
+internally technically qualified again. Stirge's nine SNA I-IX placements
+are published, bringing the generated visible roster back to 834 choices.
+Sprint 9 remains qualified. Sprint 11 remains hidden pending the owner-directed
+Trample response, explicit Stampede disposition and ungulate visual repairs;
+Sprints 12-21 remain authorized and incomplete.
+
+Stirge now uses a nonserialized, owner-only attachment link. The prey receives
+no native grapple part, Grappled, Entangled, `CantMove` or `CantAct` state and
+keeps normal movement, actions and the ability to attack the separately
+targetable Stirge. The Stirge loses Dexterity to AC, cannot independently move
+or attack while feeding, and follows the prey at a bounded offset. Its
+standard-action Remove Stirge command chooses the better current CMB or
+Mobility modifier before rolling against CMD 5; both failure and success paths
+passed, and the attached Stirge's native-profile maintain CMB includes the
+printed +8 bonus. Death, dismissal, timed expiry, prey death, area transition,
+module disable and reload leave no link, action, condition, collision or view
+residue. A native `UnitEntityData.Translocate` of the prey now detaches the
+Stirge immediately; ordinary prey movement retains the link and bounded
+follow. The accepted `ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD` policy
+remains a clean reset rather than re-establishment.
+
+The primary Paizo Stirge text limits disease exposure to one check per victim
+from a particular Stirge. That recorded source exception is retained: a 10%
+check occurs only after actual Constitution loss and is not repeated for the
+same Stirge/victim pair. Native Filth Fever at DC 12 is the disclosed bounded
+Kingmaker disease adaptation. Four actual one-point Constitution drains still
+detach automatically.
+
+Final evidence on this source/package:
+
+- working-save creature review
+  `20260929T1714055122835Z-working-save-expanded-summoning-creature-review`
+  passed 12/12: native prey movement, 4.5 m travel, 0.61 m follow gap,
+  independent targeting, prey freedom, and clean short-translocation detach;
+- guarded turn-based `20260929T1824346229028Z-summon-same-turn-activation`
+  and RTWP `20260929T1827582364082Z-summon-same-turn-rtwp-control` both
+  passed a successful native touch hit, exact weapon, session attachment,
+  zero initiator/target grapple parts, forward proboscis aim and 0.05 m
+  target-bound clearance;
+- inventory `20260929T1850489650251Z-observe-expanded-summoning-inventory`
+  passed 50/50 with 834 visible placements, all 18 reconciled menus, exact
+  ordering/icons and the Stirge touch carrier; and
+- player path
+  `20260929T1903306672213Z-disposable-expanded-summoning-player-path`
+  passed all ten top-level assertions, including 834/834 visible generated
+  roots and 29/29 native wrappers through real parent/selected-child commands,
+  exact one-slot spending, quantity contracts and request-local cleanup.
+
+Turn-mode diagnostics `20260929T1745301601263Z` and
+`20260929T1748402150851Z` exposed a stale fixture that still inspected the
+removed reciprocal grapple representation. After correcting it to inspect the
+session link, `20260929T1812365432803Z` observed one legitimate RTWP miss and
+ended before a successful touch hit. A request-local BAB fixture now makes the
+visual/attachment hit deterministic without altering the production profile;
+the two final mode runs above pass. These were fixture diagnostics, not
+production defects.
+
+Repository validation, all 1,952 domain tests, clean Release and strict
+package validation passed. Package SHA-256
+`E29BD4D56EBEEC0B120932513E2D7D6DBE916CA18E765C64AA4454292FE5DCCD`;
+DLL SHA-256
+`39FDB6422CF0F59693E37257D2D7BA00EF4800305983EC31C9E74424A00A7577`.
+Every guarded run restored the original 136-file live installation to SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`;
+the final restoration record is
+`20260929T1919411431649Z-disposable-expanded-summoning-player-path.json`.
+Owner visual approval remains pending and nonblocking. Next work is Sprint 11;
+no merge, release, permanent deployment or Sprint 22.
+
+## Prior checkpoint: Remove Stirge method and +8, 2026-09-29
 
 Branch `codex/expanded-summoning-phase2a-sprints9-13`, draft PR #25;
 last pushed head before this checkpoint

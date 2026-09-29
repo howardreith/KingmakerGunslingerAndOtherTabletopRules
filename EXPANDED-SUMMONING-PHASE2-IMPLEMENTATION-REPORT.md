@@ -1,10 +1,11 @@
 # Expanded Summoning Phase 2 implementation report
 
-Status: Sprint 9 internally technically qualified. Sprint 10 is reopened under
-the 2026-09-29 owner correction; Stirge's nine SNA choices are hidden pending
-full attachment and visual requalification. Sprint 11 trample response is now
-specified by the owner; Stampede and ungulate visual corrections remain. The
-Phase 2A PR remains draft, and Sprints 12-21 have not started.
+Status: Sprints 9 and 10 are internally technically qualified. Stirge's nine
+SNA I-IX choices are published again after the 2026-09-29 owner correction,
+for 834 visible generated choices. Sprint 11 trample response is specified by
+the owner; Stampede disposition and ungulate visual corrections remain, so all
+Sprint 11 choices stay hidden. The Phase 2A PR remains draft, and Sprints 12-21
+have not started.
 Eagle and Dire Bat passed guarded casts, player path, live inventory,
 open-floor and room-opening movement, exact-hostile native combat in RTWP
 and turn-based mode, visual impact contact, save/load/expiry, module-disabled
@@ -13,35 +14,35 @@ icon and bounded Bat blindsense are published on the Phase 2A feature branch.
 Human visual approval remains pending and nonblocking. Giant Wasp's twelve
 SM/SNA choices are published with an original icon; its poison, native sting
 cadence, visual contact, movement, cleanup, live menu and player path passed.
-Stirge's prior 834-root publication evidence is historical. A Stirge-specific
-session-only attachment and standard-action Remove Stirge ability now replace
-the native prey grapple. Guarded disposable runtime passed 36/36 assertions
-on `20260929T1502005029758Z`, including two quantity Stirges on distinct
-victims, target condition freedom, failed/successful removal, four drains,
-bounded follow after fixture relocation, native counterattack and clean
-release without reciprocal grapple residue. Actual prey movement command,
-player paths, persistence, full visual/targetability and module-disabled
-qualification remain. Filth Fever is a disclosed adaptation; the primary
-Paizo stat block limits its 10% exposure to once per victim per Stirge. The
-Phase 2A draft PR is not ready for owner review.
+Stirge now uses a session-only owner link instead of grappling the prey. The
+prey keeps normal movement and actions and can attack the separately targetable
+Stirge. The Stirge follows at a bounded offset, loses Dexterity to AC, and
+cannot move or make ordinary attacks while feeding. The standard-action Remove
+Stirge command chooses the better current CMB or Mobility modifier before the
+roll; both routes, CMD 5 and the printed +8 maintain bonus passed. Death,
+dismissal, expiry, prey death, translocation, area change, module disable and
+reload clean up safely. Four actual drains detach. Filth Fever is a disclosed
+adaptation; the primary Paizo stat block limits its 10% exposure to once per
+victim per Stirge.
 
-The subsequent guarded working-save review `20260929T1537294275973Z`
-passed 12/12 for native movement of an attached player prey, bounded Stirge
-follow and separate intact view, with request-local state restoration. The
-active-attachment save/load trio `20260929T1550288953379Z` /
-`20260929T1554468196770Z` / `20260929T1559010594274Z` passed 15/15 each:
-the new owner-only link, hold and removal action reset cleanly on reload;
-final absence and exact working-save write counts passed. All three launches
-and the preceding movement run restored the original live install. Stirge is
-still hidden pending Mobility removal, remaining visual and player paths.
-The separate guarded disabled-module prepare/cleanup/absent continuation
+The attachment lifecycle evidence includes disposable runtime
+`20260929T1502005029758Z` (36/36), native prey movement
+`20260929T1537294275973Z` (12/12), the three-stage reload reset
+`20260929T1550288953379Z` / `20260929T1554468196770Z` /
+`20260929T1559010594274Z` (15/15 each), module-disabled cleanup
 `20260929T1607498366788Z` / `20260929T1616090412469Z` /
-`20260929T1624206703157Z` passed 15/15 each and restored the original
-installation and feature setting after every stage.
-Guarded `20260929T1653192612453Z` also passed 36/36 for the corrected
-standard-action method policy: native CMB and Mobility failure/success routes,
-Stirge CMD 5, no extra grapple maneuver on the Mobility route, and printed
-+8 attached maintain bonus (CMB -5 to +3). Stirge is still hidden.
+`20260929T1624206703157Z` (15/15 each), and removal-method runtime
+`20260929T1653192612453Z` (36/36). Final creature review
+`20260929T1714055122835Z` added native short-translocation detachment.
+Turn-based `20260929T1824346229028Z` and RTWP
+`20260929T1827582364082Z` passed native touch attachment and unobstructed
+party-camera geometry. Inventory `20260929T1850489650251Z` passed 50/50.
+Player path `20260929T1903306672213Z` passed all ten assertions, including
+834/834 generated roots, 29/29 native wrappers, exact slot spending, quantity
+contracts and cleanup. Original installation restoration passed after every
+run. The Phase 2A draft PR is not ready for owner review because Sprint 11 and
+the remaining authorized sprints are incomplete; owner visual approval remains
+pending and nonblocking.
 
 The accepted baseline is `master` at `2ce70e4` (0.0.140), which advanced after
 the owner packet was written. The baseline passes 1,918 domain tests, the

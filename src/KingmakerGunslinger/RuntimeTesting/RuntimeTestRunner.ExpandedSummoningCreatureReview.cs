@@ -129,16 +129,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .GenerateVariants(family).Single(value =>
                         value.Creature.Key == key && value.ParentTier == tier &&
                         value.Multiplicity == quantity);
-                // Sprint 10 visual qualification inspects each registered
-                // creature before its parent menu entry is published.
-                bool suppressedSprint10Candidate =
-                    (key == "giant-wasp" || key == "stirge") &&
-                    !SummonVisibilityCatalog.IsPublished(variant);
                 bool suppressedSprint11Candidate =
                     IsSprint11UngulateReviewKey(key) &&
                     !SummonVisibilityCatalog.IsPublished(variant);
                 if (!SummonVisibilityCatalog.IsPublished(variant) &&
-                    !suppressedSprint10Candidate && !suppressedSprint11Candidate)
+                    !suppressedSprint11Candidate)
                     throw new InvalidOperationException(
                         "A suppressed creature cannot be reviewed through a parent: " +
                         key + ".");
@@ -1045,6 +1040,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";preyVelocity=" + _stirgePreyVelocity.ToString("0.##",
                     CultureInfo.InvariantCulture);
             bool followed = false, preyFree = false, stirgeTargetable = false;
+            bool translocationDetached = false;
             string capture = "<not captured>";
             try
             {
@@ -1070,6 +1066,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     capture = WriteExpandedSummoningPartyCameraCapture(stirge,
                         _request.EvidenceDirectory,
                         "stirge-attached-moving-prey.png");
+                    // This connected point is only 2.5 m away. A genuine
+                    // Translocate must release the link even below the
+                    // per-frame 8 m discontinuity guard.
+                    prey.Commands.InterruptMove();
+                    PlaceExpandedSummoningUnit(prey, _stirgePreyMoveStart);
+                    translocationDetached =
+                        StirgeHoldComponent.AttachedTarget(stirge) == null &&
+                        !prey.Descriptor.HasFact(
+                            StirgeHoldComponent.RemoveAbility) &&
+                        prey.Descriptor.State.CanMove &&
+                        prey.Descriptor.State.CanAct;
                 }
             }
             catch (Exception captureError)
@@ -1097,6 +1104,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 (stirge == null || StirgeHoldComponent.AttachedTarget(stirge) == null);
             detail += ";followed=" + followed + ";preyFree=" + preyFree +
                 ";stirgeTargetable=" + stirgeTargetable +
+                ";shortTranslocationDetached=" + translocationDetached +
                 ";capture=" + capture + ";restored=" + restored +
                 (error == null ? "" : ";error=" + error.GetType().Name +
                     ":" + error.Message);
@@ -1110,7 +1118,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _stirgePreyMinGap <= 0.9f &&
                     _stirgePreyTravel >= 1f &&
                     _stirgePreyVelocity > 0.01f && followed && preyFree &&
-                    stirgeTargetable && restored &&
+                    stirgeTargetable && translocationDetached && restored &&
                     capture.StartsWith("png=stirge-attached-moving-prey.png;",
                         StringComparison.Ordinal),
                 "native player UnitMoveTo, cross-frame movement-agent and separate unit/render samples; request-local relocation and pause restored"));

@@ -135,12 +135,12 @@ namespace KingmakerGunslinger.DomainTests
                 value.Symbol == "KMG.Summoning.Natural.WaspSting1d8" &&
                 value.PlannedType == "BlueprintItemWeapon"),
                 "Wasp sting has its own append-only blueprint identity.");
-            Assertions.Equal(57,
+            Assertions.Equal(48,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "Stirge and the Sprint 11 ungulates remain suppressed.");
+                "Only the Sprint 11 ungulates remain suppressed.");
         }
 
-        internal static void StirgeRegisteredAtAllNineHiddenNatureTiers()
+        internal static void StirgePublishesAtAllNineNatureTiers()
         {
             SummonCreatureSpec stirge = ExpandedSummoningCatalog.All.Single(value =>
                 value.Key == "stirge");
@@ -162,8 +162,8 @@ namespace KingmakerGunslinger.DomainTests
                     tier == 2 ? SummonMultiplicity.OneD3 :
                     SummonMultiplicity.OneD4PlusOne, variant.Multiplicity,
                     "Stirge follows the preserved summon quantity ladder.");
-                Assertions.False(SummonVisibilityCatalog.IsPublished(variant),
-                    "Reopened Stirge is registered but hidden at every Nature's Ally tier.");
+                Assertions.True(SummonVisibilityCatalog.IsPublished(variant),
+                    "Qualified Stirge publishes at every Nature's Ally tier.");
             }
             NaturalSummonProfile profile = ExpandedSummoningNaturalProfiles
                 .For("stirge");
@@ -172,7 +172,7 @@ namespace KingmakerGunslinger.DomainTests
                 profile.SpeedFeet == 40 && profile.PrimaryWeapon ==
                 "StirgeTouch" && profile.Facts.Contains("Airborne") &&
                 profile.Facts.Contains("WeaponFinesse"),
-                "The hidden profile must retain Stirge's physical and touch-carrier role.");
+                "The published profile retains Stirge's physical and touch-carrier role.");
             Assertions.Equal("406c1e1af5400ac4881e330502ccbd9e",
                 ExpandedSummoningDonorCatalog.For("stirge").Guid,
                 "Stirge uses the audited flying donor rig.");
@@ -181,7 +181,7 @@ namespace KingmakerGunslinger.DomainTests
                 value.PlannedType == "BlueprintItemWeapon"),
                 "The zero-damage touch carrier needs its own stable identity.");
             Assertions.Equal("Stirge", SummonIconCatalog.For("stirge")
-                .DisplayName, "Hidden Stirge keeps its original species art for requalification.");
+                .DisplayName, "Published Stirge keeps its original species art.");
             string builder = File.ReadAllText(Path.Combine(
                 Environment.CurrentDirectory, "src", "KingmakerGunslinger",
                 "Blueprints", "ExpandedSummoningNaturalBuilder.cs"));
@@ -298,6 +298,11 @@ namespace KingmakerGunslinger.DomainTests
                 stirgeBlock.Contains("UnitPartGrappleInitiator") ||
                 stirgeBlock.Contains("GrappledBuff"),
                 "Stirge Attach must never initialize native grapple state on its prey.");
+            Assertions.True(special.Contains("class StirgePreyTranslocationPatch") &&
+                special.Contains("method.Name == \"Translocate\"") &&
+                special.Contains("DetachFromTranslocatedTarget(__instance)") &&
+                special.Contains("ReferenceEquals(AttachedTarget(unit), target)"),
+                "Any native prey translocation must release only that prey's session links.");
             string iconBuilder = File.ReadAllText(Path.Combine(
                 Environment.CurrentDirectory, "src", "KingmakerGunslinger",
                 "Blueprints", "ExpandedSummoningIconBuilder.cs"));
@@ -307,9 +312,9 @@ namespace KingmakerGunslinger.DomainTests
                 SummonIconCatalog.For("remove-stirge").Key !=
                     SummonIconCatalog.For("stirge").Key,
                 "Remove Stirge must have its own original action icon, distinct from the creature portrait.");
-            Assertions.Equal(57,
+            Assertions.Equal(48,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "Stirge is hidden with the Sprint 11 ungulates during requalification.");
+                "Only the Sprint 11 ungulates remain hidden.");
         }
 
         internal static void GiantWaspPoisonTracksConstitutionAndTabletopExposure()
@@ -367,7 +372,7 @@ namespace KingmakerGunslinger.DomainTests
                 "The live menu icon audit must check only published creatures.");
         }
 
-        internal static void Sprint10CreatureReviewKeepsStirgeHidden()
+        internal static void Sprint10CreatureReviewAcceptsPublishedStirge()
         {
             string root = Path.Combine(Environment.CurrentDirectory,
                 "src", "KingmakerGunslinger", "RuntimeTesting");
@@ -375,22 +380,20 @@ namespace KingmakerGunslinger.DomainTests
                 "RuntimeTestRunner.ExpandedSummoningCreatureReview.cs"));
             string movement = File.ReadAllText(Path.Combine(root,
                 "RuntimeTestRunner.PteranodonReview.cs"));
-            Assertions.True(review.Contains("suppressedSprint10Candidate =") &&
-                review.Contains("(key == \"giant-wasp\" || key == \"stirge\")") &&
+            Assertions.True(!review.Contains("suppressedSprint10Candidate =") &&
                 review.Contains("!SummonVisibilityCatalog.IsPublished(variant)") &&
-                review.Contains("!suppressedSprint10Candidate") &&
-                review.Contains("key == \"giant-wasp\"") &&
+                review.Contains("!suppressedSprint11Candidate") &&
                 review.Contains("MotionReviewTravelValid") &&
                 review.Contains("MotionReviewDoorwayValid") &&
                 movement.Contains("GiantWaspBlueprintName") &&
                 movement.Contains("PrepareSprint9FlightMovement(unit)"),
-                "The hidden Wasp may enter only its guarded review and must use native flight travel checks.");
+                "Published Sprint 10 flyers use the ordinary guarded review and native flight travel checks.");
             Assertions.True(review.Contains("CaptureWaspWithoutAuxiliaryRenderer") &&
                 review.Contains("giant-wasp-review-summoned-attack-no-auxiliary.png") &&
                 review.Contains("finally") &&
                 review.Contains("renderer.enabled = true"),
                 "The isolated Wasp frame must restore every temporarily hidden auxiliary renderer.");
-            Assertions.Equal(57,
+            Assertions.Equal(48,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
                 "The review scenario remains bounded after Sprint 11 registration.");
         }
@@ -501,10 +504,14 @@ namespace KingmakerGunslinger.DomainTests
                 scenario.Contains("value.Creature.Key == \"stirge\"") &&
                 scenario.Contains("sprint10-stirge-native-attack-overhead") &&
                 scenario.Contains("stirge-native-attack-overhead.png") &&
+                scenario.Contains("!_stirgeAttackCaptured && attack.AttackRoll != null") &&
+                scenario.Contains("ReferenceEquals(StirgeHoldComponent.AttachedTarget(") &&
+                scenario.Contains("stirge-visual-fixture-bab=") &&
+                scenario.Contains("BaseAttackBonus.BaseValue = 100") &&
                 scenario.Contains(";touch=True;hit=True;attached=True") &&
                 scenario.Contains("WriteExpandedSummoningOverheadStrikeCapture(") &&
                 request.Contains("\"giant-wasp\", \"stirge\""),
-                "The guarded hidden-Stirge fixture must cast its own SNA I variant, correlate a native touch hit and session attachment, and capture the live pose.");
+                "The guarded Stirge fixture must cast its own SNA I variant, correlate a native touch hit and session attachment, and capture the live pose.");
             string special = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "Summoning",
                 "ExpandedSummoningSpecialCombatComponents.cs"));
@@ -566,8 +573,10 @@ namespace KingmakerGunslinger.DomainTests
                 creatureReview.Contains("_stirgePreyTravel >= 1f") &&
                 creatureReview.Contains("StirgeHoldComponent.Detach(stirge)") &&
                 creatureReview.Contains("PlaceExpandedSummoningUnit(prey,") &&
+                creatureReview.Contains("shortTranslocationDetached=") &&
+                creatureReview.Contains("translocationDetached && restored") &&
                 creatureReview.Contains("stirge-attached-moving-prey.png"),
-                "Attached prey must receive a cross-frame native movement and visible Stirge-follow review with request-local restoration.");
+                "Attached prey must receive native movement, visible follow and short native translocation cleanup with request-local restoration.");
         }
 
         internal static void GiantWaspOriginalVisualUsesAuditedInstanceBinding()

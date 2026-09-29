@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Linq;
+using System.Reflection;
 using Newtonsoft.Json;
 using Harmony12;
 using Kingmaker;
@@ -786,6 +787,27 @@ namespace KingmakerGunslinger.Summoning
         }
     }
 
+    /// <summary>Native translocation is a discontinuous move, including
+    /// short teleports that the per-frame distance guard cannot distinguish
+    /// from ordinary walking. Release only Stirges attached to that unit.</summary>
+    [HarmonyPatch]
+    internal static class StirgePreyTranslocationPatch
+    {
+        private static IEnumerable<MethodBase> TargetMethods()
+        {
+            return typeof(UnitEntityData).GetMethods(BindingFlags.Instance |
+                    BindingFlags.Public | BindingFlags.NonPublic)
+                .Where(method => method.Name == "Translocate" &&
+                    method.GetParameters().Length > 0 &&
+                    method.GetParameters()[0].ParameterType == typeof(Vector3));
+        }
+
+        private static void Postfix(UnitEntityData __instance)
+        {
+            StirgeHoldComponent.DetachFromTranslocatedTarget(__instance);
+        }
+    }
+
     [Serializable]
     public sealed class RemoveStirgeTargetChecker : BlueprintComponent,
         Kingmaker.UnitLogic.Abilities.Components.Base.IAbilityTargetChecker
@@ -902,6 +924,15 @@ namespace KingmakerGunslinger.Summoning
             if (hold == null) return false;
             owner.Descriptor.Buffs.RemoveFact(hold);
             return true;
+        }
+
+        internal static void DetachFromTranslocatedTarget(UnitEntityData target)
+        {
+            if (target == null || Game.Instance == null ||
+                Game.Instance.State == null ||
+                Game.Instance.State.Units == null) return;
+            foreach (UnitEntityData unit in Game.Instance.State.Units.All.ToArray())
+                if (ReferenceEquals(AttachedTarget(unit), target)) Detach(unit);
         }
 
         internal static void FollowAttached(UnitEntityData owner)
