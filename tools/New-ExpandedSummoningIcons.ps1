@@ -30,6 +30,9 @@ function Convert-KeyToToken([string]$Key) {
 }
 
 function Get-Consumers([string]$Key, [object[]]$Entries) {
+    if ($Key -ceq 'remove-stirge') {
+        return @('KMG.Summoning.Special.Stirge.Remove')
+    }
     $token = Convert-KeyToToken $Key
     $matches = @($Entries | Where-Object {
         $_.status -eq 'active' -and ($_.symbol -like "KMG.Summoning.Unit.$token" -or
@@ -148,7 +151,7 @@ if (@(Compare-Object $expectedOutputs $actualOutputs).Count -ne 0) {
 }
 
 $provenance = [ordered]@{
-    schemaVersion = 1; provenance = 'Project-owned original artwork: 77 AI-assisted roster-mission concepts, Phase 1 procedural Blender additions, and Phase 2 original creature paintings; no copied game or third-party pixels.'
+    schemaVersion = 1; provenance = 'Project-owned original artwork: 77 AI-assisted roster-mission concepts, Phase 1 procedural Blender additions, and Phase 2 original creature/action paintings; no copied game or third-party pixels.'
     generator = 'tools/New-ExpandedSummoningIcons.ps1'; count = $icons.Count; icons = $provenanceRows
 }
 $runtime = [ordered]@{

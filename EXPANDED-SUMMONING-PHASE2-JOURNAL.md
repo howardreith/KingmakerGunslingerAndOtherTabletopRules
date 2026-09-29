@@ -1,5 +1,25 @@
 # Expanded Summoning Phase 2 journal
 
+## Stirge-specific attachment checkpoint, 2026-09-29
+
+The owner-directed correction replaces the reciprocal native grapple with a
+nonserialized Stirge-to-prey link, owner-only feeding state, bounded view
+follow and a standard-action Remove Stirge ability. Its own original action
+painting and 128-pixel export are cataloged and packaged. The published Stirge
+choices remain hidden pending full Sprint 10 requalification. Paizo's explicit
+once-per-victim disease exposure remains, and Filth Fever stays a disclosed
+Kingmaker adaptation. Three guarded runs diagnosed and then corrected the
+quantity fixture: `20260929T1437160323130Z` showed a conflated freedom
+assertion; `20260929T1449446349644Z` showed the second freshly summoned prey
+had preexisting CantMove/CantAct; `20260929T1502005029758Z` passed 36/36
+with unchanged prey-state baselines, distinct links, bounded follow after
+fixture relocation, native counterattack and no grapple residue from removal.
+Each run restored the same original 136-file installation SHA
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+Latest source checks: repository PASS, 1,952 domain PASS, clean Release and
+strict 275-file package PASS. Native prey movement, full visual and persistence
+qualification and player paths remain before Sprint 10 can close.
+
 ## Sprint 10 owner correction: Stirge publication hold, 2026-09-29
 
 Hidden Stirge's nine SNA placements until the non-grappling-prey attachment,

@@ -20871,6 +20871,14 @@
       "status": "active",
       "milestone": "Expanded Summoning",
       "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Stirge.Remove",
+      "guid": "d5e6506db41d490fa69b88e881ddfe0b",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Stirge-specific standard-action removal, granted only to attached prey; reset safely on reload."
     }
   ]
 }

@@ -289,9 +289,14 @@ def validate(root: Path) -> None:
              symbol.startswith("KMG.Summoning.Ability.")) and
             any(token in symbol for token in ungulate_tokens))
     }
-    if len(entries) != 2608 or len(wasp) != 26 or wasp_hash != (
+    if len(entries) != 2609 or len(wasp) != 26 or wasp_hash != (
             "8a9dac72a9e83675765d8fc850901f76976bf6191418c6cf7f1c4ff6af261ef3"):
         raise AssertionError("Expanded Summoning Phase 2 Wasp append drifted")
+    if [(entry["symbol"], entry["guid"], entry["plannedType"],
+         entry["status"]) for entry in entries[2608:]] != [
+            ("KMG.Summoning.Special.Stirge.Remove",
+             "d5e6506db41d490fa69b88e881ddfe0b", "BlueprintAbility", "active")]:
+        raise AssertionError("Stirge removal action identity drifted")
     if len(poison) != 2 or poison_hash != (
             "92e7a5cfbf28ce94938eef6c16451d5688d47247d222b2a64f6c3db362e02adb"):
         raise AssertionError("Expanded Summoning Wasp poison identities drifted")
@@ -334,7 +339,7 @@ def validate(root: Path) -> None:
         ("KMG.Summoning.Natural.DireBat.Blindsense", "5dcc039bc9674208a51e4babcd8a30ee"),
     ) + tuple((entry["symbol"], entry["guid"]) for entry in
               wasp + poison + unit_type + stirge + stirge_attachment +
-              ungulates + charge + trample)
+              ungulates + charge + trample + entries[2608:])
     # Chains through the 0.0.139 release, which hands these to its baseline.
     release139.VERSION = VERSION
     release139.INFORMATIONAL_VERSION = INFORMATIONAL_VERSION

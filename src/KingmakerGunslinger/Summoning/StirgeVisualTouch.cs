@@ -13,9 +13,9 @@ namespace KingmakerGunslinger.Summoning
 {
     /// <summary>
     /// Poses only one Stirge's private skeleton for its native touch strike.
-    /// The entity, view root, navigation, selection and collision never move.
-    /// A live grapple holds the visual at the target surface; release and
-    /// destruction restore only this component's own pose.
+    /// The owner entity follows its attached prey at a bounded offset; only
+    /// this Stirge's private skeleton is posed for the touch. The prey's
+    /// entity, renderer, navigation, selection and collision are untouched.
     /// </summary>
     [DefaultExecutionOrder(10000)]
     internal sealed class StirgeVisualTouch : MonoBehaviour
@@ -164,13 +164,16 @@ namespace KingmakerGunslinger.Summoning
         internal float ModelForwardDot { get { return _modelForwardDot; } }
 
         private void LateUpdate()
-        { ApplyAtCurrentTime(); }
+        {
+            if (_view != null) StirgeHoldComponent.FollowAttached(_view.EntityData);
+            ApplyAtCurrentTime();
+        }
 
         private float Weight()
         {
             if (_target == null) return 0f;
             bool attached = _view != null && _view.EntityData != null &&
-                ReferenceEquals(SummonHoldComponent.HeldTarget(
+                ReferenceEquals(StirgeHoldComponent.AttachedTarget(
                     _view.EntityData), _target);
             if (attached)
             {
