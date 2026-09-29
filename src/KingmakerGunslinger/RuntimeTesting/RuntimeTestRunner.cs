@@ -17648,7 +17648,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     mechanics != null && mechanics.StirgeFirstDrain,
                     "live StirgeHoldComponent round tick and target Constitution damage"),
                 Assertion("expanded-summoning-stirge-native-disease",
-                    "one eligible Stirge exposure applies the native filth fever buff with DC 12 and later drains do not reroll that victim",
+                    "every actual Stirge blood-drain event can expose the victim to native filth fever at DC 12; zero damage cannot reroll",
                     mechanics == null ? "not-run" : mechanics.StirgeDiseaseDetail,
                     mechanics != null && mechanics.StirgeDisease,
                     "live attached Stirge, native Fortitude saving rule and RuleApplyBuff on a disposable hostile"),
@@ -19205,7 +19205,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     constitutionAfterTick - constitutionBeforeTick == 1 &&
                     liveHold.CumulativeDamage == 1 && stillAttached &&
                     liveAttach != null &&
-                    liveAttach.DiseaseCheckedVictimCount == 1;
+                    liveAttach.DiseaseExposureAttempts == 1;
                 drainDetail = "component=" + (liveHold != null) +
                     ";constitutionDamage=" + constitutionBeforeTick + "->" +
                     constitutionAfterTick + ";cumulative=" +
@@ -19213,7 +19213,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ";stillAttached=" + stillAttached + ";difficultyScale=" +
                     Game.Instance.Player.Difficulty.DamageToParty +
                     ";diseaseChecks=" + (liveAttach == null ? -1 :
-                        liveAttach.DiseaseCheckedVictimCount);
+                        liveAttach.DiseaseExposureAttempts);
                 var mealSteps = new List<string>();
                 bool mealExact = firstDrain;
                 for (int round = 2; round <= 4 && liveHold != null; round++)
@@ -19239,7 +19239,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 fourPointDetach = mealExact && automaticCleanup &&
                     hostile.Descriptor.Stats.Constitution.Damage -
                         constitutionDamageBefore == 4 && liveAttach != null &&
-                    liveAttach.DiseaseCheckedVictimCount == 1;
+                    liveAttach.DiseaseExposureAttempts == 4;
                 mealDetail = "ticks=" + string.Join("|", mealSteps.ToArray()) +
                     ";automaticCleanup=" + automaticCleanup;
                 hostile.Descriptor.Stats.Constitution.Damage =
@@ -19325,7 +19325,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         /// <summary>Force the eligible branch of the printed 10% exposure
         /// without changing production odds, then let the real hold tick
-        /// prove the same victim is never checked twice.</summary>
+        /// prove another actual drain is eligible while zero damage is not.</summary>
         private static bool ExerciseExpandedSummoningStirgeDisease(
             BlueprintScriptableObject[] blueprints, UnitEntityData caster,
             UnitEntityData hostile, List<UnitEntityData> created,
@@ -19358,32 +19358,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                 hostile.Descriptor.Stats.SaveFortitude.BaseValue = -100;
                 UnityEngine.Random.InitState(FindNativeD20Seed(1));
                 bool first = attach != null &&
-                    attach.TryDiseaseExposure(hostile, 0);
+                    attach.TryDiseaseExposure(hostile, 1, 0);
                 Buff infected = hostile.Descriptor.Buffs.GetBuff(fever);
-                bool repeat = attach != null &&
-                    attach.TryDiseaseExposure(hostile, 0);
+                bool zeroDamage = attach != null &&
+                    attach.TryDiseaseExposure(hostile, 0, 0);
                 StirgeHoldComponent liveHold = attached ?
                     ExpandedSummoningRuntimeComponent<StirgeHoldComponent>(
                         stirge, hold) : null;
                 if (liveHold != null) liveHold.OnNewRound();
-                int checkedVictims = attach == null ? -1 :
-                    attach.DiseaseCheckedVictimCount;
+                int exposureAttempts = attach == null ? -1 :
+                    attach.DiseaseExposureAttempts;
                 bool retained = infected != null &&
-                    ReferenceEquals(hostile.Descriptor.Buffs.GetBuff(fever),
-                        infected);
+                    hostile.Descriptor.Buffs.GetBuff(fever) != null;
                 int nativeDc = infected == null || infected.MaybeContext == null ||
                     infected.MaybeContext.Params == null ? -1 :
                     infected.MaybeContext.Params.DC;
                 detail = "attached=" + attached + ";firstCheck=" + first +
                     ";nativeBuff=" + (infected != null) +
                     ";nativeDc=" + nativeDc +
-                    ";repeatCheck=" + repeat + ";checkedVictims=" +
-                    checkedVictims + ";buffRetained=" + retained +
+                    ";zeroDamageCheck=" + zeroDamage + ";exposureAttempts=" +
+                    exposureAttempts + ";buffRetained=" + retained +
                     ";drain=" + constitutionBefore + "->" +
                     hostile.Descriptor.Stats.Constitution.Damage;
-                return attached && first && infected != null && !repeat &&
+                return attached && first && infected != null && !zeroDamage &&
                     nativeDc == StirgeAttachPolicy.FilthFeverFortitudeDc &&
-                    checkedVictims == 1 && retained && liveHold != null &&
+                    exposureAttempts == 2 && retained && liveHold != null &&
                     hostile.Descriptor.Stats.Constitution.Damage ==
                         constitutionBefore + 1;
             }

@@ -1,5 +1,11 @@
 # Phase 2 Sprint 11 owner-design blocker, 2026-09-29
 
+Historical record: the owner resolved this blocker later on 2026-09-29 with
+an exact automatic, single-response AoO-first policy. The same correction
+order reopens Sprint 10 and authorizes continuation through Sprint 21.
+The following text records the superseded decision point and must not be
+used as the current implementation instruction.
+
 **Blocked requirement:** Aurochs, Bison and Woolly Rhinoceros trample victim
 choice. Paizo requires each contacted, smaller target to choose an attack of
 opportunity at -4 or a Reflex save for half damage. Sprint 11 and the mission

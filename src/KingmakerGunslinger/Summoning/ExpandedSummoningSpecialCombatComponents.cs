@@ -638,8 +638,8 @@ namespace KingmakerGunslinger.Summoning
         public BlueprintBuff GrappledBuff;
         public BlueprintBuff DiseaseBuff;
 
-        [JsonProperty]
-        private List<string> m_DiseaseCheckedVictims = new List<string>();
+        [JsonIgnore]
+        private int m_DiseaseExposureAttempts;
         [JsonIgnore]
         private int m_NativeEventCalls;
         [JsonIgnore]
@@ -648,11 +648,7 @@ namespace KingmakerGunslinger.Summoning
         internal int NativeEventCalls { get { return m_NativeEventCalls; } }
         internal int NativeFallbackCalls { get { return m_NativeFallbackCalls; } }
 
-        internal int DiseaseCheckedVictimCount
-        {
-            get { return m_DiseaseCheckedVictims == null ? 0 :
-                m_DiseaseCheckedVictims.Count; }
-        }
+        internal int DiseaseExposureAttempts { get { return m_DiseaseExposureAttempts; } }
 
         internal static StirgeAttachComponent Find(UnitEntityData owner)
         {
@@ -667,25 +663,25 @@ namespace KingmakerGunslinger.Summoning
             return null;
         }
 
-        internal bool TryDiseaseExposure(UnitEntityData target)
+        internal bool TryDiseaseExposure(UnitEntityData target,
+            int actualConstitutionDamage)
         {
-            if (target == null || string.IsNullOrEmpty(target.UniqueId) ||
-                m_DiseaseCheckedVictims != null &&
-                    m_DiseaseCheckedVictims.Contains(target.UniqueId)) return false;
-            return TryDiseaseExposure(target, UnityEngine.Random.Range(0, 100));
+            if (target == null || !StirgeAttachPolicy
+                    .ShouldRollDiseaseExposure(actualConstitutionDamage))
+                return false;
+            return TryDiseaseExposure(target, actualConstitutionDamage,
+                UnityEngine.Random.Range(0, 100));
         }
 
         internal bool TryDiseaseExposure(UnitEntityData target,
-            int percentileRoll)
+            int actualConstitutionDamage, int percentileRoll)
         {
             UnitEntityData owner = Owner == null ? null : Owner.Unit;
             if (owner == null || target == null || target.Descriptor == null ||
-                DiseaseBuff == null || string.IsNullOrEmpty(target.UniqueId))
+                DiseaseBuff == null || !StirgeAttachPolicy
+                    .ShouldRollDiseaseExposure(actualConstitutionDamage))
                 return false;
-            if (m_DiseaseCheckedVictims == null)
-                m_DiseaseCheckedVictims = new List<string>();
-            if (m_DiseaseCheckedVictims.Contains(target.UniqueId)) return false;
-            m_DiseaseCheckedVictims.Add(target.UniqueId);
+            m_DiseaseExposureAttempts++;
             if (!StirgeAttachPolicy.DiseaseExposureSelected(percentileRoll))
                 return true;
             var context = new MechanicsContext(owner, target.Descriptor,
@@ -769,10 +765,8 @@ namespace KingmakerGunslinger.Summoning
         }
     }
 
-    /// <summary>One attached Stirge's bounded Constitution meal. Native
-    /// grapple parts own victim escape and the two buff lifetimes; the
-    /// recorded meal survives a normal save without a separate persistence
-    /// store.</summary>
+    /// <summary>One attached Stirge's bounded Constitution meal. The active
+    /// attachment is session-scoped and resets cleanly on save/load.</summary>
     [Serializable]
     public sealed class StirgeHoldComponent : BuffLogic, ITickEachRound,
         IInitiatorRulebookHandler<RuleCalculateCMB>
@@ -818,7 +812,7 @@ namespace KingmakerGunslinger.Summoning
             if (actual > 0 && !target.Descriptor.State.IsDead)
             {
                 StirgeAttachComponent attach = StirgeAttachComponent.Find(owner);
-                if (attach != null) attach.TryDiseaseExposure(target);
+                if (attach != null) attach.TryDiseaseExposure(target, actual);
             }
             StirgeDrainStep step = StirgeAttachPolicy.EndTurn(true,
                 !target.Descriptor.State.IsDead, m_CumulativeDamage, actual);
