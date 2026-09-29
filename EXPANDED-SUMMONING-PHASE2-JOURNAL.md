@@ -1044,3 +1044,25 @@ DLL SHA-256
 The wrapper's clean outcome and exact original 136-file restoration are
 recorded at `20260928T1844262522767Z`. Real attack cadence, trample and
 visuals are still unqualified; all four ungulates remain hidden.
+
+## Sprint 11: native Aurochs trample contact, 2026-09-29
+
+The first detached-command tests were invalid movement fixtures: the action
+controller canceled an ability outside `UnitCommands`; after queuing it, the
+loaded scene's turn-based state refused movement for a non-current disposable
+summon. The fixture now queues the exact granted ability, temporarily enters
+RTWP, unpauses, advances the native agent on positive game delta and restores
+turn mode, pause, and awake units. The corrected candidate passed guarded
+Steam run `20260929T0024400739125Z`: 8.93 m across a smaller hostile, one
+DC 17 Reflex save, one 14-point damage event, and zero allied damage.
+
+An ablation removed the proposed radius correction and passed the same
+guarded scenario at `20260929T0033452745962Z` (21/21 assertions). Native
+`AbilityCustomOverrun` traveled 8.92 m and made one DC 17 save, one
+16-point damage event, and no allied damage. The subclass was removed; the
+native component remains installed. Repository validation, the full 1,948
+domain-test suite, clean Release build and strict standalone package passed.
+The guarded wrapper restored the original 136-file installation exactly at
+`20260929T0037501346548Z`. This is one Aurochs RTWP contact, not general
+trample cadence, Bison/Woolly variants, charge travel, quantity or visuals.
+All ungulate choices remain hidden. Continue Sprint 11.
