@@ -682,3 +682,26 @@ DLL SHA-256 is
 `7D623B1262DA0F3560150156036C9EA70B08589A15E59B5946523734CB143129`.
 Restoration record: `20260929T0809255640809Z`. Concurrent charge and
 natural duration expiry remain open.
+
+Guarded working-save natural-expiry review
+`20260929T0920575813821Z` then passed 32/32 assertions. Four hidden SNA
+`1d4+1` groups contained 4/4/4/5 Aurochs/Bison/Rhinoceros/Woolly
+Rhinoceros. Every member reached its distinct connected-floor destination;
+all 17 canonical timed summon markers and all 17 units disappeared under
+normal unpaused game updates, within 111.98–113.14 game seconds after expiry
+observation began. Bison's four visual captures had enabled renderers after
+a two-frame idle wait. Pause state, zero save writes, request-local cleanup
+and exact original-install restoration passed. Repository validation, 1,952
+domain tests, clean Release and strict 274-file package passed. Package
+SHA-256: `5B14FA23491BA4D1CC6ADC633DB230400C9E6B05A43AC617AAD87F491611CB3E`;
+DLL SHA-256: `CD0D3DEFF31A0092E18CA215631B350BFC5E0C55721FB5FC59318A12788DF4BE`.
+Restoration record: `20260929T0932580911284Z`. A single-Aurochs pilot
+`20260929T0851026253484Z` also passed. The synthetic-clock diagnostic
+`20260929T0830501430816Z` and first full natural diagnostic
+`20260929T0900511372577Z` are excluded; both restored exactly. The former
+bypassed native unit retirement; the latter passed expiry but caught a
+Bison idle renderer hidden while the observer had not kept that member awake.
+The revised observer kept that member awake before its fader wait without
+changing production summon behavior. Concurrent charge, victim AoO choice,
+turn-based cadence, clear art, impact alignment, UI path and publication
+remain open; all four choices stay hidden.
