@@ -896,6 +896,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "all RTWP and turn-based automatic-AoO/Reflex response cases pass and restore combat mode, time, party membership and every disposable unit",
                         detail, ok,
                         "registered contact ActionList on direct and quantity summons with real native rules and exact restoration"));
+                    stage = "stampede-command-matrix";
+                    _rulesSteps.Add("reset:stampede=" +
+                        ResetExpandedSummoningHostile(_rulesFixture));
+                    ok = ExerciseExpandedSummoningStampedeCommandMatrix(
+                        out detail);
+                    _rulesCases.Add(Assertion(
+                        "expanded-summoning-sprint11-stampede-command-matrix",
+                        "RTWP and turn-based Stampede require three exact allied Stampede owners each executing their own native Trample command in the same round and remaining mutually adjacent; mere quantity, two commands, lost adjacency and an ended command never grant same-size eligibility or +2 DC",
+                        detail, ok,
+                        "registered direct and 1d3 summons, real UnitUseAbility OnAction commands, native mode and round state, exact contact ActionLists"));
                     stage = "mouth-ownership";
                     _rulesSteps.Add("reset:mouths=" + ResetExpandedSummoningHostile(_rulesFixture));
                     ok = ExerciseExpandedSummoningMouthOwnership(_rulesFixture, out detail);
@@ -4573,6 +4583,498 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Game.Instance.Player.GameTime == timeBefore &&
                 (!partyAdded || !Game.Instance.Player.Party.Contains(
                     _rulesFixture.Caster));
+        }
+
+        private bool ExerciseExpandedSummoningStampedeCommandMatrix(
+            out string detail)
+        {
+            bool settingBefore = SettingsRoot.Instance.EnableTurnBasedMode
+                .CurrentValue;
+            bool pauseBefore = Game.Instance.IsPaused;
+            TimeSpan timeBefore = Game.Instance.Player.GameTime;
+            bool partyAdded = false;
+            var steps = new List<string>();
+            bool rtwp = false, turnBased = false;
+            try
+            {
+                SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
+                Game.Instance.TurnBasedCombatController.Activate();
+                Game.Instance.IsPaused = false;
+                rtwp = ExerciseExpandedSummoningStampedeMode(false, steps);
+
+                if (!Game.Instance.Player.Party.Contains(
+                        _rulesFixture.Caster))
+                {
+                    Game.Instance.Player.Party.Add(_rulesFixture.Caster);
+                    partyAdded = true;
+                }
+                SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = true;
+                Game.Instance.TurnBasedCombatController.Activate();
+                turnBased = ExerciseExpandedSummoningStampedeMode(true, steps);
+            }
+            finally
+            {
+                try
+                {
+                    Game.Instance.TurnBasedCombatController
+                        .HandlePartyCombatStateChanged(false);
+                }
+                catch { }
+                if (partyAdded)
+                    Game.Instance.Player.Party.Remove(_rulesFixture.Caster);
+                Game.Instance.Player.UpdateIsInCombat();
+                SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue =
+                    settingBefore;
+                Game.Instance.TurnBasedCombatController.Activate();
+                Game.Instance.Player.GameTime = timeBefore;
+                Game.Instance.IsPaused = pauseBefore;
+            }
+            bool restored =
+                SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue ==
+                    settingBefore &&
+                Game.Instance.Player.GameTime == timeBefore &&
+                Game.Instance.IsPaused == pauseBefore &&
+                (!partyAdded || !Game.Instance.Player.Party.Contains(
+                    _rulesFixture.Caster));
+            steps.Add("restored=" + restored);
+            detail = string.Join("||", steps.ToArray());
+            return rtwp && turnBased && restored;
+        }
+
+        private bool ExerciseExpandedSummoningStampedeMode(bool turnBased,
+            List<string> steps)
+        {
+            string mode = turnBased ? "turn-based" : "rtwp";
+            var owned = new List<UnitEntityData>();
+            var joined = new List<UnitEntityData>();
+            var commands = new List<UnitUseAbility>();
+            bool turnCombatEntered = false;
+            try
+            {
+                var quantity = new List<UnitEntityData>();
+                for (int attempt = 0; attempt < 3 && quantity.Count < 2;
+                    attempt++)
+                    quantity.AddRange(CastExpandedSummoningQuietUnits(
+                        _rulesFixture, "aurochs",
+                        SummonMultiplicity.OneD3));
+                if (quantity.Count < 2)
+                    throw new InvalidOperationException(
+                        "Repeated registered 1d3 Aurochs casts did not create two Stampede owners.");
+                UnitEntityData aurochs = quantity[0];
+                UnitEntityData secondAurochs = quantity[1];
+                UnitEntityData bison = CastExpandedSummoningQuietUnit(
+                    _rulesFixture, "bison");
+                owned.AddRange(quantity);
+                owned.Add(bison);
+
+                var targets = new List<UnitEntityData>();
+                for (int index = 0; index < 6; index++)
+                {
+                    UnitEntityData target =
+                        CastExpandedSummoningQuietUnit(_rulesFixture, "wolf",
+                            _rulesFixture.Hostile);
+                    target.Descriptor.State.Size = Size.Large;
+                    SetExactProperty(target.Descriptor.Stats.GetStat(
+                        StatType.SaveReflex), "BaseValue", -100);
+                    targets.Add(target);
+                }
+                owned.AddRange(targets);
+
+                string formation;
+                TargetWrapper[] destinations =
+                    PlaceExpandedSummoningStampedeFormation(aurochs, bison,
+                        secondAurochs, out formation);
+                for (int index = 2; index < quantity.Count; index++)
+                    PlaceExpandedSummoningUnit(quantity[index], aurochs.Position +
+                        (Vector3.left + Vector3.back).normalized *
+                        (0.6f + index * 0.1f));
+                steps.Add(mode + ":formation=" + formation);
+
+                foreach (UnitEntityData unit in new[] {
+                    _rulesFixture.Caster, _rulesFixture.Hostile,
+                    aurochs, secondAurochs, bison })
+                {
+                    if (unit.CombatState.IsInCombat) continue;
+                    unit.JoinCombat();
+                    joined.Add(unit);
+                }
+                foreach (UnitEntityData unit in quantity.Skip(2).Concat(targets))
+                {
+                    if (unit.CombatState.IsInCombat) continue;
+                    unit.JoinCombat();
+                    joined.Add(unit);
+                }
+                Game.Instance.Player.UpdateIsInCombat();
+                if (turnBased)
+                {
+                    Game.Instance.TurnBasedCombatController
+                        .HandlePartyCombatStateChanged(true);
+                    turnCombatEntered = true;
+                }
+                if (TurnBased.Controllers.CombatController
+                        .IsInTurnBasedCombat() != turnBased)
+                    throw new InvalidOperationException(
+                        "Stampede fixture entered the wrong combat mode: expected=" +
+                        turnBased + ".");
+
+                int idleGroup = UngulateStampedeRuntime.ActiveGroupSize(
+                    aurochs);
+                ExpandedSummoningTrampleContactResult idle =
+                    RunExpandedSummoningStampedeContact(aurochs, targets[0],
+                        mode + "-idle-quantity");
+                bool idleOk = quantity.Count >= 2 && idleGroup == 0 &&
+                    idle.Saves.Count == 0 && idle.Damage.Count == 0;
+                _rulesCases.Add(Assertion(
+                    "expanded-summoning-sprint11-stampede-" + mode +
+                        "-idle-quantity",
+                    "nearby quantity that has not executed Trample grants no Stampede same-size contact",
+                    "quantity=" + quantity.Count + ";group=" + idleGroup +
+                        ";" + idle.Describe(), idleOk,
+                    "registered 1d3 summons, exact Stampede facts and same-size contact ActionList"));
+
+                commands.Add(BeginExpandedSummoningStampedeCommand(aurochs,
+                    destinations[0]));
+                commands.Add(BeginExpandedSummoningStampedeCommand(bison,
+                    destinations[1]));
+                int pairGroup = UngulateStampedeRuntime.ActiveGroupSize(
+                    aurochs);
+                ExpandedSummoningTrampleContactResult pair =
+                    RunExpandedSummoningStampedeContact(aurochs, targets[1],
+                        mode + "-two-commands");
+                bool pairOk = pairGroup == 0 && pair.Saves.Count == 0 &&
+                    pair.Damage.Count == 0;
+                _rulesCases.Add(Assertion(
+                    "expanded-summoning-sprint11-stampede-" + mode +
+                        "-two-commands",
+                    "two independently executing allied Trample commands do not activate Stampede",
+                    "group=" + pairGroup + ";" + pair.Describe(), pairOk,
+                    "two real registered UnitUseAbility commands and a same-size contact"));
+
+                commands.Add(BeginExpandedSummoningStampedeCommand(
+                    secondAurochs, destinations[2]));
+                int aurochsGroup = UngulateStampedeRuntime.ActiveGroupSize(
+                    aurochs);
+                int bisonGroup = UngulateStampedeRuntime.ActiveGroupSize(
+                    bison);
+                ExpandedSummoningTrampleContactResult activeAurochs =
+                    RunExpandedSummoningStampedeContact(aurochs, targets[2],
+                        mode + "-active-aurochs");
+                ExpandedSummoningTrampleContactResult activeBison =
+                    RunExpandedSummoningStampedeContact(bison, targets[3],
+                        mode + "-active-bison");
+                bool aurochsOk = aurochsGroup == 3 &&
+                    activeAurochs.Saves.Count == 1 &&
+                    activeAurochs.Saves[0].DifficultyClass == 19 &&
+                    activeAurochs.Damage.Count == 1;
+                bool bisonOk = bisonGroup == 3 &&
+                    activeBison.Saves.Count == 1 &&
+                    activeBison.Saves[0].DifficultyClass == 22 &&
+                    activeBison.Damage.Count == 1;
+                _rulesCases.Add(Assertion(
+                    "expanded-summoning-sprint11-stampede-" + mode +
+                        "-aurochs-active",
+                    "three mutually adjacent allied active Stampede owners let Aurochs trample a same-size target at DC 19",
+                    "group=" + aurochsGroup + ";" +
+                        activeAurochs.Describe(), aurochsOk,
+                    "three exact native command actions and a registered Aurochs contact"));
+                _rulesCases.Add(Assertion(
+                    "expanded-summoning-sprint11-stampede-" + mode +
+                        "-bison-active",
+                    "the same mixed active herd lets Bison trample a same-size target at DC 22",
+                    "group=" + bisonGroup + ";" + activeBison.Describe(),
+                    bisonOk,
+                    "three exact native command actions and a registered Bison contact"));
+
+                Vector3 adjacentPosition = secondAurochs.Position;
+                PlaceExpandedSummoningUnit(secondAurochs,
+                    aurochs.Position + Vector3.forward * 20f);
+                int separatedGroup = UngulateStampedeRuntime.ActiveGroupSize(
+                    aurochs);
+                ExpandedSummoningTrampleContactResult separated =
+                    RunExpandedSummoningStampedeContact(aurochs, targets[4],
+                        mode + "-adjacency-lost");
+                bool separatedOk = separatedGroup == 0 &&
+                    separated.Saves.Count == 0 && separated.Damage.Count == 0;
+                _rulesCases.Add(Assertion(
+                    "expanded-summoning-sprint11-stampede-" + mode +
+                        "-adjacency-loss",
+                    "losing mutual adjacency ends Stampede for later same-size contacts",
+                    "group=" + separatedGroup + ";" +
+                        separated.Describe(), separatedOk,
+                    "live entity positions and edge-to-edge formation recheck"));
+
+                PlaceExpandedSummoningUnit(secondAurochs,
+                    adjacentPosition);
+                commands[2].Interrupt(true);
+                if (commands[2].IsRunning && !commands[2].IsFinished)
+                    throw new InvalidOperationException(
+                        "The third native Stampede command refused direct interruption.");
+                int endedGroup = UngulateStampedeRuntime.ActiveGroupSize(
+                    aurochs);
+                ExpandedSummoningTrampleContactResult ended =
+                    RunExpandedSummoningStampedeContact(aurochs, targets[5],
+                        mode + "-command-ended");
+                bool endedOk = endedGroup == 0 && ended.Saves.Count == 0 &&
+                    ended.Damage.Count == 0;
+                _rulesCases.Add(Assertion(
+                    "expanded-summoning-sprint11-stampede-" + mode +
+                        "-command-ended",
+                    "an interrupted or ended third command ends Stampede for later same-size contacts",
+                    "group=" + endedGroup + ";command=" +
+                        commands[2].IsRunning + "/" +
+                        commands[2].IsFinished + "/" +
+                        commands[2].Result + ";" + ended.Describe(),
+                    endedOk,
+                    "native command lifecycle plus same-round contact recheck"));
+
+                bool modeOk = idleOk && pairOk && aurochsOk && bisonOk &&
+                    separatedOk && endedOk;
+                steps.Add(mode + ":quantity=" + quantity.Count +
+                    ";idle=" + idleGroup + ";pair=" + pairGroup +
+                    ";active=" + aurochsGroup + "/" + bisonGroup +
+                    ";separated=" + separatedGroup + ";ended=" +
+                    endedGroup + ";round=" +
+                    ContextActionUngulateTrample.CurrentRound() +
+                    ";pass=" + modeOk);
+                return modeOk;
+            }
+            finally
+            {
+                foreach (UnitUseAbility command in commands)
+                {
+                    try { command.Interrupt(true); }
+                    catch { }
+                    try { EndExpandedSummoningDetachedAbility(command); }
+                    catch { }
+                }
+                if (turnCombatEntered)
+                {
+                    try
+                    {
+                        Game.Instance.TurnBasedCombatController
+                            .HandlePartyCombatStateChanged(false);
+                    }
+                    catch { }
+                }
+                foreach (UnitEntityData unit in joined.AsEnumerable().Reverse())
+                {
+                    try
+                    {
+                        if (unit != null && unit.CombatState != null &&
+                            unit.CombatState.IsInCombat) unit.LeaveCombat();
+                    }
+                    catch { }
+                }
+                Game.Instance.Player.UpdateIsInCombat();
+                DisposeExpandedSummoningUnits(_rulesFixture.Created,
+                    owned.Distinct().ToArray());
+            }
+        }
+
+        private TargetWrapper[] PlaceExpandedSummoningStampedeFormation(
+            UnitEntityData aurochs, UnitEntityData bison,
+            UnitEntityData secondAurochs, out string detail)
+        {
+            if (AstarPath.active == null)
+                throw new InvalidOperationException(
+                    "Stampede formation needs live area navigation.");
+            UnitEntityData[] units = { aurochs, bison, secondAurochs };
+            var origins = new List<Vector3> {
+                _rulesFixture.Hostile.Position,
+                _rulesFixture.Caster.Position
+            };
+            foreach (Vector3 anchor in new[] {
+                _rulesFixture.Hostile.Position,
+                _rulesFixture.Caster.Position })
+                foreach (float distance in new[] { 2.5f, 3f, 4f, 6f })
+                    origins.AddRange(CompassOffsets.Select(direction =>
+                        anchor + direction * distance));
+            var attempts = new List<string>();
+            for (int originIndex = 0; originIndex < origins.Count;
+                originIndex++)
+            {
+                for (int headingIndex = 0;
+                    headingIndex < CompassOffsets.Length; headingIndex++)
+                {
+                    Vector3 heading = CompassOffsets[headingIndex];
+                    Vector3 perpendicular = new Vector3(-heading.z, 0f,
+                        heading.x);
+                    Vector3[] requested = {
+                        origins[originIndex],
+                        origins[originIndex] + heading * 1.25f,
+                        origins[originIndex] + perpendicular * 1.25f
+                    };
+                    var positions = new Vector3[units.Length];
+                    bool walkable = true;
+                    float maxSnap = 0f;
+                    for (int index = 0; index < units.Length; index++)
+                    {
+                        Pathfinding.NNInfo nearest = Kingmaker.View
+                            .ObstacleAnalyzer.GetNearestNode(requested[index]);
+                        if (nearest.node == null || !nearest.node.Walkable)
+                        {
+                            walkable = false;
+                            break;
+                        }
+                        positions[index] = nearest.clampedPosition;
+                        maxSnap = Math.Max(maxSnap, Vector3.Distance(
+                            positions[index], requested[index]));
+                    }
+                    if (!walkable) continue;
+                    for (int index = 0; index < units.Length; index++)
+                        PlaceExpandedSummoningUnit(units[index],
+                            positions[index]);
+                    bool distinct = Vector3.Distance(aurochs.Position,
+                            bison.Position) >= 0.25f &&
+                        Vector3.Distance(aurochs.Position,
+                            secondAurochs.Position) >= 0.25f &&
+                        Vector3.Distance(bison.Position,
+                            secondAurochs.Position) >= 0.25f;
+                    bool adjacent =
+                        ExpandedSummoningStampedeFixtureAdjacent(aurochs,
+                            bison) &&
+                        ExpandedSummoningStampedeFixtureAdjacent(aurochs,
+                            secondAurochs) &&
+                        ExpandedSummoningStampedeFixtureAdjacent(bison,
+                            secondAurochs);
+                    var destinations = new TargetWrapper[units.Length];
+                    var routeDetails = new string[units.Length];
+                    bool routes = distinct && adjacent;
+                    if (routes)
+                        for (int index = 0; index < units.Length; index++)
+                            if (!TryFindExpandedSummoningStampedeDestination(
+                                    units[index], out destinations[index],
+                                    out routeDetails[index]))
+                            {
+                                routes = false;
+                                break;
+                            }
+                    if (attempts.Count < 24 || routes)
+                        attempts.Add("origin" + originIndex + "/heading" +
+                            headingIndex + ":distinct=" + distinct +
+                            ",adjacent=" + adjacent + ",maxSnap=" +
+                            maxSnap.ToString("0.00", System.Globalization
+                                .CultureInfo.InvariantCulture) + ",routes=" +
+                            routes + ",checks=" + string.Join(";",
+                                routeDetails.Where(value =>
+                                    !string.IsNullOrEmpty(value)).ToArray()));
+                    if (!routes) continue;
+                    detail = attempts[attempts.Count - 1] + ",positions=" +
+                        string.Join("/", units.Select(value =>
+                            value.Position.ToString()).ToArray());
+                    return destinations;
+                }
+            }
+            throw new InvalidOperationException(
+                "No mutually adjacent Stampede formation had three valid native Trample paths;attempts=" +
+                string.Join("|", attempts.ToArray()) + ".");
+        }
+
+        private static bool ExpandedSummoningStampedeFixtureAdjacent(
+            UnitEntityData left, UnitEntityData right)
+        {
+            float edgeDistance = Vector3.Distance(left.Position,
+                right.Position) - Math.Max(0f, left.Corpulence) -
+                Math.Max(0f, right.Corpulence);
+            return edgeDistance <= 5.Feet().Meters + 0.01f;
+        }
+
+        private bool TryFindExpandedSummoningStampedeDestination(
+            UnitEntityData unit, out TargetWrapper destination,
+            out string detail)
+        {
+            BlueprintAbility ability = _rulesFixture.Blueprints
+                .OfType<BlueprintAbility>().Single(value =>
+                    RulesTrampleAbilityNames.Contains(value.name) &&
+                    unit.Descriptor.Abilities.GetAbility(value) != null);
+            Ability granted = unit.Descriptor.Abilities.GetAbility(ability);
+            var data = new AbilityData(granted);
+            destination = null;
+            var attempts = new List<string>();
+            var overrun = ability.ComponentsArray.OfType<
+                Kingmaker.UnitLogic.Abilities.Components.AbilityCustomOverrun>()
+                .Single();
+            var path = ability.ComponentsArray.OfType<
+                UngulateTramplePathChecker>().Single();
+            foreach (float distance in new[] { 5f, 6f, 8f, 4f, 3f, 2.5f })
+            {
+                foreach (Vector3 direction in CompassOffsets)
+                {
+                    Pathfinding.NNInfo nearest =
+                        Kingmaker.View.ObstacleAnalyzer.GetNearestNode(
+                            unit.Position + direction * distance);
+                    if (nearest.node == null || !nearest.node.Walkable) continue;
+                    var candidate = new TargetWrapper(nearest.clampedPosition);
+                    Vector3 traced = Kingmaker.View.ObstacleAnalyzer
+                        .TraceAlongNavmesh(unit.Position, candidate.Point);
+                    bool nativeTarget = overrun.CanTarget(unit, candidate);
+                    bool pathTarget = path.CanTarget(unit, candidate);
+                    bool canTarget = data.CanTarget(candidate);
+                    bool lineClear = Kingmaker.Visual.FogOfWar
+                        .LineOfSightGeometry.Instance != null &&
+                        !Kingmaker.Visual.FogOfWar.LineOfSightGeometry.Instance
+                            .HasObstacle(unit.EyePosition, candidate.Point, 0);
+                    if (attempts.Count < 20 || (canTarget && lineClear))
+                        attempts.Add(distance + "/" +
+                            Array.IndexOf(CompassOffsets, direction) +
+                            ":canTarget=" + canTarget + ",native=" +
+                            nativeTarget + ",path=" + pathTarget +
+                            ",lineClear=" + lineClear + ",traceDelta=" +
+                            Vector3.Distance(traced, candidate.Point).ToString(
+                                "0.00", System.Globalization.CultureInfo
+                                    .InvariantCulture));
+                    if (!canTarget || !lineClear) continue;
+                    destination = candidate;
+                    break;
+                }
+                if (destination != null) break;
+            }
+            detail = unit.Blueprint.name + "=" +
+                string.Join(",", attempts.ToArray());
+            return destination != null;
+        }
+
+        private UnitUseAbility BeginExpandedSummoningStampedeCommand(
+            UnitEntityData unit, TargetWrapper destination)
+        {
+            BlueprintAbility ability = _rulesFixture.Blueprints
+                .OfType<BlueprintAbility>().Single(value =>
+                    RulesTrampleAbilityNames.Contains(value.name) &&
+                    unit.Descriptor.Abilities.GetAbility(value) != null);
+            if (destination == null)
+                throw new InvalidOperationException(
+                    "The prequalified native Stampede destination was absent for " +
+                    unit.Blueprint.name + ".");
+            UnitUseAbility command = BeginExpandedSummoningDetachedAbility(
+                unit, ability, destination, true, true);
+            for (int tick = 0; command.ExecutionProcess == null &&
+                command.IsRunning && tick < 16; tick++)
+            {
+                if (command.Animation != null)
+                    command.Animation.IsActed = true;
+                command.Tick();
+            }
+            if (command.ExecutionProcess == null || !command.IsRunning ||
+                command.IsFinished)
+                throw new InvalidOperationException(
+                    "The exact Stampede Trample command did not enter its native action: " +
+                    unit.Blueprint.name + ";running=" + command.IsRunning +
+                    ";finished=" + command.IsFinished + ";result=" +
+                    command.Result + ".");
+            return command;
+        }
+
+        private ExpandedSummoningTrampleContactResult
+            RunExpandedSummoningStampedeContact(UnitEntityData trampler,
+                UnitEntityData target, string label)
+        {
+            PrepareExpandedSummoningTrampleResponsePair(_rulesFixture,
+                trampler, target, 0, 1f, false, false);
+            target.Descriptor.State.Size = Size.Large;
+            SetExactProperty(target.Descriptor.Stats.GetStat(
+                StatType.SaveReflex), "BaseValue", -100);
+            return RunExpandedSummoningTrampleContact(trampler, target,
+                label, 10);
         }
 
         private void BeginExpandedSummoningTramplePath()

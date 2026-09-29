@@ -529,8 +529,20 @@ namespace KingmakerGunslinger.Blueprints
                     "one at -4 before damage and receives no save. Otherwise " +
                     "it attempts a Reflex DC " + rules.TrampleDc +
                     " save for half. An attack that stops the trampler " +
-                    "prevents that contact's damage and ends the trample."),
+                    "prevents that contact's damage and ends the trample." +
+                    (rules.Stampede ?
+                        " Stampede activates only while at least three allied " +
+                        "creatures with Stampede each execute their own " +
+                        "Trample in the same combat round and remain mutually " +
+                        "adjacent. In real time all three commands must be " +
+                        "running together; in turn-based mode commands that " +
+                        "entered execution count through that native round. " +
+                        "While active, same-size enemies are eligible and the " +
+                        "save DC increases to " + (rules.TrampleDc + 2) +
+                        ". Nearby idle creatures never count." : "")),
                 native.Icon);
+            if (rules.Stampede)
+                UngulateStampedeRuntime.Register(unit, ability);
             unit.AddFacts = (unit.AddFacts ?? Array.Empty<BlueprintUnitFact>())
                 .Concat(new BlueprintUnitFact[] { ability }).ToArray();
         }
