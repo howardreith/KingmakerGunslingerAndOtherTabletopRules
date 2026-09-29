@@ -1,5 +1,37 @@
 # Expanded Summoning Phase 2 autonomous state
 
+## Sprint 11 same-round trample replay checkpoint, 2026-09-29
+
+Guarded Steam run `20260929T0146260041731Z` passed 31/31 assertions.
+The same disposable Aurochs traversed the same smaller hostile twice in one
+game-time round on two native queued overrun paths. The first path made one
+DC 17 Reflex save and one half-flagged damage event; the second moved 4.63 m
+and made no additional save or damage event. The target remained at 4 damage,
+and the observer counted one save and one damage event across both paths.
+Per-case Reflex, mode, pause, game-time and awake-unit state were restored.
+Wrapper restoration `20260929T0150362127764Z` verified the original 136-file
+installation SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+This closes same-round target replay for the tested RTWP Aurochs path. Victim
+AoO choice, turn-based cadence, charge travel, quantity and original 3D
+visuals remain open.
+
+## Sprint 11 successful trample Reflex checkpoint, 2026-09-29
+
+Guarded Steam run `20260929T0116041484925Z` passed 30/30 assertions.
+After the three species' contact controls, a fourth native Aurochs path
+crossed the smaller hostile and made one successful DC 17 Reflex save. Its
+one damage event carried the half-on-save flag and dealt 3 actual damage
+under the working save's difficulty adjustment. The hostile's prior Reflex
+value, turn-mode setting, pause, game time and awake-unit snapshot were
+restored. Wrapper restoration `20260929T0120134762094Z` verified the
+original 136-file mod tree SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+An earlier diagnostic failed only because the fixture incorrectly assumed a
+tabletop minimum of 5 after the game's difficulty adjustment; that result is
+excluded from qualification. Target AoO choice, same-round replay, turn-based
+cadence, charge travel, quantity and original 3D visuals remain open.
+
 ## Sprint 11 three-species trample contact checkpoint, 2026-09-29
 
 Guarded Steam scenario `20260929T0050555483840Z` passed 27/27 assertions.
