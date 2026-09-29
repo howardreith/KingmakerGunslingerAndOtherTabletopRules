@@ -17665,7 +17665,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     mechanics != null && mechanics.StirgeEscapeAndTransition,
                     "native UnitUseAbility removal commands and Stirge-only area sweep"),
                 Assertion("expanded-summoning-stirge-quantity-freedom",
-                    "two quantity Stirges attach to distinct victims; prey movement and melee counterattack remove only their own Stirge",
+                    "two quantity Stirges attach to distinct victims; fixture prey relocation and melee counterattack affect only their own Stirge",
                     mechanics == null ? "not-run" : mechanics.StirgeQuantityFreedomDetail,
                     mechanics != null && mechanics.StirgeQuantityFreedom,
                     "live 1d4+1 Stirge summon, two prey action grants, owner-follow relocation and native prey attack"),

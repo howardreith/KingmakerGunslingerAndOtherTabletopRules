@@ -1,12 +1,60 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## Current checkpoint: Stirge-specific attachment, 2026-09-29
+## Current checkpoint: native prey movement and clean reload, 2026-09-29
+
+Branch `codex/expanded-summoning-phase2a-sprints9-13`, draft PR #25;
+latest pushed implementation head before this checkpoint is
+`8faddb9aba548423c7931628844d348047558b15`. Sprint 10 remains open and
+Stirge's nine SNA choices remain hidden. Working-save creature review
+`20260929T1537294275973Z` passed 12/12. An attached player-controlled prey
+accepted native `UnitMoveTo` after its prior movement was stopped, moved
+4.56 m, approached the surveyed destination from 2.50 m to 0.13 m, and kept
+normal movement and actions. The separately rendered Stirge followed 0.62 m
+away; the live party-camera capture showed its intact original mesh. The
+prey's original position, native move, pause state and Stirge link were
+restored request-locally. The prior diagnostic `20260929T1524442143550Z`
+observed the same movement but failed only because `UnitMoveTo.IsStarted` and
+`IsRunning` remained false; the established native movement review correctly
+uses command acceptance, agent intent/velocity and destination approach.
+Both guarded runs restored the exact original live install.
+
+The corrected active-attachment persistence trio passed on one source/package:
+`20260929T1550288953379Z` prepare 15/15,
+`20260929T1554468196770Z` verify-cleanup 15/15, and
+`20260929T1559010594274Z` verify-absent 15/15. Prepare saved the owner-only
+Stirge hold and no new prey restriction; fresh reload had no Stirge/target
+native grapple part, owner hold, orphan Remove Stirge action or immobilizing
+condition; final reload found zero fixture summons. The first two stages made
+one exact guarded write each to `KMG_AUTOMATION_WORKING`, and the last made
+none. Package SHA-256
+`854E5F5002D4704ABE6B426BB8FDBB846416A80F782EFCD4203A6ACB58D9651E`;
+DLL SHA-256
+`9382376294887005706FCC204B54790DEB760F5CD0EAA8C0291C3CD2AC3D6EBE`.
+Repository validation, 1,952 domain tests, clean Release and strict package
+validation passed. Batch restoration
+`20260929T1602044948325Z-working-save-expanded-summoning-prepare.json`
+returned the original 136-file live tree to SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+The separate module-disabled path passed as well: guarded prepare
+`20260929T1607498366788Z` 15/15, temporary Expanded Summoning OFF
+fresh-load cleanup `20260929T1616090412469Z` 15/15, and normal-settings
+final absence `20260929T1624206703157Z` 15/15. The disabled load had no
+owner hold, prey grapple or orphan removal ability; the last load found zero
+fixture summons and made zero save writes. Each wrapper restored the original
+installation and setting exactly; final restoration
+`20260929T1627120211247Z-working-save-expanded-summoning-verify-absent.json`
+records the same SHA above. Next: Mobility removal branch, RTWP/turn-based and
+player-path/visual qualification before unhide; then Sprint 11 AoO-first,
+Stampede disposition and hoof/leg art. Sprints 12-21 remain authorized and
+unstarted. No merge, release, permanent deployment or Sprint 22.
+
+## Prior checkpoint: Stirge-specific attachment, 2026-09-29
 
 Branch `codex/expanded-summoning-phase2a-sprints9-13`, draft PR #25, based on
 accepted `master` `2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a`.
-Previous pushed head `bff3e9375ecf2ec8e4290e4298e607177baafbda`;
-this section describes the next candidate and must be pinned to its commit
-when committed. Sprint 9 is accepted; Sprint 10 remains reopened. Nine Stirge
+Current pushed head before this movement checkpoint
+`8faddb9aba548423c7931628844d348047558b15`.
+Sprint 9 is accepted; Sprint 10 remains reopened. Nine Stirge
 SNA choices remain hidden, while Giant Wasp and Sprint 9 remain published at
 825 visible placements. Sprint 11 ungulates remain hidden. Sprints 12-21 are
 authorized and unstarted; no merge, release, permanent deployment or Sprint 22.

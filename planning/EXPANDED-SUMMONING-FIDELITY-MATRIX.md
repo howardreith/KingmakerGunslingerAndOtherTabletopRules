@@ -16,6 +16,19 @@ Guarded disposable run `20260929T1502005029758Z` passed 36/36 attachment,
 removal, drain, counterattack, quantity and cleanup assertions with exact
 restoration. Its prey-follow check used fixture relocation; actual prey
 movement, persistence, player path and visual requalification remain open.
+Subsequent guarded working-save review `20260929T1537294275973Z` passed
+12/12 with a native player-prey move, 4.56 m travel, 2.50-to-0.13 m
+destination approach, 0.62 m Stirge follow gap and separate intact view.
+The corrected active-attachment reload trio
+`20260929T1550288953379Z` / `20260929T1554468196770Z` /
+`20260929T1559010594274Z` passed 15/15 each: no owner hold, prey grapple,
+orphan removal action or immobilizing residue after load; fixture absent at
+the final reload. Both working-save writes were exact and the final stage
+wrote none. The disabled-module prepare/cleanup/absent continuation
+`20260929T1607498366788Z` / `20260929T1616090412469Z` /
+`20260929T1624206703157Z` also passed 15/15 each with no reload residue,
+zero final fixture units and zero final save writes. Mobility removal,
+player path and remaining visual checks still gate publication.
 
 Status: release-qualified on final native qualification source
 `5205805eab3fe0115d6888c53bce73c80474d1b7`. The complete roster passed the
