@@ -362,7 +362,7 @@ namespace KingmakerGunslinger.DomainTests
                 Environment.CurrentDirectory, "src", "KingmakerGunslinger",
                 "RuntimeTesting", "RuntimeTestRunner.cs"));
             Assertions.True(runtime.Contains("expanded-summoning-giant-wasp-quantity") &&
-                runtime.Contains(".Concat(waspCrowd).ToArray()") &&
+                runtime.Contains(".Concat(waspCrowd).Concat(ungulateExtra).ToArray()") &&
                 runtime.Contains("waspCrowdLegal == 4"),
                 "The guarded cast loop must exercise all four private Wasp quantity variants.");
         }

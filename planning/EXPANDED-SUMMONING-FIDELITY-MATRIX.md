@@ -492,3 +492,19 @@ prohibited references. Original installation restoration was exact after
 both runs. Sprint 10 internal technical status: PASS. Native Filth Fever cure
 timing was not measured; exposure uses the exact installed buff. Owner visual
 approval is pending and nonblocking.
+
+## Phase 2 Sprint 11 hidden ungulate qualification, 2026-09-29
+
+| Creature | Registered role and mechanic | Live evidence | Remaining before publication |
+| --- | --- | --- | --- |
+| Aurochs | SM/SNA III meat/trample; original Horse-rig view | DC 17 native trample contact, successful Reflex half branch and same-round replay suppression; original view and 12.3 m doorway travel | Victim choice, turn-based cadence, simultaneous quantity pathing/expiry, impact and UI/art review |
+| Bison | SM/SNA IV heavier trample; original Horse-rig view | DC 20 native trample contact; original view and 12.3 m doorway travel | Victim choice, turn-based cadence, simultaneous quantity pathing/expiry, impact and UI/art review |
+| Rhinoceros | SM/SNA IV powerful charge; original Mastodon-rig view | Native `ChargeAbility` moved 3.88 m and queued first gore hit for 25 damage; original view and 12.3 m doorway travel | Turn-based and simultaneous quantity charge/pathing/expiry, impact and UI/art review |
+| Woolly Rhinoceros | SM/SNA V stronger charge and trample; distinct original Mastodon-rig view | Native charge moved 3.42 m and queued first gore hit for 30 damage; DC 23 trample contact; original view and 12.3 m doorway travel | Victim choice, turn-based and simultaneous quantity charge/pathing/expiry, impact and UI/art review |
+
+All four remain hidden. Guarded cast run `20260929T0713346420017Z` passed
+16/16 SM/SNA `1d3`/`1d4+1` routes, 48/48 original-view attachments,
+204/204 native casts, 280 spawned units, caster-level duration and exact
+per-cast cleanup. This is sequential quantity casting, not formation travel.
+The 35/35 run, 1,952-test build and exact restoration are indexed in
+`EXPANDED-SUMMONING-PHASE2-EVIDENCE-INDEX.md`.
