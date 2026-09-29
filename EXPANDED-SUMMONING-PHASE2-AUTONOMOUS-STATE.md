@@ -1,5 +1,26 @@
 # Expanded Summoning Phase 2 autonomous state
 
+## Sprint 11 four-ungulate live view and navigation, 2026-09-29
+
+Guarded Steam creature review `20260929T0432458054535Z` passed 24/24
+assertions after repository validation, 1,951 domain tests, clean Release and
+strict 274-file package. Each hidden ungulate used its original named mesh and
+1024 px albedo, completed a native `UnitMoveTo` over 12.3 m through the
+surveyed connected doorway, and dismissed with zero private meshes/materials.
+The Rhinoceros and Woolly Rhinoceros use view-only scales 0.55 and 0.60 on
+their Huge Mastodon rig; their mechanical Large footprints are unchanged.
+Pony and Horse remain unscaled controls. Sixteen request-local idle/move/
+attack frames were inspected; the route's walls/bookcases trigger the native
+cyan occlusion highlight, so clear visual approval and exact impact contact
+remain open. Package SHA-256
+`BA714286E87B67FF711AA8DE47BAEB523E0C46D271629210BBD52F67F6CAF9CE`,
+DLL SHA-256 `5167C6D05EFD4A3862AF2E52B50BC16088191A076BD49D129A992697C47B3760`.
+Restoration `20260929T0439456002517Z` verified the original 136-file tree
+SHA-256 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+The earlier `20260929T0414361413191Z` diagnostic failed four resource checks
+and showed no actual ground travel; its exact restoration passed. The release
+path and grounded review fixture were corrected before the passing run.
+
 ## Sprint 11 original ungulate visual integration, 2026-09-29
 
 Four original, editable Aurochs/Bison/Rhinoceros/Woolly Rhinoceros meshes and

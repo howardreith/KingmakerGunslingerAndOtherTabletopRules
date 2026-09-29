@@ -206,7 +206,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (_motionReviewWaited < MotionReviewFadeBudget &&
                         (LoadingOrScreenFadeActive() || !EntityFadedIn(unit) ||
                             DissolveAmount(unit) > MotionReviewIntactDissolve ||
-                            IsSprint9FlightReview(unit) &&
+                            IsGuidedMotionReview(unit) &&
                             unit.Descriptor.Buffs.GetBuff(BlueprintRoot.Instance
                                 .SystemMechanics.SummonedUnitAppearBuff) != null))
                     {
@@ -222,10 +222,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_motionReviewFrame == 0)
                 {
                     Capture(unit, stage, "idle");
-                    bool flight = IsSprint9FlightReview(unit);
+                    bool guided = IsGuidedMotionReview(unit);
                     Vector3 destination = unit.Position +
                         MotionReviewAcross(unit) * 6f;
-                    if (flight)
+                    if (guided)
                     {
                         _motionReviewAwakeBefore = Game.Instance.State
                             .AwakeUnits.ToArray();
@@ -257,7 +257,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _motionReviewMoveStarted |= move.IsStarted;
                     _motionReviewMoveRunning |= move.IsRunning;
                     _motionReviewMoveFinished |= move.IsFinished;
-                    if (flight && unit.View.MovementAgent != null)
+                    if (guided && unit.View.MovementAgent != null)
                         _motionReviewAgentWantsMove =
                             unit.View.MovementAgent.WantsToMove;
                     _motionReviewFrame++;
@@ -276,7 +276,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _motionReviewUnitInGame |= unit.IsInGame;
                 _motionReviewViewInGame |= unit.View != null &&
                     unit.View.IsInGame;
-                if (IsSprint9FlightReview(unit) && unit.View != null &&
+                if (IsGuidedMotionReview(unit) && unit.View != null &&
                     unit.View.MovementAgent != null)
                 {
                     float delta = Game.Instance.TimeController.DeltaTime;
@@ -453,6 +453,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 name == ExpandedSummoningPteranodonViewPatch.StirgeBlueprintName;
         }
 
+        private static bool IsGuidedMotionReview(UnitEntityData unit)
+        {
+            if (IsSprint9FlightReview(unit)) return true;
+            string name = unit == null || unit.Blueprint == null ? null :
+                unit.Blueprint.name;
+            return name == ExpandedSummoningPteranodonViewPatch.AurochsBlueprintName ||
+                name == ExpandedSummoningPteranodonViewPatch.BisonBlueprintName ||
+                name == ExpandedSummoningPteranodonViewPatch.RhinocerosBlueprintName ||
+                name == ExpandedSummoningPteranodonViewPatch.WoollyRhinocerosBlueprintName;
+        }
+
         private Vector3 PrepareSprint9FlightMovement(UnitEntityData unit)
         {
             if (AstarPath.active == null || unit.View == null ||
@@ -462,7 +473,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _creatureReviewCaster.HoldingState))
                 throw new InvalidOperationException(
                     "Sprint 9 flight review lacks a live party-area navigation anchor.");
-            // The summon may initially appear at an edge of the room. Use the
+            // Flying and large ground summons may appear at an edge. Use the
             // party member's visible floor node as a search anchor, then place
             // the summon on a clear nearby node away from all party bodies.
             Pathfinding.NNInfo anchor = AstarPath.active.GetNearest(
