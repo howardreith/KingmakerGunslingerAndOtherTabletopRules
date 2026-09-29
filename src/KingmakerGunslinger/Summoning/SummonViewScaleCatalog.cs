@@ -37,6 +37,11 @@ namespace KingmakerGunslinger.Summoning
             S("elephant", 0.90f),
             S("mastodon", 1.15f),
             S("roc", 1.10f),
+            // The original Large rhinoceroses ride a Huge Mastodon rig. Keep
+            // the mechanical Large footprint and reduce only their rendered
+            // bodies to the reviewed party-camera size.
+            S("rhinoceros", 0.55f),
+            S("woolly-rhinoceros", 0.60f),
             // Sprint 8: the tiger on the leopard rig reads Large; the cheetah lean
             S("tiger", 1.25f),
             S("cheetah", 0.92f)
@@ -57,7 +62,7 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Values.Length != 11 || Values.Any(value => value.Multiplier <
+            if (Values.Length != 13 || Values.Any(value => value.Multiplier <
                     0.20f || value.Multiplier > 1.25f) ||
                 Values.Select(value => value.CreatureKey).Distinct(
                     StringComparer.Ordinal).Count() != Values.Length ||
