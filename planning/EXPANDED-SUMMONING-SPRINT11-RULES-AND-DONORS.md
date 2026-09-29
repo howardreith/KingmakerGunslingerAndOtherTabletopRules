@@ -291,3 +291,21 @@ records `launcherOutcome=Clean`, `outcome=PASS`, no remaining Kingmaker
 process, and the original 136-file tree SHA-256
 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`
 both before and after the run.
+
+### Native Aurochs trample-path contact
+
+Guarded loaded-area run `20260929T0033452745962Z` passed 21/21 assertions.
+The hidden Aurochs used its exact granted ability through the native
+`UnitCommands` queue and the installed `AbilityCustomOverrun`. On a valid
+request-local RTWP route, the native movement agent traveled 8.92 m through
+the smaller hostile, produced one DC 17 Reflex save and one 16-point
+bludgeoning event, and left the allied caster unharmed. The fixture restored
+the prior turn-mode setting, pause state and awake-unit snapshot; the wrapper
+restored the original installation at `20260929T0037501346548Z`.
+
+An ablation removed the proposed radius-reflection delivery subclass and
+passed the same path/contact assertion. Native overrun is retained without
+that correction. This measures one Aurochs RTWP contact; it does not establish
+Bison/Woolly contacts, victim AoO choice, turn-based full-round cadence,
+multiple-quantity navigation, or original 3D silhouettes. Those remain
+publication gates.

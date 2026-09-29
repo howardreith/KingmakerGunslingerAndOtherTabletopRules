@@ -1,5 +1,23 @@
 # Expanded Summoning Phase 2 autonomous state
 
+## Sprint 11 native Aurochs trample path checkpoint, 2026-09-29
+
+The hidden Aurochs' installed `AbilityCustomOverrun` moved 8.92 m through a
+smaller disposable hostile and produced exactly one DC 17 Reflex save and one
+16-point bludgeoning damage event. The allied caster took no damage. Guarded
+Steam scenario `20260929T0033452745962Z` passed 21/21 assertions with the
+command in the native unit queue. The request-local fixture switched from the
+working save's turn-based state to RTWP, advanced the native movement agent
+with the game's positive delta time, then restored the exact turn-mode setting,
+pause state and awake-unit list. Restoration
+`20260929T0037501346548Z` verified the original installed 136-file tree at
+SHA-256 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+An ablation using the unmodified native overrun passed; the speculative
+radius-reflection subclass was removed. This qualifies one Aurochs RTWP
+contact path, not turn-based trample cadence, the Bison/Woolly variants,
+Rhino charge travel, quantity, or original ungulate visuals. All four remain
+hidden; continue Sprint 11.
+
 This is the live resume record for the owner's Phase 2 Sprints 9-21 mission in
 `Kingmaker_Expanded_Summoning_Phase2_Codex_Starter_Packet.zip`. That order
 supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
