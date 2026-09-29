@@ -28,11 +28,13 @@ using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
+using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.UI.SettingsUI;
 using Kingmaker.Utility;
 using Kingmaker.View;
 using Kingmaker.Visual.MaterialEffects.RimLighting;
 using KingmakerGunslinger.Blueprints;
+using KingmakerGunslinger.BodyguardFeats;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json;
@@ -274,7 +276,15 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static UnitEntityData CastExpandedSummoningOwnTier(
             ExpandedSummoningCorrectionFixture fixture, string creatureKey)
         {
-            UnitEntityData unit = CastExpandedSummoningVariant(fixture.Blueprints, fixture.Caster,
+            return CastExpandedSummoningOwnTier(fixture, creatureKey,
+                fixture.Caster);
+        }
+
+        private static UnitEntityData CastExpandedSummoningOwnTier(
+            ExpandedSummoningCorrectionFixture fixture, string creatureKey,
+            UnitEntityData caster)
+        {
+            UnitEntityData unit = CastExpandedSummoningVariant(fixture.Blueprints, caster,
                 ExpandedSummoningOwnTierVariant(creatureKey, SummonMultiplicity.One), null,
                 fixture.Evidence).Single();
             fixture.Created.Add(unit);
@@ -313,10 +323,38 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static UnitEntityData CastExpandedSummoningQuietUnit(
             ExpandedSummoningCorrectionFixture fixture, string creatureKey)
         {
-            UnitEntityData unit = CastExpandedSummoningOwnTier(fixture, creatureKey);
+            return CastExpandedSummoningQuietUnit(fixture, creatureKey,
+                fixture.Caster);
+        }
+
+        private static UnitEntityData CastExpandedSummoningQuietUnit(
+            ExpandedSummoningCorrectionFixture fixture, string creatureKey,
+            UnitEntityData caster)
+        {
+            UnitEntityData unit = CastExpandedSummoningOwnTier(fixture,
+                creatureKey, caster);
             unit.Descriptor.Stats.HitPoints.BaseValue = 100000;
             SetExpandedSummoningBrainActive(unit, false);
             return unit;
+        }
+
+        private static UnitEntityData[] CastExpandedSummoningQuietUnits(
+            ExpandedSummoningCorrectionFixture fixture, string creatureKey,
+            SummonMultiplicity multiplicity)
+        {
+            UnitEntityData[] units = CastExpandedSummoningVariant(
+                fixture.Blueprints, fixture.Caster,
+                ExpandedSummoningOwnTierVariant(creatureKey, multiplicity),
+                null, fixture.Evidence).ToArray();
+            foreach (UnitEntityData unit in units)
+            {
+                fixture.Created.Add(unit);
+                RemoveExpandedSummoningAppearanceBuffs(unit);
+                unit.Descriptor.Stats.HitPoints.BaseValue = 100000;
+                SetExpandedSummoningBrainActive(unit, false);
+                PlaceExpandedSummoningUnit(unit, unit.Position);
+            }
+            return units;
         }
 
         private static string ExpandedSummoningPlanFullAttack(UnitEntityData attacker,
@@ -624,16 +662,24 @@ namespace KingmakerGunslinger.RuntimeTesting
         private int _rulesLoadingWait;
         private UnitEntityData _rulesTrampler;
         private static readonly string[] RulesTrampleKeys = {
-            "aurochs", "bison", "woolly-rhinoceros", "aurochs"
+            "aurochs", "bison", "woolly-rhinoceros", "aurochs",
+            "aurochs"
         };
         private static readonly string[] RulesTrampleAbilityNames = {
             "KMG_Summoning_Special_Aurochs_Trample",
             "KMG_Summoning_Special_Bison_Trample",
             "KMG_Summoning_Special_WoollyRhinoceros_Trample",
+            "KMG_Summoning_Special_Aurochs_Trample",
             "KMG_Summoning_Special_Aurochs_Trample"
         };
-        private static readonly int[] RulesTrampleSaveDcs = { 17, 20, 23, 17 };
+        private static readonly int[] RulesTrampleSaveDcs = {
+            17, 20, 23, 17, 17
+        };
         private int _rulesTrampleIndex;
+        private UnitEntityData _rulesTrampleTarget;
+        private readonly List<UnitEntityData> _rulesTrampleCaseUnits =
+            new List<UnitEntityData>();
+        private int _rulesTrampleOpportunityBefore;
         private int? _rulesTrampleReflexBefore;
         private UnitUseAbility _rulesTrampleCommand;
         private BlueprintAbility _rulesTrampleAbility;
@@ -679,14 +725,18 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private sealed class ExpandedSummoningTrampleObserver :
             IGlobalRulebookHandler<RuleSavingThrow>,
-            IGlobalRulebookHandler<RuleDealDamage>
+            IGlobalRulebookHandler<RuleDealDamage>,
+            IGlobalRulebookHandler<RuleAttackWithWeapon>
         {
             internal UnitEntityData Caster, Target;
             internal readonly List<RuleSavingThrow> Saves = new List<RuleSavingThrow>();
             internal readonly List<RuleDealDamage> Damage = new List<RuleDealDamage>();
+            internal readonly List<RuleAttackWithWeapon> Opportunities =
+                new List<RuleAttackWithWeapon>();
             internal long ContactRound = -1;
             public void OnEventAboutToTrigger(RuleSavingThrow evt) { }
             public void OnEventAboutToTrigger(RuleDealDamage evt) { }
+            public void OnEventAboutToTrigger(RuleAttackWithWeapon evt) { }
             public void OnEventDidTrigger(RuleSavingThrow evt)
             {
                 if (!ReferenceEquals(evt.Initiator, Target)) return;
@@ -699,6 +749,64 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 if (ReferenceEquals(evt.Initiator, Caster) &&
                     ReferenceEquals(evt.Target, Target)) Damage.Add(evt);
+            }
+            public void OnEventDidTrigger(RuleAttackWithWeapon evt)
+            {
+                if (ReferenceEquals(evt.Initiator, Target) &&
+                    ReferenceEquals(evt.Target, Caster) &&
+                    evt.IsAttackOfOpportunity) Opportunities.Add(evt);
+            }
+        }
+
+        private sealed class ExpandedSummoningTrampleContactResult
+        {
+            internal string Label;
+            internal bool TurnBased;
+            internal bool EnemyAtContact;
+            internal bool SourceUnitExact;
+            internal bool TargetPlayerFaction;
+            internal string TramplerFaction;
+            internal string TargetFaction;
+            internal int OpportunityBefore;
+            internal int OpportunityAfter;
+            internal int TargetDamageBefore;
+            internal int TargetDamageAfter;
+            internal int TramplerHpBefore;
+            internal int TramplerHpAfter;
+            internal bool NativeOpportunityBefore;
+            internal string NativeOpportunityState;
+            internal readonly List<RuleAttackWithWeapon> Opportunities =
+                new List<RuleAttackWithWeapon>();
+            internal readonly List<RuleSavingThrow> Saves =
+                new List<RuleSavingThrow>();
+            internal readonly List<RuleDealDamage> Damage =
+                new List<RuleDealDamage>();
+
+            internal string Describe()
+            {
+                return "label=" + Label + ";turnBased=" + TurnBased +
+                    ";enemy=" + EnemyAtContact + ";sourceUnitExact=" +
+                    SourceUnitExact + ";targetPlayerFaction=" +
+                    TargetPlayerFaction + ";factions=" +
+                    TramplerFaction + "->" + TargetFaction +
+                    ";aooResource=" + OpportunityBefore + "->" +
+                    OpportunityAfter + ";aoos=" + string.Join("|",
+                        Opportunities.Select(value => "penalty=" +
+                            value.AttackBonusPenalty + ",roll=" +
+                            (value.AttackRoll == null ? -1 :
+                                (int)value.AttackRoll.Roll) + ",hit=" +
+                            (value.AttackRoll != null &&
+                                value.AttackRoll.IsHit)).ToArray()) +
+                    ";saves=" + string.Join("|", Saves.Select(value =>
+                        "dc=" + value.DifficultyClass + ",passed=" +
+                        value.IsPassed).ToArray()) + ";damage=" +
+                    string.Join("|", Damage.Select(value => "amount=" +
+                        value.Damage + ",half=" +
+                        value.HalfBecauseSavingThrow).ToArray()) +
+                    ";targetDamage=" + TargetDamageBefore + "->" +
+                    TargetDamageAfter + ";tramplerHp=" + TramplerHpBefore +
+                    "->" + TramplerHpAfter + ";nativeEligibleBefore=" +
+                    NativeOpportunityBefore + ";" + NativeOpportunityState;
             }
         }
 
@@ -778,6 +886,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "expanded-summoning-sprint11-registered-rhino-charge",
                         "the hidden Rhinoceros and Woolly Rhinoceros each own one charge feature; ordinary gore is 2d6+9 and 2d8+13, first marked charge is 4d6+12 and 4d8+18, follow-up, opportunity and post-marker attacks return to ordinary damage; Bison's Power Attack adds +2 without granting charge dice, and removing that feat restores printed 2d6+12 on a charge",
                         detail, ok, "own-tier disposable summons with registered Rhino feature facts and Bison's native gore; RuleCalculateWeaponStats on first charge, ordinary, follow-up, opportunity and marker removal"));
+                    stage = "trample-response-matrix";
+                    _rulesSteps.Add("reset:trampleResponses=" +
+                        ResetExpandedSummoningHostile(_rulesFixture));
+                    ok = ExerciseExpandedSummoningTrampleResponseMatrix(
+                        out detail);
+                    _rulesCases.Add(Assertion(
+                        "expanded-summoning-sprint11-trample-response-matrix",
+                        "all RTWP and turn-based automatic-AoO/Reflex response cases pass and restore combat mode, time, party membership and every disposable unit",
+                        detail, ok,
+                        "registered contact ActionList on direct and quantity summons with real native rules and exact restoration"));
                     stage = "mouth-ownership";
                     _rulesSteps.Add("reset:mouths=" + ResetExpandedSummoningHostile(_rulesFixture));
                     ok = ExerciseExpandedSummoningMouthOwnership(_rulesFixture, out detail);
@@ -3967,10 +4085,503 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private const int ExpandedSummoningCommandFrames = 600;
+
+        private ExpandedSummoningTrampleContactResult
+            RunExpandedSummoningTrampleContact(UnitEntityData trampler,
+                UnitEntityData target, string label, int naturalRoll)
+        {
+            BlueprintAbility ability = _rulesFixture.Blueprints
+                .OfType<BlueprintAbility>().Single(value =>
+                    RulesTrampleAbilityNames.Contains(value.name) &&
+                    trampler.Descriptor.Abilities.GetAbility(value) != null);
+            var overrun = ability.ComponentsArray.OfType<
+                Kingmaker.UnitLogic.Abilities.Components
+                    .AbilityCustomOverrun>().Single();
+            ContextActionUngulateTrample contact = overrun.Actions.Actions
+                .OfType<ContextActionUngulateTrample>().Single();
+            var observer = new ExpandedSummoningTrampleObserver {
+                Caster = trampler, Target = target
+            };
+            var result = new ExpandedSummoningTrampleContactResult {
+                Label = label,
+                TurnBased = TurnBased.Controllers.CombatController
+                    .IsInTurnBasedCombat(),
+                EnemyAtContact = target.IsEnemy(trampler),
+                SourceUnitExact = ReferenceEquals(contact.SourceUnit,
+                    trampler.Blueprint),
+                TargetPlayerFaction = target.IsPlayerFaction,
+                TramplerFaction = trampler.Faction == null ? "<none>" :
+                    trampler.Faction.name,
+                TargetFaction = target.Faction == null ? "<none>" :
+                    target.Faction.name,
+                OpportunityBefore = target.CombatState
+                    .AttackOfOpportunityCount,
+                TargetDamageBefore = target.Descriptor.Damage,
+                TramplerHpBefore = trampler.HPLeft
+            };
+            int nativeRemaining;
+            result.NativeOpportunityBefore = BodyguardActionEconomyAccess
+                .CanSpendAttackOfOpportunity(target, trampler,
+                    out nativeRemaining);
+            result.NativeOpportunityState = BodyguardActionEconomyAccess
+                .DescribeAttackOfOpportunityState(target, trampler) +
+                ";nativeRemaining=" + nativeRemaining +
+                ";targetInState=" + target.IsInState +
+                ";tramplerInState=" + trampler.IsInState;
+            EventBus.Subscribe(observer);
+            try
+            {
+                UnityEngine.Random.InitState(FindNativeD20Seed(naturalRoll));
+                var targetWrapper = new TargetWrapper(target);
+                var context = new MechanicsContext(trampler,
+                    trampler.Descriptor, ability, null, targetWrapper);
+                using (context.GetDataScope(targetWrapper))
+                    overrun.Actions.Run();
+            }
+            finally
+            { EventBus.Unsubscribe(observer); }
+            result.OpportunityAfter = target.CombatState
+                .AttackOfOpportunityCount;
+            result.TargetDamageAfter = target.Descriptor.Damage;
+            result.TramplerHpAfter = trampler.HPLeft;
+            result.Opportunities.AddRange(observer.Opportunities);
+            result.Saves.AddRange(observer.Saves);
+            result.Damage.AddRange(observer.Damage);
+            return result;
+        }
+
+        private static void PrepareExpandedSummoningTrampleResponsePair(
+            ExpandedSummoningCorrectionFixture fixture,
+            UnitEntityData trampler, UnitEntityData defender,
+            int opportunities, float distance, bool resetTrampler = true,
+            bool repositionTrampler = true)
+        {
+            if (!defender.IsEnemy(trampler) || !trampler.IsEnemy(defender))
+                throw new InvalidOperationException(
+                    "The native summon groups do not classify the Trample pair as mutually hostile: " +
+                    (trampler.Faction == null ? "<none>" : trampler.Faction.name) +
+                    "->" + (defender.Faction == null ? "<none>" :
+                        defender.Faction.name) + ".");
+            defender.Descriptor.State.Size = Size.Medium;
+            Vector3 centre = fixture.Caster.Position + Vector3.right * 4f;
+            if (repositionTrampler)
+                PlaceExpandedSummoningUnit(trampler, centre);
+            else
+                centre = trampler.Position;
+            PlaceExpandedSummoningUnit(defender,
+                centre + Vector3.forward * distance);
+            defender.Descriptor.Damage = 0;
+            if (resetTrampler) trampler.Descriptor.Damage = 0;
+            defender.CombatState.OnNewRound();
+            defender.CombatState.AttackOfOpportunityCount = opportunities;
+            defender.CombatState.PreventAttacksOfOpporunityNextFrame = false;
+            // Direct contact cases translocate both actors and then invoke the
+            // registered action synchronously. Clear only that placement-frame
+            // suppression on the trampler so the sample represents the later
+            // settled contact delivered by native overrun movement.
+            trampler.CombatState.PreventAttacksOfOpporunityNextFrame = false;
+            defender.LastMoveTime = Game.Instance.TimeController.GameTime -
+                TimeSpan.FromSeconds(1d);
+            defender.PreviousPosition = defender.Position;
+            // Fresh player- and hostile-owned summon groups establish the
+            // relationship. Rebuild only this pair's native memory entries so
+            // the AoO simulation and the contact action see the same enemies.
+            trampler.Memory.Remove(defender);
+            trampler.Memory.Add(defender);
+            defender.Memory.Remove(trampler);
+            defender.Memory.Add(trampler);
+        }
+
+        /// <summary>
+        /// Runs the exact registered contact action on disposable summons. The
+        /// native overrun phases below separately prove path delivery; this
+        /// matrix isolates every owner-ordered AoO/Reflex discriminator so a
+        /// failed case names its actual rule, resource and mode evidence.
+        /// </summary>
+        private bool ExerciseExpandedSummoningTrampleResponseMatrix(
+            out string detail)
+        {
+            var owned = new List<UnitEntityData>();
+            var results = new List<ExpandedSummoningTrampleContactResult>();
+            var assertions = new List<bool>();
+            bool settingBefore = SettingsRoot.Instance.EnableTurnBasedMode
+                .CurrentValue;
+            bool pauseBefore = Game.Instance.IsPaused;
+            TimeSpan timeBefore = Game.Instance.Player.GameTime;
+            bool partyAdded = false;
+            bool turnCombatEntered = false;
+            var joined = new List<UnitEntityData>();
+            UnitEntityData unableDefender = null;
+            UnitEntityData playerDefender = _rulesFixture.Caster;
+            int playerDefenderReflexBefore = playerDefender.Descriptor.Stats
+                .GetStat(StatType.SaveReflex).BaseValue;
+            Size playerDefenderSizeBefore = playerDefender.Descriptor.State.Size;
+            int playerDefenderDamageBefore = playerDefender.Descriptor.Damage;
+            try
+            {
+                if (TurnBased.Controllers.CombatController
+                        .IsInTurnBasedCombat())
+                {
+                    SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue =
+                        false;
+                    Game.Instance.TurnBasedCombatController.Activate();
+                }
+                Game.Instance.IsPaused = false;
+
+                UnitEntityData hostileDefender =
+                    CastExpandedSummoningQuietUnit(_rulesFixture, "wolf",
+                        _rulesFixture.Hostile);
+                UnitEntityData laterDefender =
+                    CastExpandedSummoningQuietUnit(_rulesFixture, "wolf",
+                        _rulesFixture.Hostile);
+                owned.AddRange(new[] { hostileDefender, laterDefender });
+
+                UnitEntityData spentTrampler =
+                    CastExpandedSummoningQuietUnit(_rulesFixture, "aurochs");
+                owned.Add(spentTrampler);
+                PrepareExpandedSummoningTrampleResponsePair(_rulesFixture,
+                    spentTrampler, hostileDefender, 0, 1f);
+                SetExactProperty(hostileDefender.Descriptor.Stats.GetStat(
+                    StatType.SaveReflex), "BaseValue", -100);
+                ExpandedSummoningTrampleContactResult spent =
+                    RunExpandedSummoningTrampleContact(spentTrampler,
+                        hostileDefender, "rtwp-spent-reflex-fail", 10);
+                results.Add(spent);
+                bool spentOk = !spent.TurnBased &&
+                    spent.Opportunities.Count == 0 && spent.Saves.Count == 1 &&
+                    !spent.Saves[0].IsPassed && spent.Damage.Count == 1 &&
+                    !spent.Damage[0].HalfBecauseSavingThrow &&
+                    spent.OpportunityBefore == 0 &&
+                    spent.OpportunityAfter == 0;
+                assertions.Add(spentOk);
+                _rulesCases.Add(Assertion(
+                    "expanded-summoning-sprint11-trample-spent-reflex",
+                    "in RTWP a defender with no remaining AoO makes no attack, fails its forced Reflex save, and takes one full trample packet",
+                    spent.Describe(), spentOk,
+                    "registered contact ActionList; native AoO count, save and damage observers"));
+
+                UnitEntityData unableTrampler =
+                    CastExpandedSummoningQuietUnit(_rulesFixture, "aurochs");
+                owned.Add(unableTrampler);
+                unableDefender = hostileDefender;
+                PrepareExpandedSummoningTrampleResponsePair(_rulesFixture,
+                    unableTrampler, unableDefender, 1, 1f);
+                SetExactProperty(unableDefender.Descriptor.Stats.GetStat(
+                    StatType.SaveReflex), "BaseValue", 100);
+                unableDefender.Descriptor.State.AddCondition(
+                    UnitCondition.CantAct, null);
+                ExpandedSummoningTrampleContactResult unable =
+                    RunExpandedSummoningTrampleContact(unableTrampler,
+                        unableDefender, "rtwp-unable-reflex-pass", 10);
+                unableDefender.Descriptor.State.RemoveCondition(
+                    UnitCondition.CantAct);
+                unableDefender = null;
+                results.Add(unable);
+                bool unableOk = !unable.TurnBased &&
+                    unable.Opportunities.Count == 0 &&
+                    unable.OpportunityBefore == 1 &&
+                    unable.OpportunityAfter == 1 && unable.Saves.Count == 1 &&
+                    unable.Saves[0].IsPassed && unable.Damage.Count == 1 &&
+                    unable.Damage[0].HalfBecauseSavingThrow;
+                assertions.Add(unableOk);
+                _rulesCases.Add(Assertion(
+                    "expanded-summoning-sprint11-trample-unable-reflex",
+                    "an unable defender preserves its AoO, makes no attack, succeeds at Reflex and takes one halved trample packet",
+                    unable.Describe(), unableOk,
+                    "live CantAct condition plus registered contact ActionList"));
+
+                UnitEntityData farTrampler =
+                    CastExpandedSummoningQuietUnit(_rulesFixture, "aurochs");
+                owned.Add(farTrampler);
+                PrepareExpandedSummoningTrampleResponsePair(_rulesFixture,
+                    farTrampler, hostileDefender, 1, 12f);
+                SetExactProperty(hostileDefender.Descriptor.Stats.GetStat(
+                    StatType.SaveReflex), "BaseValue", -100);
+                ExpandedSummoningTrampleContactResult far =
+                    RunExpandedSummoningTrampleContact(farTrampler,
+                        hostileDefender, "rtwp-nonthreatening-reflex", 10);
+                results.Add(far);
+                bool farOk = !far.TurnBased &&
+                    far.Opportunities.Count == 0 &&
+                    far.OpportunityBefore == 1 && far.OpportunityAfter == 1 &&
+                    far.Saves.Count == 1 && far.Damage.Count == 1;
+                assertions.Add(farOk);
+                _rulesCases.Add(Assertion(
+                    "expanded-summoning-sprint11-trample-nonthreatening-reflex",
+                    "a melee attack that cannot threaten the trampler consumes no AoO and uses Reflex",
+                    far.Describe(), farOk,
+                    "native threat hand and UnitEngagementExtension.IsReach at a measured nonthreatening distance"));
+
+                UnitEntityData rtwpTrampler =
+                    CastExpandedSummoningQuietUnit(_rulesFixture, "aurochs");
+                owned.Add(rtwpTrampler);
+                foreach (UnitEntityData unit in new[] {
+                    hostileDefender, rtwpTrampler })
+                {
+                    if (unit.CombatState.IsInCombat) continue;
+                    unit.CombatState.JoinCombat();
+                    joined.Add(unit);
+                }
+                PrepareExpandedSummoningTrampleResponsePair(_rulesFixture,
+                    rtwpTrampler, hostileDefender, 1, 1f);
+                hostileDefender.Descriptor.Stats.BaseAttackBonus.BaseValue =
+                    100;
+                ExpandedSummoningTrampleContactResult rtwp =
+                    RunExpandedSummoningTrampleContact(rtwpTrampler,
+                        hostileDefender, "rtwp-aoo-hit", 10);
+                results.Add(rtwp);
+                bool rtwpOk = !rtwp.TurnBased &&
+                    rtwp.Opportunities.Count == 1 &&
+                    rtwp.Opportunities[0].AttackBonusPenalty == 4 &&
+                    rtwp.Opportunities[0].AttackRoll != null &&
+                    rtwp.Opportunities[0].AttackRoll.IsHit &&
+                    rtwp.OpportunityBefore == 1 &&
+                    rtwp.OpportunityAfter == 0 && rtwp.Saves.Count == 0 &&
+                    rtwp.Damage.Count == 1 &&
+                    !rtwp.Damage[0].HalfBecauseSavingThrow &&
+                    rtwp.TramplerHpAfter < rtwp.TramplerHpBefore &&
+                    rtwp.TramplerHpAfter > 0;
+                assertions.Add(rtwpOk);
+                _rulesCases.Add(Assertion(
+                    "expanded-summoning-sprint11-trample-rtwp-aoo-hit",
+                    "in RTWP one legal melee AoO resolves at -4, spends the ordinary resource, grants no save, and full trample damage follows when the trampler continues",
+                    rtwp.Describe(), rtwpOk,
+                    "direct registered summon plus real RuleAttackWithWeapon, native AoO count and contact ActionList"));
+
+                UnitEntityData hostileTrampler =
+                    CastExpandedSummoningQuietUnit(_rulesFixture, "bison",
+                        _rulesFixture.Hostile);
+                owned.Add(hostileTrampler);
+                if (!Game.Instance.Player.Party.Contains(playerDefender))
+                {
+                    Game.Instance.Player.Party.Add(playerDefender);
+                    partyAdded = true;
+                    Game.Instance.Player.UpdateIsInCombat();
+                }
+                PrepareExpandedSummoningTrampleResponsePair(_rulesFixture,
+                    hostileTrampler, playerDefender, 0, 1f);
+                SetExactProperty(playerDefender.Descriptor.Stats.GetStat(
+                    StatType.SaveReflex), "BaseValue", -100);
+                ExpandedSummoningTrampleContactResult player =
+                    RunExpandedSummoningTrampleContact(hostileTrampler,
+                        playerDefender, "rtwp-player-defender", 10);
+                results.Add(player);
+                bool playerOk = playerDefender.IsPlayerFaction &&
+                    Game.Instance.Player.Party.Contains(playerDefender) &&
+                    playerDefender.IsEnemy(hostileTrampler) &&
+                    player.Opportunities.Count == 0 &&
+                    player.Saves.Count == 1 && player.Damage.Count == 1;
+                assertions.Add(playerOk);
+                _rulesCases.Add(Assertion(
+                    "expanded-summoning-sprint11-trample-player-defender",
+                    "the same automatic response policy applies when a hostile trampler contacts a player-faction defender",
+                    player.Describe() + ";playerFaction=" +
+                        playerDefender.IsPlayerFaction + ";enemy=" +
+                    playerDefender.IsEnemy(hostileTrampler) +
+                        ";partyControlled=" + Game.Instance.Player.Party
+                            .Contains(playerDefender), playerOk,
+                    "hostile-summoned registered Bison contact against the disposable player-faction fixture caster"));
+
+                UnitEntityData[] quantity =
+                    CastExpandedSummoningQuietUnits(_rulesFixture, "aurochs",
+                        SummonMultiplicity.OneD3);
+                owned.AddRange(quantity);
+                if (quantity.Length < 1)
+                    throw new InvalidOperationException(
+                        "The 1d3 Aurochs route produced no live summon.");
+                UnitEntityData missTrampler = quantity[0];
+                UnitEntityData hitTrampler =
+                    CastExpandedSummoningQuietUnit(_rulesFixture, "bison");
+                UnitEntityData lethalTrampler =
+                    CastExpandedSummoningQuietUnit(_rulesFixture, "aurochs");
+                owned.Add(hitTrampler);
+                owned.Add(lethalTrampler);
+                BlueprintFeature combatReflexes = BlueprintBootstrap
+                    .BodyguardFeats.CombatReflexes;
+                foreach (UnitEntityData defender in new[] { hostileDefender,
+                    laterDefender })
+                    if (!defender.Descriptor.HasFact(combatReflexes))
+                        defender.Descriptor.AddFact(combatReflexes);
+
+                if (!Game.Instance.Player.Party.Contains(
+                        _rulesFixture.Caster))
+                {
+                    Game.Instance.Player.Party.Add(_rulesFixture.Caster);
+                    partyAdded = true;
+                }
+                SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = true;
+                Game.Instance.TurnBasedCombatController.Activate();
+                foreach (UnitEntityData unit in new[] {
+                    _rulesFixture.Caster, _rulesFixture.Hostile,
+                    hostileDefender, laterDefender, missTrampler,
+                    hitTrampler, lethalTrampler })
+                {
+                    if (!unit.CombatState.IsInCombat)
+                    {
+                        unit.JoinCombat();
+                        joined.Add(unit);
+                    }
+                }
+                Game.Instance.Player.UpdateIsInCombat();
+                Game.Instance.TurnBasedCombatController
+                    .HandlePartyCombatStateChanged(true);
+                turnCombatEntered = true;
+                if (!TurnBased.Controllers.CombatController
+                        .IsInTurnBasedCombat())
+                    throw new InvalidOperationException(
+                        "The trample response matrix did not enter native turn-based combat.");
+
+                PrepareExpandedSummoningTrampleResponsePair(_rulesFixture,
+                    missTrampler, hostileDefender, 1, 1f);
+                hostileDefender.Descriptor.Stats.BaseAttackBonus.BaseValue =
+                    -100;
+                ExpandedSummoningTrampleContactResult miss =
+                    RunExpandedSummoningTrampleContact(missTrampler,
+                        hostileDefender, "turn-based-quantity-aoo-miss", 10);
+                results.Add(miss);
+                bool missOk = miss.TurnBased && quantity.Length >= 1 &&
+                    miss.Opportunities.Count == 1 &&
+                    miss.Opportunities[0].AttackBonusPenalty == 4 &&
+                    miss.Opportunities[0].AttackRoll != null &&
+                    !miss.Opportunities[0].AttackRoll.IsHit &&
+                    miss.OpportunityBefore == 1 &&
+                    miss.OpportunityAfter == 0 && miss.Saves.Count == 0 &&
+                    miss.Damage.Count == 1 &&
+                    !miss.Damage[0].HalfBecauseSavingThrow;
+                assertions.Add(missOk);
+                _rulesCases.Add(Assertion(
+                    "expanded-summoning-sprint11-trample-turn-based-miss",
+                    "in turn-based mode a quantity-summoned trampler receives exactly one pre-damage AoO at -4; a miss consumes it, grants no save, and full trample damage follows",
+                    miss.Describe() + ";quantity=" + quantity.Length,
+                    missOk,
+                    "1d3 registered summon plus real RuleAttackWithWeapon, native AoO count and contact ActionList"));
+
+                PrepareExpandedSummoningTrampleResponsePair(_rulesFixture,
+                    hitTrampler, hostileDefender, 4, 1f);
+                hostileDefender.Descriptor.Stats.BaseAttackBonus.BaseValue =
+                    100;
+                ExpandedSummoningTrampleContactResult hit =
+                    RunExpandedSummoningTrampleContact(hitTrampler,
+                        hostileDefender,
+                        "turn-based-combat-reflexes-aoo-hit", 10);
+                results.Add(hit);
+                bool hitOk = hit.TurnBased &&
+                    hit.Opportunities.Count == 1 &&
+                    hit.Opportunities[0].AttackBonusPenalty == 4 &&
+                    hit.Opportunities[0].AttackRoll != null &&
+                    hit.Opportunities[0].AttackRoll.IsHit &&
+                    hit.OpportunityBefore == 4 &&
+                    hit.OpportunityAfter == 3 && hit.Saves.Count == 0 &&
+                    hit.Damage.Count == 1 &&
+                    !hit.Damage[0].HalfBecauseSavingThrow &&
+                    hit.TramplerHpAfter < hit.TramplerHpBefore &&
+                    hit.TramplerHpAfter > 0;
+                assertions.Add(hitOk);
+                _rulesCases.Add(Assertion(
+                    "expanded-summoning-sprint11-trample-combat-reflexes-hit",
+                    "Combat Reflexes still permits exactly one -4 response; a nonlethal hit spends one of four AoOs, grants no save, and full trample damage follows",
+                    hit.Describe(), hitOk,
+                    "native Combat Reflexes fact with four live AoO resources"));
+
+                PrepareExpandedSummoningTrampleResponsePair(_rulesFixture,
+                    lethalTrampler, hostileDefender, 1, 1f);
+                hostileDefender.Descriptor.Stats.BaseAttackBonus.BaseValue =
+                    100;
+                lethalTrampler.Descriptor.Damage += Math.Max(0,
+                    lethalTrampler.HPLeft - 1);
+                ExpandedSummoningTrampleContactResult lethal =
+                    RunExpandedSummoningTrampleContact(lethalTrampler,
+                        hostileDefender, "turn-based-lethal-aoo", 10);
+                results.Add(lethal);
+                PrepareExpandedSummoningTrampleResponsePair(_rulesFixture,
+                    lethalTrampler, laterDefender, 1, 1f, false, false);
+                int laterDamageBefore = laterDefender.Descriptor.Damage;
+                ExpandedSummoningTrampleContactResult later =
+                    RunExpandedSummoningTrampleContact(lethalTrampler,
+                        laterDefender,
+                        "turn-based-after-stopping-aoo", 10);
+                results.Add(later);
+                bool stopped = lethalTrampler.Destroyed ||
+                    lethalTrampler.Descriptor.State.IsDead ||
+                    !lethalTrampler.Descriptor.State.IsConscious ||
+                    !lethalTrampler.Descriptor.State.CanAct ||
+                    !lethalTrampler.Descriptor.State.CanMove ||
+                    lethal.TramplerHpAfter <= 0;
+                bool lethalOk = lethal.TurnBased &&
+                    lethal.Opportunities.Count == 1 &&
+                    lethal.Opportunities[0].AttackRoll != null &&
+                    lethal.Opportunities[0].AttackRoll.IsHit && stopped &&
+                    lethal.Saves.Count == 0 && lethal.Damage.Count == 0 &&
+                    lethal.TargetDamageAfter == lethal.TargetDamageBefore &&
+                    later.Opportunities.Count == 0 &&
+                    later.Saves.Count == 0 && later.Damage.Count == 0 &&
+                    laterDefender.Descriptor.Damage == laterDamageBefore;
+                assertions.Add(lethalOk);
+                _rulesCases.Add(Assertion(
+                    "expanded-summoning-sprint11-trample-lethal-aoo-stops",
+                    "a lethal AoO resolves first, prevents that contact's trample damage and suppresses every later contact in the round",
+                    lethal.Describe() + ";stopped=" + stopped +
+                        ";later={" + later.Describe() + "}", lethalOk,
+                    "one-hit-point direct summon followed by a distinct live target on the same round ledger"));
+            }
+            finally
+            {
+                if (unableDefender != null && unableDefender.Descriptor != null)
+                    unableDefender.Descriptor.State.RemoveCondition(
+                        UnitCondition.CantAct);
+                if (turnCombatEntered)
+                {
+                    try
+                    {
+                        Game.Instance.TurnBasedCombatController
+                            .HandlePartyCombatStateChanged(false);
+                    }
+                    catch { }
+                }
+                foreach (UnitEntityData unit in joined.AsEnumerable().Reverse())
+                {
+                    try
+                    {
+                        if (unit != null && unit.CombatState != null &&
+                            unit.CombatState.IsInCombat) unit.LeaveCombat();
+                    }
+                    catch { }
+                }
+                if (partyAdded)
+                    Game.Instance.Player.Party.Remove(_rulesFixture.Caster);
+                SetExactProperty(playerDefender.Descriptor.Stats.GetStat(
+                    StatType.SaveReflex), "BaseValue",
+                    playerDefenderReflexBefore);
+                playerDefender.Descriptor.State.Size =
+                    playerDefenderSizeBefore;
+                playerDefender.Descriptor.Damage =
+                    playerDefenderDamageBefore;
+                Game.Instance.Player.UpdateIsInCombat();
+                SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue =
+                    settingBefore;
+                Game.Instance.TurnBasedCombatController.Activate();
+                Game.Instance.Player.GameTime = timeBefore;
+                Game.Instance.IsPaused = pauseBefore;
+                DisposeExpandedSummoningUnits(_rulesFixture.Created,
+                    owned.Distinct().ToArray());
+            }
+            detail = string.Join("||", results.Select(value =>
+                value.Describe()).ToArray());
+            return assertions.Count == 8 && assertions.All(value => value) &&
+                SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue ==
+                    settingBefore && Game.Instance.IsPaused == pauseBefore &&
+                Game.Instance.Player.GameTime == timeBefore &&
+                (!partyAdded || !Game.Instance.Player.Party.Contains(
+                    _rulesFixture.Caster));
+        }
+
         private void BeginExpandedSummoningTramplePath()
         {
             string creatureKey = RulesTrampleKeys[_rulesTrampleIndex];
             bool halfCase = _rulesTrampleIndex == 3;
+            bool opportunityCase = _rulesTrampleIndex == 4;
+            _rulesTrampleCaseUnits.Clear();
+            _rulesTrampleOpportunityBefore = 0;
             _rulesTrampleReplayStarted = false;
             _rulesTrampleReplaySettleFrames = 0;
             _rulesTrampleAbility = null;
@@ -3985,6 +4596,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             _rulesTramplePauseRestored = false;
             _rulesTrampleGameTimeRestored = false;
             UnitEntityData hostile = _rulesFixture.Hostile;
+            if (opportunityCase)
+            {
+                hostile = CastExpandedSummoningQuietUnit(_rulesFixture,
+                    "wolf", _rulesFixture.Hostile);
+                _rulesTrampleCaseUnits.Add(hostile);
+                if (!hostile.Descriptor.HasFact(BlueprintBootstrap
+                        .BodyguardFeats.CombatReflexes))
+                    hostile.Descriptor.AddFact(BlueprintBootstrap
+                        .BodyguardFeats.CombatReflexes);
+                hostile.Descriptor.Stats.BaseAttackBonus.BaseValue = -100;
+            }
+            _rulesTrampleTarget = hostile;
             hostile.Descriptor.State.Size = Size.Medium;
             if (halfCase)
             {
@@ -3993,7 +4616,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SetExactProperty(hostile.Descriptor.Stats.GetStat(
                     StatType.SaveReflex), "BaseValue", 100);
             }
-            _rulesTrampler = CastExpandedSummoningQuietUnit(_rulesFixture, creatureKey);
+            if (opportunityCase)
+            {
+                UnitEntityData[] quantity =
+                    CastExpandedSummoningQuietUnits(_rulesFixture,
+                        creatureKey, SummonMultiplicity.OneD3);
+                if (quantity.Length == 0)
+                    throw new InvalidOperationException(
+                        "The native-path 1d3 Aurochs route produced no summon.");
+                _rulesTrampleCaseUnits.AddRange(quantity);
+                _rulesTrampler = quantity[0];
+            }
+            else
+            {
+                _rulesTrampler = CastExpandedSummoningQuietUnit(
+                    _rulesFixture, creatureKey);
+                _rulesTrampleCaseUnits.Add(_rulesTrampler);
+            }
             if (_rulesTrampleIndex == 0 || _rulesTrampleIndex == 2)
                 CaptureExpandedSummoningUngulateDonorRig(_rulesTrampler,
                     _rulesTrampleIndex == 0 ? "horse" : "mastodon");
@@ -4077,7 +4716,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         Vector3 midpoint = (start + end) * 0.5f;
                         PlaceExpandedSummoningUnit(hostile, midpoint);
                         _rulesTrampleRoute = creatureKey +
-                            (halfCase ? "-reflex-half" : "") +
+                            (halfCase ? "-reflex-half" :
+                                opportunityCase ?
+                                    "-quantity-combat-reflexes" : "") +
                             "/centre" + centreIndex +
                             "/dir" + index +
                             ";start=" + start + ";hostile=" + hostile.Position +
@@ -4093,6 +4734,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 lineBlocked + ";samples=" + string.Join("|", attempts.ToArray()));
             if (destination == null)
                 throw new InvalidOperationException("No valid trample route across the hostile.");
+            if (opportunityCase)
+            {
+                hostile.CombatState.OnNewRound();
+                hostile.CombatState.AttackOfOpportunityCount = 4;
+                hostile.CombatState.PreventAttacksOfOpporunityNextFrame =
+                    false;
+                hostile.LastMoveTime = Game.Instance.TimeController.GameTime -
+                    TimeSpan.FromSeconds(1d);
+                hostile.PreviousPosition = hostile.Position;
+                if (!_rulesTrampler.Memory.Contains(hostile))
+                    _rulesTrampler.Memory.Add(hostile);
+                if (!hostile.Memory.Contains(_rulesTrampler))
+                    hostile.Memory.Add(_rulesTrampler);
+                _rulesTrampleOpportunityBefore = hostile.CombatState
+                    .AttackOfOpportunityCount;
+            }
             _rulesTrampleAbility = ability;
             _rulesTrampleDestination = destination;
             _rulesTrampleDamageBefore = hostile.Descriptor.Damage;
@@ -4279,7 +4936,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             string creatureKey = RulesTrampleKeys[_rulesTrampleIndex];
             int expectedDc = RulesTrampleSaveDcs[_rulesTrampleIndex];
             bool halfCase = _rulesTrampleIndex == 3;
-            UnitEntityData hostile = _rulesFixture.Hostile;
+            bool opportunityCase = _rulesTrampleIndex == 4;
+            UnitEntityData hostile = _rulesTrampleTarget;
             int damage = hostile.Descriptor.Damage - _rulesTrampleDamageBefore;
             int allyDamage = _rulesFixture.Caster.Descriptor.Damage -
                 _rulesTrampleCasterDamageBefore;
@@ -4309,21 +4967,61 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";turnBased=" + _rulesTrampleTurnBased +
                 ";saves=" + saves + ";dealt=" + dealt + ";hostileDamage=" + damage +
                 ";allyDamage=" + allyDamage;
-            _rulesCases.Add(Assertion("expanded-summoning-sprint11-" +
-                creatureKey + (halfCase ? "-trample-reflex-half" :
-                    "-trample-path-contact"),
-                "the hidden " + creatureKey + " follows a native trample path through a smaller hostile, completes, makes one DC " + expectedDc + " Reflex save and one bludgeoning damage event, and does not injure the allied caster",
-                detail, ended && moved > 3f && damage > 0 && allyDamage == 0 &&
-                    _rulesTrampleObserver != null &&
-                    _rulesTrampleObserver.Saves.Count == 1 &&
-                    _rulesTrampleObserver.Saves[0].DifficultyClass == expectedDc &&
+            if (opportunityCase)
+            {
+                int opportunityAfter = hostile.CombatState
+                    .AttackOfOpportunityCount;
+                string opportunities = string.Join("|",
+                    _rulesTrampleObserver.Opportunities.Select(value =>
+                        "penalty=" + value.AttackBonusPenalty + ",roll=" +
+                        (value.AttackRoll == null ? -1 :
+                            (int)value.AttackRoll.Roll) + ",hit=" +
+                        (value.AttackRoll != null &&
+                            value.AttackRoll.IsHit)).ToArray());
+                bool opportunityValid = ended && moved > 3f && damage > 0 &&
+                    allyDamage == 0 && _rulesTrampleObserver != null &&
+                    _rulesTrampleObserver.Opportunities.Count == 1 &&
+                    _rulesTrampleObserver.Opportunities[0]
+                        .AttackBonusPenalty == 4 &&
+                    _rulesTrampleObserver.Opportunities[0].AttackRoll != null &&
+                    _rulesTrampleOpportunityBefore == 4 &&
+                    opportunityAfter == 3 &&
+                    _rulesTrampleObserver.Saves.Count == 0 &&
                     _rulesTrampleObserver.Damage.Count == 1 &&
-                    _rulesTrampleObserver.Damage[0].Damage == damage &&
-                    _rulesTrampleObserver.Damage[0].HalfBecauseSavingThrow ==
-                        _rulesTrampleObserver.Saves[0].IsPassed &&
-                    (!halfCase || (_rulesTrampleObserver.Saves[0].IsPassed &&
-                        damage > 0 && damage <= 10)),
-                "guarded loaded-area queued ability command; native path contact, save and damage observers"));
+                    !_rulesTrampleObserver.Damage[0]
+                        .HalfBecauseSavingThrow;
+                _rulesCases.Add(Assertion(
+                    "expanded-summoning-sprint11-aurochs-trample-native-path-aoo",
+                    "a quantity-summoned Aurochs follows its RTWP path through a Combat Reflexes defender, receives exactly one -4 AoO before contact damage, consumes one of four resources, grants no save and produces no ordinary movement duplicate",
+                    detail + ";aooResource=" +
+                        _rulesTrampleOpportunityBefore + "->" +
+                        opportunityAfter + ";opportunities=" + opportunities,
+                    opportunityValid,
+                    "guarded loaded-area queued ability command; native overrun path plus attack, save and damage observers"));
+            }
+            else
+            {
+                _rulesCases.Add(Assertion("expanded-summoning-sprint11-" +
+                    creatureKey + (halfCase ? "-trample-reflex-half" :
+                        "-trample-path-contact"),
+                    "the hidden " + creatureKey + " follows a native trample path through a smaller hostile, completes, makes one DC " + expectedDc + " Reflex save and one bludgeoning damage event, and does not injure the allied caster",
+                    detail, ended && moved > 3f && damage > 0 &&
+                        allyDamage == 0 &&
+                        _rulesTrampleObserver != null &&
+                        _rulesTrampleObserver.Opportunities.Count == 0 &&
+                        _rulesTrampleObserver.Saves.Count == 1 &&
+                        _rulesTrampleObserver.Saves[0].DifficultyClass ==
+                            expectedDc &&
+                        _rulesTrampleObserver.Damage.Count == 1 &&
+                        _rulesTrampleObserver.Damage[0].Damage == damage &&
+                        _rulesTrampleObserver.Damage[0]
+                            .HalfBecauseSavingThrow ==
+                            _rulesTrampleObserver.Saves[0].IsPassed &&
+                        (!halfCase ||
+                            (_rulesTrampleObserver.Saves[0].IsPassed &&
+                                damage > 0 && damage <= 10)),
+                    "guarded loaded-area queued ability command; native path contact, save and damage observers"));
+            }
             if (halfCase)
             {
                 long finalRound = Game.Instance.Player.GameTime.Ticks /
@@ -4382,8 +5080,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "the disposable trample fixture restores the exact awake-unit snapshot",
                 "restored=" + awakeRestored, awakeRestored,
                 "exact AwakeUnits snapshot before and after the native movement command"));
-            DisposeExpandedSummoningUnits(_rulesFixture.Created, new[] { _rulesTrampler });
+            DisposeExpandedSummoningUnits(_rulesFixture.Created,
+                _rulesTrampleCaseUnits.Distinct().ToArray());
+            _rulesTrampleCaseUnits.Clear();
             _rulesTrampler = null;
+            _rulesTrampleTarget = null;
         }
 
         private UnitEntityData[] _rulesAwakeSnapshot;

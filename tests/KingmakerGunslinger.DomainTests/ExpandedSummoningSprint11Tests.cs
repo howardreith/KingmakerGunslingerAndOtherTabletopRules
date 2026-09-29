@@ -175,10 +175,68 @@ namespace KingmakerGunslinger.DomainTests
                 builder.Contains("UngulateTramplePathChecker") &&
                 action.Contains("target.IsEnemy(caster)") &&
                 action.Contains("ledger.TryClaim(round, target.UniqueId)") &&
+                action.Contains("CanSpendAttackOfOpportunity(defender, trampler") &&
+                action.Contains("TrySpendAttackOfOpportunity(defender, trampler") &&
+                action.Contains("new RuleAttackWithWeapon(defender, trampler,") &&
+                action.Contains("hand.Weapon, 4)") &&
+                action.Contains("IsAttackOfOpportunity = true") &&
+                action.Contains("trampler.HPLeft > 0") &&
+                action.Contains("ledger.Halt(round)") &&
+                action.Contains("SuppressDuplicateMovementOpportunityAttack") &&
                 action.Contains("SavingThrowType.Reflex") &&
-                action.Contains("damage.Half = save.IsPassed;") &&
+                action.Contains("damage.Half = half;") &&
                 action.Contains("ReferenceEquals(caster.Blueprint, SourceUnit)"),
-                "Native multi-contact movement must use a full-round, speed-bound action with exact owner, enemy, size, per-round, Reflex and half-damage gates.");
+                "Native multi-contact movement must use a full-round, speed-bound action with exact owner, enemy, size, per-round, exclusive automatic-AoO/Reflex, stopping and duplicate-suppression gates.");
+            Assertions.True(builder.Contains("automatically makes") &&
+                builder.Contains(
+                    "one at -4 before damage and receives no save") &&
+                builder.Contains("An attack that stops the trampler") &&
+                builder.Contains("prevents that contact's damage"),
+                "The hidden tooltip must disclose the Kingmaker automatic-AoO adaptation.");
+            string fixture = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "RuntimeTesting",
+                "RuntimeTestRunner.ExpandedSummoningCorrection.cs"));
+            foreach (string token in new[] {
+                "ExerciseExpandedSummoningTrampleResponseMatrix",
+                "overrun.Actions.Run();",
+                "trample-spent-reflex",
+                "trample-unable-reflex",
+                "trample-nonthreatening-reflex",
+                "trample-rtwp-aoo-hit",
+                "trample-player-defender",
+                "trample-turn-based-miss",
+                "trample-combat-reflexes-hit",
+                "trample-lethal-aoo-stops",
+                "trample-native-path-aoo",
+                "SummonMultiplicity.OneD3",
+                "HandlePartyCombatStateChanged(true)",
+                "DescribeAttackOfOpportunityState(target, trampler)",
+                "trampler.CombatState.PreventAttacksOfOpporunityNextFrame = false;",
+                "unit.CombatState.JoinCombat();"
+            })
+                Assertions.True(fixture.Contains(token),
+                    "The guarded live trample discrimination is missing " +
+                    token + ".");
+            int responseStart = fixture.IndexOf(
+                "private static void PrepareExpandedSummoningTrampleResponsePair(",
+                StringComparison.Ordinal);
+            int pathStart = responseStart < 0 ? -1 : fixture.IndexOf(
+                "private void BeginExpandedSummoningTramplePath()",
+                responseStart, StringComparison.Ordinal);
+            Assertions.True(responseStart >= 0 && pathStart > responseStart,
+                "The guarded response-matrix source boundary must remain inspectable.");
+            string responseFixture = fixture.Substring(responseStart,
+                pathStart - responseStart);
+            Assertions.True(responseFixture.Contains(
+                    "!defender.IsEnemy(trampler) || !trampler.IsEnemy(defender)") &&
+                responseFixture.Contains(
+                    "CastExpandedSummoningQuietUnit(_rulesFixture, \"wolf\",") &&
+                responseFixture.Contains("_rulesFixture.Hostile"),
+                "The response matrix must use fresh native hostile summon groups and prove mutual hostility.");
+            Assertions.False(responseFixture.Contains("SwitchFactions(") ||
+                responseFixture.Contains("UpdateAttackFactionsCache()"),
+                "The response matrix must not rewrite a shared summon group's faction cache and contaminate later live cases.");
             string inventory = File.ReadAllText(Path.Combine(
                 Environment.CurrentDirectory, "src", "KingmakerGunslinger",
                 "RuntimeTesting", "RuntimeTestRunner.cs"));
@@ -271,6 +329,31 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(aurochs.CanTrample(4, 5, 3) ||
                 rhino.CanTrample(4, 3, 0),
                 "Stampede does not reach larger creatures or grant Rhino trample.");
+            Assertions.True(TrampleTargetResponsePolicy
+                    .HasLegalOpportunityAttack(true, true, true, true, true),
+                "A fully legal contacted defender takes the automatic AoO branch.");
+            foreach (bool[] unavailable in new[] {
+                new[] { false, true, true, true, true },
+                new[] { true, false, true, true, true },
+                new[] { true, true, false, true, true },
+                new[] { true, true, true, false, true },
+                new[] { true, true, true, true, false }
+            })
+                Assertions.False(TrampleTargetResponsePolicy
+                        .HasLegalOpportunityAttack(unavailable[0],
+                            unavailable[1], unavailable[2], unavailable[3],
+                            unavailable[4]),
+                    "Any unavailable, unable, invalid, nonthreatening or native-forbidden response uses Reflex.");
+            Assertions.True(TrampleTargetResponsePolicy.Resolve(true, true,
+                    true) == TrampleTargetResponseDecision
+                        .OpportunityAttackContinues &&
+                TrampleTargetResponsePolicy.Resolve(true, true, false) ==
+                    TrampleTargetResponseDecision.OpportunityAttackStops &&
+                TrampleTargetResponsePolicy.Resolve(true, false, true) ==
+                    TrampleTargetResponseDecision.ReflexSave &&
+                TrampleTargetResponsePolicy.Resolve(false, false, true) ==
+                    TrampleTargetResponseDecision.ReflexSave,
+                "The prequalified response is exclusive: executed AoOs suppress Reflex, failed execution falls back, and stopping prevents contact damage.");
             TrampleRoundLedger ledger = new TrampleRoundLedger();
             Assertions.True(ledger.TryClaim(10, "target-a"),
                 "First contact is eligible.");
@@ -282,6 +365,14 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(ledger.TryClaim(10, "target-c") ||
                 ledger.TryClaim(11, ""),
                 "Time regression or missing target identity fails closed.");
+            Assertions.True(ledger.HasClaim(11, "target-a"),
+                "The exact claimed pair can suppress only its duplicate movement AoO.");
+            ledger.Halt(11);
+            Assertions.True(ledger.IsHalted(11) &&
+                    !ledger.TryClaim(11, "target-c"),
+                "A stopping AoO prevents every later contact in that round.");
+            Assertions.True(ledger.TryClaim(12, "target-c"),
+                "A later combat round clears the stopping marker.");
             ledger.Clear();
             Assertions.True(ledger.TryClaim(10, "target-a"),
                 "Cleanup releases the request-local contact ledger.");
