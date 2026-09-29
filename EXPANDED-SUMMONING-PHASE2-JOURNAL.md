@@ -1106,3 +1106,18 @@ game time and awake units. Wrapper restoration `20260929T0150362127764Z`
 verified the exact original 136-file installation. Repository validation,
 all 1,948 domain tests, clean Release and strict package passed. Continue
 the victim-choice, turn-based, charge, quantity and visual gates.
+
+## Sprint 11: prepared original ungulate icons, 2026-09-29
+
+The four distinct original source paintings were exported at 128 px through
+the established RGBA icon pipeline. The delegated manifest records their
+source/export hashes and 29/25/25/21 exact unit and generated
+ability/template consumers; the canonical catalog pins the updated manifest.
+The four concepts load as prepared hidden cache entries, without publishing
+their summon choices. Repository validation, all 1,948 domain tests, clean
+Release and the strict 266-file package passed. Guarded Steam inventory
+`20260929T0218259420008Z` passed 50/50 assertions with 834 published
+placements, no missing published-menu icons and no unexpected menu changes.
+Wrapper restoration `20260929T0222241478727Z` verified the original 136-file
+installation. Actual ungulate UI use, 3D visuals and owner visual approval
+remain open. Continue Sprint 11.

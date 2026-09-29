@@ -44,9 +44,12 @@ namespace KingmakerGunslinger.Summoning
             string[] split = { "redcap", "axiomite", "soul-eater", "bogeyman",
                 "movanic-deva", "frost-giant", "thanadaemon" };
             string[] preserved = { "mite", "manticore", "nereid", "hamadryad" };
+            string[] prepared = { "aurochs", "bison", "rhinoceros",
+                "woolly-rhinoceros" };
             string[] expected = visibleCatalog.Concat(split).Concat(preserved)
+                .Concat(prepared)
                 .ToArray();
-            if (Values.Length != 94 || expected.Length != 94 ||
+            if (Values.Length != 98 || expected.Length != 98 ||
                 Values.Any(value => value == null ||
                     string.IsNullOrWhiteSpace(value.Key) ||
                     string.IsNullOrWhiteSpace(value.DisplayName)) ||
@@ -74,6 +77,12 @@ namespace KingmakerGunslinger.Summoning
             Add(result, SummonProjectIconScope.PreservedNative,
                 "mite", "Mite", "manticore", "Manticore", "nereid",
                 "Nereid", "hamadryad", "Hamadryad");
+            // Original Sprint 11 paintings are packaged for technical review;
+            // their summon placements remain hidden until the full sprint gate.
+            Add(result, SummonProjectIconScope.KmgCatalog,
+                "aurochs", "Aurochs", "bison", "Bison",
+                "rhinoceros", "Rhinoceros", "woolly-rhinoceros",
+                "Woolly Rhinoceros");
             return result.ToArray();
         }
 

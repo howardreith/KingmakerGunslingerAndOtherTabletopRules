@@ -128,8 +128,8 @@ namespace KingmakerGunslinger.DomainTests
         internal static void LedgerAndIconsCoverTheTiger()
         {
             SummonIconCatalog.Validate();
-            Assertions.Equal(94, SummonIconCatalog.All.Count,
-                "The current catalog retains Tiger and adds the Phase 2 Dire Bat and Giant Wasp icons.");
+            Assertions.Equal(98, SummonIconCatalog.All.Count,
+                "The current catalog retains Tiger and includes the four prepared hidden ungulate icons.");
             string ledger = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
                 "blueprints", "blueprints.json"));
             var entries = Newtonsoft.Json.Linq.JObject.Parse(ledger)["entries"]
