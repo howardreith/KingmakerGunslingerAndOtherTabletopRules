@@ -1,5 +1,24 @@
 # Expanded Summoning Phase 2 autonomous state
 
+## Sprint 11 original ungulate visual integration, 2026-09-29
+
+Four original, editable Aurochs/Bison/Rhinoceros/Woolly Rhinoceros meshes and
+paintings now ship through the existing schema-2 asset loader and instance-local
+renderer swap. The loader limits Horse and Mastodon families to their separate
+measured native bone sets. Corrected private Unity-Y-up offline reviews showed
+distinct silhouettes. Repository validation, 1,950 domain tests, clean Release
+and strict 274-file package passed; package SHA-256
+`7A5B5A3F3AF8643B149133BC919ACB36844E1B061B377C6F5C6CED761A807E02`,
+DLL SHA-256 `68D348396DD00FA2AD39613637F7B315D1A8F61052B59DE27FB20C8FFFEFE50C5`.
+Guarded Steam rules `20260929T0348308658037Z` passed 31/31 assertions. Its
+private Horse and Mastodon captures show `KMG_aurochs_Original` and
+`KMG_woolly-rhinoceros_Original` attached to live donor renderers; those
+captures are not committed. Restoration `20260929T0354302177559Z` verified
+the original 136-file tree SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+This is live attachment evidence for two units, not full deformation, contact,
+four-creature visual, UI, or owner approval. All four choices stay hidden.
+
 ## Sprint 11 donor bind-rig capture, 2026-09-29
 
 Guarded Steam rules run `20260929T0236149627664Z` passed 31/31 assertions

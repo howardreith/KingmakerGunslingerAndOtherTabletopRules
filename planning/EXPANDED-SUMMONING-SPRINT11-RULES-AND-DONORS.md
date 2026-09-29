@@ -353,3 +353,14 @@ The captures stay in guarded local evidence, never source control or the mod
 package. The run passed 31/31 assertions and restored the original live tree
 at `20260929T0240261038414Z`. Distinct ungulate meshes and visual review
 remain open.
+
+Four original schema-2 ungulate meshes and 1024 px albedos are now exported
+and packaged. The cattle bind to named Horse bones; both rhinoceroses bind
+to named Mastodon bones. Captured donor transforms stay only in local evidence.
+The existing per-view renderer swap leaves the native donor intact on asset
+rejection. Repository validation, 1,950 tests, clean Release and strict
+274-file package passed. Guarded Steam `20260929T0348308658037Z` passed
+31/31 rules assertions and captured Aurochs/Woolly original mesh names on
+live renderers; exact original-installation restoration passed. This does
+not establish the other two live views, deformed geometry, impact points,
+navigation or owner visual acceptance. All choices remain hidden.
