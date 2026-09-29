@@ -52,6 +52,14 @@ namespace KingmakerGunslinger.Summoning
             "KMG_Summoning_Unit_GiantWasp";
         internal const string StirgeBlueprintName =
             "KMG_Summoning_Unit_Stirge";
+        internal const string AurochsBlueprintName =
+            "KMG_Summoning_Unit_Aurochs";
+        internal const string BisonBlueprintName =
+            "KMG_Summoning_Unit_Bison";
+        internal const string RhinocerosBlueprintName =
+            "KMG_Summoning_Unit_Rhinoceros";
+        internal const string WoollyRhinocerosBlueprintName =
+            "KMG_Summoning_Unit_WoollyRhinoceros";
         /// <summary>
         /// The name carried by the private mesh and material the swap installs;
         /// observers recognise the attached state by it.
@@ -61,6 +69,22 @@ namespace KingmakerGunslinger.Summoning
         internal const string EagleVisualName = "KMG_EagleFeathers";
         internal const string GiantWaspVisualName = "KMG_GiantWaspMembrane";
         internal const string StirgeVisualName = "KMG_StirgeMembrane";
+        private static readonly Dictionary<string, string> VisualKeys =
+            new Dictionary<string, string>(StringComparer.Ordinal)
+            {
+                { PteranodonBlueprintName, "pteranodon" },
+                { DireBatBlueprintName, "dire-bat" },
+                { EagleBlueprintName, "eagle" },
+                { GiantWaspBlueprintName, "giant-wasp" },
+                { StirgeBlueprintName, "stirge" },
+                { AurochsBlueprintName, "aurochs" },
+                { BisonBlueprintName, "bison" },
+                { RhinocerosBlueprintName, "rhinoceros" },
+                { WoollyRhinocerosBlueprintName, "woolly-rhinoceros" }
+            };
+        private static readonly HashSet<string> UngulateKeys =
+            new HashSet<string>(StringComparer.Ordinal)
+            { "aurochs", "bison", "rhinoceros", "woolly-rhinoceros" };
         private const string MainTexture = "_MainTex";
 
         /// <summary>
@@ -163,18 +187,8 @@ namespace KingmakerGunslinger.Summoning
             if (__instance == null || __instance.EntityData == null ||
                 __instance.EntityData.Blueprint == null) return;
             string blueprintName = __instance.EntityData.Blueprint.name;
-            string visualKey = string.Equals(blueprintName,
-                PteranodonBlueprintName, StringComparison.Ordinal)
-                ? "pteranodon" : string.Equals(blueprintName,
-                    DireBatBlueprintName, StringComparison.Ordinal)
-                    ? "dire-bat" : string.Equals(blueprintName,
-                        EagleBlueprintName, StringComparison.Ordinal)
-                    ? "eagle" : string.Equals(blueprintName,
-                        GiantWaspBlueprintName, StringComparison.Ordinal)
-                        ? "giant-wasp" : string.Equals(blueprintName,
-                            StirgeBlueprintName, StringComparison.Ordinal)
-                            ? "stirge" : null;
-            if (visualKey == null) return;
+            string visualKey;
+            if (!VisualKeys.TryGetValue(blueprintName, out visualKey)) return;
 
             lock (Applied)
             {
@@ -220,6 +234,14 @@ namespace KingmakerGunslinger.Summoning
                 if (!PteranodonAssetRuntime.TryGetStirgeVisual(out source,
                     out boneNames, out albedo))
                     return Fallback(PteranodonAssetRuntime.StirgeStatus);
+            }
+            else if (UngulateKeys.Contains(attachment.VisualKey))
+            {
+                string status;
+                if (!PteranodonAssetRuntime.TryGetUngulateVisual(
+                    attachment.VisualKey, out source, out boneNames,
+                    out albedo, out status))
+                    return Fallback(status);
             }
             else
             {
@@ -275,7 +297,10 @@ namespace KingmakerGunslinger.Summoning
                     ? DireBatVisualName : attachment.VisualKey == "eagle"
                         ? EagleVisualName : attachment.VisualKey == "giant-wasp"
                             ? GiantWaspVisualName : attachment.VisualKey == "stirge"
-                                ? StirgeVisualName : CustomVisualName;
+                                ? StirgeVisualName : UngulateKeys.Contains(
+                                    attachment.VisualKey)
+                                    ? "KMG_" + attachment.VisualKey + "_Original"
+                                    : CustomVisualName;
                 mesh.name = visualName;
                 mesh.bindposes = bindposes;
 

@@ -94,6 +94,15 @@ if (Test-Path -LiteralPath $batSource -PathType Container) {
     Copy-Item -LiteralPath (Join-Path $batSource 'stirge-mesh.json') -Destination $batDestination
     Copy-Item -LiteralPath (Join-Path $batSource 'stirge-albedo.png') -Destination $batDestination
 }
+$ungulateSource = Join-Path $outputDirectory 'assets\ungulates'
+if (Test-Path -LiteralPath $ungulateSource -PathType Container) {
+    $ungulateDestination = Join-Path $modDirectory 'assets\ungulates'
+    New-Item -ItemType Directory -Path $ungulateDestination -Force | Out-Null
+    foreach ($kind in @('aurochs','bison','rhinoceros','woolly-rhinoceros')) {
+        Copy-Item -LiteralPath (Join-Path $ungulateSource "$kind-mesh.json") -Destination $ungulateDestination
+        Copy-Item -LiteralPath (Join-Path $ungulateSource "$kind-albedo.png") -Destination $ungulateDestination
+    }
+}
 $soundBankSource=Join-Path $repositoryRoot 'assets\soundbanks'
 if(Test-Path -LiteralPath (Join-Path $soundBankSource 'KMG_Firearms.bnk') -PathType Leaf){
     $soundBankDestination=Join-Path $modDirectory 'assets\soundbanks'
@@ -115,7 +124,7 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
 # Existing 135-file package plus 89 original elemental/strategic paintings,
 # the 3 composed strategic scroll item icons, and the Pteranodon mesh data
 # with its painted albedo.
-$expectedPackageFileCount = if ($hasFirearmSoundBank) { 266 } else { 264 }
+$expectedPackageFileCount = if ($hasFirearmSoundBank) { 274 } else { 272 }
 & $python (Join-Path $repositoryRoot 'tools\create_deterministic_package.py') `
     --source $modDirectory --output $packagePath `
     --expected-file-count $expectedPackageFileCount

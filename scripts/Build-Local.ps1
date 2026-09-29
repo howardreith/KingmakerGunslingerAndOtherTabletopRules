@@ -89,6 +89,11 @@ Copy-Item -LiteralPath (Join-Path $root 'assets\flying-animals\giant-wasp-mesh.j
 Copy-Item -LiteralPath (Join-Path $root 'assets\flying-animals\giant-wasp-albedo.png') -Destination (Join-Path $buildOutput 'assets\flying-animals') -Force
 Copy-Item -LiteralPath (Join-Path $root 'assets\flying-animals\stirge-mesh.json') -Destination (Join-Path $buildOutput 'assets\flying-animals') -Force
 Copy-Item -LiteralPath (Join-Path $root 'assets\flying-animals\stirge-albedo.png') -Destination (Join-Path $buildOutput 'assets\flying-animals') -Force
+New-Item -ItemType Directory -Path (Join-Path $buildOutput 'assets\ungulates') -Force | Out-Null
+foreach ($kind in @('aurochs','bison','rhinoceros','woolly-rhinoceros')) {
+    Copy-Item -LiteralPath (Join-Path $root "assets\ungulates\$kind-mesh.json") -Destination (Join-Path $buildOutput 'assets\ungulates') -Force
+    Copy-Item -LiteralPath (Join-Path $root "assets\ungulates\$kind-albedo.png") -Destination (Join-Path $buildOutput 'assets\ungulates') -Force
+}
 $bundleManifest = Get-Content -LiteralPath (Join-Path $root 'assets\bundles\asset-bundle-manifest.json') -Raw | ConvertFrom-Json
 $bundleSource = 'C:\Dev\KingmakerGunslingerLab\unity-asset-build\KingmakerGunslinger-2018.4.10f1\Builds\Windows\kingmakergunslinger.firearms'
 if (-not (Test-Path -LiteralPath $bundleSource -PathType Leaf)) {
@@ -121,7 +126,7 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $stagedMod 'assets\soun
 # Existing 135-file package plus 89 original elemental/strategic paintings,
 # the 3 composed strategic scroll item icons, and the Pteranodon mesh data
 # with its painted albedo.
-$expectedPackageFileCount = if ($hasFirearmSoundBank) { 266 } else { 264 }
+$expectedPackageFileCount = if ($hasFirearmSoundBank) { 274 } else { 272 }
 & $python (Join-Path $root 'tools\create_deterministic_package.py') --source $stagedMod --output $packagePath --expected-file-count $expectedPackageFileCount
 if ($LASTEXITCODE -ne 0) { throw 'Deterministic package creation failed.' }
 & (Join-Path $PSScriptRoot 'validate-package.ps1') `

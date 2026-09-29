@@ -33,7 +33,15 @@ $requiredFiles = @(
     'assets\flying-animals\giant-wasp-mesh.json',
     'assets\flying-animals\giant-wasp-albedo.png',
     'assets\flying-animals\stirge-mesh.json',
-    'assets\flying-animals\stirge-albedo.png'
+    'assets\flying-animals\stirge-albedo.png',
+    'assets\ungulates\aurochs-mesh.json',
+    'assets\ungulates\aurochs-albedo.png',
+    'assets\ungulates\bison-mesh.json',
+    'assets\ungulates\bison-albedo.png',
+    'assets\ungulates\rhinoceros-mesh.json',
+    'assets\ungulates\rhinoceros-albedo.png',
+    'assets\ungulates\woolly-rhinoceros-mesh.json',
+    'assets\ungulates\woolly-rhinoceros-albedo.png'
 )
 $requiredIcons = @('gunslinger-class','firearm-proficiency','gunsmithing','grit',
     'deeds','nimble','bonus-feat','gun-training','true-grit','rapid-reload',
@@ -92,6 +100,14 @@ $allowedRelativePaths = @{
     'assets\flying-animals\giant-wasp-albedo.png' = $true
     'assets\flying-animals\stirge-mesh.json' = $true
     'assets\flying-animals\stirge-albedo.png' = $true
+    'assets\ungulates\aurochs-mesh.json' = $true
+    'assets\ungulates\aurochs-albedo.png' = $true
+    'assets\ungulates\bison-mesh.json' = $true
+    'assets\ungulates\bison-albedo.png' = $true
+    'assets\ungulates\rhinoceros-mesh.json' = $true
+    'assets\ungulates\rhinoceros-albedo.png' = $true
+    'assets\ungulates\woolly-rhinoceros-mesh.json' = $true
+    'assets\ungulates\woolly-rhinoceros-albedo.png' = $true
 }
 
 $unexpected = @()
