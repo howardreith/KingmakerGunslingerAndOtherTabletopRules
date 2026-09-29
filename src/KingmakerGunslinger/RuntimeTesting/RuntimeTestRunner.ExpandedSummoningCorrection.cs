@@ -27,6 +27,7 @@ using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
+using Kingmaker.UI.SettingsUI;
 using Kingmaker.Utility;
 using Kingmaker.View;
 using Kingmaker.Visual.MaterialEffects.RimLighting;
@@ -481,7 +482,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// its own attack roll when it lands.
         /// </summary>
         private static UnitUseAbility BeginExpandedSummoningDetachedAbility(UnitEntityData caster,
-            BlueprintAbility ability, TargetWrapper target)
+            BlueprintAbility ability, TargetWrapper target,
+            bool allowDelayedExecution = false, bool useCommandQueue = false)
         {
             Ability granted = caster.Descriptor.Abilities.GetAbility(ability);
             if (granted == null) throw new InvalidOperationException(
@@ -498,6 +500,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ";canTarget=" + data.CanTarget(target) + ".");
             command.IgnoreCooldown(TimeSpan.Zero);
             command.Init(caster);
+            if (useCommandQueue)
+            {
+                caster.Commands.Run(command);
+                if (!caster.Commands.Raw.Contains(command))
+                    throw new InvalidOperationException("The KMG ability was not placed in the native command queue: " +
+                        ability.name + ".");
+            }
             command.Start();
             if (!command.IsRunning)
                 throw new InvalidOperationException("The KMG ability command did not start: " +
@@ -505,8 +514,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ";enoughClose=" + command.IsUnitEnoughClose + ".");
             if (command.Animation != null) command.Animation.IsActed = true;
             command.Tick();
-            if (!string.Equals(command.Result.ToString(), "Success", StringComparison.Ordinal) ||
-                command.ExecutionProcess == null)
+            if (!allowDelayedExecution &&
+                (!string.Equals(command.Result.ToString(), "Success", StringComparison.Ordinal) ||
+                    command.ExecutionProcess == null))
                 throw new InvalidOperationException("The KMG ability did not begin executing: " +
                     ability.name + ";result=" + command.Result + ".");
             return command;
@@ -577,6 +587,41 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool _rulesMissedHighTouch;
         private string _rulesWebRollA = "<none>";
         private int _rulesLoadingWait;
+        private UnitEntityData _rulesTrampler;
+        private UnitUseAbility _rulesTrampleCommand;
+        private ExpandedSummoningTrampleObserver _rulesTrampleObserver;
+        private int _rulesTrampleDamageBefore;
+        private int _rulesTrampleCasterDamageBefore;
+        private Vector3 _rulesTrampleStart;
+        private string _rulesTrampleRoute;
+        private string _rulesTrampleAgentAtExecution;
+        private float _rulesTrampleMaxDelta;
+        private int _rulesTrampleManualTicks;
+        private bool _rulesTrampleCanMove;
+        private bool _rulesTrampleViewInGame;
+        private bool _rulesTrampleTurnBased;
+        private bool? _rulesTrampleTurnModeBefore;
+        private bool _rulesTrampleTurnModeRestored;
+        private bool? _rulesTramplePauseBefore;
+        private bool _rulesTramplePauseRestored;
+
+        private sealed class ExpandedSummoningTrampleObserver :
+            IGlobalRulebookHandler<RuleSavingThrow>,
+            IGlobalRulebookHandler<RuleDealDamage>
+        {
+            internal UnitEntityData Caster, Target;
+            internal readonly List<RuleSavingThrow> Saves = new List<RuleSavingThrow>();
+            internal readonly List<RuleDealDamage> Damage = new List<RuleDealDamage>();
+            public void OnEventAboutToTrigger(RuleSavingThrow evt) { }
+            public void OnEventAboutToTrigger(RuleDealDamage evt) { }
+            public void OnEventDidTrigger(RuleSavingThrow evt)
+            { if (ReferenceEquals(evt.Initiator, Target)) Saves.Add(evt); }
+            public void OnEventDidTrigger(RuleDealDamage evt)
+            {
+                if (ReferenceEquals(evt.Initiator, Caster) &&
+                    ReferenceEquals(evt.Target, Target)) Damage.Add(evt);
+            }
+        }
 
         private void PollExpandedSummoningRules()
         {
@@ -747,6 +792,49 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _rulesWait++ < ExpandedSummoningCommandFrames) return;
                     stage = "rake-command";
                     CompleteExpandedSummoningRakeCommand();
+                    stage = "trample-path-begin";
+                    _rulesSteps.Add("reset:trample=" + ResetExpandedSummoningHostile(_rulesFixture));
+                    BeginExpandedSummoningTramplePath();
+                    _rulesWait = 0;
+                    _rulesPhase = 7;
+                    return;
+                }
+                if (_rulesPhase == 7)
+                {
+                    stage = "trample-path-contact";
+                    if (_rulesTrampleCommand.ExecutionProcess == null &&
+                        _rulesTrampleCommand.IsRunning)
+                    {
+                        if (_rulesTrampleCommand.Animation != null)
+                            _rulesTrampleCommand.Animation.IsActed = true;
+                        _rulesTrampleCommand.Tick();
+                    }
+                    if (_rulesTrampleCommand.ExecutionProcess != null &&
+                        _rulesTrampleAgentAtExecution == null)
+                        _rulesTrampleAgentAtExecution =
+                            DescribeExpandedSummoningTrampleAgent(_rulesTrampler);
+                    float delta = Game.Instance.TimeController.DeltaTime;
+                    _rulesTrampleMaxDelta = Mathf.Max(_rulesTrampleMaxDelta, delta);
+                    _rulesTrampleCanMove |= _rulesTrampler.Descriptor.State.CanMove;
+                    _rulesTrampleViewInGame |= _rulesTrampler.View.IsInGame;
+                    _rulesTrampleTurnBased |= TurnBased.Controllers.CombatController
+                        .IsInTurnBasedCombat();
+                    if (_rulesTrampleCommand.ExecutionProcess != null && delta > 0f &&
+                        _rulesTrampler.Descriptor.State.CanMove &&
+                        !TurnBased.Controllers.CombatController.IsInTurnBasedCombat())
+                    {
+                        // The runtime fixture casts a quiet disposable summon. Feed
+                        // its native movement agent with the game's own delta, then
+                        // synchronize position exactly as UnitMovementController does.
+                        _rulesTrampler.View.MovementAgent.TickMovement(delta);
+                        _rulesTrampler.Position = _rulesTrampler.View.transform.position;
+                        _rulesTrampleManualTicks++;
+                    }
+                    bool ended = _rulesTrampleCommand.ExecutionProcess != null &&
+                        TickExpandedSummoningDetachedAbility(
+                            _rulesTrampleCommand, _rulesWait);
+                    if (!ended && _rulesWait++ < 600) return;
+                    CompleteExpandedSummoningTramplePath(ended);
                     CompleteExpandedSummoningRules();
                 }
             }
@@ -764,6 +852,31 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             bool cleaned = false;
             SummonDocileHoovesComponent.SuspendedForFixture = false;
+            if (_rulesTrampleCommand != null)
+            {
+                try { EndExpandedSummoningDetachedAbility(_rulesTrampleCommand); }
+                catch (Exception) { }
+                _rulesTrampleCommand = null;
+            }
+            try { RestoreExpandedSummoningTrampleTurnMode(); }
+            catch (Exception exception)
+            {
+                _rulesCases.Add(Assertion("expanded-summoning-sprint11-trample-mode-cleanup",
+                    "the original turn mode is restored", "exception=" +
+                    DescribeExpandedSummoningCorrectionException(exception), false,
+                    "request-local native turn mode toggle"));
+            }
+            if (_rulesTrampleObserver != null)
+            {
+                try { EventBus.Unsubscribe(_rulesTrampleObserver); } catch (Exception) { }
+                _rulesTrampleObserver = null;
+            }
+            if (_rulesAwakeSnapshot != null)
+            {
+                Game.Instance.State.AwakeUnits.Clear();
+                Game.Instance.State.AwakeUnits.AddRange(_rulesAwakeSnapshot);
+                _rulesAwakeSnapshot = null;
+            }
             if (_rulesObserver != null)
             {
                 try { EventBus.Unsubscribe(_rulesObserver); } catch (Exception) { }
@@ -3398,6 +3511,236 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private const int ExpandedSummoningCommandFrames = 600;
+        private void BeginExpandedSummoningTramplePath()
+        {
+            UnitEntityData hostile = _rulesFixture.Hostile;
+            hostile.Descriptor.State.Size = Size.Medium;
+            _rulesTrampler = CastExpandedSummoningQuietUnit(_rulesFixture, "aurochs");
+            BlueprintAbility ability = _rulesFixture.Blueprints.OfType<BlueprintAbility>()
+                .Single(value => value.name == "KMG_Summoning_Special_Aurochs_Trample");
+            Ability granted = _rulesTrampler.Descriptor.Abilities.GetAbility(ability);
+            if (granted == null)
+                throw new InvalidOperationException("Hidden Aurochs trample was not granted.");
+            var data = new AbilityData(granted);
+            var attempts = new List<string>();
+            TargetWrapper destination = null;
+            var overrun = ability.ComponentsArray.OfType<
+                Kingmaker.UnitLogic.Abilities.Components.AbilityCustomOverrun>().Single();
+            var path = ability.ComponentsArray.OfType<UngulateTramplePathChecker>().Single();
+            if (AstarPath.active == null)
+                throw new InvalidOperationException("Trample path needs live area navigation.");
+            var centres = new List<Vector3> {
+                hostile.Position, _rulesFixture.Caster.Position
+            };
+            centres.AddRange(CompassOffsets.Select(direction =>
+                _rulesFixture.Caster.Position + direction * 4f));
+            int unwalkable = 0, nativeRejected = 0, lineBlocked = 0;
+            for (int centreIndex = 0; centreIndex < centres.Count; centreIndex++)
+            {
+                Vector3 centre = centres[centreIndex];
+                foreach (float[] distances in new[] {
+                    new[] { 2.5f, 2.5f }, new[] { 3f, 2f },
+                    new[] { 4f, 2f }, new[] { 6f, 3f } })
+                {
+                    for (int index = 0; index < CompassOffsets.Length; index++)
+                    {
+                        Vector3 direction = CompassOffsets[index];
+                        Vector3 requestedStart = centre - direction * distances[0];
+                        Vector3 requestedEnd = centre + direction * distances[1];
+                        Pathfinding.NNInfo nearestStart =
+                            Kingmaker.View.ObstacleAnalyzer.GetNearestNode(requestedStart);
+                        Pathfinding.NNInfo nearestEnd =
+                            Kingmaker.View.ObstacleAnalyzer.GetNearestNode(requestedEnd);
+                        if (nearestStart.node == null || nearestEnd.node == null ||
+                            !nearestStart.node.Walkable || !nearestEnd.node.Walkable)
+                        {
+                            unwalkable++;
+                            continue;
+                        }
+                        Vector3 start = nearestStart.clampedPosition;
+                        Vector3 end = nearestEnd.clampedPosition;
+                        PlaceExpandedSummoningUnit(_rulesTrampler, start);
+                        var target = new TargetWrapper(end);
+                        Vector3 traced = Kingmaker.View.ObstacleAnalyzer.TraceAlongNavmesh(
+                            _rulesTrampler.Position, end);
+                        bool nativeTarget = overrun.CanTarget(_rulesTrampler, target);
+                        bool pathTarget = path.CanTarget(_rulesTrampler, target);
+                        bool canTarget = data.CanTarget(target);
+                        bool lineClear =
+                            Kingmaker.Visual.FogOfWar.LineOfSightGeometry.Instance != null &&
+                            !Kingmaker.Visual.FogOfWar.LineOfSightGeometry.Instance.HasObstacle(
+                                _rulesTrampler.EyePosition, end, 0);
+                        if (!nativeTarget) nativeRejected++;
+                        else if (!lineClear) lineBlocked++;
+                        if (attempts.Count < 20 || (canTarget && lineClear))
+                            attempts.Add(centreIndex + "/" + distances[0] + "/" +
+                            distances[1] + "/" + index +
+                            ":canTarget=" + canTarget +
+                            ",native=" + nativeTarget + ",path=" + pathTarget +
+                            ",lineClear=" + lineClear +
+                            ",traceExact=" + (traced == end) +
+                            ",traceDelta=" + Vector3.Distance(traced, end)
+                                .ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) +
+                            ",actualStartDelta=" + Vector3.Distance(
+                                _rulesTrampler.Position, start)
+                                .ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) +
+                            ",startDelta=" + Vector3.Distance(start, requestedStart)
+                                .ToString("0.0", System.Globalization.CultureInfo.InvariantCulture) +
+                            ",endDelta=" + Vector3.Distance(end, requestedEnd)
+                                .ToString("0.0", System.Globalization.CultureInfo.InvariantCulture));
+                        if (!canTarget || !lineClear) continue;
+                        destination = target;
+                        _rulesTrampleStart = _rulesTrampler.Position;
+                        Vector3 midpoint = (start + end) * 0.5f;
+                        PlaceExpandedSummoningUnit(hostile, midpoint);
+                        _rulesTrampleRoute = "centre" + centreIndex + "/dir" + index +
+                            ";start=" + start + ";hostile=" + hostile.Position +
+                            ";end=" + end;
+                        break;
+                    }
+                    if (destination != null) break;
+                }
+                if (destination != null) break;
+            }
+            _rulesSteps.Add("trampleRoutes:unwalkable=" + unwalkable +
+                ";nativeRejected=" + nativeRejected + ";lineBlocked=" +
+                lineBlocked + ";samples=" + string.Join("|", attempts.ToArray()));
+            if (destination == null)
+                throw new InvalidOperationException("No valid trample route across the hostile.");
+            _rulesTrampleDamageBefore = hostile.Descriptor.Damage;
+            _rulesTrampleCasterDamageBefore = _rulesFixture.Caster.Descriptor.Damage;
+            _rulesTrampleObserver = new ExpandedSummoningTrampleObserver {
+                Caster = _rulesTrampler, Target = hostile
+            };
+            EventBus.Subscribe(_rulesTrampleObserver);
+            _rulesAwakeSnapshot = Game.Instance.State.AwakeUnits.ToArray();
+            foreach (UnitEntityData unit in new[] { _rulesTrampler, hostile })
+                if (!Game.Instance.State.AwakeUnits.Contains(unit))
+                    Game.Instance.State.AwakeUnits.Add(unit);
+            _rulesTrampleTurnModeBefore = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue;
+            _rulesTramplePauseBefore = Game.Instance.IsPaused;
+            if (TurnBased.Controllers.CombatController.IsInTurnBasedCombat())
+            {
+                SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
+                Game.Instance.TurnBasedCombatController.Activate();
+                if (TurnBased.Controllers.CombatController.IsInTurnBasedCombat())
+                    throw new InvalidOperationException("Disposable trample fixture did not enter RTWP mode.");
+            }
+            Game.Instance.IsPaused = false;
+            _rulesTrampleCommand = BeginExpandedSummoningDetachedAbility(
+                _rulesTrampler, ability, destination, true, true);
+        }
+
+        private void RestoreExpandedSummoningTrampleTurnMode()
+        {
+            if (!_rulesTrampleTurnModeBefore.HasValue) return;
+            bool before = _rulesTrampleTurnModeBefore.Value;
+            SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = before;
+            Game.Instance.TurnBasedCombatController.Activate();
+            if (_rulesTramplePauseBefore.HasValue)
+            {
+                Game.Instance.IsPaused = _rulesTramplePauseBefore.Value;
+                _rulesTramplePauseRestored =
+                    Game.Instance.IsPaused == _rulesTramplePauseBefore.Value;
+                _rulesTramplePauseBefore = null;
+            }
+            _rulesTrampleTurnModeRestored =
+                SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue == before;
+            _rulesTrampleTurnModeBefore = null;
+        }
+
+        private static string DescribeExpandedSummoningTrampleAgent(UnitEntityData unit)
+        {
+            Kingmaker.View.UnitMovementAgent agent = unit.View.AgentASP;
+            Pathfinding.Path path = agent.Path;
+            return "moving=" + agent.IsReallyMoving +
+                ",pathNull=" + (path == null) +
+                ",points=" + (path == null || path.vectorPath == null ? -1 :
+                    path.vectorPath.Count) +
+                ",done=" + (path != null && path.IsDone()) +
+                ",error=" + (path != null && path.error) +
+                ",approach=" + agent.ApproachRadius +
+                ",maxApproach=" + agent.MaxApproachRadius +
+                ",waypoint=" + ReadExactMember(agent, "m_NextWaypoint") +
+                ",destination=" + ReadExactMember(agent, "m_Destination") +
+                ",commandsPrevent=" + unit.View.IsCommandsPreventMovement +
+                ",animationPrevent=" + (unit.View.AnimationManager != null &&
+                    unit.View.AnimationManager.IsPreventingMovement) +
+                ",next=" + ReadExactMember(agent, "m_NextPointIndex") +
+                ",force=" + ReadExactMember(agent, "m_IsInForceMode") +
+                ",requested=" + ReadExactMember(agent, "m_RequestedNewPath");
+        }
+
+        private void CompleteExpandedSummoningTramplePath(bool ended)
+        {
+            UnitEntityData hostile = _rulesFixture.Hostile;
+            int damage = hostile.Descriptor.Damage - _rulesTrampleDamageBefore;
+            int allyDamage = _rulesFixture.Caster.Descriptor.Damage -
+                _rulesTrampleCasterDamageBefore;
+            float moved = Vector3.Distance(_rulesTrampler.Position, _rulesTrampleStart);
+            bool agentMoving = _rulesTrampler.View.MovementAgent.IsReallyMoving;
+            string saves = _rulesTrampleObserver == null ? "<none>" :
+                string.Join("|", _rulesTrampleObserver.Saves.Select(value =>
+                    "dc=" + value.DifficultyClass + ",passed=" + value.IsPassed).ToArray());
+            string dealt = _rulesTrampleObserver == null ? "<none>" :
+                string.Join("|", _rulesTrampleObserver.Damage.Select(value =>
+                    "damage=" + value.Damage + ",half=" +
+                    value.HalfBecauseSavingThrow).ToArray());
+            string detail = "route=" + _rulesTrampleRoute + ";ended=" + ended +
+                ";frames=" + _rulesWait + ";moved=" +
+                moved.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) +
+                ";commandRunning=" + _rulesTrampleCommand.IsRunning +
+                ";commandResult=" + _rulesTrampleCommand.Result +
+                ";commandActed=" + _rulesTrampleCommand.IsActed +
+                ";hasExecution=" + (_rulesTrampleCommand.ExecutionProcess != null) +
+                ";agentMoving=" + agentMoving +
+                ";agentAtExecution=" + _rulesTrampleAgentAtExecution +
+                ";agentAtEnd=" + DescribeExpandedSummoningTrampleAgent(_rulesTrampler) +
+                ";maxDelta=" + _rulesTrampleMaxDelta +
+                ";manualTicks=" + _rulesTrampleManualTicks +
+                ";canMove=" + _rulesTrampleCanMove +
+                ";viewInGame=" + _rulesTrampleViewInGame +
+                ";turnBased=" + _rulesTrampleTurnBased +
+                ";saves=" + saves + ";dealt=" + dealt + ";hostileDamage=" + damage +
+                ";allyDamage=" + allyDamage;
+            _rulesCases.Add(Assertion("expanded-summoning-sprint11-trample-path-contact",
+                "the hidden Aurochs follows a native trample path through a smaller hostile, completes, makes one DC 17 Reflex save and one bludgeoning damage event, and does not injure the allied caster",
+                detail, ended && moved > 3f && damage > 0 && allyDamage == 0 &&
+                    _rulesTrampleObserver != null &&
+                    _rulesTrampleObserver.Saves.Count == 1 &&
+                    _rulesTrampleObserver.Saves[0].DifficultyClass == 17 &&
+                    _rulesTrampleObserver.Damage.Count == 1 &&
+                    _rulesTrampleObserver.Damage[0].Damage == damage,
+                "guarded loaded-area queued ability command; native path contact, save and damage observers"));
+            EndExpandedSummoningDetachedAbility(_rulesTrampleCommand);
+            _rulesTrampleCommand = null;
+            RestoreExpandedSummoningTrampleTurnMode();
+            _rulesCases.Add(Assertion("expanded-summoning-sprint11-trample-mode-restore",
+                "the request-local mode toggle restores the original setting",
+                "restored=" + _rulesTrampleTurnModeRestored +
+                    ";pauseRestored=" + _rulesTramplePauseRestored,
+                _rulesTrampleTurnModeRestored && _rulesTramplePauseRestored,
+                "exact turn-mode setting after the native movement command"));
+            EventBus.Unsubscribe(_rulesTrampleObserver);
+            _rulesTrampleObserver = null;
+            bool awakeRestored = true;
+            if (_rulesAwakeSnapshot != null)
+            {
+                Game.Instance.State.AwakeUnits.Clear();
+                Game.Instance.State.AwakeUnits.AddRange(_rulesAwakeSnapshot);
+                awakeRestored = Game.Instance.State.AwakeUnits.SequenceEqual(
+                    _rulesAwakeSnapshot);
+                _rulesAwakeSnapshot = null;
+            }
+            _rulesSteps.Add("trampleAwakeRestored=" + awakeRestored);
+            _rulesCases.Add(Assertion("expanded-summoning-sprint11-trample-awake-restore",
+                "the disposable trample fixture restores the exact awake-unit snapshot",
+                "restored=" + awakeRestored, awakeRestored,
+                "exact AwakeUnits snapshot before and after the native movement command"));
+            DisposeExpandedSummoningUnits(_rulesFixture.Created, new[] { _rulesTrampler });
+            _rulesTrampler = null;
+        }
+
         private UnitEntityData[] _rulesAwakeSnapshot;
         private UnitEntityData _rulesRakeCat;
         private UnitAttack _rulesRakeCommand;
