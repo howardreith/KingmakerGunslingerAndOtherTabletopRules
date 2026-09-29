@@ -75,8 +75,8 @@
     },
     {
       "path": "assets-source/original-icons/expanded-summoning/icon-manifest.json",
-      "sha256": "a32deebc9714e7b5504bbb6b805c7645b0d666540ccda95d3d80b51fec867236",
-      "scope": "Source/export/consumer authority for 94 published summon concepts: 77 roster-mission concepts, 14 Phase 1 additions, Phase 2 Dire Bat, Giant Wasp, and Stirge. The Wasp unit, inspectable type, and 24 ability/template consumers share one original species identity. The Stirge unit and nine Nature's Ally variants share its own original species painting. Technical PASS is not owner visual approval."
+      "sha256": "5cbff2bc995d6326364701ca624dc3a8782b148b7e173faeb4e4738b6bfacd5e",
+      "scope": "Source/export/consumer authority for 94 published summon concepts and four prepared hidden Sprint 11 ungulate concepts: 77 roster-mission concepts, 14 Phase 1 additions, Phase 2 Dire Bat, Giant Wasp, Stirge, Aurochs, Bison, Rhinoceros and Woolly Rhinoceros. The four ungulate unit and ability/template consumers each share their own original species painting while remaining hidden. Technical export PASS is not owner visual approval or publication."
     },
     {
       "path": "assets-source/original-icons/cord-of-stubborn-resolve/cord-of-stubborn-resolve-assets.json",

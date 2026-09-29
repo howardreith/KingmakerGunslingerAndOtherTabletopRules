@@ -2,8 +2,9 @@
 
 These four square 1254 px PNG paintings were created with the built-in
 `imagegen` tool on 2026-09-28 for the project's `painted-creature` icon family.
-They are original source candidates, not exported game icons or published
-choices. No Kingmaker or third-party art pixels were used. The existing Dog,
+They are original source candidates; four 128 px exports are now packaged for
+technical review, while the summon choices remain hidden. No Kingmaker or
+third-party art pixels were used. The existing Dog,
 Horse, Giant Wasp, and Stirge source paintings established the family frame,
 dark backdrop, scale, and warm lighting; Paizo anatomy supplied the species
 identities. Source inspection is complete; downsample, live menu, and owner
@@ -19,8 +20,21 @@ visual review remain pending.
 The composition briefs record the subjects and reference roles. The original
 tool-call wording was not retained in this source file, so these briefs must
 not be represented as verbatim generation prompts. The byte-identical source
-PNGs are the editable raster masters. At publication, record each export hash,
-manifest consumer, and technical versus owner-visual status. Creature choices
+PNGs are the editable raster masters. `New-ExpandedSummoningIcons.ps1`
+downsampled the four paintings through the existing 128 px RGBA production
+pipeline. The exact export SHA-256 values are:
+
+| Species | Export SHA-256 | Manifest consumers |
+| --- | --- | ---: |
+| Aurochs | `578e235e53f5b3573e53d1cb953ae4c4ff140bb236cc5d26038c08ce802df62a` | 29 |
+| Bison | `60064766af512af9af69d5c90723a886d6c3938c47167b828d4759cf6b3f44a5` | 25 |
+| Rhinoceros | `4e0b2774a8b947ca2a4f4a9cecd8e7d2346eeb9bc5700728358e3a970c20e995` | 25 |
+| Woolly Rhinoceros | `6c4fca4860efe04b48c4fd38639d8b6093bf71f6e61b88dcb2f0131948606c41` | 21 |
+
+Guarded Steam inventory `20260929T0218259420008Z` passed 50/50 assertions,
+including unchanged published menus and no missing icons; it is not a direct
+ungulate UI-view or owner visual approval. At publication, validate actual UI
+use and technical versus owner-visual status. Creature choices
 require `original-required`; quantity/template variants use
 `intentional-family-share`. Parent spells retain their existing art, and any
 mechanics-only trample/charge helper may use `hidden-internal` only when it has
