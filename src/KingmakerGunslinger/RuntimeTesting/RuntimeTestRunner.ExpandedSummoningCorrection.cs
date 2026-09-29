@@ -2707,6 +2707,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                         };
                     RuleCalculateWeaponStats offTurn = Rulebook.Trigger(
                         new RuleCalculateWeaponStats(animal, gore, opportunity));
+                    int damageBefore = fixture.Hostile.Descriptor.Damage;
+                    bool realHit;
+                    int realDamage;
+                    try
+                    {
+                        animal.Descriptor.Stats.BaseAttackBonus.BaseValue = 100;
+                        UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                        Rulebook.Trigger(first);
+                        realHit = first.AttackRoll != null &&
+                            first.AttackRoll.IsHit && !first.AttackRoll.AutoMiss;
+                        realDamage = fixture.Hostile.Descriptor.Damage - damageBefore;
+                    }
+                    finally
+                    {
+                        fixture.Hostile.Descriptor.Damage = damageBefore;
+                    }
                     animal.Descriptor.RemoveFact(nativeCharge);
                     RuleCalculateWeaponStats after = Rulebook.Trigger(
                         new RuleCalculateWeaponStats(animal, gore, first));
@@ -2721,11 +2737,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         chargeDamage == row[3] &&
                         format(later) == baseDamage &&
                         format(offTurn) == baseDamage &&
-                        format(after) == baseDamage;
+                        format(after) == baseDamage &&
+                        realHit && realDamage > 0;
                     valid &= rowValid;
                     steps.Add(row[0] + ":fact=True;ordinary=" + baseDamage +
                         ";first=" + chargeDamage + ";later=" +
                         format(later) + ";opportunity=" + format(offTurn) +
+                        ";realHit=" + realHit + ";realDamage=" + realDamage +
                         ";afterMarker=" + format(after) +
                         ";pass=" + rowValid);
                 }
