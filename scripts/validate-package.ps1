@@ -56,6 +56,14 @@ try {
         'assets\flying-animals\giant-wasp-albedo.png',
         'assets\flying-animals\stirge-mesh.json',
         'assets\flying-animals\stirge-albedo.png',
+        'assets\ungulates\aurochs-mesh.json',
+        'assets\ungulates\aurochs-albedo.png',
+        'assets\ungulates\bison-mesh.json',
+        'assets\ungulates\bison-albedo.png',
+        'assets\ungulates\rhinoceros-mesh.json',
+        'assets\ungulates\rhinoceros-albedo.png',
+        'assets\ungulates\woolly-rhinoceros-mesh.json',
+        'assets\ungulates\woolly-rhinoceros-albedo.png',
         'blueprints\blueprints.json',
         'blueprints\blueprints.schema.json'
     )

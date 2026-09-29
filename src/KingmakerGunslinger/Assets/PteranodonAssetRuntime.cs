@@ -64,6 +64,7 @@ namespace KingmakerGunslinger.Assets
             "assets/flying-animals/giant-wasp-mesh.json";
         internal const string StirgeMeshDataRelativePath =
             "assets/flying-animals/stirge-mesh.json";
+        private const string UngulateDirectory = "assets/ungulates/";
         internal const int SupportedSchemaVersion = 2;
 
         /// <summary>
@@ -91,6 +92,47 @@ namespace KingmakerGunslinger.Assets
             "R_Finger_2_1", "R_Finger_2_2", "R_Finger_3_1", "R_Finger_3_2",
             "R_Finger_4_1", "R_Finger_4_2"
         };
+
+        // The two captured native quadruped rigs have different naming and
+        // orientation. Keep each authoring family to the bones actually used
+        // by its original mesh; a stray donor bone must fail before attach.
+        private static readonly string[] AllowedHorseBones =
+        {
+            "Chest", "Head", "Jaw", "LowerTorso", "UpperTorso", "Neck1", "Neck2",
+            "L_Arm_Upper", "L_Arm_Lower", "L_Palm", "L_Fingers",
+            "R_Arm_Upper", "R_Arm_Lower", "R_Palm", "R_Fingers",
+            "L_Leg0_Upper", "L_Leg0_Lower", "L_Foot0", "L_Toes0",
+            "R_Leg0_Upper", "R_Leg0_Lower", "R_Foot0", "R_Toes0",
+            "Tail1", "Tail2", "Tail3", "Tail4", "Tail5"
+        };
+        private static readonly string[] AllowedMastodonBones =
+        {
+            "Head", "LowerTorso", "Spine", "UpperTorso", "Neck",
+            "L_Arm_Upper", "L_Arm_Lower", "L_Palm",
+            "R_Arm_Upper", "R_Arm_Lower", "R_Palm",
+            "L_Leg0_Upper", "L_Leg0_Lower", "L_Foot0",
+            "R_Leg0_Upper", "R_Leg0_Lower", "R_Foot0",
+            "frontKnee_L", "frontKnee_R", "frontAnkle_L", "frontAnkle_R",
+            "backKnee_L", "backKnee_R", "backAnkle_L", "backAnkle_R",
+            "Tail0_M", "Tail1_M", "Tail2_M", "Tail3_M", "Tail4_M"
+        };
+
+        private sealed class UngulateVisual
+        {
+            internal Mesh Mesh;
+            internal string[] Bones;
+            internal Texture2D Albedo;
+            internal string Status = "donor-visual:not-configured";
+        }
+
+        private static readonly Dictionary<string, UngulateVisual> Ungulates =
+            new Dictionary<string, UngulateVisual>(StringComparer.Ordinal)
+            {
+                { "aurochs", new UngulateVisual() },
+                { "bison", new UngulateVisual() },
+                { "rhinoceros", new UngulateVisual() },
+                { "woolly-rhinoceros", new UngulateVisual() }
+            };
 
         /// <summary>
         /// What the mesh data says about its painting. Checked against the
@@ -228,6 +270,29 @@ namespace KingmakerGunslinger.Assets
             }
         }
 
+        internal static bool TryGetUngulateVisual(string key, out Mesh mesh,
+            out string[] boneNames, out Texture2D albedo, out string status)
+        {
+            lock (Sync)
+            {
+                UngulateVisual visual;
+                if (!Ungulates.TryGetValue(key, out visual))
+                {
+                    mesh = null;
+                    boneNames = null;
+                    albedo = null;
+                    status = "donor-visual:unknown-ungulate";
+                    return false;
+                }
+                mesh = visual.Mesh;
+                boneNames = visual.Bones == null ? null :
+                    (string[])visual.Bones.Clone();
+                albedo = visual.Albedo;
+                status = visual.Status;
+                return mesh != null && boneNames != null && albedo != null;
+            }
+        }
+
         /// <summary>
         /// Takes the published visual away for the life of the returned scope,
         /// so a guarded scenario can prove the fallback on a live summon without
@@ -285,6 +350,80 @@ namespace KingmakerGunslinger.Assets
             ConfigureEagle(context);
             ConfigureGiantWasp(context);
             ConfigureStirge(context);
+            ConfigureUngulates(context);
+        }
+
+        private static void ConfigureUngulates(ModContext context)
+        {
+            if (context == null) throw new ArgumentNullException("context");
+            foreach (var entry in Ungulates)
+            {
+                string key = entry.Key;
+                UngulateVisual visual = entry.Value;
+                if (!context.FeatureModules.Active.ExpandedSummoning)
+                {
+                    lock (Sync) visual.Status = "donor-visual:module-disabled";
+                    continue;
+                }
+                lock (Sync)
+                    if (visual.Mesh != null && visual.Bones != null &&
+                        visual.Albedo != null) continue;
+                string path = Path.Combine(context.ModEntry.Path,
+                    (UngulateDirectory + key + "-mesh.json")
+                    .Replace('/', Path.DirectorySeparatorChar));
+                if (!File.Exists(path))
+                {
+                    lock (Sync) visual.Status = "donor-visual:mesh-data-missing";
+                    context.Logger.Warning(key, "mesh.missing",
+                        "The original ungulate visual is unavailable; the donor remains active: " + path);
+                    continue;
+                }
+                Mesh mesh = null;
+                Texture2D albedo = null;
+                try
+                {
+                    string[] names;
+                    AlbedoRequirement requirement;
+                    string[] allowed = key == "aurochs" || key == "bison"
+                        ? AllowedHorseBones : AllowedMastodonBones;
+                    mesh = BuildMesh(File.ReadAllText(path), out names,
+                        out requirement, allowed);
+                    string reason;
+                    albedo = LoadAlbedo(Path.GetDirectoryName(path), requirement,
+                        out reason);
+                    if (albedo == null)
+                        throw new InvalidDataException("albedo:" + reason);
+                    mesh.name = "KMG_" + key;
+                    albedo.name = "KMG_" + key + "_Albedo";
+                    lock (Sync)
+                    {
+                        visual.Mesh = mesh;
+                        visual.Bones = names;
+                        visual.Albedo = albedo;
+                        visual.Status = "visual:published";
+                    }
+                    context.Logger.Info(key, "mesh.published",
+                        "Validated original ungulate mesh: vertices=" + mesh.vertexCount +
+                        ";triangles=" + mesh.triangles.Length / 3 +
+                        ";bones=" + names.Length + ";albedo=" +
+                        albedo.width + "x" + albedo.height);
+                }
+                catch (Exception error)
+                {
+                    if (mesh != null) UnityEngine.Object.Destroy(mesh);
+                    if (albedo != null) UnityEngine.Object.Destroy(albedo);
+                    lock (Sync)
+                    {
+                        visual.Mesh = null;
+                        visual.Bones = null;
+                        visual.Albedo = null;
+                        visual.Status = "donor-visual:invalid-mesh-data";
+                    }
+                    context.Logger.Warning(key, "mesh.rejected",
+                        "The original ungulate visual was rejected; the donor remains active: " +
+                        error.Message);
+                }
+            }
         }
 
         private static void ConfigurePteranodon(ModContext context)
@@ -657,6 +796,12 @@ namespace KingmakerGunslinger.Assets
         internal static Mesh BuildMesh(string json, out string[] boneNames,
             out AlbedoRequirement albedo)
         {
+            return BuildMesh(json, out boneNames, out albedo, AllowedBones);
+        }
+
+        internal static Mesh BuildMesh(string json, out string[] boneNames,
+            out AlbedoRequirement albedo, string[] allowedBones)
+        {
             JObject document = JObject.Parse(json);
             int schema = (int?)document["schemaVersion"] ?? 0;
             if (schema != SupportedSchemaVersion)
@@ -673,7 +818,7 @@ namespace KingmakerGunslinger.Assets
             if (names.Distinct(StringComparer.Ordinal).Count() != names.Length)
                 throw new InvalidDataException("The bone list repeats a name.");
             string[] unexpected = names.Where(value =>
-                !AllowedBones.Contains(value, StringComparer.Ordinal)).ToArray();
+                !allowedBones.Contains(value, StringComparer.Ordinal)).ToArray();
             if (unexpected.Length != 0)
                 throw new InvalidDataException(
                     "The mesh binds to bones outside the declared set: " +

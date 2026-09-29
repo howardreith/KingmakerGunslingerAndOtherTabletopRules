@@ -1,7 +1,9 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using KingmakerGunslinger.Summoning;
+using Newtonsoft.Json.Linq;
 
 namespace KingmakerGunslinger.DomainTests
 {
@@ -242,6 +244,90 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(project.Contains("sprint11-horse-bind-rig.json") ||
                 project.Contains("sprint11-mastodon-bind-rig.json"),
                 "Measured native donor transforms must never enter the package.");
+        }
+
+        internal static void OriginalUngulateVisualsUseNativeBindFramesAndPackage()
+        {
+            string root = Environment.CurrentDirectory;
+            string directory = Path.Combine(root, "assets", "ungulates");
+            string[] kinds = { "aurochs", "bison", "rhinoceros",
+                "woolly-rhinoceros" };
+            string[] meshHashes = {
+                "c699bf2f310faad1b27f5a8526d5ec62edd9d89de2d1b271e40c3e1dc5144857",
+                "ded381caaad9bf5f350867d2f13391d90b5ad52b92c27360b4f1051ef2416dc7",
+                "fc4196030a46cc7c71d9a2e7492b5c89a08543d8f08d3728bbf187ffe16c0723",
+                "2a10b55256a9bdc578ea8eed02e8535b3348522de9b5905b48ab7a80efb5fe36"
+            };
+            for (int item = 0; item < kinds.Length; item++)
+            {
+                string kind = kinds[item];
+                string meshPath = Path.Combine(directory, kind + "-mesh.json");
+                using (var sha = SHA256.Create())
+                {
+                    string actual = string.Concat(sha.ComputeHash(
+                        File.ReadAllBytes(meshPath))
+                        .Select(value => value.ToString("x2")));
+                    Assertions.Equal(meshHashes[item], actual,
+                        kind + " mesh bytes match the LF-normalized reviewed export.");
+                }
+                JObject mesh = JObject.Parse(File.ReadAllText(Path.Combine(
+                    directory, kind + "-mesh.json")));
+                Assertions.Equal(2, (int)mesh["schemaVersion"],
+                    kind + " uses the shared skinned-mesh schema.");
+                string[] bones = ((JArray)mesh["bones"])
+                    .Select(value => (string)value).ToArray();
+                Assertions.True(bones.Length >= 25 && bones.Length <= 30 &&
+                    bones.Distinct(StringComparer.Ordinal).Count() == bones.Length &&
+                    bones.Contains("Head") && bones.Contains("LowerTorso"),
+                    kind + " binds only an unambiguous measured native rig.");
+                Assertions.True(((string)mesh["space"]).Contains("donor renderer local") &&
+                    ((string)mesh["rigSha256"]).Length == 64,
+                    kind + " records its captured frame without shipping transforms.");
+                int vertices = (int)mesh["vertexCount"];
+                int triangles = (int)mesh["triangleCount"];
+                Assertions.True(vertices >= 500 && triangles >= 390 &&
+                    Convert.FromBase64String((string)mesh["data"]).Length ==
+                    vertices * 64 + triangles * 12,
+                    kind + " carries complete original geometry and weights.");
+                JObject albedo = (JObject)mesh["albedo"];
+                Assertions.Equal(kind + "-albedo.png", (string)albedo["file"],
+                    kind + " names its own painting.");
+                using (var sha = SHA256.Create())
+                {
+                    string actual = string.Concat(sha.ComputeHash(File.ReadAllBytes(
+                        Path.Combine(directory, (string)albedo["file"])))
+                        .Select(value => value.ToString("x2")));
+                    Assertions.Equal((string)albedo["sha256"], actual,
+                        kind + " painting matches its geometry manifest.");
+                }
+            }
+            string source = Path.Combine(root, "assets-source", "original-models",
+                "ungulates");
+            Assertions.True(File.Exists(Path.Combine(source, "generate_ungulates.py")) &&
+                File.Exists(Path.Combine(source, "paint_ungulate_albedo.py")),
+                "Original editable source and reproducible exporters remain available.");
+            string loader = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Assets", "PteranodonAssetRuntime.cs"));
+            string view = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Summoning",
+                "ExpandedSummoningPteranodonViewPatch.cs"));
+            Assertions.True(loader.Contains("ConfigureUngulates(context)") &&
+                loader.Contains("AllowedHorseBones") &&
+                loader.Contains("AllowedMastodonBones") &&
+                loader.Contains("TryGetUngulateVisual") &&
+                view.Contains("UngulateKeys.Contains(attachment.VisualKey)") &&
+                view.Contains("TryResolveDonorBinding(donor, boneNames") &&
+                view.Contains("Revert(attachment)"),
+                "Four original visuals use the validated native-bind instance swap and fallback.");
+            string build = File.ReadAllText(Path.Combine(root, "scripts",
+                "Build-Local.ps1"));
+            string package = File.ReadAllText(Path.Combine(root, "scripts",
+                "package.ps1"));
+            Assertions.True(build.Contains("assets\\ungulates") &&
+                package.Contains("assets\\ungulates") &&
+                build.Contains("{ 274 } else { 272 }") &&
+                package.Contains("{ 274 } else { 272 }"),
+                "All eight ungulate asset files enter the strict standalone package.");
         }
     }
 }
