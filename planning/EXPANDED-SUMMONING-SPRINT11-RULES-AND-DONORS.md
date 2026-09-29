@@ -251,14 +251,12 @@ The three abilities are full-round and carry append-only identities. Their
 unit grants remain inside the 48 hidden Sprint 11 placements. The action uses
 the installed Overrun icon provisionally; no new public menu consumer exists.
 
-This is a hidden implementation checkpoint, not a trample qualification.
-The target's choice between an attack of opportunity and a Reflex save has
-not been proven against native movement, and the code conservatively awards
-no Stampede same-size/+2 benefit until a coordinated three-creature route is
-implemented and demonstrated. Actual path contact, damage cadence, target
-choice, multiple-unit navigation and both combat modes still require live
-qualification. The four original 3D ungulate views and icon exports are also
-pending.
+This was a hidden implementation checkpoint, not a trample qualification.
+At this point the target response had not been proven against native movement,
+and the code conservatively awarded no Stampede same-size/+2 benefit. The
+later automatic-response section records the owner-authorized target-response
+adaptation and its live qualification. Coordinated Stampede and the four
+original 3D ungulate views remain publication gates.
 
 A request-local Rhino `UnitAttack` charge probe in guarded run
 `20260928T1906471936890Z-disposable-expanded-summoning-rules` recorded
@@ -422,3 +420,73 @@ original-installation restoration passed; restoration record
 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
 Package SHA-256 `937CBCB24C2AFC766F43E367C971A86030239B703DE88120499AE3513DC96932`;
 DLL SHA-256 `285298FEDE8CEEB05F1DB5B88C025A2A52D659ADF77708A1F484E3CE3663FA1D`.
+
+## Owner-authorized automatic Trample response
+
+Kingmaker has no native contact-time prompt for the tabletop target choice.
+The owner therefore authorized a disclosed automatic adaptation. On a
+trampler's first valid contact with a target in the round, the component uses
+the native threat hand, reach test, action state and ordinary attack-of-
+opportunity resource to decide the branch before any attack or save roll. If
+the target can actually make a legal melee attack of opportunity, it makes
+exactly one at the printed -4 penalty, spends one normal resource, receives
+no Reflex save, and resolves the attack before contact damage. If that attack
+kills, incapacitates, removes or otherwise stops the trampler, the contact
+deals no Trample damage and the round ledger rejects all later contacts. If
+there is no legal attack, or the prequalified attack cannot execute, the
+target instead rolls the printed Reflex save for half damage. The same policy
+applies to every faction and does not inspect a roll before selecting a branch.
+The hidden ability tooltip discloses this automatic Kingmaker adaptation.
+
+A focused native audit found that `UnitCombatState.Disengage` both removes the
+engagement and invokes the ordinary movement attack-of-opportunity path. A
+narrow Harmony prefix temporarily sets that combat state's existing
+`PreventAttacksOfOpporunityNextFrame` flag only when the moving unit has an
+exact active Aurochs, Bison or Woolly Rhinoceros Trample command and its
+round ledger has already claimed that defender. The postfix immediately
+restores the flag. Native disengagement and events still run; the scope only
+prevents an ordinary movement attack from duplicating the already resolved
+contact response. Lethal synchronous attacks are detected from current hit
+points as well as native state flags because Kingmaker defers some death-state
+updates until after rule resolution.
+
+Guarded Steam run
+`20260929T2200169193790Z-disposable-expanded-summoning-rules` passed the final
+matrix on version `0.0.140` after repository validation, all 1,952 domain
+tests, a clean Release build and strict package validation. Live cases proved:
+
+- RTWP zero-resource, unable-to-act and nonthreatening defenders used the
+  Reflex branch without spending a resource; forced failed and successful
+  saves produced full and half damage respectively.
+- A legal RTWP melee response hit at exactly -4, spent the sole resource,
+  produced no save and allowed full contact damage because the trampler
+  continued.
+- A player-faction defender against a hostile Bison used the same policy.
+- A turn-based quantity Aurochs received one -4 miss, spent one resource,
+  produced no save and dealt full damage.
+- A turn-based Combat Reflexes defender hit once and moved from four resources
+  to three; it did not receive a second response or a save.
+- A lethal turn-based response reduced the trampler from one hit point to
+  negative two before damage; that contact and a later distinct contact both
+  produced no save and no damage.
+- A quantity-summoned Aurochs traversed a real RTWP native Overrun path through
+  a Combat Reflexes defender. Exactly one -4 response occurred, the resource
+  moved from four to three, no save occurred, full damage followed, and no
+  ordinary-plus-special duplicate appeared.
+- Direct and quantity summons, hostile and player-controlled targets, RTWP and
+  turn-based mode, hit and miss attacks, full and half saves, exact DCs,
+  once-per-target replay suppression, command interruption and disposable
+  fixture restoration all passed.
+
+The tested package SHA-256 was
+`c9c3ddb9a738a99339dc154e6100dcce695909e724b576598995e6a95fd71506`;
+the built, deployed and loaded DLL SHA-256 was
+`df5f4ed0a3ef219d565398029925842b0876dc7dfe85b33dfe5a3da0ce5eb7e2`.
+Restoration record
+`20260929T2205130992683Z-disposable-expanded-summoning-rules.json` records a
+clean launcher outcome, scenario PASS, no failures, and the exact original
+136-file live tree before and after restoration at SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+This closes the ordinary Trample target-response contract. Coordinated
+Stampede and corrected hoof/leg art remain open, so all Sprint 11 placements
+remain hidden.
