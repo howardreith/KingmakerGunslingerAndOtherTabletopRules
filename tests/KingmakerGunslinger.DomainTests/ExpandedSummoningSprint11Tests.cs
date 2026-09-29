@@ -183,6 +183,9 @@ namespace KingmakerGunslinger.DomainTests
                 action.Contains("trampler.HPLeft > 0") &&
                 action.Contains("ledger.Halt(round)") &&
                 action.Contains("SuppressDuplicateMovementOpportunityAttack") &&
+                action.Contains(
+                    "UngulateStampedeRuntime.ActiveGroupSize(caster)") &&
+                !action.Contains("const int activeStampedeGroup = 0") &&
                 action.Contains("SavingThrowType.Reflex") &&
                 action.Contains("damage.Half = half;") &&
                 action.Contains("ReferenceEquals(caster.Blueprint, SourceUnit)"),
@@ -193,6 +196,24 @@ namespace KingmakerGunslinger.DomainTests
                 builder.Contains("An attack that stops the trampler") &&
                 builder.Contains("prevents that contact's damage"),
                 "The hidden tooltip must disclose the Kingmaker automatic-AoO adaptation.");
+            Assertions.True(builder.Contains(
+                    "UngulateStampedeRuntime.Register(unit, ability)") &&
+                builder.Contains("at least three allied") &&
+                builder.Contains("same combat round") &&
+                builder.Contains("remain mutually ") &&
+                builder.Contains("adjacent. In real time") &&
+                builder.Contains("Nearby idle creatures never count") &&
+                action.Contains(
+                    "HarmonyPatch(typeof(UnitUseAbility), \"OnAction\")") &&
+                action.Contains(
+                    "HarmonyPatch(typeof(UnitCombatState), \"LeaveCombat\")") &&
+                action.Contains(
+                    "state.Command.Result == UnitCommand.ResultType.Success") &&
+                action.Contains("HasRunningCommand(candidate, expected)") &&
+                action.Contains("actor.IsAlly(candidate)") &&
+                action.Contains("candidate.IsAlly(actor)") &&
+                action.Contains("StampedeFormationPolicy.QualifiedGroupSize"),
+                "Stampede must use exact registered owners, actual command execution, native round cleanup, mutual allies and a rechecked adjacent trio rather than nearby quantity.");
             string fixture = File.ReadAllText(Path.Combine(
                 Environment.CurrentDirectory, "src", "KingmakerGunslinger",
                 "RuntimeTesting",
@@ -209,6 +230,25 @@ namespace KingmakerGunslinger.DomainTests
                 "trample-combat-reflexes-hit",
                 "trample-lethal-aoo-stops",
                 "trample-native-path-aoo",
+                "ExerciseExpandedSummoningStampedeCommandMatrix",
+                "BeginExpandedSummoningStampedeCommand",
+                "PlaceExpandedSummoningStampedeFormation",
+                "ExpandedSummoningStampedeFixtureAdjacent",
+                "No mutually adjacent Stampede formation had three valid native Trample paths",
+                "new[] { 5f, 6f, 8f, 4f, 3f, 2.5f }",
+                "TraceAlongNavmesh(unit.Position, candidate.Point)",
+                "nativeTarget = overrun.CanTarget(unit, candidate)",
+                "pathTarget = path.CanTarget(unit, candidate)",
+                "string mode = turnBased ? \"turn-based\" : \"rtwp\"",
+                "\"-idle-quantity\"",
+                "\"-two-commands\"",
+                "\"-aurochs-active\"",
+                "\"-bison-active\"",
+                "\"-adjacency-loss\"",
+                "\"-command-ended\"",
+                "commands[2].Interrupt(true);",
+                "UngulateStampedeRuntime.ActiveGroupSize",
+                "target.Descriptor.State.Size = Size.Large",
                 "SummonMultiplicity.OneD3",
                 "HandlePartyCombatStateChanged(true)",
                 "DescribeAttackOfOpportunityState(target, trampler)",
@@ -329,6 +369,26 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(aurochs.CanTrample(4, 5, 3) ||
                 rhino.CanTrample(4, 3, 0),
                 "Stampede does not reach larger creatures or grant Rhino trample.");
+            string[] formation = { "actor", "left", "right", "idle" };
+            Func<string, string, bool> allAdjacent = (left, right) =>
+                !string.Equals(left, right, StringComparison.Ordinal);
+            Assertions.Equal(3, StampedeFormationPolicy.QualifiedGroupSize(
+                "actor", formation,
+                value => value != "idle", allAdjacent),
+                "Three independently active eligible allies form Stampede; an idle nearby body is irrelevant.");
+            Assertions.Equal(0, StampedeFormationPolicy.QualifiedGroupSize(
+                "actor", formation,
+                value => value == "actor" || value == "left", allAdjacent),
+                "Two active tramplers cannot receive Stampede from nearby quantity.");
+            Assertions.Equal(0, StampedeFormationPolicy.QualifiedGroupSize(
+                "actor", formation, value => value != "idle",
+                (left, right) => allAdjacent(left, right) &&
+                    !(left == "left" && right == "right") &&
+                    !(left == "right" && right == "left")),
+                "All three active members must remain mutually adjacent.");
+            Assertions.Equal(0, StampedeFormationPolicy.QualifiedGroupSize(
+                "actor", formation, value => value != "actor", allAdjacent),
+                "An acting creature that is not itself executing Stampede cannot borrow the group benefit.");
             Assertions.True(TrampleTargetResponsePolicy
                     .HasLegalOpportunityAttack(true, true, true, true, true),
                 "A fully legal contacted defender takes the automatic AoO branch.");

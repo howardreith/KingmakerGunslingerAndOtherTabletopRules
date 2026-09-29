@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Harmony12;
@@ -13,6 +14,8 @@ using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.RuleSystem.Rules.Damage;
 using Kingmaker.UnitLogic.Commands;
+using Kingmaker.UnitLogic.Commands.Base;
+using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Components.Base;
 using Kingmaker.UnitLogic.Mechanics.Actions;
 using Kingmaker.Utility;
@@ -62,10 +65,8 @@ namespace KingmakerGunslinger.Summoning
                 string.IsNullOrEmpty(target.UniqueId)) return;
 
             UngulateRulesProfile rules = UngulateRulesPolicy.For(CreatureKey);
-            // Stampede needs a coordinated, adjacent three-creature path.
-            // Until that native group route is proved, never award its larger
-            // target allowance or +2 DC from mere proximity.
-            const int activeStampedeGroup = 0;
+            int activeStampedeGroup = rules.Stampede ?
+                UngulateStampedeRuntime.ActiveGroupSize(caster) : 0;
             if (!rules.CanTrample((int)caster.Descriptor.State.Size,
                     (int)target.Descriptor.State.Size,
                     activeStampedeGroup)) return;
@@ -183,7 +184,7 @@ namespace KingmakerGunslinger.Summoning
                 trampler.Descriptor.State.CanMove;
         }
 
-        private static bool IsExactTrampleCommand(UnitUseAbility command)
+        internal static bool IsExactTrampleCommand(UnitUseAbility command)
         {
             string name = command == null || command.Spell == null ||
                 command.Spell.Blueprint == null ? null :
@@ -235,13 +236,178 @@ namespace KingmakerGunslinger.Summoning
                 ledger.HasClaim(CurrentRound(), defender.UniqueId);
         }
 
-        private static long CurrentRound()
+        internal static long CurrentRound()
         {
             return CombatController.IsInTurnBasedCombat() &&
                 Game.Instance.TurnBasedCombatController != null ?
                 Game.Instance.TurnBasedCombatController.RoundNumber :
                 Game.Instance.Player.GameTime.Ticks /
                     TimeSpan.FromSeconds(6d).Ticks;
+        }
+    }
+
+    /// <summary>
+    /// Session-only coordinated-action observation for Stampede. RTWP requires
+    /// three simultaneously running exact native commands. Turn-based retains
+    /// only commands that entered OnAction in the current native round and are
+    /// still running or finished successfully. It never submits a command.
+    /// </summary>
+    internal static class UngulateStampedeRuntime
+    {
+        private sealed class Registration
+        {
+            internal BlueprintUnit Unit;
+            internal BlueprintAbility Ability;
+        }
+
+        private sealed class ExecutionState
+        {
+            internal long Round;
+            internal UnitUseAbility Command;
+        }
+
+        private static readonly object Sync = new object();
+        private static readonly Dictionary<string, Registration> Registrations =
+            new Dictionary<string, Registration>(StringComparer.Ordinal);
+        private static readonly ConditionalWeakTable<UnitEntityData,
+            ExecutionState> TurnBasedExecutions = new ConditionalWeakTable<
+                UnitEntityData, ExecutionState>();
+
+        internal static void Register(BlueprintUnit unit,
+            BlueprintAbility ability)
+        {
+            if (unit == null || ability == null ||
+                string.IsNullOrEmpty(unit.AssetGuid))
+                throw new ArgumentException(
+                    "Stampede registration requires exact unit and ability identities.");
+            lock (Sync)
+                Registrations[unit.AssetGuid] = new Registration {
+                    Unit = unit,
+                    Ability = ability
+                };
+        }
+
+        internal static void RecordAction(UnitUseAbility command)
+        {
+            UnitEntityData unit = command == null ? null : command.Executor;
+            BlueprintAbility expected;
+            if (!CombatController.IsInTurnBasedCombat() || unit == null ||
+                !TryExpectedAbility(unit, out expected) ||
+                command.Spell == null ||
+                !ReferenceEquals(command.Spell.Blueprint, expected)) return;
+            TurnBasedExecutions.Remove(unit);
+            TurnBasedExecutions.Add(unit, new ExecutionState {
+                Round = ContextActionUngulateTrample.CurrentRound(),
+                Command = command
+            });
+        }
+
+        internal static void Clear(UnitEntityData unit)
+        {
+            if (unit != null) TurnBasedExecutions.Remove(unit);
+        }
+
+        internal static int ActiveGroupSize(UnitEntityData actor)
+        {
+            if (actor == null || Game.Instance == null ||
+                Game.Instance.State == null ||
+                Game.Instance.State.Units == null) return 0;
+            bool turnBased = CombatController.IsInTurnBasedCombat();
+            long round = ContextActionUngulateTrample.CurrentRound();
+            var candidates = Game.Instance.State.Units.All
+                .Where(value => value != null).Distinct().ToList();
+            if (!candidates.Contains(actor)) candidates.Add(actor);
+            return StampedeFormationPolicy.QualifiedGroupSize(actor,
+                candidates, value => IsEligible(actor, value, turnBased,
+                    round), AreAdjacent);
+        }
+
+        private static bool IsEligible(UnitEntityData actor,
+            UnitEntityData candidate, bool turnBased, long round)
+        {
+            BlueprintAbility expected;
+            if (candidate == null || candidate.Destroyed ||
+                !candidate.IsInGame || candidate.Descriptor == null ||
+                candidate.Descriptor.State == null ||
+                candidate.Descriptor.State.IsDead ||
+                !candidate.Descriptor.State.IsConscious ||
+                candidate.CombatState == null ||
+                !candidate.CombatState.IsInCombat ||
+                !actor.IsAlly(candidate) || !candidate.IsAlly(actor) ||
+                !TryExpectedAbility(candidate, out expected) ||
+                candidate.Descriptor.Abilities.GetAbility(expected) == null)
+                return false;
+            if (!turnBased) return HasRunningCommand(candidate, expected);
+            ExecutionState state;
+            if (!TurnBasedExecutions.TryGetValue(candidate, out state) ||
+                state == null || state.Round != round ||
+                state.Command == null ||
+                !ReferenceEquals(state.Command.Executor, candidate) ||
+                state.Command.Spell == null ||
+                !ReferenceEquals(state.Command.Spell.Blueprint, expected))
+                return false;
+            return state.Command.IsRunning && !state.Command.IsFinished ||
+                state.Command.IsFinished &&
+                state.Command.Result == UnitCommand.ResultType.Success;
+        }
+
+        private static bool TryExpectedAbility(UnitEntityData unit,
+            out BlueprintAbility ability)
+        {
+            ability = null;
+            if (unit == null || unit.Blueprint == null ||
+                string.IsNullOrEmpty(unit.Blueprint.AssetGuid)) return false;
+            Registration registration;
+            lock (Sync)
+                if (!Registrations.TryGetValue(unit.Blueprint.AssetGuid,
+                        out registration)) return false;
+            if (registration == null ||
+                !ReferenceEquals(registration.Unit, unit.Blueprint))
+                return false;
+            ability = registration.Ability;
+            return ability != null;
+        }
+
+        private static bool HasRunningCommand(UnitEntityData unit,
+            BlueprintAbility expected)
+        {
+            if (unit.Commands == null) return false;
+            try
+            {
+                return unit.Commands.Raw.OfType<UnitUseAbility>().Any(command =>
+                    ReferenceEquals(command.Executor, unit) &&
+                    command.Spell != null &&
+                    ReferenceEquals(command.Spell.Blueprint, expected) &&
+                    command.IsRunning && !command.IsFinished);
+            }
+            catch { return false; }
+        }
+
+        private static bool AreAdjacent(UnitEntityData left,
+            UnitEntityData right)
+        {
+            if (left == null || right == null) return false;
+            float edgeDistance = Vector3.Distance(left.Position,
+                right.Position) - Math.Max(0f, left.Corpulence) -
+                Math.Max(0f, right.Corpulence);
+            return edgeDistance <= 5.Feet().Meters + 0.01f;
+        }
+    }
+
+    [HarmonyPatch(typeof(UnitUseAbility), "OnAction")]
+    internal static class UngulateStampedeCommandActionPatch
+    {
+        private static void Prefix(UnitUseAbility __instance)
+        { UngulateStampedeRuntime.RecordAction(__instance); }
+    }
+
+    [HarmonyPatch(typeof(UnitCombatState), "LeaveCombat")]
+    internal static class UngulateStampedeLeaveCombatPatch
+    {
+        private static void Postfix(UnitCombatState __instance)
+        {
+            if (__instance != null)
+                UngulateStampedeRuntime.Clear(__instance.Unit);
         }
     }
 
