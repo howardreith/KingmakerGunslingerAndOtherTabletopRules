@@ -1121,3 +1121,17 @@ placements, no missing published-menu icons and no unexpected menu changes.
 Wrapper restoration `20260929T0222241478727Z` verified the original 136-file
 installation. Actual ungulate UI use, 3D visuals and owner visual approval
 remain open. Continue Sprint 11.
+
+## Sprint 11: private ungulate donor bind-frame capture, 2026-09-29
+
+The guarded `20260929T0236149627664Z` rules run passed 31/31 assertions
+and retained all three native RTWP trample contacts, successful half save,
+and same-round replay guard. The disposable Aurochs's Horse donor has one
+2,110-vertex skinned renderer with 31 bones/31 bind poses. The disposable
+Woolly Rhinoceros's Mastodon donor has one 4,307-vertex renderer with 40
+bones/40 poses. The two renderer-local bind-frame captures stay in local
+guarded evidence only; their SHA-256 values are recorded in autonomous state.
+Repository validation, 1,949 domain tests, clean Release and strict package
+passed. Wrapper restoration `20260929T0240261038414Z` verified the original
+136-file installation. Continue original mesh authoring from these measured
+frames without committing native donor transforms.
