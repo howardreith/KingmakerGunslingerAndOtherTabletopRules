@@ -377,3 +377,12 @@ The sixteen party-camera frames were inspected; the route's walls/bookcases
 cause native cyan occlusion highlights. Clear art review, exact attack contact,
 charge-command travel, quantity pathing, victim AoO choice, turn-based
 cadence, negative-control in-game checks and publication are still open.
+
+The next guarded rules run `20260929T0455499342752Z` passed 31/31 after
+1,951 tests, clean Release and strict 274-file package. In addition to the
+first-charge stat calculations (`4d6+12` Rhino, `4d8+18` Woolly), the fixture
+triggered a real gore attack with each hidden Rhino and the native charge
+marker active. Both hit and dealt damage (47 and 77 in this run); it then
+restored the disposable target. Exact original-installation restoration
+`20260929T0500068625552Z` passed. This closes the direct attack-rule effect,
+not the native queued charge command, its travel or visual contact.

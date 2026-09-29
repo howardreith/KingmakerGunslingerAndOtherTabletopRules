@@ -91,6 +91,13 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(charge.Contains("evt.DoNotScaleDamage = true;") &&
                 charge.Contains("ReferenceEquals(evt.Weapon.Blueprint, Gore)"),
                 "The exact gore's printed charge dice must bypass Kingmaker's second size scale.");
+            string fixture = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "RuntimeTesting", "RuntimeTestRunner.ExpandedSummoningCorrection.cs"));
+            Assertions.True(fixture.Contains("Rulebook.Trigger(first);") &&
+                fixture.Contains("realHit && realDamage > 0") &&
+                fixture.Contains("fixture.Hostile.Descriptor.Damage = damageBefore;"),
+                "The guarded charge fixture must land a real attack and restore its disposable target.");
         }
 
         internal static void HiddenTrampleAbilitiesUseNativePathWithSummonRules()
