@@ -98,6 +98,16 @@ namespace KingmakerGunslinger.DomainTests
                 fixture.Contains("realHit && realDamage > 0") &&
                 fixture.Contains("fixture.Hostile.Descriptor.Damage = damageBefore;"),
                 "The guarded charge fixture must land a real attack and restore its disposable target.");
+            Assertions.True(fixture.Contains(
+                    "BeginExpandedSummoningQueuedRhinoCharge();") &&
+                fixture.Contains("value.AssetGuid == \"c78506dd0e14f7c45a599990e4e65038\"") &&
+                fixture.Contains("_rulesChargeCommand = BeginExpandedSummoningDetachedAbility(") &&
+                fixture.Contains("_rulesChargeRhino.View.MovementAgent.TickMovement(delta);") &&
+                fixture.Contains("_rulesChargeRhino.Commands.Raw") &&
+                fixture.Contains("_rulesChargeAttackCommand.Start();") &&
+                fixture.Contains("_rulesChargeObserver.FirstChargeHitWithMarker") &&
+                fixture.Contains("CleanupExpandedSummoningQueuedRhinoCharge();"),
+                "The guarded command case must drive native travel, observe its real charged gore, and restore request-local state.");
         }
 
         internal static void HiddenTrampleAbilitiesUseNativePathWithSummonRules()

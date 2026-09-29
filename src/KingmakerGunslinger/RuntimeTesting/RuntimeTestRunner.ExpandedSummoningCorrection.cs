@@ -565,6 +565,38 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
+        private sealed class ExpandedSummoningChargeAttackObserver :
+            IGlobalRulebookHandler<RuleAttackWithWeapon>
+        {
+            internal UnitEntityData Initiator;
+            internal UnitEntityData Target;
+            internal BlueprintItemWeapon Gore;
+            internal BlueprintBuff Marker;
+            internal readonly List<string> Attacks = new List<string>();
+            internal bool FirstChargeHitWithMarker;
+
+            public void OnEventAboutToTrigger(RuleAttackWithWeapon evt) { }
+
+            public void OnEventDidTrigger(RuleAttackWithWeapon evt)
+            {
+                if (evt == null || !ReferenceEquals(evt.Initiator, Initiator) ||
+                    !ReferenceEquals(evt.Target, Target)) return;
+                bool gore = evt.Weapon != null &&
+                    ReferenceEquals(evt.Weapon.Blueprint, Gore);
+                bool marker = Marker != null &&
+                    Initiator.Descriptor.HasFact(Marker);
+                bool hit = evt.AttackRoll != null && evt.AttackRoll.IsHit &&
+                    !evt.AttackRoll.AutoMiss;
+                Attacks.Add("gore=" + gore + ",charge=" + evt.IsCharge +
+                    ",first=" + evt.IsFirstAttack + ",opportunity=" +
+                    evt.IsAttackOfOpportunity + ",marker=" + marker +
+                    ",hit=" + hit);
+                FirstChargeHitWithMarker |= gore && marker && hit &&
+                    evt.IsCharge && evt.IsFirstAttack &&
+                    !evt.IsAttackOfOpportunity;
+            }
+        }
+
         // ---------------------------------------------------------------------------------------------------------
         // The rules scenario: the synchronous cases on the first frame, then
         // the wind wall, the cloud and the web across frames.
@@ -629,6 +661,21 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool _rulesTramplePauseRestored;
         private TimeSpan? _rulesTrampleGameTimeBefore;
         private bool _rulesTrampleGameTimeRestored;
+        private UnitEntityData _rulesChargeRhino;
+        private UnitUseAbility _rulesChargeCommand;
+        private UnitAttack _rulesChargeAttackCommand;
+        private ExpandedSummoningChargeAttackObserver _rulesChargeObserver;
+        private int _rulesChargeIndex;
+        private int _rulesChargeDamageBefore;
+        private Vector3 _rulesChargeStart;
+        private string _rulesChargeRoute;
+        private int _rulesChargeMovementTicks;
+        private bool _rulesChargeStarted;
+        private bool _rulesChargeAgentMoved;
+        private bool _rulesChargeProcessEnded;
+        private bool? _rulesChargeTurnModeBefore;
+        private bool? _rulesChargePauseBefore;
+        private TimeSpan? _rulesChargeGameTimeBefore;
 
         private sealed class ExpandedSummoningTrampleObserver :
             IGlobalRulebookHandler<RuleSavingThrow>,
@@ -900,6 +947,71 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _rulesWait = 0;
                         return;
                     }
+                    stage = "rhino-charge-begin";
+                    _rulesChargeIndex = 0;
+                    BeginExpandedSummoningQueuedRhinoCharge();
+                    _rulesWait = 0;
+                    _rulesPhase = 8;
+                    return;
+                }
+                if (_rulesPhase == 8)
+                {
+                    stage = "rhino-charge-travel";
+                    if (_rulesChargeCommand.ExecutionProcess == null &&
+                        _rulesChargeCommand.IsRunning)
+                    {
+                        if (_rulesChargeCommand.Animation != null)
+                            _rulesChargeCommand.Animation.IsActed = true;
+                        _rulesChargeCommand.Tick();
+                    }
+                    float delta = Game.Instance.TimeController.DeltaTime;
+                    if (_rulesChargeCommand.ExecutionProcess != null &&
+                        delta > 0f && _rulesChargeRhino.Descriptor.State.CanMove &&
+                        !TurnBased.Controllers.CombatController.IsInTurnBasedCombat())
+                    {
+                        bool moving = _rulesChargeRhino.View.MovementAgent
+                            .IsReallyMoving;
+                        _rulesChargeRhino.View.MovementAgent.TickMovement(delta);
+                        _rulesChargeRhino.Position =
+                            _rulesChargeRhino.View.transform.position;
+                        _rulesChargeAgentMoved |= moving;
+                        _rulesChargeMovementTicks++;
+                    }
+                    bool ended = _rulesChargeCommand.ExecutionProcess != null &&
+                        TickExpandedSummoningDetachedAbility(
+                            _rulesChargeCommand, _rulesWait);
+                    _rulesChargeProcessEnded |= ended;
+                    if (_rulesChargeAttackCommand == null)
+                        _rulesChargeAttackCommand = _rulesChargeRhino.Commands.Raw
+                            .OfType<UnitAttack>().FirstOrDefault(value =>
+                                ReferenceEquals(value.Target,
+                                    _rulesFixture.Hostile));
+                    if (_rulesChargeAttackCommand != null)
+                    {
+                        if (!_rulesChargeAttackCommand.IsStarted &&
+                            !_rulesChargeAttackCommand.IsFinished &&
+                            _rulesChargeAttackCommand.IsUnitEnoughClose)
+                            _rulesChargeAttackCommand.Start();
+                        if (_rulesChargeAttackCommand.IsRunning)
+                        {
+                            if (_rulesChargeAttackCommand.Animation != null &&
+                                _rulesWait > 12)
+                                _rulesChargeAttackCommand.Animation.IsActed = true;
+                            _rulesChargeAttackCommand.Tick();
+                        }
+                    }
+                    bool observed = _rulesChargeObserver != null &&
+                        _rulesChargeObserver.Attacks.Count > 0;
+                    if (!observed &&
+                        _rulesWait++ < ExpandedSummoningCommandFrames) return;
+                    CompleteExpandedSummoningQueuedRhinoCharge();
+                    _rulesChargeIndex++;
+                    if (_rulesChargeIndex < 2)
+                    {
+                        BeginExpandedSummoningQueuedRhinoCharge();
+                        _rulesWait = 0;
+                        return;
+                    }
                     CompleteExpandedSummoningRules();
                 }
             }
@@ -917,6 +1029,18 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             bool cleaned = false;
             SummonDocileHoovesComponent.SuspendedForFixture = false;
+            if (_rulesChargeRhino != null || _rulesChargeObserver != null)
+            {
+                try { CleanupExpandedSummoningQueuedRhinoCharge(); }
+                catch (Exception exception)
+                {
+                    _rulesCases.Add(Assertion(
+                        "expanded-summoning-sprint11-queued-charge-cleanup",
+                        "the request-local charge fixture restores its state",
+                        "exception=" + DescribeExpandedSummoningCorrectionException(
+                            exception), false, "exact request-local cleanup"));
+                }
+            }
             if (_rulesTrampleCommand != null)
             {
                 try { EndExpandedSummoningDetachedAbility(_rulesTrampleCommand); }
@@ -2823,6 +2947,241 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             detail = string.Join(";", steps.ToArray());
             return valid;
+        }
+
+        private void BeginExpandedSummoningQueuedRhinoCharge()
+        {
+            string key = _rulesChargeIndex == 0 ? "rhinoceros" :
+                "woolly-rhinoceros";
+            _rulesSteps.Add("reset:queuedCharge=" +
+                ResetExpandedSummoningHostile(_rulesFixture));
+            UnitEntityData hostile = _rulesFixture.Hostile;
+            hostile.Descriptor.State.Size = Size.Medium;
+            _rulesChargeDamageBefore = hostile.Descriptor.Damage;
+            _rulesChargeRhino = CastExpandedSummoningQuietUnit(_rulesFixture, key);
+            _rulesChargeRhino.Descriptor.Stats.BaseAttackBonus.BaseValue = 100;
+            ItemEntityWeapon gore = SummonLimbs.PrimaryWeapon(_rulesChargeRhino);
+            if (gore == null || gore.Blueprint == null)
+                throw new InvalidOperationException(key + " has no primary gore.");
+            BlueprintAbility[] nativeCharges = _rulesFixture.Blueprints
+                .OfType<BlueprintAbility>().Where(value =>
+                    value.ComponentsArray.OfType<Kingmaker.UnitLogic.Abilities
+                        .Components.AbilityCustomCharge>().Any()).ToArray();
+            _rulesSteps.Add("nativeChargeAbilities=" + string.Join("|",
+                nativeCharges.Select(value => value.name + ":" +
+                    value.AssetGuid + ":granted=" +
+                    (_rulesChargeRhino.Descriptor.Abilities.GetAbility(value) !=
+                        null)).ToArray()));
+            BlueprintAbility nativeCharge = nativeCharges.Single(value =>
+                value.AssetGuid == "c78506dd0e14f7c45a599990e4e65038");
+            Ability grantedCharge = _rulesChargeRhino.Descriptor.Abilities
+                .GetAbility(nativeCharge);
+            if (grantedCharge == null)
+                throw new InvalidOperationException(
+                    "The hidden " + key + " does not have native ChargeAbility.");
+            var chargeData = new AbilityData(grantedCharge);
+            _rulesChargeTurnModeBefore = SettingsRoot.Instance
+                .EnableTurnBasedMode.CurrentValue;
+            _rulesChargePauseBefore = Game.Instance.IsPaused;
+            _rulesChargeGameTimeBefore = Game.Instance.Player.GameTime;
+            if (TurnBased.Controllers.CombatController.IsInTurnBasedCombat())
+            {
+                SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
+                Game.Instance.TurnBasedCombatController.Activate();
+                if (TurnBased.Controllers.CombatController.IsInTurnBasedCombat())
+                    throw new InvalidOperationException(
+                        "Queued charge fixture did not enter RTWP.");
+            }
+            Game.Instance.IsPaused = false;
+            if (AstarPath.active == null)
+                throw new InvalidOperationException("Queued charge needs live area navigation.");
+            var attempts = new List<string>();
+            TargetWrapper selectedTarget = null;
+            var centres = new List<Vector3> {
+                hostile.Position, _rulesFixture.Caster.Position
+            };
+            centres.AddRange(CompassOffsets.Select(direction =>
+                _rulesFixture.Caster.Position + direction * 4f));
+            int blocked = 0, unwalkable = 0, tooClose = 0;
+            for (int centreIndex = 0; centreIndex < centres.Count &&
+                selectedTarget == null; centreIndex++)
+            {
+                Pathfinding.NNInfo targetNode = Kingmaker.View.ObstacleAnalyzer
+                    .GetNearestNode(centres[centreIndex]);
+                if (targetNode.node == null || !targetNode.node.Walkable ||
+                    Vector3.Distance(targetNode.clampedPosition,
+                        centres[centreIndex]) > 1.5f) continue;
+                PlaceExpandedSummoningUnit(hostile,
+                    targetNode.clampedPosition);
+                foreach (float distance in new[] { 6f, 5f, 4f })
+                {
+                    for (int direction = 0; direction < CompassOffsets.Length;
+                        direction++)
+                    {
+                        Vector3 requested = hostile.Position +
+                            CompassOffsets[direction] * distance;
+                        Pathfinding.NNInfo nearest = Kingmaker.View
+                            .ObstacleAnalyzer.GetNearestNode(requested);
+                        if (nearest.node == null || !nearest.node.Walkable ||
+                            Vector3.Distance(nearest.clampedPosition,
+                                requested) > 1.5f)
+                        {
+                            unwalkable++;
+                            continue;
+                        }
+                        Vector3 start = nearest.clampedPosition;
+                        Vector3 trace = Kingmaker.View.ObstacleAnalyzer
+                            .TraceAlongNavmesh(start, hostile.Position);
+                        bool clear = Kingmaker.Visual.FogOfWar.LineOfSightGeometry
+                            .Instance != null &&
+                            !Kingmaker.Visual.FogOfWar.LineOfSightGeometry
+                                .Instance.HasObstacle(start, hostile.Position, 0);
+                        float gap = Vector3.Distance(start, hostile.Position);
+                        float traceGap = Vector3.Distance(trace, hostile.Position);
+                        if (!clear || traceGap > 1f || gap <= 3.3f)
+                        {
+                            if (gap <= 3.3f) tooClose++;
+                            else blocked++;
+                            if (attempts.Count < 20)
+                                attempts.Add(centreIndex + "/" + distance +
+                                    "/" + direction + ":line=" + clear +
+                                    ",gap=" + gap.ToString("0.0") +
+                                    ",trace=" + traceGap.ToString("0.0"));
+                            continue;
+                        }
+                        PlaceExpandedSummoningUnit(_rulesChargeRhino, start);
+                        var target = new TargetWrapper(hostile);
+                        bool canTarget = chargeData.CanTarget(target);
+                        attempts.Add(centreIndex + "/" + distance + "/" +
+                            direction + ":start=" + _rulesChargeRhino.Position +
+                            ",canTarget=" + canTarget + ",available=" +
+                            chargeData.IsAvailable);
+                        if (!canTarget || !chargeData.IsAvailable) continue;
+                        selectedTarget = target;
+                        _rulesChargeStart = _rulesChargeRhino.Position;
+                        _rulesChargeRoute = key + "/centre" + centreIndex +
+                            "/" + distance + "/" + direction + ";start=" +
+                            _rulesChargeStart + ";target=" + hostile.Position;
+                        break;
+                    }
+                    if (selectedTarget != null) break;
+                }
+            }
+            _rulesSteps.Add("chargeRoutes:unwalkable=" + unwalkable +
+                ",blocked=" + blocked + ",tooClose=" + tooClose +
+                ";samples=" + string.Join("|", attempts.ToArray()));
+            if (selectedTarget == null)
+                throw new InvalidOperationException(
+                    "No live native queued charge route for " + key + ".");
+            _rulesChargeDamageBefore = hostile.Descriptor.Damage;
+            _rulesChargeMovementTicks = 0;
+            _rulesChargeAgentMoved = false;
+            _rulesChargeProcessEnded = false;
+            _rulesChargeAttackCommand = null;
+            _rulesChargeObserver = new ExpandedSummoningChargeAttackObserver {
+                Initiator = _rulesChargeRhino, Target = hostile,
+                Gore = gore.Blueprint,
+                Marker = BlueprintRoot.Instance.SystemMechanics.ChargeBuff
+            };
+            EventBus.Subscribe(_rulesChargeObserver);
+            _rulesAwakeSnapshot = Game.Instance.State.AwakeUnits.ToArray();
+            foreach (UnitEntityData unit in new[] { _rulesChargeRhino, hostile })
+                if (!Game.Instance.State.AwakeUnits.Contains(unit))
+                    Game.Instance.State.AwakeUnits.Add(unit);
+            UnityEngine.Random.InitState(FindNativeD20Seed(20));
+            _rulesChargeCommand = BeginExpandedSummoningDetachedAbility(
+                _rulesChargeRhino, nativeCharge, selectedTarget, true, true);
+            _rulesChargeStarted = _rulesChargeCommand.IsStarted &&
+                _rulesChargeCommand.IsRunning;
+        }
+
+        private void CompleteExpandedSummoningQueuedRhinoCharge()
+        {
+            string key = _rulesChargeIndex == 0 ? "rhinoceros" :
+                "woolly-rhinoceros";
+            float moved = Vector3.Distance(_rulesChargeRhino.Position,
+                _rulesChargeStart);
+            int damage = _rulesFixture.Hostile.Descriptor.Damage -
+                _rulesChargeDamageBefore;
+            string detail = "route=" + _rulesChargeRoute + ";moved=" +
+                moved.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) +
+                ";frames=" + _rulesWait + ";movementTicks=" +
+                _rulesChargeMovementTicks + ";agentMoved=" +
+                _rulesChargeAgentMoved + ";started=" + _rulesChargeStarted +
+                ";finished=" + _rulesChargeCommand.IsFinished +
+                ";hasExecution=" +
+                    (_rulesChargeCommand.ExecutionProcess != null) +
+                ";processEnded=" + _rulesChargeProcessEnded +
+                ";attackQueued=" + (_rulesChargeAttackCommand != null) +
+                ";attackStarted=" + (_rulesChargeAttackCommand != null &&
+                    _rulesChargeAttackCommand.IsStarted) +
+                ";markerAtEnd=" + _rulesChargeRhino.Descriptor.HasFact(
+                    BlueprintRoot.Instance.SystemMechanics.ChargeBuff) +
+                ";result=" + _rulesChargeCommand.Result +
+                ";damage=" + damage + ";attacks=" +
+                string.Join("|", _rulesChargeObserver.Attacks.ToArray()) +
+                ";agent=" + DescribeExpandedSummoningTrampleAgent(
+                    _rulesChargeRhino);
+            bool pass = _rulesChargeStarted && _rulesChargeAgentMoved &&
+                _rulesChargeAttackCommand != null &&
+                _rulesChargeAttackCommand.IsStarted &&
+                moved > 2f && damage > 0 &&
+                _rulesChargeObserver.FirstChargeHitWithMarker;
+            _rulesCases.Add(Assertion("expanded-summoning-sprint11-" + key +
+                "-queued-charge", "the hidden " + key +
+                " follows a native queued charge path and lands its first " +
+                "gore attack under the native charge marker", detail, pass,
+                "native ChargeAbility/AbilityCustomCharge command, movement " +
+                "agent and global RuleAttackWithWeapon observer"));
+            CleanupExpandedSummoningQueuedRhinoCharge();
+        }
+
+        private void CleanupExpandedSummoningQueuedRhinoCharge()
+        {
+            if (_rulesChargeCommand != null)
+                EndExpandedSummoningDetachedAbility(_rulesChargeCommand);
+            if (_rulesChargeRhino != null)
+            {
+                _rulesChargeRhino.Commands.InterruptAll(true);
+                _rulesChargeRhino.Commands.RemoveFinishedAndUpdateQueue();
+            }
+            _rulesChargeCommand = null;
+            _rulesChargeAttackCommand = null;
+            if (_rulesChargeObserver != null)
+            {
+                EventBus.Unsubscribe(_rulesChargeObserver);
+                _rulesChargeObserver = null;
+            }
+            if (_rulesChargePauseBefore.HasValue)
+            {
+                Game.Instance.IsPaused = _rulesChargePauseBefore.Value;
+                _rulesChargePauseBefore = null;
+            }
+            if (_rulesChargeGameTimeBefore.HasValue)
+            {
+                Game.Instance.Player.GameTime = _rulesChargeGameTimeBefore.Value;
+                _rulesChargeGameTimeBefore = null;
+            }
+            if (_rulesChargeTurnModeBefore.HasValue)
+            {
+                SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue =
+                    _rulesChargeTurnModeBefore.Value;
+                Game.Instance.TurnBasedCombatController.Activate();
+                _rulesChargeTurnModeBefore = null;
+            }
+            if (_rulesAwakeSnapshot != null)
+            {
+                Game.Instance.State.AwakeUnits.Clear();
+                Game.Instance.State.AwakeUnits.AddRange(_rulesAwakeSnapshot);
+                _rulesAwakeSnapshot = null;
+            }
+            if (_rulesFixture != null && _rulesFixture.Hostile != null &&
+                !_rulesFixture.Hostile.Destroyed)
+                _rulesFixture.Hostile.Descriptor.Damage = _rulesChargeDamageBefore;
+            if (_rulesChargeRhino != null)
+                DisposeExpandedSummoningUnits(_rulesFixture.Created,
+                    new[] { _rulesChargeRhino });
+            _rulesChargeRhino = null;
         }
 
         // ---------------------------------------------------------------------------------------------------------
