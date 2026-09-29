@@ -1080,3 +1080,29 @@ clean Release and strict package passed. Wrapper restoration
 `20260929T0055024455001Z` verified the original 136-file mod tree.
 AoO choice, successful half save, same-round replay, turn-based full-round
 cadence, native charge travel, quantity and visuals remain unqualified.
+
+## Sprint 11: successful Reflex half branch, 2026-09-29
+
+Guarded Steam `20260929T0116041484925Z` passed 30/30 assertions. After the
+three species' failed-save controls, a fourth native Aurochs path produced a
+successful DC 17 Reflex save, one half-on-save damage event, and 3 actual
+damage under the installed difficulty adjustment. The hostile's prior Reflex
+value and all request-local mode, pause, game-time and awake-unit state were
+restored. The wrapper restored the original 136-file installation exactly
+at `20260929T0120134762094Z`. The earlier `20260929T0107364456237Z`
+diagnostic showed the same mechanic but failed an overly strict tabletop
+minimum-damage assertion; it is excluded. Repository validation, 1,948
+domain tests, clean Release and strict package passed. Continue Sprint 11.
+
+## Sprint 11: same-round native trample replay, 2026-09-29
+
+Guarded Steam `20260929T0146260041731Z` passed 31/31 assertions. The same
+disposable Aurochs crossed the same hostile twice in the same game-time
+round using two native queued overrun paths. The first contact produced one
+successful DC 17 Reflex save and one half-flagged damage event. The second
+path traveled 4.63 m without another save or damage event; the target's 4
+actual damage did not increase. The fixture restored Reflex, mode, pause,
+game time and awake units. Wrapper restoration `20260929T0150362127764Z`
+verified the exact original 136-file installation. Repository validation,
+all 1,948 domain tests, clean Release and strict package passed. Continue
+the victim-choice, turn-based, charge, quantity and visual gates.

@@ -316,3 +316,18 @@ damage, and Woolly Rhinoceros 4.99 m/DC 23/19 damage. Each crossed a smaller
 hostile with one save and one damage event and no allied damage. Mode, pause,
 game time and awake-unit state were restored after each case. It does not
 close the remaining cadence, target-choice, quantity or visual gates.
+
+Guarded run `20260929T0116041484925Z` also passed a separate successful
+Reflex case: the native Aurochs path made one DC 17 successful save and one
+half-on-save damage event, with 3 actual damage under the working save's
+difficulty adjustment. The disposable hostile's prior Reflex value was
+restored. This closes the basic half-save branch, not the victim's tabletop
+AoO-versus-save choice or same-round replay contract.
+
+Guarded run `20260929T0146260041731Z` then passed 31/31 assertions with two
+native Aurochs overrun paths through the same hostile in the same game-time
+round. The second path moved 4.63 m, while save count and damage-event count
+stayed at one and the hostile's actual damage stayed at four. The first
+contact's successful DC 17 save carried the half-on-save flag. This qualifies
+the per-target, per-round replay guard for the tested RTWP path; victim AoO
+choice and turn-based cadence remain separate gates.

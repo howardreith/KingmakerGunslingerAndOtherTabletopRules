@@ -589,16 +589,26 @@ namespace KingmakerGunslinger.RuntimeTesting
         private int _rulesLoadingWait;
         private UnitEntityData _rulesTrampler;
         private static readonly string[] RulesTrampleKeys = {
-            "aurochs", "bison", "woolly-rhinoceros"
+            "aurochs", "bison", "woolly-rhinoceros", "aurochs"
         };
         private static readonly string[] RulesTrampleAbilityNames = {
             "KMG_Summoning_Special_Aurochs_Trample",
             "KMG_Summoning_Special_Bison_Trample",
-            "KMG_Summoning_Special_WoollyRhinoceros_Trample"
+            "KMG_Summoning_Special_WoollyRhinoceros_Trample",
+            "KMG_Summoning_Special_Aurochs_Trample"
         };
-        private static readonly int[] RulesTrampleSaveDcs = { 17, 20, 23 };
+        private static readonly int[] RulesTrampleSaveDcs = { 17, 20, 23, 17 };
         private int _rulesTrampleIndex;
+        private int? _rulesTrampleReflexBefore;
         private UnitUseAbility _rulesTrampleCommand;
+        private BlueprintAbility _rulesTrampleAbility;
+        private TargetWrapper _rulesTrampleDestination;
+        private bool _rulesTrampleReplayStarted;
+        private int _rulesTrampleReplayDamageBefore;
+        private int _rulesTrampleReplaySaveCount;
+        private int _rulesTrampleReplayDamageCount;
+        private float _rulesTrampleFirstDistance;
+        private int _rulesTrampleReplaySettleFrames;
         private ExpandedSummoningTrampleObserver _rulesTrampleObserver;
         private int _rulesTrampleDamageBefore;
         private int _rulesTrampleCasterDamageBefore;
@@ -624,10 +634,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal UnitEntityData Caster, Target;
             internal readonly List<RuleSavingThrow> Saves = new List<RuleSavingThrow>();
             internal readonly List<RuleDealDamage> Damage = new List<RuleDealDamage>();
+            internal long ContactRound = -1;
             public void OnEventAboutToTrigger(RuleSavingThrow evt) { }
             public void OnEventAboutToTrigger(RuleDealDamage evt) { }
             public void OnEventDidTrigger(RuleSavingThrow evt)
-            { if (ReferenceEquals(evt.Initiator, Target)) Saves.Add(evt); }
+            {
+                if (!ReferenceEquals(evt.Initiator, Target)) return;
+                if (Saves.Count == 0)
+                    ContactRound = Game.Instance.Player.GameTime.Ticks /
+                        TimeSpan.FromSeconds(6d).Ticks;
+                Saves.Add(evt);
+            }
             public void OnEventDidTrigger(RuleDealDamage evt)
             {
                 if (ReferenceEquals(evt.Initiator, Caster) &&
@@ -847,6 +864,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                         TickExpandedSummoningDetachedAbility(
                             _rulesTrampleCommand, _rulesWait);
                     if (!ended && _rulesWait++ < 600) return;
+                    if (ended && _rulesTrampleIndex == 3 &&
+                        !_rulesTrampleReplayStarted)
+                    {
+                        if (!_rulesTrampleCommand.IsFinished)
+                        {
+                            if (_rulesTrampleCommand.Animation != null)
+                                FinishExpandedSummoningAnimation(
+                                    _rulesTrampleCommand.Animation);
+                            _rulesTrampleCommand.Tick();
+                            if (!_rulesTrampleCommand.IsFinished &&
+                                _rulesTrampleReplaySettleFrames++ < 120) return;
+                            if (!_rulesTrampleCommand.IsFinished)
+                                throw new InvalidOperationException(
+                                    "The first native trample command did not finish after delivery;result=" +
+                                    _rulesTrampleCommand.Result +
+                                    ";settleFrames=" +
+                                    _rulesTrampleReplaySettleFrames + ".");
+                        }
+                        BeginExpandedSummoningTrampleReplay();
+                        _rulesWait = 0;
+                        return;
+                    }
                     CompleteExpandedSummoningTramplePath(ended);
                     _rulesTrampleIndex++;
                     if (_rulesTrampleIndex < RulesTrampleKeys.Length)
@@ -889,6 +928,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     DescribeExpandedSummoningCorrectionException(exception), false,
                     "request-local native turn mode toggle"));
             }
+            RestoreExpandedSummoningTrampleReflex();
             if (_rulesTrampleObserver != null)
             {
                 try { EventBus.Unsubscribe(_rulesTrampleObserver); } catch (Exception) { }
@@ -3537,6 +3577,11 @@ namespace KingmakerGunslinger.RuntimeTesting
         private void BeginExpandedSummoningTramplePath()
         {
             string creatureKey = RulesTrampleKeys[_rulesTrampleIndex];
+            bool halfCase = _rulesTrampleIndex == 3;
+            _rulesTrampleReplayStarted = false;
+            _rulesTrampleReplaySettleFrames = 0;
+            _rulesTrampleAbility = null;
+            _rulesTrampleDestination = null;
             _rulesTrampleAgentAtExecution = null;
             _rulesTrampleMaxDelta = 0f;
             _rulesTrampleManualTicks = 0;
@@ -3548,6 +3593,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             _rulesTrampleGameTimeRestored = false;
             UnitEntityData hostile = _rulesFixture.Hostile;
             hostile.Descriptor.State.Size = Size.Medium;
+            if (halfCase)
+            {
+                _rulesTrampleReflexBefore = hostile.Descriptor.Stats
+                    .GetStat(StatType.SaveReflex).BaseValue;
+                SetExactProperty(hostile.Descriptor.Stats.GetStat(
+                    StatType.SaveReflex), "BaseValue", 100);
+            }
             _rulesTrampler = CastExpandedSummoningQuietUnit(_rulesFixture, creatureKey);
             BlueprintAbility ability = _rulesFixture.Blueprints.OfType<BlueprintAbility>()
                 .Single(value => value.name ==
@@ -3628,7 +3680,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _rulesTrampleStart = _rulesTrampler.Position;
                         Vector3 midpoint = (start + end) * 0.5f;
                         PlaceExpandedSummoningUnit(hostile, midpoint);
-                        _rulesTrampleRoute = creatureKey + "/centre" + centreIndex +
+                        _rulesTrampleRoute = creatureKey +
+                            (halfCase ? "-reflex-half" : "") +
+                            "/centre" + centreIndex +
                             "/dir" + index +
                             ";start=" + start + ";hostile=" + hostile.Position +
                             ";end=" + end;
@@ -3643,6 +3697,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 lineBlocked + ";samples=" + string.Join("|", attempts.ToArray()));
             if (destination == null)
                 throw new InvalidOperationException("No valid trample route across the hostile.");
+            _rulesTrampleAbility = ability;
+            _rulesTrampleDestination = destination;
             _rulesTrampleDamageBefore = hostile.Descriptor.Damage;
             _rulesTrampleCasterDamageBefore = _rulesFixture.Caster.Descriptor.Damage;
             _rulesTrampleObserver = new ExpandedSummoningTrampleObserver {
@@ -3668,6 +3724,34 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _rulesTrampler, ability, destination, true, true);
         }
 
+        private void BeginExpandedSummoningTrampleReplay()
+        {
+            if (_rulesTrampleObserver == null ||
+                _rulesTrampleObserver.Saves.Count != 1 ||
+                _rulesTrampleObserver.Damage.Count != 1 ||
+                _rulesTrampleAbility == null || _rulesTrampleDestination == null)
+                throw new InvalidOperationException(
+                    "The first live trample contact is missing before replay.");
+            _rulesTrampleFirstDistance = Vector3.Distance(
+                _rulesTrampler.Position, _rulesTrampleStart);
+            _rulesTrampleReplayDamageBefore = _rulesFixture.Hostile.Descriptor.Damage;
+            _rulesTrampleReplaySaveCount = _rulesTrampleObserver.Saves.Count;
+            _rulesTrampleReplayDamageCount = _rulesTrampleObserver.Damage.Count;
+            EndExpandedSummoningDetachedAbility(_rulesTrampleCommand);
+            _rulesTrampleCommand = null;
+            _rulesTrampler.Commands.InterruptAll(true);
+            _rulesTrampler.Commands.RemoveFinishedAndUpdateQueue();
+            if (_rulesTrampler.Commands.Raw.Any(value => value != null))
+                throw new InvalidOperationException(
+                    "The first disposable trample command did not leave the native queue.");
+            PlaceExpandedSummoningUnit(_rulesTrampler, _rulesTrampleStart);
+            _rulesTrampleAgentAtExecution = null;
+            _rulesTrampleCommand = BeginExpandedSummoningDetachedAbility(
+                _rulesTrampler, _rulesTrampleAbility,
+                _rulesTrampleDestination, true, true);
+            _rulesTrampleReplayStarted = true;
+        }
+
         private void RestoreExpandedSummoningTrampleTurnMode()
         {
             if (!_rulesTrampleTurnModeBefore.HasValue) return;
@@ -3691,6 +3775,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             _rulesTrampleTurnModeRestored =
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue == before;
             _rulesTrampleTurnModeBefore = null;
+        }
+
+        private void RestoreExpandedSummoningTrampleReflex()
+        {
+            if (!_rulesTrampleReflexBefore.HasValue || _rulesFixture == null ||
+                _rulesFixture.Hostile == null || _rulesFixture.Hostile.Destroyed)
+                return;
+            SetExactProperty(_rulesFixture.Hostile.Descriptor.Stats.GetStat(
+                StatType.SaveReflex), "BaseValue", _rulesTrampleReflexBefore.Value);
+            _rulesTrampleReflexBefore = null;
         }
 
         private static string DescribeExpandedSummoningTrampleAgent(UnitEntityData unit)
@@ -3719,6 +3813,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             string creatureKey = RulesTrampleKeys[_rulesTrampleIndex];
             int expectedDc = RulesTrampleSaveDcs[_rulesTrampleIndex];
+            bool halfCase = _rulesTrampleIndex == 3;
             UnitEntityData hostile = _rulesFixture.Hostile;
             int damage = hostile.Descriptor.Damage - _rulesTrampleDamageBefore;
             int allyDamage = _rulesFixture.Caster.Descriptor.Damage -
@@ -3750,17 +3845,51 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";saves=" + saves + ";dealt=" + dealt + ";hostileDamage=" + damage +
                 ";allyDamage=" + allyDamage;
             _rulesCases.Add(Assertion("expanded-summoning-sprint11-" +
-                creatureKey + "-trample-path-contact",
+                creatureKey + (halfCase ? "-trample-reflex-half" :
+                    "-trample-path-contact"),
                 "the hidden " + creatureKey + " follows a native trample path through a smaller hostile, completes, makes one DC " + expectedDc + " Reflex save and one bludgeoning damage event, and does not injure the allied caster",
                 detail, ended && moved > 3f && damage > 0 && allyDamage == 0 &&
                     _rulesTrampleObserver != null &&
                     _rulesTrampleObserver.Saves.Count == 1 &&
                     _rulesTrampleObserver.Saves[0].DifficultyClass == expectedDc &&
                     _rulesTrampleObserver.Damage.Count == 1 &&
-                    _rulesTrampleObserver.Damage[0].Damage == damage,
+                    _rulesTrampleObserver.Damage[0].Damage == damage &&
+                    _rulesTrampleObserver.Damage[0].HalfBecauseSavingThrow ==
+                        _rulesTrampleObserver.Saves[0].IsPassed &&
+                    (!halfCase || (_rulesTrampleObserver.Saves[0].IsPassed &&
+                        damage > 0 && damage <= 10)),
                 "guarded loaded-area queued ability command; native path contact, save and damage observers"));
+            if (halfCase)
+            {
+                long finalRound = Game.Instance.Player.GameTime.Ticks /
+                    TimeSpan.FromSeconds(6d).Ticks;
+                bool replayClean = _rulesTrampleReplayStarted && ended &&
+                    _rulesTrampleFirstDistance > 3f && moved > 3f &&
+                    _rulesTrampleObserver.ContactRound == finalRound &&
+                    _rulesTrampleObserver.Saves.Count ==
+                        _rulesTrampleReplaySaveCount &&
+                    _rulesTrampleObserver.Damage.Count ==
+                        _rulesTrampleReplayDamageCount &&
+                    hostile.Descriptor.Damage == _rulesTrampleReplayDamageBefore;
+                _rulesCases.Add(Assertion(
+                    "expanded-summoning-sprint11-aurochs-trample-no-replay",
+                    "a second native path over the same hostile in the same round moves but makes no second trample save or damage event",
+                    "firstDistance=" + _rulesTrampleFirstDistance +
+                    ";secondDistance=" + moved +
+                    ";contactRound=" + _rulesTrampleObserver.ContactRound +
+                    ";finalRound=" + finalRound +
+                    ";saves=" + _rulesTrampleReplaySaveCount + "->" +
+                    _rulesTrampleObserver.Saves.Count + ";damageEvents=" +
+                    _rulesTrampleReplayDamageCount + "->" +
+                    _rulesTrampleObserver.Damage.Count + ";hostileDamage=" +
+                    _rulesTrampleReplayDamageBefore + "->" +
+                    hostile.Descriptor.Damage,
+                    replayClean,
+                    "same disposable summon and target, two native queued overrun paths in one game-time round"));
+            }
             EndExpandedSummoningDetachedAbility(_rulesTrampleCommand);
             _rulesTrampleCommand = null;
+            RestoreExpandedSummoningTrampleReflex();
             RestoreExpandedSummoningTrampleTurnMode();
             _rulesCases.Add(Assertion("expanded-summoning-sprint11-" +
                 creatureKey + "-trample-mode-restore",
