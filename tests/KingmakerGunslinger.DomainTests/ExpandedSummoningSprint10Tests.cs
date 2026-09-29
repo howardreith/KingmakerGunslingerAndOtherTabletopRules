@@ -134,12 +134,12 @@ namespace KingmakerGunslinger.DomainTests
                 value.Symbol == "KMG.Summoning.Natural.WaspSting1d8" &&
                 value.PlannedType == "BlueprintItemWeapon"),
                 "Wasp sting has its own append-only blueprint identity.");
-            Assertions.Equal(48,
+            Assertions.Equal(57,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "Only the Sprint 11 ungulate placements remain suppressed.");
+                "Stirge and the Sprint 11 ungulates remain suppressed.");
         }
 
-        internal static void StirgeRegisteredAtAllNinePublishedNatureTiers()
+        internal static void StirgeRegisteredAtAllNineHiddenNatureTiers()
         {
             SummonCreatureSpec stirge = ExpandedSummoningCatalog.All.Single(value =>
                 value.Key == "stirge");
@@ -161,8 +161,8 @@ namespace KingmakerGunslinger.DomainTests
                     tier == 2 ? SummonMultiplicity.OneD3 :
                     SummonMultiplicity.OneD4PlusOne, variant.Multiplicity,
                     "Stirge follows the preserved summon quantity ladder.");
-                Assertions.True(SummonVisibilityCatalog.IsPublished(variant),
-                    "Qualified Stirge belongs in every Nature's Ally menu tier.");
+                Assertions.False(SummonVisibilityCatalog.IsPublished(variant),
+                    "Reopened Stirge is registered but hidden at every Nature's Ally tier.");
             }
             NaturalSummonProfile profile = ExpandedSummoningNaturalProfiles
                 .For("stirge");
@@ -171,7 +171,7 @@ namespace KingmakerGunslinger.DomainTests
                 profile.SpeedFeet == 40 && profile.PrimaryWeapon ==
                 "StirgeTouch" && profile.Facts.Contains("Airborne") &&
                 profile.Facts.Contains("WeaponFinesse"),
-                "The published profile must retain Stirge's physical and touch-carrier role.");
+                "The hidden profile must retain Stirge's physical and touch-carrier role.");
             Assertions.Equal("406c1e1af5400ac4881e330502ccbd9e",
                 ExpandedSummoningDonorCatalog.For("stirge").Guid,
                 "Stirge uses the audited flying donor rig.");
@@ -180,7 +180,7 @@ namespace KingmakerGunslinger.DomainTests
                 value.PlannedType == "BlueprintItemWeapon"),
                 "The zero-damage touch carrier needs its own stable identity.");
             Assertions.Equal("Stirge", SummonIconCatalog.For("stirge")
-                .DisplayName, "The published Stirge choices need original species art.");
+                .DisplayName, "Hidden Stirge keeps its original species art for requalification.");
             string builder = File.ReadAllText(Path.Combine(
                 Environment.CurrentDirectory, "src", "KingmakerGunslinger",
                 "Blueprints", "ExpandedSummoningNaturalBuilder.cs"));
@@ -265,9 +265,9 @@ namespace KingmakerGunslinger.DomainTests
                 specialBuilder.Contains("0f775c7d5d8b6494197e1ce937754482") &&
                 specialBuilder.Contains("UnitCondition.LoseDexterityToAC"),
                 "The hidden unit must own a direct-hit native link and bounded actual-Constitution drain.");
-            Assertions.Equal(48,
+            Assertions.Equal(57,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "Stirge is published while the Sprint 11 ungulates remain suppressed.");
+                "Stirge is hidden with the Sprint 11 ungulates during requalification.");
         }
 
         internal static void GiantWaspPoisonTracksConstitutionAndTabletopExposure()
@@ -348,7 +348,7 @@ namespace KingmakerGunslinger.DomainTests
                 review.Contains("finally") &&
                 review.Contains("renderer.enabled = true"),
                 "The isolated Wasp frame must restore every temporarily hidden auxiliary renderer.");
-            Assertions.Equal(48,
+            Assertions.Equal(57,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
                 "The review scenario remains bounded after Sprint 11 registration.");
         }

@@ -57,8 +57,8 @@ namespace KingmakerGunslinger.DomainTests
                     " remains registered but hidden before qualification.");
             }
             Assertions.True(all.Length == 882 &&
-                all.Count(SummonVisibilityCatalog.IsPublished) == 834,
-                "The 48 new placements must not change the accepted menu.");
+                all.Count(SummonVisibilityCatalog.IsPublished) == 825,
+                "The 48 ungulates and nine reopened Stirge placements stay hidden.");
         }
 
         internal static void FourUngulatesHaveHiddenQuantityPlacementsInBothFamilies()

@@ -1,5 +1,20 @@
 # Expanded Summoning Phase 2 journal
 
+## Sprint 10 owner correction: Stirge publication hold, 2026-09-29
+
+Hidden Stirge's nine SNA placements until the non-grappling-prey attachment,
+standard-action removal, follow/lifecycle, visuals and save/load reset are
+requalified. Kept its identities and original art; Wasp and Sprint 9 remain
+published. Repository validation, 1,952/1,952 domain tests, clean Release and
+strict package passed. Guarded Steam inventory `20260929T1307471902731Z`
+passed 50/50 with 825 published placements, exact 18-menu reconciliation and
+no icon/order omissions. Package SHA-256
+`C04444489219EB5E70771F08539AE4DAABD9F9661AE7043C4EF38E993A225DD1`.
+Restoration `20260929T1311552981337Z` verified the unchanged original
+136-file installation SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+The older 834-placement qualification is superseded for Stirge publication.
+
 ## Sprint 9: flying-animal save/load checkpoint, 2026-09-27
 
 The published-candidate visual-contract, repeated-lifecycle and rules batch

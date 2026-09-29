@@ -44,7 +44,7 @@ namespace KingmakerGunslinger.Summoning
             string[] split = { "redcap", "axiomite", "soul-eater", "bogeyman",
                 "movanic-deva", "frost-giant", "thanadaemon" };
             string[] preserved = { "mite", "manticore", "nereid", "hamadryad" };
-            string[] prepared = { "aurochs", "bison", "rhinoceros",
+            string[] prepared = { "stirge", "aurochs", "bison", "rhinoceros",
                 "woolly-rhinoceros" };
             string[] expected = visibleCatalog.Concat(split).Concat(preserved)
                 .Concat(prepared)
@@ -77,10 +77,10 @@ namespace KingmakerGunslinger.Summoning
             Add(result, SummonProjectIconScope.PreservedNative,
                 "mite", "Mite", "manticore", "Manticore", "nereid",
                 "Nereid", "hamadryad", "Hamadryad");
-            // Original Sprint 11 paintings are packaged for technical review;
-            // their summon placements remain hidden until the full sprint gate.
+            // Original Stirge and Sprint 11 paintings remain catalogued while
+            // their summon placements are hidden for requalification.
             Add(result, SummonProjectIconScope.KmgCatalog,
-                "aurochs", "Aurochs", "bison", "Bison",
+                "stirge", "Stirge", "aurochs", "Aurochs", "bison", "Bison",
                 "rhinoceros", "Rhinoceros", "woolly-rhinoceros",
                 "Woolly Rhinoceros");
             return result.ToArray();
