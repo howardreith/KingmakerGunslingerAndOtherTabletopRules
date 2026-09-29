@@ -497,10 +497,10 @@ approval is pending and nonblocking.
 
 | Creature | Registered role and mechanic | Live evidence | Remaining before publication |
 | --- | --- | --- | --- |
-| Aurochs | SM/SNA III meat/trample; original Horse-rig view | DC 17 native trample contact, successful Reflex half branch and same-round replay suppression; original view and 12.3 m doorway travel | Victim choice, turn-based cadence, natural group expiry, impact and UI/art review |
-| Bison | SM/SNA IV heavier trample; original Horse-rig view | DC 20 native trample contact; original view and 12.3 m doorway travel | Victim choice, turn-based cadence, natural group expiry, impact and UI/art review |
-| Rhinoceros | SM/SNA IV powerful charge; original Mastodon-rig view | Native `ChargeAbility` moved 3.88 m and queued first gore hit for 25 damage; original view and 12.3 m doorway travel | Turn-based and quantity charge, natural group expiry, impact and UI/art review |
-| Woolly Rhinoceros | SM/SNA V stronger charge and trample; distinct original Mastodon-rig view | Native charge moved 3.42 m and queued first gore hit for 30 damage; DC 23 trample contact; original view and 12.3 m doorway travel | Victim choice, turn-based and quantity charge, natural group expiry, impact and UI/art review |
+| Aurochs | SM/SNA III meat/trample; original Horse-rig view | DC 17 native trample contact, successful Reflex half branch and same-round replay suppression; original view, 12.3 m doorway travel and natural 4-member group expiry | Victim choice, turn-based cadence, impact and UI/art review |
+| Bison | SM/SNA IV heavier trample; original Horse-rig view | DC 20 native trample contact; original view, 12.3 m doorway travel and natural 4-member group expiry | Victim choice, turn-based cadence, impact and UI/art review |
+| Rhinoceros | SM/SNA IV powerful charge; original Mastodon-rig view | Native `ChargeAbility` moved 3.88 m and queued first gore hit for 25 damage; original view, 12.3 m doorway travel and natural 4-member group expiry | Turn-based and quantity charge, impact and UI/art review |
+| Woolly Rhinoceros | SM/SNA V stronger charge and trample; distinct original Mastodon-rig view | Native charge moved 3.42 m and queued first gore hit for 30 damage; DC 23 trample contact; original view, 12.3 m doorway travel and natural 5-member group expiry | Victim choice, turn-based and quantity charge, impact and UI/art review |
 
 All four remain hidden. Guarded cast run `20260929T0713346420017Z` passed
 16/16 SM/SNA `1d3`/`1d4+1` routes, 48/48 original-view attachments,
@@ -515,4 +515,11 @@ Woolly Rhinoceros moved all sixteen members 6.43–13.18 m on distinct native
 paths to within 1.5 m of separate connected-floor destinations. All views,
 single-subject doorway travel, group cleanup and zero save writes passed.
 This closes simultaneous movement on the surveyed floor. Concurrent charge,
-natural group expiry, turn-based cadence and impact review remain open.
+turn-based cadence and impact review remain open at that checkpoint.
+
+Guarded working-save `20260929T0920575813821Z` passed 32/32: all 17
+members in 4/4/4/5 simultaneous groups moved to distinct connected-floor
+goals, then all canonical summon timers and units retired under natural game
+updates (111.98–113.14 game seconds). Pause state, no-save-write cleanup and
+exact original-install restoration passed. Concurrent charge, turn-based
+cadence, victim AoO choice, impact contact and clear art review remain open.

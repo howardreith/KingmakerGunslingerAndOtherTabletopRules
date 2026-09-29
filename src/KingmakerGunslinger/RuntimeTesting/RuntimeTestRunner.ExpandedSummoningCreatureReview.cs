@@ -8,6 +8,8 @@ using Kingmaker.Blueprints.Root;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Buffs;
+using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.View;
 using KingmakerGunslinger.Bootstrap;
@@ -53,6 +55,14 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool _creatureReviewCrowdWasPaused;
         private int _creatureReviewCrowdFrames;
         private int _creatureReviewCrowdWait;
+        private bool _creatureReviewExpiryStarted;
+        private bool _creatureReviewExpiryTimed;
+        private bool _creatureReviewExpiryWasPaused;
+        private bool _creatureReviewExpiryPauseRestored;
+        private TimeSpan _creatureReviewExpiryStartTime;
+        private TimeSpan _creatureReviewExpiryEndTime;
+        private DateTime _creatureReviewExpiryStartUtc;
+        private string _creatureReviewExpiryInitial = "<not run>";
         private UnitEntityData[] _creatureReviewUnits = Array.Empty<UnitEntityData>();
         private UnitEntityData _creatureReviewCaster;
         private UnitEntityData[] _creatureReviewParty;
@@ -391,6 +401,117 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "real UnitMoveTo commands on a simultaneous 1d4+1 group; native movement-agent samples and request-local state restoration"));
         }
 
+        private bool StepExpandedSummoningUngulateCrowdExpiry(string key)
+        {
+            try
+            {
+                if (!_creatureReviewExpiryStarted)
+                {
+                    BeginExpandedSummoningUngulateCrowdExpiry();
+                    _creatureReviewExpiryStarted = true;
+                    return false;
+                }
+                Game.Instance.EntityDestroyer.Tick();
+                bool allGone = _creatureReviewUnits.All(unit =>
+                    unit.Destroyed && unit.View == null &&
+                    unit.HoldingState == null);
+                TimeSpan gameTime = Game.Instance.Player.GameTime;
+                if (!allGone &&
+                    gameTime < _creatureReviewExpiryEndTime +
+                        TimeSpan.FromSeconds(10) &&
+                    DateTime.UtcNow - _creatureReviewExpiryStartUtc <
+                        TimeSpan.FromSeconds(180)) return false;
+                FinishExpandedSummoningUngulateCrowdExpiry(key, null);
+                return true;
+            }
+            catch (Exception exception)
+            {
+                FinishExpandedSummoningUngulateCrowdExpiry(key, exception);
+                return true;
+            }
+        }
+
+        private void BeginExpandedSummoningUngulateCrowdExpiry()
+        {
+            TimeSpan clock = Game.Instance.Player.GameTime;
+            BlueprintBuff summoned = BlueprintRoot.Instance.SystemMechanics
+                .SummonedUnitBuff;
+            Buff[][] markers = _creatureReviewUnits.Select(unit =>
+                unit.Descriptor.Buffs.RawFacts.OfType<Buff>().Where(value =>
+                    ReferenceEquals(value.Blueprint, summoned)).ToArray())
+                .ToArray();
+            if (markers.Any(group => group.Length != 1))
+                throw new InvalidOperationException(
+                    "Every quantity member needs one exact native summon timer.");
+            Buff[] exact = markers.Select(group => group[0]).ToArray();
+            _creatureReviewExpiryTimed = exact.All(marker =>
+                !marker.IsPermanent &&
+                marker.EndTime > clock + TimeSpan.FromSeconds(1));
+            _creatureReviewExpiryInitial = "count=" + exact.Length +
+                ";timed=" + _creatureReviewExpiryTimed + ";remaining=" +
+                string.Join("|", exact.Select(marker =>
+                    (marker.EndTime - clock).TotalSeconds.ToString("0.##",
+                        CultureInfo.InvariantCulture)).ToArray());
+            if (!_creatureReviewExpiryTimed)
+                throw new InvalidOperationException(
+                    "A quantity member lacks a positive native duration.");
+            _creatureReviewExpiryStartTime = clock;
+            _creatureReviewExpiryEndTime = exact.Max(marker => marker.EndTime);
+            _creatureReviewExpiryStartUtc = DateTime.UtcNow;
+            _creatureReviewExpiryWasPaused = Game.Instance.IsPaused;
+            if (_creatureReviewExpiryWasPaused) Game.Instance.IsPaused = false;
+        }
+
+        private void FinishExpandedSummoningUngulateCrowdExpiry(string key,
+            Exception error)
+        {
+            try
+            {
+                if (_creatureReviewExpiryStartUtc != default(DateTime))
+                {
+                    Game.Instance.IsPaused = _creatureReviewExpiryWasPaused;
+                    _creatureReviewExpiryPauseRestored =
+                        Game.Instance.IsPaused == _creatureReviewExpiryWasPaused;
+                }
+                BlueprintBuff summoned = BlueprintRoot.Instance.SystemMechanics
+                    .SummonedUnitBuff;
+                int markersLeft = _creatureReviewUnits.Count(unit =>
+                    unit.Descriptor != null &&
+                    unit.Descriptor.Buffs.RawFacts.OfType<Buff>().Any(value =>
+                        ReferenceEquals(value.Blueprint, summoned)));
+                int live = _creatureReviewUnits.Count(unit =>
+                    !unit.Destroyed || unit.View != null ||
+                    unit.HoldingState != null);
+                _creatureReviewAssertions.Add(Assertion(
+                    "expanded-summoning-ungulate-crowd-expiry-" + key,
+                    "all timed native summon markers expire and all quantity members leave the loaded area without a save write",
+                    _creatureReviewExpiryInitial + ";markersLeft=" +
+                        markersLeft + ";live=" + live +
+                        ";gameElapsed=" + (Game.Instance.Player.GameTime -
+                            _creatureReviewExpiryStartTime).TotalSeconds
+                            .ToString("0.##", CultureInfo.InvariantCulture) +
+                        ";wallElapsed=" + (DateTime.UtcNow -
+                            _creatureReviewExpiryStartUtc).TotalSeconds
+                            .ToString("0.##", CultureInfo.InvariantCulture) +
+                        ";pauseRestored=" +
+                        _creatureReviewExpiryPauseRestored +
+                        (error == null ? "" : ";error=" +
+                            error.GetType().Name + ":" + error.Message),
+                    error == null && _creatureReviewExpiryTimed &&
+                        _creatureReviewExpiryPauseRestored &&
+                        markersLeft == 0 && live == 0,
+                    "unpaused native game updates and entity-destruction queue; no clock jump or save write"));
+            }
+            finally
+            {
+                foreach (UnitEntityData unit in _creatureReviewUnits)
+                    if (!unit.Destroyed || unit.View != null ||
+                        unit.HoldingState != null)
+                        CleanupExpandedSummoningUnit(unit);
+                Game.Instance.EntityDestroyer.Tick();
+            }
+        }
+
         private void StepExpandedSummoningCreatureReview()
         {
             if (_creatureReviewQueue == null)
@@ -449,6 +570,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _creatureReviewCrowdMoves = null;
                     _creatureReviewCrowdWait = 0;
                     _creatureReviewCrowdFrames = 0;
+                    _creatureReviewExpiryStarted = false;
+                    _creatureReviewExpiryTimed = false;
+                    _creatureReviewExpiryPauseRestored = false;
+                    _creatureReviewExpiryStartUtc = default(DateTime);
+                    _creatureReviewExpiryInitial = "<not run>";
                     ResetExpandedSummoningMotionReview(
                         ExpandedSummoningIdentityCatalog.UnitSymbol(variant.Creature)
                             .Replace('.', '_').Replace('-', '_'), key + "-review");
@@ -566,9 +692,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                             MotionReviewTravelValid,
                             "surveyed connected floor route, native UnitMoveTo and cross-frame position/velocity samples"));
                     }
+                    if (_creatureReviewQuantity)
+                    {
+                        _creatureReviewSettle = 0;
+                        _creatureReviewPhase = 5;
+                        return;
+                    }
                     foreach (UnitEntityData unit in _creatureReviewUnits)
                         CleanupExpandedSummoningUnit(unit);
                     Game.Instance.EntityDestroyer.Tick();
+                    _creatureReviewSettle = 0;
+                    _creatureReviewPhase = 3;
+                    return;
+                case 5:
+                    if (!StepExpandedSummoningUngulateCrowdExpiry(key)) return;
                     _creatureReviewSettle = 0;
                     _creatureReviewPhase = 3;
                     return;

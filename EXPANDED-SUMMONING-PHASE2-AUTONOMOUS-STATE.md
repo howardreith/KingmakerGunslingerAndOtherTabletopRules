@@ -1,5 +1,35 @@
 # Expanded Summoning Phase 2 autonomous state
 
+## Sprint 11 natural expiry of simultaneous ungulate groups, 2026-09-29
+
+Guarded Steam working-save review `20260929T0920575813821Z` passed 32/32
+assertions after repository validation, 1,952 domain tests, clean Release and
+strict 274-file package validation. SNA `1d4+1` groups of 4 Aurochs, 4 Bison,
+4 Rhinoceros and 5 Woolly Rhinoceros accepted distinct simultaneous native
+moves to connected-floor goals. All 17 timed native summon markers expired
+under unpaused game updates, and all 17 units left the loaded area: each
+species ended with `markersLeft=0;live=0`, 111.98–113.14 seconds of game time
+after the expiry observation began, restored pause state and zero save writes.
+The Bison idle capture waited two frames and recorded its renderer enabled
+in all four review moments. Package SHA-256
+`5B14FA23491BA4D1CC6ADC633DB230400C9E6B05A43AC617AAD87F491611CB3E`;
+DLL SHA-256
+`CD0D3DEFF31A0092E18CA215631B350BFC5E0C55721FB5FC59318A12788DF4BE`.
+Restoration `20260929T0932580911284Z` verified the original 136-file tree
+SHA-256 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+
+Pilot `20260929T0851026253484Z` passed natural Aurochs expiry 2/2 and
+restored exactly. The earlier synthetic-clock diagnostic
+`20260929T0830501430816Z` removed timer markers but did not drive native
+unit destruction; it is excluded and restored exactly. The first full natural
+run `20260929T0900511372577Z` passed all four expiry assertions but failed
+one Bison idle-view assertion after a 600-frame fader wait; its moving and
+attack frames were visible, and restoration passed. The observer now keeps
+the reviewed quantity member awake before the fade wait. This checkpoint
+qualifies natural group expiry and movement, not concurrent charge, trample
+victim choice, turn-based cadence, clear art or impact contact. The four
+choices remain hidden.
+
 ## Sprint 11 simultaneous ungulate quantity pathing, 2026-09-29
 
 Guarded Steam working-save creature review
