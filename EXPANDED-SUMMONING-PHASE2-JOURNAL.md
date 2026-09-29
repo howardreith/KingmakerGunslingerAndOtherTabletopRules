@@ -1066,3 +1066,17 @@ The guarded wrapper restored the original 136-file installation exactly at
 `20260929T0037501346548Z`. This is one Aurochs RTWP contact, not general
 trample cadence, Bison/Woolly variants, charge travel, quantity or visuals.
 All ungulate choices remain hidden. Continue Sprint 11.
+
+## Sprint 11: Bison and Woolly trample contacts, 2026-09-29
+
+Extended the request-local native path fixture to each hidden trample
+ability and its independent printed DC. Guarded Steam result
+`20260929T0050555483840Z` passed 27/27: Aurochs 4.96 m/DC 17/16 damage,
+Bison 4.96 m/DC 20/19 damage, and Woolly Rhinoceros 4.99 m/DC 23/19 damage.
+Each crossed the smaller hostile, made one save and one damage event, and
+dealt no allied damage. The fixture restored the mode, pause, game time and
+awake list after each run. Repository validation, 1,948 domain tests,
+clean Release and strict package passed. Wrapper restoration
+`20260929T0055024455001Z` verified the original 136-file mod tree.
+AoO choice, successful half save, same-round replay, turn-based full-round
+cadence, native charge travel, quantity and visuals remain unqualified.

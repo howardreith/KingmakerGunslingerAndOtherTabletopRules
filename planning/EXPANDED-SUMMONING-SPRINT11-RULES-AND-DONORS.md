@@ -309,3 +309,10 @@ that correction. This measures one Aurochs RTWP contact; it does not establish
 Bison/Woolly contacts, victim AoO choice, turn-based full-round cadence,
 multiple-quantity navigation, or original 3D silhouettes. Those remain
 publication gates.
+
+The expanded three-species guarded run `20260929T0050555483840Z` passed
+27/27 assertions: Aurochs 4.96 m/DC 17/16 damage, Bison 4.96 m/DC 20/19
+damage, and Woolly Rhinoceros 4.99 m/DC 23/19 damage. Each crossed a smaller
+hostile with one save and one damage event and no allied damage. Mode, pause,
+game time and awake-unit state were restored after each case. It does not
+close the remaining cadence, target-choice, quantity or visual gates.
