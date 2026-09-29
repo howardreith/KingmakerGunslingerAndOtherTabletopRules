@@ -519,6 +519,13 @@
       "subjectPrompt": "A shaggy winter rhinoceros with two separate horns, reddish-brown long hair and a cold muted setting, visually heavier than the bare rhinoceros.",
       "generator": "built-in-imagegen",
       "compositionBriefSource": "assets-source/original-icons/expanded-summoning/PHASE2-SPRINT11-SOURCES.md"
+    },
+    {
+      "key": "remove-stirge",
+      "displayName": "Remove Stirge",
+      "subjectPrompt": "A gloved adventurer's hand grips a tiny rust-red bat-winged mosquito-like Stirge by its torso and lifts it visibly clear of a bare forearm, with a dark gap between proboscis and skin. The removal gesture, not the creature portrait, is the strong central silhouette. Warm amber rim light, dark forest backdrop and aged-gold circular frame. No text, blood or extra creatures.",
+      "generator": "built-in-imagegen",
+      "compositionBriefSource": "assets-source/original-icons/expanded-summoning/PHASE2-SPRINT10-SOURCES.md"
     }
   ]
 }

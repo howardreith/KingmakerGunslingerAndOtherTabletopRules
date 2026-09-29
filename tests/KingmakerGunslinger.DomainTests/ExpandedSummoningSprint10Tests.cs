@@ -11,6 +11,7 @@ namespace KingmakerGunslinger.DomainTests
     {
         internal const int AppendedLedgerIdentities = 29;
         internal const int StirgeAppendedLedgerIdentities = 13;
+        internal const int StirgeRemovalIdentityCount = 1;
 
         internal static void StirgeAttachRulesBoundDrainAndDetachment()
         {
@@ -203,9 +204,10 @@ namespace KingmakerGunslinger.DomainTests
                 runtime.Contains("roll.IsHit && damageAfter == damageBefore"),
                 "The guarded combat fixture must demand a real zero-HP touch hit against armored AC controls.");
             Assertions.True(runtime.Contains("expanded-summoning-stirge-native-attachment") &&
-                runtime.Contains("SummonHoldComponent.HeldTarget(stirge)") &&
-                runtime.Contains("ReleaseExpandedSummoningHold(stirge, hostile, hold)"),
-                "The guarded fixture must inspect and release both ends of the Stirge's native link.");
+                runtime.Contains("StirgeHoldComponent.AttachedTarget(stirge)") &&
+                runtime.Contains("StirgeHoldComponent.Detach(stirge)") &&
+                runtime.Contains("bool targetFree = hostile.Get<Kingmaker.UnitLogic.Parts"),
+                "The guarded fixture must inspect the Stirge-only link and free prey state.");
             Assertions.True(runtime.Contains("expanded-summoning-stirge-first-blood-drain") &&
                 runtime.Contains("liveHold.OnNewRound()") &&
                 runtime.Contains("liveHold.CumulativeDamage == 1 && stillAttached"),
@@ -220,12 +222,20 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(runtime.Contains("expanded-summoning-stirge-four-point-detach") &&
                 runtime.Contains("for (int round = 2; round <= 4") &&
                 runtime.Contains("fourPointDetach = mealExact && automaticCleanup"),
-                "The guarded fixture must require four actual drains and automatic native release.");
+                "The guarded fixture must require four actual drains and automatic attachment release.");
             Assertions.True(runtime.Contains("expanded-summoning-stirge-escape-and-transition") &&
-                runtime.Contains("Kingmaker.UnitLogic.UnitHelper.TryBreakFree(hostile,") &&
-                runtime.Contains("SummonGrappleAreaSafeguard.Sweep(true,") &&
-                runtime.Contains("escapeAndTransition = reattachedForEscape && nativeEscape"),
-                "Victim escape and area leave must re-establish and release real native Stirge links.");
+                runtime.Contains("ExecuteExpandedSummoningRuntimeAbility(hostile,") &&
+                runtime.Contains("SummonGrappleAreaSafeguard.SweepStirge(") &&
+                runtime.Contains("escapeAndTransition = reattachedForEscape && failedRemoval") &&
+                runtime.Contains("successfulRemoval"),
+                "The prey's standard action must show failed and successful removal, then area cleanup.");
+            Assertions.True(runtime.Contains("expanded-summoning-stirge-quantity-freedom") &&
+                runtime.Contains("ExerciseExpandedSummoningStirgeQuantityFreedom") &&
+                runtime.Contains("\"stirge\", 3, SummonMultiplicity.OneD4PlusOne") &&
+                runtime.Contains("StirgeHoldComponent.FollowAttached(first)") &&
+                runtime.Contains("new RuleAttackWithWeapon(hostile, first, weapon, 0)") &&
+                runtime.Contains("otherIntact"),
+                "Quantity Stirges must keep distinct links while one prey moves and kills its attacker.");
             Assertions.True(runtime.Contains("expanded-summoning-stirge-dismissal-release") &&
                 runtime.Contains("ExerciseExpandedSummoningStirgeDismissal") &&
                 runtime.Contains("CleanupExpandedSummoningUnit(stirge);") &&
@@ -241,7 +251,7 @@ namespace KingmakerGunslinger.DomainTests
                 runtime.Contains("marker.EndTime +") &&
                 runtime.Contains("stirge.Descriptor.Buffs.Tick()") &&
                 special.Contains(".SystemMechanics.SummonedUnitBuff) == null") &&
-                special.Contains("Detach(owner, target);"),
+                special.Contains("Detach(owner);"),
                 "The guarded fixture must drive native death and timed-marker expiry, and the holder must release after that marker expires.");
             string correction = File.ReadAllText(Path.Combine(
                 Environment.CurrentDirectory, "src", "KingmakerGunslinger",
@@ -251,20 +261,40 @@ namespace KingmakerGunslinger.DomainTests
                 runtime.Contains("PrepareExpandedSummoningPersistentStirge(units,") &&
                 runtime.Contains("VerifyExpandedSummoningReloadedStirge(units,") &&
                 correction.Contains("attach.TryAttach(pony, touch, true)") &&
-                correction.Contains("!holderPart && !victimPart && !holderBuff && !victimBuff"),
-                "The exact working-save fixture must attach a Stirge before saving and inspect both sides after reloading.");
+                correction.Contains("!holderPart && !victimPart && !holderBuff &&") &&
+                correction.Contains("!orphanRemovalAction"),
+                "The exact working-save fixture must attach before saving and clear link, hold and action on reload.");
             string specialBuilder = File.ReadAllText(Path.Combine(
                 Environment.CurrentDirectory, "src", "KingmakerGunslinger",
                 "Blueprints", "ExpandedSummoningSpecialBuilder.cs"));
             Assertions.True(special.Contains("StirgeAttachPolicy.MayAttach") &&
                 special.Contains("StirgeAttachPolicy.EndTurn") &&
                 special.Contains("new RuleDealStatDamage(owner, target,") &&
-                special.Contains("target.Ensure<UnitPartGrappleTarget>().Init") &&
+                special.Contains("link.Attach(target)") &&
+                special.Contains("private UnitEntityData m_Target;") &&
+                special.Contains("StirgeHoldComponent.AttachedTarget(owner)") &&
                 specialBuilder.Contains("ConfigureStirgeAttachment(library, bySymbol)") &&
                 specialBuilder.Contains("9545a5550d89feb47a84edaeb4e63d0b") &&
                 specialBuilder.Contains("0f775c7d5d8b6494197e1ce937754482") &&
                 specialBuilder.Contains("UnitCondition.LoseDexterityToAC"),
-                "The hidden unit must own a direct-hit native link and bounded actual-Constitution drain.");
+                "The hidden unit must own a session-only attachment and bounded actual-Constitution drain.");
+            string stirgeBlock = special.Substring(
+                special.IndexOf("public sealed class StirgeAttachComponent", StringComparison.Ordinal),
+                special.IndexOf("internal static class StirgeNativeTouchAttachPatch", StringComparison.Ordinal) -
+                special.IndexOf("public sealed class StirgeAttachComponent", StringComparison.Ordinal));
+            Assertions.False(stirgeBlock.Contains("UnitPartGrappleTarget") ||
+                stirgeBlock.Contains("UnitPartGrappleInitiator") ||
+                stirgeBlock.Contains("GrappledBuff"),
+                "Stirge Attach must never initialize native grapple state on its prey.");
+            string iconBuilder = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "Blueprints", "ExpandedSummoningIconBuilder.cs"));
+            Assertions.True(iconBuilder.Contains(
+                    "Set(bySymbol, \"KMG.Summoning.Special.Stirge.Remove\",") &&
+                iconBuilder.Contains("ExpandedSummoningProjectIcons.Require(\"remove-stirge\")") &&
+                SummonIconCatalog.For("remove-stirge").Key !=
+                    SummonIconCatalog.For("stirge").Key,
+                "Remove Stirge must have its own original action icon, distinct from the creature portrait.");
             Assertions.Equal(57,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
                 "Stirge is hidden with the Sprint 11 ungulates during requalification.");
@@ -462,14 +492,14 @@ namespace KingmakerGunslinger.DomainTests
                 scenario.Contains(";touch=True;hit=True;attached=True") &&
                 scenario.Contains("WriteExpandedSummoningOverheadStrikeCapture(") &&
                 request.Contains("\"giant-wasp\", \"stirge\""),
-                "The guarded hidden-Stirge fixture must cast its own SNA I variant, correlate a native touch hit and reciprocal attachment, and capture the live pose.");
+                "The guarded hidden-Stirge fixture must cast its own SNA I variant, correlate a native touch hit and session attachment, and capture the live pose.");
             string special = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "Summoning",
                 "ExpandedSummoningSpecialCombatComponents.cs"));
             Assertions.True(special.Contains("class StirgeNativeTouchAttachPatch") &&
                 special.Contains("attach.AttachAfterNativeRule(__instance)") &&
                 special.Contains("ReferenceEquals(attack.Weapon.Blueprint, TouchWeapon)") &&
-                special.Contains("ReferenceEquals(SummonHoldComponent.HeldTarget(attack.Initiator),") &&
+                special.Contains("ReferenceEquals(StirgeHoldComponent.AttachedTarget(attack.Initiator),") &&
                 scenario.Contains("attach.NativeFallbackCalls"),
                 "Only an exact, otherwise unattached Stirge touch hit may retry the native attach rule after UnitAttack.");
             string pose = File.ReadAllText(Path.Combine(root, "src",
@@ -483,7 +513,7 @@ namespace KingmakerGunslinger.DomainTests
                 view.Contains("attachment.StirgeTouch.Configure(view, donor)") &&
                 view.Contains("DestroyImmediate(attachment.StirgeTouch)") &&
                 pose.Contains("class StirgeVisualTouch : MonoBehaviour") &&
-                pose.Contains("SummonHoldComponent.HeldTarget(") &&
+                pose.Contains("StirgeHoldComponent.AttachedTarget(") &&
                 pose.Contains("MaximumApproachMeters = 2.5f") &&
                 pose.Contains("SurfaceClearanceMeters = 0.05f") &&
                 pose.Contains("Vector3 forward = -_root.forward") &&

@@ -1,6 +1,6 @@
 ﻿{
     "schemaVersion":  1,
-    "count":  98,
+    "count":  99,
     "icons":  [
                   {
                       "key":  "dog",
@@ -879,6 +879,15 @@
                       "key":  "woolly-rhinoceros",
                       "file":  "woolly-rhinoceros.png",
                       "sha256":  "6c4fca4860efe04b48c4fd38639d8b6093bf71f6e61b88dcb2f0131948606c41",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "remove-stirge",
+                      "file":  "remove-stirge.png",
+                      "sha256":  "d94adebdc69e80f08bb936de2050ccbb5ad78e9fc99c678b6f242c5979c28329",
                       "width":  128,
                       "height":  128,
                       "format":  "RGBA PNG",

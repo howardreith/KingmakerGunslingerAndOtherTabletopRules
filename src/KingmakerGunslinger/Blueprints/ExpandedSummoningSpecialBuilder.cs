@@ -233,6 +233,7 @@ namespace KingmakerGunslinger.Blueprints
         private const string StirgeCombatTraitsSymbol =
             "KMG.Summoning.Special.Stirge.CombatTraits";
         private const string StirgeHoldSymbol = "KMG.Summoning.Special.Stirge.Hold";
+        private const string StirgeRemoveSymbol = "KMG.Summoning.Special.Stirge.Remove";
         private const string RhinocerosUnitSymbol = "KMG.Summoning.Unit.Rhinoceros";
         private const string RhinocerosPowerfulChargeSymbol =
             "KMG.Summoning.Special.Rhinoceros.PowerfulCharge";
@@ -1686,8 +1687,8 @@ namespace KingmakerGunslinger.Blueprints
                 StirgeCombatTraitsSymbol);
             BlueprintBuff hold = Require<BlueprintBuff>(bySymbol,
                 StirgeHoldSymbol);
-            BlueprintBuff grappled = Require<BlueprintBuff>(bySymbol,
-                GrappleGrappledSymbol);
+            BlueprintAbility remove = Require<BlueprintAbility>(bySymbol,
+                StirgeRemoveSymbol);
             BlueprintBuff filthFever = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(
                 library, "9545a5550d89feb47a84edaeb4e63d0b",
                 "native Filth Fever disease");
@@ -1700,8 +1701,8 @@ namespace KingmakerGunslinger.Blueprints
             var attach = ScriptableObject.CreateInstance<StirgeAttachComponent>();
             attach.TouchWeapon = touch;
             attach.HoldBuff = hold;
-            attach.GrappledBuff = grappled;
             attach.DiseaseBuff = filthFever;
+            StirgeHoldComponent.RemoveAbility = remove;
             traits.name = InternalName(StirgeCombatTraitsSymbol);
             traits.Stacking = StackingType.Replace;
             traits.IsClassFeature = true;
@@ -1716,10 +1717,15 @@ namespace KingmakerGunslinger.Blueprints
                 null);
             var loseDexterity = ScriptableObject.CreateInstance<AddCondition>();
             loseDexterity.Condition = UnitCondition.LoseDexterityToAC;
+            var cannotMove = ScriptableObject.CreateInstance<AddCondition>();
+            cannotMove.Condition = UnitCondition.CantMove;
+            var cannotAct = ScriptableObject.CreateInstance<AddCondition>();
+            cannotAct.Condition = UnitCondition.CantAct;
             hold.name = InternalName(StirgeHoldSymbol);
             hold.Stacking = StackingType.Replace;
             hold.IsClassFeature = false;
             hold.ComponentsArray = new BlueprintComponent[] { loseDexterity,
+                cannotMove, cannotAct,
                 ScriptableObject.CreateInstance<StirgeHoldComponent>() };
             BlueprintUnitFactAccess.Resolve().Configure(hold,
                 LocalizationService.Create(
@@ -1730,6 +1736,33 @@ namespace KingmakerGunslinger.Blueprints
                 null);
             unit.AddFacts = (unit.AddFacts ?? Array.Empty<BlueprintUnitFact>())
                 .Concat(new BlueprintUnitFact[] { traits, unlootable }).ToArray();
+
+            remove.name = InternalName(StirgeRemoveSymbol);
+            remove.Type = AbilityType.Extraordinary;
+            remove.Parent = null;
+            remove.Hidden = false;
+            remove.ActionBarAutoFillIgnored = false;
+            remove.Range = AbilityRange.Touch;
+            remove.CanTargetEnemies = true;
+            remove.CanTargetFriends = true;
+            remove.CanTargetSelf = false;
+            remove.CanTargetPoint = false;
+            remove.NeedEquipWeapons = false;
+            remove.ActionType = UnitCommand.CommandType.Standard;
+            remove.MaterialComponent = new BlueprintAbility.MaterialComponentData();
+            remove.ResourceAssetIds = Array.Empty<string>();
+            var effect = ScriptableObject.CreateInstance<AbilityEffectRunAction>();
+            effect.Actions = new ActionList { Actions = new GameAction[] {
+                ScriptableObject.CreateInstance<ContextActionRemoveStirge>() } };
+            remove.ComponentsArray = new BlueprintComponent[] {
+                ScriptableObject.CreateInstance<RemoveStirgeTargetChecker>(), effect };
+            BlueprintUnitFactAccess.Resolve().Configure(remove,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Stirge.Remove.Name", "Remove Stirge"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Stirge.Remove.Description",
+                    "Spend a standard action to remove an attached Stirge. Use the better of your grapple CMB or Mobility check against the Stirge's CMD; failure leaves it attached."),
+                null);
         }
 
         /// <summary>

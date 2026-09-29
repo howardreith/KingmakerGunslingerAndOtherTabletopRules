@@ -22,6 +22,29 @@ Wasp unit, inspectable-type, ability and template consumers; Stirge has its
 unit and nine Nature's Ally abilities. Stirge's touch carrier and attack trait
 are mechanics-only, its hold is internal, and Filth Fever retains native art.
 
+## Owner correction: Remove Stirge action, 2026-09-29
+
+The new standard-action choice uses a distinct original painting. Source
+`sources/remove-stirge.png` is a 1254 px opaque square generated with the
+built-in imagegen tool, SHA-256
+`f57ff1733c65ff1702507ec5c23fcbf3c9b93065d97ecbab07b2943ac855ad1b`.
+Deterministic 128 px export `assets/game/icons/expanded-summoning/remove-stirge.png`
+has SHA-256
+`d94adebdc69e80f08bb936de2050ccbb5ad78e9fc99c678b6f242c5979c28329`.
+The exact consumer is `KMG.Summoning.Special.Stirge.Remove`; the summon unit
+and its nine registered but temporarily hidden SNA choices retain the separate
+Stirge portrait. At 128 px the large gloved hand lifting the small rust-red
+Stirge clear of a forearm remains legible. Technical export and catalog checks
+do not constitute native UI qualification or owner visual approval.
+
+Initial generation prompt (built-in imagegen, stylized-concept):
+
+> Original square source painting for a 128-pixel Pathfinder: Kingmaker-style ability icon. Clearly depict Remove Stirge as a gloved adventurer's hand gripping a tiny rust-red bat-winged, mosquito-like Stirge and pulling it away from a forearm. A large hand and forearm diagonal across the center, creature visibly separated from skin; readable at 128 px. Rich dark fantasy painting, warm amber rim light, near-black woodland backdrop, thin ornate aged-gold circular frame. Emphasize the removal gesture, not a frontal flying creature. No text, numbers, selection glow, watermark, unrelated animals, or gore.
+
+Selected edit prompt:
+
+> The Stirge has already been removed. Lift the tiny bat-winged creature upward so the entire proboscis tip is visibly clear of the forearm by a dark gap. Gloved fingers grip its small torso from above. The forearm is unpierced, with no contact or blood. Preserve the gold frame, amber painterly lighting, dark forest, square format and scale; keep the action readable at 128 px.
+
 ## Exact generation prompts
 
 Giant Wasp:
