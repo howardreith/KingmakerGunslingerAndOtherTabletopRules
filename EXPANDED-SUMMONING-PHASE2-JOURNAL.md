@@ -1232,3 +1232,35 @@ The guarded wrapper restored the original 136-file live tree exactly at
 `20260929T0717326030639Z`. These are sequential cast lifecycles; simultaneous
 formation movement, charge and expiry are not yet qualified. The choices
 remain hidden.
+
+## Sprint 11: simultaneous hidden ungulate pathing, 2026-09-29
+
+The guarded creature review now accepts only hidden Sprint 11 ungulates and
+their SNA own-tier-plus-two `1d4+1` route. The request guard round-trips
+that exact scope and rejects unrelated creatures, other quantities, extra
+parameters and the protected baseline save. The first wrapper attempt
+`20260929T0739068341178Z` was rejected before deployment because the old
+harness allowed only the `creatures` parameter. The allowlist was extended;
+repository validation, all 1,952 domain tests, clean Release and strict
+274-file package validation passed.
+
+Diagnostic `20260929T0751059958281Z` showed all four groups taking native
+distinct-target paths and cleaning up, but its four legacy solo movement
+assertions failed because the global awake-list changed naturally while
+other summons remained active. The fixture now tests that its own awake-list
+entry is removed; its separate group stage still requires exact whole-list
+restoration. That failed run restored the original installation exactly at
+`20260929T0755237739067Z`.
+
+Final guarded Steam run `20260929T0805061632581Z` passed 28/28 assertions.
+Aurochs/Bison/Rhinoceros/Woolly Rhinoceros had 5/5/4/2 concurrent units;
+every member accepted its own native move, traveled 6.43–13.18 m and ended
+within 1.5 m of a distinct connected-floor destination. Four subsequent
+single-subject doorway reviews, all original view checks, group dismissal,
+zero owned-view resources and no save writes passed. Package SHA-256
+`B032FB9C9C06C1B605647B7799EB5437600C9EBF3646C000DD0648941BA36519`;
+DLL SHA-256
+`7D623B1262DA0F3560150156036C9EA70B08589A15E59B5946523734CB143129`.
+The exact original 136-file installation was restored at
+`20260929T0809255640809Z`. Concurrent charge and natural expiry remain
+unqualified, so the choices remain hidden.

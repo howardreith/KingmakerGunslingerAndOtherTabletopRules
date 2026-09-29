@@ -1,5 +1,37 @@
 # Expanded Summoning Phase 2 autonomous state
 
+## Sprint 11 simultaneous ungulate quantity pathing, 2026-09-29
+
+Guarded Steam working-save creature review
+`20260929T0805061632581Z` passed 28/28 assertions after repository
+validation, all 1,952 domain tests, clean Release, focused request-guard tests
+and strict 274-file package validation. Hidden SNA own-tier-plus-two
+`1d4+1` casts held Aurochs 5, Bison 5, Rhinoceros 4 and Woolly Rhinoceros 2
+alive concurrently within their respective groups. Each member accepted its
+own native `UnitMoveTo` and reached a distinct connected-floor destination
+within 1.5 m, traveling 6.43–13.18 m with nonzero movement-agent velocity.
+All four single-subject doorway reviews, original-view checks, group dismissal,
+zero private meshes/materials, zero save writes and request-local cleanup
+passed. Package SHA-256
+`B032FB9C9C06C1B605647B7799EB5437600C9EBF3646C000DD0648941BA36519`;
+DLL SHA-256
+`7D623B1262DA0F3560150156036C9EA70B08589A15E59B5946523734CB143129`.
+Restoration `20260929T0809255640809Z` verified the original 136-file live
+tree SHA-256 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+The diagnostic `20260929T0751059958281Z` passed four group-path checks
+but failed four single-view awake-list assertions that assumed no other
+summons were active; it restored exactly at `20260929T0755237739067Z`.
+The earlier request-guard rejection `20260929T0739068341178Z` made no
+deployment. The observer now checks its own awake-list changes while the
+group-path stage retains exact whole-list restoration.
+
+This qualifies concurrent native movement to distinct goals on the guarded
+working-save floor. Simultaneous charge, natural duration expiry, turn-based
+cadence, trample victim choice, exact impact contact, hidden-choice player UI
+and owner art review remain open. All four choices stay hidden. Next executable
+action: test a native Rhino charge while a quantity group remains present,
+then verify timed group expiry and zero residual units before publication.
+
 ## Sprint 11 hidden ungulate quantity casts, 2026-09-29
 
 Guarded Steam cast run `20260929T0713346420017Z` passed 35/35 assertions
@@ -216,7 +248,9 @@ supersedes the Phase 1 handoff's historical prohibition on starting Sprint 9.
 - Accepted dependency: `master` / `origin/master` at
   `2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a`, the merged PR #24 Favored
   Class integration. The owner packet's expected `2943a02d` is its ancestor.
-- Last pushed checkpoint before Rhino charge, Sprint 11 hidden registration:
+- Last published checkpoint before this group-path work:
+  `cf3a60f8c026626ef6303fbc61abf9f447889080` (sequential ungulate
+  quantity casts). Earlier hidden-registration checkpoint:
   `7b9cdc7a1c2305804b0b60e6db3bb438e0c91d75`.
   Branch head at intake: `2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a`;
   first pushed intake checkpoint: `359e346ecb6a094552f096869ecb9c81a2d291bf`.

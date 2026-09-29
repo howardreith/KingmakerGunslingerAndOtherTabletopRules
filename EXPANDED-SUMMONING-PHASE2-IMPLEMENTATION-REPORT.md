@@ -668,3 +668,17 @@ The wrapper restored the original installation exactly at
 `20260929T0717326030639Z`. Simultaneous quantity movement/charge/expiry,
 trample victim choice and turn-based cadence, exact impact contact, clear art
 review, player menu path and publication remain open.
+
+The guarded working-save group review `20260929T0805061632581Z` passed
+28/28 assertions after 1,952 domain tests, clean Release and strict 274-file
+package validation. Hidden SNA `1d4+1` casts produced groups of 5 Aurochs,
+5 Bison, 4 Rhinoceros and 2 Woolly Rhinoceros. All sixteen members accepted
+their own native move and reached distinct connected-floor goals within
+1.5 m after traveling 6.43–13.18 m. The solo doorway/view review, all group
+teardowns, zero private resources, no save writes and exact installation
+restoration passed. Package SHA-256 is
+`B032FB9C9C06C1B605647B7799EB5437600C9EBF3646C000DD0648941BA36519`;
+DLL SHA-256 is
+`7D623B1262DA0F3560150156036C9EA70B08589A15E59B5946523734CB143129`.
+Restoration record: `20260929T0809255640809Z`. Concurrent charge and
+natural duration expiry remain open.
