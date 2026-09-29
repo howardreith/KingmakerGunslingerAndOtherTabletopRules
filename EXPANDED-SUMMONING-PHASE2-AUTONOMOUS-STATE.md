@@ -1,5 +1,16 @@
 # Expanded Summoning Phase 2 autonomous state
 
+## Owner-design stop, 2026-09-29
+
+Sprint 11's Aurochs, Bison and Woolly Rhinoceros trample target choice is
+blocked on an owner-level rules/balance decision. The installed native
+overrun and AoO actions do not offer the printed victim choice at each
+contact; the current hidden implementation always rolls Reflex. Exact
+evidence, rejected alternatives, restored environment and the smallest
+owner decision are in `EXPANDED-SUMMONING-PHASE2-BLOCKER.md`. Stop at this
+mission-defined boundary; do not publish the three choices or claim the
+Phase 2A draft PR ready. Sprints 12-21 have not started.
+
 ## Sprint 11 clear-floor visual inspection, 2026-09-29
 
 Guarded Steam creature review `20260929T1022039564996Z` passed 32/32
