@@ -15743,7 +15743,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         BlueprintBootstrap.RegisteredBlueprintCount == BlueprintBootstrap.ExpectedRegisteredBlueprintCountForCurrentRuntime,
                     "exact final-live KMG blueprint identity scan"),
                 Assertion("expanded-summoning-stirge-touch-carrier",
-                    "hidden Stirge primary attack uses native melee touch AC and zero base dice",
+                    "published Stirge primary attack uses native melee touch AC and zero base dice",
                     "type=" + stirgeTouch.AttackType + ";dice=" +
                         stirgeTouch.Damage + ";primary=" +
                         ReferenceEquals(stirge.Body.PrimaryHand, stirgeTouch),
@@ -17805,7 +17805,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         pteranodonAttachedClean,
                     "one patch outcome per attached view; per-cast cleanup is enforced by the cast loop itself"),
                 Assertion("expanded-summoning-stirge-visual-attached",
-                    "every hidden Stirge cast carries its private skinned view",
+                    "every published Stirge cast carries its private skinned view",
                     "checked=" + _stirgeVisualChecked + ";attached=" +
                         _stirgeVisualAttached + (_stirgeVisualDetail.Count == 0 ?
                             "" : ";detail=" + string.Join("|",
@@ -19173,7 +19173,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         /// <summary>
-        /// A hidden Stirge's own-tier attack against an armored, disposable
+        /// A Stirge's own-tier attack against an armored, disposable
         /// hostile. The native attack roll must use touch AC while the empty
         /// carrier leaves hit points unchanged; attachment is tested apart.
         /// </summary>
@@ -23086,7 +23086,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "KMG_Summoning_Special_PurpleWorm_CombatTraits" ||
                 blueprint.name == "KMG_Summoning_Special_PurpleWorm_Swallowed")
                 return false;
-            // The hidden Stirge's native Unlootable fact prevents its touch
+            // The Stirge's native Unlootable fact prevents its touch
             // carrier from becoming a dropped item. Require the installed
             // blueprint identity; the general "loot" sanitizer stays strict.
             if (blueprint.AssetGuid == "0f775c7d5d8b6494197e1ce937754482" &&

@@ -1,5 +1,21 @@
 # Autonomous Gunslinger journal
 
+## 2026-09-29 Expanded Summoning Sprint 10 corrected publication
+
+The owner-directed Stirge correction is internally qualified and its nine SNA
+I-IX choices are published again. The prey no longer receives a reciprocal
+native grapple or any movement/action restriction. A Stirge-owned session link,
+bounded view follow, clean native-translocation detach and standard-action CMB
+or Mobility removal replace it. Four drains detach; death, dismissal, expiry,
+area transition, module disable and reload clean up. The primary Paizo
+once-per-victim disease exception and disclosed DC 12 Filth Fever adaptation
+remain. Final turn-based and RTWP touch/contact runs passed; live inventory
+passed 50/50; the broad player path passed 834/834 generated roots and 29/29
+native wrappers. Repository validation, 1,952 tests, clean Release and strict
+package validation passed. Every guarded run restored the original live tree.
+Next: Sprint 11 automatic AoO-first Trample, explicit Stampede disposition and
+hoof/leg correction. No merge, release, permanent deployment or Sprint 22.
+
 ## 2026-09-06 0.0.115 public release verification
 
 Owner-authorized master merge/tag commit:
