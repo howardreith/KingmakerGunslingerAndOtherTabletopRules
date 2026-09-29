@@ -1,5 +1,31 @@
 # Expanded Summoning Phase 2 autonomous state
 
+## Sprint 11 hidden ungulate quantity casts, 2026-09-29
+
+Guarded Steam cast run `20260929T0713346420017Z` passed 35/35 assertions
+after repository validation, all 1,952 domain tests, clean Release and strict
+274-file package validation. All four hidden ungulates cast through native
+`1d3` and `1d4+1` commands in both SM and SNA: 16/16 quantity routes, with
+12 additional casts beyond the roster-wide samples. The full fixture completed
+204/204 casts and 280 spawned units. All 48 observed ungulate views carried
+their own original visual; exact-kind counts, caster-level duration, and
+per-cast scene snapshot cleanup passed. The shared visual patch recorded one
+outcome per attached view after its account was extended for ungulates.
+Package SHA-256 `E89F2E876E7FAA1AFE02B7529FEC3DB49E3BDBFADFC95DFDA1339628880E2950`;
+DLL SHA-256 `3C076A2701B9EF128668E2BB87A6D8B0558B9B4114EF34A80F792BABBA26CA52`.
+Restoration `20260929T0717326030639Z` verified the original 136-file live
+tree SHA-256 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+The earlier run `20260929T0700328410579Z` failed only the visual patch's
+obsolete expected-outcome count after the new ungulate casts; 16/16 quantity
+routes, 204/204 casts, duration and cleanup passed there, and it restored
+exactly at `20260929T0704289205794Z`. Simultaneous quantity pathing, charge
+and expiry, turn-based cadence, trample victim choice, impact contact, actual
+hidden-choice UI and owner visual review remain open. All four stay hidden.
+Next executable action: extend the guarded creature-review fixture to keep a
+`1d4+1` ungulate group live together, issue native concurrent travel and
+individual Rhino charge commands in the surveyed connected route, then observe
+group expiry and exact restoration before considering publication.
+
 ## Sprint 11 native queued Rhino charge, 2026-09-29
 
 Guarded Steam rules `20260929T0639171416597Z` passed 33/33 assertions

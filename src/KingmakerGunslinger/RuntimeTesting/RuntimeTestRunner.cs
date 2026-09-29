@@ -16974,6 +16974,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             int patchOutcomesBefore =
                 ExpandedSummoningPteranodonViewPatch.ObservedOutcomes.Count;
             int patchOutcomesAfterCoverage = -1;
+            int ungulateVisualChecked = 0;
+            int ungulateVisualAttached = 0;
             BlueprintScriptableObject[] blueprints = BlueprintBootstrap.Library
                 .GetAllBlueprints().Where(value => value != null).ToArray();
             BlueprintFeature direBatSense = blueprints.OfType<BlueprintFeature>()
@@ -17021,9 +17023,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .Where(value => !oneD3.Contains(value) &&
                     !oneD4PlusOne.Contains(value))
                 .ToArray();
+            string[] ungulateKeys = {
+                "aurochs", "bison", "rhinoceros", "woolly-rhinoceros"
+            };
+            SummonVariantSpec[] ungulateCrowd = monster.Concat(ally)
+                .Where(value => ungulateKeys.Contains(value.Creature.Key) &&
+                    value.Multiplicity != SummonMultiplicity.One)
+                .GroupBy(value => new { value.Creature.Key, value.Family,
+                    value.Multiplicity })
+                .Select(group => group.OrderBy(value => value.ParentTier).First())
+                .ToArray();
+            SummonVariantSpec[] ungulateExtra = ungulateCrowd
+                .Where(value => !oneD3.Contains(value) &&
+                    !oneD4PlusOne.Contains(value)).ToArray();
             SummonVariantSpec[] casts = oneCreature.Concat(oneD3)
                 .Concat(oneD4PlusOne).Concat(pteranodonCrowd)
-                .Concat(waspCrowd).ToArray();
+                .Concat(waspCrowd).Concat(ungulateExtra).ToArray();
             // One own-tier single per roster entry in each family, plus the
             // alphabetical 1d3 / 1d4+1 coverage samples; both move with the roster.
             int rosterEntries = ExpandedSummoningCatalog.All.Count(value =>
@@ -17045,7 +17060,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 oneD3Legal = 0, oneD4PlusOneLegal = 0, sameKind = 0,
                 durationExact = 0, legalPlacement = 0,
                 illegalPlacementRejected = 0, pteranodonCrowdLegal = 0,
-                waspCrowdLegal = 0,
+                waspCrowdLegal = 0, ungulateCrowdLegal = 0,
+                ungulateExtraLegal = 0,
                 direBatSenseChecked = 0, direBatSensePassed = 0,
                 birdSenseChecked = 0, birdSenseClean = 0;
             var observedCounts = new List<string>();
@@ -17401,6 +17417,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                             else _stirgeVisualDetail.Add(outcome + ":" + renderers);
                         }
                     }
+                    else if (variant.Creature.Key == "aurochs" ||
+                        variant.Creature.Key == "bison" ||
+                        variant.Creature.Key == "rhinoceros" ||
+                        variant.Creature.Key == "woolly-rhinoceros")
+                    {
+                        foreach (UnitEntityData unit in spawned)
+                        {
+                            if (unit == null || unit.View == null) continue;
+                            ungulateVisualChecked++;
+                            string outcome = ExpandedSummoningPteranodonViewPatch
+                                .DescribeView(unit.View);
+                            if (outcome.StartsWith("visual:attached;",
+                                    StringComparison.Ordinal))
+                                ungulateVisualAttached++;
+                        }
+                    }
                     else if (PteranodonDonorSharers.Contains(variant.Creature.Key))
                     {
                         // Isolation: the creatures that share the GiantEagle
@@ -17422,8 +17454,10 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                     completed++;
                     spawnedTotal += count;
+                    if (ungulateCrowd.Contains(variant)) ungulateCrowdLegal++;
                     if (pteranodonCrowd.Contains(variant)) pteranodonCrowdLegal++;
                     else if (waspCrowd.Contains(variant)) waspCrowdLegal++;
+                    else if (ungulateExtra.Contains(variant)) ungulateExtraLegal++;
                     else if (variant.Multiplicity == SummonMultiplicity.One) singleExact++;
                     else if (variant.Multiplicity == SummonMultiplicity.OneD3)
                         oneD3Legal++;
@@ -17550,10 +17584,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     sameKind.ToString(), sameKind == casts.Length,
                     "spawned BlueprintUnit reference equality for every command"),
                 Assertion("expanded-summoning-command-total",
-                    (coverageCasts + 2 + waspCrowd.Length) + ": " + coverageCasts +
-                        " coverage casts plus two Pteranodon and four Wasp crowd casts",
+                    (coverageCasts + 2 + waspCrowd.Length +
+                        ungulateExtra.Length) + ": " + coverageCasts +
+                        " coverage casts plus two Pteranodon, four Wasp and " +
+                        ungulateExtra.Length + " additional ungulate crowd casts",
                     completed.ToString(), casts.Length == coverageCasts +
-                        pteranodonCrowd.Length + waspCrowd.Length &&
+                        pteranodonCrowd.Length + waspCrowd.Length +
+                        ungulateExtra.Length &&
                         pteranodonCrowd.Length == 2 && completed == casts.Length,
                     "native AbilityData, UnitUseAbility command, RuleCastSpell, and execution-process completion"),
                 Assertion("expanded-summoning-caster-level-duration",
@@ -17723,6 +17760,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                         waspCrowd.Select(value => value.Family).Distinct().Count() == 2 &&
                         waspCrowd.Select(value => value.Multiplicity).Distinct().Count() == 2,
                     "exact-kind native counts and per-cast cleanup are checked by the common cast loop"),
+                Assertion("expanded-summoning-sprint11-ungulate-quantity",
+                    "1d3 and 1d4+1 native commands for all four ungulates in both SM and SNA",
+                    "covered=" + ungulateCrowdLegal + "/" + ungulateCrowd.Length +
+                        ";extra=" + ungulateExtraLegal + "/" +
+                        ungulateExtra.Length + ";keys=" +
+                        string.Join(",", ungulateCrowd.Select(value =>
+                            value.Creature.Key).Distinct().OrderBy(value => value).ToArray()),
+                    ungulateCrowd.Length == 16 && ungulateCrowdLegal == 16 &&
+                        ungulateExtraLegal == ungulateExtra.Length &&
+                        ungulateCrowd.Select(value => value.Creature.Key)
+                            .Distinct().Count() == 4 &&
+                        ungulateCrowd.Select(value => value.Family)
+                            .Distinct().Count() == 2 &&
+                        ungulateCrowd.Select(value => value.Multiplicity)
+                            .Distinct().Count() == 2,
+                    "exact-kind native quantity counts, duration and per-cast cleanup through the common cast loop"),
+                Assertion("expanded-summoning-sprint11-ungulate-quantity-visuals",
+                    "every cast ungulate view receives the private original visual",
+                    "checked=" + ungulateVisualChecked + ";attached=" +
+                        ungulateVisualAttached,
+                    ungulateVisualChecked > 0 &&
+                        ungulateVisualAttached == ungulateVisualChecked,
+                    "one attached view per observed summoned unit"),
                 Assertion("expanded-summoning-pteranodon-repeated-lifecycle",
                     "several Pteranodon casts in one lifecycle, each view attached exactly once, each cast cleaned to the exact snapshot",
                     "casts=" + _pteranodonCastsSeen + ";views=" +
@@ -17733,7 +17793,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         patchOutcomesAfterCoverage - patchOutcomesBefore ==
                             _pteranodonVisualOutcomes.Count +
                                 _direBatVisualChecked + _eagleVisualChecked +
-                                _giantWaspVisualChecked + _stirgeVisualChecked &&
+                                _giantWaspVisualChecked + _stirgeVisualChecked +
+                                ungulateVisualChecked &&
                         pteranodonAttachedClean,
                     "one patch outcome per attached view; per-cast cleanup is enforced by the cast loop itself"),
                 Assertion("expanded-summoning-stirge-visual-attached",
