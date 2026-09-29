@@ -512,6 +512,76 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
+        private Vector3 FindExpandedSummoningUngulateArtPoint(
+            out string survey)
+        {
+            if (AstarPath.active == null || _creatureReviewCaster == null ||
+                Kingmaker.Visual.FogOfWar.LineOfSightGeometry.Instance == null)
+                throw new InvalidOperationException(
+                    "Ungulate art review has no native floor or sight survey.");
+            Pathfinding.NNInfo anchor = AstarPath.active.GetNearest(
+                _creatureReviewCaster.Position);
+            if (anchor.node == null || !anchor.node.Walkable)
+                throw new InvalidOperationException(
+                    "Ungulate art review has no walkable party anchor.");
+            UnitEntityData[] party = Game.Instance.Player.Party.Where(value =>
+                value != null && value.IsInGame).ToArray();
+            Vector3 selected = Vector3.zero;
+            int bestClearance = -1, candidates = 0;
+            float bestPartyGap = float.MaxValue;
+            for (int dx = -15; dx <= 15; dx += 3)
+                for (int dz = -15; dz <= 15; dz += 3)
+                {
+                    Vector3 requested = anchor.clampedPosition +
+                        new Vector3(dx, 0f, dz);
+                    Pathfinding.NNInfo point = AstarPath.active.GetNearest(
+                        requested);
+                    if (point.node == null || !point.node.Walkable ||
+                        point.node.Area != anchor.node.Area ||
+                        point.node.GraphIndex != anchor.node.GraphIndex ||
+                        Vector3.Distance(requested, point.clampedPosition) >
+                            0.6f) continue;
+                    float partyGap = party.Length == 0 ? 0f : party.Min(
+                        value => Vector3.Distance(value.Position,
+                            point.clampedPosition));
+                    if (partyGap < 3.5f) continue;
+                    candidates++;
+                    int clearance = 0;
+                    foreach (Vector3 direction in CompassOffsets)
+                    {
+                        Vector3 radial = point.clampedPosition +
+                            direction * 3f;
+                        Pathfinding.NNInfo edge = AstarPath.active.GetNearest(
+                            radial);
+                        if (edge.node == null || !edge.node.Walkable ||
+                            edge.node.Area != anchor.node.Area ||
+                            edge.node.GraphIndex != anchor.node.GraphIndex ||
+                            Vector3.Distance(radial, edge.clampedPosition) >
+                                0.6f || Kingmaker.Visual.FogOfWar
+                                .LineOfSightGeometry.Instance.HasObstacle(
+                                    point.clampedPosition + Vector3.up * 1.2f,
+                                    edge.clampedPosition + Vector3.up * 1.2f,
+                                    0)) continue;
+                        clearance++;
+                    }
+                    if (clearance > bestClearance || clearance == bestClearance &&
+                        partyGap < bestPartyGap)
+                    {
+                        selected = point.clampedPosition;
+                        bestClearance = clearance;
+                        bestPartyGap = partyGap;
+                    }
+                }
+            survey = "candidates=" + candidates + ";clearance=" +
+                bestClearance + "/" + CompassOffsets.Length + ";partyGap=" +
+                bestPartyGap.ToString("0.##", CultureInfo.InvariantCulture) +
+                ";point=" + selected;
+            if (bestClearance < 6)
+                throw new InvalidOperationException(
+                    "No sufficiently open art review floor point: " + survey);
+            return selected;
+        }
+
         private void StepExpandedSummoningCreatureReview()
         {
             if (_creatureReviewQueue == null)
@@ -691,6 +761,53 @@ namespace KingmakerGunslinger.RuntimeTesting
                             MotionReviewSummary,
                             MotionReviewTravelValid,
                             "surveyed connected floor route, native UnitMoveTo and cross-frame position/velocity samples"));
+                        if (!_creatureReviewQuantity)
+                        {
+                            string survey;
+                            Vector3 artPoint =
+                                FindExpandedSummoningUngulateArtPoint(out survey);
+                            PlaceExpandedSummoningUnit(_creatureReviewUnits[0],
+                                artPoint);
+                            string fileName = key + "-review-overhead.png";
+                            string capture = WriteExpandedSummoningOverheadStrikeCapture(
+                                _creatureReviewUnits[0], _creatureReviewUnits[0],
+                                _request.EvidenceDirectory, fileName, 13f);
+                            _creatureReviewAssertions.Add(Assertion(
+                                "expanded-summoning-ungulate-overhead-view-" + key,
+                                "live overhead frame written for clear silhouette inspection",
+                                survey + ";" + capture,
+                                capture.StartsWith("png=" + fileName + ";",
+                                    StringComparison.Ordinal),
+                                "surveyed open floor after native movement proof; request-local camera pose restored; image supports art review, not mechanical proof"));
+                            string[] angles = { "north", "east", "south", "west" };
+                            Vector3[] offsets = {
+                                new Vector3(0f, 9f, 9f),
+                                new Vector3(9f, 9f, 0f),
+                                new Vector3(0f, 9f, -9f),
+                                new Vector3(-9f, 9f, 0f)
+                            };
+                            var oblique = new List<string>();
+                            bool allWritten = true;
+                            for (int angle = 0; angle < angles.Length; angle++)
+                            {
+                                string obliqueName = key + "-review-oblique-" +
+                                    angles[angle] + ".png";
+                                string result = WriteExpandedSummoningOverheadStrikeCapture(
+                                    _creatureReviewUnits[0], _creatureReviewUnits[0],
+                                    _request.EvidenceDirectory, obliqueName,
+                                    13f, offsets[angle]);
+                                oblique.Add(result);
+                                allWritten = allWritten && result.StartsWith(
+                                    "png=" + obliqueName + ";",
+                                    StringComparison.Ordinal);
+                            }
+                            _creatureReviewAssertions.Add(Assertion(
+                                "expanded-summoning-ungulate-oblique-views-" + key,
+                                "four live oblique frames written for body and silhouette inspection",
+                                survey + ";" + string.Join("|", oblique.ToArray()),
+                                allWritten,
+                                "four request-local camera poses restored; images support art review, not mechanical proof"));
+                        }
                     }
                     if (_creatureReviewQuantity)
                     {
