@@ -1,5 +1,20 @@
 # Expanded Summoning Phase 2 autonomous state
 
+## Sprint 11 three-species trample contact checkpoint, 2026-09-29
+
+Guarded Steam scenario `20260929T0050555483840Z` passed 27/27 assertions.
+Aurochs moved 4.96 m with one DC 17 save and 16 damage; Bison moved 4.96 m
+with one DC 20 save and 19 damage; Woolly Rhinoceros moved 4.99 m with one
+DC 23 save and 19 damage. Each native path crossed the same smaller hostile,
+made exactly one damage event, and caused zero allied damage. Each case
+restored turn-mode setting, pause, game time and awake-unit snapshot before
+the next; wrapper restoration `20260929T0055024455001Z` verified the
+original 136-file installation SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+The victim's AoO option, successful Reflex half, same-round replay, full-round
+turn-based cadence, native charge travel, quantity and original 3D ungulate
+views remain open. The choices remain hidden; continue Sprint 11.
+
 ## Sprint 11 native Aurochs trample path checkpoint, 2026-09-29
 
 The hidden Aurochs' installed `AbilityCustomOverrun` moved 8.92 m through a
