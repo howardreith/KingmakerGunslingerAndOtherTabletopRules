@@ -489,9 +489,20 @@ its native icon. All nine choices are published. The guarded player path
 wrappers. The no-save live inventory `20260928T1405023387599Z` passed 50/50
 assertions, all 18 menu equations, zero missing or misordered icons and zero
 prohibited references. Original installation restoration was exact after
-both runs. Sprint 10 internal technical status: PASS. Native Filth Fever cure
-timing was not measured; exposure uses the exact installed buff. Owner visual
-approval is pending and nonblocking.
+both runs. That Sprint 10 technical PASS is reopened by the 2026-09-29 owner
+correction: native target grapple suppresses prey movement incorrectly.
+Stirge publication remains present on the branch but is not currently
+qualified; the replacement attachment and removal route are required before
+Sprint 10 can pass again. Native Filth Fever cure timing was not measured;
+exposure uses the exact installed buff. Owner visual approval remains pending.
+
+The first correction checkpoint changed the disease cadence from the older
+once-per-victim record above to a fresh 10% roll on every actual one-point
+blood drain, with no roll on zero damage. Guarded Steam run
+`20260929T1228251279908Z` passed 35/35, including two eligible exposure
+attempts on one victim and a retained native DC 12 Filth Fever application.
+Filth Fever is the explicit single bounded Kingmaker disease adaptation for
+the tabletop Stirge exposure; attachment requalification is still open.
 
 ## Phase 2 Sprint 11 hidden ungulate qualification, 2026-09-29
 

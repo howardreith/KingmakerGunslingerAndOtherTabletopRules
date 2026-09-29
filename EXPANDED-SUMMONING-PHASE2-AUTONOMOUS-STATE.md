@@ -1,15 +1,34 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## Owner-design stop, 2026-09-29
+## Owner correction resumed, 2026-09-29
 
-Sprint 11's Aurochs, Bison and Woolly Rhinoceros trample target choice is
-blocked on an owner-level rules/balance decision. The installed native
-overrun and AoO actions do not offer the printed victim choice at each
-contact; the current hidden implementation always rolls Reflex. Exact
-evidence, rejected alternatives, restored environment and the smallest
-owner decision are in `EXPANDED-SUMMONING-PHASE2-BLOCKER.md`. Stop at this
-mission-defined boundary; do not publish the three choices or claim the
-Phase 2A draft PR ready. Sprints 12-21 have not started.
+The owner resolved the Sprint 11 trample target-response design question with
+an automatic, single-response AoO-first policy and authorized a bounded
+Stampede audit with an explicit conservative fallback. The same order reopens
+Sprint 10 for Stirge target freedom, active removal, attachment lifecycle and
+disease cadence, and directs visual correction of the four ungulates. The
+earlier `EXPANDED-SUMMONING-PHASE2-BLOCKER.md` is historical; its owner-design
+stop is resolved. Sprint 10 and 11 choices that fail the new gates remain
+unqualified, and the Phase 2A PR remains draft. Sprints 12-21 remain
+authorized after these corrections.
+
+The first narrow Sprint 10 correction removes the persistent once-per-victim
+disease gate. Exposure now rolls its printed 10% chance after every actual
+Constitution drain and never on zero damage. Guarded Steam scenario
+`20260929T1228251279908Z-disposable-expanded-summoning` passed 35/35,
+including two eligible attempts on one victim, zero-damage suppression,
+native Filth Fever DC 12 and four actual one-point drains. Repository
+validation, all 1,952 domain tests, clean Release and strict package
+validation passed. Package SHA-256
+`C45F6A4961FD5F52A63E0E4023471ED1A7ED1BB9AE206D0E24E2C11B401E8337`;
+DLL SHA-256
+`5148C99A4F7AAC97B24ACCE78EB4D8955B01ECCDE749E68B6F0FFB7522883D15`.
+Restoration `20260929T1232307424119Z` verified the unchanged original
+136-file installation SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+This does not requalify the old native prey-grapple representation; the
+Stirge-specific session link, removal action and all associated live gates
+remain to be implemented and tested.
 
 ## Sprint 11 clear-floor visual inspection, 2026-09-29
 
