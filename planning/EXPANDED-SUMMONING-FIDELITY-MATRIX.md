@@ -29,6 +29,11 @@ wrote none. The disabled-module prepare/cleanup/absent continuation
 `20260929T1624206703157Z` also passed 15/15 each with no reload residue,
 zero final fixture units and zero final save writes. Mobility removal,
 player path and remaining visual checks still gate publication.
+The guarded `20260929T1653192612453Z` run then passed native-profile method
+discrimination: Stirge maintain CMB -5 to +3 (+8), failed and successful
+Mobility skill checks against CMD 5, no extra grapple maneuver for those
+checks, and retained failed/successful CMB removal. Original install
+restoration passed; Stirge remains hidden pending the other gates.
 
 Status: release-qualified on final native qualification source
 `5205805eab3fe0115d6888c53bce73c80474d1b7`. The complete roster passed the

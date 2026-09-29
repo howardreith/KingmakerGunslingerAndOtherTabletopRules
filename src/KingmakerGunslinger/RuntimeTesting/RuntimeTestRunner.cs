@@ -19137,6 +19137,41 @@ namespace KingmakerGunslinger.RuntimeTesting
             return ok;
         }
 
+        private sealed class StirgeRemovalRuleObserver :
+            IGlobalRulebookHandler<RuleSkillCheck>,
+            IGlobalRulebookHandler<RuleCombatManeuver>,
+            IGlobalRulebookHandler<RuleCalculateCMD>
+        {
+            internal UnitEntityData Prey;
+            internal UnitEntityData Stirge;
+            internal readonly List<bool> MobilityResults = new List<bool>();
+            internal readonly List<int> MobilityDefenses = new List<int>();
+            internal int GrappleManeuvers;
+
+            public void OnEventAboutToTrigger(RuleSkillCheck evt) { }
+            public void OnEventDidTrigger(RuleSkillCheck evt)
+            {
+                if (evt != null && evt.StatType == StatType.SkillMobility &&
+                    ReferenceEquals(evt.Initiator, Prey))
+                    MobilityResults.Add(evt.IsPassed);
+            }
+            public void OnEventAboutToTrigger(RuleCombatManeuver evt) { }
+            public void OnEventDidTrigger(RuleCombatManeuver evt)
+            {
+                if (evt != null && evt.Type == CombatManeuver.Grapple &&
+                    ReferenceEquals(evt.Initiator, Prey) &&
+                    ReferenceEquals(evt.Target, Stirge)) GrappleManeuvers++;
+            }
+            public void OnEventAboutToTrigger(RuleCalculateCMD evt) { }
+            public void OnEventDidTrigger(RuleCalculateCMD evt)
+            {
+                if (evt != null && evt.Type == CombatManeuver.Grapple &&
+                    ReferenceEquals(evt.Initiator, Prey) &&
+                    ReferenceEquals(evt.Target, Stirge))
+                    MobilityDefenses.Add(evt.Result);
+            }
+        }
+
         /// <summary>
         /// A hidden Stirge's own-tier attack against an armored, disposable
         /// hostile. The native attack roll must use touch AC while the empty
@@ -19175,6 +19210,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             int babBefore = stirge.Descriptor.Stats.BaseAttackBonus.BaseValue;
             try
             {
+                int baseMaintainCmb = Rulebook.Trigger(new RuleCalculateCMB(
+                    stirge, hostile, CombatManeuver.Grapple)).Result;
                 int ordinaryAc = Rulebook.Trigger(new RuleCalculateAC(stirge,
                     hostile, AttackType.Melee)).TargetAC;
                 int touchAc = Rulebook.Trigger(new RuleCalculateAC(stirge,
@@ -19183,6 +19220,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 UnityEngine.Random.InitState(FindNativeD20Seed(20));
                 var attack = new RuleAttackWithWeapon(stirge, hostile, weapon, 0);
                 Rulebook.Trigger(attack);
+                // The boosted BAB belongs only to the touch-hit control.
+                // Compare maintain CMB and removal CMD at the native profile.
+                stirge.Descriptor.Stats.BaseAttackBonus.BaseValue = babBefore;
                 RuleAttackRoll roll = attack.AttackRoll;
                 int damageAfter = hostile.Descriptor.Damage;
                 detail = "weapon=" + (weapon == null ? "<null>" :
@@ -19205,14 +19245,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ExpandedSummoningProjectIcons.Require("remove-stirge"));
                 bool losesDexterity = stirge.Descriptor.State.HasCondition(
                     UnitCondition.LoseDexterityToAC);
+                int attachedMaintainCmb = Rulebook.Trigger(
+                    new RuleCalculateCMB(stirge, hostile,
+                        CombatManeuver.Grapple)).Result;
+                bool maintainBonus = attachedMaintainCmb - baseMaintainCmb ==
+                    StirgeAttachPolicy.MaintainGrappleRacialBonus;
                 attachmentEstablished = sessionLink && holderBuff && removeIcon &&
-                    targetFree && losesDexterity &&
+                    targetFree && losesDexterity && maintainBonus &&
                     stirge.Descriptor.State.HasCondition(UnitCondition.CantMove) &&
                     stirge.Descriptor.State.HasCondition(UnitCondition.CantAct);
                 attachmentDetail = "sessionLink=" + sessionLink +
                     ";holderBuff=" + holderBuff + ";targetFree=" +
                     targetFree + ";removeIcon=" + removeIcon +
-                    ";losesDexterity=" + losesDexterity;
+                    ";losesDexterity=" + losesDexterity +
+                    ";maintainCmb=" + baseMaintainCmb + "->" +
+                    attachedMaintainCmb + ";maintainBonus=" + maintainBonus;
                 StirgeHoldComponent liveHold = holderBuff ?
                     ExpandedSummoningRuntimeComponent<StirgeHoldComponent>(
                         stirge, hold) : null;
@@ -19275,6 +19322,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int targetBabBefore = hostile.Descriptor.Stats.BaseAttackBonus.BaseValue;
                 int mobilityBefore = hostile.Descriptor.Stats.SkillMobility.BaseValue;
                 bool failedRemoval, successfulRemoval;
+                bool failedMobilityRemoval = false;
+                bool successfulMobilityRemoval = false;
+                bool mobilityUsedNativeSkill = false;
+                bool reattachedForMobility = false;
+                int expectedMobilityCmd = -1;
+                var removalObserver = new StirgeRemovalRuleObserver {
+                    Prey = hostile, Stirge = stirge };
+                EventBus.Subscribe(removalObserver);
                 try
                 {
                     PlaceExpandedSummoningUnit(stirge, hostile.Position +
@@ -19295,9 +19350,58 @@ namespace KingmakerGunslinger.RuntimeTesting
                         stirge);
                     successfulRemoval =
                         StirgeHoldComponent.AttachedTarget(stirge) == null;
+                    int priorGrappleManeuvers =
+                        removalObserver.GrappleManeuvers;
+                    UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                    Rulebook.Trigger(new RuleAttackWithWeapon(stirge, hostile,
+                        weapon, 0));
+                    reattachedForMobility = ReferenceEquals(
+                        StirgeHoldComponent.AttachedTarget(stirge), hostile);
+                    PlaceExpandedSummoningUnit(stirge, hostile.Position +
+                        Vector3.right * 0.6f);
+                    hostile.Descriptor.Stats.BaseAttackBonus.BaseValue = -100;
+                    hostile.Descriptor.Stats.SkillMobility.BaseValue = -50;
+                    bool mobilityBetterOnFailure =
+                        hostile.Descriptor.Stats.SkillMobility.ModifiedValue >
+                        Rulebook.Trigger(new RuleCalculateCMB(hostile, stirge,
+                            CombatManeuver.Grapple)).Result;
+                    expectedMobilityCmd = Rulebook.Trigger(
+                        new RuleCalculateCMD(hostile, stirge,
+                            CombatManeuver.Grapple)).Result;
+                    UnityEngine.Random.InitState(FindNativeD20Seed(1));
+                    ExecuteExpandedSummoningRuntimeAbility(hostile,
+                        removeStirge, 0, new TargetWrapper(stirge), false,
+                        stirge);
+                    failedMobilityRemoval = reattachedForMobility &&
+                        mobilityBetterOnFailure &&
+                        ReferenceEquals(StirgeHoldComponent.AttachedTarget(stirge),
+                            hostile) && removalObserver.MobilityResults.Count == 1 &&
+                        !removalObserver.MobilityResults[0] &&
+                        removalObserver.MobilityDefenses.LastOrDefault() ==
+                            expectedMobilityCmd;
+                    hostile.Descriptor.Stats.SkillMobility.BaseValue = 100;
+                    bool mobilityBetterOnSuccess =
+                        hostile.Descriptor.Stats.SkillMobility.ModifiedValue >
+                        Rulebook.Trigger(new RuleCalculateCMB(hostile, stirge,
+                            CombatManeuver.Grapple)).Result;
+                    UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                    ExecuteExpandedSummoningRuntimeAbility(hostile,
+                        removeStirge, 0, new TargetWrapper(stirge), false,
+                        stirge);
+                    successfulMobilityRemoval = mobilityBetterOnSuccess &&
+                        StirgeHoldComponent.AttachedTarget(stirge) == null &&
+                        removalObserver.MobilityResults.Count == 2 &&
+                        removalObserver.MobilityResults[1] &&
+                        removalObserver.MobilityDefenses.LastOrDefault() ==
+                            expectedMobilityCmd;
+                    mobilityUsedNativeSkill =
+                        removalObserver.GrappleManeuvers ==
+                            priorGrappleManeuvers &&
+                        removalObserver.MobilityResults.Count == 2;
                 }
                 finally
                 {
+                    EventBus.Unsubscribe(removalObserver);
                     hostile.Descriptor.Stats.BaseAttackBonus.BaseValue =
                         targetBabBefore;
                     hostile.Descriptor.Stats.SkillMobility.BaseValue =
@@ -19328,11 +19432,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !stirge.Descriptor.State.HasCondition(
                         UnitCondition.LoseDexterityToAC);
                 escapeAndTransition = reattachedForEscape && failedRemoval &&
-                    successfulRemoval &&
+                    successfulRemoval && reattachedForMobility &&
+                    failedMobilityRemoval && successfulMobilityRemoval &&
+                    mobilityUsedNativeSkill &&
                     escapeClean && reattachedForTransition && transitionClean;
                 interruptDetail = "escapeAttach=" + reattachedForEscape +
                     ";failedRemoval=" + failedRemoval +
                     ";successfulRemoval=" + successfulRemoval +
+                    ";mobilityAttach=" + reattachedForMobility +
+                    ";failedMobility=" + failedMobilityRemoval +
+                    ";successfulMobility=" + successfulMobilityRemoval +
+                    ";mobilitySkillRoute=" + mobilityUsedNativeSkill +
+                    ";mobilityCmd=" + expectedMobilityCmd +
                     ";escapeClean=" + escapeClean +
                     ";transitionAttach=" + reattachedForTransition +
                     ";swept=" + swept + ";transitionClean=" + transitionClean;
