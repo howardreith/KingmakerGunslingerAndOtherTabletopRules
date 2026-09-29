@@ -418,11 +418,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     request.Parameters?["creatures"]?.Type != JTokenType.String ||
                     string.IsNullOrWhiteSpace((string)request.Parameters["creatures"])))
                     return "creature-review-creatures-required";
+                bool ungulateCrowdReview = creatureReview &&
+                    request.Parameters?["quantity"] != null;
+                if (ungulateCrowdReview &&
+                    (request.Parameters["quantity"].Type != JTokenType.String ||
+                    (string)request.Parameters["quantity"] != "OneD4PlusOne"))
+                    return "creature-review-quantity-invalid";
                 bool circleBound = MagicCirclePreparationBinding.RequiresBinding(request.Scenario);
                 if (circleBound && (!request.ExitAfterCompletion || request.Parameters?["preparationBinding"]?.Type != JTokenType.String ||
                     !MagicCirclePreparationBinding.Valid((string)request.Parameters["preparationBinding"], request.ExpectedModVersion)))
                     return "magic-circle-preparation-binding-required";
-                if (request.Parameters == null || request.Parameters.Count != (circleBound ? 2 : persistence || fcbPersistence ? 3 : nativeActionCase ? 5 : request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveNereidRespec ? 5 : creatorRegression || sceneRoundtrip || visualLifecycle ? 4 : treacherousEffect ? 3 : nereidPersistence || deferredMarkers || creatureReview || flightActivation ? 2 : 1) ||
+                if (request.Parameters == null || request.Parameters.Count != (circleBound ? 2 : persistence || fcbPersistence ? 3 : nativeActionCase ? 5 : request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveNereidRespec ? 5 : creatorRegression || sceneRoundtrip || visualLifecycle ? 4 : treacherousEffect || ungulateCrowdReview ? 3 : nereidPersistence || deferredMarkers || creatureReview || flightActivation ? 2 : 1) ||
                     request.Parameters.Property("saveName") == null ||
                     request.Parameters["saveName"].Type != JTokenType.String)
                     return "save-name-required";

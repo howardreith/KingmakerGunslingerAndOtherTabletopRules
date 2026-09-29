@@ -364,8 +364,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 if (_motionReviewAwakeAdded)
                     Game.Instance.State.AwakeUnits.Remove(_motionReviewSubject);
-                _motionReviewAwakeRestored = Game.Instance.State.AwakeUnits
-                    .SequenceEqual(_motionReviewAwakeBefore);
+                // Other members of a live quantity group can enter or leave
+                // AwakeUnits as their own native commands finish. This review
+                // owns only the subject it added; the crowd stage separately
+                // checks its exact whole-list restoration.
+                _motionReviewAwakeRestored = _creatureReviewQuantity
+                    ? !_motionReviewAwakeAdded || !Game.Instance.State
+                        .AwakeUnits.Contains(_motionReviewSubject)
+                    : Game.Instance.State.AwakeUnits
+                        .SequenceEqual(_motionReviewAwakeBefore);
                 _motionReviewAwakeBefore = null;
             }
             if (_motionReviewChangedPause)
@@ -429,7 +436,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _motionReviewViewInGame + ";pausedBefore=" +
                 _motionReviewWasPaused + ";awakeAdded=" +
                 _motionReviewAwakeAdded + ";awakeRestored=" +
-                _motionReviewAwakeRestored + ";pausedAfter=" +
+                _motionReviewAwakeRestored + ";awakeScope=" +
+                (_creatureReviewQuantity ? "review-owned" : "whole-list") +
+                ";pausedAfter=" +
                 Game.Instance.IsPaused + ";nearbyDoors=" +
                 _motionReviewNearbyDoors + ";doorwayRoute=" +
                 _motionReviewDoorwayRoute + ";doorwayCrossed=" +

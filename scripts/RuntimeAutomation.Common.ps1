@@ -1983,7 +1983,9 @@ function Assert-KmgRuntimeScenarioPreflight {
             $Parameters.ContainsKey('nativeActionCase')
         $flightActivation = $Scenario -cin @('summon-same-turn-activation', 'summon-same-turn-rtwp-control') -and
             $Parameters.ContainsKey('flightCreature')
-        $requiredParameterCount = if ($circleBound) { 2 } elseif ($persistence -or $fcbPersistence) { 3 } elseif ($Scenario -ceq 'working-save-elemental-nereid-respec') { 5 } elseif ($nativeActionCase) { 5 } elseif ($creatorRegression -or $visualLifecycle -or (Test-KmgCompletionSceneScope $Scenario $Parameters)) { 4 } elseif (Test-KmgTreacherousEffectScope $Scenario $Parameters) { 3 } elseif ($Scenario -ceq 'working-save-expanded-summoning-creature-review' -or $flightActivation) { 2 } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers' -or (Test-KmgNereidPersistenceScope $Scenario $Parameters)) { 2 } else { 1 }
+        $crowdReview = $Scenario -ceq 'working-save-expanded-summoning-creature-review' -and
+            $Parameters.ContainsKey('quantity')
+        $requiredParameterCount = if ($circleBound) { 2 } elseif ($persistence -or $fcbPersistence) { 3 } elseif ($Scenario -ceq 'working-save-elemental-nereid-respec') { 5 } elseif ($nativeActionCase) { 5 } elseif ($creatorRegression -or $visualLifecycle -or (Test-KmgCompletionSceneScope $Scenario $Parameters)) { 4 } elseif ((Test-KmgTreacherousEffectScope $Scenario $Parameters) -or $crowdReview) { 3 } elseif ($Scenario -ceq 'working-save-expanded-summoning-creature-review' -or $flightActivation) { 2 } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers' -or (Test-KmgNereidPersistenceScope $Scenario $Parameters)) { 2 } else { 1 }
         if ($Parameters.Count -ne $requiredParameterCount -or
             -not $Parameters.ContainsKey('saveName') -or
             $Parameters.saveName -isnot [string] -or
@@ -1994,6 +1996,12 @@ function Assert-KmgRuntimeScenarioPreflight {
             (-not $Parameters.ContainsKey('creatures') -or $Parameters.creatures -isnot [string] -or
              [string]::IsNullOrWhiteSpace([string]$Parameters.creatures))) {
             throw 'The creature review requires creatures: comma-separated creature keys.'
+        }
+        if ($crowdReview -and ($Parameters.quantity -isnot [string] -or
+            $Parameters.quantity -cne 'OneD4PlusOne' -or
+            @(([string]$Parameters.creatures -split ',') | ForEach-Object { $_.Trim() } |
+                Where-Object { $_ -cnotin @('aurochs','bison','rhinoceros','woolly-rhinoceros') }).Count -ne 0)) {
+            throw 'The crowd review permits only 1d4+1 Sprint 11 ungulates.'
         }
         if ($flightActivation -and ($Parameters.flightCreature -isnot [string] -or
             [string]$Parameters.flightCreature -cnotin @('eagle', 'dire-bat', 'giant-wasp', 'stirge'))) {
@@ -2253,7 +2261,14 @@ function New-KmgRuntimeRequest {
         } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers') {
             [ordered]@{ saveName = [string]$Parameters.saveName; fixtureCase = [string]$Parameters.fixtureCase }
         } elseif ($Scenario -ceq 'working-save-expanded-summoning-creature-review') {
-            [ordered]@{ saveName = [string]$Parameters.saveName; creatures = [string]$Parameters.creatures }
+            $creatureReviewParameters = [ordered]@{
+                saveName = [string]$Parameters.saveName
+                creatures = [string]$Parameters.creatures
+            }
+            if ($Parameters.ContainsKey('quantity')) {
+                $creatureReviewParameters.quantity = [string]$Parameters.quantity
+            }
+            $creatureReviewParameters
         } elseif ($Scenario -cin @('summon-same-turn-activation',
                 'summon-same-turn-rtwp-control') -and
                 $Parameters.ContainsKey('flightCreature')) {
