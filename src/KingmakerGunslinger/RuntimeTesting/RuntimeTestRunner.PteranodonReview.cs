@@ -197,6 +197,12 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 if (_motionReviewFrame < 0)
                 {
+                    // A quantity member can leave the awake list when the
+                    // preceding group move ends. Keep this reviewed member
+                    // awake before waiting for its native fader to become
+                    // visible; the snapshot is restored in Finish.
+                    if (_creatureReviewQuantity && IsGuidedMotionReview(unit))
+                        BeginGuidedMotionReview(unit);
                     // After a load the screen fades up from black and every
                     // unit dissolves in; a fresh summon dissolves in too. The
                     // camera is parked on the creature meanwhile so the first
@@ -227,19 +233,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         MotionReviewAcross(unit) * 6f;
                     if (guided)
                     {
-                        _motionReviewAwakeBefore = Game.Instance.State
-                            .AwakeUnits.ToArray();
-                        if (!Game.Instance.State.AwakeUnits.Contains(unit))
-                        {
-                            Game.Instance.State.AwakeUnits.Add(unit);
-                            _motionReviewAwakeAdded = true;
-                        }
-                        _motionReviewWasPaused = Game.Instance.IsPaused;
-                        if (_motionReviewWasPaused)
-                        {
-                            Game.Instance.IsPaused = false;
-                            _motionReviewChangedPause = true;
-                        }
+                        BeginGuidedMotionReview(unit);
                         destination = PrepareSprint9FlightMovement(unit);
                     }
                     _motionReviewMoveOrigin = unit.Position;
@@ -355,6 +349,23 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 Finish(stage, error);
                 return true;
+            }
+        }
+
+        private void BeginGuidedMotionReview(UnitEntityData unit)
+        {
+            if (_motionReviewAwakeBefore != null) return;
+            _motionReviewAwakeBefore = Game.Instance.State.AwakeUnits.ToArray();
+            if (!Game.Instance.State.AwakeUnits.Contains(unit))
+            {
+                Game.Instance.State.AwakeUnits.Add(unit);
+                _motionReviewAwakeAdded = true;
+            }
+            _motionReviewWasPaused = Game.Instance.IsPaused;
+            if (_motionReviewWasPaused)
+            {
+                Game.Instance.IsPaused = false;
+                _motionReviewChangedPause = true;
             }
         }
 

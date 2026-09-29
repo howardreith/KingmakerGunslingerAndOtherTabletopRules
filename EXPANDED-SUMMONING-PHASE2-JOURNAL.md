@@ -1264,3 +1264,31 @@ DLL SHA-256
 The exact original 136-file installation was restored at
 `20260929T0809255640809Z`. Concurrent charge and natural expiry remain
 unqualified, so the choices remain hidden.
+
+## Sprint 11: simultaneous ungulate natural expiry, 2026-09-29
+
+The synthetic-clock diagnostic `20260929T0830501430816Z` removed all native
+summon timer markers but bypassed native destruction; it was excluded, and the
+installed mod was restored exactly. A naturally advancing, unpaused
+working-save Aurochs pilot `20260929T0851026253484Z` passed: both members
+expired after 112.6 game seconds with zero live units and no save write.
+The first four-species natural run `20260929T0900511372577Z` passed every
+expiry but failed one Bison idle-view capture after the observer waited 600
+frames for a unit that had left the awake list. Its moving and attack images
+were visible; all request-local cleanup and exact restoration passed. The
+observer now keeps only its reviewed quantity member awake before the fade
+wait and restores that membership after the captures.
+
+Final guarded run `20260929T0920575813821Z` passed 32/32 after repository
+validation, 1,952 domain tests, clean Release and strict 274-file package.
+Groups of 4/4/4/5 Aurochs/Bison/Rhinoceros/Woolly Rhinoceros all traveled
+on distinct connected-floor native routes. All 17 timed native markers and
+all 17 units disappeared after 111.98–113.14 game seconds in the expiry
+stage; pause state was restored and no save was written. Bison's idle wait
+was two frames, and all four of its capture moments had an enabled renderer.
+Package SHA-256 `5B14FA23491BA4D1CC6ADC633DB230400C9E6B05A43AC617AAD87F491611CB3E`;
+DLL SHA-256 `CD0D3DEFF31A0092E18CA215631B350BFC5E0C55721FB5FC59318A12788DF4BE`.
+The original 136-file installation was restored exactly at
+`20260929T0932580911284Z`. Concurrent charge, victim AoO choice, turn-based
+cadence, impact alignment, clear art and publication remain open. The
+choices remain hidden.
