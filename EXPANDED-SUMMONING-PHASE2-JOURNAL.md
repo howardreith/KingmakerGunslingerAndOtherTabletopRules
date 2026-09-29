@@ -1167,3 +1167,19 @@ original-tree restoration `20260929T0439456002517Z` passed. Sixteen visual
 frames show the original bodies at party-camera scale, with native cyan
 occlusion where walls/bookcases overlap. Clear-frame art review, attack
 contact, quantity, turn-based and publication gates remain open.
+
+## Sprint 11: real first-charge gore attack, 2026-09-29
+
+The guarded `20260929T0455499342752Z` rules run passed 31/31 assertions
+after repository validation, all 1,951 domain tests, clean Release and strict
+274-file package. Both hidden Rhinoceroses retained their exact first-charge
+weapon-stat expressions (`4d6+12` and `4d8+18`) and ordinary reversion. The
+fixture then triggered genuine first-charge gore attacks under the native
+charge marker; both hit and dealt 47/77 damage, and the disposable target's
+damage was restored. Package SHA-256
+`3752BB814A382947E76C8FBC1931D339437A7AAE348679F2C0A58F254B38DEE5`;
+DLL SHA-256 `93393E576211F242AFAC4A87F9702F8C66B1A648A182B6DBB813A7719BF94363`.
+The wrapper restored the original 136-file installation exactly at
+`20260929T0500068625552Z`. This qualifies the attack rule effect, not
+queued charge travel, view impact, victim AoO choice, turn-based trample,
+quantity pathing or publication. Continue those gates with choices hidden.

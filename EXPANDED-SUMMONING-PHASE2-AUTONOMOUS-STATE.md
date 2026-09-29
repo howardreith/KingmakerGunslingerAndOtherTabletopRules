@@ -1,5 +1,22 @@
 # Expanded Summoning Phase 2 autonomous state
 
+## Sprint 11 live Rhino charge damage, 2026-09-29
+
+Guarded Steam rules `20260929T0455499342752Z` passed 31/31 assertions
+after repository validation, 1,951 domain tests, clean Release and strict
+274-file package. Each hidden Rhinoceros fired a genuine first-charge gore
+attack under the native charge marker: Rhinoceros hit and dealt 47 damage;
+Woolly Rhinoceros hit and dealt 77. Their calculated first-charge expressions
+were `4d6+12` and `4d8+18`; ordinary, follow-up, opportunity and post-marker
+calculations retained their base expressions. The disposable hostile's damage
+was restored after each attack. Package SHA-256
+`3752BB814A382947E76C8FBC1931D339437A7AAE348679F2C0A58F254B38DEE5`,
+DLL SHA-256 `93393E576211F242AFAC4A87F9702F8C66B1A648A182B6DBB813A7719BF94363`.
+Restoration `20260929T0500068625552Z` verified the original 136-file live
+tree SHA-256 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+The direct attack-rule test does not establish a queued native charge command,
+movement, impact alignment or quantity pathing. Both choices remain hidden.
+
 ## Sprint 11 four-ungulate live view and navigation, 2026-09-29
 
 Guarded Steam creature review `20260929T0432458054535Z` passed 24/24
