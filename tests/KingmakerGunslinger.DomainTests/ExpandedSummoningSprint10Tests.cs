@@ -261,6 +261,8 @@ namespace KingmakerGunslinger.DomainTests
                 runtime.Contains("PrepareExpandedSummoningPersistentStirge(units,") &&
                 runtime.Contains("VerifyExpandedSummoningReloadedStirge(units,") &&
                 correction.Contains("attach.TryAttach(pony, touch, true)") &&
+                correction.Contains("baselineCantMove") &&
+                correction.Contains("baselineCantAct") &&
                 correction.Contains("!holderPart && !victimPart && !holderBuff &&") &&
                 correction.Contains("!orphanRemovalAction"),
                 "The exact working-save fixture must attach before saving and clear link, hold and action on reload.");
@@ -541,6 +543,21 @@ namespace KingmakerGunslinger.DomainTests
                     .Contains("(Instance);bones=16;") &&
                 viewAudit.Substring(stirgeAudit).Contains("(Instance);bones=15;"),
                 "The full disposable roster must account for Stirge's view in the shared lifecycle count and verify its renderer separately.");
+            string creatureReview = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "RuntimeTestRunner.ExpandedSummoningCreatureReview.cs"));
+            Assertions.True(creatureReview.Contains(
+                    "expanded-summoning-stirge-attached-prey-movement") &&
+                creatureReview.Contains("new UnitMoveTo(_stirgePreyDestination, 0.5f)") &&
+                creatureReview.Contains("prey.Commands.Run(move)") &&
+                creatureReview.Contains("agent.Stop()") &&
+                creatureReview.Contains("_stirgePreyMoveAccepted &&") &&
+                creatureReview.Contains("_stirgePreyInitialGap - _stirgePreyMinGap >= 1f") &&
+                creatureReview.Contains("_stirgePreyTravel >= 1f") &&
+                creatureReview.Contains("StirgeHoldComponent.Detach(stirge)") &&
+                creatureReview.Contains("PlaceExpandedSummoningUnit(prey,") &&
+                creatureReview.Contains("stirge-attached-moving-prey.png"),
+                "Attached prey must receive a cross-frame native movement and visible Stirge-follow review with request-local restoration.");
         }
 
         internal static void GiantWaspOriginalVisualUsesAuditedInstanceBinding()

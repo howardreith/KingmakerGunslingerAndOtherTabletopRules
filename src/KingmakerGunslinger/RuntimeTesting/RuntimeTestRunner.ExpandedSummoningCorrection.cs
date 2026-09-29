@@ -3222,6 +3222,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             PlaceExpandedSummoningUnit(pony, stirge.Position +
                 UnityEngine.Vector3.forward);
+            bool baselineCantMove = pony.Descriptor.State.HasCondition(
+                UnitCondition.CantMove);
+            bool baselineCantAct = pony.Descriptor.State.HasCondition(
+                UnitCondition.CantAct);
             bool attached = attach.TryAttach(pony, touch, true);
             bool sessionLink = ReferenceEquals(
                 StirgeHoldComponent.AttachedTarget(stirge), pony);
@@ -3229,12 +3233,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .Any(value => value.Blueprint != null && value.Blueprint.name ==
                     "KMG_Summoning_Special_Stirge_Hold");
             bool victimFree = pony.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>() ==
-                null && !pony.Descriptor.State.HasCondition(UnitCondition.CantMove) &&
-                !pony.Descriptor.State.HasCondition(UnitCondition.CantAct) &&
+                null && pony.Descriptor.State.HasCondition(UnitCondition.CantMove) ==
+                    baselineCantMove &&
+                pony.Descriptor.State.HasCondition(UnitCondition.CantAct) ==
+                    baselineCantAct &&
                 StirgeHoldComponent.RemoveAbility != null &&
                 pony.Descriptor.HasFact(StirgeHoldComponent.RemoveAbility);
             detail = "attached=" + attached + ";sessionLink=" + sessionLink +
                 ";holderBuff=" + holderBuff + ";victimFree=" + victimFree +
+                ";cantMove=" + baselineCantMove + "->" +
+                pony.Descriptor.State.HasCondition(UnitCondition.CantMove) +
+                ";cantAct=" + baselineCantAct + "->" +
+                pony.Descriptor.State.HasCondition(UnitCondition.CantAct) +
                 ";holderId=" + stirge.UniqueId + ";victimId=" + pony.UniqueId;
             return attached && sessionLink && holderBuff && victimFree;
         }
