@@ -213,10 +213,10 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(runtime.Contains("expanded-summoning-stirge-native-disease") &&
                 runtime.Contains("attach.TryDiseaseExposure(hostile, 1, 0)") &&
                 runtime.Contains("attach.TryDiseaseExposure(hostile, 0, 0)") &&
-                runtime.Contains("attach.DiseaseExposureAttempts") &&
+                runtime.Contains("attach.DiseaseCheckedVictimCount") &&
                 special.Contains("attach.TryDiseaseExposure(target, actual)") &&
-                !special.Contains("m_DiseaseCheckedVictims"),
-                "Each actual drain rolls exposure, while zero loss and victim-wide suppression do not.");
+                special.Contains("m_DiseaseCheckedVictims.Contains(target.UniqueId)"),
+                "Zero loss cannot consume the one primary-source check per victim and Stirge.");
             Assertions.True(runtime.Contains("expanded-summoning-stirge-four-point-detach") &&
                 runtime.Contains("for (int round = 2; round <= 4") &&
                 runtime.Contains("fourPointDetach = mealExact && automaticCleanup"),

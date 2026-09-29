@@ -496,13 +496,16 @@ qualified; the replacement attachment and removal route are required before
 Sprint 10 can pass again. Native Filth Fever cure timing was not measured;
 exposure uses the exact installed buff. Owner visual approval remains pending.
 
-The first correction checkpoint changed the disease cadence from the older
-once-per-victim record above to a fresh 10% roll on every actual one-point
-blood drain, with no roll on zero damage. Guarded Steam run
-`20260929T1228251279908Z` passed 35/35, including two eligible exposure
-attempts on one victim and a retained native DC 12 Filth Fever application.
-Filth Fever is the explicit single bounded Kingmaker disease adaptation for
-the tabletop Stirge exposure; attachment requalification is still open.
+The [primary Paizo Stirge stat block](https://legacy.aonprd.com/bestiary/stirge.html)
+explicitly says that a victim cannot be infected by the same Stirge once its
+exposure check is made. This is the owner's specified exception to the proposed
+per-drain change. Diagnostic `20260929T1228251279908Z` is superseded for
+rules acceptance. The source now preserves the one-check-per-victim gate and
+requires actual Constitution loss; zero loss does not consume the check.
+Guarded Steam `20260929T1241118852906Z` passed 35/35, including an initial
+zero-damage suppression, one native DC 12 Filth Fever exposure, and no repeat
+check after a later actual drain. Filth Fever is the explicit single bounded
+Kingmaker disease adaptation; attachment requalification is still open.
 
 ## Phase 2 Sprint 11 hidden ungulate qualification, 2026-09-29
 
