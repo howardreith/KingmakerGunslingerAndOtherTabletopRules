@@ -1,5 +1,22 @@
 # Expanded Summoning Phase 2 autonomous state
 
+## Stirge publication hold, 2026-09-29
+
+The nine Stirge SNA placements are temporarily hidden while the owner-directed
+Sprint 10 attachment correction is developed. Its frozen identities, touch
+carrier, original icon and source assets remain registered. Giant Wasp and the
+accepted Sprint 9 choices remain published. Repository validation, all 1,952
+domain tests, clean Release and strict package validation passed. Guarded Steam
+inventory `20260929T1307471902731Z` passed 50/50 assertions: 825 exact
+published placements, 18 reconciled menus, no missing or misordered icons, and
+the hidden Stirge touch carrier still present. Package SHA-256
+`C04444489219EB5E70771F08539AE4DAABD9F9661AE7043C4EF38E993A225DD1`.
+Restoration record `20260929T1311552981337Z` returned the original 136-file
+installation to SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+The prior 834-placement publication evidence is historical and does not
+qualify Stirge under the reopened owner criteria.
+
 ## Owner correction resumed, 2026-09-29
 
 The owner resolved the Sprint 11 trample target-response design question with

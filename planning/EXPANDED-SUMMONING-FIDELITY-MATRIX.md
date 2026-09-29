@@ -1,5 +1,15 @@
 # Expanded Summoning fidelity matrix
 
+Current Phase 2 Sprint 10 correction (2026-09-29): Stirge's nine SNA choices
+are hidden because the prior native prey grapple prevents normal prey movement.
+The original icon, touch carrier and registered identities remain. Guarded
+Steam inventory `20260929T1307471902731Z` passed 50/50 with 825 visible
+placements and exact restoration. The historical Stirge publication and
+834-root evidence below do not satisfy the reopened attachment/removal gates.
+Giant Wasp and Sprint 9 remain published. Filth Fever is the disclosed bounded
+disease adaptation; the primary Paizo Stirge stat block permits only one
+exposure check per victim from each particular Stirge.
+
 Status: release-qualified on final native qualification source
 `5205805eab3fe0115d6888c53bce73c80474d1b7`. The complete roster passed the
 final-live structural observer, all 153 production summon commands, the
@@ -480,19 +490,19 @@ exposure, escape, prey death, dismissal, timed expiry, area sweep, visual
 attachment and exact cleanup. Its per-view rig has 15 bones and released
 zero private meshes/materials in the lifecycle run.
 
-The original 128 px Stirge icon is distinct from Giant Wasp and is assigned
-to the unit and all nine SNA choices; its source/export hashes and exact
-symbols are in the icon manifest. The zero-damage touch weapon and attack
+The original 128 px Stirge icon is distinct from Giant Wasp and assigned
+to the unit and all nine registered SNA choices; its source/export hashes and
+exact symbols are in the icon manifest. The zero-damage touch weapon and attack
 trait are mechanics-only; the hold buff is internal and Filth Fever keeps
-its native icon. All nine choices are published. The guarded player path
+its native icon. The nine choices are now hidden. The earlier guarded player path
 `20260928T1344385887684Z` passed 834/834 generated roots and 29/29 native
 wrappers. The no-save live inventory `20260928T1405023387599Z` passed 50/50
 assertions, all 18 menu equations, zero missing or misordered icons and zero
 prohibited references. Original installation restoration was exact after
 both runs. That Sprint 10 technical PASS is reopened by the 2026-09-29 owner
 correction: native target grapple suppresses prey movement incorrectly.
-Stirge publication remains present on the branch but is not currently
-qualified; the replacement attachment and removal route are required before
+Stirge publication was withdrawn on this branch pending requalification; the
+replacement attachment and removal route are required before
 Sprint 10 can pass again. Native Filth Fever cure timing was not measured;
 exposure uses the exact installed buff. Owner visual approval remains pending.
 
