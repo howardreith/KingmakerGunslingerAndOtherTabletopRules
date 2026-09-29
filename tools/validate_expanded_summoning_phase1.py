@@ -402,7 +402,7 @@ def validate(root: Path) -> None:
         'C("tiger","Tiger",null,false,4,"Leopard")')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs",
         "RegisteredLogicalPlacementCount = 882;",
-        "SuppressedLogicalPlacementCount = 57;")
+        "SuppressedLogicalPlacementCount = 48;")
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningIdentityCatalog.cs",
         "UnitCount = 87;",
         "LogicalAbilityCount = 882;",
