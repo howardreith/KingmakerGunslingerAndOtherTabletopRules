@@ -225,5 +225,23 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(ledger.TryClaim(10, "target-a"),
                 "Cleanup releases the request-local contact ledger.");
         }
+
+        internal static void DonorRigCaptureUsesPrivateBindFrame()
+        {
+            string root = Environment.CurrentDirectory;
+            string runner = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "RuntimeTestRunner.ExpandedSummoningCorrection.cs"));
+            string project = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "KingmakerGunslinger.csproj"));
+            Assertions.True(runner.Contains("CaptureExpandedSummoningUngulateDonorRig(_rulesTrampler,") &&
+                runner.Contains("_rulesTrampleIndex == 0 ? \"horse\" : \"mastodon\"") &&
+                runner.Contains("Matrix4x4 bind = poses[index].inverse;") &&
+                runner.Contains("Path.Combine(_request.EvidenceDirectory, fileName)"),
+                "Original-mesh authoring must measure both exact live donor bind frames in guarded local evidence.");
+            Assertions.False(project.Contains("sprint11-horse-bind-rig.json") ||
+                project.Contains("sprint11-mastodon-bind-rig.json"),
+                "Measured native donor transforms must never enter the package.");
+        }
     }
 }

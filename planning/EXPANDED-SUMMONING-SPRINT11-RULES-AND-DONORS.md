@@ -344,3 +344,12 @@ assertions with unchanged 834 published placements, no missing published
 menu icons, and exact original-installation restoration at
 `20260929T0222241478727Z`. Actual ungulate UI use and owner visual review
 remain open.
+
+The guarded `20260929T0236149627664Z` rules run also captured exact
+renderer-local bind frames for original 3D authoring. Horse/Aurochs has one
+2,110-vertex skinned renderer with 31 bones and 31 bind poses; Mastodon/
+Woolly Rhinoceros has one 4,307-vertex renderer with 40 bones and 40 poses.
+The captures stay in guarded local evidence, never source control or the mod
+package. The run passed 31/31 assertions and restored the original live tree
+at `20260929T0240261038414Z`. Distinct ungulate meshes and visual review
+remain open.
