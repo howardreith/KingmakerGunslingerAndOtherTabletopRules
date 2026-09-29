@@ -227,8 +227,18 @@ namespace KingmakerGunslinger.DomainTests
                 runtime.Contains("ExecuteExpandedSummoningRuntimeAbility(hostile,") &&
                 runtime.Contains("SummonGrappleAreaSafeguard.SweepStirge(") &&
                 runtime.Contains("escapeAndTransition = reattachedForEscape && failedRemoval") &&
+                runtime.Contains("failedMobilityRemoval && successfulMobilityRemoval") &&
+                runtime.Contains("mobilityUsedNativeSkill") &&
+                runtime.Contains("StirgeRemovalRuleObserver") &&
+                runtime.Contains("expectedMobilityCmd") &&
                 runtime.Contains("successfulRemoval"),
-                "The prey's standard action must show failed and successful removal, then area cleanup.");
+                "The prey's standard action must show failed and successful CMB/Mobility removal with native rule observation, then area cleanup.");
+            Assertions.True(runtime.Contains("attachedMaintainCmb - baseMaintainCmb ==") &&
+                runtime.Contains("stirge.Descriptor.Stats.BaseAttackBonus.BaseValue = babBefore;") &&
+                runtime.Contains("StirgeAttachPolicy.MaintainGrappleRacialBonus") &&
+                runtime.Contains("attachmentEstablished = sessionLink && holderBuff && removeIcon &&") &&
+                runtime.Contains("targetFree && losesDexterity && maintainBonus"),
+                "A live owner-side grapple calculation must retain Stirge's printed +8 maintain bonus while attached.");
             Assertions.True(runtime.Contains("expanded-summoning-stirge-quantity-freedom") &&
                 runtime.Contains("ExerciseExpandedSummoningStirgeQuantityFreedom") &&
                 runtime.Contains("\"stirge\", 3, SummonMultiplicity.OneD4PlusOne") &&

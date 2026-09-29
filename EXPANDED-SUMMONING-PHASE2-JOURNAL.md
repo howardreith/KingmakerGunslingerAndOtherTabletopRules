@@ -1,5 +1,20 @@
 # Expanded Summoning Phase 2 journal
 
+## Stirge removal method discrimination, 2026-09-29
+
+The first guarded 36-assertion run `20260929T1641295398751Z` showed the
+Mobility skill route and CMD calculation worked, but a new +8 check compared
+native CMB -5 against a fixture-only touch-hit BAB boost and failed. The
+fixture now restores native BAB immediately after the touch attack. Guarded
+`20260929T1653192612453Z` passed 36/36: attached maintain CMB -5 to +3
+(+8), failed and successful Mobility checks against CMD 5, no extra grapple
+maneuver on the Mobility branch, and the prior CMB removal route still passed.
+Repository validation, 1,952 domain tests, clean Release and strict package
+passed. Both runs restored the original live tree SHA
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+Stirge remains hidden for remaining visual, player and turn-mode gates.
+
+
 ## Stirge native prey movement and reload, 2026-09-29
 
 Guarded creature review `20260929T1537294275973Z` passed 12/12 after a

@@ -1,6 +1,35 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## Current checkpoint: native prey movement and clean reload, 2026-09-29
+## Current checkpoint: Remove Stirge method and +8, 2026-09-29
+
+Branch `codex/expanded-summoning-phase2a-sprints9-13`, draft PR #25;
+last pushed head before this checkpoint
+`032f6fe6e2fc536d8c79acd5649d772ee357f618`. Guarded disposable run
+`20260929T1653192612453Z-disposable-expanded-summoning` passed 36/36
+assertions on the owner-directed session attachment. Native removal selected
+the better modifier before the roll: failed and successful Mobility actions
+emitted real Mobility skill checks against Stirge CMD 5 and no additional
+grapple maneuver, while the existing CMB failure/success route remained
+valid. The attached Stirge's native-profile maintain CMB changed from -5 to
++3, exactly the printed +8. Diagnostic `20260929T1641295398751Z` had
+compared native CMB to a fixture-only boosted touch-attack BAB; its Mobility
+route passed, and its +8 assertion correctly failed. The corrected fixture
+restores native BAB immediately after the forced touch hit. Both guarded runs
+restored the original 136-file live installation to SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`;
+the final restoration record is
+`20260929T1657168379136Z-disposable-expanded-summoning.json`.
+Repository validation, all 1,952 domain tests, clean Release and strict
+275-file package validation passed. Package SHA-256
+`2D0003746F149B23B4E97045C446CC170F0F939D2B04FB8347D20322CED8363A`;
+DLL SHA-256
+`C645CBA4EC5ADD690E34DFA672179F1D857406B0850AFA1A643EDC92315B6C49`.
+Sprint 10 still needs player-path/visual, teleport and turn-mode coverage
+before Stirge's nine hidden choices can publish; Sprint 11 and Sprints 12-21
+remain authorized and incomplete. No merge, release, permanent deployment or
+Sprint 22.
+
+## Prior checkpoint: native prey movement and clean reload, 2026-09-29
 
 Branch `codex/expanded-summoning-phase2a-sprints9-13`, draft PR #25;
 latest pushed implementation head before this checkpoint is
