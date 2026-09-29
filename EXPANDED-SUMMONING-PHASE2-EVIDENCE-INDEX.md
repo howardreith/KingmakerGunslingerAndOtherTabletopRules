@@ -8,6 +8,7 @@ original 136-file live tree has SHA-256
 
 | Scope | Passing result directory | Restoration record | Limit |
 | --- | --- | --- | --- |
+| Sprint 11 native Aurochs trample path | `20260929T0033452745962Z-disposable-expanded-summoning-rules` | `20260929T0037501346548Z-disposable-expanded-summoning-rules.json` | 21/21 PASS; native queued overrun moved 8.92 m through a smaller hostile, made one DC 17 Reflex save and one 16-point damage event, with zero allied damage. Exact turn-mode, pause, awake-list and original 136-file installation restoration. Native-overrun ablation passed, so no radius subclass was retained. Bison/Woolly, turn-based cadence, charge travel, quantity and visuals remain open. |
 | Sprint 9 final Eagle/Bat doorway and cleanup | `20260927T1536450257132Z-working-save-expanded-summoning-creature-review` | `20260927T1541351948729Z-working-save-expanded-summoning-creature-review.json` | One connected-room route; owner visual approval pending. |
 | Sprint 10 Wasp hidden registration and menu | `20260927T1804369885102Z-observe-expanded-summoning-inventory` | `20260927T1808371924124Z-observe-expanded-summoning-inventory.json` | Wasp placements suppressed; no visible choice. |
 | Sprint 10 Wasp poison and private view | `20260927T1912579609072Z-disposable-expanded-summoning` | `20260927T1916362556609Z-disposable-expanded-summoning.json` | 21/21 assertions; DC 18, sting/poison/cure and visual 2/2; full Wasp qualification pending. |
