@@ -1,5 +1,22 @@
 # Expanded Summoning Phase 2 autonomous state
 
+## Sprint 11 donor bind-rig capture, 2026-09-29
+
+Guarded Steam rules run `20260929T0236149627664Z` passed 31/31 assertions
+after repository validation, 1,949 domain tests, clean Release and strict
+package. The request-local Aurochs captured its Horse donor's one skinned
+renderer with 2,110 vertices, 31 bones and 31 bind poses; the Woolly
+Rhinoceros captured the Mastodon's one renderer with 4,307 vertices, 40
+bones and 40 bind poses. Exact renderer-local bind transforms remain only in
+local guarded evidence as `sprint11-horse-bind-rig.json` SHA-256
+`E9892EA5AF0B4C345A92BB7FAA07D3A049F6EEE0C564A584D03EB0339FE7F98C`
+and `sprint11-mastodon-bind-rig.json` SHA-256
+`4599EB7B45C2F13617D67AD138ED9FCB67FFFD9107BB8E45803B0C5AD29F7FC9`.
+No measured rig is committed or packaged. Wrapper restoration
+`20260929T0240261038414Z` verified the original 136-file installation
+SHA-256 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+The bind frames are inputs for original mesh authoring, not visual acceptance.
+
 ## Sprint 11 original icon export checkpoint, 2026-09-29
 
 Four distinct original 1254 px Aurochs, Bison, Rhinoceros and Woolly

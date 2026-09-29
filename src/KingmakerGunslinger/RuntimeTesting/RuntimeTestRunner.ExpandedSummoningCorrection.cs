@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using Harmony12;
@@ -34,6 +35,8 @@ using Kingmaker.Visual.MaterialEffects.RimLighting;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Summoning;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace KingmakerGunslinger.RuntimeTesting
@@ -3601,6 +3604,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     StatType.SaveReflex), "BaseValue", 100);
             }
             _rulesTrampler = CastExpandedSummoningQuietUnit(_rulesFixture, creatureKey);
+            if (_rulesTrampleIndex == 0 || _rulesTrampleIndex == 2)
+                CaptureExpandedSummoningUngulateDonorRig(_rulesTrampler,
+                    _rulesTrampleIndex == 0 ? "horse" : "mastodon");
             BlueprintAbility ability = _rulesFixture.Blueprints.OfType<BlueprintAbility>()
                 .Single(value => value.name ==
                     RulesTrampleAbilityNames[_rulesTrampleIndex]);
@@ -3750,6 +3756,75 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _rulesTrampler, _rulesTrampleAbility,
                 _rulesTrampleDestination, true, true);
             _rulesTrampleReplayStarted = true;
+        }
+
+        /// <summary>
+        /// Records the exact live donor bind frame for offline original-mesh
+        /// authoring. These measured transforms stay in guarded local evidence;
+        /// no native geometry or rig capture enters the repository or package.
+        /// </summary>
+        private void CaptureExpandedSummoningUngulateDonorRig(
+            UnitEntityData summon, string donorKey)
+        {
+            if (summon == null || summon.View == null ||
+                string.IsNullOrWhiteSpace(_request.EvidenceDirectory))
+                throw new InvalidOperationException(
+                    "The ungulate donor bind-rig capture has no exact live view or evidence directory.");
+            SkinnedMeshRenderer[] renderers = summon.View
+                .GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                .Where(value => value != null && value.sharedMesh != null)
+                .ToArray();
+            if (renderers.Length == 0)
+                throw new InvalidOperationException(
+                    "The " + donorKey + " donor view has no skinned renderer.");
+            var document = new JObject {
+                ["source"] = "request-local summoned " + donorKey + " donor view",
+                ["space"] = "renderer-local bind frame",
+                ["blueprint"] = summon.Blueprint.name
+            };
+            var entries = new JArray();
+            foreach (SkinnedMeshRenderer renderer in renderers)
+            {
+                Transform[] bones = renderer.bones ?? new Transform[0];
+                Matrix4x4[] poses = renderer.sharedMesh.bindposes ??
+                    new Matrix4x4[0];
+                var entry = new JObject {
+                    ["renderer"] = renderer.name,
+                    ["mesh"] = renderer.sharedMesh.name,
+                    ["vertexCount"] = renderer.sharedMesh.vertexCount,
+                    ["rootBone"] = renderer.rootBone == null ? "" :
+                        renderer.rootBone.name,
+                    ["boneCount"] = bones.Length,
+                    ["bindPoseCount"] = poses.Length
+                };
+                var capturedBones = new JArray();
+                for (int index = 0; index < bones.Length; index++)
+                {
+                    Transform bone = bones[index];
+                    if (bone == null || index >= poses.Length) continue;
+                    Matrix4x4 bind = poses[index].inverse;
+                    Vector3 position = bind.MultiplyPoint3x4(Vector3.zero);
+                    Quaternion rotation = Quaternion.LookRotation(
+                        bind.GetColumn(2), bind.GetColumn(1));
+                    capturedBones.Add(new JObject {
+                        ["index"] = index,
+                        ["name"] = bone.name,
+                        ["parent"] = bone.parent == null ? "" : bone.parent.name,
+                        ["bindPosition"] = new JArray(position.x, position.y,
+                            position.z),
+                        ["bindRotation"] = new JArray(rotation.x, rotation.y,
+                            rotation.z, rotation.w)
+                    });
+                }
+                entry["bones"] = capturedBones;
+                entries.Add(entry);
+            }
+            document["renderers"] = entries;
+            string fileName = "sprint11-" + donorKey + "-bind-rig.json";
+            File.WriteAllText(Path.Combine(_request.EvidenceDirectory, fileName),
+                document.ToString(Formatting.Indented));
+            _rulesSteps.Add("ungulate-rig=" + fileName + ";renderers=" +
+                entries.Count);
         }
 
         private void RestoreExpandedSummoningTrampleTurnMode()
