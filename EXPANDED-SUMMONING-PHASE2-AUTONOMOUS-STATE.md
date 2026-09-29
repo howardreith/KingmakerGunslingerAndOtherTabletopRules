@@ -1,5 +1,23 @@
 # Expanded Summoning Phase 2 autonomous state
 
+## Sprint 11 original icon export checkpoint, 2026-09-29
+
+Four distinct original 1254 px Aurochs, Bison, Rhinoceros and Woolly
+Rhinoceros paintings now have 128 px RGBA exports and exact source/export/
+consumer records in the delegated icon manifest. The main icon catalog pins
+that manifest. The 98-concept cache includes the four prepared hidden icons;
+published menu counts remain unchanged. Repository validation, 1,948 domain
+tests, clean Release and strict 266-file standalone package passed. Package
+SHA-256 `25743e54f90bd809734c1a013c105b7326ad1bd96081dfb27b1329ec809b5cb3`;
+DLL SHA-256 `16746da42ce23290c18586444aec1e5b742142655f4f765a190e932b4240e5de`.
+Guarded Steam inventory `20260929T0218259420008Z` passed 50/50 assertions:
+834 published placements, no missing published-menu icons, and zero
+unexpected menu changes. Wrapper restoration `20260929T0222241478727Z`
+verified the original 136-file installation SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+Actual ungulate UI use, 3D views, owner visual review and the remaining
+Sprint 11 mechanics are still open; no ungulate choice was published.
+
 ## Sprint 11 same-round trample replay checkpoint, 2026-09-29
 
 Guarded Steam run `20260929T0146260041731Z` passed 31/31 assertions.
