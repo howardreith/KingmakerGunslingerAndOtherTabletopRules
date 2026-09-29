@@ -1,5 +1,30 @@
 # Expanded Summoning Phase 2 autonomous state
 
+## Sprint 11 clear-floor visual inspection, 2026-09-29
+
+Guarded Steam creature review `20260929T1022039564996Z` passed 32/32
+assertions after repository validation, 1,952 domain tests, clean Release and
+strict package validation. The request-local fixture first proved each hidden
+ungulate's native doorway travel, then moved only the disposable reviewed unit
+to a surveyed connected-floor point with all eight radial sight/walk rays
+clear. It captured one overhead and four oblique live frames per species and
+restored each temporary camera pose. The run made zero save writes and left no
+owned view resources. Package SHA-256
+`937CBCB24C2AFC766F43E367C971A86030239B703DE88120499AE3513DC96932`;
+DLL SHA-256
+`285298FEDE8CEEB05F1DB5B88C025A2A52D659ADF77708A1F484E3CE3663FA1D`.
+Restoration `20260929T1029221524485Z` returned the original 136-file live
+installation to SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+
+The unobstructed frames distinguish Aurochs lateral horns, Bison mane and
+shorter horns, Rhinoceros nasal horns, and Woolly Rhinoceros heavy coat.
+They also expose thin, splayed hoof/foot ends and awkward apparent leg poses,
+especially on both rhinoceroses. This is an internal visual finding, not an
+accepted art gate; impact-facing animation and idle side profile still need
+review. The four choices remain hidden. Trample victim AoO-versus-Reflex
+choice, turn-based cadence and simultaneous quantity charge remain open.
+
 ## Sprint 11 natural expiry of simultaneous ungulate groups, 2026-09-29
 
 Guarded Steam working-save review `20260929T0920575813821Z` passed 32/32

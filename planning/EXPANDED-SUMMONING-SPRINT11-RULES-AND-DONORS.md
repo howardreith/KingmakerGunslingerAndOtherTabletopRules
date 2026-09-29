@@ -402,3 +402,23 @@ original installation. The six earlier diagnostic runs are excluded from
 qualification and restored exactly. This closes the one-at-a-time RTWP native
 charge path, not turn-based charge, multiple-quantity navigation or visual
 impact alignment.
+
+## Clear-floor art inspection, 2026-09-29
+
+Guarded Steam run `20260929T1022039564996Z` passed 32/32 after repository
+validation, 1,952 domain tests, clean Release and strict package validation.
+For each hidden ungulate, native doorway motion completed first; a request-local
+visual survey then found a connected-floor point with eight clear radial
+walk/sight rays and moved only the disposable subject. One overhead plus four
+oblique live views per species were written, with every camera pose restored.
+The Aurochs/Bison horn span, Bison mane, two Rhinoceros nasal-horn/coated-body
+profiles and body bulk are distinguishable. The obliques also show thin,
+splayed hoof/foot ends and awkward apparent leg poses, especially on both
+Rhinoceroses. The art gate is not accepted on these frames; an idle side view
+and attack impact contact remain to be checked. Screenshots support visual
+inspection only. Zero save writes, zero owned-view resources and exact
+original-installation restoration passed; restoration record
+`20260929T1029221524485Z` verified the original 136-file tree SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+Package SHA-256 `937CBCB24C2AFC766F43E367C971A86030239B703DE88120499AE3513DC96932`;
+DLL SHA-256 `285298FEDE8CEEB05F1DB5B88C025A2A52D659ADF77708A1F484E3CE3663FA1D`.
