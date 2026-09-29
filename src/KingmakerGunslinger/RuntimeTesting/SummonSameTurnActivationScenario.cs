@@ -193,6 +193,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             private readonly List<float> _stirgeForwardDots =
                 new List<float>();
             private int _waspImpactCaptures;
+            private bool _stirgeAttackCaptured;
             private readonly List<UnitEntityData> _requestLocalCooldownUnits =
                 new List<UnitEntityData>();
             private UnitEntityData _areaAnchor;
@@ -1364,6 +1365,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _evidence.LifecycleSecondsAfterSpawn = double.NaN;
                 foreach (UnitEntityData summon in _summons)
                 {
+                    if (_flightCreature == "stirge")
+                    {
+                        int nativeBab = summon.Descriptor.Stats.BaseAttackBonus
+                            .BaseValue;
+                        summon.Descriptor.Stats.BaseAttackBonus.BaseValue = 100;
+                        _diagnostics.Add("stirge-visual-fixture-bab=" +
+                            nativeBab + "->" + summon.Descriptor.Stats
+                                .BaseAttackBonus.BaseValue +
+                            ";scope=request-local-summon");
+                    }
                     RuleSummonUnit rule = _summonRules[summon];
                     double expected = (rule.Duration.Seconds +
                         rule.BonusDuration.Seconds).TotalSeconds;
@@ -1789,9 +1800,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _diagnostics.Add("flight-impact-geometry=" +
                     _flightImpactSamples[_flightImpactSamples.Count - 1]);
                 if (_flightCreature == "stirge" &&
-                    _flightTargetAttacksByUnit.Count <= 1 &&
-                    Count(_flightTargetAttacksByUnit, attack.Initiator) == 1)
+                    !_stirgeAttackCaptured && attack.AttackRoll != null &&
+                    attack.AttackRoll.IsHit)
                 {
+                    _stirgeAttackCaptured = true;
                     string fileName = "stirge-native-attack-overhead.png";
                     string capture = RuntimeTestRunner
                         .WriteExpandedSummoningOverheadStrikeCapture(
@@ -1814,7 +1826,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             attack.AttackRoll.AttackType == AttackType.Touch) +
                         ";hit=" + (attack.AttackRoll != null &&
                             attack.AttackRoll.IsHit) + ";attached=" +
-                        ReferenceEquals(SummonHoldComponent.HeldTarget(
+                        ReferenceEquals(StirgeHoldComponent.AttachedTarget(
                             attack.Initiator), attack.Target) +
                         ";attachComponent=" + (attach != null) +
                         ";nativeEventCalls=" + (attach == null ? -1 :
@@ -2411,7 +2423,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             "stirge-native-attack-overhead.png") &&
                             _diagnostics.Any(value => value.Contains(
                                 ";touch=True;hit=True;attached=True")),
-                        "native RuleAttackWithWeapon, reciprocal attach and read-only camera capture; art image requires visual inspection");
+                        "native RuleAttackWithWeapon, Stirge session attachment and read-only camera capture; art image requires visual inspection");
 
                 if (_kind == ScenarioKind.RtwpControl)
                 {

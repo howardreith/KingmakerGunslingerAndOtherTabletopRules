@@ -1,39 +1,27 @@
 # Expanded Summoning fidelity matrix
 
-Current Phase 2 Sprint 10 correction (2026-09-29): Stirge's nine SNA choices
-remain hidden while their replacement session-only attachment undergoes full
-qualification. The old native prey grapple is removed; the target receives no
-grapple or movement/action conditions. A standard-action Remove Stirge ability
-has a distinct original icon. The original summon icon, touch carrier and
-registered identities remain. Guarded
-Steam inventory `20260929T1307471902731Z` passed 50/50 with 825 visible
-placements and exact restoration. The historical Stirge publication and
-834-root evidence below do not satisfy the reopened attachment/removal gates.
-Giant Wasp and Sprint 9 remain published. Filth Fever is the disclosed bounded
-disease adaptation; the primary Paizo Stirge stat block permits only one
-exposure check per victim from each particular Stirge.
-Guarded disposable run `20260929T1502005029758Z` passed 36/36 attachment,
-removal, drain, counterattack, quantity and cleanup assertions with exact
-restoration. Its prey-follow check used fixture relocation; actual prey
-movement, persistence, player path and visual requalification remain open.
-Subsequent guarded working-save review `20260929T1537294275973Z` passed
-12/12 with a native player-prey move, 4.56 m travel, 2.50-to-0.13 m
-destination approach, 0.62 m Stirge follow gap and separate intact view.
-The corrected active-attachment reload trio
-`20260929T1550288953379Z` / `20260929T1554468196770Z` /
-`20260929T1559010594274Z` passed 15/15 each: no owner hold, prey grapple,
-orphan removal action or immobilizing residue after load; fixture absent at
-the final reload. Both working-save writes were exact and the final stage
-wrote none. The disabled-module prepare/cleanup/absent continuation
-`20260929T1607498366788Z` / `20260929T1616090412469Z` /
-`20260929T1624206703157Z` also passed 15/15 each with no reload residue,
-zero final fixture units and zero final save writes. Mobility removal,
-player path and remaining visual checks still gate publication.
-The guarded `20260929T1653192612453Z` run then passed native-profile method
-discrimination: Stirge maintain CMB -5 to +3 (+8), failed and successful
-Mobility skill checks against CMD 5, no extra grapple maneuver for those
-checks, and retained failed/successful CMB removal. Original install
-restoration passed; Stirge remains hidden pending the other gates.
+Current Phase 2 Sprint 10 disposition (2026-09-29): Stirge's nine SNA I-IX
+choices are published after full requalification, for 834 visible generated
+choices. The replacement session-only attachment is owned only by the Stirge;
+the prey receives no native grapple part or movement/action condition. The prey
+moves, acts and attacks normally while the separately targetable Stirge follows
+at a bounded offset. A standard-action Remove Stirge ability with its own icon
+chooses the better current CMB or Mobility modifier before rolling against CMD
+5. Both methods, failure/success, and the printed +8 maintain bonus passed.
+Death, dismissal, expiry, prey death, short translocation, area transition,
+module disable and reload clean up without link, ability, condition, collision
+or view residue. Four actual Constitution drains detach automatically.
+
+Filth Fever is the disclosed bounded disease adaptation. The primary Paizo
+Stirge stat block limits exposure to one check per victim from each particular
+Stirge; zero Constitution damage neither rolls nor consumes that check. The
+final evidence set is creature review `20260929T1714055122835Z` (12/12),
+turn-based `20260929T1824346229028Z`, RTWP `20260929T1827582364082Z`,
+inventory `20260929T1850489650251Z` (50/50), and player path
+`20260929T1903306672213Z` (834/834 generated roots and 29/29 native wrappers).
+The earlier attachment, removal and reload evidence remains detailed in the
+Stirge row below. Exact live-install restoration passed after every run.
+Sprint 9 and Giant Wasp remain published; Sprint 11 remains hidden.
 
 Status: release-qualified on final native qualification source
 `5205805eab3fe0115d6888c53bce73c80474d1b7`. The complete roster passed the
@@ -444,7 +432,14 @@ Wasp technical publication gate; owner visual approval remains pending.
 
 ## Phase 2 Sprint 10 Stirge row
 
-Stirge: SNA I with nine legal quantity placements through SNA IX. The
+Final disposition: the corrected session-attachment implementation is
+published and internally technically qualified. The dated paragraphs below
+retain the incremental evidence trail; references there to a hidden choice,
+reciprocal native attachment, open art, or pending requalification describe
+superseded checkpoints rather than current behavior.
+
+Historical progression: Stirge is SNA I with nine legal quantity placements
+through SNA IX. The
 hidden unit is Tiny, one-HD magical beast with Str 3/Dex 19/Con 10/Int 1/
 Wis 12/Cha 6, 40-foot airborne speed, Weapon Finesse and a zero-base-dice
 touch carrier. Its Eagle donor is temporary rigging only. The 10-foot
@@ -540,7 +535,18 @@ requires actual Constitution loss; zero loss does not consume the check.
 Guarded Steam `20260929T1241118852906Z` passed 35/35, including an initial
 zero-damage suppression, one native DC 12 Filth Fever exposure, and no repeat
 check after a later actual drain. Filth Fever is the explicit single bounded
-Kingmaker disease adaptation; attachment requalification is still open.
+Kingmaker disease adaptation.
+
+The corrected final implementation uses no reciprocal target grapple. The
+Stirge owns a nonserialized session link and feeding state; the prey keeps
+normal movement and actions, and can target and kill the Stirge.
+Standard-action removal chooses the better current CMB or Mobility modifier
+before rolling. Native prey movement, bounded follow, short-translocation
+detach, independent quantity links, four-drain detach, all cleanup boundaries,
+both turn modes, the original view/icon, 834/834 generated player paths, 29/29
+native wrappers and the 50/50 inventory contract passed in the final evidence
+set listed at the top of this matrix. Owner visual approval remains pending and
+nonblocking.
 
 ## Phase 2 Sprint 11 hidden ungulate qualification, 2026-09-29
 

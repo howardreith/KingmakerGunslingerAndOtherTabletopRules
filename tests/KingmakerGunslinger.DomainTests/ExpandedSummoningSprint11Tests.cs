@@ -57,8 +57,8 @@ namespace KingmakerGunslinger.DomainTests
                     " remains registered but hidden before qualification.");
             }
             Assertions.True(all.Length == 882 &&
-                all.Count(SummonVisibilityCatalog.IsPublished) == 825,
-                "The 48 ungulates and nine reopened Stirge placements stay hidden.");
+                all.Count(SummonVisibilityCatalog.IsPublished) == 834,
+                "The 48 ungulate placements stay hidden after Stirge qualification.");
         }
 
         internal static void FourUngulatesHaveHiddenQuantityPlacementsInBothFamilies()
@@ -402,7 +402,8 @@ namespace KingmakerGunslinger.DomainTests
                 "KingmakerGunslinger", "RuntimeTesting",
                 "RuntimeTestRunner.PteranodonReview.cs"));
             Assertions.True(review.Contains("suppressedSprint11Candidate =") &&
-                review.Contains("!suppressedSprint10Candidate && !suppressedSprint11Candidate") &&
+                review.Contains("!suppressedSprint11Candidate") &&
+                !review.Contains("suppressedSprint10Candidate =") &&
                 review.Contains("key == \"aurochs\" || key == \"bison\"") &&
                 review.Contains("key == \"rhinoceros\" || key == \"woolly-rhinoceros\"") &&
                 review.Contains("IsOriginalReviewKey(key)") &&
