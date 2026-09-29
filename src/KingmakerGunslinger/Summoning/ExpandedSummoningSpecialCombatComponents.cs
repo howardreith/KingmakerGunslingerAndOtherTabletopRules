@@ -638,8 +638,10 @@ namespace KingmakerGunslinger.Summoning
         public BlueprintBuff GrappledBuff;
         public BlueprintBuff DiseaseBuff;
 
-        [JsonIgnore]
-        private int m_DiseaseExposureAttempts;
+        // Paizo Stirge Diseased: one exposure check per victim from this
+        // particular Stirge, even across later blood-drain events.
+        [JsonProperty]
+        private List<string> m_DiseaseCheckedVictims = new List<string>();
         [JsonIgnore]
         private int m_NativeEventCalls;
         [JsonIgnore]
@@ -648,7 +650,11 @@ namespace KingmakerGunslinger.Summoning
         internal int NativeEventCalls { get { return m_NativeEventCalls; } }
         internal int NativeFallbackCalls { get { return m_NativeFallbackCalls; } }
 
-        internal int DiseaseExposureAttempts { get { return m_DiseaseExposureAttempts; } }
+        internal int DiseaseCheckedVictimCount
+        {
+            get { return m_DiseaseCheckedVictims == null ? 0 :
+                m_DiseaseCheckedVictims.Count; }
+        }
 
         internal static StirgeAttachComponent Find(UnitEntityData owner)
         {
@@ -666,8 +672,11 @@ namespace KingmakerGunslinger.Summoning
         internal bool TryDiseaseExposure(UnitEntityData target,
             int actualConstitutionDamage)
         {
-            if (target == null || !StirgeAttachPolicy
-                    .ShouldRollDiseaseExposure(actualConstitutionDamage))
+            if (target == null || string.IsNullOrEmpty(target.UniqueId) ||
+                !StirgeAttachPolicy.ShouldRollDiseaseExposure(
+                    actualConstitutionDamage) ||
+                m_DiseaseCheckedVictims != null &&
+                    m_DiseaseCheckedVictims.Contains(target.UniqueId))
                 return false;
             return TryDiseaseExposure(target, actualConstitutionDamage,
                 UnityEngine.Random.Range(0, 100));
@@ -678,10 +687,14 @@ namespace KingmakerGunslinger.Summoning
         {
             UnitEntityData owner = Owner == null ? null : Owner.Unit;
             if (owner == null || target == null || target.Descriptor == null ||
-                DiseaseBuff == null || !StirgeAttachPolicy
-                    .ShouldRollDiseaseExposure(actualConstitutionDamage))
+                DiseaseBuff == null || string.IsNullOrEmpty(target.UniqueId) ||
+                !StirgeAttachPolicy.ShouldRollDiseaseExposure(
+                    actualConstitutionDamage))
                 return false;
-            m_DiseaseExposureAttempts++;
+            if (m_DiseaseCheckedVictims == null)
+                m_DiseaseCheckedVictims = new List<string>();
+            if (m_DiseaseCheckedVictims.Contains(target.UniqueId)) return false;
+            m_DiseaseCheckedVictims.Add(target.UniqueId);
             if (!StirgeAttachPolicy.DiseaseExposureSelected(percentileRoll))
                 return true;
             var context = new MechanicsContext(owner, target.Descriptor,

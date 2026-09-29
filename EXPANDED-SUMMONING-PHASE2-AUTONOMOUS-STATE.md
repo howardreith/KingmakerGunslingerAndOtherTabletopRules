@@ -12,18 +12,23 @@ stop is resolved. Sprint 10 and 11 choices that fail the new gates remain
 unqualified, and the Phase 2A PR remains draft. Sprints 12-21 remain
 authorized after these corrections.
 
-The first narrow Sprint 10 correction removes the persistent once-per-victim
-disease gate. Exposure now rolls its printed 10% chance after every actual
-Constitution drain and never on zero damage. Guarded Steam scenario
-`20260929T1228251279908Z-disposable-expanded-summoning` passed 35/35,
-including two eligible attempts on one victim, zero-damage suppression,
-native Filth Fever DC 12 and four actual one-point drains. Repository
+The [primary Paizo Stirge stat block](https://legacy.aonprd.com/bestiary/stirge.html)
+explicitly limits disease exposure to one check per victim by a particular
+Stirge. This satisfies the owner's stated source exception. The initial
+per-drain diagnostic `20260929T1228251279908Z` is superseded for rule
+acceptance, though it passed its then-current test. The corrected source
+keeps that once-per-victim gate, checks only after actual Constitution loss,
+and suppresses zero-damage attempts before consuming the victim's check.
+Guarded Steam `20260929T1241118852906Z-disposable-expanded-summoning`
+passed 35/35: zero damage did not consume the check, the first eligible
+drain applied native Filth Fever at DC 12, a later actual drain did not
+reroll that victim, and four one-point drains still detached. Repository
 validation, all 1,952 domain tests, clean Release and strict package
 validation passed. Package SHA-256
-`C45F6A4961FD5F52A63E0E4023471ED1A7ED1BB9AE206D0E24E2C11B401E8337`;
+`535E1CE3808B5A02B69754019207189C8E5C05914FF595A69B289A0B57EDAB23`;
 DLL SHA-256
-`5148C99A4F7AAC97B24ACCE78EB4D8955B01ECCDE749E68B6F0FFB7522883D15`.
-Restoration `20260929T1232307424119Z` verified the unchanged original
+`E95EC2E4DDFFD15F660B0346DD3AC794D9CDDF6D035B9A5F87D58B7C894F79F9`.
+Restoration `20260929T1245167230072Z` verified the unchanged original
 136-file installation SHA-256
 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
 This does not requalify the old native prey-grapple representation; the

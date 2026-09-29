@@ -1341,3 +1341,24 @@ DLL SHA-256
 `5148C99A4F7AAC97B24ACCE78EB4D8955B01ECCDE749E68B6F0FFB7522883D15`.
 The reciprocal native grapple is the next correction and remains
 unqualified by this checkpoint.
+
+## Stirge primary-source disease exception, 2026-09-29
+
+The [Paizo Stirge stat block](https://legacy.aonprd.com/bestiary/stirge.html)
+explicitly limits exposure to one check per victim from that particular
+Stirge. This is the source exception in the owner's conditional disease
+instruction. The preceding per-drain run remains a diagnostic but its
+cadence is rejected. The follow-up restores the victim ledger and adds a
+positive actual-Constitution-loss gate before it consumes the check; the
+hold's save/load comment still correctly says the attachment resets.
+
+Guarded Steam `20260929T1241118852906Z-disposable-expanded-summoning`
+passed 35/35 after repository validation, all 1,952 domain tests, clean
+Release and strict package validation. Zero damage did not consume the check;
+the first eligible event applied the native Filth Fever buff at DC 12; a
+later actual drain and direct repeat did not reroll that victim. Four drains
+still detached in the old link representation. The original 136-file
+installation was restored exactly at `20260929T1245167230072Z`. Package
+SHA-256 `535E1CE3808B5A02B69754019207189C8E5C05914FF595A69B289A0B57EDAB23`;
+DLL SHA-256 `E95EC2E4DDFFD15F660B0346DD3AC794D9CDDF6D035B9A5F87D58B7C894F79F9`.
+The Stirge-specific attachment and removal action are still open.
