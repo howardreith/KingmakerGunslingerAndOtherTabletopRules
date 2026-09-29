@@ -1292,3 +1292,27 @@ The original 136-file installation was restored exactly at
 `20260929T0932580911284Z`. Concurrent charge, victim AoO choice, turn-based
 cadence, impact alignment, clear art and publication remain open. The
 choices remain hidden.
+
+## Sprint 11: surveyed clear-floor art frames, 2026-09-29
+
+The first party-camera visual set `20260929T0944321917314Z` was largely
+obscured by the room's bookcase. A surveyed open-floor Aurochs pilot
+`20260929T0959476614920Z` and four-species overhead run
+`20260929T1008448889601Z` proved the disposable-unit relocation and clear
+silhouettes; both restored the installed mod exactly. The overheads showed
+species identity but could not resolve leg shape. Request-local four-direction
+oblique camera captures were added to the same guarded review.
+
+Final guarded Steam review `20260929T1022039564996Z` passed 32/32 after
+repository validation, 1,952 domain tests, clean Release and strict package
+validation. The 20 open-floor overhead/oblique frames show distinct heads,
+horns, coat/bulk and exact original meshes. They also reveal thin splayed
+hoof ends and awkward apparent leg poses on the rhinoceroses. These frames
+are supporting visual evidence only; art quality and attack impact remain
+unaccepted, and owner visual review is pending. The run wrote zero saves and
+restored the original 136-file installation exactly at
+`20260929T1029221524485Z`. Package SHA-256
+`937CBCB24C2AFC766F43E367C971A86030239B703DE88120499AE3513DC96932`;
+DLL SHA-256
+`285298FEDE8CEEB05F1DB5B88C025A2A52D659ADF77708A1F484E3CE3663FA1D`.
+Sprint 11 remains hidden pending mechanical and visual gates.

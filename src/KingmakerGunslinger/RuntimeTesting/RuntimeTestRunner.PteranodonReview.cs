@@ -833,11 +833,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
-        /// <summary>Request-local overhead view of a live strike; restores the
-        /// game's exact camera pose and render targets before returning.</summary>
+        /// <summary>Request-local overhead or oblique view of live units;
+        /// restores the game's exact camera pose and render targets.</summary>
         internal static string WriteExpandedSummoningOverheadStrikeCapture(
             UnitEntityData attacker, UnitEntityData target,
-            string evidenceDirectory, string fileName)
+            string evidenceDirectory, string fileName,
+            float cameraHeight = 9f, Vector3? cameraOffset = null)
         {
             if (attacker == null || attacker.View == null || target == null ||
                 target.View == null || string.IsNullOrWhiteSpace(evidenceDirectory))
@@ -855,9 +856,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             try
             {
                 Vector3 midpoint = (attacker.Position + target.Position) * 0.5f;
-                camera.transform.position = midpoint + Vector3.up * 9f;
-                camera.transform.rotation = Quaternion.LookRotation(
-                    Vector3.down, Vector3.forward);
+                camera.transform.position = midpoint +
+                    (cameraOffset ?? Vector3.up * cameraHeight);
+                camera.transform.rotation = cameraOffset.HasValue ?
+                    Quaternion.LookRotation(midpoint + Vector3.up * 1.2f -
+                        camera.transform.position, Vector3.up) :
+                    Quaternion.LookRotation(Vector3.down, Vector3.forward);
                 renderTexture = new RenderTexture(MotionReviewCaptureWidth,
                     MotionReviewCaptureHeight, 24, RenderTextureFormat.ARGB32);
                 camera.targetTexture = renderTexture;
