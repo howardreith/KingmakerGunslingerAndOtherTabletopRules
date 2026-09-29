@@ -1,9 +1,10 @@
 # Expanded Summoning Phase 2 implementation report
 
-Status: Sprints 9 and 10 internally technically qualified; Sprint 11 blocked
-on the owner-design trample victim choice documented in
-`EXPANDED-SUMMONING-PHASE2-BLOCKER.md`. The Phase 2A PR remains draft;
-Sprints 12-21 have not started.
+Status: Sprint 9 internally technically qualified. Sprint 10 is reopened under
+the 2026-09-29 owner correction; Stirge's nine SNA choices are hidden pending
+full attachment and visual requalification. Sprint 11 trample response is now
+specified by the owner; Stampede and ungulate visual corrections remain. The
+Phase 2A PR remains draft, and Sprints 12-21 have not started.
 Eagle and Dire Bat passed guarded casts, player path, live inventory,
 open-floor and room-opening movement, exact-hostile native combat in RTWP
 and turn-based mode, visual impact contact, save/load/expiry, module-disabled
@@ -12,10 +13,17 @@ icon and bounded Bat blindsense are published on the Phase 2A feature branch.
 Human visual approval remains pending and nonblocking. Giant Wasp's twelve
 SM/SNA choices are published with an original icon; its poison, native sting
 cadence, visual contact, movement, cleanup, live menu and player path passed.
-Stirge's nine SNA choices are published with an original icon after guarded
-834-root player-path and 50-assertion live-menu gates. Native Filth Fever
-exposure is qualified; cure timing has not yet been measured. The Phase 2A draft PR is
-not ready for owner review.
+Stirge's prior 834-root publication evidence is historical. A Stirge-specific
+session-only attachment and standard-action Remove Stirge ability now replace
+the native prey grapple. Guarded disposable runtime passed 36/36 assertions
+on `20260929T1502005029758Z`, including two quantity Stirges on distinct
+victims, target condition freedom, failed/successful removal, four drains,
+bounded follow after fixture relocation, native counterattack and clean
+release without reciprocal grapple residue. Actual prey movement command,
+player paths, persistence, full visual/targetability and module-disabled
+qualification remain. Filth Fever is a disclosed adaptation; the primary
+Paizo stat block limits its 10% exposure to once per victim per Stirge. The
+Phase 2A draft PR is not ready for owner review.
 
 The accepted baseline is `master` at `2ce70e4` (0.0.140), which advanced after
 the owner packet was written. The baseline passes 1,918 domain tests, the

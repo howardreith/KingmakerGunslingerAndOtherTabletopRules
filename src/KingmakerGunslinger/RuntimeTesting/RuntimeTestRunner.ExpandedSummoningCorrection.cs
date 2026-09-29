@@ -3223,19 +3223,20 @@ namespace KingmakerGunslinger.RuntimeTesting
             PlaceExpandedSummoningUnit(pony, stirge.Position +
                 UnityEngine.Vector3.forward);
             bool attached = attach.TryAttach(pony, touch, true);
-            bool reciprocal = ReferenceEquals(
-                SummonHoldComponent.HeldTarget(stirge), pony) &&
-                pony.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>() != null;
+            bool sessionLink = ReferenceEquals(
+                StirgeHoldComponent.AttachedTarget(stirge), pony);
             bool holderBuff = stirge.Descriptor.Buffs.RawFacts.OfType<Buff>()
                 .Any(value => value.Blueprint != null && value.Blueprint.name ==
                     "KMG_Summoning_Special_Stirge_Hold");
-            bool victimBuff = pony.Descriptor.Buffs.RawFacts.OfType<Buff>()
-                .Any(value => value.Blueprint != null && value.Blueprint.name ==
-                    "KMG_Summoning_Special_Grapple_Grappled");
-            detail = "attached=" + attached + ";reciprocal=" + reciprocal +
-                ";holderBuff=" + holderBuff + ";victimBuff=" + victimBuff +
+            bool victimFree = pony.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>() ==
+                null && !pony.Descriptor.State.HasCondition(UnitCondition.CantMove) &&
+                !pony.Descriptor.State.HasCondition(UnitCondition.CantAct) &&
+                StirgeHoldComponent.RemoveAbility != null &&
+                pony.Descriptor.HasFact(StirgeHoldComponent.RemoveAbility);
+            detail = "attached=" + attached + ";sessionLink=" + sessionLink +
+                ";holderBuff=" + holderBuff + ";victimFree=" + victimFree +
                 ";holderId=" + stirge.UniqueId + ";victimId=" + pony.UniqueId;
-            return attached && reciprocal && holderBuff && victimBuff;
+            return attached && sessionLink && holderBuff && victimFree;
         }
 
         private static bool VerifyExpandedSummoningReloadedStirge(
@@ -3257,18 +3258,20 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool holderBuff = stirge.Descriptor.Buffs.RawFacts.OfType<Buff>()
                 .Any(value => value.Blueprint != null && value.Blueprint.name ==
                     "KMG_Summoning_Special_Stirge_Hold");
-            bool victimBuff = pony.Descriptor.Buffs.RawFacts.OfType<Buff>()
-                .Any(value => value.Blueprint != null && value.Blueprint.name ==
-                    "KMG_Summoning_Special_Grapple_Grappled");
+            bool orphanRemovalAction = StirgeHoldComponent.RemoveAbility != null &&
+                pony.Descriptor.HasFact(StirgeHoldComponent.RemoveAbility);
             bool holderCantAct = stirge.Descriptor.State.HasCondition(
                 UnitCondition.CantAct);
             bool victimCantMove = pony.Descriptor.State.HasCondition(
                 UnitCondition.CantMove);
             detail = "holderPart=" + holderPart + ";victimPart=" + victimPart +
-                ";holderBuff=" + holderBuff + ";victimBuff=" + victimBuff +
+                ";holderBuff=" + holderBuff + ";orphanRemovalAction=" +
+                orphanRemovalAction +
                 ";holderCantAct=" + holderCantAct +
                 ";victimCantMove=" + victimCantMove;
-            return !holderPart && !victimPart && !holderBuff && !victimBuff &&
+            return !holderPart && !victimPart && !holderBuff &&
+                !orphanRemovalAction &&
+                StirgeHoldComponent.AttachedTarget(stirge) == null &&
                 !holderCantAct && !victimCantMove;
         }
 

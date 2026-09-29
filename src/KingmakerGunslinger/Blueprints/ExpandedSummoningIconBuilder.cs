@@ -62,6 +62,10 @@ namespace KingmakerGunslinger.Blueprints
             // Sprint 6: the Giant Spider's project web has no art of its own.
             Set(bySymbol, "KMG.Summoning.Special.GiantSpider.Web",
                 ExpandedSummoningProjectIcons.Require("giant-spider"));
+            // Remove Stirge is a distinct prey action with its own original
+            // hand-and-creature painting, separate from the summon portrait.
+            Set(bySymbol, "KMG.Summoning.Special.Stirge.Remove",
+                ExpandedSummoningProjectIcons.Require("remove-stirge"));
             // Sprint 5: the cloned native breaths and spells keep their native
             // art; the two project bursts (Dehydrate, Boiling Rain) have none
             // of their own and wear their mephit's summon icon.

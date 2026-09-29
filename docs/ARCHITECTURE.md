@@ -870,7 +870,7 @@ against Favored Class or Call of the Wild and never executes host code.
 Expanded Summoning Phase 2 preserves the accepted ledger prefix and appends
 the Dire Bat, Giant Wasp and Stirge identities, then 100 Sprint 11 ungulate
 unit/placement identities, two Rhino charge facts and three hidden trample
-abilities: 2608 stable IDs: 2606 active and 2 reserved.
+abilities and Stirge's session-granted removal action: 2609 stable IDs: 2607 active and 2 reserved.
 The Wasp and Stirge choices are published after their technical qualification;
 the four Sprint 11 ungulates are registered but all 48 placements remain
 suppressed until their mechanics and visual contracts pass.
