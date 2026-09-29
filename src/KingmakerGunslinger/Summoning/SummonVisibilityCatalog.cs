@@ -5,18 +5,19 @@ using System.Linq;
 namespace KingmakerGunslinger.Summoning
 {
     /// <summary>
-    /// Publication-only exclusions. Sprints 9 and 10 publish the previously
-    /// hidden Dire Bat, Giant Wasp and Stirge placements after qualification.
+    /// Publication-only exclusions. Stirge is hidden again while the owner
+    /// correction requalifies its attachment; Sprint 11 remains hidden.
     /// </summary>
     internal static class SummonVisibilityCatalog
     {
         private static readonly HashSet<string> SuppressedCreatureKeys =
             new HashSet<string>(StringComparer.Ordinal) {
-                "aurochs", "bison", "rhinoceros", "woolly-rhinoceros"
+                "stirge", "aurochs", "bison", "rhinoceros",
+                "woolly-rhinoceros"
             };
 
         internal const int RegisteredLogicalPlacementCount = 882;
-        internal const int SuppressedLogicalPlacementCount = 48;
+        internal const int SuppressedLogicalPlacementCount = 57;
         internal const int PublishedLogicalPlacementCount =
             RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount;
 
