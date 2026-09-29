@@ -386,3 +386,19 @@ marker active. Both hit and dealt damage (47 and 77 in this run); it then
 restored the disposable target. Exact original-installation restoration
 `20260929T0500068625552Z` passed. This closes the direct attack-rule effect,
 not the native queued charge command, its travel or visual contact.
+
+The queued charge fixture then isolated the game's charge command seam.
+`UnitAttack.IsCharge` by itself traveled and attacked without the native
+charge marker; read-only installed-assembly inspection showed
+`AbilityCustomCharge` supplies that marker and queues the attack after its
+movement coroutine. The exact native `ChargeAbility`
+(`c78506dd0e14f7c45a599990e4e65038`) is already granted to both hidden
+Rhinos. The final guarded run `20260929T0639171416597Z` passed 33/33:
+Rhinoceros moved 3.88 m, queued and hit with its first gore under the marker,
+dealing 25 damage; Woolly Rhinoceros moved 3.42 m and did the same for 30.
+Repository validation, 1,951 tests, clean Release and strict 274-file
+package passed; wrapper restoration `20260929T0643316615128Z` verified the
+original installation. The six earlier diagnostic runs are excluded from
+qualification and restored exactly. This closes the one-at-a-time RTWP native
+charge path, not turn-based charge, multiple-quantity navigation or visual
+impact alignment.

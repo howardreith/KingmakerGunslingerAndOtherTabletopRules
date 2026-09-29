@@ -1,5 +1,25 @@
 # Expanded Summoning Phase 2 autonomous state
 
+## Sprint 11 native queued Rhino charge, 2026-09-29
+
+Guarded Steam rules `20260929T0639171416597Z` passed 33/33 assertions
+after repository validation, all 1,951 domain tests, clean Release and strict
+274-file package. Each hidden Rhino used its already-granted native
+`ChargeAbility` (`c78506dd0e14f7c45a599990e4e65038`): Rhinoceros moved
+3.88 m and dealt 25 damage, and Woolly Rhinoceros moved 3.42 m and dealt 30.
+Both native ability executions queued and completed a first gore attack with
+the native charge marker present and a hit. Earlier direct attack-rule checks
+established `4d6+12` and `4d8+18` first-charge expressions and non-charge
+reversion. Package SHA-256
+`3561D3E873F8C72A3961E71EFB0DBCC6EF0D71D2D05705A28EE34AE90F35F998`,
+DLL SHA-256 `84D3ACC8E347292A09139A825B7B8BD6ED25C5213921326EA716D8FD66746903`.
+Restoration `20260929T0643316615128Z` verified the original 136-file live
+tree SHA-256 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+The guarded path is RTWP on one disposable summon at a time. Turn-based
+charge, multiple-quantity pathing, trample victim choice/cadence, impact
+alignment, clear visual approval and publication remain open. Both choices
+stay hidden.
+
 ## Sprint 11 live Rhino charge damage, 2026-09-29
 
 Guarded Steam rules `20260929T0455499342752Z` passed 31/31 assertions

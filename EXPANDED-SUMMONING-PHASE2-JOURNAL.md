@@ -1183,3 +1183,29 @@ The wrapper restored the original 136-file installation exactly at
 `20260929T0500068625552Z`. This qualifies the attack rule effect, not
 queued charge travel, view impact, victim AoO choice, turn-based trample,
 quantity pathing or publication. Continue those gates with choices hidden.
+
+## Sprint 11: native queued Rhino charge, 2026-09-29
+
+The first route diagnostic found no legal long straight path; a wider survey
+found a 4–6 m route. A bare `UnitAttack.IsCharge` then approached and fired
+without Kingmaker's charge marker. Read-only installed-assembly inspection
+located `AbilityCustomCharge`, and guarded discovery confirmed its exact
+`ChargeAbility` (`c78506dd0e14f7c45a599990e4e65038`) was already granted
+to both hidden Rhinos. The fixture now uses that native ability, ticks its
+movement agent, and advances the queued attack after delivery. The failed
+setup diagnostics at `20260929T0515291374997Z`, `20260929T0528081234701Z`,
+`20260929T0544589314960Z`, `20260929T0558541880050Z`,
+`20260929T0612458494037Z` and `20260929T0625065535711Z` are not
+qualifying runs; every guarded wrapper restored the original installation.
+
+Final guarded rules `20260929T0639171416597Z` passed 33/33 assertions after
+repository validation, 1,951 domain tests, clean Release and strict 274-file
+package. Rhinoceros traveled 3.88 m and hit its first exact gore under the
+native charge marker for 25 damage; Woolly Rhinoceros traveled 3.42 m and
+did the same for 30. Package SHA-256
+`3561D3E873F8C72A3961E71EFB0DBCC6EF0D71D2D05705A28EE34AE90F35F998`;
+DLL SHA-256 `84D3ACC8E347292A09139A825B7B8BD6ED25C5213921326EA716D8FD66746903`.
+The exact original 136-file installation was restored at
+`20260929T0643316615128Z`. This is a one-at-a-time RTWP charge path;
+turn-based, quantity, victim AoO choice, trample action cadence, visual
+impact and publication remain outstanding. Choices remain hidden.
