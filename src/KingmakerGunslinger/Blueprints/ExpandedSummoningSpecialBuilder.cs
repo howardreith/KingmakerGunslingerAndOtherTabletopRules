@@ -523,9 +523,14 @@ namespace KingmakerGunslinger.Blueprints
                     "As a full-round action, move up to twice speed through " +
                     "smaller enemies. Each target takes " +
                     rules.TrampleDiceCount + "d" + rules.TrampleDieSides +
-                    "+" + rules.TrampleBonus + " bludgeoning damage " +
-                    "(Reflex DC " + rules.TrampleDc + " half), at most " +
-                    "once per round."), native.Icon);
+                    "+" + rules.TrampleBonus + " bludgeoning damage at most " +
+                    "once per round. On first contact, a target that can make " +
+                    "a legal melee attack of opportunity automatically makes " +
+                    "one at -4 before damage and receives no save. Otherwise " +
+                    "it attempts a Reflex DC " + rules.TrampleDc +
+                    " save for half. An attack that stops the trampler " +
+                    "prevents that contact's damage and ends the trample."),
+                native.Icon);
             unit.AddFacts = (unit.AddFacts ?? Array.Empty<BlueprintUnitFact>())
                 .Concat(new BlueprintUnitFact[] { ability }).ToArray();
         }

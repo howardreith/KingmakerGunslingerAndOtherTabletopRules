@@ -4,6 +4,39 @@ using System.Linq;
 
 namespace KingmakerGunslinger.Summoning
 {
+    internal enum TrampleTargetResponseDecision
+    {
+        ReflexSave,
+        OpportunityAttackContinues,
+        OpportunityAttackStops
+    }
+
+    /// <summary>
+    /// Pure owner-authorized automatic response policy. A contacted target
+    /// receives exactly one branch, selected before any roll is observed.
+    /// </summary>
+    internal static class TrampleTargetResponsePolicy
+    {
+        internal static bool HasLegalOpportunityAttack(bool hasResource,
+            bool canAct, bool hasMeleeAttack, bool threatens,
+            bool nativeRulesPermit)
+        {
+            return hasResource && canAct && hasMeleeAttack && threatens &&
+                nativeRulesPermit;
+        }
+
+        internal static TrampleTargetResponseDecision Resolve(
+            bool legalOpportunityAttack, bool opportunityAttackExecuted,
+            bool tramplerCanContinue)
+        {
+            if (!legalOpportunityAttack || !opportunityAttackExecuted)
+                return TrampleTargetResponseDecision.ReflexSave;
+            return tramplerCanContinue ?
+                TrampleTargetResponseDecision.OpportunityAttackContinues :
+                TrampleTargetResponseDecision.OpportunityAttackStops;
+        }
+    }
+
     internal sealed class UngulateRulesProfile
     {
         internal UngulateRulesProfile(string key, int hitDice, int strength,
@@ -104,6 +137,7 @@ namespace KingmakerGunslinger.Summoning
     internal sealed class TrampleRoundLedger
     {
         private long _round = -1;
+        private bool _halted;
         private readonly HashSet<string> _targets =
             new HashSet<string>(StringComparer.Ordinal);
 
@@ -114,12 +148,34 @@ namespace KingmakerGunslinger.Summoning
             if (round != _round)
             {
                 _round = round;
+                _halted = false;
                 _targets.Clear();
             }
+            if (_halted) return false;
             return _targets.Add(targetId);
         }
 
+        internal bool HasClaim(long round, string targetId)
+        {
+            return round == _round && !string.IsNullOrEmpty(targetId) &&
+                _targets.Contains(targetId);
+        }
+
+        internal bool IsHalted(long round)
+        { return round == _round && _halted; }
+
+        internal void Halt(long round)
+        {
+            if (round < 0 || round < _round) return;
+            if (round != _round)
+            {
+                _round = round;
+                _targets.Clear();
+            }
+            _halted = true;
+        }
+
         internal void Clear()
-        { _round = -1; _targets.Clear(); }
+        { _round = -1; _halted = false; _targets.Clear(); }
     }
 }
