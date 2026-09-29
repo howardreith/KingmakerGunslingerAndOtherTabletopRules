@@ -38,6 +38,10 @@ The separate guarded disabled-module prepare/cleanup/absent continuation
 `20260929T1607498366788Z` / `20260929T1616090412469Z` /
 `20260929T1624206703157Z` passed 15/15 each and restored the original
 installation and feature setting after every stage.
+Guarded `20260929T1653192612453Z` also passed 36/36 for the corrected
+standard-action method policy: native CMB and Mobility failure/success routes,
+Stirge CMD 5, no extra grapple maneuver on the Mobility route, and printed
++8 attached maintain bonus (CMB -5 to +3). Stirge is still hidden.
 
 The accepted baseline is `master` at `2ce70e4` (0.0.140), which advanced after
 the owner packet was written. The baseline passes 1,918 domain tests, the
