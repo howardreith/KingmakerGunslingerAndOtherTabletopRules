@@ -1,5 +1,51 @@
 # Expanded Summoning Phase 2 autonomous state
 
+## Current checkpoint: Stirge-specific attachment, 2026-09-29
+
+Branch `codex/expanded-summoning-phase2a-sprints9-13`, draft PR #25, based on
+accepted `master` `2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a`.
+Previous pushed head `bff3e9375ecf2ec8e4290e4298e607177baafbda`;
+this section describes the next candidate and must be pinned to its commit
+when committed. Sprint 9 is accepted; Sprint 10 remains reopened. Nine Stirge
+SNA choices remain hidden, while Giant Wasp and Sprint 9 remain published at
+825 visible placements. Sprint 11 ungulates remain hidden. Sprints 12-21 are
+authorized and unstarted; no merge, release, permanent deployment or Sprint 22.
+
+The Stirge owner now holds a nonserialized, session-only target link and
+owner-only feeding buff. The prey gets neither native grapple part nor
+movement/action condition. The prey receives a standard-action Remove Stirge
+ability while linked, with a distinct original painted icon. Removal chooses
+the better current grapple CMB or Mobility modifier before rolling; its native
+successful and failed action paths and no reciprocal grapple residue passed.
+The owner view follows a relocated prey at a bounded offset. Two Stirges from
+an actual 1d4+1 cast kept separate victim links; one victim's native attack
+killed its Stirge without altering the other link. The four actual
+Constitution-drain detach and prior once-per-victim Paizo disease exception
+remain intact. On load, the accepted `ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD`
+policy clears the owner hold and orphan removal action.
+
+Repository validation, all 1,952 domain tests, clean Release and strict
+275-file package validation passed. Guarded Steam disposable run
+`20260929T1502005029758Z-disposable-expanded-summoning` passed 36/36
+assertions. Package SHA-256
+`8CD7E3ABA6C825B53179DE67017FE44104AD529D65A68D7046A5289A173505EB`;
+DLL SHA-256
+`10A648D96B978A718B8A43CD421B885D5956DD51583ACE3FD4CFAFAAB4ECB014`.
+Restoration `20260929T1505565919798Z-disposable-expanded-summoning.json`
+returned the original 136-file live tree to SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+Earlier failed diagnostic runs `20260929T1437160323130Z` and
+`20260929T1449446349644Z` also restored exactly. The latter showed the
+fixture's hostile already had `CanMove=False;CanAct=False` and its freshly
+summoned Pony already had `CantMove/CantAct` before attachment. The final
+assertion compares pre/post state and independently observes a native prey
+counterattack; it does not claim a natural prey movement command. Next:
+qualify actual target movement/attackability, standard-action method branches,
+visual follow and clipping, persistence prepare/cleanup/absent, module-disable,
+RTWP/turn-based and player paths before publishing Stirge. Then implement
+owner-directed Sprint 11 AoO-first Trample and bounded Stampede disposition,
+repair ungulate hoof/leg art, and continue Sprints 12-21.
+
 ## Stirge publication hold, 2026-09-29
 
 The nine Stirge SNA placements are temporarily hidden while the owner-directed

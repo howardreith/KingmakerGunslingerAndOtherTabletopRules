@@ -21,9 +21,9 @@ namespace KingmakerGunslinger.DomainTests
             JArray rows = (JArray)manifest["icons"];
             Assertions.Equal(1, (int)manifest["schemaVersion"],
                 "Icon manifest schema changed.");
-            Assertions.Equal(98, (int)manifest["count"],
+            Assertions.Equal(99, (int)manifest["count"],
                 "Icon manifest count changed.");
-            Assertions.Equal(98, rows.Count,
+            Assertions.Equal(99, rows.Count,
                 "Icon manifest row count changed.");
             string[] catalogKeys = SummonIconCatalog.All.Select(value =>
                 value.Key).OrderBy(value => value, StringComparer.Ordinal).ToArray();
@@ -32,6 +32,15 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(string.Join("|", catalogKeys),
                 string.Join("|", manifestKeys),
                 "Icon manifest has missing or stale concepts.");
+            JToken removal = rows.Single(value =>
+                (string)value["key"] == "remove-stirge");
+            Assertions.Equal("KMG.Summoning.Special.Stirge.Remove",
+                (string)((JArray)removal["blueprintSymbols"]).Single(),
+                "The removal action needs its own exact icon consumer.");
+            Assertions.True((string)removal["outputSha256"] !=
+                (string)rows.Single(value => (string)value["key"] == "stirge")
+                    ["outputSha256"],
+                "The removal gesture cannot silently reuse the creature portrait.");
             foreach (string key in new[] { "aurochs", "bison",
                 "rhinoceros", "woolly-rhinoceros" })
             {
@@ -122,7 +131,7 @@ namespace KingmakerGunslinger.DomainTests
                 "Runtime project must include every manifest-backed icon path.");
             Assertions.True(package.Contains("expanded-summoning") &&
                 package.Contains("summonIconDestination") &&
-                package.Contains("expectedPackageFileCount = if ($hasFirearmSoundBank) { 274 } else { 272 }"),
+                package.Contains("expectedPackageFileCount = if ($hasFirearmSoundBank) { 275 } else { 273 }"),
                 "Standalone package must stage the exact runtime icon tree.");
         }
 

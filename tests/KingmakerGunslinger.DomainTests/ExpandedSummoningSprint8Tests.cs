@@ -128,7 +128,7 @@ namespace KingmakerGunslinger.DomainTests
         internal static void LedgerAndIconsCoverTheTiger()
         {
             SummonIconCatalog.Validate();
-            Assertions.Equal(98, SummonIconCatalog.All.Count,
+            Assertions.Equal(99, SummonIconCatalog.All.Count,
                 "The current catalog retains Tiger and includes the four prepared hidden ungulate icons.");
             string ledger = File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
                 "blueprints", "blueprints.json"));

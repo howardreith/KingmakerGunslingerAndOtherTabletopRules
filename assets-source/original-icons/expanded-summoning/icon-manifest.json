@@ -1,8 +1,8 @@
 ﻿{
     "schemaVersion":  1,
-    "provenance":  "Project-owned original artwork: 77 AI-assisted roster-mission concepts, Phase 1 procedural Blender additions, and Phase 2 original creature paintings; no copied game or third-party pixels.",
+    "provenance":  "Project-owned original artwork: 77 AI-assisted roster-mission concepts, Phase 1 procedural Blender additions, and Phase 2 original creature/action paintings; no copied game or third-party pixels.",
     "generator":  "tools/New-ExpandedSummoningIcons.ps1",
-    "count":  98,
+    "count":  99,
     "icons":  [
                   {
                       "key":  "dog",
@@ -2831,6 +2831,21 @@
                                                "KMG.Summoning.Ability.SNA.Tier8.WoollyRhinoceros.OneD4PlusOne",
                                                "KMG.Summoning.Ability.SNA.Tier9.WoollyRhinoceros.OneD4PlusOne",
                                                "KMG.Summoning.Unit.WoollyRhinoceros"
+                                           ]
+                  },
+                  {
+                      "key":  "remove-stirge",
+                      "displayName":  "Remove Stirge",
+                      "sourceFile":  "assets-source/original-icons/expanded-summoning/sources/remove-stirge.png",
+                      "productionFile":  "assets/game/icons/expanded-summoning/remove-stirge.png",
+                      "sourceSha256":  "f57ff1733c65ff1702507ec5c23fcbf3c9b93065d97ecbab07b2943ac855ad1b",
+                      "outputSha256":  "d94adebdc69e80f08bb936de2050ccbb5ad78e9fc99c678b6f242c5979c28329",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog",
+                      "blueprintSymbols":  [
+                                               "KMG.Summoning.Special.Stirge.Remove"
                                            ]
                   }
               ]

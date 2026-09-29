@@ -1,14 +1,21 @@
 # Expanded Summoning fidelity matrix
 
 Current Phase 2 Sprint 10 correction (2026-09-29): Stirge's nine SNA choices
-are hidden because the prior native prey grapple prevents normal prey movement.
-The original icon, touch carrier and registered identities remain. Guarded
+remain hidden while their replacement session-only attachment undergoes full
+qualification. The old native prey grapple is removed; the target receives no
+grapple or movement/action conditions. A standard-action Remove Stirge ability
+has a distinct original icon. The original summon icon, touch carrier and
+registered identities remain. Guarded
 Steam inventory `20260929T1307471902731Z` passed 50/50 with 825 visible
 placements and exact restoration. The historical Stirge publication and
 834-root evidence below do not satisfy the reopened attachment/removal gates.
 Giant Wasp and Sprint 9 remain published. Filth Fever is the disclosed bounded
 disease adaptation; the primary Paizo Stirge stat block permits only one
 exposure check per victim from each particular Stirge.
+Guarded disposable run `20260929T1502005029758Z` passed 36/36 attachment,
+removal, drain, counterattack, quantity and cleanup assertions with exact
+restoration. Its prey-follow check used fixture relocation; actual prey
+movement, persistence, player path and visual requalification remain open.
 
 Status: release-qualified on final native qualification source
 `5205805eab3fe0115d6888c53bce73c80474d1b7`. The complete roster passed the

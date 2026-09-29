@@ -346,6 +346,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal string StirgeFourPointDetachDetail;
             internal bool StirgeEscapeAndTransition;
             internal string StirgeEscapeAndTransitionDetail;
+            internal bool StirgeQuantityFreedom;
+            internal string StirgeQuantityFreedomDetail;
             internal bool StirgeDismissal;
             internal string StirgeDismissalDetail;
             internal bool StirgePreyDeath;
@@ -17638,12 +17640,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     mechanics != null && mechanics.StirgeTouchAttack,
                     "native RuleCalculateAC controls and RuleAttackWithWeapon on a disposable hostile"),
                 Assertion("expanded-summoning-stirge-native-attachment",
-                    "the touch hit establishes reciprocal native grapple parts and its dedicated hold, then releases without a residual state",
+                    "the touch hit establishes a Stirge-only session link while prey stays free to move and act, then releases without residue",
                     mechanics == null ? "not-run" : mechanics.StirgeAttachmentDetail,
                     mechanics != null && mechanics.StirgeAttachment,
-                    "live Stirge attack event, UnitPartGrappleInitiator/Target and hold-buff lifecycle"),
+                    "live touch attack, owner-only hold, prey conditions and removal-action grant"),
                 Assertion("expanded-summoning-stirge-first-blood-drain",
-                    "the first attached round deals exactly one actual Constitution damage and retains the native link",
+                    "the first attached round deals exactly one actual Constitution damage and retains the session link",
                     mechanics == null ? "not-run" : mechanics.StirgeFirstDrainDetail,
                     mechanics != null && mechanics.StirgeFirstDrain,
                     "live StirgeHoldComponent round tick and target Constitution damage"),
@@ -17653,15 +17655,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                     mechanics != null && mechanics.StirgeDisease,
                     "live attached Stirge, native Fortitude saving rule and RuleApplyBuff on a disposable hostile"),
                 Assertion("expanded-summoning-stirge-four-point-detach",
-                    "each of four attached rounds deals one actual Constitution damage; the fourth releases both native parts and buffs",
+                    "each of four attached rounds deals one actual Constitution damage; the fourth clears the hold and removal action",
                     mechanics == null ? "not-run" : mechanics.StirgeFourPointDetachDetail,
                     mechanics != null && mechanics.StirgeFourPointDetach,
                     "four live StirgeHoldComponent round ticks with per-tick stat and link checks"),
                 Assertion("expanded-summoning-stirge-escape-and-transition",
-                    "a native victim break-free check and the area-leave safeguard each release Stirge's re-established hold without another drain",
+                    "one failed then successful standard-action removal and the area safeguard each handle re-established Stirge holds",
                     mechanics == null ? "not-run" : mechanics.StirgeEscapeAndTransitionDetail,
                     mechanics != null && mechanics.StirgeEscapeAndTransition,
-                    "UnitHelper.TryBreakFree, the native target-part removal and SummonGrappleAreaSafeguard.Sweep"),
+                    "native UnitUseAbility removal commands and Stirge-only area sweep"),
+                Assertion("expanded-summoning-stirge-quantity-freedom",
+                    "two quantity Stirges attach to distinct victims; prey movement and melee counterattack remove only their own Stirge",
+                    mechanics == null ? "not-run" : mechanics.StirgeQuantityFreedomDetail,
+                    mechanics != null && mechanics.StirgeQuantityFreedom,
+                    "live 1d4+1 Stirge summon, two prey action grants, owner-follow relocation and native prey attack"),
                 Assertion("expanded-summoning-stirge-dismissal-release",
                     "destroying an attached disposable summon leaves its former victim free, without an extra blood-drain tick",
                     mechanics == null ? "not-run" : mechanics.StirgeDismissalDetail,
@@ -18249,6 +18256,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         out result.StirgeFourPointDetachDetail,
                         out result.StirgeEscapeAndTransition,
                         out result.StirgeEscapeAndTransitionDetail);
+                ResetExpandedSummoningMechanicalHostile(hostile, blueprints);
+                result.StirgeQuantityFreedom =
+                    ExerciseExpandedSummoningStirgeQuantityFreedom(blueprints,
+                        caster, hostile, created, result,
+                        out result.StirgeQuantityFreedomDetail);
                 ResetExpandedSummoningMechanicalHostile(hostile, blueprints);
                 result.StirgeDisease =
                     ExerciseExpandedSummoningStirgeDisease(blueprints,
@@ -19150,8 +19162,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             interruptDetail = "not-run";
             BlueprintBuff hold = blueprints.OfType<BlueprintBuff>().Single(value =>
                 value.name == "KMG_Summoning_Special_Stirge_Hold");
-            BlueprintBuff grappled = blueprints.OfType<BlueprintBuff>().Single(
-                value => value.name == "KMG_Summoning_Special_Grapple_Grappled");
+            BlueprintAbility removeStirge = blueprints.OfType<BlueprintAbility>()
+                .Single(value => value.name ==
+                    "KMG_Summoning_Special_Stirge_Remove");
             UnitEntityData stirge = CastExpandedSummoningCombatUnit(blueprints,
                 caster, SummonFamily.NaturesAlly, "stirge", 1,
                 created, evidence);
@@ -19179,17 +19192,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ";resolvedAc=" + (roll == null ? -1 : roll.TargetAC) +
                     ";hit=" + (roll != null && roll.IsHit) + ";hpDamage=" +
                     damageBefore + "->" + damageAfter;
-                bool reciprocal = ReferenceEquals(
-                    SummonHoldComponent.HeldTarget(stirge), hostile);
+                bool sessionLink = ReferenceEquals(
+                    StirgeHoldComponent.AttachedTarget(stirge), hostile);
                 bool holderBuff = stirge.Descriptor.HasFact(hold);
-                bool targetBuff = hostile.Descriptor.HasFact(grappled);
+                bool targetFree = hostile.Get<Kingmaker.UnitLogic.Parts
+                    .UnitPartGrappleTarget>() == null &&
+                    !hostile.Descriptor.State.HasCondition(UnitCondition.CantMove) &&
+                    !hostile.Descriptor.State.HasCondition(UnitCondition.CantAct) &&
+                    hostile.Descriptor.HasFact(removeStirge) &&
+                    hostile.Descriptor.Abilities.GetAbility(removeStirge) != null;
+                bool removeIcon = ReferenceEquals(removeStirge.Icon,
+                    ExpandedSummoningProjectIcons.Require("remove-stirge"));
                 bool losesDexterity = stirge.Descriptor.State.HasCondition(
                     UnitCondition.LoseDexterityToAC);
-                attachmentEstablished = reciprocal && holderBuff &&
-                    targetBuff && losesDexterity;
-                attachmentDetail = "reciprocal=" + reciprocal +
-                    ";holderBuff=" + holderBuff + ";targetBuff=" +
-                    targetBuff + ";losesDexterity=" + losesDexterity;
+                attachmentEstablished = sessionLink && holderBuff && removeIcon &&
+                    targetFree && losesDexterity &&
+                    stirge.Descriptor.State.HasCondition(UnitCondition.CantMove) &&
+                    stirge.Descriptor.State.HasCondition(UnitCondition.CantAct);
+                attachmentDetail = "sessionLink=" + sessionLink +
+                    ";holderBuff=" + holderBuff + ";targetFree=" +
+                    targetFree + ";removeIcon=" + removeIcon +
+                    ";losesDexterity=" + losesDexterity;
                 StirgeHoldComponent liveHold = holderBuff ?
                     ExpandedSummoningRuntimeComponent<StirgeHoldComponent>(
                         stirge, hold) : null;
@@ -19200,7 +19223,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int constitutionAfterTick =
                     hostile.Descriptor.Stats.Constitution.Damage;
                 bool stillAttached = ReferenceEquals(
-                    SummonHoldComponent.HeldTarget(stirge), hostile);
+                    StirgeHoldComponent.AttachedTarget(stirge), hostile);
                 firstDrain = liveHold != null &&
                     constitutionAfterTick - constitutionBeforeTick == 1 &&
                     liveHold.CumulativeDamage == 1 && stillAttached &&
@@ -19222,7 +19245,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     liveHold.OnNewRound();
                     int afterRound = hostile.Descriptor.Stats.Constitution.Damage;
                     bool linked = ReferenceEquals(
-                        SummonHoldComponent.HeldTarget(stirge), hostile);
+                        StirgeHoldComponent.AttachedTarget(stirge), hostile);
                     mealSteps.Add(round + ":" + beforeRound + "->" + afterRound +
                         "/" + liveHold.CumulativeDamage + "/linked=" + linked);
                     mealExact &= afterRound - beforeRound == 1 &&
@@ -19233,7 +19256,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     stirge.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleInitiator>() == null &&
                     hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>() == null &&
                     !stirge.Descriptor.HasFact(hold) &&
-                    !hostile.Descriptor.HasFact(grappled) &&
+                    !hostile.Descriptor.HasFact(removeStirge) &&
                     !stirge.Descriptor.State.HasCondition(
                         UnitCondition.LoseDexterityToAC);
                 fourPointDetach = mealExact && automaticCleanup &&
@@ -19248,54 +19271,68 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Rulebook.Trigger(new RuleAttackWithWeapon(stirge, hostile,
                     weapon, 0));
                 bool reattachedForEscape = ReferenceEquals(
-                    SummonHoldComponent.HeldTarget(stirge), hostile);
-                StirgeHoldComponent escapeHold = reattachedForEscape ?
-                    ExpandedSummoningRuntimeComponent<StirgeHoldComponent>(
-                        stirge, hold) : null;
-                var targetPart = hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>();
+                    StirgeHoldComponent.AttachedTarget(stirge), hostile);
                 int targetBabBefore = hostile.Descriptor.Stats.BaseAttackBonus.BaseValue;
-                bool nativeEscape;
+                int mobilityBefore = hostile.Descriptor.Stats.SkillMobility.BaseValue;
+                bool failedRemoval, successfulRemoval;
                 try
                 {
+                    PlaceExpandedSummoningUnit(stirge, hostile.Position +
+                        Vector3.right * 0.6f);
+                    hostile.Descriptor.Stats.BaseAttackBonus.BaseValue = -100;
+                    hostile.Descriptor.Stats.SkillMobility.BaseValue = -100;
+                    UnityEngine.Random.InitState(FindNativeD20Seed(1));
+                    ExecuteExpandedSummoningRuntimeAbility(hostile,
+                        removeStirge, 0, new TargetWrapper(stirge), false,
+                        stirge);
+                    failedRemoval = ReferenceEquals(
+                        StirgeHoldComponent.AttachedTarget(stirge), hostile);
                     hostile.Descriptor.Stats.BaseAttackBonus.BaseValue = 100;
+                    hostile.Descriptor.Stats.SkillMobility.BaseValue = -100;
                     UnityEngine.Random.InitState(FindNativeD20Seed(20));
-                    nativeEscape = targetPart != null &&
-                        Kingmaker.UnitLogic.UnitHelper.TryBreakFree(hostile,
-                            stirge, Kingmaker.UnitLogic.UnitHelper.BreakFreeFlags.Default,
-                            targetPart.Context, null);
+                    ExecuteExpandedSummoningRuntimeAbility(hostile,
+                        removeStirge, 0, new TargetWrapper(stirge), false,
+                        stirge);
+                    successfulRemoval =
+                        StirgeHoldComponent.AttachedTarget(stirge) == null;
                 }
                 finally
                 {
                     hostile.Descriptor.Stats.BaseAttackBonus.BaseValue =
                         targetBabBefore;
+                    hostile.Descriptor.Stats.SkillMobility.BaseValue =
+                        mobilityBefore;
                 }
-                if (nativeEscape)
-                    hostile.Remove<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>();
-                if (escapeHold != null) escapeHold.OnNewRound();
                 bool escapeClean = stirge.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleInitiator>() == null &&
                     hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>() == null &&
+                    hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleInitiator>() == null &&
+                    stirge.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>() == null &&
                     !stirge.Descriptor.HasFact(hold) &&
-                    !hostile.Descriptor.HasFact(grappled) &&
+                    !hostile.Descriptor.HasFact(removeStirge) &&
+                    !hostile.Descriptor.State.HasCondition(UnitCondition.CantMove) &&
+                    !hostile.Descriptor.State.HasCondition(UnitCondition.CantAct) &&
                     hostile.Descriptor.Stats.Constitution.Damage ==
                         constitutionDamageBefore;
                 UnityEngine.Random.InitState(FindNativeD20Seed(20));
                 Rulebook.Trigger(new RuleAttackWithWeapon(stirge, hostile,
                     weapon, 0));
                 bool reattachedForTransition = ReferenceEquals(
-                    SummonHoldComponent.HeldTarget(stirge), hostile);
-                int swept = SummonGrappleAreaSafeguard.Sweep(true,
-                    new[] { hostile });
+                    StirgeHoldComponent.AttachedTarget(stirge), hostile);
+                int swept = SummonGrappleAreaSafeguard.SweepStirge(
+                    new[] { stirge, hostile });
                 bool transitionClean = swept == 1 &&
                     stirge.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleInitiator>() == null &&
                     hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>() == null &&
                     !stirge.Descriptor.HasFact(hold) &&
-                    !hostile.Descriptor.HasFact(grappled) &&
+                    !hostile.Descriptor.HasFact(removeStirge) &&
                     !stirge.Descriptor.State.HasCondition(
                         UnitCondition.LoseDexterityToAC);
-                escapeAndTransition = reattachedForEscape && nativeEscape &&
+                escapeAndTransition = reattachedForEscape && failedRemoval &&
+                    successfulRemoval &&
                     escapeClean && reattachedForTransition && transitionClean;
                 interruptDetail = "escapeAttach=" + reattachedForEscape +
-                    ";nativeBreakFree=" + nativeEscape +
+                    ";failedRemoval=" + failedRemoval +
+                    ";successfulRemoval=" + successfulRemoval +
                     ";escapeClean=" + escapeClean +
                     ";transitionAttach=" + reattachedForTransition +
                     ";swept=" + swept + ";transitionClean=" + transitionClean;
@@ -19307,11 +19344,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
-                ReleaseExpandedSummoningHold(stirge, hostile, hold);
+                StirgeHoldComponent.Detach(stirge);
                 bool clean = stirge.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleInitiator>() == null &&
                     hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>() == null &&
                     !stirge.Descriptor.HasFact(hold) &&
-                    !hostile.Descriptor.HasFact(grappled) &&
+                    !hostile.Descriptor.HasFact(removeStirge) &&
                     !stirge.Descriptor.State.HasCondition(
                         UnitCondition.LoseDexterityToAC);
                 attachmentEstablished = attachmentEstablished && clean;
@@ -19320,6 +19357,130 @@ namespace KingmakerGunslinger.RuntimeTesting
                 hostile.Descriptor.Stats.Constitution.Damage =
                     constitutionDamageBefore;
                 hostile.Descriptor.Damage = damageBefore;
+            }
+        }
+
+        /// <summary>Two actual quantity Stirges keep separate prey/action
+        /// links while one prey relocates and kills its own Stirge.</summary>
+        private static bool ExerciseExpandedSummoningStirgeQuantityFreedom(
+            BlueprintScriptableObject[] blueprints, UnitEntityData caster,
+            UnitEntityData hostile, List<UnitEntityData> created,
+            ExpandedSummoningMechanicalEvidence evidence, out string detail)
+        {
+            UnitEntityData[] stirges = CastExpandedSummoningVariant(blueprints,
+                caster, ExpandedSummoningVariant(SummonFamily.NaturesAlly,
+                    "stirge", 3, SummonMultiplicity.OneD4PlusOne), null,
+                evidence);
+            created.AddRange(stirges);
+            UnitEntityData pony = CastExpandedSummoningCombatUnit(blueprints,
+                caster, SummonFamily.NaturesAlly, "pony", 1,
+                created, evidence);
+            detail = "quantity=" + stirges.Length;
+            if (stirges.Length < 2) return false;
+            UnitEntityData first = stirges[0], second = stirges[1];
+            Vector3 preyStart = hostile.Position;
+            int bab = hostile.Descriptor.Stats.BaseAttackBonus.BaseValue;
+            int firstDamage = first.Descriptor.Damage;
+            bool preyCouldMoveBefore = hostile.Descriptor.State.CanMove;
+            bool preyCouldActBefore = hostile.Descriptor.State.CanAct;
+            bool ponyCantMoveBefore = pony.Descriptor.State.HasCondition(
+                UnitCondition.CantMove);
+            bool ponyCantActBefore = pony.Descriptor.State.HasCondition(
+                UnitCondition.CantAct);
+            try
+            {
+                RemoveExpandedSummoningAppearanceBuffs(first);
+                RemoveExpandedSummoningAppearanceBuffs(second);
+                StirgeAttachComponent one = StirgeAttachComponent.Find(first);
+                StirgeAttachComponent two = StirgeAttachComponent.Find(second);
+                bool both = one != null && two != null &&
+                    one.TryAttach(hostile, first.Body.PrimaryHand.MaybeWeapon,
+                        true) &&
+                    two.TryAttach(pony, second.Body.PrimaryHand.MaybeWeapon,
+                        true);
+                bool firstLinked = ReferenceEquals(
+                        StirgeHoldComponent.AttachedTarget(first), hostile) &&
+                    !hostile.Descriptor.State.HasCondition(UnitCondition.CantMove) &&
+                    !hostile.Descriptor.State.HasCondition(UnitCondition.CantAct);
+                bool secondLinked = ReferenceEquals(
+                        StirgeHoldComponent.AttachedTarget(second), pony) &&
+                    pony.Descriptor.State.HasCondition(UnitCondition.CantMove) ==
+                        ponyCantMoveBefore &&
+                    pony.Descriptor.State.HasCondition(UnitCondition.CantAct) ==
+                        ponyCantActBefore;
+                bool actionGrants =
+                    hostile.Descriptor.HasFact(StirgeHoldComponent.RemoveAbility) &&
+                    pony.Descriptor.HasFact(StirgeHoldComponent.RemoveAbility);
+                bool preyFreedom =
+                    hostile.Descriptor.State.CanMove == preyCouldMoveBefore &&
+                    hostile.Descriptor.State.CanAct == preyCouldActBefore;
+                bool independent = both && firstLinked && secondLinked &&
+                    actionGrants && preyFreedom;
+                PlaceExpandedSummoningUnit(hostile, preyStart +
+                    Vector3.right * 2f);
+                StirgeHoldComponent.FollowAttached(first);
+                bool followed =
+                    Vector3.Distance(first.Position, hostile.Position) > 0.35f &&
+                    Vector3.Distance(first.Position, hostile.Position) < 0.9f &&
+                    Vector3.Distance(first.Position, preyStart) > 1f &&
+                    ReferenceEquals(StirgeHoldComponent.AttachedTarget(second),
+                        pony);
+                ItemEntityWeapon weapon = hostile.Body.PrimaryHand.MaybeWeapon;
+                first.Descriptor.Damage = Math.Max(0, first.MaxHP - 1);
+                hostile.Descriptor.Stats.BaseAttackBonus.BaseValue = 100;
+                UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                var counterattack = weapon == null ? null :
+                    new RuleAttackWithWeapon(hostile, first, weapon, 0);
+                if (counterattack != null) Rulebook.Trigger(counterattack);
+                typeof(Kingmaker.Controllers.Units.UnitLifeController)
+                    .GetMethod("TickOnUnit", BindingFlags.Instance |
+                        BindingFlags.Public | BindingFlags.NonPublic)
+                    .Invoke(new Kingmaker.Controllers.Units.UnitLifeController(),
+                        new object[] { first });
+                StirgeHoldComponent.FollowAttached(first);
+                bool killed = counterattack != null &&
+                    counterattack.AttackRoll != null &&
+                    counterattack.AttackRoll.IsHit &&
+                    (first.Descriptor.State.IsDead || first.Destroyed) &&
+                    StirgeHoldComponent.AttachedTarget(first) == null &&
+                    !hostile.Descriptor.HasFact(
+                        StirgeHoldComponent.RemoveAbility);
+                bool otherIntact = ReferenceEquals(
+                        StirgeHoldComponent.AttachedTarget(second), pony) &&
+                    pony.Descriptor.HasFact(StirgeHoldComponent.RemoveAbility);
+                StirgeHoldComponent.Detach(second);
+                bool cleanup = !pony.Descriptor.HasFact(
+                    StirgeHoldComponent.RemoveAbility) &&
+                    !hostile.Descriptor.HasFact(
+                        StirgeHoldComponent.RemoveAbility);
+                detail = "quantity=" + stirges.Length + ";both=" + both +
+                    ";firstLinked=" + firstLinked + ";secondLinked=" +
+                    secondLinked + ";actionGrants=" + actionGrants +
+                    ";preyMove=" + preyCouldMoveBefore + "->" +
+                    hostile.Descriptor.State.CanMove + ";preyAct=" +
+                    preyCouldActBefore + "->" +
+                    hostile.Descriptor.State.CanAct + ";ponyCantMove=" +
+                    ponyCantMoveBefore + "->" +
+                    pony.Descriptor.State.HasCondition(UnitCondition.CantMove) +
+                    ";ponyCantAct=" + ponyCantActBefore + "->" +
+                    pony.Descriptor.State.HasCondition(UnitCondition.CantAct) +
+                    ";independent=" +
+                    independent + ";followed=" + followed +
+                    ";counterHit=" + (counterattack != null &&
+                        counterattack.AttackRoll != null &&
+                        counterattack.AttackRoll.IsHit) + ";killed=" + killed +
+                    ";otherIntact=" + otherIntact + ";cleanup=" + cleanup;
+                if (first.Destroyed) created.Remove(first);
+                return independent && followed && killed && otherIntact &&
+                    cleanup;
+            }
+            finally
+            {
+                StirgeHoldComponent.Detach(first);
+                StirgeHoldComponent.Detach(second);
+                PlaceExpandedSummoningUnit(hostile, preyStart);
+                hostile.Descriptor.Stats.BaseAttackBonus.BaseValue = bab;
+                if (!first.Destroyed) first.Descriptor.Damage = firstDamage;
             }
         }
 
@@ -19353,7 +19514,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Rulebook.Trigger(new RuleAttackWithWeapon(stirge, hostile,
                     stirge.Body.PrimaryHand.MaybeWeapon, 0));
                 bool attached = ReferenceEquals(
-                    SummonHoldComponent.HeldTarget(stirge), hostile);
+                    StirgeHoldComponent.AttachedTarget(stirge), hostile);
                 StirgeAttachComponent attach = StirgeAttachComponent.Find(stirge);
                 hostile.Descriptor.Stats.SaveFortitude.BaseValue = -100;
                 UnityEngine.Random.InitState(FindNativeD20Seed(1));
@@ -19392,7 +19553,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
-                ReleaseExpandedSummoningHold(stirge, hostile, hold);
+                StirgeHoldComponent.Detach(stirge);
                 Buff infected = hostile.Descriptor.Buffs.GetBuff(fever);
                 if (infected != null) hostile.Descriptor.Buffs.RemoveFact(infected);
                 stirge.Descriptor.Stats.BaseAttackBonus.BaseValue = babBefore;
@@ -19411,8 +19572,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             BlueprintBuff hold = blueprints.OfType<BlueprintBuff>().Single(value =>
                 value.name == "KMG_Summoning_Special_Stirge_Hold");
-            BlueprintBuff grappled = blueprints.OfType<BlueprintBuff>().Single(
-                value => value.name == "KMG_Summoning_Special_Grapple_Grappled");
+            BlueprintAbility removeStirge = blueprints.OfType<BlueprintAbility>()
+                .Single(value => value.name ==
+                    "KMG_Summoning_Special_Stirge_Remove");
             UnitEntityData stirge = CastExpandedSummoningCombatUnit(blueprints,
                 caster, SummonFamily.NaturesAlly, "stirge", 1,
                 created, evidence);
@@ -19427,15 +19589,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Rulebook.Trigger(new RuleAttackWithWeapon(stirge, hostile,
                     stirge.Body.PrimaryHand.MaybeWeapon, 0));
                 bool attached = ReferenceEquals(
-                    SummonHoldComponent.HeldTarget(stirge), hostile) &&
+                    StirgeHoldComponent.AttachedTarget(stirge), hostile) &&
                     stirge.Descriptor.HasFact(hold) &&
-                    hostile.Descriptor.HasFact(grappled);
+                    hostile.Descriptor.HasFact(removeStirge);
                 CleanupExpandedSummoningUnit(stirge);
                 // UnitEntityData.Destroy queues its fact teardown. Advance
                 // the same destroyer the guarded fixture drains at its end.
                 Game.Instance.EntityDestroyer.Tick();
                 bool victimFree = hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>() == null &&
-                    !hostile.Descriptor.HasFact(grappled) &&
+                    !hostile.Descriptor.HasFact(removeStirge) &&
                     !hostile.Descriptor.State.HasCondition(UnitCondition.CantMove) &&
                     hostile.Descriptor.Stats.Constitution.Damage ==
                         constitutionBefore &&
@@ -19467,8 +19629,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             BlueprintBuff hold = blueprints.OfType<BlueprintBuff>().Single(value =>
                 value.name == "KMG_Summoning_Special_Stirge_Hold");
-            BlueprintBuff grappled = blueprints.OfType<BlueprintBuff>().Single(
-                value => value.name == "KMG_Summoning_Special_Grapple_Grappled");
+            BlueprintAbility removeStirge = blueprints.OfType<BlueprintAbility>()
+                .Single(value => value.name ==
+                    "KMG_Summoning_Special_Stirge_Remove");
             UnitEntityData stirge = CastExpandedSummoningCombatUnit(blueprints,
                 caster, SummonFamily.NaturesAlly, "stirge", 1,
                 created, evidence);
@@ -19505,14 +19668,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Rulebook.Trigger(new RuleAttackWithWeapon(stirge, hostile,
                     stirge.Body.PrimaryHand.MaybeWeapon, 0));
                 bool attached = ReferenceEquals(
-                    SummonHoldComponent.HeldTarget(stirge), hostile);
+                    StirgeHoldComponent.AttachedTarget(stirge), hostile);
                 StirgeHoldComponent liveHold = attached ?
                     ExpandedSummoningRuntimeComponent<StirgeHoldComponent>(
                         stirge, hold) : null;
                 if (timed)
                 {
                     beforeStill = !stirge.Destroyed && marker.Active &&
-                        ReferenceEquals(SummonHoldComponent.HeldTarget(stirge),
+                        ReferenceEquals(StirgeHoldComponent.AttachedTarget(stirge),
                             hostile);
                     Game.Instance.Player.GameTime = marker.EndTime +
                         TimeSpan.FromSeconds(0.1);
@@ -19525,7 +19688,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !stirge.Descriptor.Buffs.RawFacts.OfType<Buff>()
                         .Any(value => ReferenceEquals(value, marker));
                 bool victimFree = hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>() == null &&
-                    !hostile.Descriptor.HasFact(grappled) &&
+                    !hostile.Descriptor.HasFact(removeStirge) &&
                     (stirge.Destroyed ||
                         stirge.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleInitiator>() == null);
                 detail = "attached=" + attached + ";nonRemovable=" +
@@ -19545,7 +19708,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Game.Instance.Player.GameTime = clock;
                 if (!stirge.Destroyed)
                 {
-                    ReleaseExpandedSummoningHold(stirge, hostile, hold);
+                    StirgeHoldComponent.Detach(stirge);
                     CleanupExpandedSummoningUnit(stirge);
                     Game.Instance.EntityDestroyer.Tick();
                 }
@@ -19563,8 +19726,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             BlueprintBuff hold = blueprints.OfType<BlueprintBuff>().Single(value =>
                 value.name == "KMG_Summoning_Special_Stirge_Hold");
-            BlueprintBuff grappled = blueprints.OfType<BlueprintBuff>().Single(
-                value => value.name == "KMG_Summoning_Special_Grapple_Grappled");
+            BlueprintAbility removeStirge = blueprints.OfType<BlueprintAbility>()
+                .Single(value => value.name ==
+                    "KMG_Summoning_Special_Stirge_Remove");
             UnitEntityData stirge = CastExpandedSummoningCombatUnit(blueprints,
                 caster, SummonFamily.NaturesAlly, "stirge", 1,
                 created, evidence);
@@ -19580,7 +19744,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Rulebook.Trigger(new RuleAttackWithWeapon(stirge, hostile,
                     stirge.Body.PrimaryHand.MaybeWeapon, 0));
                 bool attached = ReferenceEquals(
-                    SummonHoldComponent.HeldTarget(stirge), hostile);
+                    StirgeHoldComponent.AttachedTarget(stirge), hostile);
                 StirgeHoldComponent liveHold = attached ?
                     ExpandedSummoningRuntimeComponent<StirgeHoldComponent>(
                         stirge, hold) : null;
@@ -19608,7 +19772,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool released = stirge.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleInitiator>() == null &&
                     hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>() == null &&
                     !stirge.Descriptor.HasFact(hold) &&
-                    !hostile.Descriptor.HasFact(grappled);
+                    !hostile.Descriptor.HasFact(removeStirge);
                 bool noDrain = hostile.Descriptor.Stats.Constitution.Damage ==
                     constitutionBefore;
                 detail = "attached=" + attached + ";preyDead=" + preyDead +
@@ -19621,7 +19785,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
-                ReleaseExpandedSummoningHold(stirge, hostile, hold);
+                StirgeHoldComponent.Detach(stirge);
                 hostile.Descriptor.Damage = hitPointsBefore;
                 hostile.Descriptor.Stats.Constitution.Damage = constitutionBefore;
                 typeof(Kingmaker.Controllers.Units.UnitLifeController)
