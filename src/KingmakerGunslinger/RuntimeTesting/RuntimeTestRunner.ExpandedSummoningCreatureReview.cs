@@ -4,7 +4,11 @@ using System.Globalization;
 using System.Linq;
 using Kingmaker;
 using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Root;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker.UnitLogic;
+using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Commands;
 using Kingmaker.View;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Summoning;
@@ -38,6 +42,17 @@ namespace KingmakerGunslinger.RuntimeTesting
         private int _creatureReviewIndex;
         private int _creatureReviewPhase;
         private int _creatureReviewSettle;
+        private bool _creatureReviewQuantity;
+        private UnitMoveTo[] _creatureReviewCrowdMoves;
+        private Vector3[] _creatureReviewCrowdOrigins;
+        private Vector3[] _creatureReviewCrowdDestinations;
+        private float[] _creatureReviewCrowdTravel;
+        private float[] _creatureReviewCrowdApproach;
+        private float[] _creatureReviewCrowdVelocity;
+        private UnitEntityData[] _creatureReviewCrowdAwakeBefore;
+        private bool _creatureReviewCrowdWasPaused;
+        private int _creatureReviewCrowdFrames;
+        private int _creatureReviewCrowdWait;
         private UnitEntityData[] _creatureReviewUnits = Array.Empty<UnitEntityData>();
         private UnitEntityData _creatureReviewCaster;
         private UnitEntityData[] _creatureReviewParty;
@@ -47,13 +62,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             new List<RuntimeTestAssertion>();
 
         /// <summary>
-        /// The one variant reviewed per creature key: its own-tier single
-        /// under Summon Nature's Ally when the creature has an ally placement,
-        /// otherwise under Summon Monster. Unknown keys fail the request.
+        /// One variant per creature key: normally its own-tier single. The
+        /// guarded Sprint 11 crowd request selects its own-tier-plus-two
+        /// 1d4+1 route. Unknown or unrelated keys fail the request.
         /// </summary>
         internal static SummonVariantSpec[] ResolveCreatureReviewVariants(
-            string creatures)
+            string creatures, SummonMultiplicity quantity = SummonMultiplicity.One)
         {
+            if (quantity != SummonMultiplicity.One &&
+                quantity != SummonMultiplicity.OneD4PlusOne)
+                throw new InvalidOperationException(
+                    "Unsupported creature-review quantity: " + quantity + ".");
             if (string.IsNullOrWhiteSpace(creatures))
                 throw new InvalidOperationException(
                     "The creature review needs at least one creature key.");
@@ -68,14 +87,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .SingleOrDefault(value => value.Key == key);
                 if (creature == null) throw new InvalidOperationException(
                     "Unknown creature key for review: " + key + ".");
+                if (quantity != SummonMultiplicity.One &&
+                    !IsSprint11UngulateReviewKey(key))
+                    throw new InvalidOperationException(
+                        "Only hidden Sprint 11 ungulates may use crowd review: " +
+                        key + ".");
                 SummonFamily family = creature.NaturesAllyTier.HasValue ?
                     SummonFamily.NaturesAlly : SummonFamily.Monster;
                 int tier = family == SummonFamily.NaturesAlly ?
                     creature.NaturesAllyTier.Value : creature.MonsterTier.Value;
+                if (quantity == SummonMultiplicity.OneD4PlusOne) tier += 2;
                 SummonVariantSpec variant = ExpandedSummoningCatalog
                     .GenerateVariants(family).Single(value =>
                         value.Creature.Key == key && value.ParentTier == tier &&
-                        value.Multiplicity == SummonMultiplicity.One);
+                        value.Multiplicity == quantity);
                 // Sprint 10 visual qualification inspects each registered
                 // creature before its parent menu entry is published.
                 bool suppressedSprint10Candidate =
@@ -115,6 +140,257 @@ namespace KingmakerGunslinger.RuntimeTesting
                     : "KMG_" + key + "_Original";
         }
 
+        private UnitEntityData[] SpawnExpandedSummoningCreatureReviewQuantity(
+            SummonVariantSpec variant)
+        {
+            if (variant == null || !IsSprint11UngulateReviewKey(
+                    variant.Creature.Key) ||
+                variant.Multiplicity != SummonMultiplicity.OneD4PlusOne)
+                throw new InvalidOperationException(
+                    "Crowd review accepts only a hidden ungulate 1d4+1 route.");
+            UnitEntityData caster = _creatureReviewCaster;
+            UnitEntityData[] before = ExpandedSummoningKmgUnitsIn(
+                caster.HoldingState);
+            BlueprintAbility ability = ResolveExpandedSummoningExecution(
+                _creatureReviewBlueprints, variant);
+            caster.Descriptor.AddFact(ability);
+            try
+            {
+                ExecuteExpandedSummoningRuntimeAbility(caster, ability,
+                    variant.ParentTier);
+                Game.Instance.EntityCreator.Tick();
+            }
+            finally
+            {
+                if (caster.Descriptor.HasFact(ability))
+                    caster.Descriptor.RemoveFact(ability);
+            }
+            UnitEntityData[] appeared = ExpandedSummoningKmgUnitsIn(
+                caster.HoldingState).Where(value => !before.Any(prior =>
+                    ReferenceEquals(prior, value))).ToArray();
+            string expectedName = ExpandedSummoningInternalName(
+                ExpandedSummoningIdentityCatalog.UnitSymbol(variant.Creature));
+            if (appeared.Length < 2 || appeared.Length > 5 ||
+                appeared.Any(value => value.Blueprint == null ||
+                    value.Blueprint.name != expectedName ||
+                    !ReferenceEquals(value.HoldingState, caster.HoldingState)))
+                throw new InvalidOperationException(
+                    "Native ungulate quantity cast did not create two to five exact same-kind units in the loaded working area: " +
+                    variant.StableKey + ";count=" + appeared.Length + ";names=" +
+                    string.Join(",", appeared.Select(value => value.Blueprint == null ?
+                        "<null>" : value.Blueprint.name).ToArray()) + ".");
+            return appeared;
+        }
+
+        private bool StepExpandedSummoningUngulateCrowdPath(string key)
+        {
+            try
+            {
+                if (_creatureReviewCrowdMoves == null)
+                {
+                    if (_creatureReviewUnits.Length < 2 ||
+                        _creatureReviewUnits.Length > 5 ||
+                        _creatureReviewUnits.Any(unit => unit == null ||
+                            unit.View == null || unit.View.MovementAgent == null ||
+                            !unit.IsInGame || !unit.Descriptor.State.CanMove))
+                    {
+                        if (_creatureReviewCrowdWait++ < MotionReviewFadeBudget)
+                            return false;
+                        throw new InvalidOperationException(
+                            "The native quantity group was not ready for movement.");
+                    }
+                    if (_creatureReviewUnits.Any(unit =>
+                        unit.Descriptor.Buffs.GetBuff(BlueprintRoot.Instance
+                            .SystemMechanics.SummonedUnitAppearBuff) != null))
+                    {
+                        if (_creatureReviewCrowdWait++ < MotionReviewFadeBudget)
+                            return false;
+                        throw new InvalidOperationException(
+                            "The quantity group's appearance buff did not clear.");
+                    }
+                    BeginExpandedSummoningUngulateCrowdPath();
+                    return false;
+                }
+                float delta = Game.Instance.TimeController.DeltaTime;
+                for (int index = 0; index < _creatureReviewUnits.Length; index++)
+                {
+                    UnitEntityData unit = _creatureReviewUnits[index];
+                    if (unit.Destroyed || unit.View == null ||
+                        unit.View.MovementAgent == null)
+                        throw new InvalidOperationException(
+                            "A quantity member disappeared during native movement.");
+                    if (delta > 0f)
+                    {
+                        unit.View.MovementAgent.TickMovement(delta);
+                        unit.Position = unit.View.transform.position;
+                    }
+                    _creatureReviewCrowdVelocity[index] = Mathf.Max(
+                        _creatureReviewCrowdVelocity[index],
+                        unit.View.MovementAgent.Velocity.magnitude);
+                    _creatureReviewCrowdTravel[index] = Mathf.Max(
+                        _creatureReviewCrowdTravel[index], Vector2.Distance(
+                            new Vector2(_creatureReviewCrowdOrigins[index].x,
+                                _creatureReviewCrowdOrigins[index].z),
+                            new Vector2(unit.Position.x, unit.Position.z)));
+                    float originalGap = Vector2.Distance(new Vector2(
+                            _creatureReviewCrowdOrigins[index].x,
+                            _creatureReviewCrowdOrigins[index].z),
+                        new Vector2(_creatureReviewCrowdDestinations[index].x,
+                            _creatureReviewCrowdDestinations[index].z));
+                    float currentGap = Vector2.Distance(new Vector2(
+                            unit.Position.x, unit.Position.z),
+                        new Vector2(_creatureReviewCrowdDestinations[index].x,
+                            _creatureReviewCrowdDestinations[index].z));
+                    _creatureReviewCrowdApproach[index] = Mathf.Max(
+                        _creatureReviewCrowdApproach[index],
+                        originalGap - currentGap);
+                }
+                _creatureReviewCrowdFrames++;
+                if (_creatureReviewCrowdFrames < 240 &&
+                    !_creatureReviewUnits.Select((unit, index) =>
+                        Vector2.Distance(new Vector2(unit.Position.x,
+                                unit.Position.z), new Vector2(
+                                _creatureReviewCrowdDestinations[index].x,
+                                _creatureReviewCrowdDestinations[index].z)))
+                        .All(gap => gap <= 1.5f)) return false;
+                FinishExpandedSummoningUngulateCrowdPath(key, null);
+                return true;
+            }
+            catch (Exception exception)
+            {
+                FinishExpandedSummoningUngulateCrowdPath(key, exception);
+                return true;
+            }
+        }
+
+        private void BeginExpandedSummoningUngulateCrowdPath()
+        {
+            if (AstarPath.active == null || _creatureReviewCaster == null)
+                throw new InvalidOperationException(
+                    "Crowd review has no native navigation graph or party anchor.");
+            Pathfinding.NNInfo anchor = AstarPath.active.GetNearest(
+                _creatureReviewCaster.Position);
+            if (anchor.node == null || !anchor.node.Walkable)
+                throw new InvalidOperationException(
+                    "Crowd review has no walkable party floor node.");
+            var offsets = new[] {
+                new Vector3(9f, 0f, -3f), new Vector3(9f, 0f, -1f),
+                new Vector3(9f, 0f, -5f), new Vector3(11f, 0f, -3f),
+                new Vector3(7f, 0f, -3f), new Vector3(7f, 0f, -1f),
+                new Vector3(7f, 0f, -5f), new Vector3(5f, 0f, -3f),
+                new Vector3(5f, 0f, -1f), new Vector3(11f, 0f, -1f),
+                new Vector3(11f, 0f, -5f), new Vector3(5f, 0f, -5f)
+            };
+            UnitEntityData[] party = Game.Instance.Player.Party.Where(value =>
+                value != null && value.IsInGame).ToArray();
+            var destinations = new List<Vector3>();
+            foreach (Vector3 offset in offsets)
+            {
+                Vector3 requested = anchor.clampedPosition + offset;
+                Pathfinding.NNInfo nearest = AstarPath.active.GetNearest(requested);
+                if (nearest.node == null || !nearest.node.Walkable ||
+                    nearest.node.Area != anchor.node.Area ||
+                    nearest.node.GraphIndex != anchor.node.GraphIndex ||
+                    Vector3.Distance(requested, nearest.clampedPosition) > 0.5f ||
+                    party.Any(member => Vector3.Distance(member.Position,
+                        nearest.clampedPosition) < 2.5f) ||
+                    destinations.Any(value => Vector3.Distance(value,
+                        nearest.clampedPosition) < 2f)) continue;
+                destinations.Add(nearest.clampedPosition);
+                if (destinations.Count == _creatureReviewUnits.Length) break;
+            }
+            if (destinations.Count != _creatureReviewUnits.Length)
+                throw new InvalidOperationException(
+                    "The surveyed connected floor has only " +
+                    destinations.Count + " distinct crowd destinations for " +
+                    _creatureReviewUnits.Length + " units.");
+            _creatureReviewCrowdAwakeBefore = Game.Instance.State.AwakeUnits
+                .ToArray();
+            _creatureReviewCrowdWasPaused = Game.Instance.IsPaused;
+            if (_creatureReviewCrowdWasPaused) Game.Instance.IsPaused = false;
+            _creatureReviewCrowdMoves = new UnitMoveTo[_creatureReviewUnits.Length];
+            _creatureReviewCrowdOrigins = _creatureReviewUnits.Select(unit =>
+                unit.Position).ToArray();
+            _creatureReviewCrowdDestinations = destinations.ToArray();
+            _creatureReviewCrowdTravel = new float[_creatureReviewUnits.Length];
+            _creatureReviewCrowdApproach = new float[_creatureReviewUnits.Length];
+            _creatureReviewCrowdVelocity = new float[_creatureReviewUnits.Length];
+            _creatureReviewCrowdFrames = 0;
+            for (int index = 0; index < _creatureReviewUnits.Length; index++)
+            {
+                UnitEntityData unit = _creatureReviewUnits[index];
+                if (!Game.Instance.State.AwakeUnits.Contains(unit))
+                    Game.Instance.State.AwakeUnits.Add(unit);
+                var move = new UnitMoveTo(destinations[index], 0.5f);
+                move.Init(unit);
+                if (!move.CanStart)
+                    throw new InvalidOperationException(
+                        "Native quantity member " + index +
+                        " could not start its distinct move command.");
+                unit.Commands.Run(move);
+                if (!unit.Commands.Contains(move) ||
+                    !ReferenceEquals(move.Executor, unit))
+                    throw new InvalidOperationException(
+                        "Native quantity member " + index +
+                        " did not accept its move command.");
+                _creatureReviewCrowdMoves[index] = move;
+            }
+        }
+
+        private void FinishExpandedSummoningUngulateCrowdPath(string key,
+            Exception error)
+        {
+            var observations = new List<string>();
+            bool traveled = error == null && _creatureReviewCrowdMoves != null;
+            for (int index = 0; index < _creatureReviewUnits.Length; index++)
+            {
+                UnitEntityData unit = _creatureReviewUnits[index];
+                if (unit != null && unit.Commands != null)
+                    unit.Commands.InterruptMove();
+                float distance = _creatureReviewCrowdTravel == null ? 0f :
+                    _creatureReviewCrowdTravel[index];
+                float approach = _creatureReviewCrowdApproach == null ? 0f :
+                    _creatureReviewCrowdApproach[index];
+                float velocity = _creatureReviewCrowdVelocity == null ? 0f :
+                    _creatureReviewCrowdVelocity[index];
+                float finalGap = _creatureReviewCrowdDestinations == null ||
+                    unit == null ? float.PositiveInfinity : Vector2.Distance(
+                        new Vector2(unit.Position.x, unit.Position.z),
+                        new Vector2(_creatureReviewCrowdDestinations[index].x,
+                            _creatureReviewCrowdDestinations[index].z));
+                traveled = traveled && distance >= 0.75f &&
+                    approach >= 0.75f && velocity > 0.01f &&
+                    finalGap <= 1.5f;
+                observations.Add(index + ":" + distance.ToString("0.##",
+                    CultureInfo.InvariantCulture) + "/" + approach.ToString(
+                    "0.##", CultureInfo.InvariantCulture) + "/" +
+                    velocity.ToString("0.##", CultureInfo.InvariantCulture) +
+                    "/" + finalGap.ToString("0.##", CultureInfo.InvariantCulture));
+            }
+            bool awakeRestored = true;
+            if (_creatureReviewCrowdAwakeBefore != null)
+            {
+                foreach (UnitEntityData unit in _creatureReviewUnits)
+                    if (!_creatureReviewCrowdAwakeBefore.Contains(unit))
+                        Game.Instance.State.AwakeUnits.Remove(unit);
+                awakeRestored = Game.Instance.State.AwakeUnits.SequenceEqual(
+                    _creatureReviewCrowdAwakeBefore);
+                Game.Instance.IsPaused = _creatureReviewCrowdWasPaused;
+                _creatureReviewCrowdAwakeBefore = null;
+            }
+            _creatureReviewAssertions.Add(Assertion(
+                "expanded-summoning-ungulate-crowd-path-" + key,
+                "each native quantity member accepts a distinct simultaneous move and reaches its connected-floor destination",
+                "count=" + _creatureReviewUnits.Length + ";frames=" +
+                    _creatureReviewCrowdFrames + ";travel/approach/velocity/gap=" +
+                    string.Join("|", observations.ToArray()) +
+                    ";awakeRestored=" + awakeRestored +
+                    (error == null ? "" : ";error=" + error.GetType().Name +
+                        ":" + error.Message),
+                traveled && awakeRestored,
+                "real UnitMoveTo commands on a simultaneous 1d4+1 group; native movement-agent samples and request-local state restoration"));
+        }
+
         private void StepExpandedSummoningCreatureReview()
         {
             if (_creatureReviewQueue == null)
@@ -143,7 +419,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _creatureReviewBlueprints = BlueprintBootstrap.Library
                     .GetAllBlueprints().Where(value => value != null).ToArray();
                 _creatureReviewQueue = ResolveCreatureReviewVariants(
-                    (string)_request.Parameters["creatures"]).ToList();
+                    (string)_request.Parameters["creatures"],
+                    _request.Parameters["quantity"] == null ?
+                        SummonMultiplicity.One :
+                        SummonMultiplicity.OneD4PlusOne).ToList();
+                _creatureReviewQuantity = _request.Parameters["quantity"] != null;
                 _creatureReviewIndex = 0;
                 _creatureReviewPhase = 0;
                 WriteLifecycleStage("creature-review-start");
@@ -161,9 +441,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             switch (_creatureReviewPhase)
             {
                 case 0:
-                    _creatureReviewUnits = SpawnExpandedSummoningVariants(
-                        _creatureReviewBlueprints, _creatureReviewCaster,
-                        new[] { variant }, "Creature review of " + key);
+                    _creatureReviewUnits = _creatureReviewQuantity ?
+                        SpawnExpandedSummoningCreatureReviewQuantity(variant) :
+                        SpawnExpandedSummoningVariants(
+                            _creatureReviewBlueprints, _creatureReviewCaster,
+                            new[] { variant }, "Creature review of " + key);
+                    _creatureReviewCrowdMoves = null;
+                    _creatureReviewCrowdWait = 0;
+                    _creatureReviewCrowdFrames = 0;
                     ResetExpandedSummoningMotionReview(
                         ExpandedSummoningIdentityCatalog.UnitSymbol(variant.Creature)
                             .Replace('.', '_').Replace('-', '_'), key + "-review");
@@ -173,6 +458,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 case 1:
                     if (_creatureReviewSettle++ < CreatureReviewSpawnSettleUpdates) return;
+                    _creatureReviewPhase = _creatureReviewQuantity ? 4 : 2;
+                    return;
+                case 4:
+                    if (!StepExpandedSummoningUngulateCrowdPath(key)) return;
                     _creatureReviewPhase = 2;
                     return;
                 case 2:
@@ -217,7 +506,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         MotionReviewValid && variantValid && retainedValid,
                         (variant.Family == SummonFamily.Monster ? "Summon Monster " :
                             "Summon Nature's Ally ") + variant.ParentTier +
-                        " single cast through its registered execution; party-camera renders"));
+                        (_creatureReviewQuantity ? " 1d4+1" : " single") +
+                        " cast through its registered execution; party-camera renders"));
                     if (IsOriginalReviewKey(key))
                     {
                         string expectedName = OriginalReviewVisualName(key);
