@@ -1,5 +1,35 @@
 # Expanded Summoning Phase 2 journal
 
+## Stirge native prey movement and reload, 2026-09-29
+
+Guarded creature review `20260929T1537294275973Z` passed 12/12 after a
+diagnostic run rejected the engine's unhelpful `UnitMoveTo.IsStarted/IsRunning`
+flags. The attached player prey accepted its native move, recorded agent
+intent and 3.05 m/s maximum velocity, traveled 4.56 m and approached a
+surveyed destination to 0.13 m. The intact Stirge rendered as a separate unit
+0.62 m away in the supporting party-camera frame; prey conditions, original
+position and pause state were restored. The clean reload trio passed 15/15
+prepare, 15/15 verify-cleanup and 15/15 verify-absent on IDs
+`20260929T1550288953379Z`, `20260929T1554468196770Z`,
+`20260929T1559010594274Z`. The loaded pair had no attachment, native grapple,
+owner hold or orphan removal action. Exact working-save write counts were
+1/1/0; restoration `20260929T1602044948325Z` verified the unchanged
+136-file original install SHA
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+Repository validation, 1,952 domain tests, clean Release and strict package
+passed. Stirge remains hidden; additional player/visual cases remain before
+Sprint 10 can close.
+
+The module-off continuation used the same package: guarded prepare
+`20260929T1607498366788Z` passed 15/15, disabled-module verify-cleanup
+`20260929T1616090412469Z` passed 15/15, and normal-settings verify-absent
+`20260929T1624206703157Z` passed 15/15. No Stirge link, hold, native prey
+grapple or orphan removal action remained after disabled load. Final absence
+found zero fixture summons and made zero save writes. All three wrappers
+restored the unchanged live install SHA
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+
+
 ## Stirge-specific attachment checkpoint, 2026-09-29
 
 The owner-directed correction replaces the reciprocal native grapple with a

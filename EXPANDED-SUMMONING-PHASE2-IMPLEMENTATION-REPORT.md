@@ -25,6 +25,20 @@ qualification remain. Filth Fever is a disclosed adaptation; the primary
 Paizo stat block limits its 10% exposure to once per victim per Stirge. The
 Phase 2A draft PR is not ready for owner review.
 
+The subsequent guarded working-save review `20260929T1537294275973Z`
+passed 12/12 for native movement of an attached player prey, bounded Stirge
+follow and separate intact view, with request-local state restoration. The
+active-attachment save/load trio `20260929T1550288953379Z` /
+`20260929T1554468196770Z` / `20260929T1559010594274Z` passed 15/15 each:
+the new owner-only link, hold and removal action reset cleanly on reload;
+final absence and exact working-save write counts passed. All three launches
+and the preceding movement run restored the original live install. Stirge is
+still hidden pending Mobility removal, remaining visual and player paths.
+The separate guarded disabled-module prepare/cleanup/absent continuation
+`20260929T1607498366788Z` / `20260929T1616090412469Z` /
+`20260929T1624206703157Z` passed 15/15 each and restored the original
+installation and feature setting after every stage.
+
 The accepted baseline is `master` at `2ce70e4` (0.0.140), which advanced after
 the owner packet was written. The baseline passes 1,918 domain tests, the
 repository wrapper, exact-reference clean Release build, and strict standalone

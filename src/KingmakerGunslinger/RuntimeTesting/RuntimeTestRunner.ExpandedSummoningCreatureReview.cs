@@ -6,6 +6,7 @@ using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker.Items;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Buffs;
@@ -65,6 +66,23 @@ namespace KingmakerGunslinger.RuntimeTesting
         private string _creatureReviewExpiryInitial = "<not run>";
         private UnitEntityData[] _creatureReviewUnits = Array.Empty<UnitEntityData>();
         private UnitEntityData _creatureReviewCaster;
+        private UnitMoveTo _stirgePreyMove;
+        private Vector3 _stirgePreyOriginalPosition;
+        private Vector3 _stirgePreyMoveStart;
+        private Vector3 _stirgePreyDestination;
+        private bool _stirgePreyWasPaused;
+        private bool _stirgePreyRelocated;
+        private bool _stirgePreyMoveStarted;
+        private bool _stirgePreyMoveRunning;
+        private bool _stirgePreyMoveAccepted;
+        private bool _stirgePreyAgentWantsMove;
+        private float _stirgePreyTravel;
+        private float _stirgePreyVelocity;
+        private float _stirgePreyInitialGap;
+        private float _stirgePreyMinGap;
+        private int _stirgePreyFrames;
+        private int _stirgePreyReachedFrame;
+        private string _stirgePreySurvey;
         private UnitEntityData[] _creatureReviewParty;
         private object _creatureReviewGameState;
         private BlueprintScriptableObject[] _creatureReviewBlueprints;
@@ -809,6 +827,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 "four request-local camera poses restored; images support art review, not mechanical proof"));
                         }
                     }
+                    if (key == "stirge" && !_creatureReviewQuantity)
+                    {
+                        _creatureReviewPhase = 6;
+                        return;
+                    }
                     if (_creatureReviewQuantity)
                     {
                         _creatureReviewSettle = 0;
@@ -823,6 +846,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return;
                 case 5:
                     if (!StepExpandedSummoningUngulateCrowdExpiry(key)) return;
+                    _creatureReviewSettle = 0;
+                    _creatureReviewPhase = 3;
+                    return;
+                case 6:
+                    if (!StepExpandedSummoningStirgePreyMovement()) return;
+                    foreach (UnitEntityData unit in _creatureReviewUnits)
+                        CleanupExpandedSummoningUnit(unit);
+                    Game.Instance.EntityDestroyer.Tick();
                     _creatureReviewSettle = 0;
                     _creatureReviewPhase = 3;
                     return;
@@ -861,6 +892,228 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _creatureReviewPhase = 0;
                     return;
             }
+        }
+
+        /// <summary>Move an attached player-controlled prey with a genuine
+        /// UnitMoveTo over surveyed connected floor. This cross-frame check
+        /// observes the Stirge's LateUpdate follow without calling it itself.</summary>
+        private bool StepExpandedSummoningStirgePreyMovement()
+        {
+            try
+            {
+                if (_stirgePreyMove == null)
+                {
+                    BeginExpandedSummoningStirgePreyMovement();
+                    return false;
+                }
+                UnitEntityData prey = _creatureReviewCaster;
+                UnitEntityData stirge = _creatureReviewUnits[0];
+                if (prey == null || prey.View == null || stirge == null ||
+                    stirge.View == null || stirge.Destroyed)
+                    throw new InvalidOperationException(
+                        "Attached prey or Stirge disappeared during native movement.");
+                float delta = Game.Instance.TimeController.DeltaTime;
+                if (delta > 0f)
+                {
+                    prey.View.MovementAgent.TickMovement(delta);
+                    prey.Position = prey.View.transform.position;
+                }
+                _stirgePreyMoveStarted |= _stirgePreyMove.IsStarted;
+                _stirgePreyMoveRunning |= _stirgePreyMove.IsRunning;
+                _stirgePreyVelocity = Mathf.Max(_stirgePreyVelocity,
+                    prey.View.MovementAgent.Velocity.magnitude);
+                _stirgePreyAgentWantsMove |=
+                    prey.View.MovementAgent.WantsToMove;
+                _stirgePreyTravel = Mathf.Max(_stirgePreyTravel,
+                    Vector2.Distance(new Vector2(prey.Position.x, prey.Position.z),
+                        new Vector2(_stirgePreyMoveStart.x,
+                            _stirgePreyMoveStart.z)));
+                _stirgePreyFrames++;
+                float gap = Vector2.Distance(new Vector2(prey.Position.x,
+                        prey.Position.z), new Vector2(_stirgePreyDestination.x,
+                        _stirgePreyDestination.z));
+                _stirgePreyMinGap = Mathf.Min(_stirgePreyMinGap, gap);
+                if (gap <= 0.9f && _stirgePreyReachedFrame == 0)
+                    _stirgePreyReachedFrame = _stirgePreyFrames;
+                if (_stirgePreyFrames < 240 &&
+                    (_stirgePreyReachedFrame == 0 ||
+                     _stirgePreyFrames - _stirgePreyReachedFrame < 3))
+                    return false;
+                FinishExpandedSummoningStirgePreyMovement(null);
+                return true;
+            }
+            catch (Exception exception)
+            {
+                FinishExpandedSummoningStirgePreyMovement(exception);
+                return true;
+            }
+        }
+
+        private void BeginExpandedSummoningStirgePreyMovement()
+        {
+            UnitEntityData prey = _creatureReviewCaster;
+            UnitEntityData stirge = _creatureReviewUnits[0];
+            _stirgePreyOriginalPosition = prey == null ? Vector3.zero :
+                prey.Position;
+            _stirgePreyWasPaused = Game.Instance.IsPaused;
+            if (prey == null || prey.View == null || stirge == null ||
+                stirge.View == null || AstarPath.active == null)
+                throw new InvalidOperationException(
+                    "Stirge prey movement has no live party, view or navigation graph.");
+            Vector3 floor = FindExpandedSummoningUngulateArtPoint(
+                out _stirgePreySurvey);
+            Pathfinding.NNInfo anchor = AstarPath.active.GetNearest(floor);
+            bool destinationFound = false;
+            foreach (Vector3 direction in CompassOffsets)
+            {
+                Vector3 requested = floor + direction * 2.5f;
+                Pathfinding.NNInfo point = AstarPath.active.GetNearest(requested);
+                if (point.node == null || !point.node.Walkable ||
+                    point.node.Area != anchor.node.Area ||
+                    point.node.GraphIndex != anchor.node.GraphIndex ||
+                    Vector3.Distance(requested, point.clampedPosition) > 0.5f)
+                    continue;
+                _stirgePreyDestination = point.clampedPosition;
+                destinationFound = true;
+                break;
+            }
+            if (!destinationFound)
+                throw new InvalidOperationException(
+                    "No connected short prey movement route: " +
+                    _stirgePreySurvey);
+            PlaceExpandedSummoningUnit(prey, floor);
+            _stirgePreyRelocated = true;
+            PlaceExpandedSummoningUnit(stirge, floor + Vector3.right * 0.6f);
+            StirgeAttachComponent attach = StirgeAttachComponent.Find(stirge);
+            ItemEntityWeapon touch = stirge.Body.PrimaryHand.MaybeWeapon;
+            if (attach == null || touch == null ||
+                !attach.TryAttach(prey, touch, true) ||
+                !ReferenceEquals(StirgeHoldComponent.AttachedTarget(stirge), prey) ||
+                !prey.Descriptor.State.CanMove ||
+                !prey.Descriptor.State.CanAct)
+                throw new InvalidOperationException(
+                    "Stirge did not attach to an otherwise free moving prey.");
+            _stirgePreyMoveStart = prey.Position;
+            if (Game.Instance.IsPaused) Game.Instance.IsPaused = false;
+            prey.Commands.InterruptMove();
+            UnitMovementAgent agent = prey.View.MovementAgent as UnitMovementAgent;
+            if (agent == null)
+                throw new InvalidOperationException(
+                    "The player prey has no native movement agent.");
+            agent.Stop();
+            var move = new UnitMoveTo(_stirgePreyDestination, 0.5f);
+            move.Init(prey);
+            if (!move.CanStart)
+                throw new InvalidOperationException(
+                    "The attached prey could not start native UnitMoveTo.");
+            prey.Commands.Run(move);
+            if (!prey.Commands.Contains(move) ||
+                !ReferenceEquals(move.Executor, prey))
+                throw new InvalidOperationException(
+                    "The attached prey did not accept native UnitMoveTo.");
+            _stirgePreyMoveAccepted = true;
+            _stirgePreyMove = move;
+            _stirgePreyTravel = 0f;
+            _stirgePreyVelocity = 0f;
+            _stirgePreyAgentWantsMove = false;
+            _stirgePreyInitialGap = Vector2.Distance(new Vector2(
+                    _stirgePreyMoveStart.x, _stirgePreyMoveStart.z),
+                new Vector2(_stirgePreyDestination.x,
+                    _stirgePreyDestination.z));
+            _stirgePreyMinGap = _stirgePreyInitialGap;
+            _stirgePreyFrames = 0;
+            _stirgePreyReachedFrame = 0;
+            _stirgePreyMoveStarted = move.IsStarted;
+            _stirgePreyMoveRunning = move.IsRunning;
+        }
+
+        private void FinishExpandedSummoningStirgePreyMovement(Exception error)
+        {
+            UnitEntityData prey = _creatureReviewCaster;
+            UnitEntityData stirge = _creatureReviewUnits.Length == 0 ? null :
+                _creatureReviewUnits[0];
+            string detail = "survey=" + _stirgePreySurvey +
+                ";frames=" + _stirgePreyFrames + ";moveAccepted=" +
+                _stirgePreyMoveAccepted + ";agentWantsMove=" +
+                _stirgePreyAgentWantsMove + ";initialGap=" +
+                _stirgePreyInitialGap.ToString("0.##", CultureInfo.InvariantCulture) +
+                ";minGap=" + _stirgePreyMinGap.ToString("0.##",
+                    CultureInfo.InvariantCulture) + ";commandStarted=" +
+                _stirgePreyMoveStarted + ";commandRunning=" +
+                _stirgePreyMoveRunning + ";preyTravel=" +
+                _stirgePreyTravel.ToString("0.##", CultureInfo.InvariantCulture) +
+                ";preyVelocity=" + _stirgePreyVelocity.ToString("0.##",
+                    CultureInfo.InvariantCulture);
+            bool followed = false, preyFree = false, stirgeTargetable = false;
+            string capture = "<not captured>";
+            try
+            {
+                if (prey != null && stirge != null && !stirge.Destroyed)
+                {
+                    float distance = Vector2.Distance(new Vector2(
+                            prey.Position.x, prey.Position.z), new Vector2(
+                            stirge.Position.x, stirge.Position.z));
+                    followed = distance >= 0.35f && distance <= 0.9f &&
+                        ReferenceEquals(StirgeHoldComponent.AttachedTarget(stirge),
+                            prey);
+                    preyFree = prey.Descriptor.State.CanMove &&
+                        prey.Descriptor.State.CanAct &&
+                        !prey.Descriptor.State.HasCondition(UnitCondition.CantMove) &&
+                        !prey.Descriptor.State.HasCondition(UnitCondition.CantAct) &&
+                        prey.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>() == null;
+                    stirgeTargetable = stirge.IsInGame &&
+                        stirge.View != null && stirge.View.IsInGame &&
+                        stirge.View.GetComponentsInChildren<Renderer>(true)
+                            .Any(renderer => renderer != null && renderer.enabled);
+                    detail += ";followGap=" + distance.ToString("0.##",
+                        CultureInfo.InvariantCulture);
+                    capture = WriteExpandedSummoningPartyCameraCapture(stirge,
+                        _request.EvidenceDirectory,
+                        "stirge-attached-moving-prey.png");
+                }
+            }
+            catch (Exception captureError)
+            {
+                capture = "error=" + captureError.GetType().Name +
+                    ":" + captureError.Message;
+            }
+            finally
+            {
+                if (prey != null && prey.Commands != null)
+                    prey.Commands.InterruptMove();
+                if (stirge != null && !stirge.Destroyed)
+                    StirgeHoldComponent.Detach(stirge);
+                if (prey != null && _stirgePreyRelocated)
+                    PlaceExpandedSummoningUnit(prey,
+                        _stirgePreyOriginalPosition);
+                Game.Instance.IsPaused = _stirgePreyWasPaused;
+                _stirgePreyRelocated = false;
+                _stirgePreyMove = null;
+            }
+            bool restored = prey != null &&
+                Vector3.Distance(prey.Position,
+                    _stirgePreyOriginalPosition) < 0.08f &&
+                Game.Instance.IsPaused == _stirgePreyWasPaused &&
+                (stirge == null || StirgeHoldComponent.AttachedTarget(stirge) == null);
+            detail += ";followed=" + followed + ";preyFree=" + preyFree +
+                ";stirgeTargetable=" + stirgeTargetable +
+                ";capture=" + capture + ";restored=" + restored +
+                (error == null ? "" : ";error=" + error.GetType().Name +
+                    ":" + error.Message);
+            _creatureReviewAssertions.Add(Assertion(
+                "expanded-summoning-stirge-attached-prey-movement",
+                "attached player prey accepts native UnitMoveTo, travels at least 1 m and keeps normal actions while the distinct Stirge follows at a bounded offset",
+                detail,
+                error == null && _stirgePreyMoveAccepted &&
+                    _stirgePreyAgentWantsMove &&
+                    _stirgePreyInitialGap - _stirgePreyMinGap >= 1f &&
+                    _stirgePreyMinGap <= 0.9f &&
+                    _stirgePreyTravel >= 1f &&
+                    _stirgePreyVelocity > 0.01f && followed && preyFree &&
+                    stirgeTargetable && restored &&
+                    capture.StartsWith("png=stirge-attached-moving-prey.png;",
+                        StringComparison.Ordinal),
+                "native player UnitMoveTo, cross-frame movement-agent and separate unit/render samples; request-local relocation and pause restored"));
         }
 
         private string CaptureWaspWithoutAuxiliaryRenderer(UnitEntityData unit)
