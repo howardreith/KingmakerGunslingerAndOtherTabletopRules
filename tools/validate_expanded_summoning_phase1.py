@@ -417,7 +417,7 @@ def validate(root: Path) -> None:
         "Values.Length != 40",
         '"Animal", "Vermin", "MagicalBeast", "Humanoid", "Plant"')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonIconCatalog.cs",
-        "Values.Length != %d" % (SPRINT3["projectIcons"] + 3))
+        "Values.Length != %d" % (SPRINT3["projectIcons"] + 7))
     # Correction order: the chartered mephit roles and the ally-safe cloud stay in the code.
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningSpecialProfiles.cs",
         '"Blur", "WindWall"', '"MagicMissile", "ChillMetal"', '"Pyrotechnics", "MagmaForm"',
@@ -493,11 +493,12 @@ def validate(root: Path) -> None:
             raise AssertionError("No Lightning Mephit may enter the catalogs: " + path.name)
     runtime_icons = json.loads((root / "assets/game/icons/expanded-summoning/icon-manifest.json")
                                .read_text(encoding="utf-8-sig"))
-    if runtime_icons["count"] != SPRINT3["projectIcons"] + 3 or \
-            len(runtime_icons["icons"]) != SPRINT3["projectIcons"] + 3 or \
+    if runtime_icons["count"] != SPRINT3["projectIcons"] + 7 or \
+            len(runtime_icons["icons"]) != SPRINT3["projectIcons"] + 7 or \
             not {"pony", "horse", "owlbear", "cyclops", "shambling-mound", "giant-flytrap",
                  "purple-worm", "dust-mephit", "ice-mephit", "magma-mephit", "ooze-mephit",
-                 "salt-mephit", "steam-mephit", "tiger", "giant-wasp"} <= {row["key"] for row in runtime_icons["icons"]}:
+                 "salt-mephit", "steam-mephit", "tiger", "giant-wasp", "stirge",
+                 "aurochs", "bison", "rhinoceros", "woolly-rhinoceros"} <= {row["key"] for row in runtime_icons["icons"]}:
         raise AssertionError("Runtime icon manifest does not carry the Phase 1 icons")
     for key in ("pony", "horse", "owlbear", "cyclops", "shambling-mound", "giant-flytrap",
                 "purple-worm", "dust-mephit", "ice-mephit", "magma-mephit", "ooze-mephit",
@@ -508,7 +509,7 @@ def validate(root: Path) -> None:
     # Phase 2 adds Bat/Eagle/Wasp/Stirge meshes and albedos and the Bat icon.
     # Keep the accepted Phase 1 metadata at 251, but validate the current
     # package count with the Phase 2 bird, vermin and icon additions.
-    package_count = SPRINT3["packageFileCountWithSoundBank"] + 11
+    package_count = SPRINT3["packageFileCountWithSoundBank"] + 15
     for script in ("Build-Local.ps1", "package.ps1"):
         require_tokens(root / "scripts" / script,
             "{ %d } else { %d }" % (package_count, package_count - 2),

@@ -331,3 +331,16 @@ stayed at one and the hostile's actual damage stayed at four. The first
 contact's successful DC 17 save carried the half-on-save flag. This qualifies
 the per-target, per-round replay guard for the tested RTWP path; victim AoO
 choice and turn-based cadence remain separate gates.
+
+### Prepared creature-choice icons
+
+The four original source paintings were exported at 128 px through the
+existing icon pipeline, and the delegated manifest now names each exact unit
+and its 29/25/25/21 generated ability/template consumers. They are packaged
+as prepared hidden concepts, with no ungulate placement published. Repository
+validation, 1,948 domain tests, clean Release and strict 266-file package
+passed. Guarded Steam inventory `20260929T0218259420008Z` passed 50/50
+assertions with unchanged 834 published placements, no missing published
+menu icons, and exact original-installation restoration at
+`20260929T0222241478727Z`. Actual ungulate UI use and owner visual review
+remain open.

@@ -1,6 +1,6 @@
 ﻿{
     "schemaVersion":  1,
-    "count":  94,
+    "count":  98,
     "icons":  [
                   {
                       "key":  "dog",
@@ -843,6 +843,42 @@
                       "key":  "stirge",
                       "file":  "stirge.png",
                       "sha256":  "2238a7599b8e254bc1675ba98711667a27079c7f8d15c660089f1017ce061ff1",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "aurochs",
+                      "file":  "aurochs.png",
+                      "sha256":  "578e235e53f5b3573e53d1cb953ae4c4ff140bb236cc5d26038c08ce802df62a",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "bison",
+                      "file":  "bison.png",
+                      "sha256":  "60064766af512af9af69d5c90723a886d6c3938c47167b828d4759cf6b3f44a5",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "rhinoceros",
+                      "file":  "rhinoceros.png",
+                      "sha256":  "4e0b2774a8b947ca2a4f4a9cecd8e7d2346eeb9bc5700728358e3a970c20e995",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "woolly-rhinoceros",
+                      "file":  "woolly-rhinoceros.png",
+                      "sha256":  "6c4fca4860efe04b48c4fd38639d8b6093bf71f6e61b88dcb2f0131948606c41",
                       "width":  128,
                       "height":  128,
                       "format":  "RGBA PNG",

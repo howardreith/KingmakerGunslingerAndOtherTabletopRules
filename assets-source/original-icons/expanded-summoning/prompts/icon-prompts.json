@@ -491,6 +491,34 @@
       "subjectPrompt": "An original tiny rust-red blood-drinking insectoid in flight, with four fleshy wings, thin barbed legs, and a long forward proboscis, inside the summon portrait family frame; distinct from the striped Giant Wasp.",
       "generator": "built-in-imagegen",
       "exactPromptSource": "assets-source/original-icons/expanded-summoning/PHASE2-SPRINT10-SOURCES.md"
+    },
+    {
+      "key": "aurochs",
+      "displayName": "Aurochs",
+      "subjectPrompt": "A large muscular dark ox with pale outward-swept horns, a broad muzzle and heavy neck in a low three-quarter approach, bronze circular rim and warm side light.",
+      "generator": "built-in-imagegen",
+      "compositionBriefSource": "assets-source/original-icons/expanded-summoning/PHASE2-SPRINT11-SOURCES.md"
+    },
+    {
+      "key": "bison",
+      "displayName": "Bison",
+      "subjectPrompt": "A humped shaggy brown bison with a dark beard, shorter upturned horns and massive furred forequarters, in the summon portrait family frame.",
+      "generator": "built-in-imagegen",
+      "compositionBriefSource": "assets-source/original-icons/expanded-summoning/PHASE2-SPRINT11-SOURCES.md"
+    },
+    {
+      "key": "rhinoceros",
+      "displayName": "Rhinoceros",
+      "subjectPrompt": "A bare gray rhinoceros braced on four feet, long nasal horn and smaller brow horn, thick folded skin, dust and stone atmosphere, with a forward charge silhouette.",
+      "generator": "built-in-imagegen",
+      "compositionBriefSource": "assets-source/original-icons/expanded-summoning/PHASE2-SPRINT11-SOURCES.md"
+    },
+    {
+      "key": "woolly-rhinoceros",
+      "displayName": "Woolly Rhinoceros",
+      "subjectPrompt": "A shaggy winter rhinoceros with two separate horns, reddish-brown long hair and a cold muted setting, visually heavier than the bare rhinoceros.",
+      "generator": "built-in-imagegen",
+      "compositionBriefSource": "assets-source/original-icons/expanded-summoning/PHASE2-SPRINT11-SOURCES.md"
     }
   ]
 }

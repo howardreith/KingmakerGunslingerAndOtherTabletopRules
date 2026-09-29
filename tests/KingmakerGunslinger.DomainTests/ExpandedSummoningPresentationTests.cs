@@ -21,9 +21,9 @@ namespace KingmakerGunslinger.DomainTests
             JArray rows = (JArray)manifest["icons"];
             Assertions.Equal(1, (int)manifest["schemaVersion"],
                 "Icon manifest schema changed.");
-            Assertions.Equal(94, (int)manifest["count"],
+            Assertions.Equal(98, (int)manifest["count"],
                 "Icon manifest count changed.");
-            Assertions.Equal(94, rows.Count,
+            Assertions.Equal(98, rows.Count,
                 "Icon manifest row count changed.");
             string[] catalogKeys = SummonIconCatalog.All.Select(value =>
                 value.Key).OrderBy(value => value, StringComparer.Ordinal).ToArray();
@@ -32,6 +32,18 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(string.Join("|", catalogKeys),
                 string.Join("|", manifestKeys),
                 "Icon manifest has missing or stale concepts.");
+            foreach (string key in new[] { "aurochs", "bison",
+                "rhinoceros", "woolly-rhinoceros" })
+            {
+                JToken prepared = rows.Single(value => (string)value["key"] == key);
+                Assertions.Equal("kmg-catalog", (string)prepared["scope"],
+                    "Hidden ungulate painting must retain its exact catalog scope.");
+                Assertions.True(((JArray)prepared["blueprintSymbols"]).Any(value =>
+                    (string)value == "KMG.Summoning.Unit." +
+                    string.Concat(key.Split('-').Select(part =>
+                        char.ToUpperInvariant(part[0]) + part.Substring(1)))),
+                    "The prepared ungulate painting must name its exact unit consumer.");
+            }
 
             var hashes = new HashSet<string>(StringComparer.Ordinal);
             foreach (JToken row in rows)
@@ -110,7 +122,7 @@ namespace KingmakerGunslinger.DomainTests
                 "Runtime project must include every manifest-backed icon path.");
             Assertions.True(package.Contains("expanded-summoning") &&
                 package.Contains("summonIconDestination") &&
-                package.Contains("expectedPackageFileCount = if ($hasFirearmSoundBank) { 262 } else { 260 }"),
+                package.Contains("expectedPackageFileCount = if ($hasFirearmSoundBank) { 266 } else { 264 }"),
                 "Standalone package must stage the exact runtime icon tree.");
         }
 
