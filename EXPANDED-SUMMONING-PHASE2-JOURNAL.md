@@ -1135,3 +1135,18 @@ Repository validation, 1,949 domain tests, clean Release and strict package
 passed. Wrapper restoration `20260929T0240261038414Z` verified the original
 136-file installation. Continue original mesh authoring from these measured
 frames without committing native donor transforms.
+
+## Sprint 11: original ungulate visual integration, 2026-09-29
+
+Four original procedural meshes and paintings are exported in the shared
+schema-2 format and staged through the strict package. Horse and Mastodon
+captured bind frames are separate private inputs; only named weights and
+original geometry ship. Repository validation, 1,950 domain tests, clean
+Release and strict 274-file package passed. Guarded Steam
+`20260929T0348308658037Z` passed 31/31 rules assertions and its private
+capture named the attached `KMG_aurochs_Original` and
+`KMG_woolly-rhinoceros_Original` meshes. Restoration
+`20260929T0354302177559Z` returned the original 136-file tree exactly.
+Continue live four-species skinning, material, attack contact, navigation,
+quantity, turn-based cadence and publication review; these assets alone do
+not complete Sprint 11.

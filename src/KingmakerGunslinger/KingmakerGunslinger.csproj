@@ -1479,6 +1479,14 @@
       <Link>assets\flying-animals\giant-wasp-albedo.png</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="..\..\assets\ungulates\*-mesh.json">
+      <Link>assets\ungulates\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\ungulates\*-albedo.png">
+      <Link>assets\ungulates\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="..\..\assets\game\icons\expanded-summoning\*.png">
       <Link>assets\icons\expanded-summoning\%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
