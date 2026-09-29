@@ -88,6 +88,18 @@ namespace KingmakerGunslinger.DomainTests
                                 !SummonVisibilityCatalog.IsPublished(value)),
                             key + " must have a hidden " + family + "/" +
                             quantity + " quantity route for live qualification.");
+                        if (quantity == SummonMultiplicity.OneD4PlusOne)
+                        {
+                            SummonCreatureSpec creature = ExpandedSummoningCatalog.All
+                                .Single(value => value.Key == key);
+                            int ownTier = family == SummonFamily.Monster ?
+                                creature.MonsterTier.Value :
+                                creature.NaturesAllyTier.Value;
+                            Assertions.True(placements.Any(value =>
+                                value.ParentTier == ownTier + 2),
+                                key + " must offer a hidden own-tier-plus-two " +
+                                family + " crowd review route.");
+                        }
                     }
         }
 
