@@ -12,6 +12,15 @@ namespace KingmakerGunslinger.Summoning
         internal const int DiseaseChancePercent = 10;
         internal const int FilthFeverFortitudeDc = 12;
 
+        internal static bool ShouldRollDiseaseExposure(
+            int actualConstitutionDamage)
+        {
+            if (actualConstitutionDamage < 0)
+                throw new ArgumentOutOfRangeException(
+                    "actualConstitutionDamage");
+            return actualConstitutionDamage > 0;
+        }
+
         internal static bool DiseaseExposureSelected(int percentileRoll)
         {
             if (percentileRoll < 0 || percentileRoll >= 100)

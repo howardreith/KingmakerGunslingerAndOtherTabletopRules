@@ -31,6 +31,13 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Throws<ArgumentOutOfRangeException>(() =>
                 StirgeAttachPolicy.DiseaseExposureSelected(100),
                 "Out-of-range disease rolls fail closed.");
+            Assertions.False(StirgeAttachPolicy.ShouldRollDiseaseExposure(0),
+                "No actual Constitution loss cannot expose the prey.");
+            Assertions.True(StirgeAttachPolicy.ShouldRollDiseaseExposure(1),
+                "Every successful one-point drain rolls exposure.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                StirgeAttachPolicy.ShouldRollDiseaseExposure(-1),
+                "Negative actual damage fails closed.");
             Assertions.True(StirgeAttachPolicy.MayAttach(true, false, true),
                 "A touch hit against a live prey establishes attachment.");
             Assertions.False(StirgeAttachPolicy.MayAttach(false, false, true),
@@ -204,9 +211,12 @@ namespace KingmakerGunslinger.DomainTests
                 runtime.Contains("liveHold.CumulativeDamage == 1 && stillAttached"),
                 "The first live round must measure actual Constitution loss and persistent attachment.");
             Assertions.True(runtime.Contains("expanded-summoning-stirge-native-disease") &&
-                runtime.Contains("attach.TryDiseaseExposure(hostile, 0)") &&
-                runtime.Contains("attach.DiseaseCheckedVictimCount"),
-                "The guarded fixture must force one native disease exposure and reject repeat checks.");
+                runtime.Contains("attach.TryDiseaseExposure(hostile, 1, 0)") &&
+                runtime.Contains("attach.TryDiseaseExposure(hostile, 0, 0)") &&
+                runtime.Contains("attach.DiseaseExposureAttempts") &&
+                special.Contains("attach.TryDiseaseExposure(target, actual)") &&
+                !special.Contains("m_DiseaseCheckedVictims"),
+                "Each actual drain rolls exposure, while zero loss and victim-wide suppression do not.");
             Assertions.True(runtime.Contains("expanded-summoning-stirge-four-point-detach") &&
                 runtime.Contains("for (int round = 2; round <= 4") &&
                 runtime.Contains("fourPointDetach = mealExact && automaticCleanup"),

@@ -1316,3 +1316,28 @@ restored the original 136-file installation exactly at
 DLL SHA-256
 `285298FEDE8CEEB05F1DB5B88C025A2A52D659ADF77708A1F484E3CE3663FA1D`.
 Sprint 11 remains hidden pending mechanical and visual gates.
+
+## Owner correction: Stirge disease cadence, 2026-09-29
+
+The owner reopened Sprint 10 because native target grapple prevents Stirge
+prey movement, and directed an explicit automatic AoO-first adaptation for
+Sprint 11 trample. The prior owner-design blocker is resolved; neither Sprint
+is yet requalified. The first narrow source correction removes the persistent
+once-per-victim disease gate. The 10% Filth Fever exposure chance now runs
+after each actual Constitution damage event and never on zero damage. The
+Stirge hold comment no longer claims a normal save preserves attachment;
+the accepted policy is clean reset on reload.
+
+Guarded Steam `20260929T1228251279908Z-disposable-expanded-summoning`
+passed 35/35 assertions after repository validation, all 1,952 domain tests,
+clean Release and strict package validation. The focused disease fixture
+observed one forced eligible exposure, no attempt for zero damage, and a
+second eligible exposure on the next actual drain; the native Filth Fever
+buff retained DC 12. Four one-point drains still detached normally in the
+old link representation. The original 136-file installation was restored
+exactly at `20260929T1232307424119Z`. Package SHA-256
+`C45F6A4961FD5F52A63E0E4023471ED1A7ED1BB9AE206D0E24E2C11B401E8337`;
+DLL SHA-256
+`5148C99A4F7AAC97B24ACCE78EB4D8955B01ECCDE749E68B6F0FFB7522883D15`.
+The reciprocal native grapple is the next correction and remains
+unqualified by this checkpoint.
