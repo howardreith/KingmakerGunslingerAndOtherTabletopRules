@@ -317,7 +317,10 @@ namespace KingmakerGunslinger.DomainTests
                 loader.Contains("TryGetUngulateVisual") &&
                 view.Contains("UngulateKeys.Contains(attachment.VisualKey)") &&
                 view.Contains("TryResolveDonorBinding(donor, boneNames") &&
-                view.Contains("Revert(attachment)"),
+                view.Contains("Revert(attachment)") &&
+                view.Contains("!UngulateKeys.Contains(attachment.VisualKey)") &&
+                view.Contains("DestroyImmediate(attachment.Mesh)") &&
+                view.Contains("DestroyImmediate(material)"),
                 "Four original visuals use the validated native-bind instance swap and fallback.");
             string build = File.ReadAllText(Path.Combine(root, "scripts",
                 "Build-Local.ps1"));
@@ -328,6 +331,43 @@ namespace KingmakerGunslinger.DomainTests
                 build.Contains("{ 274 } else { 272 }") &&
                 package.Contains("{ 274 } else { 272 }"),
                 "All eight ungulate asset files enter the strict standalone package.");
+        }
+
+        internal static void HiddenUngulatesUseGuardedCreatureViewReview()
+        {
+            string root = Environment.CurrentDirectory;
+            string review = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "RuntimeTestRunner.ExpandedSummoningCreatureReview.cs"));
+            string motion = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "RuntimeTestRunner.PteranodonReview.cs"));
+            Assertions.True(review.Contains("suppressedSprint11Candidate =") &&
+                review.Contains("!suppressedSprint10Candidate && !suppressedSprint11Candidate") &&
+                review.Contains("key == \"aurochs\" || key == \"bison\"") &&
+                review.Contains("key == \"rhinoceros\" || key == \"woolly-rhinoceros\"") &&
+                review.Contains("IsOriginalReviewKey(key)") &&
+                review.Contains("OriginalReviewVisualName(key)") &&
+                review.Contains("expanded-summoning-original-view-") &&
+                review.Contains("Resources.FindObjectsOfTypeAll<Mesh>()") &&
+                review.Contains(".FindObjectsOfTypeAll<Material>()") &&
+                review.Contains("expanded-summoning-ungulate-travel-") &&
+                review.Contains("MotionReviewTravelValid") &&
+                motion.Contains("IsGuidedMotionReview(unit)") &&
+                motion.Contains("PrepareSprint9FlightMovement(unit)") &&
+                motion.Contains("unit.View.MovementAgent.TickMovement(delta)"),
+                "The four hidden Sprint 11 units can enter only request-local visual review with exact attached-mesh and resource-cleanup checks.");
+            float rhino, woolly, unused;
+            Assertions.True(SummonViewScaleCatalog.TryGetMultiplier(
+                    "KMG_Summoning_Unit_Rhinoceros", out rhino) &&
+                SummonViewScaleCatalog.TryGetMultiplier(
+                    "KMG_Summoning_Unit_WoollyRhinoceros", out woolly) &&
+                rhino == 0.55f && woolly == 0.60f &&
+                !SummonViewScaleCatalog.TryGetMultiplier(
+                    "KMG_Summoning_Unit_Pony", out unused) &&
+                !SummonViewScaleCatalog.TryGetMultiplier(
+                    "KMG_Summoning_Unit_Horse", out unused),
+                "The Huge donor is reduced only for the two Large original rhinoceroses; Pony and Horse remain native controls.");
         }
     }
 }

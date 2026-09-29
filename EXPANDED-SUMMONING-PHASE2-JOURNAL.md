@@ -1150,3 +1150,20 @@ capture named the attached `KMG_aurochs_Original` and
 Continue live four-species skinning, material, attack contact, navigation,
 quantity, turn-based cadence and publication review; these assets alone do
 not complete Sprint 11.
+
+## Sprint 11: four live original views and native room travel, 2026-09-29
+
+First guarded review `20260929T0414361413191Z` captured all four original
+views but failed four resource checks (one mesh and two materials remained
+per dismissed unit); the generic ground motion captured zero travel. Its
+exact installation restoration passed. The per-view release now includes
+the four ungulates, the two Mastodon-rig Rhinoceroses have view-only scales
+0.55/0.60, and the guarded review feeds native ground movement through the
+same surveyed connected-room route used for flight review. Repeat
+`20260929T0432458054535Z` passed 24/24 assertions: each unit moved roughly
+12.3 m through the doorway and left zero private view resources. Repository
+validation, 1,951 tests, clean Release, strict 274-file package and exact
+original-tree restoration `20260929T0439456002517Z` passed. Sixteen visual
+frames show the original bodies at party-camera scale, with native cyan
+occlusion where walls/bookcases overlap. Clear-frame art review, attack
+contact, quantity, turn-based and publication gates remain open.

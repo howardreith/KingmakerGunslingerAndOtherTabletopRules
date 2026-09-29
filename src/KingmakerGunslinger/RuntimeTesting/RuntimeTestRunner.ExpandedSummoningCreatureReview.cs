@@ -81,14 +81,38 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool suppressedSprint10Candidate =
                     (key == "giant-wasp" || key == "stirge") &&
                     !SummonVisibilityCatalog.IsPublished(variant);
+                bool suppressedSprint11Candidate =
+                    IsSprint11UngulateReviewKey(key) &&
+                    !SummonVisibilityCatalog.IsPublished(variant);
                 if (!SummonVisibilityCatalog.IsPublished(variant) &&
-                    !suppressedSprint10Candidate)
+                    !suppressedSprint10Candidate && !suppressedSprint11Candidate)
                     throw new InvalidOperationException(
                         "A suppressed creature cannot be reviewed through a parent: " +
                         key + ".");
                 result.Add(variant);
             }
             return result.ToArray();
+        }
+
+        private static bool IsSprint11UngulateReviewKey(string key)
+        {
+            return key == "aurochs" || key == "bison" ||
+                key == "rhinoceros" || key == "woolly-rhinoceros";
+        }
+
+        private static bool IsOriginalReviewKey(string key)
+        {
+            return key == "giant-wasp" || key == "stirge" ||
+                IsSprint11UngulateReviewKey(key);
+        }
+
+        private static string OriginalReviewVisualName(string key)
+        {
+            return key == "stirge"
+                ? ExpandedSummoningPteranodonViewPatch.StirgeVisualName
+                : key == "giant-wasp"
+                    ? ExpandedSummoningPteranodonViewPatch.GiantWaspVisualName
+                    : "KMG_" + key + "_Original";
         }
 
         private void StepExpandedSummoningCreatureReview()
@@ -194,11 +218,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         (variant.Family == SummonFamily.Monster ? "Summon Monster " :
                             "Summon Nature's Ally ") + variant.ParentTier +
                         " single cast through its registered execution; party-camera renders"));
-                    if (key == "giant-wasp" || key == "stirge")
+                    if (IsOriginalReviewKey(key))
                     {
-                        string expectedName = key == "stirge"
-                            ? ExpandedSummoningPteranodonViewPatch.StirgeVisualName
-                            : ExpandedSummoningPteranodonViewPatch.GiantWaspVisualName;
+                        string expectedName = OriginalReviewVisualName(key);
                         string attach = ExpandedSummoningPteranodonViewPatch
                             .DescribeView(_creatureReviewUnits[0].View);
                         bool exactMesh = _creatureReviewUnits.All(unit =>
@@ -245,6 +267,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                             MotionReviewDoorwayValid,
                             "named native area landmark, same-area endpoints, native UnitMoveTo and cross-frame position samples"));
                     }
+                    if (IsSprint11UngulateReviewKey(key))
+                    {
+                        _creatureReviewAssertions.Add(Assertion(
+                            "expanded-summoning-ungulate-travel-" + key,
+                            "native ground move accepted; at least 0.75 m planar travel and nonzero movement-agent velocity",
+                            MotionReviewSummary,
+                            MotionReviewTravelValid,
+                            "surveyed connected floor route, native UnitMoveTo and cross-frame position/velocity samples"));
+                    }
                     foreach (UnitEntityData unit in _creatureReviewUnits)
                         CleanupExpandedSummoningUnit(unit);
                     Game.Instance.EntityDestroyer.Tick();
@@ -259,11 +290,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "expanded-summoning-creature-review-cleanup-" + key, "0",
                         live.ToString(), live == 0,
                         "reviewed summon dismissed and destroyed before the next cast"));
-                    if (key == "giant-wasp" || key == "stirge")
+                    if (IsOriginalReviewKey(key))
                     {
-                        string visualName = key == "stirge"
-                            ? ExpandedSummoningPteranodonViewPatch.StirgeVisualName
-                            : ExpandedSummoningPteranodonViewPatch.GiantWaspVisualName;
+                        string visualName = OriginalReviewVisualName(key);
                         int ownedMeshes = Resources.FindObjectsOfTypeAll<Mesh>()
                             .Count(value => value != null &&
                                 (value.name == visualName || (key == "giant-wasp" &&
