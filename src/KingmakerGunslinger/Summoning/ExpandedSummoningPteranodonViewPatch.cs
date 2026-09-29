@@ -465,7 +465,7 @@ namespace KingmakerGunslinger.Summoning
             if (controller != null) ReinitMaterials(controller);
         }
 
-        /// <summary>Release the new flying creatures' per-view clones on death.
+        /// <summary>Release Phase 2 creatures' per-view clones on death.
         /// The cached source mesh/painting and the native donor stay owned by
         /// their existing systems; no accepted Phase 1 view is changed here.</summary>
         internal static void ReleasePhase2View(UnitEntityView view)
@@ -473,9 +473,12 @@ namespace KingmakerGunslinger.Summoning
             Attachment attachment;
             if (view == null || !Applied.TryGetValue(view, out attachment) ||
                 (attachment.VisualKey != "giant-wasp" &&
-                 attachment.VisualKey != "stirge")) return;
+                 attachment.VisualKey != "stirge" &&
+                 !UngulateKeys.Contains(attachment.VisualKey))) return;
             string visualName = attachment.VisualKey == "stirge"
-                ? StirgeVisualName : GiantWaspVisualName;
+                ? StirgeVisualName : attachment.VisualKey == "giant-wasp"
+                    ? GiantWaspVisualName
+                    : "KMG_" + attachment.VisualKey + "_Original";
             if (attachment.WaspSting != null)
                 attachment.WaspSting.enabled = false;
             if (attachment.StirgeTouch != null)

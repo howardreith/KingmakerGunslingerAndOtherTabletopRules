@@ -364,3 +364,16 @@ rejection. Repository validation, 1,950 tests, clean Release and strict
 live renderers; exact original-installation restoration passed. This does
 not establish the other two live views, deformed geometry, impact points,
 navigation or owner visual acceptance. All choices remain hidden.
+
+Guarded creature review `20260929T0432458054535Z` passed 24/24 after a
+failed resource/movement diagnostic exposed and prompted correction of the
+per-view release path and ground-review ticking. Aurochs, Bison, Rhinoceros
+and Woolly Rhinoceros each retained their exact original mesh and albedo,
+crossed the surveyed connected doorway on native movement for roughly
+12.3 m, and left zero private mesh/material instances after dismissal. The
+two Rhinoceroses use view-only scales 0.55/0.60 to fit their Large identity
+on the Huge Mastodon rig; collision and mechanical size remain native Large.
+The sixteen party-camera frames were inspected; the route's walls/bookcases
+cause native cyan occlusion highlights. Clear art review, exact attack contact,
+charge-command travel, quantity pathing, victim AoO choice, turn-based
+cadence, negative-control in-game checks and publication are still open.
