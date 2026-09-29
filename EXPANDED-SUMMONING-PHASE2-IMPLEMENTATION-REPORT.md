@@ -1,6 +1,9 @@
 # Expanded Summoning Phase 2 implementation report
 
-Status: Sprints 9 and 10 internally technically qualified; Sprint 11 in progress.
+Status: Sprints 9 and 10 internally technically qualified; Sprint 11 blocked
+on the owner-design trample victim choice documented in
+`EXPANDED-SUMMONING-PHASE2-BLOCKER.md`. The Phase 2A PR remains draft;
+Sprints 12-21 have not started.
 Eagle and Dire Bat passed guarded casts, player path, live inventory,
 open-floor and room-opening movement, exact-hostile native combat in RTWP
 and turn-based mode, visual impact contact, save/load/expiry, module-disabled
