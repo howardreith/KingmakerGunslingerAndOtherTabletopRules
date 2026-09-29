@@ -37,6 +37,43 @@ namespace KingmakerGunslinger.Summoning
         }
     }
 
+    /// <summary>
+    /// Pure formation policy for Stampede. Every member of the qualifying
+    /// trio must independently pass the caller's exact owner/action checks,
+    /// and all three must remain mutually adjacent at the current contact.
+    /// </summary>
+    internal static class StampedeFormationPolicy
+    {
+        internal static int QualifiedGroupSize<T>(T actor,
+            IEnumerable<T> candidates, Func<T, bool> isEligible,
+            Func<T, T, bool> isAdjacent)
+        {
+            if (ReferenceEquals(actor, null) || candidates == null ||
+                isEligible == null || isAdjacent == null ||
+                !isEligible(actor)) return 0;
+            T[] eligible = candidates.Where(value =>
+                    !ReferenceEquals(value, null) && isEligible(value))
+                .Distinct().ToArray();
+            if (!eligible.Contains(actor) || eligible.Length < 3) return 0;
+            for (int first = 0; first < eligible.Length; first++)
+            {
+                T left = eligible[first];
+                if (object.Equals(left, actor) || !isAdjacent(actor, left))
+                    continue;
+                for (int second = first + 1;
+                    second < eligible.Length; second++)
+                {
+                    T right = eligible[second];
+                    if (object.Equals(right, actor) ||
+                        !isAdjacent(actor, right) ||
+                        !isAdjacent(left, right)) continue;
+                    return 3;
+                }
+            }
+            return 0;
+        }
+    }
+
     internal sealed class UngulateRulesProfile
     {
         internal UngulateRulesProfile(string key, int hitDice, int strength,
