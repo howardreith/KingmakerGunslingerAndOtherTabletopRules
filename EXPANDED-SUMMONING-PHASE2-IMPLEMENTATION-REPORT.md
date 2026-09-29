@@ -645,3 +645,26 @@ DLL SHA-256 is
 Sprint 10 is internally technically qualified. Native Filth Fever cure timing
 was not measured; its exact installed buff owns progression. Owner visual
 review remains pending and does not block the already-authorized Sprint 11.
+
+## Sprint 11 hidden ungulate checkpoint, 2026-09-29
+
+Aurochs, Bison, Rhinoceros and Woolly Rhinoceros are registered at their
+authorized SM/SNA tiers and remain hidden. Their original icons, meshes and
+paintings are packaged. Live creature review verified all four original views,
+12.3 m native doorway movement each, and zero owned-view resource leaks.
+Guarded RTWP combat verified one native trample contact each for Aurochs,
+Bison and Woolly Rhinoceros at DC 17/20/23, an Aurochs successful Reflex
+half-damage branch, and same-round contact suppression. Both Rhinos made
+actual native `ChargeAbility` approaches and queued first-gore hits under the
+charge marker for 25/30 damage. The latest guarded cast run
+`20260929T0713346420017Z` passed 35/35 assertions: 16/16 SM/SNA quantity
+routes across both quantity tiers, 48/48 original ungulate views attached,
+204/204 native casts, 280 spawned units, caster-level duration and per-cast
+exact cleanup. Repository validation, all 1,952 domain tests, clean Release
+and strict 274-file package validation passed. Package SHA-256 is
+`E89F2E876E7FAA1AFE02B7529FEC3DB49E3BDBFADFC95DFDA1339628880E2950`;
+DLL SHA-256 is `3C076A2701B9EF128668E2BB87A6D8B0558B9B4114EF34A80F792BABBA26CA52`.
+The wrapper restored the original installation exactly at
+`20260929T0717326030639Z`. Simultaneous quantity movement/charge/expiry,
+trample victim choice and turn-based cadence, exact impact contact, clear art
+review, player menu path and publication remain open.
