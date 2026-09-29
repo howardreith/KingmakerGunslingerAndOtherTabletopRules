@@ -490,3 +490,62 @@ clean launcher outcome, scenario PASS, no failures, and the exact original
 This closes the ordinary Trample target-response contract. Coordinated
 Stampede and corrected hoof/leg art remain open, so all Sprint 11 placements
 remain hidden.
+
+## Faithful bounded Stampede disposition
+
+Aurochs and Bison now use the owner-authorized faithful implementation rather
+than the omission fallback. Registration binds each exact unit blueprint to
+its exact Trample ability. A candidate herd member must be alive, conscious,
+in combat, mutually allied with the acting trampler, possess that registered
+ability, and be executing its own exact native `UnitUseAbility` command. The
+formation policy then requires a mutually adjacent trio: every pair's edge-to-
+edge distance is at most 5 feet. It evaluates the formation again at each
+contact. A qualifying trio permits same-size targets and adds the printed +2
+to the save DC; fewer than three members, an interrupted command, or broken
+adjacency grants neither benefit.
+
+The disclosed command-timing adaptation follows the owner contract. In RTWP,
+all three exact commands must still be running together. In turn-based mode,
+a narrow `UnitUseAbility.OnAction` observation records only exact registered
+Trample commands; an execution counts only in the current native combat round
+while running or after successful completion. Interrupted and failed commands
+do not count, a later round rejects the prior record, and leaving combat clears
+it. The observer never submits, queues, or selects an action. Nearby idle
+creatures and queued commands that have not entered execution never count.
+The Aurochs and Bison tooltips disclose both timing rules, same-size eligibility,
+the +2 DC, and the idle-creature exclusion.
+
+Guarded Steam run
+`20260929T2311031955741Z-disposable-expanded-summoning-rules` passed 58/58
+assertions on version `0.0.140` after repository validation, all 1,952 domain
+tests, a clean Release build, and strict package validation. Its bounded live
+matrix used registered 1d3 Aurochs summons and a direct Bison, placed three
+distinct units in a mutually adjacent formation with independently valid
+native Overrun paths, and drove each exact command through `OnAction`.
+
+- In RTWP and turn-based mode, idle quantity produced group size zero and a
+  same-size contact produced neither save nor damage.
+- Two executing commands still produced group size zero and no same-size
+  contact effect.
+- Three executing commands produced group size three. Aurochs applied its
+  same-size contact at DC 19 and Bison at DC 22, each with one damage event.
+- Moving the third member out of adjacency reduced the group to zero and
+  suppressed a later same-size contact.
+- Restoring adjacency and directly interrupting the third native command left
+  it finished with result `Interrupt`, reduced the group to zero, and suppressed
+  the later same-size contact in both modes.
+- The fixture restored combat mode, time, party membership, command state, and
+  every disposable unit.
+
+The tested package SHA-256 was
+`094d0d00edc7e98d647f676d3f33edca522a18cd217d0093af76f8a7b142787b`;
+the built, deployed, and loaded DLL SHA-256 was
+`975a8ca397ed5982a5860a12ea0f616e56eff3f973fc96936f3d7da2bde969d0`.
+Restoration record
+`20260929T2315481989062Z-disposable-expanded-summoning-rules.json` records a
+clean launcher outcome, scenario PASS, no failures, and the exact original
+136-file live tree before and after restoration at SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+This closes the Stampede mechanics disposition. Corrected hoof/leg art and the
+remaining Sprint 11 publication gates remain open, so every Sprint 11 choice
+stays hidden.
