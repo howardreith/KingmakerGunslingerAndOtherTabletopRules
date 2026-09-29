@@ -1209,3 +1209,26 @@ The exact original 136-file installation was restored at
 `20260929T0643316615128Z`. This is a one-at-a-time RTWP charge path;
 turn-based, quantity, victim AoO choice, trample action cadence, visual
 impact and publication remain outstanding. Choices remain hidden.
+
+## Sprint 11: hidden ungulate quantity casting, 2026-09-29
+
+The roster-wide disposable cast fixture now selects each of the four hidden
+ungulates through `1d3` and `1d4+1` in both SM and SNA, adding twelve casts
+beyond its existing quantity samples. The first guarded run
+`20260929T0700328410579Z` passed all 16 quantity routes and exact cleanup but
+failed the shared visual-patch outcome total: that assertion had not counted
+the new ungulate views. It restored exactly at `20260929T0704289205794Z`.
+The observer now checks each original ungulate attachment and includes its
+views in the one-outcome-per-view invariant.
+
+Final guarded run `20260929T0713346420017Z` passed 35/35 assertions after
+repository validation, 1,952 domain tests, clean Release and strict 274-file
+package validation. It completed 204/204 native casts, 16/16 ungulate
+quantity routes, 48/48 ungulate original-view attachments, caster-level
+duration and exact per-cast scene cleanup; 280 units spawned. Package SHA-256
+`E89F2E876E7FAA1AFE02B7529FEC3DB49E3BDBFADFC95DFDA1339628880E2950`;
+DLL SHA-256 `3C076A2701B9EF128668E2BB87A6D8B0558B9B4114EF34A80F792BABBA26CA52`.
+The guarded wrapper restored the original 136-file live tree exactly at
+`20260929T0717326030639Z`. These are sequential cast lifecycles; simultaneous
+formation movement, charge and expiry are not yet qualified. The choices
+remain hidden.

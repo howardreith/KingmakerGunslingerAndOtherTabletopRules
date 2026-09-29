@@ -61,6 +61,36 @@ namespace KingmakerGunslinger.DomainTests
                 "The 48 new placements must not change the accepted menu.");
         }
 
+        internal static void FourUngulatesHaveHiddenQuantityPlacementsInBothFamilies()
+        {
+            string[] keys = {
+                "aurochs", "bison", "rhinoceros", "woolly-rhinoceros"
+            };
+            var variants = ExpandedSummoningCatalog
+                .GenerateVariants(SummonFamily.Monster).Concat(
+                    ExpandedSummoningCatalog.GenerateVariants(
+                        SummonFamily.NaturesAlly)).ToArray();
+            foreach (string key in keys)
+                foreach (SummonFamily family in new[] {
+                    SummonFamily.Monster, SummonFamily.NaturesAlly
+                })
+                    foreach (SummonMultiplicity quantity in new[] {
+                        SummonMultiplicity.OneD3,
+                        SummonMultiplicity.OneD4PlusOne
+                    })
+                    {
+                        var placements = variants.Where(value =>
+                            value.Creature.Key == key &&
+                            value.Family == family &&
+                            value.Multiplicity == quantity).ToArray();
+                        Assertions.True(placements.Length > 0 &&
+                            placements.All(value =>
+                                !SummonVisibilityCatalog.IsPublished(value)),
+                            key + " must have a hidden " + family + "/" +
+                            quantity + " quantity route for live qualification.");
+                    }
+        }
+
         internal static void HiddenRhinosOwnDistinctPowerfulChargeFacts()
         {
             string[] symbols = {
