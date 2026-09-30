@@ -29,8 +29,8 @@ namespace KingmakerGunslinger.Summoning
     /// A contact action for the native overrun delivery. The delivery moves
     /// the unit and invokes its Actions for every contacted creature; this
     /// action replaces the native CMB result with the printed trample rule.
-    /// It is installed only on hidden Sprint 11 summons until the movement,
-    /// AoO choice and round cadence have been qualified in both combat modes.
+    /// It is installed only on the three printed Sprint 11 tramplers after the
+    /// movement, response policy and round cadence qualified in both modes.
     /// </summary>
     [Serializable]
     public sealed class ContextActionUngulateTrample : ContextAction

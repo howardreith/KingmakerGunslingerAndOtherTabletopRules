@@ -5,19 +5,16 @@ using System.Linq;
 namespace KingmakerGunslinger.Summoning
 {
     /// <summary>
-    /// Publication-only exclusions. Sprint 10 is qualified; the four Sprint
-    /// 11 ungulates remain hidden until their mechanics and art qualify.
+    /// Publication-only exclusions. Sprints 10 and 11 are qualified and all
+    /// currently registered Expanded Summoning placements are published.
     /// </summary>
     internal static class SummonVisibilityCatalog
     {
         private static readonly HashSet<string> SuppressedCreatureKeys =
-            new HashSet<string>(StringComparer.Ordinal) {
-                "aurochs", "bison", "rhinoceros",
-                "woolly-rhinoceros"
-            };
+            new HashSet<string>(StringComparer.Ordinal);
 
         internal const int RegisteredLogicalPlacementCount = 882;
-        internal const int SuppressedLogicalPlacementCount = 48;
+        internal const int SuppressedLogicalPlacementCount = 0;
         internal const int PublishedLogicalPlacementCount =
             RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount;
 

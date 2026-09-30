@@ -9,14 +9,14 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class ExpandedSummoningSprint11Tests
     {
-        internal const int HiddenUngulateIdentityCount = 100;
+        internal const int UngulateIdentityCount = 100;
         internal const int PowerfulChargeIdentityCount = 2;
         internal const int TrampleIdentityCount = 3;
         internal const int AppendedLedgerIdentities =
-            HiddenUngulateIdentityCount + PowerfulChargeIdentityCount +
+            UngulateIdentityCount + PowerfulChargeIdentityCount +
             TrampleIdentityCount;
 
-        internal static void FourUngulatesRegisterAtPrintedTiersButRemainHidden()
+        internal static void FourUngulatesPublishAtPrintedTiers()
         {
             var expected = new[] {
                 new { Key = "aurochs", Tier = 3, Hd = 3, Strength = 23,
@@ -47,21 +47,21 @@ namespace KingmakerGunslinger.DomainTests
                     profile.NaturalArmor == value.Armor &&
                     profile.PrimaryWeapon == value.Weapon &&
                     profile.Facts.Contains("ReducedReach"),
-                    "The hidden " + value.Key + " has its own printed animal profile.");
+                    "The published " + value.Key + " has its own printed animal profile.");
                 var variants = all.Where(item => item.Creature.Key == value.Key)
                     .ToArray();
                 int perFamily = 10 - value.Tier;
                 Assertions.True(variants.Length == perFamily * 2 &&
-                    variants.All(item => !SummonVisibilityCatalog.IsPublished(item)),
+                    variants.All(SummonVisibilityCatalog.IsPublished),
                     "Every placement of " + value.Key +
-                    " remains registered but hidden before qualification.");
+                    " publishes after mechanics, art and lifecycle qualification.");
             }
             Assertions.True(all.Length == 882 &&
-                all.Count(SummonVisibilityCatalog.IsPublished) == 834,
-                "The 48 ungulate placements stay hidden after Stirge qualification.");
+                all.Count(SummonVisibilityCatalog.IsPublished) == 882,
+                "All 882 registered placements publish through Sprint 11.");
         }
 
-        internal static void FourUngulatesHaveHiddenQuantityPlacementsInBothFamilies()
+        internal static void FourUngulatesPublishQuantityPlacementsInBothFamilies()
         {
             string[] keys = {
                 "aurochs", "bison", "rhinoceros", "woolly-rhinoceros"
@@ -84,10 +84,9 @@ namespace KingmakerGunslinger.DomainTests
                             value.Family == family &&
                             value.Multiplicity == quantity).ToArray();
                         Assertions.True(placements.Length > 0 &&
-                            placements.All(value =>
-                                !SummonVisibilityCatalog.IsPublished(value)),
-                            key + " must have a hidden " + family + "/" +
-                            quantity + " quantity route for live qualification.");
+                            placements.All(SummonVisibilityCatalog.IsPublished),
+                            key + " must publish its " + family + "/" +
+                            quantity + " quantity route after live qualification.");
                         if (quantity == SummonMultiplicity.OneD4PlusOne)
                         {
                             SummonCreatureSpec creature = ExpandedSummoningCatalog.All
@@ -97,13 +96,13 @@ namespace KingmakerGunslinger.DomainTests
                                 creature.NaturesAllyTier.Value;
                             Assertions.True(placements.Any(value =>
                                 value.ParentTier == ownTier + 2),
-                                key + " must offer a hidden own-tier-plus-two " +
+                                key + " must offer a published own-tier-plus-two " +
                                 family + " crowd review route.");
                         }
                     }
         }
 
-        internal static void HiddenRhinosOwnDistinctPowerfulChargeFacts()
+        internal static void PublishedRhinosOwnDistinctPowerfulChargeFacts()
         {
             string[] symbols = {
                 "KMG.Summoning.Special.Rhinoceros.PowerfulCharge",
@@ -113,7 +112,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(symbols.All(symbol => identities.Count(item =>
                 item.Symbol == symbol && item.PlannedType ==
                     "BlueprintFeature") == 1),
-                "Each hidden Rhino must own one distinct charge feature identity.");
+                "Each published Rhino must own one distinct charge feature identity.");
             string builder = File.ReadAllText(Path.Combine(
                 Environment.CurrentDirectory, "src", "KingmakerGunslinger",
                 "Blueprints", "ExpandedSummoningSpecialBuilder.cs"));
@@ -152,14 +151,14 @@ namespace KingmakerGunslinger.DomainTests
                 "The guarded command case must drive native travel, observe its real charged gore, and restore request-local state.");
         }
 
-        internal static void HiddenTrampleAbilitiesUseNativePathWithSummonRules()
+        internal static void PublishedTrampleAbilitiesUseNativePathWithSummonRules()
         {
             string[] keys = { "Aurochs", "Bison", "WoollyRhinoceros" };
             var identities = ExpandedSummoningIdentityCatalog.Build();
             Assertions.True(keys.All(key => identities.Count(item =>
                 item.Symbol == "KMG.Summoning.Special." + key + ".Trample" &&
                 item.PlannedType == "BlueprintAbility") == 1),
-                "Only the three printed tramplers receive distinct hidden abilities.");
+                "Only the three printed tramplers receive distinct published abilities.");
             Assertions.False(identities.Any(item => item.Symbol ==
                 "KMG.Summoning.Special.Rhinoceros.Trample"),
                 "Ordinary Rhinoceros must not gain an invented trample.");
@@ -195,7 +194,7 @@ namespace KingmakerGunslinger.DomainTests
                     "one at -4 before damage and receives no save") &&
                 builder.Contains("An attack that stops the trampler") &&
                 builder.Contains("prevents that contact's damage"),
-                "The hidden tooltip must disclose the Kingmaker automatic-AoO adaptation.");
+                "The published tooltip must disclose the Kingmaker automatic-AoO adaptation.");
             Assertions.True(builder.Contains(
                     "UngulateStampedeRuntime.Register(unit, ability)") &&
                 builder.Contains("at least three allied") &&
@@ -574,7 +573,7 @@ namespace KingmakerGunslinger.DomainTests
                 "All eight ungulate asset files enter the strict standalone package.");
         }
 
-        internal static void HiddenUngulatesUseGuardedCreatureViewReview()
+        internal static void PublishedUngulatesUseGuardedCreatureViewReview()
         {
             string root = Environment.CurrentDirectory;
             string review = File.ReadAllText(Path.Combine(root, "src",
@@ -583,8 +582,8 @@ namespace KingmakerGunslinger.DomainTests
             string motion = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "RuntimeTesting",
                 "RuntimeTestRunner.PteranodonReview.cs"));
-            Assertions.True(review.Contains("suppressedSprint11Candidate =") &&
-                review.Contains("!suppressedSprint11Candidate") &&
+            Assertions.True(!review.Contains("suppressedSprint11Candidate =") &&
+                review.Contains("if (!SummonVisibilityCatalog.IsPublished(variant))") &&
                 !review.Contains("suppressedSprint10Candidate =") &&
                 review.Contains("key == \"aurochs\" || key == \"bison\"") &&
                 review.Contains("key == \"rhinoceros\" || key == \"woolly-rhinoceros\"") &&
@@ -598,7 +597,7 @@ namespace KingmakerGunslinger.DomainTests
                 motion.Contains("IsGuidedMotionReview(unit)") &&
                 motion.Contains("PrepareSprint9FlightMovement(unit)") &&
                 motion.Contains("unit.View.MovementAgent.TickMovement(delta)"),
-                "The four hidden Sprint 11 units can enter only request-local visual review with exact attached-mesh and resource-cleanup checks.");
+                "The four published Sprint 11 units use the ordinary publication guard and request-local visual review with exact attached-mesh and resource-cleanup checks.");
             float rhino, woolly, unused;
             Assertions.True(SummonViewScaleCatalog.TryGetMultiplier(
                     "KMG_Summoning_Unit_Rhinoceros", out rhino) &&

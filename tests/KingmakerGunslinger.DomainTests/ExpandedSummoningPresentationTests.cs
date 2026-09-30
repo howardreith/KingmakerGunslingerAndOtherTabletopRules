@@ -44,14 +44,14 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string key in new[] { "aurochs", "bison",
                 "rhinoceros", "woolly-rhinoceros" })
             {
-                JToken prepared = rows.Single(value => (string)value["key"] == key);
-                Assertions.Equal("kmg-catalog", (string)prepared["scope"],
-                    "Hidden ungulate painting must retain its exact catalog scope.");
-                Assertions.True(((JArray)prepared["blueprintSymbols"]).Any(value =>
+                JToken published = rows.Single(value => (string)value["key"] == key);
+                Assertions.Equal("kmg-catalog", (string)published["scope"],
+                    "Published ungulate painting must retain its exact catalog scope.");
+                Assertions.True(((JArray)published["blueprintSymbols"]).Any(value =>
                     (string)value == "KMG.Summoning.Unit." +
                     string.Concat(key.Split('-').Select(part =>
                         char.ToUpperInvariant(part[0]) + part.Substring(1)))),
-                    "The prepared ungulate painting must name its exact unit consumer.");
+                    "The published ungulate painting must name its exact unit consumer.");
             }
 
             var hashes = new HashSet<string>(StringComparer.Ordinal);

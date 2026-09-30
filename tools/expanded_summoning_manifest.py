@@ -97,8 +97,12 @@ SPECIAL_NOTES = {
     "tiger": "New Large animal on the leopard rig (1.25 view scale, procedural striped coat); 2d6 bite, two 1d8 claws and two 1d8 rake claws; pounce; grab with the bite and both foreclaws by limb identity on the shared lifecycle; rake gate: a charge, or the foe held since the round began (Sprint 8; corrected 2026-09-25).",
     "cheetah": "Animal chassis on the leopard rig with a procedural spotted coat at a lean view scale; trip bite; bounded once-per-summoning sprint (+30 feet for one round) with its own brain (Sprint 8).",
     "lion": "Animal chassis on the leopard rig with a tawny visual tint; bite and two claws plus two rake claws; pounce; bite grab by limb identity on the shared lifecycle; rake gate: a charge, or the foe held since the round began (Sprint 7; corrected 2026-09-25).",
-    "giant-wasp": "Sprint 10 Phase 2 native sting, original flying visual and dedicated Dexterity poison graph; all twelve placements published after two-mode contact, lifecycle, 825-root player path and 50-assertion live menu qualification.",
-    "stirge": "Sprint 10 Phase 2 Tiny flyer with a zero-damage touch carrier and original icon; all nine Nature's Ally placements temporarily hidden during the owner-directed correction of attachment, prey freedom and removal.",
+    "giant-wasp": "Sprint 10 Phase 2 native sting, original flying visual and dedicated Dexterity poison graph; all twelve placements published after two-mode contact, lifecycle, player-path and live-menu qualification.",
+    "stirge": "Sprint 10 Phase 2 Tiny flyer with a zero-damage touch carrier and original icon; a successful touch creates a Stirge-specific session attachment while the prey remains free to move and act, and each successful blood drain rolls the disclosed 10% Filth Fever adaptation. Reload resets attachment safely instead of restoring it.",
+    "aurochs": "Sprint 11 original Aurochs visual; printed gore and Trample with the disclosed automatic-AoO-or-Reflex adaptation; Stampede requires three adjacent allied Stampede owners actively executing their own Trample in the same round and is rechecked for later contacts; Endurance omitted.",
+    "bison": "Sprint 11 original Bison visual; printed gore and Trample with the disclosed automatic-AoO-or-Reflex adaptation; Stampede requires three adjacent allied Stampede owners actively executing their own Trample in the same round and is rechecked for later contacts; Endurance and Improved Bull Rush omitted.",
+    "rhinoceros": "Sprint 11 original Rhinoceros visual and summon-local powerful charge restricted to its gore on a native charge; Endurance omitted.",
+    "woolly-rhinoceros": "Sprint 11 original Woolly Rhinoceros visual; summon-local powerful charge restricted to its gore on a native charge; printed Trample with the disclosed automatic-AoO-or-Reflex adaptation; Diehard and Endurance omitted.",
     "dire-lion": "Animal chassis with bite, two claws and a secondary rake pair; pounce; bite grab by limb identity on the shared lifecycle; rake gate: a charge, or the foe held since the round began (Sprint 7; corrected 2026-09-25).",
     "dire-tiger": "Smilodon chassis with bite, two claws and a secondary rake pair; pounce; grab with the bite and both foreclaws by limb identity on the shared lifecycle; rake gate: a charge, or the foe held since the round began (Sprint 7; corrected 2026-09-25).",
     "grizzly-bear": "Animal chassis with bite and two claws; claw grab on the shared summon grapple lifecycle (Sprint 6).",
@@ -366,9 +370,9 @@ def generated_roster(manifest):
         "",
         "Generated deterministically by `tools/expanded_summoning_manifest.py`; do not edit by hand.",
         "",
-        "Registered totals: 79 Summon Monster entries / 444 placements; 77 Summon Nature's Ally entries / 438 placements; 87 unique units; 48 Sprint 11 ungulate and nine reopened Stirge placements hidden, leaving 825 published. Giant Wasp's twelve remain available. The Frost Giant remains a retained native unit under Summon Monster VIII-IX and Summon Nature's Ally VII-IX wrappers.",
+        "Registered totals: 79 Summon Monster entries / 444 placements; 77 Summon Nature's Ally entries / 438 placements; 87 unique units; all 882 placements are published through Sprint 11. The Frost Giant remains a retained native unit under Summon Monster VIII-IX and Summon Nature's Ally VII-IX wrappers.",
         "",
-        "Final native qualification source: `5205805eab3fe0115d6888c53bce73c80474d1b7`. Structural run `20260812T1327062696968Z-bd09acfba08942df8f7c42e5c70252f4`; native cast run `20260812T1330147883834Z-ec8896f1d65b43e0913a6bea7cba4405`; visual run `20260812T1151394827201Z-add45a04f5de44c1a39e3251f7ff0778`; enabled/disabled persistence runs `20260812T1155220523013Z-6d2a18f9b33344d08d3127ffce7e5cb6` through `20260812T1208449380302Z-65c9b7056d97483fb48a4a9b76c22ea6`; all eight required final compatibility transactions PASS and restored their profiles.",
+        "Phase 1 baseline qualification source: `5205805eab3fe0115d6888c53bce73c80474d1b7`. Structural run `20260812T1327062696968Z-bd09acfba08942df8f7c42e5c70252f4`; native cast run `20260812T1330147883834Z-ec8896f1d65b43e0913a6bea7cba4405`; visual run `20260812T1151394827201Z-add45a04f5de44c1a39e3251f7ff0778`; enabled/disabled persistence runs `20260812T1155220523013Z-6d2a18f9b33344d08d3127ffce7e5cb6` through `20260812T1208449380302Z-65c9b7056d97483fb48a4a9b76c22ea6`; all eight required compatibility transactions passed and restored their profiles. Phase 2 Sprint 10 and 11 mechanics, visual, quantity and lifecycle evidence is indexed in `EXPANDED-SUMMONING-PHASE2-EVIDENCE-INDEX.md`.",
         "",
         "Every placement has a distinct frozen ability identity so parent spell level, caster context, metamagic, duration, UI, and save identity remain local to that parent. Templated Summon Monster placements additionally own celestial and fiendish execution identities. No runtime GUID generation or shared cross-parent ability is used.",
         "",
@@ -413,7 +417,7 @@ def generated_roster(manifest):
                        "and summon/conjure surfaces removed; ")
             adaptation = SPECIAL_NOTES.get(creature["key"],
                 "Dedicated mechanics reused only where exact; otherwise donor is view/rig only and the checked-in tabletop profile owns stats, attacks, facts, and deviations.")
-            qualification = ("Registered; Sprint 11 mechanics, original visual, quantity, player path and persistence pending; all placements hidden" if creature["key"] in ("aurochs", "bison", "rhinoceros", "woolly-rhinoceros") else
+            qualification = ("Published; Sprint 11 mechanics, original visual, quantity and lifecycle technical PASS; owner visual review pending" if creature["key"] in ("aurochs", "bison", "rhinoceros", "woolly-rhinoceros") else
                 "Published; Sprint 10 Wasp mechanics, view, menu and player path technical PASS; owner visual review pending" if creature["key"] == "giant-wasp" else
                 "Published; Stirge attach, drain, visual contact, icon, player path and live menu technical PASS; owner visual review pending" if creature["key"] == "stirge" else
                 "Structural PASS; native cast PASS; visual contract PASS; required profiles PASS")
@@ -426,7 +430,7 @@ def generated_roster(manifest):
     lines.extend((
         "## Explicit exclusions",
         "",
-        "No aquatic-only entries, unapproved ants, apes, extra dinosaurs, campaign spawns, companions, pets, vendors, loot, or external assets are added. The four authorized Sprint 11 ungulates are registered but hidden. The Pony, Horse, Owlbear and Cyclops joined in Phase 1 Sprint 3, the Shambling Mound, Giant Flytrap and Purple Worm in Sprint 4, the six new mephits in Sprint 5 (no Lightning Mephit), the Tiger in Sprint 8, and the Frost Giant is reused, never duplicated, as a retained native unit under creature-named wrappers. Existing vanilla and third-party entries are preserved by reference and order.",
+        "No aquatic-only entries, unapproved ants, apes, extra dinosaurs, campaign spawns, companions, pets, vendors, loot, or external assets are added. The four authorized Sprint 11 ungulates are published only after their mechanics, original visuals and lifecycle qualified. The Pony, Horse, Owlbear and Cyclops joined in Phase 1 Sprint 3, the Shambling Mound, Giant Flytrap and Purple Worm in Sprint 4, the six new mephits in Sprint 5 (no Lightning Mephit), the Tiger in Sprint 8, and the Frost Giant is reused, never duplicated, as a retained native unit under creature-named wrappers. Existing vanilla and third-party entries are preserved by reference and order.",
         "",
     ))
     return "\n".join(lines)

@@ -1,5 +1,47 @@
 # Expanded Summoning Phase 2 journal
 
+## Sprint 11 publication and persistence closeout, 2026-09-30
+
+The four qualified ungulates are now visible at all 48 authorized placements.
+This raises generated publication from 834 to 882 and total visible choices,
+including the 29 retained native wrappers, from 863 to 911. No candidate-only
+publication bypass remains. The four creature descriptions disclose ordinary
+Trample, the automatic AoO/Reflex adaptation, faithful active-command Stampede
+for Aurochs/Bison, Powerful Charge for the rhinoceroses, and omitted donor
+feats. The published icon cache still contains 99 distinct project concepts;
+the four ungulate icons use their approved original sources.
+
+Guarded inventory `20260930T0457205706691Z` passed 50/50 assertions: all 882
+registered roots were visible and executable, all 18 final-live menu equations
+were exact, every published choice had the expected icon, and prohibited
+reference counts remained zero. Guarded player path
+`20260930T0508037596496Z` passed 10/10 after traversing every published root
+and all 29 native wrappers through real spellbook parent/selected-child
+commands, exact slot consumption, quantity contracts and cleanup.
+
+The canonical working-save trio passed on the same runtime artifact:
+prepare `20260930T0524086567797Z`, fresh-load cleanup
+`20260930T0528280228527Z`, and final absence
+`20260930T0532419916125Z` each passed 15/15. Prepare saved 17 exact summons;
+fresh load retained identity, context, duration, control and original flying
+views, reset the Stirge attachment cleanly, expired every fixture unit and
+saved once; final load found zero fixture summons and wrote nothing. Published
+count 882 was exact at every stage. Native save-write counts were 1/1/0.
+
+Repository validation, all 1,952 domain tests, a clean Release build and the
+strict standalone package passed. The clean package/DLL SHA-256 values were
+`2B83849D4560C4E2F14D20FECE9DA655968187663146301C2BBC7A265D24FE4B`
+and `7A91A11271603319AEF5C398633A6DFF8040AB9C051DE6CF54CEFE7C2A4771A0`.
+The guarded runtime package/DLL hashes were
+`1cb1ce000b7043259429ef6b6792fac41110fc00ebc95e85aaeb02ff7ffb2a85`
+and `9d5d52e9832ee33ef6f806beba03ea4a06aed995114cb1a46642d923c0c1b159`.
+Restoration `20260930T0535320622642Z` recorded four clean launcher outcomes,
+four scenario passes, zero failures, and exact recovery of the original
+136-file live installation SHA
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+Sprint 11 is internally technically qualified; owner visual review is pending
+and nonblocking. Continue with authorized Sprint 12.
+
 ## Stirge removal method discrimination, 2026-09-29
 
 The first guarded 36-assertion run `20260929T1641295398751Z` showed the
