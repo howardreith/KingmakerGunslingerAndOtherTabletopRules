@@ -64,6 +64,12 @@ try {
         'assets\ungulates\rhinoceros-albedo.png',
         'assets\ungulates\woolly-rhinoceros-mesh.json',
         'assets\ungulates\woolly-rhinoceros-albedo.png',
+        'assets\sprint12-quadrupeds\dire-rat-mesh.json',
+        'assets\sprint12-quadrupeds\dire-rat-albedo.png',
+        'assets\sprint12-quadrupeds\hyena-mesh.json',
+        'assets\sprint12-quadrupeds\hyena-albedo.png',
+        'assets\sprint12-quadrupeds\goblin-dog-mesh.json',
+        'assets\sprint12-quadrupeds\goblin-dog-albedo.png',
         'blueprints\blueprints.json',
         'blueprints\blueprints.schema.json'
     )

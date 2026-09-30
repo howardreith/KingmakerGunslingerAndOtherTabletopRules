@@ -1,6 +1,9 @@
 using System;
 using System.IO;
+using System.Linq;
+using System.Security.Cryptography;
 using KingmakerGunslinger.Summoning;
+using Newtonsoft.Json.Linq;
 
 namespace KingmakerGunslinger.DomainTests
 {
@@ -50,6 +53,149 @@ namespace KingmakerGunslinger.DomainTests
             })
                 Assertions.True(profiles.Contains(token),
                     "Dire Rat hidden foundation is missing " + token + ".");
+
+            OriginalQuadrupedVisualsAreDeterministicAndPrivate();
+        }
+
+        private static void OriginalQuadrupedVisualsAreDeterministicAndPrivate()
+        {
+            string root = Environment.CurrentDirectory;
+            string directory = Path.Combine(root, "assets",
+                "sprint12-quadrupeds");
+            string[] kinds = { "dire-rat", "hyena", "goblin-dog" };
+            string[] meshHashes = {
+                "2ee73bcf0ab4cdf0d275fb64764dea96107669cef07ee3b0c62a6f5228f1633a",
+                "1c68a8361149309ca374897761406dc98b81f13873a726e9b7d18d7dc1399d0f",
+                "0974e179edf83a61067517a5c343ceeae2753cb67e76352c8bff1dce91473a4a"
+            };
+            string[][] allowedBones = {
+                new[] {
+                    "Head", "Jaw", "L_Arm_Lower", "L_Arm_Upper", "L_Ear",
+                    "L_Finger0", "L_Leg0_Foot", "L_Leg0_Lower",
+                    "L_Leg0_Lower1", "L_Leg0_Toe0", "L_Leg0_Upper", "L_Palm",
+                    "LowerTorso", "Neck0", "Neck1", "Nose", "Pelvis",
+                    "R_Arm_Lower", "R_Arm_Upper", "R_Ear", "R_Finger0",
+                    "R_Leg0_Foot", "R_Leg0_Lower", "R_Leg0_Lower1",
+                    "R_Leg0_Toe0", "R_Leg0_Upper", "R_Palm", "Tail00",
+                    "Tail01", "Tail02", "Tail03", "UpperTorso"
+                },
+                new[] {
+                    "Head", "L_Arm_Lower", "L_Arm_Upper", "L_Foot0",
+                    "L_Leg0_Lower", "L_Leg0_Lower2", "L_Leg0_Upper", "L_Palm",
+                    "R_Arm_Lower", "R_Arm_Upper", "R_Foot0", "R_Leg0_Lower",
+                    "R_Leg0_Lower2", "R_Leg0_Upper", "R_Palm", "Torso_Lower",
+                    "Torso_Upper", "ear_L", "ear_R", "front_paw__tip_R",
+                    "front_paw_tip_L", "hindpaw_tip_L", "hindpaw_tip_R", "jaw",
+                    "jaw_woo_down", "jaw_woo_up", "jaw_woo_up_add", "neck",
+                    "spine_0", "tail_01", "tail_02", "tail_03", "tail_04",
+                    "withers"
+                },
+                new[] {
+                    "Head", "L_Arm_Lower", "L_Arm_Upper", "L_Foot0",
+                    "L_Leg0_Lower", "L_Leg0_Lower2", "L_Leg0_Upper", "L_Palm",
+                    "R_Arm_Lower", "R_Arm_Upper", "R_Foot0", "R_Leg0_Lower",
+                    "R_Leg0_Lower2", "R_Leg0_Upper", "R_Palm", "Torso_Lower",
+                    "Torso_Upper", "ear_L", "ear_R", "front_paw__tip_R",
+                    "front_paw_tip_L", "hindpaw_tip_L", "hindpaw_tip_R", "jaw",
+                    "jaw_woo_down", "jaw_woo_up", "jaw_woo_up_add", "neck",
+                    "spine_0", "tail_01", "tail_02", "tail_03", "tail_04",
+                    "withers"
+                }
+            };
+            for (int index = 0; index < kinds.Length; index++)
+            {
+                string kind = kinds[index];
+                string meshPath = Path.Combine(directory, kind + "-mesh.json");
+                Assertions.Equal(meshHashes[index], Sha256(meshPath),
+                    kind + " mesh matches the reviewed deterministic export.");
+                JObject mesh = JObject.Parse(File.ReadAllText(meshPath));
+                Assertions.Equal(2, (int)mesh["schemaVersion"],
+                    kind + " uses the audited skinned-mesh schema.");
+                Assertions.True(((string)mesh["space"]).Contains(
+                        "donor renderer local") &&
+                    ((string)mesh["rigSha256"]).Length == 64,
+                    kind + " records only its private captured-frame hash.");
+                string[] bones = ((JArray)mesh["bones"])
+                    .Select(value => (string)value).ToArray();
+                Assertions.True(bones.SequenceEqual(allowedBones[index]),
+                    kind + " binds only the exact reviewed donor controls.");
+                int vertices = (int)mesh["vertexCount"];
+                int triangles = (int)mesh["triangleCount"];
+                Assertions.True(vertices >= 800 && triangles >= 1500 &&
+                    Convert.FromBase64String((string)mesh["data"]).Length ==
+                    vertices * 64 + triangles * 12,
+                    kind + " carries complete original geometry, UVs and weights.");
+                JObject albedo = (JObject)mesh["albedo"];
+                Assertions.Equal(kind + "-albedo.png", (string)albedo["file"],
+                    kind + " names its own painting.");
+                Assertions.True((int)albedo["width"] == 1024 &&
+                    (int)albedo["height"] == 1024 &&
+                    Sha256(Path.Combine(directory, (string)albedo["file"])) ==
+                    (string)albedo["sha256"],
+                    kind + " painting matches its mesh manifest.");
+            }
+
+            string source = Path.Combine(root, "assets-source",
+                "original-models", "sprint12-quadrupeds");
+            string generator = File.ReadAllText(Path.Combine(source,
+                "generate_sprint12_quadrupeds.py"));
+            Assertions.True(File.Exists(Path.Combine(source,
+                    "paint_sprint12_quadruped_albedo.py")) &&
+                File.Exists(Path.Combine(source,
+                    "render_sprint12_quadruped_review.py")) &&
+                generator.Contains("if len(renderers) != 1") &&
+                generator.Contains("donor bind frame is incomplete") &&
+                generator.Contains("donor bind frame repeats a bone name") &&
+                generator.Contains("wrong donor bind frame for"),
+                "Editable source must retain deterministic review and strict private-capture rejection.");
+
+            string project = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "KingmakerGunslinger.csproj"));
+            string loader = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Assets", "PteranodonAssetRuntime.cs"));
+            string view = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Summoning",
+                "ExpandedSummoningPteranodonViewPatch.cs"));
+            string runtime = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "RuntimeTestRunner.cs"));
+            Assertions.True(project.Contains("assets\\sprint12-quadrupeds\\*-mesh.json") &&
+                project.Contains("assets\\sprint12-quadrupeds\\*-albedo.png") &&
+                loader.Contains("ConfigureSprint12Quadrupeds(context)") &&
+                loader.Contains("AllowedDogBones") &&
+                loader.Contains("AllowedWolfWorgBones") &&
+                loader.Contains("TryGetSprint12QuadrupedVisual") &&
+                view.Contains("Sprint12QuadrupedKeys.Contains(attachment.VisualKey)") &&
+                view.Contains("KMG_\" + attachment.VisualKey + \"_Original") &&
+                view.Contains("Revert(attachment)") &&
+                view.Contains("HandlesBlueprintName") &&
+                !view.Contains("\"KMG_Summoning_Unit_Dog\",") &&
+                !project.Contains("sprint12-dog-bind-rig.json") &&
+                !project.Contains("sprint12-wolf-bind-rig.json") &&
+                !project.Contains("sprint12-worg-bind-rig.json"),
+                "Three originals use the instance-local swap and native Dog remains an unpackaged donor control.");
+            Assertions.True(runtime.Contains("int sprint12VisualChecked = 0;") &&
+                runtime.Contains("variant.Creature.Key == \"dire-rat\"") &&
+                runtime.Contains("sprint12VisualAttached == sprint12VisualChecked") &&
+                runtime.Contains("ungulateVisualChecked + sprint12VisualChecked"),
+                "The shared visual-patch lifecycle assertion must account for every hidden Sprint 12 coverage view.");
+
+            string build = File.ReadAllText(Path.Combine(root, "scripts",
+                "Build-Local.ps1"));
+            string package = File.ReadAllText(Path.Combine(root, "scripts",
+                "package.ps1"));
+            Assertions.True(build.Contains("assets\\sprint12-quadrupeds") &&
+                package.Contains("assets\\sprint12-quadrupeds") &&
+                build.Contains("{ 282 } else { 280 }") &&
+                package.Contains("{ 282 } else { 280 }"),
+                "All six quadruped asset files enter the strict standalone package.");
+        }
+
+        private static string Sha256(string path)
+        {
+            using (var sha = SHA256.Create())
+                return string.Concat(sha.ComputeHash(File.ReadAllBytes(path))
+                    .Select(value => value.ToString("x2")));
         }
 
         internal static void NativeCanidAndRatSurveyStaysMetadataOnly()

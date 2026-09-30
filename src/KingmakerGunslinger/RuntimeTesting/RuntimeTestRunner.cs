@@ -362,6 +362,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal string Sprint12DiseaseQuantityDetail;
             internal bool Sprint12DonorRigs;
             internal string Sprint12DonorRigsDetail;
+            internal bool Sprint12OriginalVisuals;
+            internal string Sprint12OriginalVisualsDetail;
             internal bool HostileAbilityTarget;
             internal int AdditionalCasts;
             internal readonly List<string> Diagnostics = new List<string>();
@@ -16986,6 +16988,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             int patchOutcomesAfterCoverage = -1;
             int ungulateVisualChecked = 0;
             int ungulateVisualAttached = 0;
+            int sprint12VisualChecked = 0;
+            int sprint12VisualAttached = 0;
             BlueprintScriptableObject[] blueprints = BlueprintBootstrap.Library
                 .GetAllBlueprints().Where(value => value != null).ToArray();
             BlueprintFeature direBatSense = blueprints.OfType<BlueprintFeature>()
@@ -17443,6 +17447,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ungulateVisualAttached++;
                         }
                     }
+                    else if (variant.Creature.Key == "dire-rat" ||
+                        variant.Creature.Key == "hyena" ||
+                        variant.Creature.Key == "goblin-dog")
+                    {
+                        foreach (UnitEntityData unit in spawned)
+                        {
+                            if (unit == null || unit.View == null) continue;
+                            sprint12VisualChecked++;
+                            string outcome = ExpandedSummoningPteranodonViewPatch
+                                .DescribeView(unit.View);
+                            if (outcome.StartsWith("visual:attached;",
+                                    StringComparison.Ordinal))
+                                sprint12VisualAttached++;
+                        }
+                    }
                     else if (PteranodonDonorSharers.Contains(variant.Creature.Key))
                     {
                         // Isolation: the creatures that share the GiantEagle
@@ -17716,6 +17735,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         mechanics.Sprint12DonorRigsDetail,
                     mechanics != null && mechanics.Sprint12DonorRigs,
                     "three request-local summoned views, their SkinnedMeshRenderer bones and shared-mesh bind poses, and private evidence files"),
+                Assertion("expanded-summoning-sprint12-original-visuals",
+                    "Dire Rat, Hyena and Goblin Dog use their exact original project meshes while Dog remains a separate native-visual choice",
+                    mechanics == null ? "not-run" :
+                        mechanics.Sprint12OriginalVisualsDetail,
+                    mechanics != null && mechanics.Sprint12OriginalVisuals,
+                    "live hidden direct and quantity summon views, exact instance-local mesh names, and the VisualKeys exclusion for Dog"),
                 Assertion("expanded-summoning-disposable-cleanup",
                     "exact party and global-unit snapshots restored", observed,
                     cleaned, "per-cast UnitEntityData.Dispose and final exact snapshots"),
@@ -17833,7 +17858,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             _pteranodonVisualOutcomes.Count +
                                 _direBatVisualChecked + _eagleVisualChecked +
                                 _giantWaspVisualChecked + _stirgeVisualChecked +
-                                ungulateVisualChecked &&
+                                ungulateVisualChecked + sprint12VisualChecked &&
+                        sprint12VisualAttached == sprint12VisualChecked &&
                         pteranodonAttachedClean,
                     "one patch outcome per attached view; per-cast cleanup is enforced by the cast loop itself"),
                 Assertion("expanded-summoning-stirge-visual-attached",

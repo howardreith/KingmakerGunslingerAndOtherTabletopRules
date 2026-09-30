@@ -1,5 +1,27 @@
 # Expanded Summoning Phase 2 autonomous state
 
+## 0.0.141 release boundary, 2026-09-30
+
+The owner directed a near-term checkpoint release rather than continuing the
+entire Sprints 9-21 mission in one run. Version 0.0.141 therefore closes at
+the fully qualified Sprint 11 boundary. Sprints 9-11 publish 882 generated
+choices plus 29 retained native wrappers, for 911 visible choices. Owner
+visual review remains `NOT_PERFORMED_NONBLOCKING`.
+
+Sprint 12 remains development-only. All 68 Dire Rat, Dog, Hyena and Goblin
+Dog placements are suppressed even though the injury-disease mechanics and
+direct/quantity attachment of the original quadruped views have focused
+passing evidence. Player paths, persistence, compatibility, movement/contact,
+natural expiry, module-disabled behavior, inventory and the full internal
+visual matrix remain open. Resume from this hidden state after the 0.0.141
+checkpoint; do not treat the release as Sprint 12 publication.
+
+The final pre-release guarded candidate run
+`20260930T1626175528422Z-disposable-expanded-summoning` passed 41/41 and
+restoration `20260930T1630580562591Z-disposable-expanded-summoning.json`
+returned the exact live installation tree. Repository validation, all 1,958
+domain tests, clean Release and strict package validation preceded that run.
+
 ## Sprint 12 private donor bind frames, 2026-09-30
 
 The hidden Sprint 12 fixture now records geometry-free renderer-local bind
