@@ -1,11 +1,20 @@
 ﻿{
     "schemaVersion":  1,
-    "count":  99,
+    "count":  100,
     "icons":  [
                   {
                       "key":  "dog",
                       "file":  "dog.png",
                       "sha256":  "808dfd384d81b6128b7e8ab641e4175addf2997bcca523568c38652cdf015124",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "dire-rat",
+                      "file":  "dire-rat.png",
+                      "sha256":  "8942e8ad6fa190bb64135247718584c6d7b171c33bf37b7f3d1796fa87e2d00c",
                       "width":  128,
                       "height":  128,
                       "format":  "RGBA PNG",

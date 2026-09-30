@@ -1,8 +1,8 @@
 # Sprint 12 canine and small-quadruped rules and donor audit
 
-Status: intake complete; implementation remains hidden until mechanical,
-visual, quantity, player-path, persistence, compatibility, and restoration
-qualification pass.
+Status: intake and hidden foundation complete; implementation remains hidden
+until mechanical, visual, quantity, player-path, persistence, compatibility,
+and restoration qualification pass.
 
 ## Tabletop contract
 
@@ -107,3 +107,31 @@ is disclosed in the player text and fidelity record.
 - Direct and 1d4+1 placements must preserve per-unit mechanics, independent
   targets, collision/navigation, dismissal/expiry cleanup, save/load, module
   disable, and optional-mod compatibility without cross-unit state.
+
+## Hidden foundation checkpoint
+
+The 2026-09-30 foundation appends 37 Dire Rat identities after the preserved
+2,609-entry ledger: one unit, 18 logical placements, and 18 celestial or
+fiendish execution children. The current manifest contains 2,646 identities,
+of which 2,644 are active and two remain reserved. The runtime catalog now
+registers 900 logical placements and deliberately suppresses 68 placements
+belonging only to Dire Rat, Dog, Hyena, and Goblin Dog. The other 832 generated
+placements remain published. This is a development boundary, not mechanical
+or visual qualification.
+
+The original Dire Rat painting and its deterministic export are recorded in
+`assets-source/original-icons/expanded-summoning/PHASE2-SPRINT12-SOURCES.md`.
+Its 37 exact family-share consumers are manifest-backed, but the icon has not
+yet passed live menu or owner visual review. Dog, Hyena, and Goblin Dog retain
+their existing icon records while hidden; their creature visuals still require
+the Sprint 12 disposition above.
+
+Repository validation passed, the complete Release domain suite passed all
+1,955 tests, the clean Release build passed, and the strict standalone package
+validator accepted the 276-file package. The package SHA-256 is
+`691ECC757FA3DEB436AA2CAAE2E4EF64410BD76486B0F87CBDF96276B19B3E96`;
+the built DLL SHA-256 is
+`8A01E5E1E4E4B3FBEE98952F6B5F39C37AFE275D086D2BCC3A37631541C94582`.
+No new Kingmaker launch was used to qualify this hidden metadata checkpoint.
+The earlier guarded donor audit remains the runtime authority for the selected
+native Dog rig, Filth Fever payload, and exact Goblin unit-type adaptation.

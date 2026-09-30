@@ -37,7 +37,7 @@ namespace KingmakerGunslinger.Summoning
         private static SummonDonorSpec[] Build()
         {
             return Parse(new[] {
-                "dog|76597216769b0d540aafafa07edf0cec|1", "eagle|406c1e1af5400ac4881e330502ccbd9e|0", "poisonous-frog|30080a8d8ae40bb43aca496b11b74c6b|0", "pony|3f95557fc806db741b500a5735990841|1",
+                "dire-rat|77f3f2ddf1ec2da45ab956c433e3b557|1", "dog|77f3f2ddf1ec2da45ab956c433e3b557|1", "eagle|406c1e1af5400ac4881e330502ccbd9e|0", "poisonous-frog|30080a8d8ae40bb43aca496b11b74c6b|0", "pony|3f95557fc806db741b500a5735990841|1",
                 "giant-centipede|2f65fd8032e5182418ee83dd4f7858dd|0", "wolf|76597216769b0d540aafafa07edf0cec|1", "giant-frog|1ed9a630f0d9d7f44855d3d1d1b2cdf2|1", "giant-spider|9e120b5e0ad3c794491c049aa24b9fde|1",
                 "small-air-elemental|04944455200bc224d955a8e9bbd64f3f|1", "small-earth-elemental|651600a51edd20141adb67696986c582|1", "small-fire-elemental|46cede83b1f34ad4fa46b8776e352b02|1", "small-water-elemental|56372b0a2749c224392a5ee74105c534|1", "goblin-dog|313a17cbd273d1f40bd1654ee2ae186e|0", "hyena|76597216769b0d540aafafa07edf0cec|1", "horse|5bb9579fdb2b26b48bb10d61c81cfdfb|1",
                 "boar|5f968d63d756f994ebff0d774e88e4ab|0", "leopard|768275c9885dd954fb3c84ba69ac4281|1", "monitor-lizard|4109b40f6bbb49640840644cc84ada67|1", "cheetah|768275c9885dd954fb3c84ba69ac4281|1", "crocodile|4109b40f6bbb49640840644cc84ada67|1", "dire-bat|406c1e1af5400ac4881e330502ccbd9e|0", "wolverine|313a17cbd273d1f40bd1654ee2ae186e|0", "lantern-archon|24719a49b84c5cd43b894268d22d9c89|0",
