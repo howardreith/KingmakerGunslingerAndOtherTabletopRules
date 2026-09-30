@@ -360,6 +360,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal string Sprint12GoblinDogAllergyDetail;
             internal bool Sprint12DiseaseQuantity;
             internal string Sprint12DiseaseQuantityDetail;
+            internal bool Sprint12DonorRigs;
+            internal string Sprint12DonorRigsDetail;
             internal bool HostileAbilityTarget;
             internal int AdditionalCasts;
             internal readonly List<string> Diagnostics = new List<string>();
@@ -17708,6 +17710,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         mechanics.Sprint12DiseaseQuantityDetail,
                     mechanics != null && mechanics.Sprint12DiseaseQuantity,
                     "live 1d4+1 summons, independent natural attacks, source contexts, and paired victim buffs"),
+                Assertion("expanded-summoning-sprint12-donor-rigs",
+                    "live hidden Sprint 12 summons expose exact Dog, Wolf and Worg renderer-local bind frames for original-mesh authoring",
+                    mechanics == null ? "not-run" :
+                        mechanics.Sprint12DonorRigsDetail,
+                    mechanics != null && mechanics.Sprint12DonorRigs,
+                    "three request-local summoned views, their SkinnedMeshRenderer bones and shared-mesh bind poses, and private evidence files"),
                 Assertion("expanded-summoning-disposable-cleanup",
                     "exact party and global-unit snapshots restored", observed,
                     cleaned, "per-cast UnitEntityData.Dispose and final exact snapshots"),
@@ -18308,7 +18316,8 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 ResetExpandedSummoningMechanicalHostile(hostile, blueprints);
                 ExerciseExpandedSummoningSprint12DiseasePack(blueprints,
-                    caster, hostile, scene, created, result);
+                    caster, hostile, scene, created, result,
+                    _request.EvidenceDirectory);
 
                 result.RepresentativeCombat = animalAttack && proxyAttack &&
                     elementalAttack && stalkerAttack && shadowAttack &&

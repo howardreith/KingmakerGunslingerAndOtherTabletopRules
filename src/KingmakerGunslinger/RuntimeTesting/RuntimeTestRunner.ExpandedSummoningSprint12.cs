@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Kingmaker;
 using Kingmaker.Blueprints;
@@ -17,6 +18,8 @@ using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Summoning;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace KingmakerGunslinger.RuntimeTesting
@@ -28,7 +31,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData hostile,
             Kingmaker.EntitySystem.SceneEntitiesState scene,
             List<UnitEntityData> created,
-            ExpandedSummoningMechanicalEvidence evidence)
+            ExpandedSummoningMechanicalEvidence evidence,
+            string evidenceDirectory)
         {
             BlueprintBuff filthFever = blueprints.OfType<BlueprintBuff>()
                 .Single(value => value.AssetGuid ==
@@ -76,6 +80,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     blueprints, caster, SummonFamily.NaturesAlly, "dire-rat", 1,
                     created, evidence);
                 RemoveExpandedSummoningAppearanceBuffs(direRat);
+                string dogRig = CaptureSprint12DonorRig(direRat, "dog",
+                    evidenceDirectory);
+                UnitEntityData hyena = CastExpandedSummoningCombatUnit(
+                    blueprints, caster, SummonFamily.NaturesAlly, "hyena", 2,
+                    created, evidence);
+                RemoveExpandedSummoningAppearanceBuffs(hyena);
+                string wolfRig = CaptureSprint12DonorRig(hyena, "wolf",
+                    evidenceDirectory);
                 hostile.Descriptor.Stats.SaveFortitude.BaseValue = -100;
                 RemoveSprint12Buff(hostile, filthFever);
                 bool direRatHit = ExerciseExpandedSummoningAttack(direRat,
@@ -137,6 +149,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     blueprints, caster, SummonFamily.NaturesAlly, "goblin-dog",
                     2, created, evidence);
                 RemoveExpandedSummoningAppearanceBuffs(goblinDog);
+                string worgRig = CaptureSprint12DonorRig(goblinDog, "worg",
+                    evidenceDirectory);
+                evidence.Sprint12DonorRigs = dogRig.StartsWith("dog:",
+                        StringComparison.Ordinal) &&
+                    wolfRig.StartsWith("wolf:", StringComparison.Ordinal) &&
+                    worgRig.StartsWith("worg:", StringComparison.Ordinal);
+                evidence.Sprint12DonorRigsDetail = dogRig + ";" + wolfRig +
+                    ";" + worgRig;
                 RuleApplyBuff reactionImmunity = ApplySprint12Buff(goblinDog,
                     reaction, hostile,
                     TimeSpan.FromSeconds(
@@ -393,6 +413,76 @@ namespace KingmakerGunslinger.RuntimeTesting
                 throw new InvalidOperationException(
                     "Missing Sprint 12 disease delivery on " + featureName + ".");
             return result;
+        }
+
+        /// <summary>Records only renderer-local bind frames needed to author
+        /// project-owned silhouettes. Native vertices, triangles, materials,
+        /// textures and animation data never enter the evidence or repository.</summary>
+        private static string CaptureSprint12DonorRig(UnitEntityData summon,
+            string donorKey, string evidenceDirectory)
+        {
+            if (summon == null || summon.View == null ||
+                string.IsNullOrWhiteSpace(evidenceDirectory))
+                throw new InvalidOperationException("The Sprint 12 " + donorKey +
+                    " bind-rig capture has no live view or evidence directory.");
+            SkinnedMeshRenderer[] renderers = summon.View
+                .GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                .Where(value => value != null && value.sharedMesh != null)
+                .ToArray();
+            if (renderers.Length == 0)
+                throw new InvalidOperationException("The Sprint 12 " + donorKey +
+                    " donor view has no skinned renderer.");
+            var document = new JObject {
+                ["source"] = "request-local hidden Sprint 12 " + donorKey +
+                    " donor view",
+                ["space"] = "renderer-local bind frame",
+                ["blueprint"] = summon.Blueprint.name
+            };
+            var entries = new JArray();
+            foreach (SkinnedMeshRenderer renderer in renderers)
+            {
+                Transform[] bones = renderer.bones ?? new Transform[0];
+                Matrix4x4[] poses = renderer.sharedMesh.bindposes ??
+                    new Matrix4x4[0];
+                var entry = new JObject {
+                    ["renderer"] = renderer.name,
+                    ["mesh"] = renderer.sharedMesh.name,
+                    ["vertexCount"] = renderer.sharedMesh.vertexCount,
+                    ["rootBone"] = renderer.rootBone == null ? "" :
+                        renderer.rootBone.name,
+                    ["boneCount"] = bones.Length,
+                    ["bindPoseCount"] = poses.Length
+                };
+                var capturedBones = new JArray();
+                for (int index = 0; index < bones.Length; index++)
+                {
+                    Transform bone = bones[index];
+                    if (bone == null || index >= poses.Length) continue;
+                    Matrix4x4 bind = poses[index].inverse;
+                    Vector3 position = bind.MultiplyPoint3x4(Vector3.zero);
+                    Quaternion rotation = Quaternion.LookRotation(
+                        bind.GetColumn(2), bind.GetColumn(1));
+                    capturedBones.Add(new JObject {
+                        ["index"] = index,
+                        ["name"] = bone.name,
+                        ["parent"] = bone.parent == null ? "" : bone.parent.name,
+                        ["bindPosition"] = new JArray(position.x, position.y,
+                            position.z),
+                        ["bindRotation"] = new JArray(rotation.x, rotation.y,
+                            rotation.z, rotation.w)
+                    });
+                }
+                entry["bones"] = capturedBones;
+                entries.Add(entry);
+            }
+            document["renderers"] = entries;
+            string fileName = "sprint12-" + donorKey + "-bind-rig.json";
+            File.WriteAllText(Path.Combine(evidenceDirectory, fileName),
+                document.ToString(Formatting.Indented));
+            return donorKey + ":file=" + fileName + ",renderers=" +
+                entries.Count + ",bones=" + string.Join("/",
+                    entries.OfType<JObject>().Select(value =>
+                        ((int)value["boneCount"]).ToString()).ToArray());
         }
 
         private static RuleApplyBuff ApplySprint12Buff(UnitEntityData target,
