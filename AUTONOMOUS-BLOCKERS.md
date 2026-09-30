@@ -1,5 +1,12 @@
 # Autonomous Gunslinger blockers
 
+## 2026-09-30 Expanded Summoning 0.0.141 checkpoint
+
+No active blocker prevents the owner-requested release at the end of Sprint
+11. Sprint 12 is unfinished and all 68 of its placements remain hidden; those
+remaining qualification gates are the next work cycle, not a reason to expose
+the partial sprint. No merge or history rewrite is authorized.
+
 ## 2026-09-06 0.0.115 public release verification
 
 Owner-authorized master merge/tag commit:

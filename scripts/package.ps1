@@ -25,7 +25,7 @@ $outputDirectory = Join-Path $repositoryRoot "artifacts\bin\$Configuration\Kingm
 $stagingDirectory = Join-Path $repositoryRoot 'artifacts\staging\install'
 $modDirectory = Join-Path $stagingDirectory $info.Id
 $packagesDirectory = Join-Path $repositoryRoot 'artifacts\packages'
-$packagePath = Join-Path $packagesDirectory "$($info.Id)-$($info.Version)-favored-class-integration.zip"
+$packagePath = Join-Path $packagesDirectory "$($info.Id)-$($info.Version)-expanded-summoning-phase2a.zip"
 $checksumPath = "$packagePath.sha256"
 
 if (Test-Path -LiteralPath $stagingDirectory) {
@@ -103,6 +103,15 @@ if (Test-Path -LiteralPath $ungulateSource -PathType Container) {
         Copy-Item -LiteralPath (Join-Path $ungulateSource "$kind-albedo.png") -Destination $ungulateDestination
     }
 }
+$sprint12QuadrupedSource = Join-Path $outputDirectory 'assets\sprint12-quadrupeds'
+if (Test-Path -LiteralPath $sprint12QuadrupedSource -PathType Container) {
+    $sprint12QuadrupedDestination = Join-Path $modDirectory 'assets\sprint12-quadrupeds'
+    New-Item -ItemType Directory -Path $sprint12QuadrupedDestination -Force | Out-Null
+    foreach ($kind in @('dire-rat','hyena','goblin-dog')) {
+        Copy-Item -LiteralPath (Join-Path $sprint12QuadrupedSource "$kind-mesh.json") -Destination $sprint12QuadrupedDestination
+        Copy-Item -LiteralPath (Join-Path $sprint12QuadrupedSource "$kind-albedo.png") -Destination $sprint12QuadrupedDestination
+    }
+}
 $soundBankSource=Join-Path $repositoryRoot 'assets\soundbanks'
 if(Test-Path -LiteralPath (Join-Path $soundBankSource 'KMG_Firearms.bnk') -PathType Leaf){
     $soundBankDestination=Join-Path $modDirectory 'assets\soundbanks'
@@ -121,10 +130,10 @@ if (Test-Path -LiteralPath $checksumPath) {
 $python = (Get-Command python -ErrorAction Stop).Source
 $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
     'assets\soundbanks\KMG_Firearms.bnk') -PathType Leaf
-# Existing 135-file package plus 89 original elemental/strategic paintings,
-# the 3 composed strategic scroll item icons, the Pteranodon mesh data with its
-# painted albedo, and the prepared Sprint 12 Dire Rat icon.
-$expectedPackageFileCount = if ($hasFirearmSoundBank) { 276 } else { 274 }
+# Strict package inventory including the six reviewed Sprint 12 quadruped
+# mesh/painting files. The soundbank and its manifest account for the optional
+# two-file difference.
+$expectedPackageFileCount = if ($hasFirearmSoundBank) { 282 } else { 280 }
 & $python (Join-Path $repositoryRoot 'tools\create_deterministic_package.py') `
     --source $modDirectory --output $packagePath `
     --expected-file-count $expectedPackageFileCount

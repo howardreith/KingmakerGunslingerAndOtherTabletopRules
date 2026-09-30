@@ -7,7 +7,7 @@ $ErrorActionPreference = 'Stop'
 
 $base = @{
     Scenario = 'working-save-expanded-summoning-creature-review'
-    ExpectedVersion = '0.0.140'
+    ExpectedVersion = '0.0.141'
     TimeoutSeconds = 1200
     CatalogTimeoutSeconds = 180
     SelectionTimeoutSeconds = 300

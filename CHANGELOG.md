@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased Expanded Summoning Phase 2A
+## 0.0.141-expanded-summoning-phase2a
 
 - Sprint 9 Eagle and Dire Bat visual, sense, motion and guarded runtime
   qualification is complete internally; owner visual review remains pending.
@@ -22,9 +22,11 @@
   Tramples, and the rhinoceroses retain printed Powerful Charge. Corrected
   hooves/legs, direct and quantity combat, both turn modes, player paths,
   save/load cleanup and the 882-root live inventory passed internal review.
-  Owner visual review remains pending. The remaining Phase 2 creatures are
-  still in progress. No public version, release or permanent installation is
-  authorized.
+  Owner visual review remains pending and is nonblocking for this checkpoint.
+- This release stops at the fully qualified Sprint 11 boundary. All 68 Sprint
+  12 Dire Rat, Dog, Hyena and Goblin Dog placements remain hidden. Their
+  checked-in rules and original visual groundwork are retained for the next
+  development cycle and are not presented as published creatures.
 
 ## 0.0.140-favored-class-integration
 
