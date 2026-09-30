@@ -69,7 +69,7 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Values.Length != 40 || Values.Select(value => value.Key)
+            if (Values.Length != 41 || Values.Select(value => value.Key)
                     .Distinct(StringComparer.Ordinal).Count() != Values.Length)
                 throw new InvalidOperationException(
                     "The natural reconstruction catalog is incomplete or duplicated.");
@@ -99,6 +99,13 @@ namespace KingmakerGunslinger.Summoning
         private static NaturalSummonProfile[] Build()
         {
             return new[] {
+                P("dire-rat", "Dire Rat", "Animal", 1, "Small",
+                    10, 17, 13, 2, 13, 4, 40, 1, "Bite1d4",
+                    Array.Empty<string>(),
+                    A("TripDefenseFourLegs", "WeaponFinesse",
+                        "SkillFocusPerception"),
+                    "Filth fever is pending the Sprint 12 injury-delivery implementation; the creature remains hidden until that exact DC 11 contract qualifies.",
+                    "The native Dog rig is a bounded locomotion donor only; an original compact rat silhouette is required before publication."),
                 P("dog", "Dog", "Animal", 1, "Small",
                     13, 13, 15, 2, 12, 6, 40, 1, "Bite1d4",
                     Array.Empty<string>(),
