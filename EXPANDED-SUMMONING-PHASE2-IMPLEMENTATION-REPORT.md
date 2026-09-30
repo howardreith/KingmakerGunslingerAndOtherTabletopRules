@@ -1,5 +1,17 @@
 # Expanded Summoning Phase 2 implementation report
 
+The 2026-09-30 Sprint 10 follow-up repaired the live quantity witness. The
+final guarded case spawned five Stirges, attached two from valid touch contact
+to distinct victims, preserved prey movement/actions, followed ordinary prey
+movement at bounded contact distance, allowed a native counterattack to kill
+only the correct Stirge, retained the other attachment and cleaned both links.
+The primary Paizo stat block explicitly limits disease exposure to one check
+per victim from a particular Stirge, so the owner order's source exception
+applies and the qualified once-per-Stirge/victim cadence remains unchanged.
+Run `20260930T0718292680849Z-disposable-expanded-summoning` passed after all
+1,952 domain tests, clean Release and strict package validation; restoration
+`20260930T0722327018583Z` recovered the original installation exactly.
+
 Status: Sprints 9, 10 and 11 are internally technically qualified. Stirge's
 nine SNA I-IX choices remain published after the 2026-09-29 correction, and
 all 48 Aurochs, Bison, Rhinoceros and Woolly Rhinoceros placements are now

@@ -1,5 +1,43 @@
 # Expanded Summoning Phase 2 autonomous state
 
+## Sprint 10 quantity-witness correction, 2026-09-30
+
+The final source-correct candidate repaired the Stirge quantity fixture without
+changing the qualified attachment implementation. The fixture now removes the
+second victim's summon-appearance state, stages both Stirges at real touch
+contact on each victim's current floor, advances one victim through an ordinary
+movement step rather than the teleport API, and verifies owner follow before
+the victim kills only its own Stirge. Guarded run
+`20260930T0718292680849Z-disposable-expanded-summoning` passed: five quantity
+Stirges spawned, two kept independent victim/action links, the prey remained
+free to move and act, follow retained a 0.60 m horizontal contact offset, the
+native melee counterattack killed the correct Stirge, the other link remained
+intact, four actual Constitution drains detached automatically, and cleanup
+left no residue.
+
+The owner order made per-drain disease rolls conditional on the absence of a
+primary source limiting exposure. The primary Paizo Stirge stat block at
+`https://legacy.aonprd.com/bestiary/stirge.html` explicitly says that after
+the 10% exposure check the victim cannot be infected by that particular
+Stirge. Production therefore correctly retains one disease check per
+Stirge/victim after actual Constitution damage; zero damage does not consume
+the check. The final run observed `repeatCheck=False`, one checked victim and
+the disclosed native Filth Fever adaptation.
+
+The exact candidate passed repository validation, all 1,952 domain tests,
+clean Release and strict package validation before the guarded run. Package
+SHA-256 is
+`7B8525285BAFF7B33D130CC8F91494229A992EBB69470779E680C245C7BDAC76`;
+DLL SHA-256 is
+`2140EDBC66C5007069F3DC6B5E50AC3661539A5EB3CD8BB914C8A835CF2B20B2`.
+Runtime result/evidence hashes are
+`1F0F084D937A6ED4F620789B3E90AB542628360152591F4D8C9A7C010A1A48B3`
+and `C3D97DA6F3BB8BE2305A294818C2AEDE6682BA91A200AC5367440D7FCE4E0866`.
+Restoration record
+`20260930T0722327018583Z-disposable-expanded-summoning.json` restored the
+original 136-file installation at SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+
 ## Current checkpoint: Sprint 11 qualified and published, 2026-09-30
 
 Branch `codex/expanded-summoning-phase2a-sprints9-13`, draft PR #25;
