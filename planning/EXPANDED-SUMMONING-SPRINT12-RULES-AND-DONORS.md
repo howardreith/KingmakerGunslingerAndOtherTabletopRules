@@ -137,3 +137,34 @@ the built DLL SHA-256 is
 No new Kingmaker launch was used to qualify this hidden metadata checkpoint.
 The earlier guarded donor audit remains the runtime authority for the selected
 native Dog rig, Filth Fever payload, and exact Goblin unit-type adaptation.
+
+## Hidden original-view checkpoint
+
+The 2026-09-30 continuation adds deterministic editable meshes and albedos for
+Dire Rat, Hyena and Goblin Dog. Dog continues to use the audited native Dog
+rig. The project-owned exports attach through renderer-local patches without
+mutating the source donor assets or animal-companion state. Exact export
+SHA-256 values are:
+
+- Dire Rat mesh `2EE73D1B1677F5947BDA44F5D3A90B25D16302D7F43D046D601A3E1866C1633A`
+  and albedo `FB6186FBE9DCB7160A4D7B76281FD6A0BAF04A829295F03821BB69DE61589030`.
+- Hyena mesh `1C68A639D0B3FB2FD9E6691DDE43EC41C897B61FB38C45CF8B24CA387F439D0F`
+  and albedo `15927CBDC347044D44B2C1578B124C8075B9BB7C5CE82AB2CF77C05E6E5AE50`.
+- Goblin Dog mesh `0974ECDF204C8B0D8D89B382C7B8B0B1460B4A537E9D823B1C2FD248DC73A4A`
+  and albedo `B7FCC8D69A8D3557BD6709D962567259E93937758634BF89BD47E3EA51F626A`.
+
+Guarded run `20260930T1626175528422Z-disposable-expanded-summoning` passed
+41/41 assertions for direct and quantity attachment of the three original
+views, native Dog retention, shared view lifecycle and exact cleanup. The
+runtime result/evidence SHA-256 values are
+`3351CBB24DF11FA01317D2FA50B640E96F8648928F23069AE09FB07BC01AD462`
+and `049CBB9CA32634C40BE1AE707AABBFAB985593628A5691DC13462C9B744E7FC1`.
+Restoration record
+`20260930T1630580562591Z-disposable-expanded-summoning.json`, SHA-256
+`CA468E81FBCF9052BD0A77C4BE026EEBE0550FCFCA06FBE173429C3716D96749`,
+restored the original live tree exactly.
+
+All 68 Sprint 12 placements remain suppressed. Direct/quantity player paths,
+RTWP/turn-based movement and contact, natural expiry, save/load, module
+disable, compatibility, published inventory and complete internal motion and
+quantity review remain required before publication.

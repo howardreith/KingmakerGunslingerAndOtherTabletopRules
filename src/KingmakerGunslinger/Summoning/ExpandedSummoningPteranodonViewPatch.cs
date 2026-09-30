@@ -60,6 +60,12 @@ namespace KingmakerGunslinger.Summoning
             "KMG_Summoning_Unit_Rhinoceros";
         internal const string WoollyRhinocerosBlueprintName =
             "KMG_Summoning_Unit_WoollyRhinoceros";
+        internal const string DireRatBlueprintName =
+            "KMG_Summoning_Unit_DireRat";
+        internal const string HyenaBlueprintName =
+            "KMG_Summoning_Unit_Hyena";
+        internal const string GoblinDogBlueprintName =
+            "KMG_Summoning_Unit_GoblinDog";
         /// <summary>
         /// The name carried by the private mesh and material the swap installs;
         /// observers recognise the attached state by it.
@@ -80,12 +86,23 @@ namespace KingmakerGunslinger.Summoning
                 { AurochsBlueprintName, "aurochs" },
                 { BisonBlueprintName, "bison" },
                 { RhinocerosBlueprintName, "rhinoceros" },
-                { WoollyRhinocerosBlueprintName, "woolly-rhinoceros" }
+                { WoollyRhinocerosBlueprintName, "woolly-rhinoceros" },
+                { DireRatBlueprintName, "dire-rat" },
+                { HyenaBlueprintName, "hyena" },
+                { GoblinDogBlueprintName, "goblin-dog" }
             };
         private static readonly HashSet<string> UngulateKeys =
             new HashSet<string>(StringComparer.Ordinal)
             { "aurochs", "bison", "rhinoceros", "woolly-rhinoceros" };
+        private static readonly HashSet<string> Sprint12QuadrupedKeys =
+            new HashSet<string>(StringComparer.Ordinal)
+            { "dire-rat", "hyena", "goblin-dog" };
         private const string MainTexture = "_MainTex";
+
+        internal static bool HandlesBlueprintName(string blueprintName)
+        {
+            return blueprintName != null && VisualKeys.ContainsKey(blueprintName);
+        }
 
         /// <summary>
         /// Fault injection for the guarded fallback drill. When set, it runs at
@@ -161,8 +178,17 @@ namespace KingmakerGunslinger.Summoning
         internal static bool TryGetDonorRig(UnitEntityView view,
             out Transform[] bones, out Matrix4x4[] bindposes)
         {
+            Mesh ignored;
+            return TryGetDonorRig(view, out bones, out bindposes, out ignored);
+        }
+
+        internal static bool TryGetDonorRig(UnitEntityView view,
+            out Transform[] bones, out Matrix4x4[] bindposes,
+            out Mesh originalMesh)
+        {
             bones = null;
             bindposes = null;
+            originalMesh = null;
             Attachment attachment;
             if (view == null || !Applied.TryGetValue(view, out attachment) ||
                 attachment.Mesh == null || attachment.OriginalMesh == null ||
@@ -170,6 +196,7 @@ namespace KingmakerGunslinger.Summoning
                 return false;
             bones = attachment.OriginalBones;
             bindposes = attachment.OriginalMesh.bindposes;
+            originalMesh = attachment.OriginalMesh;
             return true;
         }
 
@@ -243,6 +270,14 @@ namespace KingmakerGunslinger.Summoning
                     out albedo, out status))
                     return Fallback(status);
             }
+            else if (Sprint12QuadrupedKeys.Contains(attachment.VisualKey))
+            {
+                string status;
+                if (!PteranodonAssetRuntime.TryGetSprint12QuadrupedVisual(
+                    attachment.VisualKey, out source, out boneNames,
+                    out albedo, out status))
+                    return Fallback(status);
+            }
             else
             {
                 if (!PteranodonAssetRuntime.TryGetMembrane(out source,
@@ -297,8 +332,10 @@ namespace KingmakerGunslinger.Summoning
                     ? DireBatVisualName : attachment.VisualKey == "eagle"
                         ? EagleVisualName : attachment.VisualKey == "giant-wasp"
                             ? GiantWaspVisualName : attachment.VisualKey == "stirge"
-                                ? StirgeVisualName : UngulateKeys.Contains(
-                                    attachment.VisualKey)
+                                ? StirgeVisualName : (UngulateKeys.Contains(
+                                    attachment.VisualKey) ||
+                                    Sprint12QuadrupedKeys.Contains(
+                                        attachment.VisualKey))
                                     ? "KMG_" + attachment.VisualKey + "_Original"
                                     : CustomVisualName;
                 mesh.name = visualName;
@@ -474,7 +511,9 @@ namespace KingmakerGunslinger.Summoning
             if (view == null || !Applied.TryGetValue(view, out attachment) ||
                 (attachment.VisualKey != "giant-wasp" &&
                  attachment.VisualKey != "stirge" &&
-                 !UngulateKeys.Contains(attachment.VisualKey))) return;
+                 !UngulateKeys.Contains(attachment.VisualKey) &&
+                 !Sprint12QuadrupedKeys.Contains(
+                    attachment.VisualKey))) return;
             string visualName = attachment.VisualKey == "stirge"
                 ? StirgeVisualName : attachment.VisualKey == "giant-wasp"
                     ? GiantWaspVisualName

@@ -157,6 +157,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     worgRig.StartsWith("worg:", StringComparison.Ordinal);
                 evidence.Sprint12DonorRigsDetail = dogRig + ";" + wolfRig +
                     ";" + worgRig;
+                bool direRatVisual = DescribeSprint12OriginalVisual(direRat,
+                    "dire-rat", out string direRatVisualDetail);
+                bool hyenaVisual = DescribeSprint12OriginalVisual(hyena,
+                    "hyena", out string hyenaVisualDetail);
+                bool goblinDogVisual = DescribeSprint12OriginalVisual(goblinDog,
+                    "goblin-dog", out string goblinDogVisualDetail);
+                evidence.Sprint12OriginalVisuals = direRatVisual &&
+                    hyenaVisual && goblinDogVisual;
+                evidence.Sprint12OriginalVisualsDetail = "direct[" +
+                    direRatVisualDetail + ";" + hyenaVisualDetail + ";" +
+                    goblinDogVisualDetail + "]";
                 RuleApplyBuff reactionImmunity = ApplySprint12Buff(goblinDog,
                     reaction, hostile,
                     TimeSpan.FromSeconds(
@@ -364,6 +375,30 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ";dogs=" + dogs.Length + ";attacks=[" +
                     dogQuantityFirst + "][" + dogQuantitySecond +
                     "];isolated=" + dogIsolation;
+                var quantityVisuals = new List<string>();
+                bool quantityOriginals = true;
+                foreach (UnitEntityData rat in rats)
+                {
+                    bool valid = DescribeSprint12OriginalVisual(rat,
+                        "dire-rat", out string detail);
+                    quantityOriginals &= valid;
+                    quantityVisuals.Add(detail);
+                }
+                foreach (UnitEntityData dog in dogs)
+                {
+                    bool valid = DescribeSprint12OriginalVisual(dog,
+                        "goblin-dog", out string detail);
+                    quantityOriginals &= valid;
+                    quantityVisuals.Add(detail);
+                }
+                bool dogNativeVisual = !ExpandedSummoningPteranodonViewPatch
+                    .HandlesBlueprintName("KMG_Summoning_Unit_Dog");
+                evidence.Sprint12OriginalVisuals &= quantityOriginals &&
+                    dogNativeVisual;
+                evidence.Sprint12OriginalVisualsDetail += ";quantity[" +
+                    string.Join("|", quantityVisuals.ToArray()) +
+                    "];nativeDogMapped=" +
+                    !dogNativeVisual;
             }
             finally
             {
@@ -415,6 +450,26 @@ namespace KingmakerGunslinger.RuntimeTesting
             return result;
         }
 
+        private static bool DescribeSprint12OriginalVisual(UnitEntityData unit,
+            string key, out string detail)
+        {
+            string outcome = unit == null || unit.View == null ? "no-view" :
+                ExpandedSummoningPteranodonViewPatch.DescribeView(unit.View);
+            SkinnedMeshRenderer[] renderers = unit == null || unit.View == null ?
+                new SkinnedMeshRenderer[0] : unit.View
+                    .GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                    .Where(value => value != null && value.sharedMesh != null)
+                    .ToArray();
+            string expected = "KMG_" + key + "_Original";
+            string observed = renderers.Length == 1 ?
+                renderers[0].sharedMesh.name : "count=" + renderers.Length;
+            bool valid = outcome.StartsWith("visual:attached;",
+                    StringComparison.Ordinal) && renderers.Length == 1 &&
+                string.Equals(observed, expected, StringComparison.Ordinal);
+            detail = key + "=" + observed + "/" + outcome;
+            return valid;
+        }
+
         /// <summary>Records only renderer-local bind frames needed to author
         /// project-owned silhouettes. Native vertices, triangles, materials,
         /// textures and animation data never enter the evidence or repository.</summary>
@@ -429,9 +484,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .GetComponentsInChildren<SkinnedMeshRenderer>(true)
                 .Where(value => value != null && value.sharedMesh != null)
                 .ToArray();
-            if (renderers.Length == 0)
+            if (renderers.Length != 1)
                 throw new InvalidOperationException("The Sprint 12 " + donorKey +
-                    " donor view has no skinned renderer.");
+                    " donor view has " + renderers.Length +
+                    " skinned renderers; exactly one was required.");
+            Transform[] originalBones;
+            Matrix4x4[] originalPoses;
+            Mesh originalMesh;
+            bool originalRetained = ExpandedSummoningPteranodonViewPatch
+                .TryGetDonorRig(summon.View, out originalBones,
+                    out originalPoses, out originalMesh);
             var document = new JObject {
                 ["source"] = "request-local hidden Sprint 12 " + donorKey +
                     " donor view",
@@ -441,13 +503,22 @@ namespace KingmakerGunslinger.RuntimeTesting
             var entries = new JArray();
             foreach (SkinnedMeshRenderer renderer in renderers)
             {
-                Transform[] bones = renderer.bones ?? new Transform[0];
-                Matrix4x4[] poses = renderer.sharedMesh.bindposes ??
-                    new Matrix4x4[0];
+                Transform[] bones = originalRetained ? originalBones :
+                    (renderer.bones ?? new Transform[0]);
+                Matrix4x4[] poses = originalRetained ? originalPoses :
+                    (renderer.sharedMesh.bindposes ?? new Matrix4x4[0]);
+                Mesh sourceMesh = originalRetained ? originalMesh :
+                    renderer.sharedMesh;
+                if (sourceMesh == null || bones.Length == 0 ||
+                    bones.Length != poses.Length ||
+                    bones.Any(value => value == null))
+                    throw new InvalidOperationException("The Sprint 12 " +
+                        donorKey + " donor bind frame is incomplete.");
                 var entry = new JObject {
                     ["renderer"] = renderer.name,
-                    ["mesh"] = renderer.sharedMesh.name,
-                    ["vertexCount"] = renderer.sharedMesh.vertexCount,
+                    ["mesh"] = sourceMesh.name,
+                    ["vertexCount"] = sourceMesh.vertexCount,
+                    ["retainedBeforeOriginalSwap"] = originalRetained,
                     ["rootBone"] = renderer.rootBone == null ? "" :
                         renderer.rootBone.name,
                     ["boneCount"] = bones.Length,
@@ -457,7 +528,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 for (int index = 0; index < bones.Length; index++)
                 {
                     Transform bone = bones[index];
-                    if (bone == null || index >= poses.Length) continue;
                     Matrix4x4 bind = poses[index].inverse;
                     Vector3 position = bind.MultiplyPoint3x4(Vector3.zero);
                     Quaternion rotation = Quaternion.LookRotation(

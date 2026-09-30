@@ -1,5 +1,14 @@
 # Expanded Summoning Phase 2 blocker
 
+## 0.0.141 checkpoint disposition, 2026-09-30
+
+Status: no active blocker for the owner-requested release boundary. Sprints
+9-11 are qualified for publication. Sprint 12 is incomplete by design and all
+68 of its placements remain hidden; its remaining matrix is work for the next
+development cycle rather than a blocker to 0.0.141. Do not infer permission to
+publish Sprint 12 from its passing focused mechanics or visual-attachment
+checks.
+
 ## Sprint 10: exact Stirge and Giant Wasp rules source, 2026-09-27
 
 Status: RESOLVED by the owner's standing network authorization and the

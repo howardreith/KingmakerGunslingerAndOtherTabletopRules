@@ -1,6 +1,12 @@
 # Installation, updates, removal, and compatibility
 
-Full release: `0.0.140-favored-class-integration` (UMM version `0.0.140`), archive
+Full release: `0.0.141-expanded-summoning-phase2a` (UMM version `0.0.141`),
+archive `KingmakerGunslinger-0.0.141-expanded-summoning-phase2a.zip`. It
+publishes Expanded Summoning Sprints 9-11. All 68 Sprint 12 placements remain
+hidden. See [its release notes](docs/RELEASE-NOTES-0.0.141.md).
+
+Previous full release: `0.0.140-favored-class-integration` (UMM version
+`0.0.140`), archive
 `KingmakerGunslinger-0.0.140-favored-class-integration.zip`. It adds the
 optional Favored Class integration described in
 [docs/FAVORED-CLASS-COMPATIBILITY.md](docs/FAVORED-CLASS-COMPATIBILITY.md) and

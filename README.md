@@ -1,6 +1,15 @@
 # Kingmaker Gunslinger
 
-The current full release, **0.0.140-favored-class-integration**, adds an optional
+The current full release, **0.0.141-expanded-summoning-phase2a**, publishes
+Expanded Summoning Sprints 9 through 11: Eagle, Dire Bat, Giant Wasp, Stirge,
+Aurochs, Bison, Rhinoceros and Woolly Rhinoceros. Together with the retained
+native summon wrappers, the mod now exposes 911 summon choices. Sprint 12 work
+is included only as hidden groundwork; all 68 Dire Rat, Dog, Hyena and Goblin
+Dog placements remain suppressed. Owner visual review remains pending and was
+accepted as nonblocking for this checkpoint. See the
+[release notes](docs/RELEASE-NOTES-0.0.141.md).
+
+The previous release, **0.0.140-favored-class-integration**, adds an optional
 integration with the Favored Class mod: Gunslinger and elemental-race
 favored-class options, and a Mostly Human alternate racial trait for the four
 elemental races. Favored Class stays optional, and only the exact qualified
