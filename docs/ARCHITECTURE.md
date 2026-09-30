@@ -875,10 +875,11 @@ The Wasp, Stirge and four Sprint 11 ungulate choices are published after their
 technical qualification.
 
 Sprint 12 appends 37 active Dire Rat identities: one unit, eighteen logical
-placements and eighteen celestial/fiendish execution children. The resulting
-append-only ledger contains 2646 stable IDs: 2644 active and 2 reserved. Dire
-Rat, Dog, Hyena and Goblin Dog remain publication-gated while their Sprint 12
-mechanics, distinct visuals and lifecycle are qualified.
+placements and eighteen celestial/fiendish execution children. It then appends
+the Dire Rat disease feature, Goblin Dog disease-traits feature, and Goblin Dog
+allergic-reaction buff. The resulting append-only ledger contains 2649 stable IDs: 2647 active and 2 reserved. Dire Rat, Dog, Hyena and Goblin Dog remain
+publication-gated while their Sprint 12 mechanics, distinct visuals and
+lifecycle are qualified.
 
 - **Pure policy** (`FavoredClass/`): `FavoredClassRankPolicy` (the host's
   full/partial alternation, N = fullRank + partialRank, with KMG-owned ceilings

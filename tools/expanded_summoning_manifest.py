@@ -97,7 +97,8 @@ SPECIAL_NOTES = {
     "leopard": "Animal chassis with bite and two claws plus two rake claws; pounce; bite grab by limb identity on the shared summon grapple lifecycle (a foe of its size or smaller); rake gate: a charge, or the foe held since the round began (Sprint 7; corrected 2026-09-25).",
     "tiger": "New Large animal on the leopard rig (1.25 view scale, procedural striped coat); 2d6 bite, two 1d8 claws and two 1d8 rake claws; pounce; grab with the bite and both foreclaws by limb identity on the shared lifecycle; rake gate: a charge, or the foe held since the round began (Sprint 8; corrected 2026-09-25).",
     "cheetah": "Animal chassis on the leopard rig with a procedural spotted coat at a lean view scale; trip bite; bounded once-per-summoning sprint (+30 feet for one round) with its own brain (Sprint 8).",
-    "dire-rat": "Sprint 12 Small animal profile with its printed bite and trip defense on the native Dog locomotion rig. Filth fever and its original compact rat silhouette remain qualification-gated; every Dire Rat placement stays hidden until those contracts pass.",
+    "dire-rat": "Sprint 12 Small animal profile with its printed bite and trip defense on the native Dog locomotion rig. An exact damaging bite makes the printed DC 11 Fortitude save before applying native Filth Fever. Its original compact rat silhouette and full runtime matrix remain qualification-gated; every Dire Rat placement stays hidden until those contracts pass.",
+    "goblin-dog": "Sprint 12 Medium animal profile with disease immunity and an exact damaging-bite allergic reaction (Fortitude DC 12; one nonstacking day at -2 Dexterity and -2 Charisma; positive magical healing or remove disease ends it). The disclosed bounded Kingmaker adaptation exempts only the exact native Goblin unit type because no broader Goblinoid subtype exists. Its original silhouette and full runtime matrix remain qualification-gated.",
     "lion": "Animal chassis on the leopard rig with a tawny visual tint; bite and two claws plus two rake claws; pounce; bite grab by limb identity on the shared lifecycle; rake gate: a charge, or the foe held since the round began (Sprint 7; corrected 2026-09-25).",
     "giant-wasp": "Sprint 10 Phase 2 native sting, original flying visual and dedicated Dexterity poison graph; all twelve placements published after two-mode contact, lifecycle, player-path and live-menu qualification.",
     "stirge": "Sprint 10 Phase 2 Tiny flyer with a zero-damage touch carrier and original icon; a successful touch creates a Stirge-specific session attachment while the prey remains free to move and act. Actual blood drain triggers one disclosed 10% Filth Fever exposure check per victim from that particular Stirge, as the primary Paizo stat block requires. Reload resets attachment safely instead of restoring it.",
@@ -352,8 +353,11 @@ def planned():
         ("KMG.Summoning.Special.Bison.Trample", "BlueprintAbility"),
         ("KMG.Summoning.Special.WoollyRhinoceros.Trample", "BlueprintAbility"),
         ("KMG.Summoning.Special.Stirge.Remove", "BlueprintAbility"),
+        ("KMG.Summoning.Natural.DireRat.Disease", "BlueprintFeature"),
+        ("KMG.Summoning.Natural.GoblinDog.Traits", "BlueprintFeature"),
+        ("KMG.Summoning.Natural.GoblinDog.AllergicReaction", "BlueprintBuff"),
     ))
-    if len(rows) != 1658 or len({symbol for symbol, _ in rows}) != 1658:
+    if len(rows) != 1661 or len({symbol for symbol, _ in rows}) != 1661:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 

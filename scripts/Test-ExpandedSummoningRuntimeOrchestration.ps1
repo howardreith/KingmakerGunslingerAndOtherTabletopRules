@@ -51,6 +51,21 @@ function Assert-Equal {
     $script:Passed++
 }
 
+# The outer restoration wrapper must expose the guarded harness's two stage
+# deadlines. A slow first OnUpdate must not be mistaken for a mechanical test
+# failure merely because the aggregate timeout was raised while the startup
+# watchdog silently remained at its default.
+$wrapperPath = Join-Path $ScriptRoot 'Invoke-ExpandedSummoningRuntimeScenario.ps1'
+$wrapperSource = Get-Content -LiteralPath $wrapperPath -Raw
+foreach ($contract in @(
+    '[int]$ObserverStartupTimeoutSeconds = 180',
+    '[int]$CompletionTimeoutSeconds = 180',
+    'ObserverStartupTimeoutSeconds = $ObserverStartupTimeoutSeconds',
+    'CompletionTimeoutSeconds = $CompletionTimeoutSeconds')) {
+    Assert-True ($wrapperSource.Contains($contract)) `
+        "runtime restoration wrapper must preserve stage-timeout contract: $contract"
+}
+
 $enabledSettings = '{"schemaVersion":10,"expanded-summoning":true,"gunslinger":true}'
 $disabledBytes = ConvertTo-KmgDisabledExpandedSummoningSettingsBytes `
     -OriginalBytes ([Text.Encoding]::UTF8.GetBytes($enabledSettings))

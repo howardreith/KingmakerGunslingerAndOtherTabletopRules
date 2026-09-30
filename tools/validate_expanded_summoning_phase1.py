@@ -377,6 +377,8 @@ def validate(root: Path) -> None:
         ".Stirge" in symbol or ".Aurochs" in symbol or
         ".Bison" in symbol or ".Rhinoceros" in symbol or
         ".WoollyRhinoceros" in symbol or ".DireRat" in symbol or
+        symbol == "KMG.Summoning.Natural.GoblinDog.Traits" or
+        symbol == "KMG.Summoning.Natural.GoblinDog.AllergicReaction" or
         symbol == "KMG.Summoning.Natural.StirgeTouch" or
         symbol == "KMG.Summoning.Natural.WaspSting1d8"}
     expected = sorted((symbol, planned_type) for symbol, planned_type in plan

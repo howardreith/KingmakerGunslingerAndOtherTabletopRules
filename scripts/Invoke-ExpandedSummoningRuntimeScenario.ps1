@@ -33,7 +33,12 @@ param(
     [hashtable]$ScenarioParameters = @{},
     [switch]$AllowDirtyGit,
     [switch]$ExpandedSummoningDisabled,
-    [int]$TimeoutSeconds = 120
+    [ValidateRange(5, 1800)]
+    [int]$TimeoutSeconds = 120,
+    [ValidateRange(5, 600)]
+    [int]$ObserverStartupTimeoutSeconds = 180,
+    [ValidateRange(5, 1800)]
+    [int]$CompletionTimeoutSeconds = 180
 )
 
 Set-StrictMode -Version Latest
@@ -148,6 +153,8 @@ try {
                 ExpectedVersion = $ExpectedVersion
                 Parameters = $ScenarioParameters
                 TimeoutSeconds = $TimeoutSeconds
+                ObserverStartupTimeoutSeconds = $ObserverStartupTimeoutSeconds
+                CompletionTimeoutSeconds = $CompletionTimeoutSeconds
                 ExitAfterCompletion = $true
                 Confirm = $false
             }

@@ -12,14 +12,16 @@ Run `20260930T0718292680849Z-disposable-expanded-summoning` passed after all
 1,952 domain tests, clean Release and strict package validation; restoration
 `20260930T0722327018583Z` recovered the original installation exactly.
 
-Status: Sprints 9, 10 and 11 are internally technically qualified. Stirge's
+Status: Sprints 9, 10 and 11 are internally technically qualified. Sprint 12's
+hidden disease mechanics have passed their focused live matrix, but Sprint 12
+as a whole remains incomplete and all four choices remain hidden. Stirge's
 nine SNA I-IX choices remain published after the 2026-09-29 correction, and
 all 48 Aurochs, Bison, Rhinoceros and Woolly Rhinoceros placements are now
 published after mechanics, art, quantity, player-path, persistence and
 restoration qualification. There are 882 visible generated choices and 911
 visible choices including the 29 retained native wrappers. The Phase 2A PR
-remains draft. Sprint 12 is next; Sprints 12-21 remain authorized and
-incomplete.
+remains draft. Sprint 12 visual, player-path, persistence and compatibility
+qualification is next; Sprints 12-21 remain authorized and incomplete.
 Eagle and Dire Bat passed guarded casts, player path, live inventory,
 open-floor and room-opening movement, exact-hostile native combat in RTWP
 and turn-based mode, visual impact contact, save/load/expiry, module-disabled
@@ -797,3 +799,25 @@ records four clean launches and exact recovery of the original 136-file live
 tree SHA `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
 Sprint 11 is internally technically qualified and published. Owner visual
 approval remains pending and nonblocking.
+
+## Sprint 12 hidden injury-disease mechanics, 2026-09-30
+
+Dire Rat, Dog, Hyena and Goblin Dog remain suppressed at all 68 registered
+placements. The candidate adds three stable rules identities. Dire Rat's exact
+damaging bite invokes the printed DC 11 Fortitude save and exact native Filth
+Fever. Goblin Dog gains disease immunity and an exact damaging-bite reaction:
+DC 12 Fortitude, one nonstacking day at -2 Dexterity and -2 Charisma, removed
+by positive magical healing or native Remove Disease. The installed game has
+no broader Goblinoid subtype seam, so the disclosed bounded adaptation exempts
+only the exact native Goblin unit type.
+
+Guarded run `20260930T1234331263883Z-disposable-expanded-summoning` passed
+39/39. It exercised both Dire Rat save outcomes, miss and replay suppression;
+Goblin Dog immunity, application, duration, penalties, nonstacking, ordinary
+healing, magical healing, Remove Disease, and native-Goblin exemption; and
+independent multi-source quantity contexts. Repository validation, 1,958/1,958
+domain tests, clean Release and strict package validation passed. Restoration
+`20260930T1238533838750Z-disposable-expanded-summoning.json` recovered the
+original 136-file installation exactly. Sprint 12 still requires distinct
+silhouettes and the full cast, mode, movement/contact, expiry, persistence,
+module-disabled, compatibility, inventory, player-path and visual-review gates.

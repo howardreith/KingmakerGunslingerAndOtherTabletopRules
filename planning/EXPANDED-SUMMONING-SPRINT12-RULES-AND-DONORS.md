@@ -112,8 +112,10 @@ is disclosed in the player text and fidelity record.
 
 The 2026-09-30 foundation appends 37 Dire Rat identities after the preserved
 2,609-entry ledger: one unit, 18 logical placements, and 18 celestial or
-fiendish execution children. The current manifest contains 2,646 identities,
-of which 2,644 are active and two remain reserved. The runtime catalog now
+fiendish execution children. Three more stable identities own the Dire Rat
+disease feature, Goblin Dog disease-traits feature, and Goblin Dog allergic
+reaction buff. The current manifest contains 2,649 identities, of which 2,647
+are active and two remain reserved. The runtime catalog now
 registers 900 logical placements and deliberately suppresses 68 placements
 belonging only to Dire Rat, Dog, Hyena, and Goblin Dog. The other 832 generated
 placements remain published. This is a development boundary, not mechanical

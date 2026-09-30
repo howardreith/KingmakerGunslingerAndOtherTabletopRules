@@ -140,9 +140,11 @@
     <Compile Include="Summoning\SummonTemplateSmitePolicy.cs" />
     <Compile Include="Summoning\ExpandedSummoningSmiteComponent.cs" />
     <Compile Include="Summoning\ExpandedSummoningSpecialCombatComponents.cs" />
+    <Compile Include="Summoning\ExpandedSummoningSprint12CombatComponents.cs" />
     <Compile Include="Summoning\GiantWaspPoison.cs" />
     <Compile Include="Summoning\GiantWaspPoisonPolicy.cs" />
     <Compile Include="Summoning\StirgeAttachPolicy.cs" />
+    <Compile Include="Summoning\SummonInjuryDiseasePolicy.cs" />
     <Compile Include="Summoning\UngulateRulesPolicy.cs" />
     <Compile Include="Summoning\UngulatePowerfulCharge.cs" />
     <Compile Include="Summoning\ContextActionUngulateTrample.cs" />
@@ -1138,6 +1140,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningNativeDonors.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningCorrection.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningCreatureReview.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint12.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.PteranodonAttachedView.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircle.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircleEvil.cs" />
