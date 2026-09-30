@@ -1,5 +1,23 @@
 # Expanded Summoning Phase 2 journal
 
+## Sprint 12 donor bind frames captured privately, 2026-09-30
+
+The guarded disposable fixture now captures the renderer-local bind frames
+needed to author original Dire Rat, Hyena and Goblin Dog silhouettes. It found
+one complete renderer in every donor: Dog 37/37 bones/bind poses, Wolf 36/36,
+and Worg 36/36. The evidence files carry only bone hierarchy and measured bind
+transforms, stay outside Git and the package, and contain no native geometry,
+painting, material or animation. Dog keeps its native visual; the three
+captures are private inputs for the remaining original silhouettes.
+
+Steam-backed run `20260930T1314329155573Z-disposable-expanded-summoning`
+passed 40/40 after repository validation, all 1,958 domain tests, clean
+Release and strict package validation. Restoration
+`20260930T1318353465055Z-disposable-expanded-summoning.json` returned the
+original 136-file live tree exactly. This qualifies the capture seam only;
+the four Sprint 12 choices remain hidden and their art, live animation and
+remaining publication gates are still open.
+
 ## Sprint 12 injury-disease mechanics qualified while hidden, 2026-09-30
 
 The Sprint 12 rules graph now owns three stable blueprints: Dire Rat disease,

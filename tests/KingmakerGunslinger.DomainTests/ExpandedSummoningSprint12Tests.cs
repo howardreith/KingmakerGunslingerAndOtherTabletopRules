@@ -217,7 +217,12 @@ namespace KingmakerGunslinger.DomainTests
                 "if (!secondVictim.Destroyed) secondVictim.Destroy()",
                 "if (!goblinVictim.Destroyed) goblinVictim.Destroy()",
                 "ReferenceEquals(firstRatDisease.Context.MaybeCaster, rats[0])",
-                "ReferenceEquals(firstDogReaction.Context.MaybeCaster, dogs[0])" })
+                "ReferenceEquals(firstDogReaction.Context.MaybeCaster, dogs[0])",
+                "CaptureSprint12DonorRig(direRat, \"dog\"",
+                "CaptureSprint12DonorRig(hyena, \"wolf\"",
+                "CaptureSprint12DonorRig(goblinDog, \"worg\"",
+                "renderer-local bind frame",
+                "sprint12-\" + donorKey + \"-bind-rig.json" })
                 Assertions.True(live.Contains(token),
                     "Sprint 12 guarded runtime matrix is missing " + token + ".");
         }
