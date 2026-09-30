@@ -242,10 +242,16 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(runtime.Contains("expanded-summoning-stirge-quantity-freedom") &&
                 runtime.Contains("ExerciseExpandedSummoningStirgeQuantityFreedom") &&
                 runtime.Contains("\"stirge\", 3, SummonMultiplicity.OneD4PlusOne") &&
+                runtime.Contains("RemoveExpandedSummoningAppearanceBuffs(pony);") &&
+                runtime.Contains("Vector3 firstContact = hostile.Position +") &&
+                runtime.Contains("first.Position = firstContact;") &&
+                runtime.Contains("hostile.Position = movedPreyPosition;") &&
+                runtime.Contains("hostile.View.transform.position = movedPreyPosition;") &&
+                runtime.Contains("float targetHorizontalDistance = Vector2.Distance(") &&
                 runtime.Contains("StirgeHoldComponent.FollowAttached(first)") &&
                 runtime.Contains("new RuleAttackWithWeapon(hostile, first, weapon, 0)") &&
                 runtime.Contains("otherIntact"),
-                "Quantity Stirges must keep distinct links while one prey moves and kills its attacker.");
+                "Quantity Stirges must keep distinct links while an appearance-ready prey takes an ordinary movement step and kills its attacker.");
             Assertions.True(runtime.Contains("expanded-summoning-stirge-dismissal-release") &&
                 runtime.Contains("ExerciseExpandedSummoningStirgeDismissal") &&
                 runtime.Contains("CleanupExpandedSummoningUnit(stirge);") &&
