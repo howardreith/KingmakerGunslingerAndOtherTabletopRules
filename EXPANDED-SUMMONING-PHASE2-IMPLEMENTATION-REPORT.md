@@ -1,5 +1,14 @@
 # Expanded Summoning Phase 2 implementation report
 
+The Sprint 12 visual authoring seam now has bounded private input. Guarded
+run `20260930T1314329155573Z-disposable-expanded-summoning` passed 40/40 and
+captured one complete geometry-free bind frame for each required donor: Dog
+37 bones/37 poses, Wolf 36/36, and Worg 36/36. The captures remain
+machine-local and carry no native geometry, material, texture or animation.
+Restoration `20260930T1318353465055Z` returned the original 136-file live tree
+exactly. This is not visual qualification; Dire Rat, Dog, Hyena and Goblin Dog
+remain hidden while original silhouettes and the remaining gates are built.
+
 The 2026-09-30 Sprint 10 follow-up repaired the live quantity witness. The
 final guarded case spawned five Stirges, attached two from valid touch contact
 to distinct victims, preserved prey movement/actions, followed ordinary prey
