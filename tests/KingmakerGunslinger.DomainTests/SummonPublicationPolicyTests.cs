@@ -74,18 +74,18 @@ namespace KingmakerGunslinger.DomainTests
                     "86f4287572bef49449b9d06c66adf456")
                     .EquivalentCreatureKey,
                 "Native SNA Smilodon reconciliation changed.");
-            Assertions.Equal(834,
+            Assertions.Equal(882,
                 ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
                     .Concat(ExpandedSummoningCatalog.GenerateVariants(
                         SummonFamily.NaturesAlly))
                     .Count(SummonVisibilityCatalog.IsPublished),
                 "Visible summon placement count changed.");
-            Assertions.Equal(48,
+            Assertions.Equal(0,
                 ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
                     .Concat(ExpandedSummoningCatalog.GenerateVariants(
                         SummonFamily.NaturesAlly))
                     .Count(value => !SummonVisibilityCatalog.IsPublished(value)),
-                "Only the 48 Sprint 11 ungulate placements are hidden.");
+                "No registered placement remains hidden through Sprint 11.");
         }
 
         internal static void DisplayOrderGroupsSinglesBeforeQuantities()

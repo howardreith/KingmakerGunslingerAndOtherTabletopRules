@@ -319,7 +319,7 @@ namespace KingmakerGunslinger.Summoning
                 P("giant-wasp", "Giant Wasp", "Vermin", 4, "Large",
                     18, 12, 18, 1, 13, 11, 60, 4, "WaspSting1d8",
                     Array.Empty<string>(), A("Airborne", "WaspPoison"),
-                    "The 60-foot fly speed uses airborne navigation; 20-foot ground speed is omitted because Kingmaker exposes one movement speed. An absent Intelligence score is represented as 1. The exact poison graph is installed but awaits live combat qualification; all Wasp placements remain suppressed."),
+                    "The 60-foot fly speed uses airborne navigation; 20-foot ground speed is omitted because Kingmaker exposes one movement speed. An absent Intelligence score is represented as 1. Its dedicated Constitution-scaled poison graph and original visual passed guarded live qualification."),
                 P("stirge", "Stirge", "MagicalBeast", 1, "Tiny",
                     3, 19, 10, 1, 12, 6, 40, 0, "StirgeTouch",
                     Array.Empty<string>(), A("Airborne", "WeaponFinesse"),
@@ -328,22 +328,22 @@ namespace KingmakerGunslinger.Summoning
                     23, 10, 17, 2, 11, 4, 40, 4, "Gore1d8",
                     Array.Empty<string>(), A("ReducedReach", "TripDefenseFourLegs",
                         "SkillFocusPerception"),
-                    "Registered but hidden in Sprint 11: trample and stampede are not installed yet; Endurance is omitted pending an exact summon-safe feat identity. The Horse donor supplies only the temporary movement and view rig."),
+                    "Trample uses the disclosed Kingmaker automatic-AoO-or-Reflex adaptation. Stampede requires three adjacent allied Stampede owners actively executing their own Trample in the same round, then permits same-size targets and adds +2 save DC only while that command formation remains valid. Endurance is omitted because no exact summon-safe feat identity was proven. The sanitized Horse rig drives the original Aurochs mesh and painting."),
                 P("bison", "Bison", "Animal", 5, "Large",
                     27, 10, 19, 2, 11, 4, 40, 8, "Gore2d6",
                     Array.Empty<string>(), A("ReducedReach", "TripDefenseFourLegs",
                         "PowerAttack"),
-                    "Registered but hidden in Sprint 11: trample and stampede are not installed yet; Endurance and Improved Bull Rush await exact summon-safe identities. The Horse donor supplies only the temporary movement and view rig."),
+                    "Trample uses the disclosed Kingmaker automatic-AoO-or-Reflex adaptation. Stampede requires three adjacent allied Stampede owners actively executing their own Trample in the same round, then permits same-size targets and adds +2 save DC only while that command formation remains valid. Endurance and Improved Bull Rush are omitted because exact summon-safe feat identities were not proven. The sanitized Horse rig drives the original Bison mesh and painting."),
                 P("rhinoceros", "Rhinoceros", "Animal", 5, "Large",
                     22, 10, 19, 2, 13, 5, 40, 7, "Gore2d6",
                     Array.Empty<string>(), A("ReducedReach", "TripDefenseFourLegs",
                         "GreatFortitude", "SkillFocusPerception"),
-                    "Registered but hidden in Sprint 11: the summon-local powerful charge is attached pending live new-unit qualification; Endurance awaits an exact summon-safe identity. The Mastodon donor supplies only the temporary movement and view rig."),
+                    "The summon-local powerful charge applies only to its gore on a native charge and uses the printed 4d6+12 result. Endurance is omitted because no exact summon-safe feat identity was proven. The sanitized Mastodon rig drives the original Rhinoceros mesh and painting."),
                 P("woolly-rhinoceros", "Woolly Rhinoceros", "Animal", 8,
                     "Large", 28, 10, 21, 2, 13, 3, 30, 10, "Gore2d8",
                     Array.Empty<string>(), A("ReducedReach", "TripDefenseFourLegs",
                         "GreatFortitude", "SkillFocusPerception"),
-                    "Registered but hidden in Sprint 11: trample is not installed and summon-local powerful charge awaits live new-unit qualification; Diehard and Endurance await exact summon-safe identities. The Mastodon donor supplies only the temporary movement and view rig.")
+                    "The summon-local powerful charge applies only to its gore on a native charge and uses the printed 4d8+18 result. Trample uses the disclosed Kingmaker automatic-AoO-or-Reflex adaptation. Diehard and Endurance are omitted because exact summon-safe feat identities were not proven. The sanitized Mastodon rig drives the original Woolly Rhinoceros mesh and painting.")
             };
         }
 
