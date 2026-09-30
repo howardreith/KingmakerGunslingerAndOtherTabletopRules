@@ -34,7 +34,8 @@ namespace KingmakerGunslinger.DomainTests
             ExpandedSummoningSprint10Tests.AppendedLedgerIdentities +
             ExpandedSummoningSprint10Tests.StirgeAppendedLedgerIdentities +
             ExpandedSummoningSprint11Tests.AppendedLedgerIdentities +
-            ExpandedSummoningSprint10Tests.StirgeRemovalIdentityCount;
+            ExpandedSummoningSprint10Tests.StirgeRemovalIdentityCount +
+            ExpandedSummoningSprint12Tests.AppendedLedgerIdentities;
 
         private static readonly string[] AppendedSymbols = {
             "KMG.Summoning.Special.Grapple.MultiHold", "KMG.Summoning.Special.Grapple.MultiHeld",

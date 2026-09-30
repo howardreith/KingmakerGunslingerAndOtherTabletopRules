@@ -10,6 +10,13 @@
       "subjectPrompt": "A sturdy loyal mastiff dog in a three-quarter alert stance, short brindle-brown coat, broad muzzle, simple leather collar, warm woodland light, natural animal anatomy."
     },
     {
+      "key": "dire-rat",
+      "displayName": "Dire Rat",
+      "subjectPrompt": "One dog-sized natural sewer rat in a low aggressive three-quarter stance, coarse charcoal-brown fur, pale scarred ears, black eyes, visible incisors, and one long bare pink-gray tail curling behind it; dim mossy stone sewer, warm amber rim light, strong compact rat silhouette, no gore or magical mutation.",
+      "generator": "built-in-imagegen",
+      "exactPromptSource": "assets-source/original-icons/expanded-summoning/PHASE2-SPRINT12-SOURCES.md"
+    },
+    {
       "key": "eagle",
       "displayName": "Eagle",
       "subjectPrompt": "A small golden-brown eagle in a compact banking pose, wings partly folded rather than fully spread, hooked beak and keen amber eye, mountain air backdrop that emphasizes a small bird silhouette."

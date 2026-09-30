@@ -120,7 +120,7 @@ namespace KingmakerGunslinger.DomainTests
                 reused++;
             }
 
-            Assertions.Equal(87, reused,
+            Assertions.Equal(88, reused,
                 "Every project-owned creature must be reused.");
 
             // The retained native wrappers are identities too. Counting only
@@ -133,10 +133,10 @@ namespace KingmakerGunslinger.DomainTests
                     "A wrapper creature must not also be project-owned: " + key);
             }
 
-            Assertions.Equal(47, ExpandedSummoningIdealRosterCatalog.All
+            Assertions.Equal(46, ExpandedSummoningIdealRosterCatalog.All
                 .Count(value => ExpandedSummoningCoveragePolicy.Provenance(value.Key) ==
                     SummonUnitProvenance.None),
-                "The remaining ideal roster needs 47 new creature identities.");
+                "The remaining ideal roster needs 46 new creature identities.");
         }
 
         /// <summary>
@@ -173,19 +173,21 @@ namespace KingmakerGunslinger.DomainTests
                 }
             }
 
-            Assertions.Equal(47, ExpandedSummoningIdealRosterCatalog.All.Count(
+            Assertions.Equal(46, ExpandedSummoningIdealRosterCatalog.All.Count(
                     value => ExpandedSummoningCoveragePolicy.Provenance(value.Key) ==
                         SummonUnitProvenance.None),
-                "47 ideal-roster creatures have no unit identity yet.");
-            Assertions.Equal(98,
+                "46 ideal-roster creatures have no unit identity yet.");
+            Assertions.Equal(99,
                 ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count,
-                "98 creatures already own a unit identity.");
+                "99 creatures already own a unit identity.");
 
             // The live player-visible surface moves only with the shipped
             // catalogs, never with the plan: 693 at the Sprint 0 freeze, 828
             // after Phase 1 Sprint 8, 842 after Dire Bat, 854 after Wasp,
-            // 863 after Stirge, and 911 after the Sprint 11 ungulates.
-            Assertions.Equal(911,
+            // 863 after Stirge and 911 after the Sprint 11 ungulates. Sprint 12
+            // registers Dire Rat and withholds all four unqualified families,
+            // leaving 861 choices visible during development.
+            Assertions.Equal(861,
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.Monster) +
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.NaturesAlly),
                 "The plan must not change the shipped visible choice count.");

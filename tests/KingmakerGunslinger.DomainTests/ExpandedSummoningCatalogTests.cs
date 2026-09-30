@@ -9,11 +9,11 @@ namespace KingmakerGunslinger.DomainTests
         internal static void FrozenRosterAndPlacementCounts()
         {
             ExpandedSummoningCatalog.Validate();
-            Assertions.Equal(87, ExpandedSummoningCatalog.All.Count, "Unique creature count changed.");
-            Assertions.Equal(79, ExpandedSummoningCatalog.All.Count(v => v.MonsterTier.HasValue), "SM roster count changed.");
-            Assertions.Equal(77, ExpandedSummoningCatalog.All.Count(v => v.NaturesAllyTier.HasValue), "SNA roster count changed.");
-            Assertions.Equal(444, ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster).Count, "SM placement count changed.");
-            Assertions.Equal(438, ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly).Count, "SNA placement count changed.");
+            Assertions.Equal(88, ExpandedSummoningCatalog.All.Count, "Unique creature count changed.");
+            Assertions.Equal(80, ExpandedSummoningCatalog.All.Count(v => v.MonsterTier.HasValue), "SM roster count changed.");
+            Assertions.Equal(78, ExpandedSummoningCatalog.All.Count(v => v.NaturesAllyTier.HasValue), "SNA roster count changed.");
+            Assertions.Equal(453, ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster).Count, "SM placement count changed.");
+            Assertions.Equal(447, ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly).Count, "SNA placement count changed.");
         }
         internal static void QuantityRulesAreExactAndSameKind()
         {

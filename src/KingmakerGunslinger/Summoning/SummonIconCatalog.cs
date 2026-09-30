@@ -44,11 +44,12 @@ namespace KingmakerGunslinger.Summoning
             string[] split = { "redcap", "axiomite", "soul-eater", "bogeyman",
                 "movanic-deva", "frost-giant", "thanadaemon" };
             string[] preserved = { "mite", "manticore", "nereid", "hamadryad" };
-            string[] prepared = { "remove-stirge" };
+            string[] prepared = { "dire-rat", "dog", "hyena",
+                "goblin-dog", "remove-stirge" };
             string[] expected = visibleCatalog.Concat(split).Concat(preserved)
                 .Concat(prepared)
                 .ToArray();
-            if (Values.Length != 99 || expected.Length != 99 ||
+            if (Values.Length != 100 || expected.Length != 100 ||
                 Values.Any(value => value == null ||
                     string.IsNullOrWhiteSpace(value.Key) ||
                     string.IsNullOrWhiteSpace(value.DisplayName)) ||
@@ -76,10 +77,12 @@ namespace KingmakerGunslinger.Summoning
             Add(result, SummonProjectIconScope.PreservedNative,
                 "mite", "Mite", "manticore", "Manticore", "nereid",
                 "Nereid", "hamadryad", "Hamadryad");
-            // Published creature icons enter through visibleCatalog. The
-            // Stirge removal action remains a separate catalogued concept.
+            // Qualified creature icons enter through visibleCatalog. Sprint
+            // 12 candidates remain catalogued while their choices are hidden;
+            // the Stirge removal action remains a separate concept.
             Add(result, SummonProjectIconScope.KmgCatalog,
-                "remove-stirge", "Remove Stirge");
+                "dire-rat", "Dire Rat", "dog", "Dog", "hyena", "Hyena",
+                "goblin-dog", "Goblin Dog", "remove-stirge", "Remove Stirge");
             return result.ToArray();
         }
 

@@ -871,9 +871,14 @@ Expanded Summoning Phase 2 preserves the accepted ledger prefix and appends
 the Dire Bat, Giant Wasp and Stirge identities, then 100 Sprint 11 ungulate
 unit/placement identities, two Rhino charge facts and three hidden trample
 abilities and Stirge's session-granted removal action: 2609 stable IDs: 2607 active and 2 reserved.
-The Wasp and Stirge choices are published after their technical qualification;
-the four Sprint 11 ungulates are registered but all 48 placements remain
-suppressed until their mechanics and visual contracts pass.
+The Wasp, Stirge and four Sprint 11 ungulate choices are published after their
+technical qualification.
+
+Sprint 12 appends 37 active Dire Rat identities: one unit, eighteen logical
+placements and eighteen celestial/fiendish execution children. The resulting
+append-only ledger contains 2646 stable IDs: 2644 active and 2 reserved. Dire
+Rat, Dog, Hyena and Goblin Dog remain publication-gated while their Sprint 12
+mechanics, distinct visuals and lifecycle are qualified.
 
 - **Pure policy** (`FavoredClass/`): `FavoredClassRankPolicy` (the host's
   full/partial alternation, N = fullRank + partialRank, with KMG-owned ceilings

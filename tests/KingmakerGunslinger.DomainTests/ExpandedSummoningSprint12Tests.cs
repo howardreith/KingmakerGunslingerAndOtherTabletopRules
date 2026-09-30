@@ -5,6 +5,51 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class ExpandedSummoningSprint12Tests
     {
+        internal const int AppendedLedgerIdentities = 37;
+
+        internal static void Sprint12FoundationStaysHiddenUntilQualified()
+        {
+            string catalog = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "Summoning", "ExpandedSummoningCatalog.cs"));
+            string visibility = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "Summoning", "SummonVisibilityCatalog.cs"));
+            string donors = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "Summoning", "ExpandedSummoningDonorCatalog.cs"));
+            string profiles = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "Summoning", "ExpandedSummoningNaturalProfiles.cs"));
+
+            Assertions.True(catalog.Contains(
+                    "C(\"dire-rat\",\"Dire Rat\",1,true,1,\"Dog\")") &&
+                catalog.Contains("ValidateFamily(SummonFamily.Monster, 80, 453)") &&
+                catalog.Contains("ValidateFamily(SummonFamily.NaturesAlly, 78, 447)"),
+                "Sprint 12 must register Dire Rat at tier 1 in both families.");
+            foreach (string key in new[] {
+                "\"dire-rat\"", "\"dog\"", "\"hyena\"", "\"goblin-dog\""
+            })
+                Assertions.True(visibility.Contains(key),
+                    "Unqualified Sprint 12 creature must be suppressed: " + key);
+            Assertions.True(visibility.Contains(
+                    "RegisteredLogicalPlacementCount = 900") &&
+                visibility.Contains("SuppressedLogicalPlacementCount = 68"),
+                "Sprint 12 publication boundary must freeze 900/68/832.");
+            Assertions.True(donors.Contains(
+                    "dire-rat|77f3f2ddf1ec2da45ab956c433e3b557|1") &&
+                donors.Contains("dog|77f3f2ddf1ec2da45ab956c433e3b557|1"),
+                "Dire Rat and Dog must use the audited native Dog summon rig.");
+            foreach (string token in new[] {
+                "P(\"dire-rat\", \"Dire Rat\", \"Animal\", 1, \"Small\"",
+                "10, 17, 13, 2, 13, 4, 40, 1, \"Bite1d4\"",
+                "\"TripDefenseFourLegs\", \"WeaponFinesse\"",
+                "\"SkillFocusPerception\"", "exact DC 11 contract"
+            })
+                Assertions.True(profiles.Contains(token),
+                    "Dire Rat hidden foundation is missing " + token + ".");
+        }
+
         internal static void NativeCanidAndRatSurveyStaysMetadataOnly()
         {
             string source = File.ReadAllText(Path.Combine(

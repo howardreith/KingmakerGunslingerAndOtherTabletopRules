@@ -135,9 +135,9 @@ namespace KingmakerGunslinger.DomainTests
                 value.Symbol == "KMG.Summoning.Natural.WaspSting1d8" &&
                 value.PlannedType == "BlueprintItemWeapon"),
                 "Wasp sting has its own append-only blueprint identity.");
-            Assertions.Equal(0,
+            Assertions.Equal(68,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "No placement remains suppressed after Sprint 11 qualification.");
+                "Only the unqualified Sprint 12 placements remain suppressed.");
         }
 
         internal static void StirgePublishesAtAllNineNatureTiers()
@@ -318,9 +318,9 @@ namespace KingmakerGunslinger.DomainTests
                 SummonIconCatalog.For("remove-stirge").Key !=
                     SummonIconCatalog.For("stirge").Key,
                 "Remove Stirge must have its own original action icon, distinct from the creature portrait.");
-            Assertions.Equal(0,
+            Assertions.Equal(68,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "No placement remains hidden after Sprint 11 qualification.");
+                "Sprint 10 remains published while Sprint 12 candidates stay hidden.");
         }
 
         internal static void GiantWaspPoisonTracksConstitutionAndTabletopExposure()
@@ -399,9 +399,9 @@ namespace KingmakerGunslinger.DomainTests
                 review.Contains("finally") &&
                 review.Contains("renderer.enabled = true"),
                 "The isolated Wasp frame must restore every temporarily hidden auxiliary renderer.");
-            Assertions.Equal(0,
+            Assertions.Equal(68,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "The review scenario remains bounded after Sprint 11 publication.");
+                "The review scenario must tolerate the bounded Sprint 12 hidden set.");
         }
 
         internal static void WaspQuantityCoveragePublishesAllLegalVariants()

@@ -26,11 +26,11 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Creatures.Length != 87) throw new InvalidOperationException("Expanded Summoning unique creature count must be 87.");
+            if (Creatures.Length != 88) throw new InvalidOperationException("Expanded Summoning unique creature count must be 88.");
             if (Creatures.Select(v => v.Key).Distinct(StringComparer.Ordinal).Count() != Creatures.Length)
                 throw new InvalidOperationException("Duplicate creature key.");
-            ValidateFamily(SummonFamily.Monster, 79, 444);
-            ValidateFamily(SummonFamily.NaturesAlly, 77, 438);
+            ValidateFamily(SummonFamily.Monster, 80, 453);
+            ValidateFamily(SummonFamily.NaturesAlly, 78, 447);
         }
 
         private static void ValidateFamily(SummonFamily family, int roster, int placements)
@@ -46,7 +46,7 @@ namespace KingmakerGunslinger.Summoning
         private static SummonCreatureSpec[] Build()
         {
             return new[] {
-                C("dog","Dog",1,true,1), C("eagle","Eagle",1,true,1,"Roc"), C("poisonous-frog","Poisonous Frog",1,true,1,"Giant Poisonous Frog"), C("pony","Pony",1,true,1),
+                C("dire-rat","Dire Rat",1,true,1,"Dog"), C("dog","Dog",1,true,1), C("eagle","Eagle",1,true,1,"Roc"), C("poisonous-frog","Poisonous Frog",1,true,1,"Giant Poisonous Frog"), C("pony","Pony",1,true,1),
                 C("giant-centipede","Giant Centipede",2,true,1), C("wolf","Wolf",2,true,2), C("giant-frog","Giant Frog",2,true,2), C("giant-spider","Giant Spider",2,true,2),
                 C("small-air-elemental","Small Air Elemental",2,false,2), C("small-earth-elemental","Small Earth Elemental",2,false,2), C("small-fire-elemental","Small Fire Elemental",2,false,2), C("small-water-elemental","Small Water Elemental",2,false,2),
                 C("goblin-dog","Goblin Dog",2,true,2,"Worg"), C("hyena","Hyena",2,true,2,"Wolf"), C("horse","Horse",2,true,2),

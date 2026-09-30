@@ -22,7 +22,7 @@ VERSION = "0.0.140"
 INFORMATIONAL_VERSION = "0.0.140-favored-class-integration"
 PACKAGE = "KingmakerGunslinger-0.0.140-local-runtime.zip"
 PACKAGE_SUFFIX = "favored-class-integration"
-DETERMINISTIC_TEST_COUNT = 1954
+DETERMINISTIC_TEST_COUNT = 1955
 STATIC_KEY = "favoredClassIntegration140"
 
 # Exact ordered (symbol, guid) pairs this candidate appends after the
@@ -258,6 +258,8 @@ def validate(root: Path) -> None:
     validate_sprint32.SCATTER_MISFIRE_AGGREGATE_TOKEN = "IsMisfire(misfireThreshold)"
     entries = json.loads((root / "blueprints/blueprints.json").read_text(
         encoding="utf-8"))["entries"]
+    legacy = entries[:2609]
+    sprint12 = entries[2609:]
     wasp = entries[2461:2487]
     wasp_pinned = [(entry["symbol"], entry["guid"],
                     entry["plannedType"], entry["status"]) for entry in wasp]
@@ -289,14 +291,34 @@ def validate(root: Path) -> None:
              symbol.startswith("KMG.Summoning.Ability.")) and
             any(token in symbol for token in ungulate_tokens))
     }
-    if len(entries) != 2609 or len(wasp) != 26 or wasp_hash != (
+    if len(legacy) != 2609 or len(wasp) != 26 or wasp_hash != (
             "8a9dac72a9e83675765d8fc850901f76976bf6191418c6cf7f1c4ff6af261ef3"):
         raise AssertionError("Expanded Summoning Phase 2 Wasp append drifted")
     if [(entry["symbol"], entry["guid"], entry["plannedType"],
-         entry["status"]) for entry in entries[2608:]] != [
+         entry["status"]) for entry in legacy[2608:]] != [
             ("KMG.Summoning.Special.Stirge.Remove",
              "d5e6506db41d490fa69b88e881ddfe0b", "BlueprintAbility", "active")]:
         raise AssertionError("Stirge removal action identity drifted")
+    sprint12_pinned = [(entry["symbol"], entry["guid"],
+                        entry["plannedType"], entry["status"])
+                       for entry in sprint12]
+    sprint12_hash = hashlib.sha256(json.dumps(sprint12_pinned,
+        separators=(",", ":")).encode()).hexdigest()
+    expected_sprint12 = {
+        symbol: planned_type for symbol, planned_type in
+        baseline.validate_expanded_summoning_phase1.expanded_summoning_manifest.planned()
+        if symbol == "KMG.Summoning.Unit.DireRat" or
+        ".DireRat." in symbol
+    }
+    if len(sprint12) != 37 or len(expected_sprint12) != 37 or {
+            entry["symbol"]: entry["plannedType"] for entry in sprint12
+            } != expected_sprint12 or sprint12_hash != (
+            "bc074bdbf1d078bf6bb118b319adb4fcc8ecaf3908bcf4c90ed7084e5e7d2272") or any(
+            entry["status"] != "active" or
+            entry["milestone"] != "Expanded Summoning"
+            for entry in sprint12):
+        raise AssertionError(
+            "Expanded Summoning Sprint 12 Dire Rat identities drifted")
     if len(poison) != 2 or poison_hash != (
             "92e7a5cfbf28ce94938eef6c16451d5688d47247d222b2a64f6c3db362e02adb"):
         raise AssertionError("Expanded Summoning Wasp poison identities drifted")

@@ -56,9 +56,10 @@ namespace KingmakerGunslinger.DomainTests
                     "Every placement of " + value.Key +
                     " publishes after mechanics, art and lifecycle qualification.");
             }
-            Assertions.True(all.Length == 882 &&
-                all.Count(SummonVisibilityCatalog.IsPublished) == 882,
-                "All 882 registered placements publish through Sprint 11.");
+            Assertions.True(all.Length == 900 &&
+                all.Count(SummonVisibilityCatalog.IsPublished) == 832 &&
+                all.Count(value => !SummonVisibilityCatalog.IsPublished(value)) == 68,
+                "Sprint 11 stays published while the registered Sprint 12 set stays hidden.");
         }
 
         internal static void FourUngulatesPublishQuantityPlacementsInBothFamilies()
@@ -568,8 +569,8 @@ namespace KingmakerGunslinger.DomainTests
                 "package.ps1"));
             Assertions.True(build.Contains("assets\\ungulates") &&
                 package.Contains("assets\\ungulates") &&
-                build.Contains("{ 275 } else { 273 }") &&
-                package.Contains("{ 275 } else { 273 }"),
+                build.Contains("{ 276 } else { 274 }") &&
+                package.Contains("{ 276 } else { 274 }"),
                 "All eight ungulate asset files enter the strict standalone package.");
         }
 
