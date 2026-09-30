@@ -202,12 +202,15 @@ namespace KingmakerGunslinger.DomainTests
                         SummonFamily.NaturesAlly)).ToArray();
             SummonVariantSpec[] bat = all.Where(value =>
                 value.Creature.Key == "dire-bat").ToArray();
-            Assertions.Equal(882, all.Count(SummonVisibilityCatalog.IsPublished),
-                "Qualified Sprints 9 through 11 stay published.");
+            Assertions.Equal(832, all.Count(SummonVisibilityCatalog.IsPublished),
+                "The published surface must exclude only Sprint 12 candidates.");
+            Assertions.Equal(68, all.Count(value =>
+                    !SummonVisibilityCatalog.IsPublished(value)),
+                "The authorized Sprint 12 hidden set changed.");
             Assertions.Equal(14, bat.Length,
                 "Dire Bat retains seven placements in each summon family.");
-            Assertions.True(all.All(SummonVisibilityCatalog.IsPublished),
-                "Every qualified placement, including Sprint 9, remains published.");
+            Assertions.True(bat.All(SummonVisibilityCatalog.IsPublished),
+                "Every qualified Dire Bat placement remains published.");
             foreach (SummonFamily family in new[] {
                 SummonFamily.Monster, SummonFamily.NaturesAlly })
             {

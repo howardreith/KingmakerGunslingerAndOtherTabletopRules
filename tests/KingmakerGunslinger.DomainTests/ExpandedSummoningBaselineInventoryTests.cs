@@ -13,28 +13,28 @@ namespace KingmakerGunslinger.DomainTests
     {
         internal static void ShippedSurfaceMatchesFrozenBaseline()
         {
-            Assertions.Equal(87, ExpandedSummoningBaselineInventory.UniqueCreatures,
+            Assertions.Equal(88, ExpandedSummoningBaselineInventory.UniqueCreatures,
                 "Baseline unique creature count changed.");
-            Assertions.Equal(79, ExpandedSummoningBaselineInventory.RosterEntries(
+            Assertions.Equal(80, ExpandedSummoningBaselineInventory.RosterEntries(
                 SummonFamily.Monster), "Baseline SM roster count changed.");
-            Assertions.Equal(77, ExpandedSummoningBaselineInventory.RosterEntries(
+            Assertions.Equal(78, ExpandedSummoningBaselineInventory.RosterEntries(
                 SummonFamily.NaturesAlly), "Baseline SNA roster count changed.");
-            Assertions.Equal(444, ExpandedSummoningBaselineInventory
+            Assertions.Equal(453, ExpandedSummoningBaselineInventory
                 .RegisteredPlacements(SummonFamily.Monster),
                 "Baseline SM registered placements changed.");
-            Assertions.Equal(438, ExpandedSummoningBaselineInventory
+            Assertions.Equal(447, ExpandedSummoningBaselineInventory
                 .RegisteredPlacements(SummonFamily.NaturesAlly),
                 "Baseline SNA registered placements changed.");
-            Assertions.Equal(461, ExpandedSummoningBaselineInventory
+            Assertions.Equal(436, ExpandedSummoningBaselineInventory
                 .VisibleChoices(SummonFamily.Monster),
                 "Baseline SM visible choice count changed.");
-            Assertions.Equal(450, ExpandedSummoningBaselineInventory
+            Assertions.Equal(425, ExpandedSummoningBaselineInventory
                 .VisibleChoices(SummonFamily.NaturesAlly),
                 "Baseline SNA visible choice count changed.");
         }
 
         /// <summary>
-        /// The 911 visible choices (693 at Sprint 0) must decompose
+        /// The 861 visible choices (693 at Sprint 0) must decompose
         /// exactly, so a sprint cannot quietly move a choice between the
         /// generated and native pools.
         /// </summary>
@@ -42,11 +42,11 @@ namespace KingmakerGunslinger.DomainTests
         {
             int generated = SummonVisibilityCatalog.PublishedLogicalPlacementCount;
             int wrappers = SummonNativeExpansionCatalog.All.Count;
-            Assertions.Equal(882, generated, "Published generated placements changed.");
+            Assertions.Equal(832, generated, "Published generated placements changed.");
             Assertions.Equal(29, wrappers, "Native wrapper count changed.");
-            Assertions.Equal(911, generated + wrappers,
+            Assertions.Equal(861, generated + wrappers,
                 "The combined visible choice total changed.");
-            Assertions.Equal(911,
+            Assertions.Equal(861,
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.Monster) +
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.NaturesAlly),
                 "Per-parent census disagrees with the catalog totals.");
@@ -85,13 +85,17 @@ namespace KingmakerGunslinger.DomainTests
         }
 
         /// <summary>
-        /// Wasp, Stirge and the Sprint 11 ungulates are all published.
+        /// Wasp, Stirge and the Sprint 11 ungulates are published while the
+        /// four Sprint 12 creature families remain hidden pending qualification.
         /// </summary>
         internal static void HiddenAndProxyCreaturesAreRecorded()
         {
-            Assertions.Equal(0,
+            Assertions.Equal(4,
                 ExpandedSummoningBaselineInventory.RegisteredButHiddenCreatures.Count,
                 "The registered-but-hidden creature set changed.");
+            Assertions.Equal("dire-rat|dog|goblin-dog|hyena", string.Join("|",
+                ExpandedSummoningBaselineInventory.RegisteredButHiddenCreatures),
+                "Only the authorized Sprint 12 creature families may be hidden.");
             Assertions.True(ExpandedSummoningBaselineInventory.ProxyVisualCreatures
                 .Contains("pteranodon<Roc"),
                 "Pteranodon must still be recorded as a Roc-policy visual proxy.");
@@ -104,7 +108,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(ExpandedSummoningBaselineInventory.ProxyVisualCreatures
                 .Contains("dire-tiger<Smilodon"),
                 "Smilodon displays under its own name and is not a proxy.");
-            Assertions.Equal(25,
+            Assertions.Equal(26,
                 ExpandedSummoningBaselineInventory.ProxyVisualCreatures.Count,
                 "The frozen borrowed-body proxy count changed.");
         }
@@ -142,7 +146,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(first.StartsWith(
                 "{\n  \"schema\": \"" + ExpandedSummoningBaselineInventory.BaselineSchema + "\""),
                 "The census must declare its schema first so evidence stays comparable.");
-            Assertions.True(first.Contains("\"totalVisibleChoices\": 911"),
+            Assertions.True(first.Contains("\"totalVisibleChoices\": 861"),
                 "The emitted census lost the frozen visible-choice total.");
         }
     }
