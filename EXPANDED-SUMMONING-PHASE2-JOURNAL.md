@@ -1,5 +1,36 @@
 # Expanded Summoning Phase 2 journal
 
+## Stirge quantity witness and disease-source resolution, 2026-09-30
+
+The reviewed quantity fixture had used `Translocate` to stand in for prey
+movement. That was an invalid witness because production correctly treats
+teleportation as a detach event. A second diagnostic also exposed fixture-only
+cross-floor contact: a touch attachment had been constructed between units on
+different navigation heights. The corrected fixture removes the Pony's fresh
+summon-appearance state, stages each Stirge at 0.60 m touch contact on its
+victim's floor, advances the first victim as a normal movement tick, updates
+the area grid, and then exercises the production follow path. It keeps the two
+attachment/action grants independent and retains the native prey attack and
+cleanup checks.
+
+Guarded final run `20260930T0718292680849Z-disposable-expanded-summoning`
+passed the corrected source. Its quantity case spawned five Stirges, attached
+two to distinct victims, preserved both victims' movement/action freedom,
+followed the moved victim at 0.60 m horizontally, killed only that victim's
+Stirge with a native weapon attack, retained the second link, and cleaned both
+attachments. Four actual Constitution drains still detached automatically.
+
+The owner-directed cadence audit found an explicit primary-source exception.
+The Paizo legacy Stirge stat block says a victim cannot be infected again by
+that particular Stirge after its 10% blood-drain exposure check. The temporary
+per-drain experiment was discarded; production remains one check per
+Stirge/victim, only after actual Constitution damage, with native Filth Fever
+as the disclosed bounded disease adaptation. The final run observed one
+checked victim and no repeat check. Repository validation, all 1,952 domain
+tests, clean Release and strict package validation passed on this exact source.
+Restoration `20260930T0722327018583Z` recovered the original 136-file live tree
+exactly.
+
 ## Sprint 11 publication and persistence closeout, 2026-09-30
 
 The four qualified ungulates are now visible at all 48 authorized placements.
