@@ -1,6 +1,67 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## Current checkpoint: corrected Stirge requalified and published, 2026-09-29
+## Current checkpoint: Sprint 11 qualified and published, 2026-09-30
+
+Branch `codex/expanded-summoning-phase2a-sprints9-13`, draft PR #25;
+publication worktree parent `39f4f98f8891e1c75820cbc08961e86685a00299`.
+Sprints 9, 10 and 11 are internally technically qualified. Aurochs, Bison,
+Rhinoceros and Woolly Rhinoceros are published at all 48 authorized SM/SNA
+placements. The generated visible roster is 882 choices; the 29 retained
+native wrappers make 911 visible summon choices. Owner visual approval remains
+pending and nonblocking. Sprint 12 is the next authorized work; no merge,
+release, permanent deployment or Sprint 22 is authorized.
+
+The final ordinary Trample policy automatically takes exactly one legal melee
+attack of opportunity at -4 before contact damage, consumes the normal resource,
+and grants no Reflex save for that contact. A defender without an executable
+legal AoO instead makes the printed Reflex save. A stopping AoO prevents that
+contact's damage and later contacts. The live 58/58 matrix covers RTWP and
+turn-based mode, player and hostile defenders, available/spent/unable/ranged
+responses, Combat Reflexes, hit/miss/lethal branches, half/full damage,
+ordinary-AoO de-duplication, direct and quantity summons, exact DCs and replay
+suppression.
+
+Stampede uses the faithful bounded implementation. Three allied Stampede
+holders must each be executing their own registered Trample in the same combat
+round and remain mutually adjacent. Only then do Aurochs and Bison gain
+same-size eligibility and +2 DC; idle, queued, interrupted, stale-round or
+separated creatures do not count. The observer never issues another creature's
+command. The behavior and RTWP/turn-based command-timing adaptation are
+disclosed in the player text.
+
+The four original ungulate views passed deterministic export, unobstructed
+idle/motion/attack/overhead/oblique review, quantity pathing and natural expiry.
+The corrected cattle hooves are compact and cloven; the rhinoceros legs use
+three overlapping tapered spans and separate broad feet. Internal visual review
+accepted the repaired silhouettes, including the final Rhinoceros/Woolly
+Rhinoceros run `20260930T0350131904135Z` (18/18) and quantity run
+`20260930T0400494836310Z` (32/32). The final mechanics/visual/lifecycle batch
+passed 58/58, 15/15 and 7/7 at `20260930T0422334006971Z`,
+`20260930T0426570686599Z` and `20260930T0430006142872Z`.
+
+Publication inventory `20260930T0457205706691Z` passed 50/50: 882 registered
+and visible parent placements, all executable contracts, all 18 menu equations,
+zero missing icons and zero prohibited references. Player path
+`20260930T0508037596496Z` passed 10/10 across every published root and all 29
+native wrappers. Working-save prepare/cleanup/absence
+`20260930T0524086567797Z`, `20260930T0528280228527Z` and
+`20260930T0532419916125Z` each passed 15/15 with 17 exact summons, published
+count 882, native save writes 1/1/0, safe Stirge reset, zero post-expiry live
+units and final zero residue. Repository validation, all 1,952 domain tests,
+clean Release and strict package validation passed. Clean package SHA-256:
+`2B83849D4560C4E2F14D20FECE9DA655968187663146301C2BBC7A265D24FE4B`;
+clean DLL SHA-256:
+`7A91A11271603319AEF5C398633A6DFF8040AB9C051DE6CF54CEFE7C2A4771A0`.
+The guarded runtime artifact was package
+`1cb1ce000b7043259429ef6b6792fac41110fc00ebc95e85aaeb02ff7ffb2a85`
+and DLL
+`9d5d52e9832ee33ef6f806beba03ea4a06aed995114cb1a46642d923c0c1b159`.
+Restoration record
+`20260930T0535320622642Z-disposable-expanded-summoning-player-path.json`
+verifies the original 136-file installation before and after at SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+
+## Prior checkpoint: corrected Stirge requalified and published, 2026-09-29
 
 Branch `codex/expanded-summoning-phase2a-sprints9-13`, draft PR #25;
 checkpoint parent `288af63178f2ef91c3a962ddd8d2f5e4e416e106`. Sprint 10 is

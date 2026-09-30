@@ -644,3 +644,37 @@ exact original 136-file live tree before and after restoration at SHA-256
 The Sprint 11 mechanics and art gates are accepted. Parent publication,
 player-path, persistence, compatibility and restoration gates remain to be
 closed before these choices are made visible.
+
+## Published closeout, 2026-09-30
+
+All 48 Aurochs, Bison, Rhinoceros and Woolly Rhinoceros placements are now
+published through the ordinary visibility catalog. The final source contains
+no hidden-candidate bypass and no suppressed ungulate identity. Generated
+publication is 882; the 29 retained native wrappers bring the visible combined
+roster to 911.
+
+Guarded inventory `20260930T0457205706691Z` passed 50/50 assertions with
+882/882 visible parents, exact executable contracts, all 18 reconciled menu
+equations, 99 project icon concepts, no missing icon and no prohibited
+reference. Guarded player path `20260930T0508037596496Z` passed 10/10 across
+all 882 roots and all 29 native wrappers, including exact spell-slot and
+quantity behavior and request-local cleanup.
+
+The save-backed trio `20260930T0524086567797Z`,
+`20260930T0528280228527Z` and `20260930T0532419916125Z` passed 15/15 each.
+It saved 17 exact summons, freshly loaded and checked their identity/context/
+duration/control, confirmed the accepted Stirge attachment reset, retired the
+fixture through native lifecycle cleanup, and finally found zero residue.
+Save-write counts were 1/1/0. Existing module-off publication and save-backed
+cleanup evidence remains valid because the inactive boundary is independent
+of the now-empty per-placement suppression set; focused domain tests rechecked
+zero publication while inactive.
+
+Repository validation, 1,952/1,952 domain tests, clean Release and strict
+package validation passed. Runtime restoration record
+`20260930T0535320622642Z-disposable-expanded-summoning-player-path.json`
+records four clean launches, four PASS results, zero failures, and exact
+restoration of the original 136-file tree at SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+Sprint 11 is internally technically qualified and published. Owner visual
+approval remains pending and nonblocking.
