@@ -17665,10 +17665,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     mechanics != null && mechanics.StirgeEscapeAndTransition,
                     "native UnitUseAbility removal commands and Stirge-only area sweep"),
                 Assertion("expanded-summoning-stirge-quantity-freedom",
-                    "two quantity Stirges attach to distinct victims; fixture prey relocation and melee counterattack affect only their own Stirge",
+                    "two quantity Stirges attach from staged touch contact to distinct victims; an ordinary prey movement step and melee counterattack affect only their own Stirge",
                     mechanics == null ? "not-run" : mechanics.StirgeQuantityFreedomDetail,
                     mechanics != null && mechanics.StirgeQuantityFreedom,
-                    "live 1d4+1 Stirge summon, two prey action grants, owner-follow relocation and native prey attack"),
+                    "live 1d4+1 Stirge summon, two prey action grants, owner follow and native prey attack"),
                 Assertion("expanded-summoning-stirge-dismissal-release",
                     "destroying an attached disposable summon leaves its former victim free, without an extra blood-drain tick",
                     mechanics == null ? "not-run" : mechanics.StirgeDismissalDetail,
@@ -19472,7 +19472,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         /// <summary>Two actual quantity Stirges keep separate prey/action
-        /// links while one prey relocates and kills its own Stirge.</summary>
+        /// links while one prey moves and kills its own Stirge.</summary>
         private static bool ExerciseExpandedSummoningStirgeQuantityFreedom(
             BlueprintScriptableObject[] blueprints, UnitEntityData caster,
             UnitEntityData hostile, List<UnitEntityData> created,
@@ -19486,6 +19486,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData pony = CastExpandedSummoningCombatUnit(blueprints,
                 caster, SummonFamily.NaturesAlly, "pony", 1,
                 created, evidence);
+            RemoveExpandedSummoningAppearanceBuffs(pony);
             detail = "quantity=" + stirges.Length;
             if (stirges.Length < 2) return false;
             UnitEntityData first = stirges[0], second = stirges[1];
@@ -19502,6 +19503,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 RemoveExpandedSummoningAppearanceBuffs(first);
                 RemoveExpandedSummoningAppearanceBuffs(second);
+                // A real touch hit can only establish an attachment from
+                // contact on the victim's current floor. Stage that contact
+                // explicitly; the fixture's summons otherwise enter on a
+                // different nearby navigation level.
+                Vector3 firstContact = hostile.Position + Vector3.right * 0.6f;
+                first.Position = firstContact;
+                if (first.View != null) first.View.transform.position = firstContact;
+                Vector3 secondContact = pony.Position + Vector3.right * 0.6f;
+                second.Position = secondContact;
+                if (second.View != null) second.View.transform.position = secondContact;
                 StirgeAttachComponent one = StirgeAttachComponent.Find(first);
                 StirgeAttachComponent two = StirgeAttachComponent.Find(second);
                 bool both = one != null && two != null &&
@@ -19527,13 +19538,34 @@ namespace KingmakerGunslinger.RuntimeTesting
                     hostile.Descriptor.State.CanAct == preyCouldActBefore;
                 bool independent = both && firstLinked && secondLinked &&
                     actionGrants && preyFreedom;
-                PlaceExpandedSummoningUnit(hostile, preyStart +
-                    Vector3.right * 2f);
+                // Advance the prey the same way a native movement tick commits
+                // its view/data position. Translocate is deliberately excluded:
+                // teleportation is a separate, required detach path.
+                Vector3 movedPreyPosition = preyStart + Vector3.right * 2f;
+                hostile.Position = movedPreyPosition;
+                if (hostile.View != null)
+                    hostile.View.transform.position = movedPreyPosition;
+                SparseGrid<Kingmaker.EntitySystem.EntityDataBase> grid =
+                    ExpandedSummoningAreaGrid();
+                if (grid != null) grid.MoveTo(hostile,
+                    movedPreyPosition.x, movedPreyPosition.z);
+                Vector3 stirgeBeforeFollow = first.Position;
+                bool stirgeInGameBeforeFollow = first.IsInGame;
+                bool preyInGameBeforeFollow = hostile.IsInGame;
                 StirgeHoldComponent.FollowAttached(first);
+                Vector3 stirgeAfterFollow = first.Position;
+                bool firstStillLinkedAfterFollow = ReferenceEquals(
+                    StirgeHoldComponent.AttachedTarget(first), hostile);
+                float targetHorizontalDistance = Vector2.Distance(
+                    new Vector2(stirgeAfterFollow.x, stirgeAfterFollow.z),
+                    new Vector2(hostile.Position.x, hostile.Position.z));
+                float startHorizontalDistance = Vector2.Distance(
+                    new Vector2(stirgeAfterFollow.x, stirgeAfterFollow.z),
+                    new Vector2(preyStart.x, preyStart.z));
                 bool followed =
-                    Vector3.Distance(first.Position, hostile.Position) > 0.35f &&
-                    Vector3.Distance(first.Position, hostile.Position) < 0.9f &&
-                    Vector3.Distance(first.Position, preyStart) > 1f &&
+                    targetHorizontalDistance > 0.35f &&
+                    targetHorizontalDistance < 0.9f &&
+                    startHorizontalDistance > 1f &&
                     ReferenceEquals(StirgeHoldComponent.AttachedTarget(second),
                         pony);
                 ItemEntityWeapon weapon = hostile.Body.PrimaryHand.MaybeWeapon;
@@ -19575,6 +19607,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     pony.Descriptor.State.HasCondition(UnitCondition.CantMove) +
                     ";ponyCantAct=" + ponyCantActBefore + "->" +
                     pony.Descriptor.State.HasCondition(UnitCondition.CantAct) +
+                    ";positions=" + Vec(preyStart) + "->" +
+                    Vec(hostile.Position) + "/stirge=" +
+                    Vec(stirgeBeforeFollow) + "->" + Vec(stirgeAfterFollow) +
+                    "/targetHorizontalDistance=" + targetHorizontalDistance
+                        .ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) +
+                    "/startHorizontalDistance=" + startHorizontalDistance
+                        .ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) +
+                    ";inGame=" + stirgeInGameBeforeFollow + "/" +
+                    preyInGameBeforeFollow + ";linkedAfterFollow=" +
+                    firstStillLinkedAfterFollow +
                     ";independent=" +
                     independent + ";followed=" + followed +
                     ";counterHit=" + (counterattack != null &&
