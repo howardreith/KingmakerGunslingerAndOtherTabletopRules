@@ -463,10 +463,10 @@ namespace KingmakerGunslinger.DomainTests
             string[] kinds = { "aurochs", "bison", "rhinoceros",
                 "woolly-rhinoceros" };
             string[] meshHashes = {
-                "c699bf2f310faad1b27f5a8526d5ec62edd9d89de2d1b271e40c3e1dc5144857",
-                "ded381caaad9bf5f350867d2f13391d90b5ad52b92c27360b4f1051ef2416dc7",
-                "fc4196030a46cc7c71d9a2e7492b5c89a08543d8f08d3728bbf187ffe16c0723",
-                "2a10b55256a9bdc578ea8eed02e8535b3348522de9b5905b48ab7a80efb5fe36"
+                "477354af79aefb21de544517c498a05b2d420fbb5ebbb1cb675613f66f09196e",
+                "bd042f973a2a871283dea51614cbce56736f2d9d7dbc65fe6f3874ab4a193d56",
+                "aa7e069491034cf8281ea19cfd228ac159e0ad2b778e14f10f1441663014e9ca",
+                "45b3003b0184049921982d828faf71e95b90c2babf5acc0827f0095ec41aac52"
             };
             for (int item = 0; item < kinds.Length; item++)
             {
@@ -516,6 +516,37 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(File.Exists(Path.Combine(source, "generate_ungulates.py")) &&
                 File.Exists(Path.Combine(source, "paint_ungulate_albedo.py")),
                 "Original editable source and reproducible exporters remain available.");
+            string generator = File.ReadAllText(Path.Combine(source,
+                "generate_ungulates.py"));
+            Assertions.True(generator.Contains("def elliptical_tube(") &&
+                generator.Contains("cap_start=True, cap_end=True") &&
+                generator.Contains("def ellipsoid(") &&
+                generator.Contains("def hoof(") &&
+                generator.Contains("def articulated_leg(") &&
+                generator.Contains("No face crosses a donor pivot") &&
+                generator.Contains("widths[index] <= 0.0 and heights[index] <= 0.0") &&
+                generator.Contains("if len(rings[index]) == 1") &&
+                generator.Contains("if len(rings[index + 1]) == 1") &&
+                generator.Contains("spans = ((0, 1, 0), (1, 2, 1), (2, 4, 2))") &&
+                generator.Contains("overlap = min(length * 0.28") &&
+                generator.Contains("min(radii[start_index], radii[end_index]) * 0.84") &&
+                generator.Contains("if span_index > 0 else points[start_index]") &&
+                generator.Contains("end = points[end_index] + along * overlap") &&
+                generator.Contains("start_tip = 0.0 if span_index > 0 else start_radius * 0.90") &&
+                generator.Contains("end_radius * 0.84, end_radius * 0.72, 0.0") &&
+                generator.Contains("bones[bone_index], \"limbs\", segments)") &&
+                generator.Contains("points[-1], names[-1]") &&
+                generator.Contains("Vector((0, 0, 1)), 0.25 if bison else 0.22, 2") &&
+                generator.Contains("Vector((0, 0, -1)), 0.52 if woolly else 0.48, 3") &&
+                generator.Contains("Vector((0.72 * scale, 0.48 * scale, 0.82 * scale))") &&
+                !generator.Contains("profile = (0.0, 0.32, 0.72, 0.90, 1.0)") &&
+                !generator.Contains("ring_bones") &&
+                !generator.Contains("segments, False, False") &&
+                !generator.Contains("def aligned_ellipsoid(") &&
+                !generator.Contains("body_drop = Vector((0, -0.75, 0))") &&
+                !generator.Contains("Vector((0, -0.12, 0.07))") &&
+                !generator.Contains("Vector((0, -0.06, -0.22))"),
+                "The deterministic source must retain broad hoof profiles and three overlapping, independently controlled Rhinoceros spindle spans rather than the reviewed thin foot fans, stretched cross-pivot faces, open or broad-cap lower-joint pieces, stacked ankle barrels, displaced geometry, or rigid upper-control columns.");
             string loader = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "Assets", "PteranodonAssetRuntime.cs"));
             string view = File.ReadAllText(Path.Combine(root, "src",
