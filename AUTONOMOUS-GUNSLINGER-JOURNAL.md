@@ -1,5 +1,15 @@
 # Autonomous Gunslinger journal
 
+## 2026-09-30 Expanded Summoning Phase 2A release boundary
+
+The owner shortened the current run to a release checkpoint at the qualified
+end of Sprint 11. Version 0.0.141 publishes Sprints 9-11 with 882 generated
+choices and 29 retained native wrappers. All 68 Sprint 12 placements remain
+hidden while their checked-in mechanics and original visual groundwork await
+the rest of the publication matrix. The latest guarded candidate passed 41/41
+and exact installation restoration. Owner visual review is pending and
+nonblocking for this checkpoint.
+
 ## 2026-09-29 Expanded Summoning Sprint 10 corrected publication
 
 The owner-directed Stirge correction is internally qualified and its nine SNA

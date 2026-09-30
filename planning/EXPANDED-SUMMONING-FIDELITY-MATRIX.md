@@ -648,3 +648,14 @@ use their checked-in bite/trip profiles, but all four need original distinct
 silhouettes and the complete direct/quantity player-path, RTWP/turn-based,
 movement/contact, natural-expiry, save/load, module-disabled, compatibility,
 inventory and internal visual matrix before publication.
+
+The later hidden-view candidate adds deterministic original Dire Rat, Hyena
+and Goblin Dog meshes/albedos while preserving the audited native Dog view.
+Guarded run `20260930T1626175528422Z-disposable-expanded-summoning` passed
+41/41 direct, quantity, attachment and lifecycle assertions. This closes the
+basic live renderer-attachment check only; all 68 placements remain
+suppressed, and Sprint 12 remains unpublished until direct/quantity player
+paths, both combat modes, movement/contact, natural expiry, save/load, module
+disable, compatibility, inventory and the complete internal visual review
+pass. The 0.0.141 release boundary is Sprints 9-11: 882 visible generated
+choices and 911 total choices including 29 retained native wrappers.

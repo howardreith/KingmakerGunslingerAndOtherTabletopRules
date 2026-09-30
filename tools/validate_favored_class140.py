@@ -24,6 +24,11 @@ PACKAGE = "KingmakerGunslinger-0.0.140-local-runtime.zip"
 PACKAGE_SUFFIX = "favored-class-integration"
 DETERMINISTIC_TEST_COUNT = 1958
 STATIC_KEY = "favoredClassIntegration140"
+# Preserve this release's own static record when a later validator chains
+# through it with the active release identity.
+RELEASE_VERSION = VERSION
+RELEASE_INFORMATIONAL_VERSION = INFORMATIONAL_VERSION
+RELEASE_TEST_COUNT = DETERMINISTIC_TEST_COUNT
 
 # Exact ordered (symbol, guid) pairs this candidate appends after the
 # Better Vendors block.
@@ -417,14 +422,14 @@ def validate(root: Path) -> None:
     static = json.loads((root / "validation/static-validation.json").read_text(
         encoding="utf-8"))
     if static.get("version") != VERSION or static.get("milestone") != INFORMATIONAL_VERSION:
-        raise AssertionError("Static validation does not identify the 0.0.140 release")
+        raise AssertionError("Static validation does not identify the active release")
     state = static[STATIC_KEY]
     expected = {
-        "deterministicTestCount": DETERMINISTIC_TEST_COUNT,
+        "deterministicTestCount": RELEASE_TEST_COUNT,
         "publicReleaseAuthorized": True,
         "candidateOnly": False,
-        "releaseVersion": VERSION,
-        "releaseInformationalVersion": INFORMATIONAL_VERSION,
+        "releaseVersion": RELEASE_VERSION,
+        "releaseInformationalVersion": RELEASE_INFORMATIONAL_VERSION,
         "hostVerifiedVersion": "1.3.1",
         "hostVerifiedFileSha256": HOST_SHA256,
         "hostVerifiedMvid": HOST_MVID,
@@ -443,7 +448,7 @@ def validate(root: Path) -> None:
         raise AssertionError("A native qualification claim needs recorded evidence")
 
     baseline.require_tokens(root / "docs/RELEASE-NOTES-0.0.140.md",
-        INFORMATIONAL_VERSION, "Favored Class", "optional", "owner authorized",
+        RELEASE_INFORMATIONAL_VERSION, "Favored Class", "optional", "owner authorized",
         "uninstall")
 
 

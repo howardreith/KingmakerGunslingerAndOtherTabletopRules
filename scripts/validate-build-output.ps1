@@ -41,7 +41,13 @@ $requiredFiles = @(
     'assets\ungulates\rhinoceros-mesh.json',
     'assets\ungulates\rhinoceros-albedo.png',
     'assets\ungulates\woolly-rhinoceros-mesh.json',
-    'assets\ungulates\woolly-rhinoceros-albedo.png'
+    'assets\ungulates\woolly-rhinoceros-albedo.png',
+    'assets\sprint12-quadrupeds\dire-rat-mesh.json',
+    'assets\sprint12-quadrupeds\dire-rat-albedo.png',
+    'assets\sprint12-quadrupeds\hyena-mesh.json',
+    'assets\sprint12-quadrupeds\hyena-albedo.png',
+    'assets\sprint12-quadrupeds\goblin-dog-mesh.json',
+    'assets\sprint12-quadrupeds\goblin-dog-albedo.png'
 )
 $requiredIcons = @('gunslinger-class','firearm-proficiency','gunsmithing','grit',
     'deeds','nimble','bonus-feat','gun-training','true-grit','rapid-reload',
@@ -108,6 +114,12 @@ $allowedRelativePaths = @{
     'assets\ungulates\rhinoceros-albedo.png' = $true
     'assets\ungulates\woolly-rhinoceros-mesh.json' = $true
     'assets\ungulates\woolly-rhinoceros-albedo.png' = $true
+    'assets\sprint12-quadrupeds\dire-rat-mesh.json' = $true
+    'assets\sprint12-quadrupeds\dire-rat-albedo.png' = $true
+    'assets\sprint12-quadrupeds\hyena-mesh.json' = $true
+    'assets\sprint12-quadrupeds\hyena-albedo.png' = $true
+    'assets\sprint12-quadrupeds\goblin-dog-mesh.json' = $true
+    'assets\sprint12-quadrupeds\goblin-dog-albedo.png' = $true
 }
 
 $unexpected = @()

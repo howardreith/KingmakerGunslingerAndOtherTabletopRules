@@ -65,6 +65,8 @@ namespace KingmakerGunslinger.Assets
         internal const string StirgeMeshDataRelativePath =
             "assets/flying-animals/stirge-mesh.json";
         private const string UngulateDirectory = "assets/ungulates/";
+        private const string Sprint12QuadrupedDirectory =
+            "assets/sprint12-quadrupeds/";
         internal const int SupportedSchemaVersion = 2;
 
         /// <summary>
@@ -117,6 +119,28 @@ namespace KingmakerGunslinger.Assets
             "Tail0_M", "Tail1_M", "Tail2_M", "Tail3_M", "Tail4_M"
         };
 
+        private static readonly string[] AllowedDogBones =
+        {
+            "Head", "Jaw", "L_Arm_Lower", "L_Arm_Upper", "L_Ear",
+            "L_Finger0", "L_Leg0_Foot", "L_Leg0_Lower", "L_Leg0_Lower1",
+            "L_Leg0_Toe0", "L_Leg0_Upper", "L_Palm", "LowerTorso", "Neck0",
+            "Neck1", "Nose", "Pelvis", "R_Arm_Lower", "R_Arm_Upper", "R_Ear",
+            "R_Finger0", "R_Leg0_Foot", "R_Leg0_Lower", "R_Leg0_Lower1",
+            "R_Leg0_Toe0", "R_Leg0_Upper", "R_Palm", "Tail00", "Tail01",
+            "Tail02", "Tail03", "UpperTorso"
+        };
+        private static readonly string[] AllowedWolfWorgBones =
+        {
+            "Head", "L_Arm_Lower", "L_Arm_Upper", "L_Foot0", "L_Leg0_Lower",
+            "L_Leg0_Lower2", "L_Leg0_Upper", "L_Palm", "R_Arm_Lower",
+            "R_Arm_Upper", "R_Foot0", "R_Leg0_Lower", "R_Leg0_Lower2",
+            "R_Leg0_Upper", "R_Palm", "Torso_Lower", "Torso_Upper", "ear_L",
+            "ear_R", "front_paw__tip_R", "front_paw_tip_L", "hindpaw_tip_L",
+            "hindpaw_tip_R", "jaw", "jaw_woo_down", "jaw_woo_up",
+            "jaw_woo_up_add", "neck", "spine_0", "tail_01", "tail_02",
+            "tail_03", "tail_04", "withers"
+        };
+
         private sealed class UngulateVisual
         {
             internal Mesh Mesh;
@@ -133,6 +157,24 @@ namespace KingmakerGunslinger.Assets
                 { "rhinoceros", new UngulateVisual() },
                 { "woolly-rhinoceros", new UngulateVisual() }
             };
+
+        private sealed class Sprint12QuadrupedVisual
+        {
+            internal Mesh Mesh;
+            internal string[] Bones;
+            internal Texture2D Albedo;
+            internal string Status = "donor-visual:not-configured";
+        }
+
+        private static readonly Dictionary<string, Sprint12QuadrupedVisual>
+            Sprint12Quadrupeds =
+                new Dictionary<string, Sprint12QuadrupedVisual>(
+                    StringComparer.Ordinal)
+                {
+                    { "dire-rat", new Sprint12QuadrupedVisual() },
+                    { "hyena", new Sprint12QuadrupedVisual() },
+                    { "goblin-dog", new Sprint12QuadrupedVisual() }
+                };
 
         /// <summary>
         /// What the mesh data says about its painting. Checked against the
@@ -293,6 +335,30 @@ namespace KingmakerGunslinger.Assets
             }
         }
 
+        internal static bool TryGetSprint12QuadrupedVisual(string key,
+            out Mesh mesh, out string[] boneNames, out Texture2D albedo,
+            out string status)
+        {
+            lock (Sync)
+            {
+                Sprint12QuadrupedVisual visual;
+                if (!Sprint12Quadrupeds.TryGetValue(key, out visual))
+                {
+                    mesh = null;
+                    boneNames = null;
+                    albedo = null;
+                    status = "donor-visual:unknown-sprint12-quadruped";
+                    return false;
+                }
+                mesh = visual.Mesh;
+                boneNames = visual.Bones == null ? null :
+                    (string[])visual.Bones.Clone();
+                albedo = visual.Albedo;
+                status = visual.Status;
+                return mesh != null && boneNames != null && albedo != null;
+            }
+        }
+
         /// <summary>
         /// Takes the published visual away for the life of the returned scope,
         /// so a guarded scenario can prove the fallback on a live summon without
@@ -351,6 +417,80 @@ namespace KingmakerGunslinger.Assets
             ConfigureGiantWasp(context);
             ConfigureStirge(context);
             ConfigureUngulates(context);
+            ConfigureSprint12Quadrupeds(context);
+        }
+
+        private static void ConfigureSprint12Quadrupeds(ModContext context)
+        {
+            if (context == null) throw new ArgumentNullException("context");
+            foreach (var entry in Sprint12Quadrupeds)
+            {
+                string key = entry.Key;
+                Sprint12QuadrupedVisual visual = entry.Value;
+                if (!context.FeatureModules.Active.ExpandedSummoning)
+                {
+                    lock (Sync) visual.Status = "donor-visual:module-disabled";
+                    continue;
+                }
+                lock (Sync)
+                    if (visual.Mesh != null && visual.Bones != null &&
+                        visual.Albedo != null) continue;
+                string path = Path.Combine(context.ModEntry.Path,
+                    (Sprint12QuadrupedDirectory + key + "-mesh.json")
+                    .Replace('/', Path.DirectorySeparatorChar));
+                if (!File.Exists(path))
+                {
+                    lock (Sync) visual.Status = "donor-visual:mesh-data-missing";
+                    context.Logger.Warning(key, "mesh.missing",
+                        "The original Sprint 12 visual is unavailable; the donor remains active: " + path);
+                    continue;
+                }
+                Mesh mesh = null;
+                Texture2D albedo = null;
+                try
+                {
+                    string[] names;
+                    AlbedoRequirement requirement;
+                    string[] allowed = key == "dire-rat" ? AllowedDogBones :
+                        AllowedWolfWorgBones;
+                    mesh = BuildMesh(File.ReadAllText(path), out names,
+                        out requirement, allowed);
+                    string reason;
+                    albedo = LoadAlbedo(Path.GetDirectoryName(path), requirement,
+                        out reason);
+                    if (albedo == null)
+                        throw new InvalidDataException("albedo:" + reason);
+                    mesh.name = "KMG_" + key;
+                    albedo.name = "KMG_" + key + "_Albedo";
+                    lock (Sync)
+                    {
+                        visual.Mesh = mesh;
+                        visual.Bones = names;
+                        visual.Albedo = albedo;
+                        visual.Status = "visual:published";
+                    }
+                    context.Logger.Info(key, "mesh.published",
+                        "Validated original Sprint 12 mesh: vertices=" +
+                        mesh.vertexCount + ";triangles=" +
+                        mesh.triangles.Length / 3 + ";bones=" + names.Length +
+                        ";albedo=" + albedo.width + "x" + albedo.height);
+                }
+                catch (Exception error)
+                {
+                    if (mesh != null) UnityEngine.Object.Destroy(mesh);
+                    if (albedo != null) UnityEngine.Object.Destroy(albedo);
+                    lock (Sync)
+                    {
+                        visual.Mesh = null;
+                        visual.Bones = null;
+                        visual.Albedo = null;
+                        visual.Status = "donor-visual:invalid-mesh-data";
+                    }
+                    context.Logger.Warning(key, "mesh.rejected",
+                        "The original Sprint 12 visual was rejected; the donor remains active: " +
+                        error.Message);
+                }
+            }
         }
 
         private static void ConfigureUngulates(ModContext context)

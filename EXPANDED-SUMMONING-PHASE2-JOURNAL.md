@@ -1,5 +1,21 @@
 # Expanded Summoning Phase 2 journal
 
+## Phase 2A checkpoint selected for 0.0.141, 2026-09-30
+
+At the owner's direction, the current work is consolidated into a release at
+the qualified end of Sprint 11. Sprints 9-11 contribute 882 visible generated
+choices and retain 29 native wrappers. The checkpoint includes the corrected
+Stirge attachment, automatic Trample response, faithful active-command
+Stampede, Powerful Charge, original creature views and icons, quantity paths,
+persistence and restoration evidence already recorded below.
+
+Sprint 12 remains hidden. The Dire Rat, Dog, Hyena and Goblin Dog rules and
+original-view foundation stay checked in, but all 68 placements remain
+suppressed until the remaining publication matrix is completed. Guarded run
+`20260930T1626175528422Z-disposable-expanded-summoning` passed 41/41,
+including direct and quantity view attachment; this is a hidden-foundation
+witness rather than Sprint 12 publication. Exact restoration followed.
+
 ## Sprint 12 donor bind frames captured privately, 2026-09-30
 
 The guarded disposable fixture now captures the renderer-local bind frames

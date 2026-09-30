@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.140-favored-class-integration",
+  "milestone": "0.0.141-expanded-summoning-phase2a",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.140",
+  "version": "0.0.141",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2062,5 +2062,22 @@
     "nativeRuntimeEvidence": "FAVORED-CLASS-IMPLEMENTATION-REPORT.md: 41/41 guarded runs of the final gate on the pre-merge candidate 1088abb3d; the merged 0.0.140 build passed repository validation, the domain suite and a clean build",
     "ownerAuthorizedRelease": true,
     "qualificationStatus": "RELEASED - owner authorized on 2026-09-26 together with the merged Expanded Summoning Phase 1 release"
+  },
+  "expandedSummoningPhase2A141": {
+    "branch": "codex/expanded-summoning-phase2a-sprints9-13",
+    "deterministicTestCount": 1958,
+    "publicReleaseAuthorized": true,
+    "candidateOnly": false,
+    "releaseVersion": "0.0.141",
+    "releaseInformationalVersion": "0.0.141-expanded-summoning-phase2a",
+    "publishedSprintRange": "9-11",
+    "visibleGeneratedChoices": 882,
+    "retainedNativeWrappers": 29,
+    "hiddenSprint12Placements": 68,
+    "sprint12Published": false,
+    "compatibilityRuntimeQualificationPending": false,
+    "runtimeEvidence": "20260930T1626175528422Z-disposable-expanded-summoning",
+    "ownerVisualReview": "NOT_PERFORMED_NONBLOCKING",
+    "ownerReleaseInstruction": "2026-09-30: consolidate at a reasonable near-term stopping point, commit, and cut a release."
   }
 }

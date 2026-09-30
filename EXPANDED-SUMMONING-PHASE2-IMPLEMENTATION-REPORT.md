@@ -1,5 +1,23 @@
 # Expanded Summoning Phase 2 implementation report
 
+Release disposition (0.0.141): the owner selected the end of Sprint 11 as the
+near-term release boundary. Sprints 9-11 are internally technically qualified
+and publish 882 generated choices plus 29 retained native wrappers, for 911
+visible choices. The release does not publish Sprint 12. All 68 Dire Rat, Dog,
+Hyena and Goblin Dog placements remain suppressed while their checked-in
+mechanics and original visual groundwork await the remaining player-path,
+persistence, compatibility, movement/contact, natural-expiry,
+module-disabled, inventory and final visual gates. Owner visual review remains
+`NOT_PERFORMED_NONBLOCKING`.
+
+The latest guarded candidate
+`20260930T1626175528422Z-disposable-expanded-summoning` passed 41/41,
+including direct and quantity original-view attachment for all hidden Sprint
+12 species and the shared lifecycle contract. Restoration
+`20260930T1630580562591Z-disposable-expanded-summoning.json` recovered the
+exact 136-file live tree. This evidence strengthens the retained Sprint 12
+foundation but does not change its hidden disposition.
+
 The Sprint 12 visual authoring seam now has bounded private input. Guarded
 run `20260930T1314329155573Z-disposable-expanded-summoning` passed 40/40 and
 captured one complete geometry-free bind frame for each required donor: Dog
