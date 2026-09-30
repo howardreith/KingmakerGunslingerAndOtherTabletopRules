@@ -44,7 +44,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "pixie", "nixie", "mound", "giant", "wasp", "stirge",
             "mosquito", "fly", "beetle", "mantis", "insect",
             "vargouille", "aurochs", "bison", "rhinoceros", "rhino",
-            "woolly", "mastodon", "elephant", "buffalo", "bull"
+            "woolly", "mastodon", "elephant", "buffalo", "bull",
+            "rat", "dog", "hyena", "worg", "wolf", "goblin"
         };
 
         private static readonly string[] NativeDonorFactTerms =
@@ -53,7 +54,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             "blindsense", "web", "pounce", "rake", "trip", "sprint", "flash",
             "insight", "breath", "poison", "naturalarmor", "plant", "regenerat",
             "fasthealing", "ferocity", "rockthrow", "rock", "blood",
-            "attach", "drain", "trample", "powerfulcharge", "stampede"
+            "attach", "drain", "trample", "powerfulcharge", "stampede",
+            "disease", "immunity", "immune", "allerg", "filth", "fever",
+            "goblin", "goblinoid"
         };
 
         private static readonly string[] NativeDonorAbilityTerms =
@@ -63,7 +66,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             "pyrotechnics", "gaseous", "softenearth", "gustofwind",
             "scorchingray", "swallow", "grapple", "grab", "flash", "sprint",
             "blood", "attach", "drain", "trample", "powerfulcharge",
-            "overrun"
+            "overrun", "disease", "allerg", "filth", "fever"
         };
 
         private static readonly string[] NativeDonorBuffTerms =
@@ -71,7 +74,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             "grapple", "grab", "swallow", "web", "entangle", "constrict",
             "sleep", "paralyz", "sprint", "flash", "insight", "pounce",
             "blood", "attach", "drain", "disease", "filth", "blinding",
-            "trample", "powerfulcharge"
+            "trample", "powerfulcharge", "allerg", "fever", "immunity"
         };
 
         private static readonly string[] NativeDonorProjectileTerms =
@@ -390,6 +393,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             "2131842b04b532f4c9cb662c9315a37a", // PujaWolfSprintBuff
             "4d0b2a0971ca8994a8af20940285da2f", // PujaWolfSuperSprintBuff
             "f957b4444b6fb404e84ae2a5765797bb", // TrippingBite
+            "9545a5550d89feb47a84edaeb4e63d0b", // FilthFever
         };
 
         /// <summary>
@@ -426,7 +430,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             "CR9_MastodonStandard", "MastodonSummon", "MammothTrample",
             "FlyTrampleTest", "GreaterAtavismTrample", "OverrunAbility",
             "OverrunNotTrampleAbility", "PowerfulChargeSharedStrengthBuff",
-            "PowerfulChargeSharedStrengthBuffToggleAbilityFeature"
+            "PowerfulChargeSharedStrengthBuffToggleAbilityFeature",
+            "DiseaseImmunity", "ImmunityToDisease", "DiseaseImmunityFeature",
+            "AllergicReaction", "GoblinDogAllergicReaction",
+            "GoblinDogDisease", "DireRatDisease", "RatDisease",
+            "Goblinoid", "SubtypeGoblinoid", "Goblin"
         };
 
         private static JToken DescribeGraph(object value, int depth, HashSet<object> seen)
