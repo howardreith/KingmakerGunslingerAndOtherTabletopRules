@@ -25,12 +25,26 @@ The shipped mesh/painting SHA-256 pairs are:
 
 | Creature | Mesh data | Albedo |
 | --- | --- | --- |
-| Aurochs | `c699bf2f310faad1b27f5a8526d5ec62edd9d89de2d1b271e40c3e1dc5144857` | `3aa982572cccc90712dfb0798920f5b6e45827cfbc32568a6d5114bfc1a0269b` |
-| Bison | `ded381caaad9bf5f350867d2f13391d90b5ad52b92c27360b4f1051ef2416dc7` | `1ec9fb91dde8f2ab6617f314efd68161b1bdeb56f00b23e8fee0667e2ba9ba7c` |
-| Rhinoceros | `fc4196030a46cc7c71d9a2e7492b5c89a08543d8f08d3728bbf187ffe16c0723` | `1568f8678a41a0ce719d307ab68b22c6d7181c24b855ac0d3af92cd2008a6cf1` |
-| Woolly Rhinoceros | `2a10b55256a9bdc578ea8eed02e8535b3348522de9b5905b48ab7a80efb5fe36` | `bbd353bc5ecdf135fb2c93e6588d09740caa170835b73b7d4f5b30d09db02f59` |
+| Aurochs | `477354af79aefb21de544517c498a05b2d420fbb5ebbb1cb675613f66f09196e` | `3aa982572cccc90712dfb0798920f5b6e45827cfbc32568a6d5114bfc1a0269b` |
+| Bison | `bd042f973a2a871283dea51614cbce56736f2d9d7dbc65fe6f3874ab4a193d56` | `1ec9fb91dde8f2ab6617f314efd68161b1bdeb56f00b23e8fee0667e2ba9ba7c` |
+| Rhinoceros | `aa7e069491034cf8281ea19cfd228ac159e0ad2b778e14f10f1441663014e9ca` | `1568f8678a41a0ce719d307ab68b22c6d7181c24b855ac0d3af92cd2008a6cf1` |
+| Woolly Rhinoceros | `45b3003b0184049921982d828faf71e95b90c2babf5acc0827f0095ec41aac52` | `bbd353bc5ecdf135fb2c93e6588d09740caa170835b73b7d4f5b30d09db02f59` |
 
 The game uses the existing per-view renderer swap and donor bind poses. A
 rejected asset leaves the donor intact. Offline renders only assess authored
 shape and color; live animation, attack contact, targeting, fades, navigation,
 and owner visual approval require separate runtime review.
+
+The September 29-30 correction replaces the short circular foot-end tubes with
+deterministic flattened hoof profiles. Cattle use two compact parallel lobes;
+rhinoceroses use one broad rounded pad. Each Rhinoceros leg follows the
+Mastodon donor's measured bind-frame centreline as three tapered spindle spans.
+No face crosses a donor pivot: each span has one exact donor control, closes
+to a point inside the next span, and overlaps it directly. No
+separate joint solid is present. The donor's short ankle helper turns the
+separately authored foot but does not receive a fourth visible sleeve. This
+keeps an upper limb, knee section, lower limb, and foot silhouette without
+linear-blend collapse, stretched bridge faces, open holes, broad cap disks,
+stacked barrels, bead-like joint covers, or one upper-control column. The
+geometry change does not alter collision, mechanical size, donor assets, or
+runtime ownership.
