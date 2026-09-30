@@ -50,6 +50,18 @@ namespace KingmakerGunslinger.DomainTests
                     "6c7915c9dc494849918e958618f61db0")
                     .IsSemanticDuplicate,
                 "Native SM I preservation child must reconcile to KMG Dog.");
+            Assertions.True(SummonVariantMergePolicy
+                    .PreserveNativeSemanticDuplicate(0,
+                        "6c7915c9dc494849918e958618f61db0"),
+                "A hidden KMG Dog must preserve the visible vanilla SM I Dog.");
+            Assertions.False(SummonVariantMergePolicy
+                    .PreserveNativeSemanticDuplicate(1,
+                        "6c7915c9dc494849918e958618f61db0"),
+                "A published exact KMG Dog replacement must collapse the vanilla duplicate.");
+            Assertions.Throws<InvalidOperationException>(() =>
+                SummonVariantMergePolicy.PreserveNativeSemanticDuplicate(2,
+                    "6c7915c9dc494849918e958618f61db0"),
+                "Ambiguous published replacements must fail closed.");
             Assertions.Equal(29, SummonNativeExpansionCatalog.All.Count,
                 "Native individual-option expansion count changed.");
             Assertions.True(SummonNativeExpansionCatalog.Replaces(

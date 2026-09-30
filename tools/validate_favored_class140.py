@@ -22,7 +22,7 @@ VERSION = "0.0.140"
 INFORMATIONAL_VERSION = "0.0.140-favored-class-integration"
 PACKAGE = "KingmakerGunslinger-0.0.140-local-runtime.zip"
 PACKAGE_SUFFIX = "favored-class-integration"
-DETERMINISTIC_TEST_COUNT = 1955
+DETERMINISTIC_TEST_COUNT = 1958
 STATIC_KEY = "favoredClassIntegration140"
 
 # Exact ordered (symbol, guid) pairs this candidate appends after the
@@ -259,7 +259,8 @@ def validate(root: Path) -> None:
     entries = json.loads((root / "blueprints/blueprints.json").read_text(
         encoding="utf-8"))["entries"]
     legacy = entries[:2609]
-    sprint12 = entries[2609:]
+    sprint12 = entries[2609:2646]
+    sprint12_mechanics = entries[2646:2649]
     wasp = entries[2461:2487]
     wasp_pinned = [(entry["symbol"], entry["guid"],
                     entry["plannedType"], entry["status"]) for entry in wasp]
@@ -308,7 +309,10 @@ def validate(root: Path) -> None:
         symbol: planned_type for symbol, planned_type in
         baseline.validate_expanded_summoning_phase1.expanded_summoning_manifest.planned()
         if symbol == "KMG.Summoning.Unit.DireRat" or
-        ".DireRat." in symbol
+        symbol.startswith("KMG.Summoning.Ability.SM.Tier") and
+            ".DireRat." in symbol or
+        symbol.startswith("KMG.Summoning.Ability.SNA.Tier") and
+            ".DireRat." in symbol
     }
     if len(sprint12) != 37 or len(expected_sprint12) != 37 or {
             entry["symbol"]: entry["plannedType"] for entry in sprint12
@@ -319,6 +323,16 @@ def validate(root: Path) -> None:
             for entry in sprint12):
         raise AssertionError(
             "Expanded Summoning Sprint 12 Dire Rat identities drifted")
+    if [(entry["symbol"], entry["guid"], entry["plannedType"],
+            entry["status"]) for entry in sprint12_mechanics] != [
+            ("KMG.Summoning.Natural.DireRat.Disease",
+             "8ca8ed3c08a5460193520cbe934eac35", "BlueprintFeature", "active"),
+            ("KMG.Summoning.Natural.GoblinDog.Traits",
+             "0f410b4ca075402485f596f474ddc9a9", "BlueprintFeature", "active"),
+            ("KMG.Summoning.Natural.GoblinDog.AllergicReaction",
+             "d9b5a71bf8424d278877e1eb735c2eae", "BlueprintBuff", "active")]:
+        raise AssertionError(
+            "Expanded Summoning Sprint 12 disease identities drifted")
     if len(poison) != 2 or poison_hash != (
             "92e7a5cfbf28ce94938eef6c16451d5688d47247d222b2a64f6c3db362e02adb"):
         raise AssertionError("Expanded Summoning Wasp poison identities drifted")

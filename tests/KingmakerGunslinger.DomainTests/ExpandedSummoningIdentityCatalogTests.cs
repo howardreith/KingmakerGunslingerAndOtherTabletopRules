@@ -11,20 +11,20 @@ namespace KingmakerGunslinger.DomainTests
         {
             var first = ExpandedSummoningIdentityCatalog.Build();
             var second = ExpandedSummoningIdentityCatalog.Build();
-            Assertions.Equal(1658, first.Count, "Foundation identity count changed.");
+            Assertions.Equal(1661, first.Count, "Foundation identity count changed.");
             Assertions.Equal(88, first.Count(value => value.PlannedType == "BlueprintUnit"), "Unit identity count changed.");
             Assertions.Equal(1435, first.Count(value => value.PlannedType == "BlueprintAbility"), "Ability identity count changed.");
             Assertions.Equal(2, first.Count(value => value.Symbol.StartsWith(
                 "KMG.Summoning.Native.", StringComparison.Ordinal)),
                 "Native tier-one preservation identity count changed.");
-            Assertions.Equal(56, first.Count(value => value.PlannedType == "BlueprintBuff"), "Buff identity count changed.");
+            Assertions.Equal(57, first.Count(value => value.PlannedType == "BlueprintBuff"), "Buff identity count changed.");
             Assertions.Equal(24, first.Count(value => value.PlannedType == "BlueprintAiCastSpell"), "AI identity count changed.");
             Assertions.Equal(12, first.Count(value => value.PlannedType == "BlueprintBrain"), "Brain identity count changed.");
             Assertions.Equal(13, first.Count(value => value.PlannedType == "BlueprintItemWeapon"), "Weapon identity count changed.");
             Assertions.Equal(2, first.Count(value => value.PlannedType == "BlueprintWeaponType"), "Weapon-type identity count changed.");
             Assertions.Equal(1, first.Count(value => value.PlannedType == "BlueprintUnitType"), "Unit-type identity count changed.");
             Assertions.Equal(17, first.Count(value => value.PlannedType == "BlueprintAbilityResource"), "Resource identity count changed.");
-            Assertions.Equal(7, first.Count(value => value.PlannedType == "BlueprintFeature"), "Feature identity count changed.");
+            Assertions.Equal(9, first.Count(value => value.PlannedType == "BlueprintFeature"), "Feature identity count changed.");
             Assertions.Equal(2, first.Count(value => value.PlannedType == "BlueprintAbilityAreaEffect"), "Area effect identity count changed.");
             Assertions.Equal(1, first.Count(value => value.PlannedType ==
                 "BlueprintActivatableAbility"),
@@ -358,9 +358,15 @@ namespace KingmakerGunslinger.DomainTests
                 "Giant Spider natural armor changed.");
             Assertions.True(spider.Facts.Contains("GiantSpiderPoison"),
                 "Giant Spider lost its exact native poison graph.");
-            Assertions.True(ExpandedSummoningNaturalProfiles.For("goblin-dog")
-                .Deviations.Any(value => value.Contains("allergic reaction")),
-                "Goblin Dog allergic-reaction omission is not explicit.");
+            NaturalSummonProfile goblinDog =
+                ExpandedSummoningNaturalProfiles.For("goblin-dog");
+            Assertions.True(goblinDog.Facts.Contains("GoblinDogTraits"),
+                "Goblin Dog lost its disease immunity and bite rider graph.");
+            Assertions.True(goblinDog.Deviations.Any(value =>
+                    value.Contains("printed DC 12 Fortitude save") &&
+                    value.Contains("nonstacking day of -2 Dexterity and -2 Charisma") &&
+                    value.Contains("exact native Goblin unit type is exempt")),
+                "Goblin Dog allergic-reaction implementation is not explicit.");
             Assertions.True(ExpandedSummoningNaturalProfiles.For("hyena")
                 .Facts.Contains("TrippingBite"),
                 "Hyena lost its tripping bite.");
@@ -911,12 +917,20 @@ namespace KingmakerGunslinger.DomainTests
                 "nativePreservation", "new[] { nativePreservation }",
                 "Direct summon publication requires exactly one frozen native-preservation child",
                 "SummonNativeOptionCatalog.Find",
-                "Native duplicate map did not resolve exactly one KMG option",
+                "PreserveNativeSemanticDuplicate",
                 "preservedOriginals.Any(original =>",
                 "SummonNativeExpansionCatalog.Replaces",
                 "nativeAdditions", "nativeAdditionSpecs" })
                 Assertions.True(source.Contains(token),
                     "Runtime publication contract is missing: " + token);
+            string mergePolicy = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "Summoning", "SummonVariantMergePolicy.cs"));
+            Assertions.True(mergePolicy.Contains(
+                    "Native duplicate map did not resolve exactly one KMG option") &&
+                mergePolicy.Contains("publishedReplacementCount == 0") &&
+                mergePolicy.Contains("publishedReplacementCount == 1"),
+                "Native duplicate reconciliation must preserve hidden replacements, collapse one published replacement, and reject ambiguity.");
             Assertions.False(source.Contains("SummonElemental"),
                 "Expanded Summoning publication must not target the standalone Summon Elemental spell.");
             string builder = File.ReadAllText(Path.Combine(

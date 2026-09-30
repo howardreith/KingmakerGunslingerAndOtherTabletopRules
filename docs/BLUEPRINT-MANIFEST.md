@@ -481,6 +481,8 @@ The Wasp, Stirge and all 48 Aurochs, Bison, Rhinoceros and Woolly Rhinoceros
 placements are now published after technical qualification.
 
 Sprint 12 appends the Dire Rat unit, eighteen logical placements and eighteen
-celestial/fiendish execution children. The ledger now contains 2646 stable identifiers: 2644 active and 2 reserved. All 68 Dire Rat, Dog, Hyena and Goblin
-Dog placements remain registered but hidden until their mechanics, distinct
-visual identities and lifecycle qualify.
+celestial/fiendish execution children, then the Dire Rat disease feature,
+Goblin Dog disease-traits feature, and Goblin Dog allergic-reaction buff. The
+ledger now contains 2649 stable identifiers: 2647 active and 2 reserved. All 68
+Dire Rat, Dog, Hyena and Goblin Dog placements remain registered but hidden
+until their mechanics, distinct visual identities and lifecycle qualify.

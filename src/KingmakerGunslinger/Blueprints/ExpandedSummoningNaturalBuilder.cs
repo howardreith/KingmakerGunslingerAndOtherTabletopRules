@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.Blueprints.Items;
 using Kingmaker.Blueprints.Items.Weapons;
@@ -17,6 +18,7 @@ using Kingmaker.RuleSystem;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
+using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.UnitLogic.Mechanics.Actions;
 using Kingmaker.UnitLogic.Mechanics.Components;
 using Kingmaker.Utility;
@@ -55,6 +57,16 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Summoning.Natural.GiantWasp.Venom";
         private const string WaspUnitTypeSymbol =
             "KMG.Summoning.Natural.GiantWasp.UnitType";
+        private const string DireRatDiseaseSymbol =
+            "KMG.Summoning.Natural.DireRat.Disease";
+        private const string GoblinDogTraitsSymbol =
+            "KMG.Summoning.Natural.GoblinDog.Traits";
+        private const string GoblinDogAllergicReactionSymbol =
+            "KMG.Summoning.Natural.GoblinDog.AllergicReaction";
+        private const string NativeFilthFeverGuid =
+            "9545a5550d89feb47a84edaeb4e63d0b";
+        private const string NativeGoblinUnitTypeGuid =
+            "d524df24b2f38cf4590525b2e7c4f34e";
         private const string NativeBite1d6Guid =
             "a000716f88c969c499a535dadcf09286";
         private const string NativeBite1d8Guid =
@@ -245,6 +257,18 @@ namespace KingmakerGunslinger.Blueprints
                 Require<BlueprintItemWeapon>(bySymbol, WaspSting1d8Symbol));
             ConfigureWaspUnitType(Require<BlueprintUnitType>(bySymbol,
                 WaspUnitTypeSymbol));
+            BlueprintBuff filthFever = BlueprintLibraryLookup.RequireExact<
+                BlueprintBuff>(library, NativeFilthFeverGuid,
+                    "native Filth Fever disease payload");
+            ConfigureDireRatDisease(Require<BlueprintFeature>(bySymbol,
+                    DireRatDiseaseSymbol), filthFever,
+                Require<BlueprintItemWeapon>(bySymbol, Bite1d4Symbol));
+            ConfigureGoblinDogTraits(Require<BlueprintFeature>(bySymbol,
+                    GoblinDogTraitsSymbol),
+                Require<BlueprintBuff>(bySymbol,
+                    GoblinDogAllergicReactionSymbol), nativeBite,
+                BlueprintLibraryLookup.RequireExact<BlueprintUnitType>(library,
+                    NativeGoblinUnitTypeGuid, "exact native Goblin unit type"));
             foreach (NaturalSummonProfile profile in
                 ExpandedSummoningNaturalProfiles.All)
                 ConfigureUnit(library, Require<BlueprintUnit>(bySymbol,
@@ -346,6 +370,94 @@ namespace KingmakerGunslinger.Blueprints
             type.SignatureAbilities = Array.Empty<BlueprintUnitFact>();
         }
 
+        private static void ConfigureDireRatDisease(BlueprintFeature feature,
+            BlueprintBuff filthFever, BlueprintItemWeapon bite)
+        {
+            var delivery = ScriptableObject.CreateInstance<
+                SummonInjuryDiseaseComponent>();
+            delivery.BiteWeapon = bite;
+            delivery.DiseaseBuff = filthFever;
+            delivery.FortitudeDc = SummonInjuryDiseasePolicy.DireRatFortitudeDc;
+            delivery.DurationSeconds = 0;
+            feature.name = InternalName(DireRatDiseaseSymbol);
+            feature.Ranks = 1;
+            feature.IsClassFeature = false;
+            feature.HideInUI = true;
+            feature.ComponentsArray = new BlueprintComponent[] { delivery };
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.DireRat.Disease.Name",
+                    "Dire Rat Filth Fever"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.DireRat.Disease.Description",
+                    "A bite that hits and deals damage exposes the target to native Filth Fever after a DC 11 Fortitude save."),
+                null);
+        }
+
+        private static void ConfigureGoblinDogTraits(BlueprintFeature feature,
+            BlueprintBuff reaction, BlueprintItemWeapon bite,
+            BlueprintUnitType goblinType)
+        {
+            var descriptor = ScriptableObject.CreateInstance<
+                SpellDescriptorComponent>();
+            descriptor.Descriptor = SpellDescriptor.Disease;
+            var dexterity = ScriptableObject.CreateInstance<AddStatBonus>();
+            dexterity.Stat = StatType.Dexterity;
+            dexterity.Value =
+                SummonInjuryDiseasePolicy.GoblinDogAllergyAbilityPenalty;
+            dexterity.Descriptor = ModifierDescriptor.Penalty;
+            var charisma = ScriptableObject.CreateInstance<AddStatBonus>();
+            charisma.Stat = StatType.Charisma;
+            charisma.Value =
+                SummonInjuryDiseasePolicy.GoblinDogAllergyAbilityPenalty;
+            charisma.Descriptor = ModifierDescriptor.Penalty;
+            var healing = ScriptableObject.CreateInstance<
+                SummonAllergicReactionHealingComponent>();
+            reaction.name = InternalName(GoblinDogAllergicReactionSymbol);
+            reaction.Stacking = StackingType.Replace;
+            SetBuffFlags(reaction, harmful: true);
+            reaction.ComponentsArray = new BlueprintComponent[] {
+                descriptor, dexterity, charisma, healing };
+            BlueprintUnitFactAccess.Resolve().Configure(reaction,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.GoblinDog.Allergy.Name",
+                    "Goblin Dog Allergic Reaction"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.GoblinDog.Allergy.Description",
+                    "Disease: -2 Dexterity and -2 Charisma for one day. Positive magical healing or remove disease ends the reaction."),
+                null);
+
+            var immunity = ScriptableObject.CreateInstance<
+                BuffDescriptorImmunity>();
+            immunity.CheckFact = false;
+            immunity.Descriptor = SpellDescriptor.Disease;
+            immunity.FactToCheck = null;
+            immunity.IgnoreFeature = null;
+            var delivery = ScriptableObject.CreateInstance<
+                SummonInjuryDiseaseComponent>();
+            delivery.BiteWeapon = bite;
+            delivery.DiseaseBuff = reaction;
+            delivery.ExcludedUnitType = goblinType;
+            delivery.FortitudeDc =
+                SummonInjuryDiseasePolicy.GoblinDogFortitudeDc;
+            delivery.DurationSeconds =
+                SummonInjuryDiseasePolicy.GoblinDogAllergyDurationSeconds;
+            feature.name = InternalName(GoblinDogTraitsSymbol);
+            feature.Ranks = 1;
+            feature.IsClassFeature = false;
+            feature.HideInUI = true;
+            feature.ComponentsArray = new BlueprintComponent[] {
+                immunity, delivery };
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.GoblinDog.Traits.Name",
+                    "Goblin Dog Disease Traits"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.GoblinDog.Traits.Description",
+                    "Immune to disease. A damaging bite causes an allergic reaction on a failed DC 12 Fortitude save; the bounded Kingmaker adaptation exempts only the exact native Goblin unit type."),
+                null);
+        }
+
         private static void ConfigureUnit(LibraryScriptableObject library,
             BlueprintUnit unit, NaturalSummonProfile profile,
             IDictionary<string, BlueprintScriptableObject> bySymbol,
@@ -424,6 +536,10 @@ namespace KingmakerGunslinger.Blueprints
                     ? Require<BlueprintFeature>(bySymbol, WaspPoisonSymbol)
                     : fact == "DireBatBlindsense"
                     ? Require<BlueprintFeature>(bySymbol, DireBatBlindsenseSymbol)
+                    : fact == "DireRatDisease"
+                    ? Require<BlueprintFeature>(bySymbol, DireRatDiseaseSymbol)
+                    : fact == "GoblinDogTraits"
+                    ? Require<BlueprintFeature>(bySymbol, GoblinDogTraitsSymbol)
                     : BaseUnitFactKeys.Contains(fact)
                     ? BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(
                         library, FactGuids[fact], profile.DisplayName + " " + fact)
@@ -567,6 +683,18 @@ namespace KingmakerGunslinger.Blueprints
             if (field == null) throw new MissingFieldException(
                 target.GetType().FullName, name);
             field.SetValue(target, value);
+        }
+
+        private static void SetBuffFlags(BlueprintBuff buff, bool harmful)
+        {
+            FieldInfo field = Fields(typeof(BlueprintBuff)).SingleOrDefault(
+                candidate => candidate.Name == "m_Flags");
+            if (field == null || !field.FieldType.IsEnum)
+                throw new MissingFieldException(typeof(BlueprintBuff).FullName,
+                    "m_Flags");
+            field.SetValue(buff, harmful ?
+                Enum.Parse(field.FieldType, "Harmful") :
+                Enum.ToObject(field.FieldType, 0));
         }
 
         private static IEnumerable<FieldInfo> Fields(Type type)
