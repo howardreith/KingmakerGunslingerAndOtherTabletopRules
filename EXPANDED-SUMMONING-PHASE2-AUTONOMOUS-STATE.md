@@ -1,5 +1,34 @@
 # Expanded Summoning Phase 2 autonomous state
 
+## Sprint 12 private donor bind frames, 2026-09-30
+
+The hidden Sprint 12 fixture now records geometry-free renderer-local bind
+frames for the three donor families needed by the original visual work. The
+Dog donor used by Dire Rat has one renderer, 37 bones and 37 bind poses; the
+Wolf donor used by Hyena has one renderer, 36 bones and 36 bind poses; the
+Worg donor used by Goblin Dog has one renderer, 36 bones and 36 bind poses.
+The captures contain renderer metadata, bone names, parent names and measured
+bind transforms only. They contain no native vertices, triangles, UVs,
+materials, textures or animation, remain machine-local, and are authoring
+inputs rather than visual acceptance.
+
+Guarded Steam-backed run
+`20260930T1314329155573Z-disposable-expanded-summoning` passed 40/40 after
+repository validation, all 1,958 domain tests, clean Release and strict
+package validation. The Dog/Wolf/Worg capture SHA-256 values are
+`BD7E0DAE190DC014CA27F5863750AAA41564BC476744D5E445105461F101D09B`,
+`73F22E28EE7DAFCC15CD2CF529B44342963B52208DD80CD0A9D3E8C18F46A591`
+and `ACB860C0BED6D330306BEFF3AFADDD367490281674C412EA125908FA5580C39D`.
+Runtime result/evidence SHA-256 values are
+`CF0069B5B1C9C395D82F04DDB5A5AE9867A4C1EC953FEF2742AE6E4CD0823828`
+and `6E17E739BBFF378EB65EAC8284B073EC6869A2F599D9556ED865738E1466284E`.
+Restoration record
+`20260930T1318353465055Z-disposable-expanded-summoning.json` has SHA-256
+`9859B5CE7107478F50B3B845F5189C7BC5D447FB5F73738FA91ADF8F28D7A0D7`
+and restored the original 136-file installation exactly at
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+All four Sprint 12 choices remain hidden.
+
 ## Sprint 12 hidden disease-mechanics checkpoint, 2026-09-30
 
 The hidden Sprint 12 candidate now gives Dire Rat and Goblin Dog their printed
