@@ -354,6 +354,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal string StirgePreyDeathDetail;
             internal bool StirgeExpiry;
             internal string StirgeExpiryDetail;
+            internal bool Sprint12DireRatDisease;
+            internal string Sprint12DireRatDiseaseDetail;
+            internal bool Sprint12GoblinDogAllergy;
+            internal string Sprint12GoblinDogAllergyDetail;
+            internal bool Sprint12DiseaseQuantity;
+            internal string Sprint12DiseaseQuantityDetail;
             internal bool HostileAbilityTarget;
             internal int AdditionalCasts;
             internal readonly List<string> Diagnostics = new List<string>();
@@ -17684,6 +17690,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                     mechanics == null ? "not-run" : mechanics.StirgeExpiryDetail,
                     mechanics != null && mechanics.StirgeExpiry,
                     "actual SummonedUnitBuff deadline, BuffCollection.Tick and native destroyer queue"),
+                Assertion("expanded-summoning-sprint12-dire-rat-disease",
+                    "exact damaging bite fails/passes DC 11 as seeded, native Filth Fever applies only on failure, miss delivers nothing, and a replayed event resolves once",
+                    mechanics == null ? "not-run" :
+                        mechanics.Sprint12DireRatDiseaseDetail,
+                    mechanics != null && mechanics.Sprint12DireRatDisease,
+                    "live Dire Rat natural attacks, native RuleSavingThrow/RuleApplyBuff, and exact runtime component replay"),
+                Assertion("expanded-summoning-sprint12-goblin-dog-allergy",
+                    "damaging bite uses DC 12; exact Goblins are exempt; one-day -2 Dexterity/-2 Charisma never stacks; disease immunity, positive magical healing, and remove disease use native rules",
+                    mechanics == null ? "not-run" :
+                        mechanics.Sprint12GoblinDogAllergyDetail,
+                    mechanics != null && mechanics.Sprint12GoblinDogAllergy,
+                    "live Goblin Dog natural attacks, exact native Goblin type, paired RuleApplyBuff immunity, RuleHealDamage sources, and native Remove Disease cast"),
+                Assertion("expanded-summoning-sprint12-disease-quantity",
+                    "separate Dire Rats and Goblin Dogs from quantity casts deliver only their own disease state to distinct victims",
+                    mechanics == null ? "not-run" :
+                        mechanics.Sprint12DiseaseQuantityDetail,
+                    mechanics != null && mechanics.Sprint12DiseaseQuantity,
+                    "live 1d4+1 summons, independent natural attacks, source contexts, and paired victim buffs"),
                 Assertion("expanded-summoning-disposable-cleanup",
                     "exact party and global-unit snapshots restored", observed,
                     cleaned, "per-cast UnitEntityData.Dispose and final exact snapshots"),
@@ -18282,6 +18306,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         caster, hostile, created, result,
                         out result.StirgePreyDeathDetail);
 
+                ResetExpandedSummoningMechanicalHostile(hostile, blueprints);
+                ExerciseExpandedSummoningSprint12DiseasePack(blueprints,
+                    caster, hostile, scene, created, result);
+
                 result.RepresentativeCombat = animalAttack && proxyAttack &&
                     elementalAttack && stalkerAttack && shadowAttack &&
                     salamanderAttack && succubusAttack && pixieAttack &&
@@ -18316,6 +18344,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     result.StirgeExpiryDetail + "]");
                 result.Diagnostics.Add("stirgePreyDeath[" +
                     result.StirgePreyDeathDetail + "]");
+                result.Diagnostics.Add("sprint12DireRat[" +
+                    result.Sprint12DireRatDiseaseDetail + "]");
+                result.Diagnostics.Add("sprint12GoblinDog[" +
+                    result.Sprint12GoblinDogAllergyDetail + "]");
+                result.Diagnostics.Add("sprint12Quantity[" +
+                    result.Sprint12DiseaseQuantityDetail + "]");
                 result.Diagnostics.Add("cyclops[granted=" + flashGranted +
                     ";resource=" + flashBefore + "->" + flashAfter + ";armed=" +
                     flashArmed + ";armedNatural1=" + flashArmedDetail +

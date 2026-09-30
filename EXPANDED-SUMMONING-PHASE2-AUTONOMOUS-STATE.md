@@ -1,5 +1,49 @@
 # Expanded Summoning Phase 2 autonomous state
 
+## Sprint 12 hidden disease-mechanics checkpoint, 2026-09-30
+
+The hidden Sprint 12 candidate now gives Dire Rat and Goblin Dog their printed
+injury riders without publishing any of the four Sprint 12 choices. A Dire Rat
+bite must hit and deal positive damage before the target makes the printed DC
+11 Fortitude save against the exact native Filth Fever blueprint. Goblin Dog
+is immune to disease. Its exact damaging bite causes a DC 12 Fortitude save;
+failure applies one nonstacking day of -2 Dexterity and -2 Charisma. Positive
+spell, spell-like or supernatural healing and native Remove Disease remove the
+reaction. The disclosed bounded Kingmaker adaptation exempts only the exact
+native Goblin unit type because the installed library has no broader Goblinoid
+subtype contract.
+
+Guarded run `20260930T1234331263883Z-disposable-expanded-summoning` passed
+39/39 assertions. The Dire Rat case observed failed and successful DC 11
+saves, native Filth Fever source identity, a miss, and same-event replay
+suppression. The Goblin Dog case observed disease immunity, failed DC 12
+application, exact 86,400-second duration, -2/-2 penalties, replacement rather
+than stacking, ordinary-healing preservation, positive magical-healing
+removal, native Remove Disease removal, and exact native-Goblin exemption.
+The quantity case used two separate rat sources and five separate dog sources
+against distinct victims and verified that each resulting context retained its
+own caster. Request-local units were destroyed through the native scene path;
+the final exact cleanup assertion passed.
+
+The source passed repository validation, all 1,958 domain tests, clean Release
+and strict package validation before the guarded run. Clean package SHA-256 is
+`018B0B43FA061D13395DCAABE61B1D8BDE3F417FB5E1BC21ADB574A5ADEFEB01`;
+DLL SHA-256 is
+`989C724965638F8FB1A62AA29A5EEFD93E856C352A3F545C53BA065B59FA51B4`.
+Runtime result/evidence SHA-256 values are
+`1FC65570413D0FA5FB70D12B27EE6599F452DF94C353B5F5FD8FD4AD1A595170`
+and `88E91D092DEB7D47D80BFD93BE82BEB68EC40A90C03127AE9DA0F27471B55453`.
+Restoration record
+`20260930T1238533838750Z-disposable-expanded-summoning.json` has SHA-256
+`5CD84AD2F0F7DE16FD215B3C1F05E6B7DDC8DBF7E8C588F3F681C8B83BD69280`
+and restored the original 136-file installation exactly at
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+
+Sprint 12 is not complete. Dire Rat, Dog, Hyena and Goblin Dog remain hidden
+until their distinct silhouettes, direct and quantity player paths, both turn
+modes, movement/contact, natural expiry, save/load, module-disabled cleanup,
+compatibility, inventory and internal visual review pass.
+
 ## Sprint 10 quantity-witness correction, 2026-09-30
 
 The final source-correct candidate repaired the Stirge quantity fixture without
