@@ -108,13 +108,14 @@ mechanical and compatibility runs passed with this behavior.
 
 | Creature | Families/tiers | KMG unit | Delivered chassis/offense | Deviation | Qualification |
 |---|---|---|---|---|---|
-| Dog | SM I; SNA I | `e8c90cb29374455cb6301e4fa7d1f837` | Small animal 1; Str 13/Dex 13/Con 15/Int 2/Wis 12/Cha 6; speed 40; bite 1d4; Perception focus | None structurally identified | Structural/runtime/visual/persistence/profile PASS |
+| Dire Rat | SM I; SNA I | `e7e43c80489a48e1b562fe6ac11c33ee` | Small animal 1; 10/17/13/2/13/4; speed 40; bite 1d4; Weapon Finesse, Skill Focus (Perception), four-leg trip defense; exact damaging bite invokes DC 11 Fortitude and native Filth Fever | Climb/swim omitted; compact original rat silhouette still pending | Registered and hidden; focused injury-disease, miss/replay and quantity-source runtime PASS; full Sprint 12 visual/player/persistence matrix pending |
+| Dog | SM I; SNA I | `e8c90cb29374455cb6301e4fa7d1f837` | Small animal 1; Str 13/Dex 13/Con 15/Int 2/Wis 12/Cha 6; speed 40; bite 1d4; Perception focus | None structurally identified | Registered and hidden for Sprint 12; inherited structural profile PASS; distinct visual and full live matrix pending |
 | Eagle | SM I; SNA I | `7383db28c1d74dce98533ddc257a2e3c`; instance-local original Eagle feathered mesh on the Giant Eagle flying rig | Small animal 1; 80-foot airborne movement; bite and two 1d4 talons; Weapon Finesse; view scale 0.30 | Separate 10-foot ground speed omitted | Phase 2 Sprint 9 visual attachment 2/2, Roc isolation 2/2, 81/81 visual contracts and lifecycle retry live PASS; player-path teardown fault, sprint-specific motion/contact and persistence pending |
 | Poisonous Frog | SM I; SNA I | `e1a8e5e206154dd48b6aca1d4262e8e7` | Tiny animal 1; bite 1; native six-tick 1d2 Constitution poison, Fortitude, one save cures | Swim movement omitted | Structural/runtime/visual/persistence/profile PASS; poison graph structurally qualified |
 | Giant Centipede | SM II; SNA I | `baf9e8f829e9410db8f3d200bb62a2c6` | Medium vermin 1; speed 40; bite 1d6-1; native six-tick 1d3 Dexterity poison; eight-leg trip defense | Int 1 represents absent Intelligence; climb omitted; native poison lacks the tabletop +2 racial DC bonus | Structural/runtime/visual/persistence/profile PASS; poison graph structurally qualified |
 | Giant Spider | SM II; SNA II | `4a3cd49e751448c8b8836485b262fdf1` | Medium vermin 3; bite 1d6; native four-tick 1d2 Strength poison; natural armor +1; native 60-ft blindsight for tremorsense, native web immunity, bounded 50-ft ranged Web (Reflex, native web-grappled state up to ten rounds, two uses per summoning) (Sprint 6) | Int 1 represents absent Intelligence; web, climb, and tremorsense omitted because no bounded contract was proven | Structural/runtime/visual/persistence/profile PASS; poison graph structurally qualified |
-| Goblin Dog | SM II; SNA II | `f1584066792a436fa3a5ba0b3731b481` | Medium animal 1; speed 50; bite 1d6+3; Toughness; Worg view only | Disease immunity and allergic reaction omitted because no safe exact contract was proven | Structural/runtime/visual/persistence/profile PASS |
-| Hyena | SM II; SNA II | `ec12fab8be5c412d8ee824d15a6621d0` | Medium animal 2; speed 50; bite 1d6+3 with native trip; Perception focus | Wolf view only | Structural/runtime/visual/persistence/profile PASS |
+| Goblin Dog | SM II; SNA II | `f1584066792a436fa3a5ba0b3731b481` | Medium animal 1; speed 50; bite 1d6+3; Toughness; disease immunity; exact damaging bite invokes DC 12 Fortitude and one nonstacking day at -2 Dexterity/-2 Charisma, removable by positive magical healing or native Remove Disease | Exact native Goblin type is exempt as a disclosed bounded adaptation because no broader Goblinoid subtype contract exists; original silhouette pending | Registered and hidden; focused immunity/allergy/removal/native-Goblin/quantity-source runtime PASS; full Sprint 12 visual/player/persistence matrix pending |
+| Hyena | SM II; SNA II | `ec12fab8be5c412d8ee824d15a6621d0` | Medium animal 2; speed 50; bite 1d6+3 with native trip; Perception focus | Original hyena silhouette pending | Registered and hidden for Sprint 12; inherited structural profile PASS; distinct visual and full live matrix pending |
 
 All 67 KMG summon units carry hidden marker
 `KMG.Summoning.Subtype.Extraplanar` (`1812739855844dc4adf3c32a70f13512`)
@@ -628,3 +629,22 @@ context, duration, control, safe session-link reset, native expiry and final
 zero residue. Restoration record `20260930T0535320622642Z` verifies the
 original 136-file installation exactly. Owner visual approval is
 NOT_PERFORMED_NONBLOCKING.
+
+## Phase 2 Sprint 12 hidden mechanics checkpoint, 2026-09-30
+
+All 68 Dire Rat, Dog, Hyena and Goblin Dog placements remain suppressed. The
+Dire Rat and Goblin Dog mechanics candidate passed focused guarded run
+`20260930T1234331263883Z-disposable-expanded-summoning` at 39/39 assertions.
+Dire Rat required an exact hit and positive bite damage, then exercised both
+DC 11 save outcomes against the exact native Filth Fever payload, a miss, and
+same-event replay suppression. Goblin Dog exercised disease immunity, both DC
+12 outcomes, exact one-day duration and -2/-2 penalties, replacement stacking,
+ordinary-healing preservation, positive magical-healing removal, native Remove
+Disease removal, and the exact native-Goblin exemption. Separate quantity
+sources retained their own caster/victim contexts, and exact cleanup passed.
+
+This qualifies only the focused injury-disease contracts. Dog and Hyena still
+use their checked-in bite/trip profiles, but all four need original distinct
+silhouettes and the complete direct/quantity player-path, RTWP/turn-based,
+movement/contact, natural-expiry, save/load, module-disabled, compatibility,
+inventory and internal visual matrix before publication.

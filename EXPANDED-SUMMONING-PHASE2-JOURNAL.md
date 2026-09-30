@@ -1,5 +1,35 @@
 # Expanded Summoning Phase 2 journal
 
+## Sprint 12 injury-disease mechanics qualified while hidden, 2026-09-30
+
+The Sprint 12 rules graph now owns three stable blueprints: Dire Rat disease,
+Goblin Dog disease traits, and Goblin Dog allergic reaction. The shared injury
+component requires the exact bite, a hit, positive actual melee damage, an
+available eligible target, and one resolution per attack event. Dire Rat then
+uses a native DC 11 Fortitude save and exact native Filth Fever. Goblin Dog is
+disease-immune; its failed DC 12 save applies one replacement-stacking day of
+-2 Dexterity and -2 Charisma. Positive magical healing or native Remove
+Disease removes that reaction. Only the exact installed Goblin unit type is
+exempt, and that narrower adaptation is disclosed in player text.
+
+The ordinary bootstrap needed more than the wrapper's old startup watchdog,
+so the restoration wrapper now forwards separately bounded startup and
+completion deadlines to the guarded harness. This changes observation timing,
+not game behavior. The fixture also uses a request-local clone of a proven
+hostile blueprint with its type set to native Goblin; selecting an arbitrary
+library Goblin had produced a null runtime spawn. Request-local victims now use
+the native `Destroy` scene path, which corrected the diagnostic cleanup residue
+left by direct disposal.
+
+Final guarded run `20260930T1234331263883Z-disposable-expanded-summoning`
+passed 39/39, including failed/successful saves, miss/replay gates, disease
+immunity, one-day penalties, nonstacking, both removal routes, native-Goblin
+exemption, independent rat/dog quantity sources, and exact cleanup. Repository
+validation, all 1,958 domain tests, clean Release, strict package validation
+and exact restoration passed. All four Sprint 12 creatures remain hidden while
+visual, player-path, turn-mode, persistence, compatibility and publication
+work continues.
+
 ## Stirge quantity witness and disease-source resolution, 2026-09-30
 
 The reviewed quantity fixture had used `Translocate` to stand in for prey
