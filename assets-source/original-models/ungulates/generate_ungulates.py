@@ -8,6 +8,7 @@ The Blender project and FBX retain donor transforms and stay local.
 import argparse
 import hashlib
 import json
+import math
 from pathlib import Path
 import random
 import sys
@@ -74,6 +75,184 @@ def tube(bm, weights, uvs, points, radii, bones, region="body", segments=12):
                     segments=segments)
 
 
+def elliptical_tube(bm, weights, uvs, points, widths, heights, bone,
+                    region="beak", segments=10, cap_start=True, cap_end=True):
+    """Build a closed, flattened tube with one exact donor-bone owner.
+
+    Hooves need a broad horizontal footprint and a shallow vertical profile.
+    The shared circular tube made each short foot read as a thin radial fan
+    when animated, so feet use explicit width and height at every ring.
+    """
+    if not (len(points) == len(widths) == len(heights)) or len(points) < 2:
+        raise ValueError("elliptical tube needs matching ring profiles")
+    lengths = [0.0]
+    for index in range(1, len(points)):
+        lengths.append(lengths[-1] +
+                       (points[index] - points[index - 1]).length)
+    total = lengths[-1] or 1.0
+    rings = []
+    for index, centre in enumerate(points):
+        if widths[index] <= 0.0 and heights[index] <= 0.0:
+            vertex = bm.verts.new(centre)
+            weights[vertex] = [(bone, 1.0)]
+            uvs[vertex] = shared.region_uv(
+                region, lengths[index] / total, 0.5)
+            rings.append([vertex])
+            continue
+        if index == 0:
+            direction = points[1] - points[0]
+        elif index == len(points) - 1:
+            direction = points[-1] - points[-2]
+        else:
+            direction = points[index + 1] - points[index - 1]
+        right, up, _ = shared.basis(direction)
+        ring = []
+        for step in range(segments):
+            angle = 2.0 * math.pi * step / segments
+            offset = right * (math.cos(angle) * widths[index]) + \
+                up * (math.sin(angle) * heights[index])
+            vertex = bm.verts.new(centre + offset)
+            ring.append(vertex)
+            weights[vertex] = [(bone, 1.0)]
+            uvs[vertex] = shared.region_uv(
+                region, lengths[index] / total, shared.fold(angle))
+        rings.append(ring)
+    for index in range(len(rings) - 1):
+        if len(rings[index]) == 1:
+            tip = rings[index][0]
+            for step in range(segments):
+                nxt = (step + 1) % segments
+                bm.faces.new((tip, rings[index + 1][step],
+                              rings[index + 1][nxt]))
+            continue
+        if len(rings[index + 1]) == 1:
+            tip = rings[index + 1][0]
+            for step in range(segments):
+                nxt = (step + 1) % segments
+                bm.faces.new((rings[index][step], tip,
+                              rings[index][nxt]))
+            continue
+        for step in range(segments):
+            nxt = (step + 1) % segments
+            bm.faces.new((rings[index][step], rings[index + 1][step],
+                          rings[index + 1][nxt], rings[index][nxt]))
+    if cap_start and len(rings[0]) > 1:
+        bm.faces.new(tuple(reversed(rings[0])))
+    if cap_end and len(rings[-1]) > 1:
+        bm.faces.new(tuple(rings[-1]))
+
+
+def ellipsoid(bm, weights, uvs, centre, radii, bone, region="limbs",
+              latitudes=6, segments=12):
+    """Build one closed, single-bone ellipsoid.
+
+    A rotationally symmetric joint cover can follow either side of a donor
+    pivot without opening a seam when the adjoining rigid spans rotate.  The
+    same primitive gives Rhinoceros feet a rounded pad instead of a radial
+    end cap.
+    """
+    top = bm.verts.new(centre + Vector((0.0, radii.y, 0.0)))
+    bottom = bm.verts.new(centre - Vector((0.0, radii.y, 0.0)))
+    weights[top] = [(bone, 1.0)]
+    weights[bottom] = [(bone, 1.0)]
+    uvs[top] = shared.region_uv(region, 0.5, 1.0)
+    uvs[bottom] = shared.region_uv(region, 0.5, 0.0)
+    rings = []
+    for latitude in range(1, latitudes):
+        polar = math.pi * latitude / latitudes
+        horizontal = math.sin(polar)
+        ring = []
+        for step in range(segments):
+            angle = 2.0 * math.pi * step / segments
+            offset = Vector((math.cos(angle) * radii.x * horizontal,
+                             math.cos(polar) * radii.y,
+                             math.sin(angle) * radii.z * horizontal))
+            vertex = bm.verts.new(centre + offset)
+            ring.append(vertex)
+            weights[vertex] = [(bone, 1.0)]
+            uvs[vertex] = shared.region_uv(region, 0.5,
+                                           shared.fold(angle))
+        rings.append(ring)
+    for step in range(segments):
+        nxt = (step + 1) % segments
+        bm.faces.new((top, rings[0][step], rings[0][nxt]))
+        for latitude in range(len(rings) - 1):
+            bm.faces.new((rings[latitude][step],
+                          rings[latitude + 1][step],
+                          rings[latitude + 1][nxt],
+                          rings[latitude][nxt]))
+        bm.faces.new((bottom, rings[-1][nxt], rings[-1][step]))
+
+
+def hoof(bm, weights, uvs, anchor, bone, forward, scale, toes):
+    """Author a compact parallel-toed hoof instead of a splayed end disc."""
+    lateral = Vector((1.0, 0.0, 0.0))
+    if toes == 3:
+        # One rounded, flattened pad reads as a massive three-toed foot at
+        # party-camera distance.  It has no triangulated end fan or separate
+        # projections that can turn into claws under Mastodon animation.
+        centre = anchor + forward * (0.15 * scale)
+        ellipsoid(bm, weights, uvs, centre,
+                  Vector((0.72 * scale, 0.48 * scale, 0.82 * scale)),
+                  bone, "beak", 6, 12)
+        return
+    offsets = [0.0] if toes == 1 else [-0.43, 0.43]
+    for offset in offsets:
+        length = scale
+        side = lateral * (offset * scale)
+        points = [anchor + side - forward * (0.32 * length),
+                  anchor + side + forward * (0.32 * length),
+                  anchor + side + forward * (0.72 * length)]
+        elliptical_tube(bm, weights, uvs, points,
+                        [0.34 * scale, 0.39 * scale, 0.25 * scale],
+                        [0.38 * scale, 0.42 * scale, 0.25 * scale],
+                        bone, "beak", 10)
+
+
+def articulated_leg(bm, weights, uvs, points, radii, bones, segments=12):
+    """Build a Rhino limb as overlapping, donor-controlled spindle spans.
+
+    No face crosses a donor pivot.  Every tapered span is rigidly controlled
+    by its own chain bone, narrows to a tiny closed tip beyond each shared
+    pivot and overlaps the adjoining span.  The tapered tips remove broad cap
+    disks and open holes without restoring a stretchable cross-pivot bridge
+    or introducing a separate joint solid.
+    """
+    if not (len(points) == len(radii) == len(bones)) or len(points) < 2:
+        raise ValueError("articulated leg needs matching joint profiles")
+
+    # Mastodon's last ankle helper mainly turns the foot.  Giving that short
+    # helper its own visible sleeve produced four stacked barrels below the
+    # torso, so the lower-leg mass spans knee-to-foot under the knee control
+    # while the separate authored foot still follows the native foot bone.
+    spans = ((0, 1, 0), (1, 2, 1), (2, 4, 2))
+    for span_index, (start_index, end_index, bone_index) in enumerate(spans):
+        direction = points[end_index] - points[start_index]
+        length = direction.length
+        along = direction.normalized()
+        overlap = min(length * 0.28,
+                      min(radii[start_index], radii[end_index]) * 0.84)
+        start = (points[start_index] - along * overlap
+                 if span_index > 0 else points[start_index])
+        end = points[end_index] + along * overlap
+        start_radius = radii[start_index]
+        end_radius = radii[end_index]
+        start_tip = 0.0 if span_index > 0 else start_radius * 0.90
+        elliptical_tube(
+            bm, weights, uvs,
+            [start, start.lerp(end, 0.08), start.lerp(end, 0.20),
+             start.lerp(end, 0.50), start.lerp(end, 0.80),
+             start.lerp(end, 0.92), end],
+            [start_tip, start_radius * 0.72,
+             start_radius * 0.84,
+             (start_radius + end_radius) * 0.45,
+             end_radius * 0.84, end_radius * 0.72, 0.0],
+            [start_tip, start_radius * 0.72,
+             start_radius * 0.84,
+             (start_radius + end_radius) * 0.45,
+             end_radius * 0.84, end_radius * 0.72, 0.0],
+            bones[bone_index], "limbs", segments)
+
 def cattle(bm, weights, uvs, rig, kind):
     at = lambda name: shared.head(rig, name)
     bison = kind == "bison"
@@ -123,12 +302,11 @@ def cattle(bm, weights, uvs, rig, kind):
             points = [at(name) + Vector((sign * (0.20 if prefix == "front" else 0.12)
                                         * bulk, 0, 0)) for name in names]
             tube(bm, weights, uvs, points,
-                 [0.19, 0.17, 0.14, 0.19] if bison else
-                 [0.17, 0.145, 0.12, 0.17], names, "limbs", 10)
-            tube(bm, weights, uvs,
-                 [points[-1], points[-1] + Vector((0, -0.12, 0.07))],
-                 [0.19 if bison else 0.17, 0.21 if bison else 0.18],
-                 [names[-1]] * 2, "beak", 10)
+                 [0.19, 0.17, 0.14, 0.125] if bison else
+                 [0.17, 0.145, 0.12, 0.105], names, "limbs", 10)
+            hoof(bm, weights, uvs,
+                 points[-1] + Vector((0, -0.055, 0)), names[-1],
+                 Vector((0, 0, 1)), 0.25 if bison else 0.22, 2)
     tail_names = ["Tail1", "Tail2", "Tail3", "Tail4", "Tail5"]
     tube(bm, weights, uvs, [at(name) for name in tail_names],
          [0.10, 0.07, 0.055, 0.045, 0.085], tail_names, "limbs", 8)
@@ -193,12 +371,11 @@ def rhinoceros(bm, weights, uvs, rig, kind):
                       side + "_Foot0"]
         for names in (front_names, rear_names):
             points = [at(name) for name in names]
-            tube(bm, weights, uvs, points,
-                 [0.47, 0.40, 0.34, 0.30, 0.38] if woolly else
-                 [0.42, 0.36, 0.31, 0.27, 0.35], names, "limbs", 11)
-            tube(bm, weights, uvs,
-                 [points[-1], points[-1] + Vector((0, -0.06, -0.22))],
-                 [0.36, 0.39], [names[-1]] * 2, "beak", 11)
+            radii = ([0.50, 0.46, 0.40, 0.35, 0.31] if woolly else
+                     [0.45, 0.41, 0.36, 0.32, 0.28])
+            articulated_leg(bm, weights, uvs, points, radii, names)
+            hoof(bm, weights, uvs, points[-1], names[-1],
+                 Vector((0, 0, -1)), 0.52 if woolly else 0.48, 3)
     tail = ["Tail0_M", "Tail1_M", "Tail2_M", "Tail3_M", "Tail4_M"]
     tube(bm, weights, uvs, [at(name) for name in tail],
          [0.16, 0.13, 0.10, 0.07, 0.04], tail, "limbs", 8)

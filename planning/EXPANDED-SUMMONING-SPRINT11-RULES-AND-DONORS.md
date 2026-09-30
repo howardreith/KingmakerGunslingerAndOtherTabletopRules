@@ -549,3 +549,98 @@ clean launcher outcome, scenario PASS, no failures, and the exact original
 This closes the Stampede mechanics disposition. Corrected hoof/leg art and the
 remaining Sprint 11 publication gates remain open, so every Sprint 11 choice
 stays hidden.
+
+## Corrected hoof and leg art, 2026-09-30
+
+The editable Blender generator now authors compact flattened cloven hooves for
+Aurochs and Bison instead of short circular foot-end tubes. Rhinoceros and
+Woolly Rhinoceros keep a broad rounded foot pad, while each leg is divided into
+three independently controlled tapered spindle spans along the measured
+Mastodon bind-frame centreline. Each internal span closes to a point beyond its
+joint and overlaps the neighboring span. No face crosses a donor pivot, no
+separate joint cover is present, and the donor's short ankle helper controls
+only the separately authored foot. This removes the reviewed thin/splayed hoof
+ends, rigid whole-leg columns, stretched bridge spikes, open joint holes, broad
+cap disks, stacked barrels, and circular knee/ankle buttons.
+
+The final mesh SHA-256 values are:
+
+- Aurochs: `477354af79aefb21de544517c498a05b2d420fbb5ebbb1cb675613f66f09196e`
+- Bison: `bd042f973a2a871283dea51614cbce56736f2d9d7dbc65fe6f3874ab4a193d56`
+- Rhinoceros: `aa7e069491034cf8281ea19cfd228ac159e0ad2b778e14f10f1441663014e9ca`
+- Woolly Rhinoceros: `45b3003b0184049921982d828faf71e95b90c2babf5acc0827f0095ec41aac52`
+
+Two independent deterministic exports reproduced all four bytes exactly. The
+tracked generator, source note, mesh data and focused tests preserve the final
+construction contract; private donor captures and intermediate review renders
+remain excluded from the repository.
+
+Several bounded candidates were rejected during live and offline review. A
+lowered body with straight leg centres read as oversized columns. Separate
+pivot pieces opened accordion gaps. A whole-leg upper control produced rigid
+swinging columns. Smooth blended two-bone rings collapsed into stars. Rigid
+spans bridged into spikes. Spherical covers read as beads or dark buttons.
+Closed overlap exposed circular cap disks, open overlap exposed holes, and
+four-spindle or ankle-sleeve variants read as stacked barrels. The accepted
+point-ended three-span construction is the first candidate that removed those
+defects across idle, locomotion and attack poses without changing mechanics,
+collision, donor assets or runtime ownership.
+
+Guarded Steam review `20260929T2348431824835Z-working-save-expanded-summoning-creature-review`
+accepted the corrected cattle hoof silhouettes. Final Rhinoceros review
+`20260930T0350131904135Z-working-save-expanded-summoning-creature-review`
+passed 18/18 assertions and recorded idle, two motion frames, attack, overhead
+and four unobstructed obliques for both Rhinoceros profiles. Across the eight
+cardinal obliques and eight party-camera animation captures, the articulated
+legs remain coherent and the prior buttons, gaps, holes, spikes, detached
+feet, ankle stack and rigid columns are absent. This is internal visual
+acceptance; screenshots remain supporting art evidence rather than mechanical
+proof.
+
+## Quantity and final hidden-candidate qualification, 2026-09-30
+
+Guarded quantity review
+`20260930T0400494836310Z-working-save-expanded-summoning-creature-review`
+passed 32/32 assertions for native `1d4+1` Aurochs, Bison, Rhinoceros and
+Woolly Rhinoceros casts. Every member accepted its own simultaneous native move
+command, remained a distinct selectable unit, retained the authored renderer,
+expired through its timed summon marker, and left no unit, view, owned resource
+or save-write residue. The crowded party-camera frames are partially obscured
+by the deliberate selection overlay and library furniture; they support
+quantity, selection and cleanup review, while the unobstructed single-creature
+frames carry the art judgment.
+
+One final guarded batch then exercised the exact package built from these
+meshes:
+
+- `20260930T0422334006971Z-disposable-expanded-summoning-rules` passed 58/58.
+  It repeated the full automatic Trample response matrix, the RTWP and
+  turn-based active-command Stampede matrix, native Aurochs/Bison/Woolly
+  Rhinoceros Trample paths, quantity AoO de-duplication, and queued native
+  Rhinoceros and Woolly Rhinoceros charges. The final charges moved 3.85 m and
+  3.49 m and landed first-gore hits under the native charge marker for 30 and
+  37 damage.
+- `20260930T0426570686599Z-disposable-expanded-summoning-visual-contracts`
+  passed 15/15. All 87 catalog creatures, including the hidden ungulates,
+  passed view attachment, renderable bounded geometry, selection/navigation,
+  locomotion, attack, hit callback, death callback and detachment checks at
+  87/87; exact party and global-unit snapshots were restored.
+- `20260930T0430006142872Z-disposable-expanded-summoning-visual-lifecycle`
+  passed 7/7. Repeated attach/dispose cycles returned owned objects to
+  baseline, failed attach rolled back, module-wide release swept its resources,
+  donors and Pteranodon stayed unchanged, and exact fixture snapshots were
+  restored.
+
+Repository validation, all 1,952 domain tests, a clean Release build and strict
+standalone package validation passed before this batch. The package SHA-256 was
+`93804f0a6502e160603a97beb3bb8e19ac6c05b9162ecfdb0b8a55d54a46576a`;
+the loaded DLL SHA-256 was
+`596071219ba9eb6b9f92825c2676f53b5ea23fdd1568492ae87bd91e85c0be39`.
+Restoration record
+`20260930T0433003280905Z-disposable-expanded-summoning-rules.json` records
+three clean launcher outcomes, three scenario passes, zero failures, and the
+exact original 136-file live tree before and after restoration at SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+The Sprint 11 mechanics and art gates are accepted. Parent publication,
+player-path, persistence, compatibility and restoration gates remain to be
+closed before these choices are made visible.
