@@ -1,11 +1,13 @@
 # Expanded Summoning Phase 2 implementation report
 
-Status: Sprints 9 and 10 are internally technically qualified. Stirge's nine
-SNA I-IX choices are published again after the 2026-09-29 owner correction,
-for 834 visible generated choices. Sprint 11 trample response is specified by
-the owner; Stampede disposition and ungulate visual corrections remain, so all
-Sprint 11 choices stay hidden. The Phase 2A PR remains draft, and Sprints 12-21
-have not started.
+Status: Sprints 9, 10 and 11 are internally technically qualified. Stirge's
+nine SNA I-IX choices remain published after the 2026-09-29 correction, and
+all 48 Aurochs, Bison, Rhinoceros and Woolly Rhinoceros placements are now
+published after mechanics, art, quantity, player-path, persistence and
+restoration qualification. There are 882 visible generated choices and 911
+visible choices including the 29 retained native wrappers. The Phase 2A PR
+remains draft. Sprint 12 is next; Sprints 12-21 remain authorized and
+incomplete.
 Eagle and Dire Bat passed guarded casts, player path, live inventory,
 open-floor and room-opening movement, exact-hostile native combat in RTWP
 and turn-based mode, visual impact contact, save/load/expiry, module-disabled
@@ -40,9 +42,10 @@ party-camera geometry. Inventory `20260929T1850489650251Z` passed 50/50.
 Player path `20260929T1903306672213Z` passed all ten assertions, including
 834/834 generated roots, 29/29 native wrappers, exact slot spending, quantity
 contracts and cleanup. Original installation restoration passed after every
-run. The Phase 2A draft PR is not ready for owner review because Sprint 11 and
-the remaining authorized sprints are incomplete; owner visual approval remains
-pending and nonblocking.
+run. Sprint 11's final rules, visual, menu, player-path and persistence evidence
+is recorded below. The Phase 2A draft PR is not ready for owner review because
+Sprints 12 and 13 remain incomplete; owner visual approval remains pending and
+nonblocking.
 
 The accepted baseline is `master` at `2ce70e4` (0.0.140), which advanced after
 the owner packet was written. The baseline passes 1,918 domain tests, the
@@ -735,3 +738,50 @@ The revised observer kept that member awake before its fader wait without
 changing production summon behavior. Concurrent charge, victim AoO choice,
 turn-based cadence, clear art, impact alignment, UI path and publication
 remain open; all four choices stay hidden.
+
+## Sprint 11 final mechanics, art and publication, 2026-09-30
+
+The dated hidden checkpoint above is superseded. Ordinary Trample uses the
+owner-authorized automatic response policy: at first valid contact, exactly one
+actually executable melee AoO is taken at -4 before damage and consumes the
+normal resource; that target receives no Reflex save and no duplicate movement
+AoO. Without an executable legal AoO, the printed Reflex save controls full or
+half damage. A response that stops the trampler prevents the contact damage and
+all later contacts. The final 58/58 rules matrix covers all required defender,
+resource, attack, stopping, mode, ownership, direct/quantity and replay cases.
+
+Aurochs and Bison use a faithful bounded Stampede implementation. At least
+three allied Stampede holders must each be executing their own exact Trample in
+the same round and remain mutually adjacent. Only that live formation gains
+same-size eligibility and +2 DC. Idle, merely nearby, queued, interrupted,
+stale-round and separated units do not count; the observer never commands
+another unit. Both timing adaptations are disclosed in their descriptions.
+
+The art correction replaced the thin/splayed cattle hoof ends and awkward
+rhinoceros legs with compact cloven hooves and three overlapping tapered leg
+spans plus separate broad feet. Deterministic exports reproduced all four mesh
+files exactly. Unobstructed clear-floor idle, motion, attack, hit, death,
+overhead and oblique review accepted the result internally. Final Rhino review
+`20260930T0350131904135Z` passed 18/18; quantity review
+`20260930T0400494836310Z` passed 32/32 with simultaneous paths, selection,
+renderers, natural expiry and zero residue. Final rules, visual-contract and
+lifecycle runs `20260930T0422334006971Z`, `20260930T0426570686599Z` and
+`20260930T0430006142872Z` passed 58/58, 15/15 and 7/7.
+
+Publication exposes all 882 generated placements through the ordinary catalog.
+Inventory `20260930T0457205706691Z` passed 50/50 with all roots visible and
+executable, all menu equations exact, all icons present and no prohibited
+references. Player path `20260930T0508037596496Z` passed 10/10 across all 882
+roots and 29 native wrappers. The working-save trio
+`20260930T0524086567797Z`, `20260930T0528280228527Z` and
+`20260930T0532419916125Z` passed 15/15 each: 17 summons saved, freshly loaded
+with exact identity/context/duration/control, safely cleaned, and absent on the
+final zero-write load. Published count 882 and write counts 1/1/0 were exact.
+
+Repository validation, 1,952/1,952 domain tests, clean Release and strict
+standalone package validation passed. Restoration record
+`20260930T0535320622642Z-disposable-expanded-summoning-player-path.json`
+records four clean launches and exact recovery of the original 136-file live
+tree SHA `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+Sprint 11 is internally technically qualified and published. Owner visual
+approval remains pending and nonblocking.

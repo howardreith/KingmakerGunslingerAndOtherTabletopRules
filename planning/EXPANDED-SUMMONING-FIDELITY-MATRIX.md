@@ -1,8 +1,19 @@
 # Expanded Summoning fidelity matrix
 
-Current Phase 2 Sprint 10 disposition (2026-09-29): Stirge's nine SNA I-IX
-choices are published after full requalification, for 834 visible generated
-choices. The replacement session-only attachment is owned only by the Stirge;
+Current Phase 2 Sprint 11 disposition (2026-09-30): Sprints 9-11 are
+internally technically qualified. Aurochs, Bison, Rhinoceros and Woolly
+Rhinoceros are published at all 48 authorized placements, for 882 visible
+generated choices and 911 total choices with the 29 retained native wrappers.
+The four ungulates have qualified original icons/views, exact natural profiles,
+ordinary Trample or Powerful Charge, direct and quantity behavior, lifecycle,
+player paths and menu publication. Aurochs and Bison use the faithful bounded
+Stampede implementation: three allied Stampede holders must each execute their
+own registered Trample in the same round while mutually adjacent. The acting
+group then gains same-size eligibility and +2 DC; idle, queued, interrupted,
+stale-round or separated units do not count. Trample uses the disclosed
+automatic AoO-first Kingmaker adaptation exactly specified by the owner.
+
+Stirge's replacement session-only attachment is owned only by the Stirge;
 the prey receives no native grapple part or movement/action condition. The prey
 moves, acts and attacks normally while the separately targetable Stirge follows
 at a bounded offset. A standard-action Remove Stirge ability with its own icon
@@ -21,7 +32,13 @@ inventory `20260929T1850489650251Z` (50/50), and player path
 `20260929T1903306672213Z` (834/834 generated roots and 29/29 native wrappers).
 The earlier attachment, removal and reload evidence remains detailed in the
 Stirge row below. Exact live-install restoration passed after every run.
-Sprint 9 and Giant Wasp remain published; Sprint 11 remains hidden.
+Final Sprint 11 evidence is rules `20260930T0422334006971Z` (58/58), visual
+contracts `20260930T0426570686599Z` (15/15), lifecycle
+`20260930T0430006142872Z` (7/7), inventory `20260930T0457205706691Z`
+(50/50), player path `20260930T0508037596496Z` (10/10), and the 15/15
+working-save trio `20260930T0524086567797Z` /
+`20260930T0528280228527Z` / `20260930T0532419916125Z`. Owner visual approval
+remains pending and nonblocking.
 
 Status: release-qualified on final native qualification source
 `5205805eab3fe0115d6888c53bce73c80474d1b7`. The complete roster passed the
@@ -548,7 +565,7 @@ native wrappers and the 50/50 inventory contract passed in the final evidence
 set listed at the top of this matrix. Owner visual approval remains pending and
 nonblocking.
 
-## Phase 2 Sprint 11 hidden ungulate qualification, 2026-09-29
+## Phase 2 Sprint 11 ungulate qualification history, 2026-09-29 to 2026-09-30
 
 | Creature | Registered role and mechanic | Live evidence | Remaining before publication |
 | --- | --- | --- | --- |
@@ -578,3 +595,36 @@ goals, then all canonical summon timers and units retired under natural game
 updates (111.98–113.14 game seconds). Pause state, no-save-write cleanup and
 exact original-install restoration passed. Concurrent charge, turn-based
 cadence, victim AoO choice, impact contact and clear art review remain open.
+
+The statements above are dated hidden-candidate checkpoints. The final
+disposition is published and internally qualified. The automatic Trample
+response run `20260929T2156585120329Z` passed the full AoO/Reflex
+discrimination in RTWP and turn-based mode: one legal melee AoO at exactly -4,
+normal resource consumption, no save, no ordinary duplicate, full damage after
+hit or miss if the trampler continued, no contact or later damage after a
+stopping response, and the Reflex full/half branch only when no response could
+execute. Direct/quantity summons and player/hostile targets passed. Stampede
+`20260929T2311031955741Z` passed the faithful active-command trio at +2 DC and
+same-size eligibility, plus two-member, idle, separated, interrupted and
+stale-command rejection in both modes.
+
+Final corrected art uses compact cloven cattle hooves and articulated,
+overlapping tapered rhinoceros leg spans with separate broad feet. Unobstructed
+idle, motion, attack, overhead and four-direction oblique reviews accepted the
+result; final Rhino review `20260930T0350131904135Z` passed 18/18. Quantity
+review `20260930T0400494836310Z` passed 32/32 with distinct selectable units,
+simultaneous native travel, original renderers, natural expiry and zero
+resource/save residue. Final rules, visual-contract and lifecycle results
+`20260930T0422334006971Z`, `20260930T0426570686599Z` and
+`20260930T0430006142872Z` passed 58/58, 15/15 and 7/7.
+
+Publication inventory `20260930T0457205706691Z` passed 50/50 with all 882
+placements visible/executable, all 18 menu equations, exact icons and zero
+prohibited references. Player path `20260930T0508037596496Z` passed 10/10
+across 882 roots and 29 wrappers. Working-save prepare, cleanup and absence
+`20260930T0524086567797Z`, `20260930T0528280228527Z` and
+`20260930T0532419916125Z` passed 15/15 each, with exact publication, identity,
+context, duration, control, safe session-link reset, native expiry and final
+zero residue. Restoration record `20260930T0535320622642Z` verifies the
+original 136-file installation exactly. Owner visual approval is
+NOT_PERFORMED_NONBLOCKING.

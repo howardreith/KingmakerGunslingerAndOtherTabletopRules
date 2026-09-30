@@ -9,11 +9,22 @@
   DC 18 Dexterity poison, two-mode target contact, movement, cleanup,
   quantity casts, 825-root player path and live menu passed guarded checks.
 - Stirge's nine Nature's Ally choices are published with an original icon.
-  Its native touch, attachment, four-point blood drain, detach and cleanup,
-  two-mode visual contact, 834-root player path and live menu passed guarded
-  checks. Native Filth Fever cure timing remains unmeasured; the remaining
-  Phase 2 creatures are still in progress. No
-  public version, release or permanent installation is authorized.
+  Its touch attack uses a Stirge-owned session attachment while the prey keeps
+  normal movement and actions. Four-point blood drain, better-of-CMB-or-Mobility
+  removal, detach/cleanup, two-mode visual contact, 834-root player path and
+  live menu passed guarded checks. The primary rules source's once-per-victim
+  disease exposure is retained, using Filth Fever as the disclosed Kingmaker
+  disease adaptation.
+- Aurochs, Bison, Rhinoceros and Woolly Rhinoceros are published at their 48
+  Summon Monster/Nature's Ally placements with original icons and views.
+  Trample uses an automatic legal-AoO-first or Reflex response, Aurochs/Bison
+  Stampede requires three adjacent allies actively executing their own
+  Tramples, and the rhinoceroses retain printed Powerful Charge. Corrected
+  hooves/legs, direct and quantity combat, both turn modes, player paths,
+  save/load cleanup and the 882-root live inventory passed internal review.
+  Owner visual review remains pending. The remaining Phase 2 creatures are
+  still in progress. No public version, release or permanent installation is
+  authorized.
 
 ## 0.0.140-favored-class-integration
 

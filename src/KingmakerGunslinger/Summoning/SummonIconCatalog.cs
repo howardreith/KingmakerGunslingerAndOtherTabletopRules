@@ -44,8 +44,7 @@ namespace KingmakerGunslinger.Summoning
             string[] split = { "redcap", "axiomite", "soul-eater", "bogeyman",
                 "movanic-deva", "frost-giant", "thanadaemon" };
             string[] preserved = { "mite", "manticore", "nereid", "hamadryad" };
-            string[] prepared = { "remove-stirge", "aurochs", "bison", "rhinoceros",
-                "woolly-rhinoceros" };
+            string[] prepared = { "remove-stirge" };
             string[] expected = visibleCatalog.Concat(split).Concat(preserved)
                 .Concat(prepared)
                 .ToArray();
@@ -77,13 +76,10 @@ namespace KingmakerGunslinger.Summoning
             Add(result, SummonProjectIconScope.PreservedNative,
                 "mite", "Mite", "manticore", "Manticore", "nereid",
                 "Nereid", "hamadryad", "Hamadryad");
-            // The Stirge creature icon now enters through visibleCatalog. Its
-            // removal action and Sprint 11 paintings remain separately catalogued.
+            // Published creature icons enter through visibleCatalog. The
+            // Stirge removal action remains a separate catalogued concept.
             Add(result, SummonProjectIconScope.KmgCatalog,
-                "remove-stirge", "Remove Stirge",
-                "aurochs", "Aurochs", "bison", "Bison",
-                "rhinoceros", "Rhinoceros", "woolly-rhinoceros",
-                "Woolly Rhinoceros");
+                "remove-stirge", "Remove Stirge");
             return result.ToArray();
         }
 

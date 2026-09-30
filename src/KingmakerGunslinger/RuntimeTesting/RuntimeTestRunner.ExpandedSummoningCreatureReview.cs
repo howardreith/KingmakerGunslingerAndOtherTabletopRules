@@ -118,7 +118,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (quantity != SummonMultiplicity.One &&
                     !IsSprint11UngulateReviewKey(key))
                     throw new InvalidOperationException(
-                        "Only hidden Sprint 11 ungulates may use crowd review: " +
+                        "Only Sprint 11 ungulates may use crowd review: " +
                         key + ".");
                 SummonFamily family = creature.NaturesAllyTier.HasValue ?
                     SummonFamily.NaturesAlly : SummonFamily.Monster;
@@ -129,11 +129,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .GenerateVariants(family).Single(value =>
                         value.Creature.Key == key && value.ParentTier == tier &&
                         value.Multiplicity == quantity);
-                bool suppressedSprint11Candidate =
-                    IsSprint11UngulateReviewKey(key) &&
-                    !SummonVisibilityCatalog.IsPublished(variant);
-                if (!SummonVisibilityCatalog.IsPublished(variant) &&
-                    !suppressedSprint11Candidate)
+                if (!SummonVisibilityCatalog.IsPublished(variant))
                     throw new InvalidOperationException(
                         "A suppressed creature cannot be reviewed through a parent: " +
                         key + ".");
