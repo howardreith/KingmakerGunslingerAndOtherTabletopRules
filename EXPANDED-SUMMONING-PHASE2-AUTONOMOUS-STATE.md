@@ -34,9 +34,10 @@ directly on work already done:
 - Tranche 2A, **Sprint 12** (Dire Rat, Dog, Hyena, Goblin Dog) - **complete**.
   Rules, the disease lifetime contract, internal visual review, publication,
   live inventory, player paths, both combat modes, compact-body navigation,
-  persistence, module-disabled deserialization, the Acadamae Graduate
-  cross-module regression and the standalone compatibility profile all pass on
-  the published surface, each with the live tree restored afterwards.
+  quantity and crowded-space behaviour, persistence, module-disabled
+  deserialization, the Acadamae Graduate cross-module regression and the
+  standalone compatibility profile all pass on the published surface, each with
+  the live tree restored afterwards.
 - Next executable action: open **Sprint 13** (Wolverine, Shadow Mastiff,
   Poisonous Frog). Its primary sources are read and its rules findings are
   recorded in `planning/EXPANDED-SUMMONING-SPRINT13-RULES-AND-DONORS.md`.
