@@ -551,6 +551,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.catalog-guards", ExpandedSummoningCatalogTests.CatalogGuardsInvalidSpecs),
             Case("expanded-summoning.baseline-frozen-surface", ExpandedSummoningBaselineInventoryTests.ShippedSurfaceMatchesFrozenBaseline),
             Case("expanded-summoning.baseline-visible-decomposition", ExpandedSummoningBaselineInventoryTests.VisibleChoicesDecomposeExactly),
+            Case("expanded-summoning.published-records-match-derivation", ExpandedSummoningBaselineInventoryTests.PublishedInventoryRecordsMatchTheDerivedEquation),
             Case("expanded-summoning.baseline-parent-census", ExpandedSummoningBaselineInventoryTests.PerParentCensusReconciles),
             Case("expanded-summoning.baseline-hidden-and-proxies", ExpandedSummoningBaselineInventoryTests.HiddenAndProxyCreaturesAreRecorded),
             Case("expanded-summoning.baseline-observer-inert", ExpandedSummoningBaselineInventoryTests.ObserverIsInertAndDeterministic),

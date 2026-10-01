@@ -21,7 +21,7 @@ VERSION = "0.0.141"
 INFORMATIONAL_VERSION = "0.0.141-expanded-summoning-phase2a"
 PACKAGE = "KingmakerGunslinger-0.0.141-local-runtime.zip"
 PACKAGE_SUFFIX = "expanded-summoning-phase2a"
-DETERMINISTIC_TEST_COUNT = 1958
+DETERMINISTIC_TEST_COUNT = 1959
 STATIC_KEY = "expandedSummoningPhase2A141"
 
 
@@ -40,8 +40,11 @@ def validate(root: Path) -> None:
         "SuppressedLogicalPlacementCount = 68",
         "RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount")
     require_tokens(root / "planning/EXPANDED-SUMMONING-FIDELITY-MATRIX.md",
-        "Sprints 9-11", "882 visible", "911 total choices",
+        "Sprints 9-11", "832 published generated", "861 total choices",
         "all 68", "remain suppressed")
+    require_tokens(root / "EXPANDED-SUMMONING-PHASE2-INVENTORY-RECONCILIATION.md",
+        "832 + 29 = 861", "881db758", "d7822297",
+        "visible in v0.0.140 and are hidden in v0.0.141")
     require_tokens(root / "docs/RELEASE-NOTES-0.0.141.md",
         INFORMATIONAL_VERSION, "Sprints 9-11", "Sprint 12", "hidden",
         "owner visual review", "uninstall")
@@ -59,7 +62,8 @@ def validate(root: Path) -> None:
         "releaseVersion": VERSION,
         "releaseInformationalVersion": INFORMATIONAL_VERSION,
         "publishedSprintRange": "9-11",
-        "visibleGeneratedChoices": 882,
+        "visibleGeneratedChoices": 832,
+        "visibleChoiceTotal": 861,
         "retainedNativeWrappers": 29,
         "hiddenSprint12Placements": 68,
         "sprint12Published": False,
@@ -72,6 +76,34 @@ def validate(root: Path) -> None:
         if state.get(key) != value:
             raise AssertionError(
                 f"Expanded Summoning Phase 2A metadata mismatch: {key}")
+
+    # Post-release Sprints 12-21 development continues on the same version.
+    # The published ZIP is immutable, so the development state must declare
+    # itself a candidate and must keep the derived inventory equation.
+    development = static.get("expandedSummoningPhase2Development", {})
+    expected_development = {
+        "authorizedSprintRange": "12-21",
+        "publicReleaseAuthorized": False,
+        "candidateOnly": True,
+        "registeredGeneratedPlacements": 900,
+        "suppressedGeneratedPlacements": 68,
+        "publishedGeneratedPlacements": 832,
+        "retainedNativeWrappers": 29,
+        "visibleChoiceTotal": 861,
+        "mergeAuthorized": False,
+        "newReleaseAuthorized": False,
+        "sprint22Authorized": False,
+        "ownerVisualReview": "NOT_PERFORMED_NONBLOCKING",
+    }
+    for key, value in expected_development.items():
+        if development.get(key) != value:
+            raise AssertionError(
+                f"Phase 2 development metadata mismatch: {key}")
+    if development.get("publishedGeneratedPlacements") + \
+            development.get("retainedNativeWrappers") != \
+            development.get("visibleChoiceTotal"):
+        raise AssertionError(
+            "Phase 2 development inventory equation does not balance")
 
 
 def main() -> int:

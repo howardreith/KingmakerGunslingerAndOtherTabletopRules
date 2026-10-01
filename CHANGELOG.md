@@ -21,12 +21,19 @@
   Stampede requires three adjacent allies actively executing their own
   Tramples, and the rhinoceroses retain printed Powerful Charge. Corrected
   hooves/legs, direct and quantity combat, both turn modes, player paths,
-  save/load cleanup and the 882-root live inventory passed internal review.
-  Owner visual review remains pending and is nonblocking for this checkpoint.
+  save/load cleanup and the 882-root live inventory of that revision passed
+  internal review. Owner visual review remains pending and is nonblocking for
+  this checkpoint.
 - This release stops at the fully qualified Sprint 11 boundary. All 68 Sprint
   12 Dire Rat, Dog, Hyena and Goblin Dog placements remain hidden. Their
   checked-in rules and original visual groundwork are retained for the next
   development cycle and are not presented as published creatures.
+- The published surface of this release is 832 generated choices plus 29
+  retained native wrappers, for 861 visible choices. Because the Sprint 12
+  suppression also withholds Dog, Hyena and Goblin Dog, which 0.0.140
+  published, 50 previously castable placements are temporarily unavailable;
+  their registered identities are unchanged, so existing saves still load.
+  See `EXPANDED-SUMMONING-PHASE2-INVENTORY-RECONCILIATION.md`.
 
 ## 0.0.140-favored-class-integration
 

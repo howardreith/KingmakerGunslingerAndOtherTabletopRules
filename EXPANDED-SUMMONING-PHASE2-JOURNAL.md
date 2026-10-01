@@ -1,10 +1,71 @@
 # Expanded Summoning Phase 2 journal
 
+## Publication-inventory reconciliation, 2026-10-01
+
+First task of the Claude continuation order. Verified the checkpoint before
+touching anything: the `expanded-summoning-phase2a` worktree is clean and idle
+on `codex/expanded-summoning-phase2a-sprints9-13` at
+`97f0a966b3219ce0122626a492529b509e1db880`, in sync with `origin`; `v0.0.141`
+resolves to that commit; PR #25 is open and draft with base `master` at
+`2ce70e4e`; no Kingmaker process or runtime lease is active. Repository
+validation passed and the domain suite ran 1,958 tests with zero failures on
+that head. The live mod tree still holds the historical baseline exactly -
+136 files, version 0.0.117, `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3` -
+so the owner never installed 0.0.141 and that baseline remains the correct
+pre-run state.
+
+Derived the inventory from source rather than from any record. The released
+commit registers 900 generated placements (453 SM + 447 SNA) across 88 project
+creatures, suppresses 68 (Dire Rat 18, Dog 18, Goblin Dog 16, Hyena 16), and so
+publishes 832 (419 SM + 413 SNA). With the 29 retained native wrappers
+(17 SM + 12 SNA) the player sees 861 choices: 436 Summon Monster and 425
+Nature's Ally. The per-parent census reconciles exactly against
+`ExpandedSummoningBaselineInventory.Census`.
+
+The production code, the generated roster ledger and the domain suite already
+carried those numbers; `ExpandedSummoningBaselineInventoryTests` even pinned
+`"totalVisibleChoices": 861`. Only hand-written prose was stale. `882` was the
+true registered and published total at `881db758`, where nothing was
+suppressed, so `882 + 29 = 911` described that revision correctly. The next
+commit, `d7822297`, moved both ends of the equation at once - +18 registered
+for Dire Rat and -68 published for the four suppressions - and the constants,
+ledger and tests were updated while the prose was not. The release was cut two
+commits later and inherited the stale sentence. That is why the gap is 50 and
+not 18: Dog, Hyena and Goblin Dog existed and were published before Sprint 12.
+
+Checked what that means for the published artifact. v0.0.140 suppressed only
+`dire-bat` and published 799 generated placements, for 828 visible choices.
+v0.0.141 publishes 832 for 861 - a real net gain of 33, and Dire Bat becomes
+visible for the first time - but it also withdraws Dog, Hyena and Goblin Dog,
+50 placements a player could previously cast, and its notes did not disclose
+that. Their registered unit, ability and placement identities are untouched, so
+a 0.0.140 save holding one of those summons still deserializes under 0.0.141;
+only the menu entries are withheld. Recorded rather than papered over. The
+published tag, ZIP and GitHub release metadata are immutable under this order
+and were not modified. Republishing the three creatures now would publish
+unqualified Sprint 12 behaviour, so the fix is to finish Sprint 12.
+
+Corrected the mutable current records - release notes, implementation report,
+this journal, the state header, the fidelity matrix, the changelog, the resume
+handoff, the Gunslinger journal, the 0.0.141 validator and
+`validation/static-validation.json` - and left every historical run
+observation intact, annotated in the evidence index as pre-`d7822297`. Added
+`EXPANDED-SUMMONING-PHASE2-INVENTORY-RECONCILIATION.md` with the full
+derivation and the withdrawal disclosure, plus domain case
+`expanded-summoning.published-records-match-derivation`, which fails if any
+current record stops stating the derived equation. The static-validation data
+now also carries an `expandedSummoningPhase2Development` section declaring the
+post-release Sprints 12-21 work a candidate: no merge, no new release, no
+Sprint 22.
+
 ## Phase 2A checkpoint selected for 0.0.141, 2026-09-30
 
 At the owner's direction, the current work is consolidated into a release at
-the qualified end of Sprint 11. Sprints 9-11 contribute 882 visible generated
-choices and retain 29 native wrappers. The checkpoint includes the corrected
+the qualified end of Sprint 11. The released surface is 832 published
+generated choices plus 29 retained native wrappers, for 861 visible choices;
+Sprint 12's registration and suppression moved both ends of the earlier
+882/911 equation (see
+`EXPANDED-SUMMONING-PHASE2-INVENTORY-RECONCILIATION.md`). The checkpoint includes the corrected
 Stirge attachment, automatic Trample response, faithful active-command
 Stampede, Powerful Charge, original creature views and icons, quantity paths,
 persistence and restoration evidence already recorded below.
