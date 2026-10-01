@@ -139,6 +139,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             private readonly RuntimeTestRequest _request;
             private readonly ScenarioKind _kind;
             private readonly string _flightCreature;
+            /// <summary>
+            /// The quickened slot level this case actually prepared, set when
+            /// the creature's own tier decides it instead of a fixed table.
+            /// </summary>
+            private int? _caseSpellLevel;
             private readonly bool _requestLocalFixture;
             private readonly DateTime _started = DateTime.UtcNow;
             private readonly Stopwatch _elapsed = Stopwatch.StartNew();
@@ -1429,13 +1434,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _evidence.DuplicateNoOp = duplicateNoOp;
                 _evidence.ExactSummonKind = _flightCreature != null ?
                     _summons.All(value => value.Blueprint != null &&
-                        value.Blueprint.name == (_flightCreature == "eagle" ?
-                            "KMG_Summoning_Unit_Eagle" :
-                            _flightCreature == "dire-bat" ?
-                            "KMG_Summoning_Unit_DireBat" :
-                            _flightCreature == "stirge" ?
-                            "KMG_Summoning_Unit_Stirge" :
-                            "KMG_Summoning_Unit_GiantWasp")) :
+                        value.Blueprint.name ==
+                            ExpandedSummoningIdentityCatalog.UnitSymbol(
+                                ExpandedSummoningCatalog.All.Single(creature =>
+                                    creature.Key == _flightCreature))
+                                .Replace('.', '_').Replace('-', '_')) :
                     _kind != ScenarioKind.Multiple ||
                     _summons.All(value => value.Blueprint != null &&
                         value.Blueprint.name == "KMG_Summoning_Unit_Eagle");
@@ -2967,8 +2970,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 else if (_flightCreature != null)
                 {
-                    int tier = _flightCreature == "eagle" ? 1 :
-                        _flightCreature == "dire-bat" ? 3 : 4;
+                    // The creature's own Summon Monster tier, read from the
+                    // frozen catalog rather than written down here, so a
+                    // chartered ground creature can use this case too.
+                    SummonCreatureSpec creature = ExpandedSummoningCatalog.All
+                        .Single(value => value.Key == _flightCreature);
+                    if (!creature.MonsterTier.HasValue)
+                        throw new InvalidOperationException(
+                            "The activation case needs a Summon Monster tier: " +
+                            _flightCreature + ".");
+                    int tier = creature.MonsterTier.Value;
                     SummonVariantSpec variant = ExpandedSummoningCatalog
                         .GenerateVariants(SummonFamily.Monster).Single(value =>
                             value.Creature.Key == _flightCreature &&
@@ -2977,11 +2988,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     string selected = ExpandedSummoningIdentityCatalog
                         .AbilitySymbol(variant).Replace('.', '_')
                         .Replace('-', '_');
-                    result = PrepareQuickenedSummon(_spellbook,
-                        tier == 1 ? SummonMonsterOneGuid :
-                            tier == 3 ? SummonMonsterThreeGuid :
-                            SummonMonsterFourGuid,
+                    string parent = tier == 1 ? SummonMonsterOneGuid :
+                        tier == 3 ? SummonMonsterThreeGuid :
+                        tier == 4 ? SummonMonsterFourGuid : null;
+                    if (parent == null)
+                        throw new InvalidOperationException(
+                            "The activation case has no canonical parent for Summon Monster " +
+                            tier + ".");
+                    result = PrepareQuickenedSummon(_spellbook, parent,
                         selected, tier, tier + 4, out _castSlot);
+                    _caseSpellLevel = tier + 4;
                 }
                 else if (_kind == ScenarioKind.Multiple)
                     result = PrepareQuickenedSummon(_spellbook,
@@ -2998,8 +3014,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     result = PrepareQuickenedSummon(_spellbook,
                         SummonMonsterOneGuid, NativeDogName, 1, 5,
                         out _castSlot);
-                _evidence.SpellLevel = _flightCreature == "giant-wasp" ? 8 :
-                    _flightCreature == "dire-bat" ||
+                _evidence.SpellLevel = _caseSpellLevel.HasValue ?
+                    _caseSpellLevel.Value :
                     _kind == ScenarioKind.Multiple ? 7 :
                     _kind == ScenarioKind.Quickened ||
                     _kind == ScenarioKind.RtwpControl ? 5 : 1;
