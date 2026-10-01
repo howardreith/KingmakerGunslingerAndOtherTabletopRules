@@ -675,6 +675,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ResetExpandedSummoningMotionReview(
                         ExpandedSummoningIdentityCatalog.UnitSymbol(variant.Creature)
                             .Replace('.', '_').Replace('-', '_'), key + "-review");
+                    // A compact quadruped has to be given a real route. The
+                    // first Sprint 12 review aimed six metres across an indoor
+                    // room, the native move never started, and the measurement
+                    // was reported but never asserted.
+                    _motionReviewSurveyedGround =
+                        IsSprint12QuadrupedReviewKey(key);
                     _creatureReviewSettle = 0;
                     _creatureReviewPhase = 1;
                     WriteLifecycleStage("creature-review-" + key + "-summoned");
@@ -779,6 +785,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                             MotionReviewSummary,
                             MotionReviewDoorwayValid,
                             "named native area landmark, same-area endpoints, native UnitMoveTo and cross-frame position samples"));
+                    }
+                    if (IsSprint12QuadrupedReviewKey(key))
+                    {
+                        _creatureReviewAssertions.Add(Assertion(
+                            "expanded-summoning-ground-travel-" + key,
+                            "native ground move accepted over surveyed connected floor; at least 0.75 m planar travel and nonzero movement-agent velocity",
+                            _motionReviewGroundSurvey + ";" + MotionReviewSummary,
+                            MotionReviewTravelValid,
+                            "native floor survey in the party's own area and graph, native UnitMoveTo and cross-frame position/velocity samples"));
                     }
                     if (IsSprint11UngulateReviewKey(key))
                     {
