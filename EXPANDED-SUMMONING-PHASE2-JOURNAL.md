@@ -1,5 +1,42 @@
 # Expanded Summoning Phase 2 journal
 
+## Sprint 12 mechanics, contact triggers and lifetime contract qualified, 2026-10-01
+
+`20261001T1804145753440Z-disposable-expanded-summoning` passed 44/44 on source
+`1ef4d6b2` and restored the live tree exactly. Every Sprint 12 rules gate now
+has live evidence.
+
+The printed-defence repair is proved by measurement rather than by reading the
+profile: the live Dire Rat's bite bonus is 1 and a freshly summoned Dog's is 2,
+a gap of -1 that matches the Strength prediction and not the finesse prediction
+of +2, so the bite is Strength-based exactly as the printed +1 requires. The
+Dog control carries +1 natural armor and the Dire Rat carries none, so the
+check can see natural armor and the Dire Rat genuinely lacks it.
+
+All three printed allergic-reaction triggers now hold in play, with their
+negative controls: a natural weapon that damages the Goblin Dog exposes its
+wielder at DC 12 with the Goblin Dog as the context caster; a manufactured Sai
+that hits for 8 exposes nobody; a failed grapple attempt still exposes its
+initiator; a trip maneuver exposes nobody; and a goblinoid is exempt.
+
+The grapple leg needed one correction worth recording. It exposed correctly
+when it ran straight after the natural-weapon trigger, then stopped exposing
+once the new manufactured-weapon control swung an unowned weapon entity between
+them. Rather than leave a gate whose result depends on what ran before it, the
+printed triggers now run first and each negative control runs after the
+behaviour it controls for. The leg also records the initiator's live Fortitude,
+whether the Goblin Dog was still available and whether a buff was applied, so a
+repeat failure would name its own cause; this run reports `fort=-100`,
+`dogAvailable=True`, `buff=applied`.
+
+The repaired Hyena mesh attached live at 819 vertices on 34 bones alongside the
+Dire Rat and Goblin Dog originals, and the native Dog remained unmapped.
+
+Sprint 12 is still not complete. Player paths, both combat modes, movement and
+contact, natural expiry, persistence, module-disabled behaviour, inventory,
+compatibility and the complete internal visual review remain open, and all 68
+placements remain suppressed.
+
 ## Sprint 12 guarded gates: first results and a host interruption, 2026-10-01
 
 The three added Sprint 12 gates ran for the first time in
