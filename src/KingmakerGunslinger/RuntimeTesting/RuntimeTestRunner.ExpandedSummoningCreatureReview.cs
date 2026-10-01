@@ -180,11 +180,17 @@ namespace KingmakerGunslinger.RuntimeTesting
         private UnitEntityData[] SpawnExpandedSummoningCreatureReviewQuantity(
             SummonVariantSpec variant)
         {
-            if (variant == null || !IsSprint11UngulateReviewKey(
-                    variant.Creature.Key) ||
+            // The crowd route is still a closed list rather than any creature,
+            // but it is no longer ungulate-only: Sprint 12's compact quadrupeds
+            // need the same crowded-space review, and the ungulates are
+            // published now, so the old "hidden ungulate" wording was stale on
+            // both counts.
+            if (variant == null ||
+                !(IsSprint11UngulateReviewKey(variant.Creature.Key) ||
+                    IsSprint12QuadrupedReviewKey(variant.Creature.Key)) ||
                 variant.Multiplicity != SummonMultiplicity.OneD4PlusOne)
                 throw new InvalidOperationException(
-                    "Crowd review accepts only a hidden ungulate 1d4+1 route.");
+                    "Crowd review accepts only a named Sprint 11 ungulate or Sprint 12 quadruped on a 1d4+1 route.");
             UnitEntityData caster = _creatureReviewCaster;
             UnitEntityData[] before = ExpandedSummoningKmgUnitsIn(
                 caster.HoldingState);
