@@ -2,8 +2,10 @@
 
 Current Phase 2 Sprint 11 disposition (2026-09-30): Sprints 9-11 are
 internally technically qualified. Aurochs, Bison, Rhinoceros and Woolly
-Rhinoceros are published at all 48 authorized placements, for 882 visible
-generated choices and 911 total choices with the 29 retained native wrappers.
+Rhinoceros are published at all 48 authorized placements. The current
+published surface is 832 generated choices and 861 total choices with the 29
+retained native wrappers; see
+`EXPANDED-SUMMONING-PHASE2-INVENTORY-RECONCILIATION.md`.
 The four ungulates have qualified original icons/views, exact natural profiles,
 ordinary Trample or Powerful Charge, direct and quantity behavior, lifecycle,
 player paths and menu publication. Aurochs and Bison use the faithful bounded
@@ -657,5 +659,5 @@ basic live renderer-attachment check only; all 68 placements remain
 suppressed, and Sprint 12 remains unpublished until direct/quantity player
 paths, both combat modes, movement/contact, natural expiry, save/load, module
 disable, compatibility, inventory and the complete internal visual review
-pass. The 0.0.141 release boundary is Sprints 9-11: 882 visible generated
-choices and 911 total choices including 29 retained native wrappers.
+pass. The 0.0.141 release boundary is Sprints 9-11: 832 published generated
+choices and 861 total choices including 29 retained native wrappers.
