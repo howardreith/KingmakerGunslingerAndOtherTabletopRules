@@ -4,7 +4,18 @@ Structured runtime artifacts are kept under
 `C:/Dev/KingmakerGunslingerLab/runtime-evidence/` and are not committed.
 The guarded wrapper restores the installed mod tree after each run. The
 original 136-file live tree has SHA-256
-`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`. Re-verified
+unchanged on 2026-10-01 before the Claude continuation order began work.
+
+Count annotation, 2026-10-01: rows whose text reports 882 published roots -
+the Sprint 11 inventory `20260930T0457205706691Z`, the player path
+`20260930T0508037596496Z`, the working-save trio and the earlier hidden
+ungulate inventory `20260928T1724419577973Z` - observed the publication
+surface of their own source revisions, before `d7822297` registered Dire Rat
+and suppressed the four Sprint 12 creatures. Those observations are left
+exactly as recorded. The current published surface is 832 generated placements
+plus 29 retained native wrappers, for 861 visible choices; see
+`EXPANDED-SUMMONING-PHASE2-INVENTORY-RECONCILIATION.md`.
 
 | Scope | Passing result directory | Restoration record | Limit |
 | --- | --- | --- | --- |

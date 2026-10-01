@@ -2,8 +2,10 @@
 
 Release disposition (0.0.141): the owner selected the end of Sprint 11 as the
 near-term release boundary. Sprints 9-11 are internally technically qualified
-and publish 882 generated choices plus 29 retained native wrappers, for 911
-visible choices. The release does not publish Sprint 12. All 68 Dire Rat, Dog,
+and publish 832 generated choices plus 29 retained native wrappers, for 861
+visible choices (derived from source; see
+`EXPANDED-SUMMONING-PHASE2-INVENTORY-RECONCILIATION.md`, which also discloses
+that Dog, Hyena and Goblin Dog were visible in 0.0.140 and are withheld here). The release does not publish Sprint 12. All 68 Dire Rat, Dog,
 Hyena and Goblin Dog placements remain suppressed while their checked-in
 mechanics and original visual groundwork await the remaining player-path,
 persistence, compatibility, movement/contact, natural-expiry,
@@ -45,7 +47,7 @@ as a whole remains incomplete and all four choices remain hidden. Stirge's
 nine SNA I-IX choices remain published after the 2026-09-29 correction, and
 all 48 Aurochs, Bison, Rhinoceros and Woolly Rhinoceros placements are now
 published after mechanics, art, quantity, player-path, persistence and
-restoration qualification. There are 882 visible generated choices and 911
+restoration qualification. There are 832 visible generated choices and 861
 visible choices including the 29 retained native wrappers. The Phase 2A PR
 remains draft. Sprint 12 visual, player-path, persistence and compatibility
 qualification is next; Sprints 12-21 remain authorized and incomplete.
@@ -809,15 +811,18 @@ renderers, natural expiry and zero residue. Final rules, visual-contract and
 lifecycle runs `20260930T0422334006971Z`, `20260930T0426570686599Z` and
 `20260930T0430006142872Z` passed 58/58, 15/15 and 7/7.
 
-Publication exposes all 882 generated placements through the ordinary catalog.
-Inventory `20260930T0457205706691Z` passed 50/50 with all roots visible and
-executable, all menu equations exact, all icons present and no prohibited
-references. Player path `20260930T0508037596496Z` passed 10/10 across all 882
-roots and 29 native wrappers. The working-save trio
+Publication exposed all 882 generated placements registered at that revision
+through the ordinary catalog. Inventory `20260930T0457205706691Z` passed 50/50
+with all roots visible and executable, all menu equations exact, all icons
+present and no prohibited references. Player path
+`20260930T0508037596496Z` passed 10/10 across all 882 roots and 29 native
+wrappers. Both runs predate `d7822297`; the released surface is 832 published
+generated placements. The working-save trio
 `20260930T0524086567797Z`, `20260930T0528280228527Z` and
 `20260930T0532419916125Z` passed 15/15 each: 17 summons saved, freshly loaded
 with exact identity/context/duration/control, safely cleaned, and absent on the
-final zero-write load. Published count 882 and write counts 1/1/0 were exact.
+final zero-write load. The published count 882 observed by those runs and
+write counts 1/1/0 were exact for their own revision.
 
 Repository validation, 1,952/1,952 domain tests, clean Release and strict
 standalone package validation passed. Restoration record
