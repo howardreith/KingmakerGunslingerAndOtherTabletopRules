@@ -427,11 +427,44 @@ namespace KingmakerGunslinger.Summoning
         /// the tint the donor material carried, which is reset to white so the
         /// albedo renders as painted.
         /// </summary>
+        /// <summary>
+        /// Kingmaker's dynamic shader has two fog-of-war treatments. With
+        /// <c>FOG_OF_WAR_DISSOLVE_ON</c> a fogged creature dissolves and keeps
+        /// its painting; without it the same creature is drawn as a flat
+        /// untextured silhouette. Which one a donor material carries is the
+        /// donor's own business, and the Worg carries the flat one while the
+        /// Dog and Wolf carry the dissolve. A cloned material inherits that,
+        /// so an original mesh borrowing the Worg rig rendered as a solid blue
+        /// shape the moment it stepped outside the party's vision, while the
+        /// same code on the other two donors looked right. Evidence: guarded
+        /// creature review `20261001T1812593825736Z`, where the Goblin Dog was
+        /// flat blue in all four live party-camera frames and was the only one
+        /// of the three whose material lacked the keyword.
+        ///
+        /// The clone is project-owned and instance-local, so it is given the
+        /// dissolve treatment regardless of donor. The donor material is never
+        /// touched, and <c>_Dissolve</c> already starts at 0, so this changes
+        /// how the project's own mesh is shaded in fog and nothing else.
+        /// </summary>
+        private const string FogOfWarAffectedKeyword = "FOG_OF_WAR_AFFECTED";
+        private const string FogOfWarDissolveKeyword = "FOG_OF_WAR_DISSOLVE_ON";
+
         private static string DressMaterial(Material material, Texture2D albedo)
         {
             material.SetTexture(MainTexture, albedo);
             material.SetTextureScale(MainTexture, Vector2.one);
             material.SetTextureOffset(MainTexture, Vector2.zero);
+
+            string donorKeywords = material.shaderKeywords == null ||
+                material.shaderKeywords.Length == 0 ? "<none>" :
+                string.Join("|", material.shaderKeywords);
+            string fogTreatment = "donor";
+            if (material.IsKeywordEnabled(FogOfWarAffectedKeyword) &&
+                !material.IsKeywordEnabled(FogOfWarDissolveKeyword))
+            {
+                material.EnableKeyword(FogOfWarDissolveKeyword);
+                fogTreatment = "dissolve-enabled";
+            }
 
             var declared = new List<string>();
             var cleared = new List<string>();
@@ -464,7 +497,9 @@ namespace KingmakerGunslinger.Summoning
                 "<none>" : string.Join(",", declared.ToArray())) +
                 ";cleared=" + (cleared.Count == 0 ?
                 "<none>" : string.Join(",", cleared.ToArray())) +
-                ";donorTint=" + tint + ";donorEmission=" + emission;
+                ";donorTint=" + tint + ";donorEmission=" + emission +
+                ";donorKeywords=" + donorKeywords + ";fogTreatment=" +
+                fogTreatment;
         }
 
         private static string Describe(Color value)
