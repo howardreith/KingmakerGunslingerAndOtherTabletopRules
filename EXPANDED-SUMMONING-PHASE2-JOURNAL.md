@@ -1,5 +1,49 @@
 # Expanded Summoning Phase 2 journal
 
+## Sprint 12 guarded gates: first results and a host interruption, 2026-10-01
+
+The three added Sprint 12 gates ran for the first time in
+`20261001T1737054842101Z-disposable-expanded-summoning` on source
+`fa221d90`. 42 of 44 assertions passed. The lifetime gate passed outright and
+is the first real evidence for the disease lifetime contract: both effects
+inflicted, both summoned sources destroyed through the native scene path, the
+rash still ticking from 86,400 down to 86,340 seconds with its penalties
+intact, both contexts reporting a destroyed caster without throwing and without
+retargeting, magical healing clearing the rash, and filth fever correctly
+surviving that healing.
+
+The contact-allergy gate proved every printed trigger: a natural weapon that
+damaged the Goblin Dog exposed its wielder at DC 12 with the Goblin Dog as the
+context caster, a failed grapple attempt still exposed its initiator - which is
+what the printed "attempts to grapple" requires - a trip maneuver exposed
+nobody, and the exact-Goblin fixture was exempt. It failed only on the
+manufactured-weapon negative control, because neither the caster nor the
+hostile is holding a manufactured weapon and the gate fails closed rather than
+skipping a control it cannot run. It now builds a real weapon entity from an
+exact loaded melee blueprint, chosen by ascending asset id so the choice is
+reproducible.
+
+The printed-defences gate proved the two repaired Dire Rat stats directly - no
+natural-armor fact, no Weapon Finesse, against a Dog control that does carry +1
+natural armor - but its attack-bonus comparison was invalid. The shared attack
+helper raises an attacker's base attack bonus to 100 and never restores it, so
+the Dire Rat, which had already swung in earlier gates, measured 101 against
+the pristine Dog's printed +2. Both sides are now freshly summoned, and the
+gate refuses to measure at all unless their base attack bonuses match.
+
+The host then killed the orchestrating process for low physical memory after
+the scenario had written its result but before the wrapper could restore. That
+left the deployed candidate installed and a runtime lease held. Recovery
+followed the project's own guarded paths rather than brute force: the lease was
+identified as this run's own by its recorded scenario, request path and game
+process - all exited, with no other session holding guarded work - and released
+with its own recorded completion command, which refuses to release while the
+original owner or any Kingmaker process is alive. The live tree was restored
+from the run's own pre-deployment snapshot, verified beforehand as the owner's
+exact baseline, and re-fingerprinted afterwards at 136 files, version 0.0.117,
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`. The run is
+recorded as a failure with a failed restoration, not as a partial pass.
+
 ## Publication-inventory reconciliation, 2026-10-01
 
 First task of the Claude continuation order. Verified the checkpoint before

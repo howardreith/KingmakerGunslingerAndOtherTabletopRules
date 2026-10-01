@@ -6,6 +6,7 @@ using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Facts;
+using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Items;
@@ -308,8 +309,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // has three triggers. The bite above is one; a natural or
                 // unarmed attacker that damages the Goblin Dog and a creature
                 // that attempts to grapple it are the other two.
-                ExerciseSprint12ContactAllergy(goblinDog, hyena, caster,
-                    hostile, goblinVictim, reaction, evidence);
+                ExerciseSprint12ContactAllergy(blueprints, goblinDog, hyena,
+                    caster, hostile, goblinVictim, reaction, evidence);
                 RemoveSprint12Buff(hostile, reaction);
                 RemoveSprint12Buff(hyena, reaction);
                 RemoveSprint12Buff(caster, reaction);
@@ -317,7 +318,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // The printed Dire Rat has no natural armor and no Weapon
                 // Finesse; the Dog's +1 natural armor is the positive control
                 // that proves the check can see natural armor at all.
-                ExerciseSprint12PrintedDefences(blueprints, caster, direRat,
+                ExerciseSprint12PrintedDefences(blueprints, caster,
                     created, evidence);
 
                 secondVictimBlueprint = UnityEngine.Object.Instantiate(
@@ -473,9 +474,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// leaving a hold behind.
         /// </summary>
         private static void ExerciseSprint12ContactAllergy(
-            UnitEntityData goblinDog, UnitEntityData naturalAttacker,
-            UnitEntityData caster, UnitEntityData hostile,
-            UnitEntityData goblinVictim, BlueprintBuff reaction,
+            BlueprintScriptableObject[] blueprints, UnitEntityData goblinDog,
+            UnitEntityData naturalAttacker, UnitEntityData caster,
+            UnitEntityData hostile, UnitEntityData goblinVictim,
+            BlueprintBuff reaction,
             ExpandedSummoningMechanicalEvidence evidence)
         {
             int naturalFortitude =
@@ -525,30 +527,47 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 // Negative control: a manufactured weapon never exposes its
                 // wielder, so the trigger is the natural contact and not any
-                // blow that lands.
-                UnitEntityData manufacturedAttacker = null;
-                foreach (UnitEntityData candidate in new[] { caster, hostile })
-                {
-                    ItemEntityWeapon held = candidate == null ||
-                        candidate.Body == null ? null :
-                        candidate.Body.PrimaryHand.MaybeWeapon;
-                    if (held != null && !held.Blueprint.IsNatural &&
-                            !held.Blueprint.IsUnarmed)
-                    {
-                        manufacturedAttacker = candidate;
-                        break;
-                    }
-                }
-                string manufacturedDetail = "no-manufactured-weapon-fixture";
-                bool manufacturedHit = false;
+                // blow that lands. Neither the caster nor the hostile is
+                // holding one in this fixture, so the control builds a real
+                // weapon entity from an exact loaded melee blueprint, chosen
+                // by ascending asset id so the choice is reproducible, and
+                // swings it through the ordinary attack rule.
+                BlueprintItemWeapon manufactured = blueprints
+                    .OfType<BlueprintItemWeapon>()
+                    .Where(value => value != null && value.IsMelee &&
+                        !value.IsNatural && !value.IsUnarmed)
+                    .OrderBy(value => value.AssetGuid, StringComparer.Ordinal)
+                    .FirstOrDefault();
+                string manufacturedDetail = "no-manufactured-weapon-blueprint";
                 bool manufacturedSafe = false;
-                if (manufacturedAttacker != null)
+                if (manufactured != null)
                 {
-                    manufacturedHit = ExerciseExpandedSummoningAttack(
-                        manufacturedAttacker, goblinDog,
-                        out manufacturedDetail);
-                    manufacturedSafe = manufacturedHit &&
-                        !manufacturedAttacker.Descriptor.HasFact(reaction);
+                    int hostileBaseAttack =
+                        hostile.Descriptor.Stats.BaseAttackBonus.BaseValue;
+                    try
+                    {
+                        RemoveSprint12Buff(hostile, reaction);
+                        hostile.Descriptor.Stats.BaseAttackBonus.BaseValue = 100;
+                        var held = new ItemEntityWeapon(manufactured);
+                        UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                        var swing = new RuleAttackWithWeapon(hostile, goblinDog,
+                            held, 0);
+                        Rulebook.Trigger(swing);
+                        bool swingHit = swing.AttackRoll != null &&
+                            swing.AttackRoll.IsHit;
+                        int swingDamage = swing.MeleeDamage == null ? 0 :
+                            Math.Max(0, swing.MeleeDamage.Damage);
+                        manufacturedSafe = swingHit && swingDamage > 0 &&
+                            !hostile.Descriptor.HasFact(reaction);
+                        manufacturedDetail = manufactured.name + ":category=" +
+                            manufactured.Category + ";hit=" + swingHit +
+                            ";damage=" + swingDamage;
+                    }
+                    finally
+                    {
+                        hostile.Descriptor.Stats.BaseAttackBonus.BaseValue =
+                            hostileBaseAttack;
+                    }
                 }
 
                 // (c) an attempt to grapple the Goblin Dog. AutoFailure keeps
@@ -591,7 +610,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
 
                 evidence.Sprint12ContactAllergy = naturalExposed &&
-                    manufacturedAttacker != null && manufacturedSafe &&
+                    manufactured != null && manufacturedSafe &&
                     grappleExposed && tripSafe && goblinVictim != null &&
                     goblinoidSafe;
                 evidence.Sprint12ContactAllergyDetail = "natural[" +
@@ -639,7 +658,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// </summary>
         private static void ExerciseSprint12PrintedDefences(
             BlueprintScriptableObject[] blueprints, UnitEntityData caster,
-            UnitEntityData direRat, List<UnitEntityData> created,
+            List<UnitEntityData> created,
             ExpandedSummoningMechanicalEvidence evidence)
         {
             const string NaturalArmorPlusOneGuid =
@@ -656,6 +675,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 throw new InvalidOperationException(
                     "The exact native +1 natural armor or Weapon Finesse fact was not loaded.");
 
+            // Both sides must be pristine: the shared attack helper sets an
+            // attacker's base attack bonus to 100 and leaves it there, so a
+            // creature that has already swung in an earlier gate cannot be
+            // measured against one that has not.
+            UnitEntityData direRat = CastExpandedSummoningCombatUnit(blueprints,
+                caster, SummonFamily.NaturesAlly, "dire-rat", 1, created,
+                evidence);
+            RemoveExpandedSummoningAppearanceBuffs(direRat);
             UnitEntityData dog = CastExpandedSummoningCombatUnit(blueprints,
                 caster, SummonFamily.NaturesAlly, "dog", 1, created, evidence);
             RemoveExpandedSummoningAppearanceBuffs(dog);
@@ -697,7 +724,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Modifier(dogDexterity);
             bool measured = ratBonus != int.MinValue &&
                 dogBonus != int.MinValue &&
-                strengthPrediction != finessePrediction;
+                strengthPrediction != finessePrediction &&
+                direRat.Descriptor.Stats.BaseAttackBonus.BaseValue ==
+                    dog.Descriptor.Stats.BaseAttackBonus.BaseValue;
             int observedGap = measured ? ratBonus - dogBonus : int.MinValue;
             bool bonusIsStrengthBased = measured &&
                 observedGap == strengthPrediction;
