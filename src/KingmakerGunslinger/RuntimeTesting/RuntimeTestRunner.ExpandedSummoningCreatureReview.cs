@@ -32,9 +32,9 @@ namespace KingmakerGunslinger.RuntimeTesting
     ///
     /// The review images are the deliverable; the assertions only say whether
     /// each image is worth looking at (creature in frame, screen lit,
-    /// renderer enabled, dissolve finished). A creature that renders wrongly
-    /// but in frame still passes here, and is caught by the person or the
-    /// agent who looks at the file.
+    /// rendering whenever the game reports it visible, dissolve finished).
+    /// A creature that renders wrongly but in frame still passes here, and is
+    /// caught by the person or the agent who looks at the file.
     /// </summary>
     internal sealed partial class RuntimeTestRunner
     {
@@ -738,7 +738,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         : "<not applicable>";
                     _creatureReviewAssertions.Add(Assertion(
                         "expanded-summoning-creature-review-" + key,
-                        "idle, moving-a, moving-b and attack captures in frame, lit, renderer enabled, intact" +
+                        "idle, moving-a, moving-b and attack captures in frame, lit, intact, rendering wherever the game reports the unit visible and rendering at least once" +
                             (variantRegistered ? "; registered visual variant applied at attach and retained on the view at capture" : ""),
                         MotionReviewSummary + ";visualVariant=" + variantOutcome +
                             ";materialsAtCapture=" + string.Join("|", materialsNow.ToArray()) +
