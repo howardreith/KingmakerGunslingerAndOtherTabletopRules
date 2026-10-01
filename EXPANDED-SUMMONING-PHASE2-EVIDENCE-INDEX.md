@@ -17,6 +17,60 @@ exactly as recorded. The current published surface is 832 generated placements
 plus 29 retained native wrappers, for 861 visible choices; see
 `EXPANDED-SUMMONING-PHASE2-INVENTORY-RECONCILIATION.md`.
 
+### Interrupted run, 2026-10-01: `20261001T1737054842101Z-disposable-expanded-summoning`
+
+Recorded because it is **not** a passing run and must not be read as one. The
+scenario itself completed and wrote its result on source
+`fa221d90c6faebca422cbeb869af0ddff18635b0`: 44 assertions, 42 pass, status
+FAIL. The host then killed the orchestrating process for low physical memory
+before it could restore, so the batch left the deployed candidate installed
+(285 files) and its runtime lease held.
+
+Recovery, in this order. The orphaned lease was identified as this run's own by
+its recorded scenario `disposable-expanded-summoning`, its request path
+`...20261001T1737054842101Z-disposable-expanded-summoning/runtime-request.json`
+and its recorded game process 7808, all of which had exited; no other session
+held guarded work. It was released with its own recorded completion command,
+`scripts/Complete-KingmakerRuntimeLease.ps1`, which refuses to release while
+either the original owner or any Kingmaker process is alive, rather than by
+deleting a lock. The live tree was then restored through
+`scripts/Restore-Live-Mod.ps1` from the run's own pre-deployment snapshot
+`20261001T1736581185046Z`, which was first verified to be the owner's exact
+baseline, and the result was re-fingerprinted afterwards: 136 files, version
+0.0.117, `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+
+The two failures were fixture defects, not behaviour defects, and the run's
+observed evidence is what drove their repair:
+
+- `expanded-summoning-sprint12-contact-allergy` proved every printed trigger
+  and every negative control that could run - a natural weapon damaging the
+  Goblin Dog exposed its wielder at DC 12 with the Goblin Dog as the context
+  caster, a **failed** grapple attempt still exposed its initiator exactly as
+  the printed "attempts to grapple" requires, a trip maneuver exposed nobody,
+  and the exact-Goblin fixture was exempt. It failed only because neither the
+  caster nor the hostile carries a manufactured weapon, so the manufactured
+  negative control could not swing and the gate failed closed rather than
+  skipping it. The fixture now builds a real weapon entity from an exact loaded
+  melee blueprint.
+- `expanded-summoning-sprint12-printed-defences` proved the two repaired stats
+  directly: the live Dire Rat carried no natural-armor fact and no Weapon
+  Finesse, while the freshly summoned Dog control carried +1 natural armor, so
+  the check can see natural armor and the Dire Rat genuinely lacks it. Its
+  attack-bonus comparison was invalid because the shared attack helper raises
+  an attacker's base attack bonus to 100 and never restores it, so the reused
+  Dire Rat measured 101 against the pristine Dog's printed +2. Both sides of
+  the comparison are now freshly summoned, and the gate additionally refuses to
+  measure unless the two base attack bonuses match.
+
+`expanded-summoning-sprint12-disease-outlives-source` **passed** in this run and
+is the first evidence for the lifetime contract: both effects were inflicted,
+both summoned sources were destroyed through the native scene path, the rash
+kept ticking (86,400 -> 86,340 seconds) and kept its penalties, both contexts
+reported a destroyed caster without throwing and without retargeting onto the
+victim or the caster, positive magical healing cleared the rash, and filth
+fever correctly survived that healing. It is retained as evidence for that
+criterion alone; the run as a whole is a failure and qualifies nothing.
+
 | Scope | Passing result directory | Restoration record | Limit |
 | --- | --- | --- | --- |
 | Complete installed `BlueprintUnitType` census for the Goblin Dog goblinoid exemption | `20261001T1658000459746Z-observe-expanded-summoning-native-donors` | `20261001T1700201505223Z-observe-expanded-summoning-native-donors.json` | 4/4 PASS on source `a8ddfe3f57fd153e3f587fb530b664e62fdbf20b`, loaded assembly `0.0.141-expanded-summoning-phase2a`, module SHA-256 `eee807c78dbc53051546180370f0b67054a3c11e767bbdc1f87aa28f18469a86`. The audit enumerated all 106 `BlueprintUnitType` values in the installed library with the number of units declaring each, plus 1,857 units carrying no type. `Goblin` (`d524df24b2f38cf4590525b2e7c4f34e`, 69 units) is the only goblinoid type; `Hobgoblin`, `Bugbear`, `Goblinoid` and `SubtypeGoblinoid` are all absent, so the enumerated exemption set is complete for this installation rather than assumed. The same run re-dumped the native `FilthFever` graph: a Disease-descriptor buff whose `NewRound` action takes a Fortitude save and, on failure, applies two `ContextActionDealDamage` ability packets and tracks consecutive successes through a shared value - the printed two-ability damage and two-consecutive-save cure, on Kingmaker's per-round cadence rather than the printed 1/day frequency and without the printed 1d3-day onset. That cadence is the native game's own, is used unmodified, and is disclosed in the lifetime contract. Result/evidence/audit SHA-256: `FEA29B75BC9AE5649C24F33D2CBCF95B063869297F1CB18508AC7884F5D90C78` / `95D465C1CEE2537CEE0C18D8CC47D72C7425D9F26051C3697D486E66F4E64743` / `AFE5FFA6DA7F34932F34A9619E9034D56E547E0F0023303959521B230D74E82C`; restoration record SHA-256 `C40619AA68D594D636F243928297E31CC3B638A2CB5F156DADD722EB26F31F46` restored the live tree to the pre-run 136-file state at `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`. Metadata only: no save was selected, loaded or written, and this run qualifies no creature behaviour. |
