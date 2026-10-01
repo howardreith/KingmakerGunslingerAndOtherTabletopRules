@@ -525,6 +525,30 @@ namespace KingmakerGunslinger.RuntimeTesting
                         SummonInjuryDiseasePolicy.GoblinDogFortitudeDc &&
                     naturalSource;
 
+                // (c) an attempt to grapple the Goblin Dog. AutoFailure keeps
+                // the printed "attempt" exact and leaves no hold behind. This
+                // runs immediately after the natural attack: an earlier
+                // ordering put the manufactured-weapon control in between and
+                // the grapple then stopped exposing its initiator, so the
+                // controls are sequenced after the behaviour they control for.
+                RemoveSprint12Buff(hostile, reaction);
+                int hostileFortitudeAtGrapple =
+                    hostile.Descriptor.Stats.SaveFortitude.ModifiedValue;
+                bool dogAvailableAtGrapple =
+                    SummonDiseaseExposure.IsAvailable(goblinDog);
+                var grapple = new RuleCombatManeuver(hostile, goblinDog,
+                    CombatManeuver.Grapple) { AutoFailure = true };
+                Rulebook.Trigger(grapple);
+                Buff grappleReaction =
+                    hostile.Descriptor.Buffs.GetBuff(reaction);
+                bool grappleExposed = !grapple.Success &&
+                    grappleReaction != null &&
+                    grappleReaction.Context != null &&
+                    grappleReaction.Context.Params.DC ==
+                        SummonInjuryDiseasePolicy.GoblinDogFortitudeDc &&
+                    ReferenceEquals(grappleReaction.Context.MaybeCaster,
+                        goblinDog);
+
                 // Negative control: a manufactured weapon never exposes its
                 // wielder, so the trigger is the natural contact and not any
                 // blow that lands. Neither the caster nor the hostile is
@@ -570,22 +594,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                 }
 
-                // (c) an attempt to grapple the Goblin Dog. AutoFailure keeps
-                // the printed "attempt" exact and leaves no hold behind.
-                RemoveSprint12Buff(hostile, reaction);
-                var grapple = new RuleCombatManeuver(hostile, goblinDog,
-                    CombatManeuver.Grapple) { AutoFailure = true };
-                Rulebook.Trigger(grapple);
-                Buff grappleReaction =
-                    hostile.Descriptor.Buffs.GetBuff(reaction);
-                bool grappleExposed = !grapple.Success &&
-                    grappleReaction != null &&
-                    grappleReaction.Context != null &&
-                    grappleReaction.Context.Params.DC ==
-                        SummonInjuryDiseasePolicy.GoblinDogFortitudeDc &&
-                    ReferenceEquals(grappleReaction.Context.MaybeCaster,
-                        goblinDog);
-
                 // Negative control: a maneuver the printed rule does not name
                 // is not contact.
                 RemoveSprint12Buff(hostile, reaction);
@@ -620,6 +628,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ";exposed=" + naturalExposed + "];manufactured[" +
                     manufacturedDetail + ";safe=" + manufacturedSafe +
                     "];grappleAttempt[success=" + grapple.Success +
+                    ";fort=" + hostileFortitudeAtGrapple + ";dogAvailable=" +
+                    dogAvailableAtGrapple + ";buff=" +
+                    (grappleReaction == null ? "none" : "applied") +
                     ";exposed=" + grappleExposed + "];trip[safe=" + tripSafe +
                     "];goblinoid[" + goblinoidDetail + ";safe=" +
                     goblinoidSafe + "]";
