@@ -34,14 +34,19 @@ def validate(root: Path) -> None:
     baseline.validate(root)
 
     require_tokens = baseline.baseline.require_tokens
+    # Sprint 12 is qualified and published, so nothing registered is withheld.
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs",
-        '"dire-rat", "dog", "hyena", "goblin-dog"',
         "RegisteredLogicalPlacementCount = 900",
-        "SuppressedLogicalPlacementCount = 68",
+        "SuppressedLogicalPlacementCount = 0",
         "RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount")
+    forbid = baseline.baseline.require_tokens
+    visibility = (root / "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs").read_text(encoding="utf-8")
+    for key in ('"dire-rat"', '"dog"', '"hyena"', '"goblin-dog"'):
+        if key in visibility:
+            raise AssertionError(
+                f"A published Sprint 12 creature is still suppressed: {key}")
     require_tokens(root / "planning/EXPANDED-SUMMONING-FIDELITY-MATRIX.md",
-        "Sprints 9-11", "832 published generated", "861 total choices",
-        "all 68", "remain suppressed")
+        "Sprints 9-12", "900 published generated", "929 total choices")
     require_tokens(root / "EXPANDED-SUMMONING-PHASE2-INVENTORY-RECONCILIATION.md",
         "832 + 29 = 861", "881db758", "d7822297",
         "visible in v0.0.140 and are hidden in v0.0.141")
@@ -61,6 +66,8 @@ def validate(root: Path) -> None:
         "candidateOnly": False,
         "releaseVersion": VERSION,
         "releaseInformationalVersion": INFORMATIONAL_VERSION,
+        # These describe the immutable published v0.0.141 build, not the
+        # current source; the development section below carries today's state.
         "publishedSprintRange": "9-11",
         "visibleGeneratedChoices": 832,
         "visibleChoiceTotal": 861,
@@ -86,10 +93,10 @@ def validate(root: Path) -> None:
         "publicReleaseAuthorized": False,
         "candidateOnly": True,
         "registeredGeneratedPlacements": 900,
-        "suppressedGeneratedPlacements": 68,
-        "publishedGeneratedPlacements": 832,
+        "suppressedGeneratedPlacements": 0,
+        "publishedGeneratedPlacements": 900,
         "retainedNativeWrappers": 29,
-        "visibleChoiceTotal": 861,
+        "visibleChoiceTotal": 929,
         "mergeAuthorized": False,
         "newReleaseAuthorized": False,
         "sprint22Authorized": False,

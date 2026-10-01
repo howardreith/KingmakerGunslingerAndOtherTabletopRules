@@ -202,9 +202,9 @@ namespace KingmakerGunslinger.DomainTests
                         SummonFamily.NaturesAlly)).ToArray();
             SummonVariantSpec[] bat = all.Where(value =>
                 value.Creature.Key == "dire-bat").ToArray();
-            Assertions.Equal(832, all.Count(SummonVisibilityCatalog.IsPublished),
+            Assertions.Equal(900, all.Count(SummonVisibilityCatalog.IsPublished),
                 "The published surface must exclude only Sprint 12 candidates.");
-            Assertions.Equal(68, all.Count(value =>
+            Assertions.Equal(0, all.Count(value =>
                     !SummonVisibilityCatalog.IsPublished(value)),
                 "The authorized Sprint 12 hidden set changed.");
             Assertions.Equal(14, bat.Length,

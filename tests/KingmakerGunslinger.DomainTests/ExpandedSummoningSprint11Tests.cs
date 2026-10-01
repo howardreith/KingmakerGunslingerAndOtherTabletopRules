@@ -57,8 +57,8 @@ namespace KingmakerGunslinger.DomainTests
                     " publishes after mechanics, art and lifecycle qualification.");
             }
             Assertions.True(all.Length == 900 &&
-                all.Count(SummonVisibilityCatalog.IsPublished) == 832 &&
-                all.Count(value => !SummonVisibilityCatalog.IsPublished(value)) == 68,
+                all.Count(SummonVisibilityCatalog.IsPublished) == 900 &&
+                all.Count(value => !SummonVisibilityCatalog.IsPublished(value)) == 0,
                 "Sprint 11 stays published while the registered Sprint 12 set stays hidden.");
         }
 
