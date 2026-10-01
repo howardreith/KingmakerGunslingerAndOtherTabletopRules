@@ -31,7 +31,7 @@ Current profile (`ExpandedSummoningNaturalProfiles.cs`):
 | Feats | Skill Focus (Perception), Toughness | same | exact |
 | Trip defence | CMD 16 (20 vs. trip) | `TripDefenseFourLegs` absent | **defect** - the printed block carries the quadruped +4, and the Dog, Dire Rat and Hyena rows all encode it |
 | Claws | 2 claws +4 (1d6+2) | primary `Claw1d6` + additional `Claw1d6` | exact |
-| Bite | bite **+4** (1d4**+2**) | `Bite1d4` placed in `AdditionalSecondaryWeapons` | **defect** - +4 with full Strength damage is a primary natural attack; a secondary attack would be +2 attack and +1 damage. Move it to `AdditionalWeapons`. |
+| Bite | bite **+4** (1d4**+2**) | `Bite1d4` placed in `AdditionalSecondaryWeapons` | **defect**, re-verified 2026-10-01 against both the source and the project's own semantics. Printed BAB +2 and Strength 15 give +4 with full +2 damage, which is a primary natural attack; a secondary one would be -1 to hit and +1 damage. The semantics were calibrated against an accepted creature rather than assumed: the Crocodile's printed `tail slap +0 (1d12+2)` is a genuine secondary - BAB 2 + Str 4 - 1 size - 5 = +0, half Strength damage - and the project correctly places it in `AdditionalSecondaryWeapons`. So that list does mean a PF1 secondary attack, and the Wolverine's bite does not belong in it. Move it to `AdditionalWeapons`. |
 | Rage | Ex, see quote | omitted, recorded as a deviation | **must implement** - Appendix A asks for "summon-local rage" and D-02 forbids counting the creature complete without the mechanic that justifies it. The recorded omission is not an accepted deviation. |
 | Burrow, climb | burrow 10 ft., climb 10 ft. | omitted, disclosed | keep the disclosed single-speed adaptation |
 
