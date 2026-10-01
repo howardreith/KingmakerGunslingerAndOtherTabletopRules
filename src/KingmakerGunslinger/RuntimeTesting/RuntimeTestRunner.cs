@@ -23232,6 +23232,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 blueprint.name == "KMG_Summoning_Special_Pony_CombatTraits" ||
                 blueprint.name == "KMG_Summoning_Special_Horse_CombatTraits")
                 return false;
+            // Sprint 12: the Dire Rat's injury-disease rider and the Goblin
+            // Dog's disease-immunity and allergic-reaction carrier. Both are
+            // project-owned signature facts on their own creature, registered
+            // here the way every earlier sprint's carriers are; the general
+            // sanitizer stays strict for everything else.
+            if (blueprint.name == "KMG_Summoning_Natural_DireRat_Disease" ||
+                blueprint.name == "KMG_Summoning_Natural_GoblinDog_Traits")
+                return false;
             // Sprint 8: the tiger's carrier and the cheetah's sprint pack.
             if (blueprint.name == "KMG_Summoning_Special_Tiger_CombatTraits" ||
                 blueprint.name.StartsWith("KMG_Summoning_Special_Cheetah_",
