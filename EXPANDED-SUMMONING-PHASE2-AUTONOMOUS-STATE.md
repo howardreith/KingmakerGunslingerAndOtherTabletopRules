@@ -1,12 +1,169 @@
 # Expanded Summoning Phase 2 autonomous state
 
+## CURRENT STATE, 2026-10-01 (Claude continuation order)
+
+This header is the single current-state record. Every dated section below it is
+history, kept for provenance. Where a historical section and this header
+disagree, this header governs.
+
+### Effective mission
+
+`artifacts/phase2/mission-claude-takeover.md` - the owner's "Claude takeover:
+finish Expanded Summoning Phase 2" order, Handoff v1.0, prepared 2026-09-30.
+It renews delegation for Sprints 12-21 and supersedes the temporary 0.0.141
+stopping point. It does not grant permission for a further release, merge, tag,
+permanent deployment or Sprint 22. The earlier `artifacts/phase2/mission.md`
+and `EXPANDED-SUMMONING-PHASE1-CODEX-HANDOFF.md` remain history.
+
+### Active work
+
+- Tranche 2A, **Sprint 12** (Dire Rat, Dog, Hyena, Goblin Dog), resumed from
+  the hidden state.
+- Next executable action: implement the Sprint 12 rules-fidelity repairs found
+  by the intake rules review, then the remaining lifecycle tests, then the
+  guarded publication matrix.
+- Sprints 13-21 remain authorized and not started.
+
+### Branch, PR and dependency heads
+
+| Item | Value |
+| --- | --- |
+| Worktree | `.worktrees/expanded-summoning-phase2a` (clean, idle, adopted 2026-10-01) |
+| Branch | `codex/expanded-summoning-phase2a-sprints9-13` |
+| Branch head at adoption | `97f0a966b3219ce0122626a492529b509e1db880` |
+| PR | #25, open, draft, base `master`, head `97f0a966` |
+| Observed `origin/master` | `2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a` |
+| Published release | `v0.0.141` -> `97f0a966`; immutable under this order |
+| Tranche 2B branch | `codex/expanded-summoning-phase2b-sprints14-17` - not yet created |
+| Tranche 2C branch | `codex/expanded-summoning-phase2c-sprints18-21` - not yet created |
+
+### Inventory: registered, hidden, visible
+
+Derived from source, not copied from any earlier document. Full derivation,
+per-parent census and the correction of the stale 882/911 figures are in
+`EXPANDED-SUMMONING-PHASE2-INVENTORY-RECONCILIATION.md`.
+
+| Quantity | Value |
+| --- | --- |
+| Project creature identities | 88 |
+| Registered generated placements | 900 (453 SM + 447 SNA) |
+| Suppressed (hidden) placements | 68 - Dire Rat 18, Dog 18, Goblin Dog 16, Hyena 16 |
+| Published generated placements | 832 (419 SM + 413 SNA) |
+| Retained native wrappers | 29 (17 SM + 12 SNA) |
+| Total visible player choices | 861 (436 SM + 425 SNA) |
+
+Disclosed consequence: Dog, Hyena and Goblin Dog were published in 0.0.140 and
+are hidden in 0.0.141. Their registered identities are unchanged, so 0.0.140
+saves holding those summons still deserialize. Completing Sprint 12 restores
+them.
+
+### Tested candidate and baseline at adoption
+
+| Gate | Result at `97f0a966` |
+| --- | --- |
+| `scripts/validate-repository.ps1` | PASS (re-run 2026-10-01) |
+| `scripts/test-domain.ps1 -Configuration Release` | 1,958 tests, 0 failures (re-run 2026-10-01) |
+| Last guarded scenario | `20260930T1626175528422Z-disposable-expanded-summoning`, 41/41 |
+| Its local runtime package SHA-256 | `AAC80B5AD7680B519230599B8CED673F4B19A74527598DBE04C0AECD813AA8EB` |
+| Its loaded DLL SHA-256 | `82A14E21C90DA5DE5E3FDB5FBAD8B83B99B38788230DE9FEEE545B9198012A5A` |
+| Its result SHA-256 | `3351CBB24DF11FA01317D2FA50B640E96F8648928F23069AE09FB07BC01AD462` |
+| Restoration record | `20260930T1630580562591Z-disposable-expanded-summoning.json`, SHA-256 `CA468E81FBCF9052BD0A77C4BE026EEBE0550FCFCA06FBE173429C3716D96749` |
+
+The published `v0.0.141` ZIP
+(`c7aa3cecd3e9d773d260e3850566ccccf663e63a8d73ede05c17a9e5294dd2ce`) and the
+locally runtime-tested package above are different artifacts with different
+hashes. Agreement of the version string is not evidence that the published ZIP
+was runtime-tested.
+
+### Live installation and restoration state
+
+Snapshotted 2026-10-01 before any guarded work: the live mod tree
+`C:\Program Files (x86)\Steam\steamapps\common\Pathfinder Kingmaker\Mods\KingmakerGunslinger`
+holds **136 files**, `Info.json` version **0.0.117**, project tree fingerprint
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`, computed
+with `Get-KmgTreeFingerprint`. That is byte-identical to the historical
+restoration baseline, so the owner did not install 0.0.141 and the historical
+baseline remains the correct pre-run state to restore. No runtime lease is
+held, no Kingmaker process is running, and no guarded transaction is open.
+`UnityModManager.exe` (PID 3544, started 2026-09-23) belongs to the owner's
+desktop session and is not touched.
+
+### Open criteria
+
+Sprint 12 is not complete. Open:
+
+1. The Sprint 12 rules-fidelity repairs from the intake rules review.
+2. A written disease/allergy lifetime contract reconciling the charter's
+   no-leak/no-persist-after-cleanup line with printed disease durations.
+3. Direct and quantity player paths through the real spellbook for all four
+   creatures.
+4. Both RTWP and turn-based modes.
+5. Compact-body navigation, movement and attack contact.
+6. Natural expiry, death, dismissal.
+7. Save/load persistence and module-disabled deserialization.
+8. Live inventory and menu after publication.
+9. Compatibility profiles.
+10. Internal visual review of all four creatures under party camera and motion.
+11. Publication: remove suppression for qualified placements only, preserving
+    every GUID, then re-derive the totals.
+
+### Settled adaptations - do not reopen
+
+- `OwnerAcceptedEngineLimitation: ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD`.
+  Active grab/hold/swallow/engulf links and Stirge attachment are
+  session-scoped and must release cleanly on reload. No project-owned hold
+  re-establishment.
+- Trample: exactly one automatic response. A defender with a legal executable
+  melee AoO takes one at -4, spending its ordinary resource, before contact
+  damage and with no Reflex save for that contact; otherwise the printed
+  Reflex save for half. A stopping AoO cancels that contact and later contacts.
+  No duplicate ordinary-movement AoO, no interactive pop-up.
+- Stampede requires three allied Stampede holders each actively executing their
+  own registered Trample in the same round while mutually adjacent. The
+  `STAMPEDE_OMITTED_NO_SAFE_COORDINATED_ACTION_SEAM` fallback was conditional
+  authority and was not used.
+- Stirge: prey remains free to move, act and attack the separately targetable
+  Stirge; standard-action removal picks the better of CMB or Mobility; four
+  actual Constitution drains end the meal; **one** 10% disease exposure check
+  per Stirge/victim pair after actual Constitution damage, per the primary
+  source's limiting sentence; zero actual drain does not consume it; Filth
+  Fever is the disclosed disease adaptation.
+
+### Outstanding owner decisions
+
+None open. No blocker is active.
+
+### Human review status
+
+Owner visual review of the Sprint 9-11 assets remains
+`NOT_PERFORMED_NONBLOCKING`. No personal owner approval of any Phase 2 asset
+has been given or may be claimed. Internal visual acceptance is recorded
+separately and is never presented as owner approval.
+
+### Resume instructions for a new context
+
+1. `cd` to `.worktrees/expanded-summoning-phase2a`; confirm the branch is
+   `codex/expanded-summoning-phase2a-sprints9-13` and the tree is clean.
+2. `git fetch --all --tags --prune`; confirm the branch head matches `origin`
+   and PR #25 is still open and draft. Preserve any descendant work.
+3. Read `artifacts/phase2/mission-claude-takeover.md`, then this header, then
+   `EXPANDED-SUMMONING-PHASE2-INVENTORY-RECONCILIATION.md`.
+4. Re-fingerprint the live mod tree before any guarded run and restore exactly
+   that state afterwards.
+5. Continue at "Next executable action" above. Do not re-run historical gates
+   solely because the context changed.
+
+
 ## 0.0.141 release boundary, 2026-09-30
 
 The owner directed a near-term checkpoint release rather than continuing the
 entire Sprints 9-21 mission in one run. Version 0.0.141 therefore closes at
-the fully qualified Sprint 11 boundary. Sprints 9-11 publish 882 generated
-choices plus 29 retained native wrappers, for 911 visible choices. Owner
-visual review remains `NOT_PERFORMED_NONBLOCKING`.
+the fully qualified Sprint 11 boundary. The released surface is 832 published
+generated choices plus 29 retained native wrappers, for 861 visible choices;
+the 882/911 figures first recorded here were the totals at the Sprint 11
+publication commit `881db758` and are corrected in
+`EXPANDED-SUMMONING-PHASE2-INVENTORY-RECONCILIATION.md`. Owner visual review
+remains `NOT_PERFORMED_NONBLOCKING`.
 
 Sprint 12 remains development-only. All 68 Dire Rat, Dog, Hyena and Goblin
 Dog placements are suppressed even though the injury-disease mechanics and
@@ -139,8 +296,8 @@ Branch `codex/expanded-summoning-phase2a-sprints9-13`, draft PR #25;
 publication worktree parent `39f4f98f8891e1c75820cbc08961e86685a00299`.
 Sprints 9, 10 and 11 are internally technically qualified. Aurochs, Bison,
 Rhinoceros and Woolly Rhinoceros are published at all 48 authorized SM/SNA
-placements. The generated visible roster is 882 choices; the 29 retained
-native wrappers make 911 visible summon choices. Owner visual approval remains
+placements. The generated published roster is 832 choices; the 29 retained
+native wrappers make 861 visible summon choices. Owner visual approval remains
 pending and nonblocking. Sprint 12 is the next authorized work; no merge,
 release, permanent deployment or Sprint 22 is authorized.
 
@@ -172,7 +329,8 @@ Rhinoceros run `20260930T0350131904135Z` (18/18) and quantity run
 passed 58/58, 15/15 and 7/7 at `20260930T0422334006971Z`,
 `20260930T0426570686599Z` and `20260930T0430006142872Z`.
 
-Publication inventory `20260930T0457205706691Z` passed 50/50: 882 registered
+Publication inventory `20260930T0457205706691Z` passed 50/50 at its own
+pre-`d7822297` revision: 882 registered
 and visible parent placements, all executable contracts, all 18 menu equations,
 zero missing icons and zero prohibited references. Player path
 `20260930T0508037596496Z` passed 10/10 across every published root and all 29

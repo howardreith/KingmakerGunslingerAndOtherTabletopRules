@@ -149,5 +149,66 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(first.Contains("\"totalVisibleChoices\": 861"),
                 "The emitted census lost the frozen visible-choice total.");
         }
+
+        /// <summary>
+        /// The 0.0.141 records once claimed 882 generated and 911 visible
+        /// choices, which were the totals at the Sprint 11 publication commit
+        /// before Sprint 12 registered Dire Rat and suppressed four creatures.
+        /// Every mutable current record must now state the derived equation,
+        /// so a future registration or suppression change cannot leave a stale
+        /// published total behind.
+        /// </summary>
+        internal static void PublishedInventoryRecordsMatchTheDerivedEquation()
+        {
+            int generated = SummonVisibilityCatalog.PublishedLogicalPlacementCount;
+            int wrappers = SummonNativeExpansionCatalog.All.Count;
+            int visible = generated + wrappers;
+            string generatedText = generated.ToString(
+                System.Globalization.CultureInfo.InvariantCulture);
+            string visibleText = visible.ToString(
+                System.Globalization.CultureInfo.InvariantCulture);
+
+            string[] records = {
+                "docs/RELEASE-NOTES-0.0.141.md",
+                "EXPANDED-SUMMONING-PHASE2-AUTONOMOUS-STATE.md",
+                "EXPANDED-SUMMONING-PHASE2-IMPLEMENTATION-REPORT.md",
+                "EXPANDED-SUMMONING-PHASE2-JOURNAL.md",
+                "EXPANDED-SUMMONING-PHASE2-INVENTORY-RECONCILIATION.md",
+                "planning/EXPANDED-SUMMONING-FIDELITY-MATRIX.md",
+            };
+
+            foreach (string record in records)
+            {
+                string text = System.IO.File.ReadAllText(System.IO.Path.Combine(
+                    System.Environment.CurrentDirectory,
+                    record.Replace('/', System.IO.Path.DirectorySeparatorChar)));
+                Assertions.True(text.Contains(generatedText),
+                    record + " must state the derived published generated " +
+                    "placement count " + generatedText + ".");
+                Assertions.True(text.Contains(visibleText),
+                    record + " must state the derived visible choice total " +
+                    visibleText + ".");
+            }
+
+            // The reconciliation record is the one place allowed to quote the
+            // superseded figures, because explaining them is its purpose.
+            foreach (string record in records)
+            {
+                if (record.EndsWith("INVENTORY-RECONCILIATION.md",
+                        System.StringComparison.Ordinal)) continue;
+                string text = System.IO.File.ReadAllText(System.IO.Path.Combine(
+                    System.Environment.CurrentDirectory,
+                    record.Replace('/', System.IO.Path.DirectorySeparatorChar)));
+                foreach (string stale in new[] {
+                    "911 visible choices", "911 total choices",
+                    "911 visible summon choices"
+                })
+                    Assertions.True(!text.Contains(stale) ||
+                        text.Contains("INVENTORY-RECONCILIATION"),
+                        record + " still presents the superseded total \"" +
+                        stale + "\" without pointing at the reconciliation " +
+                        "record.");
+            }
+        }
     }
 }
