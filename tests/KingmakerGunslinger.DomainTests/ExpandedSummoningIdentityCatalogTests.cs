@@ -11,20 +11,20 @@ namespace KingmakerGunslinger.DomainTests
         {
             var first = ExpandedSummoningIdentityCatalog.Build();
             var second = ExpandedSummoningIdentityCatalog.Build();
-            Assertions.Equal(1661, first.Count, "Foundation identity count changed.");
+            Assertions.Equal(1665, first.Count, "Foundation identity count changed.");
             Assertions.Equal(88, first.Count(value => value.PlannedType == "BlueprintUnit"), "Unit identity count changed.");
             Assertions.Equal(1435, first.Count(value => value.PlannedType == "BlueprintAbility"), "Ability identity count changed.");
             Assertions.Equal(2, first.Count(value => value.Symbol.StartsWith(
                 "KMG.Summoning.Native.", StringComparison.Ordinal)),
                 "Native tier-one preservation identity count changed.");
-            Assertions.Equal(57, first.Count(value => value.PlannedType == "BlueprintBuff"), "Buff identity count changed.");
+            Assertions.Equal(59, first.Count(value => value.PlannedType == "BlueprintBuff"), "Buff identity count changed.");
             Assertions.Equal(24, first.Count(value => value.PlannedType == "BlueprintAiCastSpell"), "AI identity count changed.");
             Assertions.Equal(12, first.Count(value => value.PlannedType == "BlueprintBrain"), "Brain identity count changed.");
-            Assertions.Equal(13, first.Count(value => value.PlannedType == "BlueprintItemWeapon"), "Weapon identity count changed.");
+            Assertions.Equal(14, first.Count(value => value.PlannedType == "BlueprintItemWeapon"), "Weapon identity count changed.");
             Assertions.Equal(2, first.Count(value => value.PlannedType == "BlueprintWeaponType"), "Weapon-type identity count changed.");
             Assertions.Equal(1, first.Count(value => value.PlannedType == "BlueprintUnitType"), "Unit-type identity count changed.");
             Assertions.Equal(17, first.Count(value => value.PlannedType == "BlueprintAbilityResource"), "Resource identity count changed.");
-            Assertions.Equal(9, first.Count(value => value.PlannedType == "BlueprintFeature"), "Feature identity count changed.");
+            Assertions.Equal(10, first.Count(value => value.PlannedType == "BlueprintFeature"), "Feature identity count changed.");
             Assertions.Equal(2, first.Count(value => value.PlannedType == "BlueprintAbilityAreaEffect"), "Area effect identity count changed.");
             Assertions.Equal(1, first.Count(value => value.PlannedType ==
                 "BlueprintActivatableAbility"),
@@ -460,14 +460,27 @@ namespace KingmakerGunslinger.DomainTests
                 "Crocodile death-roll deviation is not explicit.");
             NaturalSummonProfile wolverine =
                 ExpandedSummoningNaturalProfiles.For("wolverine");
-            Assertions.Equal(1, wolverine.AdditionalWeapons.Count,
-                "Wolverine second claw changed.");
-            Assertions.Equal("Bite1d4",
-                wolverine.AdditionalSecondaryWeapons.Single(),
-                "Wolverine secondary bite changed.");
-            Assertions.True(wolverine.Deviations.Any(value =>
+            // Printed: "2 claws +4 (1d6+2), bite +4 (1d4+2)". BAB 2 plus
+            // Strength 4 with full Strength damage on all three limbs, so all
+            // three are primary and there is no secondary limb at all. A
+            // secondary bite would print at +(-1) for 1d4+1.
+            Assertions.Equal(2, wolverine.AdditionalWeapons.Count,
+                "Wolverine primary limb count changed.");
+            Assertions.True(wolverine.AdditionalWeapons.Contains("Claw1d6"),
+                "Wolverine lost its second primary claw.");
+            Assertions.True(wolverine.AdditionalWeapons.Contains("Bite1d4"),
+                "Wolverine bite is no longer a primary natural attack.");
+            Assertions.Equal(0, wolverine.AdditionalSecondaryWeapons.Count,
+                "Wolverine gained a secondary limb its stat block does not have.");
+            // Printed: "CMD 16 (20 vs. trip)".
+            Assertions.True(wolverine.Facts.Contains("TripDefenseFourLegs"),
+                "Wolverine lost its printed quadruped trip defence.");
+            // The rage is implemented, so no deviation may stand in for it.
+            Assertions.True(wolverine.Facts.Contains("WolverineRage"),
+                "Wolverine lost its printed rage.");
+            Assertions.False(wolverine.Deviations.Any(value =>
                 value.Contains("rage")),
-                "Wolverine rage deviation is not explicit.");
+                "Wolverine still records a rage deviation after the rage shipped.");
             NaturalSummonProfile direBoar =
                 ExpandedSummoningNaturalProfiles.For("dire-boar");
             Assertions.Equal(5, direBoar.HitDice, "Dire Boar HD changed.");

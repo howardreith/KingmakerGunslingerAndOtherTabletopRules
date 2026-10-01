@@ -18,7 +18,9 @@ using Kingmaker.RuleSystem;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
+using Kingmaker.UnitLogic.Buffs.Components;
 using Kingmaker.UnitLogic.FactLogic;
+using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.UnitLogic.Mechanics.Actions;
 using Kingmaker.UnitLogic.Mechanics.Components;
 using Kingmaker.Utility;
@@ -35,6 +37,19 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Summoning.Natural.DireBat.Blindsense";
         private const string Bite1d3Symbol =
             "KMG.Summoning.Natural.Bite1d3";
+        /// <summary>
+        /// The Poison Frog's printed bite deals a flat point, not a die. The
+        /// value is exactly expressible because <c>DiceType</c> has a
+        /// <c>One</c> member and this builder mints its own natural weapons.
+        /// </summary>
+        private const string Bite1Symbol =
+            "KMG.Summoning.Natural.Bite1";
+        private const string WolverineRageSymbol =
+            "KMG.Summoning.Natural.Wolverine.Rage";
+        private const string WolverineRageOnsetSymbol =
+            "KMG.Summoning.Natural.Wolverine.RageOnset";
+        private const string WolverineRageStateSymbol =
+            "KMG.Summoning.Natural.Wolverine.RageState";
         private const string Tail1d12Symbol =
             "KMG.Summoning.Natural.Tail1d12";
         private const string Tail3d6Symbol =
@@ -216,6 +231,8 @@ namespace KingmakerGunslinger.Blueprints
                 Bite1d4Symbol), Bite1d4Symbol, 1, DiceType.D4);
             ConfigureWeapon(nativeBite, Require<BlueprintItemWeapon>(bySymbol,
                 Bite1d3Symbol), Bite1d3Symbol, 1, DiceType.D3);
+            ConfigureWeapon(nativeBite, Require<BlueprintItemWeapon>(bySymbol,
+                Bite1Symbol), Bite1Symbol, 1, DiceType.One);
             BlueprintAbility nativeTouchDelivery = BlueprintLibraryLookup
                 .RequireExact<BlueprintAbility>(library,
                     NativeShockingGraspDeliveryGuid,
@@ -276,6 +293,10 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureDireRatDisease(Require<BlueprintFeature>(bySymbol,
                     DireRatDiseaseSymbol), filthFever,
                 Require<BlueprintItemWeapon>(bySymbol, Bite1d4Symbol));
+            ConfigureWolverineRage(
+                Require<BlueprintFeature>(bySymbol, WolverineRageSymbol),
+                Require<BlueprintBuff>(bySymbol, WolverineRageOnsetSymbol),
+                Require<BlueprintBuff>(bySymbol, WolverineRageStateSymbol));
             ConfigureGoblinDogTraits(Require<BlueprintFeature>(bySymbol,
                     GoblinDogTraitsSymbol),
                 Require<BlueprintBuff>(bySymbol,
@@ -575,6 +596,8 @@ namespace KingmakerGunslinger.Blueprints
                     ? Require<BlueprintFeature>(bySymbol, DireRatDiseaseSymbol)
                     : fact == "GoblinDogTraits"
                     ? Require<BlueprintFeature>(bySymbol, GoblinDogTraitsSymbol)
+                    : fact == "WolverineRage"
+                    ? Require<BlueprintFeature>(bySymbol, WolverineRageSymbol)
                     : BaseUnitFactKeys.Contains(fact)
                     ? BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(
                         library, FactGuids[fact], profile.DisplayName + " " + fact)
@@ -646,6 +669,8 @@ namespace KingmakerGunslinger.Blueprints
                 Bite1d4Symbol);
             if (key == "Bite1d3") return Require<BlueprintItemWeapon>(bySymbol,
                 Bite1d3Symbol);
+            if (key == "Bite1") return Require<BlueprintItemWeapon>(bySymbol,
+                Bite1Symbol);
             if (key == "Bite1d6") return BlueprintLibraryLookup.RequireExact<
                 BlueprintItemWeapon>(library, NativeBite1d6Guid, "1d6 bite");
             if (key == "Bite1d8") return BlueprintLibraryLookup.RequireExact<
@@ -720,16 +745,128 @@ namespace KingmakerGunslinger.Blueprints
             field.SetValue(target, value);
         }
 
-        private static void SetBuffFlags(BlueprintBuff buff, bool harmful)
+        private static void SetBuffFlags(BlueprintBuff buff, bool harmful,
+            bool hidden = false)
         {
             FieldInfo field = Fields(typeof(BlueprintBuff)).SingleOrDefault(
                 candidate => candidate.Name == "m_Flags");
             if (field == null || !field.FieldType.IsEnum)
                 throw new MissingFieldException(typeof(BlueprintBuff).FullName,
                     "m_Flags");
-            field.SetValue(buff, harmful ?
-                Enum.Parse(field.FieldType, "Harmful") :
-                Enum.ToObject(field.FieldType, 0));
+            int value = (harmful ?
+                (int)Enum.Parse(field.FieldType, "Harmful") : 0) |
+                (hidden ? (int)Enum.Parse(field.FieldType, "HiddenInUi") : 0);
+            field.SetValue(buff, Enum.ToObject(field.FieldType, value));
+        }
+
+        /// <summary>
+        /// The printed Wolverine rage, in three blueprints.
+        ///
+        /// <para>Bestiary text: "A wolverine that takes damage in combat flies
+        /// into a rage on its next turn, clawing and biting madly until either
+        /// it or its opponent is dead. It gains +4 to Strength, +4 to
+        /// Constitution, and -2 to AC. The creature cannot end its rage
+        /// voluntarily."</para>
+        ///
+        /// <para>The delay is the part worth building carefully. The native
+        /// <see cref="SetBuffOnsetDelay"/> runs its action list exactly once,
+        /// on the first round boundary after the buff carrying it lands, so
+        /// routing the rage through a hidden onset marker means there is no
+        /// code path at all from the damage event to the +4/+4/-2: the rage
+        /// cannot begin on the turn the wolverine was hurt, however the damage
+        /// arrives.</para>
+        ///
+        /// <para>The rage state is permanent because the printed rage has no
+        /// duration - it runs "until either it or its opponent is dead" - and
+        /// carries no voluntary end. It is applied to the wolverine alone, so
+        /// it leaves when the summon does, and it is marked undispellable
+        /// because nothing in the printed text offers a way to call it off.</para>
+        /// </summary>
+        private static void ConfigureWolverineRage(BlueprintFeature feature,
+            BlueprintBuff onset, BlueprintBuff state)
+        {
+            var strength = ScriptableObject.CreateInstance<AddStatBonus>();
+            strength.Stat = StatType.Strength;
+            strength.Value = SummonRagePolicy.WolverineRageAbilityBonus;
+            strength.Descriptor = ModifierDescriptor.Morale;
+            var constitution = ScriptableObject.CreateInstance<AddStatBonus>();
+            constitution.Stat = StatType.Constitution;
+            constitution.Value = SummonRagePolicy.WolverineRageAbilityBonus;
+            constitution.Descriptor = ModifierDescriptor.Morale;
+            // The printed rage is not a pure benefit. Leaving this term out
+            // would make the creature better than its own stat block.
+            var armourClass = ScriptableObject.CreateInstance<AddStatBonus>();
+            armourClass.Stat = StatType.AC;
+            armourClass.Value = SummonRagePolicy.WolverineRageArmorClassPenalty;
+            armourClass.Descriptor = ModifierDescriptor.Penalty;
+            state.name = InternalName(WolverineRageStateSymbol);
+            state.Stacking = StackingType.Replace;
+            SetBuffFlags(state, harmful: false);
+            state.ComponentsArray = new BlueprintComponent[] {
+                strength, constitution, armourClass };
+            BlueprintUnitFactAccess.Resolve().Configure(state,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Wolverine.Rage.Name",
+                    "Rage"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Wolverine.Rage.Description",
+                    "+4 Strength, +4 Constitution and -2 AC. The wolverine cannot end its rage voluntarily."),
+                null);
+
+            var apply = ScriptableObject.CreateInstance<ContextActionApplyBuff>();
+            apply.Buff = state;
+            apply.Permanent = true;
+            apply.IsNotDispelable = true;
+            var removeMarker = ScriptableObject
+                .CreateInstance<ContextActionRemoveSelf>();
+            var delay = ScriptableObject.CreateInstance<SetBuffOnsetDelay>();
+            delay.Delay = new ContextDurationValue {
+                Rate = DurationRate.Rounds, DiceType = DiceType.Zero,
+                DiceCountValue = ContextValueZero(),
+                BonusValue = ContextValueOf(
+                    SummonRagePolicy.WolverineRageOnsetRounds) };
+            delay.OnStart = new ActionList {
+                Actions = new GameAction[] { apply, removeMarker } };
+            onset.name = InternalName(WolverineRageOnsetSymbol);
+            onset.Stacking = StackingType.Replace;
+            SetBuffFlags(onset, harmful: false, hidden: true);
+            onset.ComponentsArray = new BlueprintComponent[] { delay };
+            BlueprintUnitFactAccess.Resolve().Configure(onset,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Wolverine.RageOnset.Name",
+                    "Rising Rage"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Wolverine.RageOnset.Description",
+                    "The wolverine has been hurt and will fly into a rage on its next turn."),
+                null);
+
+            var trigger = ScriptableObject
+                .CreateInstance<SummonRageOnDamageComponent>();
+            trigger.OnsetBuff = onset;
+            trigger.RageBuff = state;
+            feature.name = InternalName(WolverineRageSymbol);
+            feature.Ranks = 1;
+            feature.IsClassFeature = false;
+            feature.HideInUI = true;
+            feature.ComponentsArray = new BlueprintComponent[] { trigger };
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Wolverine.RageTrigger.Name",
+                    "Rage"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Wolverine.RageTrigger.Description",
+                    "A wolverine that takes damage in combat flies into a rage on its next turn, gaining +4 Strength, +4 Constitution and -2 AC. It cannot end its rage voluntarily."),
+                null);
+        }
+
+        private static ContextValue ContextValueZero()
+        {
+            return new ContextValue();
+        }
+
+        private static ContextValue ContextValueOf(int value)
+        {
+            return new ContextValue { Value = value };
         }
 
         private static IEnumerable<FieldInfo> Fields(Type type)

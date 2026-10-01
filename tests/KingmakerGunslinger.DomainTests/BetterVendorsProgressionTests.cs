@@ -144,7 +144,8 @@ namespace KingmakerGunslinger.DomainTests
                     ExpandedSummoningSprint10Tests.StirgeAppendedLedgerIdentities +
                     ExpandedSummoningSprint11Tests.AppendedLedgerIdentities +
                     ExpandedSummoningSprint10Tests.StirgeRemovalIdentityCount +
-                    ExpandedSummoningSprint12Tests.AppendedLedgerIdentities,
+                    ExpandedSummoningSprint12Tests.AppendedLedgerIdentities +
+                    ExpandedSummoningSprint13Tests.AppendedLedgerIdentities,
                 entries.Length,
                 "Manifest preserves accepted blocks and appends only approved Phase 2 identities.");
             string prefix = string.Concat(entries.Take(PreservedManifestEntries)

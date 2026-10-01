@@ -25,7 +25,7 @@ namespace KingmakerGunslinger.Summoning
         internal const int TemplatedPlacementCount = 238;
         internal const int TemplateExecutionAbilityCount = TemplatedPlacementCount * 2;
         internal const int TemplateBuffCount = 8;
-        internal const int SpecialIdentityCount = 155;
+        internal const int SpecialIdentityCount = 159;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -234,6 +234,11 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.DireRat.Disease", "BlueprintFeature"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.GoblinDog.Traits", "BlueprintFeature"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.GoblinDog.AllergicReaction", "BlueprintBuff"));
+            // Sprint 13
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Bite1", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Wolverine.Rage", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Wolverine.RageOnset", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Wolverine.RageState", "BlueprintBuff"));
             Validate(result);
             return result.AsReadOnly();
         }

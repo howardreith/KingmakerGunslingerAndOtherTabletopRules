@@ -141,10 +141,12 @@
     <Compile Include="Summoning\ExpandedSummoningSmiteComponent.cs" />
     <Compile Include="Summoning\ExpandedSummoningSpecialCombatComponents.cs" />
     <Compile Include="Summoning\ExpandedSummoningSprint12CombatComponents.cs" />
+    <Compile Include="Summoning\ExpandedSummoningSprint13CombatComponents.cs" />
     <Compile Include="Summoning\GiantWaspPoison.cs" />
     <Compile Include="Summoning\GiantWaspPoisonPolicy.cs" />
     <Compile Include="Summoning\StirgeAttachPolicy.cs" />
     <Compile Include="Summoning\SummonInjuryDiseasePolicy.cs" />
+    <Compile Include="Summoning\SummonRagePolicy.cs" />
     <Compile Include="Summoning\UngulateRulesPolicy.cs" />
     <Compile Include="Summoning\UngulatePowerfulCharge.cs" />
     <Compile Include="Summoning\ContextActionUngulateTrample.cs" />

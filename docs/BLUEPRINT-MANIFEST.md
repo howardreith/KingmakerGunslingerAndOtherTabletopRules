@@ -482,7 +482,11 @@ placements are now published after technical qualification.
 
 Sprint 12 appends the Dire Rat unit, eighteen logical placements and eighteen
 celestial/fiendish execution children, then the Dire Rat disease feature,
-Goblin Dog disease-traits feature, and Goblin Dog allergic-reaction buff. The
-ledger now contains 2649 stable identifiers: 2647 active and 2 reserved. All 68
-Dire Rat, Dog, Hyena and Goblin Dog placements remain registered but hidden
-until their mechanics, distinct visual identities and lifecycle qualify.
+Goblin Dog disease-traits feature, and Goblin Dog allergic-reaction buff. All
+68 Dire Rat, Dog, Hyena and Goblin Dog placements are published after technical
+qualification.
+
+Sprint 13 appends four identities: `KMG.Summoning.Natural.Bite1`, the Poison
+Frog's printed flat-1 bite, and the Wolverine's rage trigger feature, onset
+marker and rage state.
+The ledger now contains 2653 stable identifiers: 2651 active and 2 reserved.

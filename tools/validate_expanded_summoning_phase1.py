@@ -342,7 +342,17 @@ PHASE1 = {
     "packageFileCountWithSoundBank": 251,
 }
 SPRINT3 = PHASE1  # the pins below read the current figures
-PHASE2_ADDITIONS = {"KMG.Summoning.Natural.DireBat.Blindsense"}
+# Phase 2 identities that are not matched by the creature-name filters below.
+# The Wolverine rage symbols must be listed exactly rather than by a
+# ".Wolverine" substring, because the creature itself is a Phase 1 roster
+# member and all of its ability placements belong to the Phase 1 append.
+PHASE2_ADDITIONS = {
+    "KMG.Summoning.Natural.DireBat.Blindsense",
+    "KMG.Summoning.Natural.Bite1",
+    "KMG.Summoning.Natural.Wolverine.Rage",
+    "KMG.Summoning.Natural.Wolverine.RageOnset",
+    "KMG.Summoning.Natural.Wolverine.RageState",
+}
 
 
 def require_tokens(path: Path, *tokens: str) -> None:
