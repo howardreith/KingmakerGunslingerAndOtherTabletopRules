@@ -365,8 +365,31 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(goblinDog.Deviations.Any(value =>
                     value.Contains("printed DC 12 Fortitude save") &&
                     value.Contains("nonstacking day of -2 Dexterity and -2 Charisma") &&
-                    value.Contains("exact native Goblin unit type is exempt")),
+                    value.Contains("damaged by the bite") &&
+                    value.Contains("natural weapon or unarmed attack") &&
+                    value.Contains("attempts to grapple it") &&
+                    value.Contains("Riding contact is omitted") &&
+                    value.Contains("exact enumerated set of native goblinoid unit types")),
                 "Goblin Dog allergic-reaction implementation is not explicit.");
+            // The printed Goblin Dog stat block gives CMD 14 with no "vs.
+            // trip" entry, unlike the Dog, Dire Rat and Hyena rows, so it must
+            // not inherit the quadruped trip defence.
+            Assertions.True(!goblinDog.Facts.Contains("TripDefenseFourLegs"),
+                "The printed Goblin Dog has no trip-defence bonus.");
+            NaturalSummonProfile direRat =
+                ExpandedSummoningNaturalProfiles.For("dire-rat");
+            // Printed: AC 14, touch 14, flat-footed 11 (+3 Dex, +1 size).
+            // There is no natural-armour component, and the printed feat list
+            // is Skill Focus (Perception) alone, so the +1 bite is
+            // Strength-based rather than finessed.
+            Assertions.Equal(0, direRat.NaturalArmor,
+                "The printed Dire Rat has no natural armor.");
+            Assertions.True(!direRat.Facts.Contains("WeaponFinesse"),
+                "The printed Dire Rat has no Weapon Finesse; its bite is +1 from Strength and size.");
+            Assertions.True(direRat.Facts.Contains("SkillFocusPerception") &&
+                direRat.Facts.Contains("TripDefenseFourLegs") &&
+                direRat.Facts.Contains("DireRatDisease"),
+                "The Dire Rat lost a printed feat, its quadruped trip defence or its disease rider.");
             Assertions.True(ExpandedSummoningNaturalProfiles.For("hyena")
                 .Facts.Contains("TrippingBite"),
                 "Hyena lost its tripping bite.");

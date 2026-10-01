@@ -100,9 +100,9 @@ namespace KingmakerGunslinger.Summoning
         {
             return new[] {
                 P("dire-rat", "Dire Rat", "Animal", 1, "Small",
-                    10, 17, 13, 2, 13, 4, 40, 1, "Bite1d4",
+                    10, 17, 13, 2, 13, 4, 40, 0, "Bite1d4",
                     Array.Empty<string>(),
-                    A("TripDefenseFourLegs", "WeaponFinesse",
+                    A("TripDefenseFourLegs",
                         "SkillFocusPerception", "DireRatDisease"),
                     "A bite that hits and deals positive damage makes the printed DC 11 Fortitude save before applying the native Filth Fever payload and cure lifecycle.",
                     "The native Dog rig is a bounded locomotion donor only; an original compact rat silhouette is required before publication."),
@@ -135,7 +135,7 @@ namespace KingmakerGunslinger.Summoning
                 P("goblin-dog", "Goblin Dog", "Animal", 1, "Medium",
                     15, 14, 15, 2, 12, 8, 50, 1, "Bite1d6",
                     Array.Empty<string>(), A("Toughness", "GoblinDogTraits"),
-                    "Disease immunity uses the native disease-descriptor gate. A damaging bite against a living non-goblin makes the printed DC 12 Fortitude save; failure applies one nonstacking day of -2 Dexterity and -2 Charisma, removed by positive magical healing or remove disease. Because Kingmaker has no broader Goblinoid subtype, only the exact native Goblin unit type is exempt.",
+                    "Disease immunity uses the native disease-descriptor gate. The printed allergic reaction exposes a non-goblinoid creature damaged by the bite, a creature that deals damage to the Goblin Dog with a natural weapon or unarmed attack, and a creature that attempts to grapple it; each makes the printed DC 12 Fortitude save and a failure applies one nonstacking day of -2 Dexterity and -2 Charisma, removed by positive magical healing or remove disease. Riding contact is omitted because the charter excludes mounted combat. The goblinoid exemption is the exact enumerated set of native goblinoid unit types the installed library carries.",
                     "The Worg donor contributes only its rig and bite animation; an original Goblin Dog silhouette remains required before publication."),
                 P("hyena", "Hyena", "Animal", 2, "Medium",
                     14, 15, 15, 2, 13, 6, 50, 2, "Bite1d6",
