@@ -221,7 +221,13 @@ namespace KingmakerGunslinger.DomainTests
                 "\"GoblinDogAllergicReaction\"", "\"DireRatDisease\"",
                 "\"9545a5550d89feb47a84edaeb4e63d0b\"",
                 "\"SubtypeGoblinoid\"",
+                "\"Hobgoblin\"", "\"Bugbear\"",
                 "units.Add(DescribeNativeUnit(unit))",
+                // The complete unit-type census is what proves the enumerated
+                // goblinoid exemption is complete rather than convenient.
+                "all.OfType<BlueprintUnitType>()",
+                "document[\"unitTypes\"]",
+                "[\"unitsWithoutType\"]",
                 "native-donor-audit.json"
             })
                 Assertions.True(source.Contains(token),
@@ -237,8 +243,16 @@ namespace KingmakerGunslinger.DomainTests
                 "77f3f2ddf1ec2da45ab956c433e3b557",
                 "9545a5550d89feb47a84edaeb4e63d0b",
                 "d524df24b2f38cf4590525b2e7c4f34e",
-                "No broader native Goblinoid",
-                "subtype fact exists",
+                // The goblinoid exemption is now backed by a complete
+                // unit-type census rather than the absence of a name match.
+                "Kingmaker has no Goblinoid subtype fact",
+                "106 types",
+                "declared by 69 units",
+                "are all absent",
+                "20261001T1658000459746Z-observe-expanded-summoning-native-donors",
+                "natural weapon",
+                "attempts to grapple it",
+                "charter excludes mounted combat",
                 "No individual Dire Rat exists",
                 "all 1,954 domain tests",
                 "20260930T0823186905486Z"

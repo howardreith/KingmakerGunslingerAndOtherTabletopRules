@@ -69,9 +69,13 @@ namespace KingmakerGunslinger.Blueprints
         /// The printed Goblin Dog allergic reaction exempts the goblinoid
         /// subtype. Kingmaker has no goblinoid subtype fact, so the exemption
         /// is the exact enumerated set of native goblinoid unit types the
-        /// guarded unit-type census found in the installed library. Selection
-        /// is by exact asset id, never by name, and a type the installed
-        /// library does not carry is simply absent from the set.
+        /// installed library actually carries. The guarded unit-type census in
+        /// run `20261001T1658000459746Z-observe-expanded-summoning-native-donors`
+        /// enumerated all 106 `BlueprintUnitType` values in the installed
+        /// library: `Goblin` (69 units) is the only goblinoid one, and there is
+        /// no Hobgoblin and no Bugbear type to exempt. Selection is by exact
+        /// asset id, never by name, so this set is complete for this
+        /// installation rather than merely convenient.
         /// </summary>
         private static readonly string[] NativeGoblinoidUnitTypeGuids = {
             "d524df24b2f38cf4590525b2e7c4f34e" // Goblin
