@@ -19,7 +19,7 @@ $base = @{
     LoadEntryTimeoutSeconds = 30
     FingerprintTimeoutSeconds = 180
     ExitAfterCompletion = $true
-    EvidenceDirectory = (Join-Path $script:KmgRuntimeEvidenceRoot 'ungulate-crowd-request-test')
+    EvidenceDirectory = (Join-Path $script:KmgRuntimeEvidenceRoot 'ground-crowd-request-test')
 }
 $allowed = @{ saveName = 'KMG_AUTOMATION_WORKING'
     creatures = 'aurochs,bison,rhinoceros,woolly-rhinoceros'
