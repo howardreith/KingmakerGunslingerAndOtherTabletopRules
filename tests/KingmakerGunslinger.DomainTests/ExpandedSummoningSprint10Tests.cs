@@ -490,10 +490,13 @@ namespace KingmakerGunslinger.DomainTests
                 scenario.Contains("class WaspTailAimFrameProbe : MonoBehaviour") &&
                 scenario.Contains("yield return new WaitForEndOfFrame()") &&
                 scenario.Contains("private void OnDisable()") &&
-                request.Contains("\"eagle\", \"dire-bat\", \"giant-wasp\", \"stirge\"") &&
-                launcher.Contains("@('eagle', 'dire-bat', 'giant-wasp', 'stirge')") &&
-                automation.Contains("@('eagle', 'dire-bat', 'giant-wasp', 'stirge')"),
-                "Only named flying summons may enter the guarded combat fixture; Wasp retains its two exact hostile strikes and stinger geometry.");
+                // Closed, named allowlist; Sprint 12's Dire Rat was added to it
+                // so a ground creature can prove both combat modes.
+                request.Contains("\"eagle\", \"dire-bat\", \"giant-wasp\", \"stirge\",") &&
+                request.Contains("\"dire-rat\" }.Contains(") &&
+                launcher.Contains("@('eagle', 'dire-bat', 'giant-wasp', 'stirge', 'dire-rat')") &&
+                automation.Contains("@('eagle', 'dire-bat', 'giant-wasp', 'stirge', 'dire-rat')"),
+                "Only named published summons may enter the guarded combat fixture; Wasp retains its two exact hostile strikes and stinger geometry.");
         }
 
         internal static void HiddenStirgeHasBoundedNativeAttackVisualReview()
