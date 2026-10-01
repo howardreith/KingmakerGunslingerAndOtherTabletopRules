@@ -73,7 +73,7 @@ namespace KingmakerGunslinger.DomainTests
             string[] kinds = { "dire-rat", "hyena", "goblin-dog" };
             string[] meshHashes = {
                 "2ee73bcf0ab4cdf0d275fb64764dea96107669cef07ee3b0c62a6f5228f1633a",
-                "1c68a8361149309ca374897761406dc98b81f13873a726e9b7d18d7dc1399d0f",
+                "0217f8d599480e5aaed6f1b6df9736b64609298664f3732271bb39c08596ac48",
                 "0974e179edf83a61067517a5c343ceeae2753cb67e76352c8bff1dce91473a4a"
             };
             string[][] allowedBones = {
@@ -476,6 +476,7 @@ namespace KingmakerGunslinger.DomainTests
                 "ExerciseSprint12DiseaseOutlivesSource",
                 "rat.Destroy();", "dog.Destroy();",
                 "victim.Descriptor.Buffs.Tick();",
+                "danglingSourceSafe", "diseaseUnaffectedByHealing",
                 "goblinVictimBlueprint.Type = goblinType",
                 "The exact native Goblin-type fixture did not spawn.",
                 "if (!secondVictim.Destroyed) secondVictim.Destroy()",
