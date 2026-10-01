@@ -13,9 +13,12 @@ the Sprint 11 inventory `20260930T0457205706691Z`, the player path
 ungulate inventory `20260928T1724419577973Z` - observed the publication
 surface of their own source revisions, before `d7822297` registered Dire Rat
 and suppressed the four Sprint 12 creatures. Those observations are left
-exactly as recorded. The current published surface is 832 generated placements
-plus 29 retained native wrappers, for 861 visible choices; see
-`EXPANDED-SUMMONING-PHASE2-INVENTORY-RECONCILIATION.md`.
+exactly as recorded. The released v0.0.141 build contained 832 published
+generated placements plus 29 retained native wrappers, for 861 visible choices.
+After Sprint 12 qualified and published later on 2026-10-01 the current surface
+is 900 published generated placements plus the same 29 wrappers, for 929
+visible choices; see `EXPANDED-SUMMONING-PHASE2-INVENTORY-RECONCILIATION.md`
+for both equations side by side.
 
 ### Interrupted run, 2026-10-01: `20261001T1737054842101Z-disposable-expanded-summoning`
 
