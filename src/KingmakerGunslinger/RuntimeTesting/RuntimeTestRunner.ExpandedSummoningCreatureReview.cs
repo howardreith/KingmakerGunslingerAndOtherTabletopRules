@@ -116,10 +116,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (creature == null) throw new InvalidOperationException(
                     "Unknown creature key for review: " + key + ".");
                 if (quantity != SummonMultiplicity.One &&
-                    !IsSprint11UngulateReviewKey(key) &&
-                    !IsSprint12QuadrupedReviewKey(key))
+                    !IsGroundCrowdReviewKey(key))
                     throw new InvalidOperationException(
-                        "Only Sprint 11 ungulates and Sprint 12 quadrupeds may use crowd review: " +
+                        "This creature is not on the crowd review roster: " +
                         key + ".");
                 SummonFamily family = creature.NaturesAllyTier.HasValue ?
                     SummonFamily.NaturesAlly : SummonFamily.Monster;
@@ -139,6 +138,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             return result.ToArray();
         }
 
+        /// <summary>
+        /// Every creature the crowd review accepts. Both the request guard and
+        /// the spawner ask this one question, so a sprint added to the roster
+        /// below reaches both at once; assembling the same pair of rosters at
+        /// two call sites is what previously let them disagree.
+        /// </summary>
+        private static bool IsGroundCrowdReviewKey(string key)
+        {
+            return IsSprint11UngulateReviewKey(key) ||
+                IsSprint12QuadrupedReviewKey(key);
+        }
+
         private static bool IsSprint11UngulateReviewKey(string key)
         {
             return key == "aurochs" || key == "bison" ||
@@ -147,8 +158,8 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         /// <summary>
         /// The four Sprint 12 compact quadrupeds. They are published now, so
-        /// this list no longer waives the publication guard; it only keeps
-        /// them eligible for the crowd review, which the ungulates also use.
+        /// this list no longer waives the publication guard; it only names
+        /// them as members of the crowd review roster.
         /// </summary>
         private static bool IsSprint12QuadrupedReviewKey(string key)
         {
@@ -186,11 +197,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             // published now, so the old "hidden ungulate" wording was stale on
             // both counts.
             if (variant == null ||
-                !(IsSprint11UngulateReviewKey(variant.Creature.Key) ||
-                    IsSprint12QuadrupedReviewKey(variant.Creature.Key)) ||
+                !IsGroundCrowdReviewKey(variant.Creature.Key) ||
                 variant.Multiplicity != SummonMultiplicity.OneD4PlusOne)
                 throw new InvalidOperationException(
-                    "Crowd review accepts only a named Sprint 11 ungulate or Sprint 12 quadruped on a 1d4+1 route.");
+                    "Crowd review accepts only a creature on its roster, on a 1d4+1 route.");
             UnitEntityData caster = _creatureReviewCaster;
             UnitEntityData[] before = ExpandedSummoningKmgUnitsIn(
                 caster.HoldingState);
@@ -225,7 +235,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             return appeared;
         }
 
-        private bool StepExpandedSummoningUngulateCrowdPath(string key)
+        private bool StepExpandedSummoningGroundCrowdPath(string key)
         {
             try
             {
@@ -251,7 +261,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         throw new InvalidOperationException(
                             "The quantity group's appearance buff did not clear.");
                     }
-                    BeginExpandedSummoningUngulateCrowdPath();
+                    BeginExpandedSummoningGroundCrowdPath();
                     return false;
                 }
                 float delta = Game.Instance.TimeController.DeltaTime;
@@ -296,17 +306,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 _creatureReviewCrowdDestinations[index].x,
                                 _creatureReviewCrowdDestinations[index].z)))
                         .All(gap => gap <= 1.5f)) return false;
-                FinishExpandedSummoningUngulateCrowdPath(key, null);
+                FinishExpandedSummoningGroundCrowdPath(key, null);
                 return true;
             }
             catch (Exception exception)
             {
-                FinishExpandedSummoningUngulateCrowdPath(key, exception);
+                FinishExpandedSummoningGroundCrowdPath(key, exception);
                 return true;
             }
         }
 
-        private void BeginExpandedSummoningUngulateCrowdPath()
+        private void BeginExpandedSummoningGroundCrowdPath()
         {
             if (AstarPath.active == null || _creatureReviewCaster == null)
                 throw new InvalidOperationException(
@@ -380,7 +390,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
-        private void FinishExpandedSummoningUngulateCrowdPath(string key,
+        private void FinishExpandedSummoningGroundCrowdPath(string key,
             Exception error)
         {
             var observations = new List<string>();
@@ -422,7 +432,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _creatureReviewCrowdAwakeBefore = null;
             }
             _creatureReviewAssertions.Add(Assertion(
-                "expanded-summoning-ungulate-crowd-path-" + key,
+                "expanded-summoning-ground-crowd-path-" + key,
                 "each native quantity member accepts a distinct simultaneous move and reaches its connected-floor destination",
                 "count=" + _creatureReviewUnits.Length + ";frames=" +
                     _creatureReviewCrowdFrames + ";travel/approach/velocity/gap=" +
@@ -434,13 +444,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "real UnitMoveTo commands on a simultaneous 1d4+1 group; native movement-agent samples and request-local state restoration"));
         }
 
-        private bool StepExpandedSummoningUngulateCrowdExpiry(string key)
+        private bool StepExpandedSummoningGroundCrowdExpiry(string key)
         {
             try
             {
                 if (!_creatureReviewExpiryStarted)
                 {
-                    BeginExpandedSummoningUngulateCrowdExpiry();
+                    BeginExpandedSummoningGroundCrowdExpiry();
                     _creatureReviewExpiryStarted = true;
                     return false;
                 }
@@ -454,17 +464,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                         TimeSpan.FromSeconds(10) &&
                     DateTime.UtcNow - _creatureReviewExpiryStartUtc <
                         TimeSpan.FromSeconds(180)) return false;
-                FinishExpandedSummoningUngulateCrowdExpiry(key, null);
+                FinishExpandedSummoningGroundCrowdExpiry(key, null);
                 return true;
             }
             catch (Exception exception)
             {
-                FinishExpandedSummoningUngulateCrowdExpiry(key, exception);
+                FinishExpandedSummoningGroundCrowdExpiry(key, exception);
                 return true;
             }
         }
 
-        private void BeginExpandedSummoningUngulateCrowdExpiry()
+        private void BeginExpandedSummoningGroundCrowdExpiry()
         {
             TimeSpan clock = Game.Instance.Player.GameTime;
             BlueprintBuff summoned = BlueprintRoot.Instance.SystemMechanics
@@ -495,7 +505,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (_creatureReviewExpiryWasPaused) Game.Instance.IsPaused = false;
         }
 
-        private void FinishExpandedSummoningUngulateCrowdExpiry(string key,
+        private void FinishExpandedSummoningGroundCrowdExpiry(string key,
             Exception error)
         {
             try
@@ -516,7 +526,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !unit.Destroyed || unit.View != null ||
                     unit.HoldingState != null);
                 _creatureReviewAssertions.Add(Assertion(
-                    "expanded-summoning-ungulate-crowd-expiry-" + key,
+                    "expanded-summoning-ground-crowd-expiry-" + key,
                     "all timed native summon markers expire and all quantity members leave the loaded area without a save write",
                     _creatureReviewExpiryInitial + ";markersLeft=" +
                         markersLeft + ";live=" + live +
@@ -691,7 +701,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _creatureReviewPhase = _creatureReviewQuantity ? 4 : 2;
                     return;
                 case 4:
-                    if (!StepExpandedSummoningUngulateCrowdPath(key)) return;
+                    if (!StepExpandedSummoningGroundCrowdPath(key)) return;
                     _creatureReviewPhase = 2;
                     return;
                 case 2:
@@ -870,7 +880,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _creatureReviewPhase = 3;
                     return;
                 case 5:
-                    if (!StepExpandedSummoningUngulateCrowdExpiry(key)) return;
+                    if (!StepExpandedSummoningGroundCrowdExpiry(key)) return;
                     _creatureReviewSettle = 0;
                     _creatureReviewPhase = 3;
                     return;
