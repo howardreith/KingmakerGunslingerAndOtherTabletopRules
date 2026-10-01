@@ -1,5 +1,40 @@
 # Expanded Summoning Phase 2 journal
 
+## Sprint 12 visual review, and a defect only the camera could find, 2026-10-01
+
+The guarded creature review `20261001T1812593825736Z` passed all 18 of its
+mechanical assertions - mesh attached, 982 vertices, albedo 1024x1024, shader
+resolved, material controller adopted, view cleaned up, no leaked resources -
+and its live party-camera frames then showed the Goblin Dog as a flat
+untextured blue silhouette in every moment: idle, both movement captures and
+attack. The Dire Rat and Hyena rendered their paintings correctly in the same
+room under the same light. Numerical attach success did not prove a good model,
+which is precisely the trap the mission order names.
+
+The captured material state gave the cause. Kingmaker's dynamic shader has two
+fog-of-war treatments: with `FOG_OF_WAR_DISSOLVE_ON` a fogged creature
+dissolves and keeps its painting, and without it the same creature is drawn as
+a flat untextured silhouette. The three original meshes clone their donor's
+material, so they inherit whichever treatment the donor happens to carry. The
+clone is project-owned and instance-local, so it now gets the dissolve
+treatment regardless of donor; the donor material is never touched and
+`_Dissolve` already starts at 0.
+
+The re-run `20261001T1826224738398Z` passed 18/18 on `06d0ffdf` and the Goblin
+Dog renders its painted coat. The new diagnostic also corrected the first
+reading of the cause: the Worg donor lacks the keyword, as expected, but so
+does the **Dog** donor, which the Dire Rat borrows. Only the Wolf donor behind
+the Hyena carries it. The Dire Rat was therefore at the same latent risk and
+had simply been standing inside the party's vision when its earlier frames were
+taken. One creature looked broken; two were.
+
+Internal visual verdict on the four, at normal camera distance: the Dire Rat
+reads as a compact brown rat with a long pale tail; the repaired Hyena reads as
+a tan spotted quadruped with a dark dorsal mane and shoulders higher than hips;
+the Goblin Dog reads as a pale long-legged mangy rodent; and the Dog uses its
+unmodified native presentation. This is internal review only. Owner visual
+review remains `NOT_PERFORMED_NONBLOCKING`.
+
 ## Sprint 12 mechanics, contact triggers and lifetime contract qualified, 2026-10-01
 
 `20261001T1804145753440Z-disposable-expanded-summoning` passed 44/44 on source
