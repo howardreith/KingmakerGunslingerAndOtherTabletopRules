@@ -8,12 +8,26 @@ disagree, this header governs.
 
 ### Effective mission
 
-`artifacts/phase2/mission-claude-takeover.md` - the owner's "Claude takeover:
-finish Expanded Summoning Phase 2" order, Handoff v1.0, prepared 2026-09-30.
-It renews delegation for Sprints 12-21 and supersedes the temporary 0.0.141
-stopping point. It does not grant permission for a further release, merge, tag,
-permanent deployment or Sprint 22. The earlier `artifacts/phase2/mission.md`
-and `EXPANDED-SUMMONING-PHASE1-CODEX-HANDOFF.md` remain history.
+`artifacts/phase2/mission-claude-revised-v0.0.141.md` - the owner's reviewed
+handoff, `Kingmaker_Phase2_Claude_Handoff_v0.0.141_REVISED.md`, supplied
+2026-10-01 with `artifacts/phase2/START_HERE_Claude_Phase2_v0.0.141.md`. It
+supersedes `artifacts/phase2/mission-claude-takeover.md` (Handoff v1.0), which
+is retained as history along with `artifacts/phase2/mission.md` and
+`EXPANDED-SUMMONING-PHASE1-CODEX-HANDOFF.md`.
+
+The revised order keeps the same checkpoint, the same authorized scope of
+Sprints 12-21, and the same boundary: no merge, no new release, no mutation of
+`v0.0.141`, no permanent deployment, no Sprint 22. Three points in it bear
+directly on work already done:
+
+- It confirms the published checkpoint and that work resumes on this branch
+  rather than from `master`, which is what this session did.
+- It states that deferring the full compatibility matrix from Sprint 12 to the
+  end of Phase 2A was correct, and places that matrix at the close of Sprint 13.
+- It warns against inheriting a stale note about Wolverine attack
+  primary/secondary status without re-checking the source and the existing
+  implementation. That re-check was done and the finding stands; see
+  `planning/EXPANDED-SUMMONING-SPRINT13-RULES-AND-DONORS.md`.
 
 ### Active work
 
