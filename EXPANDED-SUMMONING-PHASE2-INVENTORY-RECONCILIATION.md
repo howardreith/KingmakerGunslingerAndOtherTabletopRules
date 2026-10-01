@@ -4,6 +4,27 @@ Opened 2026-10-01 as the first task of the Claude Phase 2 continuation order.
 This record supersedes every earlier prose claim that the 0.0.141 published
 catalog contains 882 generated choices or 911 visible choices.
 
+## 0. Current source, after the Sprint 12 publication
+
+Sprint 12 qualified later the same day and its four creatures published, so the
+current source no longer withholds anything it has registered. Sections 2 to 4
+below describe the frozen v0.0.141 build and keep its own numbers; this section
+describes the branch as it stands now.
+
+| Quantity | v0.0.141 (frozen) | Current source |
+| --- | --- | --- |
+| Registered generated placements | 900 | 900 (453 SM + 447 SNA) |
+| Suppressed generated placements | 68 | **0** |
+| Published generated placements | 832 | **900** (453 SM + 447 SNA) |
+| Retained native wrappers | 29 | 29 (17 SM + 12 SNA) |
+| Total visible player choices | 861 | **929** (470 SM + 459 SNA) |
+
+The published equation is now **900 + 29 = 929**. Dog, Hyena and Goblin Dog,
+which v0.0.141 withdrew, are castable again on their original registered
+identities, and Dire Rat is published for the first time. The withdrawal
+described in section 4 is therefore resolved on this branch; it remains true of
+the released v0.0.141 artifact, which is immutable.
+
 ## 1. Why this record exists
 
 The 0.0.141 release notes, the Phase 2 implementation report, the Phase 2

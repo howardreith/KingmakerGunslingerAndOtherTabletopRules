@@ -130,11 +130,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .GenerateVariants(family).Single(value =>
                         value.Creature.Key == key && value.ParentTier == tier &&
                         value.Multiplicity == quantity);
-                bool suppressedSprint12Candidate =
-                    IsSprint12QuadrupedReviewKey(key) &&
-                    !SummonVisibilityCatalog.IsPublished(variant);
-                if (!SummonVisibilityCatalog.IsPublished(variant) &&
-                    !suppressedSprint12Candidate)
+                if (!SummonVisibilityCatalog.IsPublished(variant))
                     throw new InvalidOperationException(
                         "A suppressed creature cannot be reviewed through a parent: " +
                         key + ".");
@@ -150,12 +146,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         /// <summary>
-        /// The four Sprint 12 compact quadrupeds, which are still suppressed.
-        /// Their art has to be inspected under the party camera before the
-        /// suppression is lifted, so the review resolves them through their
-        /// parent the way the Sprint 11 ungulates were reviewed while hidden.
-        /// This allowance is deliberately a closed list of the sprint's own
-        /// creature keys and is removed when they publish.
+        /// The four Sprint 12 compact quadrupeds. They are published now, so
+        /// this list no longer waives the publication guard; it only keeps
+        /// them eligible for the crowd review, which the ungulates also use.
         /// </summary>
         private static bool IsSprint12QuadrupedReviewKey(string key)
         {

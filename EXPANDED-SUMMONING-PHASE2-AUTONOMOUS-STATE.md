@@ -17,12 +17,15 @@ and `EXPANDED-SUMMONING-PHASE1-CODEX-HANDOFF.md` remain history.
 
 ### Active work
 
-- Tranche 2A, **Sprint 12** (Dire Rat, Dog, Hyena, Goblin Dog), resumed from
-  the hidden state.
-- Next executable action: implement the Sprint 12 rules-fidelity repairs found
-  by the intake rules review, then the remaining lifecycle tests, then the
-  guarded publication matrix.
-- Sprints 13-21 remain authorized and not started.
+- Tranche 2A, **Sprint 12** (Dire Rat, Dog, Hyena, Goblin Dog) - rules,
+  lifetime contract, internal visual review and publication complete; the
+  post-publication runtime matrix is the remaining work.
+- Next executable action: run the post-publication guarded matrix on the
+  published surface - live inventory and menu census, direct and quantity
+  player paths, the working-save persistence trio, module-disabled
+  deserialization, the Acadamae Graduate regression that the suppression broke,
+  and the compatibility profiles - then open Sprint 13.
+- Sprints 13-21 remain authorized; Sprint 13 is not started.
 
 ### Branch, PR and dependency heads
 
@@ -47,15 +50,17 @@ per-parent census and the correction of the stale 882/911 figures are in
 | --- | --- |
 | Project creature identities | 88 |
 | Registered generated placements | 900 (453 SM + 447 SNA) |
-| Suppressed (hidden) placements | 68 - Dire Rat 18, Dog 18, Goblin Dog 16, Hyena 16 |
-| Published generated placements | 832 (419 SM + 413 SNA) |
+| Suppressed (hidden) placements | 0 |
+| Published generated placements | 900 (453 SM + 447 SNA) |
 | Retained native wrappers | 29 (17 SM + 12 SNA) |
-| Total visible player choices | 861 (436 SM + 425 SNA) |
+| Total visible player choices | 929 (470 SM + 459 SNA) |
 
-Disclosed consequence: Dog, Hyena and Goblin Dog were published in 0.0.140 and
-are hidden in 0.0.141. Their registered identities are unchanged, so 0.0.140
-saves holding those summons still deserialize. Completing Sprint 12 restores
-them.
+Sprint 12 qualified and published on 2026-10-01, so nothing registered is
+withheld. Dog, Hyena and Goblin Dog, which the released v0.0.141 withdrew, are
+castable again on their original registered identities, and Dire Rat is
+published for the first time. The immutable v0.0.141 artifact still contains
+832 published generated placements and 861 visible choices; see
+`EXPANDED-SUMMONING-PHASE2-INVENTORY-RECONCILIATION.md`.
 
 ### Tested candidate and baseline at adoption
 
@@ -92,20 +97,28 @@ desktop session and is not touched.
 
 Sprint 12 is not complete. Open:
 
-1. The Sprint 12 rules-fidelity repairs from the intake rules review.
-2. A written disease/allergy lifetime contract reconciling the charter's
-   no-leak/no-persist-after-cleanup line with printed disease durations.
-3. Direct and quantity player paths through the real spellbook for all four
+Closed:
+
+1. The Sprint 12 rules-fidelity repairs - run `20261001T1804145753440Z`, 44/44.
+2. The written disease/allergy lifetime contract, with live evidence in the
+   same run.
+3. Internal visual review of all four creatures under party camera and motion -
+   run `20261001T1826224738398Z`, 18/18, after the fog-treatment repair.
+4. Publication: the suppression set is empty, every GUID preserved, and all
+   totals re-derived to 900 published generated and 929 visible.
+
+Open:
+
+5. Direct and quantity player paths through the real spellbook for all four
    creatures.
-4. Both RTWP and turn-based modes.
-5. Compact-body navigation, movement and attack contact.
-6. Natural expiry, death, dismissal.
-7. Save/load persistence and module-disabled deserialization.
-8. Live inventory and menu after publication.
-9. Compatibility profiles.
-10. Internal visual review of all four creatures under party camera and motion.
-11. Publication: remove suppression for qualified placements only, preserving
-    every GUID, then re-derive the totals.
+6. Both RTWP and turn-based modes.
+7. Compact-body navigation, movement and attack contact.
+8. Natural expiry, death, dismissal.
+9. Save/load persistence and module-disabled deserialization.
+10. Live inventory and menu census on the published surface.
+11. The Acadamae Graduate regression the suppression introduced, which
+    publication should resolve, re-verified by its own scenario.
+12. Compatibility profiles.
 
 ### Settled adaptations - do not reopen
 

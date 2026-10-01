@@ -25,16 +25,16 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(447, ExpandedSummoningBaselineInventory
                 .RegisteredPlacements(SummonFamily.NaturesAlly),
                 "Baseline SNA registered placements changed.");
-            Assertions.Equal(436, ExpandedSummoningBaselineInventory
+            Assertions.Equal(470, ExpandedSummoningBaselineInventory
                 .VisibleChoices(SummonFamily.Monster),
                 "Baseline SM visible choice count changed.");
-            Assertions.Equal(425, ExpandedSummoningBaselineInventory
+            Assertions.Equal(459, ExpandedSummoningBaselineInventory
                 .VisibleChoices(SummonFamily.NaturesAlly),
                 "Baseline SNA visible choice count changed.");
         }
 
         /// <summary>
-        /// The 861 visible choices (693 at Sprint 0) must decompose
+        /// The 929 visible choices (693 at Sprint 0) must decompose
         /// exactly, so a sprint cannot quietly move a choice between the
         /// generated and native pools.
         /// </summary>
@@ -42,11 +42,11 @@ namespace KingmakerGunslinger.DomainTests
         {
             int generated = SummonVisibilityCatalog.PublishedLogicalPlacementCount;
             int wrappers = SummonNativeExpansionCatalog.All.Count;
-            Assertions.Equal(832, generated, "Published generated placements changed.");
+            Assertions.Equal(900, generated, "Published generated placements changed.");
             Assertions.Equal(29, wrappers, "Native wrapper count changed.");
-            Assertions.Equal(861, generated + wrappers,
+            Assertions.Equal(929, generated + wrappers,
                 "The combined visible choice total changed.");
-            Assertions.Equal(861,
+            Assertions.Equal(929,
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.Monster) +
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.NaturesAlly),
                 "Per-parent census disagrees with the catalog totals.");
@@ -90,12 +90,15 @@ namespace KingmakerGunslinger.DomainTests
         /// </summary>
         internal static void HiddenAndProxyCreaturesAreRecorded()
         {
-            Assertions.Equal(4,
+            // Sprint 12 published its four creatures, so nothing registered
+            // is withheld. A later sprint that registers ahead of its own
+            // qualification will move this pin deliberately.
+            Assertions.Equal(0,
                 ExpandedSummoningBaselineInventory.RegisteredButHiddenCreatures.Count,
                 "The registered-but-hidden creature set changed.");
-            Assertions.Equal("dire-rat|dog|goblin-dog|hyena", string.Join("|",
+            Assertions.Equal("", string.Join("|",
                 ExpandedSummoningBaselineInventory.RegisteredButHiddenCreatures),
-                "Only the authorized Sprint 12 creature families may be hidden.");
+                "No registered creature may be hidden now that Sprint 12 publishes.");
             Assertions.True(ExpandedSummoningBaselineInventory.ProxyVisualCreatures
                 .Contains("pteranodon<Roc"),
                 "Pteranodon must still be recorded as a Roc-policy visual proxy.");
@@ -146,7 +149,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(first.StartsWith(
                 "{\n  \"schema\": \"" + ExpandedSummoningBaselineInventory.BaselineSchema + "\""),
                 "The census must declare its schema first so evidence stays comparable.");
-            Assertions.True(first.Contains("\"totalVisibleChoices\": 861"),
+            Assertions.True(first.Contains("\"totalVisibleChoices\": 929"),
                 "The emitted census lost the frozen visible-choice total.");
         }
 
@@ -169,7 +172,6 @@ namespace KingmakerGunslinger.DomainTests
                 System.Globalization.CultureInfo.InvariantCulture);
 
             string[] records = {
-                "docs/RELEASE-NOTES-0.0.141.md",
                 "EXPANDED-SUMMONING-PHASE2-AUTONOMOUS-STATE.md",
                 "EXPANDED-SUMMONING-PHASE2-IMPLEMENTATION-REPORT.md",
                 "EXPANDED-SUMMONING-PHASE2-JOURNAL.md",
@@ -189,6 +191,15 @@ namespace KingmakerGunslinger.DomainTests
                     record + " must state the derived visible choice total " +
                     visibleText + ".");
             }
+
+            // The released 0.0.141 notes describe a frozen build, not the
+            // current source, so they keep that build's own equation. Letting
+            // them drift to today's numbers would misreport what shipped.
+            string released = System.IO.File.ReadAllText(System.IO.Path.Combine(
+                System.Environment.CurrentDirectory, "docs",
+                "RELEASE-NOTES-0.0.141.md"));
+            Assertions.True(released.Contains("832") && released.Contains("861"),
+                "The 0.0.141 release notes must keep the equation that build actually shipped.");
 
             // The reconciliation record is the one place allowed to quote the
             // superseded figures, because explaining them is its purpose.
