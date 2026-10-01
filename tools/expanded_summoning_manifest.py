@@ -356,8 +356,13 @@ def planned():
         ("KMG.Summoning.Natural.DireRat.Disease", "BlueprintFeature"),
         ("KMG.Summoning.Natural.GoblinDog.Traits", "BlueprintFeature"),
         ("KMG.Summoning.Natural.GoblinDog.AllergicReaction", "BlueprintBuff"),
+        # Sprint 13
+        ("KMG.Summoning.Natural.Bite1", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Natural.Wolverine.Rage", "BlueprintFeature"),
+        ("KMG.Summoning.Natural.Wolverine.RageOnset", "BlueprintBuff"),
+        ("KMG.Summoning.Natural.Wolverine.RageState", "BlueprintBuff"),
     ))
-    if len(rows) != 1661 or len({symbol for symbol, _ in rows}) != 1661:
+    if len(rows) != 1665 or len({symbol for symbol, _ in rows}) != 1665:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 

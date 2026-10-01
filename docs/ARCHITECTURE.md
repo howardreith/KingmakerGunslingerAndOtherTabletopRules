@@ -877,9 +877,14 @@ technical qualification.
 Sprint 12 appends 37 active Dire Rat identities: one unit, eighteen logical
 placements and eighteen celestial/fiendish execution children. It then appends
 the Dire Rat disease feature, Goblin Dog disease-traits feature, and Goblin Dog
-allergic-reaction buff. The resulting append-only ledger contains 2649 stable IDs: 2647 active and 2 reserved. Dire Rat, Dog, Hyena and Goblin Dog remain
-publication-gated while their Sprint 12 mechanics, distinct visuals and
-lifecycle are qualified.
+allergic-reaction buff. Dire Rat, Dog, Hyena and Goblin Dog are published:
+their mechanics, distinct visuals, navigation, both combat modes, quantity and
+crowded-space behaviour, persistence and lifecycle all qualified on 2026-10-01,
+and the suppression set is empty.
+
+Sprint 13 appends four more: the Poison Frog's flat-1 bite, whose printed
+damage is a single point rather than a die, and the Wolverine rage trigger
+feature with its onset marker and rage state. The resulting append-only ledger contains 2653 stable IDs: 2651 active and 2 reserved.
 
 - **Pure policy** (`FavoredClass/`): `FavoredClassRankPolicy` (the host's
   full/partial alternation, N = fullRank + partialRank, with KMG-owned ceilings
