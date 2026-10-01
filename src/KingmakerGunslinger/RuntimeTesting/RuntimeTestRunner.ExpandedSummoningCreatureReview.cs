@@ -116,9 +116,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (creature == null) throw new InvalidOperationException(
                     "Unknown creature key for review: " + key + ".");
                 if (quantity != SummonMultiplicity.One &&
-                    !IsSprint11UngulateReviewKey(key))
+                    !IsSprint11UngulateReviewKey(key) &&
+                    !IsSprint12QuadrupedReviewKey(key))
                     throw new InvalidOperationException(
-                        "Only Sprint 11 ungulates may use crowd review: " +
+                        "Only Sprint 11 ungulates and Sprint 12 quadrupeds may use crowd review: " +
                         key + ".");
                 SummonFamily family = creature.NaturesAllyTier.HasValue ?
                     SummonFamily.NaturesAlly : SummonFamily.Monster;
@@ -129,7 +130,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .GenerateVariants(family).Single(value =>
                         value.Creature.Key == key && value.ParentTier == tier &&
                         value.Multiplicity == quantity);
-                if (!SummonVisibilityCatalog.IsPublished(variant))
+                bool suppressedSprint12Candidate =
+                    IsSprint12QuadrupedReviewKey(key) &&
+                    !SummonVisibilityCatalog.IsPublished(variant);
+                if (!SummonVisibilityCatalog.IsPublished(variant) &&
+                    !suppressedSprint12Candidate)
                     throw new InvalidOperationException(
                         "A suppressed creature cannot be reviewed through a parent: " +
                         key + ".");
@@ -144,12 +149,32 @@ namespace KingmakerGunslinger.RuntimeTesting
                 key == "rhinoceros" || key == "woolly-rhinoceros";
         }
 
+        /// <summary>
+        /// The four Sprint 12 compact quadrupeds, which are still suppressed.
+        /// Their art has to be inspected under the party camera before the
+        /// suppression is lifted, so the review resolves them through their
+        /// parent the way the Sprint 11 ungulates were reviewed while hidden.
+        /// This allowance is deliberately a closed list of the sprint's own
+        /// creature keys and is removed when they publish.
+        /// </summary>
+        private static bool IsSprint12QuadrupedReviewKey(string key)
+        {
+            return key == "dire-rat" || key == "dog" || key == "hyena" ||
+                key == "goblin-dog";
+        }
+
         private static bool IsOriginalReviewKey(string key)
         {
+            // Dog is excluded on purpose: it keeps the native Dog
+            // presentation, so it has no project-owned view to inspect.
             return key == "giant-wasp" || key == "stirge" ||
+                key == "dire-rat" || key == "hyena" || key == "goblin-dog" ||
                 IsSprint11UngulateReviewKey(key);
         }
 
+        // The Sprint 12 quadrupeds already carry the "KMG_<key>_Original"
+        // mesh name the ungulates use, so OriginalReviewVisualName needs no
+        // new branch for them - its existing fallback is already correct.
         private static string OriginalReviewVisualName(string key)
         {
             return key == "stirge"

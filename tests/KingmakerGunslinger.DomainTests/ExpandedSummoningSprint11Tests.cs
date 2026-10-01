@@ -583,9 +583,16 @@ namespace KingmakerGunslinger.DomainTests
             string motion = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "RuntimeTesting",
                 "RuntimeTestRunner.PteranodonReview.cs"));
-            Assertions.True(!review.Contains("suppressedSprint11Candidate =") &&
-                review.Contains("if (!SummonVisibilityCatalog.IsPublished(variant))") &&
-                !review.Contains("suppressedSprint10Candidate =") &&
+            // The Sprint 11 and Sprint 10 review hatches are gone, and the
+            // publication guard is still the gate. The guard's exact line
+            // gains a clause for each sprint whose own creatures are being
+            // reviewed before they publish, so the pin names the guard and
+            // its refusal rather than one sprint's spelling of the condition.
+            Assertions.True(!review.Contains("suppressedSprint11Candidate") &&
+                review.Contains("!SummonVisibilityCatalog.IsPublished(variant)") &&
+                review.Contains(
+                    "A suppressed creature cannot be reviewed through a parent") &&
+                !review.Contains("suppressedSprint10Candidate") &&
                 review.Contains("key == \"aurochs\" || key == \"bison\"") &&
                 review.Contains("key == \"rhinoceros\" || key == \"woolly-rhinoceros\"") &&
                 review.Contains("IsOriginalReviewKey(key)") &&
