@@ -615,6 +615,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint12-stirge-source-cadence", ExpandedSummoningSprint12Tests.StirgeRosterTextRecordsPrimaryCadenceException),
             Case("expanded-summoning.sprint12-injury-disease-policy", ExpandedSummoningSprint12Tests.InjuryDiseasePolicyRequiresExactPositiveDamage),
             Case("expanded-summoning.sprint12-allergy-healing-policy", ExpandedSummoningSprint12Tests.AllergicReactionRemovalRequiresPositiveMagic),
+            Case("expanded-summoning.sprint12-contact-allergy-triggers", ExpandedSummoningSprint12Tests.ContactAllergyTriggersMatchThePrintedRule),
             Case("expanded-summoning.sprint12-disease-blueprints", ExpandedSummoningSprint12Tests.DiseaseBlueprintsStayHiddenAndDisclosed),
             Case("expanded-summoning.sprint10-stirge-attach-policy", ExpandedSummoningSprint10Tests.StirgeAttachRulesBoundDrainAndDetachment),
             Case("expanded-summoning.sprint10-stirge-published-registration", ExpandedSummoningSprint10Tests.StirgePublishesAtAllNineNatureTiers),

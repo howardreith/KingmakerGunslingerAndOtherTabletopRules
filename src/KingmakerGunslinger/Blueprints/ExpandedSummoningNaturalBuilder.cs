@@ -65,8 +65,17 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Summoning.Natural.GoblinDog.AllergicReaction";
         private const string NativeFilthFeverGuid =
             "9545a5550d89feb47a84edaeb4e63d0b";
-        private const string NativeGoblinUnitTypeGuid =
-            "d524df24b2f38cf4590525b2e7c4f34e";
+        /// <summary>
+        /// The printed Goblin Dog allergic reaction exempts the goblinoid
+        /// subtype. Kingmaker has no goblinoid subtype fact, so the exemption
+        /// is the exact enumerated set of native goblinoid unit types the
+        /// guarded unit-type census found in the installed library. Selection
+        /// is by exact asset id, never by name, and a type the installed
+        /// library does not carry is simply absent from the set.
+        /// </summary>
+        private static readonly string[] NativeGoblinoidUnitTypeGuids = {
+            "d524df24b2f38cf4590525b2e7c4f34e" // Goblin
+        };
         private const string NativeBite1d6Guid =
             "a000716f88c969c499a535dadcf09286";
         private const string NativeBite1d8Guid =
@@ -267,8 +276,10 @@ namespace KingmakerGunslinger.Blueprints
                     GoblinDogTraitsSymbol),
                 Require<BlueprintBuff>(bySymbol,
                     GoblinDogAllergicReactionSymbol), nativeBite,
-                BlueprintLibraryLookup.RequireExact<BlueprintUnitType>(library,
-                    NativeGoblinUnitTypeGuid, "exact native Goblin unit type"));
+                NativeGoblinoidUnitTypeGuids.Select(guid =>
+                    BlueprintLibraryLookup.RequireExact<BlueprintUnitType>(
+                        library, guid,
+                        "exact native goblinoid unit type")).ToArray());
             foreach (NaturalSummonProfile profile in
                 ExpandedSummoningNaturalProfiles.All)
                 ConfigureUnit(library, Require<BlueprintUnit>(bySymbol,
@@ -377,6 +388,7 @@ namespace KingmakerGunslinger.Blueprints
                 SummonInjuryDiseaseComponent>();
             delivery.BiteWeapon = bite;
             delivery.DiseaseBuff = filthFever;
+            delivery.ExcludedUnitTypes = Array.Empty<BlueprintUnitType>();
             delivery.FortitudeDc = SummonInjuryDiseasePolicy.DireRatFortitudeDc;
             delivery.DurationSeconds = 0;
             feature.name = InternalName(DireRatDiseaseSymbol);
@@ -396,7 +408,7 @@ namespace KingmakerGunslinger.Blueprints
 
         private static void ConfigureGoblinDogTraits(BlueprintFeature feature,
             BlueprintBuff reaction, BlueprintItemWeapon bite,
-            BlueprintUnitType goblinType)
+            BlueprintUnitType[] goblinoidTypes)
         {
             var descriptor = ScriptableObject.CreateInstance<
                 SpellDescriptorComponent>();
@@ -437,24 +449,43 @@ namespace KingmakerGunslinger.Blueprints
                 SummonInjuryDiseaseComponent>();
             delivery.BiteWeapon = bite;
             delivery.DiseaseBuff = reaction;
-            delivery.ExcludedUnitType = goblinType;
+            delivery.ExcludedUnitTypes = goblinoidTypes;
             delivery.FortitudeDc =
                 SummonInjuryDiseasePolicy.GoblinDogFortitudeDc;
             delivery.DurationSeconds =
+                SummonInjuryDiseasePolicy.GoblinDogAllergyDurationSeconds;
+            // The printed rule also exposes a creature that damages the Goblin
+            // Dog with a natural weapon or unarmed attack, and one that
+            // attempts to grapple it. Both deliver the same save and payload.
+            var counter = ScriptableObject.CreateInstance<
+                SummonContactAllergyCounterComponent>();
+            counter.DiseaseBuff = reaction;
+            counter.ExcludedUnitTypes = goblinoidTypes;
+            counter.FortitudeDc =
+                SummonInjuryDiseasePolicy.GoblinDogFortitudeDc;
+            counter.DurationSeconds =
+                SummonInjuryDiseasePolicy.GoblinDogAllergyDurationSeconds;
+            var maneuver = ScriptableObject.CreateInstance<
+                SummonContactAllergyManeuverComponent>();
+            maneuver.DiseaseBuff = reaction;
+            maneuver.ExcludedUnitTypes = goblinoidTypes;
+            maneuver.FortitudeDc =
+                SummonInjuryDiseasePolicy.GoblinDogFortitudeDc;
+            maneuver.DurationSeconds =
                 SummonInjuryDiseasePolicy.GoblinDogAllergyDurationSeconds;
             feature.name = InternalName(GoblinDogTraitsSymbol);
             feature.Ranks = 1;
             feature.IsClassFeature = false;
             feature.HideInUI = true;
             feature.ComponentsArray = new BlueprintComponent[] {
-                immunity, delivery };
+                immunity, delivery, counter, maneuver };
             BlueprintUnitFactAccess.Resolve().Configure(feature,
                 LocalizationService.Create(
                     "KMG.ExpandedSummoning.GoblinDog.Traits.Name",
                     "Goblin Dog Disease Traits"),
                 LocalizationService.Create(
                     "KMG.ExpandedSummoning.GoblinDog.Traits.Description",
-                    "Immune to disease. A damaging bite causes an allergic reaction on a failed DC 12 Fortitude save; the bounded Kingmaker adaptation exempts only the exact native Goblin unit type."),
+                    "Immune to disease. Its dander causes an allergic reaction on a failed DC 12 Fortitude save: when its bite deals damage, when a natural weapon or unarmed attack deals damage to it, and when a creature attempts to grapple it. Creatures with a native goblinoid unit type are exempt."),
                 null);
         }
 

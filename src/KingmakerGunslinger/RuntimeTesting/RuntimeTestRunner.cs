@@ -364,6 +364,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal string Sprint12DonorRigsDetail;
             internal bool Sprint12OriginalVisuals;
             internal string Sprint12OriginalVisualsDetail;
+            internal bool Sprint12ContactAllergy;
+            internal string Sprint12ContactAllergyDetail;
+            internal bool Sprint12PrintedDefences;
+            internal string Sprint12PrintedDefencesDetail;
+            internal bool Sprint12DiseaseOutlivesSource;
+            internal string Sprint12DiseaseOutlivesSourceDetail;
             internal bool HostileAbilityTarget;
             internal int AdditionalCasts;
             internal readonly List<string> Diagnostics = new List<string>();
@@ -17723,6 +17729,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                         mechanics.Sprint12GoblinDogAllergyDetail,
                     mechanics != null && mechanics.Sprint12GoblinDogAllergy,
                     "live Goblin Dog natural attacks, exact native Goblin type, paired RuleApplyBuff immunity, RuleHealDamage sources, and native Remove Disease cast"),
+                Assertion("expanded-summoning-sprint12-contact-allergy",
+                    "the printed allergic reaction also exposes a natural or unarmed attacker that damages the Goblin Dog and a creature that attempts to grapple it, while a manufactured weapon, another maneuver and a goblinoid are never exposed",
+                    mechanics == null ? "not-run" :
+                        mechanics.Sprint12ContactAllergyDetail,
+                    mechanics != null && mechanics.Sprint12ContactAllergy,
+                    "live natural-weapon attacks against the Goblin Dog and native RuleCombatManeuver grapple and trip attempts"),
+                Assertion("expanded-summoning-sprint12-printed-defences",
+                    "the live Dire Rat carries the printed defences: no natural armor and no Weapon Finesse, so its bite stays Strength-based",
+                    mechanics == null ? "not-run" :
+                        mechanics.Sprint12PrintedDefencesDetail,
+                    mechanics != null && mechanics.Sprint12PrintedDefences,
+                    "live spawned unit facts and its actual AC modifier descriptors"),
+                Assertion("expanded-summoning-sprint12-disease-outlives-source",
+                    "an inflicted disease and allergic reaction keep ticking, curing and saving correctly after their summoned source is destroyed, and the destroyed source can expose nothing further",
+                    mechanics == null ? "not-run" :
+                        mechanics.Sprint12DiseaseOutlivesSourceDetail,
+                    mechanics != null && mechanics.Sprint12DiseaseOutlivesSource,
+                    "native unit destruction, live buff tick and removal on a surviving victim"),
                 Assertion("expanded-summoning-sprint12-disease-quantity",
                     "separate Dire Rats and Goblin Dogs from quantity casts deliver only their own disease state to distinct victims",
                     mechanics == null ? "not-run" :
