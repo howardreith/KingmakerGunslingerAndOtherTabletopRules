@@ -2005,8 +2005,8 @@ function Assert-KmgRuntimeScenarioPreflight {
             throw 'The crowd review permits only 1d4+1 Sprint 11 ungulates or Sprint 12 quadrupeds.'
         }
         if ($flightActivation -and ($Parameters.flightCreature -isnot [string] -or
-            [string]$Parameters.flightCreature -cnotin @('eagle', 'dire-bat', 'giant-wasp', 'stirge'))) {
-            throw 'The flight activation fixture permits only Eagle, Dire Bat, Giant Wasp, or hidden Stirge.'
+            [string]$Parameters.flightCreature -cnotin @('eagle', 'dire-bat', 'giant-wasp', 'stirge', 'dire-rat'))) {
+            throw 'The activation fixture permits only Eagle, Dire Bat, Giant Wasp, Stirge, or Dire Rat.'
         }
         if ($nativeActionCase -and ([string]$Parameters['nativeActionCase'] -cne 'racial-actions' -or
             [string]$Parameters['class'] -cne 'Fighter' -or

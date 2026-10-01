@@ -126,8 +126,15 @@ namespace KingmakerGunslinger.DomainTests
             string automation = File.ReadAllText(Path.Combine(
                 Environment.CurrentDirectory, "scripts",
                 "RuntimeAutomation.Common.ps1"));
-            Assertions.True(source.Contains("_flightCreature == \"eagle\" ? 1 :") &&
-                source.Contains("_flightCreature == \"dire-bat\" ? 3 : 4") &&
+            // The fixture used to carry its own eagle/dire-bat/else tier table.
+            // It now reads each creature's own Summon Monster tier out of the
+            // frozen catalog, which is the same fact without a second copy of
+            // it, and refuses a creature that has no such tier.
+            Assertions.True(source.Contains(
+                    "SummonCreatureSpec creature = ExpandedSummoningCatalog.All") &&
+                source.Contains("int tier = creature.MonsterTier.Value;") &&
+                source.Contains(
+                    "The activation case needs a Summon Monster tier: ") &&
                 source.Contains("ExpandedSummoningIdentityCatalog") &&
                 source.Contains("PrepareQuickenedSummon(_spellbook,") &&
                 source.Contains("attack.Target, _enemy") &&
@@ -148,9 +155,11 @@ namespace KingmakerGunslinger.DomainTests
                 request.Contains("creatureReview || flightActivation ? 2 : 1") &&
                 launcher.Contains("$Parameters.ContainsKey('flightCreature')") &&
                 launcher.Contains("flightCreature = [string]$Parameters.flightCreature") &&
-                automation.Contains("$Parameters.flightCreature -cnotin @('eagle', 'dire-bat', 'giant-wasp', 'stirge')") &&
+                // The allowlist stays a closed, named set; Sprint 12's Dire Rat
+                // joined it so a ground creature can prove both combat modes.
+                automation.Contains("$Parameters.flightCreature -cnotin @('eagle', 'dire-bat', 'giant-wasp', 'stirge', 'dire-rat')") &&
                 automation.Contains("flightCreature = [string]$Parameters.flightCreature"),
-                "The guarded combat fixture must select only the published own-tier flyers and correlate a native attack to its exact hostile.");
+                "The guarded combat fixture must select only named published creatures and correlate a native attack to its exact hostile.");
         }
 
         internal static void EagleVisualLungeIsBoundedAndRestored()
