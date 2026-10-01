@@ -80,12 +80,28 @@ The installed library has no blueprint named `DiseaseImmunity`,
 immunity and the nonstacking allergic-reaction feature/buff. These components
 must be summon-local and must not alter native facts or targets.
 
-Kingmaker classifies 67 audited goblin units with the exact native unit type
-`Goblin:d524df24b2f38cf4590525b2e7c4f34e`. No broader native Goblinoid
-subtype fact exists. The bounded Kingmaker adaptation treats that exact unit
-type as the goblinoid exemption and treats other valid living bite targets as
-eligible. This rule is deterministic, uses no name or faction heuristic, and
-is disclosed in the player text and fidelity record.
+Kingmaker has no Goblinoid subtype fact. Rather than infer the exemption from
+a name search, the guarded audit
+`20261001T1658000459746Z-observe-expanded-summoning-native-donors` enumerated
+every `BlueprintUnitType` in the installed library: 106 types, plus 1,857
+units carrying no type at all. Exactly one is goblinoid -
+`Goblin:d524df24b2f38cf4590525b2e7c4f34e`, declared by 69 units - and
+`Hobgoblin`, `Bugbear`, `Goblinoid` and `SubtypeGoblinoid` are all absent.
+The exemption is therefore the exact enumerated set of native goblinoid unit
+type asset ids, which for this installation is that one id and is complete;
+every other valid living contact target is eligible. Production holds the set
+as a list so a future installation that adds such a type can be covered by
+extending it. This rule is deterministic, uses no name or faction heuristic,
+and is disclosed in the player text, the fidelity record and the Sprint 12
+disease lifetime contract.
+
+The printed allergic reaction also has two triggers the first hidden draft
+omitted: a creature that deals damage to the Goblin Dog with a natural weapon
+or unarmed attack, and a creature that attempts to grapple it. Both are
+implemented as creature-scoped target components alongside the bite rider.
+Riding contact is omitted because the charter excludes mounted combat, and the
+unnamed combat maneuvers are excluded because the printed text names grapple
+and riding specifically.
 
 ## Implementation boundary
 

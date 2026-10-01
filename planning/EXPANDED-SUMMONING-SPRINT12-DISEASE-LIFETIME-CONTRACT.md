@@ -120,17 +120,34 @@ above, and each is bounded:
 1. **Filth Fever payload.** The Dire Rat uses the exact native Filth Fever
    blueprint rather than a project reimplementation of the printed
    onset/frequency/effect/cure line, so the disease behaves the way every other
-   source of filth fever in the installed game behaves. Any numeric difference
-   between the native blueprint and the printed table is the native game's, is
-   recorded in the guarded audit's `FilthFever` graph, and is not silently
-   restated as the printed numbers.
+   source of filth fever in the installed game behaves. The guarded audit's
+   `FilthFever` graph in run
+   `20261001T1658000459746Z-observe-expanded-summoning-native-donors` records
+   what that blueprint actually is: a Disease-descriptor buff whose `NewRound`
+   action takes a Fortitude save and, on failure, applies two
+   `ContextActionDealDamage` ability packets while tracking consecutive
+   successes through a shared value. That is the printed two-ability damage
+   (1d3 Dexterity and 1d3 Constitution) and the printed two-consecutive-save
+   cure. Two printed details the native blueprint does not model are the
+   1d3-day onset and the 1/day frequency: Kingmaker ticks the disease per
+   round instead. Both differences are the native game's own adaptation of
+   filth fever, are used unmodified so the Dire Rat matches every other source
+   of the disease in the installed game, and are recorded here rather than
+   restated as the printed numbers. The practical effect is that the disease
+   resolves faster and is cured sooner than tabletop, which makes it less
+   punishing rather than more.
 2. **Goblinoid exemption.** The printed rule exempts the goblinoid *subtype*.
    Kingmaker has no goblinoid subtype fact, so the exemption is the exact
    enumerated set of native goblinoid `BlueprintUnitType` asset ids the
    installed library carries, taken from the guarded unit-type census rather
-   than from a name search. A goblinoid that the installed game does not model
-   as its own unit type cannot be exempted, and that is a limit of the
-   installed content, not a design choice.
+   than from a name search. The census in run
+   `20261001T1658000459746Z-observe-expanded-summoning-native-donors`
+   enumerated all 106 unit types in the installed library and found exactly one
+   goblinoid type - `Goblin`, `d524df24b2f38cf4590525b2e7c4f34e`, declared by
+   69 units - with no Hobgoblin and no Bugbear type present. The enumerated set
+   is therefore complete for this installation: nothing goblinoid is being left
+   out. If a future installation adds such a type, the census will show it and
+   the set must grow; that is why the set is a list rather than a single id.
 3. **Riding contact omitted.** The printed rule's contact list includes
    "attempts to ... ride the creature". The charter's non-goals exclude
    mounted-combat functionality outright, so no ride contact exists to detect.
