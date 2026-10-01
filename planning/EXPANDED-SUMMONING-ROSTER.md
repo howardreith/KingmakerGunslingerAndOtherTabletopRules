@@ -2,7 +2,7 @@
 
 Generated deterministically by `tools/expanded_summoning_manifest.py`; do not edit by hand.
 
-Registered totals: 80 Summon Monster entries / 453 placements; 78 Summon Nature's Ally entries / 447 placements; 88 unique units; 832 of 900 placements are published. The 68 Dire Rat, Dog, Hyena and Goblin Dog placements remain hidden during Sprint 12 qualification. The Frost Giant remains a retained native unit under Summon Monster VIII-IX and Summon Nature's Ally VII-IX wrappers.
+Registered totals: 80 Summon Monster entries / 453 placements; 78 Summon Nature's Ally entries / 447 placements; 88 unique units; all 900 placements are published. Sprint 12 qualified Dire Rat, Dog, Hyena and Goblin Dog, so nothing registered is withheld. The Frost Giant remains a retained native unit under Summon Monster VIII-IX and Summon Nature's Ally VII-IX wrappers.
 
 Phase 1 baseline qualification source: `5205805eab3fe0115d6888c53bce73c80474d1b7`. Structural run `20260812T1327062696968Z-bd09acfba08942df8f7c42e5c70252f4`; native cast run `20260812T1330147883834Z-ec8896f1d65b43e0913a6bea7cba4405`; visual run `20260812T1151394827201Z-add45a04f5de44c1a39e3251f7ff0778`; enabled/disabled persistence runs `20260812T1155220523013Z-6d2a18f9b33344d08d3127ffce7e5cb6` through `20260812T1208449380302Z-65c9b7056d97483fb48a4a9b76c22ea6`; all eight required compatibility transactions passed and restored their profiles. Phase 2 Sprint 10 and 11 mechanics, visual, quantity and lifecycle evidence is indexed in `EXPANDED-SUMMONING-PHASE2-EVIDENCE-INDEX.md`.
 

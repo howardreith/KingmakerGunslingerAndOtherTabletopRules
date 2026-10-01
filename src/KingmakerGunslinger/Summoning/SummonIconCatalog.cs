@@ -44,8 +44,7 @@ namespace KingmakerGunslinger.Summoning
             string[] split = { "redcap", "axiomite", "soul-eater", "bogeyman",
                 "movanic-deva", "frost-giant", "thanadaemon" };
             string[] preserved = { "mite", "manticore", "nereid", "hamadryad" };
-            string[] prepared = { "dire-rat", "dog", "hyena",
-                "goblin-dog", "remove-stirge" };
+            string[] prepared = { "remove-stirge" };
             string[] expected = visibleCatalog.Concat(split).Concat(preserved)
                 .Concat(prepared)
                 .ToArray();
@@ -77,12 +76,12 @@ namespace KingmakerGunslinger.Summoning
             Add(result, SummonProjectIconScope.PreservedNative,
                 "mite", "Mite", "manticore", "Manticore", "nereid",
                 "Nereid", "hamadryad", "Hamadryad");
-            // Qualified creature icons enter through visibleCatalog. Sprint
-            // 12 candidates remain catalogued while their choices are hidden;
-            // the Stirge removal action remains a separate concept.
+            // Qualified creature icons enter through visibleCatalog, which
+            // now includes the published Sprint 12 quadrupeds. The Stirge
+            // removal action remains a separate concept with no creature of
+            // its own, so it stays an explicit entry.
             Add(result, SummonProjectIconScope.KmgCatalog,
-                "dire-rat", "Dire Rat", "dog", "Dog", "hyena", "Hyena",
-                "goblin-dog", "Goblin Dog", "remove-stirge", "Remove Stirge");
+                "remove-stirge", "Remove Stirge");
             return result.ToArray();
         }
 

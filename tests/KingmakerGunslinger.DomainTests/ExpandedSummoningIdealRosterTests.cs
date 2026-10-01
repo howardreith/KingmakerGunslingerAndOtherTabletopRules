@@ -186,8 +186,8 @@ namespace KingmakerGunslinger.DomainTests
             // after Phase 1 Sprint 8, 842 after Dire Bat, 854 after Wasp,
             // 863 after Stirge and 911 after the Sprint 11 ungulates. Sprint 12
             // registers Dire Rat and withholds all four unqualified families,
-            // leaving 861 choices visible during development.
-            Assertions.Equal(861,
+            // leaving 929 choices visible after the Sprint 12 publication.
+            Assertions.Equal(929,
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.Monster) +
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.NaturesAlly),
                 "The plan must not change the shipped visible choice count.");

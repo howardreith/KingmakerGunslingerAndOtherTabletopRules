@@ -31,15 +31,17 @@ namespace KingmakerGunslinger.DomainTests
                 catalog.Contains("ValidateFamily(SummonFamily.Monster, 80, 453)") &&
                 catalog.Contains("ValidateFamily(SummonFamily.NaturesAlly, 78, 447)"),
                 "Sprint 12 must register Dire Rat at tier 1 in both families.");
+            // Sprint 12 is qualified and published, so the suppression set is
+            // empty and none of its four creature keys may appear in it.
             foreach (string key in new[] {
                 "\"dire-rat\"", "\"dog\"", "\"hyena\"", "\"goblin-dog\""
             })
-                Assertions.True(visibility.Contains(key),
-                    "Unqualified Sprint 12 creature must be suppressed: " + key);
+                Assertions.True(!visibility.Contains(key),
+                    "A published Sprint 12 creature must not be suppressed: " + key);
             Assertions.True(visibility.Contains(
                     "RegisteredLogicalPlacementCount = 900") &&
-                visibility.Contains("SuppressedLogicalPlacementCount = 68"),
-                "Sprint 12 publication boundary must freeze 900/68/832.");
+                visibility.Contains("SuppressedLogicalPlacementCount = 0"),
+                "Sprint 12 publication must leave 900/0/900.");
             Assertions.True(donors.Contains(
                     "dire-rat|77f3f2ddf1ec2da45ab956c433e3b557|1") &&
                 donors.Contains("dog|77f3f2ddf1ec2da45ab956c433e3b557|1"),

@@ -4,8 +4,10 @@
 
 The owner selected the fully qualified end of Sprint 11 as a near-term public
 release boundary. Branch `codex/expanded-summoning-phase2a-sprints9-13` and
-draft PR #25 contain 832 published generated choices plus 29 retained native
-wrappers, for 861 visible choices. Sprints 9-11 are internally qualified; owner visual review remains
+draft PR #25 now contain 900 published generated choices plus 29 retained
+native wrappers, for 929 visible choices, after Sprint 12 qualified and
+published on 2026-10-01. The released v0.0.141 artifact itself contains 832 and
+861. Sprints 9-11 are internally qualified; owner visual review remains
 `NOT_PERFORMED_NONBLOCKING`.
 
 Sprint 12 work is intentionally retained but unpublished. All 68 Dire Rat,
