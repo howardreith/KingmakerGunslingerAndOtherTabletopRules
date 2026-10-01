@@ -86,9 +86,20 @@ namespace KingmakerGunslinger.Summoning
             }
             NaturalSummonProfile frog = For("poisonous-frog");
             if (frog.Size != "Tiny" || frog.Strength != 2 ||
+                frog.PrimaryWeapon != "Bite1" ||
                 !frog.Facts.Contains("PoisonFrog"))
                 throw new InvalidOperationException(
                     "Poisonous Frog tabletop profile changed.");
+            NaturalSummonProfile wolverine = For("wolverine");
+            if (wolverine.AdditionalSecondaryWeapons.Count != 0 ||
+                wolverine.AdditionalWeapons.Count != 2 ||
+                !wolverine.AdditionalWeapons.Contains("Claw1d6") ||
+                !wolverine.AdditionalWeapons.Contains("Bite1d4") ||
+                !wolverine.Facts.Contains("TripDefenseFourLegs") ||
+                !wolverine.Facts.Contains("WolverineRage"))
+                throw new InvalidOperationException(
+                    "Wolverine printed attack routine changed.");
+            SummonRagePolicy.Validate();
             NaturalSummonProfile spider = For("giant-spider");
             if (spider.HitDice != 3 || spider.NaturalArmor != 1 ||
                 !spider.Facts.Contains("GiantSpiderPoison"))
@@ -105,7 +116,7 @@ namespace KingmakerGunslinger.Summoning
                     A("TripDefenseFourLegs",
                         "SkillFocusPerception", "DireRatDisease"),
                     "A bite that hits and deals positive damage makes the printed DC 11 Fortitude save before applying the native Filth Fever payload and cure lifecycle.",
-                    "The native Dog rig is a bounded locomotion donor only; an original compact rat silhouette is required before publication."),
+                    "The native Dog rig is a bounded locomotion donor only, supplying skeleton and animation; the shipped silhouette is the project's own KMG_dire-rat_Original mesh."),
                 P("dog", "Dog", "Animal", 1, "Small",
                     13, 13, 15, 2, 12, 6, 40, 1, "Bite1d4",
                     Array.Empty<string>(),
@@ -116,7 +127,7 @@ namespace KingmakerGunslinger.Summoning
                     A("WeaponFinesse", "Airborne"),
                     "Kingmaker exposes one movement speed; 80-foot fly speed is used with airborne navigation and the 10-foot ground speed is omitted."),
                 P("poisonous-frog", "Poisonous Frog", "Animal", 1, "Tiny",
-                    2, 12, 11, 1, 9, 10, 10, 0, "Bite1d3",
+                    2, 12, 11, 1, 9, 10, 10, 0, "Bite1",
                     Array.Empty<string>(),
                     A("WeaponFinesse", "TripDefenseFourLegs", "PoisonFrog"),
                     "The native Constitution-scaled poison graph supplies the exact six-tick 1d2 Constitution effect; ordinary-map ground speed is used and swim movement is omitted."),
@@ -136,7 +147,7 @@ namespace KingmakerGunslinger.Summoning
                     15, 14, 15, 2, 12, 8, 50, 1, "Bite1d6",
                     Array.Empty<string>(), A("Toughness", "GoblinDogTraits"),
                     "Disease immunity uses the native disease-descriptor gate. The printed allergic reaction exposes a non-goblinoid creature damaged by the bite, a creature that deals damage to the Goblin Dog with a natural weapon or unarmed attack, and a creature that attempts to grapple it; each makes the printed DC 12 Fortitude save and a failure applies one nonstacking day of -2 Dexterity and -2 Charisma, removed by positive magical healing or remove disease. Riding contact is omitted because the charter excludes mounted combat. The goblinoid exemption is the exact enumerated set of native goblinoid unit types the installed library carries.",
-                    "The Worg donor contributes only its rig and bite animation; an original Goblin Dog silhouette remains required before publication."),
+                    "The Worg donor contributes only its rig and bite animation; the shipped silhouette is the project's own KMG_goblin-dog_Original mesh."),
                 P("hyena", "Hyena", "Animal", 2, "Medium",
                     14, 15, 15, 2, 13, 6, 50, 2, "Bite1d6",
                     Array.Empty<string>(),
@@ -180,12 +191,12 @@ namespace KingmakerGunslinger.Summoning
                     A("ReducedReach", "Airborne", "Stealthy", "DireBatBlindsense"),
                     "Kingmaker exposes one movement speed; 40-foot fly speed is used with airborne navigation and the 20-foot ground speed is omitted.",
                     "A dedicated imprecise 40-foot blindsense fact uses the native component without granting the native Blindsight feature's blindness immunity; Alertness remains omitted."),
-                PS("wolverine", "Wolverine", "Animal", 3, "Medium",
+                P("wolverine", "Wolverine", "Animal", 3, "Medium",
                     15, 15, 15, 2, 12, 10, 30, 2, "Claw1d6",
-                    A("Claw1d6"), A("Bite1d4"),
-                    A("SkillFocusPerception", "Toughness"),
-                    "Burrow and climb movement are omitted because Kingmaker exposes one movement speed.",
-                    "The after-damage rage is omitted pending a summon-local implementation proven to end with the summon and survive save/load."),
+                    A("Claw1d6", "Bite1d4"),
+                    A("TripDefenseFourLegs", "SkillFocusPerception",
+                        "Toughness", "WolverineRage"),
+                    "Burrow and climb movement are omitted because Kingmaker exposes one movement speed."),
                 P("dire-boar", "Dire Boar", "Animal", 5, "Large",
                     23, 10, 17, 2, 13, 8, 40, 6, "Gore2d6",
                     Array.Empty<string>(), A("ReducedReach", "Ferocity",

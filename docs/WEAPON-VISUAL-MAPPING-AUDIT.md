@@ -6,7 +6,7 @@ Do not hand-edit either generated output.
 
 ## Coverage and policy
 
-The blueprint manifest contains exactly **116** active
+The blueprint manifest contains exactly **117** active
 `BlueprintItemWeapon` identities and every one is represented below.
 The audit includes equipped player/development weapons, mechanics-only
 Pistol-Whip items, and Expanded Summoning creature weapons. Cosmetic
@@ -23,7 +23,7 @@ identity, character identity, and time are forbidden.
 |---|---:|
 | equipped project weapon | 101 |
 | mechanics-only exclusion | 2 |
-| summoning-only exclusion | 13 |
+| summoning-only exclusion | 14 |
 
 ### Family counts
 
@@ -31,7 +31,7 @@ identity, character identity, and time are forbidden.
 |---|---:|
 | Blunderbuss | 12 |
 | Elven Branched Spear | 16 |
-| Expanded Summoning creature weapon | 13 |
+| Expanded Summoning creature weapon | 14 |
 | Katana | 14 |
 | Musket | 15 |
 | Nodachi | 14 |
@@ -161,6 +161,7 @@ identity, character identity, and time are forbidden.
 | KMG.Summoning.Natural.Claw1d8 | 422318f491354d37aba69dece0004a11 | Claw1d8 | Expanded Summoning creature weapon | native donor type configured per summoned creature | native-runtime-donor | mechanics-only | ExpandedSummoning.NativeDonor | not applicable | summoning-only exclusion |
 | KMG.Summoning.Natural.WaspSting1d8 | 0006090d43334fe1becaed56d09987b3 | WaspSting1d8 | Expanded Summoning creature weapon | native donor type configured per summoned creature | native-runtime-donor | mechanics-only | ExpandedSummoning.NativeDonor | not applicable | summoning-only exclusion |
 | KMG.Summoning.Natural.StirgeTouch | ebf16ae835ea40c7afaaf90277c013bf | StirgeTouch | Expanded Summoning creature weapon | native donor type configured per summoned creature | native-runtime-donor | mechanics-only | ExpandedSummoning.NativeDonor | not applicable | summoning-only exclusion |
+| KMG.Summoning.Natural.Bite1 | f120128f4b7c4fbb8a3b19756bdb6300 | Bite1 | Expanded Summoning creature weapon | native donor type configured per summoned creature | native-runtime-donor | mechanics-only | ExpandedSummoning.NativeDonor | not applicable | summoning-only exclusion |
 
 ## Exact presentation and provenance contracts
 
@@ -282,6 +283,7 @@ identity, character identity, and time are forbidden.
 | KMG.Summoning.Natural.Claw1d8 | native donor clone configured by Expanded Summoning builders | native donor presentation | creature/unit-view-owned native presentation | native Kingmaker asset; no redistributed source FBX | none | none; exact native blueprint donor cloning | native summoned-creature donor | creature-specific natural or manufactured attack | native donor material | none | Kingmaker runtime donor reference only; no proprietary asset redistribution | outside this cleanup; preserve qualified creature donor contract |
 | KMG.Summoning.Natural.WaspSting1d8 | native donor clone configured by Expanded Summoning builders | native donor presentation | creature/unit-view-owned native presentation | native Kingmaker asset; no redistributed source FBX | none | none; exact native blueprint donor cloning | native summoned-creature donor | creature-specific natural or manufactured attack | native donor material | none | Kingmaker runtime donor reference only; no proprietary asset redistribution | outside this cleanup; preserve qualified creature donor contract |
 | KMG.Summoning.Natural.StirgeTouch | native donor clone configured by Expanded Summoning builders | native donor presentation | creature/unit-view-owned native presentation | native Kingmaker asset; no redistributed source FBX | none | none; exact native blueprint donor cloning | native summoned-creature donor | creature-specific natural or manufactured attack | native donor material | none | Kingmaker runtime donor reference only; no proprietary asset redistribution | outside this cleanup; preserve qualified creature donor contract |
+| KMG.Summoning.Natural.Bite1 | native donor clone configured by Expanded Summoning builders | native donor presentation | creature/unit-view-owned native presentation | native Kingmaker asset; no redistributed source FBX | none | none; exact native blueprint donor cloning | native summoned-creature donor | creature-specific natural or manufactured attack | native donor material | none | Kingmaker runtime donor reference only; no proprietary asset redistribution | outside this cleanup; preserve qualified creature donor contract |
 
 ## Audit conclusion before asset authoring
 
