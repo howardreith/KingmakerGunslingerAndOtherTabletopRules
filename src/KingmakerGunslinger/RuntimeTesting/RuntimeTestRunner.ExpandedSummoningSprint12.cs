@@ -5,6 +5,7 @@ using System.Linq;
 using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints.Facts;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Items;
@@ -303,6 +304,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "]";
                 RemoveSprint12Buff(hostile, reaction);
 
+                // Correction order (2026-10-01): the printed allergic reaction
+                // has three triggers. The bite above is one; a natural or
+                // unarmed attacker that damages the Goblin Dog and a creature
+                // that attempts to grapple it are the other two.
+                ExerciseSprint12ContactAllergy(goblinDog, hyena, caster,
+                    hostile, goblinVictim, reaction, evidence);
+                RemoveSprint12Buff(hostile, reaction);
+                RemoveSprint12Buff(hyena, reaction);
+                RemoveSprint12Buff(caster, reaction);
+
+                // The printed Dire Rat has no natural armor and no Weapon
+                // Finesse; the Dog's +1 natural armor is the positive control
+                // that proves the check can see natural armor at all.
+                ExerciseSprint12PrintedDefences(blueprints, caster, direRat,
+                    created, evidence);
+
                 secondVictimBlueprint = UnityEngine.Object.Instantiate(
                     hostile.Blueprint);
                 secondVictimBlueprint.name =
@@ -399,6 +416,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     string.Join("|", quantityVisuals.ToArray()) +
                     "];nativeDogMapped=" +
                     !dogNativeVisual;
+
+                // The disease/allergy lifetime contract: an effect already
+                // inflicted on a victim belongs to the victim and must keep
+                // ticking, curing and saving after its summoned source is
+                // gone, while the source leaves no project-owned residue and
+                // can expose nothing further.
+                ExerciseSprint12DiseaseOutlivesSource(rats, dogs, secondVictim,
+                    filthFever, reaction, removeDisease, caster, evidence);
             }
             finally
             {
@@ -432,6 +457,392 @@ namespace KingmakerGunslinger.RuntimeTesting
                     UnityEngine.Object.Destroy(secondVictimBlueprint);
                 if (goblinVictimBlueprint != null)
                     UnityEngine.Object.Destroy(goblinVictimBlueprint);
+            }
+        }
+
+        /// <summary>
+        /// The printed Goblin Dog allergic reaction exposes "a non-goblinoid
+        /// creature damaged by a goblin dog's bite, who deals damage to a
+        /// goblin dog with a natural weapon or unarmed attack, or who
+        /// otherwise comes into contact with a goblin dog (including attempts
+        /// to grapple or ride the creature)". The bite is proved elsewhere;
+        /// this exercises the other two through the real rules, with a
+        /// manufactured weapon, a non-grapple maneuver and a goblinoid as
+        /// negative controls. The grapple attempt is forced to fail so the
+        /// evidence shows the printed attempt exposing its initiator without
+        /// leaving a hold behind.
+        /// </summary>
+        private static void ExerciseSprint12ContactAllergy(
+            UnitEntityData goblinDog, UnitEntityData naturalAttacker,
+            UnitEntityData caster, UnitEntityData hostile,
+            UnitEntityData goblinVictim, BlueprintBuff reaction,
+            ExpandedSummoningMechanicalEvidence evidence)
+        {
+            int naturalFortitude =
+                naturalAttacker.Descriptor.Stats.SaveFortitude.BaseValue;
+            int casterFortitude =
+                caster.Descriptor.Stats.SaveFortitude.BaseValue;
+            int hostileFortitude =
+                hostile.Descriptor.Stats.SaveFortitude.BaseValue;
+            int goblinFortitude = goblinVictim == null ? 0 :
+                goblinVictim.Descriptor.Stats.SaveFortitude.BaseValue;
+            int dogHitPoints = goblinDog.Descriptor.Stats.HitPoints.BaseValue;
+            try
+            {
+                goblinDog.Descriptor.Stats.HitPoints.BaseValue = 100000;
+                naturalAttacker.Descriptor.Stats.SaveFortitude.BaseValue = -100;
+                caster.Descriptor.Stats.SaveFortitude.BaseValue = -100;
+                hostile.Descriptor.Stats.SaveFortitude.BaseValue = -100;
+                if (goblinVictim != null)
+                    goblinVictim.Descriptor.Stats.SaveFortitude.BaseValue = -100;
+                RemoveSprint12Buff(naturalAttacker, reaction);
+                RemoveSprint12Buff(caster, reaction);
+                RemoveSprint12Buff(hostile, reaction);
+
+                // (b) a natural weapon that deals damage to the Goblin Dog.
+                ItemEntityWeapon naturalWeapon =
+                    naturalAttacker.Body.PrimaryHand.MaybeWeapon;
+                bool weaponIsNatural = naturalWeapon != null &&
+                    (naturalWeapon.Blueprint.IsNatural ||
+                        naturalWeapon.Blueprint.IsUnarmed);
+                string naturalDetail = "attacker-weapon-not-natural";
+                bool naturalHit = weaponIsNatural &&
+                    ExerciseExpandedSummoningAttack(naturalAttacker, goblinDog,
+                        out naturalDetail);
+                Buff naturalReaction =
+                    naturalAttacker.Descriptor.Buffs.GetBuff(reaction);
+                int naturalDc = naturalReaction == null ||
+                    naturalReaction.Context == null ? -1 :
+                    naturalReaction.Context.Params.DC;
+                bool naturalSource = naturalReaction != null &&
+                    naturalReaction.Context != null &&
+                    ReferenceEquals(naturalReaction.Context.MaybeCaster,
+                        goblinDog);
+                bool naturalExposed = naturalHit && naturalReaction != null &&
+                    naturalDc ==
+                        SummonInjuryDiseasePolicy.GoblinDogFortitudeDc &&
+                    naturalSource;
+
+                // Negative control: a manufactured weapon never exposes its
+                // wielder, so the trigger is the natural contact and not any
+                // blow that lands.
+                UnitEntityData manufacturedAttacker = null;
+                foreach (UnitEntityData candidate in new[] { caster, hostile })
+                {
+                    ItemEntityWeapon held = candidate == null ||
+                        candidate.Body == null ? null :
+                        candidate.Body.PrimaryHand.MaybeWeapon;
+                    if (held != null && !held.Blueprint.IsNatural &&
+                            !held.Blueprint.IsUnarmed)
+                    {
+                        manufacturedAttacker = candidate;
+                        break;
+                    }
+                }
+                string manufacturedDetail = "no-manufactured-weapon-fixture";
+                bool manufacturedHit = false;
+                bool manufacturedSafe = false;
+                if (manufacturedAttacker != null)
+                {
+                    manufacturedHit = ExerciseExpandedSummoningAttack(
+                        manufacturedAttacker, goblinDog,
+                        out manufacturedDetail);
+                    manufacturedSafe = manufacturedHit &&
+                        !manufacturedAttacker.Descriptor.HasFact(reaction);
+                }
+
+                // (c) an attempt to grapple the Goblin Dog. AutoFailure keeps
+                // the printed "attempt" exact and leaves no hold behind.
+                RemoveSprint12Buff(hostile, reaction);
+                var grapple = new RuleCombatManeuver(hostile, goblinDog,
+                    CombatManeuver.Grapple) { AutoFailure = true };
+                Rulebook.Trigger(grapple);
+                Buff grappleReaction =
+                    hostile.Descriptor.Buffs.GetBuff(reaction);
+                bool grappleExposed = !grapple.Success &&
+                    grappleReaction != null &&
+                    grappleReaction.Context != null &&
+                    grappleReaction.Context.Params.DC ==
+                        SummonInjuryDiseasePolicy.GoblinDogFortitudeDc &&
+                    ReferenceEquals(grappleReaction.Context.MaybeCaster,
+                        goblinDog);
+
+                // Negative control: a maneuver the printed rule does not name
+                // is not contact.
+                RemoveSprint12Buff(hostile, reaction);
+                var trip = new RuleCombatManeuver(hostile, goblinDog,
+                    CombatManeuver.Trip) { AutoFailure = true };
+                Rulebook.Trigger(trip);
+                bool tripSafe = !hostile.Descriptor.HasFact(reaction);
+
+                // Negative control: a goblinoid is exempt from every trigger.
+                bool goblinoidSafe = false;
+                string goblinoidDetail = "no-goblin-type-fixture";
+                if (goblinVictim != null)
+                {
+                    RemoveSprint12Buff(goblinVictim, reaction);
+                    var goblinoidGrapple = new RuleCombatManeuver(goblinVictim,
+                        goblinDog, CombatManeuver.Grapple) {
+                            AutoFailure = true };
+                    Rulebook.Trigger(goblinoidGrapple);
+                    goblinoidSafe = !goblinVictim.Descriptor.HasFact(reaction);
+                    goblinoidDetail = "grappled=" + !goblinoidGrapple.Success +
+                        ";exposed=" + !goblinoidSafe;
+                }
+
+                evidence.Sprint12ContactAllergy = naturalExposed &&
+                    manufacturedAttacker != null && manufacturedSafe &&
+                    grappleExposed && tripSafe && goblinVictim != null &&
+                    goblinoidSafe;
+                evidence.Sprint12ContactAllergyDetail = "natural[" +
+                    naturalDetail + ";weapon=" + (naturalWeapon == null ?
+                        "none" : naturalWeapon.Blueprint.Category.ToString()) +
+                    ";dc=" + naturalDc + ";source=" + naturalSource +
+                    ";exposed=" + naturalExposed + "];manufactured[" +
+                    manufacturedDetail + ";safe=" + manufacturedSafe +
+                    "];grappleAttempt[success=" + grapple.Success +
+                    ";exposed=" + grappleExposed + "];trip[safe=" + tripSafe +
+                    "];goblinoid[" + goblinoidDetail + ";safe=" +
+                    goblinoidSafe + "]";
+            }
+            finally
+            {
+                RemoveSprint12Buff(naturalAttacker, reaction);
+                RemoveSprint12Buff(caster, reaction);
+                RemoveSprint12Buff(hostile, reaction);
+                if (goblinVictim != null)
+                {
+                    RemoveSprint12Buff(goblinVictim, reaction);
+                    goblinVictim.Descriptor.Stats.SaveFortitude.BaseValue =
+                        goblinFortitude;
+                }
+                naturalAttacker.Descriptor.Stats.SaveFortitude.BaseValue =
+                    naturalFortitude;
+                caster.Descriptor.Stats.SaveFortitude.BaseValue =
+                    casterFortitude;
+                hostile.Descriptor.Stats.SaveFortitude.BaseValue =
+                    hostileFortitude;
+                goblinDog.Descriptor.Stats.HitPoints.BaseValue = dogHitPoints;
+            }
+        }
+
+        /// <summary>
+        /// The printed Dire Rat is AC 14, touch 14, flat-footed 11 - (+3 Dex,
+        /// +1 size) with no natural-armor component - and its feat list is
+        /// Skill Focus (Perception) alone, so its printed bite +1 comes from
+        /// Strength and size rather than from Weapon Finesse. The earlier
+        /// hidden profile gave it +1 natural armor and Weapon Finesse, which
+        /// made it one point harder to hit and three points more accurate than
+        /// the stat block. A live Dog is summoned as the positive control: it
+        /// does have +1 natural armor, so a passing Dire Rat result cannot be
+        /// an artefact of the check failing to see natural armor at all.
+        /// </summary>
+        private static void ExerciseSprint12PrintedDefences(
+            BlueprintScriptableObject[] blueprints, UnitEntityData caster,
+            UnitEntityData direRat, List<UnitEntityData> created,
+            ExpandedSummoningMechanicalEvidence evidence)
+        {
+            const string NaturalArmorPlusOneGuid =
+                "10c7c5e3c5806bc4ca676e22d6fbf17e";
+            const string WeaponFinesseGuid =
+                "90e54424d682d104ab36436bd527af09";
+            BlueprintUnitFact naturalArmor = blueprints
+                .OfType<BlueprintUnitFact>().SingleOrDefault(value =>
+                    value.AssetGuid == NaturalArmorPlusOneGuid);
+            BlueprintUnitFact weaponFinesse = blueprints
+                .OfType<BlueprintUnitFact>().SingleOrDefault(value =>
+                    value.AssetGuid == WeaponFinesseGuid);
+            if (naturalArmor == null || weaponFinesse == null)
+                throw new InvalidOperationException(
+                    "The exact native +1 natural armor or Weapon Finesse fact was not loaded.");
+
+            UnitEntityData dog = CastExpandedSummoningCombatUnit(blueprints,
+                caster, SummonFamily.NaturesAlly, "dog", 1, created, evidence);
+            RemoveExpandedSummoningAppearanceBuffs(dog);
+
+            bool ratHasNaturalArmor = direRat.Descriptor.HasFact(naturalArmor);
+            bool ratHasWeaponFinesse = direRat.Descriptor.HasFact(weaponFinesse);
+            bool dogHasNaturalArmor = dog.Descriptor.HasFact(naturalArmor);
+            bool dogHasWeaponFinesse = dog.Descriptor.HasFact(weaponFinesse);
+
+            // Both creatures are Small 1-HD animals with base attack 0 and the
+            // same bite weapon, so the gap between their live bite bonuses is
+            // decided by whichever ability score the natural attack uses. The
+            // printed Dire Rat is Strength 10 and the printed Dog is Strength
+            // 13, while their Dexterity scores run the other way (17 against
+            // 13). A Strength-based pair therefore differs by the Strength
+            // modifiers and a finessed pair by the Dexterity modifiers, and the
+            // two predictions cannot be confused. Measuring the gap needs no
+            // fact mutation and survives whatever the summon templates add,
+            // because both units carry the same template.
+            int ratStrength = direRat.Descriptor.Stats.Strength.ModifiedValue;
+            int ratDexterity = direRat.Descriptor.Stats.Dexterity.ModifiedValue;
+            int dogStrength = dog.Descriptor.Stats.Strength.ModifiedValue;
+            int dogDexterity = dog.Descriptor.Stats.Dexterity.ModifiedValue;
+            UnityEngine.Random.InitState(FindNativeD20Seed(20));
+            var ratProbe = new RuleAttackWithWeapon(direRat, dog,
+                direRat.Body.PrimaryHand.MaybeWeapon, 0);
+            Rulebook.Trigger(ratProbe);
+            UnityEngine.Random.InitState(FindNativeD20Seed(20));
+            var dogProbe = new RuleAttackWithWeapon(dog, direRat,
+                dog.Body.PrimaryHand.MaybeWeapon, 0);
+            Rulebook.Trigger(dogProbe);
+            int ratBonus = ratProbe.AttackRoll == null ? int.MinValue :
+                ratProbe.AttackRoll.AttackBonus;
+            int dogBonus = dogProbe.AttackRoll == null ? int.MinValue :
+                dogProbe.AttackRoll.AttackBonus;
+            int strengthPrediction = Modifier(ratStrength) -
+                Modifier(dogStrength);
+            int finessePrediction = Modifier(ratDexterity) -
+                Modifier(dogDexterity);
+            bool measured = ratBonus != int.MinValue &&
+                dogBonus != int.MinValue &&
+                strengthPrediction != finessePrediction;
+            int observedGap = measured ? ratBonus - dogBonus : int.MinValue;
+            bool bonusIsStrengthBased = measured &&
+                observedGap == strengthPrediction;
+
+            evidence.Sprint12PrintedDefences = !ratHasNaturalArmor &&
+                !ratHasWeaponFinesse && !dogHasWeaponFinesse &&
+                dogHasNaturalArmor && bonusIsStrengthBased;
+            evidence.Sprint12PrintedDefencesDetail = "direRat[naturalArmor=" +
+                ratHasNaturalArmor + ";weaponFinesse=" + ratHasWeaponFinesse +
+                ";str=" + ratStrength + ";dex=" + ratDexterity +
+                ";attackBonus=" + Describe(ratBonus) +
+                "];dogControl[naturalArmor=" + dogHasNaturalArmor +
+                ";weaponFinesse=" + dogHasWeaponFinesse + ";str=" +
+                dogStrength + ";dex=" + dogDexterity + ";attackBonus=" +
+                Describe(dogBonus) + "];gap[observed=" +
+                Describe(observedGap) + ";strengthPrediction=" +
+                strengthPrediction + ";finessePrediction=" +
+                finessePrediction + ";strengthBased=" +
+                bonusIsStrengthBased + "]";
+        }
+
+        private static int Modifier(int score)
+        {
+            return (int)Math.Floor((score - 10) / 2.0);
+        }
+
+        private static string Describe(int value)
+        {
+            return value == int.MinValue ? "none" : value.ToString(
+                System.Globalization.CultureInfo.InvariantCulture);
+        }
+
+        /// <summary>
+        /// The disease and allergy lifetime contract in
+        /// `planning/EXPANDED-SUMMONING-SPRINT12-DISEASE-LIFETIME-CONTRACT.md`
+        /// separates the summon's own lifetime from the lifetime of a rules
+        /// effect already inflicted on a victim. The charter forbids the mod's
+        /// own state persisting after cleanup; it does not require the printed
+        /// disease to be cancelled when the rat dies, and cancelling it would
+        /// delete the only mechanic the creature exists for. This proves the
+        /// victim-side effect survives its destroyed source, still ticks and
+        /// still cures, and that the destroyed source exposes nothing further.
+        /// </summary>
+        private static void ExerciseSprint12DiseaseOutlivesSource(
+            UnitEntityData[] rats, UnitEntityData[] dogs,
+            UnitEntityData victim, BlueprintBuff filthFever,
+            BlueprintBuff reaction, BlueprintAbility removeDisease,
+            UnitEntityData caster,
+            ExpandedSummoningMechanicalEvidence evidence)
+        {
+            TimeSpan clock = Game.Instance.Player.GameTime;
+            int victimFortitude =
+                victim.Descriptor.Stats.SaveFortitude.BaseValue;
+            int victimDamage = victim.Descriptor.Damage;
+            try
+            {
+                victim.Descriptor.Stats.SaveFortitude.BaseValue = -100;
+                RemoveSprint12Buff(victim, filthFever);
+                RemoveSprint12Buff(victim, reaction);
+                UnitEntityData rat = rats.Length > 0 ? rats[0] : null;
+                UnitEntityData dog = dogs.Length > 0 ? dogs[0] : null;
+                if (rat == null || dog == null)
+                    throw new InvalidOperationException(
+                        "The Sprint 12 lifetime fixture needs a live quantity rat and dog.");
+                bool ratHit = ExerciseExpandedSummoningAttack(rat, victim,
+                    out string ratDetail);
+                bool dogHit = ExerciseExpandedSummoningAttack(dog, victim,
+                    out string dogDetail);
+                Buff disease = victim.Descriptor.Buffs.GetBuff(filthFever);
+                Buff rash = victim.Descriptor.Buffs.GetBuff(reaction);
+                bool inflicted = ratHit && dogHit && disease != null &&
+                    rash != null;
+                TimeSpan rashBefore = rash == null ? TimeSpan.Zero :
+                    rash.TimeLeft;
+                int dexterityWhileInfected =
+                    victim.Descriptor.Stats.Dexterity.ModifiedValue;
+
+                // Destroy the sources through the native scene path.
+                rat.Destroy();
+                dog.Destroy();
+                Game.Instance.EntityDestroyer.Tick();
+                bool sourcesGone = rat.Destroyed && dog.Destroyed;
+
+                // The victim keeps both effects, and nothing throws when a
+                // context whose caster is destroyed is read or ticked.
+                bool survived = false;
+                string tickDetail = "not-run";
+                TimeSpan rashAfter = TimeSpan.Zero;
+                try
+                {
+                    Game.Instance.Player.GameTime = clock +
+                        TimeSpan.FromSeconds(60d);
+                    victim.Descriptor.Buffs.Tick();
+                    rashAfter = rash == null ? TimeSpan.Zero : rash.TimeLeft;
+                    survived = victim.Descriptor.HasFact(filthFever) &&
+                        victim.Descriptor.HasFact(reaction) &&
+                        rashAfter < rashBefore &&
+                        rashAfter > TimeSpan.Zero &&
+                        victim.Descriptor.Stats.Dexterity.ModifiedValue ==
+                            dexterityWhileInfected;
+                    tickDetail = "before=" + rashBefore.TotalSeconds
+                            .ToString("0.##", System.Globalization
+                                .CultureInfo.InvariantCulture) +
+                        ";after=" + rashAfter.TotalSeconds.ToString("0.##",
+                            System.Globalization.CultureInfo.InvariantCulture);
+                }
+                catch (Exception exception)
+                {
+                    tickDetail = "threw:" + exception.GetType().Name;
+                }
+
+                // The cure routes still work with the source gone.
+                caster.Descriptor.AddFact(removeDisease);
+                bool cured;
+                try
+                {
+                    UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                    ExecuteExpandedSummoningRuntimeAbility(caster,
+                        removeDisease, 3, new TargetWrapper(victim), true);
+                    cured = !victim.Descriptor.HasFact(reaction) ||
+                        !victim.Descriptor.HasFact(filthFever);
+                }
+                finally
+                {
+                    if (caster.Descriptor.HasFact(removeDisease))
+                        caster.Descriptor.RemoveFact(removeDisease);
+                }
+
+                evidence.Sprint12DiseaseOutlivesSource = inflicted &&
+                    sourcesGone && survived && cured;
+                evidence.Sprint12DiseaseOutlivesSourceDetail = "inflicted[" +
+                    ratDetail + ";" + dogDetail + ";disease=" +
+                    (disease != null) + ";rash=" + (rash != null) +
+                    "];sourcesDestroyed=" + sourcesGone + ";afterDestroy[" +
+                    tickDetail + ";survived=" + survived +
+                    "];removeDiseaseCured=" + cured;
+            }
+            finally
+            {
+                Game.Instance.Player.GameTime = clock;
+                RemoveSprint12Buff(victim, filthFever);
+                RemoveSprint12Buff(victim, reaction);
+                victim.Descriptor.Stats.SaveFortitude.BaseValue =
+                    victimFortitude;
+                victim.Descriptor.Damage = victimDamage;
             }
         }
 
