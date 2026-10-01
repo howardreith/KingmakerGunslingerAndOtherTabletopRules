@@ -17,15 +17,18 @@ and `EXPANDED-SUMMONING-PHASE1-CODEX-HANDOFF.md` remain history.
 
 ### Active work
 
-- Tranche 2A, **Sprint 12** (Dire Rat, Dog, Hyena, Goblin Dog) - rules,
-  lifetime contract, internal visual review and publication complete; the
-  post-publication runtime matrix is the remaining work.
-- Next executable action: run the post-publication guarded matrix on the
-  published surface - live inventory and menu census, direct and quantity
-  player paths, the working-save persistence trio, module-disabled
-  deserialization, the Acadamae Graduate regression that the suppression broke,
-  and the compatibility profiles - then open Sprint 13.
-- Sprints 13-21 remain authorized; Sprint 13 is not started.
+- Tranche 2A, **Sprint 12** (Dire Rat, Dog, Hyena, Goblin Dog) - **complete**.
+  Rules, the disease lifetime contract, internal visual review, publication,
+  live inventory, player paths, both combat modes, compact-body navigation,
+  persistence, module-disabled deserialization, the Acadamae Graduate
+  cross-module regression and the standalone compatibility profile all pass on
+  the published surface, each with the live tree restored afterwards.
+- Next executable action: open **Sprint 13** (Wolverine, Shadow Mastiff,
+  Poisonous Frog). Its primary sources are read and its rules findings are
+  recorded in `planning/EXPANDED-SUMMONING-SPRINT13-RULES-AND-DONORS.md`.
+- The complete five-profile compatibility matrix is a tranche-closure gate and
+  runs at the end of tranche 2A, after Sprint 13.
+- Sprints 14-21 remain authorized and not started.
 
 ### Branch, PR and dependency heads
 
@@ -97,28 +100,34 @@ desktop session and is not touched.
 
 Sprint 12 is not complete. Open:
 
-Closed:
+All Sprint 12 criteria are closed:
 
-1. The Sprint 12 rules-fidelity repairs - run `20261001T1804145753440Z`, 44/44.
+1. Rules-fidelity repairs - `20261001T1804145753440Z`, 44/44.
 2. The written disease/allergy lifetime contract, with live evidence in the
    same run.
 3. Internal visual review of all four creatures under party camera and motion -
-   run `20261001T1826224738398Z`, 18/18, after the fog-treatment repair.
+   `20261001T1826224738398Z`, 18/18, after the fog-treatment repair.
 4. Publication: the suppression set is empty, every GUID preserved, and all
    totals re-derived to 900 published generated and 929 visible.
+5. Live inventory, menu equations and icon distinctness -
+   `20261001T1857253954969Z`, 50/50.
+6. Direct and quantity player paths - `20261001T1905202804187Z`, 10/10,
+   resolving 900/900 logical roots and 29/29 native wrappers.
+7. Published module boundary - `20261001T1933521454816Z`, 2/2, exact.
+8. Working-save persistence, all three stages, 15/15 each.
+9. Module-disabled deserialization - `20261001T2016134327444Z`, 15/15.
+10. The Acadamae Graduate cross-module regression the suppression introduced -
+    `20261001T2002308652581Z`, 20/20, resolved by publication.
+11. Compact-body navigation - `20261001T2101480093714Z`, 22/22, every creature
+    travelling about 12.35 m at its printed speed.
+12. Both combat modes - `20261001T2123320398734Z` turn-based 10/10 and
+    `20261001T2130252210500Z` RTWP 6/6.
+13. Standalone compatibility profile, all three scenarios PASS with the
+    transaction restored.
 
-Open:
-
-5. Direct and quantity player paths through the real spellbook for all four
-   creatures.
-6. Both RTWP and turn-based modes.
-7. Compact-body navigation, movement and attack contact.
-8. Natural expiry, death, dismissal.
-9. Save/load persistence and module-disabled deserialization.
-10. Live inventory and menu census on the published surface.
-11. The Acadamae Graduate regression the suppression introduced, which
-    publication should resolve, re-verified by its own scenario.
-12. Compatibility profiles.
+The complete five-profile compatibility matrix is a tranche-closure gate and is
+deliberately deferred to the end of tranche 2A, after Sprint 13, which is where
+the charter places it.
 
 ### Settled adaptations - do not reopen
 
