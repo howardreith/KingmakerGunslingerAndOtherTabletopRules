@@ -159,15 +159,23 @@ native Dog rig, Filth Fever payload, and exact Goblin unit-type adaptation.
 The 2026-09-30 continuation adds deterministic editable meshes and albedos for
 Dire Rat, Hyena and Goblin Dog. Dog continues to use the audited native Dog
 rig. The project-owned exports attach through renderer-local patches without
-mutating the source donor assets or animal-companion state. Exact export
-SHA-256 values are:
+mutating the source donor assets or animal-companion state.
 
-- Dire Rat mesh `2EE73D1B1677F5947BDA44F5D3A90B25D16302D7F43D046D601A3E1866C1633A`
-  and albedo `FB6186FBE9DCB7160A4D7B76281FD6A0BAF04A829295F03821BB69DE61589030`.
-- Hyena mesh `1C68A639D0B3FB2FD9E6691DDE43EC41C897B61FB38C45CF8B24CA387F439D0F`
-  and albedo `15927CBDC347044D44B2C1578B124C8075B9BB7C5CE82AB2CF77C05E6E5AE50`.
-- Goblin Dog mesh `0974ECDF204C8B0D8D89B382C7B8B0B1460B4A537E9D823B1C2FD248DC73A4A`
-  and albedo `B7FCC8D69A8D3557BD6709D962567259E93937758634BF89BD47E3EA51F626A`.
+Correction, 2026-10-01: the six export SHA-256 values previously recorded here
+did not match the files. Each shared only its first few and last few
+characters with the real digest, and three of the six were 63 characters rather
+than 64, so they could not have been computed from any file. The authoritative
+record in `assets-source/original-models/sprint12-quadrupeds/SOURCE.md` was
+correct throughout, and the shipped bytes were never in doubt; this was a
+transcription defect in this document alone. The values below are recomputed
+from the files on disk and agree with `SOURCE.md`:
+
+- Dire Rat mesh `2EE73BCF0AB4CDF0D275FB64764DEA96107669CEF07EE3B0C62A6F5228F1633A`
+  and albedo `FB618F5D32EE380C90C872DF04DE47F65652AC2AE7D803BAE8ABA67F43689030`.
+- Hyena mesh `0217F8D599480E5AAED6F1B6DF9736B64609298664F3732271BB39C08596AC48`
+  and albedo `15927EB690A64BDD22E9F6985DDFE29F72345AD0F177C11084187F0C6745AE50`.
+- Goblin Dog mesh `0974E179EDF83A61067517A5C343CEEAE2753CB67E76352C8BFF1DCE91473A4A`
+  and albedo `B7FCC93FD653684DAC96268B1626A04590A1E5CCBE74851847C7B9C8D3DE626A`.
 
 Guarded run `20260930T1626175528422Z-disposable-expanded-summoning` passed
 41/41 assertions for direct and quantity attachment of the three original

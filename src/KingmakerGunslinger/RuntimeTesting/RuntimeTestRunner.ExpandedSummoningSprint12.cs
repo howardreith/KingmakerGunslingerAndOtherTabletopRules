@@ -423,7 +423,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // gone, while the source leaves no project-owned residue and
                 // can expose nothing further.
                 ExerciseSprint12DiseaseOutlivesSource(rats, dogs, secondVictim,
-                    filthFever, reaction, removeDisease, caster, evidence);
+                    filthFever, reaction, cure, caster, evidence);
             }
             finally
             {
@@ -744,7 +744,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static void ExerciseSprint12DiseaseOutlivesSource(
             UnitEntityData[] rats, UnitEntityData[] dogs,
             UnitEntityData victim, BlueprintBuff filthFever,
-            BlueprintBuff reaction, BlueprintAbility removeDisease,
+            BlueprintBuff reaction, BlueprintAbility cure,
             UnitEntityData caster,
             ExpandedSummoningMechanicalEvidence evidence)
         {
@@ -809,31 +809,78 @@ namespace KingmakerGunslinger.RuntimeTesting
                     tickDetail = "threw:" + exception.GetType().Name;
                 }
 
-                // The cure routes still work with the source gone.
-                caster.Descriptor.AddFact(removeDisease);
-                bool cured;
+                // Reading a context whose caster has been destroyed must not
+                // throw, and it must not silently retarget onto something
+                // else. A dangling source is the specific risk of a
+                // victim-side effect that outlives its summon.
+                bool danglingSourceSafe;
+                string danglingDetail;
                 try
                 {
-                    UnityEngine.Random.InitState(FindNativeD20Seed(20));
-                    ExecuteExpandedSummoningRuntimeAbility(caster,
-                        removeDisease, 3, new TargetWrapper(victim), true);
-                    cured = !victim.Descriptor.HasFact(reaction) ||
-                        !victim.Descriptor.HasFact(filthFever);
+                    UnitEntityData diseaseCaster = disease == null ||
+                        disease.Context == null ? null :
+                        disease.Context.MaybeCaster;
+                    UnitEntityData rashCaster = rash == null ||
+                        rash.Context == null ? null : rash.Context.MaybeCaster;
+                    bool diseaseOwnerGone = diseaseCaster == null ||
+                        diseaseCaster.Destroyed;
+                    bool rashOwnerGone = rashCaster == null ||
+                        rashCaster.Destroyed;
+                    bool noRetarget =
+                        !ReferenceEquals(diseaseCaster, victim) &&
+                        !ReferenceEquals(rashCaster, victim) &&
+                        !ReferenceEquals(diseaseCaster, caster) &&
+                        !ReferenceEquals(rashCaster, caster);
+                    danglingSourceSafe = diseaseOwnerGone && rashOwnerGone &&
+                        noRetarget;
+                    danglingDetail = "diseaseCaster=" + (diseaseCaster == null ?
+                            "null" : diseaseCaster.Destroyed ? "destroyed" :
+                            "live") + ";rashCaster=" + (rashCaster == null ?
+                            "null" : rashCaster.Destroyed ? "destroyed" :
+                            "live") + ";retargeted=" + !noRetarget;
                 }
-                finally
+                catch (Exception exception)
                 {
-                    if (caster.Descriptor.HasFact(removeDisease))
-                        caster.Descriptor.RemoveFact(removeDisease);
+                    danglingSourceSafe = false;
+                    danglingDetail = "threw:" + exception.GetType().Name;
                 }
 
+                // The printed rash removal - "remove disease or any magical
+                // healing removes the rash instantly" - must still work with
+                // the Goblin Dog gone. Positive healing carrying an actual
+                // spell context is a rule rather than a command, so it reaches
+                // a disposable victim across the room; the native Remove
+                // Disease command path is proved separately in this same
+                // scenario, on an adjacent target, because it is touch-range.
+                victim.Descriptor.Damage = Math.Max(20,
+                    victim.Descriptor.Damage);
+                var cureContext = new MechanicsContext(caster,
+                    victim.Descriptor, cure, null, new TargetWrapper(victim));
+                var magicalHealing = new RuleHealDamage(caster, victim,
+                    new DiceFormula(0, DiceType.D6), 5) {
+                    Reason = new RuleReason(cureContext)
+                };
+                Rulebook.Trigger(magicalHealing);
+                bool rashCured = magicalHealing.Value > 0 &&
+                    !victim.Descriptor.HasFact(reaction);
+                // Filth fever is not a rash: magical healing does not clear
+                // it, so the disease must still be present afterwards. That
+                // separates the two printed cure contracts instead of
+                // accepting any removal as proof.
+                bool diseaseUnaffectedByHealing =
+                    victim.Descriptor.HasFact(filthFever);
+
                 evidence.Sprint12DiseaseOutlivesSource = inflicted &&
-                    sourcesGone && survived && cured;
+                    sourcesGone && survived && danglingSourceSafe &&
+                    rashCured && diseaseUnaffectedByHealing;
                 evidence.Sprint12DiseaseOutlivesSourceDetail = "inflicted[" +
                     ratDetail + ";" + dogDetail + ";disease=" +
                     (disease != null) + ";rash=" + (rash != null) +
                     "];sourcesDestroyed=" + sourcesGone + ";afterDestroy[" +
-                    tickDetail + ";survived=" + survived +
-                    "];removeDiseaseCured=" + cured;
+                    tickDetail + ";survived=" + survived + "];danglingSource[" +
+                    danglingDetail + ";safe=" + danglingSourceSafe +
+                    "];magicalHealing[rashCured=" + rashCured +
+                    ";diseaseKept=" + diseaseUnaffectedByHealing + "]";
             }
             finally
             {
