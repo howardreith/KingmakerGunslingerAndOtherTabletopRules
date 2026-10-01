@@ -126,8 +126,6 @@ namespace KingmakerGunslinger.RuntimeTesting
             _motionReviewWaited = 0;
             _motionReviewComplete = false;
             _motionReviewSubjectResolved = false;
-            _motionReviewSurveyedGround = false;
-            _motionReviewGroundSurvey = "<not surveyed>";
             _motionReviewSubject = null;
             _motionReviewAttack = null;
             _motionReviewMoveOrigin = Vector3.zero;
@@ -175,13 +173,6 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// that cannot render records why and lets the stage continue, since
         /// the stage's own assertions are the mechanical proof.
         /// </summary>
-        /// <summary>
-        /// True while the reviewed creature is a ground walker whose route must
-        /// come from the native floor survey rather than a blind offset.
-        /// </summary>
-        private bool _motionReviewSurveyedGround;
-        private string _motionReviewGroundSurvey = "<not surveyed>";
-
         private bool StepExpandedSummoningMotionReview(UnitEntityData[] units,
             string stage)
         {
@@ -245,17 +236,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         BeginGuidedMotionReview(unit);
                         destination = PrepareSprint9FlightMovement(unit);
                     }
-                    else if (_motionReviewSurveyedGround)
-                    {
-                        // A blind offset indoors is not a route. Aim at a node
-                        // the native graph says is walkable and connected to
-                        // the party's own area, so the move either travels or
-                        // fails for a reason worth reporting.
-                        string groundSurvey;
-                        destination = FindExpandedSummoningUngulateArtPoint(
-                            out groundSurvey);
-                        _motionReviewGroundSurvey = groundSurvey;
-                    }
+
                     _motionReviewMoveOrigin = unit.Position;
                     _motionReviewMoveDestination = destination;
                     var move = new UnitMoveTo(destination, 0.5f);
@@ -501,7 +482,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             return name == ExpandedSummoningPteranodonViewPatch.AurochsBlueprintName ||
                 name == ExpandedSummoningPteranodonViewPatch.BisonBlueprintName ||
                 name == ExpandedSummoningPteranodonViewPatch.RhinocerosBlueprintName ||
-                name == ExpandedSummoningPteranodonViewPatch.WoollyRhinocerosBlueprintName;
+                name == ExpandedSummoningPteranodonViewPatch.WoollyRhinocerosBlueprintName ||
+                // Sprint 12's compact quadrupeds need the same treatment the
+                // ungulates get: a guided subject is put on the awake list and
+                // the game is unpaused for the measurement, which is what makes
+                // a movement agent tick at all. Without it the first attempt
+                // recorded maxDeltaTime=0, agentWantsMove=False and no travel.
+                // Dog is included even though it keeps the native view, because
+                // the gate is about navigation rather than about the mesh.
+                name == ExpandedSummoningPteranodonViewPatch.DireRatBlueprintName ||
+                name == ExpandedSummoningPteranodonViewPatch.HyenaBlueprintName ||
+                name == ExpandedSummoningPteranodonViewPatch.GoblinDogBlueprintName ||
+                name == "KMG_Summoning_Unit_Dog";
         }
 
         private Vector3 PrepareSprint9FlightMovement(UnitEntityData unit)
