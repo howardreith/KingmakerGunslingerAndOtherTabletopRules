@@ -73,7 +73,7 @@ Current profile:
 | Weapon Finesse | yes | yes | exact |
 | Trip defence | CMD 5 (9 vs. trip) | `TripDefenseFourLegs` | exact |
 | Poison | Fort DC 10, 1/round for 6 rounds, 1d2 Con, cure 1 save | `PoisonFrog` on the native Constitution-scaled graph | exact, already disclosed; DC 10 = 10 + Con 11 modifier 0 + half of 1 HD |
-| Bite damage | **1** (a flat point) | `Bite1d3` | **open** - 1d3 averages 2 and can roll 3. Check whether the installed library has a 1-point or 1d2 natural bite; if it does, use it, and if it does not, record the smallest available die as a disclosed adaptation with the reason. |
+| Bite damage | **1** (a flat point) | `Bite1d3` | **defect** - 1d3 averages 2 and can roll 3. Exactly fixable: `DiceType` has a `One` member and the project mints its own natural weapons, so the printed flat point is one roll of `DiceType.One`. See 5.1. |
 | Visual | Tiny frog | Giant Poisonous Frog proxy | **must replace** - Appendix A asks for "a true Tiny frog visual"; the charter forbids counting a proxy as ideal |
 | Swim | swim 20 ft. | omitted | keep the disclosed single-speed adaptation |
 
@@ -150,13 +150,146 @@ state is active, which is what a summoner wants.
 - Poisonous Frog borrows the Giant Poisonous Frog view at Tiny scale. Needs a
   true Tiny frog silhouette.
 
-## 5. Open items to resolve during implementation
+## 5. Native seams, resolved against the installed assembly
 
-1. The smallest available native natural-bite damage die, for the Poison Frog's
-   printed flat 1 damage.
-2. The exact native identities for: panicked, the sonic descriptor, a
-   concealment/miss-chance component, and a rage-style stat buff with an AC
-   penalty. All must come from an audited exact seam, not a name search.
-3. Whether the native `Rage` or barbarian rage buff can be reused without
-   dragging in class resources; if not, a creature-scoped buff built the way
-   the Sprint 12 allergy buff is built.
+Every item below was read out of the exact private build reference
+`Assembly-CSharp.dll` in
+`private/extracted-references/KingmakerGunslinger-private-build-references/Managed`,
+by reflection over its types and, where the answer depended on control flow,
+by decoding the method IL and resolving its metadata tokens. These are
+assembly facts rather than name guesses, and each one is restated as a runtime
+assertion when the ability that needs it is built.
+
+### 5.1 The Poison Frog's flat 1 damage needs no adaptation
+
+`Kingmaker.RuleSystem.DiceType` has an explicit `One = 1` member alongside
+`Zero = 0`, and `DiceFormula` exposes a static `One`. The project already mints
+its own natural weapons rather than borrowing native ones -
+`ExpandedSummoningNaturalBuilder.ConfigureWeapon(donor, target, symbol, rolls,
+dice)` is how `Bite1d4` and `Bite1d3` exist at all, and the Stirge proboscis is
+already minted at `DiceType.Zero`. So the printed `bite +3 (1 plus poison)` is
+expressible exactly, as one roll of `DiceType.One`. The open item that expected
+to settle for "the smallest available die as a disclosed adaptation" is closed
+in favour of the printed value; no adaptation is recorded because none is
+needed.
+
+### 5.2 Panicked: the engine has one flee state, and it is Frightened
+
+`Kingmaker.UnitLogic.UnitCondition` has `Shaken`, `Frightened` and `Cowering`
+but no `Panicked`, and `BlueprintRoot.SystemMechanics` correspondingly offers
+`ShakenBuff`, `FrightenedBuff` and `CoweringBuff` and no panicked buff.
+`SpellDescriptor` likewise has `Shaken` and `Frightened` and no panicked
+member.
+
+What the engine does have is `Kingmaker.Controllers.Units.UnitFearController`,
+and decoding it settles how fear actually runs. `ShouldTickOnUnit` is
+
+    base.ShouldTickOnUnit(unit) &&
+        (unit.Descriptor.State.IsPanicked ||
+         unit.Descriptor.State.HasCondition(UnitCondition.Frightened))
+
+where the condition operand is `ldc.i4.s 13` and `UnitCondition.Frightened` is
+13. `TickOnUnit` then, for such a unit, interrupts every command, picks a point
+away from the averaged direction of its remembered enemies along a partly
+random node choice (`GetPointForMove`), and runs a `UnitMoveTo` to it,
+re-interrupting each tick; when no enemy has been remembered for
+`GameConsts.UnitPanickedCooldownDuration` (3 seconds) it clears
+`UnitState.IsPanicked` and releases the unit.
+
+So `IsPanicked` is the controller's own latch rather than an authorable state,
+and the single authorable lever is `UnitCondition.Frightened`, applied by
+`Kingmaker.UnitLogic.FactLogic.AddCondition`. Behaviourally the engine's
+Frightened already delivers what PF1 assigns to panicked: forced flight away
+from the threat at run speed, along a random path, with no other action
+possible. The PF1 ladder's remaining distinctions between frightened and
+panicked - dropping held items, and cowering when cornered - are separate
+mechanics, and the engine can express both
+(`SystemMechanics.DisarmMainHandBuff` and `DisarmOffHandBuff`, and
+`UnitCondition.Cowering`), so neither is an engine barrier. Whether Bay should
+carry them is a rules question to settle in the implementation record, not one
+the engine decides.
+
+Bay therefore applies a project-owned buff for its printed `1d4` rounds whose
+`AddCondition` imposes `UnitCondition.Frightened`, so the native fear
+controller drives the flight, and whose descriptors are `Sonic`,
+`MindAffecting` and `Fear` - all three present in `SpellDescriptor`
+(`Sonic = 1073741824`, `MindAffecting = 16`, `Fear = 32`) - so native sonic,
+mind-affecting and fear immunities apply without being re-implemented.
+
+### 5.3 Shadow Blend: the concealment is exact, the illumination clause is not
+
+`Kingmaker.UnitLogic.FactLogic.AddConcealment` exists, and
+`Kingmaker.Enums.Concealment` is `None, Partial, Total`. The printed ability
+grants "concealment (50% miss chance)", which is `Concealment.Total`; `Partial`
+is the 20% grade. The effect itself is therefore exact.
+
+The precondition is not. The installed assembly has no mechanics-layer
+illumination model at all: no illumination or light-level type outside the
+rendering namespaces, no enum carrying bright/dim/dark grades, and no
+`SpellDescriptor.Light` or `.Darkness` member. There is no ambient light to
+read, so "any condition of illumination other than full daylight" has no
+literal predicate.
+
+Two pieces of the clause survive exactly, and the implementation uses both
+rather than quietly leaving the ability always on:
+
+- "a daylight spell, however, does [negate it]" is expressible against an
+  already-audited identity: native Daylight is
+  `2b877386976817a429002e8bb10bb3fc`, in this project's own audited native
+  light-spell census in `ElementalFeatPolicy`.
+- "other than full daylight" has one honest in-engine reading. `Game.TimeOfDay`
+  is a real accessor returning `Kingmaker.AreaLogic.TimeOfDay`
+  (`Morning, Day, Evening, Night`), and `BlueprintArea.IsSingleLightScene`
+  marks an area whose lighting does not follow the sun, which is how the engine
+  distinguishes interiors and dungeons. "Full daylight" is read as
+  `TimeOfDay.Day` in an area that is not a single light scene.
+
+That is a bounded adaptation of a precondition, recorded here as such. It is
+deliberately not called an accepted deviation: the ability, its concealment
+grade, its free-action suspend and resume, and its daylight negation are all
+implemented as printed.
+
+### 5.4 Rage: a creature-scoped buff, not the barbarian's
+
+`Kingmaker.UnitLogic.FactLogic.AddStatBonus` carries `Stat`, `Value` and a
+`ModifierDescriptor`; `StatType` has `Strength`, `Constitution` and `AC`, and
+`ModifierDescriptor` has both `Morale` and `Penalty`. The printed +4 Strength,
++4 Constitution and -2 AC are therefore three ordinary components on one buff,
+with the AC term carried as a penalty rather than dropped.
+
+The open question of whether to reuse a native barbarian rage is answered no.
+`UnitCondition.BarbarianRage` exists, and imposing it would expose the creature
+to class machinery it has no business in - rage powers, rage rounds, and the
+fatigue that follows a barbarian's rage - none of which the wolverine's stat
+block has. A creature-scoped buff built the way the Sprint 12 allergy buff is
+built keeps the mechanic local to the one animal, which is what "summon-local
+rage" in Appendix A asks for.
+
+For the printed one-turn delay the engine offers two round-boundary seams,
+`Kingmaker.PubSubSystem.IUnitNewCombatRoundHandler.HandleNewCombatRound(unit)`
+and `Kingmaker.Controllers.Units.ITickEachRound.OnNewRound()`. The damage
+trigger reuses the Sprint 12 rider's proven shape, a
+`RuleTargetLogicComponent<RuleDealDamage>` that fires only on actual positive
+damage.
+
+### 5.5 Bay's 24-hour immunity is keyed to an identity, not a reference
+
+The printed bound is per mastiff and per target, and it lasts 24 hours - far
+longer than a summon does. A successful save therefore grants the victim a
+project-owned immunity buff carrying the mastiff's `UniqueId` rather than a
+live reference to it, precisely because the window deliberately outlives the
+creature that opened it. This is the same lesson the Sprint 12 disease lifetime
+contract records: a rider whose duration exceeds its source's must not hold the
+source.
+
+## 6. Open items to resolve during implementation
+
+All four of the previously open items are resolved above. What remains is
+runtime confirmation rather than research:
+
+1. That a 300-foot spread resolves against a real loaded area, and how many
+   units it actually reaches there.
+2. That the native fear controller does drive a summoned mastiff's victims, and
+   releases them cleanly when the printed `1d4` rounds end.
+3. That the rage buff's +4/+4/-2 appears and clears with no stuck modifier,
+   including across the summon's expiry and a save/load.

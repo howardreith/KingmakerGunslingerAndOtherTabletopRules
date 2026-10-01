@@ -395,10 +395,26 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (_motionReviewOverlayWasOpen) SetModManagerOverlay(true);
             double frameMs = _motionReviewFrameSeconds.Count == 0 ? 0d :
                 _motionReviewFrameSeconds.Average() * 1000d;
+            // The renderer is required to be on whenever the game itself says
+            // the unit is visible, and not otherwise. Kingmaker's EntityFader
+            // legitimately disables a unit that has left the party's visible
+            // area, which a single deliberately framed creature never does but
+            // a member of a 1d4+1 crowd walking its own route does: a five-body
+            // group spreads far enough that the engine hides some of it. The
+            // defect this gate was built to catch - a unit the game considers
+            // visible that nonetheless does not render - still fails, and at
+            // least one capture must show the creature actually rendering, so
+            // a creature that never appears cannot pass by staying hidden.
+            bool renderedWhenVisible = _motionReviewCaptures.All(value =>
+                value.IndexOf(";faderVisible=true", StringComparison.Ordinal) < 0 ||
+                value.IndexOf(";rendererEnabled=true", StringComparison.Ordinal) >= 0);
+            bool renderedAtLeastOnce = _motionReviewCaptures.Any(value =>
+                value.IndexOf(";faderVisible=true", StringComparison.Ordinal) >= 0 &&
+                value.IndexOf(";rendererEnabled=true", StringComparison.Ordinal) >= 0);
             bool inFrame = _motionReviewCaptures.Count == 4 &&
+                renderedWhenVisible && renderedAtLeastOnce &&
                 _motionReviewCaptures.All(value =>
                     value.IndexOf(";inFrame=true", StringComparison.Ordinal) >= 0 &&
-                    value.IndexOf(";rendererEnabled=true", StringComparison.Ordinal) >= 0 &&
                     value.IndexOf(";screenLit=true", StringComparison.Ordinal) >= 0 &&
                     value.IndexOf(";intact=true", StringComparison.Ordinal) >= 0);
             _motionReviewValid = error == null && inFrame;
