@@ -378,6 +378,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal string Sprint13RageLifetimeDetail;
             internal bool Sprint14DonorRigs;
             internal string Sprint14DonorRigsDetail;
+            internal bool Sprint14Profiles;
+            internal string Sprint14ProfilesDetail;
+            internal bool Sprint14TripDefence;
+            internal string Sprint14TripDefenceDetail;
+            internal bool Sprint14PoisonDiscrimination;
+            internal string Sprint14PoisonDiscriminationDetail;
             internal bool Sprint13ShadowMastiffBay;
             internal string Sprint13ShadowMastiffBayDetail;
             internal bool Sprint13ShadowBlend;
@@ -17930,6 +17936,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                         mechanics.Sprint13WolverineRageDetail,
                     mechanics != null && mechanics.Sprint13WolverineRage,
                     "a live hostile natural attack, measured creature stats, and the native BuffCollection tick on an advanced and restored clock"),
+                Assertion("expanded-summoning-sprint14-profiles",
+                    "the live Fire Beetle is Small with one 1d4 bite and an inert luminescence fact, the live Worker is Medium with one 1d6 bite and no sting, grab or poison, the live Soldier adds a distinct 1d4 sting at the same attack bonus as its bite with the grab on the primary limb alone, and none of the three is still classified as the Giant Spider it borrows",
+                    mechanics == null ? "not-run" :
+                        mechanics.Sprint14ProfilesDetail,
+                    mechanics != null && mechanics.Sprint14Profiles,
+                    "freshly summoned units, their live bodies and limb attack probes, and the blueprint unit type the spawned creature actually carries"),
+                Assertion("expanded-summoning-sprint14-trip-defence",
+                    "both ant castes read the printed CMD 13 and 21 against trip through the engine's own calculation, and the Fire Beetle's own trip behaviour is measured and recorded rather than assumed",
+                    mechanics == null ? "not-run" :
+                        mechanics.Sprint14TripDefenceDetail,
+                    mechanics != null && mechanics.Sprint14TripDefence,
+                    "live RuleCalculateCMD against a real attacker, with no manoeuvre attempted"),
+                Assertion("expanded-summoning-sprint14-injury-poison",
+                    "the Soldier's sting delivers its venom only on a hit that actually wounds: a miss delivers nothing, a hit whose damage is reduced to zero by real damage reduction delivers nothing, and a wounding bite delivers nothing because the poison is gated on the sting's own weapon type",
+                    mechanics == null ? "not-run" :
+                        mechanics.Sprint14PoisonDiscriminationDetail,
+                    mechanics != null && mechanics.Sprint14PoisonDiscrimination,
+                    "four real seeded attacks against a live target, with the venom cleared between them and the zero-damage case produced by an actual damage reduction"),
                 Assertion("expanded-summoning-sprint14-donor-rigs",
                     "every donor the insect family needs returns a complete measured bind frame from a single skinned renderer, so an original mesh can be authored against it",
                     mechanics == null ? "not-run" :
