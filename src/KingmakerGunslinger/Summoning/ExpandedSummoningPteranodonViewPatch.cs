@@ -171,6 +171,7 @@ namespace KingmakerGunslinger.Summoning
             internal EagleAttackVisualLunge EagleLunge;
             internal GiantWaspVisualSting WaspSting;
             internal StirgeVisualTouch StirgeTouch;
+            internal FireBeetleVisualGlow BeetleGlow;
         }
 
         private static readonly ConditionalWeakTable<UnitEntityView, Attachment>
@@ -432,6 +433,16 @@ namespace KingmakerGunslinger.Summoning
                         .AddComponent<StirgeVisualTouch>();
                     attachment.StirgeTouch.Configure(view, donor);
                 }
+                if (attachment.VisualKey == "fire-beetle")
+                {
+                    // A light this view owns, matching the creature's painted
+                    // glands. It carries no rule: Kingmaker has no
+                    // mechanics-layer illumination model and this does not add
+                    // one.
+                    attachment.BeetleGlow = view.gameObject
+                        .AddComponent<FireBeetleVisualGlow>();
+                    attachment.BeetleGlow.Configure(view, donor);
+                }
                 return "visual:attached;bones=" + bones.Length +
                     ";vertices=" + mesh.vertexCount + ";albedo=" +
                     albedo.width + "x" + albedo.height + ";rendererEnabled=" +
@@ -454,6 +465,11 @@ namespace KingmakerGunslinger.Summoning
                 {
                     UnityEngine.Object.Destroy(attachment.StirgeTouch);
                     attachment.StirgeTouch = null;
+                }
+                if (attachment.BeetleGlow != null)
+                {
+                    UnityEngine.Object.Destroy(attachment.BeetleGlow);
+                    attachment.BeetleGlow = null;
                 }
                 if (swapped) Revert(attachment);
                 if (material != null) UnityEngine.Object.Destroy(material);
@@ -606,6 +622,15 @@ namespace KingmakerGunslinger.Summoning
                 attachment.StirgeTouch.enabled = false;
                 UnityEngine.Object.DestroyImmediate(attachment.StirgeTouch);
                 attachment.StirgeTouch = null;
+            }
+            if (attachment.BeetleGlow != null)
+            {
+                // Immediately, like the Stirge's touch: a point light left
+                // standing for a frame with nothing under it is exactly the
+                // artefact a crowd of expiring beetles would show.
+                attachment.BeetleGlow.enabled = false;
+                UnityEngine.Object.DestroyImmediate(attachment.BeetleGlow);
+                attachment.BeetleGlow = null;
             }
             var materials = new HashSet<Material>();
             if (attachment.Material != null)
