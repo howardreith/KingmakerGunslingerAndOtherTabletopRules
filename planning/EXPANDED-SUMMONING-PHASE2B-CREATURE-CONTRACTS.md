@@ -290,6 +290,62 @@ which changes what Sprints 16 and 17 actually have to do.
   no mechanics-layer illumination model. This remains the tranche's one open
   engineering question and is answered in Sprint 14 before its candidate.
 
+## The Giant Spider rig, measured 2026-10-02
+
+Run `20261002T1916589198635Z-disposable-expanded-summoning`, 51/51 PASS on
+`69e33417`, live tree restored. The donor's own bind frame is
+`sprint14-giant-spider-bind-rig.json`: one skinned renderer, 51 bones, rooted
+at `Position`, in a Z-up frame whose forward is negative Y - the chelicerae and
+pedipalps sit at y between -0.28 and -0.48, so the mouthparts are the front.
+
+| Group | Bones | What it is |
+| --- | --- | --- |
+| `Position` -> `LowerTorso` | 2 | Root and cephalothorax |
+| `Tail1_M` -> `UpperTorso` -> `Tail3_M` | 3 | The abdomen, carried up and back |
+| `L/R_Leg0..3_Upper/Lower/Foot` | 24 | **Eight legs**, three bones each |
+| `pedipalp1..7_L/R` | 14 | Two seven-bone palps sweeping forward and down |
+| `femur1..3_L/R` | 6 | A short three-bone chain per side at the leg roots |
+| `chelicera_L/R` | 2 | **The fangs**, at the front of the cephalothorax |
+
+### What this settles for the ground slice
+
+The hypothesis survives, and better than expected.
+
+- **Six legs out of eight is subtractive, not additive.** `Leg0` to `Leg2` on
+  each side give exactly the six an ant needs, in three bones each. `Leg3_L`
+  and `Leg3_R` simply receive no geometry: a bone with no vertices weighted to
+  it draws nothing, so there is no eighth leg to hide and no phantom contact to
+  suppress. The donor's animation still moves those two bones; nothing is
+  attached to them. What the ground slice has to judge is therefore not whether
+  a spider leg shows through, but whether a six-legged body walking on a
+  spider's gait timing reads as an ant.
+- **The chelicerae are mandibles.** `chelicera_L` and `chelicera_R` sit at the
+  front of the cephalothorax and are exactly where an ant's mandibles go, which
+  gives the bite a real articulated carrier rather than a static lump.
+- **The pedipalps are antennae.** Seven bones each, sweeping forward and down,
+  is more articulation than an antenna needs and far more than the donor's own
+  palps would suggest. They are the one part of this rig that will clearly
+  move, which is what an ant's antennae should do.
+- **The abdomen chain is the gaster.** `Tail1_M` is the petiole, `UpperTorso`
+  and `Tail3_M` the gaster, which is the ant's most recognisable shape after
+  its mandibles.
+
+### What this leaves open for the flying slice
+
+**The rig has no wing bones at all.** Nothing in the 51 is a wing, and the
+abdomen chain is the only thing above the body. So a beetle's elytra and the
+membranous wings beneath them have to be authored onto bones that were never
+meant to carry them - the abdomen chain for the elytra, and the pedipalps,
+which are the only strongly articulated pair, for the wings themselves.
+
+That is a real risk and it is the reason the owner's order asks for a flying
+slice before five models are authored. Elytra on the abdomen will hold still,
+which is correct for wing covers; wings on the pedipalps will sweep forward and
+down rather than beating, which is not what a wingbeat looks like. If the
+flying slice cannot be made credible on this rig, the ground and flying insects
+split and the flyers take a different donor, rather than the family being
+forced together because one census found one arthropod.
+
 ## Open questions to answer before the Sprint 14 candidate
 
 Questions 2 to 4 are answered by the census above. What remains open is the
