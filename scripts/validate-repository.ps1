@@ -45,6 +45,12 @@ if ($LASTEXITCODE -ne 0) { throw 'Icon runtime evidence corruption fixtures fail
 if ($LASTEXITCODE -ne 0) { throw 'Native icon screenshot corruption fixtures failed.' }
 & (Join-Path $PSScriptRoot 'Test-IconCensusControlRequest.ps1')
 
+# The gate level's own contract: a qualification cannot be narrowed by an
+# inherited KMG_TEST_FILTER, a focused run restores the caller's
+# environment exactly, and the candidate pipeline performs each expensive
+# operation once. Offline and cheap; it runs no gate and builds nothing.
+& (Join-Path $PSScriptRoot 'Test-KmgGate.ps1')
+
 # Orchestration decisions for the Expanded Summoning runtime batches:
 # current-run result selection, stale-result rejection, parse failure,
 # scenario failure, restoration failure, interrupted operation, and a
