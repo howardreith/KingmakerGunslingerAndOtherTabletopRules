@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using Kingmaker;
 using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Root;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Enums;
@@ -242,7 +243,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 strengthAfterBlow == strengthBefore &&
                 armourAfterBlow == armourBefore;
 
-            // One round of game time, then the engine's own buff tick.
+            // One round of game time, then the engine's own buff tick. The
+            // marker is expected to still be here: it carries a two-round life
+            // so that a round boundary can arrive inside it, and it is checked
+            // against that lifetime further down rather than at one round.
             TimeSpan clock = Game.Instance.Player.GameTime;
             bool rageBegan;
             int strengthRaging, constitutionRaging, armourRaging;
@@ -253,13 +257,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                     GameConsts.RoundDuration + 1f);
                 wolverine.Descriptor.Buffs.Tick();
                 rageBegan = wolverine.Descriptor.Buffs.GetBuff(rage) != null;
-                markerCleared =
-                    wolverine.Descriptor.Buffs.GetBuff(onset) == null;
                 strengthRaging =
                     wolverine.Descriptor.Stats.Strength.ModifiedValue;
                 constitutionRaging =
                     wolverine.Descriptor.Stats.Constitution.ModifiedValue;
                 armourRaging = wolverine.Descriptor.Stats.AC.ModifiedValue;
+                // Past the marker's own lifetime it must be gone, and the
+                // rage must remain: the printed rage has no duration.
+                Game.Instance.Player.GameTime = clock + TimeSpan.FromSeconds(
+                    (SummonRagePolicy.WolverineRageOnsetMarkerRounds + 1) *
+                    GameConsts.RoundDuration);
+                wolverine.Descriptor.Buffs.Tick();
+                markerCleared =
+                    wolverine.Descriptor.Buffs.GetBuff(onset) == null &&
+                    wolverine.Descriptor.Buffs.GetBuff(rage) != null;
             }
             finally
             {
@@ -280,8 +291,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     hostileWeapon, false, 20, out secondBlow);
             int rageStacks = wolverine.Descriptor.Buffs.RawFacts.OfType<Buff>()
                 .Count(value => ReferenceEquals(value.Blueprint, rage));
-            bool noRestack = rageStacks == 1 &&
-                wolverine.Descriptor.Buffs.GetBuff(onset) == null;
+            // A second blow must not stack a second rage. The marker is not
+            // part of this claim: the trigger declines to re-arm while the
+            // rage is already running, which is what rageStacks proves.
+            bool noRestack = rageStacks == 1;
 
             // Summon-local: nothing may land on the caster or the attacker.
             bool noLeak = caster.Descriptor.Buffs.GetBuff(rage) == null &&
@@ -369,25 +382,32 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             // The outcome cannot be steered by seeding one d20: the printed
             // spread is 300 feet of every creature present, so many saves are
-            // rolled and the seeded roll lands on whichever resolves first.
-            // Both directions are forced through the victim's own Will, which
-            // is deterministic whatever the order turns out to be.
-            ModifiableValue hostileWill = hostile.Descriptor.Stats
+            // rolled and a seeded roll lands on whichever resolves first.
+            // Everything below is forced through a save stat instead.
+            //
+            // The subject is the caster, not the hostile. The printed spread
+            // does not spare the summoner's own party, and the previous run
+            // proved the caster is caught by it while the hostile fixture is
+            // not - so the caster is the unit this rule can actually be
+            // measured on.
+            ModifiableValue casterWill = caster.Descriptor.Stats
                 .GetStat(StatType.SaveWill);
-            int willBefore = hostileWill.BaseValue;
+            int willBefore = casterWill.BaseValue;
 
+            string panickedByFirstHowl;
             bool panickedOnFailure;
             try
             {
-                hostileWill.BaseValue = willBefore - 100;
-                hostile.Descriptor.Buffs.RemoveFact(panic);
-                hostile.Descriptor.Buffs.RemoveFact(immunity);
+                casterWill.BaseValue = willBefore - 100;
+                ClearExpandedSummoningBayFear(panic, immunity, caster,
+                    hostile, mastiff, secondMastiff);
                 ExecuteExpandedSummoningRuntimeAbility(mastiff, bay, 6,
                     new TargetWrapper(mastiff.Position), true);
                 panickedOnFailure =
-                    hostile.Descriptor.Buffs.GetBuff(panic) != null;
+                    caster.Descriptor.Buffs.GetBuff(panic) != null;
+                panickedByFirstHowl = DescribeBayVictims(panic);
             }
-            finally { hostileWill.BaseValue = willBefore; }
+            finally { casterWill.BaseValue = willBefore; }
 
             // Both mastiffs are evil outsiders, so the printed exemption means
             // neither may ever be panicked by the other's howl.
@@ -399,52 +419,59 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool immunityOnSuccess;
             try
             {
-                hostileWill.BaseValue = willBefore + 100;
-                hostile.Descriptor.Buffs.RemoveFact(panic);
-                hostile.Descriptor.Buffs.RemoveFact(immunity);
+                casterWill.BaseValue = willBefore + 100;
+                ClearExpandedSummoningBayFear(panic, immunity, caster,
+                    hostile, mastiff, secondMastiff);
                 ExecuteExpandedSummoningRuntimeAbility(mastiff, bay, 6,
                     new TargetWrapper(mastiff.Position), true);
-                granted = hostile.Descriptor.Buffs.GetBuff(immunity);
+                granted = caster.Descriptor.Buffs.GetBuff(immunity);
                 immunityOnSuccess = granted != null &&
-                    hostile.Descriptor.Buffs.GetBuff(panic) == null;
+                    caster.Descriptor.Buffs.GetBuff(panic) == null;
             }
-            finally { hostileWill.BaseValue = willBefore; }
+            finally { casterWill.BaseValue = willBefore; }
             bool immunityIsPerMastiff = granted != null &&
                 granted.Context != null &&
                 ReferenceEquals(granted.Context.MaybeCaster, mastiff);
 
             // The window is closed for this mastiff, so a repeat must not
-            // panic even with the victim's Will floored.
+            // panic even with the subject's Will floored.
             bool repeatBlocked;
             try
             {
-                hostileWill.BaseValue = willBefore - 100;
+                casterWill.BaseValue = willBefore - 100;
+                caster.Descriptor.Buffs.RemoveFact(panic);
                 ExecuteExpandedSummoningRuntimeAbility(mastiff, bay, 6,
                     new TargetWrapper(mastiff.Position), true);
-                repeatBlocked = hostile.Descriptor.Buffs.GetBuff(panic) == null;
+                repeatBlocked = caster.Descriptor.Buffs.GetBuff(panic) == null;
             }
-            finally { hostileWill.BaseValue = willBefore; }
+            finally { casterWill.BaseValue = willBefore; }
 
             // A different mastiff is not inside that window.
             bool otherMastiffUnblocked;
             try
             {
-                hostileWill.BaseValue = willBefore - 100;
+                casterWill.BaseValue = willBefore - 100;
+                caster.Descriptor.Buffs.RemoveFact(panic);
                 ExecuteExpandedSummoningRuntimeAbility(secondMastiff, bay, 6,
                     new TargetWrapper(secondMastiff.Position), true);
                 otherMastiffUnblocked =
-                    hostile.Descriptor.Buffs.GetBuff(panic) != null;
+                    caster.Descriptor.Buffs.GetBuff(panic) != null;
             }
-            finally { hostileWill.BaseValue = willBefore; }
-            hostile.Descriptor.Buffs.RemoveFact(panic);
-            hostile.Descriptor.Buffs.RemoveFact(immunity);
+            finally { casterWill.BaseValue = willBefore; }
+
+            // Leaving a party member panicked and fleeing would contaminate
+            // everything after this, so every trace of the fear this gate
+            // caused is removed before it returns.
+            ClearExpandedSummoningBayFear(panic, immunity, caster, hostile,
+                mastiff, secondMastiff);
+            string residualFear = DescribeBayVictims(panic);
 
             evidence.Sprint13ShadowMastiffBay = carriesBay &&
                 expectedDc == ExpandedSummoningSpecialProfiles
                     .ShadowMastiffBayPrintedWillDc &&
                 panickedOnFailure && evilOutsiderSpared &&
                 immunityOnSuccess && immunityIsPerMastiff && repeatBlocked &&
-                otherMastiffUnblocked;
+                otherMastiffUnblocked && residualFear == "<none>";
             evidence.Sprint13ShadowMastiffBayDetail = "carriesBay=" +
                 carriesBay + ";liveCharisma=" + liveCharisma +
                 ";derivedDc=" + expectedDc + ";printedDc=" +
@@ -455,7 +482,53 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";immunityOnSuccess=" + immunityOnSuccess +
                 ";immunityIsPerMastiff=" + immunityIsPerMastiff +
                 ";repeatFromSameMastiffBlocked=" + repeatBlocked +
-                ";otherMastiffStillWorks=" + otherMastiffUnblocked;
+                ";otherMastiffStillWorks=" + otherMastiffUnblocked +
+                ";panickedByFirstHowl[" + panickedByFirstHowl +
+                "];residualFearAfterCleanup=" + residualFear;
+        }
+
+        /// <summary>
+        /// Every unit currently panicked by a mastiff's bay, named, so the
+        /// evidence says who the printed spread actually reached rather than
+        /// only whether one chosen unit was reached.
+        /// </summary>
+        private static string DescribeBayVictims(BlueprintBuff panic)
+        {
+            if (Game.Instance == null || Game.Instance.State == null ||
+                Game.Instance.State.Units == null) return "<no unit list>";
+            string[] names = Game.Instance.State.Units
+                .Where(unit => unit != null && unit.Descriptor != null &&
+                    unit.Descriptor.Buffs.GetBuff(panic) != null)
+                .Select(unit => unit.CharacterName).ToArray();
+            return names.Length == 0 ? "<none>" :
+                string.Join(",", names);
+        }
+
+        /// <summary>
+        /// Removes the bay's own payload, its immunity marker and the native
+        /// frightened state from the named units and from anyone else the
+        /// spread reached, so this gate leaves no fear behind.
+        /// </summary>
+        private static void ClearExpandedSummoningBayFear(BlueprintBuff panic,
+            BlueprintBuff immunity, params UnitEntityData[] named)
+        {
+            BlueprintBuff frightened = BlueprintRoot.Instance == null ? null :
+                BlueprintRoot.Instance.SystemMechanics.FrightenedBuff;
+            var units = new List<UnitEntityData>(named ??
+                new UnitEntityData[0]);
+            if (Game.Instance != null && Game.Instance.State != null &&
+                Game.Instance.State.Units != null)
+                units.AddRange(Game.Instance.State.Units);
+            foreach (UnitEntityData unit in units)
+            {
+                if (unit == null || unit.Descriptor == null) continue;
+                unit.Descriptor.Buffs.RemoveFact(panic);
+                unit.Descriptor.Buffs.RemoveFact(immunity);
+                if (frightened != null)
+                    unit.Descriptor.Buffs.RemoveFact(frightened);
+                if (unit.Descriptor.State != null)
+                    unit.Descriptor.State.IsPanicked = false;
+            }
         }
 
         /// <summary>
@@ -516,6 +589,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ExecuteExpandedSummoningRuntimeAbility(caster, daylight, 3,
                         new TargetWrapper(caster), true);
                     castDaylight = true;
+                    // The engine's static concealment calculation raises no
+                    // rule, so the entry is refreshed through a round tick
+                    // before it is read.
+                    TickExpandedSummoningBuffs(mastiff);
                     castDetail = "cast-on-party-member;distance=" +
                         UnityEngine.Vector3.Distance(caster.Position,
                             mastiff.Position).ToString("0.##",
@@ -584,6 +661,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";casterBuffs=" + string.Join("|",
                     caster.Descriptor.Buffs.RawFacts.OfType<Buff>()
                         .Select(value => value.Blueprint.name).ToArray());
+        }
+
+        /// <summary>
+        /// Lets the engine recompute buff-driven state after a buff was added
+        /// or removed, so a concealment read reflects the new fact set rather
+        /// than whatever the entry was last set to.
+        /// </summary>
+        private static void TickExpandedSummoningBuffs(UnitEntityData unit)
+        {
+            if (unit == null || unit.Descriptor == null) return;
+            unit.Descriptor.Buffs.Tick();
         }
 
         private static string[] DescribeLimbs(BlueprintUnit.UnitBody body)

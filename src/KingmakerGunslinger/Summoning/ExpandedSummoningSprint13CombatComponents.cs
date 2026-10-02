@@ -293,7 +293,7 @@ namespace KingmakerGunslinger.Summoning
     /// </summary>
     [Serializable]
     public sealed class SummonShadowBlendComponent :
-        RuleTargetLogicComponent<RuleConcealmentCheck>
+        RuleTargetLogicComponent<RuleConcealmentCheck>, ITickEachRound
     {
         /// <summary>The printed grade: Total is the 50% miss chance.</summary>
         public Concealment Grade = Concealment.Total;
@@ -338,6 +338,15 @@ namespace KingmakerGunslinger.Summoning
         }
 
         public override void OnEventDidTrigger(RuleConcealmentCheck evt) { }
+
+        /// <summary>
+        /// The concealment check is the immediate trigger, but the engine also
+        /// exposes a static concealment calculation that raises no rule at
+        /// all, so anything reading that path would otherwise see whatever the
+        /// entry was last set to. Re-deciding at each round boundary means a
+        /// stale entry cannot outlive a round.
+        /// </summary>
+        public void OnNewRound() { Refresh(); }
 
         private void Refresh()
         {
