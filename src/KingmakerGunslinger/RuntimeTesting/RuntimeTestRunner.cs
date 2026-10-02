@@ -376,6 +376,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal string Sprint13WolverineRageDetail;
             internal bool Sprint13RageLifetime;
             internal string Sprint13RageLifetimeDetail;
+            internal bool Sprint14DonorRigs;
+            internal string Sprint14DonorRigsDetail;
             internal bool Sprint13ShadowMastiffBay;
             internal string Sprint13ShadowMastiffBayDetail;
             internal bool Sprint13ShadowBlend;
@@ -17928,6 +17930,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         mechanics.Sprint13WolverineRageDetail,
                     mechanics != null && mechanics.Sprint13WolverineRage,
                     "a live hostile natural attack, measured creature stats, and the native BuffCollection tick on an advanced and restored clock"),
+                Assertion("expanded-summoning-sprint14-donor-rigs",
+                    "every donor the insect family needs returns a complete measured bind frame from a single skinned renderer, so an original mesh can be authored against it",
+                    mechanics == null ? "not-run" :
+                        mechanics.Sprint14DonorRigsDetail,
+                    mechanics != null && mechanics.Sprint14DonorRigs,
+                    "the live donor view's own bones and bind poses; no donor geometry, material or animation leaves the game"),
                 Assertion("expanded-summoning-sprint13-rage-lifetime",
                     "a raging Wolverine that reaches its own summon duration has its native marker removed by that timer and stays the one raging right up to the moment it goes; one dismissed while raging goes the same way; and the live area-transition handlers leave the creature's own rage alone while every party member carries nothing of it. The rage goes with the creature in every case and no unit is left raging afterwards",
                     mechanics == null ? "not-run" :
@@ -18584,6 +18592,11 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 ResetExpandedSummoningMechanicalHostile(hostile, blueprints);
                 ExerciseExpandedSummoningSprint13RulesPack(blueprints,
+                    caster, hostile, created, result,
+                    _request.EvidenceDirectory);
+
+                ResetExpandedSummoningMechanicalHostile(hostile, blueprints);
+                ExerciseExpandedSummoningSprint14RulesPack(blueprints,
                     caster, hostile, created, result,
                     _request.EvidenceDirectory);
 

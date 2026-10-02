@@ -1145,6 +1145,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningCreatureReview.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint12.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint13.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint14.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.PteranodonAttachedView.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircle.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircleEvil.cs" />
