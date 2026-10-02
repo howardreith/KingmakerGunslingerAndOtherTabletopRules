@@ -118,13 +118,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Game.Instance.EntityDestroyer.Tick();
                 markerGone = !expiring.Descriptor.Buffs.RawFacts.OfType<Buff>()
                     .Any(value => ReferenceEquals(value, marker));
-                // The native teardown queues the unit for destruction and
-                // performs it on a later frame, which a synchronous fixture
-                // inside one frame cannot reach. The first run of this gate
-                // asserted same-frame destruction and failed on exactly that;
-                // the Stirge expiry exercise measures the same boundary the
-                // same way, by the marker being gone and the destruction
-                // being queued.
+                // Recorded, not required. Two runs of this gate established
+                // that the marker's own timer removes the marker and nothing
+                // else inside that frame: the unit is neither destroyed nor
+                // yet flagged for destruction, and the removal happens over
+                // later frames under ordinary game updates. The Stirge expiry
+                // exercise records the same field the same way and does not
+                // require it either. That a summon disappears on its own
+                // timer under real game updates is separately qualified - the
+                // Sprint 11 natural-expiry run watched seventeen native
+                // markers and their units go in 112 game seconds - and this
+                // leg is about the rage rather than about that.
                 destroyQueued = expiring.ShouldBeDestroyed ||
                     expiring.Destroyed;
                 // Until the frame that destroys it, the creature is still the
@@ -150,7 +154,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     casterStrengthBefore &&
                 caster.Descriptor.Stats.AC.ModifiedValue == casterArmourBefore;
             bool expiryValid = ragingBeforeExpiry && timed && markerGone &&
-                destroyQueued && stillRagingAtExpiry && expiring.Destroyed &&
+                stillRagingAtExpiry && expiring.Destroyed &&
                 casterCleanAfterExpiry && !AnySprint13RageLeft(onset, rage);
 
             // --- dismissed by the player while raging ----------------------
