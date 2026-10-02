@@ -509,7 +509,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 name == ExpandedSummoningPteranodonViewPatch.DireRatBlueprintName ||
                 name == ExpandedSummoningPteranodonViewPatch.HyenaBlueprintName ||
                 name == ExpandedSummoningPteranodonViewPatch.GoblinDogBlueprintName ||
-                name == "KMG_Summoning_Unit_Dog";
+                name == "KMG_Summoning_Unit_Dog" ||
+                // Sprint 13's three ride the same ground agents and need the
+                // same guided measurement.
+                name == ExpandedSummoningPteranodonViewPatch.WolverineBlueprintName ||
+                name == ExpandedSummoningPteranodonViewPatch.ShadowMastiffBlueprintName ||
+                name == ExpandedSummoningPteranodonViewPatch.PoisonousFrogBlueprintName;
         }
 
         private Vector3 PrepareSprint9FlightMovement(UnitEntityData unit)

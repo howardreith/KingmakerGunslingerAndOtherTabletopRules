@@ -629,6 +629,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint13-shadow-blend", ExpandedSummoningSprint13Tests.ShadowBlendHasExactlyThePrintedTwoNegations),
             Case("expanded-summoning.sprint13-mastiff-attacks", ExpandedSummoningSprint13Tests.ShadowMastiffAttacksFollowItsPrintedNumbers),
             Case("expanded-summoning.sprint13-bay-bounded-ai", ExpandedSummoningSprint13Tests.BayIsPlayerActivatedAndNeverAnAiChoice),
+            Case("expanded-summoning.sprint13-original-visuals", ExpandedSummoningSprint13Tests.Sprint13OriginalVisualsAreDeterministicAndDelivered),
+            Case("expanded-summoning.sprint13-frog-view-scale", ExpandedSummoningSprint13Tests.PoisonFrogIsViewScaledWithoutTouchingItsMechanics),
             Case("expanded-summoning.sprint10-stirge-attach-policy", ExpandedSummoningSprint10Tests.StirgeAttachRulesBoundDrainAndDetachment),
             Case("expanded-summoning.sprint10-stirge-published-registration", ExpandedSummoningSprint10Tests.StirgePublishesAtAllNineNatureTiers),
             Case("expanded-summoning.sprint10-wasp-registration", ExpandedSummoningSprint10Tests.GiantWaspRegisteredUnderSuppressionAtExactTiers),

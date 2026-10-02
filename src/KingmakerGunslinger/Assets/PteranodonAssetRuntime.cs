@@ -67,6 +67,8 @@ namespace KingmakerGunslinger.Assets
         private const string UngulateDirectory = "assets/ungulates/";
         private const string Sprint12QuadrupedDirectory =
             "assets/sprint12-quadrupeds/";
+        private const string Sprint13CreatureDirectory =
+            "assets/sprint13-creatures/";
         internal const int SupportedSchemaVersion = 2;
 
         /// <summary>
@@ -141,6 +143,25 @@ namespace KingmakerGunslinger.Assets
             "tail_03", "tail_04", "withers"
         };
 
+        // The Giant Poisonous Frog rig. Its names come from a different
+        // authoring house than the Worg's, which is why the two lists share so
+        // little: this one mixes the engine's own torso and limb names with
+        // joint names carried straight over from the original rig. Absent on
+        // purpose: every finger joint and the whole tongue chain. The original
+        // frog has no fingers or tongue of its own, so a weight landing on one
+        // would mean geometry nobody reviewed had appeared.
+        private static readonly string[] AllowedGiantFrogBones =
+        {
+            "Head", "LowerTorso", "chest_joint", "spine_3_joint", "stomach",
+            "jaw_endJoint", "jaw_skinJoint1",
+            "l_t_eyeLid_joint", "r_t_eyeLid_joint",
+            "L_Arm_Upper", "L_Arm_Lower", "L_Palm",
+            "R_Arm_Upper", "R_Arm_Lower", "R_Palm",
+            "L_Leg0_Upper", "L_Leg0_Lower", "L_Foot0",
+            "R_Leg0_Upper", "R_Leg0_Lower", "R_Foot0",
+            "l_toe_joint", "l_toeTip_joint", "r_toe_joint", "r_toeTip_joint"
+        };
+
         private sealed class UngulateVisual
         {
             internal Mesh Mesh;
@@ -174,6 +195,29 @@ namespace KingmakerGunslinger.Assets
                     { "dire-rat", new Sprint12QuadrupedVisual() },
                     { "hyena", new Sprint12QuadrupedVisual() },
                     { "goblin-dog", new Sprint12QuadrupedVisual() }
+                };
+
+        private sealed class Sprint13CreatureVisual
+        {
+            internal Mesh Mesh;
+            internal string[] Bones;
+            internal Texture2D Albedo;
+            internal string Status = "donor-visual:not-configured";
+        }
+
+        /// <summary>
+        /// The Wolverine and the Shadow Mastiff ride the same Worg rig the
+        /// Goblin Dog does, so they reuse its reviewed bone list; the Poison
+        /// Frog has its own.
+        /// </summary>
+        private static readonly Dictionary<string, Sprint13CreatureVisual>
+            Sprint13Creatures =
+                new Dictionary<string, Sprint13CreatureVisual>(
+                    StringComparer.Ordinal)
+                {
+                    { "wolverine", new Sprint13CreatureVisual() },
+                    { "shadow-mastiff", new Sprint13CreatureVisual() },
+                    { "poisonous-frog", new Sprint13CreatureVisual() }
                 };
 
         /// <summary>
@@ -409,6 +453,30 @@ namespace KingmakerGunslinger.Assets
             }
         }
 
+        internal static bool TryGetSprint13CreatureVisual(string key,
+            out Mesh mesh, out string[] boneNames, out Texture2D albedo,
+            out string status)
+        {
+            lock (Sync)
+            {
+                Sprint13CreatureVisual visual;
+                if (!Sprint13Creatures.TryGetValue(key, out visual))
+                {
+                    mesh = null;
+                    boneNames = null;
+                    albedo = null;
+                    status = "donor-visual:unknown-sprint13-creature";
+                    return false;
+                }
+                mesh = visual.Mesh;
+                boneNames = visual.Bones == null ? null :
+                    (string[])visual.Bones.Clone();
+                albedo = visual.Albedo;
+                status = visual.Status;
+                return mesh != null && boneNames != null && albedo != null;
+            }
+        }
+
         internal static void Configure(ModContext context)
         {
             ConfigurePteranodon(context);
@@ -418,6 +486,80 @@ namespace KingmakerGunslinger.Assets
             ConfigureStirge(context);
             ConfigureUngulates(context);
             ConfigureSprint12Quadrupeds(context);
+            ConfigureSprint13Creatures(context);
+        }
+
+        private static void ConfigureSprint13Creatures(ModContext context)
+        {
+            if (context == null) throw new ArgumentNullException("context");
+            foreach (var entry in Sprint13Creatures)
+            {
+                string key = entry.Key;
+                Sprint13CreatureVisual visual = entry.Value;
+                if (!context.FeatureModules.Active.ExpandedSummoning)
+                {
+                    lock (Sync) visual.Status = "donor-visual:module-disabled";
+                    continue;
+                }
+                lock (Sync)
+                    if (visual.Mesh != null && visual.Bones != null &&
+                        visual.Albedo != null) continue;
+                string path = Path.Combine(context.ModEntry.Path,
+                    (Sprint13CreatureDirectory + key + "-mesh.json")
+                    .Replace('/', Path.DirectorySeparatorChar));
+                if (!File.Exists(path))
+                {
+                    lock (Sync) visual.Status = "donor-visual:mesh-data-missing";
+                    context.Logger.Warning(key, "mesh.missing",
+                        "The original Sprint 13 visual is unavailable; the donor remains active: " + path);
+                    continue;
+                }
+                Mesh mesh = null;
+                Texture2D albedo = null;
+                try
+                {
+                    string[] names;
+                    AlbedoRequirement requirement;
+                    string[] allowed = key == "poisonous-frog"
+                        ? AllowedGiantFrogBones : AllowedWolfWorgBones;
+                    mesh = BuildMesh(File.ReadAllText(path), out names,
+                        out requirement, allowed);
+                    string reason;
+                    albedo = LoadAlbedo(Path.GetDirectoryName(path), requirement,
+                        out reason);
+                    if (albedo == null)
+                        throw new InvalidDataException("albedo:" + reason);
+                    mesh.name = "KMG_" + key;
+                    albedo.name = "KMG_" + key + "_Albedo";
+                    lock (Sync)
+                    {
+                        visual.Mesh = mesh;
+                        visual.Bones = names;
+                        visual.Albedo = albedo;
+                        visual.Status = "visual:published";
+                    }
+                    context.Logger.Info(key, "mesh.published",
+                        "Validated original Sprint 13 mesh: vertices=" +
+                        mesh.vertexCount + ";triangles=" +
+                        mesh.triangles.Length / 3 + ";bones=" + names.Length +
+                        ";albedo=" + albedo.width + "x" + albedo.height);
+                }
+                catch (Exception error)
+                {
+                    if (mesh != null) UnityEngine.Object.Destroy(mesh);
+                    if (albedo != null) UnityEngine.Object.Destroy(albedo);
+                    lock (Sync)
+                    {
+                        visual.Mesh = null;
+                        visual.Bones = null;
+                        visual.Albedo = null;
+                        visual.Status = "donor-visual:invalid-mesh-data";
+                    }
+                    context.Logger.Warning(key, "mesh.rejected",
+                        "The original Sprint 13 visual was rejected; the donor remains active: " +
+                        error.Message);
+                }
+            }
         }
 
         private static void ConfigureSprint12Quadrupeds(ModContext context)

@@ -47,7 +47,13 @@ $requiredFiles = @(
     'assets\sprint12-quadrupeds\hyena-mesh.json',
     'assets\sprint12-quadrupeds\hyena-albedo.png',
     'assets\sprint12-quadrupeds\goblin-dog-mesh.json',
-    'assets\sprint12-quadrupeds\goblin-dog-albedo.png'
+    'assets\sprint12-quadrupeds\goblin-dog-albedo.png',
+    'assets\sprint13-creatures\wolverine-mesh.json',
+    'assets\sprint13-creatures\wolverine-albedo.png',
+    'assets\sprint13-creatures\shadow-mastiff-mesh.json',
+    'assets\sprint13-creatures\shadow-mastiff-albedo.png',
+    'assets\sprint13-creatures\poisonous-frog-mesh.json',
+    'assets\sprint13-creatures\poisonous-frog-albedo.png'
 )
 $requiredIcons = @('gunslinger-class','firearm-proficiency','gunsmithing','grit',
     'deeds','nimble','bonus-feat','gun-training','true-grit','rapid-reload',
@@ -120,6 +126,12 @@ $allowedRelativePaths = @{
     'assets\sprint12-quadrupeds\hyena-albedo.png' = $true
     'assets\sprint12-quadrupeds\goblin-dog-mesh.json' = $true
     'assets\sprint12-quadrupeds\goblin-dog-albedo.png' = $true
+    'assets\sprint13-creatures\wolverine-mesh.json' = $true
+    'assets\sprint13-creatures\wolverine-albedo.png' = $true
+    'assets\sprint13-creatures\shadow-mastiff-mesh.json' = $true
+    'assets\sprint13-creatures\shadow-mastiff-albedo.png' = $true
+    'assets\sprint13-creatures\poisonous-frog-mesh.json' = $true
+    'assets\sprint13-creatures\poisonous-frog-albedo.png' = $true
 }
 
 $unexpected = @()

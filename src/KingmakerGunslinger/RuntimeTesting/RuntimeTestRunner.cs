@@ -17029,6 +17029,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             int ungulateVisualAttached = 0;
             int sprint12VisualChecked = 0;
             int sprint12VisualAttached = 0;
+            int sprint13VisualChecked = 0;
+            int sprint13VisualAttached = 0;
             BlueprintScriptableObject[] blueprints = BlueprintBootstrap.Library
                 .GetAllBlueprints().Where(value => value != null).ToArray();
             BlueprintFeature direBatSense = blueprints.OfType<BlueprintFeature>()
@@ -17501,6 +17503,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 sprint12VisualAttached++;
                         }
                     }
+                    else if (variant.Creature.Key == "wolverine" ||
+                        variant.Creature.Key == "shadow-mastiff" ||
+                        variant.Creature.Key == "poisonous-frog")
+                    {
+                        foreach (UnitEntityData unit in spawned)
+                        {
+                            if (unit == null || unit.View == null) continue;
+                            sprint13VisualChecked++;
+                            string outcome = ExpandedSummoningPteranodonViewPatch
+                                .DescribeView(unit.View);
+                            if (outcome.StartsWith("visual:attached;",
+                                    StringComparison.Ordinal))
+                                sprint13VisualAttached++;
+                        }
+                    }
                     else if (PteranodonDonorSharers.Contains(variant.Creature.Key))
                     {
                         // Isolation: the creatures that share the GiantEagle
@@ -17945,8 +17962,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                             _pteranodonVisualOutcomes.Count +
                                 _direBatVisualChecked + _eagleVisualChecked +
                                 _giantWaspVisualChecked + _stirgeVisualChecked +
-                                ungulateVisualChecked + sprint12VisualChecked &&
+                                ungulateVisualChecked + sprint12VisualChecked +
+                                sprint13VisualChecked &&
                         sprint12VisualAttached == sprint12VisualChecked &&
+                        sprint13VisualAttached == sprint13VisualChecked &&
                         pteranodonAttachedClean,
                     "one patch outcome per attached view; per-cast cleanup is enforced by the cast loop itself"),
                 Assertion("expanded-summoning-stirge-visual-attached",
