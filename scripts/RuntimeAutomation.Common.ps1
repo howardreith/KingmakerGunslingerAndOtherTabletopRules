@@ -2274,7 +2274,8 @@ function New-KmgRuntimeRequest {
             }
             $creatureReviewParameters
         } elseif ($Scenario -cin @('summon-same-turn-activation',
-                'summon-same-turn-rtwp-control') -and
+                'summon-same-turn-rtwp-control',
+                'summon-same-turn-native-control') -and
                 $Parameters.ContainsKey('flightCreature')) {
             [ordered]@{ saveName = [string]$Parameters.saveName;
                 flightCreature = [string]$Parameters.flightCreature }
