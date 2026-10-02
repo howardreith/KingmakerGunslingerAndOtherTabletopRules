@@ -38,9 +38,24 @@ directly on work already done:
   deserialization, the Acadamae Graduate cross-module regression and the
   standalone compatibility profile all pass on the published surface, each with
   the live tree restored afterwards.
-- Next executable action: open **Sprint 13** (Wolverine, Shadow Mastiff,
-  Poisonous Frog). Its primary sources are read and its rules findings are
-  recorded in `planning/EXPANDED-SUMMONING-SPRINT13-RULES-AND-DONORS.md`.
+- Tranche 2A, **Sprint 13** (Wolverine, Shadow Mastiff, Poisonous Frog) - in
+  progress. Its rules are implemented and qualified: run
+  `20261002T0543409639325Z-disposable-expanded-summoning`, 48/48 PASS on the
+  exact head `efefe106`, covering the printed attack routines of all three
+  creatures, the Wolverine rage from trigger through delay, magnitudes, no
+  restack, no leakage and cleanup, the Shadow Mastiff's bay with its printed
+  300-foot spread and per-mastiff 24-hour immunity, and shadow blend including
+  its Daylight negation. The Shadow Mastiff is registered with its four
+  placements suppressed, so the published surface is unchanged at 900 generated
+  and 929 total choices.
+- Next executable action: the remaining Sprint 13 work, in this order - the
+  three original silhouettes (Wolverine, Shadow Mastiff, a true Tiny Poison
+  Frog) with one new donor bind-frame capture for the frog, since the Worg
+  frame the first two need was already captured in Sprint 12; then the visual
+  review, navigation, both combat modes and the rage's lifetime across expiry,
+  death, dismissal, area transition and reload; then the Shadow Mastiff's
+  publication with its icon; then the tranche 2A five-profile compatibility
+  matrix, which closes Phase 2A.
 - The complete five-profile compatibility matrix is a tranche-closure gate and
   runs at the end of tranche 2A, after Sprint 13.
 - Sprints 14-21 remain authorized and not started.
