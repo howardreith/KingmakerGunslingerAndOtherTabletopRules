@@ -1,6 +1,6 @@
 ﻿{
     "schemaVersion":  1,
-    "count":  100,
+    "count":  101,
     "icons":  [
                   {
                       "key":  "dog",
@@ -897,6 +897,15 @@
                       "key":  "remove-stirge",
                       "file":  "remove-stirge.png",
                       "sha256":  "d94adebdc69e80f08bb936de2050ccbb5ad78e9fc99c678b6f242c5979c28329",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "shadow-mastiff",
+                      "file":  "shadow-mastiff.png",
+                      "sha256":  "0448be750969434b6766b8767388da80814db2afbe5eadc40607579413489baa",
                       "width":  128,
                       "height":  128,
                       "format":  "RGBA PNG",

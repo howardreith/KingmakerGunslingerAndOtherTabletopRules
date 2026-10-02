@@ -416,7 +416,7 @@ def validate(root: Path) -> None:
         'C("tiger","Tiger",null,false,4,"Leopard")')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs",
         "RegisteredLogicalPlacementCount = 904;",
-        "SuppressedLogicalPlacementCount = 4;")
+        "SuppressedLogicalPlacementCount = 0;")
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningIdentityCatalog.cs",
         "UnitCount = 89;",
         "LogicalAbilityCount = 904;",
@@ -431,7 +431,7 @@ def validate(root: Path) -> None:
         "Values.Length != 41",
         '"Animal", "Vermin", "MagicalBeast", "Humanoid", "Plant"')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonIconCatalog.cs",
-        "Values.Length != %d" % (SPRINT3["projectIcons"] + 9))
+        "Values.Length != %d" % (SPRINT3["projectIcons"] + 10))
     # Correction order: the chartered mephit roles and the ally-safe cloud stay in the code.
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningSpecialProfiles.cs",
         '"Blur", "WindWall"', '"MagicMissile", "ChillMetal"', '"Pyrotechnics", "MagmaForm"',
@@ -507,8 +507,8 @@ def validate(root: Path) -> None:
             raise AssertionError("No Lightning Mephit may enter the catalogs: " + path.name)
     runtime_icons = json.loads((root / "assets/game/icons/expanded-summoning/icon-manifest.json")
                                .read_text(encoding="utf-8-sig"))
-    if runtime_icons["count"] != SPRINT3["projectIcons"] + 9 or \
-            len(runtime_icons["icons"]) != SPRINT3["projectIcons"] + 9 or \
+    if runtime_icons["count"] != SPRINT3["projectIcons"] + 10 or \
+            len(runtime_icons["icons"]) != SPRINT3["projectIcons"] + 10 or \
             not {"pony", "horse", "owlbear", "cyclops", "shambling-mound", "giant-flytrap",
                  "purple-worm", "dust-mephit", "ice-mephit", "magma-mephit", "ooze-mephit",
                  "salt-mephit", "steam-mephit", "tiger", "giant-wasp", "stirge",
@@ -528,7 +528,7 @@ def validate(root: Path) -> None:
     # Keep the accepted Phase 1 metadata at 251, but validate the current
     # package count with the Phase 2 bird, vermin, quadruped and icon
     # additions.
-    package_count = SPRINT3["packageFileCountWithSoundBank"] + 37
+    package_count = SPRINT3["packageFileCountWithSoundBank"] + 38
     for script in ("Build-Local.ps1", "package.ps1"):
         require_tokens(root / "scripts" / script,
             "{ %d } else { %d }" % (package_count, package_count - 2),

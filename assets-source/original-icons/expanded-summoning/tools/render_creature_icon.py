@@ -793,6 +793,67 @@ def tiger():
         cone_along("Whisker%d%d" % (s, 1), (s * 0.3, -1.05, -0.1), (s * 1.0, -0.1, -0.4), 1.0, 0.012, white)
 
 
+def shadow_mastiff():
+    """A shadow mastiff's head and shoulders facing the viewer: a heavy hound
+    built out of darkness, with ears carried high, a broad blunt muzzle, and
+    pale blue eyes that are the only bright thing on it.
+
+    Everything about the coat is near-black, because that is the creature: a
+    black dog reads as a dog, and a dog made of shadow has to read as shadow.
+    The whole portrait therefore rests on two cues the eye can still find at
+    128 pixels - the silhouette, and the eyes.
+
+    2026-10-02 art repair. The first build dressed the head with separate pale
+    plates for the crown, the brow and the withers, which do not merge with the
+    metaball body and so rendered as discs lying on the face; the eyes were
+    near-white and strongly emissive above those plates, which read as cartoon
+    eyes; the ears were long thin ellipsoids swept along the depth axis, which
+    read as a rabbit's; and the open maw was a single large red sphere, which
+    read as a tongue hanging off the chin. The dressing is gone, the coat's own
+    procedural noise does that work instead, and the eyes, ears and muzzle are
+    all brought back towards the proportions the Tiger portrait on this same
+    rig family already uses.
+    """
+    coat = material("Coat", (0.050, 0.052, 0.068), 0.82,
+                    noise=(5.0, 0.5, (0.018, 0.020, 0.032)))
+    under = material("Under", (0.022, 0.024, 0.034), 0.86)
+    eye = material("Eye", (0.22, 0.38, 0.78), 0.18,
+                   emission=(0.20, 0.40, 0.95), emission_strength=0.55)
+    maw = material("Maw", (0.10, 0.04, 0.05), 0.75)
+    fang = material("Fang", (0.86, 0.87, 0.90), 0.3)
+    body = Blob("Body", coat, 0.05)
+    body.ball((0.0, 0.62, -1.35), 1.42, (1.25, 0.88, 0.95), axis=(1, 0, 0))   # chest
+    body.ball((0.0, 0.26, -0.40), 0.80)                                       # neck
+    body.ball((0.0, 0.0, 0.52), 1.00, (1.02, 0.94, 1.0), axis=(1, 0, 0))      # skull
+    for s in (-1, 1):
+        body.ball((s * 0.44, -0.18, 0.26), 0.44)                              # jowls
+        body.ball((s * 0.40, -0.50, 0.72), 0.30)                              # brow ridge
+    body.ball((0.0, -0.70, 0.14), 0.58, (1.0, 0.90, 0.74), axis=(1, 0, 0))    # muzzle
+    body.ball((0.0, -1.14, 0.06), 0.40, (1.0, 0.92, 0.72), axis=(1, 0, 0))    # snout
+    for s in (-1, 1):
+        body.ball((s * 1.14, 0.48, -0.92), 0.60)                              # shoulders
+        # Carried high and a little back, broad at the base: a hound's ear,
+        # not the tall blade a wolf gets or the thin paddle the first build had.
+        body.ball((s * 0.66, 0.16, 1.20), 0.33, (0.58, 0.92, 1.18),
+                  axis=(0, 0, 1))
+    # A dark mouth line drawn across the muzzle rather than a sphere hung
+    # under it: the first repair still read as a tongue from the front.
+    cone_along("Jaw", (0.0, -0.52, -0.36), (0.0, -1.0, -0.10), 0.62, 0.28,
+               coat, 0.12)
+    # Seated into the muzzle and in the same near-black the underside uses:
+    # drawn in the maw colour and standing proud of the face, it read as a
+    # stick held crosswise in the creature's mouth.
+    cone_along("MouthLine", (-0.26, -1.08, -0.14), (1.0, 0.0, 0.0), 0.52,
+               0.030, under, 0.030)
+    for s in (-1, 1):
+        cone_along("Fang%d" % s, (s * 0.14, -1.07, -0.15), (0.0, -0.06, -1.0),
+                   0.15, 0.036, fang)
+        sphere("Eye%d" % s, (s * 0.38, -0.80, 0.56), (0.105, 0.07, 0.09), eye)
+        sphere("EarIn%d" % s, (s * 0.66, -0.06, 1.18), (0.16, 0.08, 0.52),
+               under)
+    sphere("Nose", (0.0, -1.38, 0.10), (0.18, 0.11, 0.11), under)
+
+
 CREATURES = {
     "pony": dict(build=lambda: equine(True),
                  inner=(0.5, 0.38, 0.16), outer=(0.05, 0.04, 0.025),
@@ -846,6 +907,14 @@ CREATURES = {
                   inner=(0.3, 0.16, 0.05), outer=(0.03, 0.015, 0.005),
                   key=(1.0, 0.9, 0.75), rim=(1.0, 0.7, 0.4),
                   camera=((0.3, -7.6, 0.9), (-0.1, 0.0, 0.05), 55.0)),
+    # A near-black creature needs a backdrop it can be seen against, so
+    # this one is the coldest and deepest in the roster and its rim light
+    # is the brightest: the silhouette is carried by the rim, not by the
+    # coat.
+    "shadow-mastiff": dict(build=shadow_mastiff,
+                     inner=(0.10, 0.13, 0.24), outer=(0.006, 0.008, 0.016),
+                     key=(0.72, 0.78, 1.0), rim=(0.55, 0.72, 1.0),
+                     camera=((0.25, -7.6, 0.95), (-0.05, 0.0, 0.1), 55.0)),
     "steam-mephit": dict(build=lambda: mephit("steam"),
                      inner=MEPHIT_DRESSINGS["steam"]["inner"], outer=MEPHIT_DRESSINGS["steam"]["outer"],
                      key=MEPHIT_DRESSINGS["steam"]["key"], rim=MEPHIT_DRESSINGS["steam"]["rim"],

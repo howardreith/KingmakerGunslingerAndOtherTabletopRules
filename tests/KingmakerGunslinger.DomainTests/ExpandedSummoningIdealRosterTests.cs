@@ -187,9 +187,10 @@ namespace KingmakerGunslinger.DomainTests
             // catalogs, never with the plan: 693 at the Sprint 0 freeze, 828
             // after Phase 1 Sprint 8, 842 after Dire Bat, 854 after Wasp,
             // 863 after Stirge and 911 after the Sprint 11 ungulates. Sprint 12
-            // registers Dire Rat and withholds all four unqualified families,
-            // leaving 929 choices visible after the Sprint 12 publication.
-            Assertions.Equal(929,
+            // registers Dire Rat and publishes its four families, and Sprint 13
+            // adds the Shadow Mastiff's four Summon Monster placements, leaving
+            // 933 choices visible after the Sprint 13 publication.
+            Assertions.Equal(933,
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.Monster) +
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.NaturesAlly),
                 "The plan must not change the shipped visible choice count.");

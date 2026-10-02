@@ -74,9 +74,9 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(100,
                 ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count,
                 "Represented creatures must be 89 project-owned plus 11 native wrappers.");
-            Assertions.Equal(99,
+            Assertions.Equal(100,
                 ExpandedSummoningCoveragePolicy.PublishedSomewhere.Count,
-                "Every represented creature publishes now that Sprint 12 is qualified.");
+                "Every represented creature publishes now that Sprint 13 is qualified too.");
             Assertions.True(ExpandedSummoningCoveragePolicy.PublishedSomewhere
                 .Contains("stirge"),
                 "The requalified Stirge must count as published coverage.");
@@ -213,9 +213,10 @@ namespace KingmakerGunslinger.DomainTests
             }
 
             // Sprint 9 adds fourteen Dire Bat; Sprint 10 adds twelve Wasp and
-            // nine Stirge choices; Sprint 11 adds forty-eight ungulate choices.
-            // Sprint 12 published, so nothing registered is withheld.
-            Assertions.Equal(929,
+            // nine Stirge choices; Sprint 11 adds forty-eight ungulate choices;
+            // Sprint 13 adds the Shadow Mastiff's four. Sprints 12 and 13 have
+            // both published, so nothing registered is withheld.
+            Assertions.Equal(933,
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.Monster) +
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.NaturesAlly),
                 "The published visible surface must include Bat, Wasp, Stirge and ungulate choices.");
