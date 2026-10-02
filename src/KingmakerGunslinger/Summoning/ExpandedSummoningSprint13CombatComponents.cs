@@ -1,12 +1,24 @@
 using System;
+using System.Linq;
+using Kingmaker;
+using Kingmaker.AreaLogic;
 using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Area;
+using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints.Facts;
+using Kingmaker.Controllers.Units;
+using Kingmaker.Enums;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker.EntitySystem.Stats;
 using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.RuleSystem.Rules.Damage;
 using Kingmaker.UnitLogic;
+using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
+using Kingmaker.UnitLogic.Buffs.Components;
 using Kingmaker.UnitLogic.Mechanics;
+using Kingmaker.UnitLogic.Mechanics.Actions;
 using Kingmaker.Utility;
 
 namespace KingmakerGunslinger.Summoning
@@ -72,6 +84,205 @@ namespace KingmakerGunslinger.Summoning
             if (unit == null || unit.Descriptor == null || buff == null)
                 return false;
             return unit.Descriptor.Buffs.GetBuff(buff) != null;
+        }
+    }
+
+    /// <summary>
+    /// The printed Shadow Mastiff bay, applied to one creature caught by the
+    /// ability's own 300-foot spread.
+    ///
+    /// <para>Bestiary 3: "When a shadow mastiff howls or barks, all creatures
+    /// within a 300-foot spread except evil outsiders must succeed at a DC 16
+    /// Will save or become panicked for 1d4 rounds. This is a sonic,
+    /// mind-affecting fear effect. A creature that successfully saves cannot
+    /// be affected by the same mastiff's bay for 24 hours."</para>
+    ///
+    /// <para>The spread, the save, the duration and the exposure of the
+    /// summoner's own party are all exactly as printed. What is bounded is who
+    /// decides to use it: bay is a player-activated ability and the mastiff's
+    /// own brain never selects it, so the charter's prohibition on repeated
+    /// friendly-fire effects from constrained caster AI is satisfied without
+    /// weakening the rule. The rule's own 24-hour immunity bounds repeat use.</para>
+    ///
+    /// <para>The immunity is matched by comparing the stored buff's caster to
+    /// this mastiff, which is exactly right in every case that can arise: the
+    /// same living mastiff matches and is blocked, a different mastiff does not
+    /// match and may bay as printed, and a mastiff that has since expired
+    /// resolves to no caster and could never bay again anyway.</para>
+    /// </summary>
+    [Serializable]
+    public sealed class ContextActionShadowMastiffBay : ContextAction
+    {
+        public BlueprintUnit SourceUnit;
+        public BlueprintBuff PanicBuff;
+        public BlueprintBuff ImmunityBuff;
+
+        /// <summary>The exact native evil subtype feature.</summary>
+        public BlueprintUnitFact EvilSubtype;
+
+        /// <summary>The exact native outsider class whose levels mark the type.</summary>
+        public BlueprintCharacterClass OutsiderClass;
+
+        public override string GetCaption()
+        { return "Resolve the printed Shadow Mastiff bay against one creature"; }
+
+        public override void RunAction()
+        {
+            UnitEntityData caster = Context == null ? null : Context.MaybeCaster;
+            UnitEntityData target = Target == null ? null : Target.Unit;
+            if (caster == null || target == null || SourceUnit == null ||
+                PanicBuff == null || ImmunityBuff == null ||
+                !ReferenceEquals(caster.Blueprint, SourceUnit)) return;
+            bool available = SummonDiseaseExposure.IsAvailable(target);
+            bool evilOutsider = IsEvilOutsider(target);
+            bool immune = IsImmuneTo(target, caster);
+            if (!SummonShadowMastiffPolicy.ShouldRollBay(available,
+                evilOutsider, immune)) return;
+            int dc = SummonShadowMastiffPolicy.BayWillDc(
+                ExpandedSummoningSpecialProfiles.ShadowMastiffHitDice,
+                caster.Stats.Charisma.ModifiedValue);
+            var saveContext = new MechanicsContext(caster, target.Descriptor,
+                PanicBuff, Context, new TargetWrapper(target));
+            saveContext.Params.DC = dc;
+            var saving = new RuleSavingThrow(target, SavingThrowType.Will, dc);
+            saving.Reason = saveContext;
+            saveContext.TriggerRule(saving);
+            if (SummonShadowMastiffPolicy.GrantsImmunityOnSave(saving.IsPassed))
+            {
+                Apply(caster, target, Context, ImmunityBuff,
+                    TimeSpan.FromHours(ExpandedSummoningSpecialProfiles
+                        .ShadowMastiffBayImmunityHours));
+                return;
+            }
+            if (!SummonShadowMastiffPolicy.AppliesPanicOnFailedSave(
+                saving.IsPassed)) return;
+            int rounds = 0;
+            for (int roll = 0; roll < ExpandedSummoningSpecialProfiles
+                .ShadowMastiffBayPanicDiceCount; roll++)
+                rounds += UnityEngine.Random.Range(1,
+                    ExpandedSummoningSpecialProfiles
+                        .ShadowMastiffBayPanicDieSides + 1);
+            Apply(caster, target, Context, PanicBuff, TimeSpan.FromSeconds(
+                rounds * GameConsts.RoundDuration));
+        }
+
+        private static void Apply(UnitEntityData caster, UnitEntityData target,
+            MechanicsContext parent, BlueprintBuff payload, TimeSpan duration)
+        {
+            var context = new MechanicsContext(caster, target.Descriptor,
+                payload, parent, new TargetWrapper(target));
+            var apply = new RuleApplyBuff(target, payload, context, duration,
+                (buff, source, time) =>
+                    target.Descriptor.Buffs.AddBuff(buff, source, time));
+            Rulebook.Trigger(apply);
+        }
+
+        /// <summary>
+        /// The printed exemption is for evil outsiders, which is the creature
+        /// type plus the subtype. Both are read from exact blueprint references
+        /// rather than from a name or an alignment guess, and the mastiff
+        /// itself satisfies both, so it is exempt by the printed clause rather
+        /// than by a special case for the caster.
+        /// </summary>
+        private bool IsEvilOutsider(UnitEntityData unit)
+        {
+            if (unit == null || unit.Descriptor == null ||
+                EvilSubtype == null || OutsiderClass == null) return false;
+            return unit.Descriptor.HasFact(EvilSubtype) &&
+                unit.Descriptor.Progression.GetClassLevel(OutsiderClass) > 0;
+        }
+
+        private bool IsImmuneTo(UnitEntityData target, UnitEntityData mastiff)
+        {
+            if (target == null || target.Descriptor == null ||
+                ImmunityBuff == null) return false;
+            foreach (Buff buff in target.Descriptor.Buffs.RawFacts
+                .OfType<Buff>())
+            {
+                if (!ReferenceEquals(buff.Blueprint, ImmunityBuff)) continue;
+                if (buff.Context != null &&
+                    ReferenceEquals(buff.Context.MaybeCaster, mastiff))
+                    return true;
+            }
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// The printed Shadow Mastiff shadow blend: "In any condition of
+    /// illumination other than full daylight, a shadow mastiff disappears into
+    /// the shadows, giving it concealment (50% miss chance). Artificial
+    /// illumination, even a light or continual flame spell, does not negate
+    /// this ability; a daylight spell, however, does. A shadow mastiff can
+    /// suspend or resume this ability as a free action."
+    ///
+    /// <para>The concealment itself is a native <c>AddConcealment</c> on the
+    /// same buff, at <c>Concealment.Total</c>, which is the engine's 50% miss
+    /// chance; <c>Partial</c> is the 20% grade. This component decides only
+    /// whether that concealment currently applies, by suppressing the buff
+    /// when the printed negations hold. Suppressing turns the buff's own
+    /// components off, so the native concealment entry is removed and restored
+    /// by the engine rather than by hand.</para>
+    ///
+    /// <para>The engine models no ambient illumination at all - there is no
+    /// light-level type outside the rendering namespaces and no light or
+    /// darkness spell descriptor - so "full daylight" is read from the only
+    /// illumination-adjacent state it does expose: the sun is up and this
+    /// area's lighting follows it. The daylight negation is exact, against the
+    /// audited native Daylight identity. Artificial light is deliberately
+    /// absent because the printed text says it does not matter.</para>
+    ///
+    /// <para>The condition is re-read on activation and at every round
+    /// boundary. Everything it depends on - the time of day, the loaded area,
+    /// and whether a daylight effect is on the creature - changes on a scale
+    /// far coarser than a round, so a round cadence is faithful to the printed
+    /// rule rather than an approximation of it.</para>
+    /// </summary>
+    [Serializable]
+    public sealed class SummonShadowBlendComponent : BuffLogic, ITickEachRound
+    {
+        /// <summary>
+        /// Exact native buffs whose presence negates shadow blend.
+        /// </summary>
+        public BlueprintBuff[] NegatingBuffs;
+
+        public override void OnTurnOn() { Refresh(); }
+
+        public void OnNewRound() { Refresh(); }
+
+        private void Refresh()
+        {
+            if (Buff == null) return;
+            UnitEntityData owner = Owner == null ? null : Owner.Unit;
+            bool grants = owner != null &&
+                SummonShadowMastiffPolicy.GrantsShadowConcealment(
+                    IsFullDaylight(), HasNegatingEffect(owner));
+            if (Buff.IsSuppressed != !grants) Buff.IsSuppressed = !grants;
+        }
+
+        /// <summary>
+        /// The sun is up and this area's lighting follows it. An area flagged
+        /// as a single light scene does not change with the time of day, which
+        /// is how the engine marks interiors and dungeons, so such an area is
+        /// never full daylight however bright its fixed lighting looks.
+        /// </summary>
+        internal static bool IsFullDaylight()
+        {
+            if (Game.Instance == null) return false;
+            BlueprintArea area = Game.Instance.CurrentlyLoadedArea;
+            if (area == null || area.IsSingleLightScene) return false;
+            return Game.Instance.TimeOfDay == TimeOfDay.Day;
+        }
+
+        private bool HasNegatingEffect(UnitEntityData unit)
+        {
+            if (NegatingBuffs == null || unit == null ||
+                unit.Descriptor == null) return false;
+            for (int index = 0; index < NegatingBuffs.Length; index++)
+                if (NegatingBuffs[index] != null &&
+                    unit.Descriptor.Buffs.GetBuff(NegatingBuffs[index]) != null)
+                    return true;
+            return false;
         }
     }
 }

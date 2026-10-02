@@ -5,18 +5,21 @@ using System.Linq;
 namespace KingmakerGunslinger.Summoning
 {
     /// <summary>
-    /// Publication-only exclusions. Sprint 12 is qualified and all currently
-    /// registered Expanded Summoning placements are published, so the set is
-    /// empty until a later sprint registers a creature ahead of its own
-    /// qualification.
+    /// Publication-only exclusions. Sprints 9-12 are qualified and published.
+    /// The Sprint 13 Shadow Mastiff is registered ahead of its own
+    /// qualification so its identities are allocated once and never move, and
+    /// its four placements are withheld until its mechanics, visual identity
+    /// and lifecycle qualify. The published surface is unchanged while it is
+    /// suppressed.
     /// </summary>
     internal static class SummonVisibilityCatalog
     {
         private static readonly HashSet<string> SuppressedCreatureKeys =
-            new HashSet<string>(StringComparer.Ordinal);
+            new HashSet<string>(new[] { "shadow-mastiff" },
+                StringComparer.Ordinal);
 
-        internal const int RegisteredLogicalPlacementCount = 900;
-        internal const int SuppressedLogicalPlacementCount = 0;
+        internal const int RegisteredLogicalPlacementCount = 904;
+        internal const int SuppressedLogicalPlacementCount = 4;
         internal const int PublishedLogicalPlacementCount =
             RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount;
 

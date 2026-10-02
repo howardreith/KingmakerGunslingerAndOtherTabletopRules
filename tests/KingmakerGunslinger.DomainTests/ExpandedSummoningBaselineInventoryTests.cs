@@ -13,13 +13,13 @@ namespace KingmakerGunslinger.DomainTests
     {
         internal static void ShippedSurfaceMatchesFrozenBaseline()
         {
-            Assertions.Equal(88, ExpandedSummoningBaselineInventory.UniqueCreatures,
+            Assertions.Equal(89, ExpandedSummoningBaselineInventory.UniqueCreatures,
                 "Baseline unique creature count changed.");
-            Assertions.Equal(80, ExpandedSummoningBaselineInventory.RosterEntries(
+            Assertions.Equal(81, ExpandedSummoningBaselineInventory.RosterEntries(
                 SummonFamily.Monster), "Baseline SM roster count changed.");
             Assertions.Equal(78, ExpandedSummoningBaselineInventory.RosterEntries(
                 SummonFamily.NaturesAlly), "Baseline SNA roster count changed.");
-            Assertions.Equal(453, ExpandedSummoningBaselineInventory
+            Assertions.Equal(457, ExpandedSummoningBaselineInventory
                 .RegisteredPlacements(SummonFamily.Monster),
                 "Baseline SM registered placements changed.");
             Assertions.Equal(447, ExpandedSummoningBaselineInventory
@@ -90,15 +90,16 @@ namespace KingmakerGunslinger.DomainTests
         /// </summary>
         internal static void HiddenAndProxyCreaturesAreRecorded()
         {
-            // Sprint 12 published its four creatures, so nothing registered
-            // is withheld. A later sprint that registers ahead of its own
-            // qualification will move this pin deliberately.
-            Assertions.Equal(0,
+            // Sprint 12 published its four creatures. Sprint 13 registers the
+            // Shadow Mastiff ahead of its own qualification, so exactly one
+            // creature is registered and withheld, which is this pin moving
+            // deliberately rather than drifting.
+            Assertions.Equal(1,
                 ExpandedSummoningBaselineInventory.RegisteredButHiddenCreatures.Count,
                 "The registered-but-hidden creature set changed.");
-            Assertions.Equal("", string.Join("|",
+            Assertions.Equal("shadow-mastiff", string.Join("|",
                 ExpandedSummoningBaselineInventory.RegisteredButHiddenCreatures),
-                "No registered creature may be hidden now that Sprint 12 publishes.");
+                "Only the unqualified Sprint 13 Shadow Mastiff may be hidden.");
             Assertions.True(ExpandedSummoningBaselineInventory.ProxyVisualCreatures
                 .Contains("pteranodon<Roc"),
                 "Pteranodon must still be recorded as a Roc-policy visual proxy.");
@@ -111,7 +112,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(ExpandedSummoningBaselineInventory.ProxyVisualCreatures
                 .Contains("dire-tiger<Smilodon"),
                 "Smilodon displays under its own name and is not a proxy.");
-            Assertions.Equal(26,
+            Assertions.Equal(27,
                 ExpandedSummoningBaselineInventory.ProxyVisualCreatures.Count,
                 "The frozen borrowed-body proxy count changed.");
         }
