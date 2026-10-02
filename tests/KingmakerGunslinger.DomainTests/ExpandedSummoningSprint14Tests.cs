@@ -21,14 +21,21 @@ namespace KingmakerGunslinger.DomainTests
         /// <summary>
         /// Ninety-nine structural identities - three units and their 48 logical
         /// placements with the Summon Monster side's celestial and fiendish
-        /// children - and five mechanical ones: the soldier's sting, its poison
-        /// feature and venom buff, the beetle's luminescence, and the soldier's
-        /// grab traits carrier.
+        /// children - and eight mechanical ones: the soldier's sting, its
+        /// poison feature and venom buff, the beetle's luminescence, the
+        /// soldier's grab traits carrier, the ants' racial Perception, and a
+        /// unit type each for the beetle and the ants so neither is classified
+        /// as the Giant Spider it borrows.
         /// </summary>
-        internal const int AppendedLedgerIdentities = 104;
+        internal const int AppendedLedgerIdentities = 107;
 
         private static readonly string[] InsectKeys =
             { "fire-beetle", "giant-ant-worker", "giant-ant-soldier" };
+
+        private const string FireBeetleKey =
+            Sprint14BonePolicy.FireBeetleKey;
+        private const string WorkerKey = Sprint14BonePolicy.WorkerKey;
+        private const string SoldierKey = Sprint14BonePolicy.SoldierKey;
 
         private static string Source(params string[] parts)
         {
@@ -308,34 +315,35 @@ namespace KingmakerGunslinger.DomainTests
         }
 
         /// <summary>
-        /// The mesh may not weight anything to the donor's fourth foot.
+        /// No Sprint 14 creature may drive the donor's fourth foot, and the
+        /// bones each kind does need are all present.
         ///
-        /// <para>The Giant Spider has four leg chains a side and an insect has
-        /// three. The ants weight nothing to the fourth chain at all and the
-        /// beetle weights its wings only to that chain's upper and lower bones,
-        /// so no part of a wing can reach the ground. The runtime's allowed-bone
-        /// list is what refuses a mesh that broke that, and this is what refuses
-        /// a change to the list.</para>
+        /// <para>The allowlists moved out of the Unity-bound loader into pure
+        /// policy so a corruption test could exercise the real rejection; this
+        /// reads the same policy the loader calls.</para>
         /// </summary>
         internal static void NoSprint14MeshMayBindTheDonorsFourthFoot()
         {
+            foreach (string key in InsectKeys)
+            {
+                string[] allowed = Sprint14BonePolicy.AllowedBones(key);
+                foreach (string foot in Sprint14BonePolicy.FourthChainFeet)
+                    if (allowed.Contains(foot))
+                        throw new InvalidOperationException(
+                            key + " may not drive " + foot + ".");
+                foreach (string bone in new[] { "chelicera_L", "chelicera_R",
+                    "Tail1_M", "L_Leg0_Upper", "R_Foot2" })
+                    if (!allowed.Contains(bone))
+                        throw new InvalidOperationException(
+                            key + " needs " + bone + " and does not have it.");
+            }
             string runtime = Source("Assets", "PteranodonAssetRuntime.cs");
-            int start = runtime.IndexOf("AllowedGiantSpiderBones",
-                StringComparison.Ordinal);
-            if (start < 0)
+            if (!runtime.Contains("Sprint14BonePolicy.AllowedBones(key)"))
                 throw new InvalidOperationException(
-                    "The Giant Spider bone allow-list must exist.");
-            int end = runtime.IndexOf("};", start, StringComparison.Ordinal);
-            string allowed = runtime.Substring(start, end - start);
-            foreach (string bone in new[] { "L_Foot3", "R_Foot3" })
-                if (allowed.Contains(bone))
-                    throw new InvalidOperationException(
-                        "The donor's fourth foot must stay unbindable: " + bone);
-            foreach (string bone in new[] { "L_Leg3_Upper", "R_Leg3_Upper",
-                "chelicera_L", "chelicera_R", "Tail1_M" })
-                if (!allowed.Contains(bone))
-                    throw new InvalidOperationException(
-                        "A bone the Sprint 14 meshes need is not allowed: " + bone);
+                    "The loader must call the policy rather than keep its own list.");
+            if (runtime.Contains("AllowedGiantSpiderBones"))
+                throw new InvalidOperationException(
+                    "The shared allowlist that could not enforce the ant contract must be gone.");
         }
 
         /// <summary>
@@ -400,5 +408,250 @@ namespace KingmakerGunslinger.DomainTests
                             foot + ".");
             }
         }
+        /// <summary>
+        /// A six-legged ant may not drive any part of the donor's fourth leg
+        /// chain, and the beetle may drive only its two reviewed wing bones.
+        ///
+        /// <para>One shared allowlist could only ever have excluded the fourth
+        /// feet, because the beetle's wings legitimately ride that chain's
+        /// upper and lower bones. It therefore enforced the beetle's contract
+        /// and not the ant's: an ant mesh weighting an eighth leg from the knee
+        /// up would have loaded, with nothing between it and a player but the
+        /// offline generator, which does not run on the file the game
+        /// reads.</para>
+        /// </summary>
+        internal static void EachInsectGetsOnlyTheBonesItsOwnKindMayDrive()
+        {
+            foreach (string key in new[] { WorkerKey, SoldierKey })
+            {
+                foreach (string bone in Sprint14BonePolicy.FourthChainWingDrivers)
+                    if (Sprint14BonePolicy.IsPermitted(key, new[] { bone }))
+                        throw new InvalidOperationException(
+                            key + " must not be able to drive " + bone + ".");
+                if (Sprint14BonePolicy.AllowedBones(key).Any(value =>
+                        value.Contains("Leg3") || value.Contains("Foot3")))
+                    throw new InvalidOperationException(
+                        key + "'s allowlist must not mention the fourth chain.");
+            }
+            foreach (string bone in Sprint14BonePolicy.FourthChainWingDrivers)
+                if (!Sprint14BonePolicy.IsPermitted(FireBeetleKey,
+                        new[] { bone }))
+                    throw new InvalidOperationException(
+                        "The Fire Beetle's wings need " + bone + ".");
+            // Neither kind, ever.
+            foreach (string key in new[] { WorkerKey, SoldierKey,
+                FireBeetleKey })
+                foreach (string foot in Sprint14BonePolicy.FourthChainFeet)
+                    if (Sprint14BonePolicy.IsPermitted(key, new[] { foot }))
+                        throw new InvalidOperationException(
+                            key + " must never drive " + foot + ".");
+            // An unreviewed key gets the narrower list, not the wider one.
+            if (Sprint14BonePolicy.AllowedBones("giant-ant-drone") !=
+                    Sprint14BonePolicy.AntBones)
+                throw new InvalidOperationException(
+                    "An unreviewed creature must not inherit wing permission.");
+        }
+
+        /// <summary>
+        /// The shipped meshes pass their own kind's allowlist, and a corrupted
+        /// copy of each is refused by the same function the loader calls.
+        /// </summary>
+        internal static void ACorruptedSprint14MeshIsRefusedByItsOwnAllowlist()
+        {
+            foreach (string key in InsectKeys)
+            {
+                string[] bones = ShippedBones(key);
+                string offender = Sprint14BonePolicy.FirstForbiddenBone(key,
+                    bones);
+                if (offender != null)
+                    throw new InvalidOperationException(
+                        key + " ships a bone it may not drive: " + offender);
+                // An eighth leg from the knee up: accepted by the old shared
+                // list for every creature, and refused now for the ants.
+                string[] eighthLeg = bones.Concat(new[] { "L_Leg3_Upper" })
+                    .ToArray();
+                bool refused = !Sprint14BonePolicy.IsPermitted(key, eighthLeg);
+                if (key == FireBeetleKey ? refused : !refused)
+                    throw new InvalidOperationException(
+                        key + " handled a fourth-chain upper bone wrongly.");
+                // A fourth foot is refused for all three without exception.
+                foreach (string foot in Sprint14BonePolicy.FourthChainFeet)
+                    if (Sprint14BonePolicy.IsPermitted(key,
+                            bones.Concat(new[] { foot }).ToArray()))
+                        throw new InvalidOperationException(
+                            key + " accepted " + foot + ".");
+                // A bone from another donor entirely.
+                if (Sprint14BonePolicy.IsPermitted(key,
+                        bones.Concat(new[] { "Torso_Lower" }).ToArray()))
+                    throw new InvalidOperationException(
+                        key + " accepted a bone from another rig.");
+            }
+        }
+
+        private static string[] ShippedBones(string key)
+        {
+            string path = Path.Combine(Environment.CurrentDirectory,
+                "assets", "sprint14-insects", key + "-mesh.json");
+            return JObject.Parse(File.ReadAllText(path))["bones"]
+                .Values<string>().ToArray();
+        }
+
+        /// <summary>
+        /// Both ant castes carry the printed trip defence and the printed
+        /// racial bonus, and neither carries the feat that was standing in for
+        /// it.
+        ///
+        /// <para>The builder reconstructs AddFacts from the profile rather than
+        /// inheriting the donor's, so a fact left out of the profile is simply
+        /// absent at runtime: without this the two castes would have had the
+        /// Giant Spider's body and a quadruped's vulnerability to being
+        /// tripped.</para>
+        /// </summary>
+        internal static void BothAntCastesCarryTheirPrintedTripDefenceAndSkills()
+        {
+            foreach (string key in new[] { WorkerKey, SoldierKey })
+            {
+                NaturalSummonProfile ant =
+                    ExpandedSummoningNaturalProfiles.For(key);
+                if (!ant.Facts.Contains("TripDefenseEightLegs"))
+                    throw new InvalidOperationException(
+                        key + " must carry the multi-legged trip defence.");
+                if (!ant.Facts.Contains("GiantAntRacialSkills"))
+                    throw new InvalidOperationException(
+                        key + " must carry its printed racial Perception.");
+                if (ant.Facts.Contains("SkillFocusPerception"))
+                    throw new InvalidOperationException(
+                        key + " must not carry a feat its stat block omits.");
+                if (!ant.Facts.Contains("Toughness"))
+                    throw new InvalidOperationException(
+                        key + " keeps Toughness, its one printed feat.");
+                if (!ant.Deviations.Any(value =>
+                        value.Contains("Survival")))
+                    throw new InvalidOperationException(
+                        key + " must disclose the omitted Survival half.");
+            }
+            NaturalSummonProfile worker =
+                ExpandedSummoningNaturalProfiles.For(WorkerKey);
+            NaturalSummonProfile soldier =
+                ExpandedSummoningNaturalProfiles.For(SoldierKey);
+            foreach (string fact in new[] { "TripDefenseEightLegs",
+                "GiantAntRacialSkills", "Toughness" })
+                if (worker.Facts.Contains(fact) != soldier.Facts.Contains(fact))
+                    throw new InvalidOperationException(
+                        "The two castes must agree on " + fact + ".");
+        }
+
+        /// <summary>
+        /// None of the three may keep the donor's unit type.
+        ///
+        /// <para>The builder replaces class levels, facts, body, stats and
+        /// brain, but it leaves BlueprintUnitType alone unless a creature asks
+        /// for its own - only the Giant Wasp used to. All three insects clone
+        /// the Giant Spider, so without this a beetle and two ants would be
+        /// classified as spiders to the player and to anything that consults
+        /// unit type.</para>
+        /// </summary>
+        internal static void NoSprint14InsectKeepsTheDonorsUnitType()
+        {
+            string builder = Source("Blueprints",
+                "ExpandedSummoningNaturalBuilder.cs");
+            foreach (string symbol in new[] { "FireBeetleUnitTypeSymbol",
+                "GiantAntUnitTypeSymbol" })
+                if (!builder.Contains("unit.Type = Require<BlueprintUnitType>(bySymbol,\r\n                    " + symbol) &&
+                    !builder.Contains("unit.Type = Require<BlueprintUnitType>(bySymbol,\n                    " + symbol))
+                    throw new InvalidOperationException(
+                        "No creature assigns " + symbol + ".");
+            // One type for both castes: they are one creature in two castes.
+            if (!builder.Contains("profile.Key == \"giant-ant-worker\" ||") ||
+                !builder.Contains("profile.Key == \"giant-ant-soldier\""))
+                throw new InvalidOperationException(
+                    "Both ant castes must share one unit type.");
+            string path = Path.Combine(Environment.CurrentDirectory,
+                "blueprints", "blueprints.json");
+            string[] symbols = ((JArray)JObject.Parse(File.ReadAllText(path))
+                ["entries"]).Select(value => (string)value["symbol"]).ToArray();
+            foreach (string symbol in new[] {
+                "KMG.Summoning.Natural.FireBeetle.UnitType",
+                "KMG.Summoning.Natural.GiantAnt.UnitType",
+                "KMG.Summoning.Natural.GiantAnt.RacialSkills" })
+                if (!symbols.Contains(symbol))
+                    throw new InvalidOperationException(
+                        "The ledger is missing " + symbol + ".");
+        }
+
+        /// <summary>
+        /// An injury poison needs an injury, not merely a hit.
+        ///
+        /// <para>The native graph this project clones fires on OnlyHit, which
+        /// is a weaker test than the tabletop rule: an attack that connects but
+        /// whose damage is reduced to nothing has hit without wounding. Sprint
+        /// 12's bite diseases already gate on positive final damage; the
+        /// poisons were left behind, so the Giant Wasp had the same defect and
+        /// is corrected with the ant rather than left inconsistent.</para>
+        /// </summary>
+        internal static void AnInjuryPoisonNeedsAnActualWound()
+        {
+            if (!SummonInjuryPoisonPolicy.ShouldDeliver(true, true, 1))
+                throw new InvalidOperationException(
+                    "A wounding hit with the right weapon delivers the poison.");
+            if (SummonInjuryPoisonPolicy.ShouldDeliver(true, false, 0))
+                throw new InvalidOperationException(
+                    "A miss delivers nothing.");
+            if (SummonInjuryPoisonPolicy.ShouldDeliver(true, true, 0))
+                throw new InvalidOperationException(
+                    "A hit reduced to no damage has not wounded.");
+            if (SummonInjuryPoisonPolicy.ShouldDeliver(false, true, 6))
+                throw new InvalidOperationException(
+                    "Another weapon's wound delivers nothing.");
+            // The same gate Sprint 12 applies to its bite diseases.
+            if (SummonInjuryDiseasePolicy.ShouldResolve(true, true, 0, true,
+                    false))
+                throw new InvalidOperationException(
+                    "The disease gate and the poison gate must agree.");
+            string builder = Source("Blueprints",
+                "ExpandedSummoningNaturalBuilder.cs");
+            if (builder.Split(new[] { "ContextActionOnlyIfWeaponWounded" },
+                    StringSplitOptions.None).Length - 1 != 2)
+                throw new InvalidOperationException(
+                    "Both injury poisons must carry the wound gate.");
+        }
+
+        /// <summary>
+        /// The beetle's light is matched to the body every frame and released
+        /// in the frame it is asked for.
+        ///
+        /// <para>A Light on a child object is governed by nothing that governs
+        /// the creature: not the fader, not the renderer, not the death
+        /// dissolve, not culling. Left alone it would keep illuminating the
+        /// scene from inside a beetle nobody can see.</para>
+        /// </summary>
+        internal static void TheBeetleGlowFollowsItsBodyAndReleasesInFrame()
+        {
+            string glow = Source("Summoning", "FireBeetleVisualGlow.cs");
+            foreach (string token in new[] { "LateUpdate", "_view.IsVisible",
+                "_renderer.enabled", "activeInHierarchy",
+                "DestroyImmediate(carrier)", "_released" })
+                if (!glow.Contains(token))
+                    throw new InvalidOperationException(
+                        "The glow lifecycle is missing " + token + ".");
+            // Release is idempotent: it clears what it owns before destroying,
+            // so a second call has nothing to destroy.
+            if (!glow.Contains("if (carrier == null) return;"))
+                throw new InvalidOperationException(
+                    "Release must be idempotent.");
+            string patch = Source("Summoning",
+                "ExpandedSummoningPteranodonViewPatch.cs");
+            if (patch.Split(new[] { "BeetleGlow.Release(true)" },
+                    StringSplitOptions.None).Length - 1 != 2)
+                throw new InvalidOperationException(
+                    "Both the release and rollback paths must free the carrier in-frame.");
+            // And it still claims nothing mechanical.
+            foreach (string forbidden in new[] { "Concealment", "Stealth",
+                "Perception" })
+                if (glow.Contains(forbidden))
+                    throw new InvalidOperationException(
+                        "The glow must not reach into " + forbidden + ".");
+        }
+
     }
 }

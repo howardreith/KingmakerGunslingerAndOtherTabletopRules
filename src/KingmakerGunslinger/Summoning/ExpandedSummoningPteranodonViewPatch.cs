@@ -468,6 +468,9 @@ namespace KingmakerGunslinger.Summoning
                 }
                 if (attachment.BeetleGlow != null)
                 {
+                    // A rollback after the glow attached must not leave its
+                    // carrier behind while the swap is reverted.
+                    attachment.BeetleGlow.Release(true);
                     UnityEngine.Object.Destroy(attachment.BeetleGlow);
                     attachment.BeetleGlow = null;
                 }
@@ -625,9 +628,11 @@ namespace KingmakerGunslinger.Summoning
             }
             if (attachment.BeetleGlow != null)
             {
-                // Immediately, like the Stirge's touch: a point light left
-                // standing for a frame with nothing under it is exactly the
+                // The component's own release destroys the carrier and the
+                // light in this frame; destroying the component alone would
+                // have queued the carrier for the end of it, which is the
                 // artefact a crowd of expiring beetles would show.
+                attachment.BeetleGlow.Release(true);
                 attachment.BeetleGlow.enabled = false;
                 UnityEngine.Object.DestroyImmediate(attachment.BeetleGlow);
                 attachment.BeetleGlow = null;
