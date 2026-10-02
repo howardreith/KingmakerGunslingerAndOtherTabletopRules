@@ -1981,7 +1981,10 @@ function Assert-KmgRuntimeScenarioPreflight {
         }
         $nativeActionCase = $Scenario -ceq 'working-save-elemental-character-creation-regression' -and
             $Parameters.ContainsKey('nativeActionCase')
-        $flightActivation = $Scenario -cin @('summon-same-turn-activation', 'summon-same-turn-rtwp-control') -and
+        # The ordinary native-control case takes a named creature too: it is the
+        # unquickened Full-Round route, and a creature too far up the ladder to
+        # be quickened has nowhere else to prove ordinary turn-based behaviour.
+        $flightActivation = $Scenario -cin @('summon-same-turn-activation', 'summon-same-turn-rtwp-control', 'summon-same-turn-native-control') -and
             $Parameters.ContainsKey('flightCreature')
         $crowdReview = $Scenario -ceq 'working-save-expanded-summoning-creature-review' -and
             $Parameters.ContainsKey('quantity')
@@ -2006,7 +2009,7 @@ function Assert-KmgRuntimeScenarioPreflight {
         }
         if ($flightActivation -and ($Parameters.flightCreature -isnot [string] -or
             [string]$Parameters.flightCreature -cnotin @('eagle', 'dire-bat', 'giant-wasp', 'stirge', 'dire-rat', 'wolverine', 'shadow-mastiff'))) {
-            throw 'The activation fixture permits only Eagle, Dire Bat, Giant Wasp, Stirge, or Dire Rat.'
+            throw 'The activation fixture permits only Eagle, Dire Bat, Giant Wasp, Stirge, Dire Rat, Wolverine or Shadow Mastiff.'
         }
         if ($nativeActionCase -and ([string]$Parameters['nativeActionCase'] -cne 'racial-actions' -or
             [string]$Parameters['class'] -cne 'Fighter' -or
@@ -2271,7 +2274,8 @@ function New-KmgRuntimeRequest {
             }
             $creatureReviewParameters
         } elseif ($Scenario -cin @('summon-same-turn-activation',
-                'summon-same-turn-rtwp-control') -and
+                'summon-same-turn-rtwp-control',
+                'summon-same-turn-native-control') -and
                 $Parameters.ContainsKey('flightCreature')) {
             [ordered]@{ saveName = [string]$Parameters.saveName;
                 flightCreature = [string]$Parameters.flightCreature }
