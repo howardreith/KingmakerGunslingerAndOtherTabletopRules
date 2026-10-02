@@ -591,8 +591,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                     castDaylight = true;
                     // The engine's static concealment calculation raises no
                     // rule, so the entry is refreshed through a round tick
-                    // before it is read.
-                    TickExpandedSummoningBuffs(mastiff);
+                    // before it is read. A tick with no elapsed time never
+                    // reaches the buff's next tick time, so the clock moves a
+                    // round first and is restored afterwards.
+                    TimeSpan blendClock = Game.Instance.Player.GameTime;
+                    try
+                    {
+                        Game.Instance.Player.GameTime = blendClock +
+                            TimeSpan.FromSeconds(GameConsts.RoundDuration + 1f);
+                        TickExpandedSummoningBuffs(mastiff);
+                    }
+                    finally
+                    {
+                        Game.Instance.Player.GameTime = blendClock;
+                    }
                     castDetail = "cast-on-party-member;distance=" +
                         UnityEngine.Vector3.Distance(caster.Position,
                             mastiff.Position).ToString("0.##",
