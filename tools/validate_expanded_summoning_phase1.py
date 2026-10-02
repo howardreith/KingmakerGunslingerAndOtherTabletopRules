@@ -389,9 +389,14 @@ def validate(root: Path) -> None:
         ".Bison" in symbol or ".Rhinoceros" in symbol or
         ".WoollyRhinoceros" in symbol or ".DireRat" in symbol or
         ".ShadowMastiff" in symbol or
+        # Sprint 14's insects. ".GiantAnt" covers both castes' units and
+        # placements as well as the shared poison and venom, because the two
+        # castes are one stat block and one poison graph.
+        ".FireBeetle" in symbol or ".GiantAnt" in symbol or
         symbol == "KMG.Summoning.Natural.GoblinDog.Traits" or
         symbol == "KMG.Summoning.Natural.GoblinDog.AllergicReaction" or
         symbol == "KMG.Summoning.Natural.StirgeTouch" or
+        symbol == "KMG.Summoning.Natural.AntSting1d4" or
         symbol == "KMG.Summoning.Natural.WaspSting1d8"}
     expected = sorted((symbol, planned_type) for symbol, planned_type in plan
                       if symbol not in prefix and symbol not in phase2_additions)
@@ -402,9 +407,9 @@ def validate(root: Path) -> None:
     expanded_summoning_manifest.validate(manifest, plan)
 
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningCatalog.cs",
-        "Creatures.Length != 89",
-        "ValidateFamily(SummonFamily.Monster, 81, 457)",
-        "ValidateFamily(SummonFamily.NaturesAlly, 78, 447)",
+        "Creatures.Length != 92",
+        "ValidateFamily(SummonFamily.Monster, 84, 481)",
+        "ValidateFamily(SummonFamily.NaturesAlly, 81, 471)",
         'C("pony","Pony",1,true,1)', 'C("horse","Horse",2,true,2)',
         'C("owlbear","Owlbear",null,false,4)', 'C("cyclops","Cyclops",null,false,5)',
         'C("shambling-mound","Shambling Mound",null,false,6)',
@@ -415,12 +420,12 @@ def validate(root: Path) -> None:
         'C("salt-mephit","Salt Mephit",4,false,4)', 'C("steam-mephit","Steam Mephit",4,false,4)',
         'C("tiger","Tiger",null,false,4,"Leopard")')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs",
-        "RegisteredLogicalPlacementCount = 904;",
-        "SuppressedLogicalPlacementCount = 0;")
+        "RegisteredLogicalPlacementCount = 952;",
+        "SuppressedLogicalPlacementCount = 48;")
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningIdentityCatalog.cs",
-        "UnitCount = 89;",
-        "LogicalAbilityCount = 904;",
-        "TemplatedPlacementCount = 238;",
+        "UnitCount = 92;",
+        "LogicalAbilityCount = 952;",
+        "TemplatedPlacementCount = 262;",
         "NativeExpandedOptionIdentityCount = %d;" % SPRINT3["nativeExpansionWrappers"])
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonNativeExpansionCatalog.cs",
         "Values.Length != %d" % SPRINT3["nativeExpansionWrappers"],

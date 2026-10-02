@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
 """Validate the 0.0.141 Expanded Summoning Phase 2A release boundary.
 
-Sprints 9-11 are published and technically qualified. Sprint 12 is retained
-as hidden groundwork: its registered placements must remain suppressed until
-the rest of its publication matrix is completed in a later release.
+Sprints 9-11 are the published 0.0.141 build and are immutable. Development of
+Sprints 12-21 continues on the same version, which is why the static record
+carries a separate development section; this validator pins the published
+boundary and guards that development state.
+
+Sprints 12 and 13 have since qualified and published, and Sprint 14's three
+insects are registered ahead of their own qualification and withheld. So the
+suppression check runs in both directions: a creature that has qualified must
+not be suppressed, and a creature that has not must be.
 """
 from __future__ import annotations
 
@@ -34,18 +40,27 @@ def validate(root: Path) -> None:
     baseline.validate(root)
 
     require_tokens = baseline.baseline.require_tokens
-    # Sprints 9-13 are qualified and published. Nothing is withheld, so the
-    # published surface is the whole registered surface at 904.
+    # Sprints 9-13 are qualified and published; Sprint 14's three insects are
+    # registered and withheld. The published surface is therefore the
+    # registered surface of 952 less the 48 withheld, which is the 904 that
+    # every roster, census and player-path gate reconciles against.
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs",
-        "RegisteredLogicalPlacementCount = 904",
-        "SuppressedLogicalPlacementCount = 0",
+        "RegisteredLogicalPlacementCount = 952",
+        "SuppressedLogicalPlacementCount = 48",
         "RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount")
     visibility = (root / "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs").read_text(encoding="utf-8")
     for key in ('"dire-rat"', '"dog"', '"hyena"', '"goblin-dog"',
-                '"shadow-mastiff"'):
+                '"shadow-mastiff"', '"wolverine"', '"poisonous-frog"'):
         if key in visibility:
             raise AssertionError(
                 f"A qualified creature is still suppressed: {key}")
+    # The other direction, which is the one that matters while a sprint is in
+    # flight: an unqualified creature may be registered but may never be
+    # published, and removing its key here is the act that publishes it.
+    for key in ('"fire-beetle"', '"giant-ant-worker"', '"giant-ant-soldier"'):
+        if key not in visibility:
+            raise AssertionError(
+                f"An unqualified Sprint 14 creature is not suppressed: {key}")
     require_tokens(root / "planning/EXPANDED-SUMMONING-FIDELITY-MATRIX.md",
         "Sprints 9-13", "904 published generated", "933 total choices")
     require_tokens(root / "EXPANDED-SUMMONING-PHASE2-INVENTORY-RECONCILIATION.md",
@@ -93,8 +108,8 @@ def validate(root: Path) -> None:
         "authorizedSprintRange": "12-21",
         "publicReleaseAuthorized": False,
         "candidateOnly": True,
-        "registeredGeneratedPlacements": 904,
-        "suppressedGeneratedPlacements": 0,
+        "registeredGeneratedPlacements": 952,
+        "suppressedGeneratedPlacements": 48,
         "publishedGeneratedPlacements": 904,
         "retainedNativeWrappers": 29,
         "visibleChoiceTotal": 933,

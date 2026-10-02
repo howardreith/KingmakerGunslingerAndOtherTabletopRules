@@ -10,12 +10,49 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 CATALOG = ROOT / "src/KingmakerGunslinger/Summoning/ExpandedSummoningCatalog.cs"
 DONORS = ROOT / "src/KingmakerGunslinger/Summoning/ExpandedSummoningDonorCatalog.cs"
+VISIBILITY = ROOT / "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs"
 MANIFEST = ROOT / "blueprints/blueprints.json"
 ROSTER = ROOT / "planning/EXPANDED-SUMMONING-ROSTER.md"
 ENTRY = re.compile(
     r'C\("([^"]+)","([^"]+)",(null|\d+),(true|false),(null|\d+)'
     r'(?:,"([^"]+)")?\)')
 DONOR = re.compile(r'"([a-z0-9-]+)\|([0-9a-f]{32})\|([01])"')
+SUPPRESSED = re.compile(
+    r"SuppressedCreatureKeys\s*=\s*\n?\s*new HashSet<string>\((.*?)\);", re.S)
+
+# Published creatures whose qualification is worth more than the structural
+# line. A creature that is withheld never appears here: what it is waiting for
+# is decided by the visibility catalog, not by this table.
+QUALIFICATION_NOTES = {
+    "giant-wasp": "Published; Sprint 10 Wasp mechanics, view, menu and player path technical PASS; owner visual review pending",
+    "stirge": "Published; Stirge attach, drain, visual contact, icon, player path and live menu technical PASS; owner visual review pending",
+    "aurochs": "Published; Sprint 11 mechanics, original visual, quantity and lifecycle technical PASS; owner visual review pending",
+    "bison": "Published; Sprint 11 mechanics, original visual, quantity and lifecycle technical PASS; owner visual review pending",
+    "rhinoceros": "Published; Sprint 11 mechanics, original visual, quantity and lifecycle technical PASS; owner visual review pending",
+    "woolly-rhinoceros": "Published; Sprint 11 mechanics, original visual, quantity and lifecycle technical PASS; owner visual review pending",
+    "dire-rat": "Published; Sprint 12 mechanics, disease lifetime, original visual, navigation, quantity and persistence technical PASS; owner visual review pending",
+    "dog": "Published; Sprint 12 mechanics, original visual, navigation, quantity and persistence technical PASS; owner visual review pending",
+    "hyena": "Published; Sprint 12 mechanics, original visual, navigation, quantity and persistence technical PASS; owner visual review pending",
+    "goblin-dog": "Published; Sprint 12 mechanics, original visual, navigation, quantity and persistence technical PASS; owner visual review pending",
+    "wolverine": "Published; Sprint 13 rage lifetime, original visual, navigation, both combat modes and persistence technical PASS; owner visual review pending",
+    "shadow-mastiff": "Published; Sprint 13 bay, shadow blend, original visual, both combat modes and persistence technical PASS; owner visual review pending",
+    "poisonous-frog": "Published; Sprint 13 mechanics, original visual, navigation, quantity and persistence technical PASS; owner visual review pending",
+}
+
+
+def suppressed_keys():
+    """The creatures the visibility catalog withholds, read from the catalog.
+
+    Registering ahead of qualification is what allocates a creature's
+    identities once and keeps them from ever moving, so the roster has to be
+    able to say that a row exists and is not yet published. That is decided in
+    exactly one place and this reads it rather than repeating it.
+    """
+    text = VISIBILITY.read_text(encoding="utf-8")
+    match = SUPPRESSED.search(text)
+    if match is None:
+        raise SystemExit("cannot read SuppressedCreatureKeys")
+    return set(re.findall(r'"([a-z0-9-]+)"', match.group(1)))
 
 DONOR_NAMES = {
     "028cc6f46e7998f46855a33ffde89567": "MastodonSummon",
@@ -160,8 +197,8 @@ def parsed_creatures():
             "ally": None if ally == "null" else int(ally),
             "visual": visual or name,
         })
-    if len(values) != 89:
-        raise SystemExit(f"Expected 89 parsed creatures; observed {len(values)}")
+    if len(values) != 92:
+        raise SystemExit(f"Expected 92 parsed creatures; observed {len(values)}")
     return values
 
 
@@ -369,27 +406,39 @@ def planned():
         ("KMG.Summoning.Special.ShadowMastiff.BayImmunity", "BlueprintBuff"),
         ("KMG.Summoning.Special.ShadowMastiff.ShadowBlend", "BlueprintActivatableAbility"),
         ("KMG.Summoning.Special.ShadowMastiff.ShadowBlendState", "BlueprintBuff"),
+        # Sprint 14. The soldier's sting is its own weapon so the poison
+        # trigger can gate on that weapon's type and never reach the bite,
+        # and its grab rides the shared grapple lifecycle on the primary limb
+        # alone. The beetle's luminescence is a display feature beside a
+        # view-local light; Kingmaker has no mechanics-layer illumination
+        # model, so it grants and denies nothing.
+        ("KMG.Summoning.Natural.AntSting1d4", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Natural.GiantAnt.Poison", "BlueprintFeature"),
+        ("KMG.Summoning.Natural.GiantAnt.Venom", "BlueprintBuff"),
+        ("KMG.Summoning.Natural.FireBeetle.Luminescence", "BlueprintFeature"),
+        ("KMG.Summoning.Special.GiantAntSoldier.Traits", "BlueprintFeature"),
     ))
-    if len(rows) != 1677 or len({symbol for symbol, _ in rows}) != 1677:
+    if len(rows) != 1781 or len({symbol for symbol, _ in rows}) != 1781:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 
 
 def generated_roster(manifest):
+    withheld = suppressed_keys()
     by_symbol = {entry["symbol"]: entry for entry in manifest["entries"]}
     donors = {
         key: {"guid": guid, "dedicated": dedicated == "1"}
         for key, guid, dedicated in DONOR.findall(DONORS.read_text(encoding="utf-8"))
     }
     creatures = parsed_creatures()
-    if len(donors) != 89 or set(donors) != {value["key"] for value in creatures}:
+    if len(donors) != 92 or set(donors) != {value["key"] for value in creatures}:
         raise SystemExit("Roster generation requires one exact donor per creature")
     lines = [
         "# Expanded Summoning roster and identity ledger",
         "",
         "Generated deterministically by `tools/expanded_summoning_manifest.py`; do not edit by hand.",
         "",
-        "Registered totals: 80 Summon Monster entries / 453 placements; 78 Summon Nature's Ally entries / 447 placements; 88 unique units; all 900 placements are published. Sprint 12 qualified Dire Rat, Dog, Hyena and Goblin Dog, so nothing registered is withheld. The Frost Giant remains a retained native unit under Summon Monster VIII-IX and Summon Nature's Ally VII-IX wrappers.",
+        "Registered totals: 84 Summon Monster entries / 481 placements; 81 Summon Nature's Ally entries / 471 placements; 92 unique units; 952 registered placements of which 904 are published and 48 are withheld. The withheld 48 are the three Sprint 14 insects - Fire Beetle, Giant Ant (Worker) and Giant Ant (Soldier) - registered ahead of their own qualification so their identities are allocated once and never move, exactly as the Shadow Mastiff was in Sprint 13. Sprints 9 to 13 are qualified and published and nothing of theirs is withheld. The Frost Giant remains a retained native unit under Summon Monster VIII-IX and Summon Nature's Ally VII-IX wrappers.",
         "",
         "Phase 1 baseline qualification source: `5205805eab3fe0115d6888c53bce73c80474d1b7`. Structural run `20260812T1327062696968Z-bd09acfba08942df8f7c42e5c70252f4`; native cast run `20260812T1330147883834Z-ec8896f1d65b43e0913a6bea7cba4405`; visual run `20260812T1151394827201Z-add45a04f5de44c1a39e3251f7ff0778`; enabled/disabled persistence runs `20260812T1155220523013Z-6d2a18f9b33344d08d3127ffce7e5cb6` through `20260812T1208449380302Z-65c9b7056d97483fb48a4a9b76c22ea6`; all eight required compatibility transactions passed and restored their profiles. Phase 2 Sprint 10 and 11 mechanics, visual, quantity and lifecycle evidence is indexed in `EXPANDED-SUMMONING-PHASE2-EVIDENCE-INDEX.md`.",
         "",
@@ -436,11 +485,12 @@ def generated_roster(manifest):
                        "and summon/conjure surfaces removed; ")
             adaptation = SPECIAL_NOTES.get(creature["key"],
                 "Dedicated mechanics reused only where exact; otherwise donor is view/rig only and the checked-in tabletop profile owns stats, attacks, facts, and deviations.")
-            qualification = ("Hidden; Sprint 12 mechanics, visual identity and lifecycle qualification pending" if creature["key"] in ("dire-rat", "dog", "hyena", "goblin-dog") else
-                "Published; Sprint 11 mechanics, original visual, quantity and lifecycle technical PASS; owner visual review pending" if creature["key"] in ("aurochs", "bison", "rhinoceros", "woolly-rhinoceros") else
-                "Published; Sprint 10 Wasp mechanics, view, menu and player path technical PASS; owner visual review pending" if creature["key"] == "giant-wasp" else
-                "Published; Stirge attach, drain, visual contact, icon, player path and live menu technical PASS; owner visual review pending" if creature["key"] == "stirge" else
-                "Structural PASS; native cast PASS; visual contract PASS; required profiles PASS")
+            qualification = (
+                "Registered and withheld; mechanics, original visual, both "
+                "combat modes and lifecycle qualification pending"
+                if creature["key"] in withheld else
+                QUALIFICATION_NOTES.get(creature["key"],
+                    "Structural PASS; native cast PASS; visual contract PASS; required profiles PASS"))
             lines.append(
                 f"| {source} / {creature['name']} | {policy} | {donor_text} | "
                 f"`{unit_guid}` | {';<br>'.join(abilities)} | {removed}{adaptation} "
