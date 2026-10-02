@@ -631,6 +631,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint13-bay-bounded-ai", ExpandedSummoningSprint13Tests.BayIsPlayerActivatedAndNeverAnAiChoice),
             Case("expanded-summoning.sprint13-original-visuals", ExpandedSummoningSprint13Tests.Sprint13OriginalVisualsAreDeterministicAndDelivered),
             Case("expanded-summoning.sprint13-frog-view-scale", ExpandedSummoningSprint13Tests.PoisonFrogIsViewScaledWithoutTouchingItsMechanics),
+            Case("harness.focused-selection-filter", FocusedSelectionFilterSelectsWhatItSays),
             Case("expanded-summoning.sprint10-stirge-attach-policy", ExpandedSummoningSprint10Tests.StirgeAttachRulesBoundDrainAndDetachment),
             Case("expanded-summoning.sprint10-stirge-published-registration", ExpandedSummoningSprint10Tests.StirgePublishesAtAllNineNatureTiers),
             Case("expanded-summoning.sprint10-wasp-registration", ExpandedSummoningSprint10Tests.GiantWaspRegisteredUnderSuppressionAtExactTiers),
@@ -2003,15 +2004,60 @@ namespace KingmakerGunslinger.DomainTests
             Case("reload-profile.ammunition-identity", ReloadProfileAmmunitionIdentity)
         };
 
+        /// <summary>
+        /// The focused-selection filter, read from <c>KMG_TEST_FILTER</c>.
+        ///
+        /// <para>An environment variable rather than an argument, because any
+        /// argument already means "run one of the utilities" and overloading
+        /// that would make a mistyped filter silently run something else.
+        /// Empty or unset selects everything, which keeps the default
+        /// invocation - and therefore the sprint and tranche gates - running
+        /// the complete suite exactly as before.</para>
+        ///
+        /// <para>Terms are separated by semicolons or commas and matched as
+        /// case-insensitive substrings of the case name; a case is selected if
+        /// any term matches. A filter that selects nothing is a failure rather
+        /// than a silent pass, because the usual cause is a typo and the worst
+        /// outcome would be an empty run reported as green.</para>
+        /// </summary>
+        internal static TestCase[] Select(TestCase[] cases, string filter)
+        {
+            if (cases == null) throw new ArgumentNullException("cases");
+            string[] terms = (filter ?? string.Empty)
+                .Split(new[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(value => value.Trim())
+                .Where(value => value.Length != 0).ToArray();
+            if (terms.Length == 0) return cases;
+            return cases.Where(value => terms.Any(term =>
+                value.Name.IndexOf(term,
+                    StringComparison.OrdinalIgnoreCase) >= 0)).ToArray();
+        }
+
         private static int Main(string[] args)
         {
             if (args != null && args.Length != 0)
                 return RunUtility(args);
 
+            string filter = Environment.GetEnvironmentVariable("KMG_TEST_FILTER");
+            TestCase[] selected = Select(Cases, filter);
+            bool filtered = !ReferenceEquals(selected, Cases);
+            if (filtered && selected.Length == 0)
+            {
+                Console.Error.WriteLine(
+                    "KMG_TEST_FILTER matched no test of the " + Cases.Length +
+                    " registered: " + filter);
+                return 1;
+            }
+
             int failures = 0;
             Console.WriteLine("Kingmaker Gunslinger domain, firearm-state, and combat-rule tests");
+            if (filtered)
+                Console.WriteLine("KMG_TEST_FILTER=" + filter +
+                    "; selected " + selected.Length + " of " + Cases.Length +
+                    " registered tests. This is a focused run and is not a gate.");
 
-            foreach (TestCase testCase in Cases)
+            var clock = System.Diagnostics.Stopwatch.StartNew();
+            foreach (TestCase testCase in selected)
             {
                 try
                 {
@@ -2024,13 +2070,16 @@ namespace KingmakerGunslinger.DomainTests
                     Console.Error.WriteLine("FAIL " + testCase.Name + ": " + exception);
                 }
             }
+            clock.Stop();
 
             Console.WriteLine(
                 string.Format(
                     System.Globalization.CultureInfo.InvariantCulture,
-                    "Completed {0} tests; failures={1}.",
+                    "Completed {0} tests; failures={1}. Registered {2}; elapsed {3:0.0}s.",
+                    selected.Length,
+                    failures,
                     Cases.Length,
-                    failures));
+                    clock.Elapsed.TotalSeconds));
             return failures == 0 ? 0 : 1;
         }
 
@@ -2767,6 +2816,45 @@ namespace KingmakerGunslinger.DomainTests
         private static TestCase Case(string name, Action body)
         {
             return new TestCase(name, body);
+        }
+
+        private static TestCase Fixture(string name)
+        {
+            return new TestCase(name, () => { });
+        }
+
+        /// <summary>
+        /// The focused-selection filter itself. A filter that quietly selected
+        /// nothing, or that let a sprint gate run a subset while reporting
+        /// green, would be worse than having no filter at all.
+        /// </summary>
+        private static void FocusedSelectionFilterSelectsWhatItSays()
+        {
+            // Named through a helper rather than written out, because the
+            // repository validators count the registration call literally to
+            // know how many tests exist, and these three are fixtures rather
+            // than registered tests.
+            TestCase[] cases = {
+                Fixture("expanded-summoning.sprint14-fire-beetle"),
+                Fixture("expanded-summoning.sprint14-ant-worker"),
+                Fixture("firearm.reload-profile")
+            };
+            Assertions.True(ReferenceEquals(Select(cases, null), cases) &&
+                ReferenceEquals(Select(cases, string.Empty), cases) &&
+                ReferenceEquals(Select(cases, "  ;, "), cases),
+                "An absent or empty filter must select every test, so the " +
+                "default invocation stays the complete suite.");
+            Assertions.Equal(2, Select(cases, "sprint14").Length,
+                "A substring must select every case that carries it.");
+            Assertions.Equal(1, Select(cases, "SPRINT14-ANT").Length,
+                "Matching must ignore case.");
+            Assertions.Equal(3, Select(cases, "sprint14;firearm").Length,
+                "Terms must combine, separated by a semicolon.");
+            Assertions.Equal(3, Select(cases, "sprint14, firearm").Length,
+                "Terms must combine, separated by a comma.");
+            Assertions.Equal(0, Select(cases, "sprint99").Length,
+                "A filter that matches nothing must select nothing, which " +
+                "the runner reports as a failure rather than an empty pass.");
         }
 
         private static ReloadProfile StandardReload(int rounds)
@@ -10402,7 +10490,9 @@ namespace KingmakerGunslinger.DomainTests
             }
         }
 
-        private sealed class TestCase
+        // Internal rather than private so the selection filter above can
+        // return an array of them to a test that exercises it.
+        internal sealed class TestCase
         {
             internal TestCase(string name, Action body)
             {

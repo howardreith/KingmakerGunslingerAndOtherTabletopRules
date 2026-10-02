@@ -1214,7 +1214,7 @@
     "sprint30EntryApproved": true,
     "standaloneBinaryCount": 1,
     "standalonePackageEntries": 8,
-    "testCount": 877,
+    "testCount": 878,
     "testFailures": 0,
     "testRuns": 3
   },
@@ -2065,7 +2065,7 @@
   },
   "expandedSummoningPhase2A141": {
     "branch": "codex/expanded-summoning-phase2a-sprints9-13",
-    "deterministicTestCount": 1974,
+    "deterministicTestCount": 1975,
     "publicReleaseAuthorized": true,
     "candidateOnly": false,
     "releaseVersion": "0.0.141",
