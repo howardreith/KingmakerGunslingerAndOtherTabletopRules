@@ -167,13 +167,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                 key == "goblin-dog";
         }
 
+        /// <summary>
+        /// Sprint 13's three creatures. The Wolverine and the Shadow Mastiff
+        /// ride the same Worg rig the Goblin Dog does; the Poison Frog rides
+        /// the Giant Poisonous Frog.
+        /// </summary>
+        private static bool IsSprint13CreatureReviewKey(string key)
+        {
+            return key == "wolverine" || key == "shadow-mastiff" ||
+                key == "poisonous-frog";
+        }
+
         private static bool IsOriginalReviewKey(string key)
         {
             // Dog is excluded on purpose: it keeps the native Dog
             // presentation, so it has no project-owned view to inspect.
             return key == "giant-wasp" || key == "stirge" ||
                 key == "dire-rat" || key == "hyena" || key == "goblin-dog" ||
-                IsSprint11UngulateReviewKey(key);
+                IsSprint11UngulateReviewKey(key) ||
+                IsSprint13CreatureReviewKey(key);
         }
 
         // The Sprint 12 quadrupeds already carry the "KMG_<key>_Original"

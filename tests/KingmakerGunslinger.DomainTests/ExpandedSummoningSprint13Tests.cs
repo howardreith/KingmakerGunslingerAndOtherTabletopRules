@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 using KingmakerGunslinger.Summoning;
 
 namespace KingmakerGunslinger.DomainTests
@@ -398,6 +399,177 @@ namespace KingmakerGunslinger.DomainTests
                 "Sprint 13 ledger count must match its declared identities.");
             Assertions.True(catalog.Contains("UnitCount = 89"),
                 "The Shadow Mastiff unit identity is not registered.");
+        }
+
+        /// <summary>
+        /// The three original visuals are deterministic, carry only reviewed
+        /// donor controls, and reach the installed mod through the project,
+        /// the local build and the strict package. A mesh that never arrives
+        /// is a creature wearing somebody else's body.
+        /// </summary>
+        internal static void Sprint13OriginalVisualsAreDeterministicAndDelivered()
+        {
+            string root = Environment.CurrentDirectory;
+            string directory = Path.Combine(root, "assets", "sprint13-creatures");
+            string[] kinds = { "wolverine", "shadow-mastiff", "poisonous-frog" };
+            string[] meshHashes = {
+                "e1e97db7ab271c3705472a78262fc3306a1515ef174c39e7d6899c28bad54fc6",
+                "61755b4c1853942b73e0f2666ac246bf5d77ef9b7c6800ca30ea2f7e56a13bd3",
+                "2b37e38a4e6fb7613a06ab69f161273221a05c50105691a9dcdfd58899f58ed6"
+            };
+            // The Wolverine and the Shadow Mastiff ride the Worg, so both must
+            // bind exactly the reviewed Worg controls the Goblin Dog already
+            // binds. The Poison Frog's donor is a different rig entirely.
+            string[] worgBones = {
+                "Head", "L_Arm_Lower", "L_Arm_Upper", "L_Foot0",
+                "L_Leg0_Lower", "L_Leg0_Lower2", "L_Leg0_Upper", "L_Palm",
+                "R_Arm_Lower", "R_Arm_Upper", "R_Foot0", "R_Leg0_Lower",
+                "R_Leg0_Lower2", "R_Leg0_Upper", "R_Palm", "Torso_Lower",
+                "Torso_Upper", "ear_L", "ear_R", "front_paw__tip_R",
+                "front_paw_tip_L", "hindpaw_tip_L", "hindpaw_tip_R", "jaw",
+                "jaw_woo_down", "jaw_woo_up", "jaw_woo_up_add", "neck",
+                "spine_0", "tail_01", "tail_02", "tail_03", "tail_04",
+                "withers"
+            };
+            string[] frogBones = {
+                "Head", "L_Arm_Lower", "L_Arm_Upper", "L_Foot0",
+                "L_Leg0_Lower", "L_Leg0_Upper", "L_Palm", "LowerTorso",
+                "R_Arm_Lower", "R_Arm_Upper", "R_Foot0", "R_Leg0_Lower",
+                "R_Leg0_Upper", "R_Palm", "chest_joint", "jaw_endJoint",
+                "jaw_skinJoint1", "l_t_eyeLid_joint", "l_toeTip_joint",
+                "l_toe_joint", "r_t_eyeLid_joint", "r_toeTip_joint",
+                "r_toe_joint", "spine_3_joint", "stomach"
+            };
+            string[][] allowedBones = { worgBones, worgBones, frogBones };
+            for (int index = 0; index < kinds.Length; index++)
+            {
+                string kind = kinds[index];
+                string meshPath = Path.Combine(directory, kind + "-mesh.json");
+                Assertions.Equal(meshHashes[index], Sha256(meshPath),
+                    kind + " mesh matches the reviewed deterministic export.");
+                JObject mesh = JObject.Parse(File.ReadAllText(meshPath));
+                Assertions.Equal(2, (int)mesh["schemaVersion"],
+                    kind + " uses the audited skinned-mesh schema.");
+                Assertions.True(((string)mesh["space"]).Contains(
+                        "donor renderer local") &&
+                    ((string)mesh["rigSha256"]).Length == 64,
+                    kind + " records only its private captured-frame hash.");
+                string[] bones = ((JArray)mesh["bones"])
+                    .Select(value => (string)value).ToArray();
+                Assertions.True(bones.SequenceEqual(allowedBones[index]),
+                    kind + " binds only the exact reviewed donor controls.");
+                int vertices = (int)mesh["vertexCount"];
+                int triangles = (int)mesh["triangleCount"];
+                Assertions.True(vertices >= 400 && triangles >= 900 &&
+                    Convert.FromBase64String((string)mesh["data"]).Length ==
+                    vertices * 64 + triangles * 12,
+                    kind + " carries complete original geometry, UVs and weights.");
+                JObject albedo = (JObject)mesh["albedo"];
+                Assertions.Equal(kind + "-albedo.png", (string)albedo["file"],
+                    kind + " names its own painting.");
+                Assertions.True((int)albedo["width"] == 1024 &&
+                    (int)albedo["height"] == 1024 &&
+                    Sha256(Path.Combine(directory, (string)albedo["file"])) ==
+                    (string)albedo["sha256"],
+                    kind + " painting matches its mesh manifest.");
+            }
+
+            string source = Path.Combine(root, "assets-source",
+                "original-models", "sprint13-creatures");
+            string generator = File.ReadAllText(Path.Combine(source,
+                "generate_sprint13_creatures.py"));
+            Assertions.True(File.Exists(Path.Combine(source,
+                    "paint_sprint13_albedo.py")) &&
+                File.Exists(Path.Combine(source,
+                    "render_sprint13_review.py")) &&
+                File.Exists(Path.Combine(source, "SOURCE.md")) &&
+                generator.Contains("if len(renderers) != 1") &&
+                generator.Contains("donor bind frame is incomplete") &&
+                generator.Contains("donor bind frame repeats a bone name") &&
+                generator.Contains("wrong donor bind frame for"),
+                "Editable source must retain deterministic review and strict private-capture rejection.");
+            // The atlas regions tile edge to edge, so a ring landing on a
+            // region edge samples its neighbour. That cost the Shadow Mastiff
+            // a blue ring around its neck, and the inset is what prevents it.
+            Assertions.True(generator.Contains("inset_region_uvs(uvs)") &&
+                generator.Contains("UV_REGION_INSET = 0.02"),
+                "Every Sprint 13 coordinate must be inset inside its own atlas region.");
+
+            string project = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "KingmakerGunslinger.csproj"));
+            string loader = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Assets", "PteranodonAssetRuntime.cs"));
+            string view = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "Summoning",
+                "ExpandedSummoningPteranodonViewPatch.cs"));
+            string runtime = File.ReadAllText(Path.Combine(root, "src",
+                "KingmakerGunslinger", "RuntimeTesting",
+                "RuntimeTestRunner.cs"));
+            Assertions.True(project.Contains("assets\\sprint13-creatures\\*-mesh.json") &&
+                project.Contains("assets\\sprint13-creatures\\*-albedo.png") &&
+                loader.Contains("ConfigureSprint13Creatures(context)") &&
+                loader.Contains("AllowedGiantFrogBones") &&
+                loader.Contains("TryGetSprint13CreatureVisual") &&
+                view.Contains("Sprint13CreatureKeys.Contains(attachment.VisualKey)") &&
+                view.Contains("KMG_Summoning_Unit_Wolverine") &&
+                view.Contains("KMG_Summoning_Unit_ShadowMastiff") &&
+                view.Contains("KMG_Summoning_Unit_PoisonousFrog") &&
+                !project.Contains("sprint13-giant-poisonous-frog-bind-rig.json"),
+                "The three originals use the instance-local swap and no private capture is packaged.");
+            // The Wolverine and the Shadow Mastiff reuse the Worg list rather
+            // than getting one of their own; a second copy would be a place
+            // for the two to drift apart.
+            Assertions.True(loader.Contains(
+                    "? AllowedGiantFrogBones : AllowedWolfWorgBones"),
+                "The two Worg riders must reuse the reviewed Worg bone list.");
+            Assertions.True(runtime.Contains("int sprint13VisualChecked = 0;") &&
+                runtime.Contains("variant.Creature.Key == \"shadow-mastiff\"") &&
+                runtime.Contains("sprint13VisualAttached == sprint13VisualChecked") &&
+                runtime.Contains("sprint13VisualChecked &&"),
+                "The shared visual-patch lifecycle assertion must account for every Sprint 13 coverage view.");
+
+            string build = File.ReadAllText(Path.Combine(root, "scripts",
+                "Build-Local.ps1"));
+            string package = File.ReadAllText(Path.Combine(root, "scripts",
+                "package.ps1"));
+            string buildOutput = File.ReadAllText(Path.Combine(root, "scripts",
+                "validate-build-output.ps1"));
+            string packageCheck = File.ReadAllText(Path.Combine(root, "scripts",
+                "validate-package.ps1"));
+            Assertions.True(build.Contains("assets\\sprint13-creatures") &&
+                package.Contains("assets\\sprint13-creatures") &&
+                buildOutput.Contains("assets\\sprint13-creatures\\wolverine-mesh.json") &&
+                packageCheck.Contains("assets\\sprint13-creatures\\poisonous-frog-albedo.png") &&
+                build.Contains("{ 288 } else { 286 }") &&
+                package.Contains("{ 288 } else { 286 }"),
+                "All six Sprint 13 asset files enter the strict standalone package.");
+        }
+
+        /// <summary>
+        /// A Tiny creature wearing a Medium donor's prefab has to be scaled
+        /// down for the view alone; mechanical size, reach and footprint are
+        /// untouched. The multiplier itself is confirmed by the live
+        /// party-camera review, which records the applied scale.
+        /// </summary>
+        internal static void PoisonFrogIsViewScaledWithoutTouchingItsMechanics()
+        {
+            SummonViewScaleSpec frog = SummonViewScaleCatalog.All.Single(
+                value => value.CreatureKey == "poisonous-frog");
+            Assertions.True(frog.Multiplier > 0f && frog.Multiplier < 1f,
+                "The Poison Frog's view must be smaller than its donor's.");
+            Assertions.Equal("KMG_Summoning_Unit_PoisonousFrog",
+                frog.BlueprintName,
+                "The view scale must address the Poison Frog's own identity.");
+            Assertions.Equal("Tiny",
+                ExpandedSummoningNaturalProfiles.For("poisonous-frog").Size,
+                "The Poison Frog's mechanical size stays as printed.");
+        }
+
+        private static string Sha256(string path)
+        {
+            using (var sha = System.Security.Cryptography.SHA256.Create())
+                return string.Concat(sha.ComputeHash(File.ReadAllBytes(path))
+                    .Select(value => value.ToString("x2")));
         }
     }
 }
