@@ -109,6 +109,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // The native summon timer, not a synthesised destruction: the
                 // clock is moved past the marker's own end and the engine's
                 // own buff tick and destroyer are advanced.
+                //
+                // The collection is brought up to just inside the marker's
+                // life first. BuffCollection.Tick() steps its own next-tick
+                // time forward rather than catching up to an arbitrary jump,
+                // so a single leap from here to the end time leaves the
+                // expiry unprocessed - which is exactly what the first run of
+                // this gate observed, and what the Stirge expiry exercise
+                // already handles the same way.
+                Game.Instance.Player.GameTime = marker.EndTime -
+                    TimeSpan.FromSeconds(0.1);
+                expiring.Descriptor.Buffs.Tick();
                 Game.Instance.Player.GameTime = marker.EndTime +
                     TimeSpan.FromSeconds(0.1);
                 expiring.Descriptor.Buffs.Tick();
