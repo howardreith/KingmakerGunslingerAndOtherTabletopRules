@@ -125,7 +125,8 @@ if ($scenarioMetadata.RequiresSaveName) {
         $Parameters = @{ saveName = $SaveName; creatures = [string]$Parameters.creatures }
         if ($crowd) { $Parameters.quantity = 'OneD4PlusOne' }
     } elseif ($Scenario -cin @('summon-same-turn-activation',
-            'summon-same-turn-rtwp-control')) {
+            'summon-same-turn-rtwp-control',
+            'summon-same-turn-native-control')) {
         if ($Parameters.Count -eq 0) {
             $Parameters = @{ saveName = $SaveName }
         } elseif ($Parameters.Count -eq 1 -and
