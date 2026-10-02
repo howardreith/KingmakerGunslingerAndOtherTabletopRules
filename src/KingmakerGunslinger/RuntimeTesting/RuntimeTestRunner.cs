@@ -15727,6 +15727,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintItemWeapon naturalBite1d3 = all.OfType<BlueprintItemWeapon>()
                 .Single(value => value.name ==
                     "KMG_Summoning_Natural_Bite1d3");
+            // Sprint 13's flat point, which the Poison Frog's printed bite is.
+            BlueprintItemWeapon naturalBite1 = all.OfType<BlueprintItemWeapon>()
+                .Single(value => value.name ==
+                    "KMG_Summoning_Natural_Bite1");
             BlueprintItemWeapon naturalTail1d12 = all.OfType<BlueprintItemWeapon>()
                 .Single(value => value.name ==
                     "KMG_Summoning_Natural_Tail1d12");
@@ -15780,7 +15784,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 poisonFrog.Strength == 2 && poisonFrog.Dexterity == 12 &&
                 poisonFrog.Constitution == 11 && poisonFrog.Intelligence == 1 &&
                 poisonFrog.Wisdom == 9 && poisonFrog.Charisma == 10 &&
-                ReferenceEquals(poisonFrog.Body.PrimaryHand, naturalBite1d3) &&
+                // Sprint 13 corrected this to the printed flat point: the
+                // Poison Frog's bite deals 1 damage, not 1d3.
+                ReferenceEquals(poisonFrog.Body.PrimaryHand, naturalBite1) &&
                 poisonFrog.AddFacts.Count(value => value != null &&
                     value.AssetGuid == "1a3f2f384bbef804d8f52db1f9aa62d3") == 1 &&
                 centipede.ComponentsArray.OfType<AddClassLevels>().Single()
@@ -22512,6 +22518,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "GiantSpiderPoison", "094714bb08f4e1943a8e9d2384ebe573" },
                     { "SpiderWebImmunity", "3051e7002c803fc47a11bcfa381b9fbd" }
                 };
+            // A project-owned fact has no native GUID to write down here - its
+            // identity is allocated in the append-only ledger - so it is
+            // resolved by its own blueprint name out of the same live set the
+            // census is already reading. Sprint 13's Wolverine rage is the
+            // first profile fact of that kind.
+            foreach (var owned in new[] {
+                new[] { "WolverineRage", "KMG_Summoning_Natural_Wolverine_Rage" } })
+            {
+                BlueprintUnitFact granted = all.OfType<BlueprintUnitFact>()
+                    .SingleOrDefault(value => value.name == owned[1]);
+                if (granted != null) factGuids[owned[0]] = granted.AssetGuid;
+            }
             // A profile fact the map does not know is a mismatch to report,
             // never an exception that ends the whole inventory.
             string[] unknownFacts = profile.Facts.Where(value =>
@@ -23382,6 +23400,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (blueprint.name == "KMG_Summoning_Subtype_Extraplanar" ||
                 blueprint.name ==
                     "KMG_Summoning_Natural_DireBat_Blindsense" ||
+                // Sprint 13: the Wolverine's rage carrier and the Shadow
+                // Mastiff's trait carrier, both project-owned and both granted
+                // directly by their own unit.
+                blueprint.name ==
+                    "KMG_Summoning_Natural_Wolverine_Rage" ||
+                blueprint.name ==
+                    "KMG_Summoning_Special_ShadowMastiff_Traits" ||
                 blueprint.name ==
                     "KMG_Summoning_Natural_GiantWasp_Poison" ||
                 blueprint.name ==
