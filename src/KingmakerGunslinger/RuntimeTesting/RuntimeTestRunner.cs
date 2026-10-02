@@ -656,6 +656,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                     WriteLifecycleStage("onupdate-entered");
                     WriteLifecycleStage("runner-onupdate-entered");
                 }
+                // A failed bootstrap is not a timeout. The runner waits for
+                // ModContext.IsReady, which only becomes true once patches are
+                // installed; if blueprint initialization threw, that never
+                // happens and every scenario used to expire after its whole
+                // startup budget reporting the stage it last recorded and an
+                // empty exception summary - which says nothing about the real
+                // cause. The context already knows it failed, so say so at
+                // once and name it.
+                if (_manualElapsed == null && _context != null &&
+                    _context.IsFailed)
+                {
+                    _trace.Record("bootstrap-failed",
+                        "stage=" + _workingStartupStage +
+                        "; the mod's own initialization failed, so no scenario can run");
+                    RuntimeTestResult bootstrapFailure = CreateResult("FAIL",
+                        null, null);
+                    bootstrapFailure.Diagnostics.Add("bootstrapFailedAtStage=" +
+                        _workingStartupStage);
+                    bootstrapFailure.Diagnostics.Add(
+                        "cause=mod-initialization-failed; see the Unity Mod Manager log for the registration exception");
+                    Complete(bootstrapFailure);
+                    return;
+                }
                 if (_manualElapsed == null &&
                     _elapsed.Elapsed.TotalSeconds >= _request.StartupTimeoutSeconds)
                 {

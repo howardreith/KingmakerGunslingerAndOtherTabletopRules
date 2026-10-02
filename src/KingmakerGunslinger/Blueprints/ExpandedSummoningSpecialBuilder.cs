@@ -2966,7 +2966,11 @@ namespace KingmakerGunslinger.Blueprints
             unit.AddFacts = new BlueprintUnitFact[] {
                 Feature(library, EvilSubtypeGuid, "evil subtype"),
                 extraplanar,
-                Feature(library, NaturalArmor6Guid, "natural armor +6"),
+                // A natural-armor stack is a BlueprintUnitFact, not a
+                // BlueprintFeature; the Invisible Stalker above resolves the
+                // same identity the same way.
+                BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(library,
+                    NaturalArmor6Guid, "natural armor +6"),
                 Feature(library, TrippingBiteGuid, "printed trip on the bite"),
                 Feature(library, ImprovedInitiativeGuid, "Improved Initiative"),
                 Feature(library, IronWillGuid, "Iron Will"),
