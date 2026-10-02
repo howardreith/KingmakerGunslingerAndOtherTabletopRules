@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Kingmaker;
 using Kingmaker.AreaLogic;
@@ -18,8 +19,11 @@ using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.UnitLogic.Parts;
+using Kingmaker.UnitLogic.Buffs.Components;
 using Kingmaker.UnitLogic.Mechanics.Actions;
+using Kingmaker.Controllers.Units;
 using Kingmaker.Utility;
+using UnityEngine;
 
 namespace KingmakerGunslinger.Summoning
 {
@@ -84,6 +88,46 @@ namespace KingmakerGunslinger.Summoning
             if (unit == null || unit.Descriptor == null || buff == null)
                 return false;
             return unit.Descriptor.Buffs.GetBuff(buff) != null;
+        }
+    }
+
+    /// <summary>
+    /// The printed one-round delay: "flies into a rage on its next turn."
+    ///
+    /// <para>This sits on the hidden onset marker the damage trigger applies,
+    /// and the engine dispatches it at the marker's own round boundary through
+    /// <c>Buff.TickMechanics</c>, so there is still no path from the damage
+    /// event to the rage that skips a round.</para>
+    ///
+    /// <para>It replaces the native <c>SetBuffOnsetDelay</c>, whose action
+    /// list ran - the marker cleared on schedule - but did not apply the rage.
+    /// Applying it through <c>RuleApplyBuff</c> uses the same path as the
+    /// damage trigger itself and the Sprint 12 disease rider, both of which
+    /// are proven in evidence. The marker is left to expire on its own short
+    /// duration rather than removing itself from inside its own tick.</para>
+    /// </summary>
+    [Serializable]
+    public sealed class SummonRageOnsetComponent : BuffLogic, ITickEachRound
+    {
+        public BlueprintBuff RageBuff;
+
+        public void OnNewRound()
+        {
+            UnitEntityData owner = Owner == null ? null : Owner.Unit;
+            if (owner == null || RageBuff == null) return;
+            bool available = SummonDiseaseExposure.IsAvailable(owner);
+            bool alreadyRaging = SummonRageOnDamageComponent.HasBuff(owner,
+                RageBuff);
+            // One tick is one round boundary, which is the printed delay.
+            if (!SummonRagePolicy.ShouldBeginRage(1, available, alreadyRaging))
+                return;
+            var context = new MechanicsContext(owner, owner.Descriptor,
+                RageBuff, Fact == null ? null : Fact.MaybeContext,
+                new TargetWrapper(owner));
+            var apply = new RuleApplyBuff(owner, RageBuff, context, null,
+                (buff, source, time) =>
+                    owner.Descriptor.Buffs.AddBuff(buff, source, time));
+            Rulebook.Trigger(apply);
         }
     }
 
@@ -257,21 +301,23 @@ namespace KingmakerGunslinger.Summoning
         public ConcealmentDescriptor Descriptor = ConcealmentDescriptor.Blur;
 
         /// <summary>
-        /// Exact native spells whose effect negates shadow blend. These are
-        /// abilities, not buffs: the audited native Daylight identity is a
-        /// spell blueprint, so negation is detected by finding a buff whose
-        /// own context names one of these as the ability that applied it.
+        /// The buffs a negating spell actually applies, derived in the builder
+        /// from the spell's own action list rather than guessed. Kingmaker's
+        /// Daylight is a party-member-targeted light spell: it cannot be cast
+        /// at a summon at all and it creates no region, so the negation has to
+        /// be detected from the buff it puts on whoever carries the light.
         /// </summary>
-        public BlueprintAbility[] NegatingAbilities;
-
-        private bool _added;
+        public BlueprintBuff[] NegatingBuffs;
 
         /// <summary>
-        /// Set while the component is active, for the runtime gate to read:
-        /// what the live creature actually carried and what the printed
-        /// condition decided from it.
+        /// How far a negating light reaches. The printed Daylight spell lights
+        /// a 60-foot radius, and the engine models no illumination of its own,
+        /// so the spell's own printed radius is what decides whether the
+        /// mastiff is standing in it.
         /// </summary>
-        [NonSerialized] internal string LastDecision = "<not evaluated>";
+        public int NegatingRadiusFeet = 60;
+
+        private bool _added;
 
         public override void OnTurnOn() { Refresh(); }
 
@@ -291,13 +337,9 @@ namespace KingmakerGunslinger.Summoning
         {
             UnitEntityData owner = Owner == null ? null : Owner.Unit;
             if (owner == null) { Remove(); return; }
-            bool daylight = IsFullDaylight();
             string negatingSource;
-            bool negated = HasNegatingEffect(owner, out negatingSource);
             bool grants = SummonShadowMastiffPolicy.GrantsShadowConcealment(
-                daylight, negated);
-            LastDecision = "fullDaylight=" + daylight + ";negatedBy=" +
-                negatingSource + ";grants=" + grants;
+                IsFullDaylight(), HasNegatingEffect(owner, out negatingSource));
             if (grants && !_added)
             {
                 Owner.Ensure<UnitPartConcealment>().AddConcealment(Entry());
@@ -344,26 +386,44 @@ namespace KingmakerGunslinger.Summoning
             return Game.Instance.TimeOfDay == TimeOfDay.Day;
         }
 
+        /// <summary>
+        /// True when a negating light is burning within its own printed radius
+        /// of this creature, on anyone - including the creature itself.
+        /// </summary>
         private bool HasNegatingEffect(UnitEntityData unit, out string source)
         {
             source = "<none>";
-            if (NegatingAbilities == null || unit == null ||
-                unit.Descriptor == null) return false;
-            foreach (Buff buff in unit.Descriptor.Buffs.RawFacts.OfType<Buff>())
+            if (NegatingBuffs == null || NegatingBuffs.Length == 0 ||
+                unit == null || unit.Descriptor == null) return false;
+            float reach = new Feet(NegatingRadiusFeet).Meters;
+            foreach (UnitEntityData other in UnitsToSearch(unit))
             {
-                MechanicsContext context = buff.MaybeContext;
-                BlueprintAbility applied = context == null ? null :
-                    context.SourceAbility;
-                if (applied == null) continue;
-                for (int index = 0; index < NegatingAbilities.Length; index++)
-                    if (NegatingAbilities[index] != null &&
-                        ReferenceEquals(applied, NegatingAbilities[index]))
+                if (other == null || other.Descriptor == null ||
+                    other.Destroyed) continue;
+                if (!ReferenceEquals(other, unit) &&
+                    Vector3.Distance(other.Position, unit.Position) > reach)
+                    continue;
+                for (int index = 0; index < NegatingBuffs.Length; index++)
+                    if (NegatingBuffs[index] != null &&
+                        other.Descriptor.Buffs.GetBuff(NegatingBuffs[index]) !=
+                            null)
                     {
-                        source = applied.name;
+                        source = NegatingBuffs[index].name + "@" +
+                            (ReferenceEquals(other, unit) ? "self" :
+                                other.CharacterName);
                         return true;
                     }
             }
             return false;
+        }
+
+        private static IEnumerable<UnitEntityData> UnitsToSearch(
+            UnitEntityData unit)
+        {
+            if (Game.Instance != null && Game.Instance.State != null &&
+                Game.Instance.State.Units != null)
+                return Game.Instance.State.Units;
+            return new[] { unit };
         }
     }
 }
