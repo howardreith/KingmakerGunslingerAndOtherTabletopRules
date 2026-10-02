@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
 using KingmakerGunslinger.Bootstrap;
+using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
@@ -153,40 +154,18 @@ namespace KingmakerGunslinger.Assets
         // frog has no fingers or tongue of its own, so a weight landing on one
         // would mean geometry nobody reviewed had appeared.
         /// <summary>
-        /// The Giant Spider bones the three Sprint 14 insects may bind to.
+        /// Which Giant Spider bones each Sprint 14 insect may drive.
         ///
-        /// <para>What is absent carries the contract. The donor has four leg
-        /// chains a side and an insect has three, so `L_Foot3` and `R_Foot3`
-        /// are deliberately not here: the ants weight nothing to the fourth
-        /// chain at all, and the beetle weights its wings only to that chain's
-        /// upper and lower bones so no part of a wing can reach the ground. A
-        /// mesh that started weighting geometry to a fourth foot - an eighth
-        /// leg, or a wing that plants - is refused at load and the donor stays
-        /// visible, rather than the defect being found in a review frame.</para>
-        ///
-        /// <para>Also absent on purpose: `Position`, which is the rig root and
-        /// carries nothing; the three `femur` bones a side, which sit inside
-        /// the body where no geometry is authored; and the pedipalp bones the
-        /// antennae skip, because an antenna is sampled at five of the chain's
-        /// seven joints rather than all of them.</para>
+        /// <para>The lists themselves live in <see cref="Sprint14BonePolicy"/>
+        /// because this class is bound to Unity and the deterministic suite
+        /// cannot construct it. The policy is pure, so a corruption test can
+        /// feed it the bytes the game would actually read, and this calls the
+        /// same function rather than a copy of it.</para>
         /// </summary>
-        private static readonly string[] AllowedGiantSpiderBones =
+        private static string[] AllowedSprint14Bones(string key)
         {
-            "LowerTorso", "Tail1_M", "UpperTorso", "Tail3_M",
-            "chelicera_L", "chelicera_R",
-            "pedipalp1_L", "pedipalp2_L", "pedipalp3_L", "pedipalp5_L",
-            "pedipalp7_L",
-            "pedipalp1_R", "pedipalp2_R", "pedipalp3_R", "pedipalp5_R",
-            "pedipalp7_R",
-            "L_Leg0_Upper", "L_Leg0_Lower", "L_Foot0",
-            "L_Leg1_Upper", "L_Leg1_Lower", "L_Foot1",
-            "L_Leg2_Upper", "L_Leg2_Lower", "L_Foot2",
-            "L_Leg3_Upper", "L_Leg3_Lower",
-            "R_Leg0_Upper", "R_Leg0_Lower", "R_Foot0",
-            "R_Leg1_Upper", "R_Leg1_Lower", "R_Foot1",
-            "R_Leg2_Upper", "R_Leg2_Lower", "R_Foot2",
-            "R_Leg3_Upper", "R_Leg3_Lower"
-        };
+            return Sprint14BonePolicy.AllowedBones(key);
+        }
 
         private static readonly string[] AllowedGiantFrogBones =
         {
@@ -598,7 +577,7 @@ namespace KingmakerGunslinger.Assets
                     string[] names;
                     AlbedoRequirement requirement;
                     mesh = BuildMesh(File.ReadAllText(path), out names,
-                        out requirement, AllowedGiantSpiderBones);
+                        out requirement, AllowedSprint14Bones(key));
                     string reason;
                     albedo = LoadAlbedo(Path.GetDirectoryName(path), requirement,
                         out reason);

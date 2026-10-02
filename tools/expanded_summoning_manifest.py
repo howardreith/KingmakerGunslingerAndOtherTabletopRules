@@ -417,8 +417,14 @@ def planned():
         ("KMG.Summoning.Natural.GiantAnt.Venom", "BlueprintBuff"),
         ("KMG.Summoning.Natural.FireBeetle.Luminescence", "BlueprintFeature"),
         ("KMG.Summoning.Special.GiantAntSoldier.Traits", "BlueprintFeature"),
+        # Sprint 14 follow-up: the ants' printed racial Perception, and
+        # project unit types so the three insects are not classified as
+        # the Giant Spider they borrow. One ant type serves both castes.
+        ("KMG.Summoning.Natural.GiantAnt.RacialSkills", "BlueprintFeature"),
+        ("KMG.Summoning.Natural.FireBeetle.UnitType", "BlueprintUnitType"),
+        ("KMG.Summoning.Natural.GiantAnt.UnitType", "BlueprintUnitType"),
     ))
-    if len(rows) != 1781 or len({symbol for symbol, _ in rows}) != 1781:
+    if len(rows) != 1784 or len({symbol for symbol, _ in rows}) != 1784:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 

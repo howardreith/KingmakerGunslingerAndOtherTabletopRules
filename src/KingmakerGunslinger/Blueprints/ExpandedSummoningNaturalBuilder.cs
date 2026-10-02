@@ -72,6 +72,12 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Summoning.Natural.GiantAnt.Venom";
         private const string FireBeetleLuminescenceSymbol =
             "KMG.Summoning.Natural.FireBeetle.Luminescence";
+        private const string GiantAntRacialSkillsSymbol =
+            "KMG.Summoning.Natural.GiantAnt.RacialSkills";
+        private const string FireBeetleUnitTypeSymbol =
+            "KMG.Summoning.Natural.FireBeetle.UnitType";
+        private const string GiantAntUnitTypeSymbol =
+            "KMG.Summoning.Natural.GiantAnt.UnitType";
         private const string NativeShockingGraspDeliveryGuid =
             "17451c1327c571641a1345bd31155209";
         private const string WaspPoisonSymbol =
@@ -308,6 +314,12 @@ namespace KingmakerGunslinger.Blueprints
                 Require<BlueprintItemWeapon>(bySymbol, AntSting1d4Symbol));
             ConfigureFireBeetleLuminescence(Require<BlueprintFeature>(
                 bySymbol, FireBeetleLuminescenceSymbol));
+            ConfigureGiantAntRacialSkills(Require<BlueprintFeature>(
+                bySymbol, GiantAntRacialSkillsSymbol));
+            ConfigureFireBeetleUnitType(Require<BlueprintUnitType>(
+                bySymbol, FireBeetleUnitTypeSymbol));
+            ConfigureGiantAntUnitType(Require<BlueprintUnitType>(
+                bySymbol, GiantAntUnitTypeSymbol));
             ConfigureWaspUnitType(Require<BlueprintUnitType>(bySymbol,
                 WaspUnitTypeSymbol));
             BlueprintBuff filthFever = BlueprintLibraryLookup.RequireExact<
@@ -401,9 +413,17 @@ namespace KingmakerGunslinger.Blueprints
             ContextActionApplyBuff apply = outcome.Failed.Actions.OfType<
                 ContextActionApplyBuff>().Single();
             apply.Buff = venom;
-            trigger.Action.Actions = (new GameAction[] {
-                new ContextActionSetWaspPoisonDc() }).Concat(
-                    trigger.Action.Actions).ToArray();
+            // The whole native graph moves inside a wound gate. An injury
+            // poison is delivered by a wound, and OnlyHit is a weaker test: an
+            // attack reduced to zero damage has hit without wounding. Sprint 12
+            // already gates its bite diseases this way; this is the same
+            // correction applied to the poison that shares the carrier.
+            trigger.Action.Actions = new GameAction[] {
+                new ContextActionOnlyIfWeaponWounded {
+                    Actions = new ActionList {
+                        Actions = (new GameAction[] {
+                            new ContextActionSetWaspPoisonDc() }).Concat(
+                                trigger.Action.Actions).ToArray() } } };
             feature.ComponentsArray = components;
             BlueprintUnitFactAccess.Resolve().Configure(feature,
                 LocalizationService.Create(
@@ -480,9 +500,16 @@ namespace KingmakerGunslinger.Blueprints
             ContextActionApplyBuff apply = outcome.Failed.Actions.OfType<
                 ContextActionApplyBuff>().Single();
             apply.Buff = venom;
-            trigger.Action.Actions = (new GameAction[] {
-                new ContextActionSetGiantAntPoisonDc() }).Concat(
-                    trigger.Action.Actions).ToArray();
+            // The same wound gate the wasp's poison now carries: the sting
+            // must hit and must deal positive final damage. The bite is
+            // excluded by weapon type a layer above this and so never reaches
+            // it at all.
+            trigger.Action.Actions = new GameAction[] {
+                new ContextActionOnlyIfWeaponWounded {
+                    Actions = new ActionList {
+                        Actions = (new GameAction[] {
+                            new ContextActionSetGiantAntPoisonDc() }).Concat(
+                                trigger.Action.Actions).ToArray() } } };
             feature.ComponentsArray = components;
             BlueprintUnitFactAccess.Resolve().Configure(feature,
                 LocalizationService.Create(
@@ -526,6 +553,76 @@ namespace KingmakerGunslinger.Blueprints
                     "KMG.ExpandedSummoning.FireBeetle.Luminescence.Description",
                     "A pair of glands above the beetle's eyes gives off a steady red glow. It is light and nothing else: Kingmaker does not model illumination, so the glow neither reveals nor conceals anything."),
                 null);
+        }
+
+        /// <summary>
+        /// The Giant Ant's printed racial skill bonus.
+        ///
+        /// <para>The stat block gives Toughness as its only feat and a +4
+        /// racial bonus to Perception and Survival. The profiles previously
+        /// carried Skill Focus (Perception), which is neither: it is a
+        /// different feat with a different value that happens to touch the same
+        /// skill.</para>
+        ///
+        /// <para>Kingmaker has no Survival skill, and this project has
+        /// consistently omitted that half rather than substituting another -
+        /// the Grizzly Bear, Dire Wolf and Tiger entries all record it as
+        /// omitted. Lore (Nature) is a knowledge stat for identifying
+        /// creatures, which is a different thing from tracking and foraging, so
+        /// it is not used as an analogue. The Perception half is exact and the
+        /// Survival half is disclosed on both castes' profiles.</para>
+        /// </summary>
+        private static void ConfigureGiantAntRacialSkills(
+            BlueprintFeature feature)
+        {
+            var perception = ScriptableObject.CreateInstance<AddStatBonus>();
+            perception.Stat = StatType.SkillPerception;
+            perception.Value = 4;
+            perception.Descriptor = ModifierDescriptor.Racial;
+            feature.name = InternalName(GiantAntRacialSkillsSymbol);
+            feature.IsClassFeature = false;
+            feature.HideInUI = false;
+            feature.ComponentsArray = new BlueprintComponent[] { perception };
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.GiantAnt.RacialSkills.Name",
+                    "Giant Ant Senses"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.GiantAnt.RacialSkills.Description",
+                    "A giant ant has a +4 racial bonus on Perception checks. Its printed +4 Survival bonus has no Kingmaker equivalent and is omitted rather than substituted."),
+                null);
+        }
+
+        private static void ConfigureFireBeetleUnitType(BlueprintUnitType type)
+        {
+            type.name = InternalName(FireBeetleUnitTypeSymbol);
+            type.KnowledgeStat = StatType.SkillLoreNature;
+            type.Name = LocalizationService.Create(
+                "KMG.ExpandedSummoning.FireBeetle.UnitType.Name",
+                "Fire Beetle");
+            type.Description = LocalizationService.Create(
+                "KMG.ExpandedSummoning.FireBeetle.UnitType.Description",
+                "A small nocturnal vermin whose glands give off a steady red glow.");
+            type.Image = null;
+            type.SignatureAbilities = Array.Empty<BlueprintUnitFact>();
+        }
+
+        /// <summary>
+        /// One type for both castes, because they are one creature in two
+        /// castes rather than two creatures.
+        /// </summary>
+        private static void ConfigureGiantAntUnitType(BlueprintUnitType type)
+        {
+            type.name = InternalName(GiantAntUnitTypeSymbol);
+            type.KnowledgeStat = StatType.SkillLoreNature;
+            type.Name = LocalizationService.Create(
+                "KMG.ExpandedSummoning.GiantAnt.UnitType.Name",
+                "Giant Ant");
+            type.Description = LocalizationService.Create(
+                "KMG.ExpandedSummoning.GiantAnt.UnitType.Description",
+                "A dog-sized colonial vermin with heavy mandibles; soldiers also carry a venomous sting.");
+            type.Image = null;
+            type.SignatureAbilities = Array.Empty<BlueprintUnitFact>();
         }
 
         private static void ConfigureWaspUnitType(BlueprintUnitType type)
@@ -694,9 +791,19 @@ namespace KingmakerGunslinger.Blueprints
                 "KMG.ExpandedSummoning." + Token(profile.Key) + ".Unit.Name",
                 profile.DisplayName);
             unit.LocalizedName = name;
+            // Without this a creature keeps whatever unit type its donor
+            // had. Only the Wasp used to ask, so all three Sprint 14 insects
+            // would have been classified as the Giant Spider they borrow.
             if (profile.Key == "giant-wasp")
                 unit.Type = Require<BlueprintUnitType>(bySymbol,
                     WaspUnitTypeSymbol);
+            else if (profile.Key == "fire-beetle")
+                unit.Type = Require<BlueprintUnitType>(bySymbol,
+                    FireBeetleUnitTypeSymbol);
+            else if (profile.Key == "giant-ant-worker" ||
+                profile.Key == "giant-ant-soldier")
+                unit.Type = Require<BlueprintUnitType>(bySymbol,
+                    GiantAntUnitTypeSymbol);
             unit.Alignment = Alignment.TrueNeutral;
             unit.Size = ParseSize(profile.Size);
             unit.Strength = profile.Strength;
@@ -739,6 +846,9 @@ namespace KingmakerGunslinger.Blueprints
                     : fact == "FireBeetleLuminescence"
                     ? Require<BlueprintFeature>(bySymbol,
                         FireBeetleLuminescenceSymbol)
+                    : fact == "GiantAntRacialSkills"
+                    ? Require<BlueprintFeature>(bySymbol,
+                        GiantAntRacialSkillsSymbol)
                     : BaseUnitFactKeys.Contains(fact)
                     ? BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(
                         library, FactGuids[fact], profile.DisplayName + " " + fact)

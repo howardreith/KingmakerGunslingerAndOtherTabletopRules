@@ -507,4 +507,12 @@ has no mechanics-layer illumination model; and
 `KMG.Summoning.Special.GiantAntSoldier.Traits`, the soldier's grab carrier on
 the shared Sprint 6 grapple lifecycle, on the primary limb alone. All 48
 placements remain registered and suppressed until the three creatures qualify.
-The ledger now contains 2769 stable identifiers: 2767 active and 2 reserved.
+
+A source review before the candidate appends three more:
+`KMG.Summoning.Natural.GiantAnt.RacialSkills`, the printed +4 racial Perception
+both castes carry in place of the Skill Focus that was standing in for it; and
+`KMG.Summoning.Natural.FireBeetle.UnitType` and
+`KMG.Summoning.Natural.GiantAnt.UnitType`, one shared by both castes, because a
+creature that does not ask for its own unit type keeps its donor's and all
+three of these borrow the Giant Spider.
+The ledger now contains 2772 stable identifiers: 2770 active and 2 reserved.
