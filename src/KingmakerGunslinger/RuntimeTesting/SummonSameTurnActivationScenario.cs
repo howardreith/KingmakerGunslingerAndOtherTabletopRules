@@ -3019,12 +3019,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                             tier + ".");
                     // Quicken Spell adds four levels, so a quickened Summon
                     // Monster VI would be a 10th-level spell and the game has
-                    // nine. No character can ever quicken one, so a creature
-                    // that far up the ladder is prepared at its own level -
-                    // which is the only way a player can cast it - and the
-                    // evidence records which path the run took rather than
-                    // leaving the reader to infer it from the spell level.
+                    // nine. No character can ever quicken one.
+                    //
+                    // That matters differently for the two cases. The
+                    // turn-based case exists to prove a summon acts in the
+                    // turn it was cast, which only a quickened swift cast
+                    // produces, so it refuses a creature that cannot be
+                    // quickened rather than measuring something else and
+                    // calling it the same thing - a run that prepared a Shadow
+                    // Mastiff at its own level instead reported eight
+                    // failures, every one of them the accelerated-summon
+                    // machinery correctly declining a Full-Round cast. The
+                    // RTWP case has no turn order to act inside, so there it
+                    // is prepared at its own level, which is the only way a
+                    // player can cast it.
                     bool quickenable = tier + 4 <= 9;
+                    if (!quickenable && _kind != ScenarioKind.RtwpControl)
+                        throw new InvalidOperationException(
+                            "Summon Monster " + tier + " cannot be quickened: " +
+                            "with Quicken Spell it would be a " + (tier + 4) +
+                            "th-level spell and the game has nine. The " +
+                            "same-turn activation case does not apply to " +
+                            _flightCreature + "; its real-time behaviour is " +
+                            "covered by the RTWP control case.");
                     _caseSpellLevel = quickenable ? tier + 4 : tier;
                     result = quickenable
                         ? PrepareQuickenedSummon(_spellbook, parent, selected,
