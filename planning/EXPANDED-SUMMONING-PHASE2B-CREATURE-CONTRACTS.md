@@ -210,17 +210,98 @@ different reaches. And heat applies to the spear as well as to the body, which
 means the fire rider belongs on the wielder rather than on a single weapon
 blueprint.
 
+## Tranche donor census, answered 2026-10-02
+
+Run `20261002T1440160968919Z-observe-expanded-summoning-native-donors`, 4/4
+PASS on `cbfc7c13`, live tree restored to the 136-file baseline. It enumerated
+599 native units, 2,931 facts, 356 abilities and 426 buffs, and the evidence
+file `native-donor-audit.json` is the record. This is the tranche's donor
+research: later sprints read it rather than relaunching to rediscover a fact
+already captured.
+
+### The game has no beetle, ant, crocodile or snake at all
+
+Searching all 599 units for beetle, ant, crocodile, alligator, snake, viper,
+serpent, python and cobra returns **nothing native**. The only matches are the
+project's own `KMG_Summoning_Unit_Crocodile`, which wears the Monitor Lizard,
+and one `SerpentineWaterElementalEidolonUnit`. Every creature in this tranche
+therefore needs an original mesh on a borrowed rig, exactly as Sprints 9 to 13
+did; none of them can be adopted from a native creature of the same species.
+
+### The rig families that do exist
+
+| Family | Donor | Prefab | Body plan |
+| --- | --- | --- | --- |
+| Insect | Giant Spider | `54e0335882f2dea4188214ea` | Compact many-legged arthropod, Medium |
+| Insect, elongated | Giant Centipede | `bf09aef8864bed844a2353f7` | Segmented, many-legged, Medium and Huge |
+| Crocodilian | Monitor Lizard | `2310dff1067d2d34caa2015e` | Four-legged lizard with a tail, Medium |
+| Serpentine | Serpentine Water Elemental Eidolon | `dc296683c2a3d2648afa516a` | Limbless, Medium, bite plus tail |
+| Serpentine with limbs | Tatzlwyrm | `c6b7d72e25039f44e9801e8c` | Large, bite and two claws |
+| Humanoid reptile | Lizardfolk | `9b1744531a4428e44aa9837c` | Biped with a weapon hand and a bite |
+
+**The insect shared-rig hypothesis holds.** A beetle and an ant are both
+compact arthropods with a segmented body and mandibles, which is the Giant
+Spider's shape rather than the centipede's; all five Sprint 14 and 15 creatures
+can ride that one rig, and the Giant Stag Beetle rides it at Large. That makes
+the grouping of those two sprints real rather than nominal.
+
+**The snake family has no good rig.** The only limbless native body is the
+Serpentine Water Elemental Eidolon, which is Medium and carries a bite and a
+tail - the right shape for the Viper and the Constrictor Snake, and the only
+candidate. Its suitability has to be confirmed from a live bind frame before
+Sprint 17 commits to it.
+
+**The Salamander has no rig of its own shape either.** It is a humanoid torso
+on a serpentine tail, and nothing native is both. The Lizardfolk it already
+wears is the closest available.
+
+### Two creatures are already most of the way there
+
+The census shows both proxies are far more complete than "a proxy" suggests,
+which changes what Sprints 16 and 17 actually have to do.
+
+- `KMG_Summoning_Unit_Crocodile` already carries `BiteDragonLarge1d8` with a
+  `KMG_Summoning_Natural_Tail1d12` secondary, `NaturalArmor4`, `ReducedReach`,
+  `TripDefenseFourLegs` and both Skill Focus feats, on the Monitor Lizard
+  prefab. Sprint 16 is therefore an original mesh, the death roll, the sprint
+  burst, grab and hold breath - not a registration.
+- `KMG_Summoning_Unit_Salamander` already carries its own spear and tail
+  weapons, `NaturalArmor7`, `DRMagic10`, `SubtypeFire`, Weapon Focus (spear)
+  and a combat-traits carrier. Sprint 17 is an original mesh, the heat rider
+  and constrict.
+
+### Carriers for the signature mechanics
+
+- **Sprint**: the project already owns
+  `KMG_Summoning_Special_Cheetah_Sprint`, which is the crocodile's once-per-
+  minute speed burst in all but name. Reuse rather than reinvent.
+- **Swallow whole**: `PurpleWormSwallowWholeFeature`
+  (`dee864aec4a0d344b913dd27a4b504cb`) exists natively and the project already
+  uses it, which covers the Dire Crocodile.
+- **Constrict**: the native constrict features are all summoner eidolon
+  evolutions (`ConstrictEvolutionFeature`
+  `9e4080be49044200b1543e620c54b923` and its selection wrappers). The project
+  already has its own constrict from Sprint 6, which is the better carrier.
+- **Death roll**: nothing native. Project-owned, riding the qualified grapple
+  lifecycle.
+- **Heat**: nothing usable. The fourteen matches are all oracle and shaman hex
+  features. Project-owned.
+- **Luminescence**: nothing native, and Sprint 13 already proved Kingmaker has
+  no mechanics-layer illumination model. This remains the tranche's one open
+  engineering question and is answered in Sprint 14 before its candidate.
+
 ## Open questions to answer before the Sprint 14 candidate
 
-1. Can Kingmaker carry the Fire Beetle's luminescence at all? Sprint 13 proved
-   there is no mechanics-layer illumination model. A view-local light source is
-   the likely answer; if none is possible, the limitation is owner-facing and
+Questions 2 to 4 are answered by the census above. What remains open is the
+one the census could not settle and one it raised.
+
+1. **Can Kingmaker carry the Fire Beetle's luminescence at all?** Sprint 13
+   proved there is no mechanics-layer illumination model, and the census found
+   no native carrier. A view-local light source on the creature's own renderer
+   is the likely answer; if none is possible the limitation is owner-facing and
    must be raised rather than dropped.
-2. Which native donors carry the insect, crocodilian and snake rigs, and do the
-   three ant castes genuinely share one rig? The tranche donor census answers
-   this once. If a family's shared-rig hypothesis fails, the implementation
-   splits rather than forcing reuse.
-3. Does any native creature already carry a death roll, a sprint burst, or the
-   salamander's heat, or must each be project-owned?
-4. For the two proxy replacements, exactly which placements and GUIDs are
-   already published and must be preserved unchanged.
+2. **Does the Serpentine Water Elemental Eidolon's rig actually suit a snake?**
+   It is the only limbless Medium body in the game, so Sprint 17 has no second
+   choice, and its bind frame must be captured and inspected before that sprint
+   commits to it. If it does not suit, the snakes are blocked on an owner
+   decision rather than quietly reshaped into something else.
