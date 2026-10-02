@@ -374,6 +374,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal string Sprint13PrintedRoutinesDetail;
             internal bool Sprint13WolverineRage;
             internal string Sprint13WolverineRageDetail;
+            internal bool Sprint13RageLifetime;
+            internal string Sprint13RageLifetimeDetail;
             internal bool Sprint13ShadowMastiffBay;
             internal string Sprint13ShadowMastiffBayDetail;
             internal bool Sprint13ShadowBlend;
@@ -3837,6 +3839,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // use survives exactly once and never doubles.
                     ArmExpandedSummoningPersistenceFlash(
                         _expandedSummoningPersistencePreparedUnits);
+                    // Same order and same reason: the Wolverine is raging
+                    // before the save, so the reload has something to lose.
+                    ArmExpandedSummoningPersistenceRage(
+                        _expandedSummoningPersistencePreparedUnits);
                     // The holds live as long as the arming does: taken here,
                     // with each victim beside its holder and each holder's
                     // attack bonus raised, so the reach check keeps the link
@@ -3878,6 +3884,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _expandedSummoningPersistenceFlashDetail =
                     DescribeExpandedSummoningPersistenceFlash(units, prepare, verifyCleanup,
                         caster, out _expandedSummoningPersistenceFlashValid);
+                _expandedSummoningPersistenceRageDetail =
+                    DescribeExpandedSummoningPersistenceRage(units, prepare,
+                        verifyCleanup, caster,
+                        out _expandedSummoningPersistenceRageValid);
                 if (verifyCleanup)
                     _expandedSummoningPersistenceLinkDetail =
                         DescribeExpandedSummoningReloadedLinks(units,
@@ -4106,11 +4116,113 @@ namespace KingmakerGunslinger.RuntimeTesting
             // Sprint 7: a cat with the rake gate and the lion's tint
             new[] { "NaturesAlly", "lion", "4" },
             // Sprint 8: the tiger with its procedural coat and view scale
-            new[] { "NaturesAlly", "tiger", "4" }
+            new[] { "NaturesAlly", "tiger", "4" },
+            // Sprint 13: the Wolverine saves while raging. Its rage has no
+            // duration and cannot be ended voluntarily, so a reload that lost
+            // it, doubled it or restored it without its numbers would be a
+            // silent failure in play.
+            new[] { "NaturesAlly", "wolverine", "3" }
         };
 
         private static int ExpandedSummoningPersistenceFixtureCount
         { get { return ExpandedSummoningPersistenceFixture.Length; } }
+
+        private string _expandedSummoningPersistenceRageDetail = "not-run";
+        private bool _expandedSummoningPersistenceRageValid;
+
+        private static UnitEntityData ExpandedSummoningPersistentWolverine(
+            UnitEntityData[] units)
+        {
+            return units == null ? null : units.FirstOrDefault(value =>
+                value != null && value.Blueprint != null &&
+                value.Blueprint.name == "KMG_Summoning_Unit_Wolverine");
+        }
+
+        /// <summary>
+        /// Brings the fixture's Wolverine to a genuine rage before the save:
+        /// a real damage rule through the Rulebook, which is the printed
+        /// trigger, then one round of game time so the printed "on its next
+        /// turn" delay elapses and the rage actually begins. The damage is put
+        /// back, because the reload is about the rage and not about wounds.
+        /// </summary>
+        private static void ArmExpandedSummoningPersistenceRage(
+            UnitEntityData[] units)
+        {
+            UnitEntityData wolverine = ExpandedSummoningPersistentWolverine(units);
+            if (wolverine == null) return;
+            int damageBefore = wolverine.Descriptor.Damage;
+            var blow = new PhysicalDamage(new DiceFormula(0, DiceType.Zero),
+                PhysicalDamageForm.Slashing);
+            blow.AddBonus(3);
+            Rulebook.Trigger(new RuleDealDamage(wolverine, wolverine, blow));
+            wolverine.Descriptor.Damage = damageBefore;
+            TimeSpan clock = Game.Instance.Player.GameTime;
+            try
+            {
+                Game.Instance.Player.GameTime = clock +
+                    TimeSpan.FromSeconds(GameConsts.RoundDuration + 1f);
+                wolverine.Descriptor.Buffs.Tick();
+            }
+            finally { Game.Instance.Player.GameTime = clock; }
+        }
+
+        /// <summary>
+        /// Prepare: raging, with the printed numbers on it. Verify-cleanup
+        /// (after the reload): still raging, exactly once, with the same
+        /// numbers, and still unable to be ended voluntarily. After cleanup:
+        /// gone with the creature.
+        /// </summary>
+        private static string DescribeExpandedSummoningPersistenceRage(
+            UnitEntityData[] units, bool prepare, bool verifyCleanup,
+            UnitEntityData caster, out bool valid)
+        {
+            valid = !prepare && !verifyCleanup;
+            BlueprintScriptableObject[] blueprints = BlueprintBootstrap.Library
+                .GetAllBlueprints().Where(value => value != null).ToArray();
+            BlueprintBuff onset = blueprints.OfType<BlueprintBuff>().Single(
+                value => value.name ==
+                    "KMG_Summoning_Natural_Wolverine_RageOnset");
+            BlueprintBuff rage = blueprints.OfType<BlueprintBuff>().Single(
+                value => value.name ==
+                    "KMG_Summoning_Natural_Wolverine_RageState");
+            UnitEntityData wolverine = ExpandedSummoningPersistentWolverine(units);
+            if (wolverine == null)
+            {
+                // After cleanup there must be no Wolverine and no rage left on
+                // anything, which is what this branch is for.
+                bool none = Game.Instance == null || Game.Instance.State == null ||
+                    Game.Instance.State.Units == null ||
+                    !Game.Instance.State.Units.Any(unit => unit != null &&
+                        unit.Descriptor != null && !unit.Destroyed &&
+                        (unit.Descriptor.Buffs.GetBuff(rage) != null ||
+                         unit.Descriptor.Buffs.GetBuff(onset) != null));
+                valid = !prepare && !verifyCleanup && none;
+                return "wolverine=absent;rageAnywhere=" + !none;
+            }
+            int raging = wolverine.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                .Count(value => ReferenceEquals(value.Blueprint, rage));
+            int strength = wolverine.Descriptor.Stats.Strength.ModifiedValue;
+            int constitution =
+                wolverine.Descriptor.Stats.Constitution.ModifiedValue;
+            int armour = wolverine.Descriptor.Stats.AC.ModifiedValue;
+            Buff live = wolverine.Descriptor.Buffs.GetBuff(rage);
+            bool permanent = live != null && live.IsPermanent;
+            bool casterClean = caster == null || caster.Descriptor == null ||
+                (caster.Descriptor.Buffs.GetBuff(rage) == null &&
+                 caster.Descriptor.Buffs.GetBuff(onset) == null);
+            // The printed rage lasts until the creature is gone, so a reload
+            // must bring back exactly one, still permanent, and must not have
+            // handed a copy to the summoner.
+            if (prepare || verifyCleanup)
+                valid = raging == 1 && permanent && casterClean &&
+                    !SummonRagePolicy.MayEndVoluntarily();
+            return "raging=" + raging + ";permanent=" + permanent +
+                ";strength=" + strength + ";constitution=" + constitution +
+                ";armourClass=" + armour + ";marker=" +
+                (wolverine.Descriptor.Buffs.GetBuff(onset) != null) +
+                ";casterClean=" + casterClean + ";voluntaryEnd=" +
+                SummonRagePolicy.MayEndVoluntarily();
+        }
 
         private static SummonVariantSpec[] ExpandedSummoningPersistenceFixtureVariants()
         {
@@ -4518,6 +4630,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _expandedSummoningPersistenceFlashDetail,
                     writes ? _expandedSummoningPersistenceFlashValid : true,
                     "the native resource and the project state on the persistent Cyclops across the save and the reload"),
+                Assertion("expanded-summoning-wolverine-rage-persistence",
+                    prepare ? "the Wolverine already raging at the save boundary, with the printed numbers on it and nothing of it on the summoner" :
+                        verifyCleanup ? "after the reload the creature is raging again exactly once, still with no duration of its own and still with no voluntary end, and the summoner still carries nothing of it" :
+                        "after cleanup no unit anywhere carries the rage or its marker",
+                    _expandedSummoningPersistenceRageDetail,
+                    _expandedSummoningPersistenceRageValid,
+                    "a real damage rule through the Rulebook before the save, then the fresh-load buff set on the deserialized creature"),
                 Assertion(verifyCleanup || !writes ?
                         "expanded-summoning-cleaned" :
                         "expanded-summoning-prepared",
@@ -17803,6 +17922,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         mechanics.Sprint13WolverineRageDetail,
                     mechanics != null && mechanics.Sprint13WolverineRage,
                     "a live hostile natural attack, measured creature stats, and the native BuffCollection tick on an advanced and restored clock"),
+                Assertion("expanded-summoning-sprint13-rage-lifetime",
+                    "a raging Wolverine that reaches its own summon duration is destroyed by the native timer, one dismissed while raging goes the same way, and the live area-transition handlers leave the creature's own rage alone while every party member carries nothing of it; no unit is left raging afterwards",
+                    mechanics == null ? "not-run" :
+                        mechanics.Sprint13RageLifetimeDetail,
+                    mechanics != null && mechanics.Sprint13RageLifetime,
+                    "the native SummonedUnitBuff timer, the fixture's own dismissal, and the subscribed IPartyLeaveAreaHandler and IAreaLoadingStagesHandler raised on the game's own event bus"),
                 Assertion("expanded-summoning-sprint13-shadow-mastiff-bay",
                     "bay derives its printed Charisma-based DC from the live creature, panics on a failed save, spares evil outsiders including the mastiffs themselves, grants a per-mastiff 24-hour immunity on a success that blocks a repeat from the same mastiff, and leaves a second mastiff's bay working",
                     mechanics == null ? "not-run" :
