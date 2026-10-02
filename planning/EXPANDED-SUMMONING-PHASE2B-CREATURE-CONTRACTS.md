@@ -93,6 +93,85 @@ and 6, and the injury-poison lifecycle from the Giant Wasp and the Giant
 Spider. This is the sprint's main reuse opportunity and the reason the three
 creatures are grouped.
 
+## Sprint 14 architecture review, 2026-10-02
+
+Done before the candidate rather than after it, because the cheapest place to
+discover that a signature mechanic was misunderstood is here. The finding is
+that **Sprint 14 needs no new mechanism**: two carriers this project already
+qualified compose to give exactly what the three stat blocks ask for.
+
+### The soldier's grab and its poison are on different attacks, and that works
+
+The Giant Ant Soldier bites with a grab and stings with a poison, and nothing
+may leak between them. Two independent gates already exist and they gate on
+different things:
+
+- **Grab is gated by limb position.** `SummonGrabComponent` takes
+  `GrabWithPrimaryHand` and `GrabAdditionalLimbCount`, and `ConfigureGrabber`
+  is keyed by unit symbol, so it is available to a Nature's Ally creature - the
+  Monitor Lizard, Grizzly Bear, Leopard and Lion are all on this path already.
+  The soldier takes `Primary: true, Additional: 0`, which puts the grab on the
+  bite and nowhere else.
+- **Poison is gated by weapon type.** The Giant Wasp's
+  `AddInitiatorAttackWithWeaponTrigger.WeaponType` is set to its sting's own
+  type, so the trigger fires only for that weapon. The soldier's bite derives
+  from a native bite template and its sting from the native sting template, so
+  they are different types and the poison cannot reach the bite even though the
+  sting sits in an additional limb slot.
+
+The two gates are orthogonal, so the bite grabs without poisoning and the sting
+poisons without grabbing. This is the reuse the sprint was grouped around and
+it survives the review.
+
+### The soldier's poison is the Giant Spider's poison, exactly
+
+Primary source, Giant Ant (Soldier): sting, injury; Fort DC 14; frequency
+1/round for 4 rounds; effect 1d2 Str; cure 1 save. The native Giant Spider
+poison Kingmaker already ships is the same graph in every field but the damaged
+ability, so the Wasp's construction applies with `Stat` set to Strength,
+`Ticks` 4 and `SuccesfullSaves` 1.
+
+DC 14 is also what the Constitution-scaled formula produces on its own: 10 +
+half of 2 hit dice + a +3 Constitution modifier. The DC is therefore not
+hard-coded; it is scaled the way the Wasp's is and it lands on the printed
+number. If a future change to the chassis moves it off 14, that is a defect the
+rules gate will catch rather than something a constant would hide.
+
+### The worker is a template, not a creature
+
+The Worker is the Soldier with the Worker template applied: no poison sting and
+no grab, which leaves a bite alone. So it takes the same chassis with the sting
+limb and both carriers absent. Nothing about it needs its own graph, and the
+one thing a player must be able to see - which caste is in front of them - is
+carried by the mesh and the painting rather than by a tooltip.
+
+### Luminescence is a view-local light and is not a mechanics claim
+
+Sprint 13 established that Kingmaker has **no mechanics-layer illumination
+model at all**: nothing in the rules layer consults light level, so a 10-foot
+radius of light cannot grant or deny anything. The source's after-death glow
+has no consumer either, because a summon's body vanishes with it.
+
+What remains implementable is the light itself, and the owner has authorized a
+view-local one on the conditions that it be instance-owned, cleaned up,
+bounded, and visually useful. The existing visual patch already owns
+project-created Unity objects per view and destroys them on
+`UnitEntityView.OnDestroy`, which is the same ownership the light needs, so the
+light is created beside the swapped renderer, registered on the same attachment
+record, and destroyed in the same teardown. It is bounded by an explicit range
+and intensity rather than by anything the rules consult.
+
+**No record may claim that a mechanics-layer illumination system exists.** The
+light is a visual that matches the creature's painted glands; the tooltip says
+the beetle glows, and says nothing about what that does, because it does
+nothing.
+
+### What is left genuinely open
+
+Only whether the donor's real gait and flight animation carry the six-legged
+ant and the winged beetle, which no amount of source reading can answer and
+which the sprint's single batched runtime review exists to settle.
+
 ## Sprint 15
 
 ### Giant Ant (Drone) - CR 3, N Medium vermin
