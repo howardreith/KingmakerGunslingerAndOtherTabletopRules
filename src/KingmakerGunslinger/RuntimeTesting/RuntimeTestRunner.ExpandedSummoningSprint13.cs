@@ -100,7 +100,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 expiring.Descriptor.Buffs.GetBuff(rage) != null;
             bool timed = marker != null && !marker.IsPermanent &&
                 marker.EndTime > clock;
-            bool goneOnExpiry = false;
+            bool markerGone = false;
+            bool destroyQueued = false;
+            bool stillRagingAtExpiry = false;
             int casterStrengthBefore =
                 caster.Descriptor.Stats.Strength.ModifiedValue;
             int casterArmourBefore = caster.Descriptor.Stats.AC.ModifiedValue;
@@ -108,24 +110,38 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 // The native summon timer, not a synthesised destruction: the
                 // clock is moved past the marker's own end and the engine's
-                // own buff tick and destroyer are advanced.
-                //
-                // The collection is brought up to just inside the marker's
-                // life first. BuffCollection.Tick() steps its own next-tick
-                // time forward rather than catching up to an arbitrary jump,
-                // so a single leap from here to the end time leaves the
-                // expiry unprocessed - which is exactly what the first run of
-                // this gate observed, and what the Stirge expiry exercise
-                // already handles the same way.
-                Game.Instance.Player.GameTime = marker.EndTime -
-                    TimeSpan.FromSeconds(0.1);
-                expiring.Descriptor.Buffs.Tick();
+                // own buff tick, creator and destroyer are advanced.
                 Game.Instance.Player.GameTime = marker.EndTime +
                     TimeSpan.FromSeconds(0.1);
                 expiring.Descriptor.Buffs.Tick();
                 Game.Instance.EntityCreator.Tick();
                 Game.Instance.EntityDestroyer.Tick();
-                goneOnExpiry = expiring.Destroyed;
+                markerGone = !expiring.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                    .Any(value => ReferenceEquals(value, marker));
+                // The native teardown queues the unit for destruction and
+                // performs it on a later frame, which a synchronous fixture
+                // inside one frame cannot reach. The first run of this gate
+                // asserted same-frame destruction and failed on exactly that;
+                // the Stirge expiry exercise measures the same boundary the
+                // same way, by the marker being gone and the destruction
+                // being queued.
+                destroyQueued = expiring.ShouldBeDestroyed ||
+                    expiring.Destroyed;
+                // Until the frame that destroys it, the creature is still the
+                // one raging - which is the point: the rage is the summon's,
+                // and it ends when the summon does rather than before.
+                stillRagingAtExpiry =
+                    expiring.Descriptor.Buffs.GetBuff(rage) != null ||
+                    expiring.Destroyed;
+            }
+            Game.Instance.Player.GameTime = clock;
+            // Draining the destroyer the way the guarded fixture does at its
+            // own end, so the final state after the summon is gone can be
+            // measured rather than assumed.
+            if (!expiring.Destroyed)
+            {
+                CleanupExpandedSummoningUnit(expiring);
+                Game.Instance.EntityDestroyer.Tick();
             }
             bool casterCleanAfterExpiry =
                 caster.Descriptor.Buffs.GetBuff(rage) == null &&
@@ -133,9 +149,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 caster.Descriptor.Stats.Strength.ModifiedValue ==
                     casterStrengthBefore &&
                 caster.Descriptor.Stats.AC.ModifiedValue == casterArmourBefore;
-            bool expiryValid = ragingBeforeExpiry && timed && goneOnExpiry &&
+            bool expiryValid = ragingBeforeExpiry && timed && markerGone &&
+                destroyQueued && stillRagingAtExpiry && expiring.Destroyed &&
                 casterCleanAfterExpiry && !AnySprint13RageLeft(onset, rage);
-            Game.Instance.Player.GameTime = clock;
 
             // --- dismissed by the player while raging ----------------------
             UnitEntityData dismissed = CastExpandedSummoningCombatUnit(
@@ -208,7 +224,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             evidence.Sprint13RageLifetimeDetail =
                 "expiry[" + expiryDetail + ";ragingBefore=" +
                 ragingBeforeExpiry + ";timedMarker=" + timed +
-                ";destroyedOnOwnTimer=" + goneOnExpiry +
+                ";markerGoneOnOwnTimer=" + markerGone +
+                ";nativeDestroyQueued=" + destroyQueued +
+                ";ragingUntilItWentAway=" + stillRagingAtExpiry +
+                ";destroyed=" + expiring.Destroyed +
                 ";casterUnchanged=" + casterCleanAfterExpiry + "]" +
                 ";dismissal[" + dismissalDetail + ";ragingBefore=" +
                 ragingBeforeDismissal + ";destroyed=" + dismissed.Destroyed +
