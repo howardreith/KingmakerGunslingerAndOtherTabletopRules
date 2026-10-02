@@ -38,35 +38,44 @@ directly on work already done:
   deserialization, the Acadamae Graduate cross-module regression and the
   standalone compatibility profile all pass on the published surface, each with
   the live tree restored afterwards.
-- Tranche 2A, **Sprint 13** (Wolverine, Shadow Mastiff, Poisonous Frog) - in
-  progress. Its rules are implemented and qualified: run
-  `20261002T0543409639325Z-disposable-expanded-summoning`, 48/48 PASS on the
-  exact head `efefe106`, covering the printed attack routines of all three
-  creatures, the Wolverine rage from trigger through delay, magnitudes, no
-  restack, no leakage and cleanup, the Shadow Mastiff's bay with its printed
-  300-foot spread and per-mastiff 24-hour immunity, and shadow blend including
-  its Daylight negation. The Shadow Mastiff is registered with its four
-  placements suppressed, so the published surface is unchanged at 900 generated
-  and 929 total choices.
-  Its three original visuals are authored, repaired and wired. Both donor bind
-  frames were captured in a guarded run - the Worg frame in Sprint 12, which
-  the Wolverine and the Shadow Mastiff share with the Goblin Dog, and the Giant
-  Poisonous Frog frame in Sprint 13. The first rest-pose review found none of
-  the three reading as its species and seven reproducible defects were
-  repaired, including a pale-blue bleed across an atlas region edge that gave
-  the Shadow Mastiff a glowing ring around its neck; all seven and the one
-  observation deliberately not treated as a defect are recorded in
-  `assets-source/original-models/sprint13-creatures/SOURCE.md`. The meshes and
-  paintings are pinned by hash in the domain suite and carried through the
-  project, the local build, the package and both output validators, so a
-  creature cannot quietly ship wearing its donor's body.
-- Next executable action: the remaining Sprint 13 work, in this order - the
-  live visual review of the three originals, navigation, both combat modes and
-  the rage's lifetime across expiry, death, dismissal, area transition and
-  reload; then the Shadow Mastiff's publication with its icon; then the tranche
-  2A five-profile compatibility matrix, which closes Phase 2A.
-- The complete five-profile compatibility matrix is a tranche-closure gate and
-  runs at the end of tranche 2A, after Sprint 13.
+- Tranche 2A, **Sprint 13** (Wolverine, Shadow Mastiff, Poisonous Frog) -
+  **complete**. Rules, the three original silhouettes, the live visual review,
+  navigation, both combat modes, the Wolverine rage's whole lifetime,
+  publication and the published-surface matrix all pass, each with the live
+  tree restored afterwards. Every row is in
+  `EXPANDED-SUMMONING-PHASE2-EVIDENCE-INDEX.md` with its run and its
+  restoration record.
+  - **Rules**, 50/50: the printed attack routines of all three creatures, the
+    Wolverine rage from trigger through delay, magnitudes, no restack, no
+    leakage and cleanup, the Shadow Mastiff's bay with its printed 300-foot
+    spread and per-mastiff 24-hour immunity, and shadow blend including its
+    Daylight negation.
+  - **Rage lifetime**, across every event the charter names: death by the rules
+    gate, and expiry, dismissal and area transition by the lifetime exercise,
+    with reload carried by the persistence trio, where the creature comes back
+    raging exactly once with the same Strength 19, Constitution 19 and Armor
+    Class 12 and the summoner carries nothing of it.
+  - **Visuals and navigation**, 16/16: twelve live party-camera frames on three
+    original meshes and paintings, each creature travelling 12.3 m at its own
+    printed speed - 3.048, 5.08 and 1.016 m/s for the 30-, 50- and 10-foot
+    creatures.
+  - **Both combat modes**: the Wolverine at 10/10 turn-based and 6/6 real-time,
+    the Shadow Mastiff at 6/6 real-time. The Shadow Mastiff cannot take the
+    turn-based case at all, and that is a rule rather than a gap: a quickened
+    Summon Monster VI would be a tenth-level spell in a game with nine.
+  - **Publication**: the Shadow Mastiff publishes on its existing registered
+    identities with its own icon. The published surface is 904 generated
+    placements and 933 total choices, nothing is withheld, every one of the 904
+    casts through the player's own path, and the menu reconciles exactly.
+- Tranche 2A, **closed**. The complete five-profile compatibility matrix -
+  gunslinger-only, Call of the Wild, Arms and Armor, Toggle Custom Soundpacks
+  and the highest-risk combined profile - ran fifteen scenarios, all PASS, with
+  every transaction restored and the machine left exactly as it started. The
+  904-placement menu reconciles under every profile.
+- Next executable action: **Sprint 14**, on a new branch
+  `codex/expanded-summoning-phase2b-sprints14-17` with a stacked draft pull
+  request targeting 2A. Primary stat blocks for Sprints 14-21 are already
+  captured, with three confirmed charter errata recorded below.
 - Sprints 14-21 remain authorized and not started.
 
 ### Branch, PR and dependency heads
