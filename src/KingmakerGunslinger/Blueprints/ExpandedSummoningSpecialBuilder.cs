@@ -2854,6 +2854,10 @@ namespace KingmakerGunslinger.Blueprints
             gate.NegatingBuffs = new[] { DaylightBuff(library) };
             buff.name = InternalName(ShadowMastiffShadowBlendStateSymbol);
             buff.Stacking = StackingType.Replace;
+            // The component re-decides the printed condition at each round
+            // boundary as well as at each concealment check, so the buff needs
+            // a round tick for the engine to dispatch that.
+            buff.Frequency = DurationRate.Rounds;
             SetBuffFlags(buff, harmful: false);
             buff.ResourceAssetIds = Array.Empty<string>();
             buff.ComponentsArray = new BlueprintComponent[] { gate };
