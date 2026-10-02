@@ -27,7 +27,7 @@ VERSION = "0.0.141"
 INFORMATIONAL_VERSION = "0.0.141-expanded-summoning-phase2a"
 PACKAGE = "KingmakerGunslinger-0.0.141-local-runtime.zip"
 PACKAGE_SUFFIX = "expanded-summoning-phase2a"
-DETERMINISTIC_TEST_COUNT = 1985
+DETERMINISTIC_TEST_COUNT = 1991
 STATIC_KEY = "expandedSummoningPhase2A141"
 
 

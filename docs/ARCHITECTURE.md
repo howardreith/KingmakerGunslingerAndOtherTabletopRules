@@ -906,7 +906,15 @@ visuals, both combat modes and lifecycle qualify. Luminescence is a view-local
 light matching the painted glands and a tooltip that says the beetle glows;
 Kingmaker has no mechanics-layer illumination model, nothing in the rules layer
 consults light level, and no part of this appends one.
-The resulting append-only ledger contains 2769 stable IDs: 2767 active and 2 reserved.
+
+A source review before the Sprint 14 candidate added three more. The ants carry
+their printed racial Perception as its own feature rather than the Skill Focus
+that was standing in for it, and the Fire Beetle and the two ant castes each
+take a project unit type: the builder reconstructs class levels, facts, body,
+stats and brain from the profile but leaves BlueprintUnitType alone unless a
+creature asks for its own, so without them all three would have been classified
+as the Giant Spider they borrow.
+The resulting append-only ledger contains 2772 stable IDs: 2770 active and 2 reserved.
 
 - **Pure policy** (`FavoredClass/`): `FavoredClassRankPolicy` (the host's
   full/partial alternation, N = fullRank + partialRank, with KMG-owned ceilings

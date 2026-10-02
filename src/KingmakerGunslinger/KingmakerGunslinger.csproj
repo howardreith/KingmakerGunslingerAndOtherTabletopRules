@@ -147,7 +147,10 @@
     <Compile Include="Summoning\GiantAntPoisonPolicy.cs" />
     <Compile Include="Summoning\GiantWaspPoison.cs" />
     <Compile Include="Summoning\GiantWaspPoisonPolicy.cs" />
+    <Compile Include="Summoning\Sprint14BonePolicy.cs" />
     <Compile Include="Summoning\StirgeAttachPolicy.cs" />
+    <Compile Include="Summoning\SummonInjuryPoison.cs" />
+    <Compile Include="Summoning\SummonInjuryPoisonPolicy.cs" />
     <Compile Include="Summoning\SummonInjuryDiseasePolicy.cs" />
     <Compile Include="Summoning\SummonRagePolicy.cs" />
     <Compile Include="Summoning\SummonShadowMastiffPolicy.cs" />
