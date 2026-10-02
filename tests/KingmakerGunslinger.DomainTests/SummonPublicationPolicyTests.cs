@@ -96,12 +96,12 @@ namespace KingmakerGunslinger.DomainTests
             // creature appearing here again would be a sprint registering
             // ahead of its own qualification, which is allowed, but it has to
             // be deliberate rather than a leftover.
-            Assertions.Equal(0,
+            Assertions.Equal(48,
                 ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
                     .Concat(ExpandedSummoningCatalog.GenerateVariants(
                         SummonFamily.NaturesAlly))
                     .Count(value => !SummonVisibilityCatalog.IsPublished(value)),
-                "No placement may remain hidden now that Sprint 13 is qualified.");
+                "Only unqualified placements may remain hidden: 48 placements are withheld, and all of them are Sprint 14 insects.");
         }
 
         internal static void DisplayOrderGroupsSinglesBeforeQuantities()
@@ -130,7 +130,7 @@ namespace KingmakerGunslinger.DomainTests
         {
             SummonIconCatalog.Validate();
             SummonViewScaleCatalog.Validate();
-            Assertions.Equal(101, SummonIconCatalog.All.Count,
+            Assertions.Equal(104, SummonIconCatalog.All.Count,
                 "Project icon concept count changed.");
             Assertions.Equal("Dire Bat", SummonIconCatalog.For("dire-bat")
                 .DisplayName, "Dire Bat requires its own creature icon identity.");

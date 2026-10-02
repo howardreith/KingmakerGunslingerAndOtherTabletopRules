@@ -21,7 +21,7 @@ namespace KingmakerGunslinger.DomainTests
             // sting and hidden Stirge carrier, the Sprint 13 Poison Frog
             // flat-1 bite and Shadow Mastiff tail slap, plus 43 Better Vendors
             // variants.
-            Assertions.Equal(75 + KingmakerGunslinger.Acquisition
+            Assertions.Equal(76 + KingmakerGunslinger.Acquisition
                     .ProgressionWeaponCatalog.NewBlueprintCount, expected.Length,
                 "The active custom-weapon baseline changed without an audit update.");
             Assertions.Equal(expected.Length, actual.Length,
@@ -72,8 +72,10 @@ namespace KingmakerGunslinger.DomainTests
                 (string)value["mappingScope"] == "mechanics-only exclusion"),
                 "Pistol-Whip preserve-only scope changed.");
             // Sprint 13 adds the Poison Frog's printed flat-1 bite and the
-            // Shadow Mastiff's 1d6 tail slap.
-            Assertions.Equal(15, audit["items"].Count(value =>
+            // Shadow Mastiff's 1d6 tail slap; Sprint 14 adds the Giant Ant
+            // Soldier's 1d4 sting, which exists so its poison can gate on a
+            // weapon type its bite does not share.
+            Assertions.Equal(16, audit["items"].Count(value =>
                 (string)value["mappingScope"] == "summoning-only exclusion"),
                 "Expanded Summoning weapon scope changed.");
             Assertions.True(audit["items"].Where(value =>

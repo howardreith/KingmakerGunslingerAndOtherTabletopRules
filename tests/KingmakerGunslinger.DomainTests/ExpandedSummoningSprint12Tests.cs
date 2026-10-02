@@ -28,8 +28,8 @@ namespace KingmakerGunslinger.DomainTests
 
             Assertions.True(catalog.Contains(
                     "C(\"dire-rat\",\"Dire Rat\",1,true,1,\"Dog\")") &&
-                catalog.Contains("ValidateFamily(SummonFamily.Monster, 81, 457)") &&
-                catalog.Contains("ValidateFamily(SummonFamily.NaturesAlly, 78, 447)"),
+                catalog.Contains("ValidateFamily(SummonFamily.Monster, 84, 481)") &&
+                catalog.Contains("ValidateFamily(SummonFamily.NaturesAlly, 81, 471)"),
                 "Sprint 12 must register Dire Rat at tier 1 in both families.");
             // Sprint 12 is qualified and published, so the suppression set is
             // empty and none of its four creature keys may appear in it.
@@ -43,9 +43,9 @@ namespace KingmakerGunslinger.DomainTests
             // published total Sprint 12 delivered - 900 - is unchanged while
             // the registered total grows.
             Assertions.True(visibility.Contains(
-                    "RegisteredLogicalPlacementCount = 904") &&
-                visibility.Contains("SuppressedLogicalPlacementCount = 0"),
-                "Sprint 13 publication must leave nothing suppressed.");
+                    "RegisteredLogicalPlacementCount = 952") &&
+                visibility.Contains("SuppressedLogicalPlacementCount = 48"),
+                "Sprint 13 published everything of its own; what is suppressed is Sprint 14's.");
             Assertions.Equal(904,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
                 "Sprint 13 publication must leave 904 published placements.");
@@ -203,8 +203,8 @@ namespace KingmakerGunslinger.DomainTests
                 "package.ps1"));
             Assertions.True(build.Contains("assets\\sprint12-quadrupeds") &&
                 package.Contains("assets\\sprint12-quadrupeds") &&
-                build.Contains("{ 289 } else { 287 }") &&
-                package.Contains("{ 289 } else { 287 }"),
+                build.Contains("{ 298 } else { 296 }") &&
+                package.Contains("{ 298 } else { 296 }"),
                 "All six quadruped asset files enter the strict standalone package.");
         }
 
