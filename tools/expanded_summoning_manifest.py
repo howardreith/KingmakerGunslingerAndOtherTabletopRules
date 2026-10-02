@@ -525,6 +525,20 @@ def validate(manifest, plan):
     print(f"Expanded Summoning manifest PASS: foundation={len(plan)} active={active} reserved={reserved} total={len(entries)}")
 
 
+def write_lf(path, text):
+    """Write with LF endings, which is what .gitattributes declares.
+
+    Path.write_text translates to the platform's newline, so on Windows
+    this silently produced CRLF in files the repository stores as LF. The
+    file then hashes differently in the working tree than in a fresh
+    checkout, and the icon catalog pins the ledger's hash, so the
+    mismatch would surface as an icon validation failure on a clean clone
+    rather than where it was caused.
+    """
+    with open(path, "w", encoding="utf-8", newline="\n") as handle:
+        handle.write(text)
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--allocate", action="store_true")
@@ -551,18 +565,18 @@ def main():
                 "milestone": "Expanded Summoning",
                 "notes": "Frozen foundation identity; activate only with exact deterministic runtime registration."
             })
-        MANIFEST.write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        write_lf(MANIFEST, json.dumps(manifest, indent=2, ensure_ascii=False) + "\n")
     if args.activate:
         planned_symbols = {symbol for symbol, _ in plan}
         for entry in manifest["entries"]:
             if entry["symbol"] in planned_symbols:
                 entry["status"] = "active"
                 entry["notes"] = "Registered in every feature-module state; live parent publication remains independently gated."
-        MANIFEST.write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        write_lf(MANIFEST, json.dumps(manifest, indent=2, ensure_ascii=False) + "\n")
     validate(manifest, plan)
     roster = generated_roster(manifest)
     if args.emit_roster:
-        ROSTER.write_text(roster, encoding="utf-8")
+        write_lf(ROSTER, roster)
     elif not ROSTER.is_file() or ROSTER.read_text(encoding="utf-8") != roster:
         raise SystemExit(
             "Expanded Summoning roster ledger is stale; run with --emit-roster")
