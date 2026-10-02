@@ -367,59 +367,75 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ExpandedSummoningSpecialProfiles.ShadowMastiffHitDice,
                 liveCharisma);
 
-            // Force the first save to fail, then to succeed, by fixing the
-            // native d20 the save consumes.
-            hostile.Descriptor.Buffs.RemoveFact(panic);
-            hostile.Descriptor.Buffs.RemoveFact(immunity);
-            UnityEngine.Random.InitState(FindNativeD20Seed(1));
-            ExecuteExpandedSummoningRuntimeAbility(mastiff, bay, 6,
-                new TargetWrapper(mastiff.Position), true);
-            bool panickedOnFailure = hostile.Descriptor.Buffs
-                .GetBuff(panic) != null;
-            bool evilOutsiderSpared = secondMastiff.Descriptor.Buffs
-                .GetBuff(panic) == null &&
-                mastiff.Descriptor.Buffs.GetBuff(panic) == null;
-
-            // Passing the save has to be deterministic. A fixed natural 20 is
-            // not enough against a DC 16 Will save on this hostile, so its Will
-            // is raised for the probe and restored immediately after; that
-            // exercises the printed success path instead of hoping for it.
-            hostile.Descriptor.Buffs.RemoveFact(panic);
+            // The outcome cannot be steered by seeding one d20: the printed
+            // spread is 300 feet of every creature present, so many saves are
+            // rolled and the seeded roll lands on whichever resolves first.
+            // Both directions are forced through the victim's own Will, which
+            // is deterministic whatever the order turns out to be.
             ModifiableValue hostileWill = hostile.Descriptor.Stats
                 .GetStat(StatType.SaveWill);
             int willBefore = hostileWill.BaseValue;
+
+            bool panickedOnFailure;
+            try
+            {
+                hostileWill.BaseValue = willBefore - 100;
+                hostile.Descriptor.Buffs.RemoveFact(panic);
+                hostile.Descriptor.Buffs.RemoveFact(immunity);
+                ExecuteExpandedSummoningRuntimeAbility(mastiff, bay, 6,
+                    new TargetWrapper(mastiff.Position), true);
+                panickedOnFailure =
+                    hostile.Descriptor.Buffs.GetBuff(panic) != null;
+            }
+            finally { hostileWill.BaseValue = willBefore; }
+
+            // Both mastiffs are evil outsiders, so the printed exemption means
+            // neither may ever be panicked by the other's howl.
+            bool evilOutsiderSpared =
+                secondMastiff.Descriptor.Buffs.GetBuff(panic) == null &&
+                mastiff.Descriptor.Buffs.GetBuff(panic) == null;
+
+            Buff granted;
+            bool immunityOnSuccess;
             try
             {
                 hostileWill.BaseValue = willBefore + 100;
-                UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                hostile.Descriptor.Buffs.RemoveFact(panic);
+                hostile.Descriptor.Buffs.RemoveFact(immunity);
                 ExecuteExpandedSummoningRuntimeAbility(mastiff, bay, 6,
                     new TargetWrapper(mastiff.Position), true);
+                granted = hostile.Descriptor.Buffs.GetBuff(immunity);
+                immunityOnSuccess = granted != null &&
+                    hostile.Descriptor.Buffs.GetBuff(panic) == null;
             }
-            finally
-            {
-                hostileWill.BaseValue = willBefore;
-            }
-            Buff granted = hostile.Descriptor.Buffs.GetBuff(immunity);
-            bool immunityOnSuccess = granted != null &&
-                hostile.Descriptor.Buffs.GetBuff(panic) == null;
+            finally { hostileWill.BaseValue = willBefore; }
             bool immunityIsPerMastiff = granted != null &&
                 granted.Context != null &&
                 ReferenceEquals(granted.Context.MaybeCaster, mastiff);
 
-            // A repeat from the same mastiff must find the window closed, even
-            // on a roll that would otherwise fail.
-            UnityEngine.Random.InitState(FindNativeD20Seed(1));
-            ExecuteExpandedSummoningRuntimeAbility(mastiff, bay, 6,
-                new TargetWrapper(mastiff.Position), true);
-            bool repeatBlocked = hostile.Descriptor.Buffs
-                .GetBuff(panic) == null;
+            // The window is closed for this mastiff, so a repeat must not
+            // panic even with the victim's Will floored.
+            bool repeatBlocked;
+            try
+            {
+                hostileWill.BaseValue = willBefore - 100;
+                ExecuteExpandedSummoningRuntimeAbility(mastiff, bay, 6,
+                    new TargetWrapper(mastiff.Position), true);
+                repeatBlocked = hostile.Descriptor.Buffs.GetBuff(panic) == null;
+            }
+            finally { hostileWill.BaseValue = willBefore; }
 
-            // A different mastiff is not blocked by the first one's window.
-            UnityEngine.Random.InitState(FindNativeD20Seed(1));
-            ExecuteExpandedSummoningRuntimeAbility(secondMastiff, bay, 6,
-                new TargetWrapper(secondMastiff.Position), true);
-            bool otherMastiffUnblocked = hostile.Descriptor.Buffs
-                .GetBuff(panic) != null;
+            // A different mastiff is not inside that window.
+            bool otherMastiffUnblocked;
+            try
+            {
+                hostileWill.BaseValue = willBefore - 100;
+                ExecuteExpandedSummoningRuntimeAbility(secondMastiff, bay, 6,
+                    new TargetWrapper(secondMastiff.Position), true);
+                otherMastiffUnblocked =
+                    hostile.Descriptor.Buffs.GetBuff(panic) != null;
+            }
+            finally { hostileWill.BaseValue = willBefore; }
             hostile.Descriptor.Buffs.RemoveFact(panic);
             hostile.Descriptor.Buffs.RemoveFact(immunity);
 
@@ -515,13 +531,19 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             bool daylightNegates = castDaylight &&
                 underDaylight != Concealment.Total;
+            // The negation did not fire with Daylight burning beside the
+            // creature, so the evidence records which buff was derived from
+            // Daylight's own action list and whether the caster ended up
+            // carrying it, instead of leaving the cause to be guessed.
+            string derived = DescribeDerivedNegation(blendState, caster);
             evidence.Sprint13ShadowBlend = activeByDefault && grantsTotal &&
                 castDaylight && daylightNegates;
             evidence.Sprint13ShadowBlendDetail = "activeByDefault=" +
                 activeByDefault + ";concealment=" + withBlend +
                 ";printedGrade=Total;daylight[" + daylightShape + ";" +
                 castDetail + "];underDaylight=" + underDaylight +
-                ";negated=" + daylightNegates + "";
+                ";negated=" + daylightNegates + ";derivedNegation[" +
+                derived + "]" + "";
         }
 
         /// <summary>
@@ -537,6 +559,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                         Array.Empty<BlueprintComponent>())
                     .Where(value => value != null)
                     .Select(value => value.GetType().Name).ToArray());
+        }
+
+        /// <summary>
+        /// Which buff the shadow blend was told to watch for, and whether the
+        /// unit that cast Daylight actually carries it. Both are blueprint and
+        /// live-fact reads, so this reports the real state rather than the
+        /// component's own opinion of it.
+        /// </summary>
+        private static string DescribeDerivedNegation(BlueprintBuff blendState,
+            UnitEntityData caster)
+        {
+            SummonShadowBlendComponent gate = (blendState.ComponentsArray ??
+                Array.Empty<BlueprintComponent>())
+                .OfType<SummonShadowBlendComponent>().FirstOrDefault();
+            if (gate == null) return "<no blend component on the buff>";
+            string[] names = (gate.NegatingBuffs ?? new BlueprintBuff[0])
+                .Where(value => value != null)
+                .Select(value => value.name + "/carriedByCaster=" +
+                    (caster.Descriptor.Buffs.GetBuff(value) != null))
+                .ToArray();
+            return "radiusFeet=" + gate.NegatingRadiusFeet + ";buffs=" +
+                (names.Length == 0 ? "<none>" : string.Join(",", names)) +
+                ";casterBuffs=" + string.Join("|",
+                    caster.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                        .Select(value => value.Blueprint.name).ToArray());
         }
 
         private static string[] DescribeLimbs(BlueprintUnit.UnitBody body)

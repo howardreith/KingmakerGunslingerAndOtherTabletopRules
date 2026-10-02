@@ -77,7 +77,13 @@ namespace KingmakerGunslinger.Summoning
             var context = new MechanicsContext(owner, owner.Descriptor,
                 OnsetBuff, Fact == null ? null : Fact.MaybeContext,
                 new TargetWrapper(owner));
-            var apply = new RuleApplyBuff(owner, OnsetBuff, context, null,
+            // The marker is deliberately short-lived. It only has to survive
+            // until the next round boundary, and the engine removes it after
+            // that rather than leaving hidden state on the creature.
+            var apply = new RuleApplyBuff(owner, OnsetBuff, context,
+                TimeSpan.FromSeconds(
+                    SummonRagePolicy.WolverineRageOnsetMarkerRounds *
+                    GameConsts.RoundDuration),
                 (buff, source, time) =>
                     owner.Descriptor.Buffs.AddBuff(buff, source, time));
             Rulebook.Trigger(apply);
