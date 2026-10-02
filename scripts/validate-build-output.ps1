@@ -53,7 +53,13 @@ $requiredFiles = @(
     'assets\sprint13-creatures\shadow-mastiff-mesh.json',
     'assets\sprint13-creatures\shadow-mastiff-albedo.png',
     'assets\sprint13-creatures\poisonous-frog-mesh.json',
-    'assets\sprint13-creatures\poisonous-frog-albedo.png'
+    'assets\sprint13-creatures\poisonous-frog-albedo.png',
+    'assets\sprint14-insects\fire-beetle-mesh.json',
+    'assets\sprint14-insects\fire-beetle-albedo.png',
+    'assets\sprint14-insects\giant-ant-worker-mesh.json',
+    'assets\sprint14-insects\giant-ant-worker-albedo.png',
+    'assets\sprint14-insects\giant-ant-soldier-mesh.json',
+    'assets\sprint14-insects\giant-ant-soldier-albedo.png'
 )
 $requiredIcons = @('gunslinger-class','firearm-proficiency','gunsmithing','grit',
     'deeds','nimble','bonus-feat','gun-training','true-grit','rapid-reload',
@@ -78,7 +84,7 @@ foreach ($name in @('firearm-monogram-rifle','firearm-monogram-revolver')) {
 }
 $summonManifest = Get-Content -LiteralPath (Join-Path $repositoryRoot `
     'assets\game\icons\expanded-summoning\icon-manifest.json') -Raw | ConvertFrom-Json
-if ($summonManifest.count -ne 101 -or @($summonManifest.icons).Count -ne 101) {
+if ($summonManifest.count -ne 104 -or @($summonManifest.icons).Count -ne 104) {
     throw 'Expanded Summoning runtime icon manifest is malformed.'
 }
 $requiredFiles += 'assets\icons\expanded-summoning\icon-manifest.json'
@@ -132,6 +138,12 @@ $allowedRelativePaths = @{
     'assets\sprint13-creatures\shadow-mastiff-albedo.png' = $true
     'assets\sprint13-creatures\poisonous-frog-mesh.json' = $true
     'assets\sprint13-creatures\poisonous-frog-albedo.png' = $true
+    'assets\sprint14-insects\fire-beetle-mesh.json' = $true
+    'assets\sprint14-insects\fire-beetle-albedo.png' = $true
+    'assets\sprint14-insects\giant-ant-worker-mesh.json' = $true
+    'assets\sprint14-insects\giant-ant-worker-albedo.png' = $true
+    'assets\sprint14-insects\giant-ant-soldier-mesh.json' = $true
+    'assets\sprint14-insects\giant-ant-soldier-albedo.png' = $true
 }
 
 $unexpected = @()

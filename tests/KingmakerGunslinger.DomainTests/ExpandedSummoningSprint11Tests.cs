@@ -56,11 +56,12 @@ namespace KingmakerGunslinger.DomainTests
                     "Every placement of " + value.Key +
                     " publishes after mechanics, art and lifecycle qualification.");
             }
-            // Sprints 9-13 are published, so the registered and published
-            // surfaces are the same 904 and nothing is withheld.
-            Assertions.True(all.Length == 904 &&
+            // Sprints 9-13 are published and Sprint 14's three insects are
+            // registered and withheld, so the registered surface is 952 and the
+            // published one stays at the 904 every census reconciles against.
+            Assertions.True(all.Length == 952 &&
                 all.Count(SummonVisibilityCatalog.IsPublished) == 904 &&
-                all.Count(value => !SummonVisibilityCatalog.IsPublished(value)) == 0,
+                all.Count(value => !SummonVisibilityCatalog.IsPublished(value)) == 48,
                 "Sprint 11 stays published alongside every later qualified sprint.");
         }
 
@@ -571,8 +572,8 @@ namespace KingmakerGunslinger.DomainTests
                 "package.ps1"));
             Assertions.True(build.Contains("assets\\ungulates") &&
                 package.Contains("assets\\ungulates") &&
-                build.Contains("{ 289 } else { 287 }") &&
-                package.Contains("{ 289 } else { 287 }"),
+                build.Contains("{ 298 } else { 296 }") &&
+                package.Contains("{ 298 } else { 296 }"),
                 "All eight ungulate asset files enter the strict standalone package.");
         }
 

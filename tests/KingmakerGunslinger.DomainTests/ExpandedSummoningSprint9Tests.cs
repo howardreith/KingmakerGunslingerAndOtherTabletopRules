@@ -214,9 +214,13 @@ namespace KingmakerGunslinger.DomainTests
                 value.Creature.Key == "dire-bat").ToArray();
             Assertions.Equal(904, all.Count(SummonVisibilityCatalog.IsPublished),
                 "The published surface must exclude only unqualified candidates.");
-            Assertions.Equal(0, all.Count(value =>
+            Assertions.Equal(48, all.Count(value =>
                     !SummonVisibilityCatalog.IsPublished(value)),
-                "The authorized hidden set changed.");
+                "The authorized hidden set changed: 48 placements are withheld, and all of them are Sprint 14 insects.");
+            Assertions.Equal(0, all.Count(value =>
+                    value.Creature.Key == "dire-bat" &&
+                    !SummonVisibilityCatalog.IsPublished(value)),
+                "Sprint 9's own creatures must never be withheld.");
             Assertions.Equal(14, bat.Length,
                 "Dire Bat retains seven placements in each summon family.");
             Assertions.True(bat.All(SummonVisibilityCatalog.IsPublished),

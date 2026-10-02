@@ -76,6 +76,12 @@ try {
         'assets\sprint13-creatures\shadow-mastiff-albedo.png',
         'assets\sprint13-creatures\poisonous-frog-mesh.json',
         'assets\sprint13-creatures\poisonous-frog-albedo.png',
+        'assets\sprint14-insects\fire-beetle-mesh.json',
+        'assets\sprint14-insects\fire-beetle-albedo.png',
+        'assets\sprint14-insects\giant-ant-worker-mesh.json',
+        'assets\sprint14-insects\giant-ant-worker-albedo.png',
+        'assets\sprint14-insects\giant-ant-soldier-mesh.json',
+        'assets\sprint14-insects\giant-ant-soldier-albedo.png',
         'blueprints\blueprints.json',
         'blueprints\blueprints.schema.json'
     )
@@ -103,7 +109,7 @@ try {
     $summonManifestPath = Join-Path $repositoryRoot `
         'assets\game\icons\expanded-summoning\icon-manifest.json'
     $summonManifest = Get-Content -LiteralPath $summonManifestPath -Raw | ConvertFrom-Json
-    if ($summonManifest.count -ne 101 -or @($summonManifest.icons).Count -ne 101) {
+    if ($summonManifest.count -ne 104 -or @($summonManifest.icons).Count -ne 104) {
         throw 'Expanded Summoning runtime icon manifest is malformed.'
     }
     $expected += 'assets\icons\expanded-summoning\icon-manifest.json'
