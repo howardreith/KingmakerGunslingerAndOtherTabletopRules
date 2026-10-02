@@ -56,14 +56,12 @@ namespace KingmakerGunslinger.DomainTests
                     "Every placement of " + value.Key +
                     " publishes after mechanics, art and lifecycle qualification.");
             }
-            // Sprints 9-12 are published. Sprint 13 registers the Shadow
-            // Mastiff ahead of its own qualification, so its four placements
-            // are the only withheld ones and the published surface is still
-            // exactly the 900 that shipped.
+            // Sprints 9-13 are published, so the registered and published
+            // surfaces are the same 904 and nothing is withheld.
             Assertions.True(all.Length == 904 &&
-                all.Count(SummonVisibilityCatalog.IsPublished) == 900 &&
-                all.Count(value => !SummonVisibilityCatalog.IsPublished(value)) == 4,
-                "Sprint 11 stays published while the unqualified Sprint 13 creature stays hidden.");
+                all.Count(SummonVisibilityCatalog.IsPublished) == 904 &&
+                all.Count(value => !SummonVisibilityCatalog.IsPublished(value)) == 0,
+                "Sprint 11 stays published alongside every later qualified sprint.");
         }
 
         internal static void FourUngulatesPublishQuantityPlacementsInBothFamilies()
@@ -573,8 +571,8 @@ namespace KingmakerGunslinger.DomainTests
                 "package.ps1"));
             Assertions.True(build.Contains("assets\\ungulates") &&
                 package.Contains("assets\\ungulates") &&
-                build.Contains("{ 288 } else { 286 }") &&
-                package.Contains("{ 288 } else { 286 }"),
+                build.Contains("{ 289 } else { 287 }") &&
+                package.Contains("{ 289 } else { 287 }"),
                 "All eight ungulate asset files enter the strict standalone package.");
         }
 

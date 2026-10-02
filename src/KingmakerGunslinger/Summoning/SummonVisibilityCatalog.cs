@@ -14,12 +14,17 @@ namespace KingmakerGunslinger.Summoning
     /// </summary>
     internal static class SummonVisibilityCatalog
     {
+        // Empty, and that is the point: every registered placement is
+        // published. The set stays because the next sprint will register
+        // creatures ahead of their own qualification the way Sprint 13 did,
+        // and a creature is suppressed by being named here rather than by
+        // being left out of the catalog, so its identities are allocated once
+        // and never reallocated when it publishes.
         private static readonly HashSet<string> SuppressedCreatureKeys =
-            new HashSet<string>(new[] { "shadow-mastiff" },
-                StringComparer.Ordinal);
+            new HashSet<string>(new string[0], StringComparer.Ordinal);
 
         internal const int RegisteredLogicalPlacementCount = 904;
-        internal const int SuppressedLogicalPlacementCount = 4;
+        internal const int SuppressedLogicalPlacementCount = 0;
         internal const int PublishedLogicalPlacementCount =
             RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount;
 

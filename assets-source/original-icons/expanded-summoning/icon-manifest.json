@@ -2,7 +2,7 @@
     "schemaVersion":  1,
     "provenance":  "Project-owned original artwork: 77 AI-assisted roster-mission concepts, Phase 1 procedural Blender additions, and Phase 2 original creature/action paintings; no copied game or third-party pixels.",
     "generator":  "tools/New-ExpandedSummoningIcons.ps1",
-    "count":  100,
+    "count":  101,
     "icons":  [
                   {
                       "key":  "dog",
@@ -2897,6 +2897,25 @@
                       "scope":  "kmg-catalog",
                       "blueprintSymbols":  [
                                                "KMG.Summoning.Special.Stirge.Remove"
+                                           ]
+                  },
+                  {
+                      "key":  "shadow-mastiff",
+                      "displayName":  "Shadow Mastiff",
+                      "sourceFile":  "assets-source/original-icons/expanded-summoning/sources/shadow-mastiff.png",
+                      "productionFile":  "assets/game/icons/expanded-summoning/shadow-mastiff.png",
+                      "sourceSha256":  "2b7560be441c652a4751f34614a86cdb122ab1614782e1554a624fd0e987884c",
+                      "outputSha256":  "0448be750969434b6766b8767388da80814db2afbe5eadc40607579413489baa",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog",
+                      "blueprintSymbols":  [
+                                               "KMG.Summoning.Ability.SM.Tier6.ShadowMastiff.One",
+                                               "KMG.Summoning.Ability.SM.Tier7.ShadowMastiff.OneD3",
+                                               "KMG.Summoning.Ability.SM.Tier8.ShadowMastiff.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SM.Tier9.ShadowMastiff.OneD4PlusOne",
+                                               "KMG.Summoning.Unit.ShadowMastiff"
                                            ]
                   }
               ]

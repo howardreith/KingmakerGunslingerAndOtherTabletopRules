@@ -25,7 +25,9 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(447, ExpandedSummoningBaselineInventory
                 .RegisteredPlacements(SummonFamily.NaturesAlly),
                 "Baseline SNA registered placements changed.");
-            Assertions.Equal(470, ExpandedSummoningBaselineInventory
+            // The Shadow Mastiff is a Summon Monster creature, so its four
+            // placements all land on the SM side when it publishes.
+            Assertions.Equal(474, ExpandedSummoningBaselineInventory
                 .VisibleChoices(SummonFamily.Monster),
                 "Baseline SM visible choice count changed.");
             Assertions.Equal(459, ExpandedSummoningBaselineInventory
@@ -34,7 +36,7 @@ namespace KingmakerGunslinger.DomainTests
         }
 
         /// <summary>
-        /// The 929 visible choices (693 at Sprint 0) must decompose
+        /// The 933 visible choices (693 at Sprint 0) must decompose
         /// exactly, so a sprint cannot quietly move a choice between the
         /// generated and native pools.
         /// </summary>
@@ -42,11 +44,11 @@ namespace KingmakerGunslinger.DomainTests
         {
             int generated = SummonVisibilityCatalog.PublishedLogicalPlacementCount;
             int wrappers = SummonNativeExpansionCatalog.All.Count;
-            Assertions.Equal(900, generated, "Published generated placements changed.");
+            Assertions.Equal(904, generated, "Published generated placements changed.");
             Assertions.Equal(29, wrappers, "Native wrapper count changed.");
-            Assertions.Equal(929, generated + wrappers,
+            Assertions.Equal(933, generated + wrappers,
                 "The combined visible choice total changed.");
-            Assertions.Equal(929,
+            Assertions.Equal(933,
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.Monster) +
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.NaturesAlly),
                 "Per-parent census disagrees with the catalog totals.");
@@ -85,21 +87,19 @@ namespace KingmakerGunslinger.DomainTests
         }
 
         /// <summary>
-        /// Wasp, Stirge and the Sprint 11 ungulates are published while the
-        /// four Sprint 12 creature families remain hidden pending qualification.
+        /// Wasp, Stirge and the Sprint 11 ungulates are published, and so now
+        /// are the Sprint 12 and Sprint 13 creatures, so nothing is withheld.
         /// </summary>
         internal static void HiddenAndProxyCreaturesAreRecorded()
         {
-            // Sprint 12 published its four creatures. Sprint 13 registers the
-            // Shadow Mastiff ahead of its own qualification, so exactly one
-            // creature is registered and withheld, which is this pin moving
-            // deliberately rather than drifting.
-            Assertions.Equal(1,
+            // Sprint 13 qualified and published, so the withheld set is empty
+            // again. A creature appearing here is a sprint registering ahead
+            // of its own qualification, which is allowed and is how both
+            // Sprint 12 and Sprint 13 ran, but it has to be deliberate rather
+            // than a leftover - which is what this pin is for.
+            Assertions.Equal(0,
                 ExpandedSummoningBaselineInventory.RegisteredButHiddenCreatures.Count,
                 "The registered-but-hidden creature set changed.");
-            Assertions.Equal("shadow-mastiff", string.Join("|",
-                ExpandedSummoningBaselineInventory.RegisteredButHiddenCreatures),
-                "Only the unqualified Sprint 13 Shadow Mastiff may be hidden.");
             Assertions.True(ExpandedSummoningBaselineInventory.ProxyVisualCreatures
                 .Contains("pteranodon<Roc"),
                 "Pteranodon must still be recorded as a Roc-policy visual proxy.");
@@ -150,7 +150,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(first.StartsWith(
                 "{\n  \"schema\": \"" + ExpandedSummoningBaselineInventory.BaselineSchema + "\""),
                 "The census must declare its schema first so evidence stays comparable.");
-            Assertions.True(first.Contains("\"totalVisibleChoices\": 929"),
+            Assertions.True(first.Contains("\"totalVisibleChoices\": 933"),
                 "The emitted census lost the frozen visible-choice total.");
         }
 
