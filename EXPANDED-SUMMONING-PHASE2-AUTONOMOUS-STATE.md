@@ -59,10 +59,15 @@ directly on work already done:
     original meshes and paintings, each creature travelling 12.3 m at its own
     printed speed - 3.048, 5.08 and 1.016 m/s for the 30-, 50- and 10-foot
     creatures.
-  - **Both combat modes**: the Wolverine at 10/10 turn-based and 6/6 real-time,
-    the Shadow Mastiff at 6/6 real-time. The Shadow Mastiff cannot take the
-    turn-based case at all, and that is a rule rather than a gap: a quickened
-    Summon Monster VI would be a tenth-level spell in a game with nine.
+  - **Both combat modes**: the Wolverine at 10/10 same-turn and 6/6 real-time,
+    the Shadow Mastiff at 9/9 ordinary turn-based and 6/6 real-time. The Shadow
+    Mastiff cannot take the *same-turn* case, and that is a rule rather than a
+    gap: a quickened Summon Monster VI would be a tenth-level spell in a game
+    with nine. Its ordinary turn-based behaviour is proved separately - cast
+    through the legal unquickened route, held by the native appearance lock,
+    two genuine attacks on the exact hostile, and shadow blend reading `Total`
+    through the engine's own concealment calculation on three of its own
+    turns.
   - **Publication**: the Shadow Mastiff publishes on its existing registered
     identities with its own icon. The published surface is 904 generated
     placements and 933 total choices, nothing is withheld, every one of the 904
