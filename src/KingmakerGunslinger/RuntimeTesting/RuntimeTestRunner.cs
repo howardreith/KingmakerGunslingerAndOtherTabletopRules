@@ -17923,7 +17923,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     mechanics != null && mechanics.Sprint13WolverineRage,
                     "a live hostile natural attack, measured creature stats, and the native BuffCollection tick on an advanced and restored clock"),
                 Assertion("expanded-summoning-sprint13-rage-lifetime",
-                    "a raging Wolverine that reaches its own summon duration has its native marker removed by that timer and its destruction queued, raging right up to the moment it goes; one dismissed while raging goes the same way; and the live area-transition handlers leave the creature's own rage alone while every party member carries nothing of it. No unit is left raging afterwards",
+                    "a raging Wolverine that reaches its own summon duration has its native marker removed by that timer and stays the one raging right up to the moment it goes; one dismissed while raging goes the same way; and the live area-transition handlers leave the creature's own rage alone while every party member carries nothing of it. The rage goes with the creature in every case and no unit is left raging afterwards",
                     mechanics == null ? "not-run" :
                         mechanics.Sprint13RageLifetimeDetail,
                     mechanics != null && mechanics.Sprint13RageLifetime,
