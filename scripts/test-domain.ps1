@@ -7,10 +7,12 @@ param(
 
     [switch]$Clean,
 
-    # Inner-loop use only. The repository wrapper is the slowest part of this
-    # script and almost none of it can be affected by an ordinary source edit,
-    # so a focused run may skip it. Every gate - sprint or tranche - leaves it
-    # on, and Invoke-KmgGate.ps1 passes this switch only at the Focused level.
+    # For a caller that has already validated the repository itself, and for
+    # the inner loop. Build-Local.ps1 passes it because it runs the wrapper
+    # directly one line earlier, which is how a candidate pipeline validates
+    # the repository exactly once; Invoke-KmgGate.ps1 passes it at the Focused
+    # level, where the wrapper is deferred to the sprint candidate boundary.
+    # No qualification level reaches the complete suite without the wrapper.
     [switch]$SkipRepositoryValidation
 )
 
@@ -22,7 +24,7 @@ $repositoryRoot = Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
 $projectPath = Join-Path $repositoryRoot 'tests\KingmakerGunslinger.DomainTests\KingmakerGunslinger.DomainTests.csproj'
 
 if ($SkipRepositoryValidation) {
-    Write-Host 'Skipping repository validation: focused run, not a gate.'
+    Write-Host 'Repository validation skipped: the caller runs it, or this is a focused run.'
 } else {
     & (Join-Path $PSScriptRoot 'validate-repository.ps1')
 }
