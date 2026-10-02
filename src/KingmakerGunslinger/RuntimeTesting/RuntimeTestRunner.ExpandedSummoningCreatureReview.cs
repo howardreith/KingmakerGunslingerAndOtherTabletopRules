@@ -129,7 +129,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .GenerateVariants(family).Single(value =>
                         value.Creature.Key == key && value.ParentTier == tier &&
                         value.Multiplicity == quantity);
-                if (!SummonVisibilityCatalog.IsPublished(variant))
+                // The Shadow Mastiff is still suppressed, and its art has to
+                // be inspected under the party camera before the suppression
+                // is lifted. Sprint 11 and Sprint 12 each opened this door for
+                // exactly their own hidden creatures and closed it again at
+                // publication; this allowance is the same closed list and goes
+                // the same way.
+                bool suppressedSprint13Candidate =
+                    IsSprint13CreatureReviewKey(key) &&
+                    !SummonVisibilityCatalog.IsPublished(variant);
+                if (!SummonVisibilityCatalog.IsPublished(variant) &&
+                    !suppressedSprint13Candidate)
                     throw new InvalidOperationException(
                         "A suppressed creature cannot be reviewed through a parent: " +
                         key + ".");
@@ -170,7 +180,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// <summary>
         /// Sprint 13's three creatures. The Wolverine and the Shadow Mastiff
         /// ride the same Worg rig the Goblin Dog does; the Poison Frog rides
-        /// the Giant Poisonous Frog.
+        /// the Giant Poisonous Frog. Only the Shadow Mastiff is suppressed;
+        /// the other two are published roster members whose visuals are new,
+        /// so naming all three here costs nothing and keeps the sprint's
+        /// roster in one place.
         /// </summary>
         private static bool IsSprint13CreatureReviewKey(string key)
         {
