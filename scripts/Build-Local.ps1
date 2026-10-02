@@ -130,6 +130,11 @@ foreach ($kind in @('wolverine','shadow-mastiff','poisonous-frog')) {
     Copy-Item -LiteralPath (Join-Path $root "assets\sprint13-creatures\$kind-mesh.json") -Destination (Join-Path $buildOutput 'assets\sprint13-creatures') -Force
     Copy-Item -LiteralPath (Join-Path $root "assets\sprint13-creatures\$kind-albedo.png") -Destination (Join-Path $buildOutput 'assets\sprint13-creatures') -Force
 }
+New-Item -ItemType Directory -Path (Join-Path $buildOutput 'assets\sprint14-insects') -Force | Out-Null
+foreach ($kind in @('fire-beetle','giant-ant-worker','giant-ant-soldier')) {
+    Copy-Item -LiteralPath (Join-Path $root "assets\sprint14-insects\$kind-mesh.json") -Destination (Join-Path $buildOutput 'assets\sprint14-insects') -Force
+    Copy-Item -LiteralPath (Join-Path $root "assets\sprint14-insects\$kind-albedo.png") -Destination (Join-Path $buildOutput 'assets\sprint14-insects') -Force
+}
 $bundleManifest = Get-Content -LiteralPath (Join-Path $root 'assets\bundles\asset-bundle-manifest.json') -Raw | ConvertFrom-Json
 $bundleSource = 'C:\Dev\KingmakerGunslingerLab\unity-asset-build\KingmakerGunslinger-2018.4.10f1\Builds\Windows\kingmakergunslinger.firearms'
 if (-not (Test-Path -LiteralPath $bundleSource -PathType Leaf)) {
@@ -173,7 +178,7 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $stagedMod 'assets\soun
 # Strict package inventory including the six reviewed Sprint 12 quadruped
 # mesh/painting files. The soundbank and its manifest account for the optional
 # two-file difference.
-$expectedPackageFileCount = if ($hasFirearmSoundBank) { 289 } else { 287 }
+$expectedPackageFileCount = if ($hasFirearmSoundBank) { 295 } else { 293 }
 & $python (Join-Path $root 'tools\create_deterministic_package.py') --source $stagedMod --output $packagePath --expected-file-count $expectedPackageFileCount
 if ($LASTEXITCODE -ne 0) { throw 'Deterministic package creation failed.' }
 & (Join-Path $PSScriptRoot 'validate-package.ps1') `
