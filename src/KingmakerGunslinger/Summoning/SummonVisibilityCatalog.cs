@@ -5,26 +5,29 @@ using System.Linq;
 namespace KingmakerGunslinger.Summoning
 {
     /// <summary>
-    /// Publication-only exclusions. Sprints 9-12 are qualified and published.
-    /// The Sprint 13 Shadow Mastiff is registered ahead of its own
-    /// qualification so its identities are allocated once and never move, and
-    /// its four placements are withheld until its mechanics, visual identity
-    /// and lifecycle qualify. The published surface is unchanged while it is
-    /// suppressed.
+    /// Publication-only exclusions. Sprints 9-13 are qualified and published.
+    /// The three Sprint 14 insects are registered ahead of their own
+    /// qualification, the way the Shadow Mastiff was in Sprint 13, so their
+    /// identities are allocated once and never move; their placements are
+    /// withheld until their mechanics, visual identity and lifecycle qualify.
+    /// The published surface is unchanged while they are suppressed, and it is
+    /// the published count rather than the registered one that every roster,
+    /// census and player-path gate reconciles against.
     /// </summary>
     internal static class SummonVisibilityCatalog
     {
-        // Empty, and that is the point: every registered placement is
-        // published. The set stays because the next sprint will register
-        // creatures ahead of their own qualification the way Sprint 13 did,
-        // and a creature is suppressed by being named here rather than by
-        // being left out of the catalog, so its identities are allocated once
-        // and never reallocated when it publishes.
+        // Sprint 14's three insects. A creature is suppressed by being named
+        // here rather than by being left out of the catalog, so its identities
+        // are allocated once and are never reallocated when it publishes.
+        // Removing a key here is what publishes a creature, and that may only
+        // happen once its own gates have passed on the head that publishes it.
         private static readonly HashSet<string> SuppressedCreatureKeys =
-            new HashSet<string>(new string[0], StringComparer.Ordinal);
+            new HashSet<string>(new[] {
+                "fire-beetle", "giant-ant-worker", "giant-ant-soldier"
+            }, StringComparer.Ordinal);
 
-        internal const int RegisteredLogicalPlacementCount = 904;
-        internal const int SuppressedLogicalPlacementCount = 0;
+        internal const int RegisteredLogicalPlacementCount = 952;
+        internal const int SuppressedLogicalPlacementCount = 48;
         internal const int PublishedLogicalPlacementCount =
             RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount;
 
