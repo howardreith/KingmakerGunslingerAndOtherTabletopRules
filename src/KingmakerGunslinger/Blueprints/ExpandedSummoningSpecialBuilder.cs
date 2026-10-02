@@ -2834,23 +2834,29 @@ namespace KingmakerGunslinger.Blueprints
         private static void ConfigureShadowMastiffShadowBlendState(
             LibraryScriptableObject library, BlueprintBuff buff)
         {
-            var concealment = ScriptableObject.CreateInstance<AddConcealment>();
-            concealment.Concealment = Concealment.Total;
-            concealment.Descriptor = ConcealmentDescriptor.Blur;
-            concealment.OnlyForAttacks = true;
-            concealment.CheckDistance = false;
-            concealment.CheckWeaponRangeType = false;
+            // The component owns its own concealment entry. A native
+            // AddConcealment would add one unconditionally, and the obvious
+            // way to gate it - suppressing the buff - does not work, because
+            // Buff.IsSuppressed only skips the per-round mechanics tick and
+            // never turns a component off, so the entry would survive full
+            // daylight and leave the creature stronger than its stat block.
+            //
+            // Daylight is resolved as the ability it is. This project's own
+            // audited native light-spell census records this identity as a
+            // spell blueprint, so asking the library for a buff here threw
+            // inside blueprint registration and aborted the whole bootstrap.
             var gate = ScriptableObject
                 .CreateInstance<SummonShadowBlendComponent>();
-            gate.NegatingBuffs = new[] {
-                BlueprintLibraryLookup.RequireExact<BlueprintBuff>(library,
-                    NativeDaylightGuid, "native Daylight") };
+            gate.Grade = Concealment.Total;
+            gate.Descriptor = ConcealmentDescriptor.Blur;
+            gate.NegatingAbilities = new[] {
+                BlueprintLibraryLookup.RequireExact<BlueprintAbility>(library,
+                    NativeDaylightGuid, "native Daylight spell") };
             buff.name = InternalName(ShadowMastiffShadowBlendStateSymbol);
             buff.Stacking = StackingType.Replace;
             SetBuffFlags(buff, harmful: false);
             buff.ResourceAssetIds = Array.Empty<string>();
-            buff.ComponentsArray = new BlueprintComponent[] {
-                concealment, gate };
+            buff.ComponentsArray = new BlueprintComponent[] { gate };
             BlueprintUnitFactAccess.Resolve().Configure(buff,
                 LocalizationService.Create(
                     "KMG.ExpandedSummoning.ShadowMastiff.ShadowBlend.Name",

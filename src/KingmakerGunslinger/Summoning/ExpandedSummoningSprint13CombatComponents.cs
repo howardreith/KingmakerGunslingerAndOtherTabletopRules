@@ -6,7 +6,6 @@ using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Area;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Facts;
-using Kingmaker.Controllers.Units;
 using Kingmaker.Enums;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.EntitySystem.Stats;
@@ -14,10 +13,11 @@ using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.RuleSystem.Rules.Damage;
 using Kingmaker.UnitLogic;
+using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
-using Kingmaker.UnitLogic.Buffs.Components;
 using Kingmaker.UnitLogic.Mechanics;
+using Kingmaker.UnitLogic.Parts;
 using Kingmaker.UnitLogic.Mechanics.Actions;
 using Kingmaker.Utility;
 
@@ -216,48 +216,118 @@ namespace KingmakerGunslinger.Summoning
     /// this ability; a daylight spell, however, does. A shadow mastiff can
     /// suspend or resume this ability as a free action."
     ///
-    /// <para>The concealment itself is a native <c>AddConcealment</c> on the
-    /// same buff, at <c>Concealment.Total</c>, which is the engine's 50% miss
-    /// chance; <c>Partial</c> is the 20% grade. This component decides only
-    /// whether that concealment currently applies, by suppressing the buff
-    /// when the printed negations hold. Suppressing turns the buff's own
-    /// components off, so the native concealment entry is removed and restored
-    /// by the engine rather than by hand.</para>
+    /// <para>The grade is <c>Concealment.Total</c>, the engine's 50% miss
+    /// chance; <c>Partial</c> is the 20% grade and would halve the ability.</para>
     ///
-    /// <para>The engine models no ambient illumination at all - there is no
-    /// light-level type outside the rendering namespaces and no light or
-    /// darkness spell descriptor - so "full daylight" is read from the only
-    /// illumination-adjacent state it does expose: the sun is up and this
-    /// area's lighting follows it. The daylight negation is exact, against the
-    /// audited native Daylight identity. Artificial light is deliberately
-    /// absent because the printed text says it does not matter.</para>
+    /// <para>This component owns its concealment entry rather than leaving a
+    /// native <c>AddConcealment</c> to add one unconditionally. The obvious
+    /// alternative - carrying <c>AddConcealment</c> and suppressing the buff
+    /// when the negations hold - does not work: <c>Buff.IsSuppressed</c> is a
+    /// plain field that gates only the per-round mechanics tick, so it never
+    /// turns a component off and the entry would have survived full daylight,
+    /// leaving the creature stronger than its own stat block.</para>
     ///
-    /// <para>The condition is re-read on activation and at every round
-    /// boundary. Everything it depends on - the time of day, the loaded area,
-    /// and whether a daylight effect is on the creature - changes on a scale
-    /// far coarser than a round, so a round cadence is faithful to the printed
-    /// rule rather than an approximation of it.</para>
+    /// <para>Because the entry is owned here the decision is re-made at every
+    /// concealment check rather than on a round cadence, which is what the
+    /// printed wording says. Ownership is explicit in both directions: added
+    /// only while the printed condition holds, and removed by
+    /// <see cref="OnTurnOff"/> when the player suspends the ability or the
+    /// creature leaves.</para>
+    ///
+    /// <para>The engine models no ambient illumination at all - no light-level
+    /// type outside the rendering namespaces, and no light or darkness spell
+    /// descriptor - so "full daylight" is read from the only
+    /// illumination-adjacent state it exposes: the sun is up and this area's
+    /// lighting follows it. Artificial light is deliberately absent because the
+    /// printed text says it does not matter.</para>
     /// </summary>
     [Serializable]
-    public sealed class SummonShadowBlendComponent : BuffLogic, ITickEachRound
+    public sealed class SummonShadowBlendComponent :
+        RuleTargetLogicComponent<RuleConcealmentCheck>
     {
+        /// <summary>The printed grade: Total is the 50% miss chance.</summary>
+        public Concealment Grade = Concealment.Total;
+
         /// <summary>
-        /// Exact native buffs whose presence negates shadow blend.
+        /// The concealment family this belongs to. Deliberately not
+        /// TargetIsInvisible, which would let See Invisibility defeat an
+        /// ability that is not invisibility, and not Fog, which would tie it to
+        /// wind and weather effects.
         /// </summary>
-        public BlueprintBuff[] NegatingBuffs;
+        public ConcealmentDescriptor Descriptor = ConcealmentDescriptor.Blur;
+
+        /// <summary>
+        /// Exact native spells whose effect negates shadow blend. These are
+        /// abilities, not buffs: the audited native Daylight identity is a
+        /// spell blueprint, so negation is detected by finding a buff whose
+        /// own context names one of these as the ability that applied it.
+        /// </summary>
+        public BlueprintAbility[] NegatingAbilities;
+
+        private bool _added;
+
+        /// <summary>
+        /// Set while the component is active, for the runtime gate to read:
+        /// what the live creature actually carried and what the printed
+        /// condition decided from it.
+        /// </summary>
+        [NonSerialized] internal string LastDecision = "<not evaluated>";
 
         public override void OnTurnOn() { Refresh(); }
 
-        public void OnNewRound() { Refresh(); }
+        public override void OnTurnOff() { Remove(); }
+
+        public override void OnEventAboutToTrigger(RuleConcealmentCheck evt)
+        {
+            UnitEntityData owner = Owner == null ? null : Owner.Unit;
+            if (owner == null || evt == null ||
+                !ReferenceEquals(evt.Target, owner)) return;
+            Refresh();
+        }
+
+        public override void OnEventDidTrigger(RuleConcealmentCheck evt) { }
 
         private void Refresh()
         {
-            if (Buff == null) return;
             UnitEntityData owner = Owner == null ? null : Owner.Unit;
-            bool grants = owner != null &&
-                SummonShadowMastiffPolicy.GrantsShadowConcealment(
-                    IsFullDaylight(), HasNegatingEffect(owner));
-            if (Buff.IsSuppressed != !grants) Buff.IsSuppressed = !grants;
+            if (owner == null) { Remove(); return; }
+            bool daylight = IsFullDaylight();
+            string negatingSource;
+            bool negated = HasNegatingEffect(owner, out negatingSource);
+            bool grants = SummonShadowMastiffPolicy.GrantsShadowConcealment(
+                daylight, negated);
+            LastDecision = "fullDaylight=" + daylight + ";negatedBy=" +
+                negatingSource + ";grants=" + grants;
+            if (grants && !_added)
+            {
+                Owner.Ensure<UnitPartConcealment>().AddConcealment(Entry());
+                _added = true;
+            }
+            else if (!grants && _added)
+            {
+                Owner.Ensure<UnitPartConcealment>().RemoveConcealement(Entry());
+                _added = false;
+            }
+        }
+
+        private void Remove()
+        {
+            if (!_added || Owner == null) { _added = false; return; }
+            Owner.Ensure<UnitPartConcealment>().RemoveConcealement(Entry());
+            _added = false;
+        }
+
+        /// <summary>
+        /// Built the way the native component builds its own, so the engine's
+        /// by-value removal matches what was added.
+        /// </summary>
+        private UnitPartConcealment.ConcealmentEntry Entry()
+        {
+            return new UnitPartConcealment.ConcealmentEntry {
+                Concealment = Grade,
+                Descriptor = Descriptor,
+                OnlyForAttacks = true
+            };
         }
 
         /// <summary>
@@ -274,14 +344,25 @@ namespace KingmakerGunslinger.Summoning
             return Game.Instance.TimeOfDay == TimeOfDay.Day;
         }
 
-        private bool HasNegatingEffect(UnitEntityData unit)
+        private bool HasNegatingEffect(UnitEntityData unit, out string source)
         {
-            if (NegatingBuffs == null || unit == null ||
+            source = "<none>";
+            if (NegatingAbilities == null || unit == null ||
                 unit.Descriptor == null) return false;
-            for (int index = 0; index < NegatingBuffs.Length; index++)
-                if (NegatingBuffs[index] != null &&
-                    unit.Descriptor.Buffs.GetBuff(NegatingBuffs[index]) != null)
-                    return true;
+            foreach (Buff buff in unit.Descriptor.Buffs.RawFacts.OfType<Buff>())
+            {
+                MechanicsContext context = buff.MaybeContext;
+                BlueprintAbility applied = context == null ? null :
+                    context.SourceAbility;
+                if (applied == null) continue;
+                for (int index = 0; index < NegatingAbilities.Length; index++)
+                    if (NegatingAbilities[index] != null &&
+                        ReferenceEquals(applied, NegatingAbilities[index]))
+                    {
+                        source = applied.name;
+                        return true;
+                    }
+            }
             return false;
         }
     }

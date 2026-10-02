@@ -372,6 +372,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal string Sprint12DiseaseOutlivesSourceDetail;
             internal bool Sprint13PrintedRoutines;
             internal string Sprint13PrintedRoutinesDetail;
+            internal bool Sprint13WolverineRage;
+            internal string Sprint13WolverineRageDetail;
             internal bool Sprint13ShadowMastiffBay;
             internal string Sprint13ShadowMastiffBayDetail;
             internal bool Sprint13ShadowBlend;
@@ -17753,6 +17755,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         mechanics.Sprint13PrintedRoutinesDetail,
                     mechanics != null && mechanics.Sprint13PrintedRoutines,
                     "live limb probes on freshly summoned creatures at a fixed natural roll, with no base-attack mutation"),
+                Assertion("expanded-summoning-sprint13-wolverine-rage",
+                    "a real hostile blow arms the printed rage without applying it or moving any of its three numbers, one round of game time later the engine's own buff tick starts it with Strength and Constitution exactly four higher and Armor Class exactly two lower, a second blow does not restack it, neither buff reaches the caster or the attacker, and destroying the creature takes both with it",
+                    mechanics == null ? "not-run" :
+                        mechanics.Sprint13WolverineRageDetail,
+                    mechanics != null && mechanics.Sprint13WolverineRage,
+                    "a live hostile natural attack, measured creature stats, and the native BuffCollection tick on an advanced and restored clock"),
                 Assertion("expanded-summoning-sprint13-shadow-mastiff-bay",
                     "bay derives its printed Charisma-based DC from the live creature, panics on a failed save, spares evil outsiders including the mastiffs themselves, grants a per-mastiff 24-hour immunity on a success that blocks a repeat from the same mastiff, and leaves a second mastiff's bay working",
                     mechanics == null ? "not-run" :

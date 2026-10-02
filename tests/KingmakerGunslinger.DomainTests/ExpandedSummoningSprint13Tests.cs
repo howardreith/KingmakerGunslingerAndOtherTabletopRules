@@ -247,8 +247,11 @@ namespace KingmakerGunslinger.DomainTests
                 "ExpandedSummoningSpecialBuilder.cs");
             // The printed 50% miss chance is Concealment.Total; Partial is the
             // 20% grade and would halve the ability.
-            Assertions.True(builder.Contains("concealment.Concealment = Concealment.Total"),
+            Assertions.True(builder.Contains("gate.Grade = Concealment.Total"),
                 "Shadow blend must grant the printed 50% miss chance.");
+            Assertions.True(builder.Contains(
+                "gate.Descriptor = ConcealmentDescriptor.Blur"),
+                "Shadow blend must not be filed as invisibility or as fog.");
             // Negation is matched against the audited native Daylight identity.
             Assertions.True(builder.Contains("2b877386976817a429002e8bb10bb3fc"),
                 "Shadow blend must be negated by the exact native Daylight identity.");
@@ -257,6 +260,26 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(component.Contains("IsSingleLightScene") &&
                 component.Contains("TimeOfDay.Day"),
                 "Full daylight must be read from the engine's own day state and area lighting.");
+            // Buff.IsSuppressed is a plain field that gates only the per-round
+            // mechanics tick, so it can never be what switches the concealment
+            // off; relying on it would have left the creature concealed in
+            // full daylight and stronger than its own stat block.
+            // The word appears in the comment that explains why suppression
+            // is the wrong mechanism; what must not appear is a write to it.
+            Assertions.False(component.Contains("IsSuppressed =") ||
+                component.Contains("IsSuppressed="),
+                "Shadow blend must not rely on buff suppression to negate itself.");
+            // The component owns the entry, so it must also release it.
+            Assertions.True(component.Contains("AddConcealment(Entry())") &&
+                component.Contains("RemoveConcealement(Entry())") &&
+                component.Contains("public override void OnTurnOff()"),
+                "Shadow blend must own its concealment entry and remove it explicitly.");
+            // Re-decided per concealment check, not on a round cadence, which
+            // is what "in any condition of illumination other than full
+            // daylight" actually says.
+            Assertions.True(component.Contains(
+                "OnEventAboutToTrigger(RuleConcealmentCheck evt)"),
+                "Shadow blend must re-read its condition at each concealment check.");
         }
 
         /// <summary>

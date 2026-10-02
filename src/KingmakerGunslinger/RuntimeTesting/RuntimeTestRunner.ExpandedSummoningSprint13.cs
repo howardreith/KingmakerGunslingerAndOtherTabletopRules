@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.Blueprints.Items.Weapons;
@@ -25,12 +26,9 @@ namespace KingmakerGunslinger.RuntimeTesting
     internal sealed partial class RuntimeTestRunner
     {
         /// <summary>
-        /// The Sprint 13 rules that resolve synchronously: the two repaired
-        /// printed attack routines, the Poison Frog's flat point of bite
-        /// damage, and the Shadow Mastiff's bay and shadow blend. The Wolverine
-        /// rage is deliberately absent, because its printed onset is "on its
-        /// next turn" and proving that needs real game time to pass; it is
-        /// gated in the frame-stepped creature review instead.
+        /// The Sprint 13 rules: the two repaired printed attack routines, the
+        /// Poison Frog's flat point of bite damage, the Wolverine rage from
+        /// trigger to cleanup, and the Shadow Mastiff's bay and shadow blend.
         /// </summary>
         private static void ExerciseExpandedSummoningSprint13RulesPack(
             BlueprintScriptableObject[] blueprints, UnitEntityData caster,
@@ -38,6 +36,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             ExpandedSummoningMechanicalEvidence evidence)
         {
             ExerciseSprint13PrintedRoutines(blueprints, caster, created,
+                evidence);
+            ExerciseSprint13WolverineRage(blueprints, caster, hostile, created,
                 evidence);
             ExerciseSprint13ShadowMastiffBay(blueprints, caster, hostile,
                 created, evidence);
@@ -168,6 +168,163 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";tailIsSecondary=" + mastiffTailIsSecondary + "]";
         }
 
+
+        /// <summary>
+        /// The printed Wolverine rage, from trigger to cleanup: "A wolverine
+        /// that takes damage in combat flies into a rage on its next turn,
+        /// clawing and biting madly until either it or its opponent is dead.
+        /// It gains +4 to Strength, +4 to Constitution, and -2 to AC. The
+        /// creature cannot end its rage voluntarily."
+        ///
+        /// <para>Five separable claims are measured. The trigger is taking
+        /// damage, so a real hostile attack starts it. The onset is the
+        /// creature's next turn, so immediately after the blow the hidden
+        /// marker is present, the rage state is not, and none of the three
+        /// printed numbers has moved yet - this is the claim a rage applied on
+        /// the damage event would fail. One round of game time later the
+        /// engine's own buff tick runs the marker's round-boundary action, the
+        /// marker is gone and the rage state is on with Strength and
+        /// Constitution exactly four higher and Armor Class exactly two lower.
+        /// A second blow does not restack it. Nothing landed on the caster or
+        /// the attacker. Destroying the creature takes both buffs with it and
+        /// leaves nothing on anyone.</para>
+        ///
+        /// <para>The round boundary is reached by advancing the clock and
+        /// letting <c>BuffCollection.Tick</c> run, which is how every other
+        /// duration gate in this project proves itself and is the engine's own
+        /// dispatcher for a buff's round boundary, rather than by calling the
+        /// component's handler directly.</para>
+        /// </summary>
+        private static void ExerciseSprint13WolverineRage(
+            BlueprintScriptableObject[] blueprints, UnitEntityData caster,
+            UnitEntityData hostile, List<UnitEntityData> created,
+            ExpandedSummoningMechanicalEvidence evidence)
+        {
+            BlueprintBuff onset = blueprints.OfType<BlueprintBuff>().Single(
+                value => value.name ==
+                    "KMG_Summoning_Natural_Wolverine_RageOnset");
+            BlueprintBuff rage = blueprints.OfType<BlueprintBuff>().Single(
+                value => value.name ==
+                    "KMG_Summoning_Natural_Wolverine_RageState");
+
+            UnitEntityData wolverine = CastExpandedSummoningCombatUnit(
+                blueprints, caster, SummonFamily.NaturesAlly, "wolverine", 3,
+                created, evidence);
+            RemoveExpandedSummoningAppearanceBuffs(wolverine);
+            int strengthBefore =
+                wolverine.Descriptor.Stats.Strength.ModifiedValue;
+            int constitutionBefore =
+                wolverine.Descriptor.Stats.Constitution.ModifiedValue;
+            int armourBefore = wolverine.Descriptor.Stats.AC.ModifiedValue;
+            // Recorded before the rage exists, so the cleanup check below has
+            // something real to compare the caster against.
+            int casterStrengthBefore =
+                caster.Descriptor.Stats.Strength.ModifiedValue;
+            int casterArmourBefore = caster.Descriptor.Stats.AC.ModifiedValue;
+
+            // The printed trigger is taking damage, so a real hostile blow
+            // starts it rather than a synthesised damage rule.
+            ItemEntityWeapon hostileWeapon = LiveLimbWeapons(hostile)
+                .FirstOrDefault();
+            string blow = "<no hostile weapon>";
+            bool damaged = hostileWeapon != null &&
+                ExerciseExpandedSummoningWeaponAttack(hostile, wolverine,
+                    hostileWeapon, false, 20, out blow);
+
+            bool markerAfterBlow =
+                wolverine.Descriptor.Buffs.GetBuff(onset) != null;
+            bool rageAfterBlow =
+                wolverine.Descriptor.Buffs.GetBuff(rage) != null;
+            int strengthAfterBlow =
+                wolverine.Descriptor.Stats.Strength.ModifiedValue;
+            int armourAfterBlow = wolverine.Descriptor.Stats.AC.ModifiedValue;
+            bool delayHeld = markerAfterBlow && !rageAfterBlow &&
+                strengthAfterBlow == strengthBefore &&
+                armourAfterBlow == armourBefore;
+
+            // One round of game time, then the engine's own buff tick.
+            TimeSpan clock = Game.Instance.Player.GameTime;
+            bool rageBegan;
+            int strengthRaging, constitutionRaging, armourRaging;
+            bool markerCleared;
+            try
+            {
+                Game.Instance.Player.GameTime = clock + TimeSpan.FromSeconds(
+                    GameConsts.RoundDuration + 1f);
+                wolverine.Descriptor.Buffs.Tick();
+                rageBegan = wolverine.Descriptor.Buffs.GetBuff(rage) != null;
+                markerCleared =
+                    wolverine.Descriptor.Buffs.GetBuff(onset) == null;
+                strengthRaging =
+                    wolverine.Descriptor.Stats.Strength.ModifiedValue;
+                constitutionRaging =
+                    wolverine.Descriptor.Stats.Constitution.ModifiedValue;
+                armourRaging = wolverine.Descriptor.Stats.AC.ModifiedValue;
+            }
+            finally
+            {
+                Game.Instance.Player.GameTime = clock;
+            }
+            bool printedNumbers =
+                strengthRaging - strengthBefore ==
+                    SummonRagePolicy.WolverineRageAbilityBonus &&
+                constitutionRaging - constitutionBefore ==
+                    SummonRagePolicy.WolverineRageAbilityBonus &&
+                armourRaging - armourBefore ==
+                    SummonRagePolicy.WolverineRageArmorClassPenalty;
+
+            // A second blow must not restack the rage or re-arm the marker.
+            string secondBlow = "<not attempted>";
+            if (hostileWeapon != null)
+                ExerciseExpandedSummoningWeaponAttack(hostile, wolverine,
+                    hostileWeapon, false, 20, out secondBlow);
+            int rageStacks = wolverine.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                .Count(value => ReferenceEquals(value.Blueprint, rage));
+            bool noRestack = rageStacks == 1 &&
+                wolverine.Descriptor.Buffs.GetBuff(onset) == null;
+
+            // Summon-local: nothing may land on the caster or the attacker.
+            bool noLeak = caster.Descriptor.Buffs.GetBuff(rage) == null &&
+                caster.Descriptor.Buffs.GetBuff(onset) == null &&
+                hostile.Descriptor.Buffs.GetBuff(rage) == null &&
+                hostile.Descriptor.Buffs.GetBuff(onset) == null;
+
+            // The rage leaves with the creature and leaves nothing behind.
+            CleanupExpandedSummoningUnit(wolverine);
+            Game.Instance.EntityDestroyer.Tick();
+            bool cleaned = wolverine.Destroyed &&
+                caster.Descriptor.Buffs.GetBuff(rage) == null &&
+                caster.Descriptor.Buffs.GetBuff(onset) == null &&
+                hostile.Descriptor.Buffs.GetBuff(rage) == null &&
+                hostile.Descriptor.Buffs.GetBuff(onset) == null &&
+                caster.Descriptor.Stats.Strength.ModifiedValue ==
+                    casterStrengthBefore &&
+                caster.Descriptor.Stats.AC.ModifiedValue ==
+                    casterArmourBefore;
+
+            evidence.Sprint13WolverineRage = damaged && delayHeld &&
+                rageBegan && markerCleared && printedNumbers && noRestack &&
+                noLeak && cleaned;
+            evidence.Sprint13WolverineRageDetail = "blow[" + blow +
+                "];damaged=" + damaged +
+                ";afterBlow[marker=" + markerAfterBlow + ";rage=" +
+                rageAfterBlow + ";str=" + strengthBefore + "->" +
+                strengthAfterBlow + ";ac=" + armourBefore + "->" +
+                armourAfterBlow + ";delayHeld=" + delayHeld +
+                "];afterOneRound[rage=" + rageBegan + ";markerCleared=" +
+                markerCleared + ";str=" + strengthBefore + "->" +
+                strengthRaging + ";con=" + constitutionBefore + "->" +
+                constitutionRaging + ";ac=" + armourBefore + "->" +
+                armourRaging + ";printedNumbers=" + printedNumbers +
+                "];secondBlow[" + secondBlow + ";rageStacks=" + rageStacks +
+                ";noRestack=" + noRestack + "];noLeakToCasterOrAttacker=" +
+                noLeak + ";cleanedWithTheSummon=" + cleaned +
+                ";casterStr=" + casterStrengthBefore + "->" +
+                caster.Descriptor.Stats.Strength.ModifiedValue +
+                ";casterAc=" + casterArmourBefore + "->" +
+                caster.Descriptor.Stats.AC.ModifiedValue;
+        }
+
         /// <summary>
         /// Printed bay: a 300-foot spread catching every creature except evil
         /// outsiders, a Charisma-based Will save with a +2 racial bonus, panic
@@ -273,10 +430,13 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// <summary>
         /// Printed shadow blend: concealment with a 50% miss chance outside
         /// full daylight, which artificial light does not disturb and a
-        /// daylight spell does. The concealment is read back through the
-        /// engine's own calculation rather than from the component, and the
-        /// daylight negation is exercised by actually applying native Daylight
-        /// to the creature.
+        /// daylight spell does.
+        ///
+        /// <para>The concealment is read back through the engine's own
+        /// calculation rather than from the component, and the negation is
+        /// produced the way a player produces it: the caster is granted the
+        /// exact native Daylight spell and casts it, rather than a buff being
+        /// planted to stand in for the spell.</para>
         /// </summary>
         private static void ExerciseSprint13ShadowBlend(
             BlueprintScriptableObject[] blueprints, UnitEntityData caster,
@@ -287,7 +447,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintBuff blendState = blueprints.OfType<BlueprintBuff>()
                 .Single(value => value.name ==
                     "KMG_Summoning_Special_ShadowMastiff_ShadowBlendState");
-            BlueprintBuff daylight = blueprints.OfType<BlueprintBuff>()
+            // Daylight is a spell, which is what this project's own audited
+            // native light-spell census records it as.
+            BlueprintAbility daylight = blueprints.OfType<BlueprintAbility>()
                 .SingleOrDefault(value => value.AssetGuid == NativeDaylightGuid);
 
             UnitEntityData mastiff = CastExpandedSummoningCombatUnit(blueprints,
@@ -303,34 +465,79 @@ namespace KingmakerGunslinger.RuntimeTesting
                 mastiff, true);
             bool grantsTotal = withBlend == Concealment.Total;
 
-            // Native Daylight negates it, and the engine must stop reporting
-            // the concealment, not merely stop being asked for it.
+            // A real cast of the real spell, by a caster granted it for the
+            // probe, so the negation is the effect a player would create.
             Concealment underDaylight = Concealment.None;
-            bool daylightAvailable = daylight != null;
-            if (daylightAvailable)
+            string daylightShape = daylight == null ? "<not loaded>" :
+                DescribeDaylight(daylight);
+            bool castDaylight = false;
+            string castDetail = "<not attempted>";
+            if (daylight != null)
             {
-                mastiff.Descriptor.Buffs.AddBuff(daylight, mastiff,
-                    TimeSpan.FromMinutes(1));
-                TickExpandedSummoningBuffs(mastiff);
+                try
+                {
+                    caster.Descriptor.AddFact(daylight);
+                    ExecuteExpandedSummoningRuntimeAbility(caster, daylight, 3,
+                        new TargetWrapper(mastiff), true);
+                    castDaylight = true;
+                    castDetail = "cast";
+                }
+                catch (Exception exception)
+                {
+                    castDetail = "cast-failed:" + exception.GetType().Name +
+                        ":" + exception.Message;
+                }
                 underDaylight = UnitPartConcealment.Calculate(hostile, mastiff,
                     true);
-                mastiff.Descriptor.Buffs.RemoveFact(daylight);
-                TickExpandedSummoningBuffs(mastiff);
             }
-            bool daylightNegates = daylightAvailable &&
+            bool daylightNegates = castDaylight &&
                 underDaylight != Concealment.Total;
-            Concealment restored = UnitPartConcealment.Calculate(hostile,
-                mastiff, true);
-            bool restoredAfterDaylight = restored == Concealment.Total;
+            string decision = DescribeShadowBlendDecision(mastiff);
 
             evidence.Sprint13ShadowBlend = activeByDefault && grantsTotal &&
-                daylightNegates && restoredAfterDaylight;
+                castDaylight && daylightNegates;
             evidence.Sprint13ShadowBlendDetail = "activeByDefault=" +
                 activeByDefault + ";concealment=" + withBlend +
-                ";printedGrade=Total;daylightLoaded=" + daylightAvailable +
-                ";underDaylight=" + underDaylight + ";negated=" +
-                daylightNegates + ";restored=" + restored + "/" +
-                restoredAfterDaylight;
+                ";printedGrade=Total;daylight[" + daylightShape + ";" +
+                castDetail + "];underDaylight=" + underDaylight +
+                ";negated=" + daylightNegates + ";componentDecision[" +
+                decision + "]";
+        }
+
+        /// <summary>
+        /// What the native Daylight spell actually is, recorded so the
+        /// evidence names the identity the negation depends on instead of
+        /// asserting it blindly.
+        /// </summary>
+        private static string DescribeDaylight(BlueprintAbility daylight)
+        {
+            return "name=" + daylight.name + ";type=" + daylight.Type +
+                ";components=" + string.Join(",",
+                    (daylight.ComponentsArray ??
+                        Array.Empty<BlueprintComponent>())
+                    .Where(value => value != null)
+                    .Select(value => value.GetType().Name).ToArray());
+        }
+
+        /// <summary>
+        /// The live component's own account of what it decided and why, so a
+        /// disagreement between the printed condition and the engine's
+        /// concealment is attributable rather than merely visible.
+        /// </summary>
+        private static string DescribeShadowBlendDecision(UnitEntityData unit)
+        {
+            if (unit == null || unit.Descriptor == null) return "<no unit>";
+            var decisions = new List<string>();
+            foreach (Buff buff in unit.Descriptor.Buffs.RawFacts.OfType<Buff>())
+            foreach (BlueprintComponent component in
+                buff.Blueprint.ComponentsArray ??
+                    Array.Empty<BlueprintComponent>())
+            {
+                var blend = component as SummonShadowBlendComponent;
+                if (blend != null) decisions.Add(blend.LastDecision);
+            }
+            return decisions.Count == 0 ? "<no blend component>" :
+                string.Join("|", decisions.ToArray());
         }
 
         /// <summary>
