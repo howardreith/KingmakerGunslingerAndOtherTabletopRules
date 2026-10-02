@@ -27,6 +27,7 @@ using Kingmaker.RuleSystem.Rules.Abilities;
 using Kingmaker.UI.SettingsUI;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.ActivatableAbilities;
+using Kingmaker.UnitLogic.Parts;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Buffs;
@@ -1591,6 +1592,49 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ForceTurnOnce(turn);
             }
 
+            /// <summary>
+            /// The creature's own signature ability, read on its own turn
+            /// through the engine's own calculation rather than from the
+            /// blueprint.
+            ///
+            /// <para>For the Shadow Mastiff that is shadow blend: the game
+            /// turns the activatable on by itself, so what is measured is
+            /// whether the concealment an attacker would consult is actually
+            /// there while the creature is taking its turn. Bay is not
+            /// exercised here on purpose - its printed spread reaches every
+            /// creature in range that is not an evil outsider, which in this
+            /// fixture is the party the turn order is built from, so panicking
+            /// them would measure the fixture collapsing rather than the
+            /// creature behaving. Bay's own rules are qualified by the Sprint
+            /// 13 rules gate against the victim list its howl really
+            /// produces.</para>
+            /// </summary>
+            private void ObserveSignatureAbilityOnOwnTurn(
+                UnitEntityData summon, int round)
+            {
+                if (_flightCreature != "shadow-mastiff" ||
+                    _evidence.SignatureAbilityObservations.Count >= 4) return;
+                ActivatableAbility blend = summon.Descriptor
+                    .ActivatableAbilities.Enumerable.FirstOrDefault(value =>
+                        value != null && value.Blueprint != null &&
+                        value.Blueprint.name ==
+                            "KMG_Summoning_Special_ShadowMastiff_ShadowBlend");
+                UnitPartConcealment part = summon.Get<UnitPartConcealment>();
+                Concealment concealment = _enemy == null ? Concealment.None :
+                    UnitPartConcealment.Calculate(_enemy, summon, true);
+                bool active = blend != null && blend.IsOn &&
+                    concealment == Concealment.Total;
+                string observation = "round=" + round + ";blend=" +
+                    (blend == null ? "<absent>" : blend.IsOn ? "on" : "off") +
+                    ";concealmentPart=" + (part != null) +
+                    ";attackerConcealment=" + concealment +
+                    ";attacker=" + (_enemy == null ? "<none>" :
+                        Identity(_enemy));
+                _evidence.SignatureAbilityObservations.Add(observation);
+                _diagnostics.Add("signature-ability=" + observation);
+                if (active) _evidence.SignatureAbilityActive = true;
+            }
+
             internal void ObserveTurnPrepared(TurnController turn)
             {
                 if (turn == null || turn.Unit == null ||
@@ -1613,6 +1657,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     summon.HasSwiftAction() + ";lawful=" + lawful;
                 _evidence.SummonTurnObservations.Add(observation);
                 _diagnostics.Add("summon-turn-prepared=" + observation);
+                ObserveSignatureAbilityOnOwnTurn(summon, round);
                 bool firstForUnit = Count(_sameTurnsByUnit, summon) == 0 &&
                     Count(_nextTurnsByUnit, summon) == 0;
                 if (_evidence.FirstSummonTurnRound == 0)
@@ -2379,7 +2424,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Add((_flightCreature == "giant-wasp" ||
                             _flightCreature == "stirge" ? "sprint10-flight-" :
                             "sprint9-flight-") + _flightCreature + "-" +
-                            (_kind == ScenarioKind.RtwpControl ? "rtwp" : "turn-based"),
+                            (_kind == ScenarioKind.RtwpControl ? "rtwp" :
+                                _kind == ScenarioKind.NativeControl ?
+                                    "ordinary-turn-based" : "turn-based"),
                         "the exact flying creature is summoned through its own-tier parent and lands the required native weapon rules on the exact hostile in the requested combat mode",
                         "creature=" + _flightCreature + ";exact=" +
                             _evidence.ExactSummonKind + ";turnBased=" +
@@ -2394,6 +2441,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                             AllUnitsAtLeast(_flightTargetAttacksByUnit,
                                 _flightCreature == "giant-wasp" ? 2 : 1),
                         "RuleSummonUnit, native combat mode and correlated RuleAttackWithWeapon target identity");
+
+                if (_flightCreature == "shadow-mastiff" &&
+                    _kind == ScenarioKind.NativeControl)
+                    Add("sprint13-shadow-mastiff-ordinary-turn-based-signature",
+                        "shadow blend is active on the creature's own turn, and the concealment an attacker's rule would consult reads Total",
+                        "observations[" + string.Join("|",
+                            _evidence.SignatureAbilityObservations.ToArray()) +
+                            "]",
+                        _evidence.SignatureAbilityObservations.Count > 0 &&
+                            _evidence.SignatureAbilityActive,
+                        "the live activatable and the engine's own UnitPartConcealment.Calculate against the exact hostile");
 
                 if (_flightCreature == "giant-wasp")
                     Add("sprint10-giant-wasp-visible-sting-" +
@@ -3021,27 +3079,32 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // Monster VI would be a 10th-level spell and the game has
                     // nine. No character can ever quicken one.
                     //
-                    // That matters differently for the two cases. The
-                    // turn-based case exists to prove a summon acts in the
-                    // turn it was cast, which only a quickened swift cast
-                    // produces, so it refuses a creature that cannot be
-                    // quickened rather than measuring something else and
-                    // calling it the same thing - a run that prepared a Shadow
-                    // Mastiff at its own level instead reported eight
-                    // failures, every one of them the accelerated-summon
-                    // machinery correctly declining a Full-Round cast. The
-                    // RTWP case has no turn order to act inside, so there it
-                    // is prepared at its own level, which is the only way a
+                    // That matters differently for the three cases. The
+                    // same-turn case exists to prove a summon acts in the turn
+                    // it was cast, which only a quickened swift cast produces,
+                    // so it refuses a creature that cannot be quickened rather
+                    // than measuring something else and calling it the same
+                    // thing - a run that prepared a Shadow Mastiff at its own
+                    // level for that case reported eight failures, every one of
+                    // them the accelerated-summon machinery correctly declining
+                    // a Full-Round cast. The RTWP case has no turn order to act
+                    // inside, and the ordinary native-control case is by
+                    // definition the unquickened Full-Round cast, so neither
+                    // ever quickens a creature this far up the ladder: both
+                    // prepare it at its own level, which is the only way a
                     // player can cast it.
-                    bool quickenable = tier + 4 <= 9;
-                    if (!quickenable && _kind != ScenarioKind.RtwpControl)
+                    bool ordinary = _kind == ScenarioKind.RtwpControl ||
+                        _kind == ScenarioKind.NativeControl;
+                    bool quickenable = tier + 4 <= 9 && !ordinary;
+                    if (tier + 4 > 9 && !ordinary)
                         throw new InvalidOperationException(
                             "Summon Monster " + tier + " cannot be quickened: " +
                             "with Quicken Spell it would be a " + (tier + 4) +
                             "th-level spell and the game has nine. The " +
                             "same-turn activation case does not apply to " +
                             _flightCreature + "; its real-time behaviour is " +
-                            "covered by the RTWP control case.");
+                            "covered by the RTWP control case and its ordinary " +
+                            "turn-based behaviour by the native-control case.");
                     _caseSpellLevel = quickenable ? tier + 4 : tier;
                     result = quickenable
                         ? PrepareQuickenedSummon(_spellbook, parent, selected,
@@ -3585,10 +3648,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SummonStates = new List<string>();
                 SummonTurnObservations = new List<string>();
                 SummonCommands = new List<string>();
+                SignatureAbilityObservations = new List<string>();
                 LifecycleSecondsBySummon = new List<string>();
                 UnitOpportunities = new List<string>();
                 Turns = new string[0];
             }
+            public List<string> SignatureAbilityObservations { get; set; }
+            public bool SignatureAbilityActive { get; set; }
             public string Case { get; set; }
             public string Caster { get; set; }
             public string Enemy { get; set; }
