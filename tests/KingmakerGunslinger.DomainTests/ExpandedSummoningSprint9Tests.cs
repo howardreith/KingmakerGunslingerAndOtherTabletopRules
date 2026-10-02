@@ -156,8 +156,9 @@ namespace KingmakerGunslinger.DomainTests
                 launcher.Contains("$Parameters.ContainsKey('flightCreature')") &&
                 launcher.Contains("flightCreature = [string]$Parameters.flightCreature") &&
                 // The allowlist stays a closed, named set; Sprint 12's Dire Rat
-                // joined it so a ground creature can prove both combat modes.
-                automation.Contains("$Parameters.flightCreature -cnotin @('eagle', 'dire-bat', 'giant-wasp', 'stirge', 'dire-rat')") &&
+                // and Sprint 13's Wolverine and Shadow Mastiff joined it so
+                // ground creatures can prove both combat modes.
+                automation.Contains("$Parameters.flightCreature -cnotin @('eagle', 'dire-bat', 'giant-wasp', 'stirge', 'dire-rat', 'wolverine', 'shadow-mastiff')") &&
                 automation.Contains("flightCreature = [string]$Parameters.flightCreature"),
                 "The guarded combat fixture must select only named published creatures and correlate a native attack to its exact hostile.");
         }

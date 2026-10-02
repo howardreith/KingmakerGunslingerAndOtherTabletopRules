@@ -410,9 +410,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .SummonSameTurnRtwpControl) &&
                     request.Parameters?["flightCreature"]?.Type ==
                         JTokenType.String;
+                // A closed list, and the name is historical: the first
+                // creatures to need their own same-turn activation case flew,
+                // and Sprint 12 and Sprint 13 added ground creatures to it
+                // rather than open the parameter to the whole roster.
                 if (flightActivation &&
                     !new[] { "eagle", "dire-bat", "giant-wasp", "stirge",
-                        "dire-rat" }.Contains(
+                        "dire-rat", "wolverine", "shadow-mastiff" }.Contains(
                         (string)request.Parameters["flightCreature"]))
                     return "flight-activation-creature-invalid";
                 if (creatureReview && (!request.ExitAfterCompletion ||
