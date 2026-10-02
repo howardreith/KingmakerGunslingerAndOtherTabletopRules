@@ -404,10 +404,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool sceneRoundtrip = IsCompletionSceneScope(request);
                 bool creatureReview = request.Scenario ==
                     RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningCreatureReview;
+                // The ordinary native-control case joins the two same-turn
+                // cases here: it is the unquickened Full-Round route, and a
+                // creature too far up the ladder to be quickened has nowhere
+                // else to prove its ordinary turn-based behaviour.
                 bool flightActivation = (request.Scenario ==
                     RuntimeTestScenarioCatalog.SummonSameTurnActivation ||
                     request.Scenario == RuntimeTestScenarioCatalog
-                        .SummonSameTurnRtwpControl) &&
+                        .SummonSameTurnRtwpControl ||
+                    request.Scenario == RuntimeTestScenarioCatalog
+                        .SummonSameTurnNativeControl) &&
                     request.Parameters?["flightCreature"]?.Type ==
                         JTokenType.String;
                 // A closed list, and the name is historical: the first
