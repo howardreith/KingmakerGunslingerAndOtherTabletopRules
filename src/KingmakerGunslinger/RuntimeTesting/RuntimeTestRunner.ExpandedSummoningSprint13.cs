@@ -12,6 +12,7 @@ using Kingmaker.Enums;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Items;
+using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UnitLogic;
@@ -42,12 +43,218 @@ namespace KingmakerGunslinger.RuntimeTesting
                 created, evidence);
             ExerciseSprint13WolverineRage(blueprints, caster, hostile, created,
                 evidence);
+            ExerciseSprint13RageLifetime(blueprints, caster, hostile, created,
+                evidence);
             ExerciseSprint13ShadowMastiffBay(blueprints, caster, hostile,
                 created, evidence);
             ExerciseSprint13ShadowBlend(blueprints, caster, hostile, created,
                 evidence);
             ExerciseSprint13DonorRigs(blueprints, caster, created, evidence,
                 evidenceDirectory);
+        }
+
+
+        /// <summary>
+        /// The rage's lifetime across the remaining events the charter names.
+        /// Death is proved by the rules exercise above, which destroys a
+        /// raging Wolverine and checks what is left; this covers the summon's
+        /// own natural expiry, a dismissal while raging, and an area
+        /// transition.
+        ///
+        /// <para>The area transition is driven through the live safeguard the
+        /// game itself calls - the subscribed <c>IPartyLeaveAreaHandler</c> and
+        /// <c>IAreaLoadingStagesHandler</c> - rather than through a private
+        /// copy of its logic, so what is measured is the path a player
+        /// triggers by walking out of the room. The rage is a buff on the
+        /// summon alone and links nothing to a party member, which is exactly
+        /// what the transition has to confirm: the party leaves carrying
+        /// nothing of it.</para>
+        /// </summary>
+        private static void ExerciseSprint13RageLifetime(
+            BlueprintScriptableObject[] blueprints, UnitEntityData caster,
+            UnitEntityData hostile, List<UnitEntityData> created,
+            ExpandedSummoningMechanicalEvidence evidence)
+        {
+            BlueprintBuff onset = blueprints.OfType<BlueprintBuff>().Single(
+                value => value.name ==
+                    "KMG_Summoning_Natural_Wolverine_RageOnset");
+            BlueprintBuff rage = blueprints.OfType<BlueprintBuff>().Single(
+                value => value.name ==
+                    "KMG_Summoning_Natural_Wolverine_RageState");
+            BlueprintBuff summoned = BlueprintRoot.Instance.SystemMechanics
+                .SummonedUnitBuff;
+
+            // --- the summon's own duration runs out while it is raging -----
+            UnitEntityData expiring = CastExpandedSummoningCombatUnit(
+                blueprints, caster, SummonFamily.NaturesAlly, "wolverine", 3,
+                created, evidence);
+            RemoveExpandedSummoningAppearanceBuffs(expiring);
+            string expiryDetail = StartSprint13Rage(expiring, hostile, onset,
+                rage);
+            Buff[] markers = expiring.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                .Where(value => ReferenceEquals(value.Blueprint, summoned))
+                .ToArray();
+            Buff marker = markers.Length == 1 ? markers[0] : null;
+            TimeSpan clock = Game.Instance.Player.GameTime;
+            bool ragingBeforeExpiry =
+                expiring.Descriptor.Buffs.GetBuff(rage) != null;
+            bool timed = marker != null && !marker.IsPermanent &&
+                marker.EndTime > clock;
+            bool goneOnExpiry = false;
+            int casterStrengthBefore =
+                caster.Descriptor.Stats.Strength.ModifiedValue;
+            int casterArmourBefore = caster.Descriptor.Stats.AC.ModifiedValue;
+            if (timed)
+            {
+                // The native summon timer, not a synthesised destruction: the
+                // clock is moved past the marker's own end and the engine's
+                // own buff tick and destroyer are advanced.
+                Game.Instance.Player.GameTime = marker.EndTime +
+                    TimeSpan.FromSeconds(0.1);
+                expiring.Descriptor.Buffs.Tick();
+                Game.Instance.EntityCreator.Tick();
+                Game.Instance.EntityDestroyer.Tick();
+                goneOnExpiry = expiring.Destroyed;
+            }
+            bool casterCleanAfterExpiry =
+                caster.Descriptor.Buffs.GetBuff(rage) == null &&
+                caster.Descriptor.Buffs.GetBuff(onset) == null &&
+                caster.Descriptor.Stats.Strength.ModifiedValue ==
+                    casterStrengthBefore &&
+                caster.Descriptor.Stats.AC.ModifiedValue == casterArmourBefore;
+            bool expiryValid = ragingBeforeExpiry && timed && goneOnExpiry &&
+                casterCleanAfterExpiry && !AnySprint13RageLeft(onset, rage);
+            Game.Instance.Player.GameTime = clock;
+
+            // --- dismissed by the player while raging ----------------------
+            UnitEntityData dismissed = CastExpandedSummoningCombatUnit(
+                blueprints, caster, SummonFamily.NaturesAlly, "wolverine", 3,
+                created, evidence);
+            RemoveExpandedSummoningAppearanceBuffs(dismissed);
+            string dismissalDetail = StartSprint13Rage(dismissed, hostile,
+                onset, rage);
+            bool ragingBeforeDismissal =
+                dismissed.Descriptor.Buffs.GetBuff(rage) != null;
+            CleanupExpandedSummoningUnit(dismissed);
+            // UnitEntityData.Destroy queues its fact teardown; the destroyer
+            // the guarded fixture drains at its end is advanced here instead.
+            Game.Instance.EntityDestroyer.Tick();
+            bool dismissalValid = ragingBeforeDismissal && dismissed.Destroyed &&
+                !AnySprint13RageLeft(onset, rage) &&
+                caster.Descriptor.Stats.Strength.ModifiedValue ==
+                    casterStrengthBefore &&
+                caster.Descriptor.Stats.AC.ModifiedValue == casterArmourBefore;
+
+            // --- the party walks out of the area while it is raging --------
+            UnitEntityData left = CastExpandedSummoningCombatUnit(blueprints,
+                caster, SummonFamily.NaturesAlly, "wolverine", 3, created,
+                evidence);
+            RemoveExpandedSummoningAppearanceBuffs(left);
+            string transitionDetail = StartSprint13Rage(left, hostile, onset,
+                rage);
+            int strengthWhileRaging =
+                left.Descriptor.Stats.Strength.ModifiedValue;
+            bool ragingBeforeTransition =
+                left.Descriptor.Buffs.GetBuff(rage) != null;
+            // The live subscriber, reached through the event bus the game
+            // itself publishes on, so this is the handler a real transition
+            // runs and not a second copy of it.
+            int releasedLeaving = 0;
+            int releasedLoading = 0;
+            EventBus.RaiseEvent<IPartyLeaveAreaHandler>(handler =>
+            {
+                handler.HandlePartyLeaveArea(
+                    Game.Instance.CurrentlyLoadedArea, null);
+                releasedLeaving++;
+            });
+            EventBus.RaiseEvent<IAreaLoadingStagesHandler>(handler =>
+            {
+                handler.OnAreaLoadingComplete();
+                releasedLoading++;
+            });
+            // The rage belongs to the summon and nothing else: the transition
+            // must leave the creature's own state alone, and must leave every
+            // party member exactly as it found them.
+            bool summonUntouched = !left.Destroyed &&
+                left.Descriptor.Buffs.GetBuff(rage) != null &&
+                left.Descriptor.Stats.Strength.ModifiedValue ==
+                    strengthWhileRaging;
+            bool partyClean = Game.Instance.Player.Party.All(unit =>
+                unit == null || unit.Descriptor == null ||
+                (unit.Descriptor.Buffs.GetBuff(rage) == null &&
+                 unit.Descriptor.Buffs.GetBuff(onset) == null));
+            bool transitionValid = ragingBeforeTransition &&
+                releasedLeaving > 0 && releasedLoading > 0 &&
+                summonUntouched && partyClean &&
+                caster.Descriptor.Stats.Strength.ModifiedValue ==
+                    casterStrengthBefore &&
+                caster.Descriptor.Stats.AC.ModifiedValue == casterArmourBefore;
+            CleanupExpandedSummoningUnit(left);
+            Game.Instance.EntityDestroyer.Tick();
+
+            evidence.Sprint13RageLifetime = expiryValid && dismissalValid &&
+                transitionValid && !AnySprint13RageLeft(onset, rage);
+            evidence.Sprint13RageLifetimeDetail =
+                "expiry[" + expiryDetail + ";ragingBefore=" +
+                ragingBeforeExpiry + ";timedMarker=" + timed +
+                ";destroyedOnOwnTimer=" + goneOnExpiry +
+                ";casterUnchanged=" + casterCleanAfterExpiry + "]" +
+                ";dismissal[" + dismissalDetail + ";ragingBefore=" +
+                ragingBeforeDismissal + ";destroyed=" + dismissed.Destroyed +
+                "]" +
+                ";areaTransition[" + transitionDetail + ";ragingBefore=" +
+                ragingBeforeTransition + ";leaveHandlers=" + releasedLeaving +
+                ";loadHandlers=" + releasedLoading +
+                ";summonKeptItsOwnRage=" + summonUntouched +
+                ";partyCarriesNothing=" + partyClean + "]" +
+                ";residual=" + DescribeSprint13RageHolders(onset, rage);
+        }
+
+        /// <summary>
+        /// Arms the printed rage on one Wolverine with a real hostile blow and
+        /// carries it over the round boundary the printed delay requires, so a
+        /// lifetime case starts from a creature that is genuinely raging.
+        /// </summary>
+        private static string StartSprint13Rage(UnitEntityData wolverine,
+            UnitEntityData hostile, BlueprintBuff onset, BlueprintBuff rage)
+        {
+            ItemEntityWeapon weapon = LiveLimbWeapons(hostile).FirstOrDefault();
+            string blow = "<no hostile weapon>";
+            bool damaged = weapon != null &&
+                ExerciseExpandedSummoningWeaponAttack(hostile, wolverine,
+                    weapon, false, 20, out blow);
+            TimeSpan clock = Game.Instance.Player.GameTime;
+            try
+            {
+                Game.Instance.Player.GameTime = clock + TimeSpan.FromSeconds(
+                    GameConsts.RoundDuration + 1f);
+                wolverine.Descriptor.Buffs.Tick();
+            }
+            finally { Game.Instance.Player.GameTime = clock; }
+            return "blow[" + blow + "];damaged=" + damaged + ";marker=" +
+                (wolverine.Descriptor.Buffs.GetBuff(onset) != null) +
+                ";raging=" + (wolverine.Descriptor.Buffs.GetBuff(rage) != null);
+        }
+
+        /// <summary>Any live unit still carrying either rage blueprint.</summary>
+        private static bool AnySprint13RageLeft(BlueprintBuff onset,
+            BlueprintBuff rage)
+        {
+            return DescribeSprint13RageHolders(onset, rage) != "<none>";
+        }
+
+        private static string DescribeSprint13RageHolders(BlueprintBuff onset,
+            BlueprintBuff rage)
+        {
+            if (Game.Instance == null || Game.Instance.State == null ||
+                Game.Instance.State.Units == null) return "<none>";
+            string[] holders = Game.Instance.State.Units
+                .Where(unit => unit != null && unit.Descriptor != null &&
+                    !unit.Destroyed &&
+                    (unit.Descriptor.Buffs.GetBuff(rage) != null ||
+                     unit.Descriptor.Buffs.GetBuff(onset) != null))
+                .Select(unit => unit.CharacterName).ToArray();
+            return holders.Length == 0 ? "<none>" : string.Join(",", holders);
         }
 
         /// <summary>
