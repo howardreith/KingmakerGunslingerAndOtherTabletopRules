@@ -2849,9 +2849,9 @@ namespace KingmakerGunslinger.Blueprints
                 .CreateInstance<SummonShadowBlendComponent>();
             gate.Grade = Concealment.Total;
             gate.Descriptor = ConcealmentDescriptor.Blur;
-            gate.NegatingAbilities = new[] {
-                BlueprintLibraryLookup.RequireExact<BlueprintAbility>(library,
-                    NativeDaylightGuid, "native Daylight spell") };
+            gate.NegatingRadiusFeet = ExpandedSummoningSpecialProfiles
+                .ShadowMastiffShadowBlendDaylightRadiusFeet;
+            gate.NegatingBuffs = new[] { DaylightBuff(library) };
             buff.name = InternalName(ShadowMastiffShadowBlendStateSymbol);
             buff.Stacking = StackingType.Replace;
             SetBuffFlags(buff, harmful: false);
@@ -2865,6 +2865,40 @@ namespace KingmakerGunslinger.Blueprints
                     "KMG.ExpandedSummoning.ShadowMastiff.ShadowBlend.Description",
                     "Outside full daylight the mastiff melts into the shadows and attackers suffer a 50% miss chance. Artificial light does not disturb it; a daylight spell does."),
                 null);
+        }
+
+        /// <summary>
+        /// The buff native Daylight actually applies, read out of the spell's
+        /// own action list rather than written down as a second GUID.
+        ///
+        /// <para>Kingmaker's Daylight is a party-member-targeted light spell -
+        /// it carries AbilityTargetIsPartyMember, so it cannot be cast at a
+        /// summon at all - and it creates no region of daylight. What it does
+        /// is put a light buff on whoever carries it, which is the only thing
+        /// the shadow blend can detect.</para>
+        /// </summary>
+        private static BlueprintBuff DaylightBuff(
+            LibraryScriptableObject library)
+        {
+            BlueprintAbility daylight = BlueprintLibraryLookup.RequireExact<
+                BlueprintAbility>(library, NativeDaylightGuid,
+                    "native Daylight spell");
+            BlueprintBuff[] applied = (daylight.ComponentsArray ??
+                Array.Empty<BlueprintComponent>())
+                .OfType<AbilityEffectRunAction>()
+                .SelectMany(run => run.Actions == null ||
+                    run.Actions.Actions == null ?
+                    Array.Empty<GameAction>() : run.Actions.Actions)
+                .OfType<ContextActionApplyBuff>()
+                .Select(action => action.Buff)
+                .Where(buff => buff != null)
+                .Distinct()
+                .ToArray();
+            if (applied.Length != 1)
+                throw new InvalidOperationException(
+                    "Native Daylight must apply exactly one buff for shadow blend to detect; found " +
+                    applied.Length + ".");
+            return applied[0];
         }
 
         /// <summary>

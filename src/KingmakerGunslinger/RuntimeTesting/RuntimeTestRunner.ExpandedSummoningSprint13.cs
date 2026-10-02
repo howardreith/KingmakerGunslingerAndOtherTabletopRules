@@ -8,6 +8,7 @@ using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Enums;
+using Kingmaker.EntitySystem.Stats;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Items;
 using Kingmaker.RuleSystem;
@@ -35,8 +36,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData hostile, List<UnitEntityData> created,
             ExpandedSummoningMechanicalEvidence evidence)
         {
-            ExerciseSprint13PrintedRoutines(blueprints, caster, created,
-                evidence);
+            ExerciseSprint13PrintedRoutines(blueprints, caster, hostile,
+                created, evidence);
             ExerciseSprint13WolverineRage(blueprints, caster, hostile, created,
                 evidence);
             ExerciseSprint13ShadowMastiffBay(blueprints, caster, hostile,
@@ -61,7 +62,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// </summary>
         private static void ExerciseSprint13PrintedRoutines(
             BlueprintScriptableObject[] blueprints, UnitEntityData caster,
-            List<UnitEntityData> created,
+            UnitEntityData hostile, List<UnitEntityData> created,
             ExpandedSummoningMechanicalEvidence evidence)
         {
             const string TripDefenceFourLegsGuid =
@@ -82,19 +83,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintItemWeapon wolverinePrimary =
                 wolverineBody.PrimaryHand as BlueprintItemWeapon;
             bool wolverinePrimaries =
-                wolverinePrimary != null &&
-                wolverinePrimary.name == "KMG_Summoning_Natural_Claw1d6" &&
+                wolverinePrimary != null && wolverinePrimary.IsNatural &&
                 wolverineBody.AdditionalLimbs != null &&
                 wolverineBody.AdditionalLimbs.Length == 2 &&
                 wolverineBody.AdditionalLimbs.Any(value => value != null &&
-                    value.name == "KMG_Summoning_Natural_Claw1d6") &&
+                    ReferenceEquals(value, wolverinePrimary)) &&
                 wolverineBody.AdditionalLimbs.Any(value => value != null &&
                     value.name == "KMG_Summoning_Natural_Bite1d4") &&
                 (wolverineBody.AdditionalSecondaryLimbs == null ||
                     wolverineBody.AdditionalSecondaryLimbs.Length == 0);
-            int wolverineClawBonus = ProbeLimbAttackBonus(wolverine,
-                "KMG_Summoning_Natural_Claw1d6");
-            int wolverineBiteBonus = ProbeLimbAttackBonus(wolverine,
+            int wolverineClawBonus = ProbeWeaponAttackBonus(wolverine,
+                hostile, wolverinePrimary);
+            int wolverineBiteBonus = ProbeLimbAttackBonus(wolverine, hostile,
                 "KMG_Summoning_Natural_Bite1d4");
             bool wolverineBiteIsPrimary = wolverineClawBonus != int.MinValue &&
                 wolverineBiteBonus != int.MinValue &&
@@ -132,10 +132,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 mastiffBody.AdditionalSecondaryLimbs[0] != null &&
                 mastiffBody.AdditionalSecondaryLimbs[0].name ==
                     "KMG_Summoning_Natural_Tail1d6";
-            int mastiffBiteBonus = ProbeWeaponAttackBonus(mastiff,
+            int mastiffBiteBonus = ProbeWeaponAttackBonus(mastiff, hostile,
                 mastiffPrimary);
             int mastiffTailBonus = mastiffLayout ? ProbeWeaponAttackBonus(
-                mastiff, mastiffBody.AdditionalSecondaryLimbs[0]) :
+                mastiff, hostile, mastiffBody.AdditionalSecondaryLimbs[0]) :
                 int.MinValue;
             // A PF1 secondary natural attack is five lower than a primary.
             bool mastiffTailIsSecondary = mastiffBiteBonus != int.MinValue &&
@@ -380,10 +380,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .GetBuff(panic) == null &&
                 mastiff.Descriptor.Buffs.GetBuff(panic) == null;
 
+            // Passing the save has to be deterministic. A fixed natural 20 is
+            // not enough against a DC 16 Will save on this hostile, so its Will
+            // is raised for the probe and restored immediately after; that
+            // exercises the printed success path instead of hoping for it.
             hostile.Descriptor.Buffs.RemoveFact(panic);
-            UnityEngine.Random.InitState(FindNativeD20Seed(20));
-            ExecuteExpandedSummoningRuntimeAbility(mastiff, bay, 6,
-                new TargetWrapper(mastiff.Position), true);
+            ModifiableValue hostileWill = hostile.Descriptor.Stats
+                .GetStat(StatType.SaveWill);
+            int willBefore = hostileWill.BaseValue;
+            try
+            {
+                hostileWill.BaseValue = willBefore + 100;
+                UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                ExecuteExpandedSummoningRuntimeAbility(mastiff, bay, 6,
+                    new TargetWrapper(mastiff.Position), true);
+            }
+            finally
+            {
+                hostileWill.BaseValue = willBefore;
+            }
             Buff granted = hostile.Descriptor.Buffs.GetBuff(immunity);
             bool immunityOnSuccess = granted != null &&
                 hostile.Descriptor.Buffs.GetBuff(panic) == null;
@@ -476,11 +491,19 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 try
                 {
+                    // Native Daylight carries AbilityTargetIsPartyMember, so
+                    // it cannot target a summon at all. A party member carries
+                    // the light instead, which is what the printed negation
+                    // amounts to in this engine: the mastiff is standing
+                    // inside the spell's own 60-foot radius.
                     caster.Descriptor.AddFact(daylight);
                     ExecuteExpandedSummoningRuntimeAbility(caster, daylight, 3,
-                        new TargetWrapper(mastiff), true);
+                        new TargetWrapper(caster), true);
                     castDaylight = true;
-                    castDetail = "cast";
+                    castDetail = "cast-on-party-member;distance=" +
+                        UnityEngine.Vector3.Distance(caster.Position,
+                            mastiff.Position).ToString("0.##",
+                            CultureInfo.InvariantCulture);
                 }
                 catch (Exception exception)
                 {
@@ -492,16 +515,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             bool daylightNegates = castDaylight &&
                 underDaylight != Concealment.Total;
-            string decision = DescribeShadowBlendDecision(mastiff);
-
             evidence.Sprint13ShadowBlend = activeByDefault && grantsTotal &&
                 castDaylight && daylightNegates;
             evidence.Sprint13ShadowBlendDetail = "activeByDefault=" +
                 activeByDefault + ";concealment=" + withBlend +
                 ";printedGrade=Total;daylight[" + daylightShape + ";" +
                 castDetail + "];underDaylight=" + underDaylight +
-                ";negated=" + daylightNegates + ";componentDecision[" +
-                decision + "]";
+                ";negated=" + daylightNegates + "";
         }
 
         /// <summary>
@@ -517,37 +537,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                         Array.Empty<BlueprintComponent>())
                     .Where(value => value != null)
                     .Select(value => value.GetType().Name).ToArray());
-        }
-
-        /// <summary>
-        /// The live component's own account of what it decided and why, so a
-        /// disagreement between the printed condition and the engine's
-        /// concealment is attributable rather than merely visible.
-        /// </summary>
-        private static string DescribeShadowBlendDecision(UnitEntityData unit)
-        {
-            if (unit == null || unit.Descriptor == null) return "<no unit>";
-            var decisions = new List<string>();
-            foreach (Buff buff in unit.Descriptor.Buffs.RawFacts.OfType<Buff>())
-            foreach (BlueprintComponent component in
-                buff.Blueprint.ComponentsArray ??
-                    Array.Empty<BlueprintComponent>())
-            {
-                var blend = component as SummonShadowBlendComponent;
-                if (blend != null) decisions.Add(blend.LastDecision);
-            }
-            return decisions.Count == 0 ? "<no blend component>" :
-                string.Join("|", decisions.ToArray());
-        }
-
-        /// <summary>
-        /// Lets the engine recompute buff-driven state after a buff was added
-        /// or removed, so a concealment read reflects the new fact set.
-        /// </summary>
-        private static void TickExpandedSummoningBuffs(UnitEntityData unit)
-        {
-            if (unit == null || unit.Descriptor == null) return;
-            unit.Descriptor.Buffs.Tick();
         }
 
         private static string[] DescribeLimbs(BlueprintUnit.UnitBody body)
@@ -586,24 +575,24 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private static int ProbeLimbAttackBonus(UnitEntityData unit,
-            string weaponName)
+            UnitEntityData target, string weaponName)
         {
             ItemEntityWeapon weapon = LiveLimbWeapons(unit)
                 .FirstOrDefault(value => value.Blueprint != null &&
                     value.Blueprint.name == weaponName);
             if (weapon == null) return int.MinValue;
-            return ProbeEntityAttackBonus(unit, weapon);
+            return ProbeEntityAttackBonus(unit, target, weapon);
         }
 
         private static int ProbeWeaponAttackBonus(UnitEntityData unit,
-            BlueprintItemWeapon blueprint)
+            UnitEntityData target, BlueprintItemWeapon blueprint)
         {
             if (blueprint == null) return int.MinValue;
             ItemEntityWeapon weapon = LiveLimbWeapons(unit)
                 .FirstOrDefault(value =>
                     ReferenceEquals(value.Blueprint, blueprint));
             if (weapon == null) return int.MinValue;
-            return ProbeEntityAttackBonus(unit, weapon);
+            return ProbeEntityAttackBonus(unit, target, weapon);
         }
 
         /// <summary>
@@ -636,10 +625,15 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// the same creature are being compared.
         /// </summary>
         private static int ProbeEntityAttackBonus(UnitEntityData unit,
-            ItemEntityWeapon weapon)
+            UnitEntityData target, ItemEntityWeapon weapon)
         {
+            // The target must be a real distinct unit: a creature aimed at
+            // itself produces no attack roll at all, which is what made the
+            // first run report every limb bonus as zero.
+            if (target == null || ReferenceEquals(target, unit))
+                return int.MinValue;
             UnityEngine.Random.InitState(FindNativeD20Seed(10));
-            var probe = new RuleAttackWithWeapon(unit, unit, weapon, 0);
+            var probe = new RuleAttackWithWeapon(unit, target, weapon, 0);
             Rulebook.Trigger(probe);
             return probe.AttackRoll == null ? int.MinValue :
                 probe.AttackRoll.AttackBonus;
