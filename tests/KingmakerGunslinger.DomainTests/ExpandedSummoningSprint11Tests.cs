@@ -56,10 +56,14 @@ namespace KingmakerGunslinger.DomainTests
                     "Every placement of " + value.Key +
                     " publishes after mechanics, art and lifecycle qualification.");
             }
-            Assertions.True(all.Length == 900 &&
+            // Sprints 9-12 are published. Sprint 13 registers the Shadow
+            // Mastiff ahead of its own qualification, so its four placements
+            // are the only withheld ones and the published surface is still
+            // exactly the 900 that shipped.
+            Assertions.True(all.Length == 904 &&
                 all.Count(SummonVisibilityCatalog.IsPublished) == 900 &&
-                all.Count(value => !SummonVisibilityCatalog.IsPublished(value)) == 0,
-                "Sprint 11 stays published while the registered Sprint 12 set stays hidden.");
+                all.Count(value => !SummonVisibilityCatalog.IsPublished(value)) == 4,
+                "Sprint 11 stays published while the unqualified Sprint 13 creature stays hidden.");
         }
 
         internal static void FourUngulatesPublishQuantityPlacementsInBothFamilies()

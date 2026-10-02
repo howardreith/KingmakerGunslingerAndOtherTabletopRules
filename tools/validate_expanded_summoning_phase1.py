@@ -352,6 +352,7 @@ PHASE2_ADDITIONS = {
     "KMG.Summoning.Natural.Wolverine.Rage",
     "KMG.Summoning.Natural.Wolverine.RageOnset",
     "KMG.Summoning.Natural.Wolverine.RageState",
+    "KMG.Summoning.Natural.Tail1d6",
 }
 
 
@@ -387,6 +388,7 @@ def validate(root: Path) -> None:
         ".Stirge" in symbol or ".Aurochs" in symbol or
         ".Bison" in symbol or ".Rhinoceros" in symbol or
         ".WoollyRhinoceros" in symbol or ".DireRat" in symbol or
+        ".ShadowMastiff" in symbol or
         symbol == "KMG.Summoning.Natural.GoblinDog.Traits" or
         symbol == "KMG.Summoning.Natural.GoblinDog.AllergicReaction" or
         symbol == "KMG.Summoning.Natural.StirgeTouch" or
@@ -400,8 +402,8 @@ def validate(root: Path) -> None:
     expanded_summoning_manifest.validate(manifest, plan)
 
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningCatalog.cs",
-        "Creatures.Length != 88",
-        "ValidateFamily(SummonFamily.Monster, 80, 453)",
+        "Creatures.Length != 89",
+        "ValidateFamily(SummonFamily.Monster, 81, 457)",
         "ValidateFamily(SummonFamily.NaturesAlly, 78, 447)",
         'C("pony","Pony",1,true,1)', 'C("horse","Horse",2,true,2)',
         'C("owlbear","Owlbear",null,false,4)', 'C("cyclops","Cyclops",null,false,5)',
@@ -413,11 +415,11 @@ def validate(root: Path) -> None:
         'C("salt-mephit","Salt Mephit",4,false,4)', 'C("steam-mephit","Steam Mephit",4,false,4)',
         'C("tiger","Tiger",null,false,4,"Leopard")')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs",
-        "RegisteredLogicalPlacementCount = 900;",
-        "SuppressedLogicalPlacementCount = 0;")
+        "RegisteredLogicalPlacementCount = 904;",
+        "SuppressedLogicalPlacementCount = 4;")
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningIdentityCatalog.cs",
-        "UnitCount = 88;",
-        "LogicalAbilityCount = 900;",
+        "UnitCount = 89;",
+        "LogicalAbilityCount = 904;",
         "TemplatedPlacementCount = 238;",
         "NativeExpandedOptionIdentityCount = %d;" % SPRINT3["nativeExpansionWrappers"])
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonNativeExpansionCatalog.cs",

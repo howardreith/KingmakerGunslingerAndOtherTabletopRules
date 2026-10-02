@@ -28,7 +28,7 @@ namespace KingmakerGunslinger.DomainTests
 
             Assertions.True(catalog.Contains(
                     "C(\"dire-rat\",\"Dire Rat\",1,true,1,\"Dog\")") &&
-                catalog.Contains("ValidateFamily(SummonFamily.Monster, 80, 453)") &&
+                catalog.Contains("ValidateFamily(SummonFamily.Monster, 81, 457)") &&
                 catalog.Contains("ValidateFamily(SummonFamily.NaturesAlly, 78, 447)"),
                 "Sprint 12 must register Dire Rat at tier 1 in both families.");
             // Sprint 12 is qualified and published, so the suppression set is
@@ -38,10 +38,17 @@ namespace KingmakerGunslinger.DomainTests
             })
                 Assertions.True(!visibility.Contains(key),
                     "A published Sprint 12 creature must not be suppressed: " + key);
+            // Sprint 12's own four creatures publish. Sprint 13 then
+            // registers the Shadow Mastiff ahead of its qualification, so the
+            // published total Sprint 12 delivered - 900 - is unchanged while
+            // the registered total grows.
             Assertions.True(visibility.Contains(
-                    "RegisteredLogicalPlacementCount = 900") &&
-                visibility.Contains("SuppressedLogicalPlacementCount = 0"),
-                "Sprint 12 publication must leave 900/0/900.");
+                    "RegisteredLogicalPlacementCount = 904") &&
+                visibility.Contains("SuppressedLogicalPlacementCount = 4"),
+                "Sprint 12 publication must leave the published surface at 900.");
+            Assertions.Equal(900,
+                SummonVisibilityCatalog.PublishedLogicalPlacementCount,
+                "Sprint 12 publication must leave 900 published placements.");
             Assertions.True(donors.Contains(
                     "dire-rat|77f3f2ddf1ec2da45ab956c433e3b557|1") &&
                 donors.Contains("dog|77f3f2ddf1ec2da45ab956c433e3b557|1"),

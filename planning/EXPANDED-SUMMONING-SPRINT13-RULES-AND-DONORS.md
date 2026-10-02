@@ -282,6 +282,53 @@ creature that opened it. This is the same lesson the Sprint 12 disease lifetime
 contract records: a rider whose duration exceeds its source's must not hold the
 source.
 
+## 5.6 What the Shadow Mastiff build actually chose
+
+The creature has no native Kingmaker equivalent, so it is constructed the way
+the project's other outsiders are: outsider hit dice on the native outsider
+class, the evil subtype and the project's extraplanar marker, and no
+Celestial/Fiendish template. The Worg supplies the rig and bite animation; its
+stat line supplies nothing.
+
+- **Attack placement comes from the printed numbers, not the donor's limbs.**
+  Bite +10 is base attack 6 plus Strength 4 with full Strength damage, so it is
+  the primary natural weapon; tail slap +5 is 6 + 4 - 5 and 1d6+2 is half
+  Strength, so it is the only secondary limb. The 1d6 tail slap needed a
+  project-owned identity, minted from the native animated tail with the printed
+  dice, because no native 1d6 tail existed.
+- **The bay DC is stored as its components.** 10 + half of 6 hit dice +
+  Charisma 13 + 2 racial derives to the printed 16, and the derivation is what
+  is asserted, so a buffed or drained Charisma moves the DC the way the engine
+  expects instead of the number being frozen.
+- **Bay keeps the printed spread and bounds the decision instead.** Its target
+  type is `Any`, not `Enemy`, because the printed rule catches every creature in
+  300 feet except evil outsiders and that includes the summoner's own party;
+  sparing allies would be a change to the rule. What is bounded is who chooses
+  to use it: bay is a player-activated standard action on the summoned mastiff
+  and nothing wires it into a brain, so no AI can select it, no friendly-fire
+  loop is possible, and the rule's own 24-hour immunity bounds repeat use. A
+  test asserts that no `BlueprintAiCastSpell` appears in the bay builder.
+- **The 24-hour immunity is matched by caster identity.** Comparing the stored
+  marker's caster to the baying mastiff is exactly right in all three cases
+  that can arise: the same living mastiff matches and is blocked, a different
+  mastiff does not match and may bay as printed, and a mastiff that has expired
+  resolves to no caster and could never bay again anyway. No ledger is needed.
+- **Shadow blend rides the native concealment entry and a suppression gate.**
+  `AddConcealment` at `Concealment.Total` is the printed 50% miss chance, and a
+  `BuffLogic` suppresses the buff when the printed negations hold, so the
+  engine adds and removes the entry rather than this project doing it by hand.
+  The `Blur` concealment descriptor is deliberate: the ability is not
+  invisibility, so `TargetIsInvisible` would wrongly let See Invisibility
+  defeat it, and it is not fog, so `Fog` would wrongly tie it to weather.
+  The condition is re-read on activation and at each round boundary, which is
+  faithful rather than approximate because everything it depends on - the time
+  of day, the loaded area, and whether a daylight effect is present - changes
+  on a scale far coarser than a round.
+- **Registration precedes qualification.** The creature's four placements are
+  suppressed, so the published surface stays at 900 generated and 929 total
+  choices while its mechanics, visual identity and lifecycle are qualified.
+  Its identities are allocated once and never move.
+
 ## 6. Open items to resolve during implementation
 
 All four of the previously open items are resolved above. What remains is

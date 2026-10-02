@@ -20,12 +20,12 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class ExpandedSummoningIdentityCatalog
     {
-        internal const int UnitCount = 88;
-        internal const int LogicalAbilityCount = 900;
+        internal const int UnitCount = 89;
+        internal const int LogicalAbilityCount = 904;
         internal const int TemplatedPlacementCount = 238;
         internal const int TemplateExecutionAbilityCount = TemplatedPlacementCount * 2;
         internal const int TemplateBuffCount = 8;
-        internal const int SpecialIdentityCount = 159;
+        internal const int SpecialIdentityCount = 166;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -239,6 +239,18 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Wolverine.Rage", "BlueprintFeature"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Wolverine.RageOnset", "BlueprintBuff"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Wolverine.RageState", "BlueprintBuff"));
+            // Sprint 13 Shadow Mastiff. Printed: bite +10 (1d8+4 plus trip),
+            // tail slap +5 (1d6+2). The tail slap's 1d6 has no project-owned
+            // identity yet; bay and shadow blend are its two printed Su
+            // abilities, and the per-mastiff bay immunity is the printed
+            // rule's own 24-hour bound.
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Tail1d6", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.ShadowMastiff.Traits", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.ShadowMastiff.Bay", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.ShadowMastiff.BayPanic", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.ShadowMastiff.BayImmunity", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.ShadowMastiff.ShadowBlend", "BlueprintActivatableAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.ShadowMastiff.ShadowBlendState", "BlueprintBuff"));
             Validate(result);
             return result.AsReadOnly();
         }

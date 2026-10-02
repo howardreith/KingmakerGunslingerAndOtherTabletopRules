@@ -147,6 +147,7 @@
     <Compile Include="Summoning\StirgeAttachPolicy.cs" />
     <Compile Include="Summoning\SummonInjuryDiseasePolicy.cs" />
     <Compile Include="Summoning\SummonRagePolicy.cs" />
+    <Compile Include="Summoning\SummonShadowMastiffPolicy.cs" />
     <Compile Include="Summoning\UngulateRulesPolicy.cs" />
     <Compile Include="Summoning\UngulatePowerfulCharge.cs" />
     <Compile Include="Summoning\ContextActionUngulateTrample.cs" />
