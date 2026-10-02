@@ -67,6 +67,22 @@ namespace KingmakerGunslinger.RuntimeTesting
             "5d61dde0020bbf54ba1521f7ca0229dc";
         private const string SummonMonsterFourGuid =
             "7ed74a3ec8c458d4fb50b192fd7be6ef";
+        // The rest of the canonical Summon Monster parents, from
+        // planning/EXPANDED-SUMMONING-INVENTORY.md, so the fixture can reach
+        // any chartered creature rather than only the three tiers the first
+        // ground cases happened to need.
+        private const string SummonMonsterTwoGuid =
+            "1724061e89c667045a6891179ee2e8e7";
+        private const string SummonMonsterFiveGuid =
+            "630c8b85d9f07a64f917d79cb5905741";
+        private const string SummonMonsterSixGuid =
+            "e740afbab0147944dab35d83faa0ae1c";
+        private const string SummonMonsterSevenGuid =
+            "ab167fd8203c1314bac6568932f1752f";
+        private const string SummonMonsterEightGuid =
+            "d3ac756a229830243a72e84f3ab050d0";
+        private const string SummonMonsterNineGuid =
+            "52b5df2a97df18242aec67610616ded0";
         private const string SummonNaturesAllyOneGuid =
             "c6147854641924442a3bb736080cfeb6";
         private const string NativeDogName =
@@ -2989,15 +3005,36 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .AbilitySymbol(variant).Replace('.', '_')
                         .Replace('-', '_');
                     string parent = tier == 1 ? SummonMonsterOneGuid :
+                        tier == 2 ? SummonMonsterTwoGuid :
                         tier == 3 ? SummonMonsterThreeGuid :
-                        tier == 4 ? SummonMonsterFourGuid : null;
+                        tier == 4 ? SummonMonsterFourGuid :
+                        tier == 5 ? SummonMonsterFiveGuid :
+                        tier == 6 ? SummonMonsterSixGuid :
+                        tier == 7 ? SummonMonsterSevenGuid :
+                        tier == 8 ? SummonMonsterEightGuid :
+                        tier == 9 ? SummonMonsterNineGuid : null;
                     if (parent == null)
                         throw new InvalidOperationException(
                             "The activation case has no canonical parent for Summon Monster " +
                             tier + ".");
-                    result = PrepareQuickenedSummon(_spellbook, parent,
-                        selected, tier, tier + 4, out _castSlot);
-                    _caseSpellLevel = tier + 4;
+                    // Quicken Spell adds four levels, so a quickened Summon
+                    // Monster VI would be a 10th-level spell and the game has
+                    // nine. No character can ever quicken one, so a creature
+                    // that far up the ladder is prepared at its own level -
+                    // which is the only way a player can cast it - and the
+                    // evidence records which path the run took rather than
+                    // leaving the reader to infer it from the spell level.
+                    bool quickenable = tier + 4 <= 9;
+                    _caseSpellLevel = quickenable ? tier + 4 : tier;
+                    result = quickenable
+                        ? PrepareQuickenedSummon(_spellbook, parent, selected,
+                            tier, tier + 4, out _castSlot)
+                        : PreparePreparedSummon(_spellbook, parent, selected,
+                            tier, out _castSlot);
+                    _diagnostics.Add(_flightCreature + "-preparation=" +
+                        (quickenable ? "quickened" : "prepared-at-own-level") +
+                        ";nativeSpellLevel=" + tier + ";preparedSpellLevel=" +
+                        _caseSpellLevel.Value);
                 }
                 else if (_kind == ScenarioKind.Multiple)
                     result = PrepareQuickenedSummon(_spellbook,
