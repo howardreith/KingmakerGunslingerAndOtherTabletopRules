@@ -18,6 +18,7 @@ using Kingmaker.Controllers.Rest;
 using Kingmaker.Controllers.Units;
 using Kingmaker.EntitySystem;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker.Enums;
 using Kingmaker.GameModes;
 using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem;
@@ -26,6 +27,7 @@ using Kingmaker.RuleSystem.Rules.Abilities;
 using Kingmaker.UI.SettingsUI;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.ActivatableAbilities;
+using Kingmaker.UnitLogic.Parts;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Buffs;
@@ -64,6 +66,26 @@ namespace KingmakerGunslinger.RuntimeTesting
             "8fd74eddd9b6c224693d9ab241f25e84";
         private const string SummonMonsterThreeGuid =
             "5d61dde0020bbf54ba1521f7ca0229dc";
+        private const string SummonMonsterFourGuid =
+            "7ed74a3ec8c458d4fb50b192fd7be6ef";
+        // The rest of the canonical Summon Monster parents, from
+        // planning/EXPANDED-SUMMONING-INVENTORY.md, so the fixture can reach
+        // any chartered creature rather than only the three tiers the first
+        // ground cases happened to need.
+        private const string SummonMonsterTwoGuid =
+            "1724061e89c667045a6891179ee2e8e7";
+        private const string SummonMonsterFiveGuid =
+            "630c8b85d9f07a64f917d79cb5905741";
+        private const string SummonMonsterSixGuid =
+            "e740afbab0147944dab35d83faa0ae1c";
+        private const string SummonMonsterSevenGuid =
+            "ab167fd8203c1314bac6568932f1752f";
+        private const string SummonMonsterEightGuid =
+            "d3ac756a229830243a72e84f3ab050d0";
+        private const string SummonMonsterNineGuid =
+            "52b5df2a97df18242aec67610616ded0";
+        private const string SummonNaturesAllyOneGuid =
+            "c6147854641924442a3bb736080cfeb6";
         private const string NativeDogName =
             "KMG_Summoning_Native_SM_Tier1";
         private const string ExpandedEagleMultipleName =
@@ -133,6 +155,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             private readonly ModContext _context;
             private readonly RuntimeTestRequest _request;
             private readonly ScenarioKind _kind;
+            private readonly string _flightCreature;
+            /// <summary>
+            /// The quickened slot level this case actually prepared, set when
+            /// the creature's own tier decides it instead of a fixed table.
+            /// </summary>
+            private int? _caseSpellLevel;
             private readonly bool _requestLocalFixture;
             private readonly DateTime _started = DateTime.UtcNow;
             private readonly Stopwatch _elapsed = Stopwatch.StartNew();
@@ -174,6 +202,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 new Dictionary<UnitEntityData, int>();
             private readonly Dictionary<UnitEntityData, int> _sameAttacksByUnit =
                 new Dictionary<UnitEntityData, int>();
+            private readonly Dictionary<UnitEntityData, int> _flightTargetAttacksByUnit =
+                new Dictionary<UnitEntityData, int>();
+            private readonly List<string> _flightImpactSamples =
+                new List<string>();
+            private readonly List<float> _waspBakedGaps =
+                new List<float>();
+            private readonly List<float> _stirgeBakedGaps =
+                new List<float>();
+            private readonly List<bool> _stirgeTipInside =
+                new List<bool>();
+            private readonly List<float> _stirgeForwardDots =
+                new List<float>();
+            private int _waspImpactCaptures;
+            private bool _stirgeAttackCaptured;
             private readonly List<UnitEntityData> _requestLocalCooldownUnits =
                 new List<UnitEntityData>();
             private UnitEntityData _areaAnchor;
@@ -256,6 +298,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             private int _nextRoundSummonCommands;
             private int _firstSummonAttackRound;
             private int _sameRoundSummonAttacks;
+            private int _flightRtwpAttackWaitFrames;
             private int _nextRoundSummonAttacks;
             private bool _castCaptureActive;
             private int _acadamaeCompletedBefore;
@@ -272,6 +315,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _context = context;
                 _request = request;
                 _kind = ResolveKind(request.Scenario);
+                _flightCreature = (string)request.Parameters?["flightCreature"];
                 _requestLocalFixture = RuntimeTestScenarioCatalog
                     .IsSummonSameTurnCompatibilityScenario(request.Scenario);
                 _evidence.Case = _kind.ToString();
@@ -761,6 +805,55 @@ namespace KingmakerGunslinger.RuntimeTesting
                             "The guarded working save has no live party area " +
                             "anchor.");
                     casterPosition = _areaAnchor.Position;
+                    if (_flightCreature == "giant-wasp" ||
+                        _flightCreature == "stirge")
+                    {
+                        // The working-save anchor is beside a room opening.
+                        // The original +3 m target straddles that wall, so a
+                        // strike image there cannot qualify contact geometry.
+                        // Survey two connected floor nodes in the same room
+                        // for this request-local visual fixture only.
+                        if (AstarPath.active == null)
+                            throw new InvalidOperationException(
+                                "Flying-creature visual fixture has no native navigation graph.");
+                        Pathfinding.NNInfo anchor = AstarPath
+                            .active.GetNearest(casterPosition);
+                        Vector3 requested = anchor.clampedPosition +
+                            new Vector3(-5f, 0f, 0f);
+                        Pathfinding.NNInfo open = AstarPath
+                            .active.GetNearest(requested);
+                        Pathfinding.NNInfo target = AstarPath
+                            .active.GetNearest(open.clampedPosition +
+                                new Vector3(3f, 0f, 0f));
+                        var graph = anchor.node == null ? null :
+                            AstarPath.active.graphs[
+                                (int)anchor.node.GraphIndex] as
+                                Pathfinding.IRaycastableGraph;
+                        Pathfinding.GraphHitInfo hit;
+                        bool valid = anchor.node != null &&
+                            open.node != null && target.node != null &&
+                            graph != null && open.node.Walkable &&
+                            target.node.Walkable &&
+                            open.node.Area == anchor.node.Area &&
+                            target.node.Area == anchor.node.Area &&
+                            open.node.GraphIndex == anchor.node.GraphIndex &&
+                            target.node.GraphIndex == anchor.node.GraphIndex &&
+                            Vector3.Distance(requested,
+                                open.clampedPosition) <= 0.5f &&
+                            Vector3.Distance(open.clampedPosition +
+                                new Vector3(3f, 0f, 0f),
+                                target.clampedPosition) <= 0.5f &&
+                            !graph.Linecast(open.clampedPosition,
+                                target.clampedPosition, open.node, out hit);
+                        if (!valid)
+                            throw new InvalidOperationException(
+                                "Flying-creature visual fixture has no surveyed open-floor " +
+                                "caster and target pair.");
+                        casterPosition = open.clampedPosition;
+                        _diagnostics.Add(_flightCreature + "-open-floor=caster=" +
+                            casterPosition.ToString("F2") + ";target=" +
+                            target.clampedPosition.ToString("F2"));
+                    }
                     holdingState = _areaAnchor.HoldingState;
                 }
 
@@ -806,8 +899,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .RequireExact<BlueprintCharacterClass>(
                         BlueprintBootstrap.Library, WizardGuid,
                         "native Wizard summon activation spellbook");
-                int casterLevels = _kind == ScenarioKind.Acadamae ||
-                    _kind == ScenarioKind.NativeControl ? 2 : 20;
+                // The Acadamae and ordinary native-control cases use a
+                // level-2 Wizard because their baseline is Summon Monster I,
+                // and a low caster keeps the fixture honest about slot
+                // economy. A named creature changes that: a level-2 Wizard
+                // cannot prepare Summon Monster VI at all, and the first
+                // ordinary turn-based run for the Shadow Mastiff failed at
+                // fixture setup with the spellbook rejecting the preparation.
+                // When a creature is named, the caster is the same level 20
+                // the other cases use - which is what a player casting a
+                // sixth-level summon would be.
+                int casterLevels = (_kind == ScenarioKind.Acadamae ||
+                    _kind == ScenarioKind.NativeControl) &&
+                    _flightCreature == null ? 2 : 20;
                 AdvanceSpellcaster(_caster.Descriptor, wizard, casterLevels,
                     ref _levelController);
                 _spellbook = _caster.Descriptor.GetSpellbook(wizard);
@@ -1294,6 +1398,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _evidence.LifecycleSecondsAfterSpawn = double.NaN;
                 foreach (UnitEntityData summon in _summons)
                 {
+                    if (_flightCreature == "stirge")
+                    {
+                        int nativeBab = summon.Descriptor.Stats.BaseAttackBonus
+                            .BaseValue;
+                        summon.Descriptor.Stats.BaseAttackBonus.BaseValue = 100;
+                        _diagnostics.Add("stirge-visual-fixture-bab=" +
+                            nativeBab + "->" + summon.Descriptor.Stats
+                                .BaseAttackBonus.BaseValue +
+                            ";scope=request-local-summon");
+                    }
                     RuleSummonUnit rule = _summonRules[summon];
                     double expected = (rule.Duration.Seconds +
                         rule.BonusDuration.Seconds).TotalSeconds;
@@ -1346,7 +1460,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _evidence.DuplicateDisposition = string.Join(",",
                     duplicateDispositions.ToArray());
                 _evidence.DuplicateNoOp = duplicateNoOp;
-                _evidence.ExactSummonKind = _kind != ScenarioKind.Multiple ||
+                _evidence.ExactSummonKind = _flightCreature != null ?
+                    _summons.All(value => value.Blueprint != null &&
+                        value.Blueprint.name ==
+                            ExpandedSummoningIdentityCatalog.UnitSymbol(
+                                ExpandedSummoningCatalog.All.Single(creature =>
+                                    creature.Key == _flightCreature))
+                                .Replace('.', '_').Replace('-', '_')) :
+                    _kind != ScenarioKind.Multiple ||
                     _summons.All(value => value.Blueprint != null &&
                         value.Blueprint.name == "KMG_Summoning_Unit_Eagle");
                 _evidence.AccelerationCorrelationTrace =
@@ -1394,6 +1515,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         value.Descriptor.Buffs.GetBuff(BlueprintRoot.Instance
                             .SystemMechanics.SummonedUnitAppearBuff) == null);
                     if (!live || !active || !appearanceCleared) return;
+                    if (_flightCreature != null &&
+                        !AllUnitsAtLeast(_flightTargetAttacksByUnit,
+                            _flightCreature == "giant-wasp" ? 2 : 1) &&
+                        _flightRtwpAttackWaitFrames++ < 600) return;
                     _evidence.RtwpNativeActive = true;
                     _evidence.RtwpNativeAppearanceCleared = true;
                     _evidence.RtwpCurrentTurnAbsent =
@@ -1478,6 +1603,49 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ForceTurnOnce(turn);
             }
 
+            /// <summary>
+            /// The creature's own signature ability, read on its own turn
+            /// through the engine's own calculation rather than from the
+            /// blueprint.
+            ///
+            /// <para>For the Shadow Mastiff that is shadow blend: the game
+            /// turns the activatable on by itself, so what is measured is
+            /// whether the concealment an attacker would consult is actually
+            /// there while the creature is taking its turn. Bay is not
+            /// exercised here on purpose - its printed spread reaches every
+            /// creature in range that is not an evil outsider, which in this
+            /// fixture is the party the turn order is built from, so panicking
+            /// them would measure the fixture collapsing rather than the
+            /// creature behaving. Bay's own rules are qualified by the Sprint
+            /// 13 rules gate against the victim list its howl really
+            /// produces.</para>
+            /// </summary>
+            private void ObserveSignatureAbilityOnOwnTurn(
+                UnitEntityData summon, int round)
+            {
+                if (_flightCreature != "shadow-mastiff" ||
+                    _evidence.SignatureAbilityObservations.Count >= 4) return;
+                ActivatableAbility blend = summon.Descriptor
+                    .ActivatableAbilities.Enumerable.FirstOrDefault(value =>
+                        value != null && value.Blueprint != null &&
+                        value.Blueprint.name ==
+                            "KMG_Summoning_Special_ShadowMastiff_ShadowBlend");
+                UnitPartConcealment part = summon.Get<UnitPartConcealment>();
+                Concealment concealment = _enemy == null ? Concealment.None :
+                    UnitPartConcealment.Calculate(_enemy, summon, true);
+                bool active = blend != null && blend.IsOn &&
+                    concealment == Concealment.Total;
+                string observation = "round=" + round + ";blend=" +
+                    (blend == null ? "<absent>" : blend.IsOn ? "on" : "off") +
+                    ";concealmentPart=" + (part != null) +
+                    ";attackerConcealment=" + concealment +
+                    ";attacker=" + (_enemy == null ? "<none>" :
+                        Identity(_enemy));
+                _evidence.SignatureAbilityObservations.Add(observation);
+                _diagnostics.Add("signature-ability=" + observation);
+                if (active) _evidence.SignatureAbilityActive = true;
+            }
+
             internal void ObserveTurnPrepared(TurnController turn)
             {
                 if (turn == null || turn.Unit == null ||
@@ -1500,6 +1668,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     summon.HasSwiftAction() + ";lawful=" + lawful;
                 _evidence.SummonTurnObservations.Add(observation);
                 _diagnostics.Add("summon-turn-prepared=" + observation);
+                ObserveSignatureAbilityOnOwnTurn(summon, round);
                 bool firstForUnit = Count(_sameTurnsByUnit, summon) == 0 &&
                     Count(_nextTurnsByUnit, summon) == 0;
                 if (_evidence.FirstSummonTurnRound == 0)
@@ -1599,10 +1768,381 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 else if (round == _castRound + 1)
                     _nextRoundSummonAttacks++;
+                if (_flightCreature != null && ReferenceEquals(
+                    attack.Target, _enemy) && attack.Weapon != null)
+                {
+                    Increment(_flightTargetAttacksByUnit, attack.Initiator);
+                    ObserveFlightImpactGeometry(attack);
+                }
                 _diagnostics.Add("summon-attack=round=" + round +
                     ";target=" + Identity(attack.Target) +
                     ";weapon=" + (attack.Weapon == null ? "<none>" :
                         attack.Weapon.Blueprint.name));
+            }
+
+            private void ObserveFlightImpactGeometry(RuleAttackWithWeapon attack)
+            {
+                if (_flightImpactSamples.Count >= 8) return;
+                UnitEntityView source = attack.Initiator.View;
+                UnitEntityView target = attack.Target.View;
+                SkinnedMeshRenderer mesh = source == null ? null : source
+                    .GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                    .FirstOrDefault(value => value != null &&
+                        value.sharedMesh != null);
+                SkinnedMeshRenderer targetRenderer = target == null ? null :
+                    target.GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                    .Where(value => value != null && value.enabled &&
+                        value.sharedMesh != null &&
+                        value.sharedMesh.vertexCount >= 100 &&
+                        value.bones != null && value.bones.Length >= 8)
+                    .OrderByDescending(value => value.bones.Length)
+                    .ThenByDescending(value => value.bounds.size.sqrMagnitude)
+                    .FirstOrDefault();
+                string weapon = attack.Weapon.Blueprint == null ? "<null>" :
+                    attack.Weapon.Blueprint.name;
+                if (mesh == null || targetRenderer == null)
+                {
+                    _flightImpactSamples.Add("weapon=" + weapon +
+                        ";sourceView=" + (source != null) +
+                        ";targetView=" + (target != null) +
+                        ";sourceMesh=" + (mesh != null) +
+                        ";targetRenderer=" + (targetRenderer != null));
+                    return;
+                }
+                Bounds targetBounds = targetRenderer.bounds;
+                string[] anchors = _flightCreature == "giant-wasp" ?
+                    new[] { "Tail" } : _flightCreature == "stirge" ?
+                    new[] { "Head" } :
+                    new[] { "Jaw", "Head", "L_Foot0", "R_Foot0" };
+                string distances = string.Join(",", anchors.Select(name =>
+                {
+                    Transform bone = (mesh.bones ?? Array.Empty<Transform>())
+                        .FirstOrDefault(value => value != null &&
+                            value.name == name);
+                    return name + "=" + (bone == null ? "missing" :
+                        Vector3.Distance(bone.position,
+                            targetBounds.ClosestPoint(bone.position))
+                            .ToString("0.###", CultureInfo.InvariantCulture));
+                }).ToArray());
+                string weightedSurface = DescribeFlightWeightedSurface(
+                    mesh, targetBounds, anchors);
+                EagleAttackVisualLunge lunge = source
+                    .GetComponent<EagleAttackVisualLunge>();
+                GiantWaspVisualSting waspSting = source
+                    .GetComponent<GiantWaspVisualSting>();
+                StirgeVisualTouch stirgeTouch = source
+                    .GetComponent<StirgeVisualTouch>();
+                if (_flightCreature == "giant-wasp")
+                    _waspBakedGaps.Add(waspSting == null ?
+                        float.PositiveInfinity : waspSting.BakedGapAfter);
+                if (_flightCreature == "stirge")
+                {
+                    _stirgeBakedGaps.Add(stirgeTouch == null ?
+                        float.PositiveInfinity : stirgeTouch.BakedGap);
+                    _stirgeTipInside.Add(stirgeTouch == null ||
+                        stirgeTouch.TipInside);
+                    _stirgeForwardDots.Add(stirgeTouch == null ? -1f :
+                        stirgeTouch.ModelForwardDot);
+                }
+                Vector3 toward = targetBounds.center - source.transform.position;
+                toward.y = 0f;
+                Vector3 facing = source.transform.forward;
+                facing.y = 0f;
+                float facingDot = toward.sqrMagnitude < 0.0001f ||
+                    facing.sqrMagnitude < 0.0001f ? 0f :
+                    Vector3.Dot(toward.normalized, facing.normalized);
+                _flightImpactSamples.Add("weapon=" + weapon +
+                    ";mesh=" + mesh.sharedMesh.name +
+                    ";sourceBounds=" + mesh.bounds.center.ToString("F2") +
+                    "/" + mesh.bounds.size.ToString("F2") +
+                    ";rendererScale=" + mesh.transform.lossyScale.ToString("F2") +
+                    ";eagleLunge=" + (lunge == null ? "<none>" :
+                        lunge.Describe()) +
+                    ";waspSting=" + (waspSting == null ? "<none>" :
+                        waspSting.Describe()) +
+                    ";stirgeTouch=" + (stirgeTouch == null ? "<none>" :
+                        stirgeTouch.Describe()) +
+                    ";viewForwardDot=" + facingDot.ToString("0.###",
+                        CultureInfo.InvariantCulture) +
+                    ";targetRenderer=" + targetRenderer.name +
+                    ";targetMesh=" + targetRenderer.sharedMesh.name +
+                    ";targetBones=" + targetRenderer.bones.Length +
+                    ";targetSize=" + targetBounds.size.ToString("F2") +
+                    ";target=" + targetBounds.center.ToString("F2") +
+                    ";source=" + source.transform.position.ToString("F2") +
+                    ";distances=" + distances +
+                    ";weightedSurface=" + weightedSurface);
+                _diagnostics.Add("flight-impact-geometry=" +
+                    _flightImpactSamples[_flightImpactSamples.Count - 1]);
+                if (_flightCreature == "stirge" &&
+                    !_stirgeAttackCaptured && attack.AttackRoll != null &&
+                    attack.AttackRoll.IsHit)
+                {
+                    _stirgeAttackCaptured = true;
+                    string fileName = "stirge-native-attack-overhead.png";
+                    string capture = RuntimeTestRunner
+                        .WriteExpandedSummoningOverheadStrikeCapture(
+                            attack.Initiator, attack.Target,
+                            _request.EvidenceDirectory, fileName);
+                    StirgeAttachComponent attach = StirgeAttachComponent.Find(
+                        attack.Initiator);
+                    bool primaryExact = attach != null &&
+                        ReferenceEquals(attach.TouchWeapon,
+                            attack.Weapon.Blueprint) &&
+                        ReferenceEquals(attack.Initiator.Body.PrimaryHand
+                            .MaybeWeapon, attack.Weapon);
+                    bool initiatorBusy = attack.Initiator.Get<Kingmaker.UnitLogic
+                        .Parts.UnitPartGrappleInitiator>() != null;
+                    bool targetBusy = attack.Target.Get<Kingmaker.UnitLogic
+                        .Parts.UnitPartGrappleTarget>() != null;
+                    _diagnostics.Add("stirge-native-attack-overhead=" +
+                        capture + ";touch=" +
+                        (attack.AttackRoll != null &&
+                            attack.AttackRoll.AttackType == AttackType.Touch) +
+                        ";hit=" + (attack.AttackRoll != null &&
+                            attack.AttackRoll.IsHit) + ";attached=" +
+                        ReferenceEquals(StirgeHoldComponent.AttachedTarget(
+                            attack.Initiator), attack.Target) +
+                        ";attachComponent=" + (attach != null) +
+                        ";nativeEventCalls=" + (attach == null ? -1 :
+                            attach.NativeEventCalls) +
+                        ";nativeFallbackCalls=" + (attach == null ? -1 :
+                            attach.NativeFallbackCalls) +
+                        ";primaryExact=" + primaryExact +
+                        ";initiatorPart=" + initiatorBusy +
+                        ";targetPart=" + targetBusy +
+                        ";targetDead=" + attack.Target.Descriptor.State.IsDead);
+                    if (capture.StartsWith("png=" + fileName + ";",
+                            StringComparison.Ordinal))
+                        _files.Add(Path.Combine(_request.EvidenceDirectory,
+                            fileName));
+                }
+                if (_flightCreature == "giant-wasp" &&
+                    _waspImpactCaptures < 2)
+                {
+                    string fileName = "giant-wasp-" +
+                        (_kind == ScenarioKind.RtwpControl ? "rtwp" :
+                            "turn-based") + "-impact-" +
+                        (_waspImpactCaptures + 1) + ".png";
+                    _waspImpactCaptures++;
+                    try
+                    {
+                        string capture = RuntimeTestRunner
+                            .WriteExpandedSummoningPartyCameraCapture(
+                                attack.Initiator, _request.EvidenceDirectory,
+                                fileName);
+                        _diagnostics.Add("wasp-impact-camera=" + capture);
+                        if (capture.StartsWith("png=" + fileName + ";",
+                                StringComparison.Ordinal))
+                            _files.Add(Path.Combine(_request.EvidenceDirectory,
+                                fileName));
+                        string overheadName = fileName.Replace(".png",
+                            "-overhead.png");
+                        string overhead = RuntimeTestRunner
+                            .WriteExpandedSummoningOverheadStrikeCapture(
+                                attack.Initiator, attack.Target,
+                                _request.EvidenceDirectory, overheadName);
+                        _diagnostics.Add("wasp-impact-overhead=" + overhead);
+                        if (overhead.StartsWith("png=" + overheadName + ";",
+                                StringComparison.Ordinal))
+                            _files.Add(Path.Combine(_request.EvidenceDirectory,
+                                overheadName));
+                        string tailName = fileName.Replace(".png",
+                            "-tail-aim.png");
+                        _diagnostics.Add("wasp-tail-aim-probe=" +
+                            ProbeWaspTailAim(attack, mesh, targetBounds,
+                                tailName));
+                        string frameName = fileName.Replace(".png",
+                            "-tail-frame.png");
+                        WaspTailAimFrameProbe frameProbe = source.gameObject
+                            .AddComponent<WaspTailAimFrameProbe>();
+                        frameProbe.Begin(mesh, targetBounds, attack.Initiator,
+                            attack.Target, _request.EvidenceDirectory,
+                            frameName, result =>
+                            {
+                                _diagnostics.Add("wasp-tail-frame-probe=" +
+                                    result);
+                                if (result.Contains("png=" + frameName + ";"))
+                                    _files.Add(Path.Combine(
+                                        _request.EvidenceDirectory,
+                                        frameName));
+                            });
+                    }
+                    catch (Exception error)
+                    {
+                        _diagnostics.Add("wasp-impact-camera=unavailable:" +
+                            error.GetType().Name);
+                    }
+                }
+            }
+
+            private string ProbeWaspTailAim(RuleAttackWithWeapon attack,
+                SkinnedMeshRenderer renderer, Bounds targetBounds,
+                string fileName)
+            {
+                Transform[] bones = renderer.bones;
+                int tailIndex = Array.FindIndex(bones, value => value != null &&
+                    value.name == "Tail");
+                BoneWeight[] weights = renderer.sharedMesh.boneWeights;
+                if (tailIndex < 0 || weights == null || weights.Length == 0)
+                    return "unavailable:tail-bone-or-weights";
+                Transform tail = bones[tailIndex];
+                Quaternion native = tail.rotation;
+                Mesh baked = new Mesh();
+                try
+                {
+                    renderer.BakeMesh(baked);
+                    Vector3[] vertices = baked.vertices;
+                    if (vertices == null || vertices.Length != weights.Length)
+                        return "unavailable:baked-weight-count";
+                    int tipIndex = -1;
+                    float longest = -1f;
+                    for (int index = 0; index < vertices.Length; index++)
+                    {
+                        BoneWeight weight = weights[index];
+                        bool tailOwned =
+                            (weight.boneIndex0 == tailIndex &&
+                                weight.weight0 >= 0.75f) ||
+                            (weight.boneIndex1 == tailIndex &&
+                                weight.weight1 >= 0.75f) ||
+                            (weight.boneIndex2 == tailIndex &&
+                                weight.weight2 >= 0.75f) ||
+                            (weight.boneIndex3 == tailIndex &&
+                                weight.weight3 >= 0.75f);
+                        if (!tailOwned) continue;
+                        Vector3 point = BakedFlightVertexWorld(renderer,
+                            vertices[index]);
+                        float length = (point - tail.position).sqrMagnitude;
+                        if (length <= longest) continue;
+                        longest = length;
+                        tipIndex = index;
+                    }
+                    if (tipIndex < 0) return "unavailable:no-tail-tip";
+                    Vector3 before = BakedFlightVertexWorld(renderer,
+                        vertices[tipIndex]);
+                    Vector3 target = targetBounds.ClosestPoint(tail.position);
+                    Vector3 currentDirection = before - tail.position;
+                    Vector3 targetDirection = target - tail.position;
+                    if (currentDirection.sqrMagnitude < 0.001f ||
+                        targetDirection.sqrMagnitude < 0.001f)
+                        return "unavailable:degenerate-aim";
+                    float beforeGap = Vector3.Distance(before,
+                        targetBounds.ClosestPoint(before));
+                    tail.rotation = Quaternion.FromToRotation(
+                        currentDirection, targetDirection) * native;
+                    renderer.BakeMesh(baked);
+                    Vector3 after = BakedFlightVertexWorld(renderer,
+                        baked.vertices[tipIndex]);
+                    float afterGap = Vector3.Distance(after,
+                        targetBounds.ClosestPoint(after));
+                    string capture = RuntimeTestRunner
+                        .WriteExpandedSummoningOverheadStrikeCapture(
+                            attack.Initiator, attack.Target,
+                            _request.EvidenceDirectory, fileName);
+                    if (capture.StartsWith("png=" + fileName + ";",
+                            StringComparison.Ordinal))
+                        _files.Add(Path.Combine(_request.EvidenceDirectory,
+                            fileName));
+                    return "tipVertex=" + tipIndex + ";pivot=" +
+                        tail.position.ToString("F2") + ";before=" +
+                        before.ToString("F2") + ";after=" +
+                        after.ToString("F2") + ";target=" +
+                        targetBounds.center.ToString("F2") + ";angle=" +
+                        Quaternion.Angle(native, tail.rotation).ToString("0.#",
+                            CultureInfo.InvariantCulture) + ";gap=" +
+                        beforeGap.ToString("0.###", CultureInfo.InvariantCulture) +
+                        "->" + afterGap.ToString("0.###",
+                            CultureInfo.InvariantCulture) + ";inside=" +
+                        targetBounds.Contains(after) + ";" + capture;
+                }
+                catch (Exception error)
+                { return "unavailable:" + error.GetType().Name; }
+                finally
+                {
+                    tail.rotation = native;
+                    UnityEngine.Object.Destroy(baked);
+                }
+            }
+
+            private static string DescribeFlightWeightedSurface(
+                SkinnedMeshRenderer renderer, Bounds targetBounds,
+                string[] anchors)
+            {
+                Mesh baked = new Mesh();
+                try
+                {
+                    renderer.BakeMesh(baked);
+                    Vector3[] vertices = baked.vertices;
+                    BoneWeight[] weights = renderer.sharedMesh.boneWeights;
+                    Transform[] bones = renderer.bones;
+                    if (vertices == null || weights == null ||
+                        vertices.Length != weights.Length)
+                        return "unavailable:vertex-weight-count";
+                    Vector3 minimum = new Vector3(float.MaxValue,
+                        float.MaxValue, float.MaxValue);
+                    Vector3 maximum = new Vector3(float.MinValue,
+                        float.MinValue, float.MinValue);
+                    for (int index = 0; index < vertices.Length; index++)
+                    {
+                        Vector3 world = BakedFlightVertexWorld(renderer,
+                            vertices[index]);
+                        minimum = Vector3.Min(minimum, world);
+                        maximum = Vector3.Max(maximum, world);
+                    }
+                    string surfaces = string.Join(",", anchors.Select(name =>
+                    {
+                        int bone = Array.FindIndex(bones, value =>
+                            value != null && value.name == name);
+                        if (bone < 0) return name + "=missing";
+                        int count = 0;
+                        float nearest = float.MaxValue;
+                        Vector3 nearestPoint = Vector3.zero;
+                        for (int index = 0; index < vertices.Length; index++)
+                        {
+                            BoneWeight weight = weights[index];
+                            bool influenced =
+                                (weight.boneIndex0 == bone && weight.weight0 >= 0.25f) ||
+                                (weight.boneIndex1 == bone && weight.weight1 >= 0.25f) ||
+                                (weight.boneIndex2 == bone && weight.weight2 >= 0.25f) ||
+                                (weight.boneIndex3 == bone && weight.weight3 >= 0.25f);
+                            if (!influenced) continue;
+                            Vector3 point = BakedFlightVertexWorld(renderer,
+                                vertices[index]);
+                            float distance = Vector3.Distance(point,
+                                targetBounds.ClosestPoint(point));
+                            if (distance < nearest)
+                            {
+                                nearest = distance;
+                                nearestPoint = point;
+                            }
+                            count++;
+                        }
+                        return name + "=" + count + "/" +
+                            (count == 0 ? "none" : nearest.ToString("0.###",
+                                CultureInfo.InvariantCulture) + "@" +
+                                nearestPoint.ToString("F2"));
+                    }).ToArray());
+                    return "bakedBounds=" + ((minimum + maximum) * 0.5f)
+                        .ToString("F2") + "/" + (maximum - minimum)
+                        .ToString("F2") + ";tips=" + surfaces;
+                }
+                catch (Exception error)
+                {
+                    return "unavailable:" + error.GetType().Name;
+                }
+                finally
+                {
+                    UnityEngine.Object.Destroy(baked);
+                }
+            }
+
+            private static Vector3 BakedFlightVertexWorld(
+                SkinnedMeshRenderer renderer, Vector3 vertex)
+            {
+                // Unity's BakeMesh has already applied the renderer's scale.
+                // TransformPoint would apply the 0.30 Eagle view scale again.
+                return renderer.transform.position +
+                    renderer.transform.rotation * vertex;
             }
 
             private void ForceTurnOnce(TurnController turn)
@@ -1891,6 +2431,88 @@ namespace KingmakerGunslinger.RuntimeTesting
                     path, realPath,
                     "exact installed runtime objects and reference identity");
 
+                if (_flightCreature != null)
+                    Add((_flightCreature == "giant-wasp" ||
+                            _flightCreature == "stirge" ? "sprint10-flight-" :
+                            "sprint9-flight-") + _flightCreature + "-" +
+                            (_kind == ScenarioKind.RtwpControl ? "rtwp" :
+                                _kind == ScenarioKind.NativeControl ?
+                                    "ordinary-turn-based" : "turn-based"),
+                        "the exact flying creature is summoned through its own-tier parent and lands the required native weapon rules on the exact hostile in the requested combat mode",
+                        "creature=" + _flightCreature + ";exact=" +
+                            _evidence.ExactSummonKind + ";turnBased=" +
+                            _evidence.TurnBasedAtCast + ";targetAttacks=" +
+                            string.Join(",", _summons.Select(value =>
+                                Count(_flightTargetAttacksByUnit, value))
+                                .ToArray()) + ";rtwpWaitFrames=" +
+                            _flightRtwpAttackWaitFrames,
+                        _summons.Count == 1 && _evidence.ExactSummonKind &&
+                            _evidence.TurnBasedAtCast ==
+                                (_kind != ScenarioKind.RtwpControl) &&
+                            AllUnitsAtLeast(_flightTargetAttacksByUnit,
+                                _flightCreature == "giant-wasp" ? 2 : 1),
+                        "RuleSummonUnit, native combat mode and correlated RuleAttackWithWeapon target identity");
+
+                if (_flightCreature == "shadow-mastiff" &&
+                    _kind == ScenarioKind.NativeControl)
+                    Add("sprint13-shadow-mastiff-ordinary-turn-based-signature",
+                        "shadow blend is active on the creature's own turn, and the concealment an attacker's rule would consult reads Total",
+                        "observations[" + string.Join("|",
+                            _evidence.SignatureAbilityObservations.ToArray()) +
+                            "]",
+                        _evidence.SignatureAbilityObservations.Count > 0 &&
+                            _evidence.SignatureAbilityActive,
+                        "the live activatable and the engine's own UnitPartConcealment.Calculate against the exact hostile");
+
+                if (_flightCreature == "giant-wasp")
+                    Add("sprint10-giant-wasp-visible-sting-" +
+                            (_kind == ScenarioKind.RtwpControl ? "rtwp" :
+                                "turn-based"),
+                        "both native sting hits place the baked original stinger within 0.25 m of the hostile renderer in the same weapon event",
+                        "bakedGaps=" + string.Join(",",
+                            _waspBakedGaps.Select(value => value.ToString(
+                                "0.###", CultureInfo.InvariantCulture))
+                            .ToArray()),
+                        _waspBakedGaps.Count >= 2 &&
+                            _waspBakedGaps.Take(2).All(value =>
+                                value >= 0f && value <= 0.25f),
+                        "instance-local pose sampled in each native RuleAttackWithWeapon.OnTrigger, not a cached prior attack");
+
+                if (_flightCreature == "stirge")
+                    Add("sprint10-stirge-visible-contact",
+                        "the original proboscis reaches within 0.20 m of the hostile renderer without entering its bounds on a native touch attack",
+                        "bakedGaps=" + string.Join(",",
+                            _stirgeBakedGaps.Select(value => value.ToString(
+                                "0.###", CultureInfo.InvariantCulture))
+                                .ToArray()) + ";inside=" +
+                            string.Join(",", _stirgeTipInside.Select(value =>
+                                value.ToString()).ToArray()) +
+                            ";modelForwardDots=" + string.Join(",",
+                                _stirgeForwardDots.Select(value =>
+                                    value.ToString("0.###",
+                                        CultureInfo.InvariantCulture))
+                                    .ToArray()),
+                        _stirgeBakedGaps.Count >= 1 &&
+                            _stirgeBakedGaps.Count == _stirgeTipInside.Count &&
+                            _stirgeBakedGaps.Count == _stirgeForwardDots.Count &&
+                            _stirgeBakedGaps.All(value =>
+                                value >= 0f && value <= 0.20f) &&
+                            _stirgeTipInside.All(value => !value) &&
+                            _stirgeForwardDots.All(value => value >= 0.80f),
+                        "instance-local baked mesh sampled in the exact native RuleAttackWithWeapon event");
+
+                if (_flightCreature == "stirge")
+                    Add("sprint10-stirge-native-attack-overhead",
+                        "one native touch attack against the exact hostile has a live overhead visual capture",
+                        string.Join("|", _diagnostics.Where(value =>
+                            value.StartsWith("stirge-native-attack-overhead=",
+                                StringComparison.Ordinal)).ToArray()),
+                        _files.Any(value => Path.GetFileName(value) ==
+                            "stirge-native-attack-overhead.png") &&
+                            _diagnostics.Any(value => value.Contains(
+                                ";touch=True;hit=True;attached=True")),
+                        "native RuleAttackWithWeapon, Stirge session attachment and read-only camera capture; art image requires visual inspection");
+
                 if (_kind == ScenarioKind.RtwpControl)
                 {
                     Add("rtwp-native-summon-activation",
@@ -2084,7 +2706,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             AllUnitsAtLeast(_sameCommandsByUnit, 1) &&
                             AllUnitsAtLeast(_nextCommandsByUnit, 1),
                             "UnitCommands.Run correlated to exact summon and CurrentTurn");
-                        if (_kind == ScenarioKind.Quickened)
+                        if (_kind == ScenarioKind.Quickened &&
+                            _flightCreature == null)
                             Add("accelerated-summon-single-action",
                                 "tier-one dog resolves exactly one weapon rule in its one cast-round opportunity",
                                 "first=" + _firstSummonAttackRound +
@@ -2416,7 +3039,95 @@ namespace KingmakerGunslinger.RuntimeTesting
             private AbilityData PrepareCaseAbility()
             {
                 AbilityData result;
-                if (_kind == ScenarioKind.Multiple)
+                if (_flightCreature == "stirge")
+                {
+                    SummonVariantSpec variant = ExpandedSummoningCatalog
+                        .GenerateVariants(SummonFamily.NaturesAlly).Single(value =>
+                            value.Creature.Key == "stirge" &&
+                            value.ParentTier == 1 &&
+                            value.Multiplicity == SummonMultiplicity.One);
+                    string selected = ExpandedSummoningIdentityCatalog
+                        .AbilitySymbol(variant).Replace('.', '_')
+                        .Replace('-', '_');
+                    result = PrepareQuickenedSummon(_spellbook,
+                        SummonNaturesAllyOneGuid, selected, 1, 5,
+                        out _castSlot);
+                }
+                else if (_flightCreature != null)
+                {
+                    // The creature's own Summon Monster tier, read from the
+                    // frozen catalog rather than written down here, so a
+                    // chartered ground creature can use this case too.
+                    SummonCreatureSpec creature = ExpandedSummoningCatalog.All
+                        .Single(value => value.Key == _flightCreature);
+                    if (!creature.MonsterTier.HasValue)
+                        throw new InvalidOperationException(
+                            "The activation case needs a Summon Monster tier: " +
+                            _flightCreature + ".");
+                    int tier = creature.MonsterTier.Value;
+                    SummonVariantSpec variant = ExpandedSummoningCatalog
+                        .GenerateVariants(SummonFamily.Monster).Single(value =>
+                            value.Creature.Key == _flightCreature &&
+                            value.ParentTier == tier &&
+                            value.Multiplicity == SummonMultiplicity.One);
+                    string selected = ExpandedSummoningIdentityCatalog
+                        .AbilitySymbol(variant).Replace('.', '_')
+                        .Replace('-', '_');
+                    string parent = tier == 1 ? SummonMonsterOneGuid :
+                        tier == 2 ? SummonMonsterTwoGuid :
+                        tier == 3 ? SummonMonsterThreeGuid :
+                        tier == 4 ? SummonMonsterFourGuid :
+                        tier == 5 ? SummonMonsterFiveGuid :
+                        tier == 6 ? SummonMonsterSixGuid :
+                        tier == 7 ? SummonMonsterSevenGuid :
+                        tier == 8 ? SummonMonsterEightGuid :
+                        tier == 9 ? SummonMonsterNineGuid : null;
+                    if (parent == null)
+                        throw new InvalidOperationException(
+                            "The activation case has no canonical parent for Summon Monster " +
+                            tier + ".");
+                    // Quicken Spell adds four levels, so a quickened Summon
+                    // Monster VI would be a 10th-level spell and the game has
+                    // nine. No character can ever quicken one.
+                    //
+                    // That matters differently for the three cases. The
+                    // same-turn case exists to prove a summon acts in the turn
+                    // it was cast, which only a quickened swift cast produces,
+                    // so it refuses a creature that cannot be quickened rather
+                    // than measuring something else and calling it the same
+                    // thing - a run that prepared a Shadow Mastiff at its own
+                    // level for that case reported eight failures, every one of
+                    // them the accelerated-summon machinery correctly declining
+                    // a Full-Round cast. The RTWP case has no turn order to act
+                    // inside, and the ordinary native-control case is by
+                    // definition the unquickened Full-Round cast, so neither
+                    // ever quickens a creature this far up the ladder: both
+                    // prepare it at its own level, which is the only way a
+                    // player can cast it.
+                    bool ordinary = _kind == ScenarioKind.RtwpControl ||
+                        _kind == ScenarioKind.NativeControl;
+                    bool quickenable = tier + 4 <= 9 && !ordinary;
+                    if (tier + 4 > 9 && !ordinary)
+                        throw new InvalidOperationException(
+                            "Summon Monster " + tier + " cannot be quickened: " +
+                            "with Quicken Spell it would be a " + (tier + 4) +
+                            "th-level spell and the game has nine. The " +
+                            "same-turn activation case does not apply to " +
+                            _flightCreature + "; its real-time behaviour is " +
+                            "covered by the RTWP control case and its ordinary " +
+                            "turn-based behaviour by the native-control case.");
+                    _caseSpellLevel = quickenable ? tier + 4 : tier;
+                    result = quickenable
+                        ? PrepareQuickenedSummon(_spellbook, parent, selected,
+                            tier, tier + 4, out _castSlot)
+                        : PreparePreparedSummon(_spellbook, parent, selected,
+                            tier, out _castSlot);
+                    _diagnostics.Add(_flightCreature + "-preparation=" +
+                        (quickenable ? "quickened" : "prepared-at-own-level") +
+                        ";nativeSpellLevel=" + tier + ";preparedSpellLevel=" +
+                        _caseSpellLevel.Value);
+                }
+                else if (_kind == ScenarioKind.Multiple)
                     result = PrepareQuickenedSummon(_spellbook,
                         SummonMonsterThreeGuid, ExpandedEagleMultipleName,
                         3, 7, out _castSlot);
@@ -2431,7 +3142,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     result = PrepareQuickenedSummon(_spellbook,
                         SummonMonsterOneGuid, NativeDogName, 1, 5,
                         out _castSlot);
-                _evidence.SpellLevel = _kind == ScenarioKind.Multiple ? 7 :
+                _evidence.SpellLevel = _caseSpellLevel.HasValue ?
+                    _caseSpellLevel.Value :
+                    _kind == ScenarioKind.Multiple ? 7 :
                     _kind == ScenarioKind.Quickened ||
                     _kind == ScenarioKind.RtwpControl ? 5 : 1;
                 _evidence.SlotAvailableBefore = _castSlot != null &&
@@ -2946,10 +3659,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SummonStates = new List<string>();
                 SummonTurnObservations = new List<string>();
                 SummonCommands = new List<string>();
+                SignatureAbilityObservations = new List<string>();
                 LifecycleSecondsBySummon = new List<string>();
                 UnitOpportunities = new List<string>();
                 Turns = new string[0];
             }
+            public List<string> SignatureAbilityObservations { get; set; }
+            public bool SignatureAbilityActive { get; set; }
             public string Case { get; set; }
             public string Caster { get; set; }
             public string Enemy { get; set; }
@@ -3224,5 +3940,158 @@ namespace KingmakerGunslinger.RuntimeTesting
                 { session.ObserveFailure("RuleAttackWithWeapon", exception); }
             }
         }
+    }
+
+    /// <summary>Guarded fixture only: hold one Tail pose through rendering,
+    /// capture after two frames, then restore the animated bone. This never
+    /// changes a published Wasp or persists with the summon.</summary>
+    [DefaultExecutionOrder(10000)]
+    internal sealed class WaspTailAimFrameProbe : MonoBehaviour
+    {
+        private SkinnedMeshRenderer _renderer;
+        private Transform _tail;
+        private Vector3 _tipLocal;
+        private Bounds _targetBounds;
+        private UnitEntityData _attacker;
+        private UnitEntityData _target;
+        private string _directory;
+        private string _fileName;
+        private Action<string> _record;
+        private Quaternion _native;
+        private Quaternion _applied;
+        private bool _hasApplied;
+        private int _tipIndex = -1;
+        private float _beforeGap;
+
+        internal void Begin(SkinnedMeshRenderer renderer, Bounds targetBounds,
+            UnitEntityData attacker, UnitEntityData target, string directory,
+            string fileName, Action<string> record)
+        {
+            _renderer = renderer;
+            _targetBounds = targetBounds;
+            _attacker = attacker;
+            _target = target;
+            _directory = directory;
+            _fileName = fileName;
+            _record = record;
+            Transform[] bones = renderer.bones;
+            int tailIndex = Array.FindIndex(bones, value => value != null &&
+                value.name == "Tail");
+            if (tailIndex < 0 || renderer.sharedMesh == null)
+            {
+                Finish("unavailable:tail");
+                return;
+            }
+            _tail = bones[tailIndex];
+            BoneWeight[] weights = renderer.sharedMesh.boneWeights;
+            Mesh baked = new Mesh();
+            try
+            {
+                renderer.BakeMesh(baked);
+                Vector3[] vertices = baked.vertices;
+                if (weights == null || weights.Length != vertices.Length)
+                {
+                    Finish("unavailable:weights");
+                    return;
+                }
+                float longest = -1f;
+                for (int index = 0; index < vertices.Length; index++)
+                {
+                    BoneWeight weight = weights[index];
+                    bool owned =
+                        (weight.boneIndex0 == tailIndex && weight.weight0 >= 0.75f) ||
+                        (weight.boneIndex1 == tailIndex && weight.weight1 >= 0.75f) ||
+                        (weight.boneIndex2 == tailIndex && weight.weight2 >= 0.75f) ||
+                        (weight.boneIndex3 == tailIndex && weight.weight3 >= 0.75f);
+                    if (!owned) continue;
+                    Vector3 point = World(vertices[index]);
+                    float length = (point - _tail.position).sqrMagnitude;
+                    if (length <= longest) continue;
+                    longest = length;
+                    _tipIndex = index;
+                }
+                if (_tipIndex < 0)
+                {
+                    Finish("unavailable:tip");
+                    return;
+                }
+                Vector3 before = World(vertices[_tipIndex]);
+                _tipLocal = _tail.InverseTransformPoint(before);
+                _beforeGap = Vector3.Distance(before,
+                    targetBounds.ClosestPoint(before));
+            }
+            finally { UnityEngine.Object.Destroy(baked); }
+            StartCoroutine(CaptureAfterFrames());
+        }
+
+        private void LateUpdate()
+        {
+            if (_tail == null || _tipIndex < 0) return;
+            Restore();
+            _native = _tail.rotation;
+            Vector3 tip = _tail.TransformPoint(_tipLocal);
+            Vector3 desired = _targetBounds.ClosestPoint(_tail.position) -
+                _tail.position;
+            Vector3 current = tip - _tail.position;
+            if (desired.sqrMagnitude < 0.001f ||
+                current.sqrMagnitude < 0.001f) return;
+            _applied = Quaternion.FromToRotation(current, desired) * _native;
+            _tail.rotation = _applied;
+            _hasApplied = true;
+        }
+
+        private System.Collections.IEnumerator CaptureAfterFrames()
+        {
+            yield return new WaitForEndOfFrame();
+            yield return new WaitForEndOfFrame();
+            string outcome;
+            Mesh baked = new Mesh();
+            try
+            {
+                _renderer.BakeMesh(baked);
+                Vector3 after = World(baked.vertices[_tipIndex]);
+                float gap = Vector3.Distance(after,
+                    _targetBounds.ClosestPoint(after));
+                string capture = RuntimeTestRunner
+                    .WriteExpandedSummoningOverheadStrikeCapture(_attacker,
+                        _target, _directory, _fileName);
+                outcome = "tipVertex=" + _tipIndex + ";angle=" +
+                    Quaternion.Angle(_native, _applied).ToString("0.#",
+                        CultureInfo.InvariantCulture) + ";gap=" +
+                    _beforeGap.ToString("0.###", CultureInfo.InvariantCulture) +
+                    "->" + gap.ToString("0.###", CultureInfo.InvariantCulture) +
+                    ";" + capture;
+            }
+            catch (Exception error)
+            { outcome = "unavailable:" + error.GetType().Name; }
+            finally { UnityEngine.Object.Destroy(baked); }
+            Finish(outcome);
+        }
+
+        private Vector3 World(Vector3 bakedVertex)
+        { return _renderer.transform.position +
+            _renderer.transform.rotation * bakedVertex; }
+
+        private void Finish(string result)
+        {
+            Restore();
+            if (_record != null) _record(result);
+            UnityEngine.Object.Destroy(this);
+        }
+
+        private void Restore()
+        {
+            if (!_hasApplied || _tail == null) return;
+            if (Quaternion.Angle(_tail.rotation, _applied) <=
+                Quaternion.Angle(_tail.rotation, _native))
+                _tail.rotation = _native;
+            _hasApplied = false;
+        }
+
+        private void OnDisable()
+        { Restore(); }
+
+        private void OnDestroy()
+        { Restore(); }
     }
 }

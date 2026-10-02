@@ -69,23 +69,26 @@ namespace KingmakerGunslinger.DomainTests
         /// </summary>
         internal static void RepresentationIsTheUnionOfBothCatalogs()
         {
-            Assertions.Equal(81, ExpandedSummoningCatalog.All.Count,
+            Assertions.Equal(89, ExpandedSummoningCatalog.All.Count,
                 "Project-owned identities must be preserved.");
-            Assertions.Equal(92,
+            Assertions.Equal(100,
                 ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count,
-                "Represented creatures must be 81 project-owned plus 11 native wrappers.");
-            Assertions.Equal(91,
+                "Represented creatures must be 89 project-owned plus 11 native wrappers.");
+            Assertions.Equal(100,
                 ExpandedSummoningCoveragePolicy.PublishedSomewhere.Count,
-                "91 creatures are published somewhere; Dire Bat is registered only.");
-            Assertions.False(
+                "Every represented creature publishes now that Sprint 13 is qualified too.");
+            Assertions.True(ExpandedSummoningCoveragePolicy.PublishedSomewhere
+                .Contains("stirge"),
+                "The requalified Stirge must count as published coverage.");
+            Assertions.True(
                 ExpandedSummoningCoveragePolicy.PublishedSomewhere.Contains("dire-bat"),
-                "Dire Bat must not count as published.");
+                "Dire Bat must count as published in both families.");
 
             int notRepresented = ExpandedSummoningIdealRosterCatalog.All.Count(
                 value => ExpandedSummoningCoveragePolicy.Provenance(value.Key) ==
                     SummonUnitProvenance.None);
-            Assertions.Equal(53, notRepresented,
-                "53 ideal-roster creatures are not represented in the summon roster yet.");
+            Assertions.Equal(45, notRepresented,
+                "46 ideal-roster creatures are not represented in the summon roster yet.");
             Assertions.Equal(145,
                 ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count + notRepresented,
                 "Represented plus unrepresented must account for the whole roster.");
@@ -209,11 +212,14 @@ namespace KingmakerGunslinger.DomainTests
                     "A wrapper lost its exact source ability GUID: " + wrapper.CreatureKey);
             }
 
-            // The visible surface is unchanged by a bookkeeping correction.
-            Assertions.Equal(828,
+            // Sprint 9 adds fourteen Dire Bat; Sprint 10 adds twelve Wasp and
+            // nine Stirge choices; Sprint 11 adds forty-eight ungulate choices;
+            // Sprint 13 adds the Shadow Mastiff's four. Sprints 12 and 13 have
+            // both published, so nothing registered is withheld.
+            Assertions.Equal(933,
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.Monster) +
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.NaturesAlly),
-                "Coverage derivation must not change the shipped visible surface.");
+                "The published visible surface must include Bat, Wasp, Stirge and ungulate choices.");
         }
     }
 }

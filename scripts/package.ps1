@@ -25,7 +25,7 @@ $outputDirectory = Join-Path $repositoryRoot "artifacts\bin\$Configuration\Kingm
 $stagingDirectory = Join-Path $repositoryRoot 'artifacts\staging\install'
 $modDirectory = Join-Path $stagingDirectory $info.Id
 $packagesDirectory = Join-Path $repositoryRoot 'artifacts\packages'
-$packagePath = Join-Path $packagesDirectory "$($info.Id)-$($info.Version)-favored-class-integration.zip"
+$packagePath = Join-Path $packagesDirectory "$($info.Id)-$($info.Version)-expanded-summoning-phase2a.zip"
 $checksumPath = "$packagePath.sha256"
 
 if (Test-Path -LiteralPath $stagingDirectory) {
@@ -81,6 +81,46 @@ if (Test-Path -LiteralPath $pteranodonSource -PathType Container) {
     Copy-Item -LiteralPath (Join-Path $pteranodonSource 'pteranodon-albedo.png') `
         -Destination $pteranodonDestination
 }
+$batSource = Join-Path $outputDirectory 'assets\flying-animals'
+if (Test-Path -LiteralPath $batSource -PathType Container) {
+    $batDestination = Join-Path $modDirectory 'assets\flying-animals'
+    New-Item -ItemType Directory -Path $batDestination -Force | Out-Null
+    Copy-Item -LiteralPath (Join-Path $batSource 'dire-bat-mesh.json') -Destination $batDestination
+    Copy-Item -LiteralPath (Join-Path $batSource 'dire-bat-albedo.png') -Destination $batDestination
+    Copy-Item -LiteralPath (Join-Path $batSource 'eagle-mesh.json') -Destination $batDestination
+    Copy-Item -LiteralPath (Join-Path $batSource 'eagle-albedo.png') -Destination $batDestination
+    Copy-Item -LiteralPath (Join-Path $batSource 'giant-wasp-mesh.json') -Destination $batDestination
+    Copy-Item -LiteralPath (Join-Path $batSource 'giant-wasp-albedo.png') -Destination $batDestination
+    Copy-Item -LiteralPath (Join-Path $batSource 'stirge-mesh.json') -Destination $batDestination
+    Copy-Item -LiteralPath (Join-Path $batSource 'stirge-albedo.png') -Destination $batDestination
+}
+$ungulateSource = Join-Path $outputDirectory 'assets\ungulates'
+if (Test-Path -LiteralPath $ungulateSource -PathType Container) {
+    $ungulateDestination = Join-Path $modDirectory 'assets\ungulates'
+    New-Item -ItemType Directory -Path $ungulateDestination -Force | Out-Null
+    foreach ($kind in @('aurochs','bison','rhinoceros','woolly-rhinoceros')) {
+        Copy-Item -LiteralPath (Join-Path $ungulateSource "$kind-mesh.json") -Destination $ungulateDestination
+        Copy-Item -LiteralPath (Join-Path $ungulateSource "$kind-albedo.png") -Destination $ungulateDestination
+    }
+}
+$sprint12QuadrupedSource = Join-Path $outputDirectory 'assets\sprint12-quadrupeds'
+if (Test-Path -LiteralPath $sprint12QuadrupedSource -PathType Container) {
+    $sprint12QuadrupedDestination = Join-Path $modDirectory 'assets\sprint12-quadrupeds'
+    New-Item -ItemType Directory -Path $sprint12QuadrupedDestination -Force | Out-Null
+    foreach ($kind in @('dire-rat','hyena','goblin-dog')) {
+        Copy-Item -LiteralPath (Join-Path $sprint12QuadrupedSource "$kind-mesh.json") -Destination $sprint12QuadrupedDestination
+        Copy-Item -LiteralPath (Join-Path $sprint12QuadrupedSource "$kind-albedo.png") -Destination $sprint12QuadrupedDestination
+    }
+}
+$sprint13CreatureSource = Join-Path $outputDirectory 'assets\sprint13-creatures'
+if (Test-Path -LiteralPath $sprint13CreatureSource -PathType Container) {
+    $sprint13CreatureDestination = Join-Path $modDirectory 'assets\sprint13-creatures'
+    New-Item -ItemType Directory -Path $sprint13CreatureDestination -Force | Out-Null
+    foreach ($kind in @('wolverine','shadow-mastiff','poisonous-frog')) {
+        Copy-Item -LiteralPath (Join-Path $sprint13CreatureSource "$kind-mesh.json") -Destination $sprint13CreatureDestination
+        Copy-Item -LiteralPath (Join-Path $sprint13CreatureSource "$kind-albedo.png") -Destination $sprint13CreatureDestination
+    }
+}
 $soundBankSource=Join-Path $repositoryRoot 'assets\soundbanks'
 if(Test-Path -LiteralPath (Join-Path $soundBankSource 'KMG_Firearms.bnk') -PathType Leaf){
     $soundBankDestination=Join-Path $modDirectory 'assets\soundbanks'
@@ -99,10 +139,10 @@ if (Test-Path -LiteralPath $checksumPath) {
 $python = (Get-Command python -ErrorAction Stop).Source
 $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
     'assets\soundbanks\KMG_Firearms.bnk') -PathType Leaf
-# Existing 135-file package plus 89 original elemental/strategic paintings,
-# the 3 composed strategic scroll item icons, and the Pteranodon mesh data
-# with its painted albedo.
-$expectedPackageFileCount = if ($hasFirearmSoundBank) { 251 } else { 249 }
+# Strict package inventory including the six reviewed Sprint 12 quadruped
+# mesh/painting files. The soundbank and its manifest account for the optional
+# two-file difference.
+$expectedPackageFileCount = if ($hasFirearmSoundBank) { 289 } else { 287 }
 & $python (Join-Path $repositoryRoot 'tools\create_deterministic_package.py') `
     --source $modDirectory --output $packagePath `
     --expected-file-count $expectedPackageFileCount

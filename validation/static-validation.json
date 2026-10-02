@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.140-favored-class-integration",
+  "milestone": "0.0.141-expanded-summoning-phase2a",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1214,7 +1214,7 @@
     "sprint30EntryApproved": true,
     "standaloneBinaryCount": 1,
     "standalonePackageEntries": 8,
-    "testCount": 877,
+    "testCount": 878,
     "testFailures": 0,
     "testRuns": 3
   },
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.140",
+  "version": "0.0.141",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2045,7 +2045,7 @@
     "branch": "claude/favored-class-integration",
     "baselineCommit": "996105ed9e72259a220be56e2a74e0cc18e5ef47",
     "charterSha256": "35e5ed5776839e8b1f4007f2d413079e26dac51ba3ab0f77ce4174be39ec7959",
-    "deterministicTestCount": 1918,
+    "deterministicTestCount": 1958,
     "publicReleaseAuthorized": true,
     "candidateOnly": false,
     "releaseVersion": "0.0.140",
@@ -2062,5 +2062,46 @@
     "nativeRuntimeEvidence": "FAVORED-CLASS-IMPLEMENTATION-REPORT.md: 41/41 guarded runs of the final gate on the pre-merge candidate 1088abb3d; the merged 0.0.140 build passed repository validation, the domain suite and a clean build",
     "ownerAuthorizedRelease": true,
     "qualificationStatus": "RELEASED - owner authorized on 2026-09-26 together with the merged Expanded Summoning Phase 1 release"
+  },
+  "expandedSummoningPhase2A141": {
+    "branch": "codex/expanded-summoning-phase2a-sprints9-13",
+    "deterministicTestCount": 1975,
+    "publicReleaseAuthorized": true,
+    "candidateOnly": false,
+    "releaseVersion": "0.0.141",
+    "releaseInformationalVersion": "0.0.141-expanded-summoning-phase2a",
+    "publishedSprintRange": "9-11",
+    "visibleGeneratedChoices": 832,
+    "retainedNativeWrappers": 29,
+    "hiddenSprint12Placements": 68,
+    "sprint12Published": false,
+    "compatibilityRuntimeQualificationPending": false,
+    "runtimeEvidence": "20260930T1626175528422Z-disposable-expanded-summoning",
+    "ownerVisualReview": "NOT_PERFORMED_NONBLOCKING",
+    "ownerReleaseInstruction": "2026-09-30: consolidate at a reasonable near-term stopping point, commit, and cut a release.",
+    "visibleChoiceTotal": 861,
+    "inventoryReconciliation": "EXPANDED-SUMMONING-PHASE2-INVENTORY-RECONCILIATION.md: 900 registered - 68 suppressed = 832 published generated; + 29 retained native wrappers = 861 visible. The earlier 882/911 figures were the Sprint 11 publication totals at 881db758 and did not describe the released commit 97f0a966.",
+    "withdrawnRelativeTo0140": "Dog, Hyena and Goblin Dog were published in 0.0.140 and are hidden in 0.0.141; their 50 placements return when Sprint 12 qualifies. Registered identities are unchanged, so 0.0.140 saves still load."
+  },
+  "expandedSummoningPhase2Development": {
+    "branch": "codex/expanded-summoning-phase2a-sprints9-13",
+    "effectiveMission": "artifacts/phase2/mission-claude-takeover.md",
+    "authorizedSprintRange": "12-21",
+    "activeSprint": 14,
+    "tranche2AClosed": true,
+    "publicReleaseAuthorized": false,
+    "candidateOnly": true,
+    "immutablePublishedArtifact": "KingmakerGunslinger-0.0.141-expanded-summoning-phase2a.zip sha256 c7aa3cecd3e9d773d260e3850566ccccf663e63a8d73ede05c17a9e5294dd2ce",
+    "registeredGeneratedPlacements": 904,
+    "suppressedGeneratedPlacements": 0,
+    "publishedGeneratedPlacements": 904,
+    "retainedNativeWrappers": 29,
+    "visibleChoiceTotal": 933,
+    "sprint12Published": true,
+    "sprint13Published": true,
+    "ownerVisualReview": "NOT_PERFORMED_NONBLOCKING",
+    "mergeAuthorized": false,
+    "newReleaseAuthorized": false,
+    "sprint22Authorized": false
   }
 }

@@ -13,28 +13,30 @@ namespace KingmakerGunslinger.DomainTests
     {
         internal static void ShippedSurfaceMatchesFrozenBaseline()
         {
-            Assertions.Equal(81, ExpandedSummoningBaselineInventory.UniqueCreatures,
+            Assertions.Equal(89, ExpandedSummoningBaselineInventory.UniqueCreatures,
                 "Baseline unique creature count changed.");
-            Assertions.Equal(74, ExpandedSummoningBaselineInventory.RosterEntries(
+            Assertions.Equal(81, ExpandedSummoningBaselineInventory.RosterEntries(
                 SummonFamily.Monster), "Baseline SM roster count changed.");
-            Assertions.Equal(71, ExpandedSummoningBaselineInventory.RosterEntries(
+            Assertions.Equal(78, ExpandedSummoningBaselineInventory.RosterEntries(
                 SummonFamily.NaturesAlly), "Baseline SNA roster count changed.");
-            Assertions.Equal(414, ExpandedSummoningBaselineInventory
+            Assertions.Equal(457, ExpandedSummoningBaselineInventory
                 .RegisteredPlacements(SummonFamily.Monster),
                 "Baseline SM registered placements changed.");
-            Assertions.Equal(399, ExpandedSummoningBaselineInventory
+            Assertions.Equal(447, ExpandedSummoningBaselineInventory
                 .RegisteredPlacements(SummonFamily.NaturesAlly),
                 "Baseline SNA registered placements changed.");
-            Assertions.Equal(424, ExpandedSummoningBaselineInventory
+            // The Shadow Mastiff is a Summon Monster creature, so its four
+            // placements all land on the SM side when it publishes.
+            Assertions.Equal(474, ExpandedSummoningBaselineInventory
                 .VisibleChoices(SummonFamily.Monster),
                 "Baseline SM visible choice count changed.");
-            Assertions.Equal(404, ExpandedSummoningBaselineInventory
+            Assertions.Equal(459, ExpandedSummoningBaselineInventory
                 .VisibleChoices(SummonFamily.NaturesAlly),
                 "Baseline SNA visible choice count changed.");
         }
 
         /// <summary>
-        /// The 828 headline figure (693 at the Sprint 0 freeze) must decompose
+        /// The 933 visible choices (693 at Sprint 0) must decompose
         /// exactly, so a sprint cannot quietly move a choice between the
         /// generated and native pools.
         /// </summary>
@@ -42,11 +44,11 @@ namespace KingmakerGunslinger.DomainTests
         {
             int generated = SummonVisibilityCatalog.PublishedLogicalPlacementCount;
             int wrappers = SummonNativeExpansionCatalog.All.Count;
-            Assertions.Equal(799, generated, "Published generated placements changed.");
+            Assertions.Equal(904, generated, "Published generated placements changed.");
             Assertions.Equal(29, wrappers, "Native wrapper count changed.");
-            Assertions.Equal(828, generated + wrappers,
+            Assertions.Equal(933, generated + wrappers,
                 "The combined visible choice total changed.");
-            Assertions.Equal(828,
+            Assertions.Equal(933,
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.Monster) +
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.NaturesAlly),
                 "Per-parent census disagrees with the catalog totals.");
@@ -85,17 +87,19 @@ namespace KingmakerGunslinger.DomainTests
         }
 
         /// <summary>
-        /// Dire Bat is the one frozen registered-but-hidden identity. Recording
-        /// it keeps Sprint 9's unhide from looking like a new creature.
+        /// Wasp, Stirge and the Sprint 11 ungulates are published, and so now
+        /// are the Sprint 12 and Sprint 13 creatures, so nothing is withheld.
         /// </summary>
         internal static void HiddenAndProxyCreaturesAreRecorded()
         {
-            Assertions.Equal(1,
+            // Sprint 13 qualified and published, so the withheld set is empty
+            // again. A creature appearing here is a sprint registering ahead
+            // of its own qualification, which is allowed and is how both
+            // Sprint 12 and Sprint 13 ran, but it has to be deliberate rather
+            // than a leftover - which is what this pin is for.
+            Assertions.Equal(0,
                 ExpandedSummoningBaselineInventory.RegisteredButHiddenCreatures.Count,
                 "The registered-but-hidden creature set changed.");
-            Assertions.Equal("dire-bat",
-                ExpandedSummoningBaselineInventory.RegisteredButHiddenCreatures[0],
-                "Dire Bat is the only frozen suppressed identity.");
             Assertions.True(ExpandedSummoningBaselineInventory.ProxyVisualCreatures
                 .Contains("pteranodon<Roc"),
                 "Pteranodon must still be recorded as a Roc-policy visual proxy.");
@@ -108,7 +112,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(ExpandedSummoningBaselineInventory.ProxyVisualCreatures
                 .Contains("dire-tiger<Smilodon"),
                 "Smilodon displays under its own name and is not a proxy.");
-            Assertions.Equal(21,
+            Assertions.Equal(27,
                 ExpandedSummoningBaselineInventory.ProxyVisualCreatures.Count,
                 "The frozen borrowed-body proxy count changed.");
         }
@@ -146,8 +150,77 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(first.StartsWith(
                 "{\n  \"schema\": \"" + ExpandedSummoningBaselineInventory.BaselineSchema + "\""),
                 "The census must declare its schema first so evidence stays comparable.");
-            Assertions.True(first.Contains("\"totalVisibleChoices\": 828"),
+            Assertions.True(first.Contains("\"totalVisibleChoices\": 933"),
                 "The emitted census lost the frozen visible-choice total.");
+        }
+
+        /// <summary>
+        /// The 0.0.141 records once claimed 882 generated and 911 visible
+        /// choices, which were the totals at the Sprint 11 publication commit
+        /// before Sprint 12 registered Dire Rat and suppressed four creatures.
+        /// Every mutable current record must now state the derived equation,
+        /// so a future registration or suppression change cannot leave a stale
+        /// published total behind.
+        /// </summary>
+        internal static void PublishedInventoryRecordsMatchTheDerivedEquation()
+        {
+            int generated = SummonVisibilityCatalog.PublishedLogicalPlacementCount;
+            int wrappers = SummonNativeExpansionCatalog.All.Count;
+            int visible = generated + wrappers;
+            string generatedText = generated.ToString(
+                System.Globalization.CultureInfo.InvariantCulture);
+            string visibleText = visible.ToString(
+                System.Globalization.CultureInfo.InvariantCulture);
+
+            string[] records = {
+                "EXPANDED-SUMMONING-PHASE2-AUTONOMOUS-STATE.md",
+                "EXPANDED-SUMMONING-PHASE2-IMPLEMENTATION-REPORT.md",
+                "EXPANDED-SUMMONING-PHASE2-JOURNAL.md",
+                "EXPANDED-SUMMONING-PHASE2-INVENTORY-RECONCILIATION.md",
+                "planning/EXPANDED-SUMMONING-FIDELITY-MATRIX.md",
+            };
+
+            foreach (string record in records)
+            {
+                string text = System.IO.File.ReadAllText(System.IO.Path.Combine(
+                    System.Environment.CurrentDirectory,
+                    record.Replace('/', System.IO.Path.DirectorySeparatorChar)));
+                Assertions.True(text.Contains(generatedText),
+                    record + " must state the derived published generated " +
+                    "placement count " + generatedText + ".");
+                Assertions.True(text.Contains(visibleText),
+                    record + " must state the derived visible choice total " +
+                    visibleText + ".");
+            }
+
+            // The released 0.0.141 notes describe a frozen build, not the
+            // current source, so they keep that build's own equation. Letting
+            // them drift to today's numbers would misreport what shipped.
+            string released = System.IO.File.ReadAllText(System.IO.Path.Combine(
+                System.Environment.CurrentDirectory, "docs",
+                "RELEASE-NOTES-0.0.141.md"));
+            Assertions.True(released.Contains("832") && released.Contains("861"),
+                "The 0.0.141 release notes must keep the equation that build actually shipped.");
+
+            // The reconciliation record is the one place allowed to quote the
+            // superseded figures, because explaining them is its purpose.
+            foreach (string record in records)
+            {
+                if (record.EndsWith("INVENTORY-RECONCILIATION.md",
+                        System.StringComparison.Ordinal)) continue;
+                string text = System.IO.File.ReadAllText(System.IO.Path.Combine(
+                    System.Environment.CurrentDirectory,
+                    record.Replace('/', System.IO.Path.DirectorySeparatorChar)));
+                foreach (string stale in new[] {
+                    "911 visible choices", "911 total choices",
+                    "911 visible summon choices"
+                })
+                    Assertions.True(!text.Contains(stale) ||
+                        text.Contains("INVENTORY-RECONCILIATION"),
+                        record + " still presents the superseded total \"" +
+                        stale + "\" without pointing at the reconciliation " +
+                        "record.");
+            }
         }
     }
 }

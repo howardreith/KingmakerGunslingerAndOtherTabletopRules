@@ -124,6 +124,10 @@
     <Compile Include="Summoning\SummonVisibilityCatalog.cs" />
     <Compile Include="Summoning\SummonViewScaleCatalog.cs" />
     <Compile Include="Summoning\ExpandedSummoningViewScalePatch.cs" />
+    <Compile Include="Summoning\EagleAttackLungePolicy.cs" />
+    <Compile Include="Summoning\EagleAttackVisualLunge.cs" />
+    <Compile Include="Summoning\GiantWaspVisualSting.cs" />
+    <Compile Include="Summoning\StirgeVisualTouch.cs" />
     <Compile Include="Summoning\ExpandedSummoningPteranodonViewPatch.cs" />
     <Compile Include="Summoning\ExpandedSummoningVisualVariantPatch.cs" />
     <Compile Include="Summoning\ExpandedSummoningVariantMenuPatch.cs" />
@@ -136,6 +140,17 @@
     <Compile Include="Summoning\SummonTemplateSmitePolicy.cs" />
     <Compile Include="Summoning\ExpandedSummoningSmiteComponent.cs" />
     <Compile Include="Summoning\ExpandedSummoningSpecialCombatComponents.cs" />
+    <Compile Include="Summoning\ExpandedSummoningSprint12CombatComponents.cs" />
+    <Compile Include="Summoning\ExpandedSummoningSprint13CombatComponents.cs" />
+    <Compile Include="Summoning\GiantWaspPoison.cs" />
+    <Compile Include="Summoning\GiantWaspPoisonPolicy.cs" />
+    <Compile Include="Summoning\StirgeAttachPolicy.cs" />
+    <Compile Include="Summoning\SummonInjuryDiseasePolicy.cs" />
+    <Compile Include="Summoning\SummonRagePolicy.cs" />
+    <Compile Include="Summoning\SummonShadowMastiffPolicy.cs" />
+    <Compile Include="Summoning\UngulateRulesPolicy.cs" />
+    <Compile Include="Summoning\UngulatePowerfulCharge.cs" />
+    <Compile Include="Summoning\ContextActionUngulateTrample.cs" />
     <Compile Include="Summoning\SummonGrappleLinkState.cs" />
     <Compile Include="Summoning\SummonAlignmentRuntimePolicy.cs" />
     <Compile Include="Summoning\SummonSameTurnActivationPolicy.cs" />
@@ -1128,6 +1143,8 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningNativeDonors.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningCorrection.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningCreatureReview.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint12.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint13.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.PteranodonAttachedView.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircle.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircleEvil.cs" />
@@ -1443,6 +1460,54 @@
     </Content>
     <Content Include="..\..\assets\pteranodon\pteranodon-albedo.png">
       <Link>assets\pteranodon\pteranodon-albedo.png</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\flying-animals\dire-bat-mesh.json">
+      <Link>assets\flying-animals\dire-bat-mesh.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\flying-animals\dire-bat-albedo.png">
+      <Link>assets\flying-animals\dire-bat-albedo.png</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\flying-animals\eagle-mesh.json">
+      <Link>assets\flying-animals\eagle-mesh.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\flying-animals\eagle-albedo.png">
+      <Link>assets\flying-animals\eagle-albedo.png</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\flying-animals\giant-wasp-mesh.json">
+      <Link>assets\flying-animals\giant-wasp-mesh.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\flying-animals\giant-wasp-albedo.png">
+      <Link>assets\flying-animals\giant-wasp-albedo.png</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\ungulates\*-mesh.json">
+      <Link>assets\ungulates\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\ungulates\*-albedo.png">
+      <Link>assets\ungulates\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\sprint12-quadrupeds\*-mesh.json">
+      <Link>assets\sprint12-quadrupeds\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\sprint12-quadrupeds\*-albedo.png">
+      <Link>assets\sprint12-quadrupeds\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\sprint13-creatures\*-mesh.json">
+      <Link>assets\sprint13-creatures\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\sprint13-creatures\*-albedo.png">
+      <Link>assets\sprint13-creatures\%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\..\assets\game\icons\expanded-summoning\*.png">

@@ -191,6 +191,11 @@
     <Compile Include="ExpandedSummoningSprint6Tests.cs" />
     <Compile Include="ExpandedSummoningSprint7Tests.cs" />
     <Compile Include="ExpandedSummoningSprint8Tests.cs" />
+    <Compile Include="ExpandedSummoningSprint9Tests.cs" />
+    <Compile Include="ExpandedSummoningSprint10Tests.cs" />
+    <Compile Include="ExpandedSummoningSprint11Tests.cs" />
+    <Compile Include="ExpandedSummoningSprint12Tests.cs" />
+    <Compile Include="ExpandedSummoningSprint13Tests.cs" />
     <Compile Include="ExpandedSummoningCorrectionTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonFamily.cs"><Link>Summoning\SummonFamily.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonMultiplicity.cs"><Link>Summoning\SummonMultiplicity.cs</Link></Compile>
@@ -208,6 +213,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ExpandedSummoningIdealRosterCatalog.cs"><Link>Summoning\ExpandedSummoningIdealRosterCatalog.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ExpandedSummoningCoveragePolicy.cs"><Link>Summoning\ExpandedSummoningCoveragePolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonViewScaleCatalog.cs"><Link>Summoning\SummonViewScaleCatalog.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\EagleAttackLungePolicy.cs"><Link>Summoning\EagleAttackLungePolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonIconCatalog.cs"><Link>Summoning\SummonIconCatalog.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonPublicationTransaction.cs"><Link>Summoning\SummonPublicationTransaction.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonUnitSanitizationPolicy.cs"><Link>Summoning\SummonUnitSanitizationPolicy.cs</Link></Compile>
@@ -220,6 +226,12 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ExpandedSummoningDonorCatalog.cs"><Link>Summoning\ExpandedSummoningDonorCatalog.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ExpandedSummoningSpecialProfiles.cs"><Link>Summoning\ExpandedSummoningSpecialProfiles.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ExpandedSummoningNaturalProfiles.cs"><Link>Summoning\ExpandedSummoningNaturalProfiles.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\GiantWaspPoisonPolicy.cs"><Link>Summoning\GiantWaspPoisonPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\StirgeAttachPolicy.cs"><Link>Summoning\StirgeAttachPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonInjuryDiseasePolicy.cs"><Link>Summoning\SummonInjuryDiseasePolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonRagePolicy.cs"><Link>Summoning\SummonRagePolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonShadowMastiffPolicy.cs"><Link>Summoning\SummonShadowMastiffPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\UngulateRulesPolicy.cs"><Link>Summoning\UngulateRulesPolicy.cs</Link></Compile>
     <Compile Include="ArchetypeFoundationTests.cs" />
     <Compile Include="RapidReloadPrerequisiteTests.cs" />
     <Compile Include="RapidReloadGateEvidenceTests.cs" />

@@ -4,16 +4,28 @@ using System.Linq;
 using System.Reflection;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.Blueprints.Items;
 using Kingmaker.Blueprints.Items.Weapons;
+using Kingmaker.Designers.Mechanics.Buffs;
+using Kingmaker.Designers.Mechanics.Facts;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Enums;
+using Kingmaker.ElementsSystem;
 using Kingmaker.Localization;
 using Kingmaker.RuleSystem;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Abilities.Components;
+using Kingmaker.UnitLogic.Buffs.Blueprints;
+using Kingmaker.UnitLogic.Buffs.Components;
+using Kingmaker.UnitLogic.FactLogic;
+using Kingmaker.UnitLogic.Mechanics;
+using Kingmaker.UnitLogic.Mechanics.Actions;
+using Kingmaker.UnitLogic.Mechanics.Components;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Summoning;
+using UnityEngine;
 
 namespace KingmakerGunslinger.Blueprints
 {
@@ -21,8 +33,23 @@ namespace KingmakerGunslinger.Blueprints
     {
         private const string Bite1d4Symbol =
             "KMG.Summoning.Natural.Bite1d4";
+        private const string DireBatBlindsenseSymbol =
+            "KMG.Summoning.Natural.DireBat.Blindsense";
         private const string Bite1d3Symbol =
             "KMG.Summoning.Natural.Bite1d3";
+        /// <summary>
+        /// The Poison Frog's printed bite deals a flat point, not a die. The
+        /// value is exactly expressible because <c>DiceType</c> has a
+        /// <c>One</c> member and this builder mints its own natural weapons.
+        /// </summary>
+        private const string Bite1Symbol =
+            "KMG.Summoning.Natural.Bite1";
+        private const string WolverineRageSymbol =
+            "KMG.Summoning.Natural.Wolverine.Rage";
+        private const string WolverineRageOnsetSymbol =
+            "KMG.Summoning.Natural.Wolverine.RageOnset";
+        private const string WolverineRageStateSymbol =
+            "KMG.Summoning.Natural.Wolverine.RageState";
         private const string Tail1d12Symbol =
             "KMG.Summoning.Natural.Tail1d12";
         private const string Tail3d6Symbol =
@@ -33,6 +60,41 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Summoning.Natural.Claw1d8";
         private const string Talon2d6Symbol =
             "KMG.Summoning.Natural.Talon2d6";
+        private const string WaspSting1d8Symbol =
+            "KMG.Summoning.Natural.WaspSting1d8";
+        private const string StirgeTouchSymbol =
+            "KMG.Summoning.Natural.StirgeTouch";
+        private const string NativeShockingGraspDeliveryGuid =
+            "17451c1327c571641a1345bd31155209";
+        private const string WaspPoisonSymbol =
+            "KMG.Summoning.Natural.GiantWasp.Poison";
+        private const string WaspVenomSymbol =
+            "KMG.Summoning.Natural.GiantWasp.Venom";
+        private const string WaspUnitTypeSymbol =
+            "KMG.Summoning.Natural.GiantWasp.UnitType";
+        private const string DireRatDiseaseSymbol =
+            "KMG.Summoning.Natural.DireRat.Disease";
+        private const string GoblinDogTraitsSymbol =
+            "KMG.Summoning.Natural.GoblinDog.Traits";
+        private const string GoblinDogAllergicReactionSymbol =
+            "KMG.Summoning.Natural.GoblinDog.AllergicReaction";
+        private const string NativeFilthFeverGuid =
+            "9545a5550d89feb47a84edaeb4e63d0b";
+        /// <summary>
+        /// The printed Goblin Dog allergic reaction exempts the goblinoid
+        /// subtype. Kingmaker has no goblinoid subtype fact, so the exemption
+        /// is the exact enumerated set of native goblinoid unit types the
+        /// installed library actually carries. The guarded unit-type census in
+        /// run `20261001T1658000459746Z-observe-expanded-summoning-native-donors`
+        /// enumerated all 106 `BlueprintUnitType` values in the installed
+        /// library: `Goblin` (69 units) is the only goblinoid one, and there is
+        /// no Hobgoblin and no Bugbear type to exempt. Selection is by exact
+        /// asset id, never by name, so this set is complete for this
+        /// installation rather than merely convenient.
+        /// </summary>
+        private static readonly string[] NativeGoblinoidUnitTypeGuids = {
+            "d524df24b2f38cf4590525b2e7c4f34e" // Goblin
+        };
         private const string NativeBite1d6Guid =
             "a000716f88c969c499a535dadcf09286";
         private const string NativeBite1d8Guid =
@@ -80,6 +142,10 @@ namespace KingmakerGunslinger.Blueprints
             "7e4b9b41a9358264d9e3c69c183ca0a2";
         private const string NativePurpleWormStingGuid =
             "287cd06241fdaf8408410b226f744093";
+        private const string NativeSpiderPoisonFeatureGuid =
+            "094714bb08f4e1943a8e9d2384ebe573";
+        private const string NativeSpiderPoisonBuffGuid =
+            "56ec8788092b6314e8f3c1c502e8433f";
         private const string NativeSmallHoof1d3Guid =
             "085547b82eded104ba7e1870dd0563bf";
         private const string NativeHoof1d4Guid =
@@ -156,6 +222,8 @@ namespace KingmakerGunslinger.Blueprints
             if (bySymbol == null) throw new ArgumentNullException("bySymbol");
             if (extraplanar == null) throw new ArgumentNullException("extraplanar");
             ExpandedSummoningNaturalProfiles.Validate();
+            ConfigureDireBatBlindsense(Require<BlueprintFeature>(bySymbol,
+                DireBatBlindsenseSymbol));
             BlueprintItemWeapon nativeBite = BlueprintLibraryLookup.RequireExact<
                 BlueprintItemWeapon>(library, NativeBite1d6Guid,
                     "native bite animation weapon");
@@ -163,6 +231,25 @@ namespace KingmakerGunslinger.Blueprints
                 Bite1d4Symbol), Bite1d4Symbol, 1, DiceType.D4);
             ConfigureWeapon(nativeBite, Require<BlueprintItemWeapon>(bySymbol,
                 Bite1d3Symbol), Bite1d3Symbol, 1, DiceType.D3);
+            ConfigureWeapon(nativeBite, Require<BlueprintItemWeapon>(bySymbol,
+                Bite1Symbol), Bite1Symbol, 1, DiceType.One);
+            BlueprintAbility nativeTouchDelivery = BlueprintLibraryLookup
+                .RequireExact<BlueprintAbility>(library,
+                    NativeShockingGraspDeliveryGuid,
+                    "native held-touch weapon delivery");
+            AbilityDeliverTouch touchComponent = nativeTouchDelivery
+                .GetComponent<AbilityDeliverTouch>();
+            BlueprintItemWeapon nativeTouch = touchComponent == null ? null :
+                touchComponent.TouchWeapon;
+            if (nativeTouch == null || nativeTouch.AttackType != AttackType.Touch)
+                throw new InvalidOperationException(
+                    "Native held-touch donor has no melee touch weapon.");
+            BlueprintItemWeapon stirgeTouch = Require<BlueprintItemWeapon>(
+                bySymbol, StirgeTouchSymbol);
+            ConfigureWeapon(nativeTouch, stirgeTouch, StirgeTouchSymbol, 0,
+                DiceType.Zero);
+            // This is the creature's proboscis, not lootable held equipment.
+            stirgeTouch.IsNonRemovable = true;
             ConfigureWeapon(BlueprintLibraryLookup.RequireExact<
                 BlueprintItemWeapon>(library, NativeTail1d8Guid,
                     "native animated tail weapon"),
@@ -189,6 +276,35 @@ namespace KingmakerGunslinger.Blueprints
                     "native large claw animation weapon"),
                 Require<BlueprintItemWeapon>(bySymbol, Claw1d8Symbol),
                 Claw1d8Symbol, 1, DiceType.D8);
+            ConfigureWeapon(BlueprintLibraryLookup.RequireExact<
+                BlueprintItemWeapon>(library, NativePurpleWormStingGuid,
+                    "native sting animation weapon"),
+                Require<BlueprintItemWeapon>(bySymbol, WaspSting1d8Symbol),
+                WaspSting1d8Symbol, 1, DiceType.D8);
+            ConfigureWaspPoison(library,
+                Require<BlueprintFeature>(bySymbol, WaspPoisonSymbol),
+                Require<BlueprintBuff>(bySymbol, WaspVenomSymbol),
+                Require<BlueprintItemWeapon>(bySymbol, WaspSting1d8Symbol));
+            ConfigureWaspUnitType(Require<BlueprintUnitType>(bySymbol,
+                WaspUnitTypeSymbol));
+            BlueprintBuff filthFever = BlueprintLibraryLookup.RequireExact<
+                BlueprintBuff>(library, NativeFilthFeverGuid,
+                    "native Filth Fever disease payload");
+            ConfigureDireRatDisease(Require<BlueprintFeature>(bySymbol,
+                    DireRatDiseaseSymbol), filthFever,
+                Require<BlueprintItemWeapon>(bySymbol, Bite1d4Symbol));
+            ConfigureWolverineRage(
+                Require<BlueprintFeature>(bySymbol, WolverineRageSymbol),
+                Require<BlueprintBuff>(bySymbol, WolverineRageOnsetSymbol),
+                Require<BlueprintBuff>(bySymbol, WolverineRageStateSymbol));
+            ConfigureGoblinDogTraits(Require<BlueprintFeature>(bySymbol,
+                    GoblinDogTraitsSymbol),
+                Require<BlueprintBuff>(bySymbol,
+                    GoblinDogAllergicReactionSymbol), nativeBite,
+                NativeGoblinoidUnitTypeGuids.Select(guid =>
+                    BlueprintLibraryLookup.RequireExact<BlueprintUnitType>(
+                        library, guid,
+                        "exact native goblinoid unit type")).ToArray());
             foreach (NaturalSummonProfile profile in
                 ExpandedSummoningNaturalProfiles.All)
                 ConfigureUnit(library, Require<BlueprintUnit>(bySymbol,
@@ -210,6 +326,192 @@ namespace KingmakerGunslinger.Blueprints
             SetField(target, "m_DamageDice", new DiceFormula(rolls, dice));
             SetField(target, "m_Enchantments", Array.Empty<Kingmaker.Blueprints
                 .Items.Ecnchantments.BlueprintWeaponEnchantment>());
+        }
+
+        private static void ConfigureWaspPoison(LibraryScriptableObject library,
+            BlueprintFeature feature, BlueprintBuff venom,
+            BlueprintItemWeapon sting)
+        {
+            BlueprintBuff nativeBuff = BlueprintLibraryLookup.RequireExact<
+                BlueprintBuff>(library, NativeSpiderPoisonBuffGuid,
+                    "native saved poison lifecycle");
+            CopyFields(nativeBuff, venom);
+            venom.name = InternalName(WaspVenomSymbol);
+            venom.ComponentsArray = (nativeBuff.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Select(
+                    ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
+            venom.Stacking = StackingType.Poison;
+            BuffPoisonStatDamage damage = venom.ComponentsArray.OfType<
+                BuffPoisonStatDamage>().Single();
+            damage.Stat = StatType.Dexterity;
+            damage.Value = new DiceFormula(1, DiceType.D2);
+            damage.Ticks = GiantWaspPoisonPolicy.Exposures;
+            damage.SuccesfullSaves = GiantWaspPoisonPolicy.SavesToCure;
+            damage.SaveType = SavingThrowType.Fortitude;
+            BlueprintUnitFactAccess.Resolve().Configure(venom,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.GiantWasp.Venom.Name",
+                    "Giant Wasp Venom"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.GiantWasp.Venom.Description",
+                    "Injury poison: Fortitude DC 18; 1d2 Dexterity damage each round for six total exposures; one successful save cures it."),
+                nativeBuff.Icon);
+
+            BlueprintFeature nativeFeature = BlueprintLibraryLookup.RequireExact<
+                BlueprintFeature>(library, NativeSpiderPoisonFeatureGuid,
+                    "native poison-on-hit feature");
+            CopyFields(nativeFeature, feature);
+            feature.name = InternalName(WaspPoisonSymbol);
+            feature.HideInUI = true;
+            feature.IsClassFeature = false;
+            BlueprintComponent[] components = (nativeFeature.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Select(
+                    ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
+            AddInitiatorAttackWithWeaponTrigger trigger = components.OfType<
+                AddInitiatorAttackWithWeaponTrigger>().Single();
+            trigger.WeaponType = sting.Type;
+            trigger.OnlyHit = true;
+            ContextActionSavingThrow save = trigger.Action.Actions.OfType<
+                ContextActionSavingThrow>().Single();
+            ContextActionConditionalSaved outcome = save.Actions.Actions.OfType<
+                ContextActionConditionalSaved>().Single();
+            ContextActionApplyBuff apply = outcome.Failed.Actions.OfType<
+                ContextActionApplyBuff>().Single();
+            apply.Buff = venom;
+            trigger.Action.Actions = (new GameAction[] {
+                new ContextActionSetWaspPoisonDc() }).Concat(
+                    trigger.Action.Actions).ToArray();
+            feature.ComponentsArray = components;
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.GiantWasp.Poison.Name",
+                    "Giant Wasp Poison"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.GiantWasp.Poison.Description",
+                    "A sting delivers Giant Wasp venom on a hit."),
+                null);
+        }
+
+        private static void ConfigureWaspUnitType(BlueprintUnitType type)
+        {
+            type.name = InternalName(WaspUnitTypeSymbol);
+            type.KnowledgeStat = StatType.SkillLoreNature;
+            type.Name = LocalizationService.Create(
+                "KMG.ExpandedSummoning.GiantWasp.UnitType.Name",
+                "Giant Wasp");
+            type.Description = LocalizationService.Create(
+                "KMG.ExpandedSummoning.GiantWasp.UnitType.Description",
+                "A large flying vermin with a venomous sting.");
+            type.Image = null;
+            type.SignatureAbilities = Array.Empty<BlueprintUnitFact>();
+        }
+
+        private static void ConfigureDireRatDisease(BlueprintFeature feature,
+            BlueprintBuff filthFever, BlueprintItemWeapon bite)
+        {
+            var delivery = ScriptableObject.CreateInstance<
+                SummonInjuryDiseaseComponent>();
+            delivery.BiteWeapon = bite;
+            delivery.DiseaseBuff = filthFever;
+            delivery.ExcludedUnitTypes = Array.Empty<BlueprintUnitType>();
+            delivery.FortitudeDc = SummonInjuryDiseasePolicy.DireRatFortitudeDc;
+            delivery.DurationSeconds = 0;
+            feature.name = InternalName(DireRatDiseaseSymbol);
+            feature.Ranks = 1;
+            feature.IsClassFeature = false;
+            feature.HideInUI = true;
+            feature.ComponentsArray = new BlueprintComponent[] { delivery };
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.DireRat.Disease.Name",
+                    "Dire Rat Filth Fever"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.DireRat.Disease.Description",
+                    "A bite that hits and deals damage exposes the target to native Filth Fever after a DC 11 Fortitude save."),
+                null);
+        }
+
+        private static void ConfigureGoblinDogTraits(BlueprintFeature feature,
+            BlueprintBuff reaction, BlueprintItemWeapon bite,
+            BlueprintUnitType[] goblinoidTypes)
+        {
+            var descriptor = ScriptableObject.CreateInstance<
+                SpellDescriptorComponent>();
+            descriptor.Descriptor = SpellDescriptor.Disease;
+            var dexterity = ScriptableObject.CreateInstance<AddStatBonus>();
+            dexterity.Stat = StatType.Dexterity;
+            dexterity.Value =
+                SummonInjuryDiseasePolicy.GoblinDogAllergyAbilityPenalty;
+            dexterity.Descriptor = ModifierDescriptor.Penalty;
+            var charisma = ScriptableObject.CreateInstance<AddStatBonus>();
+            charisma.Stat = StatType.Charisma;
+            charisma.Value =
+                SummonInjuryDiseasePolicy.GoblinDogAllergyAbilityPenalty;
+            charisma.Descriptor = ModifierDescriptor.Penalty;
+            var healing = ScriptableObject.CreateInstance<
+                SummonAllergicReactionHealingComponent>();
+            reaction.name = InternalName(GoblinDogAllergicReactionSymbol);
+            reaction.Stacking = StackingType.Replace;
+            SetBuffFlags(reaction, harmful: true);
+            reaction.ComponentsArray = new BlueprintComponent[] {
+                descriptor, dexterity, charisma, healing };
+            BlueprintUnitFactAccess.Resolve().Configure(reaction,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.GoblinDog.Allergy.Name",
+                    "Goblin Dog Allergic Reaction"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.GoblinDog.Allergy.Description",
+                    "Disease: -2 Dexterity and -2 Charisma for one day. Positive magical healing or remove disease ends the reaction."),
+                null);
+
+            var immunity = ScriptableObject.CreateInstance<
+                BuffDescriptorImmunity>();
+            immunity.CheckFact = false;
+            immunity.Descriptor = SpellDescriptor.Disease;
+            immunity.FactToCheck = null;
+            immunity.IgnoreFeature = null;
+            var delivery = ScriptableObject.CreateInstance<
+                SummonInjuryDiseaseComponent>();
+            delivery.BiteWeapon = bite;
+            delivery.DiseaseBuff = reaction;
+            delivery.ExcludedUnitTypes = goblinoidTypes;
+            delivery.FortitudeDc =
+                SummonInjuryDiseasePolicy.GoblinDogFortitudeDc;
+            delivery.DurationSeconds =
+                SummonInjuryDiseasePolicy.GoblinDogAllergyDurationSeconds;
+            // The printed rule also exposes a creature that damages the Goblin
+            // Dog with a natural weapon or unarmed attack, and one that
+            // attempts to grapple it. Both deliver the same save and payload.
+            var counter = ScriptableObject.CreateInstance<
+                SummonContactAllergyCounterComponent>();
+            counter.DiseaseBuff = reaction;
+            counter.ExcludedUnitTypes = goblinoidTypes;
+            counter.FortitudeDc =
+                SummonInjuryDiseasePolicy.GoblinDogFortitudeDc;
+            counter.DurationSeconds =
+                SummonInjuryDiseasePolicy.GoblinDogAllergyDurationSeconds;
+            var maneuver = ScriptableObject.CreateInstance<
+                SummonContactAllergyManeuverComponent>();
+            maneuver.DiseaseBuff = reaction;
+            maneuver.ExcludedUnitTypes = goblinoidTypes;
+            maneuver.FortitudeDc =
+                SummonInjuryDiseasePolicy.GoblinDogFortitudeDc;
+            maneuver.DurationSeconds =
+                SummonInjuryDiseasePolicy.GoblinDogAllergyDurationSeconds;
+            feature.name = InternalName(GoblinDogTraitsSymbol);
+            feature.Ranks = 1;
+            feature.IsClassFeature = false;
+            feature.HideInUI = true;
+            feature.ComponentsArray = new BlueprintComponent[] {
+                immunity, delivery, counter, maneuver };
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.GoblinDog.Traits.Name",
+                    "Goblin Dog Disease Traits"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.GoblinDog.Traits.Description",
+                    "Immune to disease. Its dander causes an allergic reaction on a failed DC 12 Fortitude save: when its bite deals damage, when a natural weapon or unarmed attack deals damage to it, and when a creature attempts to grapple it. Creatures with a native goblinoid unit type are exempt."),
+                null);
         }
 
         private static void ConfigureUnit(LibraryScriptableObject library,
@@ -256,6 +558,9 @@ namespace KingmakerGunslinger.Blueprints
                 "KMG.ExpandedSummoning." + Token(profile.Key) + ".Unit.Name",
                 profile.DisplayName);
             unit.LocalizedName = name;
+            if (profile.Key == "giant-wasp")
+                unit.Type = Require<BlueprintUnitType>(bySymbol,
+                    WaspUnitTypeSymbol);
             unit.Alignment = Alignment.TrueNeutral;
             unit.Size = ParseSize(profile.Size);
             unit.Strength = profile.Strength;
@@ -283,7 +588,17 @@ namespace KingmakerGunslinger.Blueprints
             }
             foreach (string fact in profile.Facts)
             {
-                BlueprintUnitFact value = BaseUnitFactKeys.Contains(fact)
+                BlueprintUnitFact value = fact == "WaspPoison"
+                    ? Require<BlueprintFeature>(bySymbol, WaspPoisonSymbol)
+                    : fact == "DireBatBlindsense"
+                    ? Require<BlueprintFeature>(bySymbol, DireBatBlindsenseSymbol)
+                    : fact == "DireRatDisease"
+                    ? Require<BlueprintFeature>(bySymbol, DireRatDiseaseSymbol)
+                    : fact == "GoblinDogTraits"
+                    ? Require<BlueprintFeature>(bySymbol, GoblinDogTraitsSymbol)
+                    : fact == "WolverineRage"
+                    ? Require<BlueprintFeature>(bySymbol, WolverineRageSymbol)
+                    : BaseUnitFactKeys.Contains(fact)
                     ? BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(
                         library, FactGuids[fact], profile.DisplayName + " " + fact)
                     : BlueprintLibraryLookup.RequireExact<BlueprintFeature>(
@@ -292,6 +607,26 @@ namespace KingmakerGunslinger.Blueprints
             }
             facts.Add(extraplanar);
             unit.AddFacts = facts.ToArray();
+        }
+
+        private static void ConfigureDireBatBlindsense(BlueprintFeature feature)
+        {
+            var nativeSense = UnityEngine.ScriptableObject.CreateInstance<
+                Kingmaker.Designers.Mechanics.Facts.Blindsense>();
+            nativeSense.Blindsight = false;
+            nativeSense.Range = new Feet(40);
+            feature.name = InternalName(DireBatBlindsenseSymbol);
+            feature.IsClassFeature = false;
+            feature.HideInUI = true;
+            feature.ComponentsArray = new BlueprintComponent[] { nativeSense };
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.DireBat.Blindsense.Name",
+                    "Blindsense (40 feet)"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.DireBat.Blindsense.Description",
+                    "This dire bat can detect creatures within 40 feet by sound, without seeing them precisely."),
+                null);
         }
 
         internal static string HitDieClassGuid(string hitDieClass)
@@ -334,6 +669,8 @@ namespace KingmakerGunslinger.Blueprints
                 Bite1d4Symbol);
             if (key == "Bite1d3") return Require<BlueprintItemWeapon>(bySymbol,
                 Bite1d3Symbol);
+            if (key == "Bite1") return Require<BlueprintItemWeapon>(bySymbol,
+                Bite1Symbol);
             if (key == "Bite1d6") return BlueprintLibraryLookup.RequireExact<
                 BlueprintItemWeapon>(library, NativeBite1d6Guid, "1d6 bite");
             if (key == "Bite1d8") return BlueprintLibraryLookup.RequireExact<
@@ -365,6 +702,10 @@ namespace KingmakerGunslinger.Blueprints
                 Talon2d6Symbol);
             if (key == "Claw1d8") return Require<BlueprintItemWeapon>(bySymbol,
                 Claw1d8Symbol);
+            if (key == "WaspSting1d8") return Require<BlueprintItemWeapon>(
+                bySymbol, WaspSting1d8Symbol);
+            if (key == "StirgeTouch") return Require<BlueprintItemWeapon>(
+                bySymbol, StirgeTouchSymbol);
             if (key == "Gore2d8") return BlueprintLibraryLookup.RequireExact<
                 BlueprintItemWeapon>(library, NativeMastodonGoreGuid,
                     "mastodon 2d8 gore");
@@ -402,6 +743,126 @@ namespace KingmakerGunslinger.Blueprints
             if (field == null) throw new MissingFieldException(
                 target.GetType().FullName, name);
             field.SetValue(target, value);
+        }
+
+        private static void SetBuffFlags(BlueprintBuff buff, bool harmful,
+            bool hidden = false)
+        {
+            FieldInfo field = Fields(typeof(BlueprintBuff)).SingleOrDefault(
+                candidate => candidate.Name == "m_Flags");
+            if (field == null || !field.FieldType.IsEnum)
+                throw new MissingFieldException(typeof(BlueprintBuff).FullName,
+                    "m_Flags");
+            int value = (harmful ?
+                (int)Enum.Parse(field.FieldType, "Harmful") : 0) |
+                (hidden ? (int)Enum.Parse(field.FieldType, "HiddenInUi") : 0);
+            field.SetValue(buff, Enum.ToObject(field.FieldType, value));
+        }
+
+        /// <summary>
+        /// The printed Wolverine rage, in three blueprints.
+        ///
+        /// <para>Bestiary text: "A wolverine that takes damage in combat flies
+        /// into a rage on its next turn, clawing and biting madly until either
+        /// it or its opponent is dead. It gains +4 to Strength, +4 to
+        /// Constitution, and -2 to AC. The creature cannot end its rage
+        /// voluntarily."</para>
+        ///
+        /// <para>The delay is the part worth building carefully. The native
+        /// <see cref="SetBuffOnsetDelay"/> runs its action list exactly once,
+        /// on the first round boundary after the buff carrying it lands, so
+        /// routing the rage through a hidden onset marker means there is no
+        /// code path at all from the damage event to the +4/+4/-2: the rage
+        /// cannot begin on the turn the wolverine was hurt, however the damage
+        /// arrives.</para>
+        ///
+        /// <para>The rage state is permanent because the printed rage has no
+        /// duration - it runs "until either it or its opponent is dead" - and
+        /// carries no voluntary end. It is applied to the wolverine alone, so
+        /// it leaves when the summon does, and it is marked undispellable
+        /// because nothing in the printed text offers a way to call it off.</para>
+        /// </summary>
+        private static void ConfigureWolverineRage(BlueprintFeature feature,
+            BlueprintBuff onset, BlueprintBuff state)
+        {
+            var strength = ScriptableObject.CreateInstance<AddStatBonus>();
+            strength.Stat = StatType.Strength;
+            strength.Value = SummonRagePolicy.WolverineRageAbilityBonus;
+            strength.Descriptor = ModifierDescriptor.Morale;
+            var constitution = ScriptableObject.CreateInstance<AddStatBonus>();
+            constitution.Stat = StatType.Constitution;
+            constitution.Value = SummonRagePolicy.WolverineRageAbilityBonus;
+            constitution.Descriptor = ModifierDescriptor.Morale;
+            // The printed rage is not a pure benefit. Leaving this term out
+            // would make the creature better than its own stat block.
+            var armourClass = ScriptableObject.CreateInstance<AddStatBonus>();
+            armourClass.Stat = StatType.AC;
+            armourClass.Value = SummonRagePolicy.WolverineRageArmorClassPenalty;
+            armourClass.Descriptor = ModifierDescriptor.Penalty;
+            state.name = InternalName(WolverineRageStateSymbol);
+            state.Stacking = StackingType.Replace;
+            SetBuffFlags(state, harmful: false);
+            state.ComponentsArray = new BlueprintComponent[] {
+                strength, constitution, armourClass };
+            BlueprintUnitFactAccess.Resolve().Configure(state,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Wolverine.Rage.Name",
+                    "Rage"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Wolverine.Rage.Description",
+                    "+4 Strength, +4 Constitution and -2 AC. The wolverine cannot end its rage voluntarily."),
+                null);
+
+            // The native SetBuffOnsetDelay ran its list on schedule - the
+            // marker cleared - but the rage state never arrived, so the onset
+            // carries this project's own round-boundary component instead and
+            // applies the rage through RuleApplyBuff, the path the damage
+            // trigger and the Sprint 12 disease rider both already prove. The
+            // delay is still the engine's own round boundary.
+            var onsetTick = ScriptableObject
+                .CreateInstance<SummonRageOnsetComponent>();
+            onsetTick.RageBuff = state;
+            onset.name = InternalName(WolverineRageOnsetSymbol);
+            onset.Stacking = StackingType.Replace;
+            onset.Frequency = DurationRate.Rounds;
+            SetBuffFlags(onset, harmful: false, hidden: true);
+            onset.ComponentsArray = new BlueprintComponent[] { onsetTick };
+            BlueprintUnitFactAccess.Resolve().Configure(onset,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Wolverine.RageOnset.Name",
+                    "Rising Rage"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Wolverine.RageOnset.Description",
+                    "The wolverine has been hurt and will fly into a rage on its next turn."),
+                null);
+
+            var trigger = ScriptableObject
+                .CreateInstance<SummonRageOnDamageComponent>();
+            trigger.OnsetBuff = onset;
+            trigger.RageBuff = state;
+            feature.name = InternalName(WolverineRageSymbol);
+            feature.Ranks = 1;
+            feature.IsClassFeature = false;
+            feature.HideInUI = true;
+            feature.ComponentsArray = new BlueprintComponent[] { trigger };
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Wolverine.RageTrigger.Name",
+                    "Rage"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Wolverine.RageTrigger.Description",
+                    "A wolverine that takes damage in combat flies into a rage on its next turn, gaining +4 Strength, +4 Constitution and -2 AC. It cannot end its rage voluntarily."),
+                null);
+        }
+
+        private static ContextValue ContextValueZero()
+        {
+            return new ContextValue();
+        }
+
+        private static ContextValue ContextValueOf(int value)
+        {
+            return new ContextValue { Value = value };
         }
 
         private static IEnumerable<FieldInfo> Fields(Type type)

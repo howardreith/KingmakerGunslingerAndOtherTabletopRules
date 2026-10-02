@@ -1,6 +1,37 @@
 {
   "schemaVersion": 1,
   "program": "Kingmaker Expanded Summoning Ideal Roster",
+  "phase2Mission": {
+    "authority": "Kingmaker_Expanded_Summoning_Phase2_Sprints9-21_Codex_Mission.md in the owner-supplied Phase 2 starter packet",
+    "authorizedSprints": [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21],
+    "completedSprints": [9, 10, 11],
+    "currentSprint": 12,
+    "currentSubItem": "Sprints 9-11 are internally technically qualified and published. Sprint 12 remains hidden. Its Dire Rat and Goblin Dog injury-disease mechanics passed a focused 39/39 live matrix. A later 40/40 guarded run captured private geometry-free Dog 37/37, Wolf 36/36 and Worg 36/36 bone/bind-pose frames for original visual authoring and restored the exact original live tree. Distinct Dire Rat, Dog, Hyena and Goblin Dog silhouettes plus full player-path, both-mode, persistence, compatibility, inventory and visual qualification remain open.",
+    "lastGuardedRuntimePass": "20260930T1314329155573Z-disposable-expanded-summoning",
+    "lastGuardedRestoration": "20260930T1318353465055Z-disposable-expanded-summoning.json",
+    "giantWaspPublished": true,
+    "stirgeRegistered": true,
+    "stirgePublished": true,
+    "sprint10TechnicalQualified": true,
+    "stirgeOriginalVisualQualified": true,
+    "ungulatesPublished": true,
+    "sprint11TechnicalQualified": true,
+    "sprint12DiseaseMechanicsQualified": true,
+    "sprint12PrivateDonorFramesCaptured": true,
+    "sprint12TechnicalQualified": false,
+    "sprint12Published": false,
+    "sprint10OriginalIconSourcesPainted": true,
+    "automaticContinuationAllowed": true,
+    "supersedesHistoricalMissionAuthorization": true,
+    "acceptedMaster": "2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a",
+    "trancheA": "codex/expanded-summoning-phase2a-sprints9-13",
+    "trancheB": "codex/expanded-summoning-phase2b-sprints14-17",
+    "trancheC": "codex/expanded-summoning-phase2c-sprints18-21",
+    "ownerAcceptedEngineLimitation": "ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD",
+    "releaseAuthorized": false,
+    "mergeAuthorized": false,
+    "sprint22Authorized": false
+  },
   "charter": {
     "title": "Kingmaker_Expanded_Summoning_Implementation_Charter_v1.0.docx",
     "version": "1.0",
@@ -276,7 +307,7 @@
       "detail": "Supplied by the owner and read. The Pteranodon passage confirms the shipped profile rather than changing it: ten-foot reach valued for attacks of opportunity, and a single main bite on which everything stacks (2d6 plus modifiers). The guide also positions multiple Pteranodons as the best single-target aerial attacker at their tier. This informs Sprint 2's acceptance emphasis on correct bite impact timing and location at Large reach; it changes no accepted statistic."
     }
   ],
-  "nextConcreteAction": "Sprints 3-8 corrected and requalified on candidate commit `145810a5`, with the closeout delta recorded afterwards. The 2026-09-25 and 2026-09-26 orders are both closed: an active summon grab, hold, swallow, engulf, mouth occupancy and held-target rake are session-scoped under OwnerAcceptedEngineLimitation: ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD, accepted by the owner on 2026-09-26, and a save and reload release them cleanly. Draft PR #23 is marked ready for owner review and stays unmerged. No merge, release publication, permanent deployment or Sprint 9 under the orders of 2026-09-24, 2026-09-25 and 2026-09-26.",
+  "nextConcreteAction": "Complete authorized Sprint 12 on the Phase 2A branch: author and qualify distinct Dire Rat, Dog, Hyena and Goblin Dog silhouettes, then pass direct and quantity player paths, both turn modes, movement/contact, natural expiry, save/load, module-disabled cleanup, compatibility, inventory and internal visual review. Keep every choice hidden until all gates pass. Then complete Sprint 13 and prepare the Phase 2A draft PR checkpoint before stacking Phase 2B. No merge, release, permanent deployment or Sprint 22.",
   "deploymentReconciliation": {
     "finding": "The first runs left this mission's 0.0.136 branch build installed over the pre-run 0.0.117 installation. The mission required restoration and did not authorize a permanent installation; a shared version string does not make a branch artifact an accepted release.",
     "ownershipVerified": "The live DLL hash matched this mission's exact build byte for byte, so the tree was unambiguously mission-owned.",

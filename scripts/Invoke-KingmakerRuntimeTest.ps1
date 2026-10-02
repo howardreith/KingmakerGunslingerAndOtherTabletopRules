@@ -110,11 +110,33 @@ if ($scenarioMetadata.RequiresSaveName) {
         }
         $Parameters = @{saveName=$SaveName;fixtureCase=$Parameters.fixtureCase}
     } elseif ($Scenario -ceq 'working-save-expanded-summoning-creature-review') {
-        if ($Parameters.Count -ne 1 -or -not $Parameters.ContainsKey('creatures') -or
+        $crowd = $Parameters.ContainsKey('quantity')
+        if ($Parameters.Count -ne $(if ($crowd) { 2 } else { 1 }) -or
+            -not $Parameters.ContainsKey('creatures') -or
             [string]::IsNullOrWhiteSpace([string]$Parameters.creatures)) {
-            throw 'The creature review requires typed -SaveName plus exactly creatures (comma-separated creature keys).'
+            throw 'The creature review requires typed -SaveName plus creatures and optionally the bounded ungulate quantity.'
+        }
+        if ($crowd -and ([string]$Parameters.quantity -cne 'OneD4PlusOne' -or
+            @(([string]$Parameters.creatures -split ',') | ForEach-Object { $_.Trim() } |
+                Where-Object { $_ -cnotin @('aurochs','bison','rhinoceros','woolly-rhinoceros',
+                    'dire-rat','dog','hyena','goblin-dog') }).Count -ne 0)) {
+            throw 'The crowd review permits only quantity=OneD4PlusOne for Sprint 11 ungulates or Sprint 12 quadrupeds.'
         }
         $Parameters = @{ saveName = $SaveName; creatures = [string]$Parameters.creatures }
+        if ($crowd) { $Parameters.quantity = 'OneD4PlusOne' }
+    } elseif ($Scenario -cin @('summon-same-turn-activation',
+            'summon-same-turn-rtwp-control',
+            'summon-same-turn-native-control')) {
+        if ($Parameters.Count -eq 0) {
+            $Parameters = @{ saveName = $SaveName }
+        } elseif ($Parameters.Count -eq 1 -and
+            $Parameters.ContainsKey('flightCreature') -and
+            [string]$Parameters.flightCreature -cin @('eagle', 'dire-bat', 'giant-wasp', 'stirge', 'dire-rat', 'wolverine', 'shadow-mastiff')) {
+            $Parameters = @{ saveName = $SaveName;
+                flightCreature = [string]$Parameters.flightCreature }
+        } else {
+            throw 'Summon activation permits typed -SaveName and only the bounded Eagle/Dire Bat/Wasp/Stirge/Dire Rat/Wolverine/Shadow Mastiff flightCreature.'
+        }
     } elseif (Test-KmgNereidPersistenceScope $Scenario $Parameters) {
         if (Test-KmgTreacherousEffectScope $Scenario $Parameters) {
             $sceneRoundtrip = Test-KmgCompletionSceneScope $Scenario $Parameters

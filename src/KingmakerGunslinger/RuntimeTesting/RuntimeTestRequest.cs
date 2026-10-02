@@ -404,15 +404,42 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool sceneRoundtrip = IsCompletionSceneScope(request);
                 bool creatureReview = request.Scenario ==
                     RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningCreatureReview;
+                // The ordinary native-control case joins the two same-turn
+                // cases here: it is the unquickened Full-Round route, and a
+                // creature too far up the ladder to be quickened has nowhere
+                // else to prove its ordinary turn-based behaviour.
+                bool flightActivation = (request.Scenario ==
+                    RuntimeTestScenarioCatalog.SummonSameTurnActivation ||
+                    request.Scenario == RuntimeTestScenarioCatalog
+                        .SummonSameTurnRtwpControl ||
+                    request.Scenario == RuntimeTestScenarioCatalog
+                        .SummonSameTurnNativeControl) &&
+                    request.Parameters?["flightCreature"]?.Type ==
+                        JTokenType.String;
+                // A closed list, and the name is historical: the first
+                // creatures to need their own same-turn activation case flew,
+                // and Sprint 12 and Sprint 13 added ground creatures to it
+                // rather than open the parameter to the whole roster.
+                if (flightActivation &&
+                    !new[] { "eagle", "dire-bat", "giant-wasp", "stirge",
+                        "dire-rat", "wolverine", "shadow-mastiff" }.Contains(
+                        (string)request.Parameters["flightCreature"]))
+                    return "flight-activation-creature-invalid";
                 if (creatureReview && (!request.ExitAfterCompletion ||
                     request.Parameters?["creatures"]?.Type != JTokenType.String ||
                     string.IsNullOrWhiteSpace((string)request.Parameters["creatures"])))
                     return "creature-review-creatures-required";
+                bool crowdReview = creatureReview &&
+                    request.Parameters?["quantity"] != null;
+                if (crowdReview &&
+                    (request.Parameters["quantity"].Type != JTokenType.String ||
+                    (string)request.Parameters["quantity"] != "OneD4PlusOne"))
+                    return "creature-review-quantity-invalid";
                 bool circleBound = MagicCirclePreparationBinding.RequiresBinding(request.Scenario);
                 if (circleBound && (!request.ExitAfterCompletion || request.Parameters?["preparationBinding"]?.Type != JTokenType.String ||
                     !MagicCirclePreparationBinding.Valid((string)request.Parameters["preparationBinding"], request.ExpectedModVersion)))
                     return "magic-circle-preparation-binding-required";
-                if (request.Parameters == null || request.Parameters.Count != (circleBound ? 2 : persistence || fcbPersistence ? 3 : nativeActionCase ? 5 : request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveNereidRespec ? 5 : creatorRegression || sceneRoundtrip || visualLifecycle ? 4 : treacherousEffect ? 3 : nereidPersistence || deferredMarkers || creatureReview ? 2 : 1) ||
+                if (request.Parameters == null || request.Parameters.Count != (circleBound ? 2 : persistence || fcbPersistence ? 3 : nativeActionCase ? 5 : request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveNereidRespec ? 5 : creatorRegression || sceneRoundtrip || visualLifecycle ? 4 : treacherousEffect || crowdReview ? 3 : nereidPersistence || deferredMarkers || creatureReview || flightActivation ? 2 : 1) ||
                     request.Parameters.Property("saveName") == null ||
                     request.Parameters["saveName"].Type != JTokenType.String)
                     return "save-name-required";
@@ -505,6 +532,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !OptionalModCompatibilityObserver.IsAllowedProfile(
                         (string)request.Parameters["profileId"]))
                     return "compatibility-profile-not-allowed";
+            }
+            else if (request.Scenario ==
+                RuntimeTestScenarioCatalog.ObserveExpandedSummoningModuleBoundary)
+            {
+                if (request.MainMenuTimeoutSeconds != 0 ||
+                    request.ActionResolutionTimeoutSeconds != 0 ||
+                    request.ActionInvocationTimeoutSeconds != 0 ||
+                    request.DescriptorResolutionTimeoutSeconds != 0 ||
+                    request.LoadEntryTimeoutSeconds != 0 ||
+                    request.FingerprintTimeoutSeconds != 0)
+                    return "scenario-timeouts-not-allowed";
+                if (request.Parameters == null || request.Parameters.Count != 1 ||
+                    request.Parameters.Property("expandedSummoning") == null ||
+                    request.Parameters["expandedSummoning"].Type != JTokenType.Boolean)
+                    return "expanded-summoning-module-boundary-parameters-invalid";
             }
             else if (request.Scenario ==
                 RuntimeTestScenarioCatalog.ObserveFeatureModuleSettings)

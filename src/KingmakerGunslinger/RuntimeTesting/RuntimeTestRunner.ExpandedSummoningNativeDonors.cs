@@ -12,6 +12,7 @@ using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.FactLogic;
 using KingmakerGunslinger.Bootstrap;
+using KingmakerGunslinger.Assets;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -40,7 +41,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             "horse", "pony", "owlbear", "cyclop", "frostgiant", "giantfrost",
             "shambl", "flytrap", "worm", "mephit", "tiger", "smilodon",
             "leopard", "cheetah", "bear", "monitor", "lizard", "spider",
-            "pixie", "nixie", "mound", "giant"
+            "pixie", "nixie", "mound", "giant", "wasp", "stirge",
+            "mosquito", "fly", "beetle", "mantis", "insect",
+            "vargouille", "aurochs", "bison", "rhinoceros", "rhino",
+            "woolly", "mastodon", "elephant", "buffalo", "bull",
+            "rat", "dog", "hyena", "worg", "wolf", "goblin"
         };
 
         private static readonly string[] NativeDonorFactTerms =
@@ -48,7 +53,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             "grab", "grapple", "constrict", "swallow", "tremorsense",
             "blindsense", "web", "pounce", "rake", "trip", "sprint", "flash",
             "insight", "breath", "poison", "naturalarmor", "plant", "regenerat",
-            "fasthealing", "ferocity", "rockthrow", "rock"
+            "fasthealing", "ferocity", "rockthrow", "rock", "blood",
+            "attach", "drain", "trample", "powerfulcharge", "stampede",
+            "disease", "immunity", "immune", "allerg", "filth", "fever",
+            "goblin", "goblinoid"
         };
 
         private static readonly string[] NativeDonorAbilityTerms =
@@ -56,13 +64,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             "web", "breath", "stinkingcloud", "glitterdust", "acidarrow",
             "blur", "magicmissile", "windwall", "chillmetal", "heatmetal",
             "pyrotechnics", "gaseous", "softenearth", "gustofwind",
-            "scorchingray", "swallow", "grapple", "grab", "flash", "sprint"
+            "scorchingray", "swallow", "grapple", "grab", "flash", "sprint",
+            "blood", "attach", "drain", "trample", "powerfulcharge",
+            "overrun", "disease", "allerg", "filth", "fever"
         };
 
         private static readonly string[] NativeDonorBuffTerms =
         {
             "grapple", "grab", "swallow", "web", "entangle", "constrict",
-            "sleep", "paralyz", "sprint", "flash", "insight", "pounce"
+            "sleep", "paralyz", "sprint", "flash", "insight", "pounce",
+            "blood", "attach", "drain", "disease", "filth", "blinding",
+            "trample", "powerfulcharge", "allerg", "fever", "immunity"
         };
 
         private static readonly string[] NativeDonorProjectileTerms =
@@ -170,6 +182,36 @@ namespace KingmakerGunslinger.RuntimeTesting
             document["projectiles"] = new JObject {
                 ["total"] = projectiles.Length,
                 ["webCandidates"] = webProjectiles };
+            // Sprint 12 correction order: the printed Goblin Dog allergic
+            // reaction exempts the goblinoid subtype, and Kingmaker carries no
+            // such subtype fact. Rather than guess from a name search, record
+            // every BlueprintUnitType the installed library holds with the
+            // number of units that declare it, so the exemption can be wired
+            // to an exact enumerated set of asset ids and the absence of a
+            // Hobgoblin or Bugbear type is proved rather than assumed.
+            BlueprintUnitType[] unitTypes = all.OfType<BlueprintUnitType>()
+                .OrderBy(value => value.name, StringComparer.Ordinal).ToArray();
+            BlueprintUnit[] everyUnit = all.OfType<BlueprintUnit>().ToArray();
+            var typeCensus = new JArray();
+            foreach (BlueprintUnitType unitType in unitTypes)
+            {
+                BlueprintUnitType scoped = unitType;
+                typeCensus.Add(new JObject {
+                    ["name"] = scoped.name,
+                    ["guid"] = scoped.AssetGuid,
+                    ["localizedName"] = scoped.Name == null ? null :
+                        scoped.Name.ToString(),
+                    ["units"] = everyUnit.Count(value =>
+                        ReferenceEquals(value.Type, scoped)) });
+            }
+            document["unitTypes"] = new JObject {
+                ["total"] = unitTypes.Length,
+                ["unitsWithoutType"] = everyUnit.Count(value =>
+                    value.Type == null),
+                ["values"] = typeCensus };
+
+            document["giantWaspVisualStatus"] = PteranodonAssetRuntime.GiantWaspStatus;
+            document["stirgeVisualStatus"] = PteranodonAssetRuntime.StirgeStatus;
 
             string path = Path.Combine(_request.EvidenceDirectory,
                 "native-donor-audit.json");
@@ -187,17 +229,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ";buffs=" + ((JArray)document["buffs"]).Count +
                     ";nativeGrab=" + (grab == null ? "missing" : grab.name) +
                     ";projectiles=" + projectiles.Length +
+                    ";unitTypes=" + unitTypes.Length +
                     ";webCandidates=" + string.Join("|", webProjectiles
                         .Select(value => (string)value["name"] + ":" + (string)value["guid"])
                         .ToArray()) +
                     ";file=native-donor-audit.json",
                     units.Count > 0 && classes.Count > 0 && grab != null &&
-                        File.Exists(path),
+                        unitTypes.Length > 0 && File.Exists(path),
                     "installed library metadata only; no asset content"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _context.ModEntry.Info.Version == _request.ExpectedModVersion,
-                    "Unity Mod Manager ModEntry.Info.Version")
+                    "Unity Mod Manager ModEntry.Info.Version"),
+                Assertion("giant-wasp-original-asset-loader",
+                    "visual:published", PteranodonAssetRuntime.GiantWaspStatus,
+                    PteranodonAssetRuntime.GiantWaspStatus == "visual:published",
+                    "shared mesh and albedo parser during mod configuration"),
+                Assertion("stirge-original-asset-loader",
+                    "visual:published", PteranodonAssetRuntime.StirgeStatus,
+                    PteranodonAssetRuntime.StirgeStatus == "visual:published",
+                    "shared mesh and albedo parser during mod configuration")
             };
             return CreateResult(assertions.All(value =>
                 value.Status == RuntimeTestStatuses.Pass) ? RuntimeTestStatuses.Pass :
@@ -338,6 +389,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             "bb72a758112438e4a9c62f7637c974ae", // WebBuffSlowMovement
             "3051e7002c803fc47a11bcfa381b9fbd", // SpiderWebImmunity
             "094714bb08f4e1943a8e9d2384ebe573", // GiantSpiderPoisonFeature
+            "56ec8788092b6314e8f3c1c502e8433f", // GiantSpiderPoisonBuff, candidate graph for Wasp poison
             "ef60cd888b834a549898824e6b684918", // HuntingSpiderPoisonFeature
             "d88236a83413baa45ae9c8e5ddce5a6c", // MonitorLizardPoisonFeature
             "5e0cd801bac0e95429bb7e4d1bc61a23", // Sleeping
@@ -370,6 +422,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             "2131842b04b532f4c9cb662c9315a37a", // PujaWolfSprintBuff
             "4d0b2a0971ca8994a8af20940285da2f", // PujaWolfSuperSprintBuff
             "f957b4444b6fb404e84ae2a5765797bb", // TrippingBite
+            "9545a5550d89feb47a84edaeb4e63d0b", // FilthFever
         };
 
         /// <summary>
@@ -399,7 +452,19 @@ namespace KingmakerGunslinger.RuntimeTesting
             "BlurBuff", "StinkingCloudArea", "StinkingCloudBuff", "MagicMissile",
             "AcidArrow", "Glitterdust", "Blur", "MephitAirBlur",
             "MephitWaterStinkingCloud", "ScorchingRay", "PixieSleepArrowBuff",
-            "IrresistibleDance", "PixieDance"
+            "IrresistibleDance", "PixieDance", "FilthFever",
+            "Trample", "TrampleAbility", "TrampleFeature", "PowerfulCharge",
+            "PowerfulChargeFeature", "MastodonTrample", "ElephantTrample",
+            "CR11_MastodonStandard", "MastodonSummoned", "ElephantSummoned",
+            "CR9_MastodonStandard", "MastodonSummon", "MammothTrample",
+            "FlyTrampleTest", "GreaterAtavismTrample", "OverrunAbility",
+            "OverrunNotTrampleAbility", "PowerfulChargeSharedStrengthBuff",
+            "PowerfulChargeSharedStrengthBuffToggleAbilityFeature",
+            "DiseaseImmunity", "ImmunityToDisease", "DiseaseImmunityFeature",
+            "AllergicReaction", "GoblinDogAllergicReaction",
+            "GoblinDogDisease", "DireRatDisease", "RatDisease",
+            "Goblinoid", "SubtypeGoblinoid", "Goblin", "Hobgoblin", "Bugbear",
+            "UnitTypeGoblin", "UnitTypeHobgoblin", "UnitTypeBugbear"
         };
 
         private static JToken DescribeGraph(object value, int depth, HashSet<object> seen)

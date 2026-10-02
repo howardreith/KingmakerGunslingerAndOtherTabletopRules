@@ -1,14 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using Harmony12;
 using Kingmaker;
 using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.Blueprints.Items.Armors;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Blueprints.Root;
+using Kingmaker.Designers.Mechanics.Buffs;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Enums;
@@ -25,12 +28,17 @@ using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
+using Kingmaker.UnitLogic.Mechanics;
+using Kingmaker.UI.SettingsUI;
 using Kingmaker.Utility;
 using Kingmaker.View;
 using Kingmaker.Visual.MaterialEffects.RimLighting;
 using KingmakerGunslinger.Blueprints;
+using KingmakerGunslinger.BodyguardFeats;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Summoning;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace KingmakerGunslinger.RuntimeTesting
@@ -268,7 +276,15 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static UnitEntityData CastExpandedSummoningOwnTier(
             ExpandedSummoningCorrectionFixture fixture, string creatureKey)
         {
-            UnitEntityData unit = CastExpandedSummoningVariant(fixture.Blueprints, fixture.Caster,
+            return CastExpandedSummoningOwnTier(fixture, creatureKey,
+                fixture.Caster);
+        }
+
+        private static UnitEntityData CastExpandedSummoningOwnTier(
+            ExpandedSummoningCorrectionFixture fixture, string creatureKey,
+            UnitEntityData caster)
+        {
+            UnitEntityData unit = CastExpandedSummoningVariant(fixture.Blueprints, caster,
                 ExpandedSummoningOwnTierVariant(creatureKey, SummonMultiplicity.One), null,
                 fixture.Evidence).Single();
             fixture.Created.Add(unit);
@@ -307,10 +323,38 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static UnitEntityData CastExpandedSummoningQuietUnit(
             ExpandedSummoningCorrectionFixture fixture, string creatureKey)
         {
-            UnitEntityData unit = CastExpandedSummoningOwnTier(fixture, creatureKey);
+            return CastExpandedSummoningQuietUnit(fixture, creatureKey,
+                fixture.Caster);
+        }
+
+        private static UnitEntityData CastExpandedSummoningQuietUnit(
+            ExpandedSummoningCorrectionFixture fixture, string creatureKey,
+            UnitEntityData caster)
+        {
+            UnitEntityData unit = CastExpandedSummoningOwnTier(fixture,
+                creatureKey, caster);
             unit.Descriptor.Stats.HitPoints.BaseValue = 100000;
             SetExpandedSummoningBrainActive(unit, false);
             return unit;
+        }
+
+        private static UnitEntityData[] CastExpandedSummoningQuietUnits(
+            ExpandedSummoningCorrectionFixture fixture, string creatureKey,
+            SummonMultiplicity multiplicity)
+        {
+            UnitEntityData[] units = CastExpandedSummoningVariant(
+                fixture.Blueprints, fixture.Caster,
+                ExpandedSummoningOwnTierVariant(creatureKey, multiplicity),
+                null, fixture.Evidence).ToArray();
+            foreach (UnitEntityData unit in units)
+            {
+                fixture.Created.Add(unit);
+                RemoveExpandedSummoningAppearanceBuffs(unit);
+                unit.Descriptor.Stats.HitPoints.BaseValue = 100000;
+                SetExpandedSummoningBrainActive(unit, false);
+                PlaceExpandedSummoningUnit(unit, unit.Position);
+            }
+            return units;
         }
 
         private static string ExpandedSummoningPlanFullAttack(UnitEntityData attacker,
@@ -479,7 +523,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// its own attack roll when it lands.
         /// </summary>
         private static UnitUseAbility BeginExpandedSummoningDetachedAbility(UnitEntityData caster,
-            BlueprintAbility ability, TargetWrapper target)
+            BlueprintAbility ability, TargetWrapper target,
+            bool allowDelayedExecution = false, bool useCommandQueue = false)
         {
             Ability granted = caster.Descriptor.Abilities.GetAbility(ability);
             if (granted == null) throw new InvalidOperationException(
@@ -496,6 +541,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ";canTarget=" + data.CanTarget(target) + ".");
             command.IgnoreCooldown(TimeSpan.Zero);
             command.Init(caster);
+            if (useCommandQueue)
+            {
+                caster.Commands.Run(command);
+                if (!caster.Commands.Raw.Contains(command))
+                    throw new InvalidOperationException("The KMG ability was not placed in the native command queue: " +
+                        ability.name + ".");
+            }
             command.Start();
             if (!command.IsRunning)
                 throw new InvalidOperationException("The KMG ability command did not start: " +
@@ -503,8 +555,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ";enoughClose=" + command.IsUnitEnoughClose + ".");
             if (command.Animation != null) command.Animation.IsActed = true;
             command.Tick();
-            if (!string.Equals(command.Result.ToString(), "Success", StringComparison.Ordinal) ||
-                command.ExecutionProcess == null)
+            if (!allowDelayedExecution &&
+                (!string.Equals(command.Result.ToString(), "Success", StringComparison.Ordinal) ||
+                    command.ExecutionProcess == null))
                 throw new InvalidOperationException("The KMG ability did not begin executing: " +
                     ability.name + ";result=" + command.Result + ".");
             return command;
@@ -550,6 +603,38 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
+        private sealed class ExpandedSummoningChargeAttackObserver :
+            IGlobalRulebookHandler<RuleAttackWithWeapon>
+        {
+            internal UnitEntityData Initiator;
+            internal UnitEntityData Target;
+            internal BlueprintItemWeapon Gore;
+            internal BlueprintBuff Marker;
+            internal readonly List<string> Attacks = new List<string>();
+            internal bool FirstChargeHitWithMarker;
+
+            public void OnEventAboutToTrigger(RuleAttackWithWeapon evt) { }
+
+            public void OnEventDidTrigger(RuleAttackWithWeapon evt)
+            {
+                if (evt == null || !ReferenceEquals(evt.Initiator, Initiator) ||
+                    !ReferenceEquals(evt.Target, Target)) return;
+                bool gore = evt.Weapon != null &&
+                    ReferenceEquals(evt.Weapon.Blueprint, Gore);
+                bool marker = Marker != null &&
+                    Initiator.Descriptor.HasFact(Marker);
+                bool hit = evt.AttackRoll != null && evt.AttackRoll.IsHit &&
+                    !evt.AttackRoll.AutoMiss;
+                Attacks.Add("gore=" + gore + ",charge=" + evt.IsCharge +
+                    ",first=" + evt.IsFirstAttack + ",opportunity=" +
+                    evt.IsAttackOfOpportunity + ",marker=" + marker +
+                    ",hit=" + hit);
+                FirstChargeHitWithMarker |= gore && marker && hit &&
+                    evt.IsCharge && evt.IsFirstAttack &&
+                    !evt.IsAttackOfOpportunity;
+            }
+        }
+
         // ---------------------------------------------------------------------------------------------------------
         // The rules scenario: the synchronous cases on the first frame, then
         // the wind wall, the cloud and the web across frames.
@@ -575,6 +660,155 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool _rulesMissedHighTouch;
         private string _rulesWebRollA = "<none>";
         private int _rulesLoadingWait;
+        private UnitEntityData _rulesTrampler;
+        private static readonly string[] RulesTrampleKeys = {
+            "aurochs", "bison", "woolly-rhinoceros", "aurochs",
+            "aurochs"
+        };
+        private static readonly string[] RulesTrampleAbilityNames = {
+            "KMG_Summoning_Special_Aurochs_Trample",
+            "KMG_Summoning_Special_Bison_Trample",
+            "KMG_Summoning_Special_WoollyRhinoceros_Trample",
+            "KMG_Summoning_Special_Aurochs_Trample",
+            "KMG_Summoning_Special_Aurochs_Trample"
+        };
+        private static readonly int[] RulesTrampleSaveDcs = {
+            17, 20, 23, 17, 17
+        };
+        private int _rulesTrampleIndex;
+        private UnitEntityData _rulesTrampleTarget;
+        private readonly List<UnitEntityData> _rulesTrampleCaseUnits =
+            new List<UnitEntityData>();
+        private int _rulesTrampleOpportunityBefore;
+        private int? _rulesTrampleReflexBefore;
+        private UnitUseAbility _rulesTrampleCommand;
+        private BlueprintAbility _rulesTrampleAbility;
+        private TargetWrapper _rulesTrampleDestination;
+        private bool _rulesTrampleReplayStarted;
+        private int _rulesTrampleReplayDamageBefore;
+        private int _rulesTrampleReplaySaveCount;
+        private int _rulesTrampleReplayDamageCount;
+        private float _rulesTrampleFirstDistance;
+        private int _rulesTrampleReplaySettleFrames;
+        private ExpandedSummoningTrampleObserver _rulesTrampleObserver;
+        private int _rulesTrampleDamageBefore;
+        private int _rulesTrampleCasterDamageBefore;
+        private Vector3 _rulesTrampleStart;
+        private string _rulesTrampleRoute;
+        private string _rulesTrampleAgentAtExecution;
+        private float _rulesTrampleMaxDelta;
+        private int _rulesTrampleManualTicks;
+        private bool _rulesTrampleCanMove;
+        private bool _rulesTrampleViewInGame;
+        private bool _rulesTrampleTurnBased;
+        private bool? _rulesTrampleTurnModeBefore;
+        private bool _rulesTrampleTurnModeRestored;
+        private bool? _rulesTramplePauseBefore;
+        private bool _rulesTramplePauseRestored;
+        private TimeSpan? _rulesTrampleGameTimeBefore;
+        private bool _rulesTrampleGameTimeRestored;
+        private UnitEntityData _rulesChargeRhino;
+        private UnitUseAbility _rulesChargeCommand;
+        private UnitAttack _rulesChargeAttackCommand;
+        private ExpandedSummoningChargeAttackObserver _rulesChargeObserver;
+        private int _rulesChargeIndex;
+        private int _rulesChargeDamageBefore;
+        private Vector3 _rulesChargeStart;
+        private string _rulesChargeRoute;
+        private int _rulesChargeMovementTicks;
+        private bool _rulesChargeStarted;
+        private bool _rulesChargeAgentMoved;
+        private bool _rulesChargeProcessEnded;
+        private bool? _rulesChargeTurnModeBefore;
+        private bool? _rulesChargePauseBefore;
+        private TimeSpan? _rulesChargeGameTimeBefore;
+
+        private sealed class ExpandedSummoningTrampleObserver :
+            IGlobalRulebookHandler<RuleSavingThrow>,
+            IGlobalRulebookHandler<RuleDealDamage>,
+            IGlobalRulebookHandler<RuleAttackWithWeapon>
+        {
+            internal UnitEntityData Caster, Target;
+            internal readonly List<RuleSavingThrow> Saves = new List<RuleSavingThrow>();
+            internal readonly List<RuleDealDamage> Damage = new List<RuleDealDamage>();
+            internal readonly List<RuleAttackWithWeapon> Opportunities =
+                new List<RuleAttackWithWeapon>();
+            internal long ContactRound = -1;
+            public void OnEventAboutToTrigger(RuleSavingThrow evt) { }
+            public void OnEventAboutToTrigger(RuleDealDamage evt) { }
+            public void OnEventAboutToTrigger(RuleAttackWithWeapon evt) { }
+            public void OnEventDidTrigger(RuleSavingThrow evt)
+            {
+                if (!ReferenceEquals(evt.Initiator, Target)) return;
+                if (Saves.Count == 0)
+                    ContactRound = Game.Instance.Player.GameTime.Ticks /
+                        TimeSpan.FromSeconds(6d).Ticks;
+                Saves.Add(evt);
+            }
+            public void OnEventDidTrigger(RuleDealDamage evt)
+            {
+                if (ReferenceEquals(evt.Initiator, Caster) &&
+                    ReferenceEquals(evt.Target, Target)) Damage.Add(evt);
+            }
+            public void OnEventDidTrigger(RuleAttackWithWeapon evt)
+            {
+                if (ReferenceEquals(evt.Initiator, Target) &&
+                    ReferenceEquals(evt.Target, Caster) &&
+                    evt.IsAttackOfOpportunity) Opportunities.Add(evt);
+            }
+        }
+
+        private sealed class ExpandedSummoningTrampleContactResult
+        {
+            internal string Label;
+            internal bool TurnBased;
+            internal bool EnemyAtContact;
+            internal bool SourceUnitExact;
+            internal bool TargetPlayerFaction;
+            internal string TramplerFaction;
+            internal string TargetFaction;
+            internal int OpportunityBefore;
+            internal int OpportunityAfter;
+            internal int TargetDamageBefore;
+            internal int TargetDamageAfter;
+            internal int TramplerHpBefore;
+            internal int TramplerHpAfter;
+            internal bool NativeOpportunityBefore;
+            internal string NativeOpportunityState;
+            internal readonly List<RuleAttackWithWeapon> Opportunities =
+                new List<RuleAttackWithWeapon>();
+            internal readonly List<RuleSavingThrow> Saves =
+                new List<RuleSavingThrow>();
+            internal readonly List<RuleDealDamage> Damage =
+                new List<RuleDealDamage>();
+
+            internal string Describe()
+            {
+                return "label=" + Label + ";turnBased=" + TurnBased +
+                    ";enemy=" + EnemyAtContact + ";sourceUnitExact=" +
+                    SourceUnitExact + ";targetPlayerFaction=" +
+                    TargetPlayerFaction + ";factions=" +
+                    TramplerFaction + "->" + TargetFaction +
+                    ";aooResource=" + OpportunityBefore + "->" +
+                    OpportunityAfter + ";aoos=" + string.Join("|",
+                        Opportunities.Select(value => "penalty=" +
+                            value.AttackBonusPenalty + ",roll=" +
+                            (value.AttackRoll == null ? -1 :
+                                (int)value.AttackRoll.Roll) + ",hit=" +
+                            (value.AttackRoll != null &&
+                                value.AttackRoll.IsHit)).ToArray()) +
+                    ";saves=" + string.Join("|", Saves.Select(value =>
+                        "dc=" + value.DifficultyClass + ",passed=" +
+                        value.IsPassed).ToArray()) + ";damage=" +
+                    string.Join("|", Damage.Select(value => "amount=" +
+                        value.Damage + ",half=" +
+                        value.HalfBecauseSavingThrow).ToArray()) +
+                    ";targetDamage=" + TargetDamageBefore + "->" +
+                    TargetDamageAfter + ";tramplerHp=" + TramplerHpBefore +
+                    "->" + TramplerHpAfter + ";nativeEligibleBefore=" +
+                    NativeOpportunityBefore + ";" + NativeOpportunityState;
+            }
+        }
 
         private void PollExpandedSummoningRules()
         {
@@ -631,6 +865,47 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _rulesCases.Add(Assertion("expanded-summoning-correction-hooves",
                         "the pony's and the horse's hooves are both secondary: -5 to hit and half the Strength modifier to damage against the same hooves treated as primary, both listed in the full attack",
                         detail, ok, "RuleCalculateAttackBonus and RuleCalculateWeaponStats with the docile flag on and off; UnitAttack.CreateFullAttack"));
+                    stage = "native-charge";
+                    _rulesSteps.Add("reset:nativeCharge=" + ResetExpandedSummoningHostile(_rulesFixture));
+                    ok = ExerciseExpandedSummoningNativeCharge(_rulesFixture, out detail);
+                    _rulesCases.Add(Assertion("expanded-summoning-sprint11-native-charge",
+                        "the installed PowerfulCharge component adds two gore dice and another 1.5 times the Strength modifier on the first native charge, never on follow-up or opportunity attacks; that excess is not the Rhino stat-block bonus",
+                        detail, ok, "request-local Mastodon with a request-local native PowerfulCharge feature; RuleCalculateWeaponStats on first charge, ordinary, follow-up and opportunity attacks"));
+                    stage = "owned-charge";
+                    _rulesSteps.Add("reset:ownedCharge=" + ResetExpandedSummoningHostile(_rulesFixture));
+                    ok = ExerciseExpandedSummoningOwnedCharge(_rulesFixture, out detail);
+                    _rulesCases.Add(Assertion("expanded-summoning-sprint11-owned-charge",
+                        "a request-local Mastodon with the summon-local charge component adds exactly two gore dice and +3 damage on its first native charge, and nothing on later or opportunity attacks; removing the native charge marker ends the boost",
+                        detail, ok, "temporary UngulatePowerfulCharge feature on a disposable Mastodon; RuleCalculateWeaponStats with native charge marker and exact first/later/opportunity gates"));
+                    stage = "registered-rhino-charge";
+                    _rulesSteps.Add("reset:registeredRhinoCharge=" +
+                        ResetExpandedSummoningHostile(_rulesFixture));
+                    ok = ExerciseExpandedSummoningRegisteredRhinoCharge(
+                        _rulesFixture, out detail);
+                    _rulesCases.Add(Assertion(
+                        "expanded-summoning-sprint11-registered-rhino-charge",
+                        "the hidden Rhinoceros and Woolly Rhinoceros each own one charge feature; ordinary gore is 2d6+9 and 2d8+13, first marked charge is 4d6+12 and 4d8+18, follow-up, opportunity and post-marker attacks return to ordinary damage; Bison's Power Attack adds +2 without granting charge dice, and removing that feat restores printed 2d6+12 on a charge",
+                        detail, ok, "own-tier disposable summons with registered Rhino feature facts and Bison's native gore; RuleCalculateWeaponStats on first charge, ordinary, follow-up, opportunity and marker removal"));
+                    stage = "trample-response-matrix";
+                    _rulesSteps.Add("reset:trampleResponses=" +
+                        ResetExpandedSummoningHostile(_rulesFixture));
+                    ok = ExerciseExpandedSummoningTrampleResponseMatrix(
+                        out detail);
+                    _rulesCases.Add(Assertion(
+                        "expanded-summoning-sprint11-trample-response-matrix",
+                        "all RTWP and turn-based automatic-AoO/Reflex response cases pass and restore combat mode, time, party membership and every disposable unit",
+                        detail, ok,
+                        "registered contact ActionList on direct and quantity summons with real native rules and exact restoration"));
+                    stage = "stampede-command-matrix";
+                    _rulesSteps.Add("reset:stampede=" +
+                        ResetExpandedSummoningHostile(_rulesFixture));
+                    ok = ExerciseExpandedSummoningStampedeCommandMatrix(
+                        out detail);
+                    _rulesCases.Add(Assertion(
+                        "expanded-summoning-sprint11-stampede-command-matrix",
+                        "RTWP and turn-based Stampede require three exact allied Stampede owners each executing their own native Trample command in the same round and remaining mutually adjacent; mere quantity, two commands, lost adjacency and an ended command never grant same-size eligibility or +2 DC",
+                        detail, ok,
+                        "registered direct and 1d3 summons, real UnitUseAbility OnAction commands, native mode and round state, exact contact ActionLists"));
                     stage = "mouth-ownership";
                     _rulesSteps.Add("reset:mouths=" + ResetExpandedSummoningHostile(_rulesFixture));
                     ok = ExerciseExpandedSummoningMouthOwnership(_rulesFixture, out detail);
@@ -724,6 +999,147 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _rulesWait++ < ExpandedSummoningCommandFrames) return;
                     stage = "rake-command";
                     CompleteExpandedSummoningRakeCommand();
+                    stage = "trample-path-begin";
+                    _rulesSteps.Add("reset:trample=" + ResetExpandedSummoningHostile(_rulesFixture));
+                    _rulesTrampleIndex = 0;
+                    BeginExpandedSummoningTramplePath();
+                    _rulesWait = 0;
+                    _rulesPhase = 7;
+                    return;
+                }
+                if (_rulesPhase == 7)
+                {
+                    stage = "trample-path-contact";
+                    if (_rulesTrampleCommand.ExecutionProcess == null &&
+                        _rulesTrampleCommand.IsRunning)
+                    {
+                        if (_rulesTrampleCommand.Animation != null)
+                            _rulesTrampleCommand.Animation.IsActed = true;
+                        _rulesTrampleCommand.Tick();
+                    }
+                    if (_rulesTrampleCommand.ExecutionProcess != null &&
+                        _rulesTrampleAgentAtExecution == null)
+                        _rulesTrampleAgentAtExecution =
+                            DescribeExpandedSummoningTrampleAgent(_rulesTrampler);
+                    float delta = Game.Instance.TimeController.DeltaTime;
+                    _rulesTrampleMaxDelta = Mathf.Max(_rulesTrampleMaxDelta, delta);
+                    _rulesTrampleCanMove |= _rulesTrampler.Descriptor.State.CanMove;
+                    _rulesTrampleViewInGame |= _rulesTrampler.View.IsInGame;
+                    _rulesTrampleTurnBased |= TurnBased.Controllers.CombatController
+                        .IsInTurnBasedCombat();
+                    if (_rulesTrampleCommand.ExecutionProcess != null && delta > 0f &&
+                        _rulesTrampler.Descriptor.State.CanMove &&
+                        !TurnBased.Controllers.CombatController.IsInTurnBasedCombat())
+                    {
+                        // The runtime fixture casts a quiet disposable summon. Feed
+                        // its native movement agent with the game's own delta, then
+                        // synchronize position exactly as UnitMovementController does.
+                        _rulesTrampler.View.MovementAgent.TickMovement(delta);
+                        _rulesTrampler.Position = _rulesTrampler.View.transform.position;
+                        _rulesTrampleManualTicks++;
+                    }
+                    bool ended = _rulesTrampleCommand.ExecutionProcess != null &&
+                        TickExpandedSummoningDetachedAbility(
+                            _rulesTrampleCommand, _rulesWait);
+                    if (!ended && _rulesWait++ < 600) return;
+                    if (ended && _rulesTrampleIndex == 3 &&
+                        !_rulesTrampleReplayStarted)
+                    {
+                        if (!_rulesTrampleCommand.IsFinished)
+                        {
+                            if (_rulesTrampleCommand.Animation != null)
+                                FinishExpandedSummoningAnimation(
+                                    _rulesTrampleCommand.Animation);
+                            _rulesTrampleCommand.Tick();
+                            if (!_rulesTrampleCommand.IsFinished &&
+                                _rulesTrampleReplaySettleFrames++ < 120) return;
+                            if (!_rulesTrampleCommand.IsFinished)
+                                throw new InvalidOperationException(
+                                    "The first native trample command did not finish after delivery;result=" +
+                                    _rulesTrampleCommand.Result +
+                                    ";settleFrames=" +
+                                    _rulesTrampleReplaySettleFrames + ".");
+                        }
+                        BeginExpandedSummoningTrampleReplay();
+                        _rulesWait = 0;
+                        return;
+                    }
+                    CompleteExpandedSummoningTramplePath(ended);
+                    _rulesTrampleIndex++;
+                    if (_rulesTrampleIndex < RulesTrampleKeys.Length)
+                    {
+                        _rulesSteps.Add("reset:trample-" +
+                            RulesTrampleKeys[_rulesTrampleIndex] + "=" +
+                            ResetExpandedSummoningHostile(_rulesFixture));
+                        BeginExpandedSummoningTramplePath();
+                        _rulesWait = 0;
+                        return;
+                    }
+                    stage = "rhino-charge-begin";
+                    _rulesChargeIndex = 0;
+                    BeginExpandedSummoningQueuedRhinoCharge();
+                    _rulesWait = 0;
+                    _rulesPhase = 8;
+                    return;
+                }
+                if (_rulesPhase == 8)
+                {
+                    stage = "rhino-charge-travel";
+                    if (_rulesChargeCommand.ExecutionProcess == null &&
+                        _rulesChargeCommand.IsRunning)
+                    {
+                        if (_rulesChargeCommand.Animation != null)
+                            _rulesChargeCommand.Animation.IsActed = true;
+                        _rulesChargeCommand.Tick();
+                    }
+                    float delta = Game.Instance.TimeController.DeltaTime;
+                    if (_rulesChargeCommand.ExecutionProcess != null &&
+                        delta > 0f && _rulesChargeRhino.Descriptor.State.CanMove &&
+                        !TurnBased.Controllers.CombatController.IsInTurnBasedCombat())
+                    {
+                        bool moving = _rulesChargeRhino.View.MovementAgent
+                            .IsReallyMoving;
+                        _rulesChargeRhino.View.MovementAgent.TickMovement(delta);
+                        _rulesChargeRhino.Position =
+                            _rulesChargeRhino.View.transform.position;
+                        _rulesChargeAgentMoved |= moving;
+                        _rulesChargeMovementTicks++;
+                    }
+                    bool ended = _rulesChargeCommand.ExecutionProcess != null &&
+                        TickExpandedSummoningDetachedAbility(
+                            _rulesChargeCommand, _rulesWait);
+                    _rulesChargeProcessEnded |= ended;
+                    if (_rulesChargeAttackCommand == null)
+                        _rulesChargeAttackCommand = _rulesChargeRhino.Commands.Raw
+                            .OfType<UnitAttack>().FirstOrDefault(value =>
+                                ReferenceEquals(value.Target,
+                                    _rulesFixture.Hostile));
+                    if (_rulesChargeAttackCommand != null)
+                    {
+                        if (!_rulesChargeAttackCommand.IsStarted &&
+                            !_rulesChargeAttackCommand.IsFinished &&
+                            _rulesChargeAttackCommand.IsUnitEnoughClose)
+                            _rulesChargeAttackCommand.Start();
+                        if (_rulesChargeAttackCommand.IsRunning)
+                        {
+                            if (_rulesChargeAttackCommand.Animation != null &&
+                                _rulesWait > 12)
+                                _rulesChargeAttackCommand.Animation.IsActed = true;
+                            _rulesChargeAttackCommand.Tick();
+                        }
+                    }
+                    bool observed = _rulesChargeObserver != null &&
+                        _rulesChargeObserver.Attacks.Count > 0;
+                    if (!observed &&
+                        _rulesWait++ < ExpandedSummoningCommandFrames) return;
+                    CompleteExpandedSummoningQueuedRhinoCharge();
+                    _rulesChargeIndex++;
+                    if (_rulesChargeIndex < 2)
+                    {
+                        BeginExpandedSummoningQueuedRhinoCharge();
+                        _rulesWait = 0;
+                        return;
+                    }
                     CompleteExpandedSummoningRules();
                 }
             }
@@ -741,6 +1157,44 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             bool cleaned = false;
             SummonDocileHoovesComponent.SuspendedForFixture = false;
+            if (_rulesChargeRhino != null || _rulesChargeObserver != null)
+            {
+                try { CleanupExpandedSummoningQueuedRhinoCharge(); }
+                catch (Exception exception)
+                {
+                    _rulesCases.Add(Assertion(
+                        "expanded-summoning-sprint11-queued-charge-cleanup",
+                        "the request-local charge fixture restores its state",
+                        "exception=" + DescribeExpandedSummoningCorrectionException(
+                            exception), false, "exact request-local cleanup"));
+                }
+            }
+            if (_rulesTrampleCommand != null)
+            {
+                try { EndExpandedSummoningDetachedAbility(_rulesTrampleCommand); }
+                catch (Exception) { }
+                _rulesTrampleCommand = null;
+            }
+            try { RestoreExpandedSummoningTrampleTurnMode(); }
+            catch (Exception exception)
+            {
+                _rulesCases.Add(Assertion("expanded-summoning-sprint11-trample-mode-cleanup",
+                    "the original turn mode is restored", "exception=" +
+                    DescribeExpandedSummoningCorrectionException(exception), false,
+                    "request-local native turn mode toggle"));
+            }
+            RestoreExpandedSummoningTrampleReflex();
+            if (_rulesTrampleObserver != null)
+            {
+                try { EventBus.Unsubscribe(_rulesTrampleObserver); } catch (Exception) { }
+                _rulesTrampleObserver = null;
+            }
+            if (_rulesAwakeSnapshot != null)
+            {
+                Game.Instance.State.AwakeUnits.Clear();
+                Game.Instance.State.AwakeUnits.AddRange(_rulesAwakeSnapshot);
+                _rulesAwakeSnapshot = null;
+            }
             if (_rulesObserver != null)
             {
                 try { EventBus.Unsubscribe(_rulesObserver); } catch (Exception) { }
@@ -2255,6 +2709,609 @@ namespace KingmakerGunslinger.RuntimeTesting
             return ok;
         }
 
+        /// <summary>
+        /// The installed component is a donor measurement, never a new Rhino
+        /// mechanic. The feature and unit exist only until this request ends.
+        /// </summary>
+        private static bool ExerciseExpandedSummoningNativeCharge(
+            ExpandedSummoningCorrectionFixture fixture, out string detail)
+        {
+            var steps = new List<string>();
+            UnitEntityData animal = null;
+            BlueprintFeature feature = null;
+            PowerfulCharge component = null;
+            BlueprintBuff nativeCharge = BlueprintRoot.Instance.SystemMechanics
+                .ChargeBuff;
+            try
+            {
+                animal = CastExpandedSummoningOwnTier(fixture, "mastodon");
+                ItemEntityWeapon gore = SummonLimbs.PrimaryWeapon(animal);
+                if (gore == null || nativeCharge == null)
+                    throw new InvalidOperationException(
+                        "The Mastodon gore or installed charge buff is absent.");
+                int strength = animal.Descriptor.Stats.Strength.Bonus;
+                component = ScriptableObject.CreateInstance<PowerfulCharge>();
+                component.AdditionalDiceRolls = 2;
+                feature = ScriptableObject.CreateInstance<BlueprintFeature>();
+                feature.name = "KMG_Runtime_Sprint11_NativeChargeOnly";
+                feature.Ranks = 1;
+                feature.ComponentsArray = new BlueprintComponent[] { component };
+                if (animal.Descriptor.AddFact(feature) == null)
+                    throw new InvalidOperationException(
+                        "The request-local charge feature was not applied.");
+
+                var first = new RuleAttackWithWeapon(animal, fixture.Hostile,
+                    gore, 0) { IsFirstAttack = true, IsCharge = true };
+                RuleCalculateWeaponStats ordinary = Rulebook.Trigger(
+                    new RuleCalculateWeaponStats(animal, gore, first));
+                if (animal.Descriptor.AddFact(nativeCharge) == null)
+                    throw new InvalidOperationException(
+                        "The request-local native charge marker was not applied.");
+                RuleCalculateWeaponStats boosted = Rulebook.Trigger(
+                    new RuleCalculateWeaponStats(animal, gore, first));
+                var followUp = new RuleAttackWithWeapon(animal, fixture.Hostile,
+                    gore, 0) { IsFirstAttack = false, IsCharge = true };
+                RuleCalculateWeaponStats later = Rulebook.Trigger(
+                    new RuleCalculateWeaponStats(animal, gore, followUp));
+                var opportunity = new RuleAttackWithWeapon(animal,
+                    fixture.Hostile, gore, 0) {
+                        IsFirstAttack = true,
+                        IsAttackOfOpportunity = true
+                    };
+                RuleCalculateWeaponStats offTurn = Rulebook.Trigger(
+                    new RuleCalculateWeaponStats(animal, gore, opportunity));
+                int ordinaryRolls = ordinary.DamageDescription[0].Dice.Rolls;
+                int ordinaryBonus = ordinary.DamageDescription[0].Bonus;
+                int boostedRolls = boosted.DamageDescription[0].Dice.Rolls;
+                int boostedBonus = boosted.DamageDescription[0].Bonus;
+                bool valid = strength == 12 && ordinaryRolls == 2 &&
+                    boostedRolls == 4 && boostedBonus - ordinaryBonus ==
+                    strength * 3 / 2 && later.DamageDescription[0].Dice.Rolls ==
+                    ordinaryRolls && later.DamageDescription[0].Bonus ==
+                    ordinaryBonus && offTurn.DamageDescription[0].Dice.Rolls ==
+                    ordinaryRolls && offTurn.DamageDescription[0].Bonus ==
+                    ordinaryBonus;
+                steps.Add("strength=" + strength + ";ordinary=" +
+                    ordinaryRolls + "d8+" + ordinaryBonus + ";nativeFirst=" +
+                    boostedRolls + "d8+" + boostedBonus + ";later=" +
+                    later.DamageDescription[0].Dice.Rolls + "d8+" +
+                    later.DamageDescription[0].Bonus + ";opportunity=" +
+                    offTurn.DamageDescription[0].Dice.Rolls + "d8+" +
+                    offTurn.DamageDescription[0].Bonus);
+                detail = string.Join(";", steps.ToArray());
+                return valid;
+            }
+            catch (Exception exception)
+            {
+                steps.Add("exception=" +
+                    DescribeExpandedSummoningCorrectionException(exception));
+                detail = string.Join(";", steps.ToArray());
+                return false;
+            }
+            finally
+            {
+                if (animal != null && animal.Descriptor != null)
+                {
+                    if (nativeCharge != null && animal.Descriptor.HasFact(nativeCharge))
+                        animal.Descriptor.RemoveFact(nativeCharge);
+                    if (feature != null && animal.Descriptor.HasFact(feature))
+                        animal.Descriptor.RemoveFact(feature);
+                    DisposeExpandedSummoningUnits(fixture.Created,
+                        new[] { animal });
+                }
+                if (component != null) UnityEngine.Object.DestroyImmediate(component);
+                if (feature != null) UnityEngine.Object.DestroyImmediate(feature);
+            }
+        }
+
+        private static bool ExerciseExpandedSummoningOwnedCharge(
+            ExpandedSummoningCorrectionFixture fixture, out string detail)
+        {
+            var steps = new List<string>();
+            UnitEntityData animal = null;
+            BlueprintFeature feature = null;
+            UngulatePowerfulCharge component = null;
+            BlueprintBuff nativeCharge = BlueprintRoot.Instance.SystemMechanics
+                .ChargeBuff;
+            try
+            {
+                animal = CastExpandedSummoningOwnTier(fixture, "mastodon");
+                ItemEntityWeapon gore = SummonLimbs.PrimaryWeapon(animal);
+                if (gore == null || nativeCharge == null)
+                    throw new InvalidOperationException(
+                        "The Mastodon gore or installed charge buff is absent.");
+                int strength = animal.Descriptor.Stats.Strength.Bonus;
+                UngulateRulesProfile rhino = UngulateRulesPolicy.For("rhinoceros");
+                component = ScriptableObject.CreateInstance<UngulatePowerfulCharge>();
+                component.Gore = gore.Blueprint;
+                component.AdditionalDiceRolls = rhino.ChargeDiceIncrement;
+                component.AdditionalDamageBonus = rhino.ChargeBonusIncrement;
+                feature = ScriptableObject.CreateInstance<BlueprintFeature>();
+                feature.name = "KMG_Runtime_Sprint11_OwnedChargeOnly";
+                feature.Ranks = 1;
+                feature.ComponentsArray = new BlueprintComponent[] { component };
+                if (animal.Descriptor.AddFact(feature) == null)
+                    throw new InvalidOperationException(
+                        "The request-local owned charge feature was not applied.");
+
+                var first = new RuleAttackWithWeapon(animal, fixture.Hostile,
+                    gore, 0) { IsFirstAttack = true, IsCharge = true };
+                RuleCalculateWeaponStats ordinary = Rulebook.Trigger(
+                    new RuleCalculateWeaponStats(animal, gore, first));
+                if (animal.Descriptor.AddFact(nativeCharge) == null)
+                    throw new InvalidOperationException(
+                        "The request-local native charge marker was not applied.");
+                RuleCalculateWeaponStats boosted = Rulebook.Trigger(
+                    new RuleCalculateWeaponStats(animal, gore, first));
+                var followUp = new RuleAttackWithWeapon(animal, fixture.Hostile,
+                    gore, 0) { IsFirstAttack = false, IsCharge = true };
+                RuleCalculateWeaponStats later = Rulebook.Trigger(
+                    new RuleCalculateWeaponStats(animal, gore, followUp));
+                var opportunity = new RuleAttackWithWeapon(animal,
+                    fixture.Hostile, gore, 0) {
+                        IsFirstAttack = true,
+                        IsCharge = true,
+                        IsAttackOfOpportunity = true
+                    };
+                RuleCalculateWeaponStats offTurn = Rulebook.Trigger(
+                    new RuleCalculateWeaponStats(animal, gore, opportunity));
+                animal.Descriptor.RemoveFact(nativeCharge);
+                RuleCalculateWeaponStats after = Rulebook.Trigger(
+                    new RuleCalculateWeaponStats(animal, gore, first));
+                Func<RuleCalculateWeaponStats, string> format = value =>
+                    value.DamageDescription[0].Dice.Rolls +
+                    value.DamageDescription[0].Dice.Dice.ToString()
+                        .ToLowerInvariant() + "+" +
+                    value.DamageDescription[0].Bonus;
+                bool valid = strength == 12 &&
+                    format(ordinary) == "2d8+24" &&
+                    format(boosted) == "4d8+27" &&
+                    format(later) == format(ordinary) &&
+                    format(offTurn) == format(ordinary) &&
+                    format(after) == format(ordinary);
+                steps.Add("strength=" + strength + ";ordinary=" +
+                    format(ordinary) + ";first=" + format(boosted) +
+                    ";later=" + format(later) + ";opportunity=" +
+                    format(offTurn) + ";afterMarker=" + format(after));
+                detail = string.Join(";", steps.ToArray());
+                return valid;
+            }
+            catch (Exception exception)
+            {
+                steps.Add("exception=" +
+                    DescribeExpandedSummoningCorrectionException(exception));
+                detail = string.Join(";", steps.ToArray());
+                return false;
+            }
+            finally
+            {
+                if (animal != null && animal.Descriptor != null)
+                {
+                    if (nativeCharge != null && animal.Descriptor.HasFact(nativeCharge))
+                        animal.Descriptor.RemoveFact(nativeCharge);
+                    if (feature != null && animal.Descriptor.HasFact(feature))
+                        animal.Descriptor.RemoveFact(feature);
+                    DisposeExpandedSummoningUnits(fixture.Created,
+                        new[] { animal });
+                }
+                if (component != null) UnityEngine.Object.DestroyImmediate(component);
+                if (feature != null) UnityEngine.Object.DestroyImmediate(feature);
+            }
+        }
+
+        private static bool ExerciseExpandedSummoningRegisteredRhinoCharge(
+            ExpandedSummoningCorrectionFixture fixture, out string detail)
+        {
+            var steps = new List<string>();
+            BlueprintBuff nativeCharge = BlueprintRoot.Instance.SystemMechanics
+                .ChargeBuff;
+            bool valid = nativeCharge != null;
+            foreach (string[] row in new[] {
+                new[] { "rhinoceros", "Rhinoceros", "2d6+9", "4d6+12" },
+                new[] { "woolly-rhinoceros", "WoollyRhinoceros",
+                    "2d8+13", "4d8+18" }
+            })
+            {
+                UnitEntityData animal = null;
+                try
+                {
+                    animal = CastExpandedSummoningOwnTier(fixture, row[0]);
+                    ItemEntityWeapon gore = SummonLimbs.PrimaryWeapon(animal);
+                    BlueprintFeature feature = fixture.Blueprints
+                        .OfType<BlueprintFeature>().Single(value => value.name ==
+                            "KMG_Summoning_Special_" + row[1] +
+                            "_PowerfulCharge");
+                    UngulatePowerfulCharge component = feature
+                        .GetComponent<UngulatePowerfulCharge>();
+                    UngulateRulesProfile rules = UngulateRulesPolicy.For(row[0]);
+                    if (gore == null || component == null ||
+                        !animal.Descriptor.HasFact(feature) ||
+                        !ReferenceEquals(component.Gore, gore.Blueprint) ||
+                        component.AdditionalDiceRolls !=
+                            rules.ChargeDiceIncrement ||
+                        component.AdditionalDamageBonus !=
+                            rules.ChargeBonusIncrement)
+                        throw new InvalidOperationException(
+                            "Registered Rhino charge fact or exact gore is absent: " +
+                            row[0]);
+                    var first = new RuleAttackWithWeapon(animal,
+                        fixture.Hostile, gore, 0) {
+                            IsFirstAttack = true, IsCharge = true
+                        };
+                    RuleCalculateWeaponStats ordinary = Rulebook.Trigger(
+                        new RuleCalculateWeaponStats(animal, gore, first));
+                    if (animal.Descriptor.AddFact(nativeCharge) == null)
+                        throw new InvalidOperationException(
+                            "Native charge marker could not be applied: " +
+                            row[0]);
+                    RuleCalculateWeaponStats boosted = Rulebook.Trigger(
+                        new RuleCalculateWeaponStats(animal, gore, first));
+                    var followUp = new RuleAttackWithWeapon(animal,
+                        fixture.Hostile, gore, 0) {
+                            IsFirstAttack = false, IsCharge = true
+                        };
+                    RuleCalculateWeaponStats later = Rulebook.Trigger(
+                        new RuleCalculateWeaponStats(animal, gore, followUp));
+                    var opportunity = new RuleAttackWithWeapon(animal,
+                        fixture.Hostile, gore, 0) {
+                            IsFirstAttack = true, IsCharge = true,
+                            IsAttackOfOpportunity = true
+                        };
+                    RuleCalculateWeaponStats offTurn = Rulebook.Trigger(
+                        new RuleCalculateWeaponStats(animal, gore, opportunity));
+                    int damageBefore = fixture.Hostile.Descriptor.Damage;
+                    bool realHit;
+                    int realDamage;
+                    try
+                    {
+                        animal.Descriptor.Stats.BaseAttackBonus.BaseValue = 100;
+                        UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                        Rulebook.Trigger(first);
+                        realHit = first.AttackRoll != null &&
+                            first.AttackRoll.IsHit && !first.AttackRoll.AutoMiss;
+                        realDamage = fixture.Hostile.Descriptor.Damage - damageBefore;
+                    }
+                    finally
+                    {
+                        fixture.Hostile.Descriptor.Damage = damageBefore;
+                    }
+                    animal.Descriptor.RemoveFact(nativeCharge);
+                    RuleCalculateWeaponStats after = Rulebook.Trigger(
+                        new RuleCalculateWeaponStats(animal, gore, first));
+                    Func<RuleCalculateWeaponStats, string> format = value =>
+                        value.DamageDescription[0].Dice.Rolls +
+                        value.DamageDescription[0].Dice.Dice.ToString()
+                            .ToLowerInvariant() + "+" +
+                        value.DamageDescription[0].Bonus;
+                    string baseDamage = format(ordinary);
+                    string chargeDamage = format(boosted);
+                    bool rowValid = baseDamage == row[2] &&
+                        chargeDamage == row[3] &&
+                        format(later) == baseDamage &&
+                        format(offTurn) == baseDamage &&
+                        format(after) == baseDamage &&
+                        realHit && realDamage > 0;
+                    valid &= rowValid;
+                    steps.Add(row[0] + ":fact=True;ordinary=" + baseDamage +
+                        ";first=" + chargeDamage + ";later=" +
+                        format(later) + ";opportunity=" + format(offTurn) +
+                        ";realHit=" + realHit + ";realDamage=" + realDamage +
+                        ";afterMarker=" + format(after) +
+                        ";pass=" + rowValid);
+                }
+                catch (Exception exception)
+                {
+                    valid = false;
+                    steps.Add(row[0] + ":exception=" +
+                        DescribeExpandedSummoningCorrectionException(exception));
+                }
+                finally
+                {
+                    if (animal != null && animal.Descriptor != null)
+                    {
+                        if (nativeCharge != null &&
+                            animal.Descriptor.HasFact(nativeCharge))
+                            animal.Descriptor.RemoveFact(nativeCharge);
+                        DisposeExpandedSummoningUnits(fixture.Created,
+                            new[] { animal });
+                    }
+                }
+            }
+            UnitEntityData bison = null;
+            try
+            {
+                bison = CastExpandedSummoningOwnTier(fixture, "bison");
+                ItemEntityWeapon gore = SummonLimbs.PrimaryWeapon(bison);
+                if (gore == null)
+                    throw new InvalidOperationException(
+                        "Bison has no primary gore weapon.");
+                var first = new RuleAttackWithWeapon(bison, fixture.Hostile,
+                    gore, 0) { IsFirstAttack = true, IsCharge = true };
+                BlueprintFeature powerAttack = bison.Blueprint.AddFacts
+                    .OfType<BlueprintFeature>().Single(value => value.name ==
+                        "PowerAttackFeature");
+                bool hasPowerAttack = bison.Descriptor.HasFact(powerAttack);
+                RuleCalculateWeaponStats withPowerAttack = Rulebook.Trigger(
+                    new RuleCalculateWeaponStats(bison, gore, first));
+                bison.Descriptor.RemoveFact(powerAttack);
+                RuleCalculateWeaponStats ordinary = Rulebook.Trigger(
+                    new RuleCalculateWeaponStats(bison, gore, first));
+                if (bison.Descriptor.AddFact(nativeCharge) == null)
+                    throw new InvalidOperationException(
+                        "Bison charge marker could not be applied.");
+                RuleCalculateWeaponStats charged = Rulebook.Trigger(
+                    new RuleCalculateWeaponStats(bison, gore, first));
+                Func<RuleCalculateWeaponStats, string> format = value =>
+                    value.DamageDescription[0].Dice.Rolls +
+                    value.DamageDescription[0].Dice.Dice.ToString()
+                        .ToLowerInvariant() + "+" +
+                    value.DamageDescription[0].Bonus;
+                bool rowValid = hasPowerAttack &&
+                    format(withPowerAttack) == "2d6+14" &&
+                    format(ordinary) == "2d6+12" &&
+                    format(charged) == "2d6+12";
+                valid &= rowValid;
+                steps.Add("bison:powerAttack=" + hasPowerAttack +
+                    ";withFeat=" + format(withPowerAttack) +
+                    ";withoutFeat=" + format(ordinary) +
+                    ";charge=" + format(charged) + ";pass=" + rowValid);
+            }
+            catch (Exception exception)
+            {
+                valid = false;
+                steps.Add("bison:exception=" +
+                    DescribeExpandedSummoningCorrectionException(exception));
+            }
+            finally
+            {
+                if (bison != null && bison.Descriptor != null)
+                {
+                    if (nativeCharge != null &&
+                        bison.Descriptor.HasFact(nativeCharge))
+                        bison.Descriptor.RemoveFact(nativeCharge);
+                    DisposeExpandedSummoningUnits(fixture.Created,
+                        new[] { bison });
+                }
+            }
+            detail = string.Join(";", steps.ToArray());
+            return valid;
+        }
+
+        private void BeginExpandedSummoningQueuedRhinoCharge()
+        {
+            string key = _rulesChargeIndex == 0 ? "rhinoceros" :
+                "woolly-rhinoceros";
+            _rulesSteps.Add("reset:queuedCharge=" +
+                ResetExpandedSummoningHostile(_rulesFixture));
+            UnitEntityData hostile = _rulesFixture.Hostile;
+            hostile.Descriptor.State.Size = Size.Medium;
+            _rulesChargeDamageBefore = hostile.Descriptor.Damage;
+            _rulesChargeRhino = CastExpandedSummoningQuietUnit(_rulesFixture, key);
+            _rulesChargeRhino.Descriptor.Stats.BaseAttackBonus.BaseValue = 100;
+            ItemEntityWeapon gore = SummonLimbs.PrimaryWeapon(_rulesChargeRhino);
+            if (gore == null || gore.Blueprint == null)
+                throw new InvalidOperationException(key + " has no primary gore.");
+            BlueprintAbility[] nativeCharges = _rulesFixture.Blueprints
+                .OfType<BlueprintAbility>().Where(value =>
+                    value.ComponentsArray.OfType<Kingmaker.UnitLogic.Abilities
+                        .Components.AbilityCustomCharge>().Any()).ToArray();
+            _rulesSteps.Add("nativeChargeAbilities=" + string.Join("|",
+                nativeCharges.Select(value => value.name + ":" +
+                    value.AssetGuid + ":granted=" +
+                    (_rulesChargeRhino.Descriptor.Abilities.GetAbility(value) !=
+                        null)).ToArray()));
+            BlueprintAbility nativeCharge = nativeCharges.Single(value =>
+                value.AssetGuid == "c78506dd0e14f7c45a599990e4e65038");
+            Ability grantedCharge = _rulesChargeRhino.Descriptor.Abilities
+                .GetAbility(nativeCharge);
+            if (grantedCharge == null)
+                throw new InvalidOperationException(
+                    "The hidden " + key + " does not have native ChargeAbility.");
+            var chargeData = new AbilityData(grantedCharge);
+            _rulesChargeTurnModeBefore = SettingsRoot.Instance
+                .EnableTurnBasedMode.CurrentValue;
+            _rulesChargePauseBefore = Game.Instance.IsPaused;
+            _rulesChargeGameTimeBefore = Game.Instance.Player.GameTime;
+            if (TurnBased.Controllers.CombatController.IsInTurnBasedCombat())
+            {
+                SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
+                Game.Instance.TurnBasedCombatController.Activate();
+                if (TurnBased.Controllers.CombatController.IsInTurnBasedCombat())
+                    throw new InvalidOperationException(
+                        "Queued charge fixture did not enter RTWP.");
+            }
+            Game.Instance.IsPaused = false;
+            if (AstarPath.active == null)
+                throw new InvalidOperationException("Queued charge needs live area navigation.");
+            var attempts = new List<string>();
+            TargetWrapper selectedTarget = null;
+            var centres = new List<Vector3> {
+                hostile.Position, _rulesFixture.Caster.Position
+            };
+            centres.AddRange(CompassOffsets.Select(direction =>
+                _rulesFixture.Caster.Position + direction * 4f));
+            int blocked = 0, unwalkable = 0, tooClose = 0;
+            for (int centreIndex = 0; centreIndex < centres.Count &&
+                selectedTarget == null; centreIndex++)
+            {
+                Pathfinding.NNInfo targetNode = Kingmaker.View.ObstacleAnalyzer
+                    .GetNearestNode(centres[centreIndex]);
+                if (targetNode.node == null || !targetNode.node.Walkable ||
+                    Vector3.Distance(targetNode.clampedPosition,
+                        centres[centreIndex]) > 1.5f) continue;
+                PlaceExpandedSummoningUnit(hostile,
+                    targetNode.clampedPosition);
+                foreach (float distance in new[] { 6f, 5f, 4f })
+                {
+                    for (int direction = 0; direction < CompassOffsets.Length;
+                        direction++)
+                    {
+                        Vector3 requested = hostile.Position +
+                            CompassOffsets[direction] * distance;
+                        Pathfinding.NNInfo nearest = Kingmaker.View
+                            .ObstacleAnalyzer.GetNearestNode(requested);
+                        if (nearest.node == null || !nearest.node.Walkable ||
+                            Vector3.Distance(nearest.clampedPosition,
+                                requested) > 1.5f)
+                        {
+                            unwalkable++;
+                            continue;
+                        }
+                        Vector3 start = nearest.clampedPosition;
+                        Vector3 trace = Kingmaker.View.ObstacleAnalyzer
+                            .TraceAlongNavmesh(start, hostile.Position);
+                        bool clear = Kingmaker.Visual.FogOfWar.LineOfSightGeometry
+                            .Instance != null &&
+                            !Kingmaker.Visual.FogOfWar.LineOfSightGeometry
+                                .Instance.HasObstacle(start, hostile.Position, 0);
+                        float gap = Vector3.Distance(start, hostile.Position);
+                        float traceGap = Vector3.Distance(trace, hostile.Position);
+                        if (!clear || traceGap > 1f || gap <= 3.3f)
+                        {
+                            if (gap <= 3.3f) tooClose++;
+                            else blocked++;
+                            if (attempts.Count < 20)
+                                attempts.Add(centreIndex + "/" + distance +
+                                    "/" + direction + ":line=" + clear +
+                                    ",gap=" + gap.ToString("0.0") +
+                                    ",trace=" + traceGap.ToString("0.0"));
+                            continue;
+                        }
+                        PlaceExpandedSummoningUnit(_rulesChargeRhino, start);
+                        var target = new TargetWrapper(hostile);
+                        bool canTarget = chargeData.CanTarget(target);
+                        attempts.Add(centreIndex + "/" + distance + "/" +
+                            direction + ":start=" + _rulesChargeRhino.Position +
+                            ",canTarget=" + canTarget + ",available=" +
+                            chargeData.IsAvailable);
+                        if (!canTarget || !chargeData.IsAvailable) continue;
+                        selectedTarget = target;
+                        _rulesChargeStart = _rulesChargeRhino.Position;
+                        _rulesChargeRoute = key + "/centre" + centreIndex +
+                            "/" + distance + "/" + direction + ";start=" +
+                            _rulesChargeStart + ";target=" + hostile.Position;
+                        break;
+                    }
+                    if (selectedTarget != null) break;
+                }
+            }
+            _rulesSteps.Add("chargeRoutes:unwalkable=" + unwalkable +
+                ",blocked=" + blocked + ",tooClose=" + tooClose +
+                ";samples=" + string.Join("|", attempts.ToArray()));
+            if (selectedTarget == null)
+                throw new InvalidOperationException(
+                    "No live native queued charge route for " + key + ".");
+            _rulesChargeDamageBefore = hostile.Descriptor.Damage;
+            _rulesChargeMovementTicks = 0;
+            _rulesChargeAgentMoved = false;
+            _rulesChargeProcessEnded = false;
+            _rulesChargeAttackCommand = null;
+            _rulesChargeObserver = new ExpandedSummoningChargeAttackObserver {
+                Initiator = _rulesChargeRhino, Target = hostile,
+                Gore = gore.Blueprint,
+                Marker = BlueprintRoot.Instance.SystemMechanics.ChargeBuff
+            };
+            EventBus.Subscribe(_rulesChargeObserver);
+            _rulesAwakeSnapshot = Game.Instance.State.AwakeUnits.ToArray();
+            foreach (UnitEntityData unit in new[] { _rulesChargeRhino, hostile })
+                if (!Game.Instance.State.AwakeUnits.Contains(unit))
+                    Game.Instance.State.AwakeUnits.Add(unit);
+            UnityEngine.Random.InitState(FindNativeD20Seed(20));
+            _rulesChargeCommand = BeginExpandedSummoningDetachedAbility(
+                _rulesChargeRhino, nativeCharge, selectedTarget, true, true);
+            _rulesChargeStarted = _rulesChargeCommand.IsStarted &&
+                _rulesChargeCommand.IsRunning;
+        }
+
+        private void CompleteExpandedSummoningQueuedRhinoCharge()
+        {
+            string key = _rulesChargeIndex == 0 ? "rhinoceros" :
+                "woolly-rhinoceros";
+            float moved = Vector3.Distance(_rulesChargeRhino.Position,
+                _rulesChargeStart);
+            int damage = _rulesFixture.Hostile.Descriptor.Damage -
+                _rulesChargeDamageBefore;
+            string detail = "route=" + _rulesChargeRoute + ";moved=" +
+                moved.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) +
+                ";frames=" + _rulesWait + ";movementTicks=" +
+                _rulesChargeMovementTicks + ";agentMoved=" +
+                _rulesChargeAgentMoved + ";started=" + _rulesChargeStarted +
+                ";finished=" + _rulesChargeCommand.IsFinished +
+                ";hasExecution=" +
+                    (_rulesChargeCommand.ExecutionProcess != null) +
+                ";processEnded=" + _rulesChargeProcessEnded +
+                ";attackQueued=" + (_rulesChargeAttackCommand != null) +
+                ";attackStarted=" + (_rulesChargeAttackCommand != null &&
+                    _rulesChargeAttackCommand.IsStarted) +
+                ";markerAtEnd=" + _rulesChargeRhino.Descriptor.HasFact(
+                    BlueprintRoot.Instance.SystemMechanics.ChargeBuff) +
+                ";result=" + _rulesChargeCommand.Result +
+                ";damage=" + damage + ";attacks=" +
+                string.Join("|", _rulesChargeObserver.Attacks.ToArray()) +
+                ";agent=" + DescribeExpandedSummoningTrampleAgent(
+                    _rulesChargeRhino);
+            bool pass = _rulesChargeStarted && _rulesChargeAgentMoved &&
+                _rulesChargeAttackCommand != null &&
+                _rulesChargeAttackCommand.IsStarted &&
+                moved > 2f && damage > 0 &&
+                _rulesChargeObserver.FirstChargeHitWithMarker;
+            _rulesCases.Add(Assertion("expanded-summoning-sprint11-" + key +
+                "-queued-charge", "the hidden " + key +
+                " follows a native queued charge path and lands its first " +
+                "gore attack under the native charge marker", detail, pass,
+                "native ChargeAbility/AbilityCustomCharge command, movement " +
+                "agent and global RuleAttackWithWeapon observer"));
+            CleanupExpandedSummoningQueuedRhinoCharge();
+        }
+
+        private void CleanupExpandedSummoningQueuedRhinoCharge()
+        {
+            if (_rulesChargeCommand != null)
+                EndExpandedSummoningDetachedAbility(_rulesChargeCommand);
+            if (_rulesChargeRhino != null)
+            {
+                _rulesChargeRhino.Commands.InterruptAll(true);
+                _rulesChargeRhino.Commands.RemoveFinishedAndUpdateQueue();
+            }
+            _rulesChargeCommand = null;
+            _rulesChargeAttackCommand = null;
+            if (_rulesChargeObserver != null)
+            {
+                EventBus.Unsubscribe(_rulesChargeObserver);
+                _rulesChargeObserver = null;
+            }
+            if (_rulesChargePauseBefore.HasValue)
+            {
+                Game.Instance.IsPaused = _rulesChargePauseBefore.Value;
+                _rulesChargePauseBefore = null;
+            }
+            if (_rulesChargeGameTimeBefore.HasValue)
+            {
+                Game.Instance.Player.GameTime = _rulesChargeGameTimeBefore.Value;
+                _rulesChargeGameTimeBefore = null;
+            }
+            if (_rulesChargeTurnModeBefore.HasValue)
+            {
+                SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue =
+                    _rulesChargeTurnModeBefore.Value;
+                Game.Instance.TurnBasedCombatController.Activate();
+                _rulesChargeTurnModeBefore = null;
+            }
+            if (_rulesAwakeSnapshot != null)
+            {
+                Game.Instance.State.AwakeUnits.Clear();
+                Game.Instance.State.AwakeUnits.AddRange(_rulesAwakeSnapshot);
+                _rulesAwakeSnapshot = null;
+            }
+            if (_rulesFixture != null && _rulesFixture.Hostile != null &&
+                !_rulesFixture.Hostile.Destroyed)
+                _rulesFixture.Hostile.Descriptor.Damage = _rulesChargeDamageBefore;
+            if (_rulesChargeRhino != null)
+                DisposeExpandedSummoningUnits(_rulesFixture.Created,
+                    new[] { _rulesChargeRhino });
+            _rulesChargeRhino = null;
+        }
+
         // ---------------------------------------------------------------------------------------------------------
         // The Cyclops Flash of Insight across the persistence trio's save and reload.
         // ---------------------------------------------------------------------------------------------------------
@@ -2264,6 +3321,8 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private string _expandedSummoningPersistenceLinkDetail = "not run";
         private bool _expandedSummoningPersistenceLinkValid;
+        private string _expandedSummoningPersistenceStirgeDetail = "not run";
+        private bool _expandedSummoningPersistenceStirgeValid;
 
 
         private static UnitEntityData ExpandedSummoningPersistenceUnit(UnitEntityData[] units,
@@ -2271,6 +3330,87 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             return units == null ? null : units.FirstOrDefault(value => value != null &&
                 value.Blueprint != null && value.Blueprint.name == blueprintName);
+        }
+
+        private static bool PrepareExpandedSummoningPersistentStirge(
+            UnitEntityData[] units, out string detail)
+        {
+            UnitEntityData stirge = ExpandedSummoningPersistenceUnit(units,
+                "KMG_Summoning_Unit_Stirge");
+            UnitEntityData pony = ExpandedSummoningPersistenceUnit(units,
+                "KMG_Summoning_Unit_Pony");
+            StirgeAttachComponent attach = StirgeAttachComponent.Find(stirge);
+            ItemEntityWeapon touch = stirge == null || stirge.Body == null ||
+                stirge.Body.PrimaryHand == null ? null :
+                stirge.Body.PrimaryHand.MaybeWeapon;
+            if (stirge == null || pony == null || attach == null || touch == null)
+            {
+                detail = "missing-holder-victim-attach-or-touch";
+                return false;
+            }
+            PlaceExpandedSummoningUnit(pony, stirge.Position +
+                UnityEngine.Vector3.forward);
+            bool baselineCantMove = pony.Descriptor.State.HasCondition(
+                UnitCondition.CantMove);
+            bool baselineCantAct = pony.Descriptor.State.HasCondition(
+                UnitCondition.CantAct);
+            bool attached = attach.TryAttach(pony, touch, true);
+            bool sessionLink = ReferenceEquals(
+                StirgeHoldComponent.AttachedTarget(stirge), pony);
+            bool holderBuff = stirge.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                .Any(value => value.Blueprint != null && value.Blueprint.name ==
+                    "KMG_Summoning_Special_Stirge_Hold");
+            bool victimFree = pony.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>() ==
+                null && pony.Descriptor.State.HasCondition(UnitCondition.CantMove) ==
+                    baselineCantMove &&
+                pony.Descriptor.State.HasCondition(UnitCondition.CantAct) ==
+                    baselineCantAct &&
+                StirgeHoldComponent.RemoveAbility != null &&
+                pony.Descriptor.HasFact(StirgeHoldComponent.RemoveAbility);
+            detail = "attached=" + attached + ";sessionLink=" + sessionLink +
+                ";holderBuff=" + holderBuff + ";victimFree=" + victimFree +
+                ";cantMove=" + baselineCantMove + "->" +
+                pony.Descriptor.State.HasCondition(UnitCondition.CantMove) +
+                ";cantAct=" + baselineCantAct + "->" +
+                pony.Descriptor.State.HasCondition(UnitCondition.CantAct) +
+                ";holderId=" + stirge.UniqueId + ";victimId=" + pony.UniqueId;
+            return attached && sessionLink && holderBuff && victimFree;
+        }
+
+        private static bool VerifyExpandedSummoningReloadedStirge(
+            UnitEntityData[] units, out string detail)
+        {
+            UnitEntityData stirge = ExpandedSummoningPersistenceUnit(units,
+                "KMG_Summoning_Unit_Stirge");
+            UnitEntityData pony = ExpandedSummoningPersistenceUnit(units,
+                "KMG_Summoning_Unit_Pony");
+            if (stirge == null || pony == null)
+            {
+                detail = "missing-reloaded-holder-or-victim";
+                return false;
+            }
+            bool holderPart = stirge.Get<Kingmaker.UnitLogic.Parts
+                .UnitPartGrappleInitiator>() != null;
+            bool victimPart = pony.Get<Kingmaker.UnitLogic.Parts
+                .UnitPartGrappleTarget>() != null;
+            bool holderBuff = stirge.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                .Any(value => value.Blueprint != null && value.Blueprint.name ==
+                    "KMG_Summoning_Special_Stirge_Hold");
+            bool orphanRemovalAction = StirgeHoldComponent.RemoveAbility != null &&
+                pony.Descriptor.HasFact(StirgeHoldComponent.RemoveAbility);
+            bool holderCantAct = stirge.Descriptor.State.HasCondition(
+                UnitCondition.CantAct);
+            bool victimCantMove = pony.Descriptor.State.HasCondition(
+                UnitCondition.CantMove);
+            detail = "holderPart=" + holderPart + ";victimPart=" + victimPart +
+                ";holderBuff=" + holderBuff + ";orphanRemovalAction=" +
+                orphanRemovalAction +
+                ";holderCantAct=" + holderCantAct +
+                ";victimCantMove=" + victimCantMove;
+            return !holderPart && !victimPart && !holderBuff &&
+                !orphanRemovalAction &&
+                StirgeHoldComponent.AttachedTarget(stirge) == null &&
+                !holderCantAct && !victimCantMove;
         }
 
         /// <summary>
@@ -2955,6 +4095,1500 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private const int ExpandedSummoningCommandFrames = 600;
+
+        private ExpandedSummoningTrampleContactResult
+            RunExpandedSummoningTrampleContact(UnitEntityData trampler,
+                UnitEntityData target, string label, int naturalRoll)
+        {
+            BlueprintAbility ability = _rulesFixture.Blueprints
+                .OfType<BlueprintAbility>().Single(value =>
+                    RulesTrampleAbilityNames.Contains(value.name) &&
+                    trampler.Descriptor.Abilities.GetAbility(value) != null);
+            var overrun = ability.ComponentsArray.OfType<
+                Kingmaker.UnitLogic.Abilities.Components
+                    .AbilityCustomOverrun>().Single();
+            ContextActionUngulateTrample contact = overrun.Actions.Actions
+                .OfType<ContextActionUngulateTrample>().Single();
+            var observer = new ExpandedSummoningTrampleObserver {
+                Caster = trampler, Target = target
+            };
+            var result = new ExpandedSummoningTrampleContactResult {
+                Label = label,
+                TurnBased = TurnBased.Controllers.CombatController
+                    .IsInTurnBasedCombat(),
+                EnemyAtContact = target.IsEnemy(trampler),
+                SourceUnitExact = ReferenceEquals(contact.SourceUnit,
+                    trampler.Blueprint),
+                TargetPlayerFaction = target.IsPlayerFaction,
+                TramplerFaction = trampler.Faction == null ? "<none>" :
+                    trampler.Faction.name,
+                TargetFaction = target.Faction == null ? "<none>" :
+                    target.Faction.name,
+                OpportunityBefore = target.CombatState
+                    .AttackOfOpportunityCount,
+                TargetDamageBefore = target.Descriptor.Damage,
+                TramplerHpBefore = trampler.HPLeft
+            };
+            int nativeRemaining;
+            result.NativeOpportunityBefore = BodyguardActionEconomyAccess
+                .CanSpendAttackOfOpportunity(target, trampler,
+                    out nativeRemaining);
+            result.NativeOpportunityState = BodyguardActionEconomyAccess
+                .DescribeAttackOfOpportunityState(target, trampler) +
+                ";nativeRemaining=" + nativeRemaining +
+                ";targetInState=" + target.IsInState +
+                ";tramplerInState=" + trampler.IsInState;
+            EventBus.Subscribe(observer);
+            try
+            {
+                UnityEngine.Random.InitState(FindNativeD20Seed(naturalRoll));
+                var targetWrapper = new TargetWrapper(target);
+                var context = new MechanicsContext(trampler,
+                    trampler.Descriptor, ability, null, targetWrapper);
+                using (context.GetDataScope(targetWrapper))
+                    overrun.Actions.Run();
+            }
+            finally
+            { EventBus.Unsubscribe(observer); }
+            result.OpportunityAfter = target.CombatState
+                .AttackOfOpportunityCount;
+            result.TargetDamageAfter = target.Descriptor.Damage;
+            result.TramplerHpAfter = trampler.HPLeft;
+            result.Opportunities.AddRange(observer.Opportunities);
+            result.Saves.AddRange(observer.Saves);
+            result.Damage.AddRange(observer.Damage);
+            return result;
+        }
+
+        private static void PrepareExpandedSummoningTrampleResponsePair(
+            ExpandedSummoningCorrectionFixture fixture,
+            UnitEntityData trampler, UnitEntityData defender,
+            int opportunities, float distance, bool resetTrampler = true,
+            bool repositionTrampler = true)
+        {
+            if (!defender.IsEnemy(trampler) || !trampler.IsEnemy(defender))
+                throw new InvalidOperationException(
+                    "The native summon groups do not classify the Trample pair as mutually hostile: " +
+                    (trampler.Faction == null ? "<none>" : trampler.Faction.name) +
+                    "->" + (defender.Faction == null ? "<none>" :
+                        defender.Faction.name) + ".");
+            defender.Descriptor.State.Size = Size.Medium;
+            Vector3 centre = fixture.Caster.Position + Vector3.right * 4f;
+            if (repositionTrampler)
+                PlaceExpandedSummoningUnit(trampler, centre);
+            else
+                centre = trampler.Position;
+            PlaceExpandedSummoningUnit(defender,
+                centre + Vector3.forward * distance);
+            defender.Descriptor.Damage = 0;
+            if (resetTrampler) trampler.Descriptor.Damage = 0;
+            defender.CombatState.OnNewRound();
+            defender.CombatState.AttackOfOpportunityCount = opportunities;
+            defender.CombatState.PreventAttacksOfOpporunityNextFrame = false;
+            // Direct contact cases translocate both actors and then invoke the
+            // registered action synchronously. Clear only that placement-frame
+            // suppression on the trampler so the sample represents the later
+            // settled contact delivered by native overrun movement.
+            trampler.CombatState.PreventAttacksOfOpporunityNextFrame = false;
+            defender.LastMoveTime = Game.Instance.TimeController.GameTime -
+                TimeSpan.FromSeconds(1d);
+            defender.PreviousPosition = defender.Position;
+            // Fresh player- and hostile-owned summon groups establish the
+            // relationship. Rebuild only this pair's native memory entries so
+            // the AoO simulation and the contact action see the same enemies.
+            trampler.Memory.Remove(defender);
+            trampler.Memory.Add(defender);
+            defender.Memory.Remove(trampler);
+            defender.Memory.Add(trampler);
+        }
+
+        /// <summary>
+        /// Runs the exact registered contact action on disposable summons. The
+        /// native overrun phases below separately prove path delivery; this
+        /// matrix isolates every owner-ordered AoO/Reflex discriminator so a
+        /// failed case names its actual rule, resource and mode evidence.
+        /// </summary>
+        private bool ExerciseExpandedSummoningTrampleResponseMatrix(
+            out string detail)
+        {
+            var owned = new List<UnitEntityData>();
+            var results = new List<ExpandedSummoningTrampleContactResult>();
+            var assertions = new List<bool>();
+            bool settingBefore = SettingsRoot.Instance.EnableTurnBasedMode
+                .CurrentValue;
+            bool pauseBefore = Game.Instance.IsPaused;
+            TimeSpan timeBefore = Game.Instance.Player.GameTime;
+            bool partyAdded = false;
+            bool turnCombatEntered = false;
+            var joined = new List<UnitEntityData>();
+            UnitEntityData unableDefender = null;
+            UnitEntityData playerDefender = _rulesFixture.Caster;
+            int playerDefenderReflexBefore = playerDefender.Descriptor.Stats
+                .GetStat(StatType.SaveReflex).BaseValue;
+            Size playerDefenderSizeBefore = playerDefender.Descriptor.State.Size;
+            int playerDefenderDamageBefore = playerDefender.Descriptor.Damage;
+            try
+            {
+                if (TurnBased.Controllers.CombatController
+                        .IsInTurnBasedCombat())
+                {
+                    SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue =
+                        false;
+                    Game.Instance.TurnBasedCombatController.Activate();
+                }
+                Game.Instance.IsPaused = false;
+
+                UnitEntityData hostileDefender =
+                    CastExpandedSummoningQuietUnit(_rulesFixture, "wolf",
+                        _rulesFixture.Hostile);
+                UnitEntityData laterDefender =
+                    CastExpandedSummoningQuietUnit(_rulesFixture, "wolf",
+                        _rulesFixture.Hostile);
+                owned.AddRange(new[] { hostileDefender, laterDefender });
+
+                UnitEntityData spentTrampler =
+                    CastExpandedSummoningQuietUnit(_rulesFixture, "aurochs");
+                owned.Add(spentTrampler);
+                PrepareExpandedSummoningTrampleResponsePair(_rulesFixture,
+                    spentTrampler, hostileDefender, 0, 1f);
+                SetExactProperty(hostileDefender.Descriptor.Stats.GetStat(
+                    StatType.SaveReflex), "BaseValue", -100);
+                ExpandedSummoningTrampleContactResult spent =
+                    RunExpandedSummoningTrampleContact(spentTrampler,
+                        hostileDefender, "rtwp-spent-reflex-fail", 10);
+                results.Add(spent);
+                bool spentOk = !spent.TurnBased &&
+                    spent.Opportunities.Count == 0 && spent.Saves.Count == 1 &&
+                    !spent.Saves[0].IsPassed && spent.Damage.Count == 1 &&
+                    !spent.Damage[0].HalfBecauseSavingThrow &&
+                    spent.OpportunityBefore == 0 &&
+                    spent.OpportunityAfter == 0;
+                assertions.Add(spentOk);
+                _rulesCases.Add(Assertion(
+                    "expanded-summoning-sprint11-trample-spent-reflex",
+                    "in RTWP a defender with no remaining AoO makes no attack, fails its forced Reflex save, and takes one full trample packet",
+                    spent.Describe(), spentOk,
+                    "registered contact ActionList; native AoO count, save and damage observers"));
+
+                UnitEntityData unableTrampler =
+                    CastExpandedSummoningQuietUnit(_rulesFixture, "aurochs");
+                owned.Add(unableTrampler);
+                unableDefender = hostileDefender;
+                PrepareExpandedSummoningTrampleResponsePair(_rulesFixture,
+                    unableTrampler, unableDefender, 1, 1f);
+                SetExactProperty(unableDefender.Descriptor.Stats.GetStat(
+                    StatType.SaveReflex), "BaseValue", 100);
+                unableDefender.Descriptor.State.AddCondition(
+                    UnitCondition.CantAct, null);
+                ExpandedSummoningTrampleContactResult unable =
+                    RunExpandedSummoningTrampleContact(unableTrampler,
+                        unableDefender, "rtwp-unable-reflex-pass", 10);
+                unableDefender.Descriptor.State.RemoveCondition(
+                    UnitCondition.CantAct);
+                unableDefender = null;
+                results.Add(unable);
+                bool unableOk = !unable.TurnBased &&
+                    unable.Opportunities.Count == 0 &&
+                    unable.OpportunityBefore == 1 &&
+                    unable.OpportunityAfter == 1 && unable.Saves.Count == 1 &&
+                    unable.Saves[0].IsPassed && unable.Damage.Count == 1 &&
+                    unable.Damage[0].HalfBecauseSavingThrow;
+                assertions.Add(unableOk);
+                _rulesCases.Add(Assertion(
+                    "expanded-summoning-sprint11-trample-unable-reflex",
+                    "an unable defender preserves its AoO, makes no attack, succeeds at Reflex and takes one halved trample packet",
+                    unable.Describe(), unableOk,
+                    "live CantAct condition plus registered contact ActionList"));
+
+                UnitEntityData farTrampler =
+                    CastExpandedSummoningQuietUnit(_rulesFixture, "aurochs");
+                owned.Add(farTrampler);
+                PrepareExpandedSummoningTrampleResponsePair(_rulesFixture,
+                    farTrampler, hostileDefender, 1, 12f);
+                SetExactProperty(hostileDefender.Descriptor.Stats.GetStat(
+                    StatType.SaveReflex), "BaseValue", -100);
+                ExpandedSummoningTrampleContactResult far =
+                    RunExpandedSummoningTrampleContact(farTrampler,
+                        hostileDefender, "rtwp-nonthreatening-reflex", 10);
+                results.Add(far);
+                bool farOk = !far.TurnBased &&
+                    far.Opportunities.Count == 0 &&
+                    far.OpportunityBefore == 1 && far.OpportunityAfter == 1 &&
+                    far.Saves.Count == 1 && far.Damage.Count == 1;
+                assertions.Add(farOk);
+                _rulesCases.Add(Assertion(
+                    "expanded-summoning-sprint11-trample-nonthreatening-reflex",
+                    "a melee attack that cannot threaten the trampler consumes no AoO and uses Reflex",
+                    far.Describe(), farOk,
+                    "native threat hand and UnitEngagementExtension.IsReach at a measured nonthreatening distance"));
+
+                UnitEntityData rtwpTrampler =
+                    CastExpandedSummoningQuietUnit(_rulesFixture, "aurochs");
+                owned.Add(rtwpTrampler);
+                foreach (UnitEntityData unit in new[] {
+                    hostileDefender, rtwpTrampler })
+                {
+                    if (unit.CombatState.IsInCombat) continue;
+                    unit.CombatState.JoinCombat();
+                    joined.Add(unit);
+                }
+                PrepareExpandedSummoningTrampleResponsePair(_rulesFixture,
+                    rtwpTrampler, hostileDefender, 1, 1f);
+                hostileDefender.Descriptor.Stats.BaseAttackBonus.BaseValue =
+                    100;
+                ExpandedSummoningTrampleContactResult rtwp =
+                    RunExpandedSummoningTrampleContact(rtwpTrampler,
+                        hostileDefender, "rtwp-aoo-hit", 10);
+                results.Add(rtwp);
+                bool rtwpOk = !rtwp.TurnBased &&
+                    rtwp.Opportunities.Count == 1 &&
+                    rtwp.Opportunities[0].AttackBonusPenalty == 4 &&
+                    rtwp.Opportunities[0].AttackRoll != null &&
+                    rtwp.Opportunities[0].AttackRoll.IsHit &&
+                    rtwp.OpportunityBefore == 1 &&
+                    rtwp.OpportunityAfter == 0 && rtwp.Saves.Count == 0 &&
+                    rtwp.Damage.Count == 1 &&
+                    !rtwp.Damage[0].HalfBecauseSavingThrow &&
+                    rtwp.TramplerHpAfter < rtwp.TramplerHpBefore &&
+                    rtwp.TramplerHpAfter > 0;
+                assertions.Add(rtwpOk);
+                _rulesCases.Add(Assertion(
+                    "expanded-summoning-sprint11-trample-rtwp-aoo-hit",
+                    "in RTWP one legal melee AoO resolves at -4, spends the ordinary resource, grants no save, and full trample damage follows when the trampler continues",
+                    rtwp.Describe(), rtwpOk,
+                    "direct registered summon plus real RuleAttackWithWeapon, native AoO count and contact ActionList"));
+
+                UnitEntityData hostileTrampler =
+                    CastExpandedSummoningQuietUnit(_rulesFixture, "bison",
+                        _rulesFixture.Hostile);
+                owned.Add(hostileTrampler);
+                if (!Game.Instance.Player.Party.Contains(playerDefender))
+                {
+                    Game.Instance.Player.Party.Add(playerDefender);
+                    partyAdded = true;
+                    Game.Instance.Player.UpdateIsInCombat();
+                }
+                PrepareExpandedSummoningTrampleResponsePair(_rulesFixture,
+                    hostileTrampler, playerDefender, 0, 1f);
+                SetExactProperty(playerDefender.Descriptor.Stats.GetStat(
+                    StatType.SaveReflex), "BaseValue", -100);
+                ExpandedSummoningTrampleContactResult player =
+                    RunExpandedSummoningTrampleContact(hostileTrampler,
+                        playerDefender, "rtwp-player-defender", 10);
+                results.Add(player);
+                bool playerOk = playerDefender.IsPlayerFaction &&
+                    Game.Instance.Player.Party.Contains(playerDefender) &&
+                    playerDefender.IsEnemy(hostileTrampler) &&
+                    player.Opportunities.Count == 0 &&
+                    player.Saves.Count == 1 && player.Damage.Count == 1;
+                assertions.Add(playerOk);
+                _rulesCases.Add(Assertion(
+                    "expanded-summoning-sprint11-trample-player-defender",
+                    "the same automatic response policy applies when a hostile trampler contacts a player-faction defender",
+                    player.Describe() + ";playerFaction=" +
+                        playerDefender.IsPlayerFaction + ";enemy=" +
+                    playerDefender.IsEnemy(hostileTrampler) +
+                        ";partyControlled=" + Game.Instance.Player.Party
+                            .Contains(playerDefender), playerOk,
+                    "hostile-summoned registered Bison contact against the disposable player-faction fixture caster"));
+
+                UnitEntityData[] quantity =
+                    CastExpandedSummoningQuietUnits(_rulesFixture, "aurochs",
+                        SummonMultiplicity.OneD3);
+                owned.AddRange(quantity);
+                if (quantity.Length < 1)
+                    throw new InvalidOperationException(
+                        "The 1d3 Aurochs route produced no live summon.");
+                UnitEntityData missTrampler = quantity[0];
+                UnitEntityData hitTrampler =
+                    CastExpandedSummoningQuietUnit(_rulesFixture, "bison");
+                UnitEntityData lethalTrampler =
+                    CastExpandedSummoningQuietUnit(_rulesFixture, "aurochs");
+                owned.Add(hitTrampler);
+                owned.Add(lethalTrampler);
+                BlueprintFeature combatReflexes = BlueprintBootstrap
+                    .BodyguardFeats.CombatReflexes;
+                foreach (UnitEntityData defender in new[] { hostileDefender,
+                    laterDefender })
+                    if (!defender.Descriptor.HasFact(combatReflexes))
+                        defender.Descriptor.AddFact(combatReflexes);
+
+                if (!Game.Instance.Player.Party.Contains(
+                        _rulesFixture.Caster))
+                {
+                    Game.Instance.Player.Party.Add(_rulesFixture.Caster);
+                    partyAdded = true;
+                }
+                SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = true;
+                Game.Instance.TurnBasedCombatController.Activate();
+                foreach (UnitEntityData unit in new[] {
+                    _rulesFixture.Caster, _rulesFixture.Hostile,
+                    hostileDefender, laterDefender, missTrampler,
+                    hitTrampler, lethalTrampler })
+                {
+                    if (!unit.CombatState.IsInCombat)
+                    {
+                        unit.JoinCombat();
+                        joined.Add(unit);
+                    }
+                }
+                Game.Instance.Player.UpdateIsInCombat();
+                Game.Instance.TurnBasedCombatController
+                    .HandlePartyCombatStateChanged(true);
+                turnCombatEntered = true;
+                if (!TurnBased.Controllers.CombatController
+                        .IsInTurnBasedCombat())
+                    throw new InvalidOperationException(
+                        "The trample response matrix did not enter native turn-based combat.");
+
+                PrepareExpandedSummoningTrampleResponsePair(_rulesFixture,
+                    missTrampler, hostileDefender, 1, 1f);
+                hostileDefender.Descriptor.Stats.BaseAttackBonus.BaseValue =
+                    -100;
+                ExpandedSummoningTrampleContactResult miss =
+                    RunExpandedSummoningTrampleContact(missTrampler,
+                        hostileDefender, "turn-based-quantity-aoo-miss", 10);
+                results.Add(miss);
+                bool missOk = miss.TurnBased && quantity.Length >= 1 &&
+                    miss.Opportunities.Count == 1 &&
+                    miss.Opportunities[0].AttackBonusPenalty == 4 &&
+                    miss.Opportunities[0].AttackRoll != null &&
+                    !miss.Opportunities[0].AttackRoll.IsHit &&
+                    miss.OpportunityBefore == 1 &&
+                    miss.OpportunityAfter == 0 && miss.Saves.Count == 0 &&
+                    miss.Damage.Count == 1 &&
+                    !miss.Damage[0].HalfBecauseSavingThrow;
+                assertions.Add(missOk);
+                _rulesCases.Add(Assertion(
+                    "expanded-summoning-sprint11-trample-turn-based-miss",
+                    "in turn-based mode a quantity-summoned trampler receives exactly one pre-damage AoO at -4; a miss consumes it, grants no save, and full trample damage follows",
+                    miss.Describe() + ";quantity=" + quantity.Length,
+                    missOk,
+                    "1d3 registered summon plus real RuleAttackWithWeapon, native AoO count and contact ActionList"));
+
+                PrepareExpandedSummoningTrampleResponsePair(_rulesFixture,
+                    hitTrampler, hostileDefender, 4, 1f);
+                hostileDefender.Descriptor.Stats.BaseAttackBonus.BaseValue =
+                    100;
+                ExpandedSummoningTrampleContactResult hit =
+                    RunExpandedSummoningTrampleContact(hitTrampler,
+                        hostileDefender,
+                        "turn-based-combat-reflexes-aoo-hit", 10);
+                results.Add(hit);
+                bool hitOk = hit.TurnBased &&
+                    hit.Opportunities.Count == 1 &&
+                    hit.Opportunities[0].AttackBonusPenalty == 4 &&
+                    hit.Opportunities[0].AttackRoll != null &&
+                    hit.Opportunities[0].AttackRoll.IsHit &&
+                    hit.OpportunityBefore == 4 &&
+                    hit.OpportunityAfter == 3 && hit.Saves.Count == 0 &&
+                    hit.Damage.Count == 1 &&
+                    !hit.Damage[0].HalfBecauseSavingThrow &&
+                    hit.TramplerHpAfter < hit.TramplerHpBefore &&
+                    hit.TramplerHpAfter > 0;
+                assertions.Add(hitOk);
+                _rulesCases.Add(Assertion(
+                    "expanded-summoning-sprint11-trample-combat-reflexes-hit",
+                    "Combat Reflexes still permits exactly one -4 response; a nonlethal hit spends one of four AoOs, grants no save, and full trample damage follows",
+                    hit.Describe(), hitOk,
+                    "native Combat Reflexes fact with four live AoO resources"));
+
+                PrepareExpandedSummoningTrampleResponsePair(_rulesFixture,
+                    lethalTrampler, hostileDefender, 1, 1f);
+                hostileDefender.Descriptor.Stats.BaseAttackBonus.BaseValue =
+                    100;
+                lethalTrampler.Descriptor.Damage += Math.Max(0,
+                    lethalTrampler.HPLeft - 1);
+                ExpandedSummoningTrampleContactResult lethal =
+                    RunExpandedSummoningTrampleContact(lethalTrampler,
+                        hostileDefender, "turn-based-lethal-aoo", 10);
+                results.Add(lethal);
+                PrepareExpandedSummoningTrampleResponsePair(_rulesFixture,
+                    lethalTrampler, laterDefender, 1, 1f, false, false);
+                int laterDamageBefore = laterDefender.Descriptor.Damage;
+                ExpandedSummoningTrampleContactResult later =
+                    RunExpandedSummoningTrampleContact(lethalTrampler,
+                        laterDefender,
+                        "turn-based-after-stopping-aoo", 10);
+                results.Add(later);
+                bool stopped = lethalTrampler.Destroyed ||
+                    lethalTrampler.Descriptor.State.IsDead ||
+                    !lethalTrampler.Descriptor.State.IsConscious ||
+                    !lethalTrampler.Descriptor.State.CanAct ||
+                    !lethalTrampler.Descriptor.State.CanMove ||
+                    lethal.TramplerHpAfter <= 0;
+                bool lethalOk = lethal.TurnBased &&
+                    lethal.Opportunities.Count == 1 &&
+                    lethal.Opportunities[0].AttackRoll != null &&
+                    lethal.Opportunities[0].AttackRoll.IsHit && stopped &&
+                    lethal.Saves.Count == 0 && lethal.Damage.Count == 0 &&
+                    lethal.TargetDamageAfter == lethal.TargetDamageBefore &&
+                    later.Opportunities.Count == 0 &&
+                    later.Saves.Count == 0 && later.Damage.Count == 0 &&
+                    laterDefender.Descriptor.Damage == laterDamageBefore;
+                assertions.Add(lethalOk);
+                _rulesCases.Add(Assertion(
+                    "expanded-summoning-sprint11-trample-lethal-aoo-stops",
+                    "a lethal AoO resolves first, prevents that contact's trample damage and suppresses every later contact in the round",
+                    lethal.Describe() + ";stopped=" + stopped +
+                        ";later={" + later.Describe() + "}", lethalOk,
+                    "one-hit-point direct summon followed by a distinct live target on the same round ledger"));
+            }
+            finally
+            {
+                if (unableDefender != null && unableDefender.Descriptor != null)
+                    unableDefender.Descriptor.State.RemoveCondition(
+                        UnitCondition.CantAct);
+                if (turnCombatEntered)
+                {
+                    try
+                    {
+                        Game.Instance.TurnBasedCombatController
+                            .HandlePartyCombatStateChanged(false);
+                    }
+                    catch { }
+                }
+                foreach (UnitEntityData unit in joined.AsEnumerable().Reverse())
+                {
+                    try
+                    {
+                        if (unit != null && unit.CombatState != null &&
+                            unit.CombatState.IsInCombat) unit.LeaveCombat();
+                    }
+                    catch { }
+                }
+                if (partyAdded)
+                    Game.Instance.Player.Party.Remove(_rulesFixture.Caster);
+                SetExactProperty(playerDefender.Descriptor.Stats.GetStat(
+                    StatType.SaveReflex), "BaseValue",
+                    playerDefenderReflexBefore);
+                playerDefender.Descriptor.State.Size =
+                    playerDefenderSizeBefore;
+                playerDefender.Descriptor.Damage =
+                    playerDefenderDamageBefore;
+                Game.Instance.Player.UpdateIsInCombat();
+                SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue =
+                    settingBefore;
+                Game.Instance.TurnBasedCombatController.Activate();
+                Game.Instance.Player.GameTime = timeBefore;
+                Game.Instance.IsPaused = pauseBefore;
+                DisposeExpandedSummoningUnits(_rulesFixture.Created,
+                    owned.Distinct().ToArray());
+            }
+            detail = string.Join("||", results.Select(value =>
+                value.Describe()).ToArray());
+            return assertions.Count == 8 && assertions.All(value => value) &&
+                SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue ==
+                    settingBefore && Game.Instance.IsPaused == pauseBefore &&
+                Game.Instance.Player.GameTime == timeBefore &&
+                (!partyAdded || !Game.Instance.Player.Party.Contains(
+                    _rulesFixture.Caster));
+        }
+
+        private bool ExerciseExpandedSummoningStampedeCommandMatrix(
+            out string detail)
+        {
+            bool settingBefore = SettingsRoot.Instance.EnableTurnBasedMode
+                .CurrentValue;
+            bool pauseBefore = Game.Instance.IsPaused;
+            TimeSpan timeBefore = Game.Instance.Player.GameTime;
+            bool partyAdded = false;
+            var steps = new List<string>();
+            bool rtwp = false, turnBased = false;
+            try
+            {
+                SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
+                Game.Instance.TurnBasedCombatController.Activate();
+                Game.Instance.IsPaused = false;
+                rtwp = ExerciseExpandedSummoningStampedeMode(false, steps);
+
+                if (!Game.Instance.Player.Party.Contains(
+                        _rulesFixture.Caster))
+                {
+                    Game.Instance.Player.Party.Add(_rulesFixture.Caster);
+                    partyAdded = true;
+                }
+                SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = true;
+                Game.Instance.TurnBasedCombatController.Activate();
+                turnBased = ExerciseExpandedSummoningStampedeMode(true, steps);
+            }
+            finally
+            {
+                try
+                {
+                    Game.Instance.TurnBasedCombatController
+                        .HandlePartyCombatStateChanged(false);
+                }
+                catch { }
+                if (partyAdded)
+                    Game.Instance.Player.Party.Remove(_rulesFixture.Caster);
+                Game.Instance.Player.UpdateIsInCombat();
+                SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue =
+                    settingBefore;
+                Game.Instance.TurnBasedCombatController.Activate();
+                Game.Instance.Player.GameTime = timeBefore;
+                Game.Instance.IsPaused = pauseBefore;
+            }
+            bool restored =
+                SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue ==
+                    settingBefore &&
+                Game.Instance.Player.GameTime == timeBefore &&
+                Game.Instance.IsPaused == pauseBefore &&
+                (!partyAdded || !Game.Instance.Player.Party.Contains(
+                    _rulesFixture.Caster));
+            steps.Add("restored=" + restored);
+            detail = string.Join("||", steps.ToArray());
+            return rtwp && turnBased && restored;
+        }
+
+        private bool ExerciseExpandedSummoningStampedeMode(bool turnBased,
+            List<string> steps)
+        {
+            string mode = turnBased ? "turn-based" : "rtwp";
+            var owned = new List<UnitEntityData>();
+            var joined = new List<UnitEntityData>();
+            var commands = new List<UnitUseAbility>();
+            bool turnCombatEntered = false;
+            try
+            {
+                var quantity = new List<UnitEntityData>();
+                for (int attempt = 0; attempt < 3 && quantity.Count < 2;
+                    attempt++)
+                    quantity.AddRange(CastExpandedSummoningQuietUnits(
+                        _rulesFixture, "aurochs",
+                        SummonMultiplicity.OneD3));
+                if (quantity.Count < 2)
+                    throw new InvalidOperationException(
+                        "Repeated registered 1d3 Aurochs casts did not create two Stampede owners.");
+                UnitEntityData aurochs = quantity[0];
+                UnitEntityData secondAurochs = quantity[1];
+                UnitEntityData bison = CastExpandedSummoningQuietUnit(
+                    _rulesFixture, "bison");
+                owned.AddRange(quantity);
+                owned.Add(bison);
+
+                var targets = new List<UnitEntityData>();
+                for (int index = 0; index < 6; index++)
+                {
+                    UnitEntityData target =
+                        CastExpandedSummoningQuietUnit(_rulesFixture, "wolf",
+                            _rulesFixture.Hostile);
+                    target.Descriptor.State.Size = Size.Large;
+                    SetExactProperty(target.Descriptor.Stats.GetStat(
+                        StatType.SaveReflex), "BaseValue", -100);
+                    targets.Add(target);
+                }
+                owned.AddRange(targets);
+
+                string formation;
+                TargetWrapper[] destinations =
+                    PlaceExpandedSummoningStampedeFormation(aurochs, bison,
+                        secondAurochs, out formation);
+                for (int index = 2; index < quantity.Count; index++)
+                    PlaceExpandedSummoningUnit(quantity[index], aurochs.Position +
+                        (Vector3.left + Vector3.back).normalized *
+                        (0.6f + index * 0.1f));
+                steps.Add(mode + ":formation=" + formation);
+
+                foreach (UnitEntityData unit in new[] {
+                    _rulesFixture.Caster, _rulesFixture.Hostile,
+                    aurochs, secondAurochs, bison })
+                {
+                    if (unit.CombatState.IsInCombat) continue;
+                    unit.JoinCombat();
+                    joined.Add(unit);
+                }
+                foreach (UnitEntityData unit in quantity.Skip(2).Concat(targets))
+                {
+                    if (unit.CombatState.IsInCombat) continue;
+                    unit.JoinCombat();
+                    joined.Add(unit);
+                }
+                Game.Instance.Player.UpdateIsInCombat();
+                if (turnBased)
+                {
+                    Game.Instance.TurnBasedCombatController
+                        .HandlePartyCombatStateChanged(true);
+                    turnCombatEntered = true;
+                }
+                if (TurnBased.Controllers.CombatController
+                        .IsInTurnBasedCombat() != turnBased)
+                    throw new InvalidOperationException(
+                        "Stampede fixture entered the wrong combat mode: expected=" +
+                        turnBased + ".");
+
+                int idleGroup = UngulateStampedeRuntime.ActiveGroupSize(
+                    aurochs);
+                ExpandedSummoningTrampleContactResult idle =
+                    RunExpandedSummoningStampedeContact(aurochs, targets[0],
+                        mode + "-idle-quantity");
+                bool idleOk = quantity.Count >= 2 && idleGroup == 0 &&
+                    idle.Saves.Count == 0 && idle.Damage.Count == 0;
+                _rulesCases.Add(Assertion(
+                    "expanded-summoning-sprint11-stampede-" + mode +
+                        "-idle-quantity",
+                    "nearby quantity that has not executed Trample grants no Stampede same-size contact",
+                    "quantity=" + quantity.Count + ";group=" + idleGroup +
+                        ";" + idle.Describe(), idleOk,
+                    "registered 1d3 summons, exact Stampede facts and same-size contact ActionList"));
+
+                commands.Add(BeginExpandedSummoningStampedeCommand(aurochs,
+                    destinations[0]));
+                commands.Add(BeginExpandedSummoningStampedeCommand(bison,
+                    destinations[1]));
+                int pairGroup = UngulateStampedeRuntime.ActiveGroupSize(
+                    aurochs);
+                ExpandedSummoningTrampleContactResult pair =
+                    RunExpandedSummoningStampedeContact(aurochs, targets[1],
+                        mode + "-two-commands");
+                bool pairOk = pairGroup == 0 && pair.Saves.Count == 0 &&
+                    pair.Damage.Count == 0;
+                _rulesCases.Add(Assertion(
+                    "expanded-summoning-sprint11-stampede-" + mode +
+                        "-two-commands",
+                    "two independently executing allied Trample commands do not activate Stampede",
+                    "group=" + pairGroup + ";" + pair.Describe(), pairOk,
+                    "two real registered UnitUseAbility commands and a same-size contact"));
+
+                commands.Add(BeginExpandedSummoningStampedeCommand(
+                    secondAurochs, destinations[2]));
+                int aurochsGroup = UngulateStampedeRuntime.ActiveGroupSize(
+                    aurochs);
+                int bisonGroup = UngulateStampedeRuntime.ActiveGroupSize(
+                    bison);
+                ExpandedSummoningTrampleContactResult activeAurochs =
+                    RunExpandedSummoningStampedeContact(aurochs, targets[2],
+                        mode + "-active-aurochs");
+                ExpandedSummoningTrampleContactResult activeBison =
+                    RunExpandedSummoningStampedeContact(bison, targets[3],
+                        mode + "-active-bison");
+                bool aurochsOk = aurochsGroup == 3 &&
+                    activeAurochs.Saves.Count == 1 &&
+                    activeAurochs.Saves[0].DifficultyClass == 19 &&
+                    activeAurochs.Damage.Count == 1;
+                bool bisonOk = bisonGroup == 3 &&
+                    activeBison.Saves.Count == 1 &&
+                    activeBison.Saves[0].DifficultyClass == 22 &&
+                    activeBison.Damage.Count == 1;
+                _rulesCases.Add(Assertion(
+                    "expanded-summoning-sprint11-stampede-" + mode +
+                        "-aurochs-active",
+                    "three mutually adjacent allied active Stampede owners let Aurochs trample a same-size target at DC 19",
+                    "group=" + aurochsGroup + ";" +
+                        activeAurochs.Describe(), aurochsOk,
+                    "three exact native command actions and a registered Aurochs contact"));
+                _rulesCases.Add(Assertion(
+                    "expanded-summoning-sprint11-stampede-" + mode +
+                        "-bison-active",
+                    "the same mixed active herd lets Bison trample a same-size target at DC 22",
+                    "group=" + bisonGroup + ";" + activeBison.Describe(),
+                    bisonOk,
+                    "three exact native command actions and a registered Bison contact"));
+
+                Vector3 adjacentPosition = secondAurochs.Position;
+                PlaceExpandedSummoningUnit(secondAurochs,
+                    aurochs.Position + Vector3.forward * 20f);
+                int separatedGroup = UngulateStampedeRuntime.ActiveGroupSize(
+                    aurochs);
+                ExpandedSummoningTrampleContactResult separated =
+                    RunExpandedSummoningStampedeContact(aurochs, targets[4],
+                        mode + "-adjacency-lost");
+                bool separatedOk = separatedGroup == 0 &&
+                    separated.Saves.Count == 0 && separated.Damage.Count == 0;
+                _rulesCases.Add(Assertion(
+                    "expanded-summoning-sprint11-stampede-" + mode +
+                        "-adjacency-loss",
+                    "losing mutual adjacency ends Stampede for later same-size contacts",
+                    "group=" + separatedGroup + ";" +
+                        separated.Describe(), separatedOk,
+                    "live entity positions and edge-to-edge formation recheck"));
+
+                PlaceExpandedSummoningUnit(secondAurochs,
+                    adjacentPosition);
+                commands[2].Interrupt(true);
+                if (commands[2].IsRunning && !commands[2].IsFinished)
+                    throw new InvalidOperationException(
+                        "The third native Stampede command refused direct interruption.");
+                int endedGroup = UngulateStampedeRuntime.ActiveGroupSize(
+                    aurochs);
+                ExpandedSummoningTrampleContactResult ended =
+                    RunExpandedSummoningStampedeContact(aurochs, targets[5],
+                        mode + "-command-ended");
+                bool endedOk = endedGroup == 0 && ended.Saves.Count == 0 &&
+                    ended.Damage.Count == 0;
+                _rulesCases.Add(Assertion(
+                    "expanded-summoning-sprint11-stampede-" + mode +
+                        "-command-ended",
+                    "an interrupted or ended third command ends Stampede for later same-size contacts",
+                    "group=" + endedGroup + ";command=" +
+                        commands[2].IsRunning + "/" +
+                        commands[2].IsFinished + "/" +
+                        commands[2].Result + ";" + ended.Describe(),
+                    endedOk,
+                    "native command lifecycle plus same-round contact recheck"));
+
+                bool modeOk = idleOk && pairOk && aurochsOk && bisonOk &&
+                    separatedOk && endedOk;
+                steps.Add(mode + ":quantity=" + quantity.Count +
+                    ";idle=" + idleGroup + ";pair=" + pairGroup +
+                    ";active=" + aurochsGroup + "/" + bisonGroup +
+                    ";separated=" + separatedGroup + ";ended=" +
+                    endedGroup + ";round=" +
+                    ContextActionUngulateTrample.CurrentRound() +
+                    ";pass=" + modeOk);
+                return modeOk;
+            }
+            finally
+            {
+                foreach (UnitUseAbility command in commands)
+                {
+                    try { command.Interrupt(true); }
+                    catch { }
+                    try { EndExpandedSummoningDetachedAbility(command); }
+                    catch { }
+                }
+                if (turnCombatEntered)
+                {
+                    try
+                    {
+                        Game.Instance.TurnBasedCombatController
+                            .HandlePartyCombatStateChanged(false);
+                    }
+                    catch { }
+                }
+                foreach (UnitEntityData unit in joined.AsEnumerable().Reverse())
+                {
+                    try
+                    {
+                        if (unit != null && unit.CombatState != null &&
+                            unit.CombatState.IsInCombat) unit.LeaveCombat();
+                    }
+                    catch { }
+                }
+                Game.Instance.Player.UpdateIsInCombat();
+                DisposeExpandedSummoningUnits(_rulesFixture.Created,
+                    owned.Distinct().ToArray());
+            }
+        }
+
+        private TargetWrapper[] PlaceExpandedSummoningStampedeFormation(
+            UnitEntityData aurochs, UnitEntityData bison,
+            UnitEntityData secondAurochs, out string detail)
+        {
+            if (AstarPath.active == null)
+                throw new InvalidOperationException(
+                    "Stampede formation needs live area navigation.");
+            UnitEntityData[] units = { aurochs, bison, secondAurochs };
+            var origins = new List<Vector3> {
+                _rulesFixture.Hostile.Position,
+                _rulesFixture.Caster.Position
+            };
+            foreach (Vector3 anchor in new[] {
+                _rulesFixture.Hostile.Position,
+                _rulesFixture.Caster.Position })
+                foreach (float distance in new[] { 2.5f, 3f, 4f, 6f })
+                    origins.AddRange(CompassOffsets.Select(direction =>
+                        anchor + direction * distance));
+            var attempts = new List<string>();
+            for (int originIndex = 0; originIndex < origins.Count;
+                originIndex++)
+            {
+                for (int headingIndex = 0;
+                    headingIndex < CompassOffsets.Length; headingIndex++)
+                {
+                    Vector3 heading = CompassOffsets[headingIndex];
+                    Vector3 perpendicular = new Vector3(-heading.z, 0f,
+                        heading.x);
+                    Vector3[] requested = {
+                        origins[originIndex],
+                        origins[originIndex] + heading * 1.25f,
+                        origins[originIndex] + perpendicular * 1.25f
+                    };
+                    var positions = new Vector3[units.Length];
+                    bool walkable = true;
+                    float maxSnap = 0f;
+                    for (int index = 0; index < units.Length; index++)
+                    {
+                        Pathfinding.NNInfo nearest = Kingmaker.View
+                            .ObstacleAnalyzer.GetNearestNode(requested[index]);
+                        if (nearest.node == null || !nearest.node.Walkable)
+                        {
+                            walkable = false;
+                            break;
+                        }
+                        positions[index] = nearest.clampedPosition;
+                        maxSnap = Math.Max(maxSnap, Vector3.Distance(
+                            positions[index], requested[index]));
+                    }
+                    if (!walkable) continue;
+                    for (int index = 0; index < units.Length; index++)
+                        PlaceExpandedSummoningUnit(units[index],
+                            positions[index]);
+                    bool distinct = Vector3.Distance(aurochs.Position,
+                            bison.Position) >= 0.25f &&
+                        Vector3.Distance(aurochs.Position,
+                            secondAurochs.Position) >= 0.25f &&
+                        Vector3.Distance(bison.Position,
+                            secondAurochs.Position) >= 0.25f;
+                    bool adjacent =
+                        ExpandedSummoningStampedeFixtureAdjacent(aurochs,
+                            bison) &&
+                        ExpandedSummoningStampedeFixtureAdjacent(aurochs,
+                            secondAurochs) &&
+                        ExpandedSummoningStampedeFixtureAdjacent(bison,
+                            secondAurochs);
+                    var destinations = new TargetWrapper[units.Length];
+                    var routeDetails = new string[units.Length];
+                    bool routes = distinct && adjacent;
+                    if (routes)
+                        for (int index = 0; index < units.Length; index++)
+                            if (!TryFindExpandedSummoningStampedeDestination(
+                                    units[index], out destinations[index],
+                                    out routeDetails[index]))
+                            {
+                                routes = false;
+                                break;
+                            }
+                    if (attempts.Count < 24 || routes)
+                        attempts.Add("origin" + originIndex + "/heading" +
+                            headingIndex + ":distinct=" + distinct +
+                            ",adjacent=" + adjacent + ",maxSnap=" +
+                            maxSnap.ToString("0.00", System.Globalization
+                                .CultureInfo.InvariantCulture) + ",routes=" +
+                            routes + ",checks=" + string.Join(";",
+                                routeDetails.Where(value =>
+                                    !string.IsNullOrEmpty(value)).ToArray()));
+                    if (!routes) continue;
+                    detail = attempts[attempts.Count - 1] + ",positions=" +
+                        string.Join("/", units.Select(value =>
+                            value.Position.ToString()).ToArray());
+                    return destinations;
+                }
+            }
+            throw new InvalidOperationException(
+                "No mutually adjacent Stampede formation had three valid native Trample paths;attempts=" +
+                string.Join("|", attempts.ToArray()) + ".");
+        }
+
+        private static bool ExpandedSummoningStampedeFixtureAdjacent(
+            UnitEntityData left, UnitEntityData right)
+        {
+            float edgeDistance = Vector3.Distance(left.Position,
+                right.Position) - Math.Max(0f, left.Corpulence) -
+                Math.Max(0f, right.Corpulence);
+            return edgeDistance <= 5.Feet().Meters + 0.01f;
+        }
+
+        private bool TryFindExpandedSummoningStampedeDestination(
+            UnitEntityData unit, out TargetWrapper destination,
+            out string detail)
+        {
+            BlueprintAbility ability = _rulesFixture.Blueprints
+                .OfType<BlueprintAbility>().Single(value =>
+                    RulesTrampleAbilityNames.Contains(value.name) &&
+                    unit.Descriptor.Abilities.GetAbility(value) != null);
+            Ability granted = unit.Descriptor.Abilities.GetAbility(ability);
+            var data = new AbilityData(granted);
+            destination = null;
+            var attempts = new List<string>();
+            var overrun = ability.ComponentsArray.OfType<
+                Kingmaker.UnitLogic.Abilities.Components.AbilityCustomOverrun>()
+                .Single();
+            var path = ability.ComponentsArray.OfType<
+                UngulateTramplePathChecker>().Single();
+            foreach (float distance in new[] { 5f, 6f, 8f, 4f, 3f, 2.5f })
+            {
+                foreach (Vector3 direction in CompassOffsets)
+                {
+                    Pathfinding.NNInfo nearest =
+                        Kingmaker.View.ObstacleAnalyzer.GetNearestNode(
+                            unit.Position + direction * distance);
+                    if (nearest.node == null || !nearest.node.Walkable) continue;
+                    var candidate = new TargetWrapper(nearest.clampedPosition);
+                    Vector3 traced = Kingmaker.View.ObstacleAnalyzer
+                        .TraceAlongNavmesh(unit.Position, candidate.Point);
+                    bool nativeTarget = overrun.CanTarget(unit, candidate);
+                    bool pathTarget = path.CanTarget(unit, candidate);
+                    bool canTarget = data.CanTarget(candidate);
+                    bool lineClear = Kingmaker.Visual.FogOfWar
+                        .LineOfSightGeometry.Instance != null &&
+                        !Kingmaker.Visual.FogOfWar.LineOfSightGeometry.Instance
+                            .HasObstacle(unit.EyePosition, candidate.Point, 0);
+                    if (attempts.Count < 20 || (canTarget && lineClear))
+                        attempts.Add(distance + "/" +
+                            Array.IndexOf(CompassOffsets, direction) +
+                            ":canTarget=" + canTarget + ",native=" +
+                            nativeTarget + ",path=" + pathTarget +
+                            ",lineClear=" + lineClear + ",traceDelta=" +
+                            Vector3.Distance(traced, candidate.Point).ToString(
+                                "0.00", System.Globalization.CultureInfo
+                                    .InvariantCulture));
+                    if (!canTarget || !lineClear) continue;
+                    destination = candidate;
+                    break;
+                }
+                if (destination != null) break;
+            }
+            detail = unit.Blueprint.name + "=" +
+                string.Join(",", attempts.ToArray());
+            return destination != null;
+        }
+
+        private UnitUseAbility BeginExpandedSummoningStampedeCommand(
+            UnitEntityData unit, TargetWrapper destination)
+        {
+            BlueprintAbility ability = _rulesFixture.Blueprints
+                .OfType<BlueprintAbility>().Single(value =>
+                    RulesTrampleAbilityNames.Contains(value.name) &&
+                    unit.Descriptor.Abilities.GetAbility(value) != null);
+            if (destination == null)
+                throw new InvalidOperationException(
+                    "The prequalified native Stampede destination was absent for " +
+                    unit.Blueprint.name + ".");
+            UnitUseAbility command = BeginExpandedSummoningDetachedAbility(
+                unit, ability, destination, true, true);
+            for (int tick = 0; command.ExecutionProcess == null &&
+                command.IsRunning && tick < 16; tick++)
+            {
+                if (command.Animation != null)
+                    command.Animation.IsActed = true;
+                command.Tick();
+            }
+            if (command.ExecutionProcess == null || !command.IsRunning ||
+                command.IsFinished)
+                throw new InvalidOperationException(
+                    "The exact Stampede Trample command did not enter its native action: " +
+                    unit.Blueprint.name + ";running=" + command.IsRunning +
+                    ";finished=" + command.IsFinished + ";result=" +
+                    command.Result + ".");
+            return command;
+        }
+
+        private ExpandedSummoningTrampleContactResult
+            RunExpandedSummoningStampedeContact(UnitEntityData trampler,
+                UnitEntityData target, string label)
+        {
+            PrepareExpandedSummoningTrampleResponsePair(_rulesFixture,
+                trampler, target, 0, 1f, false, false);
+            target.Descriptor.State.Size = Size.Large;
+            SetExactProperty(target.Descriptor.Stats.GetStat(
+                StatType.SaveReflex), "BaseValue", -100);
+            return RunExpandedSummoningTrampleContact(trampler, target,
+                label, 10);
+        }
+
+        private void BeginExpandedSummoningTramplePath()
+        {
+            string creatureKey = RulesTrampleKeys[_rulesTrampleIndex];
+            bool halfCase = _rulesTrampleIndex == 3;
+            bool opportunityCase = _rulesTrampleIndex == 4;
+            _rulesTrampleCaseUnits.Clear();
+            _rulesTrampleOpportunityBefore = 0;
+            _rulesTrampleReplayStarted = false;
+            _rulesTrampleReplaySettleFrames = 0;
+            _rulesTrampleAbility = null;
+            _rulesTrampleDestination = null;
+            _rulesTrampleAgentAtExecution = null;
+            _rulesTrampleMaxDelta = 0f;
+            _rulesTrampleManualTicks = 0;
+            _rulesTrampleCanMove = false;
+            _rulesTrampleViewInGame = false;
+            _rulesTrampleTurnBased = false;
+            _rulesTrampleTurnModeRestored = false;
+            _rulesTramplePauseRestored = false;
+            _rulesTrampleGameTimeRestored = false;
+            UnitEntityData hostile = _rulesFixture.Hostile;
+            if (opportunityCase)
+            {
+                hostile = CastExpandedSummoningQuietUnit(_rulesFixture,
+                    "wolf", _rulesFixture.Hostile);
+                _rulesTrampleCaseUnits.Add(hostile);
+                if (!hostile.Descriptor.HasFact(BlueprintBootstrap
+                        .BodyguardFeats.CombatReflexes))
+                    hostile.Descriptor.AddFact(BlueprintBootstrap
+                        .BodyguardFeats.CombatReflexes);
+                hostile.Descriptor.Stats.BaseAttackBonus.BaseValue = -100;
+            }
+            _rulesTrampleTarget = hostile;
+            hostile.Descriptor.State.Size = Size.Medium;
+            if (halfCase)
+            {
+                _rulesTrampleReflexBefore = hostile.Descriptor.Stats
+                    .GetStat(StatType.SaveReflex).BaseValue;
+                SetExactProperty(hostile.Descriptor.Stats.GetStat(
+                    StatType.SaveReflex), "BaseValue", 100);
+            }
+            if (opportunityCase)
+            {
+                UnitEntityData[] quantity =
+                    CastExpandedSummoningQuietUnits(_rulesFixture,
+                        creatureKey, SummonMultiplicity.OneD3);
+                if (quantity.Length == 0)
+                    throw new InvalidOperationException(
+                        "The native-path 1d3 Aurochs route produced no summon.");
+                _rulesTrampleCaseUnits.AddRange(quantity);
+                _rulesTrampler = quantity[0];
+            }
+            else
+            {
+                _rulesTrampler = CastExpandedSummoningQuietUnit(
+                    _rulesFixture, creatureKey);
+                _rulesTrampleCaseUnits.Add(_rulesTrampler);
+            }
+            if (_rulesTrampleIndex == 0 || _rulesTrampleIndex == 2)
+                CaptureExpandedSummoningUngulateDonorRig(_rulesTrampler,
+                    _rulesTrampleIndex == 0 ? "horse" : "mastodon");
+            BlueprintAbility ability = _rulesFixture.Blueprints.OfType<BlueprintAbility>()
+                .Single(value => value.name ==
+                    RulesTrampleAbilityNames[_rulesTrampleIndex]);
+            Ability granted = _rulesTrampler.Descriptor.Abilities.GetAbility(ability);
+            if (granted == null)
+                throw new InvalidOperationException("Hidden " + creatureKey +
+                    " trample was not granted.");
+            var data = new AbilityData(granted);
+            var attempts = new List<string>();
+            TargetWrapper destination = null;
+            var overrun = ability.ComponentsArray.OfType<
+                Kingmaker.UnitLogic.Abilities.Components.AbilityCustomOverrun>().Single();
+            var path = ability.ComponentsArray.OfType<UngulateTramplePathChecker>().Single();
+            if (AstarPath.active == null)
+                throw new InvalidOperationException("Trample path needs live area navigation.");
+            var centres = new List<Vector3> {
+                hostile.Position, _rulesFixture.Caster.Position
+            };
+            centres.AddRange(CompassOffsets.Select(direction =>
+                _rulesFixture.Caster.Position + direction * 4f));
+            int unwalkable = 0, nativeRejected = 0, lineBlocked = 0;
+            for (int centreIndex = 0; centreIndex < centres.Count; centreIndex++)
+            {
+                Vector3 centre = centres[centreIndex];
+                foreach (float[] distances in new[] {
+                    new[] { 2.5f, 2.5f }, new[] { 3f, 2f },
+                    new[] { 4f, 2f }, new[] { 6f, 3f } })
+                {
+                    for (int index = 0; index < CompassOffsets.Length; index++)
+                    {
+                        Vector3 direction = CompassOffsets[index];
+                        Vector3 requestedStart = centre - direction * distances[0];
+                        Vector3 requestedEnd = centre + direction * distances[1];
+                        Pathfinding.NNInfo nearestStart =
+                            Kingmaker.View.ObstacleAnalyzer.GetNearestNode(requestedStart);
+                        Pathfinding.NNInfo nearestEnd =
+                            Kingmaker.View.ObstacleAnalyzer.GetNearestNode(requestedEnd);
+                        if (nearestStart.node == null || nearestEnd.node == null ||
+                            !nearestStart.node.Walkable || !nearestEnd.node.Walkable)
+                        {
+                            unwalkable++;
+                            continue;
+                        }
+                        Vector3 start = nearestStart.clampedPosition;
+                        Vector3 end = nearestEnd.clampedPosition;
+                        PlaceExpandedSummoningUnit(_rulesTrampler, start);
+                        var target = new TargetWrapper(end);
+                        Vector3 traced = Kingmaker.View.ObstacleAnalyzer.TraceAlongNavmesh(
+                            _rulesTrampler.Position, end);
+                        bool nativeTarget = overrun.CanTarget(_rulesTrampler, target);
+                        bool pathTarget = path.CanTarget(_rulesTrampler, target);
+                        bool canTarget = data.CanTarget(target);
+                        bool lineClear =
+                            Kingmaker.Visual.FogOfWar.LineOfSightGeometry.Instance != null &&
+                            !Kingmaker.Visual.FogOfWar.LineOfSightGeometry.Instance.HasObstacle(
+                                _rulesTrampler.EyePosition, end, 0);
+                        if (!nativeTarget) nativeRejected++;
+                        else if (!lineClear) lineBlocked++;
+                        if (attempts.Count < 20 || (canTarget && lineClear))
+                            attempts.Add(centreIndex + "/" + distances[0] + "/" +
+                            distances[1] + "/" + index +
+                            ":canTarget=" + canTarget +
+                            ",native=" + nativeTarget + ",path=" + pathTarget +
+                            ",lineClear=" + lineClear +
+                            ",traceExact=" + (traced == end) +
+                            ",traceDelta=" + Vector3.Distance(traced, end)
+                                .ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) +
+                            ",actualStartDelta=" + Vector3.Distance(
+                                _rulesTrampler.Position, start)
+                                .ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) +
+                            ",startDelta=" + Vector3.Distance(start, requestedStart)
+                                .ToString("0.0", System.Globalization.CultureInfo.InvariantCulture) +
+                            ",endDelta=" + Vector3.Distance(end, requestedEnd)
+                                .ToString("0.0", System.Globalization.CultureInfo.InvariantCulture));
+                        if (!canTarget || !lineClear) continue;
+                        destination = target;
+                        _rulesTrampleStart = _rulesTrampler.Position;
+                        Vector3 midpoint = (start + end) * 0.5f;
+                        PlaceExpandedSummoningUnit(hostile, midpoint);
+                        _rulesTrampleRoute = creatureKey +
+                            (halfCase ? "-reflex-half" :
+                                opportunityCase ?
+                                    "-quantity-combat-reflexes" : "") +
+                            "/centre" + centreIndex +
+                            "/dir" + index +
+                            ";start=" + start + ";hostile=" + hostile.Position +
+                            ";end=" + end;
+                        break;
+                    }
+                    if (destination != null) break;
+                }
+                if (destination != null) break;
+            }
+            _rulesSteps.Add("trampleRoutes:unwalkable=" + unwalkable +
+                ";nativeRejected=" + nativeRejected + ";lineBlocked=" +
+                lineBlocked + ";samples=" + string.Join("|", attempts.ToArray()));
+            if (destination == null)
+                throw new InvalidOperationException("No valid trample route across the hostile.");
+            if (opportunityCase)
+            {
+                hostile.CombatState.OnNewRound();
+                hostile.CombatState.AttackOfOpportunityCount = 4;
+                hostile.CombatState.PreventAttacksOfOpporunityNextFrame =
+                    false;
+                hostile.LastMoveTime = Game.Instance.TimeController.GameTime -
+                    TimeSpan.FromSeconds(1d);
+                hostile.PreviousPosition = hostile.Position;
+                if (!_rulesTrampler.Memory.Contains(hostile))
+                    _rulesTrampler.Memory.Add(hostile);
+                if (!hostile.Memory.Contains(_rulesTrampler))
+                    hostile.Memory.Add(_rulesTrampler);
+                _rulesTrampleOpportunityBefore = hostile.CombatState
+                    .AttackOfOpportunityCount;
+            }
+            _rulesTrampleAbility = ability;
+            _rulesTrampleDestination = destination;
+            _rulesTrampleDamageBefore = hostile.Descriptor.Damage;
+            _rulesTrampleCasterDamageBefore = _rulesFixture.Caster.Descriptor.Damage;
+            _rulesTrampleObserver = new ExpandedSummoningTrampleObserver {
+                Caster = _rulesTrampler, Target = hostile
+            };
+            EventBus.Subscribe(_rulesTrampleObserver);
+            _rulesAwakeSnapshot = Game.Instance.State.AwakeUnits.ToArray();
+            foreach (UnitEntityData unit in new[] { _rulesTrampler, hostile })
+                if (!Game.Instance.State.AwakeUnits.Contains(unit))
+                    Game.Instance.State.AwakeUnits.Add(unit);
+            _rulesTrampleTurnModeBefore = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue;
+            _rulesTramplePauseBefore = Game.Instance.IsPaused;
+            _rulesTrampleGameTimeBefore = Game.Instance.Player.GameTime;
+            if (TurnBased.Controllers.CombatController.IsInTurnBasedCombat())
+            {
+                SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
+                Game.Instance.TurnBasedCombatController.Activate();
+                if (TurnBased.Controllers.CombatController.IsInTurnBasedCombat())
+                    throw new InvalidOperationException("Disposable trample fixture did not enter RTWP mode.");
+            }
+            Game.Instance.IsPaused = false;
+            _rulesTrampleCommand = BeginExpandedSummoningDetachedAbility(
+                _rulesTrampler, ability, destination, true, true);
+        }
+
+        private void BeginExpandedSummoningTrampleReplay()
+        {
+            if (_rulesTrampleObserver == null ||
+                _rulesTrampleObserver.Saves.Count != 1 ||
+                _rulesTrampleObserver.Damage.Count != 1 ||
+                _rulesTrampleAbility == null || _rulesTrampleDestination == null)
+                throw new InvalidOperationException(
+                    "The first live trample contact is missing before replay.");
+            _rulesTrampleFirstDistance = Vector3.Distance(
+                _rulesTrampler.Position, _rulesTrampleStart);
+            _rulesTrampleReplayDamageBefore = _rulesFixture.Hostile.Descriptor.Damage;
+            _rulesTrampleReplaySaveCount = _rulesTrampleObserver.Saves.Count;
+            _rulesTrampleReplayDamageCount = _rulesTrampleObserver.Damage.Count;
+            EndExpandedSummoningDetachedAbility(_rulesTrampleCommand);
+            _rulesTrampleCommand = null;
+            _rulesTrampler.Commands.InterruptAll(true);
+            _rulesTrampler.Commands.RemoveFinishedAndUpdateQueue();
+            if (_rulesTrampler.Commands.Raw.Any(value => value != null))
+                throw new InvalidOperationException(
+                    "The first disposable trample command did not leave the native queue.");
+            PlaceExpandedSummoningUnit(_rulesTrampler, _rulesTrampleStart);
+            _rulesTrampleAgentAtExecution = null;
+            _rulesTrampleCommand = BeginExpandedSummoningDetachedAbility(
+                _rulesTrampler, _rulesTrampleAbility,
+                _rulesTrampleDestination, true, true);
+            _rulesTrampleReplayStarted = true;
+        }
+
+        /// <summary>
+        /// Records the exact live donor bind frame for offline original-mesh
+        /// authoring. These measured transforms stay in guarded local evidence;
+        /// no native geometry or rig capture enters the repository or package.
+        /// </summary>
+        private void CaptureExpandedSummoningUngulateDonorRig(
+            UnitEntityData summon, string donorKey)
+        {
+            if (summon == null || summon.View == null ||
+                string.IsNullOrWhiteSpace(_request.EvidenceDirectory))
+                throw new InvalidOperationException(
+                    "The ungulate donor bind-rig capture has no exact live view or evidence directory.");
+            SkinnedMeshRenderer[] renderers = summon.View
+                .GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                .Where(value => value != null && value.sharedMesh != null)
+                .ToArray();
+            if (renderers.Length == 0)
+                throw new InvalidOperationException(
+                    "The " + donorKey + " donor view has no skinned renderer.");
+            var document = new JObject {
+                ["source"] = "request-local summoned " + donorKey + " donor view",
+                ["space"] = "renderer-local bind frame",
+                ["blueprint"] = summon.Blueprint.name
+            };
+            var entries = new JArray();
+            foreach (SkinnedMeshRenderer renderer in renderers)
+            {
+                Transform[] bones = renderer.bones ?? new Transform[0];
+                Matrix4x4[] poses = renderer.sharedMesh.bindposes ??
+                    new Matrix4x4[0];
+                var entry = new JObject {
+                    ["renderer"] = renderer.name,
+                    ["mesh"] = renderer.sharedMesh.name,
+                    ["vertexCount"] = renderer.sharedMesh.vertexCount,
+                    ["rootBone"] = renderer.rootBone == null ? "" :
+                        renderer.rootBone.name,
+                    ["boneCount"] = bones.Length,
+                    ["bindPoseCount"] = poses.Length
+                };
+                var capturedBones = new JArray();
+                for (int index = 0; index < bones.Length; index++)
+                {
+                    Transform bone = bones[index];
+                    if (bone == null || index >= poses.Length) continue;
+                    Matrix4x4 bind = poses[index].inverse;
+                    Vector3 position = bind.MultiplyPoint3x4(Vector3.zero);
+                    Quaternion rotation = Quaternion.LookRotation(
+                        bind.GetColumn(2), bind.GetColumn(1));
+                    capturedBones.Add(new JObject {
+                        ["index"] = index,
+                        ["name"] = bone.name,
+                        ["parent"] = bone.parent == null ? "" : bone.parent.name,
+                        ["bindPosition"] = new JArray(position.x, position.y,
+                            position.z),
+                        ["bindRotation"] = new JArray(rotation.x, rotation.y,
+                            rotation.z, rotation.w)
+                    });
+                }
+                entry["bones"] = capturedBones;
+                entries.Add(entry);
+            }
+            document["renderers"] = entries;
+            string fileName = "sprint11-" + donorKey + "-bind-rig.json";
+            File.WriteAllText(Path.Combine(_request.EvidenceDirectory, fileName),
+                document.ToString(Formatting.Indented));
+            _rulesSteps.Add("ungulate-rig=" + fileName + ";renderers=" +
+                entries.Count);
+        }
+
+        private void RestoreExpandedSummoningTrampleTurnMode()
+        {
+            if (!_rulesTrampleTurnModeBefore.HasValue) return;
+            bool before = _rulesTrampleTurnModeBefore.Value;
+            SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = before;
+            Game.Instance.TurnBasedCombatController.Activate();
+            if (_rulesTramplePauseBefore.HasValue)
+            {
+                Game.Instance.IsPaused = _rulesTramplePauseBefore.Value;
+                _rulesTramplePauseRestored =
+                    Game.Instance.IsPaused == _rulesTramplePauseBefore.Value;
+                _rulesTramplePauseBefore = null;
+            }
+            if (_rulesTrampleGameTimeBefore.HasValue)
+            {
+                Game.Instance.Player.GameTime = _rulesTrampleGameTimeBefore.Value;
+                _rulesTrampleGameTimeRestored = Game.Instance.Player.GameTime ==
+                    _rulesTrampleGameTimeBefore.Value;
+                _rulesTrampleGameTimeBefore = null;
+            }
+            _rulesTrampleTurnModeRestored =
+                SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue == before;
+            _rulesTrampleTurnModeBefore = null;
+        }
+
+        private void RestoreExpandedSummoningTrampleReflex()
+        {
+            if (!_rulesTrampleReflexBefore.HasValue || _rulesFixture == null ||
+                _rulesFixture.Hostile == null || _rulesFixture.Hostile.Destroyed)
+                return;
+            SetExactProperty(_rulesFixture.Hostile.Descriptor.Stats.GetStat(
+                StatType.SaveReflex), "BaseValue", _rulesTrampleReflexBefore.Value);
+            _rulesTrampleReflexBefore = null;
+        }
+
+        private static string DescribeExpandedSummoningTrampleAgent(UnitEntityData unit)
+        {
+            Kingmaker.View.UnitMovementAgent agent = unit.View.AgentASP;
+            Pathfinding.Path path = agent.Path;
+            return "moving=" + agent.IsReallyMoving +
+                ",pathNull=" + (path == null) +
+                ",points=" + (path == null || path.vectorPath == null ? -1 :
+                    path.vectorPath.Count) +
+                ",done=" + (path != null && path.IsDone()) +
+                ",error=" + (path != null && path.error) +
+                ",approach=" + agent.ApproachRadius +
+                ",maxApproach=" + agent.MaxApproachRadius +
+                ",waypoint=" + ReadExactMember(agent, "m_NextWaypoint") +
+                ",destination=" + ReadExactMember(agent, "m_Destination") +
+                ",commandsPrevent=" + unit.View.IsCommandsPreventMovement +
+                ",animationPrevent=" + (unit.View.AnimationManager != null &&
+                    unit.View.AnimationManager.IsPreventingMovement) +
+                ",next=" + ReadExactMember(agent, "m_NextPointIndex") +
+                ",force=" + ReadExactMember(agent, "m_IsInForceMode") +
+                ",requested=" + ReadExactMember(agent, "m_RequestedNewPath");
+        }
+
+        private void CompleteExpandedSummoningTramplePath(bool ended)
+        {
+            string creatureKey = RulesTrampleKeys[_rulesTrampleIndex];
+            int expectedDc = RulesTrampleSaveDcs[_rulesTrampleIndex];
+            bool halfCase = _rulesTrampleIndex == 3;
+            bool opportunityCase = _rulesTrampleIndex == 4;
+            UnitEntityData hostile = _rulesTrampleTarget;
+            int damage = hostile.Descriptor.Damage - _rulesTrampleDamageBefore;
+            int allyDamage = _rulesFixture.Caster.Descriptor.Damage -
+                _rulesTrampleCasterDamageBefore;
+            float moved = Vector3.Distance(_rulesTrampler.Position, _rulesTrampleStart);
+            bool agentMoving = _rulesTrampler.View.MovementAgent.IsReallyMoving;
+            string saves = _rulesTrampleObserver == null ? "<none>" :
+                string.Join("|", _rulesTrampleObserver.Saves.Select(value =>
+                    "dc=" + value.DifficultyClass + ",passed=" + value.IsPassed).ToArray());
+            string dealt = _rulesTrampleObserver == null ? "<none>" :
+                string.Join("|", _rulesTrampleObserver.Damage.Select(value =>
+                    "damage=" + value.Damage + ",half=" +
+                    value.HalfBecauseSavingThrow).ToArray());
+            string detail = "route=" + _rulesTrampleRoute + ";ended=" + ended +
+                ";frames=" + _rulesWait + ";moved=" +
+                moved.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) +
+                ";commandRunning=" + _rulesTrampleCommand.IsRunning +
+                ";commandResult=" + _rulesTrampleCommand.Result +
+                ";commandActed=" + _rulesTrampleCommand.IsActed +
+                ";hasExecution=" + (_rulesTrampleCommand.ExecutionProcess != null) +
+                ";agentMoving=" + agentMoving +
+                ";agentAtExecution=" + _rulesTrampleAgentAtExecution +
+                ";agentAtEnd=" + DescribeExpandedSummoningTrampleAgent(_rulesTrampler) +
+                ";maxDelta=" + _rulesTrampleMaxDelta +
+                ";manualTicks=" + _rulesTrampleManualTicks +
+                ";canMove=" + _rulesTrampleCanMove +
+                ";viewInGame=" + _rulesTrampleViewInGame +
+                ";turnBased=" + _rulesTrampleTurnBased +
+                ";saves=" + saves + ";dealt=" + dealt + ";hostileDamage=" + damage +
+                ";allyDamage=" + allyDamage;
+            if (opportunityCase)
+            {
+                int opportunityAfter = hostile.CombatState
+                    .AttackOfOpportunityCount;
+                string opportunities = string.Join("|",
+                    _rulesTrampleObserver.Opportunities.Select(value =>
+                        "penalty=" + value.AttackBonusPenalty + ",roll=" +
+                        (value.AttackRoll == null ? -1 :
+                            (int)value.AttackRoll.Roll) + ",hit=" +
+                        (value.AttackRoll != null &&
+                            value.AttackRoll.IsHit)).ToArray());
+                bool opportunityValid = ended && moved > 3f && damage > 0 &&
+                    allyDamage == 0 && _rulesTrampleObserver != null &&
+                    _rulesTrampleObserver.Opportunities.Count == 1 &&
+                    _rulesTrampleObserver.Opportunities[0]
+                        .AttackBonusPenalty == 4 &&
+                    _rulesTrampleObserver.Opportunities[0].AttackRoll != null &&
+                    _rulesTrampleOpportunityBefore == 4 &&
+                    opportunityAfter == 3 &&
+                    _rulesTrampleObserver.Saves.Count == 0 &&
+                    _rulesTrampleObserver.Damage.Count == 1 &&
+                    !_rulesTrampleObserver.Damage[0]
+                        .HalfBecauseSavingThrow;
+                _rulesCases.Add(Assertion(
+                    "expanded-summoning-sprint11-aurochs-trample-native-path-aoo",
+                    "a quantity-summoned Aurochs follows its RTWP path through a Combat Reflexes defender, receives exactly one -4 AoO before contact damage, consumes one of four resources, grants no save and produces no ordinary movement duplicate",
+                    detail + ";aooResource=" +
+                        _rulesTrampleOpportunityBefore + "->" +
+                        opportunityAfter + ";opportunities=" + opportunities,
+                    opportunityValid,
+                    "guarded loaded-area queued ability command; native overrun path plus attack, save and damage observers"));
+            }
+            else
+            {
+                _rulesCases.Add(Assertion("expanded-summoning-sprint11-" +
+                    creatureKey + (halfCase ? "-trample-reflex-half" :
+                        "-trample-path-contact"),
+                    "the hidden " + creatureKey + " follows a native trample path through a smaller hostile, completes, makes one DC " + expectedDc + " Reflex save and one bludgeoning damage event, and does not injure the allied caster",
+                    detail, ended && moved > 3f && damage > 0 &&
+                        allyDamage == 0 &&
+                        _rulesTrampleObserver != null &&
+                        _rulesTrampleObserver.Opportunities.Count == 0 &&
+                        _rulesTrampleObserver.Saves.Count == 1 &&
+                        _rulesTrampleObserver.Saves[0].DifficultyClass ==
+                            expectedDc &&
+                        _rulesTrampleObserver.Damage.Count == 1 &&
+                        _rulesTrampleObserver.Damage[0].Damage == damage &&
+                        _rulesTrampleObserver.Damage[0]
+                            .HalfBecauseSavingThrow ==
+                            _rulesTrampleObserver.Saves[0].IsPassed &&
+                        (!halfCase ||
+                            (_rulesTrampleObserver.Saves[0].IsPassed &&
+                                damage > 0 && damage <= 10)),
+                    "guarded loaded-area queued ability command; native path contact, save and damage observers"));
+            }
+            if (halfCase)
+            {
+                long finalRound = Game.Instance.Player.GameTime.Ticks /
+                    TimeSpan.FromSeconds(6d).Ticks;
+                bool replayClean = _rulesTrampleReplayStarted && ended &&
+                    _rulesTrampleFirstDistance > 3f && moved > 3f &&
+                    _rulesTrampleObserver.ContactRound == finalRound &&
+                    _rulesTrampleObserver.Saves.Count ==
+                        _rulesTrampleReplaySaveCount &&
+                    _rulesTrampleObserver.Damage.Count ==
+                        _rulesTrampleReplayDamageCount &&
+                    hostile.Descriptor.Damage == _rulesTrampleReplayDamageBefore;
+                _rulesCases.Add(Assertion(
+                    "expanded-summoning-sprint11-aurochs-trample-no-replay",
+                    "a second native path over the same hostile in the same round moves but makes no second trample save or damage event",
+                    "firstDistance=" + _rulesTrampleFirstDistance +
+                    ";secondDistance=" + moved +
+                    ";contactRound=" + _rulesTrampleObserver.ContactRound +
+                    ";finalRound=" + finalRound +
+                    ";saves=" + _rulesTrampleReplaySaveCount + "->" +
+                    _rulesTrampleObserver.Saves.Count + ";damageEvents=" +
+                    _rulesTrampleReplayDamageCount + "->" +
+                    _rulesTrampleObserver.Damage.Count + ";hostileDamage=" +
+                    _rulesTrampleReplayDamageBefore + "->" +
+                    hostile.Descriptor.Damage,
+                    replayClean,
+                    "same disposable summon and target, two native queued overrun paths in one game-time round"));
+            }
+            EndExpandedSummoningDetachedAbility(_rulesTrampleCommand);
+            _rulesTrampleCommand = null;
+            RestoreExpandedSummoningTrampleReflex();
+            RestoreExpandedSummoningTrampleTurnMode();
+            _rulesCases.Add(Assertion("expanded-summoning-sprint11-" +
+                creatureKey + "-trample-mode-restore",
+                "the request-local mode toggle restores the original setting",
+                "restored=" + _rulesTrampleTurnModeRestored +
+                    ";pauseRestored=" + _rulesTramplePauseRestored +
+                    ";gameTimeRestored=" + _rulesTrampleGameTimeRestored,
+                _rulesTrampleTurnModeRestored && _rulesTramplePauseRestored &&
+                    _rulesTrampleGameTimeRestored,
+                "exact turn-mode setting after the native movement command"));
+            EventBus.Unsubscribe(_rulesTrampleObserver);
+            _rulesTrampleObserver = null;
+            bool awakeRestored = true;
+            if (_rulesAwakeSnapshot != null)
+            {
+                Game.Instance.State.AwakeUnits.Clear();
+                Game.Instance.State.AwakeUnits.AddRange(_rulesAwakeSnapshot);
+                awakeRestored = Game.Instance.State.AwakeUnits.SequenceEqual(
+                    _rulesAwakeSnapshot);
+                _rulesAwakeSnapshot = null;
+            }
+            _rulesSteps.Add("trampleAwakeRestored=" + awakeRestored);
+            _rulesCases.Add(Assertion("expanded-summoning-sprint11-" +
+                creatureKey + "-trample-awake-restore",
+                "the disposable trample fixture restores the exact awake-unit snapshot",
+                "restored=" + awakeRestored, awakeRestored,
+                "exact AwakeUnits snapshot before and after the native movement command"));
+            DisposeExpandedSummoningUnits(_rulesFixture.Created,
+                _rulesTrampleCaseUnits.Distinct().ToArray());
+            _rulesTrampleCaseUnits.Clear();
+            _rulesTrampler = null;
+            _rulesTrampleTarget = null;
+        }
+
         private UnitEntityData[] _rulesAwakeSnapshot;
         private UnitEntityData _rulesRakeCat;
         private UnitAttack _rulesRakeCommand;

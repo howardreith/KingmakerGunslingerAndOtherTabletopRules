@@ -17,9 +17,11 @@ namespace KingmakerGunslinger.DomainTests
                 (string)value["plannedType"] == "BlueprintItemWeapon" &&
                 (string)value["status"] == "active").ToArray();
             JToken[] actual = audit["items"].ToArray();
-            // 70 pre-existing weapons, the Expanded Summoning Sprint 8 project 1d8 claw,
-            // plus the 43 Better Vendors progression variants.
-            Assertions.Equal(71 + KingmakerGunslinger.Acquisition
+            // 70 pre-existing weapons, the Sprint 8 claw, the Sprint 10 Wasp
+            // sting and hidden Stirge carrier, the Sprint 13 Poison Frog
+            // flat-1 bite and Shadow Mastiff tail slap, plus 43 Better Vendors
+            // variants.
+            Assertions.Equal(75 + KingmakerGunslinger.Acquisition
                     .ProgressionWeaponCatalog.NewBlueprintCount, expected.Length,
                 "The active custom-weapon baseline changed without an audit update.");
             Assertions.Equal(expected.Length, actual.Length,
@@ -69,7 +71,9 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(2, audit["items"].Count(value =>
                 (string)value["mappingScope"] == "mechanics-only exclusion"),
                 "Pistol-Whip preserve-only scope changed.");
-            Assertions.Equal(11, audit["items"].Count(value =>
+            // Sprint 13 adds the Poison Frog's printed flat-1 bite and the
+            // Shadow Mastiff's 1d6 tail slap.
+            Assertions.Equal(15, audit["items"].Count(value =>
                 (string)value["mappingScope"] == "summoning-only exclusion"),
                 "Expanded Summoning weapon scope changed.");
             Assertions.True(audit["items"].Where(value =>

@@ -25,7 +25,35 @@ $requiredFiles = @(
     # albedo rather than an AssetBundle: no bind poses, no material, no
     # editor dependency.
     'assets\pteranodon\pteranodon-mesh.json',
-    'assets\pteranodon\pteranodon-albedo.png'
+    'assets\pteranodon\pteranodon-albedo.png',
+    'assets\flying-animals\dire-bat-mesh.json',
+    'assets\flying-animals\dire-bat-albedo.png',
+    'assets\flying-animals\eagle-mesh.json',
+    'assets\flying-animals\eagle-albedo.png',
+    'assets\flying-animals\giant-wasp-mesh.json',
+    'assets\flying-animals\giant-wasp-albedo.png',
+    'assets\flying-animals\stirge-mesh.json',
+    'assets\flying-animals\stirge-albedo.png',
+    'assets\ungulates\aurochs-mesh.json',
+    'assets\ungulates\aurochs-albedo.png',
+    'assets\ungulates\bison-mesh.json',
+    'assets\ungulates\bison-albedo.png',
+    'assets\ungulates\rhinoceros-mesh.json',
+    'assets\ungulates\rhinoceros-albedo.png',
+    'assets\ungulates\woolly-rhinoceros-mesh.json',
+    'assets\ungulates\woolly-rhinoceros-albedo.png',
+    'assets\sprint12-quadrupeds\dire-rat-mesh.json',
+    'assets\sprint12-quadrupeds\dire-rat-albedo.png',
+    'assets\sprint12-quadrupeds\hyena-mesh.json',
+    'assets\sprint12-quadrupeds\hyena-albedo.png',
+    'assets\sprint12-quadrupeds\goblin-dog-mesh.json',
+    'assets\sprint12-quadrupeds\goblin-dog-albedo.png',
+    'assets\sprint13-creatures\wolverine-mesh.json',
+    'assets\sprint13-creatures\wolverine-albedo.png',
+    'assets\sprint13-creatures\shadow-mastiff-mesh.json',
+    'assets\sprint13-creatures\shadow-mastiff-albedo.png',
+    'assets\sprint13-creatures\poisonous-frog-mesh.json',
+    'assets\sprint13-creatures\poisonous-frog-albedo.png'
 )
 $requiredIcons = @('gunslinger-class','firearm-proficiency','gunsmithing','grit',
     'deeds','nimble','bonus-feat','gun-training','true-grit','rapid-reload',
@@ -50,7 +78,7 @@ foreach ($name in @('firearm-monogram-rifle','firearm-monogram-revolver')) {
 }
 $summonManifest = Get-Content -LiteralPath (Join-Path $repositoryRoot `
     'assets\game\icons\expanded-summoning\icon-manifest.json') -Raw | ConvertFrom-Json
-if ($summonManifest.count -ne 91 -or @($summonManifest.icons).Count -ne 91) {
+if ($summonManifest.count -ne 101 -or @($summonManifest.icons).Count -ne 101) {
     throw 'Expanded Summoning runtime icon manifest is malformed.'
 }
 $requiredFiles += 'assets\icons\expanded-summoning\icon-manifest.json'
@@ -76,6 +104,34 @@ $allowedRelativePaths = @{
     'assets\bundles\asset-bundle-manifest.json' = $true
     'assets\pteranodon\pteranodon-mesh.json' = $true
     'assets\pteranodon\pteranodon-albedo.png' = $true
+    'assets\flying-animals\dire-bat-mesh.json' = $true
+    'assets\flying-animals\dire-bat-albedo.png' = $true
+    'assets\flying-animals\eagle-mesh.json' = $true
+    'assets\flying-animals\eagle-albedo.png' = $true
+    'assets\flying-animals\giant-wasp-mesh.json' = $true
+    'assets\flying-animals\giant-wasp-albedo.png' = $true
+    'assets\flying-animals\stirge-mesh.json' = $true
+    'assets\flying-animals\stirge-albedo.png' = $true
+    'assets\ungulates\aurochs-mesh.json' = $true
+    'assets\ungulates\aurochs-albedo.png' = $true
+    'assets\ungulates\bison-mesh.json' = $true
+    'assets\ungulates\bison-albedo.png' = $true
+    'assets\ungulates\rhinoceros-mesh.json' = $true
+    'assets\ungulates\rhinoceros-albedo.png' = $true
+    'assets\ungulates\woolly-rhinoceros-mesh.json' = $true
+    'assets\ungulates\woolly-rhinoceros-albedo.png' = $true
+    'assets\sprint12-quadrupeds\dire-rat-mesh.json' = $true
+    'assets\sprint12-quadrupeds\dire-rat-albedo.png' = $true
+    'assets\sprint12-quadrupeds\hyena-mesh.json' = $true
+    'assets\sprint12-quadrupeds\hyena-albedo.png' = $true
+    'assets\sprint12-quadrupeds\goblin-dog-mesh.json' = $true
+    'assets\sprint12-quadrupeds\goblin-dog-albedo.png' = $true
+    'assets\sprint13-creatures\wolverine-mesh.json' = $true
+    'assets\sprint13-creatures\wolverine-albedo.png' = $true
+    'assets\sprint13-creatures\shadow-mastiff-mesh.json' = $true
+    'assets\sprint13-creatures\shadow-mastiff-albedo.png' = $true
+    'assets\sprint13-creatures\poisonous-frog-mesh.json' = $true
+    'assets\sprint13-creatures\poisonous-frog-albedo.png' = $true
 }
 
 $unexpected = @()

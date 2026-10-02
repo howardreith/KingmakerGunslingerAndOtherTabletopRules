@@ -2,7 +2,11 @@
 param(
     [string]$MSBuildPath,
     [string]$ReferenceBundleDir,
-    [string]$KingmakerInstallDir = 'C:\Program Files (x86)\Steam\steamapps\common\Pathfinder Kingmaker'
+    [string]$KingmakerInstallDir = 'C:\Program Files (x86)\Steam\steamapps\common\Pathfinder Kingmaker',
+    # Prints the ordered pipeline and exits without running any of it, so a
+    # cheap test can prove each expensive operation appears exactly once for
+    # one immutable commit. It produces no artifact and qualifies nothing.
+    [switch]$PlanOnly
 )
 
 Set-StrictMode -Version Latest
@@ -12,7 +16,7 @@ $ErrorActionPreference = 'Stop'
 
 $root = Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
 $info = Get-KmgModInfo -RepositoryRoot $root
-if ($info.Version -ne '0.0.140') { throw "Build-Local supports only active version 0.0.140, observed $($info.Version)." }
+if ($info.Version -ne '0.0.141') { throw "Build-Local supports only active version 0.0.141, observed $($info.Version)." }
 $msbuild = Resolve-KmgMsBuild -ExplicitPath $MSBuildPath
 Write-Host "MSBuild: $msbuild"
 $git = Get-KmgGitState -RepositoryRoot $root
@@ -48,10 +52,32 @@ if (-not (Test-Path -LiteralPath (Join-Path $net47 'mscorlib.dll') -PathType Lea
     throw ".NET Framework 4.7 reference assemblies are missing: $net47"
 }
 
-& (Join-Path $PSScriptRoot 'validate-repository.ps1')
-& (Join-Path $PSScriptRoot 'test-domain.ps1') -Configuration Release -Clean -MSBuildPath $msbuild
+# The ordered pipeline, named once so -PlanOnly and the running script cannot
+# disagree about what it contains. Each expensive operation appears exactly
+# once: this script is the whole qualification pipeline for one commit, and
+# nothing above it may run any of these a second time.
+$script:KmgBuildLocalPlan = @(
+    'repository-wrapper'
+    'complete-domain-suite'
+    'exact-reference-release-build'
+    'package-assembly'
+    'strict-package-validation'
+)
+if ($PlanOnly) {
+    # On the success stream, not the host, so a caller can capture and count it.
+    Write-Verbose 'Build-Local plan (no operation performed).'
+    $script:KmgBuildLocalPlan
+    return
+}
 
-$localRoot = Join-Path $root 'artifacts\local-runtime\0.0.140'
+& (Join-Path $PSScriptRoot 'validate-repository.ps1')
+# The repository wrapper has just run. test-domain.ps1 would otherwise run it
+# again, which is the duplication the 2026-10-02 amendment called out: a
+# tranche gate for one immutable commit must validate the repository once.
+& (Join-Path $PSScriptRoot 'test-domain.ps1') -Configuration Release -Clean `
+    -MSBuildPath $msbuild -SkipRepositoryValidation
+
+$localRoot = Join-Path $root 'artifacts\local-runtime\0.0.141'
 $exactRoot = Join-Path $localRoot 'exact-build'
 & $python (Join-Path $root 'tools\build_mod_from_private_references.py') `
     --reference-bundle-dir $ReferenceBundleDir --dotnet $dotnet `
@@ -80,6 +106,30 @@ Copy-Item -Path (Join-Path $root 'assets\game\icons\expanded-summoning\*') -Dest
 New-Item -ItemType Directory -Path (Join-Path $buildOutput 'assets\pteranodon') -Force | Out-Null
 Copy-Item -LiteralPath (Join-Path $root 'assets\pteranodon\pteranodon-mesh.json') -Destination (Join-Path $buildOutput 'assets\pteranodon') -Force
 Copy-Item -LiteralPath (Join-Path $root 'assets\pteranodon\pteranodon-albedo.png') -Destination (Join-Path $buildOutput 'assets\pteranodon') -Force
+New-Item -ItemType Directory -Path (Join-Path $buildOutput 'assets\flying-animals') -Force | Out-Null
+Copy-Item -LiteralPath (Join-Path $root 'assets\flying-animals\dire-bat-mesh.json') -Destination (Join-Path $buildOutput 'assets\flying-animals') -Force
+Copy-Item -LiteralPath (Join-Path $root 'assets\flying-animals\dire-bat-albedo.png') -Destination (Join-Path $buildOutput 'assets\flying-animals') -Force
+Copy-Item -LiteralPath (Join-Path $root 'assets\flying-animals\eagle-mesh.json') -Destination (Join-Path $buildOutput 'assets\flying-animals') -Force
+Copy-Item -LiteralPath (Join-Path $root 'assets\flying-animals\eagle-albedo.png') -Destination (Join-Path $buildOutput 'assets\flying-animals') -Force
+Copy-Item -LiteralPath (Join-Path $root 'assets\flying-animals\giant-wasp-mesh.json') -Destination (Join-Path $buildOutput 'assets\flying-animals') -Force
+Copy-Item -LiteralPath (Join-Path $root 'assets\flying-animals\giant-wasp-albedo.png') -Destination (Join-Path $buildOutput 'assets\flying-animals') -Force
+Copy-Item -LiteralPath (Join-Path $root 'assets\flying-animals\stirge-mesh.json') -Destination (Join-Path $buildOutput 'assets\flying-animals') -Force
+Copy-Item -LiteralPath (Join-Path $root 'assets\flying-animals\stirge-albedo.png') -Destination (Join-Path $buildOutput 'assets\flying-animals') -Force
+New-Item -ItemType Directory -Path (Join-Path $buildOutput 'assets\ungulates') -Force | Out-Null
+foreach ($kind in @('aurochs','bison','rhinoceros','woolly-rhinoceros')) {
+    Copy-Item -LiteralPath (Join-Path $root "assets\ungulates\$kind-mesh.json") -Destination (Join-Path $buildOutput 'assets\ungulates') -Force
+    Copy-Item -LiteralPath (Join-Path $root "assets\ungulates\$kind-albedo.png") -Destination (Join-Path $buildOutput 'assets\ungulates') -Force
+}
+New-Item -ItemType Directory -Path (Join-Path $buildOutput 'assets\sprint12-quadrupeds') -Force | Out-Null
+foreach ($kind in @('dire-rat','hyena','goblin-dog')) {
+    Copy-Item -LiteralPath (Join-Path $root "assets\sprint12-quadrupeds\$kind-mesh.json") -Destination (Join-Path $buildOutput 'assets\sprint12-quadrupeds') -Force
+    Copy-Item -LiteralPath (Join-Path $root "assets\sprint12-quadrupeds\$kind-albedo.png") -Destination (Join-Path $buildOutput 'assets\sprint12-quadrupeds') -Force
+}
+New-Item -ItemType Directory -Path (Join-Path $buildOutput 'assets\sprint13-creatures') -Force | Out-Null
+foreach ($kind in @('wolverine','shadow-mastiff','poisonous-frog')) {
+    Copy-Item -LiteralPath (Join-Path $root "assets\sprint13-creatures\$kind-mesh.json") -Destination (Join-Path $buildOutput 'assets\sprint13-creatures') -Force
+    Copy-Item -LiteralPath (Join-Path $root "assets\sprint13-creatures\$kind-albedo.png") -Destination (Join-Path $buildOutput 'assets\sprint13-creatures') -Force
+}
 $bundleManifest = Get-Content -LiteralPath (Join-Path $root 'assets\bundles\asset-bundle-manifest.json') -Raw | ConvertFrom-Json
 $bundleSource = 'C:\Dev\KingmakerGunslingerLab\unity-asset-build\KingmakerGunslinger-2018.4.10f1\Builds\Windows\kingmakergunslinger.firearms'
 if (-not (Test-Path -LiteralPath $bundleSource -PathType Leaf)) {
@@ -105,14 +155,25 @@ Copy-Item -LiteralPath (Join-Path $root 'assets\bundles\asset-bundle-manifest.js
 & (Join-Path $PSScriptRoot 'validate-build-output.ps1') -Configuration Release
 & (Join-Path $PSScriptRoot 'package.ps1') -Configuration Release
 
+# The build above was produced for $git.Commit. If the tree moved underneath
+# this run - a concurrent commit, a checkout - the package would carry one
+# commit's binaries under another commit's name, which is exactly the
+# confusion a candidate hash exists to prevent.
+$packagingCommit = Get-KmgGitState -RepositoryRoot $root
+if ($packagingCommit.Commit -ne $git.Commit) {
+    throw ("The repository moved during the build: started at $($git.Commit), " +
+        "now at $($packagingCommit.Commit). The candidate would not describe " +
+        'one commit.')
+}
+
 $packagePath = Join-Path $localRoot "$($info.Id)-$($info.Version)-local-runtime.zip"
 New-Item -ItemType Directory -Path $localRoot -Force | Out-Null
 $stagedMod = Join-Path $root 'artifacts\staging\install\KingmakerGunslinger'
 $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $stagedMod 'assets\soundbanks\KMG_Firearms.bnk') -PathType Leaf
-# Existing 135-file package plus 89 original elemental/strategic paintings,
-# the 3 composed strategic scroll item icons, and the Pteranodon mesh data
-# with its painted albedo.
-$expectedPackageFileCount = if ($hasFirearmSoundBank) { 251 } else { 249 }
+# Strict package inventory including the six reviewed Sprint 12 quadruped
+# mesh/painting files. The soundbank and its manifest account for the optional
+# two-file difference.
+$expectedPackageFileCount = if ($hasFirearmSoundBank) { 289 } else { 287 }
 & $python (Join-Path $root 'tools\create_deterministic_package.py') --source $stagedMod --output $packagePath --expected-file-count $expectedPackageFileCount
 if ($LASTEXITCODE -ne 0) { throw 'Deterministic package creation failed.' }
 & (Join-Path $PSScriptRoot 'validate-package.ps1') `

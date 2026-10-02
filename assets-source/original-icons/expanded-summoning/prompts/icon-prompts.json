@@ -10,9 +10,21 @@
       "subjectPrompt": "A sturdy loyal mastiff dog in a three-quarter alert stance, short brindle-brown coat, broad muzzle, simple leather collar, warm woodland light, natural animal anatomy."
     },
     {
+      "key": "dire-rat",
+      "displayName": "Dire Rat",
+      "subjectPrompt": "One dog-sized natural sewer rat in a low aggressive three-quarter stance, coarse charcoal-brown fur, pale scarred ears, black eyes, visible incisors, and one long bare pink-gray tail curling behind it; dim mossy stone sewer, warm amber rim light, strong compact rat silhouette, no gore or magical mutation.",
+      "generator": "built-in-imagegen",
+      "exactPromptSource": "assets-source/original-icons/expanded-summoning/PHASE2-SPRINT12-SOURCES.md"
+    },
+    {
       "key": "eagle",
       "displayName": "Eagle",
       "subjectPrompt": "A small golden-brown eagle in a compact banking pose, wings partly folded rather than fully spread, hooked beak and keen amber eye, mountain air backdrop that emphasizes a small bird silhouette."
+    },
+    {
+      "key": "dire-bat",
+      "displayName": "Dire Bat",
+      "subjectPrompt": "A single large brown dire bat in flight, broad dark membrane wings with distinct finger struts, pointed ears and a short leaf-shaped nose, dramatic cave light; original painting for the Expanded Summoning creature choice."
     },
     {
       "key": "poisonous-frog",
@@ -471,6 +483,61 @@
       "key": "tiger",
       "displayName": "Tiger",
       "subjectPrompt": "A snarling tiger's head and shoulders facing the viewer, orange coat with dark stripes over the brow, cheeks and neck, white muzzle and chin, amber eyes, bared fangs, warm amber radial backdrop.",
+      "generator": "blender-procedural"
+    },
+    {
+      "key": "giant-wasp",
+      "displayName": "Giant Wasp",
+      "subjectPrompt": "An original horse-sized black-and-gold wasp in flight with four translucent wings, six legs, and a long rear stinger, inside the summon portrait family frame; distinct from the Stirge.",
+      "generator": "built-in-imagegen",
+      "exactPromptSource": "assets-source/original-icons/expanded-summoning/PHASE2-SPRINT10-SOURCES.md"
+    },
+    {
+      "key": "stirge",
+      "displayName": "Stirge",
+      "subjectPrompt": "An original tiny rust-red blood-drinking insectoid in flight, with four fleshy wings, thin barbed legs, and a long forward proboscis, inside the summon portrait family frame; distinct from the striped Giant Wasp.",
+      "generator": "built-in-imagegen",
+      "exactPromptSource": "assets-source/original-icons/expanded-summoning/PHASE2-SPRINT10-SOURCES.md"
+    },
+    {
+      "key": "aurochs",
+      "displayName": "Aurochs",
+      "subjectPrompt": "A large muscular dark ox with pale outward-swept horns, a broad muzzle and heavy neck in a low three-quarter approach, bronze circular rim and warm side light.",
+      "generator": "built-in-imagegen",
+      "compositionBriefSource": "assets-source/original-icons/expanded-summoning/PHASE2-SPRINT11-SOURCES.md"
+    },
+    {
+      "key": "bison",
+      "displayName": "Bison",
+      "subjectPrompt": "A humped shaggy brown bison with a dark beard, shorter upturned horns and massive furred forequarters, in the summon portrait family frame.",
+      "generator": "built-in-imagegen",
+      "compositionBriefSource": "assets-source/original-icons/expanded-summoning/PHASE2-SPRINT11-SOURCES.md"
+    },
+    {
+      "key": "rhinoceros",
+      "displayName": "Rhinoceros",
+      "subjectPrompt": "A bare gray rhinoceros braced on four feet, long nasal horn and smaller brow horn, thick folded skin, dust and stone atmosphere, with a forward charge silhouette.",
+      "generator": "built-in-imagegen",
+      "compositionBriefSource": "assets-source/original-icons/expanded-summoning/PHASE2-SPRINT11-SOURCES.md"
+    },
+    {
+      "key": "woolly-rhinoceros",
+      "displayName": "Woolly Rhinoceros",
+      "subjectPrompt": "A shaggy winter rhinoceros with two separate horns, reddish-brown long hair and a cold muted setting, visually heavier than the bare rhinoceros.",
+      "generator": "built-in-imagegen",
+      "compositionBriefSource": "assets-source/original-icons/expanded-summoning/PHASE2-SPRINT11-SOURCES.md"
+    },
+    {
+      "key": "remove-stirge",
+      "displayName": "Remove Stirge",
+      "subjectPrompt": "A gloved adventurer's hand grips a tiny rust-red bat-winged mosquito-like Stirge by its torso and lifts it visibly clear of a bare forearm, with a dark gap between proboscis and skin. The removal gesture, not the creature portrait, is the strong central silhouette. Warm amber rim light, dark forest backdrop and aged-gold circular frame. No text, blood or extra creatures.",
+      "generator": "built-in-imagegen",
+      "compositionBriefSource": "assets-source/original-icons/expanded-summoning/PHASE2-SPRINT10-SOURCES.md"
+    },
+    {
+      "key": "shadow-mastiff",
+      "displayName": "Shadow Mastiff",
+      "subjectPrompt": "A shadow mastiff's head and shoulders facing the viewer, a heavy hound built out of darkness with a near-black coat lifted only towards a cold blue on the raised surfaces, ears carried high, a broad muzzle open on its howl, and pale blue eyes that are the only bright thing on it; deep cold radial backdrop, strong rim light carrying the silhouette, not a wolf and not a black dog.",
       "generator": "blender-procedural"
     }
   ]

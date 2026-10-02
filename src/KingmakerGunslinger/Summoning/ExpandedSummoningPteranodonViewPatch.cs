@@ -44,12 +44,77 @@ namespace KingmakerGunslinger.Summoning
     {
         internal const string PteranodonBlueprintName =
             "KMG_Summoning_Unit_Pteranodon";
+        internal const string DireBatBlueprintName =
+            "KMG_Summoning_Unit_DireBat";
+        internal const string EagleBlueprintName =
+            "KMG_Summoning_Unit_Eagle";
+        internal const string GiantWaspBlueprintName =
+            "KMG_Summoning_Unit_GiantWasp";
+        internal const string StirgeBlueprintName =
+            "KMG_Summoning_Unit_Stirge";
+        internal const string AurochsBlueprintName =
+            "KMG_Summoning_Unit_Aurochs";
+        internal const string BisonBlueprintName =
+            "KMG_Summoning_Unit_Bison";
+        internal const string RhinocerosBlueprintName =
+            "KMG_Summoning_Unit_Rhinoceros";
+        internal const string WoollyRhinocerosBlueprintName =
+            "KMG_Summoning_Unit_WoollyRhinoceros";
+        internal const string DireRatBlueprintName =
+            "KMG_Summoning_Unit_DireRat";
+        internal const string HyenaBlueprintName =
+            "KMG_Summoning_Unit_Hyena";
+        internal const string GoblinDogBlueprintName =
+            "KMG_Summoning_Unit_GoblinDog";
+        internal const string WolverineBlueprintName =
+            "KMG_Summoning_Unit_Wolverine";
+        internal const string ShadowMastiffBlueprintName =
+            "KMG_Summoning_Unit_ShadowMastiff";
+        internal const string PoisonousFrogBlueprintName =
+            "KMG_Summoning_Unit_PoisonousFrog";
         /// <summary>
         /// The name carried by the private mesh and material the swap installs;
         /// observers recognise the attached state by it.
         /// </summary>
         internal const string CustomVisualName = "KMG_PteranodonMembrane";
+        internal const string DireBatVisualName = "KMG_DireBatMembrane";
+        internal const string EagleVisualName = "KMG_EagleFeathers";
+        internal const string GiantWaspVisualName = "KMG_GiantWaspMembrane";
+        internal const string StirgeVisualName = "KMG_StirgeMembrane";
+        private static readonly Dictionary<string, string> VisualKeys =
+            new Dictionary<string, string>(StringComparer.Ordinal)
+            {
+                { PteranodonBlueprintName, "pteranodon" },
+                { DireBatBlueprintName, "dire-bat" },
+                { EagleBlueprintName, "eagle" },
+                { GiantWaspBlueprintName, "giant-wasp" },
+                { StirgeBlueprintName, "stirge" },
+                { AurochsBlueprintName, "aurochs" },
+                { BisonBlueprintName, "bison" },
+                { RhinocerosBlueprintName, "rhinoceros" },
+                { WoollyRhinocerosBlueprintName, "woolly-rhinoceros" },
+                { DireRatBlueprintName, "dire-rat" },
+                { HyenaBlueprintName, "hyena" },
+                { GoblinDogBlueprintName, "goblin-dog" },
+                { WolverineBlueprintName, "wolverine" },
+                { ShadowMastiffBlueprintName, "shadow-mastiff" },
+                { PoisonousFrogBlueprintName, "poisonous-frog" }
+            };
+        private static readonly HashSet<string> UngulateKeys =
+            new HashSet<string>(StringComparer.Ordinal)
+            { "aurochs", "bison", "rhinoceros", "woolly-rhinoceros" };
+        private static readonly HashSet<string> Sprint12QuadrupedKeys =
+            new HashSet<string>(StringComparer.Ordinal)
+            { "dire-rat", "hyena", "goblin-dog" };
+        private static readonly HashSet<string> Sprint13CreatureKeys =
+            new HashSet<string>(StringComparer.Ordinal)
+            { "wolverine", "shadow-mastiff", "poisonous-frog" };
         private const string MainTexture = "_MainTex";
+
+        internal static bool HandlesBlueprintName(string blueprintName)
+        {
+            return blueprintName != null && VisualKeys.ContainsKey(blueprintName);
+        }
 
         /// <summary>
         /// Fault injection for the guarded fallback drill. When set, it runs at
@@ -84,12 +149,16 @@ namespace KingmakerGunslinger.Summoning
         private sealed class Attachment
         {
             internal string Outcome;
+            internal string VisualKey;
             internal SkinnedMeshRenderer Donor;
             internal Mesh OriginalMesh;
             internal Transform[] OriginalBones;
             internal Material[] OriginalMaterials;
             internal Material Material;
             internal Mesh Mesh;
+            internal EagleAttackVisualLunge EagleLunge;
+            internal GiantWaspVisualSting WaspSting;
+            internal StirgeVisualTouch StirgeTouch;
         }
 
         private static readonly ConditionalWeakTable<UnitEntityView, Attachment>
@@ -121,8 +190,17 @@ namespace KingmakerGunslinger.Summoning
         internal static bool TryGetDonorRig(UnitEntityView view,
             out Transform[] bones, out Matrix4x4[] bindposes)
         {
+            Mesh ignored;
+            return TryGetDonorRig(view, out bones, out bindposes, out ignored);
+        }
+
+        internal static bool TryGetDonorRig(UnitEntityView view,
+            out Transform[] bones, out Matrix4x4[] bindposes,
+            out Mesh originalMesh)
+        {
             bones = null;
             bindposes = null;
+            originalMesh = null;
             Attachment attachment;
             if (view == null || !Applied.TryGetValue(view, out attachment) ||
                 attachment.Mesh == null || attachment.OriginalMesh == null ||
@@ -130,6 +208,7 @@ namespace KingmakerGunslinger.Summoning
                 return false;
             bones = attachment.OriginalBones;
             bindposes = attachment.OriginalMesh.bindposes;
+            originalMesh = attachment.OriginalMesh;
             return true;
         }
 
@@ -146,14 +225,16 @@ namespace KingmakerGunslinger.Summoning
         {
             if (__instance == null || __instance.EntityData == null ||
                 __instance.EntityData.Blueprint == null) return;
-            if (!string.Equals(__instance.EntityData.Blueprint.name,
-                PteranodonBlueprintName, StringComparison.Ordinal)) return;
+            string blueprintName = __instance.EntityData.Blueprint.name;
+            string visualKey;
+            if (!VisualKeys.TryGetValue(blueprintName, out visualKey)) return;
 
             lock (Applied)
             {
                 Attachment existing;
                 if (Applied.TryGetValue(__instance, out existing)) return;
                 Attachment attachment = new Attachment();
+                attachment.VisualKey = visualKey;
                 Applied.Add(__instance, attachment);
                 attachment.Outcome = Attach(__instance, attachment);
                 Record(attachment.Outcome);
@@ -168,11 +249,63 @@ namespace KingmakerGunslinger.Summoning
         {
             Mesh source;
             string[] boneNames;
-            if (!PteranodonAssetRuntime.TryGetMembrane(out source, out boneNames))
-                return Fallback(PteranodonAssetRuntime.Status);
             Texture2D albedo;
-            if (!PteranodonAssetRuntime.TryGetAlbedo(out albedo))
-                return Fallback(PteranodonAssetRuntime.Status);
+            if (attachment.VisualKey == "dire-bat")
+            {
+                if (!PteranodonAssetRuntime.TryGetDireBatVisual(out source,
+                    out boneNames, out albedo))
+                    return Fallback(PteranodonAssetRuntime.DireBatStatus);
+            }
+            else if (attachment.VisualKey == "eagle")
+            {
+                if (!PteranodonAssetRuntime.TryGetEagleVisual(out source,
+                    out boneNames, out albedo))
+                    return Fallback(PteranodonAssetRuntime.EagleStatus);
+            }
+            else if (attachment.VisualKey == "giant-wasp")
+            {
+                if (!PteranodonAssetRuntime.TryGetGiantWaspVisual(out source,
+                    out boneNames, out albedo))
+                    return Fallback(PteranodonAssetRuntime.GiantWaspStatus);
+            }
+            else if (attachment.VisualKey == "stirge")
+            {
+                if (!PteranodonAssetRuntime.TryGetStirgeVisual(out source,
+                    out boneNames, out albedo))
+                    return Fallback(PteranodonAssetRuntime.StirgeStatus);
+            }
+            else if (UngulateKeys.Contains(attachment.VisualKey))
+            {
+                string status;
+                if (!PteranodonAssetRuntime.TryGetUngulateVisual(
+                    attachment.VisualKey, out source, out boneNames,
+                    out albedo, out status))
+                    return Fallback(status);
+            }
+            else if (Sprint12QuadrupedKeys.Contains(attachment.VisualKey))
+            {
+                string status;
+                if (!PteranodonAssetRuntime.TryGetSprint12QuadrupedVisual(
+                    attachment.VisualKey, out source, out boneNames,
+                    out albedo, out status))
+                    return Fallback(status);
+            }
+            else if (Sprint13CreatureKeys.Contains(attachment.VisualKey))
+            {
+                string status;
+                if (!PteranodonAssetRuntime.TryGetSprint13CreatureVisual(
+                    attachment.VisualKey, out source, out boneNames,
+                    out albedo, out status))
+                    return Fallback(status);
+            }
+            else
+            {
+                if (!PteranodonAssetRuntime.TryGetMembrane(out source,
+                    out boneNames))
+                    return Fallback(PteranodonAssetRuntime.Status);
+                if (!PteranodonAssetRuntime.TryGetAlbedo(out albedo))
+                    return Fallback(PteranodonAssetRuntime.Status);
+            }
 
             SkinnedMeshRenderer[] donors = view
                 .GetComponentsInChildren<SkinnedMeshRenderer>(true)
@@ -215,14 +348,26 @@ namespace KingmakerGunslinger.Summoning
                 // A copy, so the cached asset keeps its identity bind poses and
                 // a second unit binds from the same clean source.
                 mesh = UnityEngine.Object.Instantiate(source);
-                mesh.name = CustomVisualName;
+                string visualName = attachment.VisualKey == "dire-bat"
+                    ? DireBatVisualName : attachment.VisualKey == "eagle"
+                        ? EagleVisualName : attachment.VisualKey == "giant-wasp"
+                            ? GiantWaspVisualName : attachment.VisualKey == "stirge"
+                                ? StirgeVisualName : (UngulateKeys.Contains(
+                                    attachment.VisualKey) ||
+                                    Sprint12QuadrupedKeys.Contains(
+                                        attachment.VisualKey) ||
+                                    Sprint13CreatureKeys.Contains(
+                                        attachment.VisualKey))
+                                    ? "KMG_" + attachment.VisualKey + "_Original"
+                                    : CustomVisualName;
+                mesh.name = visualName;
                 mesh.bindposes = bindposes;
 
                 // Cloned from the donor's material so the creature is shaded by
                 // the game's own pipeline rather than a bundled stand-in; then
                 // the eagle's textures are replaced by the painting.
                 material = new Material(donorMaterial);
-                material.name = CustomVisualName;
+                material.name = visualName;
                 string dressing = DressMaterial(material, albedo);
 
                 // The swap, on this one instance's renderer component: the
@@ -247,6 +392,24 @@ namespace KingmakerGunslinger.Summoning
 
                 Action fault = PostSuppressionFaultForTest;
                 if (fault != null) fault();
+                if (attachment.VisualKey == "eagle")
+                {
+                    attachment.EagleLunge = view.gameObject
+                        .AddComponent<EagleAttackVisualLunge>();
+                    attachment.EagleLunge.Configure(view, donor);
+                }
+                if (attachment.VisualKey == "giant-wasp")
+                {
+                    attachment.WaspSting = view.gameObject
+                        .AddComponent<GiantWaspVisualSting>();
+                    attachment.WaspSting.Configure(view, donor);
+                }
+                if (attachment.VisualKey == "stirge")
+                {
+                    attachment.StirgeTouch = view.gameObject
+                        .AddComponent<StirgeVisualTouch>();
+                    attachment.StirgeTouch.Configure(view, donor);
+                }
                 return "visual:attached;bones=" + bones.Length +
                     ";vertices=" + mesh.vertexCount + ";albedo=" +
                     albedo.width + "x" + albedo.height + ";rendererEnabled=" +
@@ -255,6 +418,21 @@ namespace KingmakerGunslinger.Summoning
             }
             catch (Exception error)
             {
+                if (attachment.EagleLunge != null)
+                {
+                    UnityEngine.Object.Destroy(attachment.EagleLunge);
+                    attachment.EagleLunge = null;
+                }
+                if (attachment.WaspSting != null)
+                {
+                    UnityEngine.Object.Destroy(attachment.WaspSting);
+                    attachment.WaspSting = null;
+                }
+                if (attachment.StirgeTouch != null)
+                {
+                    UnityEngine.Object.Destroy(attachment.StirgeTouch);
+                    attachment.StirgeTouch = null;
+                }
                 if (swapped) Revert(attachment);
                 if (material != null) UnityEngine.Object.Destroy(material);
                 if (mesh != null) UnityEngine.Object.Destroy(mesh);
@@ -271,11 +449,44 @@ namespace KingmakerGunslinger.Summoning
         /// the tint the donor material carried, which is reset to white so the
         /// albedo renders as painted.
         /// </summary>
+        /// <summary>
+        /// Kingmaker's dynamic shader has two fog-of-war treatments. With
+        /// <c>FOG_OF_WAR_DISSOLVE_ON</c> a fogged creature dissolves and keeps
+        /// its painting; without it the same creature is drawn as a flat
+        /// untextured silhouette. Which one a donor material carries is the
+        /// donor's own business, and the Worg carries the flat one while the
+        /// Dog and Wolf carry the dissolve. A cloned material inherits that,
+        /// so an original mesh borrowing the Worg rig rendered as a solid blue
+        /// shape the moment it stepped outside the party's vision, while the
+        /// same code on the other two donors looked right. Evidence: guarded
+        /// creature review `20261001T1812593825736Z`, where the Goblin Dog was
+        /// flat blue in all four live party-camera frames and was the only one
+        /// of the three whose material lacked the keyword.
+        ///
+        /// The clone is project-owned and instance-local, so it is given the
+        /// dissolve treatment regardless of donor. The donor material is never
+        /// touched, and <c>_Dissolve</c> already starts at 0, so this changes
+        /// how the project's own mesh is shaded in fog and nothing else.
+        /// </summary>
+        private const string FogOfWarAffectedKeyword = "FOG_OF_WAR_AFFECTED";
+        private const string FogOfWarDissolveKeyword = "FOG_OF_WAR_DISSOLVE_ON";
+
         private static string DressMaterial(Material material, Texture2D albedo)
         {
             material.SetTexture(MainTexture, albedo);
             material.SetTextureScale(MainTexture, Vector2.one);
             material.SetTextureOffset(MainTexture, Vector2.zero);
+
+            string donorKeywords = material.shaderKeywords == null ||
+                material.shaderKeywords.Length == 0 ? "<none>" :
+                string.Join("|", material.shaderKeywords);
+            string fogTreatment = "donor";
+            if (material.IsKeywordEnabled(FogOfWarAffectedKeyword) &&
+                !material.IsKeywordEnabled(FogOfWarDissolveKeyword))
+            {
+                material.EnableKeyword(FogOfWarDissolveKeyword);
+                fogTreatment = "dissolve-enabled";
+            }
 
             var declared = new List<string>();
             var cleared = new List<string>();
@@ -308,7 +519,9 @@ namespace KingmakerGunslinger.Summoning
                 "<none>" : string.Join(",", declared.ToArray())) +
                 ";cleared=" + (cleared.Count == 0 ?
                 "<none>" : string.Join(",", cleared.ToArray())) +
-                ";donorTint=" + tint + ";donorEmission=" + emission;
+                ";donorTint=" + tint + ";donorEmission=" + emission +
+                ";donorKeywords=" + donorKeywords + ";fogTreatment=" +
+                fogTreatment;
         }
 
         private static string Describe(Color value)
@@ -346,6 +559,59 @@ namespace KingmakerGunslinger.Summoning
             if (controller != null) ReinitMaterials(controller);
         }
 
+        /// <summary>Release Phase 2 creatures' per-view clones on death.
+        /// The cached source mesh/painting and the native donor stay owned by
+        /// their existing systems; no accepted Phase 1 view is changed here.</summary>
+        internal static void ReleasePhase2View(UnitEntityView view)
+        {
+            Attachment attachment;
+            if (view == null || !Applied.TryGetValue(view, out attachment) ||
+                (attachment.VisualKey != "giant-wasp" &&
+                 attachment.VisualKey != "stirge" &&
+                 !UngulateKeys.Contains(attachment.VisualKey) &&
+                 !Sprint12QuadrupedKeys.Contains(attachment.VisualKey) &&
+                 !Sprint13CreatureKeys.Contains(
+                    attachment.VisualKey))) return;
+            string visualName = attachment.VisualKey == "stirge"
+                ? StirgeVisualName : attachment.VisualKey == "giant-wasp"
+                    ? GiantWaspVisualName
+                    : "KMG_" + attachment.VisualKey + "_Original";
+            if (attachment.WaspSting != null)
+                attachment.WaspSting.enabled = false;
+            if (attachment.StirgeTouch != null)
+            {
+                attachment.StirgeTouch.enabled = false;
+                UnityEngine.Object.DestroyImmediate(attachment.StirgeTouch);
+                attachment.StirgeTouch = null;
+            }
+            var materials = new HashSet<Material>();
+            if (attachment.Material != null)
+                materials.Add(attachment.Material);
+            if (attachment.Donor != null)
+            {
+                foreach (Material material in attachment.Donor.sharedMaterials)
+                    if (material != null && material.name.StartsWith(
+                        visualName, StringComparison.Ordinal))
+                        materials.Add(material);
+                StandardMaterialController controller = attachment.Donor
+                    .GetComponentInParent<StandardMaterialController>();
+                IList<Material> driven = ControllerMaterials(controller);
+                if (driven != null)
+                    foreach (Material material in driven)
+                        if (material != null && material.name.StartsWith(
+                            visualName, StringComparison.Ordinal))
+                            materials.Add(material);
+                Revert(attachment);
+            }
+            foreach (Material material in materials)
+                if (material != null) UnityEngine.Object.DestroyImmediate(material);
+            if (attachment.Mesh != null)
+                UnityEngine.Object.DestroyImmediate(attachment.Mesh);
+            attachment.Material = null;
+            attachment.Mesh = null;
+            Applied.Remove(view);
+        }
+
         private const string DissolveProperty = "_Dissolve";
 
         /// <summary>
@@ -376,7 +642,7 @@ namespace KingmakerGunslinger.Summoning
             int count = materials == null ? -1 : materials.Count;
             bool adopted = materials != null && driven != null &&
                 materials.Contains(driven) && driven.name.StartsWith(
-                    CustomVisualName, StringComparison.Ordinal);
+                    material.name, StringComparison.Ordinal);
             return "clonedDissolve=" + dissolve + ";materialController=" +
                 (reinitialized ? "reinitialized" : "reinit-unavailable") +
                 ";controllerMaterials=" + count + ";adopted=" +
@@ -417,6 +683,20 @@ namespace KingmakerGunslinger.Summoning
             if (method == null) return false;
             method.Invoke(controller, null);
             return true;
+        }
+    }
+
+
+    [HarmonyPatch(typeof(UnitEntityView), "OnDestroy")]
+    internal static class ExpandedSummoningWaspVisualTeardownPatch
+    {
+        private static void Prefix(UnitEntityView __instance)
+        {
+            try { ExpandedSummoningPteranodonViewPatch.ReleasePhase2View(__instance); }
+            catch (Exception)
+            {
+                // Resource release must never interrupt native view teardown.
+            }
         }
     }
 }

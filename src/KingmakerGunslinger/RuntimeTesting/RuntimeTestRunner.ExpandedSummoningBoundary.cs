@@ -31,6 +31,32 @@ namespace KingmakerGunslinger.RuntimeTesting
     /// </summary>
     internal sealed partial class RuntimeTestRunner
     {
+        private RuntimeTestResult RunExpandedSummoningModuleBoundaryObservation()
+        {
+            bool expected = (bool)_request.Parameters["expandedSummoning"];
+            bool active = _context.FeatureModules.Active.ExpandedSummoning;
+            ExpandedSummoningBoundary observed =
+                ObserveExpandedSummoningBoundary(expected);
+            string expectedReading = (expected ? "enabled" : "disabled") +
+                ";" + ExpandedSummoningBoundaryExpectation(expected,
+                    observed.NativeVariants);
+            string actualReading = (active ? "enabled" : "disabled") +
+                ";" + observed.Describe();
+            var assertions = new List<RuntimeTestAssertion>
+            {
+                Assertion("expanded-summoning-module-boundary",
+                    expectedReading, actualReading,
+                    expectedReading == actualReading,
+                    "live AbilityVariants census across the eighteen canonical native summon parents"),
+                Assertion("loaded-mod-version", _request.ExpectedModVersion,
+                    _context.ModEntry.Info.Version,
+                    _request.ExpectedModVersion == _context.ModEntry.Info.Version,
+                    "Unity Mod Manager ModEntry.Info.Version")
+            };
+            return CreateResult(assertions.All(value => value.Status == "PASS") ?
+                "PASS" : "FAIL", assertions, null);
+        }
+
         private const string ExpandedSummoningModulePrefix = "KMG_Summoning_";
         private const string ExpandedSummoningPlacementPrefix =
             "KMG_Summoning_Ability_";

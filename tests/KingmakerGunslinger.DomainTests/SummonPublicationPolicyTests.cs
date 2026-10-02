@@ -50,6 +50,18 @@ namespace KingmakerGunslinger.DomainTests
                     "6c7915c9dc494849918e958618f61db0")
                     .IsSemanticDuplicate,
                 "Native SM I preservation child must reconcile to KMG Dog.");
+            Assertions.True(SummonVariantMergePolicy
+                    .PreserveNativeSemanticDuplicate(0,
+                        "6c7915c9dc494849918e958618f61db0"),
+                "A hidden KMG Dog must preserve the visible vanilla SM I Dog.");
+            Assertions.False(SummonVariantMergePolicy
+                    .PreserveNativeSemanticDuplicate(1,
+                        "6c7915c9dc494849918e958618f61db0"),
+                "A published exact KMG Dog replacement must collapse the vanilla duplicate.");
+            Assertions.Throws<InvalidOperationException>(() =>
+                SummonVariantMergePolicy.PreserveNativeSemanticDuplicate(2,
+                    "6c7915c9dc494849918e958618f61db0"),
+                "Ambiguous published replacements must fail closed.");
             Assertions.Equal(29, SummonNativeExpansionCatalog.All.Count,
                 "Native individual-option expansion count changed.");
             Assertions.True(SummonNativeExpansionCatalog.Replaces(
@@ -74,18 +86,22 @@ namespace KingmakerGunslinger.DomainTests
                     "86f4287572bef49449b9d06c66adf456")
                     .EquivalentCreatureKey,
                 "Native SNA Smilodon reconciliation changed.");
-            Assertions.Equal(799,
+            Assertions.Equal(904,
                 ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
                     .Concat(ExpandedSummoningCatalog.GenerateVariants(
                         SummonFamily.NaturesAlly))
                     .Count(SummonVisibilityCatalog.IsPublished),
                 "Visible summon placement count changed.");
-            Assertions.Equal(14,
+            // Sprint 13 is qualified, so nothing is withheld any more. A
+            // creature appearing here again would be a sprint registering
+            // ahead of its own qualification, which is allowed, but it has to
+            // be deliberate rather than a leftover.
+            Assertions.Equal(0,
                 ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
                     .Concat(ExpandedSummoningCatalog.GenerateVariants(
                         SummonFamily.NaturesAlly))
                     .Count(value => !SummonVisibilityCatalog.IsPublished(value)),
-                "Dire Bat compatibility-shell placement count changed.");
+                "No placement may remain hidden now that Sprint 13 is qualified.");
         }
 
         internal static void DisplayOrderGroupsSinglesBeforeQuantities()
@@ -114,8 +130,10 @@ namespace KingmakerGunslinger.DomainTests
         {
             SummonIconCatalog.Validate();
             SummonViewScaleCatalog.Validate();
-            Assertions.Equal(91, SummonIconCatalog.All.Count,
+            Assertions.Equal(101, SummonIconCatalog.All.Count,
                 "Project icon concept count changed.");
+            Assertions.Equal("Dire Bat", SummonIconCatalog.For("dire-bat")
+                .DisplayName, "Dire Bat requires its own creature icon identity.");
             Assertions.Equal("Smilodon", SummonIconCatalog.For("dire-tiger")
                 .DisplayName, "Smilodon icon identity changed.");
             Assertions.True(new[] { "air-mephit", "earth-mephit",

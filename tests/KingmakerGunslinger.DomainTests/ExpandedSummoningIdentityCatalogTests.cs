@@ -11,23 +11,27 @@ namespace KingmakerGunslinger.DomainTests
         {
             var first = ExpandedSummoningIdentityCatalog.Build();
             var second = ExpandedSummoningIdentityCatalog.Build();
-            Assertions.Equal(1472, first.Count, "Foundation identity count changed.");
-            Assertions.Equal(81, first.Count(value => value.PlannedType == "BlueprintUnit"), "Unit identity count changed.");
-            Assertions.Equal(1266, first.Count(value => value.PlannedType == "BlueprintAbility"), "Ability identity count changed.");
+            Assertions.Equal(1677, first.Count, "Foundation identity count changed.");
+            Assertions.Equal(89, first.Count(value => value.PlannedType == "BlueprintUnit"), "Unit identity count changed.");
+            Assertions.Equal(1440, first.Count(value => value.PlannedType == "BlueprintAbility"), "Ability identity count changed.");
             Assertions.Equal(2, first.Count(value => value.Symbol.StartsWith(
                 "KMG.Summoning.Native.", StringComparison.Ordinal)),
                 "Native tier-one preservation identity count changed.");
-            Assertions.Equal(53, first.Count(value => value.PlannedType == "BlueprintBuff"), "Buff identity count changed.");
+            Assertions.Equal(62, first.Count(value => value.PlannedType == "BlueprintBuff"), "Buff identity count changed.");
             Assertions.Equal(24, first.Count(value => value.PlannedType == "BlueprintAiCastSpell"), "AI identity count changed.");
             Assertions.Equal(12, first.Count(value => value.PlannedType == "BlueprintBrain"), "Brain identity count changed.");
-            Assertions.Equal(11, first.Count(value => value.PlannedType == "BlueprintItemWeapon"), "Weapon identity count changed.");
+            Assertions.Equal(15, first.Count(value => value.PlannedType == "BlueprintItemWeapon"), "Weapon identity count changed.");
             Assertions.Equal(2, first.Count(value => value.PlannedType == "BlueprintWeaponType"), "Weapon-type identity count changed.");
+            Assertions.Equal(1, first.Count(value => value.PlannedType == "BlueprintUnitType"), "Unit-type identity count changed.");
             Assertions.Equal(17, first.Count(value => value.PlannedType == "BlueprintAbilityResource"), "Resource identity count changed.");
-            Assertions.Equal(3, first.Count(value => value.PlannedType == "BlueprintFeature"), "Feature identity count changed.");
+            Assertions.Equal(11, first.Count(value => value.PlannedType == "BlueprintFeature"), "Feature identity count changed.");
             Assertions.Equal(2, first.Count(value => value.PlannedType == "BlueprintAbilityAreaEffect"), "Area effect identity count changed.");
-            Assertions.Equal(1, first.Count(value => value.PlannedType ==
+            // The alignment-mode toggle, plus the Shadow Mastiff's shadow
+            // blend, whose printed text makes suspending and resuming it a
+            // free action and therefore a player-facing toggle.
+            Assertions.Equal(2, first.Count(value => value.PlannedType ==
                 "BlueprintActivatableAbility"),
-                "Neutral alignment-mode toggle identity count changed.");
+                "Activatable toggle identity count changed.");
             Assertions.Equal(string.Join("|", first.Select(value => value.Symbol)),
                 string.Join("|", second.Select(value => value.Symbol)), "Identity output is not deterministic.");
         }
@@ -327,7 +331,7 @@ namespace KingmakerGunslinger.DomainTests
         internal static void LowTierNaturalProfilesAreExact()
         {
             ExpandedSummoningNaturalProfiles.Validate();
-            Assertions.Equal(34, ExpandedSummoningNaturalProfiles.All.Count,
+            Assertions.Equal(41, ExpandedSummoningNaturalProfiles.All.Count,
                 "Natural reconstruction count changed.");
             NaturalSummonProfile dog = ExpandedSummoningNaturalProfiles.For("dog");
             Assertions.Equal("Small", dog.Size, "Dog size changed.");
@@ -357,9 +361,38 @@ namespace KingmakerGunslinger.DomainTests
                 "Giant Spider natural armor changed.");
             Assertions.True(spider.Facts.Contains("GiantSpiderPoison"),
                 "Giant Spider lost its exact native poison graph.");
-            Assertions.True(ExpandedSummoningNaturalProfiles.For("goblin-dog")
-                .Deviations.Any(value => value.Contains("allergic reaction")),
-                "Goblin Dog allergic-reaction omission is not explicit.");
+            NaturalSummonProfile goblinDog =
+                ExpandedSummoningNaturalProfiles.For("goblin-dog");
+            Assertions.True(goblinDog.Facts.Contains("GoblinDogTraits"),
+                "Goblin Dog lost its disease immunity and bite rider graph.");
+            Assertions.True(goblinDog.Deviations.Any(value =>
+                    value.Contains("printed DC 12 Fortitude save") &&
+                    value.Contains("nonstacking day of -2 Dexterity and -2 Charisma") &&
+                    value.Contains("damaged by the bite") &&
+                    value.Contains("natural weapon or unarmed attack") &&
+                    value.Contains("attempts to grapple it") &&
+                    value.Contains("Riding contact is omitted") &&
+                    value.Contains("exact enumerated set of native goblinoid unit types")),
+                "Goblin Dog allergic-reaction implementation is not explicit.");
+            // The printed Goblin Dog stat block gives CMD 14 with no "vs.
+            // trip" entry, unlike the Dog, Dire Rat and Hyena rows, so it must
+            // not inherit the quadruped trip defence.
+            Assertions.True(!goblinDog.Facts.Contains("TripDefenseFourLegs"),
+                "The printed Goblin Dog has no trip-defence bonus.");
+            NaturalSummonProfile direRat =
+                ExpandedSummoningNaturalProfiles.For("dire-rat");
+            // Printed: AC 14, touch 14, flat-footed 11 (+3 Dex, +1 size).
+            // There is no natural-armour component, and the printed feat list
+            // is Skill Focus (Perception) alone, so the +1 bite is
+            // Strength-based rather than finessed.
+            Assertions.Equal(0, direRat.NaturalArmor,
+                "The printed Dire Rat has no natural armor.");
+            Assertions.True(!direRat.Facts.Contains("WeaponFinesse"),
+                "The printed Dire Rat has no Weapon Finesse; its bite is +1 from Strength and size.");
+            Assertions.True(direRat.Facts.Contains("SkillFocusPerception") &&
+                direRat.Facts.Contains("TripDefenseFourLegs") &&
+                direRat.Facts.Contains("DireRatDisease"),
+                "The Dire Rat lost a printed feat, its quadruped trip defence or its disease rider.");
             Assertions.True(ExpandedSummoningNaturalProfiles.For("hyena")
                 .Facts.Contains("TrippingBite"),
                 "Hyena lost its tripping bite.");
@@ -430,14 +463,27 @@ namespace KingmakerGunslinger.DomainTests
                 "Crocodile death-roll deviation is not explicit.");
             NaturalSummonProfile wolverine =
                 ExpandedSummoningNaturalProfiles.For("wolverine");
-            Assertions.Equal(1, wolverine.AdditionalWeapons.Count,
-                "Wolverine second claw changed.");
-            Assertions.Equal("Bite1d4",
-                wolverine.AdditionalSecondaryWeapons.Single(),
-                "Wolverine secondary bite changed.");
-            Assertions.True(wolverine.Deviations.Any(value =>
+            // Printed: "2 claws +4 (1d6+2), bite +4 (1d4+2)". BAB 2 plus
+            // Strength 4 with full Strength damage on all three limbs, so all
+            // three are primary and there is no secondary limb at all. A
+            // secondary bite would print at +(-1) for 1d4+1.
+            Assertions.Equal(2, wolverine.AdditionalWeapons.Count,
+                "Wolverine primary limb count changed.");
+            Assertions.True(wolverine.AdditionalWeapons.Contains("Claw1d6"),
+                "Wolverine lost its second primary claw.");
+            Assertions.True(wolverine.AdditionalWeapons.Contains("Bite1d4"),
+                "Wolverine bite is no longer a primary natural attack.");
+            Assertions.Equal(0, wolverine.AdditionalSecondaryWeapons.Count,
+                "Wolverine gained a secondary limb its stat block does not have.");
+            // Printed: "CMD 16 (20 vs. trip)".
+            Assertions.True(wolverine.Facts.Contains("TripDefenseFourLegs"),
+                "Wolverine lost its printed quadruped trip defence.");
+            // The rage is implemented, so no deviation may stand in for it.
+            Assertions.True(wolverine.Facts.Contains("WolverineRage"),
+                "Wolverine lost its printed rage.");
+            Assertions.False(wolverine.Deviations.Any(value =>
                 value.Contains("rage")),
-                "Wolverine rage deviation is not explicit.");
+                "Wolverine still records a rage deviation after the rage shipped.");
             NaturalSummonProfile direBoar =
                 ExpandedSummoningNaturalProfiles.For("dire-boar");
             Assertions.Equal(5, direBoar.HitDice, "Dire Boar HD changed.");
@@ -563,9 +609,9 @@ namespace KingmakerGunslinger.DomainTests
         internal static void TemplateExecutionsAreFamilyScoped()
         {
             var identities = ExpandedSummoningIdentityCatalog.Build();
-            Assertions.Equal(199, identities.Count(value => value.Symbol.EndsWith(".Celestial", StringComparison.Ordinal)),
+            Assertions.Equal(238, identities.Count(value => value.Symbol.EndsWith(".Celestial", StringComparison.Ordinal)),
                 "Celestial execution count changed.");
-            Assertions.Equal(199, identities.Count(value => value.Symbol.EndsWith(".Fiendish", StringComparison.Ordinal)),
+            Assertions.Equal(238, identities.Count(value => value.Symbol.EndsWith(".Fiendish", StringComparison.Ordinal)),
                 "Fiendish execution count changed.");
             Assertions.True(!identities.Any(value => value.Symbol.Contains(".SNA.") &&
                 (value.Symbol.EndsWith(".Celestial", StringComparison.Ordinal) ||
@@ -700,13 +746,13 @@ namespace KingmakerGunslinger.DomainTests
                     "Logical placement identity missing or duplicated: " + symbol);
                 found++;
             }
-            Assertions.Equal(813, found, "Logical placement traversal changed.");
+            Assertions.Equal(904, found, "Logical placement traversal changed.");
         }
 
         internal static void DonorsCoverEveryFrozenCreature()
         {
             ExpandedSummoningDonorCatalog.Validate();
-            Assertions.Equal(81, ExpandedSummoningDonorCatalog.All.Count,
+            Assertions.Equal(89, ExpandedSummoningDonorCatalog.All.Count,
                 "Every unique creature requires exactly one frozen donor decision.");
             Assertions.Equal("676f8b7d0a170674cb6e504e0e30b4f0",
                 ExpandedSummoningDonorCatalog.For("invisible-stalker").Guid,
@@ -910,12 +956,20 @@ namespace KingmakerGunslinger.DomainTests
                 "nativePreservation", "new[] { nativePreservation }",
                 "Direct summon publication requires exactly one frozen native-preservation child",
                 "SummonNativeOptionCatalog.Find",
-                "Native duplicate map did not resolve exactly one KMG option",
+                "PreserveNativeSemanticDuplicate",
                 "preservedOriginals.Any(original =>",
                 "SummonNativeExpansionCatalog.Replaces",
                 "nativeAdditions", "nativeAdditionSpecs" })
                 Assertions.True(source.Contains(token),
                     "Runtime publication contract is missing: " + token);
+            string mergePolicy = File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "src", "KingmakerGunslinger",
+                "Summoning", "SummonVariantMergePolicy.cs"));
+            Assertions.True(mergePolicy.Contains(
+                    "Native duplicate map did not resolve exactly one KMG option") &&
+                mergePolicy.Contains("publishedReplacementCount == 0") &&
+                mergePolicy.Contains("publishedReplacementCount == 1"),
+                "Native duplicate reconciliation must preserve hidden replacements, collapse one published replacement, and reject ambiguity.");
             Assertions.False(source.Contains("SummonElemental"),
                 "Expanded Summoning publication must not target the standalone Summon Elemental spell.");
             string builder = File.ReadAllText(Path.Combine(

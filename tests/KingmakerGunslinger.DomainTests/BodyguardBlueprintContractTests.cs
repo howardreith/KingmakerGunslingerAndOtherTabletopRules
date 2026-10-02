@@ -39,7 +39,13 @@ namespace KingmakerGunslinger.DomainTests
                     ExpandedSummoningSprint7Tests.AppendedLedgerIdentities +
                     (ExpandedSummoningSprint8Tests.AppendedLedgerIdentities + ExpandedSummoningCorrectionTests.AppendedLedgerIdentities) +
                     KingmakerGunslinger.FavoredClass.FavoredClassIdentityCatalog.IdentityCount +
-                    KingmakerGunslinger.ElementalRaces.ElementalMostlyHumanPolicy.IdentityCount,
+                    KingmakerGunslinger.ElementalRaces.ElementalMostlyHumanPolicy.IdentityCount + 1 +
+                    ExpandedSummoningSprint10Tests.AppendedLedgerIdentities +
+                    ExpandedSummoningSprint10Tests.StirgeAppendedLedgerIdentities +
+                    ExpandedSummoningSprint11Tests.AppendedLedgerIdentities +
+                    ExpandedSummoningSprint10Tests.StirgeRemovalIdentityCount +
+                    ExpandedSummoningSprint12Tests.AppendedLedgerIdentities +
+                    ExpandedSummoningSprint13Tests.AppendedLedgerIdentities,
                 entries.Length,
                 "Current blueprint ledger count changed.");
             Assertions.Equal(1911 + KingmakerGunslinger.Acquisition
@@ -51,7 +57,13 @@ namespace KingmakerGunslinger.DomainTests
                     ExpandedSummoningSprint7Tests.AppendedLedgerIdentities +
                     (ExpandedSummoningSprint8Tests.AppendedLedgerIdentities + ExpandedSummoningCorrectionTests.AppendedLedgerIdentities) +
                     KingmakerGunslinger.FavoredClass.FavoredClassIdentityCatalog.IdentityCount +
-                    KingmakerGunslinger.ElementalRaces.ElementalMostlyHumanPolicy.IdentityCount,
+                    KingmakerGunslinger.ElementalRaces.ElementalMostlyHumanPolicy.IdentityCount + 1 +
+                    ExpandedSummoningSprint10Tests.AppendedLedgerIdentities +
+                    ExpandedSummoningSprint10Tests.StirgeAppendedLedgerIdentities +
+                    ExpandedSummoningSprint11Tests.AppendedLedgerIdentities +
+                    ExpandedSummoningSprint10Tests.StirgeRemovalIdentityCount +
+                    ExpandedSummoningSprint12Tests.AppendedLedgerIdentities +
+                    ExpandedSummoningSprint13Tests.AppendedLedgerIdentities,
                 entries.Count(value => string.Equals(
                 (string)value["status"], "active", StringComparison.Ordinal)),
                 "Current active identity count changed.");

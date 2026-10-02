@@ -1,6 +1,6 @@
 ﻿{
     "schemaVersion":  1,
-    "count":  91,
+    "count":  101,
     "icons":  [
                   {
                       "key":  "dog",
@@ -12,9 +12,27 @@
                       "scope":  "kmg-catalog"
                   },
                   {
+                      "key":  "dire-rat",
+                      "file":  "dire-rat.png",
+                      "sha256":  "8942e8ad6fa190bb64135247718584c6d7b171c33bf37b7f3d1796fa87e2d00c",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
                       "key":  "eagle",
                       "file":  "eagle.png",
                       "sha256":  "525942badf1442e1032be07d6d8ebfbfdfc53858f35783ca95620c1534ebd125",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "dire-bat",
+                      "file":  "dire-bat.png",
+                      "sha256":  "5c2deea29d590ba3c024063d209b69108103bdf726ec9decb9889eccc8d6b16a",
                       "width":  128,
                       "height":  128,
                       "format":  "RGBA PNG",
@@ -816,6 +834,78 @@
                       "key":  "tiger",
                       "file":  "tiger.png",
                       "sha256":  "0c2c7447cf4c8559f5bc2bd0882aac5140b84c75dd2022edb90d2fe87a1c1ae4",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "giant-wasp",
+                      "file":  "giant-wasp.png",
+                      "sha256":  "1f7159733556a13fdbc9a985441141e2e9f7cf1af092147c8945ae49cee64058",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "stirge",
+                      "file":  "stirge.png",
+                      "sha256":  "2238a7599b8e254bc1675ba98711667a27079c7f8d15c660089f1017ce061ff1",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "aurochs",
+                      "file":  "aurochs.png",
+                      "sha256":  "578e235e53f5b3573e53d1cb953ae4c4ff140bb236cc5d26038c08ce802df62a",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "bison",
+                      "file":  "bison.png",
+                      "sha256":  "60064766af512af9af69d5c90723a886d6c3938c47167b828d4759cf6b3f44a5",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "rhinoceros",
+                      "file":  "rhinoceros.png",
+                      "sha256":  "4e0b2774a8b947ca2a4f4a9cecd8e7d2346eeb9bc5700728358e3a970c20e995",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "woolly-rhinoceros",
+                      "file":  "woolly-rhinoceros.png",
+                      "sha256":  "6c4fca4860efe04b48c4fd38639d8b6093bf71f6e61b88dcb2f0131948606c41",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "remove-stirge",
+                      "file":  "remove-stirge.png",
+                      "sha256":  "d94adebdc69e80f08bb936de2050ccbb5ad78e9fc99c678b6f242c5979c28329",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "shadow-mastiff",
+                      "file":  "shadow-mastiff.png",
+                      "sha256":  "0448be750969434b6766b8767388da80814db2afbe5eadc40607579413489baa",
                       "width":  128,
                       "height":  128,
                       "format":  "RGBA PNG",

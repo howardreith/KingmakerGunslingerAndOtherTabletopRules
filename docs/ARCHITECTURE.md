@@ -864,8 +864,34 @@ contract, lifecycle and limits are in
 
 The optional Favored Class integration appends its owned leaf identities to
 the ledger after the Expanded Summoning Phase 1 append, for
-2460 stable IDs: 2458 active and 2 reserved (2172 before the merge with 0.0.139). It never compiles
+2461 stable IDs: 2459 active and 2 reserved (2172 before the merge with 0.0.139). It never compiles
 against Favored Class or Call of the Wild and never executes host code.
+
+Expanded Summoning Phase 2 preserves the accepted ledger prefix and appends
+the Dire Bat, Giant Wasp and Stirge identities, then 100 Sprint 11 ungulate
+unit/placement identities, two Rhino charge facts and three hidden trample
+abilities and Stirge's session-granted removal action: 2609 stable IDs: 2607 active and 2 reserved.
+The Wasp, Stirge and four Sprint 11 ungulate choices are published after their
+technical qualification.
+
+Sprint 12 appends 37 active Dire Rat identities: one unit, eighteen logical
+placements and eighteen celestial/fiendish execution children. It then appends
+the Dire Rat disease feature, Goblin Dog disease-traits feature, and Goblin Dog
+allergic-reaction buff. Dire Rat, Dog, Hyena and Goblin Dog are published:
+their mechanics, distinct visuals, navigation, both combat modes, quantity and
+crowded-space behaviour, persistence and lifecycle all qualified on 2026-10-01,
+and the suppression set is empty.
+
+Sprint 13 appends four more: the Poison Frog's flat-1 bite, whose printed
+damage is a single point rather than a die, and the Wolverine rage trigger
+feature with its onset marker and rage state. It also registers the Shadow
+Mastiff, a new Summon Monster VI outsider with no native Kingmaker equivalent:
+its unit, its four logical placements, the 1d6 tail slap its printed stat block
+needs, and its bay and shadow-blend identities. The Shadow Mastiff is
+registered ahead of its own qualification, so its four placements are
+suppressed and the published surface stays at 900 generated choices until its
+mechanics, visual identity and lifecycle qualify.
+The resulting append-only ledger contains 2665 stable IDs: 2663 active and 2 reserved.
 
 - **Pure policy** (`FavoredClass/`): `FavoredClassRankPolicy` (the host's
   full/partial alternation, N = fullRank + partialRank, with KMG-owned ceilings

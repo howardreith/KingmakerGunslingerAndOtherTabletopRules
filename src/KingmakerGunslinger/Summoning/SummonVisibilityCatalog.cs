@@ -5,16 +5,26 @@ using System.Linq;
 namespace KingmakerGunslinger.Summoning
 {
     /// <summary>
-    /// Frozen publication-only exclusions. Identities and unit blueprints remain
-    /// registered so existing saves continue to deserialize safely.
+    /// Publication-only exclusions. Sprints 9-12 are qualified and published.
+    /// The Sprint 13 Shadow Mastiff is registered ahead of its own
+    /// qualification so its identities are allocated once and never move, and
+    /// its four placements are withheld until its mechanics, visual identity
+    /// and lifecycle qualify. The published surface is unchanged while it is
+    /// suppressed.
     /// </summary>
     internal static class SummonVisibilityCatalog
     {
+        // Empty, and that is the point: every registered placement is
+        // published. The set stays because the next sprint will register
+        // creatures ahead of their own qualification the way Sprint 13 did,
+        // and a creature is suppressed by being named here rather than by
+        // being left out of the catalog, so its identities are allocated once
+        // and never reallocated when it publishes.
         private static readonly HashSet<string> SuppressedCreatureKeys =
-            new HashSet<string>(new[] { "dire-bat" }, StringComparer.Ordinal);
+            new HashSet<string>(new string[0], StringComparer.Ordinal);
 
-        internal const int RegisteredLogicalPlacementCount = 813;
-        internal const int SuppressedLogicalPlacementCount = 14;
+        internal const int RegisteredLogicalPlacementCount = 904;
+        internal const int SuppressedLogicalPlacementCount = 0;
         internal const int PublishedLogicalPlacementCount =
             RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount;
 
@@ -34,7 +44,6 @@ namespace KingmakerGunslinger.Summoning
                 !IsPublished(value)).ToArray();
             if (all.Length != RegisteredLogicalPlacementCount ||
                 suppressed.Length != SuppressedLogicalPlacementCount ||
-                suppressed.Any(value => value.Creature.Key != "dire-bat") ||
                 all.Count(IsPublished) != PublishedLogicalPlacementCount)
                 throw new InvalidOperationException(
                     "Frozen summon publication visibility catalog changed.");

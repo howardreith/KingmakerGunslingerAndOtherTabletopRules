@@ -20,12 +20,12 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class ExpandedSummoningIdentityCatalog
     {
-        internal const int UnitCount = 81;
-        internal const int LogicalAbilityCount = 813;
-        internal const int TemplatedPlacementCount = 199;
+        internal const int UnitCount = 89;
+        internal const int LogicalAbilityCount = 904;
+        internal const int TemplatedPlacementCount = 238;
         internal const int TemplateExecutionAbilityCount = TemplatedPlacementCount * 2;
         internal const int TemplateBuffCount = 8;
-        internal const int SpecialIdentityCount = 138;
+        internal const int SpecialIdentityCount = 166;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -210,6 +210,7 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.MagmaMephit.PyrotechnicsBlindedState", "BlueprintBuff"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.OozeMephit.StinkingCloudArea", "BlueprintAbilityAreaEffect"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Bite1d4", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.DireBat.Blindsense", "BlueprintFeature"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Bite1d3", "BlueprintItemWeapon"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Tail1d12", "BlueprintItemWeapon"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Tail3d6", "BlueprintItemWeapon"));
@@ -217,6 +218,39 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Talon2d6", "BlueprintItemWeapon"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Claw1d8", "BlueprintItemWeapon"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Subtype.Extraplanar", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.WaspSting1d8", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.GiantWasp.Poison", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.GiantWasp.Venom", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.GiantWasp.UnitType", "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.StirgeTouch", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Stirge.CombatTraits", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Stirge.Hold", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Rhinoceros.PowerfulCharge", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.WoollyRhinoceros.PowerfulCharge", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Aurochs.Trample", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Bison.Trample", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.WoollyRhinoceros.Trample", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Stirge.Remove", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.DireRat.Disease", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.GoblinDog.Traits", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.GoblinDog.AllergicReaction", "BlueprintBuff"));
+            // Sprint 13
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Bite1", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Wolverine.Rage", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Wolverine.RageOnset", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Wolverine.RageState", "BlueprintBuff"));
+            // Sprint 13 Shadow Mastiff. Printed: bite +10 (1d8+4 plus trip),
+            // tail slap +5 (1d6+2). The tail slap's 1d6 has no project-owned
+            // identity yet; bay and shadow blend are its two printed Su
+            // abilities, and the per-mastiff bay immunity is the printed
+            // rule's own 24-hour bound.
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Tail1d6", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.ShadowMastiff.Traits", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.ShadowMastiff.Bay", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.ShadowMastiff.BayPanic", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.ShadowMastiff.BayImmunity", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.ShadowMastiff.ShadowBlend", "BlueprintActivatableAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.ShadowMastiff.ShadowBlendState", "BlueprintBuff"));
             Validate(result);
             return result.AsReadOnly();
         }

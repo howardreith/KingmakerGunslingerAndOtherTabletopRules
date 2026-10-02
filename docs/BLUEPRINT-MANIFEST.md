@@ -466,9 +466,30 @@ and listed with family, module, enhancement, Reliable flag and price in
 
 The optional Favored Class integration appends its owned full/partial leaves
 after the Expanded Summoning Phase 1 append (0.0.140), for
-2460 stable identifiers: 2458 active and 2 reserved (2172 before the merge with 0.0.139). Every pre-existing GUID is unchanged. The symbols use the
+2461 stable identifiers: 2459 active and 2 reserved (2172 before the merge with 0.0.139). Every pre-existing GUID is unchanged. The symbols use the
 `KMG.FavoredClass.<Class>.<Effect>[.<Target>].{Full|Partial}` pattern. They
 register on every load in a contained registry, independently of the host and
 of the publication profile, so saved investments always resolve. The exact
 ordered list is enforced by `tools/validate_favored_class140.py` and
 `FavoredClassIdentityCatalog`.
+
+Expanded Summoning Phase 2 preserves every accepted 0.0.140 ledger GUID,
+appends the Dire Bat, Giant Wasp and Stirge identities, then appends 100
+Sprint 11 ungulate unit/placement identities, two Rhino charge facts and three
+hidden trample abilities and Stirge's removal action: 2609 stable identifiers: 2607 active and 2 reserved.
+The Wasp, Stirge and all 48 Aurochs, Bison, Rhinoceros and Woolly Rhinoceros
+placements are now published after technical qualification.
+
+Sprint 12 appends the Dire Rat unit, eighteen logical placements and eighteen
+celestial/fiendish execution children, then the Dire Rat disease feature,
+Goblin Dog disease-traits feature, and Goblin Dog allergic-reaction buff. All
+68 Dire Rat, Dog, Hyena and Goblin Dog placements are published after technical
+qualification.
+
+Sprint 13 appends four identities: `KMG.Summoning.Natural.Bite1`, the Poison
+Frog's printed flat-1 bite, and the Wolverine's rage trigger feature, onset
+marker and rage state. It then registers the Shadow Mastiff unit, its four
+Summon Monster placements, `KMG.Summoning.Natural.Tail1d6`, and its bay and
+shadow-blend identities; those four placements remain registered but suppressed
+until the creature qualifies.
+The ledger now contains 2665 stable identifiers: 2663 active and 2 reserved.

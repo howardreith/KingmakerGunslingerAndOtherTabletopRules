@@ -21,9 +21,9 @@ namespace KingmakerGunslinger.DomainTests
             JArray rows = (JArray)manifest["icons"];
             Assertions.Equal(1, (int)manifest["schemaVersion"],
                 "Icon manifest schema changed.");
-            Assertions.Equal(91, (int)manifest["count"],
+            Assertions.Equal(101, (int)manifest["count"],
                 "Icon manifest count changed.");
-            Assertions.Equal(91, rows.Count,
+            Assertions.Equal(101, rows.Count,
                 "Icon manifest row count changed.");
             string[] catalogKeys = SummonIconCatalog.All.Select(value =>
                 value.Key).OrderBy(value => value, StringComparer.Ordinal).ToArray();
@@ -32,6 +32,27 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(string.Join("|", catalogKeys),
                 string.Join("|", manifestKeys),
                 "Icon manifest has missing or stale concepts.");
+            JToken removal = rows.Single(value =>
+                (string)value["key"] == "remove-stirge");
+            Assertions.Equal("KMG.Summoning.Special.Stirge.Remove",
+                (string)((JArray)removal["blueprintSymbols"]).Single(),
+                "The removal action needs its own exact icon consumer.");
+            Assertions.True((string)removal["outputSha256"] !=
+                (string)rows.Single(value => (string)value["key"] == "stirge")
+                    ["outputSha256"],
+                "The removal gesture cannot silently reuse the creature portrait.");
+            foreach (string key in new[] { "aurochs", "bison",
+                "rhinoceros", "woolly-rhinoceros" })
+            {
+                JToken published = rows.Single(value => (string)value["key"] == key);
+                Assertions.Equal("kmg-catalog", (string)published["scope"],
+                    "Published ungulate painting must retain its exact catalog scope.");
+                Assertions.True(((JArray)published["blueprintSymbols"]).Any(value =>
+                    (string)value == "KMG.Summoning.Unit." +
+                    string.Concat(key.Split('-').Select(part =>
+                        char.ToUpperInvariant(part[0]) + part.Substring(1)))),
+                    "The published ungulate painting must name its exact unit consumer.");
+            }
 
             var hashes = new HashSet<string>(StringComparer.Ordinal);
             foreach (JToken row in rows)
@@ -110,7 +131,7 @@ namespace KingmakerGunslinger.DomainTests
                 "Runtime project must include every manifest-backed icon path.");
             Assertions.True(package.Contains("expanded-summoning") &&
                 package.Contains("summonIconDestination") &&
-                package.Contains("expectedPackageFileCount = if ($hasFirearmSoundBank) { 251 } else { 249 }"),
+                package.Contains("expectedPackageFileCount = if ($hasFirearmSoundBank) { 289 } else { 287 }"),
                 "Standalone package must stage the exact runtime icon tree.");
         }
 
