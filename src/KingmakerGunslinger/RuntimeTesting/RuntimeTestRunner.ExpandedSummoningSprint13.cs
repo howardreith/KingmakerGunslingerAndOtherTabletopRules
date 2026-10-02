@@ -43,14 +43,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 created, evidence);
             ExerciseSprint13WolverineRage(blueprints, caster, hostile, created,
                 evidence);
-            ExerciseSprint13RageLifetime(blueprints, caster, hostile, created,
-                evidence);
             ExerciseSprint13ShadowMastiffBay(blueprints, caster, hostile,
                 created, evidence);
             ExerciseSprint13ShadowBlend(blueprints, caster, hostile, created,
                 evidence);
             ExerciseSprint13DonorRigs(blueprints, caster, created, evidence,
                 evidenceDirectory);
+            // Last, and deliberately so. Proving the expiry means jumping the
+            // shared game clock past one summon's own end and draining the
+            // global entity destroyer, which thins the population every later
+            // exercise works against. Placed before the bay it cost that
+            // howl most of the creatures it should have reached, and the
+            // immunity sequence then ran against a subject that was no longer
+            // there.
+            ExerciseSprint13RageLifetime(blueprints, caster, hostile, created,
+                evidence);
         }
 
 
