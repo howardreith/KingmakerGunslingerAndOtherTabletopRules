@@ -35,7 +35,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static void ExerciseExpandedSummoningSprint13RulesPack(
             BlueprintScriptableObject[] blueprints, UnitEntityData caster,
             UnitEntityData hostile, List<UnitEntityData> created,
-            ExpandedSummoningMechanicalEvidence evidence)
+            ExpandedSummoningMechanicalEvidence evidence,
+            string evidenceDirectory)
         {
             ExerciseSprint13PrintedRoutines(blueprints, caster, hostile,
                 created, evidence);
@@ -45,6 +46,35 @@ namespace KingmakerGunslinger.RuntimeTesting
                 created, evidence);
             ExerciseSprint13ShadowBlend(blueprints, caster, hostile, created,
                 evidence);
+            ExerciseSprint13DonorRigs(blueprints, caster, created, evidence,
+                evidenceDirectory);
+        }
+
+        /// <summary>
+        /// The donor bind frame Sprint 13 still needs for an original
+        /// silhouette. The Wolverine and the Shadow Mastiff both ride the Worg
+        /// rig, whose renderer-local frame Sprint 12 already captured for the
+        /// Goblin Dog, so only the Poison Frog's donor is new here.
+        ///
+        /// <para>Only bone names and a measured bind frame leave the game. No
+        /// donor vertices, triangles, materials, textures or animation data
+        /// enter the evidence or the repository.</para>
+        /// </summary>
+        private static void ExerciseSprint13DonorRigs(
+            BlueprintScriptableObject[] blueprints, UnitEntityData caster,
+            List<UnitEntityData> created,
+            ExpandedSummoningMechanicalEvidence evidence,
+            string evidenceDirectory)
+        {
+            UnitEntityData frog = CastExpandedSummoningCombatUnit(blueprints,
+                caster, SummonFamily.NaturesAlly, "poisonous-frog", 1, created,
+                evidence);
+            RemoveExpandedSummoningAppearanceBuffs(frog);
+            string frogRig = CaptureDonorRig(frog, "giant-poisonous-frog",
+                evidenceDirectory, "Sprint 13");
+            evidence.Sprint13DonorRigs = frogRig.IndexOf(";bones=",
+                StringComparison.Ordinal) > 0;
+            evidence.Sprint13DonorRigsDetail = frogRig;
         }
 
         /// <summary>

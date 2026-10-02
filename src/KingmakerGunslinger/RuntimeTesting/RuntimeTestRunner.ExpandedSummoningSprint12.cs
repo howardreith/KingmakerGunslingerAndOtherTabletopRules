@@ -974,16 +974,29 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static string CaptureSprint12DonorRig(UnitEntityData summon,
             string donorKey, string evidenceDirectory)
         {
+            return CaptureDonorRig(summon, donorKey, evidenceDirectory,
+                "Sprint 12");
+        }
+
+        /// <summary>
+        /// Records only renderer-local bind frames needed to author
+        /// project-owned silhouettes, labelled with the sprint that captured
+        /// them. Native vertices, triangles, materials, textures and animation
+        /// data never enter the evidence or the repository.
+        /// </summary>
+        private static string CaptureDonorRig(UnitEntityData summon,
+            string donorKey, string evidenceDirectory, string sprintLabel)
+        {
             if (summon == null || summon.View == null ||
                 string.IsNullOrWhiteSpace(evidenceDirectory))
-                throw new InvalidOperationException("The Sprint 12 " + donorKey +
+                throw new InvalidOperationException("The " + sprintLabel + " " + donorKey +
                     " bind-rig capture has no live view or evidence directory.");
             SkinnedMeshRenderer[] renderers = summon.View
                 .GetComponentsInChildren<SkinnedMeshRenderer>(true)
                 .Where(value => value != null && value.sharedMesh != null)
                 .ToArray();
             if (renderers.Length != 1)
-                throw new InvalidOperationException("The Sprint 12 " + donorKey +
+                throw new InvalidOperationException("The " + sprintLabel + " " + donorKey +
                     " donor view has " + renderers.Length +
                     " skinned renderers; exactly one was required.");
             Transform[] originalBones;
@@ -993,7 +1006,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .TryGetDonorRig(summon.View, out originalBones,
                     out originalPoses, out originalMesh);
             var document = new JObject {
-                ["source"] = "request-local hidden Sprint 12 " + donorKey +
+                ["source"] = "request-local hidden " + sprintLabel + " " + donorKey +
                     " donor view",
                 ["space"] = "renderer-local bind frame",
                 ["blueprint"] = summon.Blueprint.name
@@ -1010,7 +1023,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (sourceMesh == null || bones.Length == 0 ||
                     bones.Length != poses.Length ||
                     bones.Any(value => value == null))
-                    throw new InvalidOperationException("The Sprint 12 " +
+                    throw new InvalidOperationException("The " + sprintLabel + " " +
                         donorKey + " donor bind frame is incomplete.");
                 var entry = new JObject {
                     ["renderer"] = renderer.name,
@@ -1044,7 +1057,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 entries.Add(entry);
             }
             document["renderers"] = entries;
-            string fileName = "sprint12-" + donorKey + "-bind-rig.json";
+            string fileName = sprintLabel.Replace(" ", "")
+                .ToLowerInvariant() + "-" + donorKey + "-bind-rig.json";
             File.WriteAllText(Path.Combine(evidenceDirectory, fileName),
                 document.ToString(Formatting.Indented));
             return donorKey + ":file=" + fileName + ",renderers=" +
