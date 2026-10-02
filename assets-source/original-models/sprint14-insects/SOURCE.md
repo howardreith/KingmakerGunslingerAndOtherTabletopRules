@@ -1,6 +1,7 @@
 # Original Sprint 14 insects
 
-Giant Ant Soldier and Fire Beetle geometry, UVs and paintings are original
+Giant Ant Soldier, Giant Ant Worker and Fire Beetle geometry, UVs and paintings
+are original
 project-owned procedural work. No native vertices, triangles, texture, material
 or animation is copied. Both original meshes use only bone names and weights
 from the live Giant Spider renderer; runtime supplies that individual donor's
@@ -70,6 +71,15 @@ swings the three weighted chains into the alternating tripod at fourteen
 degrees, which is the pose in which six visible legs and no phantom contact
 either holds or does not; `wing-stroke` raises the beetle's fourth chain so the
 wing's deformation at the top of a stroke can be seen rather than guessed at.
+
+The two ant castes are one builder taking a caste rather than two near-copies,
+because they differ in exactly the three things that separate them in the
+source: head size, mandible weight and whether there is a sting. The worker's
+stat block is the soldier's with the Worker template applied - no poison sting
+and no grab, which leaves a bite alone - so its head no longer has to carry
+one, its gaster is the larger mass, and its chitin is painted lighter and
+duller. With both castes on screen the soldiers are the dark ones, and from
+behind the sting tells them apart outright.
 
 The expected visual reads are: a dark reddish-brown ant in three masses on a
 thread - an oversized soldier's head with heavy curved mandibles, a humped
