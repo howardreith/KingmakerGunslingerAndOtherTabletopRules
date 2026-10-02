@@ -512,14 +512,22 @@ def validate(root: Path) -> None:
             raise AssertionError("No Lightning Mephit may enter the catalogs: " + path.name)
     runtime_icons = json.loads((root / "assets/game/icons/expanded-summoning/icon-manifest.json")
                                .read_text(encoding="utf-8-sig"))
-    if runtime_icons["count"] != SPRINT3["projectIcons"] + 10 or \
-            len(runtime_icons["icons"]) != SPRINT3["projectIcons"] + 10 or \
+    # Ten Phase 2 concepts through Sprint 13, and three Sprint 14 insects.
+    if runtime_icons["count"] != SPRINT3["projectIcons"] + 13 or \
+            len(runtime_icons["icons"]) != SPRINT3["projectIcons"] + 13 or \
             not {"pony", "horse", "owlbear", "cyclops", "shambling-mound", "giant-flytrap",
                  "purple-worm", "dust-mephit", "ice-mephit", "magma-mephit", "ooze-mephit",
                  "salt-mephit", "steam-mephit", "tiger", "giant-wasp", "stirge",
                  "aurochs", "bison", "rhinoceros", "woolly-rhinoceros",
                  "remove-stirge", "dire-rat"} <= {row["key"] for row in runtime_icons["icons"]}:
         raise AssertionError("Runtime icon manifest does not carry the Phase 1 icons")
+
+    # Sprint 14's three insects carry their own icons from registration rather
+    # than from publication: a creature that is withheld still has to be able
+    # to show its own face the moment its key leaves the suppression set.
+    if not {"fire-beetle", "giant-ant-worker", "giant-ant-soldier"} <= \
+            {row["key"] for row in runtime_icons["icons"]}:
+        raise AssertionError("Runtime icon manifest is missing a Sprint 14 insect")
     for key in ("pony", "horse", "owlbear", "cyclops", "shambling-mound", "giant-flytrap",
                 "purple-worm", "dust-mephit", "ice-mephit", "magma-mephit", "ooze-mephit",
                 "salt-mephit", "steam-mephit", "tiger", "dire-rat"):
@@ -533,7 +541,7 @@ def validate(root: Path) -> None:
     # Keep the accepted Phase 1 metadata at 251, but validate the current
     # package count with the Phase 2 bird, vermin, quadruped and icon
     # additions.
-    package_count = SPRINT3["packageFileCountWithSoundBank"] + 38
+    package_count = SPRINT3["packageFileCountWithSoundBank"] + 44
     for script in ("Build-Local.ps1", "package.ps1"):
         require_tokens(root / "scripts" / script,
             "{ %d } else { %d }" % (package_count, package_count - 2),
@@ -544,7 +552,9 @@ def validate(root: Path) -> None:
             "assets\\sprint12-quadrupeds",
             "@('dire-rat','hyena','goblin-dog')",
             "assets\\sprint13-creatures",
-            "@('wolverine','shadow-mastiff','poisonous-frog')")
+            "@('wolverine','shadow-mastiff','poisonous-frog')",
+            "assets\\sprint14-insects",
+            "@('fire-beetle','giant-ant-worker','giant-ant-soldier')")
 
     state = json.loads((root / "validation/static-validation.json").read_text(
         encoding="utf-8"))[STATIC_KEY]

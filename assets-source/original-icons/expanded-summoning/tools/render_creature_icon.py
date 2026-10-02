@@ -854,7 +854,139 @@ def shadow_mastiff():
     sphere("Nose", (0.0, -1.38, 0.10), (0.18, 0.11, 0.11), under)
 
 
+def giant_ant(soldier):
+    """A giant ant in profile: head, pinched waist and gaster, three masses on
+    a thread, which is the only thing that names an ant at 64 pixels.
+
+    The first build framed it head-on and close, so all three masses hid behind
+    the face and what rendered was a brown ball with sticks. The creature is
+    now laid along the view's horizontal, slightly turned, so the silhouette
+    does the work and the mandibles and elbowed antennae decorate it rather
+    than carry it.
+
+    The caste is the same three differences the mesh uses - head size, mandible
+    weight, and whether a sting shows - because a player who can tell them apart
+    in the field should be able to tell them apart in the menu.
+    """
+    head_scale = 1.0 if soldier else 0.78
+    chitin = material("Chitin", (0.172, 0.084, 0.047), 0.32,
+                      noise=(7.0, 0.42, (0.078, 0.035, 0.021)))
+    limb = material("Limb", (0.132, 0.063, 0.036), 0.40)
+    jaw = material("Jaw", (0.050, 0.027, 0.017), 0.28)
+    eye = material("AntEye", (0.028, 0.024, 0.022), 0.10)
+    body = Blob("Body", chitin, 0.045)
+    head = (-1.92, 0.0, 0.52)
+    body.ball(head, 0.80 * head_scale, (1.04, 0.96, 0.98), axis=(1, 0, 0))
+    body.ball((-1.02, 0.0, 0.34), 0.26)                                  # neck
+    body.ball((-0.42, 0.0, 0.50), 0.62, (1.28, 0.90, 0.92), axis=(1, 0, 0))
+    body.ball((0.34, 0.0, 0.28), 0.15)                                   # petiole
+    body.ball((1.28, 0.0, 0.52), 0.82, (1.24, 0.92, 0.94), axis=(1, 0, 0))
+    for s in (-1, 1):
+        # Compound eyes on the head's sides, set well forward.
+        sphere("Eye%d" % s, (-2.16, s * 0.52 * head_scale, 0.62),
+               (0.15, 0.11, 0.13), eye)
+        # Mandibles: out and forward, then converging. Two segments, because a
+        # straight cone reads as a tusk.
+        heavy = 0.135 if soldier else 0.078
+        cone_along("Mandible%dA" % s, (-2.42, s * 0.34 * head_scale, 0.18),
+                   (-1.0, s * 0.42, -0.06), 0.78 * head_scale, heavy, jaw,
+                   heavy * 0.74)
+        cone_along("Mandible%dB" % s,
+                   (-3.12, s * 0.62 * head_scale, 0.12),
+                   (-1.0, -s * 0.66, 0.10), 0.62 * head_scale, heavy * 0.72,
+                   jaw, heavy * 0.14)
+        # The elbowed antenna: a scape up and forward, then a funiculus out.
+        cone_along("Scape%d" % s, (-2.08, s * 0.34, 1.04),
+                   (-0.42, s * 0.30, 1.0), 0.94, 0.068, limb, 0.050)
+        cone_along("Funiculus%d" % s, (-2.48, s * 0.62, 1.92),
+                   (-1.0, s * 0.18, 0.22), 1.26, 0.050, limb, 0.020)
+        # Three pairs of legs from the mesosoma, each a femur out and up and a
+        # tibia down to the ground line.
+        for index, (root, out) in enumerate((
+                (-0.92, -0.46), (-0.38, 0.0), (0.10, 0.46))):
+            cone_along("Femur%d%d" % (s, index), (root, s * 0.22, 0.42),
+                       (out, s * 1.0, 0.52), 0.92, 0.096, limb, 0.062)
+            cone_along("Tibia%d%d" % (s, index),
+                       (root + out * 0.55, s * 0.86, 0.90),
+                       (out * 0.6, s * 0.55, -1.0), 1.46, 0.058, limb, 0.020)
+    if soldier:
+        # The sting. The one feature a worker does not have, so it is worth the
+        # two primitives even at this size.
+        cone_along("Sting", (2.08, 0.0, 0.34), (1.0, 0.0, -0.46), 0.62,
+                   0.070, jaw, 0.012)
+
+
+def fire_beetle():
+    """A fire beetle, three-quarter and from slightly above.
+
+    The glands are the portrait. The source gives this creature luminescence
+    and no fire damage at all, so the one bright thing in the frame is a pair
+    of emissive glands on its head, and everything else - a near-black shell
+    with a red cast, short legs, clubbed antennae - exists so that they have
+    something to glow against.
+
+    The first build made the glands large and nearly white, which read as
+    cartoon eyes, and the shell too pale for them to tell against. They are
+    smaller and redder now, the shell is near-black, and the elytra carry a
+    visible suture so the back is a beetle's and not a dome.
+    """
+    shell = material("Shell", (0.058, 0.026, 0.022), 0.26,
+                     noise=(6.0, 0.40, (0.026, 0.011, 0.010)))
+    elytron = material("Elytron", (0.104, 0.040, 0.030), 0.20,
+                       noise=(16.0, 0.45, (0.038, 0.014, 0.012)))
+    limb = material("BeetleLimb", (0.048, 0.021, 0.018), 0.42)
+    gland = material("Gland", (1.0, 0.34, 0.08), 0.16,
+                     emission=(1.0, 0.36, 0.08), emission_strength=5.0)
+    body = Blob("Body", shell, 0.045)
+    body.ball((0.0, -1.46, 0.10), 0.54, (1.00, 1.18, 0.72), axis=(0, 1, 0))
+    body.ball((0.0, -0.62, 0.26), 0.98, (1.12, 1.30, 0.76), axis=(0, 1, 0))
+    body.ball((0.0, 0.86, 0.22), 1.14, (1.42, 1.44, 0.80), axis=(0, 1, 0))
+    for s in (-1, 1):
+        # One elytron a side, raised and offset so the suture between the pair
+        # is visible from this angle.
+        wing = Blob("Elytron%d" % s, elytron, 0.045)
+        wing.ball((s * 0.46, 0.10, 0.84), 0.50, (0.82, 1.52, 0.42),
+                  axis=(0, 1, 0))
+        wing.ball((s * 0.44, 1.10, 0.78), 0.48, (0.80, 1.44, 0.40),
+                  axis=(0, 1, 0))
+        wing.ball((s * 0.34, 1.92, 0.62), 0.38, (0.70, 1.10, 0.34),
+                  axis=(0, 1, 0))
+        # The glands, above the eyes, where the source puts them. Small enough
+        # to read as lights rather than as a face.
+        sphere("Gland%d" % s, (s * 0.34, -1.80, 0.46), (0.155, 0.135, 0.145),
+               gland)
+        cone_along("Leg%dA" % s, (s * 0.58, -0.72, -0.20),
+                   (s * 1.0, -0.50, 0.20), 0.88, 0.094, limb, 0.060)
+        cone_along("Leg%dB" % s, (s * 1.38, -1.14, -0.02),
+                   (s * 0.38, -0.28, -1.0), 1.04, 0.054, limb, 0.020)
+        cone_along("Leg%dC" % s, (s * 0.68, 0.42, -0.26),
+                   (s * 1.0, 0.28, 0.14), 0.86, 0.088, limb, 0.056)
+        cone_along("Leg%dD" % s, (s * 1.48, 0.68, -0.14),
+                   (s * 0.32, 0.24, -1.0), 1.00, 0.050, limb, 0.018)
+        # Clubbed antennae: short, and thicker at the tip than the base.
+        cone_along("Antenna%d" % s, (s * 0.40, -1.86, 0.22),
+                   (s * 0.62, -1.0, 0.46), 0.92, 0.050, limb, 0.070)
+
+
 CREATURES = {
+    # The two ant castes share a backdrop and a light rig because they are one
+    # creature in two builds; what separates them in the frame is the head and
+    # the mandibles, which is what separates them in the stat block.
+    "giant-ant-soldier": dict(build=lambda: giant_ant(True),
+                     inner=(0.26, 0.13, 0.06), outer=(0.028, 0.014, 0.008),
+                     key=(1.0, 0.86, 0.60), rim=(0.70, 0.80, 1.0),
+                     camera=((1.5, -9.8, 1.95), (-0.30, 0.0, 0.46), 46.0)),
+    "giant-ant-worker": dict(build=lambda: giant_ant(False),
+                     inner=(0.26, 0.13, 0.06), outer=(0.028, 0.014, 0.008),
+                     key=(1.0, 0.86, 0.60), rim=(0.70, 0.80, 1.0),
+                     camera=((1.5, -9.8, 1.95), (-0.30, 0.0, 0.46), 46.0)),
+    # A near-black creature whose whole identity is that it glows: the backdrop
+    # is deep and cool so the two emissive glands are the only warm thing
+    # anywhere in the frame.
+    "fire-beetle": dict(build=fire_beetle,
+                     inner=(0.09, 0.07, 0.11), outer=(0.008, 0.006, 0.010),
+                     key=(0.80, 0.78, 0.92), rim=(0.62, 0.70, 1.0),
+                     camera=((0.45, -7.4, 1.90), (0.0, 0.05, 0.16), 54.0)),
     "pony": dict(build=lambda: equine(True),
                  inner=(0.5, 0.38, 0.16), outer=(0.05, 0.04, 0.025),
                  key=(1.0, 0.88, 0.62), rim=(0.85, 0.85, 0.95),
