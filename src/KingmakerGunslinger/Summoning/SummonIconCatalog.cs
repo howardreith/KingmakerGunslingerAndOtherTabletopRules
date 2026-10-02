@@ -39,7 +39,7 @@ namespace KingmakerGunslinger.Summoning
         internal static void Validate()
         {
             string[] visibleCatalog = ExpandedSummoningCatalog.All
-                .Where(IsPublishedSomewhere)
+                .Where(IsRegisteredSomewhere)
                 .Select(value => value.Key).ToArray();
             string[] split = { "redcap", "axiomite", "soul-eater", "bogeyman",
                 "movanic-deva", "frost-giant", "thanadaemon" };
@@ -48,7 +48,7 @@ namespace KingmakerGunslinger.Summoning
             string[] expected = visibleCatalog.Concat(split).Concat(preserved)
                 .Concat(prepared)
                 .ToArray();
-            if (Values.Length != 101 || expected.Length != 101 ||
+            if (Values.Length != 104 || expected.Length != 104 ||
                 Values.Any(value => value == null ||
                     string.IsNullOrWhiteSpace(value.Key) ||
                     string.IsNullOrWhiteSpace(value.DisplayName)) ||
@@ -64,7 +64,7 @@ namespace KingmakerGunslinger.Summoning
 
         private static SummonProjectIconSpec[] Build()
         {
-            var result = ExpandedSummoningCatalog.All.Where(IsPublishedSomewhere)
+            var result = ExpandedSummoningCatalog.All.Where(IsRegisteredSomewhere)
                 .Select(value => new SummonProjectIconSpec(
                     value.Key, value.DisplayName, SummonProjectIconScope.KmgCatalog))
                 .ToList();
@@ -85,6 +85,29 @@ namespace KingmakerGunslinger.Summoning
             return result.ToArray();
         }
 
+        /// <summary>
+        /// Every creature the roster registers, published or withheld.
+        ///
+        /// <para>An icon is part of a creature's identity and identities are
+        /// allocated once and never move, so a creature that is registered and
+        /// withheld still carries its own icon: removing its key from the
+        /// suppression set is all that publication should take, and a menu
+        /// entry that appeared without a face would make that a two-step
+        /// change.</para>
+        /// </summary>
+        internal static bool IsRegisteredSomewhere(SummonCreatureSpec creature)
+        {
+            return ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
+                .Concat(ExpandedSummoningCatalog.GenerateVariants(
+                    SummonFamily.NaturesAlly))
+                .Any(value => value.Creature.Key == creature.Key);
+        }
+
+        /// <summary>
+        /// Only the creatures a player can choose today. The guarded runtime
+        /// review samples this, because what it has to look at is the live
+        /// menu rather than the roster.
+        /// </summary>
         internal static bool IsPublishedSomewhere(SummonCreatureSpec creature)
         {
             return ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
