@@ -72,6 +72,12 @@ namespace KingmakerGunslinger.Summoning
             "KMG_Summoning_Unit_ShadowMastiff";
         internal const string PoisonousFrogBlueprintName =
             "KMG_Summoning_Unit_PoisonousFrog";
+        internal const string FireBeetleBlueprintName =
+            "KMG_Summoning_Unit_FireBeetle";
+        internal const string GiantAntWorkerBlueprintName =
+            "KMG_Summoning_Unit_GiantAntWorker";
+        internal const string GiantAntSoldierBlueprintName =
+            "KMG_Summoning_Unit_GiantAntSoldier";
         /// <summary>
         /// The name carried by the private mesh and material the swap installs;
         /// observers recognise the attached state by it.
@@ -98,7 +104,10 @@ namespace KingmakerGunslinger.Summoning
                 { GoblinDogBlueprintName, "goblin-dog" },
                 { WolverineBlueprintName, "wolverine" },
                 { ShadowMastiffBlueprintName, "shadow-mastiff" },
-                { PoisonousFrogBlueprintName, "poisonous-frog" }
+                { PoisonousFrogBlueprintName, "poisonous-frog" },
+                { FireBeetleBlueprintName, "fire-beetle" },
+                { GiantAntWorkerBlueprintName, "giant-ant-worker" },
+                { GiantAntSoldierBlueprintName, "giant-ant-soldier" }
             };
         private static readonly HashSet<string> UngulateKeys =
             new HashSet<string>(StringComparer.Ordinal)
@@ -109,6 +118,9 @@ namespace KingmakerGunslinger.Summoning
         private static readonly HashSet<string> Sprint13CreatureKeys =
             new HashSet<string>(StringComparer.Ordinal)
             { "wolverine", "shadow-mastiff", "poisonous-frog" };
+        private static readonly HashSet<string> Sprint14InsectKeys =
+            new HashSet<string>(StringComparer.Ordinal)
+            { "fire-beetle", "giant-ant-worker", "giant-ant-soldier" };
         private const string MainTexture = "_MainTex";
 
         internal static bool HandlesBlueprintName(string blueprintName)
@@ -298,6 +310,14 @@ namespace KingmakerGunslinger.Summoning
                     out albedo, out status))
                     return Fallback(status);
             }
+            else if (Sprint14InsectKeys.Contains(attachment.VisualKey))
+            {
+                string status;
+                if (!PteranodonAssetRuntime.TryGetSprint14InsectVisual(
+                    attachment.VisualKey, out source, out boneNames,
+                    out albedo, out status))
+                    return Fallback(status);
+            }
             else
             {
                 if (!PteranodonAssetRuntime.TryGetMembrane(out source,
@@ -357,6 +377,8 @@ namespace KingmakerGunslinger.Summoning
                                     Sprint12QuadrupedKeys.Contains(
                                         attachment.VisualKey) ||
                                     Sprint13CreatureKeys.Contains(
+                                        attachment.VisualKey) ||
+                                    Sprint14InsectKeys.Contains(
                                         attachment.VisualKey))
                                     ? "KMG_" + attachment.VisualKey + "_Original"
                                     : CustomVisualName;
@@ -570,7 +592,8 @@ namespace KingmakerGunslinger.Summoning
                  attachment.VisualKey != "stirge" &&
                  !UngulateKeys.Contains(attachment.VisualKey) &&
                  !Sprint12QuadrupedKeys.Contains(attachment.VisualKey) &&
-                 !Sprint13CreatureKeys.Contains(
+                 !Sprint13CreatureKeys.Contains(attachment.VisualKey) &&
+                 !Sprint14InsectKeys.Contains(
                     attachment.VisualKey))) return;
             string visualName = attachment.VisualKey == "stirge"
                 ? StirgeVisualName : attachment.VisualKey == "giant-wasp"
