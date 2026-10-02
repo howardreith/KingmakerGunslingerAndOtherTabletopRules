@@ -48,14 +48,23 @@ directly on work already done:
   its Daylight negation. The Shadow Mastiff is registered with its four
   placements suppressed, so the published surface is unchanged at 900 generated
   and 929 total choices.
+  Its three original visuals are authored, repaired and wired. Both donor bind
+  frames were captured in a guarded run - the Worg frame in Sprint 12, which
+  the Wolverine and the Shadow Mastiff share with the Goblin Dog, and the Giant
+  Poisonous Frog frame in Sprint 13. The first rest-pose review found none of
+  the three reading as its species and seven reproducible defects were
+  repaired, including a pale-blue bleed across an atlas region edge that gave
+  the Shadow Mastiff a glowing ring around its neck; all seven and the one
+  observation deliberately not treated as a defect are recorded in
+  `assets-source/original-models/sprint13-creatures/SOURCE.md`. The meshes and
+  paintings are pinned by hash in the domain suite and carried through the
+  project, the local build, the package and both output validators, so a
+  creature cannot quietly ship wearing its donor's body.
 - Next executable action: the remaining Sprint 13 work, in this order - the
-  three original silhouettes (Wolverine, Shadow Mastiff, a true Tiny Poison
-  Frog) with one new donor bind-frame capture for the frog, since the Worg
-  frame the first two need was already captured in Sprint 12; then the visual
-  review, navigation, both combat modes and the rage's lifetime across expiry,
-  death, dismissal, area transition and reload; then the Shadow Mastiff's
-  publication with its icon; then the tranche 2A five-profile compatibility
-  matrix, which closes Phase 2A.
+  live visual review of the three originals, navigation, both combat modes and
+  the rage's lifetime across expiry, death, dismissal, area transition and
+  reload; then the Shadow Mastiff's publication with its icon; then the tranche
+  2A five-profile compatibility matrix, which closes Phase 2A.
 - The complete five-profile compatibility matrix is a tranche-closure gate and
   runs at the end of tranche 2A, after Sprint 13.
 - Sprints 14-21 remain authorized and not started.

@@ -112,6 +112,15 @@ if (Test-Path -LiteralPath $sprint12QuadrupedSource -PathType Container) {
         Copy-Item -LiteralPath (Join-Path $sprint12QuadrupedSource "$kind-albedo.png") -Destination $sprint12QuadrupedDestination
     }
 }
+$sprint13CreatureSource = Join-Path $outputDirectory 'assets\sprint13-creatures'
+if (Test-Path -LiteralPath $sprint13CreatureSource -PathType Container) {
+    $sprint13CreatureDestination = Join-Path $modDirectory 'assets\sprint13-creatures'
+    New-Item -ItemType Directory -Path $sprint13CreatureDestination -Force | Out-Null
+    foreach ($kind in @('wolverine','shadow-mastiff','poisonous-frog')) {
+        Copy-Item -LiteralPath (Join-Path $sprint13CreatureSource "$kind-mesh.json") -Destination $sprint13CreatureDestination
+        Copy-Item -LiteralPath (Join-Path $sprint13CreatureSource "$kind-albedo.png") -Destination $sprint13CreatureDestination
+    }
+}
 $soundBankSource=Join-Path $repositoryRoot 'assets\soundbanks'
 if(Test-Path -LiteralPath (Join-Path $soundBankSource 'KMG_Firearms.bnk') -PathType Leaf){
     $soundBankDestination=Join-Path $modDirectory 'assets\soundbanks'
@@ -133,7 +142,7 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
 # Strict package inventory including the six reviewed Sprint 12 quadruped
 # mesh/painting files. The soundbank and its manifest account for the optional
 # two-file difference.
-$expectedPackageFileCount = if ($hasFirearmSoundBank) { 282 } else { 280 }
+$expectedPackageFileCount = if ($hasFirearmSoundBank) { 288 } else { 286 }
 & $python (Join-Path $repositoryRoot 'tools\create_deterministic_package.py') `
     --source $modDirectory --output $packagePath `
     --expected-file-count $expectedPackageFileCount
