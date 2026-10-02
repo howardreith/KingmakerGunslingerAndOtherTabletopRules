@@ -899,8 +899,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .RequireExact<BlueprintCharacterClass>(
                         BlueprintBootstrap.Library, WizardGuid,
                         "native Wizard summon activation spellbook");
-                int casterLevels = _kind == ScenarioKind.Acadamae ||
-                    _kind == ScenarioKind.NativeControl ? 2 : 20;
+                // The Acadamae and ordinary native-control cases use a
+                // level-2 Wizard because their baseline is Summon Monster I,
+                // and a low caster keeps the fixture honest about slot
+                // economy. A named creature changes that: a level-2 Wizard
+                // cannot prepare Summon Monster VI at all, and the first
+                // ordinary turn-based run for the Shadow Mastiff failed at
+                // fixture setup with the spellbook rejecting the preparation.
+                // When a creature is named, the caster is the same level 20
+                // the other cases use - which is what a player casting a
+                // sixth-level summon would be.
+                int casterLevels = (_kind == ScenarioKind.Acadamae ||
+                    _kind == ScenarioKind.NativeControl) &&
+                    _flightCreature == null ? 2 : 20;
                 AdvanceSpellcaster(_caster.Descriptor, wizard, casterLevels,
                     ref _levelController);
                 _spellbook = _caster.Descriptor.GetSpellbook(wizard);
