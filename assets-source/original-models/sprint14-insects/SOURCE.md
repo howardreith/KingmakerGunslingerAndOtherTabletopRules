@@ -1,11 +1,11 @@
 # Original Sprint 14 insects
 
 Giant Ant Soldier, Giant Ant Worker and Fire Beetle geometry, UVs and paintings
-are original
-project-owned procedural work. No native vertices, triangles, texture, material
-or animation is copied. Both original meshes use only bone names and weights
-from the live Giant Spider renderer; runtime supplies that individual donor's
-own bind poses during the existing instance-local renderer swap.
+are original project-owned procedural work. No native vertices, triangles,
+texture, material or animation is copied. All three original meshes use only
+bone names and weights from the live Giant Spider renderer; runtime supplies
+that individual donor's own bind poses during the existing instance-local
+renderer swap.
 
 The geometry-free request-local capture remains outside Git and the package.
 Use Blender 4.5.10 LTS. For each key, run
@@ -17,7 +17,7 @@ is where numpy lives, then run
 assets/sprint14-insects/<key>-mesh.json --report <private report.json>
 --blend-out <private source.blend> --fbx-out <private preview.fbx>`.
 
-Both keys use the Sprint 14 Giant Spider capture. The generator rejects an
+All three keys use the Sprint 14 Giant Spider capture. The generator rejects an
 incomplete, repeated, multi-renderer or wrong-family capture and names the
 sprint whose capture each creature is entitled to, so a Sprint 12 or 13 file
 cannot silently stand in for this one. Private reports record the exact capture
@@ -32,7 +32,8 @@ and that the Giant Spider is the only compact many-legged arthropod in the
 game. That makes it the best available donor, which is not the same as proving
 one rig can carry both a six-legged ant walking and a beetle flying, so the
 owner's order required two minimal vertical slices before the five Sprint 14
-and 15 models were authored. These two creatures are those slices.
+and 15 models were authored. The Soldier and the Fire Beetle are those two
+slices; the Worker follows from the Soldier once they pass.
 
 The measured bind frame - 51 bones, one skinned renderer, Z up and negative Y
 forward - answered the ground half immediately. The donor has four leg chains a
@@ -59,7 +60,7 @@ is weighted to the fourth foot, so no part of a wing can reach the ground.
 something a reviewer has to catch by eye: the build fails unless the ant's
 fourth chain is empty on both sides and the beetle's carries geometry on its
 upper and lower bones and none on its foot. Each shipped report records
-`legChainUsage` and `visibleLegs`, which is six for both.
+`legChainUsage` and `visibleLegs`, which is six for all three.
 
 ## The review sheet
 
