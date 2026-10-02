@@ -130,11 +130,11 @@ if ($scenarioMetadata.RequiresSaveName) {
             $Parameters = @{ saveName = $SaveName }
         } elseif ($Parameters.Count -eq 1 -and
             $Parameters.ContainsKey('flightCreature') -and
-            [string]$Parameters.flightCreature -cin @('eagle', 'dire-bat', 'giant-wasp', 'stirge', 'dire-rat')) {
+            [string]$Parameters.flightCreature -cin @('eagle', 'dire-bat', 'giant-wasp', 'stirge', 'dire-rat', 'wolverine', 'shadow-mastiff')) {
             $Parameters = @{ saveName = $SaveName;
                 flightCreature = [string]$Parameters.flightCreature }
         } else {
-            throw 'Summon activation permits typed -SaveName and only the bounded Eagle/Dire Bat/Wasp/Stirge/Dire Rat flightCreature.'
+            throw 'Summon activation permits typed -SaveName and only the bounded Eagle/Dire Bat/Wasp/Stirge/Dire Rat/Wolverine/Shadow Mastiff flightCreature.'
         }
     } elseif (Test-KmgNereidPersistenceScope $Scenario $Parameters) {
         if (Test-KmgTreacherousEffectScope $Scenario $Parameters) {
