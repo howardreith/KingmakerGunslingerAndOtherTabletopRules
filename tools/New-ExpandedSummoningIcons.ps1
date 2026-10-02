@@ -15,6 +15,12 @@ $blueprintPath = Join-Path $root 'blueprints\blueprints.json'
 
 Add-Type -AssemblyName System.Drawing
 
+function Write-LfText([string]$Path, [string]$Text) {
+    $body = $Text.Replace("`r`n", "`n")
+    if (-not $body.EndsWith("`n")) { $body += "`n" }
+    [System.IO.File]::WriteAllText($Path, $body, (New-Object System.Text.UTF8Encoding $false))
+}
+
 function Get-Sha256([string]$Path) {
     return (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant()
 }
@@ -158,8 +164,11 @@ $runtime = [ordered]@{
     schemaVersion = 1; count = $icons.Count; icons = $runtimeRows
 }
 if (-not $VerifyOnly) {
-    $provenance | ConvertTo-Json -Depth 12 | Set-Content -LiteralPath $provenancePath -Encoding UTF8
-    $runtime | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $runtimePath -Encoding UTF8
+    # LF, because .gitattributes declares both manifests LF and the icon
+    # catalog pins the authoring one. Set-Content would write CRLF and the
+    # pin would then only ever match this machine.
+    Write-LfText $provenancePath ($provenance | ConvertTo-Json -Depth 12)
+    Write-LfText $runtimePath ($runtime | ConvertTo-Json -Depth 8)
 } else {
     if (-not (Test-Path $provenancePath) -or -not (Test-Path $runtimePath)) { throw 'Icon manifests are missing.' }
     $checkedRuntime = Get-Content -LiteralPath $runtimePath -Raw | ConvertFrom-Json
