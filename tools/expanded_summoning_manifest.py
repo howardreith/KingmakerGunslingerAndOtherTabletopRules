@@ -160,8 +160,8 @@ def parsed_creatures():
             "ally": None if ally == "null" else int(ally),
             "visual": visual or name,
         })
-    if len(values) != 88:
-        raise SystemExit(f"Expected 88 parsed creatures; observed {len(values)}")
+    if len(values) != 89:
+        raise SystemExit(f"Expected 89 parsed creatures; observed {len(values)}")
     return values
 
 
@@ -361,8 +361,16 @@ def planned():
         ("KMG.Summoning.Natural.Wolverine.Rage", "BlueprintFeature"),
         ("KMG.Summoning.Natural.Wolverine.RageOnset", "BlueprintBuff"),
         ("KMG.Summoning.Natural.Wolverine.RageState", "BlueprintBuff"),
+        # Sprint 13 Shadow Mastiff
+        ("KMG.Summoning.Natural.Tail1d6", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Special.ShadowMastiff.Traits", "BlueprintFeature"),
+        ("KMG.Summoning.Special.ShadowMastiff.Bay", "BlueprintAbility"),
+        ("KMG.Summoning.Special.ShadowMastiff.BayPanic", "BlueprintBuff"),
+        ("KMG.Summoning.Special.ShadowMastiff.BayImmunity", "BlueprintBuff"),
+        ("KMG.Summoning.Special.ShadowMastiff.ShadowBlend", "BlueprintActivatableAbility"),
+        ("KMG.Summoning.Special.ShadowMastiff.ShadowBlendState", "BlueprintBuff"),
     ))
-    if len(rows) != 1665 or len({symbol for symbol, _ in rows}) != 1665:
+    if len(rows) != 1677 or len({symbol for symbol, _ in rows}) != 1677:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 
@@ -374,7 +382,7 @@ def generated_roster(manifest):
         for key, guid, dedicated in DONOR.findall(DONORS.read_text(encoding="utf-8"))
     }
     creatures = parsed_creatures()
-    if len(donors) != 88 or set(donors) != {value["key"] for value in creatures}:
+    if len(donors) != 89 or set(donors) != {value["key"] for value in creatures}:
         raise SystemExit("Roster generation requires one exact donor per creature")
     lines = [
         "# Expanded Summoning roster and identity ledger",

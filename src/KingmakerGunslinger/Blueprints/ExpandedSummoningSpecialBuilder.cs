@@ -24,6 +24,7 @@ using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.Abilities.Components.TargetCheckers;
+using Kingmaker.UnitLogic.ActivatableAbilities;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Buffs.Components;
 using Kingmaker.UnitLogic.Commands.Base;
@@ -55,6 +56,34 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Summoning.Unit.InvisibleStalker";
         private const string ErinyesUnitSymbol =
             "KMG.Summoning.Unit.ErinyesDevil";
+        private const string ShadowMastiffUnitSymbol =
+            "KMG.Summoning.Unit.ShadowMastiff";
+        private const string ShadowMastiffTailSymbol =
+            "KMG.Summoning.Natural.Tail1d6";
+        private const string ShadowMastiffTraitsSymbol =
+            "KMG.Summoning.Special.ShadowMastiff.Traits";
+        private const string ShadowMastiffBaySymbol =
+            "KMG.Summoning.Special.ShadowMastiff.Bay";
+        private const string ShadowMastiffBayPanicSymbol =
+            "KMG.Summoning.Special.ShadowMastiff.BayPanic";
+        private const string ShadowMastiffBayImmunitySymbol =
+            "KMG.Summoning.Special.ShadowMastiff.BayImmunity";
+        private const string ShadowMastiffShadowBlendSymbol =
+            "KMG.Summoning.Special.ShadowMastiff.ShadowBlend";
+        private const string ShadowMastiffShadowBlendStateSymbol =
+            "KMG.Summoning.Special.ShadowMastiff.ShadowBlendState";
+        /// <summary>
+        /// Exact native identities the Shadow Mastiff needs: the quadruped
+        /// trip rider its printed bite carries, the two feats its stat block
+        /// lists that this builder did not already name, and native Daylight,
+        /// which is the only effect the printed shadow blend says negates it.
+        /// Daylight is taken from this project's own audited native
+        /// light-spell census in ElementalFeatPolicy.
+        /// </summary>
+        private const string TrippingBiteGuid = "f957b4444b6fb404e84ae2a5765797bb";
+        private const string IronWillGuid = "175d1577bb6c9a04baf88eec99c66334";
+        private const string PowerAttackGuid = "9972f33f977fc724c838e59641b2fca5";
+        private const string NativeDaylightGuid = "2b877386976817a429002e8bb10bb3fc";
         private const string ShadowDemonUnitSymbol =
             "KMG.Summoning.Unit.ShadowDemon";
         private const string ShadowDemonCombatTraitsSymbol =
@@ -353,6 +382,7 @@ namespace KingmakerGunslinger.Blueprints
                 InvisibleStalkerUnitSymbol), extraplanar);
             ConfigureErinyes(library, Require<BlueprintUnit>(bySymbol,
                 ErinyesUnitSymbol));
+            ConfigureShadowMastiffFamily(library, bySymbol, extraplanar);
             BlueprintBuff shadowTraits = Require<BlueprintBuff>(bySymbol,
                 ShadowDemonCombatTraitsSymbol);
             ConfigureShadowDemonCombatTraits(shadowTraits);
@@ -2576,6 +2606,367 @@ namespace KingmakerGunslinger.Blueprints
                 ExpandedSummoningSpecialProfiles.ErinyesWisdom,
                 ExpandedSummoningSpecialProfiles.ErinyesCharisma,
                 ExpandedSummoningSpecialProfiles.ErinyesSpeedFeet);
+        }
+
+        /// <summary>
+        /// Builds the Shadow Mastiff and its two printed supernatural
+        /// abilities. The creature has no native Kingmaker equivalent, so
+        /// every number here comes from its Bestiary 3 stat block and is held
+        /// in ExpandedSummoningSpecialProfiles rather than written inline.
+        /// </summary>
+        /// <summary>
+        /// Sets the two buff flags this builder cares about. The special
+        /// builder's buffs are fresh shells whose flags default to zero, so
+        /// only a buff that must read as harmful, or must stay out of the
+        /// player's buff list, needs this.
+        /// </summary>
+        private static void SetBuffFlags(BlueprintBuff buff, bool harmful,
+            bool hidden = false)
+        {
+            FieldInfo field = buff.GetType().GetField("m_Flags",
+                BindingFlags.Instance | BindingFlags.Public |
+                BindingFlags.NonPublic);
+            if (field == null || !field.FieldType.IsEnum)
+                throw new MissingFieldException(typeof(BlueprintBuff).FullName,
+                    "m_Flags");
+            int value = (harmful ?
+                (int)Enum.Parse(field.FieldType, "Harmful") : 0) |
+                (hidden ? (int)Enum.Parse(field.FieldType, "HiddenInUi") : 0);
+            field.SetValue(buff, Enum.ToObject(field.FieldType, value));
+        }
+
+        private static void ConfigureShadowMastiffFamily(
+            LibraryScriptableObject library,
+            IDictionary<string, BlueprintScriptableObject> bySymbol,
+            BlueprintFeature extraplanar)
+        {
+            BlueprintItemWeapon tail = Require<BlueprintItemWeapon>(bySymbol,
+                ShadowMastiffTailSymbol);
+            ConfigureShadowMastiffTail(library, tail);
+            BlueprintBuff panic = Require<BlueprintBuff>(bySymbol,
+                ShadowMastiffBayPanicSymbol);
+            BlueprintBuff immunity = Require<BlueprintBuff>(bySymbol,
+                ShadowMastiffBayImmunitySymbol);
+            BlueprintAbility bay = Require<BlueprintAbility>(bySymbol,
+                ShadowMastiffBaySymbol);
+            BlueprintBuff blendState = Require<BlueprintBuff>(bySymbol,
+                ShadowMastiffShadowBlendStateSymbol);
+            BlueprintActivatableAbility blend =
+                Require<BlueprintActivatableAbility>(bySymbol,
+                    ShadowMastiffShadowBlendSymbol);
+            BlueprintFeature traits = Require<BlueprintFeature>(bySymbol,
+                ShadowMastiffTraitsSymbol);
+            BlueprintUnit unit = Require<BlueprintUnit>(bySymbol,
+                ShadowMastiffUnitSymbol);
+            ConfigureShadowMastiffBayPanic(panic);
+            ConfigureShadowMastiffBayImmunity(immunity);
+            ConfigureShadowMastiffBay(library, bay, panic, immunity, unit);
+            ConfigureShadowMastiffShadowBlendState(library, blendState);
+            ConfigureShadowMastiffShadowBlend(blend, blendState);
+            ConfigureShadowMastiffTraits(traits, bay, blend);
+            ConfigureShadowMastiff(library, unit, tail, traits, extraplanar);
+        }
+
+        /// <summary>
+        /// The printed tail slap is 1d6. The native animated tail is the donor
+        /// for presentation and the dice are overridden to the printed value,
+        /// the same way the Salamander's tail is minted.
+        /// </summary>
+        private static void ConfigureShadowMastiffTail(
+            LibraryScriptableObject library, BlueprintItemWeapon tail)
+        {
+            BlueprintItemWeapon native = BlueprintLibraryLookup.RequireExact<
+                BlueprintItemWeapon>(library, LargeTailGuid,
+                    "native animated tail weapon");
+            CopyFields(native, tail);
+            tail.name = InternalName(ShadowMastiffTailSymbol);
+            tail.ComponentsArray = (native.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Select(
+                    ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
+            SetField(tail, "m_OverrideDamageDice", true);
+            SetField(tail, "m_DamageDice", new DiceFormula(1, DiceType.D6));
+            tail.IsNonRemovable = true;
+            SetField(tail, "m_Cost", 0);
+            SetField(tail, "m_Weight", 0f);
+            SetField(tail, "m_Enchantments", Array.Empty<
+                Kingmaker.Blueprints.Items.Ecnchantments.BlueprintWeaponEnchantment>());
+        }
+
+        /// <summary>
+        /// The printed effect of a failed bay save. Kingmaker models one
+        /// authorable flee state, UnitCondition.Frightened, which is what
+        /// UnitFearController gates on: it interrupts every command each tick
+        /// and runs the creature away from its remembered enemies along a
+        /// partly random path, which is behaviourally what PF1 assigns to
+        /// panicked. The three printed descriptors are carried so native
+        /// sonic, mind-affecting and fear immunities apply without being
+        /// re-implemented.
+        /// </summary>
+        private static void ConfigureShadowMastiffBayPanic(BlueprintBuff buff)
+        {
+            var descriptor = ScriptableObject.CreateInstance<
+                SpellDescriptorComponent>();
+            descriptor.Descriptor = SpellDescriptor.Sonic |
+                SpellDescriptor.MindAffecting | SpellDescriptor.Fear;
+            var condition = ScriptableObject.CreateInstance<AddCondition>();
+            condition.Condition = UnitCondition.Frightened;
+            buff.name = InternalName(ShadowMastiffBayPanicSymbol);
+            buff.Stacking = StackingType.Replace;
+            SetBuffFlags(buff, harmful: true);
+            buff.ResourceAssetIds = Array.Empty<string>();
+            buff.ComponentsArray = new BlueprintComponent[] {
+                descriptor, condition };
+            BlueprintUnitFactAccess.Resolve().Configure(buff,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.ShadowMastiff.BayPanic.Name",
+                    "Panicked (Bay)"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.ShadowMastiff.BayPanic.Description",
+                    "Fleeing in terror from a shadow mastiff's bay. The creature cannot act while it runs."),
+                null);
+        }
+
+        /// <summary>
+        /// The printed 24-hour bound: "A creature that successfully saves
+        /// cannot be affected by the same mastiff's bay for 24 hours." The
+        /// marker is inert and carries no mechanics; what makes it per-mastiff
+        /// is that the bay action compares the stored buff's caster to itself.
+        /// It deliberately outlives the summon that created it, which is the
+        /// same lifetime rule the Sprint 12 disease contract records.
+        /// </summary>
+        private static void ConfigureShadowMastiffBayImmunity(BlueprintBuff buff)
+        {
+            buff.name = InternalName(ShadowMastiffBayImmunitySymbol);
+            buff.Stacking = StackingType.Replace;
+            SetBuffFlags(buff, harmful: false, hidden: true);
+            buff.ResourceAssetIds = Array.Empty<string>();
+            buff.ComponentsArray = Array.Empty<BlueprintComponent>();
+            BlueprintUnitFactAccess.Resolve().Configure(buff,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.ShadowMastiff.BayImmunity.Name",
+                    "Steeled Against That Bay"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.ShadowMastiff.BayImmunity.Description",
+                    "This creature resisted one shadow mastiff's bay and cannot be affected by that same mastiff's bay for 24 hours."),
+                null);
+        }
+
+        /// <summary>
+        /// Bay, as printed: a 300-foot spread that catches every creature in
+        /// it except evil outsiders. The target type is deliberately Any, not
+        /// Enemy, because the printed rule does not spare the summoner's party
+        /// and softening that would be a change to the rule.
+        ///
+        /// <para>What is bounded instead is the decision. Bay is a player
+        /// activated standard action on the summoned mastiff and the creature's
+        /// brain never selects it, so no AI can spam it into the party and no
+        /// AI loop is possible. The charter asks for bay that is useful without
+        /// repeatedly harming allies or stalling AI, and this delivers that
+        /// without touching the printed spread, DC, duration or exposure.</para>
+        /// </summary>
+        private static void ConfigureShadowMastiffBay(
+            LibraryScriptableObject library, BlueprintAbility ability,
+            BlueprintBuff panic, BlueprintBuff immunity, BlueprintUnit unit)
+        {
+            var around = ScriptableObject.CreateInstance<AbilityTargetsAround>();
+            SetField(around, "m_Radius", new Feet(ExpandedSummoningSpecialProfiles
+                .ShadowMastiffBayRadiusFeet));
+            SetField(around, "m_TargetType",
+                Kingmaker.UnitLogic.Abilities.Components.TargetType.Any);
+            SetField(around, "m_IncludeDead", false);
+            SetField(around, "m_Condition", new ConditionsChecker {
+                Operation = Operation.And, Conditions = Array.Empty<Condition>() });
+            SetField(around, "m_SpreadSpeed", new Feet(0));
+            var resolve = ScriptableObject
+                .CreateInstance<ContextActionShadowMastiffBay>();
+            resolve.SourceUnit = unit;
+            resolve.PanicBuff = panic;
+            resolve.ImmunityBuff = immunity;
+            resolve.EvilSubtype = Feature(library, EvilSubtypeGuid,
+                "evil subtype");
+            resolve.OutsiderClass = BlueprintLibraryLookup.RequireExact<
+                BlueprintCharacterClass>(library, OutsiderClassGuid,
+                    "native outsider class");
+            var run = ScriptableObject.CreateInstance<AbilityEffectRunAction>();
+            // The save is rolled inside the action, against a DC derived from
+            // the mastiff's own hit dice and Charisma, so the native
+            // saving-throw component must not roll a second one here.
+            run.SavingThrowType = SavingThrowType.Unknown;
+            run.Actions = new ActionList {
+                Actions = new GameAction[] { resolve } };
+            var descriptor = ScriptableObject.CreateInstance<
+                SpellDescriptorComponent>();
+            descriptor.Descriptor = SpellDescriptor.Sonic |
+                SpellDescriptor.MindAffecting | SpellDescriptor.Fear;
+            ability.name = InternalName(ShadowMastiffBaySymbol);
+            ability.Type = AbilityType.Supernatural;
+            ability.Range = AbilityRange.Personal;
+            ability.CanTargetEnemies = false;
+            ability.CanTargetFriends = false;
+            ability.CanTargetPoint = false;
+            ability.CanTargetSelf = true;
+            ability.EffectOnEnemy = AbilityEffectOnUnit.Harmful;
+            ability.EffectOnAlly = AbilityEffectOnUnit.Harmful;
+            ability.ActionType = UnitCommand.CommandType.Standard;
+            ability.Animation = UnitAnimationActionCastSpell
+                .CastAnimationStyle.Omni;
+            ability.MaterialComponent = new BlueprintAbility.MaterialComponentData();
+            ability.ResourceAssetIds = Array.Empty<string>();
+            ability.ComponentsArray = new BlueprintComponent[] {
+                around, run, descriptor };
+            BlueprintUnitFactAccess.Resolve().Configure(ability,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.ShadowMastiff.Bay.Name", "Bay"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.ShadowMastiff.Bay.Description",
+                    "The mastiff howls. Every creature within 300 feet except evil outsiders must make a Will save or be panicked for 1d4 rounds, fleeing and unable to act. This is a sonic, mind-affecting fear effect and it does not spare your own party. A creature that saves cannot be affected by this mastiff's bay again for 24 hours."),
+                null);
+        }
+
+        /// <summary>
+        /// Shadow blend's concealment. Concealment.Total is the engine's 50%
+        /// miss chance, which is the printed value; Partial is the 20% grade.
+        /// The Blur descriptor is chosen deliberately: the printed ability is
+        /// not invisibility, so TargetIsInvisible would wrongly let See
+        /// Invisibility defeat it, and it is not fog, so Fog would wrongly tie
+        /// it to wind and weather effects.
+        /// </summary>
+        private static void ConfigureShadowMastiffShadowBlendState(
+            LibraryScriptableObject library, BlueprintBuff buff)
+        {
+            var concealment = ScriptableObject.CreateInstance<AddConcealment>();
+            concealment.Concealment = Concealment.Total;
+            concealment.Descriptor = ConcealmentDescriptor.Blur;
+            concealment.OnlyForAttacks = true;
+            concealment.CheckDistance = false;
+            concealment.CheckWeaponRangeType = false;
+            var gate = ScriptableObject
+                .CreateInstance<SummonShadowBlendComponent>();
+            gate.NegatingBuffs = new[] {
+                BlueprintLibraryLookup.RequireExact<BlueprintBuff>(library,
+                    NativeDaylightGuid, "native Daylight") };
+            buff.name = InternalName(ShadowMastiffShadowBlendStateSymbol);
+            buff.Stacking = StackingType.Replace;
+            SetBuffFlags(buff, harmful: false);
+            buff.ResourceAssetIds = Array.Empty<string>();
+            buff.ComponentsArray = new BlueprintComponent[] {
+                concealment, gate };
+            BlueprintUnitFactAccess.Resolve().Configure(buff,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.ShadowMastiff.ShadowBlend.Name",
+                    "Shadow Blend"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.ShadowMastiff.ShadowBlend.Description",
+                    "Outside full daylight the mastiff melts into the shadows and attackers suffer a 50% miss chance. Artificial light does not disturb it; a daylight spell does."),
+                null);
+        }
+
+        /// <summary>
+        /// The printed ability can be suspended or resumed as a free action,
+        /// which is a player-facing toggle. It starts on, because an active
+        /// shadow blend is what a summoner wants and what the printed creature
+        /// has.
+        /// </summary>
+        private static void ConfigureShadowMastiffShadowBlend(
+            BlueprintActivatableAbility ability, BlueprintBuff state)
+        {
+            ability.name = InternalName(ShadowMastiffShadowBlendSymbol);
+            ability.Buff = state;
+            ability.Group = ActivatableAbilityGroup.None;
+            ability.WeightInGroup = 1;
+            ability.IsOnByDefault = true;
+            ability.ActivationType = AbilityActivationType.Immediately;
+            ability.DeactivateIfCombatEnded = false;
+            ability.DeactivateAfterFirstRound = false;
+            ability.DeactivateImmediately = false;
+            ability.DeactivateIfOwnerDisabled = false;
+            ability.DeactivateIfOwnerUnconscious = false;
+            ability.OnlyInCombat = false;
+            ability.ActionBarAutoFillIgnored = false;
+            ability.ComponentsArray = Array.Empty<BlueprintComponent>();
+            ability.ResourceAssetIds = Array.Empty<string>();
+            BlueprintUnitFactAccess.Resolve().Configure(ability,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.ShadowMastiff.ShadowBlendToggle.Name",
+                    "Shadow Blend"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.ShadowMastiff.ShadowBlendToggle.Description",
+                    "Suspend or resume shadow blend as a free action. While it is active and the mastiff is not standing in full daylight, attackers suffer a 50% miss chance."),
+                null);
+        }
+
+        private static void ConfigureShadowMastiffTraits(
+            BlueprintFeature feature, BlueprintAbility bay,
+            BlueprintActivatableAbility blend)
+        {
+            var grant = ScriptableObject.CreateInstance<AddFacts>();
+            grant.name = "$KMG_GrantShadowMastiffAbilities";
+            grant.Facts = new BlueprintUnitFact[] { bay, blend };
+            grant.DoNotRestoreMissingFacts = false;
+            feature.name = InternalName(ShadowMastiffTraitsSymbol);
+            feature.Ranks = 1;
+            feature.IsClassFeature = false;
+            feature.HideInUI = true;
+            feature.ComponentsArray = new BlueprintComponent[] { grant };
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.ShadowMastiff.Traits.Name",
+                    "Shadow Mastiff Abilities"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.ShadowMastiff.Traits.Description",
+                    "Grants the mastiff's bay and shadow blend."),
+                null);
+        }
+
+        /// <summary>
+        /// Printed: NE Medium outsider (evil, extraplanar), 6d10+18, AC 18
+        /// (+2 Dex, +6 natural), Speed 50 ft., bite +10 (1d8+4 plus trip),
+        /// tail slap +5 (1d6+2), Str 19 Dex 15 Con 17 Int 4 Wis 12 Cha 13,
+        /// Base Atk +6, CMD 22 (26 vs. trip), Feats Improved Initiative, Iron
+        /// Will, Power Attack.
+        ///
+        /// <para>The attack placement follows from those numbers rather than
+        /// from the donor's limb layout. Bite +10 is base attack 6 plus
+        /// Strength 4 with full Strength damage, so it is the primary natural
+        /// weapon. Tail slap +5 is 6 + 4 - 5 and 1d6+2 is half Strength, so it
+        /// is a secondary limb. Nothing is promoted because the Worg donor
+        /// happens to have a convenient slot.</para>
+        /// </summary>
+        private static void ConfigureShadowMastiff(
+            LibraryScriptableObject library, BlueprintUnit unit,
+            BlueprintItemWeapon tail, BlueprintFeature traits,
+            BlueprintFeature extraplanar)
+        {
+            BlueprintItemWeapon bite = BlueprintLibraryLookup.RequireExact<
+                BlueprintItemWeapon>(library, MediumBite1d8Guid,
+                    "Shadow Mastiff 1d8 bite");
+            unit.ComponentsArray = new BlueprintComponent[] {
+                OutsiderLevels(library,
+                    ExpandedSummoningSpecialProfiles.ShadowMastiffHitDice)
+            };
+            unit.Body = NaturalBody(bite, Array.Empty<BlueprintItemWeapon>(),
+                new[] { tail });
+            unit.Brain = BlueprintLibraryLookup.RequireExact<BlueprintBrain>(
+                library, DumbBrainGuid, "bounded natural-attack brain");
+            ConfigureUnitCore(unit, "ShadowMastiff", "Shadow Mastiff",
+                Alignment.NeutralEvil, Size.Medium,
+                ExpandedSummoningSpecialProfiles.ShadowMastiffStrength,
+                ExpandedSummoningSpecialProfiles.ShadowMastiffDexterity,
+                ExpandedSummoningSpecialProfiles.ShadowMastiffConstitution,
+                ExpandedSummoningSpecialProfiles.ShadowMastiffIntelligence,
+                ExpandedSummoningSpecialProfiles.ShadowMastiffWisdom,
+                ExpandedSummoningSpecialProfiles.ShadowMastiffCharisma,
+                ExpandedSummoningSpecialProfiles.ShadowMastiffSpeedFeet);
+            unit.AddFacts = new BlueprintUnitFact[] {
+                Feature(library, EvilSubtypeGuid, "evil subtype"),
+                extraplanar,
+                Feature(library, NaturalArmor6Guid, "natural armor +6"),
+                Feature(library, TrippingBiteGuid, "printed trip on the bite"),
+                Feature(library, ImprovedInitiativeGuid, "Improved Initiative"),
+                Feature(library, IronWillGuid, "Iron Will"),
+                Feature(library, PowerAttackGuid, "Power Attack"),
+                traits
+            };
         }
 
         private static void ConfigureShadowDemonCombatTraits(BlueprintBuff buff)

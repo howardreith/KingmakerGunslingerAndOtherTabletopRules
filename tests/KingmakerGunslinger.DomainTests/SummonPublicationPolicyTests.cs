@@ -92,12 +92,19 @@ namespace KingmakerGunslinger.DomainTests
                         SummonFamily.NaturesAlly))
                     .Count(SummonVisibilityCatalog.IsPublished),
                 "Visible summon placement count changed.");
-            Assertions.Equal(0,
+            Assertions.Equal(4,
                 ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
                     .Concat(ExpandedSummoningCatalog.GenerateVariants(
                         SummonFamily.NaturesAlly))
                     .Count(value => !SummonVisibilityCatalog.IsPublished(value)),
-                "Only the authorized Sprint 12 placements may remain hidden.");
+                "Only the authorized unqualified placements may remain hidden.");
+            Assertions.True(ExpandedSummoningCatalog
+                    .GenerateVariants(SummonFamily.Monster)
+                    .Concat(ExpandedSummoningCatalog.GenerateVariants(
+                        SummonFamily.NaturesAlly))
+                    .Where(value => !SummonVisibilityCatalog.IsPublished(value))
+                    .All(value => value.Creature.Key == "shadow-mastiff"),
+                "Only the unqualified Sprint 13 Shadow Mastiff may be hidden.");
         }
 
         internal static void DisplayOrderGroupsSinglesBeforeQuantities()
