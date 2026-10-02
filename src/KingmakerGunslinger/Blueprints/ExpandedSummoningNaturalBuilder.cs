@@ -64,6 +64,14 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Summoning.Natural.WaspSting1d8";
         private const string StirgeTouchSymbol =
             "KMG.Summoning.Natural.StirgeTouch";
+        private const string AntSting1d4Symbol =
+            "KMG.Summoning.Natural.AntSting1d4";
+        private const string GiantAntPoisonSymbol =
+            "KMG.Summoning.Natural.GiantAnt.Poison";
+        private const string GiantAntVenomSymbol =
+            "KMG.Summoning.Natural.GiantAnt.Venom";
+        private const string FireBeetleLuminescenceSymbol =
+            "KMG.Summoning.Natural.FireBeetle.Luminescence";
         private const string NativeShockingGraspDeliveryGuid =
             "17451c1327c571641a1345bd31155209";
         private const string WaspPoisonSymbol =
@@ -285,6 +293,21 @@ namespace KingmakerGunslinger.Blueprints
                 Require<BlueprintFeature>(bySymbol, WaspPoisonSymbol),
                 Require<BlueprintBuff>(bySymbol, WaspVenomSymbol),
                 Require<BlueprintItemWeapon>(bySymbol, WaspSting1d8Symbol));
+            // The soldier's sting is its own weapon, built from the same
+            // native sting animation the wasp uses, so the poison below can
+            // gate on this weapon's type and never fire on the bite that
+            // grabs.
+            ConfigureWeapon(BlueprintLibraryLookup.RequireExact<
+                BlueprintItemWeapon>(library, NativePurpleWormStingGuid,
+                    "native sting animation weapon"),
+                Require<BlueprintItemWeapon>(bySymbol, AntSting1d4Symbol),
+                AntSting1d4Symbol, 1, DiceType.D4);
+            ConfigureGiantAntPoison(library,
+                Require<BlueprintFeature>(bySymbol, GiantAntPoisonSymbol),
+                Require<BlueprintBuff>(bySymbol, GiantAntVenomSymbol),
+                Require<BlueprintItemWeapon>(bySymbol, AntSting1d4Symbol));
+            ConfigureFireBeetleLuminescence(Require<BlueprintFeature>(
+                bySymbol, FireBeetleLuminescenceSymbol));
             ConfigureWaspUnitType(Require<BlueprintUnitType>(bySymbol,
                 WaspUnitTypeSymbol));
             BlueprintBuff filthFever = BlueprintLibraryLookup.RequireExact<
@@ -389,6 +412,119 @@ namespace KingmakerGunslinger.Blueprints
                 LocalizationService.Create(
                     "KMG.ExpandedSummoning.GiantWasp.Poison.Description",
                     "A sting delivers Giant Wasp venom on a hit."),
+                null);
+        }
+
+        /// <summary>
+        /// The Giant Ant (Soldier)'s printed sting poison.
+        ///
+        /// <para>The native Giant Spider poison Kingmaker already ships is
+        /// this graph in every field but the damaged ability, so the clone
+        /// changes Strength for its stat, four exposures for its frequency and
+        /// one save to cure, and leaves everything else as the game wrote
+        /// it.</para>
+        ///
+        /// <para>The trigger's weapon type is the sting's own, which is what
+        /// keeps the poison off the bite. The bite is the primary limb and
+        /// carries the grab; the sting is an additional limb and carries this.
+        /// The two gates are independent - one on limb position, one on weapon
+        /// type - so neither attack can acquire the other's rider.</para>
+        /// </summary>
+        private static void ConfigureGiantAntPoison(
+            LibraryScriptableObject library, BlueprintFeature feature,
+            BlueprintBuff venom, BlueprintItemWeapon sting)
+        {
+            BlueprintBuff nativeBuff = BlueprintLibraryLookup.RequireExact<
+                BlueprintBuff>(library, NativeSpiderPoisonBuffGuid,
+                    "native saved poison lifecycle");
+            CopyFields(nativeBuff, venom);
+            venom.name = InternalName(GiantAntVenomSymbol);
+            venom.ComponentsArray = (nativeBuff.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Select(
+                    ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
+            venom.Stacking = StackingType.Poison;
+            BuffPoisonStatDamage damage = venom.ComponentsArray.OfType<
+                BuffPoisonStatDamage>().Single();
+            damage.Stat = StatType.Strength;
+            damage.Value = new DiceFormula(1, DiceType.D2);
+            damage.Ticks = GiantAntPoisonPolicy.Exposures;
+            damage.SuccesfullSaves = GiantAntPoisonPolicy.SavesToCure;
+            damage.SaveType = SavingThrowType.Fortitude;
+            BlueprintUnitFactAccess.Resolve().Configure(venom,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.GiantAnt.Venom.Name",
+                    "Giant Ant Venom"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.GiantAnt.Venom.Description",
+                    "Injury poison: Fortitude DC 14; 1d2 Strength damage each round for four total exposures; one successful save cures it."),
+                nativeBuff.Icon);
+
+            BlueprintFeature nativeFeature = BlueprintLibraryLookup.RequireExact<
+                BlueprintFeature>(library, NativeSpiderPoisonFeatureGuid,
+                    "native poison-on-hit feature");
+            CopyFields(nativeFeature, feature);
+            feature.name = InternalName(GiantAntPoisonSymbol);
+            feature.HideInUI = true;
+            feature.IsClassFeature = false;
+            BlueprintComponent[] components = (nativeFeature.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Select(
+                    ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
+            AddInitiatorAttackWithWeaponTrigger trigger = components.OfType<
+                AddInitiatorAttackWithWeaponTrigger>().Single();
+            trigger.WeaponType = sting.Type;
+            trigger.OnlyHit = true;
+            ContextActionSavingThrow save = trigger.Action.Actions.OfType<
+                ContextActionSavingThrow>().Single();
+            ContextActionConditionalSaved outcome = save.Actions.Actions.OfType<
+                ContextActionConditionalSaved>().Single();
+            ContextActionApplyBuff apply = outcome.Failed.Actions.OfType<
+                ContextActionApplyBuff>().Single();
+            apply.Buff = venom;
+            trigger.Action.Actions = (new GameAction[] {
+                new ContextActionSetGiantAntPoisonDc() }).Concat(
+                    trigger.Action.Actions).ToArray();
+            feature.ComponentsArray = components;
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.GiantAnt.Poison.Name",
+                    "Giant Ant Poison"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.GiantAnt.Poison.Description",
+                    "A sting delivers Giant Ant venom on a hit. The bite does not."),
+                null);
+        }
+
+        /// <summary>
+        /// The Fire Beetle's luminescence, which carries no components at all.
+        ///
+        /// <para>That is deliberate and it is the whole point. The primary
+        /// source gives the beetle a pair of glands that light a ten-foot
+        /// radius, and Sprint 13 established that Kingmaker has no
+        /// mechanics-layer illumination model: nothing in the rules layer
+        /// consults light level, so a radius of light cannot grant or deny
+        /// anything to anyone. A component here would have to either do
+        /// nothing or invent a rule the tabletop does not have.</para>
+        ///
+        /// <para>What the player gets instead is honest: a visible feature
+        /// that says the beetle glows, and a view-local light on the creature's
+        /// own view that matches its painted glands. The feature deliberately
+        /// does not claim an illumination system exists, and neither may any
+        /// record of it.</para>
+        /// </summary>
+        private static void ConfigureFireBeetleLuminescence(
+            BlueprintFeature feature)
+        {
+            feature.name = InternalName(FireBeetleLuminescenceSymbol);
+            feature.IsClassFeature = false;
+            feature.HideInUI = false;
+            feature.ComponentsArray = Array.Empty<BlueprintComponent>();
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.FireBeetle.Luminescence.Name",
+                    "Luminescence"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.FireBeetle.Luminescence.Description",
+                    "A pair of glands above the beetle's eyes gives off a steady red glow. It is light and nothing else: Kingmaker does not model illumination, so the glow neither reveals nor conceals anything."),
                 null);
         }
 
@@ -598,6 +734,11 @@ namespace KingmakerGunslinger.Blueprints
                     ? Require<BlueprintFeature>(bySymbol, GoblinDogTraitsSymbol)
                     : fact == "WolverineRage"
                     ? Require<BlueprintFeature>(bySymbol, WolverineRageSymbol)
+                    : fact == "GiantAntPoison"
+                    ? Require<BlueprintFeature>(bySymbol, GiantAntPoisonSymbol)
+                    : fact == "FireBeetleLuminescence"
+                    ? Require<BlueprintFeature>(bySymbol,
+                        FireBeetleLuminescenceSymbol)
                     : BaseUnitFactKeys.Contains(fact)
                     ? BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(
                         library, FactGuids[fact], profile.DisplayName + " " + fact)
@@ -704,6 +845,8 @@ namespace KingmakerGunslinger.Blueprints
                 Claw1d8Symbol);
             if (key == "WaspSting1d8") return Require<BlueprintItemWeapon>(
                 bySymbol, WaspSting1d8Symbol);
+            if (key == "AntSting1d4") return Require<BlueprintItemWeapon>(
+                bySymbol, AntSting1d4Symbol);
             if (key == "StirgeTouch") return Require<BlueprintItemWeapon>(
                 bySymbol, StirgeTouchSymbol);
             if (key == "Gore2d8") return BlueprintLibraryLookup.RequireExact<

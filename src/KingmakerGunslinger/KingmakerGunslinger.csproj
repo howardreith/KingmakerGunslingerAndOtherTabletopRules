@@ -142,6 +142,8 @@
     <Compile Include="Summoning\ExpandedSummoningSpecialCombatComponents.cs" />
     <Compile Include="Summoning\ExpandedSummoningSprint12CombatComponents.cs" />
     <Compile Include="Summoning\ExpandedSummoningSprint13CombatComponents.cs" />
+    <Compile Include="Summoning\GiantAntPoison.cs" />
+    <Compile Include="Summoning\GiantAntPoisonPolicy.cs" />
     <Compile Include="Summoning\GiantWaspPoison.cs" />
     <Compile Include="Summoning\GiantWaspPoisonPolicy.cs" />
     <Compile Include="Summoning\StirgeAttachPolicy.cs" />
