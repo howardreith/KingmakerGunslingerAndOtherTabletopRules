@@ -813,24 +813,20 @@ namespace KingmakerGunslinger.Blueprints
                     "+4 Strength, +4 Constitution and -2 AC. The wolverine cannot end its rage voluntarily."),
                 null);
 
-            var apply = ScriptableObject.CreateInstance<ContextActionApplyBuff>();
-            apply.Buff = state;
-            apply.Permanent = true;
-            apply.IsNotDispelable = true;
-            var removeMarker = ScriptableObject
-                .CreateInstance<ContextActionRemoveSelf>();
-            var delay = ScriptableObject.CreateInstance<SetBuffOnsetDelay>();
-            delay.Delay = new ContextDurationValue {
-                Rate = DurationRate.Rounds, DiceType = DiceType.Zero,
-                DiceCountValue = ContextValueZero(),
-                BonusValue = ContextValueOf(
-                    SummonRagePolicy.WolverineRageOnsetRounds) };
-            delay.OnStart = new ActionList {
-                Actions = new GameAction[] { apply, removeMarker } };
+            // The native SetBuffOnsetDelay ran its list on schedule - the
+            // marker cleared - but the rage state never arrived, so the onset
+            // carries this project's own round-boundary component instead and
+            // applies the rage through RuleApplyBuff, the path the damage
+            // trigger and the Sprint 12 disease rider both already prove. The
+            // delay is still the engine's own round boundary.
+            var onsetTick = ScriptableObject
+                .CreateInstance<SummonRageOnsetComponent>();
+            onsetTick.RageBuff = state;
             onset.name = InternalName(WolverineRageOnsetSymbol);
             onset.Stacking = StackingType.Replace;
+            onset.Frequency = DurationRate.Rounds;
             SetBuffFlags(onset, harmful: false, hidden: true);
-            onset.ComponentsArray = new BlueprintComponent[] { delay };
+            onset.ComponentsArray = new BlueprintComponent[] { onsetTick };
             BlueprintUnitFactAccess.Resolve().Configure(onset,
                 LocalizationService.Create(
                     "KMG.ExpandedSummoning.Wolverine.RageOnset.Name",
