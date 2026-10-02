@@ -72,8 +72,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             RemoveExpandedSummoningAppearanceBuffs(frog);
             string frogRig = CaptureDonorRig(frog, "giant-poisonous-frog",
                 evidenceDirectory, "Sprint 13");
-            evidence.Sprint13DonorRigs = frogRig.IndexOf(";bones=",
-                StringComparison.Ordinal) > 0;
+            evidence.Sprint13DonorRigs = frogRig.IndexOf(",bones=",
+                StringComparison.Ordinal) > 0 &&
+                frogRig.IndexOf(",renderers=1,", StringComparison.Ordinal) > 0;
             evidence.Sprint13DonorRigsDetail = frogRig;
         }
 
@@ -410,88 +411,78 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ExpandedSummoningSpecialProfiles.ShadowMastiffHitDice,
                 liveCharisma);
 
-            // The outcome cannot be steered by seeding one d20: the printed
-            // spread is 300 feet of every creature present, so many saves are
-            // rolled and a seeded roll lands on whichever resolves first.
-            // Everything below is forced through a save stat instead.
-            //
-            // The subject is the caster, not the hostile. The printed spread
-            // does not spare the summoner's own party, and the previous run
-            // proved the caster is caught by it while the hostile fixture is
-            // not - so the caster is the unit this rule can actually be
-            // measured on.
-            ModifiableValue casterWill = caster.Descriptor.Stats
-                .GetStat(StatType.SaveWill);
-            int willBefore = casterWill.BaseValue;
-
-            string panickedByFirstHowl;
-            bool panickedOnFailure;
-            try
-            {
-                casterWill.BaseValue = willBefore - 100;
-                ClearExpandedSummoningBayFear(panic, immunity, caster,
-                    hostile, mastiff, secondMastiff);
-                ExecuteExpandedSummoningRuntimeAbility(mastiff, bay, 6,
-                    new TargetWrapper(mastiff.Position), true);
-                panickedOnFailure =
-                    caster.Descriptor.Buffs.GetBuff(panic) != null;
-                panickedByFirstHowl = DescribeBayVictims(panic);
-            }
-            finally { casterWill.BaseValue = willBefore; }
+            // One howl, unmanipulated, to see who the printed spread actually
+            // reaches. The rule promises no particular creature is caught -
+            // only that everything in range except evil outsiders must save -
+            // and which creatures are present, where they stand and what they
+            // resist varies from run to run, so the victim list is read rather
+            // than predicted.
+            ClearExpandedSummoningBayFear(panic, immunity, caster, hostile,
+                mastiff, secondMastiff);
+            ExecuteExpandedSummoningRuntimeAbility(mastiff, bay, 6,
+                new TargetWrapper(mastiff.Position), true);
+            UnitEntityData[] victims = CollectExpandedSummoningBayVictims(panic);
+            string panickedByFirstHowl = victims.Length == 0 ? "<none>" :
+                string.Join(",", victims.Select(unit => unit.CharacterName)
+                    .ToArray());
+            bool panickedOnFailure = victims.Length > 0;
 
             // Both mastiffs are evil outsiders, so the printed exemption means
-            // neither may ever be panicked by the other's howl.
+            // neither may ever appear in that list.
             bool evilOutsiderSpared =
-                secondMastiff.Descriptor.Buffs.GetBuff(panic) == null &&
-                mastiff.Descriptor.Buffs.GetBuff(panic) == null;
+                !victims.Any(unit => ReferenceEquals(unit, mastiff) ||
+                    ReferenceEquals(unit, secondMastiff));
 
-            Buff granted;
-            bool immunityOnSuccess;
-            try
+            // The immunity sequence runs against a creature the howl just
+            // proved catchable, so it cannot be defeated by a fixture that
+            // happens to resist fear.
+            UnitEntityData subject = victims.FirstOrDefault();
+            string subjectName = subject == null ? "<none>" :
+                subject.CharacterName;
+            Buff granted = null;
+            bool immunityOnSuccess = false;
+            bool immunityIsPerMastiff = false;
+            bool repeatBlocked = false;
+            bool otherMastiffUnblocked = false;
+            if (subject != null)
             {
-                casterWill.BaseValue = willBefore + 100;
-                ClearExpandedSummoningBayFear(panic, immunity, caster,
-                    hostile, mastiff, secondMastiff);
-                ExecuteExpandedSummoningRuntimeAbility(mastiff, bay, 6,
-                    new TargetWrapper(mastiff.Position), true);
-                granted = caster.Descriptor.Buffs.GetBuff(immunity);
-                immunityOnSuccess = granted != null &&
-                    caster.Descriptor.Buffs.GetBuff(panic) == null;
-            }
-            finally { casterWill.BaseValue = willBefore; }
-            bool immunityIsPerMastiff = granted != null &&
-                granted.Context != null &&
-                ReferenceEquals(granted.Context.MaybeCaster, mastiff);
+                ModifiableValue subjectWill = subject.Descriptor.Stats
+                    .GetStat(StatType.SaveWill);
+                int willBefore = subjectWill.BaseValue;
+                try
+                {
+                    subjectWill.BaseValue = willBefore + 100;
+                    ClearExpandedSummoningBayFear(panic, immunity, subject);
+                    ExecuteExpandedSummoningRuntimeAbility(mastiff, bay, 6,
+                        new TargetWrapper(mastiff.Position), true);
+                    granted = subject.Descriptor.Buffs.GetBuff(immunity);
+                    immunityOnSuccess = granted != null &&
+                        subject.Descriptor.Buffs.GetBuff(panic) == null;
+                    immunityIsPerMastiff = granted != null &&
+                        granted.Context != null &&
+                        ReferenceEquals(granted.Context.MaybeCaster, mastiff);
 
-            // The window is closed for this mastiff, so a repeat must not
-            // panic even with the subject's Will floored.
-            bool repeatBlocked;
-            try
-            {
-                casterWill.BaseValue = willBefore - 100;
-                caster.Descriptor.Buffs.RemoveFact(panic);
-                ExecuteExpandedSummoningRuntimeAbility(mastiff, bay, 6,
-                    new TargetWrapper(mastiff.Position), true);
-                repeatBlocked = caster.Descriptor.Buffs.GetBuff(panic) == null;
-            }
-            finally { casterWill.BaseValue = willBefore; }
+                    // The window is closed for this mastiff, so a repeat must
+                    // not panic even with the subject's Will floored.
+                    subjectWill.BaseValue = willBefore - 100;
+                    subject.Descriptor.Buffs.RemoveFact(panic);
+                    ExecuteExpandedSummoningRuntimeAbility(mastiff, bay, 6,
+                        new TargetWrapper(mastiff.Position), true);
+                    repeatBlocked =
+                        subject.Descriptor.Buffs.GetBuff(panic) == null;
 
-            // A different mastiff is not inside that window.
-            bool otherMastiffUnblocked;
-            try
-            {
-                casterWill.BaseValue = willBefore - 100;
-                caster.Descriptor.Buffs.RemoveFact(panic);
-                ExecuteExpandedSummoningRuntimeAbility(secondMastiff, bay, 6,
-                    new TargetWrapper(secondMastiff.Position), true);
-                otherMastiffUnblocked =
-                    caster.Descriptor.Buffs.GetBuff(panic) != null;
+                    // A different mastiff is not inside that window.
+                    subject.Descriptor.Buffs.RemoveFact(panic);
+                    ExecuteExpandedSummoningRuntimeAbility(secondMastiff, bay,
+                        6, new TargetWrapper(secondMastiff.Position), true);
+                    otherMastiffUnblocked =
+                        subject.Descriptor.Buffs.GetBuff(panic) != null;
+                }
+                finally { subjectWill.BaseValue = willBefore; }
             }
-            finally { casterWill.BaseValue = willBefore; }
 
-            // Leaving a party member panicked and fleeing would contaminate
-            // everything after this, so every trace of the fear this gate
-            // caused is removed before it returns.
+            // Leaving creatures panicked and fleeing would contaminate
+            // everything after this, so every trace is removed and checked.
             ClearExpandedSummoningBayFear(panic, immunity, caster, hostile,
                 mastiff, secondMastiff);
             string residualFear = DescribeBayVictims(panic);
@@ -513,6 +504,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";immunityIsPerMastiff=" + immunityIsPerMastiff +
                 ";repeatFromSameMastiffBlocked=" + repeatBlocked +
                 ";otherMastiffStillWorks=" + otherMastiffUnblocked +
+                ";immunitySubject=" + subjectName +
                 ";panickedByFirstHowl[" + panickedByFirstHowl +
                 "];residualFearAfterCleanup=" + residualFear;
         }
@@ -522,6 +514,24 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// evidence says who the printed spread actually reached rather than
         /// only whether one chosen unit was reached.
         /// </summary>
+        /// <summary>
+        /// The units a mastiff's bay currently has panicked, as live units, so
+        /// the gate can run the rest of the printed rule against one the howl
+        /// has already proved it reaches.
+        /// </summary>
+        private static UnitEntityData[] CollectExpandedSummoningBayVictims(
+            BlueprintBuff panic)
+        {
+            if (Game.Instance == null || Game.Instance.State == null ||
+                Game.Instance.State.Units == null)
+                return new UnitEntityData[0];
+            return Game.Instance.State.Units
+                .Where(unit => unit != null && unit.Descriptor != null &&
+                    !unit.Destroyed &&
+                    unit.Descriptor.Buffs.GetBuff(panic) != null)
+                .ToArray();
+        }
+
         private static string DescribeBayVictims(BlueprintBuff panic)
         {
             if (Game.Instance == null || Game.Instance.State == null ||
