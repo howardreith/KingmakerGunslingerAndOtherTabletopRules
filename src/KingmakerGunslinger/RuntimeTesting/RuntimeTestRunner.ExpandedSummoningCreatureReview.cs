@@ -191,6 +191,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 key == "poisonous-frog";
         }
 
+        /// <summary>
+        /// Sprint 14's three insects, all on the Giant Spider rig. They are
+        /// reviewable while they are still withheld because the review casts
+        /// through a development-owned private route rather than the player's
+        /// menu, which is the only way to look at a creature before it
+        /// publishes.
+        /// </summary>
+        private static bool IsSprint14InsectReviewKey(string key)
+        {
+            return key == "fire-beetle" || key == "giant-ant-worker" ||
+                key == "giant-ant-soldier";
+        }
+
         private static bool IsOriginalReviewKey(string key)
         {
             // Dog is excluded on purpose: it keeps the native Dog
@@ -198,6 +211,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             return key == "giant-wasp" || key == "stirge" ||
                 key == "dire-rat" || key == "hyena" || key == "goblin-dog" ||
                 IsSprint11UngulateReviewKey(key) ||
+                IsSprint14InsectReviewKey(key) ||
                 IsSprint13CreatureReviewKey(key);
         }
 
