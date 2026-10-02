@@ -2,7 +2,11 @@
 param(
     [string]$MSBuildPath,
     [string]$ReferenceBundleDir,
-    [string]$KingmakerInstallDir = 'C:\Program Files (x86)\Steam\steamapps\common\Pathfinder Kingmaker'
+    [string]$KingmakerInstallDir = 'C:\Program Files (x86)\Steam\steamapps\common\Pathfinder Kingmaker',
+    # Prints the ordered pipeline and exits without running any of it, so a
+    # cheap test can prove each expensive operation appears exactly once for
+    # one immutable commit. It produces no artifact and qualifies nothing.
+    [switch]$PlanOnly
 )
 
 Set-StrictMode -Version Latest
@@ -48,8 +52,30 @@ if (-not (Test-Path -LiteralPath (Join-Path $net47 'mscorlib.dll') -PathType Lea
     throw ".NET Framework 4.7 reference assemblies are missing: $net47"
 }
 
+# The ordered pipeline, named once so -PlanOnly and the running script cannot
+# disagree about what it contains. Each expensive operation appears exactly
+# once: this script is the whole qualification pipeline for one commit, and
+# nothing above it may run any of these a second time.
+$script:KmgBuildLocalPlan = @(
+    'repository-wrapper'
+    'complete-domain-suite'
+    'exact-reference-release-build'
+    'package-assembly'
+    'strict-package-validation'
+)
+if ($PlanOnly) {
+    # On the success stream, not the host, so a caller can capture and count it.
+    Write-Verbose 'Build-Local plan (no operation performed).'
+    $script:KmgBuildLocalPlan
+    return
+}
+
 & (Join-Path $PSScriptRoot 'validate-repository.ps1')
-& (Join-Path $PSScriptRoot 'test-domain.ps1') -Configuration Release -Clean -MSBuildPath $msbuild
+# The repository wrapper has just run. test-domain.ps1 would otherwise run it
+# again, which is the duplication the 2026-10-02 amendment called out: a
+# tranche gate for one immutable commit must validate the repository once.
+& (Join-Path $PSScriptRoot 'test-domain.ps1') -Configuration Release -Clean `
+    -MSBuildPath $msbuild -SkipRepositoryValidation
 
 $localRoot = Join-Path $root 'artifacts\local-runtime\0.0.141'
 $exactRoot = Join-Path $localRoot 'exact-build'
@@ -128,6 +154,17 @@ Copy-Item -LiteralPath $easternBundle -Destination (Join-Path $buildOutput 'asse
 Copy-Item -LiteralPath (Join-Path $root 'assets\bundles\asset-bundle-manifest.json') -Destination (Join-Path $buildOutput 'assets\bundles') -Force
 & (Join-Path $PSScriptRoot 'validate-build-output.ps1') -Configuration Release
 & (Join-Path $PSScriptRoot 'package.ps1') -Configuration Release
+
+# The build above was produced for $git.Commit. If the tree moved underneath
+# this run - a concurrent commit, a checkout - the package would carry one
+# commit's binaries under another commit's name, which is exactly the
+# confusion a candidate hash exists to prevent.
+$packagingCommit = Get-KmgGitState -RepositoryRoot $root
+if ($packagingCommit.Commit -ne $git.Commit) {
+    throw ("The repository moved during the build: started at $($git.Commit), " +
+        "now at $($packagingCommit.Commit). The candidate would not describe " +
+        'one commit.')
+}
 
 $packagePath = Join-Path $localRoot "$($info.Id)-$($info.Version)-local-runtime.zip"
 New-Item -ItemType Directory -Path $localRoot -Force | Out-Null
