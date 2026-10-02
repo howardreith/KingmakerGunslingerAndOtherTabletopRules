@@ -5,7 +5,13 @@ param(
 
     [string]$MSBuildPath,
 
-    [switch]$Clean
+    [switch]$Clean,
+
+    # Inner-loop use only. The repository wrapper is the slowest part of this
+    # script and almost none of it can be affected by an ordinary source edit,
+    # so a focused run may skip it. Every gate - sprint or tranche - leaves it
+    # on, and Invoke-KmgGate.ps1 passes this switch only at the Focused level.
+    [switch]$SkipRepositoryValidation
 )
 
 Set-StrictMode -Version Latest
@@ -15,7 +21,11 @@ $ErrorActionPreference = 'Stop'
 $repositoryRoot = Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
 $projectPath = Join-Path $repositoryRoot 'tests\KingmakerGunslinger.DomainTests\KingmakerGunslinger.DomainTests.csproj'
 
-& (Join-Path $PSScriptRoot 'validate-repository.ps1')
+if ($SkipRepositoryValidation) {
+    Write-Host 'Skipping repository validation: focused run, not a gate.'
+} else {
+    & (Join-Path $PSScriptRoot 'validate-repository.ps1')
+}
 
 $msbuild = Resolve-KmgMsBuild -ExplicitPath $MSBuildPath
 $processPath = $env:Path
