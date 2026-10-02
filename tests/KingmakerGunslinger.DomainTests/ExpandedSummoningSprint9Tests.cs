@@ -212,10 +212,10 @@ namespace KingmakerGunslinger.DomainTests
             SummonVariantSpec[] bat = all.Where(value =>
                 value.Creature.Key == "dire-bat").ToArray();
             Assertions.Equal(900, all.Count(SummonVisibilityCatalog.IsPublished),
-                "The published surface must exclude only Sprint 12 candidates.");
-            Assertions.Equal(0, all.Count(value =>
+                "The published surface must exclude only unqualified candidates.");
+            Assertions.Equal(4, all.Count(value =>
                     !SummonVisibilityCatalog.IsPublished(value)),
-                "The authorized Sprint 12 hidden set changed.");
+                "The authorized hidden set changed.");
             Assertions.Equal(14, bat.Length,
                 "Dire Bat retains seven placements in each summon family.");
             Assertions.True(bat.All(SummonVisibilityCatalog.IsPublished),

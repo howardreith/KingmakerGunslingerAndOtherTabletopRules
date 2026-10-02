@@ -884,7 +884,14 @@ and the suppression set is empty.
 
 Sprint 13 appends four more: the Poison Frog's flat-1 bite, whose printed
 damage is a single point rather than a die, and the Wolverine rage trigger
-feature with its onset marker and rage state. The resulting append-only ledger contains 2653 stable IDs: 2651 active and 2 reserved.
+feature with its onset marker and rage state. It also registers the Shadow
+Mastiff, a new Summon Monster VI outsider with no native Kingmaker equivalent:
+its unit, its four logical placements, the 1d6 tail slap its printed stat block
+needs, and its bay and shadow-blend identities. The Shadow Mastiff is
+registered ahead of its own qualification, so its four placements are
+suppressed and the published surface stays at 900 generated choices until its
+mechanics, visual identity and lifecycle qualify.
+The resulting append-only ledger contains 2665 stable IDs: 2663 active and 2 reserved.
 
 - **Pure policy** (`FavoredClass/`): `FavoredClassRankPolicy` (the host's
   full/partial alternation, N = fullRank + partialRank, with KMG-owned ceilings

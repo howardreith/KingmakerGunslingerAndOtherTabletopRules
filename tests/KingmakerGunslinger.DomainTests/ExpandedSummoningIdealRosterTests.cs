@@ -120,7 +120,7 @@ namespace KingmakerGunslinger.DomainTests
                 reused++;
             }
 
-            Assertions.Equal(88, reused,
+            Assertions.Equal(89, reused,
                 "Every project-owned creature must be reused.");
 
             // The retained native wrappers are identities too. Counting only
@@ -133,7 +133,7 @@ namespace KingmakerGunslinger.DomainTests
                     "A wrapper creature must not also be project-owned: " + key);
             }
 
-            Assertions.Equal(46, ExpandedSummoningIdealRosterCatalog.All
+            Assertions.Equal(45, ExpandedSummoningIdealRosterCatalog.All
                 .Count(value => ExpandedSummoningCoveragePolicy.Provenance(value.Key) ==
                     SummonUnitProvenance.None),
                 "The remaining ideal roster needs 46 new creature identities.");
@@ -173,13 +173,15 @@ namespace KingmakerGunslinger.DomainTests
                 }
             }
 
-            Assertions.Equal(46, ExpandedSummoningIdealRosterCatalog.All.Count(
+            // The Shadow Mastiff moved from this set into the represented
+            // one when Sprint 13 registered it.
+            Assertions.Equal(45, ExpandedSummoningIdealRosterCatalog.All.Count(
                     value => ExpandedSummoningCoveragePolicy.Provenance(value.Key) ==
                         SummonUnitProvenance.None),
-                "46 ideal-roster creatures have no unit identity yet.");
-            Assertions.Equal(99,
+                "45 ideal-roster creatures have no unit identity yet.");
+            Assertions.Equal(100,
                 ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count,
-                "99 creatures already own a unit identity.");
+                "100 creatures already own a unit identity.");
 
             // The live player-visible surface moves only with the shipped
             // catalogs, never with the plan: 693 at the Sprint 0 freeze, 828

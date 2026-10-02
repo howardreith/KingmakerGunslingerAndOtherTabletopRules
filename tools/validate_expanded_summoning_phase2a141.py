@@ -21,7 +21,7 @@ VERSION = "0.0.141"
 INFORMATIONAL_VERSION = "0.0.141-expanded-summoning-phase2a"
 PACKAGE = "KingmakerGunslinger-0.0.141-local-runtime.zip"
 PACKAGE_SUFFIX = "expanded-summoning-phase2a"
-DETERMINISTIC_TEST_COUNT = 1967
+DETERMINISTIC_TEST_COUNT = 1972
 STATIC_KEY = "expandedSummoningPhase2A141"
 
 
@@ -34,12 +34,14 @@ def validate(root: Path) -> None:
     baseline.validate(root)
 
     require_tokens = baseline.baseline.require_tokens
-    # Sprint 12 is qualified and published, so nothing registered is withheld.
+    # Sprints 9-12 are qualified and published. The Sprint 13 Shadow Mastiff is
+    # registered ahead of its own qualification, so exactly its four placements
+    # are withheld and the published surface is unchanged at 900.
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs",
-        "RegisteredLogicalPlacementCount = 900",
-        "SuppressedLogicalPlacementCount = 0",
-        "RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount")
-    forbid = baseline.baseline.require_tokens
+        "RegisteredLogicalPlacementCount = 904",
+        "SuppressedLogicalPlacementCount = 4",
+        "RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount",
+        '"shadow-mastiff"')
     visibility = (root / "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs").read_text(encoding="utf-8")
     for key in ('"dire-rat"', '"dog"', '"hyena"', '"goblin-dog"'):
         if key in visibility:
@@ -92,8 +94,8 @@ def validate(root: Path) -> None:
         "authorizedSprintRange": "12-21",
         "publicReleaseAuthorized": False,
         "candidateOnly": True,
-        "registeredGeneratedPlacements": 900,
-        "suppressedGeneratedPlacements": 0,
+        "registeredGeneratedPlacements": 904,
+        "suppressedGeneratedPlacements": 4,
         "publishedGeneratedPlacements": 900,
         "retainedNativeWrappers": 29,
         "visibleChoiceTotal": 929,

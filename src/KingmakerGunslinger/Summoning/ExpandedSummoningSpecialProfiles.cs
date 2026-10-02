@@ -297,6 +297,45 @@ namespace KingmakerGunslinger.Summoning
         internal const int ErinyesCharisma = 21;
         internal const int ErinyesSpeedFeet = 50;
 
+        // Shadow Mastiff, Bestiary 3. NE Medium outsider (evil, extraplanar),
+        // 6d10+18, AC 18 touch 12 flat-footed 16 (+2 Dex, +6 natural),
+        // Fort +8 Ref +7 Will +5, Speed 50 ft., bite +10 (1d8+4 plus trip),
+        // tail slap +5 (1d6+2), Str 19 Dex 15 Con 17 Int 4 Wis 12 Cha 13,
+        // Base Atk +6, CMD 22 (26 vs. trip), Feats Improved Initiative,
+        // Iron Will, Power Attack.
+        internal const int ShadowMastiffHitDice = 6;
+        internal const int ShadowMastiffStrength = 19;
+        internal const int ShadowMastiffDexterity = 15;
+        internal const int ShadowMastiffConstitution = 17;
+        internal const int ShadowMastiffIntelligence = 4;
+        internal const int ShadowMastiffWisdom = 12;
+        internal const int ShadowMastiffCharisma = 13;
+        internal const int ShadowMastiffSpeedFeet = 50;
+        internal const int ShadowMastiffNaturalArmor = 6;
+
+        /// <summary>
+        /// Printed bay: "all creatures within a 300-foot spread except evil
+        /// outsiders must succeed at a DC 16 Will save or become panicked for
+        /// 1d4 rounds. ... A creature that successfully saves cannot be
+        /// affected by the same mastiff's bay for 24 hours. ... The save DC is
+        /// Charisma-based and includes a +2 racial bonus."
+        ///
+        /// <para>The DC is recorded by its components rather than as the
+        /// literal 16, so a buffed Charisma moves it the way the engine
+        /// expects: 10 + 3 (half of 6 HD) + 1 (Charisma 13) + 2 racial = 16.</para>
+        /// </summary>
+        internal const int ShadowMastiffBayRadiusFeet = 300;
+        internal const int ShadowMastiffBayRacialSaveBonus = 2;
+        internal const int ShadowMastiffBayPanicDiceCount = 1;
+        internal const int ShadowMastiffBayPanicDieSides = 4;
+        internal const int ShadowMastiffBayImmunityHours = 24;
+
+        /// <summary>
+        /// The printed DC at the creature's own stat block, kept only so the
+        /// derived components can be checked against the published number.
+        /// </summary>
+        internal const int ShadowMastiffBayPrintedWillDc = 16;
+
         internal const int ShadowDemonHitDice = 7;
         internal const int ShadowDemonStrength = 17;
         internal const int ShadowDemonDexterity = 20;
@@ -664,6 +703,21 @@ namespace KingmakerGunslinger.Summoning
                     throw new InvalidOperationException(
                         "Native reuse requires an exact dedicated donor: " + key + ".");
             }
+            // 10 + half of 6 hit dice + Charisma 13 modifier + 2 racial = 16.
+            if (10 + ShadowMastiffHitDice / 2 +
+                    (ShadowMastiffCharisma - 10) / 2 +
+                    ShadowMastiffBayRacialSaveBonus !=
+                    ShadowMastiffBayPrintedWillDc ||
+                ShadowMastiffHitDice != 6 || ShadowMastiffStrength != 19 ||
+                ShadowMastiffSpeedFeet != 50 ||
+                ShadowMastiffNaturalArmor != 6 ||
+                ShadowMastiffBayRadiusFeet != 300 ||
+                ShadowMastiffBayPanicDiceCount != 1 ||
+                ShadowMastiffBayPanicDieSides != 4 ||
+                ShadowMastiffBayImmunityHours != 24)
+                throw new InvalidOperationException(
+                    "Shadow Mastiff printed profile changed.");
+            SummonShadowMastiffPolicy.Validate();
             if (ErinyesHitDice != 9 || ErinyesDexterity != 23 ||
                 ErinyesSpeedFeet != 50 || BebelithHitDice != 12 ||
                 BebelithDismantleReflexDc != 25 ||

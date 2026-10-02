@@ -488,5 +488,8 @@ qualification.
 
 Sprint 13 appends four identities: `KMG.Summoning.Natural.Bite1`, the Poison
 Frog's printed flat-1 bite, and the Wolverine's rage trigger feature, onset
-marker and rage state.
-The ledger now contains 2653 stable identifiers: 2651 active and 2 reserved.
+marker and rage state. It then registers the Shadow Mastiff unit, its four
+Summon Monster placements, `KMG.Summoning.Natural.Tail1d6`, and its bay and
+shadow-blend identities; those four placements remain registered but suppressed
+until the creature qualifies.
+The ledger now contains 2665 stable identifiers: 2663 active and 2 reserved.
