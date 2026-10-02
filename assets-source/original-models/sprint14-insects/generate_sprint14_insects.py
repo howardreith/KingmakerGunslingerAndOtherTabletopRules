@@ -50,7 +50,7 @@ from generate_sprint13_creatures import (  # noqa: E402
     ellipsoid, inset_region_uvs, tube)
 
 
-KINDS = ("giant-ant-soldier", "fire-beetle")
+KINDS = ("giant-ant-soldier", "giant-ant-worker", "fire-beetle")
 DONORS = {kind: "giant-spider" for kind in KINDS}
 CAPTURE_SPRINT = {kind: "Sprint 14" for kind in KINDS}
 SPACES = {kind: "donor renderer local; +X right, +Z up, -Y forward"
@@ -81,8 +81,30 @@ def leg_chain(prefix, index):
 EXPECTED_CHAINS = {
     "giant-ant-soldier": {
         "0": "full", "1": "full", "2": "full", "3": "empty"},
+    "giant-ant-worker": {
+        "0": "full", "1": "full", "2": "full", "3": "empty"},
     "fire-beetle": {
         "0": "full", "1": "full", "2": "full", "3": "upper-and-lower"},
+}
+
+# The two ant castes differ in exactly the three things that separate them in
+# the source - head size, mandible weight and whether there is a sting - so
+# they are one builder taking a caste rather than two near-copies of ninety
+# lines. A worker's head is smaller because it does not have to carry a
+# soldier's mandibles, and its gaster is correspondingly the larger mass.
+ANT_CASTES = {
+    "giant-ant-soldier": {
+        "head": (0.360, 0.315, 0.330), "headReach": 0.56,
+        "mandibleRadii": (0.085, 0.066, 0.042, 0.014),
+        "mandibleReach": 0.58, "mandibleSpread": 0.190,
+        "gaster": 1.00, "sting": True,
+    },
+    "giant-ant-worker": {
+        "head": (0.276, 0.244, 0.258), "headReach": 0.49,
+        "mandibleRadii": (0.055, 0.043, 0.027, 0.010),
+        "mandibleReach": 0.37, "mandibleSpread": 0.145,
+        "gaster": 1.10, "sting": False,
+    },
 }
 
 
@@ -232,7 +254,7 @@ def insect_leg(bm, weights, uvs, rig, prefix, index, scale):
          [upper, upper, lower, lower, foot, foot], "limbs", 9)
 
 
-def giant_ant_soldier(bm, weights, uvs, rig):
+def giant_ant(bm, weights, uvs, rig, caste):
     """An ant is three masses on a thread, and that is the whole silhouette.
 
     Head, mesosoma and gaster separated by a pinched petiole is what makes an
@@ -244,7 +266,9 @@ def giant_ant_soldier(bm, weights, uvs, rig):
     it are what separate a soldier from a worker, and they are also why the
     chartered bite has a grab. The first build made the head the smallest of
     the three and the waist too short to see, so it read as a two-part body
-    with a muzzle.
+    with a muzzle. The worker caste takes the same body with a smaller head,
+    lighter mandibles, a slightly larger gaster and no sting, which is exactly
+    what the Worker template removes from the stat block.
 
     The mandibles ride the donor's own chelicerae and the antennae its
     pedipalps, so both articulate. The pedipalp chain descends as it reaches
@@ -259,9 +283,10 @@ def giant_ant_soldier(bm, weights, uvs, rig):
     petiole, gaster, rear = (at(name) for name in
                              ("Tail1_M", "UpperTorso", "Tail3_M"))
 
-    head_centre = thorax + forward * 0.56 + up * 0.020
+    shape = ANT_CASTES[caste]
+    head_centre = thorax + forward * shape["headReach"] + up * 0.020
     ellipsoid(bm, weights, uvs, head_centre, side, up, forward,
-              (0.360, 0.315, 0.330), "LowerTorso", "body", 9, 16)
+              shape["head"], "LowerTorso", "body", 9, 16)
 
     # The mesosoma, humped at the front the way an ant's pronotum is and
     # narrowing hard into the waist.
@@ -290,28 +315,32 @@ def giant_ant_soldier(bm, weights, uvs, rig):
           gaster - forward * 0.30 + up * 0.070,
           gaster - forward * 0.46 + up * 0.040,
           gaster - forward * 0.56 + up * 0.010],
-         [0.078, 0.070, 0.178, 0.238, 0.258, 0.208, 0.098, 0.026],
+         [0.078, 0.070] + [value * shape["gaster"] for value in
+                           (0.178, 0.238, 0.258, 0.208, 0.098, 0.026)],
          ["Tail1_M", "Tail1_M", "Tail1_M", "UpperTorso", "UpperTorso",
           "UpperTorso", "Tail3_M", "Tail3_M"],
          "body", 16)
 
-    # The sting. The soldier has one and the worker does not, so it is a
-    # silhouette feature rather than decoration.
-    sting_root = gaster - forward * 0.56 + up * 0.010
-    tube(bm, weights, uvs,
-         [sting_root, sting_root - forward * 0.11 - up * 0.075],
-         [0.026, 0.007], ["Tail3_M", "Tail3_M"], "beak", 8)
+    # The sting. The soldier has one and the worker does not, so its presence
+    # is a silhouette feature rather than decoration: a player can tell the two
+    # castes apart from behind.
+    if shape["sting"]:
+        sting_root = gaster - forward * 0.56 + up * 0.010
+        tube(bm, weights, uvs,
+             [sting_root, sting_root - forward * 0.11 - up * 0.075],
+             [0.026, 0.007], ["Tail3_M", "Tail3_M"], "beak", 8)
 
     for sign, suffix in ((1.0, "_R"), (-1.0, "_L")):
         chel = "chelicera" + suffix
-        base = (head_centre + forward * 0.30 + side * (sign * 0.190) -
-                up * 0.070)
+        reach = shape["mandibleReach"]
+        base = (head_centre + forward * (reach * 0.52) +
+                side * (sign * shape["mandibleSpread"]) - up * 0.070)
         tube(bm, weights, uvs,
              [base,
-              base + forward * 0.22 + side * (sign * 0.100),
-              base + forward * 0.42 + side * (sign * 0.060),
-              base + forward * 0.58 - side * (sign * 0.070)],
-             [0.085, 0.066, 0.042, 0.014],
+              base + forward * (reach * 0.38) + side * (sign * 0.100),
+              base + forward * (reach * 0.72) + side * (sign * 0.060),
+              base + forward * reach - side * (sign * 0.070)],
+             list(shape["mandibleRadii"]),
              [chel, chel, chel, chel], "beak", 8)
 
         palps = ["pedipalp1", "pedipalp2", "pedipalp3", "pedipalp5",
@@ -327,10 +356,12 @@ def giant_ant_soldier(bm, weights, uvs, rig):
         # Compound eyes on the sides of the head capsule, half buried in it so
         # they break its outline.
         ellipsoid(bm, weights, uvs,
-                  head_centre + side * (sign * 0.280) + up * 0.100 +
-                  forward * 0.080,
-                  side, up, forward, (0.095, 0.092, 0.105), "LowerTorso",
-                  "crest", 6, 10)
+                  head_centre + side * (sign * shape["head"][0] * 0.78) +
+                  up * (shape["head"][1] * 0.32) + forward * 0.080,
+                  side, up, forward,
+                  tuple(value * shape["head"][0] / 0.360
+                        for value in (0.095, 0.092, 0.105)),
+                  "LowerTorso", "crest", 6, 10)
 
         # Six legs, on the donor's forward, outward and rearward chains. Leg3
         # is left with no geometry at all, so there is no eighth leg to hide
@@ -470,8 +501,15 @@ def fire_beetle(bm, weights, uvs, rig):
               (0.54, 0.98))
 
 
-BUILDERS = {"giant-ant-soldier": giant_ant_soldier,
-            "fire-beetle": fire_beetle}
+BUILDERS = {
+    "giant-ant-soldier":
+        lambda bm, weights, uvs, rig:
+            giant_ant(bm, weights, uvs, rig, "giant-ant-soldier"),
+    "giant-ant-worker":
+        lambda bm, weights, uvs, rig:
+            giant_ant(bm, weights, uvs, rig, "giant-ant-worker"),
+    "fire-beetle": fire_beetle,
+}
 
 
 def chain_usage(kind, used):

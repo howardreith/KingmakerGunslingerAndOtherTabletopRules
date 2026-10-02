@@ -6,8 +6,10 @@ camera, because at that distance the silhouette and a single strong marking are
 all a player reads:
 
 - the Giant Ant Soldier's reddish-brown chitin, segmented across the gaster and
-  darkest on the oversized head and mandibles, which is what says "soldier"
-  rather than "worker";
+  darkest on the oversized head and mandibles, which is what says "soldier";
+- the Worker's lighter, duller version of the same chitin, which is the second
+  cue after its smaller head: in a nest of both castes the soldiers are the
+  dark ones;
 - the Fire Beetle's near-black body with a red cast, and the pair of
   luminescent glands painted as the only bright thing on the creature. The
   glands are what the source gives it instead of fire damage, so they are the
@@ -29,7 +31,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "pteranodon"))
 import paint_pteranodon_albedo as shared  # noqa: E402
 
 
-KINDS = ("giant-ant-soldier", "fire-beetle")
+KINDS = ("giant-ant-soldier", "giant-ant-worker", "fire-beetle")
 # Where the membrane region's two tenants sit, matching the u_range values the
 # generator gives each blade.
 MEMBRANE_SPLIT = 0.5
@@ -55,16 +57,22 @@ def body(kind, rng, u, v):
     h, w = u.shape
     fine = shared.fbm(rng, h, w, 9, 5, aspect=5.0) - 0.5
     coarse = shared.fbm(rng, h, w, 3, 4) - 0.5
-    if kind == "giant-ant-soldier":
+    if kind.startswith("giant-ant"):
         # Reddish-brown chitin. The dorsal surfaces catch the light hard,
         # because chitin is glossy where fur is not, and the plate banding runs
         # across the body's length so the gaster reads as segmented.
-        base = colour((0.155, 0.072, 0.040))
+        # The worker is lighter and duller than the soldier, which is the
+        # second cue after its smaller head when both castes are on screen.
+        base = (colour((0.155, 0.072, 0.040)) if kind == "giant-ant-soldier"
+                else colour((0.196, 0.110, 0.068)))
         pixels = np.broadcast_to(base, (h, w, 3)).copy()
         pixels *= (1.0 + 0.26 * fine)[..., None]
         gloss = shared.smoothstep(0.58, 0.99, v)
-        pixels = shared.mix(pixels, colour((0.305, 0.160, 0.092)),
-                            0.70 * gloss)
+        pixels = shared.mix(
+            pixels,
+            colour((0.305, 0.160, 0.092)) if kind == "giant-ant-soldier"
+            else colour((0.318, 0.198, 0.128)),
+            (0.70 if kind == "giant-ant-soldier" else 0.52) * gloss)
         band = segments(u + 0.05 * coarse, 7.0)
         pixels = shared.mix(pixels, colour((0.088, 0.040, 0.026)),
                             0.42 * band)
@@ -121,7 +129,7 @@ def paint(kind, size):
         (y0, y1, x0, x1), u, v = shared.region_canvas(size, name)
         h, w = u.shape
         grain = 0.90 + 0.18 * shared.fbm(rng, h, w, 14, 4)
-        ant = kind == "giant-ant-soldier"
+        ant = kind.startswith("giant-ant")
         if name == "body":
             pixels = body(kind, rng, u, v)
         elif name == "membrane":
