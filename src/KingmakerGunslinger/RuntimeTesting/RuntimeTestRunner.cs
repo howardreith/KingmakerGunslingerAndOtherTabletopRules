@@ -370,6 +370,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal string Sprint12PrintedDefencesDetail;
             internal bool Sprint12DiseaseOutlivesSource;
             internal string Sprint12DiseaseOutlivesSourceDetail;
+            internal bool Sprint13PrintedRoutines;
+            internal string Sprint13PrintedRoutinesDetail;
+            internal bool Sprint13ShadowMastiffBay;
+            internal string Sprint13ShadowMastiffBayDetail;
+            internal bool Sprint13ShadowBlend;
+            internal string Sprint13ShadowBlendDetail;
             internal bool HostileAbilityTarget;
             internal int AdditionalCasts;
             internal readonly List<string> Diagnostics = new List<string>();
@@ -17741,6 +17747,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                         mechanics.Sprint12PrintedDefencesDetail,
                     mechanics != null && mechanics.Sprint12PrintedDefences,
                     "live spawned unit facts and its actual AC modifier descriptors"),
+                Assertion("expanded-summoning-sprint13-printed-routines",
+                    "the live Wolverine bite reads at its claw's own attack bonus so all three limbs are primary, it carries the printed quadruped trip defence, the Poison Frog's bite is a flat point rather than 1d3, and the Shadow Mastiff's tail slap reads exactly five lower than its bite at the printed 1d6",
+                    mechanics == null ? "not-run" :
+                        mechanics.Sprint13PrintedRoutinesDetail,
+                    mechanics != null && mechanics.Sprint13PrintedRoutines,
+                    "live limb probes on freshly summoned creatures at a fixed natural roll, with no base-attack mutation"),
+                Assertion("expanded-summoning-sprint13-shadow-mastiff-bay",
+                    "bay derives its printed Charisma-based DC from the live creature, panics on a failed save, spares evil outsiders including the mastiffs themselves, grants a per-mastiff 24-hour immunity on a success that blocks a repeat from the same mastiff, and leaves a second mastiff's bay working",
+                    mechanics == null ? "not-run" :
+                        mechanics.Sprint13ShadowMastiffBayDetail,
+                    mechanics != null && mechanics.Sprint13ShadowMastiffBay,
+                    "two live Shadow Mastiffs, the native ability executor, and fixed native saving-throw rolls"),
+                Assertion("expanded-summoning-sprint13-shadow-blend",
+                    "shadow blend is active without player input, the engine's own concealment calculation reports the printed 50% miss chance, native Daylight negates it, and it returns when the Daylight ends",
+                    mechanics == null ? "not-run" :
+                        mechanics.Sprint13ShadowBlendDetail,
+                    mechanics != null && mechanics.Sprint13ShadowBlend,
+                    "live UnitPartConcealment calculation and an actually applied native Daylight buff"),
                 Assertion("expanded-summoning-sprint12-disease-outlives-source",
                     "an inflicted disease and allergic reaction keep ticking, curing and saving correctly after their summoned source is destroyed, and the destroyed source can expose nothing further",
                     mechanics == null ? "not-run" :
@@ -18368,6 +18392,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ExerciseExpandedSummoningSprint12DiseasePack(blueprints,
                     caster, hostile, scene, created, result,
                     _request.EvidenceDirectory);
+
+                ResetExpandedSummoningMechanicalHostile(hostile, blueprints);
+                ExerciseExpandedSummoningSprint13RulesPack(blueprints,
+                    caster, hostile, created, result);
 
                 result.RepresentativeCombat = animalAttack && proxyAttack &&
                     elementalAttack && stalkerAttack && shadowAttack &&
