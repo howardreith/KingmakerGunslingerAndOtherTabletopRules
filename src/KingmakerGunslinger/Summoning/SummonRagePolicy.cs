@@ -39,6 +39,14 @@ namespace KingmakerGunslinger.Summoning
         internal const int WolverineRageOnsetRounds = 1;
 
         /// <summary>
+        /// How long the hidden onset marker lives. One round boundary has to
+        /// arrive inside this window for the rage to begin, and nothing longer
+        /// is wanted: a marker that outlives its purpose is hidden state
+        /// lingering on the creature.
+        /// </summary>
+        internal const int WolverineRageOnsetMarkerRounds = 2;
+
+        /// <summary>
         /// True when a damage event should schedule the rage. The creature
         /// must have taken actual positive damage - a miss, a fully resisted
         /// hit, or a zero-damage effect is not "takes damage" - and must not
