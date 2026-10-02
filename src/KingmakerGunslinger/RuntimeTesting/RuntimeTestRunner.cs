@@ -378,6 +378,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal string Sprint13ShadowMastiffBayDetail;
             internal bool Sprint13ShadowBlend;
             internal string Sprint13ShadowBlendDetail;
+            internal bool Sprint13DonorRigs;
+            internal string Sprint13DonorRigsDetail;
             internal bool HostileAbilityTarget;
             internal int AdditionalCasts;
             internal readonly List<string> Diagnostics = new List<string>();
@@ -17790,6 +17792,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         mechanics.Sprint13ShadowMastiffBayDetail,
                     mechanics != null && mechanics.Sprint13ShadowMastiffBay,
                     "two live Shadow Mastiffs, the native ability executor, and fixed native saving-throw rolls"),
+                Assertion("expanded-summoning-sprint13-donor-rigs",
+                    "the live Poison Frog exposes its donor's renderer-local bind frame for original-mesh authoring, with no donor geometry, material or animation data leaving the game",
+                    mechanics == null ? "not-run" :
+                        mechanics.Sprint13DonorRigsDetail,
+                    mechanics != null && mechanics.Sprint13DonorRigs,
+                    "bone names and a measured bind pose only; the Worg frame the Wolverine and Shadow Mastiff need was captured in Sprint 12"),
                 Assertion("expanded-summoning-sprint13-shadow-blend",
                     "shadow blend is active without player input, the engine's own concealment calculation reports the printed 50% miss chance, native Daylight negates it, and it returns when the Daylight ends",
                     mechanics == null ? "not-run" :
@@ -18426,7 +18434,8 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 ResetExpandedSummoningMechanicalHostile(hostile, blueprints);
                 ExerciseExpandedSummoningSprint13RulesPack(blueprints,
-                    caster, hostile, created, result);
+                    caster, hostile, created, result,
+                    _request.EvidenceDirectory);
 
                 result.RepresentativeCombat = animalAttack && proxyAttack &&
                     elementalAttack && stalkerAttack && shadowAttack &&

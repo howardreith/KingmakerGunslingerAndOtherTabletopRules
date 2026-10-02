@@ -497,7 +497,13 @@ namespace KingmakerGunslinger.DomainTests
                 "CaptureSprint12DonorRig(hyena, \"wolf\"",
                 "CaptureSprint12DonorRig(goblinDog, \"worg\"",
                 "renderer-local bind frame",
-                "sprint12-\" + donorKey + \"-bind-rig.json" })
+                // The capture is shared with later sprints now, so Sprint 12's
+                // own provenance label and the label-derived filename are what
+                // keep its captures named sprint12-<donor>-bind-rig.json, which
+                // is what its offline mesh generator reads.
+                "CaptureDonorRig(summon, donorKey, evidenceDirectory,",
+                "\"Sprint 12\");",
+                "sprintLabel.Replace(\" \", \"\")" })
                 Assertions.True(live.Contains(token),
                     "Sprint 12 guarded runtime matrix is missing " + token + ".");
         }
