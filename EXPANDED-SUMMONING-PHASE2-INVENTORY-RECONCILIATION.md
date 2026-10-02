@@ -13,17 +13,19 @@ describes the branch as it stands now.
 
 | Quantity | v0.0.141 (frozen) | Current source |
 | --- | --- | --- |
-| Registered generated placements | 900 | 900 (453 SM + 447 SNA) |
+| Registered generated placements | 900 | **904** (457 SM + 447 SNA) |
 | Suppressed generated placements | 68 | **0** |
-| Published generated placements | 832 | **900** (453 SM + 447 SNA) |
+| Published generated placements | 832 | **904** (457 SM + 447 SNA) |
 | Retained native wrappers | 29 | 29 (17 SM + 12 SNA) |
-| Total visible player choices | 861 | **929** (470 SM + 459 SNA) |
+| Total visible player choices | 861 | **933** (474 SM + 459 SNA) |
 
-The published equation is now **900 + 29 = 929**. Dog, Hyena and Goblin Dog,
+The published equation is now **904 + 29 = 933**. Dog, Hyena and Goblin Dog,
 which v0.0.141 withdrew, are castable again on their original registered
-identities, and Dire Rat is published for the first time. The withdrawal
-described in section 4 is therefore resolved on this branch; it remains true of
-the released v0.0.141 artifact, which is immutable.
+identities; Dire Rat is published for the first time; and Sprint 13 added the
+Shadow Mastiff, whose four Summon Monster placements took the registered
+generated total from 900 to 904 and are now published alongside the rest. The
+withdrawal described in section 4 is therefore resolved on this branch; it
+remains true of the released v0.0.141 artifact, which is immutable.
 
 ## 1. Why this record exists
 

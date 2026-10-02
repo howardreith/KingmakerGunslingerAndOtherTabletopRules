@@ -533,6 +533,12 @@
       "subjectPrompt": "A gloved adventurer's hand grips a tiny rust-red bat-winged mosquito-like Stirge by its torso and lifts it visibly clear of a bare forearm, with a dark gap between proboscis and skin. The removal gesture, not the creature portrait, is the strong central silhouette. Warm amber rim light, dark forest backdrop and aged-gold circular frame. No text, blood or extra creatures.",
       "generator": "built-in-imagegen",
       "compositionBriefSource": "assets-source/original-icons/expanded-summoning/PHASE2-SPRINT10-SOURCES.md"
+    },
+    {
+      "key": "shadow-mastiff",
+      "displayName": "Shadow Mastiff",
+      "subjectPrompt": "A shadow mastiff's head and shoulders facing the viewer, a heavy hound built out of darkness with a near-black coat lifted only towards a cold blue on the raised surfaces, ears carried high, a broad muzzle open on its howl, and pale blue eyes that are the only bright thing on it; deep cold radial backdrop, strong rim light carrying the silhouette, not a wolf and not a black dog.",
+      "generator": "blender-procedural"
     }
   ]
 }
