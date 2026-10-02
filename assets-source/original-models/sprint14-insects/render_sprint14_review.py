@@ -36,7 +36,7 @@ import bpy
 from mathutils import Quaternion, Vector
 
 
-KINDS = ("giant-ant-soldier", "fire-beetle")
+KINDS = ("giant-ant-soldier", "giant-ant-worker", "fire-beetle")
 # The Sprint 14 donor is Z-up in renderer space, unlike the Sprint 12 and 13
 # quadrupeds, so the preview root needs no rotation into the review scene at
 # all. Its mouthparts sit at negative Y, so that is forward.
