@@ -86,25 +86,22 @@ namespace KingmakerGunslinger.DomainTests
                     "86f4287572bef49449b9d06c66adf456")
                     .EquivalentCreatureKey,
                 "Native SNA Smilodon reconciliation changed.");
-            Assertions.Equal(900,
+            Assertions.Equal(904,
                 ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
                     .Concat(ExpandedSummoningCatalog.GenerateVariants(
                         SummonFamily.NaturesAlly))
                     .Count(SummonVisibilityCatalog.IsPublished),
                 "Visible summon placement count changed.");
-            Assertions.Equal(4,
+            // Sprint 13 is qualified, so nothing is withheld any more. A
+            // creature appearing here again would be a sprint registering
+            // ahead of its own qualification, which is allowed, but it has to
+            // be deliberate rather than a leftover.
+            Assertions.Equal(0,
                 ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
                     .Concat(ExpandedSummoningCatalog.GenerateVariants(
                         SummonFamily.NaturesAlly))
                     .Count(value => !SummonVisibilityCatalog.IsPublished(value)),
-                "Only the authorized unqualified placements may remain hidden.");
-            Assertions.True(ExpandedSummoningCatalog
-                    .GenerateVariants(SummonFamily.Monster)
-                    .Concat(ExpandedSummoningCatalog.GenerateVariants(
-                        SummonFamily.NaturesAlly))
-                    .Where(value => !SummonVisibilityCatalog.IsPublished(value))
-                    .All(value => value.Creature.Key == "shadow-mastiff"),
-                "Only the unqualified Sprint 13 Shadow Mastiff may be hidden.");
+                "No placement may remain hidden now that Sprint 13 is qualified.");
         }
 
         internal static void DisplayOrderGroupsSinglesBeforeQuantities()
@@ -133,7 +130,7 @@ namespace KingmakerGunslinger.DomainTests
         {
             SummonIconCatalog.Validate();
             SummonViewScaleCatalog.Validate();
-            Assertions.Equal(100, SummonIconCatalog.All.Count,
+            Assertions.Equal(101, SummonIconCatalog.All.Count,
                 "Project icon concept count changed.");
             Assertions.Equal("Dire Bat", SummonIconCatalog.For("dire-bat")
                 .DisplayName, "Dire Bat requires its own creature icon identity.");

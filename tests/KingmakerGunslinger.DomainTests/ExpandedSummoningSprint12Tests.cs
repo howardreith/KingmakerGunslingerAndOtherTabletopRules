@@ -44,11 +44,11 @@ namespace KingmakerGunslinger.DomainTests
             // the registered total grows.
             Assertions.True(visibility.Contains(
                     "RegisteredLogicalPlacementCount = 904") &&
-                visibility.Contains("SuppressedLogicalPlacementCount = 4"),
-                "Sprint 12 publication must leave the published surface at 900.");
-            Assertions.Equal(900,
+                visibility.Contains("SuppressedLogicalPlacementCount = 0"),
+                "Sprint 13 publication must leave nothing suppressed.");
+            Assertions.Equal(904,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
-                "Sprint 12 publication must leave 900 published placements.");
+                "Sprint 13 publication must leave 904 published placements.");
             Assertions.True(donors.Contains(
                     "dire-rat|77f3f2ddf1ec2da45ab956c433e3b557|1") &&
                 donors.Contains("dog|77f3f2ddf1ec2da45ab956c433e3b557|1"),
@@ -203,8 +203,8 @@ namespace KingmakerGunslinger.DomainTests
                 "package.ps1"));
             Assertions.True(build.Contains("assets\\sprint12-quadrupeds") &&
                 package.Contains("assets\\sprint12-quadrupeds") &&
-                build.Contains("{ 288 } else { 286 }") &&
-                package.Contains("{ 288 } else { 286 }"),
+                build.Contains("{ 289 } else { 287 }") &&
+                package.Contains("{ 289 } else { 287 }"),
                 "All six quadruped asset files enter the strict standalone package.");
         }
 
