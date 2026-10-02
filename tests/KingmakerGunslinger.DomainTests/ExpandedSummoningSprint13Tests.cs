@@ -112,20 +112,40 @@ namespace KingmakerGunslinger.DomainTests
         {
             string component = Source("Summoning",
                 "ExpandedSummoningSprint13CombatComponents.cs");
-            Assertions.True(component.Contains("OnsetBuff") &&
-                component.Contains("RuleApplyBuff(owner, OnsetBuff"),
+            // The claim is about the damage trigger specifically, so its own
+            // class body is what gets examined: the onset component below it
+            // does apply the rage, and must.
+            int trigger = component.IndexOf(
+                "public sealed class SummonRageOnDamageComponent",
+                StringComparison.Ordinal);
+            int afterTrigger = component.IndexOf(
+                "public sealed class SummonRageOnsetComponent",
+                StringComparison.Ordinal);
+            Assertions.True(trigger > 0 && afterTrigger > trigger,
+                "Both rage components must be present, trigger first.");
+            string triggerBody = component.Substring(trigger,
+                afterTrigger - trigger);
+            Assertions.True(triggerBody.Contains("RuleApplyBuff(owner, OnsetBuff"),
                 "The damage trigger must apply the onset marker.");
-            Assertions.False(component.Contains("RuleApplyBuff(owner, RageBuff"),
+            Assertions.False(triggerBody.Contains("RuleApplyBuff(owner, RageBuff"),
                 "The damage trigger must never apply the rage state directly.");
+
+            // The rage is reachable only from a round boundary, which the
+            // engine dispatches through Buff.TickMechanics.
+            string onsetBody = component.Substring(afterTrigger);
+            Assertions.True(onsetBody.Contains("ITickEachRound") &&
+                onsetBody.Contains("public void OnNewRound()") &&
+                onsetBody.Contains("RuleApplyBuff(owner, RageBuff"),
+                "The rage state must be applied from the onset marker's round boundary.");
+            Assertions.True(onsetBody.Contains(
+                "SummonRagePolicy.ShouldBeginRage(1, available, alreadyRaging)"),
+                "The onset must ask the printed policy whether the rage may begin.");
 
             string builder = Source("Blueprints",
                 "ExpandedSummoningNaturalBuilder.cs");
-            Assertions.True(builder.Contains("SetBuffOnsetDelay") &&
-                builder.Contains("delay.OnStart = new ActionList") &&
-                builder.Contains("apply.Buff = state"),
-                "The rage state must be applied from the onset marker's round-boundary action list.");
-            Assertions.True(builder.Contains("apply.Permanent = true"),
-                "The printed rage has no duration and runs until the creature dies.");
+            Assertions.True(builder.Contains("onsetTick.RageBuff = state") &&
+                builder.Contains("onset.Frequency = DurationRate.Rounds"),
+                "The onset marker must carry the round-boundary component and tick by rounds.");
         }
 
         /// <summary>

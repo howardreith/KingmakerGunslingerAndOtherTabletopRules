@@ -331,6 +331,13 @@ namespace KingmakerGunslinger.Summoning
         internal const int ShadowMastiffBayImmunityHours = 24;
 
         /// <summary>
+        /// The printed Daylight spell lights a 60-foot radius. The engine
+        /// models no illumination of its own, so the spell's own printed
+        /// radius is what decides whether the mastiff is standing in it.
+        /// </summary>
+        internal const int ShadowMastiffShadowBlendDaylightRadiusFeet = 60;
+
+        /// <summary>
         /// The printed DC at the creature's own stat block, kept only so the
         /// derived components can be checked against the published number.
         /// </summary>
