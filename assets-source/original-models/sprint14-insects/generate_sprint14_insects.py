@@ -616,6 +616,11 @@ def main():
                            report, args.albedo)
     payload = json.loads(Path(args.mesh_data).read_text(encoding="utf-8"))
     payload["space"] = SPACES[args.kind]
+    # Shipped, not merely reported: the runtime's allowed-bone list refuses a
+    # mesh that binds the donor's fourth foot, and this lets everything
+    # downstream of the build check the same thing without the private report.
+    payload["legChainUsage"] = chains
+    payload["visibleLegs"] = report["visibleLegs"]
     with Path(args.mesh_data).open("w", encoding="utf-8", newline="\n") as out:
         out.write(json.dumps(payload, indent=1) + "\n")
     bpy.ops.object.select_all(action="DESELECT")

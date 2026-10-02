@@ -2065,7 +2065,7 @@
   },
   "expandedSummoningPhase2A141": {
     "branch": "codex/expanded-summoning-phase2a-sprints9-13",
-    "deterministicTestCount": 1975,
+    "deterministicTestCount": 1985,
     "publicReleaseAuthorized": true,
     "candidateOnly": false,
     "releaseVersion": "0.0.141",
