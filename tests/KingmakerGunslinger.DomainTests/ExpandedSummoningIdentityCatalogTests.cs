@@ -11,20 +11,20 @@ namespace KingmakerGunslinger.DomainTests
         {
             var first = ExpandedSummoningIdentityCatalog.Build();
             var second = ExpandedSummoningIdentityCatalog.Build();
-            Assertions.Equal(1776, first.Count, "Foundation identity count changed.");
+            Assertions.Equal(1784, first.Count, "Foundation identity count changed.");
             Assertions.Equal(92, first.Count(value => value.PlannedType == "BlueprintUnit"), "Unit identity count changed.");
             Assertions.Equal(1536, first.Count(value => value.PlannedType == "BlueprintAbility"), "Ability identity count changed.");
             Assertions.Equal(2, first.Count(value => value.Symbol.StartsWith(
                 "KMG.Summoning.Native.", StringComparison.Ordinal)),
                 "Native tier-one preservation identity count changed.");
-            Assertions.Equal(62, first.Count(value => value.PlannedType == "BlueprintBuff"), "Buff identity count changed.");
+            Assertions.Equal(63, first.Count(value => value.PlannedType == "BlueprintBuff"), "Buff identity count changed.");
             Assertions.Equal(24, first.Count(value => value.PlannedType == "BlueprintAiCastSpell"), "AI identity count changed.");
             Assertions.Equal(12, first.Count(value => value.PlannedType == "BlueprintBrain"), "Brain identity count changed.");
-            Assertions.Equal(15, first.Count(value => value.PlannedType == "BlueprintItemWeapon"), "Weapon identity count changed.");
+            Assertions.Equal(16, first.Count(value => value.PlannedType == "BlueprintItemWeapon"), "Weapon identity count changed.");
             Assertions.Equal(2, first.Count(value => value.PlannedType == "BlueprintWeaponType"), "Weapon-type identity count changed.");
-            Assertions.Equal(1, first.Count(value => value.PlannedType == "BlueprintUnitType"), "Unit-type identity count changed.");
+            Assertions.Equal(3, first.Count(value => value.PlannedType == "BlueprintUnitType"), "Unit-type identity count changed.");
             Assertions.Equal(17, first.Count(value => value.PlannedType == "BlueprintAbilityResource"), "Resource identity count changed.");
-            Assertions.Equal(11, first.Count(value => value.PlannedType == "BlueprintFeature"), "Feature identity count changed.");
+            Assertions.Equal(15, first.Count(value => value.PlannedType == "BlueprintFeature"), "Feature identity count changed.");
             Assertions.Equal(2, first.Count(value => value.PlannedType == "BlueprintAbilityAreaEffect"), "Area effect identity count changed.");
             // The alignment-mode toggle, plus the Shadow Mastiff's shadow
             // blend, whose printed text makes suspending and resuming it a
