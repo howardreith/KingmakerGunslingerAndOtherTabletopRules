@@ -4177,6 +4177,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             // sweep.
             new[] { "NaturesAlly", "giant-ant-soldier", "3" },
             new[] { "NaturesAlly", "fire-beetle", "1" }
+            // Sprint 15 adds no row, on the same principle that keeps
+            // the worker out. The Drone carries a grab and a venom,
+            // but both are the Soldier's carriers with different
+            // numbers, and a different number is not a new kind of
+            // state: the leg below already proves that a delivered
+            // venom survives a reload with whatever difficulty class
+            // it was applied with, and that an active grab resolves to
+            // a clean release. The Giant Stag Beetle has no long-lived
+            // state at all - no grab, no light, no rage - and its
+            // trample is spent within the round it is used. 7E is
+            // targeted rather than a roster sweep.
         };
 
         private static int ExpandedSummoningPersistenceFixtureCount
@@ -18030,6 +18041,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 sprint14VisualAttached++;
                         }
                     }
+                    else if (InsectDonorSelves.Contains(variant.Creature.Key))
+                    {
+                        // The insect family's donor, cast as itself: the patch
+                        // must not have attempted anything on it.
+                        foreach (UnitEntityData unit in spawned)
+                        {
+                            if (unit == null || unit.View == null) continue;
+                            _insectDonorChecked++;
+                            string outcome = ExpandedSummoningPteranodonViewPatch
+                                .DescribeView(unit.View);
+                            if (outcome == "not-attempted")
+                                _insectDonorClean++;
+                            else _insectDonorDetail.Add(
+                                variant.Creature.Key + ":" + outcome + ":" +
+                                DescribePteranodonRenderers(unit.View));
+                        }
+                    }
                     else if (PteranodonDonorSharers.Contains(variant.Creature.Key))
                     {
                         // Isolation: the creatures that share the GiantEagle
@@ -18522,6 +18550,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ungulateCrowd.Select(value => value.Multiplicity)
                             .Distinct().Count() == 2,
                     "exact-kind native quantity counts, duration and per-cast cleanup through the common cast loop"),
+                Assertion("expanded-summoning-sprint15-donor-negative-control",
+                    "the Giant Spider, cast as itself while five project creatures ride its prefab, comes up with no swap attempted on it at all - the negative control the insect family needs, because unlike the Pteranodon's donor this one is published and can share a fight with its own tenants",
+                    "checked=" + _insectDonorChecked + ";clean=" +
+                        _insectDonorClean +
+                        (_insectDonorDetail.Count == 0 ? string.Empty :
+                            ";detail=" + string.Join("|",
+                                _insectDonorDetail.ToArray())),
+                    _insectDonorChecked > 0 &&
+                        _insectDonorClean == _insectDonorChecked,
+                    "the live donor view's own patch outcome after a real cast of the donor creature through the player's own ability"),
                 Assertion("expanded-summoning-sprint15-quantity",
                     "both Sprint 15 creatures are summoned in quantity as well as singly - a 1d3 and a 1d4+1 command for each, in whichever families carry them - while every one of their menu placements is still suppressed, with exact-kind counts, duration and per-cast cleanup checked by the same cast loop every other creature goes through, and the project visual required on every body of a multi-body cast",
                     "crowd=" + sprint15CrowdLegal + "/" +
