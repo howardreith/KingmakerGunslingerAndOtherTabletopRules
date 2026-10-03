@@ -44,7 +44,13 @@ namespace KingmakerGunslinger.Summoning
             S("woolly-rhinoceros", 0.60f),
             // Sprint 8: the tiger on the leopard rig reads Large; the cheetah lean
             S("tiger", 1.25f),
-            S("cheetah", 0.92f)
+            S("cheetah", 0.92f),
+            // Sprint 14: the Fire Beetle is Small and rides the Medium Giant
+            // Spider, so without this it renders at a Medium body. The first
+            // guarded party-camera review showed it reading as large as a
+            // party member. Both Giant Ant castes are Medium on the same
+            // Medium donor and need no entry.
+            S("fire-beetle", 0.65f)
         };
 
         internal static IReadOnlyList<SummonViewScaleSpec> All
@@ -62,7 +68,7 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Values.Length != 13 || Values.Any(value => value.Multiplier <
+            if (Values.Length != 14 || Values.Any(value => value.Multiplier <
                     0.20f || value.Multiplier > 1.25f) ||
                 Values.Select(value => value.CreatureKey).Distinct(
                     StringComparer.Ordinal).Count() != Values.Length ||
