@@ -56,13 +56,21 @@ namespace KingmakerGunslinger.DomainTests
                     "Every placement of " + value.Key +
                     " publishes after mechanics, art and lifecycle qualification.");
             }
-            // Sprints 9-14 are published except for Sprint 14's two Giant Ant
-            // castes, which are registered and withheld on the scent barrier,
-            // so the registered surface is 952 and the published one is the 922
-            // every census reconciles against.
-            Assertions.True(all.Length == 970 &&
-                all.Count(SummonVisibilityCatalog.IsPublished) == 970 &&
-                all.Count(value => !SummonVisibilityCatalog.IsPublished(value)) == 0,
+            // The loop above owns the claim this test exists for: every
+            // placement of every Sprint 11 ungulate publishes. What is left to
+            // say is that the surface stays consistent around them - the
+            // published count is the registered one less whatever a later
+            // sprint is still withholding - and that none of what is withheld
+            // is theirs. Pinning the totals themselves only recorded whatever
+            // the roster happened to be on the day, and the comment here still
+            // described a barrier that no longer exists.
+            Assertions.True(
+                all.Length == SummonVisibilityCatalog
+                    .RegisteredLogicalPlacementCount &&
+                all.Count(SummonVisibilityCatalog.IsPublished) ==
+                    SummonVisibilityCatalog.PublishedLogicalPlacementCount &&
+                all.Count(value => !SummonVisibilityCatalog.IsPublished(value)) ==
+                    SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
                 "Sprint 11 stays published alongside every later qualified sprint.");
         }
 
@@ -573,8 +581,8 @@ namespace KingmakerGunslinger.DomainTests
                 "package.ps1"));
             Assertions.True(build.Contains("assets\\ungulates") &&
                 package.Contains("assets\\ungulates") &&
-                build.Contains("{ 304 } else { 302 }") &&
-                package.Contains("{ 304 } else { 302 }"),
+                build.Contains("{ 305 } else { 303 }") &&
+                package.Contains("{ 305 } else { 303 }"),
                 "All eight ungulate asset files enter the strict standalone package.");
         }
 

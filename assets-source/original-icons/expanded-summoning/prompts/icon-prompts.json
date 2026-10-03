@@ -64,6 +64,12 @@
       "subjectPrompt": "A broad armored crocodile surging from dark swamp water in three-quarter view, long heavy snout, olive scutes and open toothed jaws, tail wake, visibly distinct from a monitor lizard."
     },
     {
+      "key": "dire-crocodile",
+      "displayName": "Dire Crocodile",
+      "subjectPrompt": "A dire crocodile in strict profile with its head to the left, an enormous armored crocodilian with a long low flat snout, heavy toothed jaws held slightly open, raised brow and nostril bosses, two ranks of low keeled dorsal scutes running from the shoulders down a thick tapering keeled tail, and four short thick sprawling legs with wide feet; cool damp green-grey radial backdrop, the whole animal inside the bronze ring, read in profile because a crocodile seen down its own length is a wedge and seen across it is a jaw; visibly a crocodilian rather than a monitor lizard, and visibly far larger and heavier than the ordinary Crocodile beside it.",
+      "generator": "blender-procedural"
+    },
+    {
       "key": "cyclops",
       "displayName": "Cyclops",
       "subjectPrompt": "A brutal cyclops bust from a low viewpoint, single amber eye under a heavy brow, pointed ears and lower tusks, hide pauldrons and a chest strap, a greataxe over the right shoulder, storm-grey radial backdrop.",

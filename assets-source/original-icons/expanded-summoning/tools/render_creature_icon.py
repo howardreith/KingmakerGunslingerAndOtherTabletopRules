@@ -1059,6 +1059,107 @@ def giant_stag_beetle():
                        (out * 0.4, s * 0.42, -1.0), 1.18, 0.082, limb, 0.030)
 
 
+def dire_crocodile():
+    """A dire crocodile in profile, head to the left.
+
+    Profile, not three-quarter, and for the same reason the stag beetle needed
+    one: the feature that names this creature projects forward. A crocodile
+    read down its own length is a brown wedge; read across, it is a jaw. The
+    camera sits low as well, because a crocodile's whole silhouette is that it
+    is long and flat and close to the ground, and anything looking down at it
+    turns that into an oval.
+
+    The sprint's order says no lizard silhouette disguised by texture, so the
+    things that separate the two are built rather than painted: a broad flat
+    snout instead of a tapering muzzle, a jaw line long enough to carry teeth
+    along it, raised brow and nostril bosses, armoured dorsal scutes in two
+    ranks, a tail that is deep and keeled rather than round, and short limbs
+    splayed out to the sides instead of tucked under the body.
+    """
+    hide = material("CrocHide", (0.062, 0.070, 0.048), 0.42,
+                    noise=(7.0, 0.46, (0.030, 0.036, 0.024)))
+    belly = material("CrocBelly", (0.146, 0.138, 0.104), 0.52,
+                     noise=(16.0, 0.30, (0.092, 0.088, 0.066)))
+    scute = material("CrocScute", (0.044, 0.050, 0.034), 0.30,
+                     noise=(11.0, 0.40, (0.082, 0.090, 0.058)))
+    limb = material("CrocLimb", (0.052, 0.058, 0.040), 0.46)
+    tooth = material("CrocTooth", (0.184, 0.176, 0.150), 0.24)
+    # A low eyeshine, which a crocodile actually has and which gives the
+    # frame one bright point at 128 pixels.
+    eye = material("CrocEye", (0.230, 0.146, 0.040), 0.16,
+                   emission=(0.230, 0.146, 0.040),
+                   emission_strength=0.30)
+    body = Blob("Body", hide, 0.045)
+    # Snout, skull, shoulders, trunk and hips, all within about five units so
+    # the whole animal sits inside the ring. The snout balls are flattened
+    # hard in z, because a crocodile's head is wide and low and a round one is
+    # a lizard.
+    body.ball((-2.34, 0.0, 0.34), 0.34, (1.44, 0.96, 0.46), axis=(1, 0, 0))
+    body.ball((-1.80, 0.0, 0.37), 0.42, (1.34, 1.04, 0.54), axis=(1, 0, 0))
+    body.ball((-1.22, 0.0, 0.44), 0.54, (1.18, 1.16, 0.70), axis=(1, 0, 0))
+    body.ball((-0.52, 0.0, 0.48), 0.68, (1.20, 1.20, 0.82), axis=(1, 0, 0))
+    body.ball((0.34, 0.0, 0.50), 0.74, (1.30, 1.22, 0.86), axis=(1, 0, 0))
+    body.ball((1.22, 0.0, 0.46), 0.62, (1.28, 1.04, 0.78), axis=(1, 0, 0))
+    # One continuous tail rather than four lumps: a chain fuses because its
+    # elements overlap, and it stops well inside the frame.
+    body.chain((1.70, 0.04, 0.44), (3.15, 0.26, 0.40), 0.46, 0.15, count=9)
+    # A paler belly slab, which is what makes the body read as a heavy
+    # cylinder lying on something rather than as a silhouette.
+    under = Blob("CrocBelly", belly, 0.050)
+    under.ball((-0.40, 0.0, 0.12), 0.40, (1.50, 1.04, 0.30), axis=(1, 0, 0))
+    under.ball((0.45, 0.0, 0.12), 0.44, (1.50, 1.04, 0.30), axis=(1, 0, 0))
+    # The lower jaw, slung under the snout and slightly open. An open jaw is
+    # what makes the portrait a predator rather than a log.
+    jaw = Blob("CrocJaw", hide, 0.042)
+    jaw.ball((-2.24, 0.0, 0.06), 0.24, (1.34, 0.80, 0.34), axis=(1, 0, 0))
+    jaw.ball((-1.72, 0.0, 0.12), 0.27, (1.22, 0.88, 0.38), axis=(1, 0, 0))
+    jaw.ball((-1.24, 0.0, 0.20), 0.31, (1.08, 0.94, 0.44), axis=(1, 0, 0))
+    for s in (-1, 1):
+        # A raised brow with the eye on its side rather than on top, so the
+        # near one carries the frame and the far one stays a hint.
+        sphere("CrocBrow%d" % s, (-1.20, s * 0.26, 0.64),
+               (0.22, 0.17, 0.13), hide)
+        sphere("CrocEye%d" % s, (-1.22, s * 0.37, 0.60),
+               (0.12, 0.09, 0.10), eye)
+        sphere("CrocNostril%d" % s, (-2.52, s * 0.12, 0.46),
+               (0.10, 0.08, 0.07), hide)
+        # Teeth along both jaw lines, the front ones longest the way a
+        # crocodile's fourth tooth is, and short enough not to read as a comb.
+        for index, (x, length) in enumerate((
+                (-2.38, 0.20), (-2.06, 0.16), (-1.74, 0.17), (-1.42, 0.13))):
+            cone_along("CrocToothUpper%d%d" % (s, index),
+                       (x, s * 0.19, 0.16), (0.0, 0.0, -1.0), length,
+                       0.046, tooth, 0.004)
+            cone_along("CrocToothLower%d%d" % (s, index),
+                       (x + 0.15, s * 0.17, 0.00), (0.0, 0.0, 1.0),
+                       length * 0.75, 0.040, tooth, 0.004)
+        # Low keeled scutes hugging the spine: plates, not spikes. Flattened
+        # spheres rather than cones, because the first build's cones made the
+        # back read as a stegosaurus.
+        for index, (x, scale) in enumerate((
+                (-0.75, 0.92), (-0.25, 1.00), (0.25, 1.02), (0.75, 0.96),
+                (1.25, 0.84), (1.75, 0.68), (2.25, 0.52))):
+            sphere("CrocScute%d%d" % (s, index),
+                   (x, s * 0.20, 0.80 + 0.04 * scale),
+                   (0.20 * scale, 0.13 * scale, 0.09 * scale), scute)
+            if index < 5:
+                sphere("CrocScuteOuter%d%d" % (s, index),
+                       (x + 0.06, s * 0.37, 0.73),
+                       (0.17 * scale, 0.11 * scale, 0.07 * scale), scute)
+        # Four short sprawling legs, thick and rooted inside the hull, with a
+        # wide foot. Sprawl is half of why a crocodile looks like a crocodile.
+        for index, (root, out) in enumerate(((-0.70, -0.26), (1.05, 0.24))):
+            cone_along("CrocHumerus%d%d" % (s, index),
+                       (root, s * 0.26, 0.34), (out, s * 1.0, -0.42), 0.60,
+                       0.185, limb, 0.140)
+            cone_along("CrocForearm%d%d" % (s, index),
+                       (root + out * 0.46, s * 0.80, 0.08),
+                       (out * 0.4, s * 0.30, -1.0), 0.34, 0.132, limb, 0.098)
+            box("CrocFoot%d%d" % (s, index),
+                (root + out * 0.66, s * 0.93, -0.12),
+                (0.26, 0.20, 0.07), limb, bevel=0.025)
+
+
 CREATURES = {
     # The two ant castes share a backdrop and a light rig because they are one
     # creature in two builds; what separates them in the frame is the head and
@@ -1080,6 +1181,15 @@ CREATURES = {
     # A heavy ground beetle whose portrait is its mandibles: a cool slate
     # backdrop so the warm antlers carry against it, and a camera low enough
     # that the body reads as mass rather than as a disc from above.
+    # The crocodilians: a cool, damp, green-grey backdrop rather than the
+    # insects' warm brown, so a dark olive animal separates from it, and a low
+    # camera well back along the body because the subject is long rather than
+    # tall. The Dire Crocodile is Gargantuan, but an icon is a portrait and
+    # size lives in the stat block, so what the frame has to carry is the jaw.
+    "dire-crocodile": dict(build=dire_crocodile,
+                     inner=(0.088, 0.128, 0.104), outer=(0.012, 0.020, 0.016),
+                     key=(1.0, 0.90, 0.68), rim=(0.58, 0.82, 0.92),
+                     camera=((1.4, -8.6, 1.32), (0.12, 0.0, 0.40), 46.0)),
     "giant-stag-beetle": dict(build=giant_stag_beetle,
                      inner=(0.11, 0.12, 0.15), outer=(0.010, 0.011, 0.014),
                      key=(1.0, 0.90, 0.70), rim=(0.66, 0.76, 1.0),

@@ -1,6 +1,6 @@
 {
     "schemaVersion":  1,
-    "count":  106,
+    "count":  107,
     "icons":  [
                   {
                       "key":  "air-mephit",
@@ -96,6 +96,15 @@
                       "key":  "crocodile",
                       "file":  "crocodile.png",
                       "sha256":  "150557a1483cec9a0e66c0b4b1f9fac4949f535cf111b043b29bc9444bba38d0",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "dire-crocodile",
+                      "file":  "dire-crocodile.png",
+                      "sha256":  "77a7395a6fe17e1528b8a8778fa28f77f1c02bb1ad50ab92888688625666116b",
                       "width":  128,
                       "height":  128,
                       "format":  "RGBA PNG",

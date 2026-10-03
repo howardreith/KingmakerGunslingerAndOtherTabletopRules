@@ -22463,6 +22463,126 @@
       "status": "active",
       "milestone": "Expanded Summoning",
       "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Unit.DireCrocodile",
+      "guid": "95bd522bb3a444d49986ba12b7822f10",
+      "plannedType": "BlueprintUnit",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated and every Dire Crocodile placement is suppressed until its own guarded review passes."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier7.DireCrocodile.One",
+      "guid": "3591a9213c054dc1ade0ce5a5aed5dbc",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated and every Dire Crocodile placement is suppressed until its own guarded review passes."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier7.DireCrocodile.One.Celestial",
+      "guid": "e4d13277d1db47408a5dffa99e0cdc0d",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated and every Dire Crocodile placement is suppressed until its own guarded review passes."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier7.DireCrocodile.One.Fiendish",
+      "guid": "160c3486f72f4947aecef15558442f2c",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated and every Dire Crocodile placement is suppressed until its own guarded review passes."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier8.DireCrocodile.OneD3",
+      "guid": "5f48a1357c2f4be0a898775f9ca41695",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated and every Dire Crocodile placement is suppressed until its own guarded review passes."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier8.DireCrocodile.OneD3.Celestial",
+      "guid": "83a3dcf171344731ba641c4cb175600f",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated and every Dire Crocodile placement is suppressed until its own guarded review passes."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier8.DireCrocodile.OneD3.Fiendish",
+      "guid": "6f50d7c7d63741368c92b862a053db97",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated and every Dire Crocodile placement is suppressed until its own guarded review passes."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.DireCrocodile.OneD4PlusOne",
+      "guid": "a79a2792db7442f2952d32270108206a",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated and every Dire Crocodile placement is suppressed until its own guarded review passes."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.DireCrocodile.OneD4PlusOne.Celestial",
+      "guid": "43fa6db398844fa5b3720189749c3d0d",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated and every Dire Crocodile placement is suppressed until its own guarded review passes."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.DireCrocodile.OneD4PlusOne.Fiendish",
+      "guid": "e3346310d6e2426fa79b5c59e9b9efeb",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated and every Dire Crocodile placement is suppressed until its own guarded review passes."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier7.DireCrocodile.One",
+      "guid": "36ca1b0206bf43a4ad6991acf50f6ab3",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated and every Dire Crocodile placement is suppressed until its own guarded review passes."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier8.DireCrocodile.OneD3",
+      "guid": "f3bd53788c38460dbd32f5bce3c1b704",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated and every Dire Crocodile placement is suppressed until its own guarded review passes."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier9.DireCrocodile.OneD4PlusOne",
+      "guid": "b8dd977bc57146ee80223e55bc32da7a",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated and every Dire Crocodile placement is suppressed until its own guarded review passes."
+    },
+    {
+      "symbol": "KMG.Summoning.Natural.Bite3d6",
+      "guid": "2fda8520f73c4431b02db582e16430b7",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated and every Dire Crocodile placement is suppressed until its own guarded review passes."
+    },
+    {
+      "symbol": "KMG.Summoning.Natural.Tail4d8",
+      "guid": "99fd2a7c2e0e422d8c3792b4f882e37e",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated and every Dire Crocodile placement is suppressed until its own guarded review passes."
     }
   ]
 }
