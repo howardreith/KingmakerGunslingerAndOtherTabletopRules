@@ -637,6 +637,62 @@ namespace KingmakerGunslinger.DomainTests
             }
         }
 
+        /// <summary>
+        /// Every shipped painting matches the hash its own mesh declares, and
+        /// is the size the atlas assumes.
+        ///
+        /// <para>The loader compares that hash to the bytes on disk before it
+        /// decodes the texture, and refuses the texture if they disagree. A
+        /// refusal is not a crash: the creature comes up wearing its donor,
+        /// which looks like a missing feature rather than a broken file. So a
+        /// painting regenerated without its hash being refreshed would ship
+        /// and show the Giant Spider, and nothing else offline would say
+        /// so.</para>
+        /// </summary>
+        internal static void EachInsectPaintingMatchesItsDeclaredHash()
+        {
+            string directory = Path.Combine(Environment.CurrentDirectory,
+                "assets", "sprint14-insects");
+            foreach (string key in InsectFamilyKeys)
+            {
+                JObject mesh = JObject.Parse(File.ReadAllText(
+                    Path.Combine(directory, key + "-mesh.json")));
+                JObject albedo = (JObject)mesh["albedo"];
+                if (albedo == null)
+                    throw new InvalidOperationException(
+                        key + " ships a mesh that declares no painting.");
+                string file = (string)albedo["file"];
+                if (file != key + "-albedo.png")
+                    throw new InvalidOperationException(
+                        key + " declares the painting " + file + ".");
+                string path = Path.Combine(directory, file);
+                if (!File.Exists(path))
+                    throw new InvalidOperationException(
+                        key + " declares a painting that is not shipped: " +
+                        file);
+                string declared = (string)albedo["sha256"];
+                string actual = InsectSha256(path);
+                if (actual != declared)
+                    throw new InvalidOperationException(
+                        key + " ships a painting its mesh does not recognise: " +
+                        "declared " + declared + ", shipped " + actual +
+                        ". The loader would refuse it and the creature would " +
+                        "wear its donor.");
+                if ((int)albedo["width"] != 1024 ||
+                        (int)albedo["height"] != 1024)
+                    throw new InvalidOperationException(
+                        key + " declares a painting that is not 1024 square, " +
+                        "which the UV atlas assumes.");
+            }
+        }
+
+        private static string InsectSha256(string path)
+        {
+            using (var sha = System.Security.Cryptography.SHA256.Create())
+                return string.Concat(sha.ComputeHash(File.ReadAllBytes(path))
+                    .Select(value => value.ToString("x2")));
+        }
+
         private static string[] ShippedBones(string key)
         {
             string path = Path.Combine(Environment.CurrentDirectory,

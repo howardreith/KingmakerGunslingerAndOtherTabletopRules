@@ -73,6 +73,23 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static readonly string[] PteranodonDonorSharers =
         { "roc" };
 
+        private int _insectDonorChecked;
+        private int _insectDonorClean;
+        private readonly List<string> _insectDonorDetail = new List<string>();
+
+        /// <summary>
+        /// The insect family's donor, cast as itself.
+        ///
+        /// <para>Five project creatures ride the Giant Spider, and unlike the
+        /// GiantEagle the donor is published, so a player can have the spider
+        /// and one of its tenants in the same fight. The patch must never
+        /// attempt anything on it: a swap that reached the shared prefab
+        /// rather than the instance would be visible here and nowhere
+        /// else.</para>
+        /// </summary>
+        private static readonly string[] InsectDonorSelves =
+        { "giant-spider" };
+
         /// <summary>
         /// The one skinned renderer on a GiantEagle-donor view, as the swap
         /// leaves it: the Pteranodon's mesh, material and 46 bones when
