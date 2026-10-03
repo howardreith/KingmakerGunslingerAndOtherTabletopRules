@@ -594,7 +594,8 @@ namespace KingmakerGunslinger.Blueprints
         {
             var perception = ScriptableObject.CreateInstance<AddStatBonus>();
             perception.Stat = StatType.SkillPerception;
-            perception.Value = 4;
+            perception.Value = NaturalSummonProfile
+                .GiantAntRacialPerceptionBonus;
             perception.Descriptor = ModifierDescriptor.Racial;
             feature.name = InternalName(GiantAntRacialSkillsSymbol);
             feature.IsClassFeature = false;

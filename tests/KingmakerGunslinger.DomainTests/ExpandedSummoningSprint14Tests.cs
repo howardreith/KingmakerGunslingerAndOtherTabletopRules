@@ -215,9 +215,27 @@ namespace KingmakerGunslinger.DomainTests
             SummonVariantSpec[] mine = all.Where(value =>
                 InsectKeys.Contains(value.Creature.Key)).ToArray();
             if (mine.Length != 48)
+
                 throw new InvalidOperationException(
                     "The three insects register 48 placements, not " +
                     mine.Length + ".");
+            // The per-creature split, because publication is per creature and
+            // the arithmetic has to survive publishing one of the three
+            // without the other two. A creature held back for a proven engine
+            // barrier must subtract exactly its own placements and no others.
+            foreach (var expected in new[] {
+                new { Key = FireBeetleKey, Placements = 18 },
+                new { Key = WorkerKey, Placements = 16 },
+                new { Key = SoldierKey, Placements = 14 } })
+            {
+                int actual = mine.Count(value =>
+                    value.Creature.Key == expected.Key);
+                if (actual != expected.Placements)
+                    throw new InvalidOperationException(expected.Key +
+                        " registers " + actual + " placements, not " +
+                        expected.Placements + ", so the publication " +
+                        "arithmetic for a partial publication is wrong.");
+            }
             if (mine.Any(SummonVisibilityCatalog.IsPublished))
                 throw new InvalidOperationException(
                     "No Sprint 14 placement may be published before it qualifies.");
@@ -720,6 +738,88 @@ namespace KingmakerGunslinger.DomainTests
                         "A Sprint 14 builder resolves " + symbol +
                         " but nothing creates it.");
         }
+
+        /// <summary>
+        /// The printed skill totals come out exactly, and nothing arrives that
+        /// the stat block never printed.
+        ///
+        /// <para>The first attempt implemented the ants' racial +4 Perception
+        /// correctly and still produced the wrong creature: a Worker read
+        /// Perception 7 against a printed +5, because the generic builder gives
+        /// every reconstructed creature automatic Perception, Mobility and
+        /// Stealth ranks through AddClassLevels. That is right for the animals
+        /// it was written for and wrong for a vermin whose stat block prints no
+        /// ranks at all. The racial bonus was never the problem; the total
+        /// was.</para>
+        ///
+        /// <para>So this asserts the arithmetic that has to produce the printed
+        /// number - zero ranks, plus the governing attribute, plus the racial
+        /// bonus - and asserts that the default is still what it always was for
+        /// every other creature, because correcting these three must not move
+        /// anything already qualified. The compensating alternative, a negative
+        /// racial modifier cancelling ranks that should not exist, would reach
+        /// the same total through a stat block the game cannot show honestly,
+        /// and is not what is implemented.</para>
+        /// </summary>
+        internal static void InsectSkillTotalsMatchThePrintedStatBlocks()
+        {
+            // The default is untouched, so no qualified creature moves.
+            string[] expectedDefault = { "Perception", "Mobility", "Stealth" };
+            if (!NaturalSummonProfile.DefaultSkills
+                    .SequenceEqual(expectedDefault))
+                throw new InvalidOperationException(
+                    "The generic builder's skill set changed, which moves every " +
+                    "previously qualified creature: " + string.Join(", ",
+                        NaturalSummonProfile.DefaultSkills));
+            string[] movedCreatures = ExpandedSummoningNaturalProfiles.All
+                .Where(value => !InsectKeys.Contains(value.Key,
+                    StringComparer.Ordinal) &&
+                    !value.Skills.SequenceEqual(expectedDefault))
+                .Select(value => value.Key).ToArray();
+            if (movedCreatures.Length != 0)
+                throw new InvalidOperationException(
+                    "Correcting the three insects moved creatures that were " +
+                    "already qualified: " + string.Join(", ", movedCreatures));
+
+            foreach (var row in new[] {
+                new { Key = FireBeetleKey, Perception = 0, Racial = 0 },
+                new { Key = WorkerKey, Perception = 5,
+                    Racial = NaturalSummonProfile
+                        .GiantAntRacialPerceptionBonus },
+                new { Key = SoldierKey, Perception = 5,
+                    Racial = NaturalSummonProfile
+                        .GiantAntRacialPerceptionBonus } })
+            {
+                NaturalSummonProfile profile =
+                    ExpandedSummoningNaturalProfiles.For(row.Key);
+
+                // No ranks at all: the stat block prints none.
+                if (profile.Skills.Count != 0)
+                    throw new InvalidOperationException(row.Key +
+                        " still takes automatic class ranks the stat block " +
+                        "never printed: " + string.Join(", ", profile.Skills));
+
+                // Ranks, plus the attribute, plus the racial bonus.
+                int wisdomModifier = (profile.Wisdom - 10) / 2;
+                int derived = 0 + wisdomModifier + row.Racial;
+                if (derived != row.Perception)
+                    throw new InvalidOperationException(row.Key +
+                        " derives Perception " + derived + " from Wisdom " +
+                        profile.Wisdom + " and racial " + row.Racial +
+                        ", but its stat block prints " + row.Perception + ".");
+
+                // And the racial bonus is carried as a racial modifier rather
+                // than folded into a rank, so the creature's own stat block
+                // reads the way the printed one does.
+                bool carriesRacialFeature = profile.Facts
+                    .Contains("GiantAntRacialSkills");
+                if (carriesRacialFeature != (row.Racial != 0))
+                    throw new InvalidOperationException(row.Key +
+                        " needs racial " + row.Racial +
+                        " but carriesRacialSkills=" + carriesRacialFeature);
+            }
+        }
+
 
     }
 }
