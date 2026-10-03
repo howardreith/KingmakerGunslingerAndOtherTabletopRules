@@ -1154,6 +1154,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 if (_rulesPhase == 9)
                 {
+                    // Turn-based needs real frames before it can take a
+                    // command: initiative and the first turn do not happen in
+                    // the frame that enabled the mode, which is why the first
+                    // version of this never reached a turn at all.
+                    stage = "sprint14-combat-entry" + _sprint14CombatCell;
+                    if (!AdvanceSprint14CombatEntry(_rulesWait))
+                    {
+                        _rulesWait++;
+                        return;
+                    }
+                    _rulesWait = 0;
+                    _rulesPhase = 10;
+                    return;
+                }
+                if (_rulesPhase == 10)
+                {
                     stage = "sprint14-combat-cell" + _sprint14CombatCell + "-" +
                         Sprint14CombatCells[_sprint14CombatCell][0] + "-" +
                         (Sprint14CombatCells[_sprint14CombatCell][1] == "true" ?
@@ -1168,6 +1184,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ResetExpandedSummoningHostile(_rulesFixture));
                         BeginSprint14CombatCell();
                         _rulesWait = 0;
+                        _rulesPhase = 9;
                         return;
                     }
                     stage = "sprint14-combat-complete";
