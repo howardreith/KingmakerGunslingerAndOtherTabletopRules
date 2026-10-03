@@ -5,7 +5,11 @@ using System.Linq;
 namespace KingmakerGunslinger.Summoning
 {
     /// <summary>
-    /// Which Giant Spider bones each Sprint 14 insect is entitled to drive.
+    /// Which Giant Spider bones each insect is entitled to drive.
+    ///
+    /// <para>Named for Sprint 14, which introduced it, but it governs the whole
+    /// insect family: Sprint 15's Giant Ant (Drone) and Giant Stag Beetle ride
+    /// the same donor and are listed here too.</para>
     ///
     /// <para>This is pure policy on purpose. The asset runtime that enforces it
     /// is bound to Unity and cannot be exercised by the deterministic suite, so
@@ -26,18 +30,21 @@ namespace KingmakerGunslinger.Summoning
         internal const string FireBeetleKey = "fire-beetle";
         internal const string WorkerKey = "giant-ant-worker";
         internal const string SoldierKey = "giant-ant-soldier";
+        internal const string DroneKey = "giant-ant-drone";
+        internal const string StagBeetleKey = "giant-stag-beetle";
 
         /// <summary>
-        /// The donor's fourth leg chain. Its feet are forbidden to every Sprint
-        /// 14 creature without exception, because a foot is the bone that
+        /// The donor's fourth leg chain. Its feet are forbidden to every
+        /// creature here without exception, because a foot is the bone that
         /// plants on the ground and nothing here may plant an eighth time.
         /// </summary>
         internal static readonly string[] FourthChainFeet =
             { "L_Foot3", "R_Foot3" };
 
         /// <summary>
-        /// The fourth chain's upper and lower bones: the beetle's reviewed wing
-        /// drivers, and forbidden to the ants.
+        /// The fourth chain's upper and lower bones: the reviewed wing drivers
+        /// of the two creatures that fly with membranous wings - the Fire
+        /// Beetle and the Giant Ant (Drone) - and forbidden to everything else.
         /// </summary>
         internal static readonly string[] FourthChainWingDrivers =
             { "L_Leg3_Upper", "L_Leg3_Lower", "R_Leg3_Upper", "R_Leg3_Lower" };
@@ -64,8 +71,22 @@ namespace KingmakerGunslinger.Summoning
         };
 
         /// <summary>The ant's list plus the two wing drivers, and nothing else.</summary>
-        internal static readonly string[] FireBeetleBones =
+        internal static readonly string[] WingedBones =
             AntBones.Concat(FourthChainWingDrivers).ToArray();
+
+        /// <summary>Kept for the name Sprint 14 used.</summary>
+        internal static readonly string[] FireBeetleBones = WingedBones;
+
+        /// <summary>
+        /// The creatures whose reviewed meshes drive the wing bones. The Giant
+        /// Stag Beetle is deliberately not among them: its printed flight is a
+        /// poor speed equal to its ground speed, its profile takes the ground
+        /// mode its trample needs, and its wing cases stay shut, so it has no
+        /// membranous wing to drive and may not reach that chain at all.
+        /// </summary>
+        private static readonly HashSet<string> WingedCreatures =
+            new HashSet<string>(new[] { FireBeetleKey, DroneKey },
+                StringComparer.Ordinal);
 
         /// <summary>
         /// The allowlist a creature key is entitled to.
@@ -76,7 +97,21 @@ namespace KingmakerGunslinger.Summoning
         /// </summary>
         internal static string[] AllowedBones(string key)
         {
-            return key == FireBeetleKey ? FireBeetleBones : AntBones;
+            return Flies(key) ? WingedBones : AntBones;
+        }
+
+        /// <summary>
+        /// Whether this creature's reviewed mesh drives wings.
+        ///
+        /// <para>A flier's spare limb chain carries its forewing and hindwing
+        /// on the upper and lower bones and has no foot at all, which is a
+        /// legal shape for a flier and a defect for anything else. Callers
+        /// that police limb layout ask here rather than naming a creature, so
+        /// one place decides who flies.</para>
+        /// </summary>
+        internal static bool Flies(string key)
+        {
+            return key != null && WingedCreatures.Contains(key);
         }
 
         /// <summary>

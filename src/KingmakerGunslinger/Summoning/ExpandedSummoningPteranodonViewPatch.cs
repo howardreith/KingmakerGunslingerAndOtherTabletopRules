@@ -78,6 +78,10 @@ namespace KingmakerGunslinger.Summoning
             "KMG_Summoning_Unit_GiantAntWorker";
         internal const string GiantAntSoldierBlueprintName =
             "KMG_Summoning_Unit_GiantAntSoldier";
+        internal const string GiantAntDroneBlueprintName =
+            "KMG_Summoning_Unit_GiantAntDrone";
+        internal const string GiantStagBeetleBlueprintName =
+            "KMG_Summoning_Unit_GiantStagBeetle";
         /// <summary>
         /// The name carried by the private mesh and material the swap installs;
         /// observers recognise the attached state by it.
@@ -107,7 +111,9 @@ namespace KingmakerGunslinger.Summoning
                 { PoisonousFrogBlueprintName, "poisonous-frog" },
                 { FireBeetleBlueprintName, "fire-beetle" },
                 { GiantAntWorkerBlueprintName, "giant-ant-worker" },
-                { GiantAntSoldierBlueprintName, "giant-ant-soldier" }
+                { GiantAntSoldierBlueprintName, "giant-ant-soldier" },
+                { GiantAntDroneBlueprintName, "giant-ant-drone" },
+                { GiantStagBeetleBlueprintName, "giant-stag-beetle" }
             };
         private static readonly HashSet<string> UngulateKeys =
             new HashSet<string>(StringComparer.Ordinal)
@@ -118,9 +124,13 @@ namespace KingmakerGunslinger.Summoning
         private static readonly HashSet<string> Sprint13CreatureKeys =
             new HashSet<string>(StringComparer.Ordinal)
             { "wolverine", "shadow-mastiff", "poisonous-frog" };
+        // The whole insect family on the Giant Spider rig, Sprints 14 and 15
+        // together: they share a donor, a bone policy and an asset pipeline, so
+        // every seam that asks "is this one of the insects" wants all five.
         private static readonly HashSet<string> Sprint14InsectKeys =
             new HashSet<string>(StringComparer.Ordinal)
-            { "fire-beetle", "giant-ant-worker", "giant-ant-soldier" };
+            { "fire-beetle", "giant-ant-worker", "giant-ant-soldier",
+              "giant-ant-drone", "giant-stag-beetle" };
         private const string MainTexture = "_MainTex";
 
         internal static bool HandlesBlueprintName(string blueprintName)
