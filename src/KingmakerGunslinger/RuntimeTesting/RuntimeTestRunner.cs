@@ -17164,6 +17164,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             int sprint12VisualAttached = 0;
             int sprint13VisualChecked = 0;
             int sprint13VisualAttached = 0;
+            // The coverage loop casts every registered variant, not only the
+            // published ones, so the three withheld Sprint 14 insects attach
+            // views here too and their outcomes have to be accounted for.
+            int sprint14VisualChecked = 0;
+            int sprint14VisualAttached = 0;
             BlueprintScriptableObject[] blueprints = BlueprintBootstrap.Library
                 .GetAllBlueprints().Where(value => value != null).ToArray();
             BlueprintFeature direBatSense = blueprints.OfType<BlueprintFeature>()
@@ -17651,6 +17656,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 sprint13VisualAttached++;
                         }
                     }
+                    else if (variant.Creature.Key == "fire-beetle" ||
+                        variant.Creature.Key == "giant-ant-worker" ||
+                        variant.Creature.Key == "giant-ant-soldier")
+                    {
+                        foreach (UnitEntityData unit in spawned)
+                        {
+                            if (unit == null || unit.View == null) continue;
+                            sprint14VisualChecked++;
+                            string outcome = ExpandedSummoningPteranodonViewPatch
+                                .DescribeView(unit.View);
+                            if (outcome.StartsWith("visual:attached;",
+                                    StringComparison.Ordinal))
+                                sprint14VisualAttached++;
+                        }
+                    }
                     else if (PteranodonDonorSharers.Contains(variant.Creature.Key))
                     {
                         // Isolation: the creatures that share the GiantEagle
@@ -18118,7 +18138,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "several Pteranodon casts in one lifecycle, each view attached exactly once, each cast cleaned to the exact snapshot",
                     "casts=" + _pteranodonCastsSeen + ";views=" +
                         _pteranodonVisualOutcomes.Count + ";patchOutcomes=" +
-                        (patchOutcomesAfterCoverage - patchOutcomesBefore),
+                        (patchOutcomesAfterCoverage - patchOutcomesBefore) +
+                        ";sprint14Views=" + sprint14VisualChecked +
+                        ";sprint14Attached=" + sprint14VisualAttached,
                     _pteranodonCastsSeen >= 4 &&
                         _pteranodonVisualOutcomes.Count >= _pteranodonCastsSeen &&
                         patchOutcomesAfterCoverage - patchOutcomesBefore ==
@@ -18126,9 +18148,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 _direBatVisualChecked + _eagleVisualChecked +
                                 _giantWaspVisualChecked + _stirgeVisualChecked +
                                 ungulateVisualChecked + sprint12VisualChecked +
-                                sprint13VisualChecked &&
+                                sprint13VisualChecked +
+                                sprint14VisualChecked &&
                         sprint12VisualAttached == sprint12VisualChecked &&
                         sprint13VisualAttached == sprint13VisualChecked &&
+                        sprint14VisualAttached == sprint14VisualChecked &&
                         pteranodonAttachedClean,
                     "one patch outcome per attached view; per-cast cleanup is enforced by the cast loop itself"),
                 Assertion("expanded-summoning-stirge-visual-attached",
