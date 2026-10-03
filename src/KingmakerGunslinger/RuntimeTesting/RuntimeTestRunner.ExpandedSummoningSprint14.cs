@@ -417,18 +417,48 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// the wound gate exists to refuse, so the fixture has to produce one
         /// honestly rather than by asserting it happened.</para>
         /// </summary>
-        private static BlueprintBuff FindSprint14DamageShield(
+        private static BlueprintBuff[] FindSprint14DamageShields(
             BlueprintScriptableObject[] blueprints)
         {
-            return blueprints.OfType<BlueprintBuff>().FirstOrDefault(value =>
+            return blueprints.OfType<BlueprintBuff>().Where(value =>
                 value != null && value.ComponentsArray != null &&
                 value.ComponentsArray.OfType<AddDamageResistancePhysical>()
-                    .Any(dr => dr != null && dr.Value != null &&
-                        dr.Value.Value >= 20)) ??
-                blueprints.OfType<BlueprintBuff>().FirstOrDefault(value =>
-                    value != null && value.ComponentsArray != null &&
-                    value.ComponentsArray.OfType<AddDamageResistancePhysical>()
-                        .Any(dr => dr != null));
+                    .Any(dr => dr != null)).ToArray();
+        }
+
+        /// <summary>
+        /// Apply a damage reduction to the target and confirm it reduced the
+        /// damage to nothing, trying each candidate until one does.
+        ///
+        /// <para>The first attempt applied one buff and assumed it worked. It
+        /// did not: the sting still dealt ten through it, because a buff added
+        /// without a mechanics context leaves its ContextValue unresolved and
+        /// the reduction evaluates to zero. A fixture that cannot produce the
+        /// situation it names must say so rather than quietly measure
+        /// something else, so this returns null when nothing reaches zero and
+        /// the case then fails on its own situation check.</para>
+        /// </summary>
+        private static Buff ApplySprint14DamageShield(
+            BlueprintScriptableObject[] blueprints, UnitEntityData soldier,
+            UnitEntityData target, ItemEntityWeapon weapon, int seed)
+        {
+            foreach (BlueprintBuff candidate in
+                FindSprint14DamageShields(blueprints))
+            {
+                Buff applied = target.Descriptor.AddFact(candidate) as Buff;
+                if (applied == null)
+                    applied = target.Descriptor.AddBuff(candidate, target, null);
+                if (applied == null) continue;
+                UnityEngine.Random.InitState(seed);
+                var probe = new RuleAttackWithWeapon(soldier, target, weapon, 0);
+                Rulebook.Trigger(probe);
+                int dealt = probe.MeleeDamage == null ? 0 :
+                    Math.Max(0, probe.MeleeDamage.Damage);
+                bool hit = probe.AttackRoll != null && probe.AttackRoll.IsHit;
+                if (hit && dealt == 0) return applied;
+                applied.Remove();
+            }
+            return null;
         }
 
         /// <summary>
@@ -450,15 +480,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 value => ReferenceEquals(value.Blueprint, blueprint));
             if (weapon == null) return label + "[no-weapon]=unexpected";
             ClearSprint14Venom(target, venom);
+            int seed = FindNativeD20Seed(
+                !shouldHit ? 1 : allowDamage ? 20 : 19);
             Buff shield = null;
             if (!allowDamage)
             {
-                BlueprintBuff reduction = FindSprint14DamageShield(blueprints);
-                if (reduction == null)
-                    return label + "[no-damage-shield]=unexpected";
-                shield = target.Descriptor.AddBuff(reduction, target, null);
+                shield = ApplySprint14DamageShield(blueprints, soldier, target,
+                    weapon, seed);
+                ClearSprint14Venom(target, venom);
                 if (shield == null)
-                    return label + "[shield-refused]=unexpected";
+                    return label + "[no-reduction-reached-zero]=wrong";
             }
             bool hit;
             int damage;
@@ -469,8 +500,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // dealt ten through a reduction that should have absorbed it.
                 // The wounding cases keep the 20 because they want a hit; the
                 // zero-damage case takes the lowest roll that still hits.
-                UnityEngine.Random.InitState(FindNativeD20Seed(
-                    !shouldHit ? 1 : allowDamage ? 20 : 19));
+                UnityEngine.Random.InitState(seed);
                 var attack = new RuleAttackWithWeapon(soldier, target, weapon,
                     0);
                 Rulebook.Trigger(attack);
