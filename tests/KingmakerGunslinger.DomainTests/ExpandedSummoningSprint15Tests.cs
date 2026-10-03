@@ -64,11 +64,11 @@ namespace KingmakerGunslinger.DomainTests
             // Registering a creature never moves the published surface. That
             // is the whole reason a creature is withheld by name rather than
             // by being left out of the roster.
-            if (SummonVisibilityCatalog.PublishedLogicalPlacementCount != 922)
+            if (SummonVisibilityCatalog.PublishedLogicalPlacementCount != 952)
                 throw new InvalidOperationException(
                     "Registering Sprint 15 moved the published surface to " +
                     SummonVisibilityCatalog.PublishedLogicalPlacementCount +
-                    "; it must stay at the 922 Sprint 14 left it at.");
+                    "; it must stay at the 952 Sprint 14 left it at.");
             if (SummonVisibilityCatalog.RegisteredLogicalPlacementCount != 970)
                 throw new InvalidOperationException(
                     "The registered surface must be 970.");
