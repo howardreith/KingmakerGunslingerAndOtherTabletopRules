@@ -238,8 +238,11 @@ namespace KingmakerGunslinger.Assets
                 };
 
         /// <summary>
-        /// The three Sprint 14 insects, all on the Giant Spider rig. The record
-        /// shape is the same one Sprint 13 declared and is not re-declared.
+        /// The insect family, all on the Giant Spider rig: Sprint 14's three
+        /// and Sprint 15's two. The record shape is the same one Sprint 13
+        /// declared and is not re-declared. Everything below this point is
+        /// driven by the key, so a creature joins the family by being named
+        /// here and shipping its two files.
         /// </summary>
         private static readonly Dictionary<string, Sprint13CreatureVisual>
             Sprint14Insects =
@@ -248,7 +251,9 @@ namespace KingmakerGunslinger.Assets
                 {
                     { "fire-beetle", new Sprint13CreatureVisual() },
                     { "giant-ant-worker", new Sprint13CreatureVisual() },
-                    { "giant-ant-soldier", new Sprint13CreatureVisual() }
+                    { "giant-ant-soldier", new Sprint13CreatureVisual() },
+                    { "giant-ant-drone", new Sprint13CreatureVisual() },
+                    { "giant-stag-beetle", new Sprint13CreatureVisual() }
                 };
 
         /// <summary>

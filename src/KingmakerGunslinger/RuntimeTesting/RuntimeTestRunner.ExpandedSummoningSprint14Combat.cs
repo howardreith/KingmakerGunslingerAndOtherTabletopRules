@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Kingmaker;
+using Kingmaker.Blueprints;
 using Kingmaker.Controllers;
 using Kingmaker.Controllers.Combat;
 using Kingmaker.Controllers.Units;
@@ -78,7 +79,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             new[] { "giant-ant-worker", "true", "false" },
             new[] { "giant-ant-soldier", "false", "false" },
             new[] { "giant-ant-soldier", "true", "false" },
-            new[] { "giant-ant-soldier", "false", "true" }
+            new[] { "giant-ant-soldier", "false", "true" },
+            // Sprint 15. The Drone has the soldier's grab and sting, so it
+            // gets the soldier's three cells; the Giant Stag Beetle has one
+            // limb and no grab, so it gets the worker's two.
+            new[] { "giant-ant-drone", "false", "false" },
+            new[] { "giant-ant-drone", "true", "false" },
+            new[] { "giant-ant-drone", "false", "true" },
+            new[] { "giant-stag-beetle", "false", "false" },
+            new[] { "giant-stag-beetle", "true", "false" }
         };
 
         private int _sprint14CombatCell;
@@ -94,7 +103,18 @@ namespace KingmakerGunslinger.RuntimeTesting
         private int _sprint14CombatActings;
         private int _sprint14CombatActedFrame = -1;
         private int _sprint14CombatGrabBonusBefore;
-        private bool _sprint14CombatSoldierSeparationShown;
+        // What this cell's creature is, read off the live creature before the
+        // cell changes anything. A name cannot answer either question: the
+        // Drone is the Soldier with a template and has both a grab and a
+        // sting, and a later creature could have one without the other.
+        private bool _sprint14CombatExpectsGrab;
+        private bool _sprint14CombatExpectsTwoAttacks;
+        // Every two-attack creature has to demonstrate its separation in at
+        // least one of its own cells, so a grab cannot excuse all of them.
+        private readonly HashSet<string> _sprint14CombatSeparationShown =
+            new HashSet<string>(StringComparer.Ordinal);
+        private readonly HashSet<string> _sprint14CombatTwoAttackKeys =
+            new HashSet<string>(StringComparer.Ordinal);
         private string _sprint14CombatGrabSuppressed = "not-applicable";
         private bool _sprint14CombatQueued;
         private int _sprint14CombatFirstRollFrame = -1;
@@ -175,16 +195,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Rulebook.Trigger(new RuleCalculateCMB(_sprint14CombatUnit,
                     hostile, CombatManeuver.Trip)).Result;
 
+            // Measured before the cell changes anything, because the
+            // separation cell below takes the grab away.
+            _sprint14CombatExpectsGrab =
+                SummonGrabComponent.Find(_sprint14CombatUnit) != null;
+            BlueprintUnit.UnitBody cellShape =
+                _sprint14CombatUnit.Blueprint.Body;
+            _sprint14CombatExpectsTwoAttacks = cellShape != null &&
+                cellShape.AdditionalLimbs != null &&
+                cellShape.AdditionalLimbs.Length >= 1;
+
             // The separation cell: with no grab traits nothing can seize
             // the target, so nothing cuts the full attack short and both
             // attacks reach the records without needing a particular roll.
             _sprint14CombatGrabSuppressed = "not-applicable";
             if (Sprint14CombatCells[_sprint14CombatCell][2] == "true")
             {
+                // The creature's own traits buff, found by what it carries
+                // rather than by a name, so each caste suppresses its own.
                 BlueprintBuff traits = _rulesFixture.Blueprints
                     .OfType<BlueprintBuff>().FirstOrDefault(value =>
-                        value != null && value.name ==
-                        "KMG_Summoning_Special_GiantAntSoldier_Traits");
+                        value != null && value.name != null &&
+                        value.name.StartsWith("KMG_Summoning_Special_",
+                            StringComparison.Ordinal) &&
+                        value.name.EndsWith("_Traits",
+                            StringComparison.Ordinal) &&
+                        _sprint14CombatUnit.Descriptor.Buffs.GetBuff(value)
+                            != null);
                 bool had = traits != null && _sprint14CombatUnit.Descriptor
                     .Buffs.GetBuff(traits) != null;
                 if (had)
@@ -458,9 +495,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         CombatManeuver.Trip)).Result;
             // The bonus was measured before the traits were removed, so the
             // separation cell is held to the same +4 as the others.
-            bool grabExact = key != "giant-ant-soldier" ? grabBonus == 0 :
-                grabBonus == ExpandedSummoningSpecialProfiles
-                    .SummonGrabManeuverBonus;
+            bool grabExact = _sprint14CombatExpectsGrab
+                ? grabBonus == ExpandedSummoningSpecialProfiles
+                    .SummonGrabManeuverBonus
+                : grabBonus == 0;
 
             bool commandRan = _sprint14CombatCommand != null &&
                 _sprint14CombatCommand.IsStarted && rolls.Length > 0;
@@ -489,17 +527,20 @@ namespace KingmakerGunslinger.RuntimeTesting
             // so this cannot pass with the grab as an excuse every time.
             bool suppressed =
                 Sprint14CombatCells[_sprint14CombatCell][2] == "true";
-            bool grabCutSequenceShort = key == "giant-ant-soldier" &&
+            bool grabCutSequenceShort = _sprint14CombatExpectsGrab &&
+                _sprint14CombatExpectsTwoAttacks &&
                 !suppressed && rolls.Length == 1 && biteHits >= 1 &&
                 grabBonusAfter > grabBonus;
             bool separation;
-            if (key != "giant-ant-soldier") separation = distinct.Length == 1;
+            if (!_sprint14CombatExpectsTwoAttacks)
+                separation = distinct.Length == 1;
             else
             {
+                _sprint14CombatTwoAttackKeys.Add(key);
                 bool bothAttacksMade = distinct.Length >= 2 &&
                     rolls.Length >= 2;
                 if (bothAttacksMade)
-                    _sprint14CombatSoldierSeparationShown = true;
+                    _sprint14CombatSeparationShown.Add(key);
                 // With the grab traits removed the sequence cannot be cut
                 // short, so this cell has to produce both attacks and nothing
                 // else will do. Whether they hit is the dice and is not asked.
@@ -638,18 +679,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                 restored.Contains(";settingNow=" +
                     _sprint14CombatTurnModeBefore) &&
                 restored.Contains(";hostileInCombat=False") &&
-                // Somewhere, in one mode or the other, the soldier's forced
-                // full attack has to have actually produced both of its
-                // attacks in one sequence. Accepting a grab-shortened cell is
-                // only reasonable while that stays true elsewhere.
-                _sprint14CombatSoldierSeparationShown;
+                // Somewhere, in one mode or the other, each two-limbed
+                // creature's forced full attack has to have actually produced
+                // both of its attacks in one sequence. Accepting a
+                // grab-shortened cell is only reasonable while that stays true
+                // elsewhere for that same creature - one creature's evidence
+                // does not cover another's.
+                _sprint14CombatTwoAttackKeys.Count > 0 &&
+                _sprint14CombatTwoAttackKeys.All(value =>
+                    _sprint14CombatSeparationShown.Contains(value));
             _rulesCases.Add(Assertion(
                 "expanded-summoning-sprint14-combat-modes",
-                "all three insects attack through the command a player's click produces, in RTWP and in turn-based combat: the command is queued on the unit, started by the game, waits on its own animation's contact and fires each attack after it, every attack reaches the combat log, the worker produces exactly one named weapon and the soldier's forced full attack produces its bite and its sting as separately named attacks - counting attacks made rather than attacks that hit, since which of them lands is the dice - with a sequence cut short by the soldier's own grab accepted as the engine behaviour it is, provided at least one of its two cells still produced both attacks in one sequence; the soldier's grapple carries exactly the +4 grab that its trip does not, measured before anything is held so the separate +5 to maintain cannot be mistaken for it; the venom is present only when a sting wounded; and both modes are left as they were found",
+                "all five insects attack through the command a player's click produces, in RTWP and in turn-based combat: the command is queued on the unit, started by the game, waits on its own animation's contact and fires each attack after it, every attack reaches the combat log, a one-limbed creature produces exactly one named weapon and a two-limbed one's forced full attack produces its bite and its sting as separately named attacks - counting attacks made rather than attacks that hit, since which of them lands is the dice - with a sequence cut short by the creature's own grab accepted as the engine behaviour it is, provided at least one of that same creature's cells still produced both attacks in one sequence; a grab-carrying creature's grapple carries exactly the +4 grab that its trip does not, and a creature without one carries no such difference, measured before anything is held so the separate +5 to maintain cannot be mistaken for it; the venom is present only when a sting wounded; and both modes are left as they were found",
                 "cells=" + _sprint14CombatRows.Count + "/" +
                     Sprint14CombatCells.Length +
-                    ";soldierSeparationShown=" +
-                    _sprint14CombatSoldierSeparationShown +
+                    ";twoAttackCreatures=" + string.Join("/",
+                        _sprint14CombatTwoAttackKeys.OrderBy(value => value,
+                            StringComparer.Ordinal).ToArray()) +
+                    ";separationShown=" + string.Join("/",
+                        _sprint14CombatSeparationShown.OrderBy(value => value,
+                            StringComparer.Ordinal).ToArray()) +
                     ";restored=" + restored +
                     ";" + string.Join(";", _sprint14CombatRows.ToArray()) +
                     ";steps=" + string.Join(" | ",

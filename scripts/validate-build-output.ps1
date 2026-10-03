@@ -59,7 +59,11 @@ $requiredFiles = @(
     'assets\sprint14-insects\giant-ant-worker-mesh.json',
     'assets\sprint14-insects\giant-ant-worker-albedo.png',
     'assets\sprint14-insects\giant-ant-soldier-mesh.json',
-    'assets\sprint14-insects\giant-ant-soldier-albedo.png'
+    'assets\sprint14-insects\giant-ant-soldier-albedo.png',
+    'assets\sprint14-insects\giant-ant-drone-mesh.json',
+    'assets\sprint14-insects\giant-ant-drone-albedo.png',
+    'assets\sprint14-insects\giant-stag-beetle-mesh.json',
+    'assets\sprint14-insects\giant-stag-beetle-albedo.png'
 )
 $requiredIcons = @('gunslinger-class','firearm-proficiency','gunsmithing','grit',
     'deeds','nimble','bonus-feat','gun-training','true-grit','rapid-reload',
@@ -144,6 +148,10 @@ $allowedRelativePaths = @{
     'assets\sprint14-insects\giant-ant-worker-albedo.png' = $true
     'assets\sprint14-insects\giant-ant-soldier-mesh.json' = $true
     'assets\sprint14-insects\giant-ant-soldier-albedo.png' = $true
+    'assets\sprint14-insects\giant-ant-drone-mesh.json' = $true
+    'assets\sprint14-insects\giant-ant-drone-albedo.png' = $true
+    'assets\sprint14-insects\giant-stag-beetle-mesh.json' = $true
+    'assets\sprint14-insects\giant-stag-beetle-albedo.png' = $true
 }
 
 $unexpected = @()
