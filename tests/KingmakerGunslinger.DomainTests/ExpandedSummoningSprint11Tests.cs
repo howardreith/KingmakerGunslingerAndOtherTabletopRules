@@ -56,12 +56,13 @@ namespace KingmakerGunslinger.DomainTests
                     "Every placement of " + value.Key +
                     " publishes after mechanics, art and lifecycle qualification.");
             }
-            // Sprints 9-13 are published and Sprint 14's three insects are
-            // registered and withheld, so the registered surface is 952 and the
-            // published one stays at the 904 every census reconciles against.
+            // Sprints 9-14 are published except for Sprint 14's two Giant Ant
+            // castes, which are registered and withheld on the scent barrier,
+            // so the registered surface is 952 and the published one is the 922
+            // every census reconciles against.
             Assertions.True(all.Length == 952 &&
-                all.Count(SummonVisibilityCatalog.IsPublished) == 904 &&
-                all.Count(value => !SummonVisibilityCatalog.IsPublished(value)) == 48,
+                all.Count(SummonVisibilityCatalog.IsPublished) == 922 &&
+                all.Count(value => !SummonVisibilityCatalog.IsPublished(value)) == 30,
                 "Sprint 11 stays published alongside every later qualified sprint.");
         }
 

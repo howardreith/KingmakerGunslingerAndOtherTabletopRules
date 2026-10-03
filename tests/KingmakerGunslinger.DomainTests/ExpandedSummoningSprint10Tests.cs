@@ -135,9 +135,9 @@ namespace KingmakerGunslinger.DomainTests
                 value.Symbol == "KMG.Summoning.Natural.WaspSting1d8" &&
                 value.PlannedType == "BlueprintItemWeapon"),
                 "Wasp sting has its own append-only blueprint identity.");
-            Assertions.Equal(48,
+            Assertions.Equal(30,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "Only unqualified placements are suppressed: 48 placements are withheld, and all of them are Sprint 14 insects.");
+                "Only placements that are unqualified or held on a proven engine barrier are suppressed: 30 placements are withheld, and both are Giant Ant castes held on a proven engine barrier rather than on anything of their own.");
         }
 
         internal static void StirgePublishesAtAllNineNatureTiers()
@@ -318,9 +318,9 @@ namespace KingmakerGunslinger.DomainTests
                 SummonIconCatalog.For("remove-stirge").Key !=
                     SummonIconCatalog.For("stirge").Key,
                 "Remove Stirge must have its own original action icon, distinct from the creature portrait.");
-            Assertions.Equal(48,
+            Assertions.Equal(30,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "Sprint 10 remains published while 48 placements are withheld, and all of them are Sprint 14 insects.");
+                "Sprint 10 remains published while 30 placements are withheld, and both are Giant Ant castes held on a proven engine barrier rather than on anything of their own.");
         }
 
         internal static void GiantWaspPoisonTracksConstitutionAndTabletopExposure()
@@ -399,9 +399,9 @@ namespace KingmakerGunslinger.DomainTests
                 review.Contains("finally") &&
                 review.Contains("renderer.enabled = true"),
                 "The isolated Wasp frame must restore every temporarily hidden auxiliary renderer.");
-            Assertions.Equal(48,
+            Assertions.Equal(30,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "The review scenario must tolerate a hidden set: 48 placements are withheld, and all of them are Sprint 14 insects.");
+                "The review scenario must tolerate a hidden set: 30 placements are withheld, and both are Giant Ant castes held on a proven engine barrier rather than on anything of their own.");
         }
 
         internal static void WaspQuantityCoveragePublishesAllLegalVariants()
