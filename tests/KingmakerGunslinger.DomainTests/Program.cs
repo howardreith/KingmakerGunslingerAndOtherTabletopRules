@@ -878,6 +878,10 @@ namespace KingmakerGunslinger.DomainTests
             Case("midgame-firearms.stable-identities", MidgameFirearmTests.StableIdentitiesAreNewAndExact),
             Case("midgame-firearms.exact-merchant-scope", MidgameFirearmTests.MerchantScopeIncludesBothNativeVariants),
             Case("midgame-firearms.integrated-stock-repeat", MidgameFirearmTests.InsertionPreservesOtherStockAndRepeats),
+            Case("firearm-descriptions.penetration-text", FirearmItemDescriptionTests.PenetrationTextIsNaturalAndExact),
+            Case("firearm-descriptions.enchantment-sentences", FirearmItemDescriptionTests.EnchantmentSentencesStayTruthful),
+            Case("firearm-descriptions.every-item-resolves", FirearmItemDescriptionTests.EveryItemDescriptionResolves),
+            Case("firearm-descriptions.no-internal-notes", FirearmItemDescriptionTests.SourcesCarryNoInternalNotes),
             Case("seeking.exact-failed-concealment", RareFirearmSeekingTests.ExactFailedConcealmentBypasses),
             Case("seeking.native-success", RareFirearmSeekingTests.NativeSuccessRemainsNative),
             Case("seeking.wrong-check", RareFirearmSeekingTests.WrongCheckFailsClosed),
@@ -8581,22 +8585,23 @@ namespace KingmakerGunslinger.DomainTests
             FirearmDefinition pistol = FirearmDefinitions.CreateEarlyPistol();
             string pistolText = FirearmPenetrationPresentation.Describe(pistol);
             Assertions.True(pistolText.Contains("first range increment") &&
-                pistolText.Contains("20 ft. base") &&
-                pistolText.Contains("Normal AC beyond"),
+                pistolText.Contains("20 ft.") &&
+                pistolText.Contains("touch AC") &&
+                pistolText.Contains("normal AC at greater distances"),
                 "Pistol penetration help is incomplete.");
 
             string rifleText = FirearmPenetrationPresentation.Describe(
                 FirearmDefinitions.CreateAdvancedRifle());
             Assertions.True(rifleText.Contains("first five range increments") &&
-                rifleText.Contains("400 ft. base"),
+                rifleText.Contains("400 ft."),
                 "Advanced Rifle penetration help is incomplete.");
 
             string scatterText = FirearmPenetrationPresentation.Describe(
                 FirearmDefinitions.CreateEarlyBlunderbuss());
-            Assertions.True(scatterText.Contains("ordinary direct fire") &&
-                scatterText.Contains("Scatter Shot") &&
-                scatterText.Contains("10 ft. base"),
-                "Blunderbuss direct-fire/scatter distinction is incomplete.");
+            Assertions.True(scatterText.Contains("Attacks with a lead ball") &&
+                scatterText.Contains("10 ft.") &&
+                !scatterText.Contains("Scatter Shot"),
+                "Blunderbuss penetration must stay scoped to lead-ball direct fire.");
 
             string log = FirearmArmorClassPresentation.Format(pistol,
                 20d * FirearmArmorClassService.MetersPerFoot, 20d, true,
