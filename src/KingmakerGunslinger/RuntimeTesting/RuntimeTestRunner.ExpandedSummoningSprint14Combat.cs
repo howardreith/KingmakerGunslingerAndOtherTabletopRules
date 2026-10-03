@@ -70,10 +70,11 @@ namespace KingmakerGunslinger.RuntimeTesting
         private BlueprintBuff _sprint14CombatVenom;
         private bool _sprint14CombatTurnModeBefore;
         private bool _sprint14CombatModeCaptured;
-        private bool _sprint14CombatSubscribed;
         private bool _sprint14CombatJoined;
-        private bool _sprint14CombatActedOnce;
+        private int _sprint14CombatActings;
         private int _sprint14CombatActedFrame = -1;
+        private int _sprint14CombatGrabBonusBefore;
+        private bool _sprint14CombatQueued;
         private int _sprint14CombatFirstRollFrame = -1;
         private string _sprint14CombatEntry = "not-entered";
         private readonly UnitCombatJoinController _sprint14CombatJoin =
@@ -107,10 +108,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         value != null && value.name ==
                         "KMG_Summoning_Natural_GiantAnt_Venom");
             }
-            _sprint14CombatActedOnce = false;
+            _sprint14CombatActings = 0;
             _sprint14CombatActedFrame = -1;
             _sprint14CombatFirstRollFrame = -1;
             _sprint14CombatEntry = "not-entered";
+            _sprint14CombatQueued = false;
+            _sprint14CombatTurnsSeen.Clear();
 
             _sprint14CombatUnit = CastExpandedSummoningOwnTier(_rulesFixture,
                 key);
@@ -137,20 +140,124 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (_sprint14CombatVenom != null)
                 hostile.Descriptor.Buffs.RemoveFact(_sprint14CombatVenom);
 
+            // Measured now, before anything is held. A grab bonus applies
+            // to the grapple and not to the trip, so the difference between
+            // the two is the bonus itself - but only while nothing is held,
+            // because a creature already holding its target also carries the
+            // separate +5 to maintain, and the first version of this read the
+            // sum of the two as a wrong answer.
+            _sprint14CombatGrabBonusBefore =
+                Rulebook.Trigger(new RuleCalculateCMB(_sprint14CombatUnit,
+                    hostile, CombatManeuver.Grapple)).Result -
+                Rulebook.Trigger(new RuleCalculateCMB(_sprint14CombatUnit,
+                    hostile, CombatManeuver.Trip)).Result;
+
             _sprint14CombatEntry = EnterSprint14CombatMode(turnBased,
                 _sprint14CombatUnit, hostile);
+            _sprint14CombatSteps.Add(key + "/" +
+                (turnBased ? "turn-based" : "rtwp") + ":placed=" + chosen +
+                ";entry=" + _sprint14CombatEntry + ";grabBonusBefore=" +
+                _sprint14CombatGrabBonusBefore);
+        }
 
-            _sprint14CombatCommand = new UnitAttack(hostile);
+        /// <summary>
+        /// Wait for this cell's mode to be ready to take a command, then queue
+        /// it. True once the command is queued or the wait is given up on.
+        ///
+        /// <para>RTWP is ready at once. Turn-based is not, and the first
+        /// version of this failed for a reason worth keeping: it walked the
+        /// native turn loop by calling the controller's Tick two dozen times
+        /// inside a single frame, and CurrentTurn was null for every one of
+        /// them. Initiative and the first turn need real frames. So this is
+        /// asked once per frame and the game's own update does the advancing
+        /// in between, which is also what a player waiting for their
+        /// creature's turn actually does. Other units' turns are ended as they
+        /// come up, because the insect's turn is the one being tested.</para>
+        /// </summary>
+        private bool AdvanceSprint14CombatEntry(int frames)
+        {
+            if (_sprint14CombatQueued) return true;
+            bool turnBased = Sprint14CombatCells[_sprint14CombatCell][1] ==
+                "true";
+            if (turnBased && _sprint14CombatEntry.StartsWith("turn-based",
+                    StringComparison.Ordinal) &&
+                !_sprint14CombatEntry.StartsWith("turn-based-refused",
+                    StringComparison.Ordinal))
+            {
+                string ready = StepSprint14TurnLoop();
+                if (ready == null)
+                {
+                    if (frames < Sprint14TurnEntryFrames) return false;
+                    _sprint14CombatEntry = "turn-based:never-reached-actor;" +
+                        "waited=" + frames + ";turns=" + string.Join("/",
+                            _sprint14CombatTurnsSeen.Distinct().ToArray());
+                }
+                else _sprint14CombatEntry = "turn-based:" + ready;
+            }
+            QueueSprint14CombatCommand();
+            return true;
+        }
+
+        /// <summary>
+        /// How long a cell waits for its creature's turn. Six seconds of frames
+        /// is far more than initiative needs and still bounded.
+        /// </summary>
+        private const int Sprint14TurnEntryFrames = 360;
+
+        private readonly List<string> _sprint14CombatTurnsSeen =
+            new List<string>();
+
+        /// <summary>
+        /// One frame's look at the native turn loop. Returns a description once
+        /// the insect is the acting unit, or null while still waiting.
+        /// </summary>
+        private string StepSprint14TurnLoop()
+        {
+            var controller = Game.Instance.TurnBasedCombatController;
+            _sprint14CombatJoin.Tick();
+            _sprint14CombatPrepare.Tick();
+            TurnController turn = controller.CurrentTurn;
+            if (turn == null)
+            {
+                _sprint14CombatTurnsSeen.Add("no-turn");
+                return null;
+            }
+            if (turn.Status == TurnController.TurnStatus.None &&
+                _sprint14CombatPrepared.Add(turn))
+                turn.Prepare();
+            bool acting = turn.Status == TurnController.TurnStatus.Preparing ||
+                turn.Status == TurnController.TurnStatus.Acting;
+            if (ReferenceEquals(turn.Unit, _sprint14CombatUnit) && acting)
+                return "round=" + controller.RoundNumber + ";status=" +
+                    turn.Status + ";turnsWaited=" +
+                    _sprint14CombatTurnsSeen.Count;
+            _sprint14CombatTurnsSeen.Add((turn.Unit == null ? "<null>" :
+                turn.Unit.Blueprint == null ? "<none>" :
+                turn.Unit.Blueprint.name) + ":" + turn.Status);
+            if (!ReferenceEquals(turn.Unit, _sprint14CombatUnit) && acting)
+            {
+                turn.ForceToEnd(true);
+                MethodInfo end = typeof(TurnController).GetMethod("End",
+                    Sprint14CombatMembers, null, Type.EmptyTypes, null);
+                if (end != null) end.Invoke(turn, null);
+            }
+            return null;
+        }
+
+        /// <summary>Queue the real command on the real unit.</summary>
+        private void QueueSprint14CombatCommand()
+        {
+            string key = Sprint14CombatCells[_sprint14CombatCell][0];
+            _sprint14CombatCommand = new UnitAttack(_rulesFixture.Hostile);
             _sprint14CombatCommand.Init(_sprint14CombatUnit);
             // A soldier's two limbs only separate inside a sequence; a single
             // attack would prove nothing about which one carries the venom.
             if (key == "giant-ant-soldier")
                 _sprint14CombatCommand.ForceFullAttack = true;
-            _sprint14CombatSteps.Add(key + "/" +
-                (turnBased ? "turn-based" : "rtwp") + ":placed=" + chosen +
-                ";entry=" + _sprint14CombatEntry + ";canStart=" +
+            _sprint14CombatSteps.Add(key + ":canStart=" +
                 _sprint14CombatCommand.CanStart);
             _sprint14CombatUnit.Commands.Run(_sprint14CombatCommand);
+            _sprint14CombatQueued = true;
         }
 
         /// <summary>
@@ -171,11 +278,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue =
                     turnBased;
                 Game.Instance.TurnBasedCombatController.Activate();
-                if (turnBased && !_sprint14CombatSubscribed)
-                {
-                    EventBus.Subscribe(Game.Instance.TurnBasedCombatController);
-                    _sprint14CombatSubscribed = true;
-                }
+                // Deliberately not subscribing the turn-based controller to
+                // the EventBus. Where that mod is enabled it holds its own
+                // subscription, and a second one delivers every event twice,
+                // which would advance turns at double rate and make this
+                // fixture the cause of what it is measuring.
                 if (!_sprint14CombatJoined)
                 {
                     unit.JoinCombat();
@@ -199,53 +306,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!inTurnBased)
                     return "turn-based-refused:inCombat=" +
                         Game.Instance.Player.IsInCombat;
-                return "turn-based:" + AdvanceSprint14CombatToActor(unit);
+                // The walk itself happens a frame at a time from the
+                // machine; entry only has to get the mode and the enrolment
+                // right.
+                return "turn-based:entered";
             }
             catch (Exception exception)
             {
                 return "entry-exception:" +
                     DescribeExpandedSummoningCorrectionException(exception);
             }
-        }
-
-        /// <summary>
-        /// Walk the native turn loop until the given unit is the acting one.
-        /// </summary>
-        private string AdvanceSprint14CombatToActor(UnitEntityData unit)
-        {
-            var controller = Game.Instance.TurnBasedCombatController;
-            var visited = new List<string>();
-            for (int guard = 0; guard < 24; guard++)
-            {
-                TurnController turn = controller.CurrentTurn;
-                if (turn == null)
-                {
-                    controller.Tick();
-                    visited.Add("no-turn");
-                    continue;
-                }
-                if (turn.Status == TurnController.TurnStatus.None &&
-                    _sprint14CombatPrepared.Add(turn))
-                    turn.Prepare();
-                bool acting =
-                    turn.Status == TurnController.TurnStatus.Preparing ||
-                    turn.Status == TurnController.TurnStatus.Acting;
-                if (ReferenceEquals(turn.Unit, unit) && acting)
-                    return "round=" + controller.RoundNumber + ";actor=" +
-                        (turn.Unit.Blueprint == null ? "<none>" :
-                            turn.Unit.Blueprint.name) + ";status=" +
-                        turn.Status + ";turnsSkipped=" + visited.Count;
-                visited.Add(turn.Unit == null ? "<null>" :
-                    (turn.Unit.Blueprint == null ? "<none>" :
-                        turn.Unit.Blueprint.name) + ":" + turn.Status);
-                turn.ForceToEnd(true);
-                MethodInfo end = typeof(TurnController).GetMethod("End",
-                    Sprint14CombatMembers, null, Type.EmptyTypes, null);
-                if (end != null) end.Invoke(turn, null);
-                controller.Tick();
-            }
-            return "never-reached-actor;turns=" +
-                string.Join("/", visited.ToArray());
         }
 
         /// <summary>
@@ -261,12 +331,19 @@ namespace KingmakerGunslinger.RuntimeTesting
             // rule that fired on its own schedule.
             if (_sprint14CombatCommand.IsRunning)
             {
+                // Every attack in a sequence has its own contact, and the
+                // first version acted one animation and then latched a flag,
+                // so a forced full attack landed its first attack and then
+                // waited forever on a contact nothing would act - which is
+                // the Interrupt the soldier's RTWP cell recorded. The frame of
+                // the first acting is still what the ordering check uses.
                 if (_sprint14CombatCommand.Animation != null && frames > 8 &&
-                    !_sprint14CombatActedOnce)
+                    !_sprint14CombatCommand.Animation.IsActed)
                 {
                     _sprint14CombatCommand.Animation.IsActed = true;
-                    _sprint14CombatActedOnce = true;
-                    _sprint14CombatActedFrame = frames;
+                    _sprint14CombatActings++;
+                    if (_sprint14CombatActedFrame < 0)
+                        _sprint14CombatActedFrame = frames;
                 }
                 _sprint14CombatCommand.Tick();
             }
@@ -321,20 +398,22 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool noCrossDelivery = stingName == null ||
                 venomPresent == stingHits > 0;
 
-            // A grab bonus is specific to the grapple; the same creature's trip
-            // gets none of it, so the difference between the two is the bonus
-            // itself without disturbing a single fact on the unit.
-            int grappleCmb = 0, tripCmb = 0;
+            // The bonus that matters was measured before the attack, with
+            // nothing held. The value after it is recorded too, because a
+            // soldier that established a hold legitimately carries the +5
+            // maintain on top of the +4 grab and reads 9 - which is how the
+            // first version of this produced a wrong answer out of two right
+            // numbers.
+            int grabBonus = _sprint14CombatGrabBonusBefore;
+            int grabBonusAfter = 0;
             if (_sprint14CombatUnit != null)
-            {
-                grappleCmb = Rulebook.Trigger(new RuleCalculateCMB(
-                    _sprint14CombatUnit, hostile,
-                    CombatManeuver.Grapple)).Result;
-                tripCmb = Rulebook.Trigger(new RuleCalculateCMB(
-                    _sprint14CombatUnit, hostile,
-                    CombatManeuver.Trip)).Result;
-            }
-            int grabBonus = grappleCmb - tripCmb;
+                grabBonusAfter =
+                    Rulebook.Trigger(new RuleCalculateCMB(
+                        _sprint14CombatUnit, hostile,
+                        CombatManeuver.Grapple)).Result -
+                    Rulebook.Trigger(new RuleCalculateCMB(
+                        _sprint14CombatUnit, hostile,
+                        CombatManeuver.Trip)).Result;
             bool grabExact = key != "giant-ant-soldier" ? grabBonus == 0 :
                 grabBonus == ExpandedSummoningSpecialProfiles
                     .SummonGrabManeuverBonus;
@@ -369,10 +448,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";contactFrame=" + _sprint14CombatActedFrame +
                 ";firstRuleFrame=" + _sprint14CombatFirstRollFrame +
                 ";contactBeforeRules=" + contactBeforeRules +
+                ";actings=" + _sprint14CombatActings +
                 ";stingHits=" + stingHits + ";biteHits=" + biteHits +
                 ";venom=" + venomPresent + ";noCrossDelivery=" +
-                noCrossDelivery + ";grappleCmb=" + grappleCmb + ";tripCmb=" +
-                tripCmb + ";grabBonus=" + grabBonus + ";grabExact=" +
+                noCrossDelivery + ";grabBonusBeforeAttack=" + grabBonus +
+                ";grabBonusAfterAttack=" + grabBonusAfter + ";grabExact=" +
                 grabExact + ";separation=" + separation + ";rolls=" +
                 string.Join(" | ", rolls) + "]" + (ok ? "=ok" : "=wrong"));
 
@@ -435,20 +515,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                     SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue =
                         _sprint14CombatTurnModeBefore;
                     Game.Instance.TurnBasedCombatController.Activate();
-                    if (_sprint14CombatSubscribed)
-                    {
-                        EventBus.Unsubscribe(
-                            Game.Instance.TurnBasedCombatController);
-                        _sprint14CombatSubscribed = false;
-                    }
                     if (_rulesFixture != null &&
                         _rulesFixture.Hostile != null)
                         _rulesFixture.Hostile.CombatState.LeaveCombat();
                     Game.Instance.Player.UpdateIsInCombat();
+                    // What this fixture owns is the mode setting it
+                    // changed and the enrolment it created. Whether the game
+                    // still reports turn-based combat depends on the setting
+                    // it found - which was already true here - so asserting
+                    // that flag is off would demand a state the fixture never
+                    // had and must not impose.
                     restored = "turnBasedRestoredTo=" +
-                        _sprint14CombatTurnModeBefore + ";inTurnBased=" +
-                        CombatController.IsInTurnBasedCombat() + ";inCombat=" +
-                        Game.Instance.Player.IsInCombat;
+                        _sprint14CombatTurnModeBefore + ";settingNow=" +
+                        SettingsRoot.Instance.EnableTurnBasedMode
+                            .CurrentValue + ";hostileInCombat=" +
+                        (_rulesFixture.Hostile.CombatState != null &&
+                            _rulesFixture.Hostile.CombatState.IsInCombat) +
+                        ";inTurnBased=" +
+                        CombatController.IsInTurnBasedCombat();
                 }
             }
             catch (Exception exception)
@@ -461,9 +545,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Sprint14CombatCells.Length &&
                 _sprint14CombatRows.All(value => value.EndsWith("=ok",
                     StringComparison.Ordinal)) &&
-                restored.StartsWith("turnBasedRestoredTo=",
-                    StringComparison.Ordinal) &&
-                !CombatController.IsInTurnBasedCombat();
+                restored.Contains(";settingNow=" +
+                    _sprint14CombatTurnModeBefore) &&
+                restored.Contains(";hostileInCombat=False");
             _rulesCases.Add(Assertion(
                 "expanded-summoning-sprint14-combat-modes",
                 "all three insects attack through the command a player's click produces, in RTWP and in turn-based combat: the command is queued on the unit, started by the game, waits on its own animation's contact and fires each attack after it, every attack reaches the combat log, the worker produces exactly one named weapon and the soldier's forced full attack produces its bite and its sting as separately named attacks, the soldier's grapple carries exactly the +4 grab that its trip does not, the venom is present only when a sting wounded, and both modes are left as they were found",
