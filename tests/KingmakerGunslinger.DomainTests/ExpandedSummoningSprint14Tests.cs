@@ -330,9 +330,13 @@ namespace KingmakerGunslinger.DomainTests
                 File.ReadAllText(path))["entries"];
             string[] symbols = entries.Select(value =>
                 (string)value["symbol"]).ToArray();
+            // Not a bare ".GiantAnt" match any more: Sprint 15's Giant Ant
+            // Drone shares that prefix, so the unfiltered pattern counted its
+            // 26 symbols as Sprint 14's and reported 133 appends.
             string[] mine = symbols.Where(value =>
-                value.Contains(".FireBeetle") || value.Contains(".GiantAnt") ||
-                value == "KMG.Summoning.Natural.AntSting1d4").ToArray();
+                !value.Contains("GiantAntDrone") &&
+                (value.Contains(".FireBeetle") || value.Contains(".GiantAnt") ||
+                 value == "KMG.Summoning.Natural.AntSting1d4")).ToArray();
             if (mine.Length != AppendedLedgerIdentities)
                 throw new InvalidOperationException(
                     "Sprint 14 appends " + AppendedLedgerIdentities +
@@ -340,11 +344,17 @@ namespace KingmakerGunslinger.DomainTests
             if (mine.Distinct(StringComparer.Ordinal).Count() != mine.Length)
                 throw new InvalidOperationException(
                     "A Sprint 14 identity is declared twice.");
+            // Contiguous rather than final: Sprint 15 appends after this
+            // block, which is what an append-only ledger is supposed to allow.
+            // What must stay true is that nothing of Sprint 14's was moved or
+            // interleaved.
             int first = Array.IndexOf(symbols, mine[0]);
-            if (first + mine.Length != symbols.Length)
+            if (!symbols.Skip(first).Take(mine.Length)
+                    .SequenceEqual(mine, StringComparer.Ordinal))
                 throw new InvalidOperationException(
-                    "Sprint 14 identities must be the ledger's final append.");
-            foreach (JToken entry in entries.Skip(first))
+                    "Sprint 14 identities must sit contiguously in the ledger " +
+                    "in the order they were appended.");
+            foreach (JToken entry in entries.Skip(first).Take(mine.Length))
             {
                 if ((string)entry["status"] != "active")
                     throw new InvalidOperationException(
@@ -797,8 +807,15 @@ namespace KingmakerGunslinger.DomainTests
                     "The generic builder's skill set changed, which moves every " +
                     "previously qualified creature: " + string.Join(", ",
                         NaturalSummonProfile.DefaultSkills));
+            // Sprint 15's two insects name no skills for the same reason the
+            // Sprint 14 three do: their stat blocks print none. They are
+            // exempt from the "nothing already qualified moved" check for that
+            // reason, not because the check became inconvenient.
+            string[] printsNoSkillRanks = InsectKeys
+                .Concat(new[] { "giant-ant-drone", "giant-stag-beetle" })
+                .ToArray();
             string[] movedCreatures = ExpandedSummoningNaturalProfiles.All
-                .Where(value => !InsectKeys.Contains(value.Key,
+                .Where(value => !printsNoSkillRanks.Contains(value.Key,
                     StringComparer.Ordinal) &&
                     !value.Skills.SequenceEqual(expectedDefault))
                 .Select(value => value.Key).ToArray();

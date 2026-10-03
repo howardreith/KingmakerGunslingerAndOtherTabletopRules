@@ -214,9 +214,9 @@ namespace KingmakerGunslinger.DomainTests
                 value.Creature.Key == "dire-bat").ToArray();
             Assertions.Equal(922, all.Count(SummonVisibilityCatalog.IsPublished),
                 "The published surface must exclude only candidates that are unqualified or held on a proven engine barrier.");
-            Assertions.Equal(30, all.Count(value =>
+            Assertions.Equal(48, all.Count(value =>
                     !SummonVisibilityCatalog.IsPublished(value)),
-                "The authorized hidden set changed: 30 placements are withheld, and both are Giant Ant castes held on a proven engine barrier rather than on anything of their own.");
+                "The authorized hidden set changed: 48 placements are withheld: the two Giant Ant castes held on a proven engine barrier, and Sprint 15's Giant Ant Drone and Giant Stag Beetle registered ahead of their own qualification.");
             Assertions.Equal(0, all.Count(value =>
                     value.Creature.Key == "dire-bat" &&
                     !SummonVisibilityCatalog.IsPublished(value)),
