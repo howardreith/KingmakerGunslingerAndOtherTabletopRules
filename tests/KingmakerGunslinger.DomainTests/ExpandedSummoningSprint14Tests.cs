@@ -29,6 +29,19 @@ namespace KingmakerGunslinger.DomainTests
         /// </summary>
         internal const int AppendedLedgerIdentities = 107;
 
+        /// <summary>
+        /// Every creature on the Giant Spider insect rig, Sprints 14 and 15
+        /// together. The shipped-asset invariants belong to the family rather
+        /// than to a sprint: the donor, the bone policy and the generator are
+        /// shared, so a Sprint 15 mesh that bound an eighth leg would be the
+        /// same defect in the same pipeline and has to fail in the same place.
+        /// </summary>
+        internal static readonly string[] InsectFamilyKeys =
+        {
+            "fire-beetle", "giant-ant-worker", "giant-ant-soldier",
+            "giant-ant-drone", "giant-stag-beetle"
+        };
+
         private static readonly string[] InsectKeys =
             { "fire-beetle", "giant-ant-worker", "giant-ant-soldier" };
 
@@ -372,7 +385,7 @@ namespace KingmakerGunslinger.DomainTests
         /// </summary>
         internal static void NoSprint14MeshMayBindTheDonorsFourthFoot()
         {
-            foreach (string key in InsectKeys)
+            foreach (string key in InsectFamilyKeys)
             {
                 string[] allowed = Sprint14BonePolicy.AllowedBones(key);
                 foreach (string foot in Sprint14BonePolicy.FourthChainFeet)
@@ -400,7 +413,7 @@ namespace KingmakerGunslinger.DomainTests
         /// </summary>
         internal static void EachShippedInsectMeshDeclaresSixVisibleLegs()
         {
-            foreach (string key in InsectKeys)
+            foreach (string key in InsectFamilyKeys)
             {
                 string path = Path.Combine(Environment.CurrentDirectory,
                     "assets", "sprint14-insects", key + "-mesh.json");
@@ -427,10 +440,11 @@ namespace KingmakerGunslinger.DomainTests
                         if (upper && lower && foot) sides++;
                         else if (upper || lower || foot)
                         {
-                            // The beetle's wings ride the spare chain's upper
+                            // A flier's wings ride the spare chain's upper
                             // and lower bones and nothing else. Any other
                             // partial binding is a defect.
-                            if (chain != 3 || foot || key != "fire-beetle")
+                            if (chain != 3 || foot ||
+                                    !Sprint14BonePolicy.Flies(key))
                                 throw new InvalidOperationException(
                                     key + " binds chain " + chain + " on " +
                                     side + " partially.");
@@ -494,10 +508,30 @@ namespace KingmakerGunslinger.DomainTests
                         throw new InvalidOperationException(
                             key + " must never drive " + foot + ".");
             // An unreviewed key gets the narrower list, not the wider one.
-            if (Sprint14BonePolicy.AllowedBones("giant-ant-drone") !=
+            // This used to name the Giant Ant Drone, which was then a creature
+            // nobody had reviewed; Sprint 15 reviewed it and gave it wings, so
+            // the example has to be a key that is genuinely unknown or the
+            // test stops asserting anything.
+            if (Sprint14BonePolicy.AllowedBones("not-a-creature") !=
                     Sprint14BonePolicy.AntBones)
                 throw new InvalidOperationException(
                     "An unreviewed creature must not inherit wing permission.");
+            // And the two that fly do get it, which is the other half of the
+            // same contract.
+            foreach (string winged in new[] { Sprint14BonePolicy.FireBeetleKey,
+                Sprint14BonePolicy.DroneKey })
+                if (Sprint14BonePolicy.AllowedBones(winged) !=
+                        Sprint14BonePolicy.WingedBones)
+                    throw new InvalidOperationException(
+                        winged + " flies and must be allowed its wing drivers.");
+            // The Giant Stag Beetle does not fly in this implementation and
+            // must not reach that chain.
+            if (Sprint14BonePolicy.AllowedBones(
+                    Sprint14BonePolicy.StagBeetleKey) !=
+                    Sprint14BonePolicy.AntBones)
+                throw new InvalidOperationException(
+                    "The Giant Stag Beetle keeps its wing cases shut and may " +
+                    "not drive the wing chain.");
         }
 
         /// <summary>
@@ -506,7 +540,7 @@ namespace KingmakerGunslinger.DomainTests
         /// </summary>
         internal static void ACorruptedSprint14MeshIsRefusedByItsOwnAllowlist()
         {
-            foreach (string key in InsectKeys)
+            foreach (string key in InsectFamilyKeys)
             {
                 string[] bones = ShippedBones(key);
                 string offender = Sprint14BonePolicy.FirstForbiddenBone(key,
@@ -519,10 +553,11 @@ namespace KingmakerGunslinger.DomainTests
                 string[] eighthLeg = bones.Concat(new[] { "L_Leg3_Upper" })
                     .ToArray();
                 bool refused = !Sprint14BonePolicy.IsPermitted(key, eighthLeg);
-                if (key == FireBeetleKey ? refused : !refused)
+                if (Sprint14BonePolicy.Flies(key) ? refused : !refused)
                     throw new InvalidOperationException(
                         key + " handled a fourth-chain upper bone wrongly.");
-                // A fourth foot is refused for all three without exception.
+                // A fourth foot is refused for every creature in the family,
+                // fliers included, without exception.
                 foreach (string foot in Sprint14BonePolicy.FourthChainFeet)
                     if (Sprint14BonePolicy.IsPermitted(key,
                             bones.Concat(new[] { foot }).ToArray()))
