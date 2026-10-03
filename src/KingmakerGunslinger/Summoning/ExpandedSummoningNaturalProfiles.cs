@@ -6,13 +6,26 @@ namespace KingmakerGunslinger.Summoning
 {
     internal sealed class NaturalSummonProfile
     {
+        /// <summary>
+        /// What the builder has always given every reconstructed creature.
+        ///
+        /// <para>It is right for the animals this was written for and wrong for
+        /// a vermin whose stat block prints no skill ranks at all: a Giant Ant
+        /// reads Perception 7 against a printed +5 because four points are its
+        /// racial bonus, one is its Wisdom, and two are ranks nothing printed.
+        /// A profile that names its own skills overrides this; everything else
+        /// keeps it, so no qualified creature moves.</para>
+        /// </summary>
+        internal static readonly string[] DefaultSkills =
+            { "Perception", "Mobility", "Stealth" };
+
         internal NaturalSummonProfile(string key, string displayName,
             string hitDieClass, int hitDice, string size, int strength,
             int dexterity, int constitution, int intelligence, int wisdom,
             int charisma, int speedFeet, int naturalArmor,
             string primaryWeapon, string[] additionalWeapons,
             string[] additionalSecondaryWeapons,
-            string[] facts, string[] deviations)
+            string[] facts, string[] deviations, string[] skills = null)
         {
             Key = key; DisplayName = displayName; HitDieClass = hitDieClass;
             HitDice = hitDice; Size = size; Strength = strength;
@@ -25,6 +38,7 @@ namespace KingmakerGunslinger.Summoning
                 Array.Empty<string>();
             Facts = facts ?? Array.Empty<string>();
             Deviations = deviations ?? Array.Empty<string>();
+            Skills = skills ?? DefaultSkills;
         }
 
         internal string Key { get; private set; }
@@ -46,6 +60,12 @@ namespace KingmakerGunslinger.Summoning
         { get; private set; }
         internal IReadOnlyList<string> Facts { get; private set; }
         internal IReadOnlyList<string> Deviations { get; private set; }
+
+        /// <summary>
+        /// The skills this creature has class ranks in. Empty means none, which
+        /// is what a printed stat block showing no skill ranks requires.
+        /// </summary>
+        internal IReadOnlyList<string> Skills { get; private set; }
     }
 
     internal static class ExpandedSummoningNaturalProfiles
@@ -131,11 +151,12 @@ namespace KingmakerGunslinger.Summoning
                     Array.Empty<string>(),
                     A("WeaponFinesse", "TripDefenseFourLegs", "PoisonFrog"),
                     "The native Constitution-scaled poison graph supplies the exact six-tick 1d2 Constitution effect; ordinary-map ground speed is used and swim movement is omitted."),
-                P("fire-beetle", "Fire Beetle", "Vermin", 1, "Small",
+                PK("fire-beetle", "Fire Beetle", "Vermin", 1, "Small",
                     10, 11, 11, 1, 10, 7, 30, 1, "Bite1d4",
                     Array.Empty<string>(),
                     A("Airborne", "TripDefenseEightLegs",
                         "FireBeetleLuminescence"),
+                    Array.Empty<string>(),
                     "Kingmaker exposes one movement speed; the 30-foot fly speed is used with airborne navigation and the equal 30-foot ground speed is omitted. Poor maneuverability has no native representation and is omitted. An absent Intelligence score is represented as 1.",
                     "The printed CMD 17 against trip is carried by the project's multi-legged trip defence. The first guarded audit measured this creature at CMD 9 and trip 9: the airborne adaptation had not made it untrippable, as was thought possible, and the bonus was simply absent.",
                     "Luminescence is a view-local light matching the painted glands and a tooltip that says the beetle glows. Kingmaker has no mechanics-layer illumination model, so it grants and denies nothing, and the source's 1d6 days of after-death glow has no consumer because a summoned body vanishes with the summon."),
@@ -144,18 +165,20 @@ namespace KingmakerGunslinger.Summoning
                     Array.Empty<string>(),
                     A("WeaponFinesse", "TripImmune", "CentipedePoison"),
                     "Kingmaker cannot represent an absent Intelligence score on BlueprintUnit, so Intelligence 1 is used. Climb movement is omitted; native poison is conservative because its graph does not expose the tabletop +2 racial DC bonus."),
-                P("giant-ant-worker", "Giant Ant (Worker)", "Vermin", 2,
+                PK("giant-ant-worker", "Giant Ant (Worker)", "Vermin", 2,
                     "Medium", 14, 10, 17, 1, 13, 11, 50, 5, "Bite1d6",
                     Array.Empty<string>(),
                     A("Toughness", "TripDefenseEightLegs", "GiantAntRacialSkills"),
+                    Array.Empty<string>(),
                     "Kingmaker exposes one movement speed; the 50-foot ground speed is used and the 20-foot climb is omitted. An absent Intelligence score is represented as 1.",
                     "The printed racial +4 Survival is omitted because Kingmaker has no Survival skill and this project has consistently omitted that half rather than substituting another skill; Lore (Nature) is a knowledge stat for identifying creatures and is not a defensible analogue for tracking and foraging. The printed racial +4 Perception is implemented exactly.",
                     "The Worker template removes the soldier's poison sting and its grab, which leaves a bite alone, so this caste carries neither carrier. Its smaller head, lighter mandibles, absent sting and lighter chitin are what tell a player which caste is in front of them."),
-                P("giant-ant-soldier", "Giant Ant (Soldier)", "Vermin", 2,
+                PK("giant-ant-soldier", "Giant Ant (Soldier)", "Vermin", 2,
                     "Medium", 14, 10, 17, 1, 13, 11, 50, 5, "Bite1d6",
                     A("AntSting1d4"),
                     A("Toughness", "TripDefenseEightLegs", "GiantAntRacialSkills",
                         "GiantAntPoison"),
+                    Array.Empty<string>(),
                     "Kingmaker exposes one movement speed; the 50-foot ground speed is used and the 20-foot climb is omitted. An absent Intelligence score is represented as 1.",
                     "The printed racial +4 Survival is omitted for the reason recorded on the Worker; the Perception half is exact. Both castes carry the project's multi-legged trip defence, which the Giant Centipede already uses, so the printed CMD 13 and 21 against trip hold on both.",
                     "The bite's grab rides the shared summon grapple lifecycle (Sprint 6) on the primary limb only, and the sting's poison is gated on the sting's own weapon type (Sprint 10), so neither reaches the other attack. The printed Fortitude DC 14 is what the Constitution-scaled formula produces unaided and is not hard-coded."),
@@ -399,6 +422,23 @@ namespace KingmakerGunslinger.Summoning
                 size, strength, dexterity, constitution, intelligence, wisdom,
                 charisma, speed, naturalArmor, primary, additional,
                 Array.Empty<string>(), facts, deviations);
+        }
+
+        /// <summary>
+        /// A profile that names its own skill ranks. Used by the Sprint 14
+        /// vermin, whose stat blocks print none.
+        /// </summary>
+        private static NaturalSummonProfile PK(string key, string name,
+            string hitDieClass, int hitDice, string size, int strength,
+            int dexterity, int constitution, int intelligence, int wisdom,
+            int charisma, int speed, int naturalArmor, string primary,
+            string[] additional, string[] facts, string[] skills,
+            params string[] deviations)
+        {
+            return new NaturalSummonProfile(key, name, hitDieClass, hitDice,
+                size, strength, dexterity, constitution, intelligence, wisdom,
+                charisma, speed, naturalArmor, primary, additional,
+                Array.Empty<string>(), facts, deviations, skills);
         }
 
         private static NaturalSummonProfile PS(string key, string name,

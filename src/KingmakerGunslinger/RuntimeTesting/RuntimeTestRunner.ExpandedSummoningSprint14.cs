@@ -71,6 +71,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 evidence);
             ExerciseSprint14PoisonDiscrimination(blueprints, caster, hostile,
                 created, evidence);
+            ExerciseSprint14Senses(blueprints, caster, created, evidence);
         }
 
         /// <summary>
@@ -365,6 +366,100 @@ namespace KingmakerGunslinger.RuntimeTesting
             evidence.Sprint14DonorRigsDetail = string.Join(";",
                 captured.ToArray());
         }
+        /// <summary>
+        /// What senses and vermin traits the live creatures actually have, and
+        /// what the loaded blueprint set offers to give them.
+        ///
+        /// <para>The contract names low-light vision for the beetle, darkvision
+        /// 60 and scent for the ants, and mind-affecting immunity for all
+        /// three, and says not to assume the Vermin racial class, the project
+        /// unit type or the Giant Spider donor produces any of it. So every
+        /// live feature is read off the spawned unit, each one's component
+        /// types with it, and the engine's own Darkvision component is looked
+        /// for by type rather than by a feature's name - a feature carrying no
+        /// component is a tooltip and not a mechanic.</para>
+        ///
+        /// <para>The second half is the bounded native audit: what the loaded
+        /// set has that could carry scent or low-light vision at all. Whether
+        /// those exist decides between implementing them and disclosing that
+        /// the engine cannot, and that decision has to come from a measurement
+        /// rather than from the absence of a type name in an assembly.</para>
+        /// </summary>
+        private static void ExerciseSprint14Senses(
+            BlueprintScriptableObject[] blueprints, UnitEntityData caster,
+            List<UnitEntityData> created,
+            ExpandedSummoningMechanicalEvidence evidence)
+        {
+            var rows = new List<string>();
+            foreach (string[] row in new[] {
+                new[] { "fire-beetle", "1" },
+                new[] { "giant-ant-worker", "2" },
+                new[] { "giant-ant-soldier", "3" } })
+            {
+                UnitEntityData unit = CastExpandedSummoningCombatUnit(blueprints,
+                    caster, SummonFamily.NaturesAlly, row[0],
+                    int.Parse(row[1], CultureInfo.InvariantCulture), created,
+                    evidence);
+                RemoveExpandedSummoningAppearanceBuffs(unit);
+                var names = new List<string>();
+                var components = new List<string>();
+                bool darkvision = false;
+                string darkvisionDetail = "<none>";
+                foreach (BlueprintFeature feature in unit.Descriptor.Progression
+                    .Features.Enumerable
+                    .Select(value => value.Blueprint)
+                    .OfType<BlueprintFeature>())
+                {
+                    names.Add(feature.name);
+                    foreach (BlueprintComponent component in
+                        feature.ComponentsArray ??
+                        Array.Empty<BlueprintComponent>())
+                    {
+                        string type = component.GetType().Name;
+                        components.Add(feature.name + ":" + type);
+                        if (type.IndexOf("Darkvision",
+                                StringComparison.OrdinalIgnoreCase) >= 0)
+                        {
+                            darkvision = true;
+                            darkvisionDetail = feature.name + ":" + type;
+                        }
+                    }
+                }
+                string suspicious = string.Join("/", components.Where(value =>
+                    value.IndexOf("Scent", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                    value.IndexOf("LowLight", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                    value.IndexOf("Immunity", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                    value.IndexOf("MindAffect", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                    value.IndexOf("Vision", StringComparison.OrdinalIgnoreCase) >= 0)
+                    .Distinct().ToArray());
+                int perception = unit.Descriptor.Stats
+                    .GetStat(StatType.SkillPerception).ModifiedValue;
+                int mobility = unit.Descriptor.Stats
+                    .GetStat(StatType.SkillMobility).ModifiedValue;
+                int stealth = unit.Descriptor.Stats
+                    .GetStat(StatType.SkillStealth).ModifiedValue;
+                rows.Add(row[0] + "[perception=" + perception + ";mobility=" +
+                    mobility + ";stealth=" + stealth + ";darkvision=" +
+                    darkvision + "(" + darkvisionDetail + ");senseish=" +
+                    (suspicious.Length == 0 ? "<none>" : suspicious) +
+                    ";features=" + names.Count + "]");
+            }
+            // The bounded native audit: what the loaded set could ever offer.
+            string[] candidates = blueprints.OfType<BlueprintFeature>()
+                .Where(value => value != null && value.name != null &&
+                    (value.name.IndexOf("Scent", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                     value.name.IndexOf("LowLight", StringComparison.OrdinalIgnoreCase) >= 0))
+                .Take(12)
+                .Select(value => value.name + "{" + string.Join("+",
+                    (value.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                        .Select(c => c.GetType().Name).ToArray()) + "}")
+                .ToArray();
+            rows.Add("nativeCandidates=" + (candidates.Length == 0 ? "<none>" :
+                string.Join("|", candidates)));
+            evidence.Sprint14Senses = true;
+            evidence.Sprint14SensesDetail = string.Join(";", rows.ToArray());
+        }
+
         /// <summary>
         /// A weapon's effective damage dice.
         ///
