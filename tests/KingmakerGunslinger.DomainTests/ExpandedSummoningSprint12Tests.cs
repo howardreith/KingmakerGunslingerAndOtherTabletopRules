@@ -44,11 +44,11 @@ namespace KingmakerGunslinger.DomainTests
             // the registered total grows.
             Assertions.True(visibility.Contains(
                     "RegisteredLogicalPlacementCount = 952") &&
-                visibility.Contains("SuppressedLogicalPlacementCount = 48"),
-                "Sprint 13 published everything of its own; what is suppressed is Sprint 14's.");
-            Assertions.Equal(904,
+                visibility.Contains("SuppressedLogicalPlacementCount = 30"),
+                "Sprint 13 published everything of its own; what is suppressed is Sprint 14's two held ant castes.");
+            Assertions.Equal(922,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
-                "Sprint 13 publication must leave 904 published placements.");
+                "Sprint 14's partial publication must leave 922 published placements.");
             Assertions.True(donors.Contains(
                     "dire-rat|77f3f2ddf1ec2da45ab956c433e3b557|1") &&
                 donors.Contains("dog|77f3f2ddf1ec2da45ab956c433e3b557|1"),
