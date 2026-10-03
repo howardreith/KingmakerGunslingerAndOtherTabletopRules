@@ -49,19 +49,26 @@ namespace KingmakerGunslinger.RuntimeTesting
     internal sealed partial class RuntimeTestRunner
     {
         /// <summary>
-        /// (creature key, turn-based, harden the target) for every cell, in run
+        /// (creature key, turn-based, suppress the grab) for every cell, in run
         /// order.
         ///
         /// <para>The last cell is the one that proves bite-and-sting
         /// separation, and it needs its own conditions. A soldier whose bite
-        /// lands takes its grab with it, and the attack sequence ends there -
+        /// lands takes its grab with it and the attack sequence ends there -
         /// correctly, since a creature that has just seized its target does not
-        /// go on swinging - so both of its attacks only ever appear when the
-        /// bite misses. Leaving that to the dice is what it was before: six
-        /// cells all passing and the separation unproven because two bites
-        /// happened to hit. Raising the target out of reach makes the whole
-        /// sequence run every time, which is what puts both attacks in the
-        /// records.</para>
+        /// go on swinging - so both attacks only appear when the grab does not
+        /// fire.</para>
+        ///
+        /// <para>Two attempts got that wrong by leaving it to the dice. First
+        /// the cell simply hoped the bite would miss, which it did once and
+        /// then did not. Then the target's Armour Class was raised beyond
+        /// reach, which fails for a reason the rules guarantee: a natural 20
+        /// hits through any Armour Class, and the next run rolled one. So the
+        /// sequence is now kept whole by removing the thing that ends it. The
+        /// soldier's grab traits come off for this one cell, nothing can seize
+        /// anything, and the full attack runs to its end every time. The grab
+        /// is asserted in the two cells that keep it, and the bonus here is
+        /// still measured before the traits are removed.</para>
         /// </summary>
         private static readonly string[][] Sprint14CombatCells =
         {
@@ -88,7 +95,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private int _sprint14CombatActedFrame = -1;
         private int _sprint14CombatGrabBonusBefore;
         private bool _sprint14CombatSoldierSeparationShown;
-        private int _sprint14CombatHardenedBy;
+        private string _sprint14CombatGrabSuppressed = "not-applicable";
         private bool _sprint14CombatQueued;
         private int _sprint14CombatFirstRollFrame = -1;
         private string _sprint14CombatEntry = "not-entered";
@@ -155,17 +162,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (_sprint14CombatVenom != null)
                 hostile.Descriptor.Buffs.RemoveFact(_sprint14CombatVenom);
 
-            // The separation cell puts the target out of reach so the full
-            // attack runs to its end instead of stopping at a grab.
-            _sprint14CombatHardenedBy = 0;
-            if (Sprint14CombatCells[_sprint14CombatCell][2] == "true")
-            {
-                _sprint14CombatHardenedBy = 100;
-                hostile.Descriptor.Stats.AC.BaseValue +=
-                    _sprint14CombatHardenedBy;
-            }
-
-            // Measured now, before anything is held. A grab bonus applies
+            // Measured now, before anything is held and before the grab
+            // traits are taken off the separation cell's soldier. A grab bonus applies
             // to the grapple and not to the trip, so the difference between
             // the two is the bonus itself - but only while nothing is held,
             // because a creature already holding its target also carries the
@@ -176,6 +174,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                     hostile, CombatManeuver.Grapple)).Result -
                 Rulebook.Trigger(new RuleCalculateCMB(_sprint14CombatUnit,
                     hostile, CombatManeuver.Trip)).Result;
+
+            // The separation cell: with no grab traits nothing can seize
+            // the target, so nothing cuts the full attack short and both
+            // attacks reach the records without needing a particular roll.
+            _sprint14CombatGrabSuppressed = "not-applicable";
+            if (Sprint14CombatCells[_sprint14CombatCell][2] == "true")
+            {
+                BlueprintBuff traits = _rulesFixture.Blueprints
+                    .OfType<BlueprintBuff>().FirstOrDefault(value =>
+                        value != null && value.name ==
+                        "KMG_Summoning_Special_GiantAntSoldier_Traits");
+                bool had = traits != null && _sprint14CombatUnit.Descriptor
+                    .Buffs.GetBuff(traits) != null;
+                if (had)
+                    _sprint14CombatUnit.Descriptor.Buffs.RemoveFact(traits);
+                _sprint14CombatGrabSuppressed = "carried=" + had + ";removed=" +
+                    (traits != null && _sprint14CombatUnit.Descriptor.Buffs
+                        .GetBuff(traits) == null);
+            }
 
             _sprint14CombatEntry = EnterSprint14CombatMode(turnBased,
                 _sprint14CombatUnit, hostile);
@@ -439,6 +456,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Rulebook.Trigger(new RuleCalculateCMB(
                         _sprint14CombatUnit, hostile,
                         CombatManeuver.Trip)).Result;
+            // The bonus was measured before the traits were removed, so the
+            // separation cell is held to the same +4 as the others.
             bool grabExact = key != "giant-ant-soldier" ? grabBonus == 0 :
                 grabBonus == ExpandedSummoningSpecialProfiles
                     .SummonGrabManeuverBonus;
@@ -468,10 +487,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             // demonstrated somewhere - the closing assertion requires at least
             // one soldier cell to have produced both attacks in one sequence,
             // so this cannot pass with the grab as an excuse every time.
-            bool hardened = Sprint14CombatCells[_sprint14CombatCell][2] ==
-                "true";
+            bool suppressed =
+                Sprint14CombatCells[_sprint14CombatCell][2] == "true";
             bool grabCutSequenceShort = key == "giant-ant-soldier" &&
-                !hardened && rolls.Length == 1 && biteHits >= 1 &&
+                !suppressed && rolls.Length == 1 && biteHits >= 1 &&
                 grabBonusAfter > grabBonus;
             bool separation;
             if (key != "giant-ant-soldier") separation = distinct.Length == 1;
@@ -481,21 +500,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     rolls.Length >= 2;
                 if (bothAttacksMade)
                     _sprint14CombatSoldierSeparationShown = true;
-                // The hardened cell exists to produce both attacks, and that
-                // is what it has to show. It must not also be required to
-                // produce no hits: a natural 20 hits whatever the Armour Class
-                // is, so demanding none is a condition the rules forbid
-                // meeting, and the first version of this cell failed on its
-                // sting landing through an Armour Class of about 110. What the
-                // hardening is for is the bite: with the bite missing, no grab
-                // is taken, nothing cuts the sequence short and the sting
-                // follows. So the grab must not have fired - that is the
-                // condition worth checking beside both attacks being made -
-                // and the sting landing is welcome, because a venom delivered
-                // from the sting alone inside a real full-attack command is
-                // exactly what the contract wants to see.
-                separation = hardened
-                    ? bothAttacksMade && grabBonusAfter == grabBonus
+                // With the grab traits removed the sequence cannot be cut
+                // short, so this cell has to produce both attacks and nothing
+                // else will do. Whether they hit is the dice and is not asked.
+                separation = suppressed ? bothAttacksMade
                     : bothAttacksMade || grabCutSequenceShort;
             }
 
@@ -523,7 +531,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";grabBonusAfterAttack=" + grabBonusAfter + ";grabExact=" +
                 grabExact + ";separation=" + separation +
                 ";grabCutSequenceShort=" + grabCutSequenceShort +
-                ";hardenedTarget=" + hardened + ";rolls=" +
+                ";grabSuppressed=" + _sprint14CombatGrabSuppressed +
+                ";rolls=" +
                 string.Join(" | ", rolls) + "]" + (ok ? "=ok" : "=wrong"));
 
             if (_sprint14CombatObserver != null)
@@ -537,12 +546,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 InterruptExpandedSummoningFixtureCommands(_sprint14CombatUnit);
             if (_sprint14CombatVenom != null)
                 hostile.Descriptor.Buffs.RemoveFact(_sprint14CombatVenom);
-            if (_sprint14CombatHardenedBy != 0)
-            {
-                hostile.Descriptor.Stats.AC.BaseValue -=
-                    _sprint14CombatHardenedBy;
-                _sprint14CombatHardenedBy = 0;
-            }
             // The body has to go before the next cell casts. Every cell is
             // placed at the same open point beside the hostile, and the first
             // version left each creature standing there: cells one and two
