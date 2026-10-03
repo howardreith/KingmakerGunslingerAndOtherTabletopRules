@@ -1,6 +1,6 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-03 (Sprint 14 complete; Sprint 15 in progress)
+## CURRENT STATE, 2026-10-03 (Sprint 15 complete and published; Sprint 16 next)
 
 This header is the single current-state record and is written to be enough on
 its own: a fresh session with no chat history should be able to resume from it
@@ -17,8 +17,8 @@ section and this header disagree, **this header governs**.
   `handoffs/Kingmaker_Codex_TwoDay_Autonomous_Phase2_Mission.md`, the owner's
   two-day unattended order of 2026-10-03. It authorises continuous work through
   Sprints 15-21 without routine check-ins.
-- **No blocker is open.** The passive-sense question that held two creatures is
-  settled; see accepted limitations.
+- **No blocker is open, and nothing is withheld.** Every creature this phase
+  registered has published.
 
 ### Effective mission
 
@@ -28,9 +28,11 @@ the earlier Phase 2 handoffs for cadence and scope. Standing boundary unchanged:
 `v0.0.141`, no permanent deployment, no Sprint 22**, and none of the prohibited
 subsystems - scent/darkness/passive-sense, grapple persistence, arbitrary-limb,
 global AI/movement/animation rewrites. Pushes go only through
-`codex-policy/Push-KingmakerGunslinger.ps1`.
+`codex-policy/Push-KingmakerGunslinger.ps1`, invoked from this worktree (it
+resolves the repository from the current directory, so running it elsewhere
+pushes a different branch).
 
-### Branch, PR and dependency heads
+### Branch, PR and candidate
 
 | Item | Value |
 | --- | --- |
@@ -64,25 +66,26 @@ global AI/movement/animation rewrites. Pushes go only through
 **Tranche 2B, Sprint 14** (Fire Beetle, Giant Ant Worker, Giant Ant Soldier) -
 **COMPLETE WITH OWNER-ACCEPTED ENGINE LIMITATION.** All three published.
 
-Qualified 174/174 across six guarded scenarios on candidate `cda8d72c`, every
-run restoring the live tree exactly: mechanical pack 56/56, rules pack with 7D
-59/59, visual lifecycle 8/8, and the targeted persistence trio 17/17 at each
-stage. The Fire Beetle published on that qualification and was verified through
-the real player path at 922/922 logical roots and 29/29 wrappers. The two ant
-castes published on 2026-10-03 under the passive-sense limitation, which was the
-only thing holding them.
+**Tranche 2B, Sprint 15** (Giant Ant Drone, Giant Stag Beetle) - **COMPLETE AND
+PUBLISHED.** Qualified across six guarded scenarios, every run restoring the
+live tree exactly: mechanical pack 61/61 on `c8cb25ce`, rules pack 62/62 with
+twelve combat-mode cells, visual lifecycle 8/8, and all three working-save
+persistence legs, those five on `52baae65`. See the Sprint 15 closeout section
+below for what was proved and for the two measurement corrections.
 
-**Tranche 2B, Sprint 15** (Giant Ant Drone, Giant Stag Beetle) - **in
-progress.** Registered and withheld; identities, profiles, mechanics wiring,
-icons and domain tests are done and gated. Outstanding: meshes, paintings, view
-registration, per-kind bone policy, view scale, offline review, then one batched
-guarded review and publication.
+**Tranche 2B, Sprint 16** (Crocodile, Dire Crocodile) - **next.** Its
+pre-candidate rules and architecture review is already filed at
+`planning/EXPANDED-SUMMONING-SPRINT16-PRE-CANDIDATE-REVIEW.md` and found no
+engine barrier: death roll and Sprint both have native carriers this project
+already drives, replacing the Crocodile's Monitor Lizard proxy provably touches
+no identity, and the review also settles Sprint 17's donor question in advance.
 
 ### Next executable action
 
-Run the Sprint 14 ant publication gate and the 30 new ant roots through the real
-player path, then continue Sprint 15 by building the two deterministic meshes
-and paintings offline.
+Begin Sprint 16 from its filed pre-candidate review: implement Death Roll on
+the Crocodile alone as a vertical slice before the Dire Crocodile is authored
+against it, then the two meshes offline with one review sheet, then one sprint
+candidate and one batched guarded review.
 
 ### Inventory: registered, hidden, visible
 
@@ -92,13 +95,14 @@ Derived from source.
 | --- | --- |
 | Project creature identities | 94 |
 | Registered generated placements | 970 |
-| Suppressed (hidden) placements | 18 - Giant Ant (Drone) 12, Giant Stag Beetle 6 |
-| Published generated placements | 952 (498 SM + 483 SNA, less the 29 wrappers below) |
+| Suppressed (hidden) placements | **0** |
+| Published generated placements | **970** (504 SM + 495 SNA visible, less the 29 wrappers below) |
 | Retained native wrappers | 29 (17 SM + 12 SNA) |
-| Total visible player choices | 981 |
+| Total visible player choices | **999** |
 
-The Sprint 14 and 15 domain suites pin each creature's placement split, so this
-arithmetic cannot drift when the held pair publishes.
+The Sprint 14 and 15 domain suites pin each creature's placement split, and a
+guard requires every mutable record to state the derived published and visible
+totals, so this arithmetic cannot drift between the code and the documents.
 
 ### Live installation and restoration state
 
@@ -106,8 +110,9 @@ The live mod tree
 `C:\Program Files (x86)\Steam\steamapps\common\Pathfinder Kingmaker\Mods\KingmakerGunslinger`
 holds **136 files**, `Info.json` **0.0.117**, tree fingerprint
 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`. Every
-guarded run so far restored exactly to it. No lease is held, no Kingmaker
-process runs, no guarded transaction is open.
+guarded run so far restored exactly to it, each with `"restoration":
+"verified"`. No lease is held, no Kingmaker process runs, no guarded
+transaction is open.
 
 Memory preflight before every guarded batch: free physical memory and the
 largest Steam helper working set, against the stable baseline. Two runs were
@@ -116,11 +121,15 @@ lost to host out-of-memory kills on 2026-10-02 when `steamwebhelper` leaked to
 
 ### Open gates
 
-1. Sprint 14 ant publication gate and the 30 new ant roots through the real
-   player path. The exhaustive old-root replay is deferred to tranche close.
-2. Sprint 15: meshes, paintings, view registration, bone policy, view scales,
-   offline review, one batched guarded review, publication.
-3. Sprints 16-17, then the Phase 2B tranche close.
+1. Sprint 15 publication: the publication sprint gate and the 18 new roots
+   through the real player path, plus the rules pack re-run on the publication
+   head so both Sprint 15-bearing scenarios sit on one candidate. The
+   exhaustive old-root replay is deferred to tranche close.
+2. Sprint 16 (Crocodile, Dire Crocodile), then Sprint 17 (Viper, Constrictor
+   Snake, Salamander), then the Phase 2B tranche close.
+3. Phase 2C: create `codex/expanded-summoning-phase2c-sprints18-21`, a stacked
+   draft pull request, a read-only donor census, then Sprints 18-21 and the
+   Phase 2 closure.
 
 The exhaustive player-path census, whole-roster persistence matrix and
 five-profile compatibility matrix are tranche-closure gates and stay deferred.
@@ -139,16 +148,28 @@ five-profile compatibility matrix are tranche-closure gates and stay deferred.
   actual Constitution drains end the meal; one 10% disease exposure check per
   Stirge/victim pair after actual Constitution damage; Filth Fever is the
   disclosed disease adaptation.
-- Giant Ant poison is **1d2 Strength**, DC 14, four exposures, one save to cure.
-  Dexterity belongs to the Giant Wasp. These creatures share a cloned native
-  graph and the differences between them are where copying goes wrong; a test
-  asserting the wasp's stat against the ant was written and corrected during
-  Sprint 14, and the stat block is the authority over the test.
-- The Giant Ant Drone omits the "+2 to all skills" clause the frozen contract
-  attributes to the advanced simple template: that clause is not part of the
-  template and no primary source was found for it, so Perception derives to +7
-  rather than +9. An unsourced bonus would make the creature stronger than
-  printed.
+- Giant Ant poison is **1d2 Strength**, DC 14 on the Soldier's Constitution 17
+  and DC 16 on the Drone's advanced 21, four exposures, one save to cure. The
+  difficulty class is computed from the live caster and is not written down
+  anywhere. Dexterity belongs to the Giant Wasp. These creatures share a cloned
+  native graph and the differences between them are where copying goes wrong; a
+  test asserting the wasp's stat against the ant was written and corrected
+  during Sprint 14, and the stat block is the authority over the test.
+- The Giant Ant Drone applies the advanced simple template as a **rebuild**,
+  not as a rebuild plus the quick bonuses. The frozen contract describes the
+  template as granting +4 to every ability score except Intelligence, +2
+  natural armour and +2 to all skills, and also requires the numbers be derived
+  from the Soldier; those instructions conflict, because a simple template's
+  flat bonuses and its rebuild are alternative routes to the same creature. The
+  implementation takes the rebuild, so Perception derives to +7 rather than +9,
+  and the discrepancy is recorded as a fourth erratum on the contract page.
+- **Combat-manoeuvre defence is measured by the engine's components, not by one
+  total.** A freshly summoned creature has not acted, so Kingmaker treats it as
+  flat-footed and denies it its Dexterity bonus; the printed defence is
+  recovered by adding back a modifier the engine itself reports denying. The
+  engine's split of a size modifier across its size and miscellaneous
+  components is its own business - a Large creature's printed +1 arrives as
+  `size=2` with `misc=-1` - so only the net value is asserted.
 
 ### Human review status
 
@@ -166,7 +187,9 @@ Phase 2 asset has been given or may be claimed.
    `handoffs/Kingmaker_Codex_TwoDay_Autonomous_Phase2_Mission.md`, then this
    header, then `EXPANDED-SUMMONING-PHASE2-EVIDENCE-INDEX.md`.
 4. Run the memory preflight and re-fingerprint the live mod tree before any
-   guarded run; restore exactly afterwards.
+   guarded run; restore exactly afterwards. A guarded scenario that needs a
+   working save refuses to run without `-SaveName KMG_AUTOMATION_WORKING` and
+   leaves the machine untouched when it does.
 5. Continue at **Next executable action**. Do not re-run historical gates
    solely because the context changed.
 

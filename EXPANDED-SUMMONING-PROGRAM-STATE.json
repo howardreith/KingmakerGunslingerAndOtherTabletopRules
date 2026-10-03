@@ -23,7 +23,7 @@
       10,
       11
     ],
-    "currentSprint": 15,
+    "currentSprint": 16,
     "currentSubItem": "Sprints 9-11 are internally technically qualified and published. Sprint 12 remains hidden. Its Dire Rat and Goblin Dog injury-disease mechanics passed a focused 39/39 live matrix. A later 40/40 guarded run captured private geometry-free Dog 37/37, Wolf 36/36 and Worg 36/36 bone/bind-pose frames for original visual authoring and restored the exact original live tree. Distinct Dire Rat, Dog, Hyena and Goblin Dog silhouettes plus full player-path, both-mode, persistence, compatibility, inventory and visual qualification remain open.",
     "lastGuardedRuntimePass": "20260930T1314329155573Z-disposable-expanded-summoning",
     "lastGuardedRestoration": "20260930T1318353465055Z-disposable-expanded-summoning.json",
@@ -51,11 +51,13 @@
     "sprint22Authorized": false,
     "sprint14Published": true,
     "sprint14Status": "COMPLETE WITH OWNER-ACCEPTED ENGINE LIMITATION (PASSIVE_CREATURE_SENSES_UNMODELED)",
-    "publishedGeneratedPlacements": 952,
+    "publishedGeneratedPlacements": 970,
     "registeredGeneratedPlacements": 970,
-    "withheldGeneratedPlacements": 18,
+    "withheldGeneratedPlacements": 0,
     "retainedNativeWrappers": 29,
-    "totalVisibleChoices": 981
+    "totalVisibleChoices": 999,
+    "sprint15Published": true,
+    "sprint15Status": "COMPLETE AND PUBLISHED"
   },
   "charter": {
     "title": "Kingmaker_Expanded_Summoning_Implementation_Charter_v1.0.docx",

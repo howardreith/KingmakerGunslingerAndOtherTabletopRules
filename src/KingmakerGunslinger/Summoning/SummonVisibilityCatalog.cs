@@ -38,19 +38,23 @@ namespace KingmakerGunslinger.Summoning
         //
         // What is left is Sprint 15's pair, waiting on their own gates and on
         // nothing else.
+        // Empty, and kept rather than deleted: registering a creature
+        // ahead of its own qualification and withholding it until the guarded
+        // review passes is how every sprint in this phase has worked, and the
+        // next one will need it again.
         private static readonly HashSet<string> SuppressedCreatureKeys =
-            new HashSet<string>(new[] {
-                "giant-ant-drone", "giant-stag-beetle"
-            }, StringComparer.Ordinal);
+            new HashSet<string>(Array.Empty<string>(),
+                StringComparer.Ordinal);
 
         internal const int RegisteredLogicalPlacementCount = 970;
-        // Two creatures, 18 placements: Sprint 15's Giant Ant Drone's 12 and
-        // Giant Stag Beetle's 6, registered ahead of their own qualification.
-        // Everything of Sprints 9-14 is published. A creature held for any
-        // reason subtracts exactly its own placements, which the Sprint 14 and
-        // 15 domain suites assert per creature so this arithmetic cannot
+        // Nothing is withheld. Sprint 15's Giant Ant Drone and Giant Stag
+        // Beetle published on their guarded review, which was the last hidden
+        // pair in the tranche, so for the first time since Sprint 9 the
+        // registered and published surfaces are the same. A creature held for
+        // any reason subtracts exactly its own placements, which the Sprint 14
+        // and 15 domain suites assert per creature so this arithmetic cannot
         // drift.
-        internal const int SuppressedLogicalPlacementCount = 18;
+        internal const int SuppressedLogicalPlacementCount = 0;
         internal const int PublishedLogicalPlacementCount =
             RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount;
 
