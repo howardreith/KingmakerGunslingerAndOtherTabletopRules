@@ -467,6 +467,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 InterruptExpandedSummoningFixtureCommands(_sprint14CombatUnit);
             if (_sprint14CombatVenom != null)
                 hostile.Descriptor.Buffs.RemoveFact(_sprint14CombatVenom);
+            // The body has to go before the next cell casts. Every cell is
+            // placed at the same open point beside the hostile, and the first
+            // version left each creature standing there: cells one and two
+            // worked, and from the third onwards the spot was occupied, so the
+            // new insect never got close enough for the game to start its
+            // command. All four of those cells recorded canStart=True and
+            // started=False, which is what being unable to reach the target
+            // looks like from outside.
+            if (_sprint14CombatUnit != null)
+                DisposeExpandedSummoningUnits(_rulesFixture.Created,
+                    new[] { _sprint14CombatUnit });
             _sprint14CombatUnit = null;
         }
 

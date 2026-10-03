@@ -669,17 +669,74 @@ namespace KingmakerGunslinger.RuntimeTesting
                 mastiff, secondMastiff);
             ExecuteExpandedSummoningRuntimeAbility(mastiff, bay, 6,
                 new TargetWrapper(mastiff.Position), true);
-            UnitEntityData[] victims = CollectExpandedSummoningBayVictims(panic);
-            string panickedByFirstHowl = victims.Length == 0 ? "<none>" :
-                string.Join(",", victims.Select(unit => unit.CharacterName)
+            UnitEntityData[] natural = CollectExpandedSummoningBayVictims(panic);
+            string panickedByFirstHowl = natural.Length == 0 ? "<none>" :
+                string.Join(",", natural.Select(unit => unit.CharacterName)
                     .ToArray());
-            bool panickedOnFailure = victims.Length > 0;
 
             // Both mastiffs are evil outsiders, so the printed exemption means
             // neither may ever appear in that list.
             bool evilOutsiderSpared =
-                !victims.Any(unit => ReferenceEquals(unit, mastiff) ||
+                !natural.Any(unit => ReferenceEquals(unit, mastiff) ||
                     ReferenceEquals(unit, secondMastiff));
+
+            // That natural howl is evidence and nothing more. Whether it caught
+            // anyone is up to the dice, and twice it has decided this
+            // assertion: once it caught only an unnamed scene entity that
+            // cannot carry the immunity sequence, and once - on the candidate
+            // before this one - it caught nobody at all, which failed the
+            // assertion for the opposite reason. Neither time was anything
+            // wrong with the bay.
+            //
+            // The rule is "a creature that fails its Will save is panicked", so
+            // the creature put to it has its Will floored first. A failure is
+            // then the rule rather than a roll, and a creature that still does
+            // not panic with a floored save is a real defect. Candidates are
+            // tried in a fixed order so the same creature is used run to run
+            // wherever the scene allows it, and every rejection is recorded.
+            var fearCandidates = new List<UnitEntityData> { hostile };
+            if (Game.Instance != null && Game.Instance.State != null &&
+                Game.Instance.State.Units != null)
+                fearCandidates.AddRange(Game.Instance.State.Units
+                    .Where(unit => unit != null && unit.Descriptor != null &&
+                        unit.IsInState && !unit.Descriptor.State.IsDead &&
+                        !ReferenceEquals(unit, mastiff) &&
+                        !ReferenceEquals(unit, secondMastiff) &&
+                        !ReferenceEquals(unit, hostile))
+                    .OrderBy(unit => unit.UniqueId, StringComparer.Ordinal));
+            UnitEntityData forced = null;
+            var fearRejections = new List<string>();
+            foreach (UnitEntityData candidate in fearCandidates)
+            {
+                if (candidate == null || candidate.Descriptor == null) continue;
+                ModifiableValue will = candidate.Descriptor.Stats
+                    .GetStat(StatType.SaveWill);
+                int before = will.BaseValue;
+                try
+                {
+                    will.BaseValue = before - 100;
+                    ClearExpandedSummoningBayFear(panic, immunity, candidate);
+                    ExecuteExpandedSummoningRuntimeAbility(mastiff, bay, 6,
+                        new TargetWrapper(mastiff.Position), true);
+                    if (candidate.Descriptor.Buffs.GetBuff(panic) != null)
+                    {
+                        forced = candidate;
+                        break;
+                    }
+                }
+                finally { will.BaseValue = before; }
+                fearRejections.Add(candidate.CharacterName + "/" +
+                    (candidate.Blueprint == null ? "<no blueprint>" :
+                        candidate.Blueprint.name));
+                if (fearRejections.Count == 8) break;
+            }
+            bool panickedOnFailure = forced != null;
+            evilOutsiderSpared = evilOutsiderSpared &&
+                mastiff.Descriptor.Buffs.GetBuff(panic) == null &&
+                secondMastiff.Descriptor.Buffs.GetBuff(panic) == null;
+            UnitEntityData[] victims = forced == null ? natural :
+                new[] { forced }.Concat(natural.Where(unit =>
+                    !ReferenceEquals(unit, forced))).ToArray();
 
             // The immunity sequence runs against a creature the howl just
             // proved catchable, so it cannot be defeated by a fixture that
@@ -781,6 +838,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";rejectedSubjects[" + (rejectedSubjects.Count == 0 ?
                     "<none>" : string.Join(" | ",
                         rejectedSubjects.ToArray())) + "]" +
+                ";forcedFailureSubject=" + (forced == null ? "<none>" :
+                    forced.CharacterName) +
+                ";forcedFailureRejections[" + (fearRejections.Count == 0 ?
+                    "<none>" : string.Join(" | ",
+                        fearRejections.ToArray())) + "]" +
                 ";panickedByFirstHowl[" + panickedByFirstHowl +
                 "];residualFearAfterCleanup=" + residualFear;
         }

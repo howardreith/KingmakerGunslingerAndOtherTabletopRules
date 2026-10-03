@@ -1180,16 +1180,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _sprint14CombatCell++;
                     if (_sprint14CombatCell < Sprint14CombatCells.Length)
                     {
-                        _rulesSteps.Add("reset:sprint14Combat=" +
-                            ResetExpandedSummoningHostile(_rulesFixture));
-                        BeginSprint14CombatCell();
                         _rulesWait = 0;
-                        _rulesPhase = 9;
+                        _rulesPhase = 11;
                         return;
                     }
                     stage = "sprint14-combat-complete";
                     CompleteSprint14CombatModes();
                     CompleteExpandedSummoningRules();
+                }
+                if (_rulesPhase == 11)
+                {
+                    // The disposed body needs the destroyer's own frames to
+                    // leave the spot the next cell is placed on, which is why
+                    // this waits rather than casting in the frame that
+                    // disposed.
+                    stage = "sprint14-combat-settle" + _sprint14CombatCell;
+                    if (_rulesWait++ < 4) return;
+                    _rulesSteps.Add("reset:sprint14Combat=" +
+                        ResetExpandedSummoningHostile(_rulesFixture));
+                    BeginSprint14CombatCell();
+                    _rulesWait = 0;
+                    _rulesPhase = 9;
+                    return;
                 }
             }
             catch (Exception exception)
