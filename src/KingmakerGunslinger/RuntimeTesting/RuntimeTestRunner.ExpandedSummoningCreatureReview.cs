@@ -129,17 +129,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .GenerateVariants(family).Single(value =>
                         value.Creature.Key == key && value.ParentTier == tier &&
                         value.Multiplicity == quantity);
-                // The Shadow Mastiff is still suppressed, and its art has to
-                // be inspected under the party camera before the suppression
-                // is lifted. Sprint 11 and Sprint 12 each opened this door for
-                // exactly their own hidden creatures and closed it again at
-                // publication; this allowance is the same closed list and goes
-                // the same way.
+                // A withheld creature's art has to be inspected under the
+                // party camera before its suppression is lifted, which cannot
+                // be done through a published parent it does not have. Sprints
+                // 11, 12 and 13 each opened this door for exactly their own
+                // hidden creatures and closed it again at publication; the
+                // Sprint 14 allowance is the same closed list and goes the same
+                // way. It is a development-owned route and never a player one:
+                // the parent the review casts through stays unpublished, and
+                // removing these keys from the suppression set is what actually
+                // publishes the creatures.
                 bool suppressedSprint13Candidate =
                     IsSprint13CreatureReviewKey(key) &&
                     !SummonVisibilityCatalog.IsPublished(variant);
+                bool suppressedSprint14Candidate =
+                    IsSprint14InsectReviewKey(key) &&
+                    !SummonVisibilityCatalog.IsPublished(variant);
                 if (!SummonVisibilityCatalog.IsPublished(variant) &&
-                    !suppressedSprint13Candidate)
+                    !suppressedSprint13Candidate &&
+                    !suppressedSprint14Candidate)
                     throw new InvalidOperationException(
                         "A suppressed creature cannot be reviewed through a parent: " +
                         key + ".");
