@@ -18216,12 +18216,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "spawned BlueprintUnit reference equality for every command"),
                 Assertion("expanded-summoning-command-total",
                     (coverageCasts + 2 + waspCrowd.Length +
-                        ungulateExtra.Length) + ": " + coverageCasts +
-                        " coverage casts plus two Pteranodon, four Wasp and " +
-                        ungulateExtra.Length + " additional ungulate crowd casts",
+                        ungulateExtra.Length + sprint15Crowd.Length) + ": " +
+                        coverageCasts +
+                        " coverage casts plus two Pteranodon, four Wasp, " +
+                        ungulateExtra.Length + " additional ungulate and " +
+                        sprint15Crowd.Length + " Sprint 15 crowd casts",
                     completed.ToString(), casts.Length == coverageCasts +
                         pteranodonCrowd.Length + waspCrowd.Length +
-                        ungulateExtra.Length &&
+                        ungulateExtra.Length + sprint15Crowd.Length &&
                         pteranodonCrowd.Length == 2 && completed == casts.Length,
                     "native AbilityData, UnitUseAbility command, RuleCastSpell, and execution-process completion"),
                 Assertion("expanded-summoning-caster-level-duration",
@@ -18386,7 +18388,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     mechanics != null && mechanics.Sprint15Profiles,
                     "two freshly summoned creatures and a third for comparison, their live bodies, limb attack probes, live ability scores and the blueprint unit type each spawned creature actually carries"),
                 Assertion("expanded-summoning-sprint15-defences",
-                    "both creatures read their combat-manoeuvre defences through the engine's own calculation - the Stag Beetle at its printed 20 and 28 against trip, the Drone at the 17 and 25 its contract requires be derived from the Soldier - and both carry their printed skills as totals with a modifier breakdown: the Drone's Perception exactly 7 from a racial +4 and the advanced Wisdom with no ranks and no unprinted flat bonus, the Stag Beetle's exactly 0, and vermin mind-affecting immunity proved on each by a native buff the caster demonstrably accepts",
+                    "both creatures read their combat-manoeuvre defences through the engine's own component arithmetic rather than one total - base attack bonus, Strength, Dexterity, dodge, size and miscellaneous, each required to be the creature's own - reaching the Stag Beetle's printed 20 and 28 against trip and the Drone's 17 and 25 that its contract requires be derived from the Soldier, with the Dexterity a freshly summoned creature is denied for being flat-footed added back rather than demanded of a creature that cannot show it before it has acted, and the eight-point multi-legged difference between the two defences holding either way; and both carry their printed skills as totals with a modifier breakdown: the Drone's Perception exactly 7 from a racial +4 and the advanced Wisdom with no ranks and no unprinted flat bonus, the Stag Beetle's exactly 0, and vermin mind-affecting immunity proved on each by a native buff the caster demonstrably accepts",
                     mechanics == null ? "not-run" :
                         mechanics.Sprint15DefencesDetail,
                     mechanics != null && mechanics.Sprint15Defences,
