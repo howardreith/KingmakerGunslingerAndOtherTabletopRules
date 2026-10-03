@@ -96,7 +96,7 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Values.Length != 44 || Values.Select(value => value.Key)
+            if (Values.Length != 46 || Values.Select(value => value.Key)
                     .Distinct(StringComparer.Ordinal).Count() != Values.Length)
                 throw new InvalidOperationException(
                     "The natural reconstruction catalog is incomplete or duplicated.");
@@ -189,6 +189,26 @@ namespace KingmakerGunslinger.Summoning
                     "Kingmaker exposes one movement speed; the 50-foot ground speed is used and the 20-foot climb is omitted. An absent Intelligence score is represented as 1.",
                     "The printed racial +4 Survival is omitted for the reason recorded on the Worker; the Perception half is exact. Both castes carry the project's multi-legged trip defence, which the Giant Centipede already uses, so the printed CMD 13 and 21 against trip hold on both.",
                     "The bite's grab rides the shared summon grapple lifecycle (Sprint 6) on the primary limb only, and the sting's poison is gated on the sting's own weapon type (Sprint 10), so neither reaches the other attack. The printed Fortitude DC 14 is what the Constitution-scaled formula produces unaided and is not hard-coded."),
+                PK("giant-ant-drone", "Giant Ant (Drone)", "Vermin", 2,
+                    "Medium", 18, 14, 21, 1, 17, 15, 30, 7, "Bite1d6",
+                    A("AntSting1d4"),
+                    A("Airborne", "Toughness", "TripDefenseEightLegs",
+                        "GiantAntRacialSkills", "GiantAntPoison"),
+                    Array.Empty<string>(),
+                    "Kingmaker exposes one movement speed; the 30-foot average fly speed is used with airborne navigation, and the soldier's 50-foot ground speed and 20-foot climb are omitted. That leaves this caste slower on the ground than the soldier it is built from, which is the conservative direction and is preferred to overstating a flier's ground movement. An absent Intelligence score is represented as 1.",
+                    "Every ability score is the soldier's with the advanced simple template applied, written out here rather than computed at load because the frozen contract requires it: Strength 14 to 18, Dexterity 10 to 14, Constitution 17 to 21, Wisdom 13 to 17, Charisma 11 to 15, Intelligence unchanged because the template excludes it, and natural armour 5 to 7. Hit dice stay at 2 because the template adds none.",
+                    "The frozen contract describes that template as also granting +2 to all skills. That clause is not part of the advanced simple template and no primary source for it was found, so it is omitted: Perception is +7 - the +3 from the advanced Wisdom of 17 plus the exact racial +4 - and not +9. Granting an unsourced +2 would make this creature stronger than its printed form, which this project treats as a defect rather than a rounding, and the contract page is where the discrepancy is raised.",
+                    "The poison needs no second graph. Its difficulty class is computed live from the caster's own Constitution, so the shared Giant Ant poison feature gives the soldier DC 14 on Constitution 17 and this caste DC 16 on the advanced 21, with the same 1d2 Strength over four rounds cured by one save.",
+                    "The printed darkvision 60 feet and scent have no representation in Kingmaker, which carries no creature-sense model at all. The scent half holds this caste out of publication alongside the worker and the soldier, pending the owner's ruling; it is not recorded as an accepted limitation."),
+                PK("giant-stag-beetle", "Giant Stag Beetle", "Vermin", 7,
+                    "Large", 19, 10, 15, 1, 10, 9, 20, 8, "Bite2d8",
+                    Array.Empty<string>(),
+                    A("ReducedReach", "TripDefenseEightLegs"),
+                    Array.Empty<string>(),
+                    "Kingmaker exposes one movement mode; the 20-foot ground speed is used and the equal 20-foot poor fly speed is omitted, so no movement rate is lost - only the mode. Ground is the right mode for a heavy Large beetle and is the only one its trample can use. The Fire Beetle resolves the same equal-speed choice the other way because its flight is characterful and it does not trample; the asymmetry is deliberate rather than an oversight. Poor maneuverability has no native representation. An absent Intelligence score is represented as 1.",
+                    "The printed Space 10 feet with Reach 5 feet is a reduced reach for a Large creature and uses the project's reduced-reach carrier, the same one the Large ungulates use.",
+                    "Trample reuses the project's qualified trample carrier rather than a new graph, and the derivation lands on the printed line exactly: damage is one and a half times Strength on 1d6, which is 1d6+6 at Strength 19, and the save is 10 plus half the hit dice plus the Strength modifier, which is DC 17 at 7 hit dice. It uses the disclosed Kingmaker automatic-attack-of-opportunity-or-Reflex adaptation and carries no Stampede, which belongs to the herd ungulates alone.",
+                    "The printed darkvision 60 feet has no representation in Kingmaker, which carries no creature-sense model. Unlike the Giant Ant castes this creature prints no scent, so the gap costs it nothing a player could observe and it does not hold publication."),
                 P("giant-spider", "Giant Spider", "Vermin", 3, "Medium",
                     11, 17, 12, 1, 10, 2, 30, 1, "Bite1d6",
                     Array.Empty<string>(),

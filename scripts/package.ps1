@@ -150,8 +150,11 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
     'assets\soundbanks\KMG_Firearms.bnk') -PathType Leaf
 # Strict package inventory including the six reviewed Sprint 12 quadruped
 # mesh/painting files. The soundbank and its manifest account for the optional
-# two-file difference.
-$expectedPackageFileCount = if ($hasFirearmSoundBank) { 298 } else { 296 }
+# two-file difference. Sprint 15 adds the Giant Ant (Drone) and Giant Stag
+# Beetle icons, which is the whole of its packaged footprint so far: both
+# creatures are registered and withheld, and neither has its mesh or painting
+# yet.
+$expectedPackageFileCount = if ($hasFirearmSoundBank) { 300 } else { 298 }
 & $python (Join-Path $repositoryRoot 'tools\create_deterministic_package.py') `
     --source $modDirectory --output $packagePath `
     --expected-file-count $expectedPackageFileCount
