@@ -627,7 +627,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint13-bay-dc", ExpandedSummoningSprint13Tests.BayDcDerivesToThePrintedSixteen),
             Case("expanded-summoning.sprint14-ant-poison-dc", ExpandedSummoningSprint14Tests.AntPoisonDcDerivesToThePrintedFourteen),
             Case("expanded-summoning.sprint14-printed-skill-totals", ExpandedSummoningSprint14Tests.InsectSkillTotalsMatchThePrintedStatBlocks),
-            Case("expanded-summoning.sprint15-registered-and-withheld", ExpandedSummoningSprint15Tests.BothCreaturesAreRegisteredAndWithheld),
+            Case("expanded-summoning.sprint15-registered-and-withheld", ExpandedSummoningSprint15Tests.BothCreaturesAreRegisteredAndPublished),
             Case("expanded-summoning.sprint15-drone-advanced-template", ExpandedSummoningSprint15Tests.TheDroneIsTheSoldierWithTheAdvancedTemplate),
             Case("expanded-summoning.sprint15-stag-beetle-trample", ExpandedSummoningSprint15Tests.TheStagBeetleTrampleDerivesToItsPrintedLine),
             Case("expanded-summoning.sprint15-stag-beetle-stat-block", ExpandedSummoningSprint15Tests.TheStagBeetleMatchesItsPrintedStatBlock),

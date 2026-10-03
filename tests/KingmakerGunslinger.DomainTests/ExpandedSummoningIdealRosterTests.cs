@@ -189,9 +189,11 @@ namespace KingmakerGunslinger.DomainTests
             // 863 after Stirge and 911 after the Sprint 11 ungulates. Sprint 12
             // registers Dire Rat and publishes its four families, and Sprint 13
             // adds the Shadow Mastiff's four Summon Monster placements, leaving
-            // 933 choices visible after the Sprint 13 publication, and 951
-            // after Sprint 14 publishes the Fire Beetle alone.
-            Assertions.Equal(981,
+            // 933 choices visible after the Sprint 13 publication, 951 once
+            // Sprint 14 published the Fire Beetle, 981 when the two ant castes
+            // followed it under the accepted passive-sense limitation, and 999
+            // with Sprint 15's Drone and Giant Stag Beetle.
+            Assertions.Equal(999,
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.Monster) +
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.NaturesAlly),
                 "The plan must not change the shipped visible choice count.");

@@ -1,5 +1,71 @@
 # Expanded Summoning Phase 2 implementation report
 
+## Sprint 15 closeout, 2026-10-03: COMPLETE AND PUBLISHED
+
+The Giant Ant (Drone) and the Giant Stag Beetle are published. The visible
+surface is **970 published generated placements plus 29 retained native
+wrappers, for 999 visible choices**, derived from source. **Nothing is withheld
+anywhere** - for the first time since Sprint 9 the registered and published
+surfaces are the same number, so no creature in this phase is registered and
+hidden.
+
+### What the guarded review proved
+
+Six scenarios, 139 assertions, every run restoring the live tree exactly to
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3` with
+restoration verified.
+
+| Scenario | Assertions | Candidate |
+| --- | --- | --- |
+| mechanical pack | 61/61 | `c8cb25ce` |
+| rules pack, with twelve combat-mode cells | 62/62 | `52baae65` |
+| visual lifecycle | 8/8 | `52baae65` |
+| working-save prepare / verify-cleanup / verify-absent | PASS / PASS / PASS | `52baae65` |
+
+The Drone is the Soldier with the advanced simple template, and the engine
+produced it: every ability score measured exactly four higher than a Soldier
+spawned in the same run except Intelligence, which the template excludes. Its
+poison needed no second graph - the shared Constitution-scaled policy turned
+the advanced Constitution of 21 into the printed Fortitude DC 16 unaided, with
+1d2 Strength over four exposures cured by one save, delivered only by a sting
+that actually wounded, and one attack producing exactly one application
+carrying that same difficulty class. Its Perception derived to exactly 7 from a
+racial +4 and the advanced Wisdom, with no ranks and no unprinted flat bonus.
+
+The Giant Stag Beetle read its printed CMD 20 and 28 against trip exactly, is
+Large with one 2d8 bite and nothing else on its body, carries its own unit type
+rather than the Fire Beetle's or the Giant Spider's, and carries none of the
+Fire Beetle's luminescence. Its trample ran through the carrier the Sprint 11
+ungulates qualified, at its printed DC 17, dealing damage to the hostile and
+none to the allied caster.
+
+Both creatures attack through the command a player's click produces, in RTWP
+and in turn-based combat: twelve cells, and each two-limbed creature
+demonstrated its own bite-and-sting separation rather than borrowing another
+creature's evidence. Both were summoned in quantity as well as singly - a 1d3
+and a 1d4+1 command for each - with the project visual attached on every body
+of every multi-body cast, and the Giant Spider cast as itself came up with no
+swap attempted on it at all.
+
+### One measurement corrected, twice
+
+The Drone's combat-manoeuvre defence first measured 15 and 23 against a derived
+17 and 25. The engine's own component breakdown settled it: a freshly summoned
+creature has not acted, so Kingmaker treats it as flat-footed and denies it its
+Dexterity bonus, which is exactly the two points. The creature was right; a
+single total could not say so, because the four insects before it all had
+Dexterity 10 and read correctly either way.
+
+The second attempt then asserted the engine's split of a size modifier, and a
+Large creature's printed +1 arrives in Kingmaker as `size=2` with `misc=-1`.
+That is the same number expressed differently and no source text constrains the
+split, so the check now asserts only quantities the rules name - base attack
+bonus, Strength, the net size modifier, Dexterity when it is not denied, the
+printed total, and the eight-point multi-legged difference - and records every
+component as evidence without requiring it.
+
+`HumanReview: NOT_PERFORMED_NONBLOCKING`.
+
 ## OwnerAcceptedEngineLimitation: PASSIVE_CREATURE_SENSES_UNMODELED
 
 **Accepted by the owner on 2026-10-03.** Kingmaker models none of **Scent**,

@@ -86,7 +86,7 @@ namespace KingmakerGunslinger.DomainTests
                     "86f4287572bef49449b9d06c66adf456")
                     .EquivalentCreatureKey,
                 "Native SNA Smilodon reconciliation changed.");
-            Assertions.Equal(952,
+            Assertions.Equal(970,
                 ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
                     .Concat(ExpandedSummoningCatalog.GenerateVariants(
                         SummonFamily.NaturesAlly))
@@ -98,12 +98,12 @@ namespace KingmakerGunslinger.DomainTests
             // appearing here for any other reason would be a sprint
             // registering ahead of its own qualification, which is allowed,
             // but it has to be deliberate rather than a leftover.
-            Assertions.Equal(18,
+            Assertions.Equal(0,
                 ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
                     .Concat(ExpandedSummoningCatalog.GenerateVariants(
                         SummonFamily.NaturesAlly))
                     .Count(value => !SummonVisibilityCatalog.IsPublished(value)),
-                "Only placements that are unqualified or held on a proven engine barrier may remain hidden: 18 placements are withheld: Sprint 15's Giant Ant Drone and Giant Stag Beetle, registered ahead of their own qualification.");
+                "Only placements that are unqualified or held on a proven engine barrier may remain hidden: nothing is withheld - every registered placement of every qualified creature publishes.");
         }
 
         internal static void DisplayOrderGroupsSinglesBeforeQuantities()
