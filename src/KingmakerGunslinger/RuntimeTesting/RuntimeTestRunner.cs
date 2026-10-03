@@ -17943,7 +17943,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     mechanics != null && mechanics.Sprint14Profiles,
                     "freshly summoned units, their live bodies and limb attack probes, and the blueprint unit type the spawned creature actually carries"),
                 Assertion("expanded-summoning-sprint14-trip-defence",
-                    "both ant castes read the printed CMD 13 and 21 against trip through the engine's own calculation, and the Fire Beetle's own trip behaviour is measured and recorded rather than assumed",
+                    "all three insects read their printed combat-manoeuvre defences through the engine's own calculation: both ant castes at 13 and 21 against trip, and the Fire Beetle at 9 and 17, which the first guarded audit found it did not have",
                     mechanics == null ? "not-run" :
                         mechanics.Sprint14TripDefenceDetail,
                     mechanics != null && mechanics.Sprint14TripDefence,

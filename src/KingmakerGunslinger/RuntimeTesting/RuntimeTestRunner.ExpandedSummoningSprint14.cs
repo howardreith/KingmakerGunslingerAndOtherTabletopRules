@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Facts;
@@ -102,7 +103,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 beetle.Blueprint.Type.name;
             bool beetleShape =
                 beetle.Descriptor.State.Size == Size.Small &&
-                beetleBite != null && DescribeWeaponDice(beetleBite) == "1d4" &&
+                beetleBite != null &&
+                DescribeEffectiveWeaponDice(beetleBite) == "1d4" &&
                 (beetleBody.AdditionalLimbs == null ||
                     beetleBody.AdditionalLimbs.Length == 0) &&
                 (beetleBody.AdditionalSecondaryLimbs == null ||
@@ -121,7 +123,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 (luminescence.ComponentsArray == null ||
                     luminescence.ComponentsArray.Length == 0);
             rows.Add("fire-beetle[size=" + beetle.Descriptor.State.Size +
-                ";bite=" + DescribeWeaponDice(beetleBite) + ";limbs=" +
+                ";bite=" + DescribeEffectiveWeaponDice(beetleBite) + ";limbs=" +
                 string.Join("/", DescribeLimbs(beetleBody)) + ";type=" +
                 beetleType + ";luminescence=" + luminescenceCarried +
                 ";luminescenceComponents=" + (luminescence == null ? -1 :
@@ -142,7 +144,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             // a bite alone: one limb, and nothing else anywhere on the body.
             bool workerShape =
                 worker.Descriptor.State.Size == Size.Medium &&
-                workerBite != null && DescribeWeaponDice(workerBite) == "1d6" &&
+                workerBite != null &&
+                DescribeEffectiveWeaponDice(workerBite) == "1d6" &&
                 (workerBody.AdditionalLimbs == null ||
                     workerBody.AdditionalLimbs.Length == 0) &&
                 (workerBody.AdditionalSecondaryLimbs == null ||
@@ -151,7 +154,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 workerType.IndexOf("GiantAnt", StringComparison.Ordinal) >= 0;
             bool workerCarriesNoPoison = SummonGrabComponent.Find(worker) == null;
             rows.Add("giant-ant-worker[size=" + worker.Descriptor.State.Size +
-                ";bite=" + DescribeWeaponDice(workerBite) + ";limbs=" +
+                ";bite=" + DescribeEffectiveWeaponDice(workerBite) + ";limbs=" +
                 string.Join("/", DescribeLimbs(workerBody)) + ";type=" +
                 workerType + ";grab=" + !workerCarriesNoPoison + "]");
             valid = valid && workerShape && workerCarriesNoPoison;
@@ -177,9 +180,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             // poison)" - both at the same bonus, so both are primary.
             bool soldierShape =
                 soldier.Descriptor.State.Size == Size.Medium &&
-                soldierBite != null && DescribeWeaponDice(soldierBite) == "1d6" &&
+                soldierBite != null &&
+                DescribeEffectiveWeaponDice(soldierBite) == "1d6" &&
                 soldierSting != null &&
-                DescribeWeaponDice(soldierSting) == "1d4" &&
+                DescribeEffectiveWeaponDice(soldierSting) == "1d4" &&
                 soldierSting.name == "KMG_Summoning_Natural_AntSting1d4" &&
                 !ReferenceEquals(soldierSting, soldierBite) &&
                 soldierSting.Type != soldierBite.Type &&
@@ -196,9 +200,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 grab.GrabAdditionalLimbCount == 0 && grab.RakeLimbCount == 0 &&
                 grab.IsGrabLimb(soldier, SummonLimbs.PrimaryWeapon(soldier));
             rows.Add("giant-ant-soldier[size=" + soldier.Descriptor.State.Size +
-                ";bite=" + DescribeWeaponDice(soldierBite) + "@" +
+                ";bite=" + DescribeEffectiveWeaponDice(soldierBite) + "@" +
                 soldierBiteBonus + ";sting=" +
-                DescribeWeaponDice(soldierSting) + "@" + soldierStingBonus +
+                DescribeEffectiveWeaponDice(soldierSting) + "@" +
+                soldierStingBonus +
                 ";distinctWeaponTypes=" + (soldierSting != null &&
                     soldierBite != null &&
                     soldierSting.Type != soldierBite.Type) +
@@ -260,15 +265,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 CombatManeuver.BullRush);
             int beetleTrip = ProbeCombatManeuverDefence(hostile, beetle,
                 CombatManeuver.Trip);
-            // Audited, not asserted: the printed CMD 9 and 17 against trip are
-            // recorded beside what the engine actually produces, so the
-            // decision about whether the airborne adaptation has already made
-            // the creature untrippable is made from a measurement. Kingmaker
-            // exposes no trip-immunity condition, so a defence far above the
-            // printed one is what that would look like here.
+            // The first guarded audit answered the open question: the beetle
+            // measured CMD 9 and trip 9, so the airborne adaptation had not
+            // made it untrippable and the printed bonus was simply absent. It
+            // now carries the same multi-legged defence the ants do, so this is
+            // an assertion rather than an audit.
             rows.Add("fire-beetle[cmd=" + beetleOrdinary + ";trip=" +
                 beetleTrip + ";delta=" + (beetleTrip - beetleOrdinary) +
-                ";printedCmd=9;printedTrip=17;audited=true]");
+                ";printedCmd=9;printedTrip=17]");
+            valid = valid && beetleOrdinary == 9 && beetleTrip == 17;
             evidence.Sprint14TripDefence = valid;
             evidence.Sprint14TripDefenceDetail =
                 string.Join(";", rows.ToArray());
@@ -316,7 +321,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     venom, true, false, "sting-hits-no-damage", false));
                 rows.Add(DescribeSprint14PoisonCase(blueprints, soldier, hostile, bite,
                     venom, true, true, "bite-wounds", false));
-                valid = rows.All(value => value.EndsWith("expected", StringComparison.Ordinal));
+                // Not EndsWith("expected"): "unexpected" ends with
+                // "expected", so the first version of this passed while two of
+                // its four cases were failing in plain sight.
+                valid = rows.All(value => value.EndsWith("=ok",
+                    StringComparison.Ordinal));
             }
             evidence.Sprint14PoisonDiscrimination = valid;
             evidence.Sprint14PoisonDiscriminationDetail =
@@ -357,6 +366,34 @@ namespace KingmakerGunslinger.RuntimeTesting
                 captured.ToArray());
         }
         /// <summary>
+        /// A weapon's effective damage dice.
+        ///
+        /// <para>A project-created weapon carries its own dice on the item. A
+        /// native one usually does not: the item reads 0d0 and the dice live on
+        /// its BlueprintWeaponType, which is why the ants' native 1d6 bite
+        /// looked like nothing at all the first time this was measured. Both
+        /// are read here, item first, so an override still wins where one
+        /// exists.</para>
+        /// </summary>
+        private static string DescribeEffectiveWeaponDice(
+            BlueprintItemWeapon weapon)
+        {
+            if (weapon == null) return "<none>";
+            string own = DescribeWeaponDice(weapon);
+            if (own != "0d0") return own;
+            if (weapon.Type == null) return own + "(no-type)";
+            FieldInfo field = weapon.Type.GetType().GetField("m_BaseDamage",
+                BindingFlags.Instance | BindingFlags.Public |
+                BindingFlags.NonPublic);
+            if (field == null) return own + "(no-type-dice)";
+            object value = field.GetValue(weapon.Type);
+            if (!(value is DiceFormula)) return own + "(type-not-a-formula)";
+            var formula = (DiceFormula)value;
+            return formula.Rolls.ToString(CultureInfo.InvariantCulture) + "d" +
+                ((int)formula.Dice).ToString(CultureInfo.InvariantCulture);
+        }
+
+        /// <summary>
         /// One creature's live combat-manoeuvre defence, without attempting the
         /// manoeuvre. RuleCalculateCMD is the engine's own calculation, so a
         /// trip defence that exists only in a blueprint does not show up here.
@@ -387,7 +424,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 value != null && value.ComponentsArray != null &&
                 value.ComponentsArray.OfType<AddDamageResistancePhysical>()
                     .Any(dr => dr != null && dr.Value != null &&
-                        dr.Value.Value >= 20));
+                        dr.Value.Value >= 20)) ??
+                blueprints.OfType<BlueprintBuff>().FirstOrDefault(value =>
+                    value != null && value.ComponentsArray != null &&
+                    value.ComponentsArray.OfType<AddDamageResistancePhysical>()
+                        .Any(dr => dr != null));
         }
 
         /// <summary>
@@ -423,8 +464,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             int damage;
             try
             {
-                UnityEngine.Random.InitState(
-                    FindNativeD20Seed(shouldHit ? 20 : 1));
+                // A natural 20 threatens, and a confirmed critical doubles
+                // the damage, which is how the first zero-damage attempt still
+                // dealt ten through a reduction that should have absorbed it.
+                // The wounding cases keep the 20 because they want a hit; the
+                // zero-damage case takes the lowest roll that still hits.
+                UnityEngine.Random.InitState(FindNativeD20Seed(
+                    !shouldHit ? 1 : allowDamage ? 20 : 19));
                 var attack = new RuleAttackWithWeapon(soldier, target, weapon,
                     0);
                 Rulebook.Trigger(attack);
@@ -438,11 +484,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             bool venomPresent = target.Descriptor.Buffs.GetBuff(venom) != null;
             ClearSprint14Venom(target, venom);
-            bool matches = venomPresent == expectVenom && hit == shouldHit &&
-                (allowDamage ? damage > 0 : damage == 0);
+            // A case only counts when the engine actually produced the
+            // situation it names. A miss must miss; a wounding case must wound;
+            // and the zero-damage case must really have been reduced to zero,
+            // because a shield that failed to apply would otherwise look like a
+            // passing proof that a wounding hit delivers no venom.
+            bool situation = hit == shouldHit &&
+                (!shouldHit ? damage == 0 : allowDamage ? damage > 0 :
+                    damage == 0);
+            bool matches = situation && venomPresent == expectVenom;
             return label + "[hit=" + hit + ";damage=" + damage + ";venom=" +
-                venomPresent + ";wanted=" + expectVenom + "]=" +
-                (matches ? "expected" : "unexpected");
+                venomPresent + ";wanted=" + expectVenom + ";situation=" +
+                situation + "]=" + (matches ? "ok" : "wrong");
         }
 
         private static void ClearSprint14Venom(UnitEntityData target,
