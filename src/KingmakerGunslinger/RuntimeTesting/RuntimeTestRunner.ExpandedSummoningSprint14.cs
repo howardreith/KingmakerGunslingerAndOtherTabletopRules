@@ -5,8 +5,11 @@ using System.Linq;
 using System.Reflection;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.Blueprints.Items.Weapons;
+using Kingmaker;
+using Kingmaker.Designers.Mechanics.Buffs;
 using Kingmaker.Designers.Mechanics.Facts;
 using Kingmaker.Enums;
 using Kingmaker.EntitySystem.Entities;
@@ -72,6 +75,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             ExerciseSprint14PoisonDiscrimination(blueprints, caster, hostile,
                 created, evidence);
             ExerciseSprint14Senses(blueprints, caster, created, evidence);
+            ExerciseSprint14WaspRequalification(blueprints, caster, hostile,
+                created, evidence);
         }
 
         /// <summary>
@@ -367,50 +372,69 @@ namespace KingmakerGunslinger.RuntimeTesting
                 captured.ToArray());
         }
         /// <summary>
-        /// What senses and vermin traits the live creatures actually have, and
-        /// what the loaded blueprint set offers to give them.
+        /// What senses, vermin traits and skill totals the live creatures
+        /// actually have, and what the loaded library could ever give them.
         ///
-        /// <para>The contract names low-light vision for the beetle, darkvision
-        /// 60 and scent for the ants, and mind-affecting immunity for all
-        /// three, and says not to assume the Vermin racial class, the project
-        /// unit type or the Giant Spider donor produces any of it. So every
-        /// live feature is read off the spawned unit, each one's component
-        /// types with it, and the engine's own Darkvision component is looked
-        /// for by type rather than by a feature's name - a feature carrying no
-        /// component is a tooltip and not a mechanic.</para>
+        /// <para>The contract names exact printed totals rather than a racial
+        /// component: Perception +0 on the Fire Beetle and +5 on both ant
+        /// castes, where the ants' five is a Wisdom point on top of a racial
+        /// +4 and nothing else. A total is therefore checked against the
+        /// printed number and broken down by modifier descriptor, because a
+        /// total alone cannot tell an unprinted class rank from the engine's
+        /// own size bonus - the Fire Beetle reads Stealth 4 on no ranks at all,
+        /// which is the Small size bonus every Small creature in Pathfinder
+        /// gets and not something the generic builder added.</para>
         ///
-        /// <para>The second half is the bounded native audit: what the loaded
-        /// set has that could carry scent or low-light vision at all. Whether
-        /// those exist decides between implementing them and disclosing that
-        /// the engine cannot, and that decision has to come from a measurement
-        /// rather than from the absence of a type name in an assembly.</para>
+        /// <para>Mind-affecting immunity is proved rather than inferred. A
+        /// feature carrying a BuffDescriptorImmunity component is suggestive
+        /// and no more, so a real native mind-affecting buff is applied to the
+        /// insect, which must refuse it, and to the caster, which must accept
+        /// it. Without that control an immunity assertion passes just as well
+        /// when the fixture's buff was never applicable to anything.</para>
+        ///
+        /// <para>The last part is the bounded native audit the contract asks
+        /// for before anything is declared impossible: every component on every
+        /// loaded blueprint is searched for anything that could express scent,
+        /// darkvision or low-light vision. The engine's own assembly holds
+        /// VisionNormal, VisionLowLight and VisionDarkvision beside VisionColor
+        /// and VisionRangeInMeters, which is a rendering enum rather than a
+        /// creature sense, and the only mechanical sense plumbing it has is
+        /// AddBlindsight with UnitPartBlindsense. This measures whether that
+        /// reading is right where it matters, which is on the blueprints the
+        /// game actually loaded.</para>
         /// </summary>
         private static void ExerciseSprint14Senses(
             BlueprintScriptableObject[] blueprints, UnitEntityData caster,
             List<UnitEntityData> created,
             ExpandedSummoningMechanicalEvidence evidence)
         {
+            BlueprintBuff mindAffecting = FindSprint14MindAffectingBuff(
+                blueprints, caster);
             var rows = new List<string>();
+            bool contract = mindAffecting != null;
             foreach (string[] row in new[] {
-                new[] { "fire-beetle", "1" },
-                new[] { "giant-ant-worker", "2" },
-                new[] { "giant-ant-soldier", "3" } })
+                new[] { "fire-beetle", "1", "0" },
+                new[] { "giant-ant-worker", "2", "5" },
+                new[] { "giant-ant-soldier", "3", "5" } })
             {
                 UnitEntityData unit = CastExpandedSummoningCombatUnit(blueprints,
                     caster, SummonFamily.NaturesAlly, row[0],
                     int.Parse(row[1], CultureInfo.InvariantCulture), created,
                     evidence);
                 RemoveExpandedSummoningAppearanceBuffs(unit);
-                var names = new List<string>();
+                int printedPerception = int.Parse(row[2],
+                    CultureInfo.InvariantCulture);
+
                 var components = new List<string>();
                 bool darkvision = false;
                 string darkvisionDetail = "<none>";
+                int features = 0;
                 foreach (BlueprintFeature feature in unit.Descriptor.Progression
                     .Features.Enumerable
                     .Select(value => value.Blueprint)
                     .OfType<BlueprintFeature>())
                 {
-                    names.Add(feature.name);
+                    features++;
                     foreach (BlueprintComponent component in
                         feature.ComponentsArray ??
                         Array.Empty<BlueprintComponent>())
@@ -418,6 +442,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         string type = component.GetType().Name;
                         components.Add(feature.name + ":" + type);
                         if (type.IndexOf("Darkvision",
+                                StringComparison.OrdinalIgnoreCase) >= 0 ||
+                            type.IndexOf("LowLight",
                                 StringComparison.OrdinalIgnoreCase) >= 0)
                         {
                             darkvision = true;
@@ -425,39 +451,155 @@ namespace KingmakerGunslinger.RuntimeTesting
                         }
                     }
                 }
-                string suspicious = string.Join("/", components.Where(value =>
-                    value.IndexOf("Scent", StringComparison.OrdinalIgnoreCase) >= 0 ||
-                    value.IndexOf("LowLight", StringComparison.OrdinalIgnoreCase) >= 0 ||
-                    value.IndexOf("Immunity", StringComparison.OrdinalIgnoreCase) >= 0 ||
-                    value.IndexOf("MindAffect", StringComparison.OrdinalIgnoreCase) >= 0 ||
-                    value.IndexOf("Vision", StringComparison.OrdinalIgnoreCase) >= 0)
-                    .Distinct().ToArray());
-                int perception = unit.Descriptor.Stats
-                    .GetStat(StatType.SkillPerception).ModifiedValue;
-                int mobility = unit.Descriptor.Stats
-                    .GetStat(StatType.SkillMobility).ModifiedValue;
-                int stealth = unit.Descriptor.Stats
-                    .GetStat(StatType.SkillStealth).ModifiedValue;
-                rows.Add(row[0] + "[perception=" + perception + ";mobility=" +
-                    mobility + ";stealth=" + stealth + ";darkvision=" +
-                    darkvision + "(" + darkvisionDetail + ");senseish=" +
-                    (suspicious.Length == 0 ? "<none>" : suspicious) +
-                    ";features=" + names.Count + "]");
+
+                ModifiableValue perception = unit.Descriptor.Stats
+                    .GetStat(StatType.SkillPerception);
+                ModifiableValue mobility = unit.Descriptor.Stats
+                    .GetStat(StatType.SkillMobility);
+                ModifiableValue stealth = unit.Descriptor.Stats
+                    .GetStat(StatType.SkillStealth);
+
+                // The printed total, not the racial component on its own.
+                bool perceptionExact =
+                    perception.ModifiedValue == printedPerception;
+                // No class ranks in any of the three, which is what a stat
+                // block printing no skill ranks requires. Anything left in the
+                // total has to come from an attribute, a racial modifier or a
+                // size bonus, and the breakdown below says which.
+                bool noRanks = perception.BaseValue == 0 &&
+                    mobility.BaseValue == 0 && stealth.BaseValue == 0;
+
+                string immunityOutcome = DescribeSprint14MindImmunity(
+                    mindAffecting, unit, caster);
+                bool immune = immunityOutcome == "refused-on-vermin;" +
+                    "accepted-on-caster";
+
+                contract = contract && perceptionExact && noRanks && immune &&
+                    !darkvision;
+                rows.Add(row[0] + "[" +
+                    DescribeSprint14Skill("perception", perception) + "@printed" +
+                    printedPerception + (perceptionExact ? "=exact" : "=WRONG") +
+                    ";" + DescribeSprint14Skill("mobility", mobility) +
+                    ";" + DescribeSprint14Skill("stealth", stealth) +
+                    ";noClassRanks=" + noRanks +
+                    ";darkvision=" + darkvision + "(" + darkvisionDetail + ")" +
+                    ";mindAffecting=" + immunityOutcome +
+                    ";vermin=" + string.Join("/", components.Where(value =>
+                        value.IndexOf("Vermin",
+                            StringComparison.OrdinalIgnoreCase) >= 0)
+                        .Distinct().ToArray()) +
+                    ";features=" + features + "]");
             }
-            // The bounded native audit: what the loaded set could ever offer.
-            string[] candidates = blueprints.OfType<BlueprintFeature>()
-                .Where(value => value != null && value.name != null &&
-                    (value.name.IndexOf("Scent", StringComparison.OrdinalIgnoreCase) >= 0 ||
-                     value.name.IndexOf("LowLight", StringComparison.OrdinalIgnoreCase) >= 0))
-                .Take(12)
-                .Select(value => value.name + "{" + string.Join("+",
-                    (value.ComponentsArray ?? Array.Empty<BlueprintComponent>())
-                        .Select(c => c.GetType().Name).ToArray()) + "}")
-                .ToArray();
-            rows.Add("nativeCandidates=" + (candidates.Length == 0 ? "<none>" :
-                string.Join("|", candidates)));
-            evidence.Sprint14Senses = true;
+
+            rows.Add("mindAffectingProbe=" + (mindAffecting == null ?
+                "<none-found:immunity-unproven>" : mindAffecting.name));
+            rows.Add(DescribeSprint14SenseCensus(blueprints));
+            evidence.Sprint14Senses = contract;
             evidence.Sprint14SensesDetail = string.Join(";", rows.ToArray());
+        }
+
+        /// <summary>
+        /// A skill total with the breakdown that explains it.
+        /// </summary>
+        private static string DescribeSprint14Skill(string label,
+            ModifiableValue value)
+        {
+            string parts = string.Join("+", value.Modifiers
+                .Where(modifier => modifier != null)
+                .Select(modifier => modifier.ModDescriptor + ":" +
+                    modifier.ModValue)
+                .ToArray());
+            return label + "=" + value.ModifiedValue + "{ranks=" +
+                value.BaseValue + ";" +
+                (parts.Length == 0 ? "noModifiers" : parts) + "}";
+        }
+
+        /// <summary>
+        /// A native mind-affecting buff the caster is demonstrably not immune
+        /// to, so that a refusal on a vermin means immunity and not that the
+        /// buff never applied to anything.
+        /// </summary>
+        private static BlueprintBuff FindSprint14MindAffectingBuff(
+            BlueprintScriptableObject[] blueprints, UnitEntityData caster)
+        {
+            foreach (BlueprintBuff candidate in blueprints
+                .OfType<BlueprintBuff>()
+                .Where(value => value != null &&
+                    (value.ComponentsArray ??
+                        Array.Empty<BlueprintComponent>())
+                    .OfType<SpellDescriptorComponent>()
+                    .Any(descriptor =>
+                        (descriptor.Descriptor.Value &
+                            SpellDescriptor.MindAffecting) != 0))
+                .OrderBy(value => value.name, StringComparer.Ordinal))
+            {
+                Buff applied = caster.Descriptor.AddBuff(candidate, caster,
+                    null);
+                bool took = caster.Descriptor.Buffs.GetBuff(candidate) != null;
+                if (applied != null) applied.Remove();
+                caster.Descriptor.Buffs.RemoveFact(candidate);
+                if (took) return candidate;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Apply the probe to the vermin and to the caster, and say what each
+        /// did. Only "refused-on-vermin;accepted-on-caster" is immunity.
+        /// </summary>
+        private static string DescribeSprint14MindImmunity(
+            BlueprintBuff probe, UnitEntityData vermin, UnitEntityData caster)
+        {
+            if (probe == null) return "<no-probe>";
+            Buff onVermin = vermin.Descriptor.AddBuff(probe, caster, null);
+            bool verminTook = vermin.Descriptor.Buffs.GetBuff(probe) != null;
+            if (onVermin != null) onVermin.Remove();
+            vermin.Descriptor.Buffs.RemoveFact(probe);
+
+            Buff onCaster = caster.Descriptor.AddBuff(probe, caster, null);
+            bool casterTook = caster.Descriptor.Buffs.GetBuff(probe) != null;
+            if (onCaster != null) onCaster.Remove();
+            caster.Descriptor.Buffs.RemoveFact(probe);
+
+            return (verminTook ? "accepted-on-vermin" : "refused-on-vermin") +
+                ";" + (casterTook ? "accepted-on-caster" :
+                    "refused-on-caster");
+        }
+
+        /// <summary>
+        /// The bounded native audit: every component on every loaded blueprint
+        /// that could express scent, darkvision or low-light vision, with how
+        /// many blueprints carry each.
+        /// </summary>
+        private static string DescribeSprint14SenseCensus(
+            BlueprintScriptableObject[] blueprints)
+        {
+            var counts = new Dictionary<string, int>(StringComparer.Ordinal);
+            foreach (BlueprintScriptableObject blueprint in blueprints)
+            {
+                foreach (BlueprintComponent component in
+                    blueprint.ComponentsArray ??
+                    Array.Empty<BlueprintComponent>())
+                {
+                    if (component == null) continue;
+                    string type = component.GetType().Name;
+                    if (type.IndexOf("Vision", StringComparison.OrdinalIgnoreCase) < 0 &&
+                        type.IndexOf("Scent", StringComparison.OrdinalIgnoreCase) < 0 &&
+                        type.IndexOf("Blindsen", StringComparison.OrdinalIgnoreCase) < 0 &&
+                        type.IndexOf("Blindsight", StringComparison.OrdinalIgnoreCase) < 0 &&
+                        type.IndexOf("Darkvis", StringComparison.OrdinalIgnoreCase) < 0 &&
+                        type.IndexOf("LowLight", StringComparison.OrdinalIgnoreCase) < 0)
+                        continue;
+                    int seen;
+                    counts[type] = counts.TryGetValue(type, out seen) ?
+                        seen + 1 : 1;
+                }
+            }
+            string census = string.Join("/", counts
+                .OrderBy(pair => pair.Key, StringComparer.Ordinal)
+                .Select(pair => pair.Key + "x" + pair.Value).ToArray());
+            return "senseComponentCensus=" +
+                (census.Length == 0 ? "<none-in-library>" : census);
         }
 
         /// <summary>
@@ -565,6 +707,193 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// have reduced it. The venom is cleared before and after so each case
         /// starts from nothing.</para>
         /// </summary>
+
+        /// <summary>
+        /// The Giant Wasp's poison, requalified against the wound gate it now
+        /// goes through.
+        ///
+        /// <para>Sprint 10 proved this poison against OnlyHit and recorded a
+        /// pass. Sprint 14 then established that an injury poison delivered on
+        /// a hit is wrong, because an attack reduced to zero damage has hit
+        /// without wounding, and moved the entire native graph inside
+        /// ContextActionOnlyIfWeaponWounded. The wasp shares that carrier, so
+        /// the earlier evidence no longer describes the shipping code and the
+        /// creature has to earn its pass again.</para>
+        ///
+        /// <para>Narrow on purpose. The three delivery outcomes across the new
+        /// gate, the printed numbers the gate sits on top of and could have
+        /// disturbed, and the two failure modes that a gate inserted into a
+        /// trigger graph can actually introduce: firing twice for one attack,
+        /// and leaving a delivered poison dependent on a source that then
+        /// dies. Nothing here reopens the attachment, quantity, visual or
+        /// vermin-immunity work Sprint 10 qualified separately.</para>
+        /// </summary>
+        private static void ExerciseSprint14WaspRequalification(
+            BlueprintScriptableObject[] blueprints, UnitEntityData caster,
+            UnitEntityData hostile, List<UnitEntityData> created,
+            ExpandedSummoningMechanicalEvidence evidence)
+        {
+            BlueprintBuff venom = blueprints.OfType<BlueprintBuff>()
+                .FirstOrDefault(value => value != null && value.name ==
+                    "KMG_Summoning_Natural_GiantWasp_Venom");
+            if (venom == null)
+                throw new InvalidOperationException(
+                    "The Giant Wasp venom buff was not loaded.");
+            UnitEntityData wasp = CastExpandedSummoningCombatUnit(blueprints,
+                caster, SummonFamily.NaturesAlly, "giant-wasp", 4, created,
+                evidence);
+            RemoveExpandedSummoningAppearanceBuffs(wasp);
+            BlueprintItemWeapon sting =
+                wasp.Blueprint.Body.PrimaryHand as BlueprintItemWeapon;
+            var rows = new List<string>();
+            bool valid = sting != null;
+            if (!valid)
+            {
+                evidence.Sprint14WaspRequalification = false;
+                evidence.Sprint14WaspRequalificationDetail =
+                    "the wasp has no sting on its primary limb";
+                return;
+            }
+
+            // The printed numbers, read off the live buff rather than the
+            // builder's intent: Fortitude DC 18, 1d2 Dexterity, six exposures,
+            // one successful save cures.
+            BuffPoisonStatDamage poison = (venom.ComponentsArray ??
+                Array.Empty<BlueprintComponent>())
+                .OfType<BuffPoisonStatDamage>().FirstOrDefault();
+            int constitutionBonus = wasp.Descriptor.Stats.Constitution
+                .ModifiedValue / 2 - 5;
+            int derivedDc = GiantWaspPoisonPolicy.DifficultyClass(
+                constitutionBonus);
+            bool numbersExact = poison != null &&
+                poison.Stat == StatType.Dexterity &&
+                poison.Value.Dice == DiceType.D2 &&
+                poison.Value.Rolls == 1 &&
+                poison.Ticks == GiantWaspPoisonPolicy.Exposures &&
+                poison.SuccesfullSaves == GiantWaspPoisonPolicy.SavesToCure &&
+                poison.SaveType == SavingThrowType.Fortitude &&
+                derivedDc == Sprint14WaspPrintedPoisonDc;
+            rows.Add("printed[stat=" + (poison == null ? "<none>" :
+                    poison.Stat.ToString()) + ";dice=" + (poison == null ?
+                    "<none>" : poison.Value.Rolls + "d" + poison.Value.Dice) +
+                ";exposures=" + (poison == null ? -1 : poison.Ticks) +
+                ";savesToCure=" + (poison == null ? -1 :
+                    poison.SuccesfullSaves) + ";saveType=" + (poison == null ?
+                    "<none>" : poison.SaveType.ToString()) + ";liveCon=" +
+                wasp.Descriptor.Stats.Constitution.ModifiedValue +
+                ";derivedDc=" + derivedDc + ";printedDc=" +
+                Sprint14WaspPrintedPoisonDc + "]" +
+                (numbersExact ? "=ok" : "=wrong"));
+
+            // The gate itself, through the same three situations the ant's
+            // sting is held to.
+            rows.Add(DescribeSprint14PoisonCase(blueprints, wasp, hostile,
+                sting, venom, true, true, "wasp-sting-wounds", true));
+            rows.Add(DescribeSprint14PoisonCase(blueprints, wasp, hostile,
+                sting, venom, false, true, "wasp-sting-misses", false));
+            rows.Add(DescribeSprint14PoisonCase(blueprints, wasp, hostile,
+                sting, venom, true, false, "wasp-sting-hits-no-damage",
+                false));
+
+            // One attack, one application. A gate wrapped around a trigger
+            // graph is exactly the kind of change that can run the graph twice.
+            ClearSprint14Venom(hostile, venom);
+            ItemEntityWeapon liveSting = LiveLimbWeapons(wasp).FirstOrDefault(
+                value => ReferenceEquals(value.Blueprint, sting));
+            int applications = -1;
+            int dcOnApplied = -1;
+            if (liveSting != null)
+            {
+                UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                Rulebook.Trigger(new RuleAttackWithWeapon(wasp, hostile,
+                    liveSting, 0));
+                applications = hostile.Descriptor.Buffs.Enumerable
+                    .Count(value => value != null &&
+                        ReferenceEquals(value.Blueprint, venom));
+                Buff applied = hostile.Descriptor.Buffs.GetBuff(venom);
+                dcOnApplied = applied == null || applied.Context == null ?
+                    -1 : applied.Context.Params.DC;
+            }
+            bool singleApplication = applications == 1 &&
+                dcOnApplied == Sprint14WaspPrintedPoisonDc;
+            rows.Add("oneAttackOneApplication[applications=" + applications +
+                ";dcOnAppliedBuff=" + dcOnApplied + "]" +
+                (singleApplication ? "=ok" : "=wrong"));
+
+            // A delivered poison belongs to the victim. Destroying the wasp
+            // must not remove it, retarget it or make ticking it throw.
+            string outlives = DescribeSprint14WaspOutlivesSource(wasp, hostile,
+                caster, venom);
+            rows.Add(outlives);
+
+            valid = rows.All(value => value.EndsWith("=ok",
+                StringComparison.Ordinal));
+            evidence.Sprint14WaspRequalification = valid;
+            evidence.Sprint14WaspRequalificationDetail =
+                string.Join(";", rows.ToArray());
+        }
+
+        /// <summary>The wasp's printed Fortitude DC.</summary>
+        private const int Sprint14WaspPrintedPoisonDc = 18;
+
+        /// <summary>
+        /// Destroy the wasp with its venom already in the victim, and read what
+        /// the victim is left holding.
+        /// </summary>
+        private static string DescribeSprint14WaspOutlivesSource(
+            UnitEntityData wasp, UnitEntityData hostile, UnitEntityData caster,
+            BlueprintBuff venom)
+        {
+            Buff applied = hostile.Descriptor.Buffs.GetBuff(venom);
+            if (applied == null)
+                return "outlivesSource[no-venom-to-test]=wrong";
+            TimeSpan before = applied.TimeLeft;
+            int dcBefore = applied.Context == null ? -1 :
+                applied.Context.Params.DC;
+            TimeSpan clock = Game.Instance.Player.GameTime;
+            wasp.Destroy();
+            Game.Instance.EntityDestroyer.Tick();
+            bool sourceGone = wasp.Destroyed;
+            bool survived;
+            bool tickSafe;
+            string tickDetail;
+            try
+            {
+                Game.Instance.Player.GameTime = clock +
+                    TimeSpan.FromSeconds(12d);
+                hostile.Descriptor.Buffs.Tick();
+                survived = hostile.Descriptor.HasFact(venom);
+                tickSafe = true;
+                tickDetail = "ticked";
+            }
+            catch (Exception exception)
+            {
+                survived = hostile.Descriptor.HasFact(venom);
+                tickSafe = false;
+                tickDetail = "threw:" + exception.GetType().Name;
+            }
+            finally { Game.Instance.Player.GameTime = clock; }
+            Buff after = hostile.Descriptor.Buffs.GetBuff(venom);
+            UnitEntityData owner = after == null || after.Context == null ?
+                null : after.Context.MaybeCaster;
+            bool ownerGone = owner == null || owner.Destroyed;
+            bool noRetarget = !ReferenceEquals(owner, hostile) &&
+                !ReferenceEquals(owner, caster);
+            int dcAfter = after == null || after.Context == null ? -1 :
+                after.Context.Params.DC;
+            bool ok = sourceGone && survived && tickSafe && ownerGone &&
+                noRetarget && dcAfter == dcBefore;
+            string result = "outlivesSource[sourceDestroyed=" + sourceGone +
+                ";venomSurvived=" + survived + ";tick=" + tickDetail +
+                ";ownerGone=" + ownerGone + ";retargeted=" + !noRetarget +
+                ";dcBefore=" + dcBefore + ";dcAfter=" + dcAfter +
+                ";timeLeftBefore=" + before.TotalSeconds.ToString("0.##",
+                    CultureInfo.InvariantCulture) + "]" +
+                (ok ? "=ok" : "=wrong");
+            ClearSprint14Venom(hostile, venom);
+            return result;
+        }
+
         private static string DescribeSprint14PoisonCase(
             BlueprintScriptableObject[] blueprints, UnitEntityData soldier,
             UnitEntityData target, BlueprintItemWeapon blueprint,
