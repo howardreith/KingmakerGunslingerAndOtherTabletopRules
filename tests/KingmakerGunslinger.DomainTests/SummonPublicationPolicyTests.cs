@@ -86,22 +86,24 @@ namespace KingmakerGunslinger.DomainTests
                     "86f4287572bef49449b9d06c66adf456")
                     .EquivalentCreatureKey,
                 "Native SNA Smilodon reconciliation changed.");
-            Assertions.Equal(904,
+            Assertions.Equal(922,
                 ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
                     .Concat(ExpandedSummoningCatalog.GenerateVariants(
                         SummonFamily.NaturesAlly))
                     .Count(SummonVisibilityCatalog.IsPublished),
                 "Visible summon placement count changed.");
-            // Sprint 13 is qualified, so nothing is withheld any more. A
-            // creature appearing here again would be a sprint registering
-            // ahead of its own qualification, which is allowed, but it has to
-            // be deliberate rather than a leftover.
-            Assertions.Equal(48,
+            // Sprint 14's two Giant Ant castes are withheld, and not for want
+            // of qualification: their mechanics passed and their printed scent
+            // has no representation in this engine at all. A creature
+            // appearing here for any other reason would be a sprint
+            // registering ahead of its own qualification, which is allowed,
+            // but it has to be deliberate rather than a leftover.
+            Assertions.Equal(30,
                 ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
                     .Concat(ExpandedSummoningCatalog.GenerateVariants(
                         SummonFamily.NaturesAlly))
                     .Count(value => !SummonVisibilityCatalog.IsPublished(value)),
-                "Only unqualified placements may remain hidden: 48 placements are withheld, and all of them are Sprint 14 insects.");
+                "Only placements that are unqualified or held on a proven engine barrier may remain hidden: 30 placements are withheld, and both are Giant Ant castes held on a proven engine barrier rather than on anything of their own.");
         }
 
         internal static void DisplayOrderGroupsSinglesBeforeQuantities()
