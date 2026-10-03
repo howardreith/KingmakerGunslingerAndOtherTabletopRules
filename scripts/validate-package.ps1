@@ -82,6 +82,10 @@ try {
         'assets\sprint14-insects\giant-ant-worker-albedo.png',
         'assets\sprint14-insects\giant-ant-soldier-mesh.json',
         'assets\sprint14-insects\giant-ant-soldier-albedo.png',
+        'assets\sprint14-insects\giant-ant-drone-mesh.json',
+        'assets\sprint14-insects\giant-ant-drone-albedo.png',
+        'assets\sprint14-insects\giant-stag-beetle-mesh.json',
+        'assets\sprint14-insects\giant-stag-beetle-albedo.png',
         'blueprints\blueprints.json',
         'blueprints\blueprints.schema.json'
     )
