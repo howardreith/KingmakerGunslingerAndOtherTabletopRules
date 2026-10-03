@@ -61,8 +61,8 @@ namespace KingmakerGunslinger.DomainTests
             // so the registered surface is 952 and the published one is the 922
             // every census reconciles against.
             Assertions.True(all.Length == 970 &&
-                all.Count(SummonVisibilityCatalog.IsPublished) == 922 &&
-                all.Count(value => !SummonVisibilityCatalog.IsPublished(value)) == 48,
+                all.Count(SummonVisibilityCatalog.IsPublished) == 952 &&
+                all.Count(value => !SummonVisibilityCatalog.IsPublished(value)) == 18,
                 "Sprint 11 stays published alongside every later qualified sprint.");
         }
 

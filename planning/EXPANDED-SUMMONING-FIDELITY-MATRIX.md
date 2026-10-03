@@ -1,5 +1,74 @@
 # Expanded Summoning fidelity matrix
 
+## OwnerAcceptedEngineLimitation: PASSIVE_CREATURE_SENSES_UNMODELED
+
+**Accepted by the owner on 2026-10-03.** Kingmaker models none of **Scent**,
+**Darkvision** or **Low-light Vision**, and this project omits them wherever a
+bounded native audit proves no faithful carrier exists.
+
+### The evidence the acceptance rests on
+
+The audit searched every component on every blueprint the running game had
+loaded - the whole library, not a filtered subset - and reported
+`senseComponentCensus=Blindsensex74/OverrideVisionRangex23`. Scent has no
+carrier of any kind. No enum reachable from `BlueprintUnit`, `UnitEntityData` or
+`UnitDescriptor` holds a darkvision value: `visionEnum=<none>`.
+`OverrideVisionRange` is a sight radius in metres, carried by 23 blueprints, of
+which the sampled six are Vordakai and Horagnamon boss units setting 50 m
+against a live unit's 8.5.
+
+### What the label permits
+
+A creature may publish or qualify without these three passive senses. The
+omission is recorded here once and referenced from the affected creature rows.
+**A creature is never kept hidden for one of these three alone.**
+
+### What it forbids
+
+- No substitution of `AddBlindsight`, `UnitPartBlindsense`, tremorsense or any
+  materially different sense. Blindsight is a real and different rule, and this
+  project implements it exactly for the Dire Bat; that implementation stays.
+- No use of `OverrideVisionRange` as darkvision. It changes general detection
+  range in all conditions and would hand a creature an advantage no stat block
+  grants it.
+- No scent, darkness, stealth-detection or perception subsystem in this phase.
+- No claim anywhere that the omitted traits work.
+- No use of this label to waive any other sense, combat ability, immunity,
+  skill or signature mechanic.
+- The limitation is never re-marked BLOCKED.
+
+This is a conservative engine limitation, not a balance adaptation.
+
+### Creatures currently governed by it
+
+Giant Ant (Worker), Giant Ant (Soldier) and Giant Ant (Drone) for Scent and
+Darkvision; the Fire Beetle and Giant Stag Beetle for Low-light Vision and
+Darkvision respectively; and already-published creatures carrying the same
+engine gap, the wolves among them. It applies to later Phase 2 creatures whose
+stat blocks list these passive senses.
+
+
+## Sprint 14 closeout, 2026-10-03: COMPLETE WITH OWNER-ACCEPTED ENGINE LIMITATION
+
+All three Sprint 14 insects are published. The published surface is **952
+generated placements plus 29 retained native wrappers, for 981 visible
+choices**, derived from source. The Fire Beetle's 18 placements went out on its
+own qualification; the Giant Ant Worker's 16 and Soldier's 14 followed once the
+owner accepted `PASSIVE_CREATURE_SENSES_UNMODELED`, which was the only thing
+holding them - their mechanics had already qualified 174/174 across six guarded
+scenarios on candidate `cda8d72c`.
+
+Nothing was implemented to earn that publication. The ruling records an engine
+gap rather than closing one: no substitute sense was added, no vision range was
+touched, and no record claims the omitted traits work.
+
+What remains withheld is Sprint 15's pair - the Giant Ant Drone's 12 placements
+and the Giant Stag Beetle's 6 - registered ahead of their own qualification the
+way every sprint before them did. The Drone carries the same unmodelled senses
+and is no longer held for them; it waits on its own gates alone.
+
+`HumanReview: NOT_PERFORMED_NONBLOCKING`.
+
 ## Sprint 14 publication, 2026-10-03: the Fire Beetle only
 
 The published surface is **922 generated placements plus 29 retained native
