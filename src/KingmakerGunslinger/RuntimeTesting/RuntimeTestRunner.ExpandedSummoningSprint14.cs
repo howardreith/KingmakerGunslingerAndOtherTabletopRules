@@ -494,8 +494,164 @@ namespace KingmakerGunslinger.RuntimeTesting
             rows.Add("mindAffectingProbe=" + (mindAffecting == null ?
                 "<none-found:immunity-unproven>" : mindAffecting.name));
             rows.Add(DescribeSprint14SenseCensus(blueprints));
+            rows.Add(DescribeSprint14VisionModel(blueprints,
+                created.LastOrDefault()));
             evidence.Sprint14Senses = contract;
             evidence.Sprint14SensesDetail = string.Join(";", rows.ToArray());
+        }
+
+
+        /// <summary>
+        /// What Kingmaker's vision model actually is, measured rather than
+        /// inferred from the names in its assembly.
+        ///
+        /// <para>The first audit searched for identifiers starting with
+        /// "Vision", found only an enum beside VisionColor and
+        /// VisionRangeInMeters, and concluded the engine had no per-creature
+        /// vision mechanic. The live census contradicted it in the same run:
+        /// 23 loaded blueprints carry an OverrideVisionRange component and 74
+        /// carry Blindsense. A publication decision taken on the first reading
+        /// would have been taken on a false premise, so this reports the
+        /// ground truth instead - where the Vision enum is reachable from, what
+        /// the native carriers configure, and what a live unit says its own
+        /// vision range is.</para>
+        ///
+        /// <para>Nothing here asserts. Whether any of it may honestly be called
+        /// darkvision is a judgement that needs the numbers first, and a field
+        /// that exists but that no rule consults is a tooltip rather than a
+        /// mechanic.</para>
+        /// </summary>
+        private static string DescribeSprint14VisionModel(
+            BlueprintScriptableObject[] blueprints, UnitEntityData sample)
+        {
+            var rows = new List<string>();
+            try
+            {
+                // Where is the Vision enum, and what is it attached to?
+                Type visionEnum = AppDomain.CurrentDomain.GetAssemblies()
+                    .SelectMany(Sprint14SafeTypes)
+                    .FirstOrDefault(value => value != null && value.IsEnum &&
+                        Enum.GetNames(value).Contains("Darkvision"));
+                rows.Add("visionEnum=" + (visionEnum == null ? "<none>" :
+                    visionEnum.FullName + "{" + string.Join("|",
+                        Enum.GetNames(visionEnum)) + "}"));
+                if (visionEnum != null)
+                {
+                    string holders = string.Join("/",
+                        new[] { typeof(BlueprintUnit), typeof(UnitEntityData),
+                            typeof(UnitDescriptor) }
+                        .SelectMany(owner => owner
+                            .GetMembers(BindingFlags.Public |
+                                BindingFlags.NonPublic |
+                                BindingFlags.Instance)
+                            .Where(member =>
+                                Sprint14MemberType(member) == visionEnum)
+                            .Select(member => owner.Name + "." + member.Name))
+                        .Take(10).ToArray());
+                    rows.Add("visionEnumHolders=" +
+                        (holders.Length == 0 ? "<none-on-unit-or-blueprint>" :
+                            holders));
+                }
+
+                // What do the native carriers of OverrideVisionRange set?
+                var carriers = new List<string>();
+                foreach (BlueprintScriptableObject blueprint in blueprints)
+                {
+                    foreach (BlueprintComponent component in
+                        blueprint.ComponentsArray ??
+                        Array.Empty<BlueprintComponent>())
+                    {
+                        if (component == null ||
+                            component.GetType().Name != "OverrideVisionRange")
+                            continue;
+                        string values = string.Join(",",
+                            component.GetType().GetFields(
+                                BindingFlags.Public | BindingFlags.NonPublic |
+                                BindingFlags.Instance)
+                            .Where(field => !field.Name.StartsWith("m_Owner",
+                                StringComparison.Ordinal))
+                            .Select(field => field.Name + "=" +
+                                Sprint14SafeValue(field, component))
+                            .ToArray());
+                        carriers.Add(blueprint.name + "{" + values + "}");
+                        break;
+                    }
+                    if (carriers.Count == 6) break;
+                }
+                rows.Add("overrideVisionRangeCarriers=" +
+                    (carriers.Count == 0 ? "<none>" :
+                        string.Join("|", carriers.ToArray())));
+
+                // And what does a live insect report for itself?
+                string live = string.Join(",",
+                    new[] { "VisionRangeMeters", "VisionRangeMetersOverride" }
+                    .Select(name => name + "=" +
+                        Sprint14SafeProperty(sample, name)).ToArray());
+                rows.Add("liveUnitVision[" + live + "]");
+            }
+            catch (Exception exception)
+            {
+                rows.Add("visionProbeThrew=" + exception.GetType().Name + ":" +
+                    exception.Message);
+            }
+            return string.Join(";", rows.ToArray());
+        }
+
+        private static Type[] Sprint14SafeTypes(Assembly assembly)
+        {
+            try { return assembly.GetTypes(); }
+            catch (ReflectionTypeLoadException exception)
+            {
+                return exception.Types.Where(value => value != null).ToArray();
+            }
+            catch (Exception) { return Array.Empty<Type>(); }
+        }
+
+        private static Type Sprint14MemberType(MemberInfo member)
+        {
+            var field = member as FieldInfo;
+            if (field != null) return field.FieldType;
+            var property = member as PropertyInfo;
+            return property == null ? null : property.PropertyType;
+        }
+
+        private static string Sprint14SafeValue(FieldInfo field, object owner)
+        {
+            try
+            {
+                object value = field.GetValue(owner);
+                return value == null ? "<null>" : value.ToString();
+            }
+            catch (Exception) { return "<unreadable>"; }
+        }
+
+        private static string Sprint14SafeProperty(object owner, string name)
+        {
+            if (owner == null) return "<no-unit>";
+            foreach (object target in new[] { owner,
+                ((UnitEntityData)owner).Descriptor, ((UnitEntityData)owner).View })
+            {
+                if (target == null) continue;
+                MemberInfo[] found = target.GetType().GetMember(name,
+                    BindingFlags.Public | BindingFlags.NonPublic |
+                    BindingFlags.Instance);
+                foreach (MemberInfo member in found)
+                {
+                    try
+                    {
+                        var property = member as PropertyInfo;
+                        if (property != null)
+                            return target.GetType().Name + ":" +
+                                property.GetValue(target, null);
+                        var field = member as FieldInfo;
+                        if (field != null)
+                            return target.GetType().Name + ":" +
+                                field.GetValue(target);
+                    }
+                    catch (Exception) { return "<unreadable>"; }
+                }
+            }
+            return "<absent>";
         }
 
         /// <summary>
