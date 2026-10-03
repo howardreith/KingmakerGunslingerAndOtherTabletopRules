@@ -247,22 +247,60 @@ namespace KingmakerGunslinger.RuntimeTesting
                 caster);
 
             foreach (var creature in new[] {
+                // Cmd and Trip are the defences the creature should have when
+                // it is not flat-footed. Bab, Str and SizeBonus are the
+                // engine components each one must produce, so a total that
+                // happens to come out right for the wrong reasons fails.
                 new { Key = DroneKey, Tier = Sprint15DroneTier, Cmd = 17,
                     Trip = 25, Perception = Sprint15DronePerception,
-                    Printed = false },
+                    Printed = false, Bab = 1, Str = 4, SizeBonus = 0,
+                    Dex = 2 },
                 new { Key = StagBeetleKey, Tier = Sprint15StagBeetleTier,
-                    Cmd = 20, Trip = 28, Perception = 0, Printed = true } })
+                    Cmd = 20, Trip = 28, Perception = 0, Printed = true,
+                    Bab = 5, Str = 4, SizeBonus = 1, Dex = 0 } })
             {
                 UnitEntityData unit = CastExpandedSummoningCombatUnit(
                     blueprints, caster, SummonFamily.NaturesAlly,
                     creature.Key, creature.Tier, created, evidence);
                 RemoveExpandedSummoningAppearanceBuffs(unit);
-                int ordinary = ProbeCombatManeuverDefence(hostile, unit,
-                    CombatManeuver.BullRush);
-                int trip = ProbeCombatManeuverDefence(hostile, unit,
-                    CombatManeuver.Trip);
-                bool defencesExact = ordinary == creature.Cmd &&
-                    trip == creature.Trip;
+                Sprint14CmdBreakdown bull =
+                    ProbeCombatManeuverDefenceParts(hostile, unit,
+                        CombatManeuver.BullRush);
+                Sprint14CmdBreakdown tripParts =
+                    ProbeCombatManeuverDefenceParts(hostile, unit,
+                        CombatManeuver.Trip);
+                int ordinary = bull.Result;
+                int trip = tripParts.Result;
+                // A freshly summoned creature has not acted, so the engine
+                // treats it as flat-footed and denies it its Dexterity. That
+                // is a property of the measurement, not of the creature: the
+                // printed defence is what it has once it has acted, so the
+                // denied modifier is added back rather than demanded of a
+                // creature that cannot show it here.
+                // The engine has to say so itself. Inferring the denial
+                // from a Dexterity component of zero would make the check
+                // self-fulfilling and would hide the real defect it exists to
+                // catch: a creature whose Dexterity never reached its stats at
+                // all would look identical. The live score is recorded beside
+                // the component so the two can be compared.
+                bool denied = bull.DexterityDenied || bull.FlatFooted;
+                int liveDexterity = unit.Descriptor.Stats.Dexterity
+                    .ModifiedValue;
+                int recovered = ordinary + (denied ? creature.Dex : 0);
+                int recoveredTrip = trip + (denied ? creature.Dex : 0);
+                bool componentsExact =
+                    bull.Bab == creature.Bab &&
+                    bull.Strength == creature.Str &&
+                    bull.Size == creature.SizeBonus &&
+                    bull.Misc == 0 &&
+                    (denied ? bull.Dexterity == 0 :
+                        bull.Dexterity == creature.Dex);
+                bool defencesExact = componentsExact &&
+                    recovered == creature.Cmd &&
+                    recoveredTrip == creature.Trip &&
+                    // The multi-legged defence is the difference between the
+                    // two, and it is never affected by the Dexterity denial.
+                    trip - ordinary == 8;
 
                 // A total with its breakdown, so a size or racial modifier
                 // cannot pass for a rank and a flat template bonus cannot
@@ -283,13 +321,30 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .All(stat => unit.Descriptor.Stats.GetStat(stat)
                         .BaseValue == 0);
 
+                // One real attack, then the same measurement again.
+                ItemEntityWeapon limb = LiveLimbWeapons(unit)
+                    .FirstOrDefault(value => value != null);
+                string acted = "no-limb";
+                if (limb != null)
+                {
+                    UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                    Rulebook.Trigger(new RuleAttackWithWeapon(unit, hostile,
+                        limb, 0));
+                    acted = ProbeCombatManeuverDefenceParts(hostile, unit,
+                        CombatManeuver.BullRush).Describe("afterActing");
+                }
+
                 string immunity = DescribeSprint15MindImmunity(mindProbe, unit,
                     caster);
                 bool immune = immunity == "refused-on-vermin;accepted-on-caster";
 
-                rows.Add(creature.Key + "[cmd=" + ordinary + "/" +
-                    creature.Cmd + ";trip=" + trip + "/" + creature.Trip +
-                    ";" + (creature.Printed ? "printed" : "derived") + ";" +
+                rows.Add(creature.Key + "[" + bull.Describe("cmd") + "/" +
+                    creature.Cmd + ";" + tripParts.Describe("trip") + "/" +
+                    creature.Trip + ";recovered=" + recovered + "/" +
+                    recoveredTrip + ";liveDex=" + liveDexterity +
+                    ";dexAddedBack=" + (denied ? creature.Dex : 0) + ";" +
+                    acted + ";" +
+                    (creature.Printed ? "printed" : "derived") + ";" +
                     string.Join(";", skills) + ";noRanks=" + noRanks +
                     ";mindAffecting=" + immunity + "]" +
                     (defencesExact && perceptionExact && noRanks && immune ?
