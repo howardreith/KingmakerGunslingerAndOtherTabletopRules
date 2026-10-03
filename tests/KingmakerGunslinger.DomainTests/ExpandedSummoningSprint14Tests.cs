@@ -236,12 +236,38 @@ namespace KingmakerGunslinger.DomainTests
                         expected.Placements + ", so the publication " +
                         "arithmetic for a partial publication is wrong.");
             }
-            if (mine.Any(SummonVisibilityCatalog.IsPublished))
+            // The Fire Beetle publishes; the two ant castes do not, and the
+            // reason is an engine barrier rather than a failure of theirs.
+            // Kingmaker has no scent mechanic at all, so their printed scent
+            // cannot be implemented and must not be approximated with
+            // blindsight, and the Sprint 14 order's instruction for that
+            // outcome is to hold the affected creature pending one owner
+            // ruling.
+            string[] wronglyWithheld = mine
+                .Where(value => value.Creature.Key == FireBeetleKey &&
+                    !SummonVisibilityCatalog.IsPublished(value))
+                .Select(value => value.StableKey).ToArray();
+            if (wronglyWithheld.Length != 0)
                 throw new InvalidOperationException(
-                    "No Sprint 14 placement may be published before it qualifies.");
-            if (SummonVisibilityCatalog.PublishedLogicalPlacementCount != 904)
+                    "The Fire Beetle qualified and must be published: " +
+                    string.Join(", ", wronglyWithheld));
+            string[] wronglyPublished = mine
+                .Where(value => value.Creature.Key != FireBeetleKey &&
+                    SummonVisibilityCatalog.IsPublished(value))
+                .Select(value => value.StableKey).ToArray();
+            if (wronglyPublished.Length != 0)
                 throw new InvalidOperationException(
-                    "The published surface must stay at 904 while they are withheld.");
+                    "A Giant Ant caste is published while its printed scent " +
+                    "has no engine representation and no owner ruling: " +
+                    string.Join(", ", wronglyPublished));
+            // 904 before Sprint 14, plus the Fire Beetle's 18.
+            if (SummonVisibilityCatalog.PublishedLogicalPlacementCount != 922)
+                throw new InvalidOperationException(
+                    "The published surface must be 922: the 904 published " +
+                    "before Sprint 14 plus the Fire Beetle's 18, with the " +
+                    "two ant castes' 30 still withheld. It is " +
+                    SummonVisibilityCatalog
+                        .PublishedLogicalPlacementCount + ".");
             if (SummonVisibilityCatalog.RegisteredLogicalPlacementCount -
                     SummonVisibilityCatalog.SuppressedLogicalPlacementCount !=
                     SummonVisibilityCatalog.PublishedLogicalPlacementCount)

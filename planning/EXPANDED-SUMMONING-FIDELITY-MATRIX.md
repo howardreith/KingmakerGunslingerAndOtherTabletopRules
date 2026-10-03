@@ -1,5 +1,49 @@
 # Expanded Summoning fidelity matrix
 
+## Sprint 14 publication, 2026-10-03: the Fire Beetle only
+
+The published surface is **922 generated placements plus 29 retained native
+wrappers, for 951 visible choices**, derived from source. Sprint 14 registered
+48 placements across three insects and publishes 18 of them - the Fire Beetle,
+reachable from both parents and splitting nine each way. The 30 placements of
+Giant Ant (Worker) and Giant Ant (Soldier) stay withheld.
+
+The ants are not withheld for want of qualification. Their mechanics passed on
+the closing candidate: printed Perception +5 exactly with zero class ranks, the
+printed trip defence, a sting that is its own weapon type, a grab on the bite
+alone carrying exactly +4 to the grapple and nothing to the trip, an injury
+poison that a wound delivers and a hit reduced to zero damage does not, vermin
+mind-affecting immunity proved by a native mind-affecting buff they refuse and
+the caster accepts, and both combat modes driven through the command a player's
+click produces. What they cannot have is their printed scent.
+
+Kingmaker has no scent mechanic. The bounded native audit searched the whole
+loaded blueprint library, not a filtered subset, and found no component that
+could express it; the engine's only sense plumbing is `AddBlindsight` with
+`UnitPartBlindsense`, which this project already uses for the Dire Bat and which
+is a different rule. Their printed darkvision 60 ft is equally unrepresentable:
+no enum reachable from `BlueprintUnit`, `UnitEntityData` or `UnitDescriptor`
+carries a darkvision value, and `OverrideVisionRange` is a sight radius in
+metres - six Vordakai and Horagnamon boss units set 50 m against a live default
+of 8.5 m - so using it for darkvision would hand the ants more than double
+their detection range in all conditions, an advantage no stat block grants
+them. In an engine with no darkness that is inventing a mechanic rather than
+implementing one.
+
+The Fire Beetle's own senses requirement was the opposite case and is met
+exactly: its stat block prints **no** darkvision, nothing was inherited from the
+Vermin racial class, the project unit type or the Giant Spider donor, and the
+live unit reads `darkvision=False` with no carrier. Its printed low-light vision
+has no representation either, and no mechanical consequence in an engine with no
+light model, so nothing about the creature is softened by its absence.
+
+**This is not recorded as an accepted engine limitation.** No
+`OwnerAcceptedEngineLimitation:` label is created here, because only the owner
+converts a proven barrier into one. The two castes are held pending a single
+ruling, recorded as a blocker with the engine evidence. The same ruling governs
+Sprint 15's Giant Ant Drone, which prints scent too; the Giant Stag Beetle does
+not and is unaffected.
+
 Current Phase 2 Sprint 11 disposition (2026-09-30): Sprints 9-11 are
 internally technically qualified. Aurochs, Bison, Rhinoceros and Woolly
 Rhinoceros are published at all 48 authorized placements. The current
