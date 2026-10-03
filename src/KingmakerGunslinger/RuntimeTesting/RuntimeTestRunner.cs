@@ -384,6 +384,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal string Sprint14TripDefenceDetail;
             internal bool Sprint14PoisonDiscrimination;
             internal string Sprint14PoisonDiscriminationDetail;
+            internal bool Sprint14Senses;
+            internal string Sprint14SensesDetail;
             internal bool Sprint13ShadowMastiffBay;
             internal string Sprint13ShadowMastiffBayDetail;
             internal bool Sprint13ShadowBlend;
@@ -17974,6 +17976,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         mechanics.Sprint14PoisonDiscriminationDetail,
                     mechanics != null && mechanics.Sprint14PoisonDiscrimination,
                     "four real seeded attacks against a live target, with the venom cleared between them and the zero-damage case produced by an actual damage reduction"),
+                Assertion("expanded-summoning-sprint14-senses",
+                    "an audit, not yet a contract: the live senses, vermin traits and skill totals of all three insects, and what the loaded blueprint set could offer for scent and low-light vision",
+                    mechanics == null ? "not-run" :
+                        mechanics.Sprint14SensesDetail,
+                    mechanics != null && mechanics.Sprint14Senses,
+                    "every live feature on the spawned unit with its component types, the engine's own Darkvision component looked for by type rather than by name, and the loaded feature set searched for scent and low-light carriers"),
                 Assertion("expanded-summoning-sprint14-donor-rigs",
                     "every donor the insect family needs returns a complete measured bind frame from a single skinned renderer, so an original mesh can be authored against it",
                     mechanics == null ? "not-run" :

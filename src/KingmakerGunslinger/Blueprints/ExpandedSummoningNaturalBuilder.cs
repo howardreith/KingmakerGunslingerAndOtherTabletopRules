@@ -572,6 +572,23 @@ namespace KingmakerGunslinger.Blueprints
         /// it is not used as an analogue. The Perception half is exact and the
         /// Survival half is disclosed on both castes' profiles.</para>
         /// </summary>
+        /// <summary>
+        /// The skill a profile names, as the engine's own stat. Unknown names
+        /// are refused rather than ignored: a typo that silently removed a
+        /// creature's ranks would be invisible.
+        /// </summary>
+        private static StatType SkillStat(string skill)
+        {
+            if (skill == "Perception") return StatType.SkillPerception;
+            if (skill == "Mobility") return StatType.SkillMobility;
+            if (skill == "Stealth") return StatType.SkillStealth;
+            if (skill == "LoreNature") return StatType.SkillLoreNature;
+            if (skill == "KnowledgeWorld") return StatType.SkillKnowledgeWorld;
+            if (skill == "Athletics") return StatType.SkillAthletics;
+            throw new InvalidOperationException(
+                "Unknown natural profile skill: " + skill + ".");
+        }
+
         private static void ConfigureGiantAntRacialSkills(
             BlueprintFeature feature)
         {
@@ -761,8 +778,12 @@ namespace KingmakerGunslinger.Blueprints
             levels.Levels = profile.HitDice;
             levels.RaceStat = StatType.Constitution;
             levels.LevelsStat = StatType.Unknown;
-            levels.Skills = new[] { StatType.SkillPerception,
-                StatType.SkillMobility, StatType.SkillStealth };
+            // Profile-controlled. The default is the three this builder has
+            // always given every reconstructed creature; a profile that names
+            // its own gets exactly those, and a vermin whose stat block prints
+            // no skill ranks names none. Giving ranks nobody printed is how a
+            // Giant Ant read Perception 7 against a printed +5.
+            levels.Skills = profile.Skills.Select(SkillStat).ToArray();
             levels.Archetypes = Array.Empty<BlueprintArchetype>();
             levels.SelectSpells = Array.Empty<BlueprintAbility>();
             levels.MemorizeSpells = Array.Empty<BlueprintAbility>();
