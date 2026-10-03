@@ -641,6 +641,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint14-no-fourth-foot", ExpandedSummoningSprint14Tests.NoSprint14MeshMayBindTheDonorsFourthFoot),
             Case("expanded-summoning.sprint14-six-visible-legs", ExpandedSummoningSprint14Tests.EachShippedInsectMeshDeclaresSixVisibleLegs),
             Case("expanded-summoning.sprint14-per-kind-bone-allowlist", ExpandedSummoningSprint14Tests.EachInsectGetsOnlyTheBonesItsOwnKindMayDrive),
+            Case("expanded-summoning.sprint14-loaded-insects-are-shipped", ExpandedSummoningSprint14Tests.EveryLoadedInsectIsAlsoShipped),
             Case("expanded-summoning.sprint14-corrupt-mesh-refused", ExpandedSummoningSprint14Tests.ACorruptedSprint14MeshIsRefusedByItsOwnAllowlist),
             Case("expanded-summoning.sprint14-ant-trip-and-skills", ExpandedSummoningSprint14Tests.BothAntCastesCarryTheirPrintedTripDefenceAndSkills),
             Case("expanded-summoning.sprint14-unit-type", ExpandedSummoningSprint14Tests.NoSprint14InsectKeepsTheDonorsUnitType),
