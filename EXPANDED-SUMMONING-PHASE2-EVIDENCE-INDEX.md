@@ -20,6 +20,43 @@ is 900 published generated placements plus the same 29 wrappers, for 929
 visible choices; see `EXPANDED-SUMMONING-PHASE2-INVENTORY-RECONCILIATION.md`
 for both equations side by side.
 
+### Sprint 15, 2026-10-03: Giant Ant (Drone) and Giant Stag Beetle
+
+Hidden candidates `52baae658a9884bf8a5d16f65098b3cc86ef450b` and
+`c8cb25ce6d017c8f569d18903a4d61260fcf8412`; publication head
+`2b843574efeb99c1a576da43d235f951b3b30d14`. Every run below restored the live
+tree to `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`
+with `"restoration": "verified"`.
+
+| Run | Scenario | Candidate | Outcome |
+| --- | --- | --- | --- |
+| `20261003T1546531627260Z-disposable-expanded-summoning` | mechanical pack | `52baae65` | 59/61 - superseded |
+| `20261003T1552113797695Z-disposable-expanded-summoning-rules` | rules pack | `52baae65` | 62/62 |
+| `20261003T1558021589423Z-disposable-expanded-summoning-visual-lifecycle` | visual lifecycle | `52baae65` | 8/8 |
+| `20261003T1601320819458Z-working-save-expanded-summoning-prepare` | persistence prepare | `52baae65` | PASS |
+| `20261003T1606076685081Z-working-save-expanded-summoning-verify-cleanup` | persistence verify/cleanup | `52baae65` | PASS |
+| `20261003T1610144883155Z-working-save-expanded-summoning-verify-absent` | persistence verify/absent | `52baae65` | PASS |
+| `20261003T1622060359818Z-disposable-expanded-summoning` | mechanical pack | `2eac0acb` | 60/61 - superseded |
+| `20261003T1634427876832Z-disposable-expanded-summoning` | mechanical pack | `c8cb25ce` | **61/61** |
+| `20261003T1651221165513Z-disposable-expanded-summoning-player-path` | player path | `2b843574` | **970/970 logical roots, 29/29 wrappers** |
+| `20261003T1707089786422Z-disposable-expanded-summoning-rules` | rules pack, re-run on the published head | `2b843574` | 62/62 |
+
+The two superseded mechanical runs are listed rather than dropped. Both failed
+on this session's own measurements and not on either creature: the first on an
+expected combat-manoeuvre defence that ignored the engine denying a flat-footed
+creature its Dexterity, and on a cast total that had not been told about a
+crowd added to the same loop; the second on an expected decomposition of a size
+modifier, which the engine splits as `size=2` with `misc=-1` for a Large
+creature where the printed rules just say +1. A record showing only the passing
+run would hide that the Drone's defence was measured three times before the
+measurement itself was right.
+
+Two runs produced no evidence directory and are recorded for completeness: an
+invocation of `disposable-expanded-summoning` without
+`-SaveName KMG_AUTOMATION_WORKING`, which the orchestrator refused before
+touching the machine and reported as `Live tree already matches the pre-run
+snapshot; nothing to restore`.
+
 ### Interrupted run, 2026-10-01: `20261001T1737054842101Z-disposable-expanded-summoning`
 
 Recorded because it is **not** a passing run and must not be read as one. The

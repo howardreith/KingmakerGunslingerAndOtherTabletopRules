@@ -78,14 +78,24 @@ pre-candidate rules and architecture review is already filed at
 `planning/EXPANDED-SUMMONING-SPRINT16-PRE-CANDIDATE-REVIEW.md` and found no
 engine barrier: death roll and Sprint both have native carriers this project
 already drives, replacing the Crocodile's Monitor Lizard proxy provably touches
-no identity, and the review also settles Sprint 17's donor question in advance.
+no identity, the Dire Crocodile needs registering before anything else because
+it has no ledger identities yet, and the review also settles Sprint 17's donor
+question in advance.
 
 ### Next executable action
 
-Begin Sprint 16 from its filed pre-candidate review: implement Death Roll on
-the Crocodile alone as a vertical slice before the Dire Crocodile is authored
-against it, then the two meshes offline with one review sheet, then one sprint
-candidate and one batched guarded review.
+Register the Dire Crocodile. It has no ledger identities at all - it exists
+only in the ideal-roster plan - so Sprint 16 begins by allocating its
+identities in the append-only ledger and adding it to the shipped catalog at
+tier 7 in both families, withheld, before any of its mechanics or visuals can
+be exercised. The Crocodile needs no registration change: it already ships with
+its full placements and template variants, and only its appearance and its
+missing mechanics change.
+
+Then follow the filed pre-candidate review: Death Roll on the Crocodile alone
+as a vertical slice before the Dire Crocodile is authored against it, the two
+meshes offline with one review sheet, then one sprint candidate and one batched
+guarded review.
 
 ### Inventory: registered, hidden, visible
 
@@ -121,13 +131,16 @@ lost to host out-of-memory kills on 2026-10-02 when `steamwebhelper` leaked to
 
 ### Open gates
 
-1. Sprint 15 publication: the publication sprint gate and the 18 new roots
-   through the real player path, plus the rules pack re-run on the publication
-   head so both Sprint 15-bearing scenarios sit on one candidate. The
-   exhaustive old-root replay is deferred to tranche close.
-2. Sprint 16 (Crocodile, Dire Crocodile), then Sprint 17 (Viper, Constrictor
+Sprint 15 has none. Its publication gate closed on the published head: the
+publication sprint gate at 1999/1999, all **970/970** logical player paths and
+**29/29** native wrappers through the real player path, the rules pack re-run
+at 62/62, and the projected menu rendering bounded while observing
+**placements=970** from inside the game. The exhaustive old-root replay is
+deferred to tranche close.
+
+1. Sprint 16 (Crocodile, Dire Crocodile), then Sprint 17 (Viper, Constrictor
    Snake, Salamander), then the Phase 2B tranche close.
-3. Phase 2C: create `codex/expanded-summoning-phase2c-sprints18-21`, a stacked
+2. Phase 2C: create `codex/expanded-summoning-phase2c-sprints18-21`, a stacked
    draft pull request, a read-only donor census, then Sprints 18-21 and the
    Phase 2 closure.
 
