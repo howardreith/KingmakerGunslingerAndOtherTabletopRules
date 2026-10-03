@@ -663,17 +663,24 @@ namespace KingmakerGunslinger.RuntimeTesting
         private UnitEntityData _rulesTrampler;
         private static readonly string[] RulesTrampleKeys = {
             "aurochs", "bison", "woolly-rhinoceros", "aurochs",
-            "aurochs"
+            "aurochs",
+            // Sprint 15. The Giant Stag Beetle's printed trample is 1d6+6 at
+            // DC 17, and it rides the carrier these ungulates qualified, so it
+            // is proved here through the same machine rather than asserted
+            // from the policy that computes its numbers. Appended last because
+            // the two special cases above are selected by index.
+            "giant-stag-beetle"
         };
         private static readonly string[] RulesTrampleAbilityNames = {
             "KMG_Summoning_Special_Aurochs_Trample",
             "KMG_Summoning_Special_Bison_Trample",
             "KMG_Summoning_Special_WoollyRhinoceros_Trample",
             "KMG_Summoning_Special_Aurochs_Trample",
-            "KMG_Summoning_Special_Aurochs_Trample"
+            "KMG_Summoning_Special_Aurochs_Trample",
+            "KMG_Summoning_Special_GiantStagBeetle_Trample"
         };
         private static readonly int[] RulesTrampleSaveDcs = {
-            17, 20, 23, 17, 17
+            17, 20, 23, 17, 17, 17
         };
         private int _rulesTrampleIndex;
         private UnitEntityData _rulesTrampleTarget;
@@ -1140,7 +1147,68 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _rulesWait = 0;
                         return;
                     }
+                    // 7D rides this machine rather than a new scenario: it is
+                    // the only place with a live caster, a disposable armoured
+                    // hostile, the awake-units collection the game ticks
+                    // commands on, and a frame loop to tick them in.
+                    stage = "sprint14-combat-begin";
+                    _rulesSteps.Add("reset:sprint14Combat=" +
+                        ResetExpandedSummoningHostile(_rulesFixture));
+                    BeginSprint14CombatCell();
+                    _rulesWait = 0;
+                    _rulesPhase = 9;
+                    return;
+                }
+                if (_rulesPhase == 9)
+                {
+                    // Turn-based needs real frames before it can take a
+                    // command: initiative and the first turn do not happen in
+                    // the frame that enabled the mode, which is why the first
+                    // version of this never reached a turn at all.
+                    stage = "sprint14-combat-entry" + _sprint14CombatCell;
+                    if (!AdvanceSprint14CombatEntry(_rulesWait))
+                    {
+                        _rulesWait++;
+                        return;
+                    }
+                    _rulesWait = 0;
+                    _rulesPhase = 10;
+                    return;
+                }
+                if (_rulesPhase == 10)
+                {
+                    stage = "sprint14-combat-cell" + _sprint14CombatCell + "-" +
+                        Sprint14CombatCells[_sprint14CombatCell][0] + "-" +
+                        (Sprint14CombatCells[_sprint14CombatCell][1] == "true" ?
+                            "turn-based" : "rtwp");
+                    if (!FinishSprint14CombatCell(_rulesWait) &&
+                        _rulesWait++ < ExpandedSummoningCommandFrames) return;
+                    CompleteSprint14CombatCell(_rulesWait);
+                    _sprint14CombatCell++;
+                    if (_sprint14CombatCell < Sprint14CombatCells.Length)
+                    {
+                        _rulesWait = 0;
+                        _rulesPhase = 11;
+                        return;
+                    }
+                    stage = "sprint14-combat-complete";
+                    CompleteSprint14CombatModes();
                     CompleteExpandedSummoningRules();
+                }
+                if (_rulesPhase == 11)
+                {
+                    // The disposed body needs the destroyer's own frames to
+                    // leave the spot the next cell is placed on, which is why
+                    // this waits rather than casting in the frame that
+                    // disposed.
+                    stage = "sprint14-combat-settle" + _sprint14CombatCell;
+                    if (_rulesWait++ < 4) return;
+                    _rulesSteps.Add("reset:sprint14Combat=" +
+                        ResetExpandedSummoningHostile(_rulesFixture));
+                    BeginSprint14CombatCell();
+                    _rulesWait = 0;
+                    _rulesPhase = 9;
+                    return;
                 }
             }
             catch (Exception exception)
@@ -3498,7 +3566,19 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// </summary>
         private static readonly string[][] ExpandedSummoningPersistenceHoldPlan =
         {
-            new[] { "KMG_Summoning_Unit_Tiger", "KMG_Summoning_Unit_Wolf", "-1" }
+            new[] { "KMG_Summoning_Unit_Tiger", "KMG_Summoning_Unit_Wolf", "-1" },
+            // Sprint 14: the soldier grabs with its bite, which is its primary
+            // limb, and the question asked of the reload is the one the owner's
+            // accepted limitation already settles - not that the hold returns,
+            // but that nothing is left holding a victim it cannot name and no
+            // limb stays occupied by a link the engine dropped.
+            // Not the Pony: the Stirge attaches to the Pony in this same
+            // fixture, and holding it broke that leg - a victim cannot be
+            // seized by an ant and hosting a Stirge at once. The Giant Spider
+            // is Medium, which a Medium grabber may hold, and nothing else in
+            // the persistence fixture arms it.
+            new[] { "KMG_Summoning_Unit_GiantAntSoldier",
+                "KMG_Summoning_Unit_GiantSpider", "-1" }
         };
 
         /// <summary>
@@ -6133,6 +6213,58 @@ namespace KingmakerGunslinger.RuntimeTesting
                         string.Join("||", _visualLifecycleSteps.ToArray()) + "||final=" + counts,
                         !_visualLifecycleFailed && final,
                         "ExpandedSummoningVisualVariantPatch.CountOwnedObjects, DescribeView, DescribeOwnership and ObservedReleases across frames"));
+                    // 7E's third leg begins where the variant census ends,
+                    // because it asks the same question of a different kind of
+                    // owned object: the Fire Beetle's light.
+                    int beetleComponents, beetleCarriers, beetleLights,
+                        beetleEnabled;
+                    _visualLifecycleBeetleBaseline =
+                        FireBeetleVisualGlow.CountOwnedObjects(
+                            out beetleComponents, out beetleCarriers,
+                            out beetleLights, out beetleEnabled);
+                    _visualLifecycleBeetleBaselineClean =
+                        beetleComponents == 0 && beetleCarriers == 0 &&
+                        beetleLights == 0 && beetleEnabled == 0;
+                    _visualLifecycleBeetleIndex = 0;
+                    _visualLifecycleWait = 0;
+                    _visualLifecyclePhase = 8;
+                    return;
+                }
+                if (_visualLifecyclePhase == 8)
+                {
+                    BeginExpandedSummoningBeetleGlowCensus(fixture);
+                    _visualLifecycleWait = 0;
+                    _visualLifecyclePhase = 9;
+                    return;
+                }
+                if (_visualLifecyclePhase == 9)
+                {
+                    // The views attach on the game's own schedule, and the
+                    // glow is matched to visibility in LateUpdate, so the
+                    // census has to be taken after real frames rather than in
+                    // the frame that cast.
+                    if (_visualLifecycleWait++ < 4) return;
+                    MeasureExpandedSummoningBeetleGlowCensus(fixture);
+                    _visualLifecycleWait = 0;
+                    _visualLifecyclePhase = 10;
+                    return;
+                }
+                if (_visualLifecyclePhase == 10)
+                {
+                    // The dispose happened in phase 9; this is the frame
+                    // boundary it has to survive. A carrier queued for the end
+                    // of a frame would still be counted before it.
+                    if (_visualLifecycleWait++ < 4) return;
+                    CompleteExpandedSummoningBeetleGlowCensus();
+                    _visualLifecycleBeetleIndex++;
+                    if (_visualLifecycleBeetleIndex <
+                        ExpandedSummoningBeetleGlowMultiplicities.Length)
+                    {
+                        _visualLifecycleWait = 0;
+                        _visualLifecyclePhase = 8;
+                        return;
+                    }
+                    FinishExpandedSummoningBeetleGlowCensus();
                     CompleteExpandedSummoningVisualLifecycle();
                 }
             }
@@ -6144,6 +6276,159 @@ namespace KingmakerGunslinger.RuntimeTesting
                     false, "the visual lifecycle fixture"));
                 CompleteExpandedSummoningVisualLifecycle();
             }
+        }
+
+        /// <summary>
+        /// The three quantities a player can actually get, because a resource
+        /// that balances for one body is not proof for five.
+        /// </summary>
+        private static readonly SummonMultiplicity[]
+            ExpandedSummoningBeetleGlowMultiplicities =
+            {
+                SummonMultiplicity.One,
+                SummonMultiplicity.OneD3,
+                SummonMultiplicity.OneD4PlusOne
+            };
+
+        private int _visualLifecycleBeetleIndex;
+        private string _visualLifecycleBeetleBaseline = "not-measured";
+        private bool _visualLifecycleBeetleBaselineClean;
+        private UnitEntityData[] _visualLifecycleBeetles =
+            new UnitEntityData[0];
+        private readonly List<string> _visualLifecycleBeetleRows =
+            new List<string>();
+        private string _visualLifecycleBeetleMeasured = "not-measured";
+        private bool _visualLifecycleBeetleMeasuredOk;
+
+        /// <summary>Cast this round's quantity of beetles.</summary>
+        private void BeginExpandedSummoningBeetleGlowCensus(
+            ExpandedSummoningCorrectionFixture fixture)
+        {
+            SummonMultiplicity multiplicity =
+                ExpandedSummoningBeetleGlowMultiplicities[
+                    _visualLifecycleBeetleIndex];
+            _visualLifecycleBeetles = CastExpandedSummoningVariant(
+                fixture.Blueprints, fixture.Caster,
+                ExpandedSummoningOwnTierVariant("fire-beetle", multiplicity),
+                null, fixture.Evidence);
+            fixture.Created.AddRange(_visualLifecycleBeetles);
+            foreach (UnitEntityData beetle in _visualLifecycleBeetles)
+                SetExpandedSummoningBrainActive(beetle, false);
+        }
+
+        /// <summary>
+        /// Count what the live bodies own, then take the glow away from them
+        /// without destroying anything and count again.
+        ///
+        /// <para>The hard requirement is not that the carriers are eventually
+        /// destroyed; it is that a body no longer visibly present cannot keep
+        /// lighting the scene. Destroying the creature proves that only
+        /// incidentally, because everything goes at once. So the renderers are
+        /// disabled on live beetles - which is what hiding, fading, dissolving
+        /// and culling all reduce to - and the lights must go dark while their
+        /// carriers are still there. Then the renderers come back and the
+        /// lights must too, because a glow that never returned would be a
+        /// different defect hiding behind the same count.</para>
+        /// </summary>
+        private void MeasureExpandedSummoningBeetleGlowCensus(
+            ExpandedSummoningCorrectionFixture fixture)
+        {
+            SummonMultiplicity multiplicity =
+                ExpandedSummoningBeetleGlowMultiplicities[
+                    _visualLifecycleBeetleIndex];
+            int bodies = _visualLifecycleBeetles.Count(value =>
+                value != null && value.View != null);
+            int attached = _visualLifecycleBeetles.Count(value =>
+                value != null && value.View != null &&
+                ExpandedSummoningPteranodonViewPatch.DescribeView(value.View)
+                    .StartsWith("visual:attached;", StringComparison.Ordinal));
+
+            int components, carriers, lights, enabled;
+            string live = FireBeetleVisualGlow.CountOwnedObjects(
+                out components, out carriers, out lights, out enabled);
+            bool oneEach = components == bodies && carriers == bodies &&
+                lights == bodies;
+
+            // Take visibility away without destroying anything.
+            var renderers = new List<Renderer>();
+            foreach (UnitEntityData beetle in _visualLifecycleBeetles)
+            {
+                if (beetle == null || beetle.View == null) continue;
+                foreach (Renderer renderer in beetle.View
+                    .GetComponentsInChildren<Renderer>(true))
+                    if (renderer != null && renderer.enabled)
+                    {
+                        renderer.enabled = false;
+                        renderers.Add(renderer);
+                    }
+            }
+            foreach (FireBeetleVisualGlow glow in
+                Resources.FindObjectsOfTypeAll<FireBeetleVisualGlow>())
+                if (glow != null) glow.SyncToVisibility();
+            int hiddenComponents, hiddenCarriers, hiddenLights, hiddenEnabled;
+            string hidden = FireBeetleVisualGlow.CountOwnedObjects(
+                out hiddenComponents, out hiddenCarriers, out hiddenLights,
+                out hiddenEnabled);
+            bool darkWhileHidden = hiddenEnabled == 0 &&
+                hiddenCarriers == bodies;
+
+            foreach (Renderer renderer in renderers)
+                if (renderer != null) renderer.enabled = true;
+            foreach (FireBeetleVisualGlow glow in
+                Resources.FindObjectsOfTypeAll<FireBeetleVisualGlow>())
+                if (glow != null) glow.SyncToVisibility();
+            int backComponents, backCarriers, backLights, backEnabled;
+            string restored = FireBeetleVisualGlow.CountOwnedObjects(
+                out backComponents, out backCarriers, out backLights,
+                out backEnabled);
+            bool lightReturns = backEnabled == enabled;
+
+            _visualLifecycleBeetleMeasured = multiplicity + "[bodies=" +
+                bodies + ";attached=" + attached + ";live(" + live +
+                ");oneEach=" + oneEach + ";hidden(" + hidden +
+                ");darkWhileHidden=" + darkWhileHidden + ";restored(" +
+                restored + ");lightReturns=" + lightReturns + "]";
+            _visualLifecycleBeetleMeasuredOk = bodies > 0 &&
+                attached == bodies && oneEach && darkWhileHidden &&
+                lightReturns;
+
+            DisposeExpandedSummoningUnits(fixture.Created,
+                _visualLifecycleBeetles);
+        }
+
+        /// <summary>After the frame boundary: everything this round made is gone.</summary>
+        private void CompleteExpandedSummoningBeetleGlowCensus()
+        {
+            SummonMultiplicity multiplicity =
+                ExpandedSummoningBeetleGlowMultiplicities[
+                    _visualLifecycleBeetleIndex];
+            int components, carriers, lights, enabled;
+            string after = FireBeetleVisualGlow.CountOwnedObjects(
+                out components, out carriers, out lights, out enabled);
+            bool back = components == 0 && carriers == 0 && lights == 0 &&
+                enabled == 0;
+            _visualLifecycleBeetleRows.Add(_visualLifecycleBeetleMeasured +
+                ";afterFrameBoundary(" + after + ");backToBaseline=" + back +
+                (_visualLifecycleBeetleMeasuredOk && back ? "=ok" : "=wrong"));
+            _visualLifecycleBeetles = new UnitEntityData[0];
+        }
+
+        private void FinishExpandedSummoningBeetleGlowCensus()
+        {
+            bool ok = _visualLifecycleBeetleBaselineClean &&
+                _visualLifecycleBeetleRows.Count ==
+                    ExpandedSummoningBeetleGlowMultiplicities.Length &&
+                _visualLifecycleBeetleRows.All(value => value.EndsWith("=ok",
+                    StringComparison.Ordinal));
+            _visualLifecycleCases.Add(Assertion(
+                "expanded-summoning-sprint14-beetle-glow-resources",
+                "the Fire Beetle's light, across the three quantities a player can actually get - a direct cast, 1d3 and 1d4+1: one component, one carrier object and one light per body and no more, every light dark while its body's renderers are disabled though its carrier still exists, every light back on when they return, and every component, carrier and light gone and the counts exactly at the pre-cast baseline after the frame boundary that follows disposal. The requirement being tested is narrower than destruction: a body no longer visibly present may not continue lighting the scene even for the frame before its carrier is collected",
+                "baseline(" + _visualLifecycleBeetleBaseline +
+                    ");baselineClean=" + _visualLifecycleBeetleBaselineClean +
+                    ";" + string.Join(";",
+                        _visualLifecycleBeetleRows.ToArray()),
+                ok,
+                "FireBeetleVisualGlow.CountOwnedObjects over Resources.FindObjectsOfTypeAll, real renderer disable and re-enable on live bodies, and a frame boundary after native disposal"));
         }
 
         private void CompleteExpandedSummoningVisualLifecycle()

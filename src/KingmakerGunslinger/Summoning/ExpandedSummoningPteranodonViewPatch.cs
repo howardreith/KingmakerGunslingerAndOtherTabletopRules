@@ -72,6 +72,16 @@ namespace KingmakerGunslinger.Summoning
             "KMG_Summoning_Unit_ShadowMastiff";
         internal const string PoisonousFrogBlueprintName =
             "KMG_Summoning_Unit_PoisonousFrog";
+        internal const string FireBeetleBlueprintName =
+            "KMG_Summoning_Unit_FireBeetle";
+        internal const string GiantAntWorkerBlueprintName =
+            "KMG_Summoning_Unit_GiantAntWorker";
+        internal const string GiantAntSoldierBlueprintName =
+            "KMG_Summoning_Unit_GiantAntSoldier";
+        internal const string GiantAntDroneBlueprintName =
+            "KMG_Summoning_Unit_GiantAntDrone";
+        internal const string GiantStagBeetleBlueprintName =
+            "KMG_Summoning_Unit_GiantStagBeetle";
         /// <summary>
         /// The name carried by the private mesh and material the swap installs;
         /// observers recognise the attached state by it.
@@ -98,7 +108,12 @@ namespace KingmakerGunslinger.Summoning
                 { GoblinDogBlueprintName, "goblin-dog" },
                 { WolverineBlueprintName, "wolverine" },
                 { ShadowMastiffBlueprintName, "shadow-mastiff" },
-                { PoisonousFrogBlueprintName, "poisonous-frog" }
+                { PoisonousFrogBlueprintName, "poisonous-frog" },
+                { FireBeetleBlueprintName, "fire-beetle" },
+                { GiantAntWorkerBlueprintName, "giant-ant-worker" },
+                { GiantAntSoldierBlueprintName, "giant-ant-soldier" },
+                { GiantAntDroneBlueprintName, "giant-ant-drone" },
+                { GiantStagBeetleBlueprintName, "giant-stag-beetle" }
             };
         private static readonly HashSet<string> UngulateKeys =
             new HashSet<string>(StringComparer.Ordinal)
@@ -109,6 +124,13 @@ namespace KingmakerGunslinger.Summoning
         private static readonly HashSet<string> Sprint13CreatureKeys =
             new HashSet<string>(StringComparer.Ordinal)
             { "wolverine", "shadow-mastiff", "poisonous-frog" };
+        // The whole insect family on the Giant Spider rig, Sprints 14 and 15
+        // together: they share a donor, a bone policy and an asset pipeline, so
+        // every seam that asks "is this one of the insects" wants all five.
+        private static readonly HashSet<string> Sprint14InsectKeys =
+            new HashSet<string>(StringComparer.Ordinal)
+            { "fire-beetle", "giant-ant-worker", "giant-ant-soldier",
+              "giant-ant-drone", "giant-stag-beetle" };
         private const string MainTexture = "_MainTex";
 
         internal static bool HandlesBlueprintName(string blueprintName)
@@ -159,6 +181,7 @@ namespace KingmakerGunslinger.Summoning
             internal EagleAttackVisualLunge EagleLunge;
             internal GiantWaspVisualSting WaspSting;
             internal StirgeVisualTouch StirgeTouch;
+            internal FireBeetleVisualGlow BeetleGlow;
         }
 
         private static readonly ConditionalWeakTable<UnitEntityView, Attachment>
@@ -298,6 +321,14 @@ namespace KingmakerGunslinger.Summoning
                     out albedo, out status))
                     return Fallback(status);
             }
+            else if (Sprint14InsectKeys.Contains(attachment.VisualKey))
+            {
+                string status;
+                if (!PteranodonAssetRuntime.TryGetSprint14InsectVisual(
+                    attachment.VisualKey, out source, out boneNames,
+                    out albedo, out status))
+                    return Fallback(status);
+            }
             else
             {
                 if (!PteranodonAssetRuntime.TryGetMembrane(out source,
@@ -357,6 +388,8 @@ namespace KingmakerGunslinger.Summoning
                                     Sprint12QuadrupedKeys.Contains(
                                         attachment.VisualKey) ||
                                     Sprint13CreatureKeys.Contains(
+                                        attachment.VisualKey) ||
+                                    Sprint14InsectKeys.Contains(
                                         attachment.VisualKey))
                                     ? "KMG_" + attachment.VisualKey + "_Original"
                                     : CustomVisualName;
@@ -410,6 +443,16 @@ namespace KingmakerGunslinger.Summoning
                         .AddComponent<StirgeVisualTouch>();
                     attachment.StirgeTouch.Configure(view, donor);
                 }
+                if (attachment.VisualKey == "fire-beetle")
+                {
+                    // A light this view owns, matching the creature's painted
+                    // glands. It carries no rule: Kingmaker has no
+                    // mechanics-layer illumination model and this does not add
+                    // one.
+                    attachment.BeetleGlow = view.gameObject
+                        .AddComponent<FireBeetleVisualGlow>();
+                    attachment.BeetleGlow.Configure(view, donor);
+                }
                 return "visual:attached;bones=" + bones.Length +
                     ";vertices=" + mesh.vertexCount + ";albedo=" +
                     albedo.width + "x" + albedo.height + ";rendererEnabled=" +
@@ -432,6 +475,14 @@ namespace KingmakerGunslinger.Summoning
                 {
                     UnityEngine.Object.Destroy(attachment.StirgeTouch);
                     attachment.StirgeTouch = null;
+                }
+                if (attachment.BeetleGlow != null)
+                {
+                    // A rollback after the glow attached must not leave its
+                    // carrier behind while the swap is reverted.
+                    attachment.BeetleGlow.Release(true);
+                    UnityEngine.Object.Destroy(attachment.BeetleGlow);
+                    attachment.BeetleGlow = null;
                 }
                 if (swapped) Revert(attachment);
                 if (material != null) UnityEngine.Object.Destroy(material);
@@ -570,7 +621,8 @@ namespace KingmakerGunslinger.Summoning
                  attachment.VisualKey != "stirge" &&
                  !UngulateKeys.Contains(attachment.VisualKey) &&
                  !Sprint12QuadrupedKeys.Contains(attachment.VisualKey) &&
-                 !Sprint13CreatureKeys.Contains(
+                 !Sprint13CreatureKeys.Contains(attachment.VisualKey) &&
+                 !Sprint14InsectKeys.Contains(
                     attachment.VisualKey))) return;
             string visualName = attachment.VisualKey == "stirge"
                 ? StirgeVisualName : attachment.VisualKey == "giant-wasp"
@@ -583,6 +635,17 @@ namespace KingmakerGunslinger.Summoning
                 attachment.StirgeTouch.enabled = false;
                 UnityEngine.Object.DestroyImmediate(attachment.StirgeTouch);
                 attachment.StirgeTouch = null;
+            }
+            if (attachment.BeetleGlow != null)
+            {
+                // The component's own release destroys the carrier and the
+                // light in this frame; destroying the component alone would
+                // have queued the carrier for the end of it, which is the
+                // artefact a crowd of expiring beetles would show.
+                attachment.BeetleGlow.Release(true);
+                attachment.BeetleGlow.enabled = false;
+                UnityEngine.Object.DestroyImmediate(attachment.BeetleGlow);
+                attachment.BeetleGlow = null;
             }
             var materials = new HashSet<Material>();
             if (attachment.Material != null)

@@ -26,10 +26,12 @@ namespace KingmakerGunslinger.DomainTests
                 Environment.CurrentDirectory, "src", "KingmakerGunslinger",
                 "Summoning", "ExpandedSummoningNaturalProfiles.cs"));
 
+            // The creature's own registration line, and nothing about the
+            // whole-roster totals: those move whenever any later sprint
+            // registers anything, and they are asserted in the catalog's own
+            // Validate() and in the catalog tests rather than here.
             Assertions.True(catalog.Contains(
-                    "C(\"dire-rat\",\"Dire Rat\",1,true,1,\"Dog\")") &&
-                catalog.Contains("ValidateFamily(SummonFamily.Monster, 81, 457)") &&
-                catalog.Contains("ValidateFamily(SummonFamily.NaturesAlly, 78, 447)"),
+                    "C(\"dire-rat\",\"Dire Rat\",1,true,1,\"Dog\")"),
                 "Sprint 12 must register Dire Rat at tier 1 in both families.");
             // Sprint 12 is qualified and published, so the suppression set is
             // empty and none of its four creature keys may appear in it.
@@ -38,17 +40,19 @@ namespace KingmakerGunslinger.DomainTests
             })
                 Assertions.True(!visibility.Contains(key),
                     "A published Sprint 12 creature must not be suppressed: " + key);
-            // Sprint 12's own four creatures publish. Sprint 13 then
-            // registers the Shadow Mastiff ahead of its qualification, so the
-            // published total Sprint 12 delivered - 900 - is unchanged while
-            // the registered total grows.
-            Assertions.True(visibility.Contains(
-                    "RegisteredLogicalPlacementCount = 904") &&
-                visibility.Contains("SuppressedLogicalPlacementCount = 0"),
-                "Sprint 13 publication must leave nothing suppressed.");
-            Assertions.Equal(904,
-                SummonVisibilityCatalog.PublishedLogicalPlacementCount,
-                "Sprint 13 publication must leave 904 published placements.");
+            // Behavioural, and about Sprint 12 rather than about the roster.
+            // This used to read two constants out of the visibility catalog's
+            // source text and pin their values, so every later sprint's
+            // registration broke a test about the Dire Rat - and it carried a
+            // message about 922 published placements beside an assertion for a
+            // different number, which is what a hand-maintained total does
+            // over time. The whole-surface counts live in the inventory tests;
+            // what belongs here is that the three agree with one another.
+            Assertions.True(
+                SummonVisibilityCatalog.RegisteredLogicalPlacementCount -
+                    SummonVisibilityCatalog.SuppressedLogicalPlacementCount ==
+                    SummonVisibilityCatalog.PublishedLogicalPlacementCount,
+                "The published surface is the registered one less the withheld.");
             Assertions.True(donors.Contains(
                     "dire-rat|77f3f2ddf1ec2da45ab956c433e3b557|1") &&
                 donors.Contains("dog|77f3f2ddf1ec2da45ab956c433e3b557|1"),
@@ -203,8 +207,8 @@ namespace KingmakerGunslinger.DomainTests
                 "package.ps1"));
             Assertions.True(build.Contains("assets\\sprint12-quadrupeds") &&
                 package.Contains("assets\\sprint12-quadrupeds") &&
-                build.Contains("{ 289 } else { 287 }") &&
-                package.Contains("{ 289 } else { 287 }"),
+                build.Contains("{ 305 } else { 303 }") &&
+                package.Contains("{ 305 } else { 303 }"),
                 "All six quadruped asset files enter the strict standalone package.");
         }
 

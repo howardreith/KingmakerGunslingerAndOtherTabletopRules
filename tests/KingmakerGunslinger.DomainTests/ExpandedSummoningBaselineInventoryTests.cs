@@ -13,30 +13,40 @@ namespace KingmakerGunslinger.DomainTests
     {
         internal static void ShippedSurfaceMatchesFrozenBaseline()
         {
-            Assertions.Equal(89, ExpandedSummoningBaselineInventory.UniqueCreatures,
+            Assertions.Equal(95, ExpandedSummoningBaselineInventory.UniqueCreatures,
                 "Baseline unique creature count changed.");
-            Assertions.Equal(81, ExpandedSummoningBaselineInventory.RosterEntries(
+            Assertions.Equal(86, ExpandedSummoningBaselineInventory.RosterEntries(
                 SummonFamily.Monster), "Baseline SM roster count changed.");
-            Assertions.Equal(78, ExpandedSummoningBaselineInventory.RosterEntries(
+            Assertions.Equal(84, ExpandedSummoningBaselineInventory.RosterEntries(
                 SummonFamily.NaturesAlly), "Baseline SNA roster count changed.");
-            Assertions.Equal(457, ExpandedSummoningBaselineInventory
+            Assertions.Equal(490, ExpandedSummoningBaselineInventory
                 .RegisteredPlacements(SummonFamily.Monster),
                 "Baseline SM registered placements changed.");
-            Assertions.Equal(447, ExpandedSummoningBaselineInventory
+            Assertions.Equal(486, ExpandedSummoningBaselineInventory
                 .RegisteredPlacements(SummonFamily.NaturesAlly),
                 "Baseline SNA registered placements changed.");
             // The Shadow Mastiff is a Summon Monster creature, so its four
-            // placements all land on the SM side when it publishes.
-            Assertions.Equal(474, ExpandedSummoningBaselineInventory
+            // placements all land on the SM side when it publishes. Sprint 14's
+            // Fire Beetle is reachable from both parents and splits its
+            // eighteen evenly, nine each. Sprint 15 is lopsided for a reason
+            // that is in the roster rather than in the creatures: the Drone is
+            // reachable from both parents and splits six and six, while the
+            // Giant Stag Beetle is a Nature's Ally creature alone and puts all
+            // six of its placements on that side.
+            //
+            // With nothing withheld, each side's visible count is now its own
+            // registered count plus its share of the native wrappers - 487 and
+            // 17 on the Monster side, 483 and 12 on the other.
+            Assertions.Equal(504, ExpandedSummoningBaselineInventory
                 .VisibleChoices(SummonFamily.Monster),
                 "Baseline SM visible choice count changed.");
-            Assertions.Equal(459, ExpandedSummoningBaselineInventory
+            Assertions.Equal(495, ExpandedSummoningBaselineInventory
                 .VisibleChoices(SummonFamily.NaturesAlly),
                 "Baseline SNA visible choice count changed.");
         }
 
         /// <summary>
-        /// The 933 visible choices (693 at Sprint 0) must decompose
+        /// The 999 visible choices (693 at Sprint 0) must decompose
         /// exactly, so a sprint cannot quietly move a choice between the
         /// generated and native pools.
         /// </summary>
@@ -44,11 +54,11 @@ namespace KingmakerGunslinger.DomainTests
         {
             int generated = SummonVisibilityCatalog.PublishedLogicalPlacementCount;
             int wrappers = SummonNativeExpansionCatalog.All.Count;
-            Assertions.Equal(904, generated, "Published generated placements changed.");
+            Assertions.Equal(970, generated, "Published generated placements changed.");
             Assertions.Equal(29, wrappers, "Native wrapper count changed.");
-            Assertions.Equal(933, generated + wrappers,
+            Assertions.Equal(999, generated + wrappers,
                 "The combined visible choice total changed.");
-            Assertions.Equal(933,
+            Assertions.Equal(999,
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.Monster) +
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.NaturesAlly),
                 "Per-parent census disagrees with the catalog totals.");
@@ -97,9 +107,9 @@ namespace KingmakerGunslinger.DomainTests
             // of its own qualification, which is allowed and is how both
             // Sprint 12 and Sprint 13 ran, but it has to be deliberate rather
             // than a leftover - which is what this pin is for.
-            Assertions.Equal(0,
+            Assertions.Equal(1,
                 ExpandedSummoningBaselineInventory.RegisteredButHiddenCreatures.Count,
-                "The registered-but-hidden creature set changed.");
+                "The registered-but-hidden creature set changed: it is Sprint 16's Dire Crocodile, registered ahead of its own qualification.");
             Assertions.True(ExpandedSummoningBaselineInventory.ProxyVisualCreatures
                 .Contains("pteranodon<Roc"),
                 "Pteranodon must still be recorded as a Roc-policy visual proxy.");
@@ -112,9 +122,9 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(ExpandedSummoningBaselineInventory.ProxyVisualCreatures
                 .Contains("dire-tiger<Smilodon"),
                 "Smilodon displays under its own name and is not a proxy.");
-            Assertions.Equal(27,
+            Assertions.Equal(33,
                 ExpandedSummoningBaselineInventory.ProxyVisualCreatures.Count,
-                "The frozen borrowed-body proxy count changed.");
+                "The frozen borrowed-body proxy count changed. A creature counts here while it rides another creature's rig, which is why all five Sprint 14 and 15 insects are counted although they ship original meshes, and why Sprint 16's Dire Crocodile joins them on the Monitor Lizard.");
         }
 
         /// <summary>
@@ -150,7 +160,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(first.StartsWith(
                 "{\n  \"schema\": \"" + ExpandedSummoningBaselineInventory.BaselineSchema + "\""),
                 "The census must declare its schema first so evidence stays comparable.");
-            Assertions.True(first.Contains("\"totalVisibleChoices\": 933"),
+            Assertions.True(first.Contains("\"totalVisibleChoices\": 999"),
                 "The emitted census lost the frozen visible-choice total.");
         }
 

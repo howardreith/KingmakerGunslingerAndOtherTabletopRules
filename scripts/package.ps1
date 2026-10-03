@@ -121,6 +121,16 @@ if (Test-Path -LiteralPath $sprint13CreatureSource -PathType Container) {
         Copy-Item -LiteralPath (Join-Path $sprint13CreatureSource "$kind-albedo.png") -Destination $sprint13CreatureDestination
     }
 }
+$sprint14InsectSource = Join-Path $outputDirectory 'assets\sprint14-insects'
+if (Test-Path -LiteralPath $sprint14InsectSource -PathType Container) {
+    $sprint14InsectDestination = Join-Path $modDirectory 'assets\sprint14-insects'
+    New-Item -ItemType Directory -Path $sprint14InsectDestination -Force | Out-Null
+    foreach ($kind in @('fire-beetle','giant-ant-worker','giant-ant-soldier',
+                 'giant-ant-drone','giant-stag-beetle')) {
+        Copy-Item -LiteralPath (Join-Path $sprint14InsectSource "$kind-mesh.json") -Destination $sprint14InsectDestination
+        Copy-Item -LiteralPath (Join-Path $sprint14InsectSource "$kind-albedo.png") -Destination $sprint14InsectDestination
+    }
+}
 $soundBankSource=Join-Path $repositoryRoot 'assets\soundbanks'
 if(Test-Path -LiteralPath (Join-Path $soundBankSource 'KMG_Firearms.bnk') -PathType Leaf){
     $soundBankDestination=Join-Path $modDirectory 'assets\soundbanks'
@@ -141,8 +151,13 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
     'assets\soundbanks\KMG_Firearms.bnk') -PathType Leaf
 # Strict package inventory including the six reviewed Sprint 12 quadruped
 # mesh/painting files. The soundbank and its manifest account for the optional
-# two-file difference.
-$expectedPackageFileCount = if ($hasFirearmSoundBank) { 289 } else { 287 }
+# two-file difference. Sprint 15 adds the Giant Ant (Drone) and Giant Stag
+# Beetle icons and, now, their meshes and paintings: four more files, which is
+# why this count moved. Both creatures are registered and withheld, but a
+# withheld creature still has to ship its visual - the loader resolves its
+# files from the creature key, so one missing from this staging would wear its
+# donor's body rather than fail.
+$expectedPackageFileCount = if ($hasFirearmSoundBank) { 305 } else { 303 }
 & $python (Join-Path $repositoryRoot 'tools\create_deterministic_package.py') `
     --source $modDirectory --output $packagePath `
     --expected-file-count $expectedPackageFileCount

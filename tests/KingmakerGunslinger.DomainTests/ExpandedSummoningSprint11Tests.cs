@@ -56,11 +56,21 @@ namespace KingmakerGunslinger.DomainTests
                     "Every placement of " + value.Key +
                     " publishes after mechanics, art and lifecycle qualification.");
             }
-            // Sprints 9-13 are published, so the registered and published
-            // surfaces are the same 904 and nothing is withheld.
-            Assertions.True(all.Length == 904 &&
-                all.Count(SummonVisibilityCatalog.IsPublished) == 904 &&
-                all.Count(value => !SummonVisibilityCatalog.IsPublished(value)) == 0,
+            // The loop above owns the claim this test exists for: every
+            // placement of every Sprint 11 ungulate publishes. What is left to
+            // say is that the surface stays consistent around them - the
+            // published count is the registered one less whatever a later
+            // sprint is still withholding - and that none of what is withheld
+            // is theirs. Pinning the totals themselves only recorded whatever
+            // the roster happened to be on the day, and the comment here still
+            // described a barrier that no longer exists.
+            Assertions.True(
+                all.Length == SummonVisibilityCatalog
+                    .RegisteredLogicalPlacementCount &&
+                all.Count(SummonVisibilityCatalog.IsPublished) ==
+                    SummonVisibilityCatalog.PublishedLogicalPlacementCount &&
+                all.Count(value => !SummonVisibilityCatalog.IsPublished(value)) ==
+                    SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
                 "Sprint 11 stays published alongside every later qualified sprint.");
         }
 
@@ -571,8 +581,8 @@ namespace KingmakerGunslinger.DomainTests
                 "package.ps1"));
             Assertions.True(build.Contains("assets\\ungulates") &&
                 package.Contains("assets\\ungulates") &&
-                build.Contains("{ 289 } else { 287 }") &&
-                package.Contains("{ 289 } else { 287 }"),
+                build.Contains("{ 305 } else { 303 }") &&
+                package.Contains("{ 305 } else { 303 }"),
                 "All eight ungulate asset files enter the strict standalone package.");
         }
 

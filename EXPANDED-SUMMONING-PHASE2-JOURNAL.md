@@ -1,5 +1,184 @@
 # Expanded Summoning Phase 2 journal
 
+## Sprint 15 closeout, 2026-10-03: COMPLETE AND PUBLISHED
+
+The Giant Ant (Drone) and the Giant Stag Beetle are published. The visible
+surface is **970 published generated placements plus 29 retained native
+wrappers, for 999 visible choices**, derived from source. **Nothing is withheld
+anywhere** - for the first time since Sprint 9 the registered and published
+surfaces are the same number, so no creature in this phase is registered and
+hidden.
+
+### What the guarded review proved
+
+Six scenarios, 139 assertions, every run restoring the live tree exactly to
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3` with
+restoration verified.
+
+| Scenario | Assertions | Candidate |
+| --- | --- | --- |
+| mechanical pack | 61/61 | `c8cb25ce` |
+| rules pack, with twelve combat-mode cells | 62/62 | `52baae65` |
+| visual lifecycle | 8/8 | `52baae65` |
+| working-save prepare / verify-cleanup / verify-absent | PASS / PASS / PASS | `52baae65` |
+
+The Drone is the Soldier with the advanced simple template, and the engine
+produced it: every ability score measured exactly four higher than a Soldier
+spawned in the same run except Intelligence, which the template excludes. Its
+poison needed no second graph - the shared Constitution-scaled policy turned
+the advanced Constitution of 21 into the printed Fortitude DC 16 unaided, with
+1d2 Strength over four exposures cured by one save, delivered only by a sting
+that actually wounded, and one attack producing exactly one application
+carrying that same difficulty class. Its Perception derived to exactly 7 from a
+racial +4 and the advanced Wisdom, with no ranks and no unprinted flat bonus.
+
+The Giant Stag Beetle read its printed CMD 20 and 28 against trip exactly, is
+Large with one 2d8 bite and nothing else on its body, carries its own unit type
+rather than the Fire Beetle's or the Giant Spider's, and carries none of the
+Fire Beetle's luminescence. Its trample ran through the carrier the Sprint 11
+ungulates qualified, at its printed DC 17, dealing damage to the hostile and
+none to the allied caster.
+
+Both creatures attack through the command a player's click produces, in RTWP
+and in turn-based combat: twelve cells, and each two-limbed creature
+demonstrated its own bite-and-sting separation rather than borrowing another
+creature's evidence. Both were summoned in quantity as well as singly - a 1d3
+and a 1d4+1 command for each - with the project visual attached on every body
+of every multi-body cast, and the Giant Spider cast as itself came up with no
+swap attempted on it at all.
+
+### One measurement corrected, twice
+
+The Drone's combat-manoeuvre defence first measured 15 and 23 against a derived
+17 and 25. The engine's own component breakdown settled it: a freshly summoned
+creature has not acted, so Kingmaker treats it as flat-footed and denies it its
+Dexterity bonus, which is exactly the two points. The creature was right; a
+single total could not say so, because the four insects before it all had
+Dexterity 10 and read correctly either way.
+
+The second attempt then asserted the engine's split of a size modifier, and a
+Large creature's printed +1 arrives in Kingmaker as `size=2` with `misc=-1`.
+That is the same number expressed differently and no source text constrains the
+split, so the check now asserts only quantities the rules name - base attack
+bonus, Strength, the net size modifier, Dexterity when it is not denied, the
+printed total, and the eight-point multi-legged difference - and records every
+component as evidence without requiring it.
+
+`HumanReview: NOT_PERFORMED_NONBLOCKING`.
+
+## OwnerAcceptedEngineLimitation: PASSIVE_CREATURE_SENSES_UNMODELED
+
+**Accepted by the owner on 2026-10-03.** Kingmaker models none of **Scent**,
+**Darkvision** or **Low-light Vision**, and this project omits them wherever a
+bounded native audit proves no faithful carrier exists.
+
+### The evidence the acceptance rests on
+
+The audit searched every component on every blueprint the running game had
+loaded - the whole library, not a filtered subset - and reported
+`senseComponentCensus=Blindsensex74/OverrideVisionRangex23`. Scent has no
+carrier of any kind. No enum reachable from `BlueprintUnit`, `UnitEntityData` or
+`UnitDescriptor` holds a darkvision value: `visionEnum=<none>`.
+`OverrideVisionRange` is a sight radius in metres, carried by 23 blueprints, of
+which the sampled six are Vordakai and Horagnamon boss units setting 50 m
+against a live unit's 8.5.
+
+### What the label permits
+
+A creature may publish or qualify without these three passive senses. The
+omission is recorded here once and referenced from the affected creature rows.
+**A creature is never kept hidden for one of these three alone.**
+
+### What it forbids
+
+- No substitution of `AddBlindsight`, `UnitPartBlindsense`, tremorsense or any
+  materially different sense. Blindsight is a real and different rule, and this
+  project implements it exactly for the Dire Bat; that implementation stays.
+- No use of `OverrideVisionRange` as darkvision. It changes general detection
+  range in all conditions and would hand a creature an advantage no stat block
+  grants it.
+- No scent, darkness, stealth-detection or perception subsystem in this phase.
+- No claim anywhere that the omitted traits work.
+- No use of this label to waive any other sense, combat ability, immunity,
+  skill or signature mechanic.
+- The limitation is never re-marked BLOCKED.
+
+This is a conservative engine limitation, not a balance adaptation.
+
+### Creatures currently governed by it
+
+Giant Ant (Worker), Giant Ant (Soldier) and Giant Ant (Drone) for Scent and
+Darkvision; the Fire Beetle and Giant Stag Beetle for Low-light Vision and
+Darkvision respectively; and already-published creatures carrying the same
+engine gap, the wolves among them. It applies to later Phase 2 creatures whose
+stat blocks list these passive senses.
+
+
+## Sprint 14 closeout, 2026-10-03: COMPLETE WITH OWNER-ACCEPTED ENGINE LIMITATION
+
+All three Sprint 14 insects are published. The published surface is **952
+generated placements plus 29 retained native wrappers, for 981 visible
+choices**, derived from source. The Fire Beetle's 18 placements went out on its
+own qualification; the Giant Ant Worker's 16 and Soldier's 14 followed once the
+owner accepted `PASSIVE_CREATURE_SENSES_UNMODELED`, which was the only thing
+holding them - their mechanics had already qualified 174/174 across six guarded
+scenarios on candidate `cda8d72c`.
+
+Nothing was implemented to earn that publication. The ruling records an engine
+gap rather than closing one: no substitute sense was added, no vision range was
+touched, and no record claims the omitted traits work.
+
+What remains withheld is Sprint 15's pair - the Giant Ant Drone's 12 placements
+and the Giant Stag Beetle's 6 - registered ahead of their own qualification the
+way every sprint before them did. The Drone carries the same unmodelled senses
+and is no longer held for them; it waits on its own gates alone.
+
+`HumanReview: NOT_PERFORMED_NONBLOCKING`.
+
+## Sprint 14 publication, 2026-10-03: the Fire Beetle only
+
+The published surface is **922 generated placements plus 29 retained native
+wrappers, for 951 visible choices**, derived from source. Sprint 14 registered
+48 placements across three insects and publishes 18 of them - the Fire Beetle,
+reachable from both parents and splitting nine each way. The 30 placements of
+Giant Ant (Worker) and Giant Ant (Soldier) stay withheld.
+
+The ants are not withheld for want of qualification. Their mechanics passed on
+the closing candidate: printed Perception +5 exactly with zero class ranks, the
+printed trip defence, a sting that is its own weapon type, a grab on the bite
+alone carrying exactly +4 to the grapple and nothing to the trip, an injury
+poison that a wound delivers and a hit reduced to zero damage does not, vermin
+mind-affecting immunity proved by a native mind-affecting buff they refuse and
+the caster accepts, and both combat modes driven through the command a player's
+click produces. What they cannot have is their printed scent.
+
+Kingmaker has no scent mechanic. The bounded native audit searched the whole
+loaded blueprint library, not a filtered subset, and found no component that
+could express it; the engine's only sense plumbing is `AddBlindsight` with
+`UnitPartBlindsense`, which this project already uses for the Dire Bat and which
+is a different rule. Their printed darkvision 60 ft is equally unrepresentable:
+no enum reachable from `BlueprintUnit`, `UnitEntityData` or `UnitDescriptor`
+carries a darkvision value, and `OverrideVisionRange` is a sight radius in
+metres - six Vordakai and Horagnamon boss units set 50 m against a live default
+of 8.5 m - so using it for darkvision would hand the ants more than double
+their detection range in all conditions, an advantage no stat block grants
+them. In an engine with no darkness that is inventing a mechanic rather than
+implementing one.
+
+The Fire Beetle's own senses requirement was the opposite case and is met
+exactly: its stat block prints **no** darkvision, nothing was inherited from the
+Vermin racial class, the project unit type or the Giant Spider donor, and the
+live unit reads `darkvision=False` with no carrier. Its printed low-light vision
+has no representation either, and no mechanical consequence in an engine with no
+light model, so nothing about the creature is softened by its absence.
+
+**This is not recorded as an accepted engine limitation.** No
+`OwnerAcceptedEngineLimitation:` label is created here, because only the owner
+converts a proven barrier into one. The two castes are held pending a single
+ruling, recorded as a blocker with the engine evidence. The same ruling governs
+Sprint 15's Giant Ant Drone, which prints scent too; the Giant Stag Beetle does
+not and is unaffected.
+
 ## Sprint 12 visual review, and a defect only the camera could find, 2026-10-01
 
 The guarded creature review `20261001T1812593825736Z` passed all 18 of its

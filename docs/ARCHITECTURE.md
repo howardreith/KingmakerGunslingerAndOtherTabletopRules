@@ -887,11 +887,34 @@ damage is a single point rather than a die, and the Wolverine rage trigger
 feature with its onset marker and rage state. It also registers the Shadow
 Mastiff, a new Summon Monster VI outsider with no native Kingmaker equivalent:
 its unit, its four logical placements, the 1d6 tail slap its printed stat block
-needs, and its bay and shadow-blend identities. The Shadow Mastiff is
-registered ahead of its own qualification, so its four placements are
-suppressed and the published surface stays at 900 generated choices until its
-mechanics, visual identity and lifecycle qualify.
-The resulting append-only ledger contains 2665 stable IDs: 2663 active and 2 reserved.
+needs, and its bay and shadow-blend identities. The Shadow Mastiff was
+registered ahead of its own qualification and suppressed while it was proved;
+it qualified on 2026-10-02 and published, so Sprint 13 closed with an empty
+suppression set and 904 generated choices, superseding the 900 this paragraph
+recorded while the Mastiff was still withheld.
+
+Sprint 14 registers the three insects of the Giant Spider rig family - the Fire
+Beetle at tier 1, the Giant Ant (Worker) at tier 2 and the Giant Ant (Soldier)
+at tier 3 - with their units, their 48 logical placements across both families,
+the soldier's own 1d4 sting so its poison can gate on that weapon's type and
+never reach its bite, that poison's feature and venom buff, the beetle's
+luminescence feature, and the soldier's grab traits carrier on the shared
+Sprint 6 grapple lifecycle. All three are registered ahead of their own
+qualification, so all 48 placements are suppressed: the registered surface is
+952 and the published surface stays at 904 until their mechanics, original
+visuals, both combat modes and lifecycle qualify. Luminescence is a view-local
+light matching the painted glands and a tooltip that says the beetle glows;
+Kingmaker has no mechanics-layer illumination model, nothing in the rules layer
+consults light level, and no part of this appends one.
+
+A source review before the Sprint 14 candidate added three more. The ants carry
+their printed racial Perception as its own feature rather than the Skill Focus
+that was standing in for it, and the Fire Beetle and the two ant castes each
+take a project unit type: the builder reconstructs class levels, facts, body,
+stats and brain from the profile but leaves BlueprintUnitType alone unless a
+creature asks for its own, so without them all three would have been classified
+as the Giant Spider they borrow.
+The resulting append-only ledger contains 2772 stable IDs: 2770 active and 2 reserved.
 
 - **Pure policy** (`FavoredClass/`): `FavoredClassRankPolicy` (the host's
   full/partial alternation, N = fullRank + partialRank, with KMG-owned ceilings

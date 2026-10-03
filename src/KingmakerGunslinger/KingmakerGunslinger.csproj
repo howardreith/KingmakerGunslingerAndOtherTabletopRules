@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.props" Condition="Exists('$(MSBuildToolsPath)\Microsoft.Common.props')" />
   <Import Project="..\..\GamePath.props" Condition="Exists('..\..\GamePath.props')" />
@@ -142,9 +142,15 @@
     <Compile Include="Summoning\ExpandedSummoningSpecialCombatComponents.cs" />
     <Compile Include="Summoning\ExpandedSummoningSprint12CombatComponents.cs" />
     <Compile Include="Summoning\ExpandedSummoningSprint13CombatComponents.cs" />
+    <Compile Include="Summoning\FireBeetleVisualGlow.cs" />
+    <Compile Include="Summoning\GiantAntPoison.cs" />
+    <Compile Include="Summoning\GiantAntPoisonPolicy.cs" />
     <Compile Include="Summoning\GiantWaspPoison.cs" />
     <Compile Include="Summoning\GiantWaspPoisonPolicy.cs" />
+    <Compile Include="Summoning\Sprint14BonePolicy.cs" />
     <Compile Include="Summoning\StirgeAttachPolicy.cs" />
+    <Compile Include="Summoning\SummonInjuryPoison.cs" />
+    <Compile Include="Summoning\SummonInjuryPoisonPolicy.cs" />
     <Compile Include="Summoning\SummonInjuryDiseasePolicy.cs" />
     <Compile Include="Summoning\SummonRagePolicy.cs" />
     <Compile Include="Summoning\SummonShadowMastiffPolicy.cs" />
@@ -1145,6 +1151,9 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningCreatureReview.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint12.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint13.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint14.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint14Combat.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint15.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.PteranodonAttachedView.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircle.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircleEvil.cs" />

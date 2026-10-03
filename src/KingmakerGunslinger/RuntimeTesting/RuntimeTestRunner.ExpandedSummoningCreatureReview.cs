@@ -129,17 +129,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .GenerateVariants(family).Single(value =>
                         value.Creature.Key == key && value.ParentTier == tier &&
                         value.Multiplicity == quantity);
-                // The Shadow Mastiff is still suppressed, and its art has to
-                // be inspected under the party camera before the suppression
-                // is lifted. Sprint 11 and Sprint 12 each opened this door for
-                // exactly their own hidden creatures and closed it again at
-                // publication; this allowance is the same closed list and goes
-                // the same way.
+                // A withheld creature's art has to be inspected under the
+                // party camera before its suppression is lifted, which cannot
+                // be done through a published parent it does not have. Sprints
+                // 11, 12 and 13 each opened this door for exactly their own
+                // hidden creatures and closed it again at publication; the
+                // Sprint 14 allowance is the same closed list and goes the same
+                // way. It is a development-owned route and never a player one:
+                // the parent the review casts through stays unpublished, and
+                // removing these keys from the suppression set is what actually
+                // publishes the creatures.
                 bool suppressedSprint13Candidate =
                     IsSprint13CreatureReviewKey(key) &&
                     !SummonVisibilityCatalog.IsPublished(variant);
+                bool suppressedSprint14Candidate =
+                    IsSprint14InsectReviewKey(key) &&
+                    !SummonVisibilityCatalog.IsPublished(variant);
                 if (!SummonVisibilityCatalog.IsPublished(variant) &&
-                    !suppressedSprint13Candidate)
+                    !suppressedSprint13Candidate &&
+                    !suppressedSprint14Candidate)
                     throw new InvalidOperationException(
                         "A suppressed creature cannot be reviewed through a parent: " +
                         key + ".");
@@ -191,6 +199,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 key == "poisonous-frog";
         }
 
+        /// <summary>
+        /// The insect family, all on the Giant Spider rig: Sprint 14's
+        /// three and Sprint 15's two. They are reviewable while they are
+        /// still withheld because the review casts through a
+        /// development-owned private route rather than the player's menu,
+        /// which is the only way to look at a creature before it publishes.
+        /// </summary>
+        private static bool IsSprint14InsectReviewKey(string key)
+        {
+            return key == "fire-beetle" || key == "giant-ant-worker" ||
+                key == "giant-ant-soldier" || key == "giant-ant-drone" ||
+                key == "giant-stag-beetle";
+        }
+
         private static bool IsOriginalReviewKey(string key)
         {
             // Dog is excluded on purpose: it keeps the native Dog
@@ -198,6 +220,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             return key == "giant-wasp" || key == "stirge" ||
                 key == "dire-rat" || key == "hyena" || key == "goblin-dog" ||
                 IsSprint11UngulateReviewKey(key) ||
+                IsSprint14InsectReviewKey(key) ||
                 IsSprint13CreatureReviewKey(key);
         }
 

@@ -86,22 +86,25 @@ namespace KingmakerGunslinger.DomainTests
                     "86f4287572bef49449b9d06c66adf456")
                     .EquivalentCreatureKey,
                 "Native SNA Smilodon reconciliation changed.");
-            Assertions.Equal(904,
+            Assertions.Equal(970,
                 ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
                     .Concat(ExpandedSummoningCatalog.GenerateVariants(
                         SummonFamily.NaturesAlly))
                     .Count(SummonVisibilityCatalog.IsPublished),
                 "Visible summon placement count changed.");
-            // Sprint 13 is qualified, so nothing is withheld any more. A
-            // creature appearing here again would be a sprint registering
-            // ahead of its own qualification, which is allowed, but it has to
-            // be deliberate rather than a leftover.
-            Assertions.Equal(0,
+            // Sprint 14's two Giant Ant castes are withheld, and not for want
+            // of qualification: their mechanics passed and their printed scent
+            // has no representation in this engine at all. A creature
+            // appearing here for any other reason would be a sprint
+            // registering ahead of its own qualification, which is allowed,
+            // but it has to be deliberate rather than a leftover.
+            Assertions.Equal(
+                SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
                 ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
                     .Concat(ExpandedSummoningCatalog.GenerateVariants(
                         SummonFamily.NaturesAlly))
                     .Count(value => !SummonVisibilityCatalog.IsPublished(value)),
-                "No placement may remain hidden now that Sprint 13 is qualified.");
+                "Only placements that are unqualified or held on a proven engine barrier may remain hidden, and the catalog must hide exactly as many as it declares it hides.");
         }
 
         internal static void DisplayOrderGroupsSinglesBeforeQuantities()
@@ -130,7 +133,7 @@ namespace KingmakerGunslinger.DomainTests
         {
             SummonIconCatalog.Validate();
             SummonViewScaleCatalog.Validate();
-            Assertions.Equal(101, SummonIconCatalog.All.Count,
+            Assertions.Equal(107, SummonIconCatalog.All.Count,
                 "Project icon concept count changed.");
             Assertions.Equal("Dire Bat", SummonIconCatalog.For("dire-bat")
                 .DisplayName, "Dire Bat requires its own creature icon identity.");

@@ -490,6 +490,29 @@ Sprint 13 appends four identities: `KMG.Summoning.Natural.Bite1`, the Poison
 Frog's printed flat-1 bite, and the Wolverine's rage trigger feature, onset
 marker and rage state. It then registers the Shadow Mastiff unit, its four
 Summon Monster placements, `KMG.Summoning.Natural.Tail1d6`, and its bay and
-shadow-blend identities; those four placements remain registered but suppressed
-until the creature qualifies.
-The ledger now contains 2665 stable identifiers: 2663 active and 2 reserved.
+shadow-blend identities; those four placements were registered and suppressed
+while the creature was proved, and published when it qualified on 2026-10-02.
+
+Sprint 14 appends 104 identities for the three insects of the Giant Spider rig
+family. Ninety-nine are structural: a unit each for the Fire Beetle, the Giant
+Ant (Worker) and the Giant Ant (Soldier), and their 48 logical placements with
+the celestial and fiendish execution children the Summon Monster side needs.
+The remaining five are mechanical: `KMG.Summoning.Natural.AntSting1d4`, which
+exists so the soldier's poison can gate on the sting's own weapon type and
+never reach the bite that grabs; `KMG.Summoning.Natural.GiantAnt.Poison` and
+`KMG.Summoning.Natural.GiantAnt.Venom`, the printed injury poison and its
+payload; `KMG.Summoning.Natural.FireBeetle.Luminescence`, a display feature
+beside a view-local light, which grants and denies nothing because Kingmaker
+has no mechanics-layer illumination model; and
+`KMG.Summoning.Special.GiantAntSoldier.Traits`, the soldier's grab carrier on
+the shared Sprint 6 grapple lifecycle, on the primary limb alone. All 48
+placements remain registered and suppressed until the three creatures qualify.
+
+A source review before the candidate appends three more:
+`KMG.Summoning.Natural.GiantAnt.RacialSkills`, the printed +4 racial Perception
+both castes carry in place of the Skill Focus that was standing in for it; and
+`KMG.Summoning.Natural.FireBeetle.UnitType` and
+`KMG.Summoning.Natural.GiantAnt.UnitType`, one shared by both castes, because a
+creature that does not ask for its own unit type keeps its donor's and all
+three of these borrow the Giant Spider.
+The ledger now contains 2772 stable identifiers: 2770 active and 2 reserved.

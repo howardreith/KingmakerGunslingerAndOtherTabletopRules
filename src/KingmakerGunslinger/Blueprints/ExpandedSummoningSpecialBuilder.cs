@@ -217,6 +217,18 @@ namespace KingmakerGunslinger.Blueprints
         /// <summary>The native thrown stone: the Web's pinned delivery visual (correction order, 2026-09-26).</summary>
         internal const string WebProjectileGuid = "c8e6e6e315030b443b5ab9bc07843bb2";
         internal const string MediumBite1d8Guid = "c988aa874d11ff84d873508ddc9b928f";
+        private const string GiantAntSoldierUnitSymbol =
+            "KMG.Summoning.Unit.GiantAntSoldier";
+        private const string GiantAntSoldierTraitsSymbol =
+            "KMG.Summoning.Special.GiantAntSoldier.Traits";
+        private const string GiantAntDroneUnitSymbol =
+            "KMG.Summoning.Unit.GiantAntDrone";
+        private const string GiantAntDroneTraitsSymbol =
+            "KMG.Summoning.Special.GiantAntDrone.Traits";
+        private const string GiantStagBeetleUnitSymbol =
+            "KMG.Summoning.Unit.GiantStagBeetle";
+        private const string GiantStagBeetleTrampleSymbol =
+            "KMG.Summoning.Special.GiantStagBeetle.Trample";
         private const string MonitorLizardUnitSymbol = "KMG.Summoning.Unit.MonitorLizard";
         private const string MonitorLizardCombatTraitsSymbol =
             "KMG.Summoning.Special.MonitorLizard.CombatTraits";
@@ -486,6 +498,12 @@ namespace KingmakerGunslinger.Blueprints
                 AurochsTrampleSymbol, "aurochs");
             ConfigureUngulateTrample(library, bySymbol, "KMG.Summoning.Unit.Bison",
                 BisonTrampleSymbol, "bison");
+            // Sprint 15: a trampling beetle on the ungulates' carrier. Its
+            // policy row derives the printed 1d6+6 and DC 17 rather than
+            // stating them, which is why no new graph was written.
+            ConfigureUngulateTrample(library, bySymbol,
+                GiantStagBeetleUnitSymbol, GiantStagBeetleTrampleSymbol,
+                "giant-stag-beetle");
             ConfigureUngulateTrample(library, bySymbol,
                 WoollyRhinocerosUnitSymbol, WoollyRhinocerosTrampleSymbol,
                 "woolly-rhinoceros");
@@ -1681,6 +1699,26 @@ namespace KingmakerGunslinger.Blueprints
                 DireBearCombatTraitsSymbol, "DireBear", "Dire Bear Grab",
                 "A claw hit lets the bear attempt to grab a foe no larger than itself.",
                 new GrabSpec { Additional = 2, Hold = hold, Grappled = grappled });
+            // Sprint 14. The soldier's spec is the Monitor Lizard's exactly:
+            // the primary limb grabs and nothing else does. That is what keeps
+            // the grab off its sting, which is an additional limb; the sting's
+            // poison is gated on its own weapon type, which is what keeps the
+            // poison off this bite. The worker takes neither carrier, because
+            // the Worker template removes both.
+            ConfigureGrabber(library, bySymbol, GiantAntSoldierUnitSymbol,
+                GiantAntSoldierTraitsSymbol, "GiantAntSoldier",
+                "Giant Ant Grab",
+                "A bite hit lets the soldier attempt to grab a foe no larger than itself. Its sting never grabs.",
+                new GrabSpec { Primary = true, Hold = hold, Grappled = grappled });
+            // Sprint 15: the Drone is the soldier with the advanced simple
+            // template and wings, so its grab is the soldier's grab on a
+            // different unit and takes the same spec. The carrier is its own
+            // because ConfigureGrabber is keyed by unit symbol.
+            ConfigureGrabber(library, bySymbol, GiantAntDroneUnitSymbol,
+                GiantAntDroneTraitsSymbol, "GiantAntDrone",
+                "Giant Ant Grab",
+                "A bite hit lets the drone attempt to grab a foe no larger than itself. Its sting never grabs.",
+                new GrabSpec { Primary = true, Hold = hold, Grappled = grappled });
             ConfigureGiantSpiderWeb(library, bySymbol);
             // Sprint 7, rebuilt: the cats grab with the bite (the tiger and the
             // smilodon also with their two foreclaws); the last two claws are

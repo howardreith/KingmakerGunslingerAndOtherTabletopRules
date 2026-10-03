@@ -389,9 +389,14 @@ def validate(root: Path) -> None:
         ".Bison" in symbol or ".Rhinoceros" in symbol or
         ".WoollyRhinoceros" in symbol or ".DireRat" in symbol or
         ".ShadowMastiff" in symbol or
+        # Sprint 14's insects. ".GiantAnt" covers both castes' units and
+        # placements as well as the shared poison and venom, because the two
+        # castes are one stat block and one poison graph.
+        ".FireBeetle" in symbol or ".GiantAnt" in symbol or
         symbol == "KMG.Summoning.Natural.GoblinDog.Traits" or
         symbol == "KMG.Summoning.Natural.GoblinDog.AllergicReaction" or
         symbol == "KMG.Summoning.Natural.StirgeTouch" or
+        symbol == "KMG.Summoning.Natural.AntSting1d4" or
         symbol == "KMG.Summoning.Natural.WaspSting1d8"}
     expected = sorted((symbol, planned_type) for symbol, planned_type in plan
                       if symbol not in prefix and symbol not in phase2_additions)
@@ -402,9 +407,9 @@ def validate(root: Path) -> None:
     expanded_summoning_manifest.validate(manifest, plan)
 
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningCatalog.cs",
-        "Creatures.Length != 89",
-        "ValidateFamily(SummonFamily.Monster, 81, 457)",
-        "ValidateFamily(SummonFamily.NaturesAlly, 78, 447)",
+        "Creatures.Length != 92",
+        "ValidateFamily(SummonFamily.Monster, 84, 481)",
+        "ValidateFamily(SummonFamily.NaturesAlly, 81, 471)",
         'C("pony","Pony",1,true,1)', 'C("horse","Horse",2,true,2)',
         'C("owlbear","Owlbear",null,false,4)', 'C("cyclops","Cyclops",null,false,5)',
         'C("shambling-mound","Shambling Mound",null,false,6)',
@@ -415,12 +420,12 @@ def validate(root: Path) -> None:
         'C("salt-mephit","Salt Mephit",4,false,4)', 'C("steam-mephit","Steam Mephit",4,false,4)',
         'C("tiger","Tiger",null,false,4,"Leopard")')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs",
-        "RegisteredLogicalPlacementCount = 904;",
-        "SuppressedLogicalPlacementCount = 0;")
+        "RegisteredLogicalPlacementCount = 952;",
+        "SuppressedLogicalPlacementCount = 48;")
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningIdentityCatalog.cs",
-        "UnitCount = 89;",
-        "LogicalAbilityCount = 904;",
-        "TemplatedPlacementCount = 238;",
+        "UnitCount = 92;",
+        "LogicalAbilityCount = 952;",
+        "TemplatedPlacementCount = 262;",
         "NativeExpandedOptionIdentityCount = %d;" % SPRINT3["nativeExpansionWrappers"])
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonNativeExpansionCatalog.cs",
         "Values.Length != %d" % SPRINT3["nativeExpansionWrappers"],
@@ -428,10 +433,10 @@ def validate(root: Path) -> None:
         '"256739c1e61e3f64eaf71734d271f4be","590cd3d5e76fdc649a5f97bc984cd3c4",true',
         '"9bd8cb6180842f44e9302c58e47b91f0","590cd3d5e76fdc649a5f97bc984cd3c4",true')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningNaturalProfiles.cs",
-        "Values.Length != 41",
+        "Values.Length != 44",
         '"Animal", "Vermin", "MagicalBeast", "Humanoid", "Plant"')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonIconCatalog.cs",
-        "Values.Length != %d" % (SPRINT3["projectIcons"] + 10))
+        "Values.Length != %d" % (SPRINT3["projectIcons"] + 13))
     # Correction order: the chartered mephit roles and the ally-safe cloud stay in the code.
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningSpecialProfiles.cs",
         '"Blur", "WindWall"', '"MagicMissile", "ChillMetal"', '"Pyrotechnics", "MagmaForm"',
@@ -507,14 +512,22 @@ def validate(root: Path) -> None:
             raise AssertionError("No Lightning Mephit may enter the catalogs: " + path.name)
     runtime_icons = json.loads((root / "assets/game/icons/expanded-summoning/icon-manifest.json")
                                .read_text(encoding="utf-8-sig"))
-    if runtime_icons["count"] != SPRINT3["projectIcons"] + 10 or \
-            len(runtime_icons["icons"]) != SPRINT3["projectIcons"] + 10 or \
+    # Ten Phase 2 concepts through Sprint 13, and three Sprint 14 insects.
+    if runtime_icons["count"] != SPRINT3["projectIcons"] + 13 or \
+            len(runtime_icons["icons"]) != SPRINT3["projectIcons"] + 13 or \
             not {"pony", "horse", "owlbear", "cyclops", "shambling-mound", "giant-flytrap",
                  "purple-worm", "dust-mephit", "ice-mephit", "magma-mephit", "ooze-mephit",
                  "salt-mephit", "steam-mephit", "tiger", "giant-wasp", "stirge",
                  "aurochs", "bison", "rhinoceros", "woolly-rhinoceros",
                  "remove-stirge", "dire-rat"} <= {row["key"] for row in runtime_icons["icons"]}:
         raise AssertionError("Runtime icon manifest does not carry the Phase 1 icons")
+
+    # Sprint 14's three insects carry their own icons from registration rather
+    # than from publication: a creature that is withheld still has to be able
+    # to show its own face the moment its key leaves the suppression set.
+    if not {"fire-beetle", "giant-ant-worker", "giant-ant-soldier"} <= \
+            {row["key"] for row in runtime_icons["icons"]}:
+        raise AssertionError("Runtime icon manifest is missing a Sprint 14 insect")
     for key in ("pony", "horse", "owlbear", "cyclops", "shambling-mound", "giant-flytrap",
                 "purple-worm", "dust-mephit", "ice-mephit", "magma-mephit", "ooze-mephit",
                 "salt-mephit", "steam-mephit", "tiger", "dire-rat"):
@@ -528,7 +541,7 @@ def validate(root: Path) -> None:
     # Keep the accepted Phase 1 metadata at 251, but validate the current
     # package count with the Phase 2 bird, vermin, quadruped and icon
     # additions.
-    package_count = SPRINT3["packageFileCountWithSoundBank"] + 38
+    package_count = SPRINT3["packageFileCountWithSoundBank"] + 47
     for script in ("Build-Local.ps1", "package.ps1"):
         require_tokens(root / "scripts" / script,
             "{ %d } else { %d }" % (package_count, package_count - 2),
@@ -539,7 +552,9 @@ def validate(root: Path) -> None:
             "assets\\sprint12-quadrupeds",
             "@('dire-rat','hyena','goblin-dog')",
             "assets\\sprint13-creatures",
-            "@('wolverine','shadow-mastiff','poisonous-frog')")
+            "@('wolverine','shadow-mastiff','poisonous-frog')",
+            "assets\\sprint14-insects",
+            "@('fire-beetle','giant-ant-worker','giant-ant-soldier')")
 
     state = json.loads((root / "validation/static-validation.json").read_text(
         encoding="utf-8"))[STATIC_KEY]
