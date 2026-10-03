@@ -20,9 +20,9 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class ExpandedSummoningIdentityCatalog
     {
-        internal const int UnitCount = 94;
-        internal const int LogicalAbilityCount = 970;
-        internal const int TemplatedPlacementCount = 268;
+        internal const int UnitCount = 95;
+        internal const int LogicalAbilityCount = 976;
+        internal const int TemplatedPlacementCount = 271;
         internal const int TemplateExecutionAbilityCount = TemplatedPlacementCount * 2;
         internal const int TemplateBuffCount = 8;
         // Sprint 14 adds eight: the soldier's sting, its poison and venom,
@@ -31,8 +31,12 @@ namespace KingmakerGunslinger.Summoning
         // soldier's grab traits carrier. Sprint 15 adds three: the Drone's own
         // grab traits carrier, the Giant Stag Beetle's trample and its unit
         // type. The Drone needs no poison graph of its own, because the DC is
-        // derived live from the caster's Constitution.
-        internal const int SpecialIdentityCount = 177;
+        // derived live from the caster's Constitution. Sprint 16's
+        // registration adds two, both weapons: no native blueprint carries a
+        // 3d6 bite or a 4d8 tail slap, which is the Dire Crocodile's printed
+        // routine. Its death roll and swallow whole will add their own when
+        // they are implemented.
+        internal const int SpecialIdentityCount = 179;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -269,6 +273,8 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.GiantAntDrone.Traits", "BlueprintBuff"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.GiantStagBeetle.Trample", "BlueprintAbility"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.GiantStagBeetle.UnitType", "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Bite3d6", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Tail4d8", "BlueprintItemWeapon"));
             Validate(result);
             return result.AsReadOnly();
         }
