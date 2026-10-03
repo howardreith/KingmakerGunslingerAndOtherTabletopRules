@@ -154,7 +154,7 @@ namespace KingmakerGunslinger.Acquisition
         /// The same Reliable sentence the authored named Reliable firearms use.
         /// </summary>
         internal const string ReliableItemDescription =
-            "Reliable reduces this firearm's misfire value by 1 after other increases, to a minimum of 0. A natural 1 still misses.";
+            FirearmEnchantmentItemText.Reliable;
 
         internal const string PistolPlus1Symbol = "KMG.Firearms.PistolPlus1Item";
         internal const string MusketPlus1Symbol = "KMG.Firearms.MusketPlus1Item";
