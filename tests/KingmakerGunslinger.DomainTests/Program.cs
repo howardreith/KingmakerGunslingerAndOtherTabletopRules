@@ -641,6 +641,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint14-unit-type", ExpandedSummoningSprint14Tests.NoSprint14InsectKeepsTheDonorsUnitType),
             Case("expanded-summoning.sprint14-injury-poison-needs-a-wound", ExpandedSummoningSprint14Tests.AnInjuryPoisonNeedsAnActualWound),
             Case("expanded-summoning.sprint14-glow-lifecycle", ExpandedSummoningSprint14Tests.TheBeetleGlowFollowsItsBodyAndReleasesInFrame),
+            Case("expanded-summoning.sprint14-catalog-matches-ledger", ExpandedSummoningSprint14Tests.TheIdentityCatalogMatchesTheLedgerExactly),
             Case("expanded-summoning.sprint13-bay-exemptions", ExpandedSummoningSprint13Tests.BaySparesEvilOutsidersAndHonoursItsOwnImmunity),
             Case("expanded-summoning.sprint13-shadow-blend", ExpandedSummoningSprint13Tests.ShadowBlendHasExactlyThePrintedTwoNegations),
             Case("expanded-summoning.sprint13-mastiff-attacks", ExpandedSummoningSprint13Tests.ShadowMastiffAttacksFollowItsPrintedNumbers),
