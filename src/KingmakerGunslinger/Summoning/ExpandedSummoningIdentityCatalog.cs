@@ -25,7 +25,11 @@ namespace KingmakerGunslinger.Summoning
         internal const int TemplatedPlacementCount = 262;
         internal const int TemplateExecutionAbilityCount = TemplatedPlacementCount * 2;
         internal const int TemplateBuffCount = 8;
-        internal const int SpecialIdentityCount = 166;
+        // Sprint 14 adds eight: the soldier's sting, its poison and venom,
+        // the ants' racial Perception, a unit type for the beetle and one
+        // shared by both ant castes, the beetle's luminescence, and the
+        // soldier's grab traits carrier.
+        internal const int SpecialIdentityCount = 174;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -251,6 +255,14 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.ShadowMastiff.BayImmunity", "BlueprintBuff"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.ShadowMastiff.ShadowBlend", "BlueprintActivatableAbility"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.ShadowMastiff.ShadowBlendState", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.AntSting1d4", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.GiantAnt.Poison", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.GiantAnt.Venom", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.GiantAnt.RacialSkills", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.GiantAnt.UnitType", "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.FireBeetle.Luminescence", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.FireBeetle.UnitType", "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.GiantAntSoldier.Traits", "BlueprintFeature"));
             Validate(result);
             return result.AsReadOnly();
         }

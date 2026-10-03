@@ -653,5 +653,73 @@ namespace KingmakerGunslinger.DomainTests
                         "The glow must not reach into " + forbidden + ".");
         }
 
+        /// <summary>
+        /// Every Expanded Summoning identity in the ledger is also in the
+        /// catalog the game builds its blueprints from, and with the same
+        /// planned type.
+        ///
+        /// <para>This is the guard that was missing. A symbol can be allocated
+        /// in the ledger, referenced by a builder and validated by every
+        /// offline gate while nothing ever creates its blueprint, because the
+        /// catalog is a separate hand-maintained list. The first guarded launch
+        /// after Sprint 14's mechanics went in failed at load with a
+        /// KeyNotFoundException from Require, and the eight missing symbols had
+        /// passed 1991 domain tests, a repository wrapper, an exact-reference
+        /// build and a strict package validation on the way there. Nothing
+        /// offline could have caught it, so now something does.</para>
+        /// </summary>
+        internal static void TheIdentityCatalogMatchesTheLedgerExactly()
+        {
+            string path = Path.Combine(Environment.CurrentDirectory,
+                "blueprints", "blueprints.json");
+            JToken[] entries = ((JArray)JObject.Parse(
+                File.ReadAllText(path))["entries"]).ToArray();
+            var ledger = entries
+                .Where(value => ((string)value["symbol"]).StartsWith(
+                    "KMG.Summoning.", StringComparison.Ordinal))
+                .ToDictionary(value => (string)value["symbol"],
+                    value => (string)value["plannedType"],
+                    StringComparer.Ordinal);
+            var catalog = ExpandedSummoningIdentityCatalog.Build()
+                .ToDictionary(value => value.Symbol,
+                    value => value.PlannedType, StringComparer.Ordinal);
+            string[] uncreated = ledger.Keys.Except(catalog.Keys,
+                StringComparer.Ordinal).OrderBy(value => value,
+                StringComparer.Ordinal).ToArray();
+            if (uncreated.Length != 0)
+                throw new InvalidOperationException(
+                    "The ledger allocates identities the catalog never creates, " +
+                    "so nothing builds their blueprints: " +
+                    string.Join(", ", uncreated));
+            string[] unallocated = catalog.Keys.Except(ledger.Keys,
+                StringComparer.Ordinal).OrderBy(value => value,
+                StringComparer.Ordinal).ToArray();
+            if (unallocated.Length != 0)
+                throw new InvalidOperationException(
+                    "The catalog creates identities the ledger never allocated: " +
+                    string.Join(", ", unallocated));
+            string[] mistyped = catalog.Keys
+                .Where(value => catalog[value] != ledger[value])
+                .OrderBy(value => value, StringComparer.Ordinal).ToArray();
+            if (mistyped.Length != 0)
+                throw new InvalidOperationException(
+                    "The catalog and the ledger disagree about a planned type: " +
+                    string.Join(", ", mistyped));
+            // And specifically: every Sprint 14 symbol a builder resolves.
+            foreach (string symbol in new[] {
+                "KMG.Summoning.Natural.AntSting1d4",
+                "KMG.Summoning.Natural.GiantAnt.Poison",
+                "KMG.Summoning.Natural.GiantAnt.Venom",
+                "KMG.Summoning.Natural.GiantAnt.RacialSkills",
+                "KMG.Summoning.Natural.GiantAnt.UnitType",
+                "KMG.Summoning.Natural.FireBeetle.Luminescence",
+                "KMG.Summoning.Natural.FireBeetle.UnitType",
+                "KMG.Summoning.Special.GiantAntSoldier.Traits" })
+                if (!catalog.ContainsKey(symbol))
+                    throw new InvalidOperationException(
+                        "A Sprint 14 builder resolves " + symbol +
+                        " but nothing creates it.");
+        }
+
     }
 }
