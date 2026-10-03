@@ -802,6 +802,57 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         /// <summary>
+        /// The engine's own arithmetic behind one combat-manoeuvre defence.
+        ///
+        /// <para>A single total cannot be checked against a printed number
+        /// without assuming which components went into it, and that assumption
+        /// held for four creatures only because all four had Dexterity 10. The
+        /// rule carries its own working - base attack bonus, Strength,
+        /// Dexterity, dodge, size and miscellaneous - plus whether the
+        /// Dexterity bonus was denied, which is what happens to a creature
+        /// that is flat-footed because it has not acted yet.</para>
+        /// </summary>
+        private sealed class Sprint14CmdBreakdown
+        {
+            internal int Result;
+            internal int Bab;
+            internal int Strength;
+            internal int Dexterity;
+            internal int Dodge;
+            internal int Size;
+            internal int Misc;
+            internal bool DexterityDenied;
+            internal bool FlatFooted;
+
+            internal string Describe(string label)
+            {
+                return label + "=" + Result + "{bab=" + Bab + ";str=" +
+                    Strength + ";dex=" + Dexterity + ";dodge=" + Dodge +
+                    ";size=" + Size + ";misc=" + Misc + ";dexDenied=" +
+                    DexterityDenied + ";flatFooted=" + FlatFooted + "}";
+            }
+        }
+
+        private static Sprint14CmdBreakdown ProbeCombatManeuverDefenceParts(
+            UnitEntityData attacker, UnitEntityData defender,
+            CombatManeuver type)
+        {
+            var rule = new RuleCalculateCMD(attacker, defender, type);
+            Rulebook.Trigger(rule);
+            RuleCalculateBaseCMD b = rule.Base;
+            return new Sprint14CmdBreakdown {
+                Result = rule.Result,
+                Bab = b == null ? int.MinValue : b.ResultBAB,
+                Strength = b == null ? int.MinValue : b.ResultStrengthBonus,
+                Dexterity = b == null ? int.MinValue : b.ResultDexterityBonus,
+                Dodge = b == null ? int.MinValue : b.ResultDodgeBonus,
+                Size = b == null ? int.MinValue : b.ResultSizeBonus,
+                Misc = b == null ? int.MinValue : b.ResultMiscBonus,
+                DexterityDenied = b != null && b.DenyDexterityBonus,
+                FlatFooted = rule.IsTargetFlatFooted };
+        }
+
+        /// <summary>
         /// An already-qualified project buff that carries enough physical
         /// damage reduction to absorb a 1d4+2 sting entirely.
         ///
