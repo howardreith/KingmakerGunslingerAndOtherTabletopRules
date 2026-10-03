@@ -5,8 +5,12 @@ this file is the evidence ledger and final handoff it requires).
 **Repository / origin:** `howardreith/KingmakerGunslingerAndOtherTabletopRules`
 (`https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules.git`).
 **Starting `origin/master`:** `2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a`
-(HEAD equaled `origin/master` at branch creation; fetch during preflight moved
-no master commits — new remote branches/tag `v0.0.141` appeared only).
+(HEAD equaled `origin/master` at branch creation).
+**Ending fetched `origin/master`:** `2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a`
+— **master did not move during the mission** (verified by fetch at close;
+only unrelated remote feature branches and tag `v0.0.141` appeared). No
+rebase or integration is required; merging this branch remains an owner
+action.
 **Mission branch:** `codex/z-weekend-traits-content-2026-10-03`
 (created fresh; no collision).
 **Clean-tree evidence:** `git status --porcelain` at start showed only the
@@ -25,7 +29,7 @@ artifact, UMM `KingmakerGunslinger.dll`, entry `KingmakerGunslinger.Main.Load`.
 
 | Slice | Status | Result | Commit |
 |---|---|---|---|
-| 0 Preflight/ledger | PASS | branch, baseline, inventory, this ledger | `cda8667d3` (interim) + final commit |
+| 0 Preflight/ledger | PASS | branch, baseline, inventory, this ledger | `e51560a1e` + `fff3b778f` + final commit |
 | 1 Nodachi Heirloom Weapon | SKIPPED-ALREADY-COMPLETE | shipped 0.0.93 (`431bef614`), re-verified by the final domain suite | none (no duplicate work) |
 | 2 Firearm description normalization | PASS | 12 description surfaces normalized; mechanics/keys/names untouched | `dea494233` |
 | 3 Fiery Glare (Ifrit) | BLOCKED (icon authoring) | mechanics proven feasible; full design + blocker in the finding | none (finding in `bc83e0044`) |
@@ -74,7 +78,7 @@ status: not applicable (nothing painted).
 | Repository validation | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/validate-repository.ps1` | PASS (exit 0; icon catalog coverage + protected-assignment PASS) — after the deterministic-count pin update 1918→1922 |
 | Domain suite | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/test-domain.ps1 -Configuration Release` | PASS — **1922/1922** tests, 0 failures (1918 inherited + 4 new `firearm-descriptions.*`) |
 | Clean Release build + strict package | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/build.ps1 -Configuration Release -Clean -Package` | PASS — strict standalone UMM package validation of `KingmakerGunslinger-0.0.140-favored-class-integration.zip` (first attempt failed CS0103 — new source file missing from the main csproj — fixed and re-run clean) |
-| Mod-load smoke (guarded, Steam 640820, `KMG_AUTOMATION_WORKING`, auto-exit) | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/Invoke-KingmakerRuntimeTest.ps1 -Scenario working-save-smoke -ExpectedVersion 0.0.140 -SaveName KMG_AUTOMATION_WORKING '-ExitAfterCompletion:$true' '-Confirm:$false'` | RUNTIME-RESULT-PLACEHOLDER |
+| Mod-load smoke (guarded, Steam 640820, `KMG_AUTOMATION_WORKING`, auto-exit) | `powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "& 'scripts\Invoke-KingmakerRuntimeTest.ps1' -Scenario working-save-smoke -ExpectedVersion 0.0.140 -SaveName KMG_AUTOMATION_WORKING -ExitAfterCompletion:$true -Confirm:$false"` | **PASS** — run `20261003T1556228321641Z-1c3db0f090324ae3b33a40d70b6c830f`, 11/11 structured assertions PASS, zero warnings, loaded mod version 0.0.140 on exact commit `fff3b778f`, automatic exit initiated, no Kingmaker process left running; evidence `C:\Dev\KingmakerGunslingerLab\runtime-evidence\20261003T1556228281609Z-working-save-smoke\runtime-result.json` (live-mod backup taken before deploy; deployment manifest `runtime-evidence\deployments\20261003T1556227785778Z\deployment.json`) |
 | Diff hygiene | `git diff --check` | clean |
 | Binary/secret/private-path audit of all commits | inspected full `git diff 2ce70e4e7..HEAD`: only text sources, tests, research docs, ledger, csproj entries, one .gitignore line | clean — no binaries, saves, credentials, machine-local config (`.zcodeignore` explicitly ignored), proprietary dumps or generated packages |
 | Push wrapper | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:/Dev/KingmakerGunslingerLab/codex-policy/Push-KingmakerGunslinger.ps1` | PASS after every slice commit (`e51560a1e`, `ee88a6361`, `7e7cee271` … final below) |
@@ -156,10 +160,23 @@ implementation commit.
 | `e51560a1e` (incl. interim ledger) | docs: start weekend mission handoff ledger | wrapper PASS |
 | `ee88a6361` | docs(research): assess whiteout weather integration | wrapper PASS |
 | `7e7cee271` | docs(research): audit mod item availability | wrapper PASS |
-| FINAL | docs: add weekend mission handoff (this file, completed) | wrapper PASS (below) |
+| `fff3b778f` | docs: draft final weekend mission handoff sections | (with final push) |
+| FINAL | docs: add weekend mission handoff (this file, completed) | wrapper PASS (SHA below) |
 
 No merge, no master push, no tag, no release, no PR (none opened; no
 repository automation created one).
+
+## Final repository state
+
+- Final branch HEAD: this commit (pushed SHA recorded by the wrapper output
+  at close; the push ledger above lists every pushed SHA).
+- Final worktree: clean (tracked and untracked) after this commit; the
+  workspace-local `.zcodeignore` is git-ignored, never committed.
+- Branch pushed through the authorized wrapper only; remote branch identity
+  `origin/codex/z-weekend-traits-content-2026-10-03`.
+- Confirmed: **no merge, no master/main push, no force-push, no history
+  rewrite, no tag, no release, no PR, no version bump** for this mission.
+
 
 
 ## Slice 1 — SKIPPED-ALREADY-COMPLETE evidence
@@ -289,4 +306,3 @@ no non-English firearm entries exist to become stale.
 ## Commit / push ledger
 
 (appended as slices complete)
-
