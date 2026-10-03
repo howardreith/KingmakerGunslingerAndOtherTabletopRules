@@ -1,258 +1,172 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-03 (Sprint 14 qualified; Fire Beetle published)
+## CURRENT STATE, 2026-10-03 (Sprint 14 complete; Sprint 15 in progress)
 
-This header is the single current-state record. Every dated section below it is
-history, kept for provenance. Where a historical section and this header
-disagree, **this header governs** - and several of them now do disagree, because
-the header this replaced still described Sprint 12.
+This header is the single current-state record and is written to be enough on
+its own: a fresh session with no chat history should be able to resume from it
+and the repository. Every dated section below it is history. Where a historical
+section and this header disagree, **this header governs**.
 
 ### Read this first if you are a fresh context
 
 - The worktree directory is called `.worktrees/expanded-summoning-phase2a` but
-  it holds the **tranche 2B branch**. The directory name is a leftover; do not
-  infer the branch from it.
-- Tranche 2A (Sprints 9-13) is finished and its PR #25 is a separate, still-open
-  draft. The work in progress is tranche 2B on PR #26.
-- One owner decision is outstanding and it blocks two creatures. See
-  **Outstanding owner decisions**.
+  it holds the **tranche 2B branch**. The directory name is a leftover.
+- Tranche 2A (Sprints 9-13) is finished; its PR #25 is a separate open draft.
+  The work in progress is tranche 2B on PR #26.
+- Authority is
+  `handoffs/Kingmaker_Codex_TwoDay_Autonomous_Phase2_Mission.md`, the owner's
+  two-day unattended order of 2026-10-03. It authorises continuous work through
+  Sprints 15-21 without routine check-ins.
+- **No blocker is open.** The passive-sense question that held two creatures is
+  settled; see accepted limitations.
 
 ### Effective mission
 
-`artifacts/phase2/mission-claude-revised-v0.0.141.md` - the owner's reviewed
-handoff of 2026-10-01 - plus the Sprint 14 continuation orders of 2026-10-02.
-Authorized scope is Sprints 12-21. The standing boundary is unchanged: **no
-merge, no new release, no mutation of `v0.0.141`, no permanent deployment, no
-Sprint 18, no Sprint 22.** Pushes go only through
+`handoffs/Kingmaker_Codex_TwoDay_Autonomous_Phase2_Mission.md`, which supersedes
+the earlier Phase 2 handoffs for cadence and scope. Standing boundary unchanged:
+**no merge of PR #25, #26 or Phase 2C, no release, no modification of
+`v0.0.141`, no permanent deployment, no Sprint 22**, and none of the prohibited
+subsystems - scent/darkness/passive-sense, grapple persistence, arbitrary-limb,
+global AI/movement/animation rewrites. Pushes go only through
 `codex-policy/Push-KingmakerGunslinger.ps1`.
-
-The 2026-10-02 workflow amendment governs cadence: the full
-test/build/package/runtime/documentation sequence runs at coherent sprint and
-tranche candidate boundaries, not after every edit. The quality bar is
-unchanged.
 
 ### Branch, PR and dependency heads
 
 | Item | Value |
 | --- | --- |
-| Worktree | `.worktrees/expanded-summoning-phase2a` (holds the 2B branch; name is a leftover) |
+| Worktree | `.worktrees/expanded-summoning-phase2a` (holds the 2B branch) |
 | Branch | `codex/expanded-summoning-phase2b-sprints14-17` |
-| Reviewed head this work descends from | `9960da339385efc015370595e94b6454646d8e39` |
-| PR | **#26**, open, draft - "Expanded Summoning Phase 2B: Sprints 14-17" |
-| Tranche 2A branch and PR | `codex/expanded-summoning-phase2a-sprints9-13`, PR #25, open draft, finished |
+| Phase 2A base | `5482db429bd3c4009a031aa733a3091edfa5fe5e` |
+| PR | **#26**, open, draft, stacked on the Phase 2A branch |
+| Tranche 2A | `codex/expanded-summoning-phase2a-sprints9-13`, PR #25, open draft, finished |
 | Published release | `v0.0.141`; immutable under this order |
-| Tranche 2C branch | `codex/expanded-summoning-phase2c-sprints18-21` - not created, and Sprint 18 is not authorized |
+| Tranche 2C branch | `codex/expanded-summoning-phase2c-sprints18-21` - not yet created |
+
+### Accepted engine limitations
+
+- **`OwnerAcceptedEngineLimitation: PASSIVE_CREATURE_SENSES_UNMODELED`**,
+  accepted 2026-10-03. Kingmaker models none of Scent, Darkvision or Low-light
+  Vision; those traits are omitted wherever a bounded native audit proves no
+  faithful carrier exists. No substitute sense, no `OverrideVisionRange` as
+  darkvision, no new sense subsystem, no claim the traits work, and **no
+  creature is ever kept hidden for one of these three alone**. The Dire Bat's
+  exactly-implemented blindsense is unaffected and stays. Evidence:
+  `senseComponentCensus=Blindsensex74/OverrideVisionRangex23` over every
+  component on every loaded blueprint, and `visionEnum=<none>` on
+  `BlueprintUnit`, `UnitEntityData` and `UnitDescriptor`.
+- **`OwnerAcceptedEngineLimitation: ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD`**,
+  accepted 2026-09-26. Active grab, hold, swallow and engulf links and Stirge
+  attachment are session-scoped and must release cleanly on reload. No
+  project-owned re-establishment.
 
 ### Active work
 
 **Tranche 2B, Sprint 14** (Fire Beetle, Giant Ant Worker, Giant Ant Soldier) -
-**mechanically qualified; published in part.**
+**COMPLETE WITH OWNER-ACCEPTED ENGINE LIMITATION.** All three published.
 
-All three creatures passed their mechanics, visuals and lifecycle on one
-closing candidate. The Fire Beetle is published. Both Giant Ant castes are held
-out of publication on a proven engine barrier, not on any failure of their own,
-pending one owner ruling.
+Qualified 174/174 across six guarded scenarios on candidate `cda8d72c`, every
+run restoring the live tree exactly: mechanical pack 56/56, rules pack with 7D
+59/59, visual lifecycle 8/8, and the targeted persistence trio 17/17 at each
+stage. The Fire Beetle published on that qualification and was verified through
+the real player path at 922/922 logical roots and 29/29 wrappers. The two ant
+castes published on 2026-10-03 under the passive-sense limitation, which was the
+only thing holding them.
 
-Qualified on the closing candidate, 174/174 across six guarded scenarios:
-
-- **Mechanical pack, 56/56.** Printed skill totals exactly: Fire Beetle
-  Perception +0, both ants +5, zero class ranks anywhere, each total broken down
-  by modifier descriptor - the beetle's Stealth 4 is the Small size bonus and
-  not a builder rank. Printed trip defences. A sting that is its own weapon
-  type. A grab on the bite alone. An injury poison a wound delivers and a hit
-  reduced to zero damage does not. Vermin mind-affecting immunity proved by a
-  native mind-affecting buff the insect refuses and the caster accepts. The
-  Giant Wasp requalified across the wound gate that replaced its `OnlyHit`
-  test: DC 18, 1d2 Dexterity, six exposures, one application per attack, and a
-  venom that survives its source's destruction with its DC intact.
-- **7D, both combat modes, 59/59 including the rules pack.** Seven cells: all
-  three insects in RTWP and turn-based, through the `UnitAttack` command a
-  player's click produces, queued on the unit and ticked by the game. Every
-  cell's first rule event lands on the same frame its animation's contact was
-  acted. The soldier's grapple carries exactly +4 where its trip carries none,
-  measured before anything is held. One dedicated cell removes the grab traits
-  so the forced full attack cannot be cut short, and produces both attacks named
-  separately - `Bite1d6` and `AntSting1d4` - with both landing and only the
-  sting delivering venom.
-- **Visual lifecycle, 8/8.** The Fire Beetle's light across a direct cast, 1d3
-  and 1d4+1: one component, carrier and light per body; every light dark while
-  its body's renderers are disabled though its carrier still exists; every light
-  back on when they return; and all counts exactly at the pre-cast baseline
-  after the frame boundary following disposal.
-- **Targeted persistence, 17/17 at each of the three stages.** The soldier's
-  grab comes back cleanly released under
-  `ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD` with no limb left occupied.
-  Its venom does the opposite and must: present once before the save and once
-  after the reload, with DC 14, 1d2 **Strength**, four exposures and one save to
-  cure all unchanged, ticking safely afterwards, and gone from every unit after
-  cleanup.
-
-**Tranche 2A, Sprints 12 and 13** - complete and published; see the history
-below.
+**Tranche 2B, Sprint 15** (Giant Ant Drone, Giant Stag Beetle) - **in
+progress.** Registered and withheld; identities, profiles, mechanics wiring,
+icons and domain tests are done and gated. Outstanding: meshes, paintings, view
+registration, per-kind bone policy, view scale, offline review, then one batched
+guarded review and publication.
 
 ### Next executable action
 
-Verify the published surface through the real player path on the publication
-head, then continue into Sprint 15 (Giant Ant Drone, Giant Stag Beetle). The
-Drone prints scent and is governed by the same outstanding ruling as the ant
-castes; the Giant Stag Beetle is not affected.
+Run the Sprint 14 ant publication gate and the 30 new ant roots through the real
+player path, then continue Sprint 15 by building the two deterministic meshes
+and paintings offline.
 
 ### Inventory: registered, hidden, visible
 
-Derived from source, not copied from any earlier document.
+Derived from source.
 
 | Quantity | Value |
 | --- | --- |
-| Project creature identities | 92 |
-| Registered generated placements | 952 |
-| Suppressed (hidden) placements | 30 - Giant Ant (Worker) 16, Giant Ant (Soldier) 14 |
-| Published generated placements | 922 (483 SM + 468 SNA, less the 29 wrappers below) |
+| Project creature identities | 94 |
+| Registered generated placements | 970 |
+| Suppressed (hidden) placements | 18 - Giant Ant (Drone) 12, Giant Stag Beetle 6 |
+| Published generated placements | 952 (498 SM + 483 SNA, less the 29 wrappers below) |
 | Retained native wrappers | 29 (17 SM + 12 SNA) |
-| Total visible player choices | 951 |
+| Total visible player choices | 981 |
 
-Sprint 14 registered 48 placements across three insects and published 18 of
-them: the Fire Beetle, reachable from both parents, splitting nine each way. The
-Sprint 14 domain suite pins the per-creature split so this arithmetic cannot
-drift when the held castes publish.
-
-### Closing candidate and baseline
-
-| Gate | Result |
-| --- | --- |
-| Candidate commit | `cda8d72ccfa6f624c1d41674230ad107ae26b589` |
-| Version | `0.0.141` |
-| Package SHA-256 | `369b08714317b76b4d401c8fc800758170ebd82e0f4045fd781fc26bdb8090a7` |
-| Loaded DLL SHA-256 | `fa18164cc7afa5c1a140e69c62b8854955ffa090dd84ed163692225ce3c51cbd` |
-| Domain suite | 1,993 tests, 0 failures |
-| Guarded runtime | 174/174 across six scenarios, every one restored exactly |
-
-The publication change that followed - removing the Fire Beetle's suppression
-key and re-pinning the frozen surface - is a behavioural change, not a
-documentation delta, so it carries its own Sprint gate and its own verification
-run on the publication head.
+The Sprint 14 and 15 domain suites pin each creature's placement split, so this
+arithmetic cannot drift when the held pair publishes.
 
 ### Live installation and restoration state
 
 The live mod tree
 `C:\Program Files (x86)\Steam\steamapps\common\Pathfinder Kingmaker\Mods\KingmakerGunslinger`
-holds **136 files**, `Info.json` version **0.0.117**, tree fingerprint
-`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3` from
-`Get-KmgTreeFingerprint`. Every guarded run in this session restored exactly to
-that fingerprint. The owner did not install 0.0.141, so this remains the correct
-pre-run state. No lease is held, no Kingmaker process runs, no guarded
-transaction is open. `UnityModManager.exe` belongs to the owner's desktop
-session and is not touched.
+holds **136 files**, `Info.json` **0.0.117**, tree fingerprint
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`. Every
+guarded run so far restored exactly to it. No lease is held, no Kingmaker
+process runs, no guarded transaction is open.
 
-Runtime memory preflight before each guarded batch: record free physical memory
-and the largest Steam helper working set, and do not launch into pressure. Two
-runs were lost to host out-of-memory kills on 2026-10-02 when `steamwebhelper`
-leaked to 22.4 GiB of 39.7; restarting that helper, which Steam respawns itself,
-recovered it. Across this session it grew from 0.4 to 2.9 GiB with free memory
-between 28.4 and 26.0 GiB, which is well clear and was left alone.
+Memory preflight before every guarded batch: free physical memory and the
+largest Steam helper working set, against the stable baseline. Two runs were
+lost to host out-of-memory kills on 2026-10-02 when `steamwebhelper` leaked to
+22.4 GiB of 39.7; restarting that helper, which Steam respawns, recovered it.
 
-### Open criteria
+### Open gates
 
-Sprint 14 is **not complete**. Open:
+1. Sprint 14 ant publication gate and the 30 new ant roots through the real
+   player path. The exhaustive old-root replay is deferred to tranche close.
+2. Sprint 15: meshes, paintings, view registration, bone policy, view scales,
+   offline review, one batched guarded review, publication.
+3. Sprints 16-17, then the Phase 2B tranche close.
 
-1. Published-surface verification through the real player path on the
-   publication head, covering the Fire Beetle's 18 new roots and the 29 native
-   wrappers. The 904 previously published paths are a tranche-closure gate and
-   are deliberately not replayed here.
-2. The two Giant Ant castes remain unpublished pending the ruling below.
-
-The complete five-profile compatibility matrix and the exhaustive player-path
-census are tranche-closure gates and stay deferred to the end of tranche 2B.
+The exhaustive player-path census, whole-roster persistence matrix and
+five-profile compatibility matrix are tranche-closure gates and stay deferred.
 
 ### Settled adaptations - do not reopen
 
-- `OwnerAcceptedEngineLimitation: ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD`.
-  Active grab/hold/swallow/engulf links and Stirge attachment are
-  session-scoped and must release cleanly on reload. No project-owned hold
-  re-establishment.
 - Trample: exactly one automatic response. A defender with a legal executable
-  melee AoO takes one at -4, spending its ordinary resource, before contact
-  damage and with no Reflex save for that contact; otherwise the printed
-  Reflex save for half. A stopping AoO cancels that contact and later contacts.
-  No duplicate ordinary-movement AoO, no interactive pop-up.
+  melee attack of opportunity takes one at -4, spending its ordinary resource,
+  before contact damage and with no Reflex save for that contact; otherwise the
+  printed Reflex save for half. A stopping attack cancels that contact and
+  later contacts. No duplicate ordinary-movement attack, no interactive pop-up.
 - Stampede requires three allied Stampede holders each actively executing their
-  own registered Trample in the same round while mutually adjacent. The
-  `STAMPEDE_OMITTED_NO_SAFE_COORDINATED_ACTION_SEAM` fallback was conditional
-  authority and was not used.
+  own registered Trample in the same round while mutually adjacent.
 - Stirge: prey remains free to move, act and attack the separately targetable
   Stirge; standard-action removal picks the better of CMB or Mobility; four
-  actual Constitution drains end the meal; **one** 10% disease exposure check
-  per Stirge/victim pair after actual Constitution damage, per the primary
-  source's limiting sentence; zero actual drain does not consume it; Filth
-  Fever is the disclosed disease adaptation.
+  actual Constitution drains end the meal; one 10% disease exposure check per
+  Stirge/victim pair after actual Constitution damage; Filth Fever is the
+  disclosed disease adaptation.
 - Giant Ant poison is **1d2 Strength**, DC 14, four exposures, one save to cure.
   Dexterity belongs to the Giant Wasp. These creatures share a cloned native
   graph and the differences between them are where copying goes wrong; a test
   asserting the wasp's stat against the ant was written and corrected during
   Sprint 14, and the stat block is the authority over the test.
-
-### Outstanding owner decisions
-
-**BLOCKED, one ruling, holding two creatures: Giant Ant (Worker) and Giant Ant
-(Soldier).**
-
-Their printed scent and darkvision 60 ft cannot be represented in Kingmaker, and
-the barrier is engine-wide rather than specific to them.
-
-- **Scent has no carrier at all.** The bounded native audit searched every
-  component on every blueprint the running game had loaded - the whole library,
-  not a filtered subset - and found nothing that could express it. The engine's
-  only sense mechanic is `AddBlindsight` with `UnitPartBlindsense`, used on 74
-  blueprints and already used by this project for the Dire Bat. It is a
-  different rule and was not substituted.
-- **Darkvision has no carrier either.** No enum reachable from `BlueprintUnit`,
-  `UnitEntityData` or `UnitDescriptor` holds a darkvision value.
-  `OverrideVisionRange` is a sight radius in metres, carried by 23 blueprints -
-  six Vordakai and Horagnamon boss units set 50 m against a live default of
-  8.5 m. Using it for "darkvision 60 ft" would set the ants to 18.3 m and more
-  than double their detection range in all conditions, an advantage no stat
-  block grants them. In an engine with no darkness that is inventing a mechanic,
-  not implementing one.
-- The Fire Beetle's requirement was the opposite and is met exactly: its stat
-  block prints **no** darkvision, nothing was inherited from the Vermin racial
-  class, the project unit type or the Giant Spider donor, and the live unit
-  reads `darkvision=False` with no carrier. Its printed low-light vision is
-  equally unrepresentable and equally without mechanical consequence, so nothing
-  about the creature is softened by its absence.
-
-**No `OwnerAcceptedEngineLimitation:` label has been created for this.** Only
-the owner converts a proven barrier into an accepted limitation. The smallest
-decision that unblocks it is one of:
-
-1. **Accept the limitation** under a name - the natural one is
-   `KINGMAKER_HAS_NO_CREATURE_SENSE_MODEL` - covering scent, darkvision and
-   low-light vision for every creature in the project, since the gap is
-   engine-wide and already applies silently to published creatures such as the
-   wolves, which have scent on paper. Publishing the two castes then needs no
-   code change: the suppression keys come out and the records name the label.
-2. **Charter a scent subsystem** as separate work, in which case the castes stay
-   held until it exists.
-
-Option 1 changes no behaviour and is reversible. Option 2 is a new subsystem and
-is outside the authorized scope until chartered. The same ruling governs Sprint
-15's Giant Ant Drone, which prints scent; the Giant Stag Beetle does not.
+- The Giant Ant Drone omits the "+2 to all skills" clause the frozen contract
+  attributes to the advanced simple template: that clause is not part of the
+  template and no primary source was found for it, so Perception derives to +7
+  rather than +9. An unsourced bonus would make the creature stronger than
+  printed.
 
 ### Human review status
 
-`HumanReview: NOT_PERFORMED_NONBLOCKING`. No personal owner approval of any
-Phase 2 asset has been given or may be claimed. Internal visual acceptance is
-recorded separately and is never presented as owner approval.
+`HumanReview: NOT_PERFORMED_NONBLOCKING`. No owner visual approval of any
+Phase 2 asset has been given or may be claimed.
 
 ### Resume instructions for a new context
 
-1. `cd` to `.worktrees/expanded-summoning-phase2a` and confirm the branch is
+1. `cd` to `.worktrees/expanded-summoning-phase2a`; confirm the branch is
    `codex/expanded-summoning-phase2b-sprints14-17`, not the 2A branch the
-   directory name suggests. Confirm the tree is clean.
-2. `git fetch --all --tags --prune`. Confirm PR #26 is still open and draft, and
-   preserve any descendant work rather than resetting to the reviewed head.
-3. Read the effective mission, then this header, then
-   `EXPANDED-SUMMONING-PHASE2-EVIDENCE-INDEX.md` for the run-by-run record.
-4. Re-fingerprint the live mod tree before any guarded run and restore exactly
-   that state afterwards. Run the memory preflight first.
+   directory name suggests, and that the tree is clean.
+2. `git fetch --all --tags --prune`. Preserve and push any valid local
+   descendant rather than resetting to an older remote head.
+3. Read the mission at
+   `handoffs/Kingmaker_Codex_TwoDay_Autonomous_Phase2_Mission.md`, then this
+   header, then `EXPANDED-SUMMONING-PHASE2-EVIDENCE-INDEX.md`.
+4. Run the memory preflight and re-fingerprint the live mod tree before any
+   guarded run; restore exactly afterwards.
 5. Continue at **Next executable action**. Do not re-run historical gates
    solely because the context changed.
 

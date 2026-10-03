@@ -236,36 +236,30 @@ namespace KingmakerGunslinger.DomainTests
                         expected.Placements + ", so the publication " +
                         "arithmetic for a partial publication is wrong.");
             }
-            // The Fire Beetle publishes; the two ant castes do not, and the
-            // reason is an engine barrier rather than a failure of theirs.
-            // Kingmaker has no scent mechanic at all, so their printed scent
-            // cannot be implemented and must not be approximated with
-            // blindsight, and the Sprint 14 order's instruction for that
-            // outcome is to hold the affected creature pending one owner
-            // ruling.
+            // All three publish now. The Fire Beetle went out on its own
+            // qualification; the two ant castes followed once the owner
+            // accepted PASSIVE_CREATURE_SENSES_UNMODELED on 2026-10-03, which
+            // was the only thing holding them - their mechanics had already
+            // qualified 174/174. Nothing was implemented to earn that: the
+            // ruling records an engine gap rather than closing one, and no
+            // substitute sense exists anywhere in this sprint.
             string[] wronglyWithheld = mine
-                .Where(value => value.Creature.Key == FireBeetleKey &&
-                    !SummonVisibilityCatalog.IsPublished(value))
+                .Where(value => !SummonVisibilityCatalog.IsPublished(value))
                 .Select(value => value.StableKey).ToArray();
             if (wronglyWithheld.Length != 0)
                 throw new InvalidOperationException(
-                    "The Fire Beetle qualified and must be published: " +
+                    "Every Sprint 14 creature is qualified and published; " +
+                    "these are still withheld: " +
                     string.Join(", ", wronglyWithheld));
-            string[] wronglyPublished = mine
-                .Where(value => value.Creature.Key != FireBeetleKey &&
-                    SummonVisibilityCatalog.IsPublished(value))
-                .Select(value => value.StableKey).ToArray();
-            if (wronglyPublished.Length != 0)
+            // 904 before Sprint 14, plus all 48 of its placements: the Fire
+            // Beetle's 18 on qualification, and the two ant castes' 30 once the
+            // owner accepted PASSIVE_CREATURE_SENSES_UNMODELED, which was the
+            // only thing holding them.
+            if (SummonVisibilityCatalog.PublishedLogicalPlacementCount != 952)
                 throw new InvalidOperationException(
-                    "A Giant Ant caste is published while its printed scent " +
-                    "has no engine representation and no owner ruling: " +
-                    string.Join(", ", wronglyPublished));
-            // 904 before Sprint 14, plus the Fire Beetle's 18.
-            if (SummonVisibilityCatalog.PublishedLogicalPlacementCount != 922)
-                throw new InvalidOperationException(
-                    "The published surface must be 922: the 904 published " +
-                    "before Sprint 14 plus the Fire Beetle's 18, with the " +
-                    "two ant castes' 30 still withheld. It is " +
+                    "The published surface must be 952: the 904 published " +
+                    "before Sprint 14 plus all 48 of its placements, with " +
+                    "only Sprint 15's 18 still withheld. It is " +
                     SummonVisibilityCatalog
                         .PublishedLogicalPlacementCount + ".");
             if (SummonVisibilityCatalog.RegisteredLogicalPlacementCount -

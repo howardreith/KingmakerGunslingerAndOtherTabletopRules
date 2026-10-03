@@ -191,7 +191,7 @@ namespace KingmakerGunslinger.DomainTests
             // adds the Shadow Mastiff's four Summon Monster placements, leaving
             // 933 choices visible after the Sprint 13 publication, and 951
             // after Sprint 14 publishes the Fire Beetle alone.
-            Assertions.Equal(951,
+            Assertions.Equal(981,
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.Monster) +
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.NaturesAlly),
                 "The plan must not change the shipped visible choice count.");
