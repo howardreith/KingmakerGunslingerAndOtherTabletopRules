@@ -214,9 +214,11 @@ namespace KingmakerGunslinger.DomainTests
                 value.Creature.Key == "dire-bat").ToArray();
             Assertions.Equal(970, all.Count(SummonVisibilityCatalog.IsPublished),
                 "The published surface must exclude only candidates that are unqualified or held on a proven engine barrier.");
-            Assertions.Equal(0, all.Count(value =>
+            Assertions.Equal(
+                SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
+                all.Count(value =>
                     !SummonVisibilityCatalog.IsPublished(value)),
-                "The authorized hidden set changed: nothing is withheld - every registered placement of every qualified creature publishes.");
+                "The authorized hidden set must be exactly the size the catalog declares; which creature is in it belongs to whichever sprint is in flight, and Sprint 9's own are checked next.");
             Assertions.Equal(0, all.Count(value =>
                     value.Creature.Key == "dire-bat" &&
                     !SummonVisibilityCatalog.IsPublished(value)),

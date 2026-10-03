@@ -68,21 +68,27 @@ namespace KingmakerGunslinger.DomainTests
                         "Every Sprint 15 placement publishes now that the " +
                         "pair has qualified: " + expected.Key);
             }
-            // Publishing the last withheld pair makes the two surfaces
-            // equal for the first time since Sprint 9, which is a stronger
-            // statement than either number alone: it says nothing anywhere is
-            // registered and hidden.
-            if (SummonVisibilityCatalog.PublishedLogicalPlacementCount != 970)
+            // What this test owns is Sprint 15's own eighteen placements,
+            // asserted above, and the invariant that ties the three counts
+            // together. It deliberately does not pin the whole published
+            // surface: that number moves whenever a later sprint registers a
+            // creature, which says nothing about whether Sprint 15 published,
+            // and the inventory tests assert it in one place.
+            if (SummonVisibilityCatalog.RegisteredLogicalPlacementCount -
+                    SummonVisibilityCatalog.SuppressedLogicalPlacementCount !=
+                    SummonVisibilityCatalog.PublishedLogicalPlacementCount)
                 throw new InvalidOperationException(
-                    "The published surface must be 970, not " +
+                    "The published surface must be the registered one less " +
+                    "the withheld.");
+            // Whatever is withheld now belongs to a later sprint. No Sprint 15
+            // placement may be among it, which the per-creature loop above
+            // establishes directly.
+            if (SummonVisibilityCatalog.PublishedLogicalPlacementCount < 970)
+                throw new InvalidOperationException(
+                    "The published surface cannot fall below the 970 Sprint " +
+                    "15 left it at; it is " +
                     SummonVisibilityCatalog.PublishedLogicalPlacementCount +
                     ".");
-            if (SummonVisibilityCatalog.RegisteredLogicalPlacementCount != 970)
-                throw new InvalidOperationException(
-                    "The registered surface must be 970.");
-            if (SummonVisibilityCatalog.SuppressedLogicalPlacementCount != 0)
-                throw new InvalidOperationException(
-                    "Nothing may remain withheld once Sprint 15 publishes.");
         }
 
         /// <summary>

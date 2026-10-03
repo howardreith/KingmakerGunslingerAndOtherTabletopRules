@@ -179,7 +179,7 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $stagedMod 'assets\soun
 # Strict package inventory including the six reviewed Sprint 12 quadruped
 # mesh/painting files. The soundbank and its manifest account for the optional
 # two-file difference.
-$expectedPackageFileCount = if ($hasFirearmSoundBank) { 304 } else { 302 }
+$expectedPackageFileCount = if ($hasFirearmSoundBank) { 305 } else { 303 }
 & $python (Join-Path $root 'tools\create_deterministic_package.py') --source $stagedMod --output $packagePath --expected-file-count $expectedPackageFileCount
 if ($LASTEXITCODE -ne 0) { throw 'Deterministic package creation failed.' }
 & (Join-Path $PSScriptRoot 'validate-package.ps1') `

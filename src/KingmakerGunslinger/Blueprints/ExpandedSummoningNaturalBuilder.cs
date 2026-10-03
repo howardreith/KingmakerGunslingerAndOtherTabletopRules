@@ -56,6 +56,12 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Summoning.Natural.Tail3d6";
         private const string Bite2d8Symbol =
             "KMG.Summoning.Natural.Bite2d8";
+        // Sprint 16: no native blueprint carries a 3d6 bite or a 4d8 tail
+        // slap, so the Dire Crocodile's printed routine needs both.
+        private const string Bite3d6Symbol =
+            "KMG.Summoning.Natural.Bite3d6";
+        private const string Tail4d8Symbol =
+            "KMG.Summoning.Natural.Tail4d8";
         private const string Claw1d8Symbol =
             "KMG.Summoning.Natural.Claw1d8";
         private const string Talon2d6Symbol =
@@ -281,6 +287,18 @@ namespace KingmakerGunslinger.Blueprints
                     "native large bite weapon"),
                 Require<BlueprintItemWeapon>(bySymbol, Bite2d8Symbol),
                 Bite2d8Symbol, 2, DiceType.D8);
+            // Sprint 16: the Dire Crocodile's printed 3d6 bite and 4d8 tail
+            // slap, each on the native animation its shape already uses.
+            ConfigureWeapon(BlueprintLibraryLookup.RequireExact<
+                BlueprintItemWeapon>(library, NativeBiteLarge2d6Guid,
+                    "native large bite weapon"),
+                Require<BlueprintItemWeapon>(bySymbol, Bite3d6Symbol),
+                Bite3d6Symbol, 3, DiceType.D6);
+            ConfigureWeapon(BlueprintLibraryLookup.RequireExact<
+                BlueprintItemWeapon>(library, NativeTail1d8Guid,
+                    "native animated tail weapon"),
+                Require<BlueprintItemWeapon>(bySymbol, Tail4d8Symbol),
+                Tail4d8Symbol, 4, DiceType.D8);
             ConfigureWeapon(BlueprintLibraryLookup.RequireExact<
                 BlueprintItemWeapon>(library, NativeClaw2d4Guid,
                     "native large claw animation weapon"),
@@ -1000,6 +1018,10 @@ namespace KingmakerGunslinger.Blueprints
                     "large 2d6 bite");
             if (key == "Bite2d8") return Require<BlueprintItemWeapon>(bySymbol,
                 Bite2d8Symbol);
+            if (key == "Bite3d6") return Require<BlueprintItemWeapon>(bySymbol,
+                Bite3d6Symbol);
+            if (key == "Tail4d8") return Require<BlueprintItemWeapon>(bySymbol,
+                Tail4d8Symbol);
             if (key == "Talon2d6") return Require<BlueprintItemWeapon>(bySymbol,
                 Talon2d6Symbol);
             if (key == "Claw1d8") return Require<BlueprintItemWeapon>(bySymbol,

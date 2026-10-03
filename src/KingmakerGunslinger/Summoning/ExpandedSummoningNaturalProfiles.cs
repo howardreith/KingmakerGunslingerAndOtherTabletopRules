@@ -96,7 +96,7 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Values.Length != 46 || Values.Select(value => value.Key)
+            if (Values.Length != 47 || Values.Select(value => value.Key)
                     .Distinct(StringComparer.Ordinal).Count() != Values.Length)
                 throw new InvalidOperationException(
                     "The natural reconstruction catalog is incomplete or duplicated.");
@@ -254,6 +254,17 @@ namespace KingmakerGunslinger.Summoning
                         "WeaponFinesse", "ImprovedInitiative"),
                     "Sprint is a bounded once-per-summoning swift burst on the special builder (Sprint 8): +30 feet for one round under the game's own speed cap, never repeatable within one summoning.",
                     "Cheetah visual: a procedural spotted coat on the leopard rig at a lean view scale (Sprint 8)."),
+                PS("dire-crocodile", "Dire Crocodile", "Animal", 12,
+                    "Gargantuan", 37, 10, 25, 1, 14, 2, 20, 15, "Bite3d6",
+                    Array.Empty<string>(), A("Tail4d8"),
+                    A("TripDefenseFourLegs", "SkillFocusPerception",
+                        "SkillFocusStealth", "ImprovedInitiative", "IronWill",
+                        "ImprovedCriticalBite"),
+                    "Kingmaker exposes one movement speed; the 20-foot ground speed is used and the 30-foot swim is omitted. No underwater movement system is introduced, which the sprint's order forbids, and omitting the mode rather than the rate keeps the creature at its printed land speed.",
+                    "The printed tail slap is a secondary natural attack - five lower than the bite and at half the Strength bonus - so it is declared in the secondary limb slot rather than among the additional primaries. A Gargantuan creature's printed Space 20 feet with Reach 15 feet is the standard footprint for its size, so unlike the Crocodile it must not carry the reduced-reach carrier.",
+                    "The printed Run feat is omitted. Kingmaker has no running action distinct from ordinary movement and no jumping, so nothing in the rules layer could consult it; nothing is substituted for it and no record claims it works. Hold breath is omitted for the same kind of reason - the game models neither swimming nor drowning - and neither omission is covered by the passive-sense label, which is only for Scent, Darkvision and Low-light Vision.",
+                    "The printed low-light vision is omitted under OwnerAcceptedEngineLimitation: PASSIVE_CREATURE_SENSES_UNMODELED, accepted 2026-10-03, on the evidence recorded there.",
+                    "REGISTERED AND WITHHELD. Its grab, death roll and swallow whole are not implemented yet, which is exactly why every one of its placements is suppressed; this profile is the stat block the implementation will be measured against, not a claim that the creature is finished."),
                 PS("crocodile", "Crocodile", "Animal", 3, "Large",
                     19, 12, 17, 1, 12, 2, 20, 4, "Bite1d8",
                     Array.Empty<string>(), A("Tail1d12"),

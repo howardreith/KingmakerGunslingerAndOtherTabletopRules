@@ -38,23 +38,21 @@ namespace KingmakerGunslinger.Summoning
         //
         // What is left is Sprint 15's pair, waiting on their own gates and on
         // nothing else.
-        // Empty, and kept rather than deleted: registering a creature
-        // ahead of its own qualification and withholding it until the guarded
-        // review passes is how every sprint in this phase has worked, and the
-        // next one will need it again.
+        // Sprint 16's Dire Crocodile, registered ahead of its own
+        // qualification and withheld until its guarded review passes, which is
+        // how every sprint in this phase has worked.
         private static readonly HashSet<string> SuppressedCreatureKeys =
-            new HashSet<string>(Array.Empty<string>(),
+            new HashSet<string>(new[] { "dire-crocodile" },
                 StringComparer.Ordinal);
 
-        internal const int RegisteredLogicalPlacementCount = 970;
-        // Nothing is withheld. Sprint 15's Giant Ant Drone and Giant Stag
-        // Beetle published on their guarded review, which was the last hidden
-        // pair in the tranche, so for the first time since Sprint 9 the
-        // registered and published surfaces are the same. A creature held for
-        // any reason subtracts exactly its own placements, which the Sprint 14
-        // and 15 domain suites assert per creature so this arithmetic cannot
-        // drift.
-        internal const int SuppressedLogicalPlacementCount = 0;
+        internal const int RegisteredLogicalPlacementCount = 976;
+        // Sprint 16's Dire Crocodile: 6 placements, three parent tiers in
+        // each family for a tier-7 creature, registered ahead of its own
+        // qualification. Everything of Sprints 9-15 is published. A creature
+        // held for any reason subtracts exactly its own placements, which the
+        // per-sprint domain suites assert per creature so this arithmetic
+        // cannot drift.
+        internal const int SuppressedLogicalPlacementCount = 6;
         internal const int PublishedLogicalPlacementCount =
             RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount;
 
