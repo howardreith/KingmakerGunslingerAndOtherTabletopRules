@@ -416,7 +416,7 @@ def planned():
         ("KMG.Summoning.Natural.GiantAnt.Poison", "BlueprintFeature"),
         ("KMG.Summoning.Natural.GiantAnt.Venom", "BlueprintBuff"),
         ("KMG.Summoning.Natural.FireBeetle.Luminescence", "BlueprintFeature"),
-        ("KMG.Summoning.Special.GiantAntSoldier.Traits", "BlueprintFeature"),
+        ("KMG.Summoning.Special.GiantAntSoldier.Traits", "BlueprintBuff"),
         # Sprint 14 follow-up: the ants' printed racial Perception, and
         # project unit types so the three insects are not classified as
         # the Giant Spider they borrow. One ant type serves both castes.
