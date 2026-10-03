@@ -4191,17 +4191,58 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static void ArmExpandedSummoningPersistenceAntVenom(
             UnitEntityData[] units)
         {
+            // The first version reported applications=0 and nothing else, so
+            // a missing soldier, a missing sting and an attack that simply
+            // missed all looked identical. Every step is recorded now.
+            var steps = new List<string>();
             UnitEntityData soldier = ExpandedSummoningPersistenceUnit(units,
                 "KMG_Summoning_Unit_GiantAntSoldier");
             UnitEntityData victim = ExpandedSummoningPersistenceUnit(units,
                 "KMG_Summoning_Unit_Horse");
+            steps.Add("soldier=" + (soldier == null ? "<none>" : "found") +
+                ";victim=" + (victim == null ? "<none>" : "found"));
             if (soldier == null || victim == null || soldier.Body == null)
+            {
+                _expandedSummoningPersistenceAntVenomArming =
+                    string.Join(";", steps.ToArray()) + ";armed=false";
                 return;
-            List<Kingmaker.Items.Slots.WeaponSlot> limbs =
-                soldier.Body.AdditionalLimbs;
-            ItemEntityWeapon sting = limbs == null || limbs.Count == 0 ||
-                limbs[0] == null ? null : limbs[0].MaybeWeapon;
-            if (sting == null) return;
+            }
+            // The blueprint names the sting; the live weapon is then matched
+            // against it, which is the lookup the Sprint 14 poison exercise
+            // already proves works. Indexing the live body's limb list is not
+            // the same thing and was what the first version did.
+            BlueprintItemWeapon planned =
+                soldier.Blueprint.Body.AdditionalLimbs == null ||
+                soldier.Blueprint.Body.AdditionalLimbs.Length != 1 ? null :
+                soldier.Blueprint.Body.AdditionalLimbs[0];
+            ItemEntityWeapon sting = planned == null ? null :
+                LiveLimbWeapons(soldier).FirstOrDefault(value =>
+                    ReferenceEquals(value.Blueprint, planned));
+            BlueprintScriptableObject[] loaded = BlueprintBootstrap.Library
+                .GetAllBlueprints().Where(value => value != null).ToArray();
+            BlueprintFeature poisonFeature = loaded
+                .OfType<BlueprintFeature>().FirstOrDefault(value =>
+                    value != null && value.name ==
+                    "KMG_Summoning_Natural_GiantAnt_Poison");
+            BlueprintBuff venomBuff = loaded.OfType<BlueprintBuff>()
+                .FirstOrDefault(value => value != null && value.name ==
+                    "KMG_Summoning_Natural_GiantAnt_Venom");
+            steps.Add("plannedSting=" + (planned == null ? "<none>" :
+                planned.name) + ";liveSting=" + (sting == null ? "<none>" :
+                "found") + ";liveLimbs=" + LiveLimbWeapons(soldier)
+                    .Count(value => value != null) +
+                // If the attack lands and nothing arrives, the next question is
+                // whether the creature even carries the feature that delivers
+                // it, so that is answered here rather than in another run.
+                ";carriesPoisonFeature=" + (poisonFeature != null &&
+                    soldier.Descriptor.HasFact(poisonFeature)) +
+                ";holdingSomething=" + (soldier.HoldingState != null));
+            if (sting == null)
+            {
+                _expandedSummoningPersistenceAntVenomArming =
+                    string.Join(";", steps.ToArray()) + ";armed=false";
+                return;
+            }
             int fortitude = victim.Descriptor.Stats.SaveFortitude.BaseValue;
             int damage = victim.Descriptor.Damage;
             int dexterityDamage = victim.Descriptor.Stats.Dexterity.Damage;
@@ -4212,8 +4253,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                 PlaceExpandedSummoningUnit(victim, soldier.Position +
                     UnityEngine.Vector3.right * 1.2f);
                 UnityEngine.Random.InitState(FindNativeD20Seed(20));
-                Rulebook.Trigger(new RuleAttackWithWeapon(soldier, victim,
-                    sting, 0));
+                var attack = new RuleAttackWithWeapon(soldier, victim, sting,
+                    0);
+                Rulebook.Trigger(attack);
+                // Counted here, in the frame that attacked, so a venom that
+                // arrived and was then lost over the frames before the save
+                // cannot be confused with one that never arrived at all.
+                steps.Add("hit=" + (attack.AttackRoll != null &&
+                        attack.AttackRoll.IsHit) + ";autoMiss=" +
+                    (attack.AttackRoll != null &&
+                        attack.AttackRoll.AutoMiss) + ";damage=" +
+                    (attack.MeleeDamage == null ? 0 :
+                        Math.Max(0, attack.MeleeDamage.Damage)) +
+                    ";appliedImmediately=" + (venomBuff == null ? -1 :
+                        victim.Descriptor.Buffs.Enumerable.Count(value =>
+                            value != null && ReferenceEquals(value.Blueprint,
+                                venomBuff))));
+            }
+            catch (Exception exception)
+            {
+                steps.Add("threw=" + exception.GetType().Name);
             }
             finally
             {
@@ -4221,7 +4280,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 victim.Descriptor.Damage = damage;
                 victim.Descriptor.Stats.Dexterity.Damage = dexterityDamage;
             }
+            _expandedSummoningPersistenceAntVenomArming =
+                string.Join(";", steps.ToArray()) + ";armed=true";
         }
+
+        private static string _expandedSummoningPersistenceAntVenomArming =
+            "not-armed";
 
         /// <summary>
         /// Prepare: the venom is in the victim with its printed numbers.
@@ -4320,7 +4384,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 dc == GiantAntPoisonPolicy.DifficultyClass(
                     ExpandedSummoningPersistenceAntConstitutionBonus(units));
             valid = ok;
-            return (prepare ? "prepare" : "reloaded") + "[applications=" +
+            return (prepare ? "prepare" : "reloaded") + "{arming:" +
+                _expandedSummoningPersistenceAntVenomArming + "}[applications=" +
                 applications + ";dcOnAppliedBuff=" + dc + ";stat=" +
                 (component == null ? "<none>" : component.Stat.ToString()) +
                 ";dice=" + (component == null ? "<none>" :
