@@ -1,6 +1,6 @@
 {
     "schemaVersion":  1,
-    "count":  104,
+    "count":  106,
     "icons":  [
                   {
                       "key":  "air-mephit",
@@ -933,6 +933,24 @@
                       "key":  "woolly-rhinoceros",
                       "file":  "woolly-rhinoceros.png",
                       "sha256":  "6c4fca4860efe04b48c4fd38639d8b6093bf71f6e61b88dcb2f0131948606c41",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "giant-ant-drone",
+                      "file":  "giant-ant-drone.png",
+                      "sha256":  "61c529722f74f148920982a1c0258b1d34adcf2b577c4f6316e4b152f3e89b68",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "giant-stag-beetle",
+                      "file":  "giant-stag-beetle.png",
+                      "sha256":  "4e8ff343aefdd5f8ed85830193fe6c4df10dfc2baf91b2087e1726a8d1cf896c",
                       "width":  128,
                       "height":  128,
                       "format":  "RGBA PNG",

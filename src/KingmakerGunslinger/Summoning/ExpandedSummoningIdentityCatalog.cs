@@ -20,16 +20,19 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class ExpandedSummoningIdentityCatalog
     {
-        internal const int UnitCount = 92;
-        internal const int LogicalAbilityCount = 952;
-        internal const int TemplatedPlacementCount = 262;
+        internal const int UnitCount = 94;
+        internal const int LogicalAbilityCount = 970;
+        internal const int TemplatedPlacementCount = 268;
         internal const int TemplateExecutionAbilityCount = TemplatedPlacementCount * 2;
         internal const int TemplateBuffCount = 8;
         // Sprint 14 adds eight: the soldier's sting, its poison and venom,
         // the ants' racial Perception, a unit type for the beetle and one
-        // shared by both ant castes, the beetle's luminescence, and the
-        // soldier's grab traits carrier.
-        internal const int SpecialIdentityCount = 174;
+        // shared by all the ant castes, the beetle's luminescence, and the
+        // soldier's grab traits carrier. Sprint 15 adds three: the Drone's own
+        // grab traits carrier, the Giant Stag Beetle's trample and its unit
+        // type. The Drone needs no poison graph of its own, because the DC is
+        // derived live from the caster's Constitution.
+        internal const int SpecialIdentityCount = 177;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -263,6 +266,9 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.FireBeetle.Luminescence", "BlueprintFeature"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.FireBeetle.UnitType", "BlueprintUnitType"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.GiantAntSoldier.Traits", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.GiantAntDrone.Traits", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.GiantStagBeetle.Trample", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.GiantStagBeetle.UnitType", "BlueprintUnitType"));
             Validate(result);
             return result.AsReadOnly();
         }

@@ -221,6 +221,14 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Summoning.Unit.GiantAntSoldier";
         private const string GiantAntSoldierTraitsSymbol =
             "KMG.Summoning.Special.GiantAntSoldier.Traits";
+        private const string GiantAntDroneUnitSymbol =
+            "KMG.Summoning.Unit.GiantAntDrone";
+        private const string GiantAntDroneTraitsSymbol =
+            "KMG.Summoning.Special.GiantAntDrone.Traits";
+        private const string GiantStagBeetleUnitSymbol =
+            "KMG.Summoning.Unit.GiantStagBeetle";
+        private const string GiantStagBeetleTrampleSymbol =
+            "KMG.Summoning.Special.GiantStagBeetle.Trample";
         private const string MonitorLizardUnitSymbol = "KMG.Summoning.Unit.MonitorLizard";
         private const string MonitorLizardCombatTraitsSymbol =
             "KMG.Summoning.Special.MonitorLizard.CombatTraits";
@@ -490,6 +498,12 @@ namespace KingmakerGunslinger.Blueprints
                 AurochsTrampleSymbol, "aurochs");
             ConfigureUngulateTrample(library, bySymbol, "KMG.Summoning.Unit.Bison",
                 BisonTrampleSymbol, "bison");
+            // Sprint 15: a trampling beetle on the ungulates' carrier. Its
+            // policy row derives the printed 1d6+6 and DC 17 rather than
+            // stating them, which is why no new graph was written.
+            ConfigureUngulateTrample(library, bySymbol,
+                GiantStagBeetleUnitSymbol, GiantStagBeetleTrampleSymbol,
+                "giant-stag-beetle");
             ConfigureUngulateTrample(library, bySymbol,
                 WoollyRhinocerosUnitSymbol, WoollyRhinocerosTrampleSymbol,
                 "woolly-rhinoceros");
@@ -1695,6 +1709,15 @@ namespace KingmakerGunslinger.Blueprints
                 GiantAntSoldierTraitsSymbol, "GiantAntSoldier",
                 "Giant Ant Grab",
                 "A bite hit lets the soldier attempt to grab a foe no larger than itself. Its sting never grabs.",
+                new GrabSpec { Primary = true, Hold = hold, Grappled = grappled });
+            // Sprint 15: the Drone is the soldier with the advanced simple
+            // template and wings, so its grab is the soldier's grab on a
+            // different unit and takes the same spec. The carrier is its own
+            // because ConfigureGrabber is keyed by unit symbol.
+            ConfigureGrabber(library, bySymbol, GiantAntDroneUnitSymbol,
+                GiantAntDroneTraitsSymbol, "GiantAntDrone",
+                "Giant Ant Grab",
+                "A bite hit lets the drone attempt to grab a foe no larger than itself. Its sting never grabs.",
                 new GrabSpec { Primary = true, Hold = hold, Grappled = grappled });
             ConfigureGiantSpiderWeb(library, bySymbol);
             // Sprint 7, rebuilt: the cats grab with the bite (the tiger and the

@@ -13,16 +13,16 @@ namespace KingmakerGunslinger.DomainTests
     {
         internal static void ShippedSurfaceMatchesFrozenBaseline()
         {
-            Assertions.Equal(92, ExpandedSummoningBaselineInventory.UniqueCreatures,
+            Assertions.Equal(94, ExpandedSummoningBaselineInventory.UniqueCreatures,
                 "Baseline unique creature count changed.");
-            Assertions.Equal(84, ExpandedSummoningBaselineInventory.RosterEntries(
+            Assertions.Equal(85, ExpandedSummoningBaselineInventory.RosterEntries(
                 SummonFamily.Monster), "Baseline SM roster count changed.");
-            Assertions.Equal(81, ExpandedSummoningBaselineInventory.RosterEntries(
+            Assertions.Equal(83, ExpandedSummoningBaselineInventory.RosterEntries(
                 SummonFamily.NaturesAlly), "Baseline SNA roster count changed.");
-            Assertions.Equal(481, ExpandedSummoningBaselineInventory
+            Assertions.Equal(487, ExpandedSummoningBaselineInventory
                 .RegisteredPlacements(SummonFamily.Monster),
                 "Baseline SM registered placements changed.");
-            Assertions.Equal(471, ExpandedSummoningBaselineInventory
+            Assertions.Equal(483, ExpandedSummoningBaselineInventory
                 .RegisteredPlacements(SummonFamily.NaturesAlly),
                 "Baseline SNA registered placements changed.");
             // The Shadow Mastiff is a Summon Monster creature, so its four
@@ -100,9 +100,9 @@ namespace KingmakerGunslinger.DomainTests
             // of its own qualification, which is allowed and is how both
             // Sprint 12 and Sprint 13 ran, but it has to be deliberate rather
             // than a leftover - which is what this pin is for.
-            Assertions.Equal(2,
+            Assertions.Equal(4,
                 ExpandedSummoningBaselineInventory.RegisteredButHiddenCreatures.Count,
-                "The registered-but-hidden creature set changed: it is Sprint 14's two Giant Ant castes, held on the scent barrier after the Fire Beetle published.");
+                "The registered-but-hidden creature set changed: it is Sprint 14's two Giant Ant castes, held on the scent barrier after the Fire Beetle published, plus Sprint 15's two registered ahead of their own qualification.");
             Assertions.True(ExpandedSummoningBaselineInventory.ProxyVisualCreatures
                 .Contains("pteranodon<Roc"),
                 "Pteranodon must still be recorded as a Roc-policy visual proxy.");
@@ -115,9 +115,9 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(ExpandedSummoningBaselineInventory.ProxyVisualCreatures
                 .Contains("dire-tiger<Smilodon"),
                 "Smilodon displays under its own name and is not a proxy.");
-            Assertions.Equal(30,
+            Assertions.Equal(32,
                 ExpandedSummoningBaselineInventory.ProxyVisualCreatures.Count,
-                "The frozen borrowed-body proxy count changed: the three Sprint 14 insects all borrow the Giant Spider.");
+                "The frozen borrowed-body proxy count changed: all five Sprint 14 and 15 insects borrow the Giant Spider.");
         }
 
         /// <summary>

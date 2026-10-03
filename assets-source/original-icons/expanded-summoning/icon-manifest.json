@@ -2,7 +2,7 @@
     "schemaVersion":  1,
     "provenance":  "Project-owned original artwork: 77 AI-assisted roster-mission concepts, Phase 1 procedural Blender additions, and Phase 2 original creature/action paintings; no copied game or third-party pixels.",
     "generator":  "tools/New-ExpandedSummoningIcons.ps1",
-    "count":  104,
+    "count":  106,
     "icons":  [
                   {
                       "key":  "air-mephit",
@@ -968,6 +968,7 @@
                                                "KMG.Summoning.Ability.SNA.Tier7.FireBeetle.OneD4PlusOne",
                                                "KMG.Summoning.Ability.SNA.Tier8.FireBeetle.OneD4PlusOne",
                                                "KMG.Summoning.Ability.SNA.Tier9.FireBeetle.OneD4PlusOne",
+                                               "KMG.Summoning.Natural.FireBeetle.UnitType",
                                                "KMG.Summoning.Unit.FireBeetle"
                                            ]
                   },
@@ -3057,6 +3058,67 @@
                                                "KMG.Summoning.Ability.SNA.Tier8.WoollyRhinoceros.OneD4PlusOne",
                                                "KMG.Summoning.Ability.SNA.Tier9.WoollyRhinoceros.OneD4PlusOne",
                                                "KMG.Summoning.Unit.WoollyRhinoceros"
+                                           ]
+                  },
+                  {
+                      "key":  "giant-ant-drone",
+                      "displayName":  "Giant Ant (Drone)",
+                      "sourceFile":  "assets-source/original-icons/expanded-summoning/sources/giant-ant-drone.png",
+                      "productionFile":  "assets/game/icons/expanded-summoning/giant-ant-drone.png",
+                      "sourceSha256":  "67b0a0ca2b5d48433a9aff553f28e5f40ff0a5f258b3b00253e07ca27f36225f",
+                      "outputSha256":  "61c529722f74f148920982a1c0258b1d34adcf2b577c4f6316e4b152f3e89b68",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog",
+                      "blueprintSymbols":  [
+                                               "KMG.Summoning.Ability.SM.Tier4.GiantAntDrone.One",
+                                               "KMG.Summoning.Ability.SM.Tier4.GiantAntDrone.One.Celestial",
+                                               "KMG.Summoning.Ability.SM.Tier4.GiantAntDrone.One.Fiendish",
+                                               "KMG.Summoning.Ability.SM.Tier5.GiantAntDrone.OneD3",
+                                               "KMG.Summoning.Ability.SM.Tier5.GiantAntDrone.OneD3.Celestial",
+                                               "KMG.Summoning.Ability.SM.Tier5.GiantAntDrone.OneD3.Fiendish",
+                                               "KMG.Summoning.Ability.SM.Tier6.GiantAntDrone.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SM.Tier6.GiantAntDrone.OneD4PlusOne.Celestial",
+                                               "KMG.Summoning.Ability.SM.Tier6.GiantAntDrone.OneD4PlusOne.Fiendish",
+                                               "KMG.Summoning.Ability.SM.Tier7.GiantAntDrone.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SM.Tier7.GiantAntDrone.OneD4PlusOne.Celestial",
+                                               "KMG.Summoning.Ability.SM.Tier7.GiantAntDrone.OneD4PlusOne.Fiendish",
+                                               "KMG.Summoning.Ability.SM.Tier8.GiantAntDrone.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SM.Tier8.GiantAntDrone.OneD4PlusOne.Celestial",
+                                               "KMG.Summoning.Ability.SM.Tier8.GiantAntDrone.OneD4PlusOne.Fiendish",
+                                               "KMG.Summoning.Ability.SM.Tier9.GiantAntDrone.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SM.Tier9.GiantAntDrone.OneD4PlusOne.Celestial",
+                                               "KMG.Summoning.Ability.SM.Tier9.GiantAntDrone.OneD4PlusOne.Fiendish",
+                                               "KMG.Summoning.Ability.SNA.Tier4.GiantAntDrone.One",
+                                               "KMG.Summoning.Ability.SNA.Tier5.GiantAntDrone.OneD3",
+                                               "KMG.Summoning.Ability.SNA.Tier6.GiantAntDrone.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SNA.Tier7.GiantAntDrone.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SNA.Tier8.GiantAntDrone.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SNA.Tier9.GiantAntDrone.OneD4PlusOne",
+                                               "KMG.Summoning.Unit.GiantAntDrone"
+                                           ]
+                  },
+                  {
+                      "key":  "giant-stag-beetle",
+                      "displayName":  "Giant Stag Beetle",
+                      "sourceFile":  "assets-source/original-icons/expanded-summoning/sources/giant-stag-beetle.png",
+                      "productionFile":  "assets/game/icons/expanded-summoning/giant-stag-beetle.png",
+                      "sourceSha256":  "b961e23aa4a6c8461ae14846c24ae68382221fcb532c98ccfefb1ac4441549eb",
+                      "outputSha256":  "4e8ff343aefdd5f8ed85830193fe6c4df10dfc2baf91b2087e1726a8d1cf896c",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog",
+                      "blueprintSymbols":  [
+                                               "KMG.Summoning.Ability.SNA.Tier4.GiantStagBeetle.One",
+                                               "KMG.Summoning.Ability.SNA.Tier5.GiantStagBeetle.OneD3",
+                                               "KMG.Summoning.Ability.SNA.Tier6.GiantStagBeetle.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SNA.Tier7.GiantStagBeetle.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SNA.Tier8.GiantStagBeetle.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SNA.Tier9.GiantStagBeetle.OneD4PlusOne",
+                                               "KMG.Summoning.Natural.GiantStagBeetle.UnitType",
+                                               "KMG.Summoning.Unit.GiantStagBeetle"
                                            ]
                   }
               ]

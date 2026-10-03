@@ -397,7 +397,7 @@ namespace KingmakerGunslinger.DomainTests
             // ledger append is five larger.
             Assertions.Equal(AppendedLedgerIdentities, symbols.Length + 5,
                 "Sprint 13 ledger count must match its declared identities.");
-            Assertions.True(catalog.Contains("UnitCount = 92"),
+            Assertions.True(catalog.Contains("UnitCount = 94"),
                 "The Shadow Mastiff unit identity is not registered.");
         }
 
@@ -540,8 +540,8 @@ namespace KingmakerGunslinger.DomainTests
                 package.Contains("assets\\sprint13-creatures") &&
                 buildOutput.Contains("assets\\sprint13-creatures\\wolverine-mesh.json") &&
                 packageCheck.Contains("assets\\sprint13-creatures\\poisonous-frog-albedo.png") &&
-                build.Contains("{ 298 } else { 296 }") &&
-                package.Contains("{ 298 } else { 296 }"),
+                build.Contains("{ 300 } else { 298 }") &&
+                package.Contains("{ 300 } else { 298 }"),
                 "All six Sprint 13 asset files enter the strict standalone package.");
         }
 
