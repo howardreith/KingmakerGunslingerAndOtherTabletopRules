@@ -247,17 +247,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 caster);
 
             foreach (var creature in new[] {
-                // Cmd and Trip are the defences the creature should have when
-                // it is not flat-footed. Bab, Str and SizeBonus are the
-                // engine components each one must produce, so a total that
-                // happens to come out right for the wrong reasons fails.
+                // Cmd and Trip are the defences the creature should have
+                // when it is not flat-footed. Bab, Str, SizeNet and Dex are
+                // the quantities the rules name, so a total that comes out
+                // right for the wrong reasons still fails - but SizeNet is the
+                // sum of however many components the engine chooses to express
+                // a size modifier with, because that split is not something
+                // any source text constrains. A Large creature's +1 arrives
+                // here as size=2 and misc=-1.
                 new { Key = DroneKey, Tier = Sprint15DroneTier, Cmd = 17,
                     Trip = 25, Perception = Sprint15DronePerception,
-                    Printed = false, Bab = 1, Str = 4, SizeBonus = 0,
+                    Printed = false, Bab = 1, Str = 4, SizeNet = 0,
                     Dex = 2 },
                 new { Key = StagBeetleKey, Tier = Sprint15StagBeetleTier,
                     Cmd = 20, Trip = 28, Perception = 0, Printed = true,
-                    Bab = 5, Str = 4, SizeBonus = 1, Dex = 0 } })
+                    Bab = 5, Str = 4, SizeNet = 1, Dex = 0 } })
             {
                 UnitEntityData unit = CastExpandedSummoningCombatUnit(
                     blueprints, caster, SummonFamily.NaturesAlly,
@@ -291,8 +295,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool componentsExact =
                     bull.Bab == creature.Bab &&
                     bull.Strength == creature.Str &&
-                    bull.Size == creature.SizeBonus &&
-                    bull.Misc == 0 &&
+                    bull.Size + bull.Misc == creature.SizeNet &&
                     (denied ? bull.Dexterity == 0 :
                         bull.Dexterity == creature.Dex);
                 bool defencesExact = componentsExact &&
