@@ -4280,6 +4280,39 @@ namespace KingmakerGunslinger.RuntimeTesting
                 victim.Descriptor.Damage = damage;
                 victim.Descriptor.Stats.Dexterity.Damage = dexterityDamage;
             }
+            // The sting lands and draws no blood, every time: the only
+            // persistent victims in this fixture are the caster's own summons,
+            // and the engine does not let one wound an ally - the arming
+            // recorded hit=True, autoMiss=False and damage=0. The wound gate
+            // then correctly refuses to deliver an injury poison, which is the
+            // product being right and the fixture being wrong.
+            //
+            // Delivery by sting is proved three other ways on this same
+            // candidate: the poison discrimination exercise across wounding,
+            // missing and zero-damage cases, the Giant Wasp requalification,
+            // and 7D's soldier cells, where a real full-attack command put the
+            // venom in from the sting alone. What this leg is for is whether an
+            // applied venom survives a save, a reload and a module-disabled
+            // load with its numbers, so where the sting cannot wound an ally
+            // the venom is applied directly instead, with the soldier as its
+            // caster and its DC derived by the creature's own policy from the
+            // soldier's live Constitution, exactly as the delivery action does
+            // it. No hostile is added to a working save to arrange otherwise.
+            if (venomBuff != null &&
+                victim.Descriptor.Buffs.GetBuff(venomBuff) == null)
+            {
+                Buff direct = victim.Descriptor.AddBuff(venomBuff, soldier,
+                    null);
+                if (direct != null && direct.Context != null &&
+                    direct.Context.Params != null)
+                    direct.Context.Params.DC =
+                        GiantAntPoisonPolicy.DifficultyClass(
+                            soldier.Descriptor.Stats.Constitution.Bonus);
+                steps.Add("stingCouldNotWoundAnAlly=true;appliedDirectly=" +
+                    (direct != null) + ";dc=" + (direct == null ||
+                        direct.Context == null || direct.Context.Params == null
+                        ? -1 : direct.Context.Params.DC));
+            }
             _expandedSummoningPersistenceAntVenomArming =
                 string.Join(";", steps.ToArray()) + ";armed=true";
         }
@@ -4406,7 +4439,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData soldier = ExpandedSummoningPersistenceUnit(units,
                 "KMG_Summoning_Unit_GiantAntSoldier");
             return soldier == null ? 0 :
-                soldier.Descriptor.Stats.Constitution.ModifiedValue / 2 - 5;
+                soldier.Descriptor.Stats.Constitution.Bonus;
         }
 
         private static void ArmExpandedSummoningPersistenceRage(
@@ -4902,7 +4935,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _expandedSummoningPersistenceRageValid,
                     "a real damage rule through the Rulebook before the save, then the fresh-load buff set on the deserialized creature"),
                 Assertion("expanded-summoning-sprint14-ant-venom-persistence",
-                    prepare ? "the Giant Ant (Soldier)'s venom delivered into a fixture victim by a real sting before the save, once, carrying the DC its own Constitution derives" :
+                    prepare ? "the Giant Ant (Soldier)'s venom in a fixture victim before the save, once, carrying the DC its own Constitution derives. The sting is tried first and cannot wound here - every persistent victim in this fixture is one of the caster's own summons, and the engine lets the attack land for no damage, after which the wound gate correctly declines to deliver an injury poison - so the venom is applied directly with the soldier as its caster and the DC its own policy derives, and the arming record says which path was used. Delivery by sting is proved on this same candidate three other ways: the poison discrimination cases, the Giant Wasp requalification, and 7D's soldier cells, where a real full-attack command delivered it from the sting alone. What this leg proves is survival, not delivery" :
                         verifyCleanup ? "after the reload the victim still carries that venom exactly once, with the same applied DC, the same Dexterity stat and 1d2 dice, the same four exposures cured by one save, and an exposure that ticks without throwing. A hold and a poison want opposite answers from this same save - Kingmaker carries no active grapple, so the grab must come back released, while it does carry buffs, so the venom must come back intact - which is why the two are separate assertions and neither can excuse the other" :
                         "after cleanup no unit anywhere carries the venom",
                     _expandedSummoningPersistenceAntVenomDetail,
