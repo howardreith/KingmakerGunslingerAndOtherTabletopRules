@@ -3565,8 +3565,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             // accepted limitation already settles - not that the hold returns,
             // but that nothing is left holding a victim it cannot name and no
             // limb stays occupied by a link the engine dropped.
+            // Not the Pony: the Stirge attaches to the Pony in this same
+            // fixture, and holding it broke that leg - a victim cannot be
+            // seized by an ant and hosting a Stirge at once. The Giant Spider
+            // is Medium, which a Medium grabber may hold, and nothing else in
+            // the persistence fixture arms it.
             new[] { "KMG_Summoning_Unit_GiantAntSoldier",
-                "KMG_Summoning_Unit_Pony", "-1" }
+                "KMG_Summoning_Unit_GiantSpider", "-1" }
         };
 
         /// <summary>

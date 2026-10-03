@@ -74,6 +74,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private int _sprint14CombatActings;
         private int _sprint14CombatActedFrame = -1;
         private int _sprint14CombatGrabBonusBefore;
+        private bool _sprint14CombatSoldierSeparationShown;
         private bool _sprint14CombatQueued;
         private int _sprint14CombatFirstRollFrame = -1;
         private string _sprint14CombatEntry = "not-entered";
@@ -427,9 +428,35 @@ namespace KingmakerGunslinger.RuntimeTesting
                     StringComparison.Ordinal);
             // A worker has one limb and must never produce two; a soldier has
             // two and must produce both, separately named.
-            bool separation = key == "giant-ant-soldier" ?
-                distinct.Length >= 2 && stingHits + biteHits >= 2 :
-                distinct.Length == 1;
+            //
+            // The first version required both of the soldier's attacks to
+            // *hit*, which is the dice and not the rule: its RTWP cell planned
+            // and fired both, named them separately, delivered the venom from
+            // the sting alone - and failed, because the bite happened to miss.
+            // What the contract asks for is records that identify both
+            // attacks, so the count that matters is attacks made.
+            //
+            // The other case is engine behaviour rather than a defect. In
+            // turn-based the soldier's bite hit, its grab took hold, and the
+            // sequence ended after that one attack: a creature that has just
+            // seized its target does not go on swinging. A cell cut short that
+            // way is accepted and says so, and the separation still has to be
+            // demonstrated somewhere - the closing assertion requires at least
+            // one soldier cell to have produced both attacks in one sequence,
+            // so this cannot pass with the grab as an excuse every time.
+            bool grabCutSequenceShort = key == "giant-ant-soldier" &&
+                rolls.Length == 1 && biteHits >= 1 &&
+                grabBonusAfter > grabBonus;
+            bool separation;
+            if (key != "giant-ant-soldier") separation = distinct.Length == 1;
+            else
+            {
+                bool bothAttacksMade = distinct.Length >= 2 &&
+                    rolls.Length >= 2;
+                if (bothAttacksMade)
+                    _sprint14CombatSoldierSeparationShown = true;
+                separation = bothAttacksMade || grabCutSequenceShort;
+            }
 
             bool ok = commandRan && modeEntered && everyRollLogged &&
                 contactBeforeRules && noCrossDelivery && grabExact &&
@@ -453,7 +480,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";venom=" + venomPresent + ";noCrossDelivery=" +
                 noCrossDelivery + ";grabBonusBeforeAttack=" + grabBonus +
                 ";grabBonusAfterAttack=" + grabBonusAfter + ";grabExact=" +
-                grabExact + ";separation=" + separation + ";rolls=" +
+                grabExact + ";separation=" + separation +
+                ";grabCutSequenceShort=" + grabCutSequenceShort + ";rolls=" +
                 string.Join(" | ", rolls) + "]" + (ok ? "=ok" : "=wrong"));
 
             if (_sprint14CombatObserver != null)
@@ -558,12 +586,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                     StringComparison.Ordinal)) &&
                 restored.Contains(";settingNow=" +
                     _sprint14CombatTurnModeBefore) &&
-                restored.Contains(";hostileInCombat=False");
+                restored.Contains(";hostileInCombat=False") &&
+                // Somewhere, in one mode or the other, the soldier's forced
+                // full attack has to have actually produced both of its
+                // attacks in one sequence. Accepting a grab-shortened cell is
+                // only reasonable while that stays true elsewhere.
+                _sprint14CombatSoldierSeparationShown;
             _rulesCases.Add(Assertion(
                 "expanded-summoning-sprint14-combat-modes",
-                "all three insects attack through the command a player's click produces, in RTWP and in turn-based combat: the command is queued on the unit, started by the game, waits on its own animation's contact and fires each attack after it, every attack reaches the combat log, the worker produces exactly one named weapon and the soldier's forced full attack produces its bite and its sting as separately named attacks, the soldier's grapple carries exactly the +4 grab that its trip does not, the venom is present only when a sting wounded, and both modes are left as they were found",
+                "all three insects attack through the command a player's click produces, in RTWP and in turn-based combat: the command is queued on the unit, started by the game, waits on its own animation's contact and fires each attack after it, every attack reaches the combat log, the worker produces exactly one named weapon and the soldier's forced full attack produces its bite and its sting as separately named attacks - counting attacks made rather than attacks that hit, since which of them lands is the dice - with a sequence cut short by the soldier's own grab accepted as the engine behaviour it is, provided at least one of its two cells still produced both attacks in one sequence; the soldier's grapple carries exactly the +4 grab that its trip does not, measured before anything is held so the separate +5 to maintain cannot be mistaken for it; the venom is present only when a sting wounded; and both modes are left as they were found",
                 "cells=" + _sprint14CombatRows.Count + "/" +
-                    Sprint14CombatCells.Length + ";restored=" + restored +
+                    Sprint14CombatCells.Length +
+                    ";soldierSeparationShown=" +
+                    _sprint14CombatSoldierSeparationShown +
+                    ";restored=" + restored +
                     ";" + string.Join(";", _sprint14CombatRows.ToArray()) +
                     ";steps=" + string.Join(" | ",
                         _sprint14CombatSteps.ToArray()),
