@@ -481,12 +481,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                     rolls.Length >= 2;
                 if (bothAttacksMade)
                     _sprint14CombatSoldierSeparationShown = true;
-                // The hardened cell exists to produce both attacks, so nothing
-                // else will do for it: no grab may be taken and nothing may
-                // hit, because the point is a sequence that runs to its end.
+                // The hardened cell exists to produce both attacks, and that
+                // is what it has to show. It must not also be required to
+                // produce no hits: a natural 20 hits whatever the Armour Class
+                // is, so demanding none is a condition the rules forbid
+                // meeting, and the first version of this cell failed on its
+                // sting landing through an Armour Class of about 110. What the
+                // hardening is for is the bite: with the bite missing, no grab
+                // is taken, nothing cuts the sequence short and the sting
+                // follows. So the grab must not have fired - that is the
+                // condition worth checking beside both attacks being made -
+                // and the sting landing is welcome, because a venom delivered
+                // from the sting alone inside a real full-attack command is
+                // exactly what the contract wants to see.
                 separation = hardened
-                    ? bothAttacksMade && stingHits == 0 && biteHits == 0 &&
-                        grabBonusAfter == grabBonus
+                    ? bothAttacksMade && grabBonusAfter == grabBonus
                     : bothAttacksMade || grabCutSequenceShort;
             }
 
