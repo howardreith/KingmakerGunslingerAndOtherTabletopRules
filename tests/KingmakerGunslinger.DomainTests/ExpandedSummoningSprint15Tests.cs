@@ -37,9 +37,16 @@ namespace KingmakerGunslinger.DomainTests
         private const string StagBeetleKey = "giant-stag-beetle";
 
         /// <summary>
-        /// Both creatures are registered, and neither is published.
+        /// Both creatures are registered, and both are published.
+        ///
+        /// <para>The placement counts are the assertion that matters and have
+        /// not moved: twelve for the Drone, six for the Stag Beetle. What
+        /// inverted on publication is the expectation about visibility, and
+        /// the surface the pair leaves behind - with nothing withheld
+        /// anywhere, the registered and published counts are finally the same
+        /// number.</para>
         /// </summary>
-        internal static void BothCreaturesAreRegisteredAndWithheld()
+        internal static void BothCreaturesAreRegisteredAndPublished()
         {
             SummonVariantSpec[] all = ExpandedSummoningCatalog
                 .GenerateVariants(SummonFamily.Monster).Concat(
@@ -56,22 +63,26 @@ namespace KingmakerGunslinger.DomainTests
                     throw new InvalidOperationException(expected.Key +
                         " registers " + mine.Length + " placements, not " +
                         expected.Placements + ".");
-                if (mine.Any(SummonVisibilityCatalog.IsPublished))
+                if (!mine.All(SummonVisibilityCatalog.IsPublished))
                     throw new InvalidOperationException(
-                        "No Sprint 15 placement may be published before it " +
-                        "qualifies: " + expected.Key);
+                        "Every Sprint 15 placement publishes now that the " +
+                        "pair has qualified: " + expected.Key);
             }
-            // Registering a creature never moves the published surface. That
-            // is the whole reason a creature is withheld by name rather than
-            // by being left out of the roster.
-            if (SummonVisibilityCatalog.PublishedLogicalPlacementCount != 952)
+            // Publishing the last withheld pair makes the two surfaces
+            // equal for the first time since Sprint 9, which is a stronger
+            // statement than either number alone: it says nothing anywhere is
+            // registered and hidden.
+            if (SummonVisibilityCatalog.PublishedLogicalPlacementCount != 970)
                 throw new InvalidOperationException(
-                    "Registering Sprint 15 moved the published surface to " +
+                    "The published surface must be 970, not " +
                     SummonVisibilityCatalog.PublishedLogicalPlacementCount +
-                    "; it must stay at the 952 Sprint 14 left it at.");
+                    ".");
             if (SummonVisibilityCatalog.RegisteredLogicalPlacementCount != 970)
                 throw new InvalidOperationException(
                     "The registered surface must be 970.");
+            if (SummonVisibilityCatalog.SuppressedLogicalPlacementCount != 0)
+                throw new InvalidOperationException(
+                    "Nothing may remain withheld once Sprint 15 publishes.");
         }
 
         /// <summary>

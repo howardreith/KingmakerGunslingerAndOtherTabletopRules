@@ -135,9 +135,9 @@ namespace KingmakerGunslinger.DomainTests
                 value.Symbol == "KMG.Summoning.Natural.WaspSting1d8" &&
                 value.PlannedType == "BlueprintItemWeapon"),
                 "Wasp sting has its own append-only blueprint identity.");
-            Assertions.Equal(18,
+            Assertions.Equal(0,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "Only placements that are unqualified or held on a proven engine barrier are suppressed: 18 placements are withheld: Sprint 15's Giant Ant Drone and Giant Stag Beetle, registered ahead of their own qualification.");
+                "Only placements that are unqualified or held on a proven engine barrier are suppressed: nothing is withheld - every registered placement of every qualified creature publishes.");
         }
 
         internal static void StirgePublishesAtAllNineNatureTiers()
@@ -318,9 +318,9 @@ namespace KingmakerGunslinger.DomainTests
                 SummonIconCatalog.For("remove-stirge").Key !=
                     SummonIconCatalog.For("stirge").Key,
                 "Remove Stirge must have its own original action icon, distinct from the creature portrait.");
-            Assertions.Equal(18,
+            Assertions.Equal(0,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "Sprint 10 remains published while 18 placements are withheld: Sprint 15's Giant Ant Drone and Giant Stag Beetle, registered ahead of their own qualification.");
+                "Sprint 10 remains published while nothing is withheld - every registered placement of every qualified creature publishes.");
         }
 
         internal static void GiantWaspPoisonTracksConstitutionAndTabletopExposure()
@@ -399,9 +399,9 @@ namespace KingmakerGunslinger.DomainTests
                 review.Contains("finally") &&
                 review.Contains("renderer.enabled = true"),
                 "The isolated Wasp frame must restore every temporarily hidden auxiliary renderer.");
-            Assertions.Equal(18,
+            Assertions.Equal(0,
                 SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
-                "The review scenario must tolerate a hidden set: 18 placements are withheld: Sprint 15's Giant Ant Drone and Giant Stag Beetle, registered ahead of their own qualification.");
+                "The review scenario must tolerate an empty hidden set as well as a populated one: nothing is withheld now - every registered placement of every qualified creature publishes.");
         }
 
         internal static void WaspQuantityCoveragePublishesAllLegalVariants()

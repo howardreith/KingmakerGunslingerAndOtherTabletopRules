@@ -74,9 +74,9 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(105,
                 ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count,
                 "Represented creatures must be 94 project-owned plus 11 native wrappers.");
-            Assertions.Equal(103,
+            Assertions.Equal(105,
                 ExpandedSummoningCoveragePolicy.PublishedSomewhere.Count,
-                "Every represented creature publishes except Sprint 15's two, which are registered ahead of their own qualification.");
+                "Every represented creature publishes - the first time these two counts have been equal, because nothing is registered and hidden any more.");
             Assertions.True(ExpandedSummoningCoveragePolicy.PublishedSomewhere
                 .Contains("stirge"),
                 "The requalified Stirge must count as published coverage.");
@@ -218,7 +218,7 @@ namespace KingmakerGunslinger.DomainTests
             // Beetle's eighteen. What is still withheld is the thirty
             // placements of the two Giant Ant castes, held on a proven engine
             // barrier rather than on anything of their own.
-            Assertions.Equal(981,
+            Assertions.Equal(999,
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.Monster) +
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.NaturesAlly),
                 "The published visible surface must include Bat, Wasp, Stirge and ungulate choices.");

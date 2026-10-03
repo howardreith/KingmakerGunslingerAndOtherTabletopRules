@@ -330,15 +330,15 @@ namespace KingmakerGunslinger.DomainTests
                     "Every Sprint 14 creature is qualified and published; " +
                     "these are still withheld: " +
                     string.Join(", ", wronglyWithheld));
-            // 904 before Sprint 14, plus all 48 of its placements: the Fire
+            // 904 before Sprint 14, plus all 48 of its placements - the Fire
             // Beetle's 18 on qualification, and the two ant castes' 30 once the
             // owner accepted PASSIVE_CREATURE_SENSES_UNMODELED, which was the
-            // only thing holding them.
-            if (SummonVisibilityCatalog.PublishedLogicalPlacementCount != 952)
+            // only thing holding them - and then Sprint 15's 18.
+            if (SummonVisibilityCatalog.PublishedLogicalPlacementCount != 970)
                 throw new InvalidOperationException(
-                    "The published surface must be 952: the 904 published " +
-                    "before Sprint 14 plus all 48 of its placements, with " +
-                    "only Sprint 15's 18 still withheld. It is " +
+                    "The published surface must be 970: the 904 published " +
+                    "before Sprint 14, plus all 48 of its placements, plus " +
+                    "Sprint 15's 18, with nothing withheld. It is " +
                     SummonVisibilityCatalog
                         .PublishedLogicalPlacementCount + ".");
             if (SummonVisibilityCatalog.RegisteredLogicalPlacementCount -
