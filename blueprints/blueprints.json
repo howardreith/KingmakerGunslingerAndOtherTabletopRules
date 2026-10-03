@@ -22155,7 +22155,7 @@
     {
       "symbol": "KMG.Summoning.Special.GiantAntSoldier.Traits",
       "guid": "f4002c9c7d51450eb7fdd19acc018525",
-      "plannedType": "BlueprintFeature",
+      "plannedType": "BlueprintBuff",
       "status": "active",
       "milestone": "Expanded Summoning",
       "notes": "Registered in every feature-module state; live parent publication remains independently gated."
