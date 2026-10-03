@@ -58,6 +58,72 @@ namespace KingmakerGunslinger.DomainTests
         }
 
         /// <summary>
+        /// Every creature the visual loader knows about is also shipped.
+        ///
+        /// <para>The loader resolves its files from the creature key, so a new
+        /// insect needs no loader code - and that is the trap. The build
+        /// script, the packaging script and both validators each enumerate the
+        /// family's files by name, and a creature missing from them loads
+        /// nothing and silently keeps its donor's body. Sprint 15 hit exactly
+        /// that: both creatures passed every offline invariant while their
+        /// mesh and painting were absent from the package.</para>
+        ///
+        /// <para>Source text is the only available evidence here. The lists
+        /// are PowerShell this suite cannot run, and a missing package entry
+        /// cannot be observed from inside a test process, so this sits in the
+        /// same package-inclusion category as the existing checks rather than
+        /// standing in for a behavioural one.</para>
+        /// </summary>
+        internal static void EveryLoadedInsectIsAlsoShipped()
+        {
+            string runtime = Source("Assets", "PteranodonAssetRuntime.cs");
+            // The loader's own dictionary is the authority on who is in the
+            // family, so the lists are checked against it rather than against
+            // a second copy of the roster kept here.
+            int start = runtime.IndexOf("Sprint14Insects =",
+                StringComparison.Ordinal);
+            int end = start < 0 ? -1 : runtime.IndexOf("};", start,
+                StringComparison.Ordinal);
+            if (start < 0 || end < 0)
+                throw new InvalidOperationException(
+                    "The Sprint 14 insect loader dictionary could not be read.");
+            string declaration = runtime.Substring(start, end - start);
+            string[] loaded = InsectFamilyKeys
+                .Where(key => declaration.Contains("\"" + key + "\""))
+                .ToArray();
+            if (loaded.Length != InsectFamilyKeys.Length)
+                throw new InvalidOperationException(
+                    "The loader knows " + loaded.Length + " of the family's " +
+                    InsectFamilyKeys.Length + " creatures; a creature the " +
+                    "family claims must be loadable.");
+
+            foreach (string key in InsectFamilyKeys)
+            {
+                // The two scripts copy by key; the validators name each file.
+                foreach (string[] expectation in new[] {
+                    new[] { "Build-Local.ps1", "'" + key + "'" },
+                    new[] { "package.ps1", "'" + key + "'" },
+                    new[] { "validate-build-output.ps1",
+                        key + "-mesh.json" },
+                    new[] { "validate-build-output.ps1",
+                        key + "-albedo.png" },
+                    new[] { "validate-package.ps1", key + "-mesh.json" },
+                    new[] { "validate-package.ps1", key + "-albedo.png" } })
+                    if (!ScriptText(expectation[0]).Contains(expectation[1]))
+                        throw new InvalidOperationException(
+                            key + " is loaded but " + expectation[0] +
+                            " never mentions " + expectation[1] +
+                            ", so it would ship wearing its donor.");
+            }
+        }
+
+        private static string ScriptText(string name)
+        {
+            return File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "scripts", name));
+        }
+
+        /// <summary>
         /// The printed Fortitude DC 14 is what the standard formula produces on
         /// its own, and nothing about it is written down as a constant.
         ///

@@ -389,6 +389,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal string Sprint14SensesDetail;
             internal bool Sprint14WaspRequalification;
             internal string Sprint14WaspRequalificationDetail;
+            internal bool Sprint15Profiles;
+            internal string Sprint15ProfilesDetail;
+            internal bool Sprint15Defences;
+            internal string Sprint15DefencesDetail;
+            internal bool Sprint15DronePoison;
+            internal string Sprint15DronePoisonDetail;
             internal bool Sprint13ShadowMastiffBay;
             internal string Sprint13ShadowMastiffBayDetail;
             internal bool Sprint13ShadowBlend;
@@ -17559,9 +17565,25 @@ namespace KingmakerGunslinger.RuntimeTesting
             SummonVariantSpec[] ungulateExtra = ungulateCrowd
                 .Where(value => !oneD3.Contains(value) &&
                     !oneD4PlusOne.Contains(value)).ToArray();
+            // Sprint 15's pair, for the same reason the three crowds above
+            // exist: the alphabetical sample reaches neither reliably. Both
+            // quantities in whichever families carry them, while every one of
+            // their menu placements is still suppressed.
+            string[] sprint15Keys = { "giant-ant-drone", "giant-stag-beetle" };
+            SummonVariantSpec[] sprint15Crowd = monster.Concat(ally)
+                .Where(value => sprint15Keys.Contains(value.Creature.Key) &&
+                    value.Multiplicity != SummonMultiplicity.One)
+                .GroupBy(value => new { value.Creature.Key, value.Family,
+                    value.Multiplicity })
+                .Select(group => group.OrderBy(value => value.ParentTier)
+                    .First())
+                .Where(value => !oneD3.Contains(value) &&
+                    !oneD4PlusOne.Contains(value))
+                .ToArray();
             SummonVariantSpec[] casts = oneCreature.Concat(oneD3)
                 .Concat(oneD4PlusOne).Concat(pteranodonCrowd)
-                .Concat(waspCrowd).Concat(ungulateExtra).ToArray();
+                .Concat(waspCrowd).Concat(ungulateExtra)
+                .Concat(sprint15Crowd).ToArray();
             // One own-tier single per roster entry in each family, plus the
             // alphabetical 1d3 / 1d4+1 coverage samples; both move with the roster.
             int rosterEntries = ExpandedSummoningCatalog.All.Count(value =>
@@ -17584,9 +17606,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 durationExact = 0, legalPlacement = 0,
                 illegalPlacementRejected = 0, pteranodonCrowdLegal = 0,
                 waspCrowdLegal = 0, ungulateCrowdLegal = 0,
-                ungulateExtraLegal = 0,
+                ungulateExtraLegal = 0, sprint15CrowdLegal = 0,
                 direBatSenseChecked = 0, direBatSensePassed = 0,
                 birdSenseChecked = 0, birdSenseClean = 0;
+            // Which (creature, quantity) pairs the run actually produced
+            // for Sprint 15's two creatures, counting the alphabetical sample
+            // as well as the crowd.
+            var sprint15Quantities =
+                new HashSet<string>(StringComparer.Ordinal);
             var observedCounts = new List<string>();
             var durationObservations = new List<string>();
             var durationProfiles = new HashSet<string>(StringComparer.Ordinal);
@@ -17988,7 +18015,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     else if (variant.Creature.Key == "fire-beetle" ||
                         variant.Creature.Key == "giant-ant-worker" ||
-                        variant.Creature.Key == "giant-ant-soldier")
+                        variant.Creature.Key == "giant-ant-soldier" ||
+                        variant.Creature.Key == "giant-ant-drone" ||
+                        variant.Creature.Key == "giant-stag-beetle")
                     {
                         foreach (UnitEntityData unit in spawned)
                         {
@@ -18023,9 +18052,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     completed++;
                     spawnedTotal += count;
                     if (ungulateCrowd.Contains(variant)) ungulateCrowdLegal++;
+                    if (sprint15Keys.Contains(variant.Creature.Key) &&
+                        variant.Multiplicity != SummonMultiplicity.One)
+                        sprint15Quantities.Add(variant.Creature.Key + "/" +
+                            variant.Multiplicity);
                     if (pteranodonCrowd.Contains(variant)) pteranodonCrowdLegal++;
                     else if (waspCrowd.Contains(variant)) waspCrowdLegal++;
                     else if (ungulateExtra.Contains(variant)) ungulateExtraLegal++;
+                    else if (sprint15Crowd.Contains(variant))
+                        sprint15CrowdLegal++;
                     else if (variant.Multiplicity == SummonMultiplicity.One) singleExact++;
                     else if (variant.Multiplicity == SummonMultiplicity.OneD3)
                         oneD3Legal++;
@@ -18316,6 +18351,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                         mechanics.Sprint14WaspRequalificationDetail,
                     mechanics != null && mechanics.Sprint14WaspRequalification,
                     "ContextActionOnlyIfWeaponWounded around the native poison graph, the live BuffPoisonStatDamage on the applied buff, the buff's own MechanicsContext DC, and native unit destruction with a later buff tick on the surviving victim"),
+                Assertion("expanded-summoning-sprint15-profiles",
+                    "the live Drone is the Soldier's shape - Medium, a 1d6 bite and a distinct 1d4 sting at the same attack bonus, the grab on the primary limb alone - with every ability score but Intelligence exactly four higher than the Soldier it is built from, measured against a Soldier spawned in the same run; and the live Stag Beetle is a single heavy limb: Large, one 2d8 bite, nothing else on its body, no grab, none of the Fire Beetle's luminescence, and its own unit type rather than the Fire Beetle's or the Giant Spider's",
+                    mechanics == null ? "not-run" :
+                        mechanics.Sprint15ProfilesDetail,
+                    mechanics != null && mechanics.Sprint15Profiles,
+                    "two freshly summoned creatures and a third for comparison, their live bodies, limb attack probes, live ability scores and the blueprint unit type each spawned creature actually carries"),
+                Assertion("expanded-summoning-sprint15-defences",
+                    "both creatures read their combat-manoeuvre defences through the engine's own calculation - the Stag Beetle at its printed 20 and 28 against trip, the Drone at the 17 and 25 its contract requires be derived from the Soldier - and both carry their printed skills as totals with a modifier breakdown: the Drone's Perception exactly 7 from a racial +4 and the advanced Wisdom with no ranks and no unprinted flat bonus, the Stag Beetle's exactly 0, and vermin mind-affecting immunity proved on each by a native buff the caster demonstrably accepts",
+                    mechanics == null ? "not-run" :
+                        mechanics.Sprint15DefencesDetail,
+                    mechanics != null && mechanics.Sprint15Defences,
+                    "live RuleCalculateCMD against a real attacker with no manoeuvre attempted, live skill modifiers by descriptor, and a mind-affecting probe applied to both the vermin and the caster"),
+                Assertion("expanded-summoning-sprint15-drone-poison",
+                    "the Drone's venom is the Soldier's graph on a stronger body: still 1d2 Strength over four exposures cured by one Fortitude save, with its difficulty class computed live from the advanced Constitution of 21 to exactly 16 rather than hard-coded or overridden, delivered only by a sting that actually wounded - a miss and a hit reduced to zero damage deliver nothing, and a wounding bite delivers nothing because the gate is on the sting's own weapon type - and one attack produces exactly one application carrying this creature's own difficulty class",
+                    mechanics == null ? "not-run" :
+                        mechanics.Sprint15DronePoisonDetail,
+                    mechanics != null && mechanics.Sprint15DronePoison,
+                    "the shared BuffPoisonStatDamage on the live buff, the Constitution-scaled policy with no creature-specific constant, four real seeded attacks with the venom cleared between them, and the applied buff's own MechanicsContext DC"),
                 Assertion("expanded-summoning-sprint14-donor-rigs",
                     "every donor the insect family needs returns a complete measured bind frame from a single skinned renderer, so an original mesh can be authored against it",
                     mechanics == null ? "not-run" :
@@ -18469,6 +18522,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ungulateCrowd.Select(value => value.Multiplicity)
                             .Distinct().Count() == 2,
                     "exact-kind native quantity counts, duration and per-cast cleanup through the common cast loop"),
+                Assertion("expanded-summoning-sprint15-quantity",
+                    "both Sprint 15 creatures are summoned in quantity as well as singly - a 1d3 and a 1d4+1 command for each, in whichever families carry them - while every one of their menu placements is still suppressed, with exact-kind counts, duration and per-cast cleanup checked by the same cast loop every other creature goes through, and the project visual required on every body of a multi-body cast",
+                    "crowd=" + sprint15CrowdLegal + "/" +
+                        sprint15Crowd.Length + ";pairs=" +
+                        string.Join(",", sprint15Quantities
+                            .OrderBy(value => value, StringComparer.Ordinal)
+                            .ToArray()) + ";views=" + sprint14VisualChecked +
+                        ";attached=" + sprint14VisualAttached,
+                    sprint15CrowdLegal == sprint15Crowd.Length &&
+                        sprint15Quantities.Count == 4 &&
+                        sprint15Keys.All(key => sprint15Quantities.Any(value =>
+                            value.StartsWith(key + "/",
+                                StringComparison.Ordinal))) &&
+                        sprint14VisualAttached == sprint14VisualChecked,
+                    "native quantity commands through the common cast loop, with the insect family's visual census counting one attached project view per spawned body"),
                 Assertion("expanded-summoning-sprint11-ungulate-quantity-visuals",
                     "every cast ungulate view receives the private original visual",
                     "checked=" + ungulateVisualChecked + ";attached=" +
@@ -18987,6 +19055,11 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 ResetExpandedSummoningMechanicalHostile(hostile, blueprints);
                 ExerciseExpandedSummoningSprint14RulesPack(blueprints,
+                    caster, hostile, created, result,
+                    _request.EvidenceDirectory);
+
+                ResetExpandedSummoningMechanicalHostile(hostile, blueprints);
+                ExerciseExpandedSummoningSprint15RulesPack(blueprints,
                     caster, hostile, created, result,
                     _request.EvidenceDirectory);
 

@@ -47,6 +47,18 @@ rather than carried into implementation.
 3. **The Dire Ape has a bite and two claws with rend, not dual slams.** That
    creature belongs to Sprint 18, but the erratum is recorded here because it
    was found in the same reading pass.
+4. **The Giant Ant Drone's advanced simple template is applied as a rebuild,
+   not as a rebuild plus the quick bonuses.** The Sprint 15 section below
+   describes that template as "+4 to each ability score except Intelligence,
+   +2 natural armour, and +2 to all skills", and also requires that the exact
+   numbers be derived from the soldier. Those two instructions conflict: a
+   simple template's flat bonuses and its rebuild are alternative routes to the
+   same creature, so a +2 to all skills applied on top of skills already
+   rederived from a Wisdom raised by 4 counts the same increase twice. The
+   implementation takes the rebuild this section demands and omits the flat
+   skill bonus, which puts the Drone's Perception at +7 rather than +9. Nothing
+   else in the section is affected, and the ability scores, natural armour and
+   fly speed are implemented exactly as written.
 
 ## Sprint 14
 

@@ -200,16 +200,17 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         /// <summary>
-        /// Sprint 14's three insects, all on the Giant Spider rig. They are
-        /// reviewable while they are still withheld because the review casts
-        /// through a development-owned private route rather than the player's
-        /// menu, which is the only way to look at a creature before it
-        /// publishes.
+        /// The insect family, all on the Giant Spider rig: Sprint 14's
+        /// three and Sprint 15's two. They are reviewable while they are
+        /// still withheld because the review casts through a
+        /// development-owned private route rather than the player's menu,
+        /// which is the only way to look at a creature before it publishes.
         /// </summary>
         private static bool IsSprint14InsectReviewKey(string key)
         {
             return key == "fire-beetle" || key == "giant-ant-worker" ||
-                key == "giant-ant-soldier";
+                key == "giant-ant-soldier" || key == "giant-ant-drone" ||
+                key == "giant-stag-beetle";
         }
 
         private static bool IsOriginalReviewKey(string key)

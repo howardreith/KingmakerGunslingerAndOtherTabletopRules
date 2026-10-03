@@ -663,17 +663,24 @@ namespace KingmakerGunslinger.RuntimeTesting
         private UnitEntityData _rulesTrampler;
         private static readonly string[] RulesTrampleKeys = {
             "aurochs", "bison", "woolly-rhinoceros", "aurochs",
-            "aurochs"
+            "aurochs",
+            // Sprint 15. The Giant Stag Beetle's printed trample is 1d6+6 at
+            // DC 17, and it rides the carrier these ungulates qualified, so it
+            // is proved here through the same machine rather than asserted
+            // from the policy that computes its numbers. Appended last because
+            // the two special cases above are selected by index.
+            "giant-stag-beetle"
         };
         private static readonly string[] RulesTrampleAbilityNames = {
             "KMG_Summoning_Special_Aurochs_Trample",
             "KMG_Summoning_Special_Bison_Trample",
             "KMG_Summoning_Special_WoollyRhinoceros_Trample",
             "KMG_Summoning_Special_Aurochs_Trample",
-            "KMG_Summoning_Special_Aurochs_Trample"
+            "KMG_Summoning_Special_Aurochs_Trample",
+            "KMG_Summoning_Special_GiantStagBeetle_Trample"
         };
         private static readonly int[] RulesTrampleSaveDcs = {
-            17, 20, 23, 17, 17
+            17, 20, 23, 17, 17, 17
         };
         private int _rulesTrampleIndex;
         private UnitEntityData _rulesTrampleTarget;

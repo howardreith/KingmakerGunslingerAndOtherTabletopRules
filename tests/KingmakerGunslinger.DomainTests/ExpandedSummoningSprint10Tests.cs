@@ -423,7 +423,14 @@ namespace KingmakerGunslinger.DomainTests
                 Environment.CurrentDirectory, "src", "KingmakerGunslinger",
                 "RuntimeTesting", "RuntimeTestRunner.cs"));
             Assertions.True(runtime.Contains("expanded-summoning-giant-wasp-quantity") &&
-                runtime.Contains(".Concat(waspCrowd).Concat(ungulateExtra).ToArray()") &&
+                // The claim is that the wasp crowd joins the cast list
+                // and that all four of its variants are required to
+                // have been cast legally - not that it sits at a
+                // particular position in the chain. Pinning the whole
+                // chain made this fail when a later sprint appended its
+                // own crowd, which is a change this test has no
+                // business objecting to.
+                runtime.Contains(".Concat(waspCrowd)") &&
                 runtime.Contains("waspCrowdLegal == 4"),
                 "The guarded cast loop must exercise all four private Wasp quantity variants.");
         }
