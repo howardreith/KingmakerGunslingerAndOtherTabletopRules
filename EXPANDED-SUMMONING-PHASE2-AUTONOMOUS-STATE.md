@@ -73,7 +73,9 @@ twelve combat-mode cells, visual lifecycle 8/8, and all three working-save
 persistence legs, those five on `52baae65`. See the Sprint 15 closeout section
 below for what was proved and for the two measurement corrections.
 
-**Tranche 2B, Sprint 16** (Crocodile, Dire Crocodile) - **next.** Its
+**Tranche 2B, Sprint 16** (Crocodile, Dire Crocodile) - **in progress.**
+The Dire Crocodile is registered and withheld; the Crocodile's missing
+signature behaviour is the next work. Its
 pre-candidate rules and architecture review is already filed at
 `planning/EXPANDED-SUMMONING-SPRINT16-PRE-CANDIDATE-REVIEW.md` and found no
 engine barrier: death roll and Sprint both have native carriers this project
@@ -84,18 +86,22 @@ question in advance.
 
 ### Next executable action
 
-Register the Dire Crocodile. It has no ledger identities at all - it exists
-only in the ideal-roster plan - so Sprint 16 begins by allocating its
-identities in the append-only ledger and adding it to the shipped catalog at
-tier 7 in both families, withheld, before any of its mechanics or visuals can
-be exercised. The Crocodile needs no registration change: it already ships with
-its full placements and template variants, and only its appearance and its
-missing mechanics change.
+Implement the Crocodile's signature behaviour, which its profile currently
+records as absent in a single line: *"Grab, death roll, sprint, and hold breath
+are omitted because no duration-bound summon-safe native graph was proven."*
+Three of those four have carriers this project already drives - grab is the
+qualified Sprint 6 carrier, death roll is a grapple-check rider plus the native
+`UnitCondition.Prone`, and sprint is a one-round `StatType.Speed` bonus on a
+once-per-minute resource - and only hold breath stays omitted, because
+Kingmaker models neither swimming nor drowning.
 
-Then follow the filed pre-candidate review: Death Roll on the Crocodile alone
-as a vertical slice before the Dire Crocodile is authored against it, the two
-meshes offline with one review sheet, then one sprint candidate and one batched
-guarded review.
+Take Death Roll first, on the Crocodile alone, as a vertical slice before the
+Dire Crocodile is authored against it. Then the two meshes offline with one
+review sheet, then one sprint candidate and one batched guarded review.
+
+The Dire Crocodile's registration is done: `2ab66ae5` added it to the catalog
+at tier 7 in both families with its printed stat block, fifteen ledger
+identities, two project-owned weapons, an icon, and every placement withheld.
 
 ### Inventory: registered, hidden, visible
 
@@ -103,9 +109,9 @@ Derived from source.
 
 | Quantity | Value |
 | --- | --- |
-| Project creature identities | 94 |
-| Registered generated placements | 970 |
-| Suppressed (hidden) placements | **0** |
+| Project creature identities | 95 |
+| Registered generated placements | 976 |
+| Suppressed (hidden) placements | 6 - Sprint 16's Dire Crocodile, registered ahead of its own qualification |
 | Published generated placements | **970** (504 SM + 495 SNA visible, less the 29 wrappers below) |
 | Retained native wrappers | 29 (17 SM + 12 SNA) |
 | Total visible player choices | **999** |
