@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Kingmaker.View;
 using UnityEngine;
 
@@ -67,7 +68,7 @@ namespace KingmakerGunslinger.Summoning
             // origin, and so it is destroyed with the view's own hierarchy.
             Transform parent = renderer.rootBone != null
                 ? renderer.rootBone : view.transform;
-            _carrier = new GameObject("KMG_FireBeetleGlow");
+            _carrier = new GameObject(CarrierName);
             _carrier.transform.SetParent(parent, false);
             _carrier.transform.localPosition = new Vector3(0f, 0f, 0.35f);
             _light = _carrier.AddComponent<Light>();
@@ -114,7 +115,60 @@ namespace KingmakerGunslinger.Summoning
         {
             // After the view has had its own chance to fade, hide or dissolve
             // this frame, so the glow never outlives the body by a frame.
+            SyncToVisibility();
+        }
+
+        /// <summary>
+        /// Match the light to what the body is currently doing.
+        ///
+        /// <para>This is what the frame calls, and it is callable by name so
+        /// the guarded review can take visibility away from a live body and
+        /// read the result without reaching for the private frame callback
+        /// through SendMessage - a reflective call that silently does nothing
+        /// if the method is ever renamed, which would read as a passing
+        /// census.</para>
+        /// </summary>
+        internal void SyncToVisibility()
+        {
             Apply(ShouldGlow());
+        }
+
+        /// <summary>
+        /// The name every carrier this component creates is given, so a census
+        /// can find them without holding a reference to any of them.
+        /// </summary>
+        internal const string CarrierName = "KMG_FireBeetleGlow";
+
+        /// <summary>
+        /// Every object of this kind alive anywhere, counted off Unity rather
+        /// than off a table this code keeps.
+        ///
+        /// <para>A list of its own ownerships would answer the easier question:
+        /// whether this component believes it released everything. The question
+        /// worth asking is whether the objects are actually gone, so the count
+        /// comes from Unity's own registry of live objects, which includes any
+        /// carrier that was orphaned by a path that forgot to release it.
+        /// Enabled lights are counted separately because the hard requirement
+        /// is narrower than destruction: a body no longer visibly present must
+        /// not still be lighting the scene, even for the frame before its
+        /// carrier is collected.</para>
+        /// </summary>
+        internal static string CountOwnedObjects(out int components,
+            out int carriers, out int lights, out int enabledLights)
+        {
+            components = Resources.FindObjectsOfTypeAll<FireBeetleVisualGlow>()
+                .Count(value => value != null);
+            Light[] all = Resources.FindObjectsOfTypeAll<Light>();
+            lights = all.Count(value => value != null &&
+                value.gameObject != null &&
+                value.gameObject.name == CarrierName);
+            enabledLights = all.Count(value => value != null &&
+                value.gameObject != null &&
+                value.gameObject.name == CarrierName && value.enabled);
+            carriers = Resources.FindObjectsOfTypeAll<GameObject>()
+                .Count(value => value != null && value.name == CarrierName);
+            return "components=" + components + ";carriers=" + carriers +
+                ";lights=" + lights + ";enabledLights=" + enabledLights;
         }
 
         /// <summary>Observation for the guarded runtime review.</summary>

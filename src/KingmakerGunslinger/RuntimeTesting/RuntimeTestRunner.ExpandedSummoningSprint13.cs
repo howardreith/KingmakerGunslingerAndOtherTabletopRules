@@ -683,17 +683,31 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             // The immunity sequence runs against a creature the howl just
             // proved catchable, so it cannot be defeated by a fixture that
-            // happens to resist fear.
-            UnitEntityData subject = victims.FirstOrDefault();
-            string subjectName = subject == null ? "<none>" :
-                subject.CharacterName;
-            Buff granted = null;
+            // happens to resist fear. Which catchable creature, though, used to
+            // be left to the dice: this took victims.FirstOrDefault(), and over
+            // twelve recorded runs that was Hedwirg, then Purple Worm, then
+            // Tartuccio, and twice an unnamed scene entity that cannot carry
+            // the sequence at all - once on 2026-10-02 at 08:43, before Sprint
+            // 14 existed, and again at 02:46. Both times three flags went false
+            // with nothing wrong in the product, which is a coin toss standing
+            // between the project and publication.
+            //
+            // So candidates are tried in the order the howl caught them until
+            // one can carry the sequence, and each rejection is recorded with
+            // its blueprint. A real regression still fails: if the rule itself
+            // breaks, no candidate succeeds and the rejection list shows every
+            // creature that was asked.
+            string subjectName = "<none>";
+            var rejectedSubjects = new List<string>();
             bool immunityOnSuccess = false;
             bool immunityIsPerMastiff = false;
             bool repeatBlocked = false;
             bool otherMastiffUnblocked = false;
-            if (subject != null)
+            foreach (UnitEntityData subject in victims)
             {
+                if (subject == null || subject.Descriptor == null) continue;
+                subjectName = subject.CharacterName;
+                Buff granted = null;
                 ModifiableValue subjectWill = subject.Descriptor.Stats
                     .GetStat(StatType.SaveWill);
                 int willBefore = subjectWill.BaseValue;
@@ -727,6 +741,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                         subject.Descriptor.Buffs.GetBuff(panic) != null;
                 }
                 finally { subjectWill.BaseValue = willBefore; }
+
+                if (immunityOnSuccess && immunityIsPerMastiff &&
+                    repeatBlocked && otherMastiffUnblocked)
+                    break;
+
+                rejectedSubjects.Add(subject.CharacterName + "/" +
+                    (subject.Blueprint == null ? "<no blueprint>" :
+                        subject.Blueprint.name) + ":immunity=" +
+                    immunityOnSuccess + ",perMastiff=" + immunityIsPerMastiff +
+                    ",repeatBlocked=" + repeatBlocked + ",otherWorks=" +
+                    otherMastiffUnblocked);
             }
 
             // Leaving creatures panicked and fleeing would contaminate
@@ -753,6 +778,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ";repeatFromSameMastiffBlocked=" + repeatBlocked +
                 ";otherMastiffStillWorks=" + otherMastiffUnblocked +
                 ";immunitySubject=" + subjectName +
+                ";rejectedSubjects[" + (rejectedSubjects.Count == 0 ?
+                    "<none>" : string.Join(" | ",
+                        rejectedSubjects.ToArray())) + "]" +
                 ";panickedByFirstHowl[" + panickedByFirstHowl +
                 "];residualFearAfterCleanup=" + residualFear;
         }
