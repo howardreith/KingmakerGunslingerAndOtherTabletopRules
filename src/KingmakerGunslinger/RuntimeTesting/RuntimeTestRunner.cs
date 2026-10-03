@@ -3865,11 +3865,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                         TakeExpandedSummoningPersistenceHolds(
                             _expandedSummoningPersistencePreparedUnits,
                             out _expandedSummoningPersistenceLinkValid);
-                    // Sprint 14: the soldier's venom is delivered into a
-                    // victim before the save, by a real sting, so the reload
-                    // has a poison with exposures left to carry.
-                    ArmExpandedSummoningPersistenceAntVenom(
-                        _expandedSummoningPersistencePreparedUnits);
                     _expandedSummoningPersistenceFixtureSpawned = true;
                     return;
                 }
@@ -3906,10 +3901,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     DescribeExpandedSummoningPersistenceRage(units, prepare,
                         verifyCleanup, caster,
                         out _expandedSummoningPersistenceRageValid);
-                _expandedSummoningPersistenceAntVenomDetail =
-                    DescribeExpandedSummoningPersistenceAntVenom(units,
-                        prepare, verifyCleanup,
-                        out _expandedSummoningPersistenceAntVenomValid);
+                // Not in prepare: there the reading is taken at the save
+                // boundary, where the venom is armed, so that what the
+                // assertion reports is the state the save actually carried
+                // rather than a measurement from an earlier frame.
+                if (!prepare)
+                    _expandedSummoningPersistenceAntVenomDetail =
+                        DescribeExpandedSummoningPersistenceAntVenom(units,
+                            prepare, verifyCleanup,
+                            out _expandedSummoningPersistenceAntVenomValid);
                 if (verifyCleanup)
                     _expandedSummoningPersistenceLinkDetail =
                         DescribeExpandedSummoningReloadedLinks(units,
@@ -4074,6 +4074,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _expandedSummoningPersistenceLinkDetail += ";atSave=" +
                     DescribeExpandedSummoningPersistenceHolds(
                         _expandedSummoningPersistencePreparedUnits);
+            if (prepare)
+            {
+                // Armed here rather than at spawn, for exactly the reason the
+                // holds are re-described here: rounds pass during the settle
+                // and the motion review. One successful Fortitude save cures
+                // Giant Ant venom, and the victim is a Horse with a decent
+                // save, so a poison applied at spawn time is reliably gone
+                // before the save boundary - which is what the first attempt
+                // recorded, an intact venom at evaluation and nothing at all
+                // after the reload. The reading is taken here too, so what the
+                // assertion reports is the state the save actually carried.
+                ArmExpandedSummoningPersistenceAntVenom(
+                    _expandedSummoningPersistencePreparedUnits);
+                _expandedSummoningPersistenceAntVenomDetail =
+                    DescribeExpandedSummoningPersistenceAntVenom(
+                        _expandedSummoningPersistencePreparedUnits, true,
+                        false,
+                        out _expandedSummoningPersistenceAntVenomValid);
+            }
             _workingSaveSmoke.ArmExactWorkingSaveWrite();
             MethodInfo saveGame = typeof(Game).GetMethods(BindingFlags.Instance |
                 BindingFlags.Public | BindingFlags.NonPublic).Single(value =>
