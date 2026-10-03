@@ -6,6 +6,7 @@
 # Visual Studio / IDE
 /.vs/
 /.idea/
+/.zcodeignore
 *.suo
 *.user
 *.userosscache
