@@ -626,6 +626,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint13-identities", ExpandedSummoningSprint13Tests.Sprint13IdentitiesAreDeclaredAndAppendOnly),
             Case("expanded-summoning.sprint13-bay-dc", ExpandedSummoningSprint13Tests.BayDcDerivesToThePrintedSixteen),
             Case("expanded-summoning.sprint14-ant-poison-dc", ExpandedSummoningSprint14Tests.AntPoisonDcDerivesToThePrintedFourteen),
+            Case("expanded-summoning.sprint14-printed-skill-totals", ExpandedSummoningSprint14Tests.InsectSkillTotalsMatchThePrintedStatBlocks),
             Case("expanded-summoning.sprint14-ant-poison-frequency", ExpandedSummoningSprint14Tests.AntPoisonCarriesThePrintedFrequency),
             Case("expanded-summoning.sprint14-worker-template", ExpandedSummoningSprint14Tests.TheWorkerIsTheSoldierWithoutItsSting),
             Case("expanded-summoning.sprint14-sting-is-its-own-weapon", ExpandedSummoningSprint14Tests.TheStingIsItsOwnWeaponSoThePoisonCannotReachTheBite),

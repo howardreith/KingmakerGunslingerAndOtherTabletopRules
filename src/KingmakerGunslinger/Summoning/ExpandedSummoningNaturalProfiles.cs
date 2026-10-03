@@ -19,6 +19,13 @@ namespace KingmakerGunslinger.Summoning
         internal static readonly string[] DefaultSkills =
             { "Perception", "Mobility", "Stealth" };
 
+        /// <summary>
+        /// The Giant Ant's printed racial Perception bonus. Both castes print
+        /// Perception +5 on a Wisdom of 13, so four of those points are racial,
+        /// one is the attribute and none is a rank.
+        /// </summary>
+        internal const int GiantAntRacialPerceptionBonus = 4;
+
         internal NaturalSummonProfile(string key, string displayName,
             string hitDieClass, int hitDice, string size, int strength,
             int dexterity, int constitution, int intelligence, int wisdom,
