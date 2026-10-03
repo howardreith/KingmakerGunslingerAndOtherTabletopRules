@@ -4377,10 +4377,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .OfType<BuffPoisonStatDamage>().FirstOrDefault();
             TimeSpan before = applied == null ? TimeSpan.Zero :
                 applied.TimeLeft;
+            // Only the reloaded leg ticks. The prepare leg's own tick was
+            // curing the poison before the save it was meant to survive: it
+            // advanced the clock a round, the victim made its Fortitude save,
+            // and one successful save cures Giant Ant venom, so the save
+            // boundary carried nothing and the reload correctly found nothing.
+            // Curing it after the reload is harmless, because by then the
+            // numbers have been read.
             bool tickSafe = true;
-            string tickDetail = "not-ticked";
+            string tickDetail = prepare ? "not-ticked-before-the-save" :
+                "not-ticked";
             TimeSpan after = before;
-            if (applied != null)
+            if (applied != null && !prepare)
             {
                 TimeSpan clock = Game.Instance.Player.GameTime;
                 int dexterityDamage = victim.Descriptor.Stats.Dexterity.Damage;
@@ -4405,8 +4413,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     victim.Descriptor.Stats.Dexterity.Damage = dexterityDamage;
                 }
             }
+            // Strength, not Dexterity. The Giant Ant's printed poison is
+            // 1d2 Strength over four rounds cured by one save; Dexterity is
+            // the Giant Wasp's, and this verifier was written with the wasp's
+            // numbers in it. The creature was right and the assertion was
+            // wrong, which is worth a comment because the live reading said so
+            // in plain text - stat=Strength - and could have been "corrected"
+            // in the builder by someone trusting the test over the stat block.
             bool numbersIntact = component != null &&
-                component.Stat == StatType.Dexterity &&
+                component.Stat == StatType.Strength &&
                 component.Value.Dice == DiceType.D2 &&
                 component.Value.Rolls == 1 &&
                 component.Ticks == GiantAntPoisonPolicy.Exposures &&
