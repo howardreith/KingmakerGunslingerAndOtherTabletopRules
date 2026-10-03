@@ -21,18 +21,146 @@ artifact, UMM `KingmakerGunslinger.dll`, entry `KingmakerGunslinger.Main.Load`.
 - Icon catalog: `python tools/validate_icon_catalog.py`, `python tools/test_icon_catalog.py`
 - Push wrapper: `powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:/Dev/KingmakerGunslingerLab/codex-policy/Push-KingmakerGunslinger.ps1`
 
-## Slice matrix (living status — final results in the closing sections)
+## Slice matrix (final)
 
-| Slice | Status |
-|---|---|
-| 0 Preflight/ledger | IN-PROGRESS |
-| 1 Nodachi Heirloom Weapon | SKIPPED-ALREADY-COMPLETE (evidence below) |
-| 2 Firearm description normalization | NOT-STARTED |
-| 3 Fiery Glare (Ifrit) | IN-PROGRESS (investigation) |
-| 4 Stoic Dignity (Oread) | IN-PROGRESS (investigation) |
-| 5 Earthsense (Oread) | IN-PROGRESS (investigation) |
-| 6 Whiteout/weather research | NOT-STARTED |
-| 7 Item/vendor availability research | NOT-STARTED |
+| Slice | Status | Result | Commit |
+|---|---|---|---|
+| 0 Preflight/ledger | PASS | branch, baseline, inventory, this ledger | `cda8667d3` (interim) + final commit |
+| 1 Nodachi Heirloom Weapon | SKIPPED-ALREADY-COMPLETE | shipped 0.0.93 (`431bef614`), re-verified by the final domain suite | none (no duplicate work) |
+| 2 Firearm description normalization | PASS | 12 description surfaces normalized; mechanics/keys/names untouched | `dea494233` |
+| 3 Fiery Glare (Ifrit) | BLOCKED (icon authoring) | mechanics proven feasible; full design + blocker in the finding | none (finding in `bc83e0044`) |
+| 4 Stoic Dignity (Oread) | BLOCKED (icon authoring) | mechanics proven feasible; full design + blocker in the finding | none (finding in `bc83e0044`) |
+| 5 Earthsense (Oread) | BLOCKED (engine) | no tremorsense exists in Kingmaker; substitutes forbidden by the mission gate | none (finding in `bc83e0044`) |
+| 6 Whiteout/weather research | PASS | `docs/research/WHITEOUT-WEATHER-FEASIBILITY.md`; no production change | `ee88a6361` |
+| 7 Item/vendor availability research | PASS | `docs/research/MOD-ITEM-AVAILABILITY-AUDIT.md` + 62-row CSV; no production change | `7e7cee271` |
+
+Per-slice changed files, tests and evidence are in the slice sections above
+and the validation ledger below; the two research documents carry their own
+evidence sections.
+
+## Research outputs
+
+- **Whiteout:** conclusion `FEASIBLE-WITH-DOCUMENTED-ADAPTATION`; engine
+  weather map (Player.WeatherData/InclemencyType/IWeatherChangeHandler, the
+  two native weather-gameplay consumers, the three-tier Max-combined
+  concealment model), a minimal event-driven architecture, one rejected
+  alternative, a test matrix and five owner decisions —
+  `docs/research/WHITEOUT-WEATHER-FEASIBILITY.md`. **No Whiteout production
+  code was changed.**
+- **Item/vendor audit:** 62-row machine-readable table
+  (`docs/research/MOD-ITEM-AVAILABILITY-AUDIT.csv`) + analysis report with
+  eight evidence-backed patterns and three redistribution models
+  (`docs/research/MOD-ITEM-AVAILABILITY-AUDIT.md`). **No availability,
+  inventory, loot, price, stock or gate was changed.**
+
+## Icon ledger
+
+No new icons were created. The two mechanically-feasible traits (Fiery Glare,
+Stoic Dignity) each require a distinct original painted icon
+(`painted-magical` family, `ifrit-traits`/`oread-traits` review groups,
+`project-painted-128` profile) before their features may be committed; this
+session had no authorized image-generation tool (the existing trait icons
+record `"tool": "built-in image_gen"`, absent here), and the icon contract
+plus mission §9 forbid procedural substitutes, donor art and monograms.
+Art direction briefs for both concepts are recorded in
+`docs/research/CHARACTER-RACE-TRAITS-FEASIBILITY.md`. No existing icon,
+assignment, catalog entry or protected asset was touched. Aesthetic approval
+status: not applicable (nothing painted).
+
+## Validation ledger (exact commands and results)
+
+| Gate | Command | Result |
+|---|---|---|
+| Repository validation | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/validate-repository.ps1` | PASS (exit 0; icon catalog coverage + protected-assignment PASS) — after the deterministic-count pin update 1918→1922 |
+| Domain suite | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/test-domain.ps1 -Configuration Release` | PASS — **1922/1922** tests, 0 failures (1918 inherited + 4 new `firearm-descriptions.*`) |
+| Clean Release build + strict package | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/build.ps1 -Configuration Release -Clean -Package` | PASS — strict standalone UMM package validation of `KingmakerGunslinger-0.0.140-favored-class-integration.zip` (first attempt failed CS0103 — new source file missing from the main csproj — fixed and re-run clean) |
+| Mod-load smoke (guarded, Steam 640820, `KMG_AUTOMATION_WORKING`, auto-exit) | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/Invoke-KingmakerRuntimeTest.ps1 -Scenario working-save-smoke -ExpectedVersion 0.0.140 -SaveName KMG_AUTOMATION_WORKING '-ExitAfterCompletion:$true' '-Confirm:$false'` | RUNTIME-RESULT-PLACEHOLDER |
+| Diff hygiene | `git diff --check` | clean |
+| Binary/secret/private-path audit of all commits | inspected full `git diff 2ce70e4e7..HEAD`: only text sources, tests, research docs, ledger, csproj entries, one .gitignore line | clean — no binaries, saves, credentials, machine-local config (`.zcodeignore` explicitly ignored), proprietary dumps or generated packages |
+| Push wrapper | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:/Dev/KingmakerGunslingerLab/codex-policy/Push-KingmakerGunslinger.ps1` | PASS after every slice commit (`e51560a1e`, `ee88a6361`, `7e7cee271` … final below) |
+
+No version bump, release, tag or public artifact was made for this mission;
+`Info.json` remains `0.0.140` per the mission's version rule.
+
+## Blockers and deferred decisions
+
+### B1 — Fiery Glare & Stoic Dignity: icon authoring unavailable
+
+- **Exact unresolved question:** who/what authors the two original trait
+  paintings (and when), given no authorized image tool exists on this
+  toolchain today.
+- **Evidence inspected:** 122-concept canonical catalog production briefs
+  (`"tool": "built-in image_gen"`), `docs/ICON-ART-GUIDE.md` (forbids
+  procedural substitutes), mission §8/§9 commit gates, local toolchain scan.
+- **Alternatives considered:** procedural GDI+/Python painting (forbidden as
+  a substitute); donor/native-semantic reuse (forbidden for a new trait
+  identity); committing unpublished code without icons (mission says
+  "continue without a feature commit").
+- **Why choosing autonomously would be unfaithful:** any fallback would
+  either violate the icon contract or ship a player-visible feature with a
+  missing/unrelated identity.
+- **Narrowest recommended next human decision:** author the two paintings
+  with the built-in image tool under the recorded briefs (or authorize a
+  named alternative workflow), then implement from the finding — no design
+  questions remain on mechanics or offering mechanism.
+- **Mission continuation:** confirmed — slices 5–7 and qualification
+  continued after recording this blocker.
+
+### B2 — Earthsense: no tremorsense in the engine
+
+- **Exact unresolved question:** whether the owner wants a documented
+  adaptation (e.g. a see-invisibility-adjacent effect) despite the mission
+  gate, or no Earthsense at all.
+- **Evidence inspected:** full Assembly-CSharp metadata (zero `Tremor*`
+  matches; sense model = UnitCondition flags + UnitStealth), mission gate
+  forbidding blindsight/blindsense/see-invisibility substitutes.
+- **Alternatives considered:** SeeInvisibility-style fact (explicitly
+  forbidden), all-target detection (forbidden), global stealth-patch
+  (invasive, exactly what the gate bars).
+- **Why choosing autonomously would be unfaithful:** any approximation is a
+  materially different player-facing rule.
+- **Narrowest recommended next human decision:** accept NOT-CURRENTLY-SAFE
+  or explicitly approve a named adaptation in writing.
+- **Mission continuation:** confirmed.
+
+### B3 — Race-trait offering mechanism (resolved by analysis, ratified by owner review)
+
+The feasibility finding resolves offering to Favored Class `racial_traits`
+late publication (Heirloom precedent) rather than a replacement-slot
+alternate trait (would invent a slot) or a feat (wrong tabletop category).
+This is documented with full reasoning for owner ratification before any
+implementation commit.
+
+## Owner review priorities (ordered)
+
+1. **Firearm description wording** — review the new copy in the Slice 2
+   table above (already qualified mechanically; pure prose review).
+2. **Icon authoring for Fiery Glare + Stoic Dignity** (blocker B1) — once
+   painted, both traits implement directly from
+   `docs/research/CHARACTER-RACE-TRAITS-FEASIBILITY.md`.
+3. **Earthsense disposition** (blocker B2).
+4. **Whiteout: whether to authorize implementation** and the five design
+   decisions in `WHITEOUT-WEATHER-FEASIBILITY.md`.
+5. **Item-availability model choice** among the three in
+   `MOD-ITEM-AVAILABILITY-AUDIT.md` (preliminary recommendation: Model C).
+6. **Integration/rebase:** `origin/master` did not move during the mission
+   (verified at close), so no rebase is needed; merging this branch remains
+   an owner action.
+
+## Commit / push ledger
+
+| Commit | Subject | Push |
+|---|---|---|
+| `dea494233` | docs(items): normalize firearm item descriptions | (with `e51560a1e`) |
+| `bc83e0044` | docs(research): record character race trait feasibility findings | (with `e51560a1e`) |
+| `e51560a1e` (incl. interim ledger) | docs: start weekend mission handoff ledger | wrapper PASS |
+| `ee88a6361` | docs(research): assess whiteout weather integration | wrapper PASS |
+| `7e7cee271` | docs(research): audit mod item availability | wrapper PASS |
+| FINAL | docs: add weekend mission handoff (this file, completed) | wrapper PASS (below) |
+
+No merge, no master push, no tag, no release, no PR (none opened; no
+repository automation created one).
+
 
 ## Slice 1 — SKIPPED-ALREADY-COMPLETE evidence
 
