@@ -38,15 +38,27 @@ namespace KingmakerGunslinger.Summoning
         // them.
         private static readonly HashSet<string> SuppressedCreatureKeys =
             new HashSet<string>(new[] {
-                "giant-ant-worker", "giant-ant-soldier"
+                "giant-ant-worker", "giant-ant-soldier",
+                // Sprint 15, registered ahead of its own qualification the way
+                // every sprint before it did. The Drone also prints scent and
+                // is held by the same pending ruling as the castes above; the
+                // Giant Stag Beetle prints none and is withheld only until its
+                // own gates pass.
+                "giant-ant-drone", "giant-stag-beetle"
             }, StringComparer.Ordinal);
 
-        internal const int RegisteredLogicalPlacementCount = 952;
-        // The worker's 16 placements and the soldier's 14. The Fire Beetle's 18
-        // are published. A creature held for a proven engine barrier subtracts
-        // exactly its own placements, which the Sprint 14 domain suite asserts
-        // per creature so this arithmetic cannot drift.
-        internal const int SuppressedLogicalPlacementCount = 30;
+        internal const int RegisteredLogicalPlacementCount = 970;
+        // Four creatures, 48 placements: the Giant Ant Worker's 16 and
+        // Soldier's 14, held on the scent barrier, and Sprint 15's Giant Ant
+        // Drone's 12 and Giant Stag Beetle's 6, registered ahead of their own
+        // qualification. The Fire Beetle's 18 are published. A creature held
+        // for any reason subtracts exactly its own placements, which the
+        // Sprint 14 and 15 domain suites assert per creature so this
+        // arithmetic cannot drift.
+        //
+        // The published surface therefore stays at 922 while Sprint 15 is
+        // withheld: registering a creature never moves it.
+        internal const int SuppressedLogicalPlacementCount = 48;
         internal const int PublishedLogicalPlacementCount =
             RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount;
 

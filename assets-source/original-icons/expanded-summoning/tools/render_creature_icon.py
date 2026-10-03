@@ -854,7 +854,7 @@ def shadow_mastiff():
     sphere("Nose", (0.0, -1.38, 0.10), (0.18, 0.11, 0.11), under)
 
 
-def giant_ant(soldier):
+def giant_ant(soldier, drone=False):
     """A giant ant in profile: head, pinched waist and gaster, three masses on
     a thread, which is the only thing that names an ant at 64 pixels.
 
@@ -867,6 +867,14 @@ def giant_ant(soldier):
     The caste is the same three differences the mesh uses - head size, mandible
     weight, and whether a sting shows - because a player who can tell them apart
     in the field should be able to tell them apart in the menu.
+
+    Sprint 15's Drone is a fourth difference on the same build: it is the
+    soldier with the advanced simple template, so it keeps the soldier's heavy
+    head, mandibles and sting and adds two pairs of wings folded back over the
+    gaster. The wings are what a player will actually use to tell it from the
+    soldier at icon size, so they are raised off the body and lit pale against
+    the dark chitin rather than laid flat where the silhouette would swallow
+    them.
     """
     head_scale = 1.0 if soldier else 0.78
     chitin = material("Chitin", (0.172, 0.084, 0.047), 0.32,
@@ -914,6 +922,30 @@ def giant_ant(soldier):
         # two primitives even at this size.
         cone_along("Sting", (2.08, 0.0, 0.34), (1.0, 0.0, -0.46), 0.62,
                    0.070, jaw, 0.012)
+    if drone:
+        # Two pairs of wings, the forewing long and the hindwing short, swept
+        # back over the gaster and tilted up so each pair reads separately
+        # against the body instead of merging into one shape.
+        membrane = material("Wing", (0.70, 0.58, 0.36), 0.16,
+                            emission=(0.50, 0.40, 0.23),
+                            emission_strength=0.45)
+        for s in (-1, 1):
+            # Broad across, thin through, and sitting down on the mesosoma
+            # rather than hovering over it. The first build made them narrow
+            # as well as thin, so each rendered as a sliver that read like a
+            # scratch across the frame instead of a wing.
+            fore = Blob("Forewing%d" % s, membrane, 0.040)
+            fore.ball((-0.24, s * 0.34, 0.96), 0.44, (1.70, 1.25, 0.16),
+                      axis=(1, 0, 0))
+            fore.ball((0.86, s * 0.66, 1.02), 0.46, (1.95, 1.30, 0.15),
+                      axis=(1, 0, 0))
+            fore.ball((2.00, s * 0.92, 1.04), 0.34, (1.70, 1.05, 0.13),
+                      axis=(1, 0, 0))
+            hind = Blob("Hindwing%d" % s, membrane, 0.040)
+            hind.ball((0.10, s * 0.52, 0.80), 0.34, (1.35, 1.05, 0.14),
+                      axis=(1, 0, 0))
+            hind.ball((1.05, s * 0.76, 0.84), 0.30, (1.25, 0.95, 0.12),
+                      axis=(1, 0, 0))
 
 
 def fire_beetle():
@@ -968,6 +1000,65 @@ def fire_beetle():
                    (s * 0.62, -1.0, 0.46), 0.92, 0.050, limb, 0.070)
 
 
+def giant_stag_beetle():
+    """A giant stag beetle in profile, head to the left.
+
+    The mandibles are the portrait, so the creature is laid along the view's
+    horizontal exactly as the ant is. The first build copied the fire beetle
+    and pointed the head at the camera; the antlers foreshortened straight into
+    the body and the rendered frame was a brown blob with legs, missing the one
+    feature that names the creature. A forward-projecting feature needs a
+    profile to live in.
+
+    Everything else says heavy. This is a Large creature with a 20-foot speed
+    that bowls over anything smaller than itself, so the body is long and
+    deep, the elytra are broad with a visible suture, and the legs are short
+    and thick rather than the ant's thin struts.
+    """
+    shell = material("StagShell", (0.098, 0.058, 0.030), 0.30,
+                     noise=(5.0, 0.44, (0.044, 0.025, 0.013)))
+    elytron = material("StagElytron", (0.150, 0.088, 0.045), 0.18,
+                       noise=(13.0, 0.40, (0.064, 0.036, 0.018)))
+    limb = material("StagLimb", (0.074, 0.043, 0.022), 0.40)
+    antler = material("Antler", (0.206, 0.126, 0.060), 0.22,
+                      noise=(9.0, 0.30, (0.092, 0.055, 0.026)))
+    eye = material("StagEye", (0.030, 0.026, 0.024), 0.10)
+    body = Blob("Body", shell, 0.045)
+    # Head, a short thick neck, a deep thorax and a long broad abdomen.
+    body.ball((-1.66, 0.0, 0.46), 0.60, (1.06, 1.00, 0.86), axis=(1, 0, 0))
+    body.ball((-0.96, 0.0, 0.42), 0.30)
+    body.ball((-0.30, 0.0, 0.52), 0.76, (1.22, 1.08, 0.94), axis=(1, 0, 0))
+    body.ball((1.00, 0.0, 0.50), 0.96, (1.46, 1.16, 0.90), axis=(1, 0, 0))
+    for s in (-1, 1):
+        # Elytra along the abdomen, raised so the suture between them reads.
+        wing = Blob("StagElytron%d" % s, elytron, 0.045)
+        wing.ball((0.10, s * 0.38, 1.02), 0.44, (1.30, 0.82, 0.34),
+                  axis=(1, 0, 0))
+        wing.ball((1.10, s * 0.42, 1.02), 0.46, (1.40, 0.86, 0.34),
+                  axis=(1, 0, 0))
+        wing.ball((2.00, s * 0.32, 0.88), 0.34, (1.10, 0.66, 0.28),
+                  axis=(1, 0, 0))
+        sphere("StagEye%d" % s, (-1.92, s * 0.44, 0.60),
+               (0.14, 0.11, 0.13), eye)
+        # The antlers: a heavy base forward and out, a longer arm curving in,
+        # and one inner tine. Held wide enough that the gap between them is
+        # part of the silhouette.
+        cone_along("Antler%dA" % s, (-2.06, s * 0.34, 0.46),
+                   (-1.0, s * 0.30, 0.16), 1.16, 0.150, antler, 0.108)
+        cone_along("Antler%dB" % s, (-3.10, s * 0.66, 0.66),
+                   (-1.0, -s * 0.46, 0.04), 1.00, 0.102, antler, 0.030)
+        cone_along("Tine%d" % s, (-2.86, s * 0.58, 0.60),
+                   (-0.30, -s * 1.0, 0.26), 0.58, 0.060, antler, 0.014)
+        # Six short braced legs: a thick femur out and a tibia to the ground.
+        for index, (root, out) in enumerate((
+                (-0.74, -0.40), (-0.20, 0.0), (0.38, 0.40))):
+            cone_along("StagFemur%d%d" % (s, index), (root, s * 0.30, 0.34),
+                       (out, s * 1.0, 0.30), 0.86, 0.128, limb, 0.086)
+            cone_along("StagTibia%d%d" % (s, index),
+                       (root + out * 0.5, s * 0.92, 0.66),
+                       (out * 0.4, s * 0.42, -1.0), 1.18, 0.082, limb, 0.030)
+
+
 CREATURES = {
     # The two ant castes share a backdrop and a light rig because they are one
     # creature in two builds; what separates them in the frame is the head and
@@ -980,6 +1071,19 @@ CREATURES = {
                      inner=(0.26, 0.13, 0.06), outer=(0.028, 0.014, 0.008),
                      key=(1.0, 0.86, 0.60), rim=(0.70, 0.80, 1.0),
                      camera=((1.5, -9.8, 1.95), (-0.30, 0.0, 0.46), 46.0)),
+    # The Drone shares the castes' backdrop and rig for the same reason, and
+    # pulls the camera back a little because the wings widen the subject.
+    "giant-ant-drone": dict(build=lambda: giant_ant(True, True),
+                     inner=(0.26, 0.13, 0.06), outer=(0.028, 0.014, 0.008),
+                     key=(1.0, 0.86, 0.60), rim=(0.70, 0.80, 1.0),
+                     camera=((1.6, -10.6, 2.30), (-0.30, 0.0, 0.58), 46.0)),
+    # A heavy ground beetle whose portrait is its mandibles: a cool slate
+    # backdrop so the warm antlers carry against it, and a camera low enough
+    # that the body reads as mass rather than as a disc from above.
+    "giant-stag-beetle": dict(build=giant_stag_beetle,
+                     inner=(0.11, 0.12, 0.15), outer=(0.010, 0.011, 0.014),
+                     key=(1.0, 0.90, 0.70), rim=(0.66, 0.76, 1.0),
+                     camera=((1.5, -10.4, 2.10), (-0.40, 0.0, 0.56), 46.0)),
     # A near-black creature whose whole identity is that it glows: the backdrop
     # is deep and cool so the two emissive glands are the only warm thing
     # anywhere in the frame.

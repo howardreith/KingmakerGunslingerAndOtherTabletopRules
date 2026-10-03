@@ -76,6 +76,8 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Summoning.Natural.GiantAnt.RacialSkills";
         private const string FireBeetleUnitTypeSymbol =
             "KMG.Summoning.Natural.FireBeetle.UnitType";
+        private const string GiantStagBeetleUnitTypeSymbol =
+            "KMG.Summoning.Natural.GiantStagBeetle.UnitType";
         private const string GiantAntUnitTypeSymbol =
             "KMG.Summoning.Natural.GiantAnt.UnitType";
         private const string NativeShockingGraspDeliveryGuid =
@@ -320,6 +322,8 @@ namespace KingmakerGunslinger.Blueprints
                 bySymbol, FireBeetleUnitTypeSymbol));
             ConfigureGiantAntUnitType(Require<BlueprintUnitType>(
                 bySymbol, GiantAntUnitTypeSymbol));
+            ConfigureGiantStagBeetleUnitType(Require<BlueprintUnitType>(
+                bySymbol, GiantStagBeetleUnitTypeSymbol));
             ConfigureWaspUnitType(Require<BlueprintUnitType>(bySymbol,
                 WaspUnitTypeSymbol));
             BlueprintBuff filthFever = BlueprintLibraryLookup.RequireExact<
@@ -626,8 +630,9 @@ namespace KingmakerGunslinger.Blueprints
         }
 
         /// <summary>
-        /// One type for both castes, because they are one creature in two
-        /// castes rather than two creatures.
+        /// One type for all three castes, because they are one creature in
+        /// three castes rather than three creatures. Sprint 15's Drone is the
+        /// soldier with the advanced simple template and wings and shares it.
         /// </summary>
         private static void ConfigureGiantAntUnitType(BlueprintUnitType type)
         {
@@ -639,6 +644,26 @@ namespace KingmakerGunslinger.Blueprints
             type.Description = LocalizationService.Create(
                 "KMG.ExpandedSummoning.GiantAnt.UnitType.Description",
                 "A dog-sized colonial vermin with heavy mandibles; soldiers also carry a venomous sting.");
+            type.Image = null;
+            type.SignatureAbilities = Array.Empty<BlueprintUnitFact>();
+        }
+
+        /// <summary>
+        /// Its own type rather than the Fire Beetle's. They are different
+        /// creatures that happen to share a rig, and a type carries a display
+        /// name a player reads.
+        /// </summary>
+        private static void ConfigureGiantStagBeetleUnitType(
+            BlueprintUnitType type)
+        {
+            type.name = InternalName(GiantStagBeetleUnitTypeSymbol);
+            type.KnowledgeStat = StatType.SkillLoreNature;
+            type.Name = LocalizationService.Create(
+                "KMG.ExpandedSummoning.GiantStagBeetle.UnitType.Name",
+                "Giant Stag Beetle");
+            type.Description = LocalizationService.Create(
+                "KMG.ExpandedSummoning.GiantStagBeetle.UnitType.Description",
+                "A heavy Large beetle whose enormous mandibles can bowl over anything smaller than itself.");
             type.Image = null;
             type.SignatureAbilities = Array.Empty<BlueprintUnitFact>();
         }
@@ -823,9 +848,13 @@ namespace KingmakerGunslinger.Blueprints
                 unit.Type = Require<BlueprintUnitType>(bySymbol,
                     FireBeetleUnitTypeSymbol);
             else if (profile.Key == "giant-ant-worker" ||
-                profile.Key == "giant-ant-soldier")
+                profile.Key == "giant-ant-soldier" ||
+                profile.Key == "giant-ant-drone")
                 unit.Type = Require<BlueprintUnitType>(bySymbol,
                     GiantAntUnitTypeSymbol);
+            else if (profile.Key == "giant-stag-beetle")
+                unit.Type = Require<BlueprintUnitType>(bySymbol,
+                    GiantStagBeetleUnitTypeSymbol);
             unit.Alignment = Alignment.TrueNeutral;
             unit.Size = ParseSize(profile.Size);
             unit.Strength = profile.Strength;

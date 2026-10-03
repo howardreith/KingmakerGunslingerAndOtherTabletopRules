@@ -557,6 +557,18 @@
       "subjectPrompt": "A shaggy winter rhinoceros with two separate horns, reddish-brown long hair and a cold muted setting, visually heavier than the bare rhinoceros.",
       "generator": "built-in-imagegen",
       "compositionBriefSource": "assets-source/original-icons/expanded-summoning/PHASE2-SPRINT11-SOURCES.md"
+    },
+    {
+      "key": "giant-ant-drone",
+      "displayName": "Giant Ant (Drone)",
+      "subjectPrompt": "A winged giant ant in three-quarter profile, the soldier's three masses on a pinched waist - oversized head, humped mesosoma, egg-shaped gaster - but larger and darker, with two pairs of long translucent amber-veined wings folded back over the gaster and raised slightly as if about to beat; reddish-brown chitin with a deeper sheen than the soldier's, heavy curved mandibles, elbowed antennae and a sting at the tip; warm amber radial backdrop, visibly the winged reproductive caste rather than the worker or the soldier.",
+      "generator": "blender-procedural"
+    },
+    {
+      "key": "giant-stag-beetle",
+      "displayName": "Giant Stag Beetle",
+      "subjectPrompt": "A giant stag beetle three-quarter from slightly above, a heavy broad-shouldered beetle in glossy dark brown, hard elytra meeting along a deep suture over a wide abdomen, thick short legs braced wide, and enormous antler-like mandibles branching forward from the head and held open, which are the silhouette's defining feature; cool slate radial backdrop so the mandibles read against it, visibly massive and ground-bound rather than the small glowing fire beetle.",
+      "generator": "blender-procedural"
     }
   ]
 }

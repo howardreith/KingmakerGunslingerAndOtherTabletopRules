@@ -98,12 +98,12 @@ namespace KingmakerGunslinger.DomainTests
             // appearing here for any other reason would be a sprint
             // registering ahead of its own qualification, which is allowed,
             // but it has to be deliberate rather than a leftover.
-            Assertions.Equal(30,
+            Assertions.Equal(48,
                 ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
                     .Concat(ExpandedSummoningCatalog.GenerateVariants(
                         SummonFamily.NaturesAlly))
                     .Count(value => !SummonVisibilityCatalog.IsPublished(value)),
-                "Only placements that are unqualified or held on a proven engine barrier may remain hidden: 30 placements are withheld, and both are Giant Ant castes held on a proven engine barrier rather than on anything of their own.");
+                "Only placements that are unqualified or held on a proven engine barrier may remain hidden: 48 placements are withheld: the two Giant Ant castes held on a proven engine barrier, and Sprint 15's Giant Ant Drone and Giant Stag Beetle registered ahead of their own qualification.");
         }
 
         internal static void DisplayOrderGroupsSinglesBeforeQuantities()
@@ -132,7 +132,7 @@ namespace KingmakerGunslinger.DomainTests
         {
             SummonIconCatalog.Validate();
             SummonViewScaleCatalog.Validate();
-            Assertions.Equal(104, SummonIconCatalog.All.Count,
+            Assertions.Equal(106, SummonIconCatalog.All.Count,
                 "Project icon concept count changed.");
             Assertions.Equal("Dire Bat", SummonIconCatalog.For("dire-bat")
                 .DisplayName, "Dire Bat requires its own creature icon identity.");
