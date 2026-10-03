@@ -98,12 +98,13 @@ namespace KingmakerGunslinger.DomainTests
             // appearing here for any other reason would be a sprint
             // registering ahead of its own qualification, which is allowed,
             // but it has to be deliberate rather than a leftover.
-            Assertions.Equal(0,
+            Assertions.Equal(
+                SummonVisibilityCatalog.SuppressedLogicalPlacementCount,
                 ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
                     .Concat(ExpandedSummoningCatalog.GenerateVariants(
                         SummonFamily.NaturesAlly))
                     .Count(value => !SummonVisibilityCatalog.IsPublished(value)),
-                "Only placements that are unqualified or held on a proven engine barrier may remain hidden: nothing is withheld - every registered placement of every qualified creature publishes.");
+                "Only placements that are unqualified or held on a proven engine barrier may remain hidden, and the catalog must hide exactly as many as it declares it hides.");
         }
 
         internal static void DisplayOrderGroupsSinglesBeforeQuantities()
@@ -132,7 +133,7 @@ namespace KingmakerGunslinger.DomainTests
         {
             SummonIconCatalog.Validate();
             SummonViewScaleCatalog.Validate();
-            Assertions.Equal(106, SummonIconCatalog.All.Count,
+            Assertions.Equal(107, SummonIconCatalog.All.Count,
                 "Project icon concept count changed.");
             Assertions.Equal("Dire Bat", SummonIconCatalog.For("dire-bat")
                 .DisplayName, "Dire Bat requires its own creature icon identity.");

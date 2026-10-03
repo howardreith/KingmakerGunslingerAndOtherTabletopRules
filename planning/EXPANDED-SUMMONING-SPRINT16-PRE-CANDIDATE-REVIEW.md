@@ -7,25 +7,38 @@ misunderstood signature is not discovered by a runtime matrix.
 
 ## Findings that change the implementation
 
-### 1. Replacing the Crocodile's proxy touches no identity
+### 1. Replacing the Crocodile's proxy touches no identity, and its label stays
 
-`SummonCreatureSpec.Visual` defaults to the display name and is consumed in
-exactly one place: `ExpandedSummoningBaselineInventory.ProxyVisualCreatures`,
-which counts an entry as a proxy only when `Visual` differs from
-`DisplayName`. Placements and GUIDs come from the append-only ledger and are
-untouched by it.
+**Corrected after filing.** The first version of this section said to drop the
+trailing `"Monitor Lizard"` argument from the Crocodile's catalog entry. That
+was wrong, and following it would have broken a pinned count while overstating
+how much original visual work this project has finished.
 
-So replacing the proxy is: drop the trailing `"Monitor Lizard"` argument from
-`C("crocodile","Crocodile",3,true,3,"Monitor Lizard")` in
-`ExpandedSummoningCatalog`, add the creature to the view patch's key map, the
-asset runtime's dictionary, the bone policy, the view scale catalog and the
-four shipping lists. The Crocodile's identity, placements and GUIDs are
-preserved by construction, which is what the mission requires. The proxy count
-in the inventory census moves by one and is pinned in tests.
+`SummonCreatureSpec.Visual` is consumed in exactly one place -
+`ExpandedSummoningBaselineInventory.ProxyVisualCreatures`, which counts an
+entry as a proxy when `Visual` differs from `DisplayName` - and it has no
+behavioural effect at all. Placements and GUIDs come from the append-only
+ledger and are untouched by it, so the mission's requirement that the
+Crocodile's identity survive is satisfied however the label is set.
 
-`ExpandedSummoningDonorCatalog` keeps its Monitor Lizard row: that row names
-the *donor rig*, which the project mesh still binds against, not the borrowed
-appearance. The Monitor Lizard is also the right rig to keep - a low, wide,
+What settles the label is the convention the repository already encodes. The
+frozen proxy count is 32, and the test that pins it says in its own message
+that *all five Sprint 14 and 15 insects borrow the Giant Spider* - those five
+creatures ship original project meshes and are still counted as borrowing,
+because they ride the donor's rig. The Sprint 11 ungulates, the Sprint 12
+quadrupeds and the Sprint 13 creatures all keep their labels on the same basis.
+The Giant Wasp and the Stirge carry no label, which is the one inconsistency in
+the set and is not a reason to propagate the looser reading.
+
+So the Crocodile keeps `"Monitor Lizard"`: it will still ride that rig, the
+proxy count stays 32, and "replace the proxy" means ship an original mesh in
+place of the borrowed body rather than relabel the creature. The remaining work
+is the view patch's key map, the asset runtime's dictionary, the bone policy,
+the view scale catalog and the four shipping lists - the last of which Sprint 15
+proved is easy to forget and silent when forgotten.
+
+`ExpandedSummoningDonorCatalog` keeps its Monitor Lizard row for the same
+reason, and the Monitor Lizard is the right rig to keep: a low, wide,
 four-legged body with a long tail is a crocodile's shape already, so the work
 is a new mesh on a sound donor rather than a donor hunt.
 
@@ -154,3 +167,43 @@ publishes.
 That makes Sprint 17 two seams: the Purple Worm frame for the two snakes, and
 the Salamander's existing humanoid donor with a new mesh. Recording the
 decision now means the bind-frame proof only has to answer the snake question.
+
+---
+
+# Addendum: what the Crocodile already has, and what it is missing
+
+Read off the shipped profile rather than assumed from the sprint's framing.
+
+`ExpandedSummoningNaturalProfiles` already carries the Crocodile, and its
+numbers are the printed ones exactly: Animal, 3 hit dice, Large, Str 19,
+Dex 12, Con 17, Int 1, Wis 12, Cha 2, 20-foot speed, +4 natural armour, a 1d8
+bite, and - correctly - a 1d12 tail slap in the **secondary** limb slot via the
+`PS` helper rather than among the additional primaries. Point 5 of this review
+is therefore already satisfied for this creature; it is the Dire Crocodile that
+still has to be built that way.
+
+Both of its weapons already resolve, so neither needs a new identity: `Bite1d8`
+maps to a native 1d8 bite and `Tail1d12` to a project-owned weapon this
+creature is the reason for. Its facts carry the reduced reach a Large creature
+with 5-foot reach needs, the four-legged trip defence its printed CMD 18 and 22
+require, and Skill Focus in Perception and Stealth.
+
+What it is missing is the whole of its signature behaviour, and the profile says
+so in a single deviation line:
+
+> "Grab, death roll, sprint, and hold breath are omitted because no
+> duration-bound summon-safe native graph was proven."
+
+That line is the sprint's real target, and it is the shape of record the owner
+rejected in Phase 1: an omission written down as a deviation and counted as
+completion. Three of its four items have carriers this project already drives,
+as the sections above establish - grab is the qualified Sprint 6 carrier that
+a dozen creatures use, death roll is a grapple-check rider plus the native
+prone condition, and sprint is a one-round Speed bonus with a once-per-minute
+resource. Only hold breath has no consumer, because Kingmaker models neither
+swimming nor drowning, and that one stays omitted with its reason stated
+exactly rather than bundled with three implementable abilities.
+
+So Sprint 16 does not begin by writing the Crocodile. It begins by registering
+the Dire Crocodile, and then by replacing that one deviation line with three
+implementations and one honest omission.

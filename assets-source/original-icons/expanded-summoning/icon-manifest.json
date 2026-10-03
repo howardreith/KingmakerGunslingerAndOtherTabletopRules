@@ -2,7 +2,7 @@
     "schemaVersion":  1,
     "provenance":  "Project-owned original artwork: 77 AI-assisted roster-mission concepts, Phase 1 procedural Blender additions, and Phase 2 original creature/action paintings; no copied game or third-party pixels.",
     "generator":  "tools/New-ExpandedSummoningIcons.ps1",
-    "count":  106,
+    "count":  107,
     "icons":  [
                   {
                       "key":  "air-mephit",
@@ -347,6 +347,33 @@
                                                "KMG.Summoning.Ability.SNA.Tier8.Crocodile.OneD4PlusOne",
                                                "KMG.Summoning.Ability.SNA.Tier9.Crocodile.OneD4PlusOne",
                                                "KMG.Summoning.Unit.Crocodile"
+                                           ]
+                  },
+                  {
+                      "key":  "dire-crocodile",
+                      "displayName":  "Dire Crocodile",
+                      "sourceFile":  "assets-source/original-icons/expanded-summoning/sources/dire-crocodile.png",
+                      "productionFile":  "assets/game/icons/expanded-summoning/dire-crocodile.png",
+                      "sourceSha256":  "bb5f282d769cdc7e1be047ba7d2161529f52443abc0550d1f8d1d37aacd6ffa2",
+                      "outputSha256":  "77a7395a6fe17e1528b8a8778fa28f77f1c02bb1ad50ab92888688625666116b",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog",
+                      "blueprintSymbols":  [
+                                               "KMG.Summoning.Ability.SM.Tier7.DireCrocodile.One",
+                                               "KMG.Summoning.Ability.SM.Tier7.DireCrocodile.One.Celestial",
+                                               "KMG.Summoning.Ability.SM.Tier7.DireCrocodile.One.Fiendish",
+                                               "KMG.Summoning.Ability.SM.Tier8.DireCrocodile.OneD3",
+                                               "KMG.Summoning.Ability.SM.Tier8.DireCrocodile.OneD3.Celestial",
+                                               "KMG.Summoning.Ability.SM.Tier8.DireCrocodile.OneD3.Fiendish",
+                                               "KMG.Summoning.Ability.SM.Tier9.DireCrocodile.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SM.Tier9.DireCrocodile.OneD4PlusOne.Celestial",
+                                               "KMG.Summoning.Ability.SM.Tier9.DireCrocodile.OneD4PlusOne.Fiendish",
+                                               "KMG.Summoning.Ability.SNA.Tier7.DireCrocodile.One",
+                                               "KMG.Summoning.Ability.SNA.Tier8.DireCrocodile.OneD3",
+                                               "KMG.Summoning.Ability.SNA.Tier9.DireCrocodile.OneD4PlusOne",
+                                               "KMG.Summoning.Unit.DireCrocodile"
                                            ]
                   },
                   {
