@@ -184,6 +184,7 @@ namespace KingmakerGunslinger.Summoning
             internal Mesh Mesh;
             internal EagleAttackVisualLunge EagleLunge;
             internal GiantWaspVisualSting WaspSting;
+            internal CrocodilianAttackVisualPose CrocodilianPose;
             internal StirgeVisualTouch StirgeTouch;
             internal FireBeetleVisualGlow BeetleGlow;
         }
@@ -449,6 +450,12 @@ namespace KingmakerGunslinger.Summoning
                         .AddComponent<GiantWaspVisualSting>();
                     attachment.WaspSting.Configure(view, donor);
                 }
+                if (IsCrocodilian(attachment.VisualKey))
+                {
+                    attachment.CrocodilianPose = view.gameObject
+                        .AddComponent<CrocodilianAttackVisualPose>();
+                    attachment.CrocodilianPose.Configure(attachment.VisualKey, view, donor);
+                }
                 if (attachment.VisualKey == "stirge")
                 {
                     attachment.StirgeTouch = view.gameObject
@@ -482,6 +489,12 @@ namespace KingmakerGunslinger.Summoning
                 {
                     UnityEngine.Object.Destroy(attachment.WaspSting);
                     attachment.WaspSting = null;
+                }
+                if (attachment.CrocodilianPose != null)
+                {
+                    attachment.CrocodilianPose.enabled = false;
+                    UnityEngine.Object.Destroy(attachment.CrocodilianPose);
+                    attachment.CrocodilianPose = null;
                 }
                 if (attachment.StirgeTouch != null)
                 {
@@ -631,6 +644,13 @@ namespace KingmakerGunslinger.Summoning
         /// </summary>
         private static void Revert(Attachment attachment)
         {
+            if (attachment.CrocodilianPose != null)
+            {
+                attachment.CrocodilianPose.enabled = false;
+                attachment.CrocodilianPose.RestoreNative();
+                UnityEngine.Object.DestroyImmediate(attachment.CrocodilianPose);
+                attachment.CrocodilianPose = null;
+            }
             SkinnedMeshRenderer donor = attachment.Donor;
             if (donor == null) return;
             donor.sharedMesh = attachment.OriginalMesh;

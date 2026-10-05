@@ -46,30 +46,29 @@ release, tag, version bump, PR change or permanent deployment.
   write, absence 4/5. Actual leased 0.0.140 / 254-file installation restored
   exactly, lease released. Full ledger and exact fingerprints:
   `planning/EXPANDED-SUMMONING-SPRINT16-RECONCILED-BATCH-REVIEW.md`.
-- Second clean repaired candidate `634b6c189` passed new complete source,
-  preflight, build and package gates, then FAILED the complete six-run batch:
-  smoke 11/11, main 173/205, crowd 17/20, prepare 9/9, cleanup 6/9,
-  absence 4/5. Prepare made one authorized native working save; failed cleanup
-  refused to write. Exact leased 0.0.140 / 254-file installation restored,
-  lease released. Five closed fixture summons await successful native cleanup.
-  Exact artifact/process/save/restoration ledger:
-  `planning/EXPANDED-SUMMONING-SPRINT16-SECOND-RECONCILED-BATCH-REVIEW.md`.
-- The containing source-qualified repair distinguishes native Medium-relative
-  dice from explicit creature-baseline dice; corrects premature fixture Dispose,
-  native appearance lock, detached-sheet close and turn-based command rejection;
-  retains intact-frame acceptance with bounded native fade settlement. Original
-  contact uses explicit weighted bone/bind-pose world positions plus prior
-  BakeMesh diagnostics. Native turns and census diagnostics remain guarded.
-  No range, original art, icon, AI action, price, version or publication change.
-- New pre-commit repair gates PASS: 216 focused / 2018 unfiltered; repository,
-  static/icon, 480 preflight, 68 orchestration, closed request tests, clean Release,
-  deterministic and strict 312-member package. No runtime PASS is claimed.
-- Next action: commit/push the coherent source correction; qualify one new clean
-  exact-head artifact with the complete prelaunch gates and repeat the entire
-  corrected six-scenario batch. Keep contact, visual, AI, both combat modes,
-  persistence, cleanup and publication assertions. Acquire lease before actual
-  live snapshot; restore that snapshot exactly; fresh Steam 640820 processes.
-  Stop on external remote motion; no old artifact qualifies repairs.
+- Second clean repaired candidate `634b6c189` failed its six-run batch;
+  exact history: `planning/EXPANDED-SUMMONING-SPRINT16-SECOND-RECONCILED-BATCH-REVIEW.md`.
+- Third clean candidate `08df2611b` passed new complete source/preflight/build/
+  package gates, then FAILED: smoke 11/11, main 184/206, crowd ERROR before
+  OnUpdate/result, prepare 9/9, cleanup 9/9, absence 5/5. Damage/maintain 35/35,
+  final UI/lifecycle 80/80, speed 19/19 and icons 9/9 PASS. Combat 33/55 FAIL.
+  Exact leased 0.0.140 / 254-file installation restored, lease released.
+  Two authorized native working writes completed the closed persistence cycle;
+  fresh absence proves zero remaining KMG summons. Failed attempts retained in
+  `planning/EXPANDED-SUMMONING-SPRINT16-THIRD-RECONCILED-BATCH-REVIEW.md`.
+- Containing narrow repair: exact-owner crocodilian visual-only fixed tail/jaw
+  contact pose, capped 0.25m root approach, established native attack timing and
+  owned teardown; exact native direct-control rule for manual fixtures; native
+  AI setup settling with complete action lists; bounded real hold retries and
+  maneuver diagnostics. No artwork, icon, range, collision, version or publication
+  change. New 216 focused / 2018 unfiltered, repository/static/icon, 480 preflight,
+  68 orchestration, closed request, clean Release, deterministic and strict
+  312-member package gates PASS. Runtime NOT QUALIFIED.
+- Next action: complete new source/preflight/build/package gates, commit and
+  push a source-qualified repair, then freeze one new clean exact-head artifact
+  and rerun the complete corrected six-scenario batch. No old runtime result
+  qualifies the new DLL. Acquire lease before actual live snapshot; restore
+  it exactly; only fresh Steam 640820 processes. Stop on external remote motion.
 - Publish Dire only after every required exact-artifact Sprint 16 gate passes.
   Sprint 17 must not begin until Sprint 16 is qualified and pushed.
 - Accepted unchanged: `PASSIVE_CREATURE_SENSES_UNMODELED`,
