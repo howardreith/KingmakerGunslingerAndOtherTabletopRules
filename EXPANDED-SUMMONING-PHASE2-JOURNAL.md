@@ -2,6 +2,14 @@
 
 ## October 5 canonical finalization reconciliation — NOT QUALIFIED
 
+Reconciliation is pushed at 379ff538; canonical draft PR #27 targets Phase 2A.
+PR #26 is annotated as historical, remains open/draft, and retains its body.
+Subsequent bounded source/native inspection corrected trait-based visual weapon
+lookup and capital manual-fixture parent eligibility; native Summoner/context
+and original party/area are untouched, and the fixture parent restores before
+cleanup. Added behavior/live ownership checks. Focused 217/217 and compile PASS;
+full exact-head gates/runtime next. One local test-name compile error was fixed.
+
 Owner froze the contested branch and made
 `codex/expanded-summoning-phase2b-finalize-20261005` canonical. Created its
 fresh worktree from the actual fetched 3fca5aba tip, preserving c5058203,

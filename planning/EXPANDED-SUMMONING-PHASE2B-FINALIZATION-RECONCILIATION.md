@@ -123,6 +123,38 @@ No duplicate disposal, swallow damage, UI close or damage-scaling path was added
 
 ## Qualification boundary and next action
 
+Canonical reconciliation `379ff53846c4f77fab993b36a223fee11be01151` is pushed.
+Draft [PR #27](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/27)
+targets Phase 2A; PR #26's top line marks it historical, preserving its entire
+body and open/draft state.
+
+### Bounded post-reconciliation corrections
+
+Independent inspection of imported source confirms the stats component is
+declared by ConfigureGrabber on the combat-trait buff in unit.AddFacts, not on
+the unit's ComponentsArray. Resolve the exact owner from those declared facts;
+fail closed on ambiguity. Behavior tests cover mixed/foreign/duplicate facts;
+the runtime profile now checks the actual bite/tail binding.
+
+Private native IL (UnitEntityData.IsDirectlyControllable, 1371603-1371702)
+shows capital control checks descriptor.Master against MainCharacter before
+consulting the native summoned-monster control flag. The fixture retains its
+exact native RuleSummonUnit control request and untouched Summoner/context.
+Only a newly created manual actor in a capital receives a temporary descriptor
+parent pointing to the already-existing main character, restored before any
+cleanup path. No party unit or area metadata changes. Evidence and the main
+combat predicate require the native Summoner to remain the fixture caster.
+UnitPartSummonedMonster.Summoner has its own native field (IL 354276-354291);
+it is not rewritten by this fixture-parent registration.
+
+These corrections follow inspected canonical source/native contracts, not an
+integration or restart on later frozen-branch motion. No foreign commit was
+cherry-picked. They preserve contact timing/tolerance, weapon roles, AI lists,
+native damage, native destruction and the corrected UI path.
+First focused rebuild exposed a local test variable shadowing an existing loop
+name; renamed the fixture variable, then 217/217 and incremental Release PASS.
+Runtime proof and the complete new exact-head pipeline remain mandatory.
+
 Reconciliation inner gates PASS: 217/217 focused of 2019 registered; active
 static/manifest validation; incremental exact-reference Release compile;
 68 orchestration assertions; persistence 11 wiring + 3 round trips/19 rejections;

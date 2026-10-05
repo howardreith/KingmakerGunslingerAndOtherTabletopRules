@@ -59,6 +59,8 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private ExpandedSummoningCorrectionFixture _crocCombatFixture;
         private UnitEntityData _crocCombatOwner;
+        private UnitEntityData _crocCombatMasterBefore;
+        private bool _crocCombatCapitalMaster;
         private UnitEntityData[] _crocCombatAwakeBefore;
         private Sprint16RuleObserver _crocCombatObserver;
         private readonly JArray _crocCombatRows = new JArray();
@@ -224,8 +226,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                 EventBus.Subscribe(control);
                 try { _crocCombatOwner = CastExpandedSummoningOwnTier(_crocCombatFixture, cell[0]); }
                 finally { EventBus.Unsubscribe(control); }
-                if (control.Matched != 1 || !_crocCombatOwner.IsDirectlyControllable)
+                var nativeSummon = _crocCombatOwner.Get<UnitPartSummonedMonster>();
+                if (control.Matched != 1 || nativeSummon == null || !nativeSummon.IsDirectlyControllable ||
+                    !ReferenceEquals(nativeSummon.Summoner, _crocCombatFixture.Caster))
                     throw new InvalidOperationException("Manual fixture did not receive exact native summon control.");
+                if (Game.Instance.CurrentlyLoadedArea != null && Game.Instance.CurrentlyLoadedArea.IsCapital)
+                {
+                    // Capital selection checks descriptor.Master before the
+                    // summon control part. Parent only this disposable manual
+                    // actor for control; its real native Summoner/context stay
+                    // the fixture caster. Never change the player or area.
+                    UnitEntityData main = Game.Instance.Player.MainCharacter.Value;
+                    if (main == null || !_crocCombatFixture.PartyBefore.Any(value => ReferenceEquals(value, main)))
+                        throw new InvalidOperationException("Capital manual fixture has no exact party main character.");
+                    _crocCombatMasterBefore = _crocCombatOwner.Descriptor.Master.Value;
+                    _crocCombatOwner.Descriptor.Master = main;
+                    _crocCombatCapitalMaster = true;
+                }
+                if (!_crocCombatOwner.IsDirectlyControllable)
+                    throw new InvalidOperationException("Native direct-control predicate still rejects the manual fixture.");
             }
             else _crocCombatOwner = CastExpandedSummoningOwnTier(_crocCombatFixture, cell[0]);
             // Never empty an AI cell's action list. The manual cell explicitly
@@ -411,6 +430,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ReferenceEquals(SummonHoldComponent.HeldTarget(_crocCombatOwner), _crocCombatFixture.Hostile) &&
                     _crocCombatFixture.Hostile.Descriptor.State.HasCondition(UnitCondition.Prone);
             bool exact = _crocCombatReadyFrame >= 0 && (heldCell ? rider && relationship : twoWeapons) &&
+                ReferenceEquals(_crocCombatOwner.Get<UnitPartSummonedMonster>()?.Summoner, _crocCombatFixture.Caster) &&
                 rejected && casts.Length == 1 && casts[0].Success &&
                 _crocCombatSharedCooldown && noFailedSpam &&
                 _crocCombatObserver.Attacks.All(value => !value.SuspendCombatLog) &&
@@ -430,6 +450,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["rejectedCommandResult"] = _crocCombatRejectedCast == null ? null : _crocCombatRejectedCast.Result.ToString(),
                     ["rejectedCommandActed"] = _crocCombatRejectedCast != null && _crocCombatRejectedCast.IsActed,
                     ["directlyControllable"] = _crocCombatOwner.IsDirectlyControllable,
+                    ["capitalManualParent"] = _crocCombatCapitalMaster,
+                    ["nativeSummonerUnchanged"] = ReferenceEquals(
+                        _crocCombatOwner.Get<UnitPartSummonedMonster>()?.Summoner, _crocCombatFixture.Caster),
                     ["manualNativeAttackAttempts"] = _crocCombatManualAttackAttempts,
                     ["maneuvers"] = new JArray(_crocCombatObserver.Checks.Select(value => new JObject {
                         ["initiator"] = value.Initiator.UniqueId,
@@ -557,6 +580,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             _crocCombatObserver = null;
             if (_crocCombatOwner != null)
             {
+                if (_crocCombatCapitalMaster)
+                {
+                    _crocCombatOwner.Descriptor.Master = _crocCombatMasterBefore;
+                    _crocCombatCapitalMaster = false;
+                    if (!ReferenceEquals(_crocCombatOwner.Descriptor.Master.Value, _crocCombatMasterBefore))
+                        throw new InvalidOperationException("Manual fixture parent did not restore before cleanup.");
+                    _crocCombatMasterBefore = null;
+                }
                 SummonGrabComponent grab = SummonGrabComponent.Find(_crocCombatOwner);
                 if (grab != null) Sprint16Release(_crocCombatFixture, _crocCombatOwner, grab);
                 TurnController turn = Game.Instance.TurnBasedCombatController.CurrentTurn;

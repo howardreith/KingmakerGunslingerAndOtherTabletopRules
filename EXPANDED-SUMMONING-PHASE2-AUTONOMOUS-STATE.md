@@ -12,8 +12,10 @@ No Sprint 18-22, merge, release/tag/version bump or permanent deployment.
 
 - Canonical branch: `codex/expanded-summoning-phase2b-finalize-20261005`;
   worktree: `.worktrees/expanded-summoning-phase2b-finalize-20261005`.
-  Imported base: `3fca5aba1cdaaf6215fd5712409fc208855c79cf`; the containing
-  commit is its reconciled descendant. No exact-head runtime candidate yet.
+  Imported base: `3fca5aba1cdaaf6215fd5712409fc208855c79cf`; reconciliation
+  checkpoint `379ff53846c4f77fab993b36a223fee11be01151` is pushed.
+  [Canonical draft PR #27](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/27)
+  targets Phase 2A and supersedes PR #26. No exact-head runtime candidate yet.
 - Frozen branch `codex/expanded-summoning-phase2b-sprints14-17` and PR #26 are
   historical evidence only. Later `31c9ff0f4949bfda5db21225366f52d110953d13`
   was preserved, not integrated. Later frozen-branch motion is informational;
@@ -46,9 +48,11 @@ No Sprint 18-22, merge, release/tag/version bump or permanent deployment.
   `SWALLOW_ELIGIBLE_TARGET_ELSE_DEATH_ROLL`.
 - Inner checks PASS: 217/217 focused (2019 registered), active static/manifest,
   incremental Release, 68 orchestration and closed persistence/crowd requests.
-- Next: coherent NOT QUALIFIED commit and policy push, new stacked draft PR;
-  finish the identified trait-lookup/capital-manual-control pre-candidate review,
-  then complete exact-head source/build/package
+- Pre-candidate review repairs: exact-owner combat-trait lookup for the visual
+  adapter; temporary capital manual-fixture parent with native Summoner/context
+  unchanged and restored before cleanup. New behavior checks and live binding/
+  unchanged-summoner assertions added; focused 217/217 and compile PASS.
+- Next: commit/policy-push this NOT QUALIFIED candidate, then exact-head source/build/package
   gates and all six guarded scenarios. Acquire runtime lease **before**
   observing/snapshotting the actual installation; restore that exact snapshot.
   No new runtime, installation observation/deployment or save write yet.
