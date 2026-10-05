@@ -5,6 +5,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 {
     internal static class RuntimeTestScenarioCatalog
     {
+        internal const string ObserveFirearmDescriptions = "observe-firearm-descriptions";
         internal const string ModLoadSmoke = "mod-load-smoke";
         internal const string DisposableMagicCircleProfile = "disposable-magic-circle-profile";
         internal const string DisposableMagicCircleUi = "disposable-magic-circle-ui";
@@ -623,6 +624,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static readonly HashSet<string> Allowed =
             new HashSet<string>(StringComparer.Ordinal)
             {
+                ObserveFirearmDescriptions,
                 ModLoadSmoke,
                 ObserveWordOfRecallFavoredClass,
                 DisposableWordOfRecallFavoredClassPersistence,

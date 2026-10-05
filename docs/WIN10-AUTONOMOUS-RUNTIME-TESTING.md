@@ -233,6 +233,19 @@ production adapter/service. Synthetic doubles may supply isolated state only
 when they do not duplicate the behavior under test. Log text, a screenshot,
 domain tests, or a successful build alone is not proof of gameplay behavior.
 
+## Firearm description observation
+
+`observe-firearm-descriptions` is a guarded, save-free, read-only scenario.
+It waits for registered blueprints and native preloading to complete, then
+reads the actual Pistol, Blunderbuss and The Last Word `Description` getters.
+Structured assertions compare exact localized text, spacing/punctuation,
+lead-ball-only penetration wording and both complete Last Word property
+clauses exactly once. No merchant UI, screenshot, OCR, input or save is used.
+Run with the active `Info.json` version and automatic exit. Deployment and
+restoration use the existing guarded scripts and shared runtime lease.
+HumanTooltipReview remains `NOT_PERFORMED`; string correctness does not
+establish tooltip layout or owner aesthetic approval.
+
 ## Runtime qualification scope policy
 
 Use exhaustive `2^N` enumeration only in fast source/domain tests where every
