@@ -174,6 +174,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             // disables its brain, which is disclosed in its evidence.
             bool manual = cell[2].StartsWith("manual", StringComparison.Ordinal);
             bool heldCell = cell[2] == "manual-hold" || cell[2] == "manual-swallow";
+            RemoveExpandedSummoningAppearanceBuffs(_crocCombatOwner);
             SetExpandedSummoningBrainActive(_crocCombatOwner, !manual);
             if (!manual) _crocCombatOwner.Brain.RestoreAvailableActions();
             hostile.Descriptor.State.RemoveConditionAll(UnitCondition.ImmuneToCombatManeuvers);
@@ -236,7 +237,27 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (turn.Status == TurnController.TurnStatus.None && _crocCombatPrepared.Add(turn)) turn.Prepare();
             bool acting = turn.Status == TurnController.TurnStatus.Preparing ||
                 turn.Status == TurnController.TurnStatus.Acting;
-            if (ReferenceEquals(turn.Unit, _crocCombatOwner)) return acting;
+            if (ReferenceEquals(turn.Unit, _crocCombatOwner))
+            {
+                string driver = Sprint16CombatCells[_crocCombatCell][2];
+                if (driver.StartsWith("manual", StringComparison.Ordinal))
+                    SetExpandedSummoningBrainActive(_crocCombatOwner, false);
+                bool needsMaintain = driver == "manual-hold" || driver == "manual-swallow";
+                // A completed native bite may leave a controllable summon at
+                // an idle turn. End only this fixture owner's finished turn so
+                // later native rounds can maintain; never invoke maintain here.
+                if (needsMaintain && _crocCombatManualAttackQueued && _crocCombatFirstAttack >= 0 &&
+                    !_crocCombatObserver.Damage.Any(value => ReferenceEquals(value.Initiator,
+                        _crocCombatOwner) && value.AttackRoll == null) && turn.CanEndTurnAndNoActing())
+                {
+                    turn.ForceToEnd(true);
+                    typeof(TurnController).GetMethod("End", BindingFlags.Public |
+                        BindingFlags.NonPublic | BindingFlags.Instance, null,
+                        Type.EmptyTypes, null).Invoke(turn, null);
+                    return false;
+                }
+                return acting;
+            }
             if (acting)
             {
                 // Native turn progression; no actions, movement, saves or
@@ -319,7 +340,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool noFailedSpam = _crocCombatCommands.Count(value => value.Key is UnitUseAbility &&
                 !ReferenceEquals(value.Key, _crocCombatRejectedCast)) <= 1;
             bool rejected = ai || _crocCombatRejectedCast != null && _crocCombatRejectedCast.IsFinished &&
-                _crocCombatRejectedCast.Result == UnitCommand.ResultType.Fail && _crocCombatCooldown != null &&
+                (_crocCombatRejectedCast.Result == UnitCommand.ResultType.Fail ||
+                    _crocCombatRejectedCast.Result == UnitCommand.ResultType.Interrupt &&
+                    !_crocCombatRejectedCast.IsActed) && _crocCombatCooldown != null &&
                 _crocCombatCooldown.EndTime == _crocCombatCooldownDeadline &&
                 ReferenceEquals(_crocCombatOwner.Descriptor.Buffs.GetBuff(
                     Sprint16SprintBuff(_crocCombatFixture.Blueprints, cell[0], true)), _crocCombatCooldown);
@@ -347,6 +370,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["travelMeters"] = _crocCombatTravel, ["nativeAiAttack"] = nativeAiAttack,
                     ["deliberateCooldownCommandRejected"] = rejected,
                     ["rejectedCommandResult"] = _crocCombatRejectedCast == null ? null : _crocCombatRejectedCast.Result.ToString(),
+                    ["rejectedCommandActed"] = _crocCombatRejectedCast != null && _crocCombatRejectedCast.IsActed,
+                    ["directlyControllable"] = _crocCombatOwner.IsDirectlyControllable,
+                    ["brainActive"] = _crocCombatOwner.IsBrainActive,
+                    ["ownerBuffs"] = new JArray(_crocCombatOwner.Buffs.Enumerable.Select(value => new JObject {
+                        ["name"] = value.Blueprint.name, ["nextTick"] = ReadExactMember(value, "NextTickTime").ToString(),
+                        ["round"] = value.RoundNumber })),
+                    ["turnStatus"] = Game.Instance.TurnBasedCombatController.CurrentTurn == null ? null :
+                        Game.Instance.TurnBasedCombatController.CurrentTurn.Status.ToString(),
+                    ["turnOwner"] = Game.Instance.TurnBasedCombatController.CurrentTurn == null ? null :
+                        Game.Instance.TurnBasedCombatController.CurrentTurn.Unit.UniqueId,
                     ["nativeMaintainObserved"] = rider, ["expectedRelationship"] = relationship,
                     ["contacts"] = new JArray(_crocCombatContacts),
                     ["damage"] = new JArray(_crocCombatObserver.Damage.Select(Sprint16DamageEvent)),
@@ -389,8 +422,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Bounds bounds = targetMesh.bounds;
                 baked = new Mesh();
                 mesh.BakeMesh(baked);
-                Vector3[] vertices = baked.vertices;
+                Vector3[] vertices = mesh.sharedMesh.vertices;
+                Vector3[] bakedVertices = baked.vertices;
                 BoneWeight[] weights = mesh.sharedMesh.boneWeights;
+                Matrix4x4[] bindposes = mesh.sharedMesh.bindposes;
+                if (vertices.Length != weights.Length || bindposes.Length != mesh.bones.Length)
+                    throw new InvalidOperationException("Original skin contract changed.");
+                // Compute the same weighted bone/bind-pose transformation the
+                // skin uses. This avoids assuming BakeMesh's version-specific
+                // renderer-scale convention at a mechanical contact boundary.
+                Matrix4x4[] skinToWorld = mesh.bones.Select((bone, index) =>
+                    bone.localToWorldMatrix * bindposes[index]).ToArray();
                 var anchors = new HashSet<int>(Enumerable.Range(0, mesh.bones.Length).Where(index =>
                     mesh.bones[index] != null && (kind == "tail"
                         ? mesh.bones[index].name.StartsWith("cent_tail", StringComparison.Ordinal)
@@ -398,6 +440,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 float gap = float.MaxValue;
                 Vector3 closest = Vector3.zero;
                 int count = 0;
+                float legacyGap = float.MaxValue;
+                float transformedBakeGap = float.MaxValue;
                 for (int index = 0; index < vertices.Length; index++)
                 {
                     BoneWeight w = weights[index];
@@ -405,9 +449,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                         anchors.Contains(w.boneIndex1) && w.weight1 >= 0.25f ||
                         anchors.Contains(w.boneIndex2) && w.weight2 >= 0.25f ||
                         anchors.Contains(w.boneIndex3) && w.weight3 >= 0.25f)) continue;
-                    // BakeMesh already includes renderer scale in this Unity
-                    // version; applying TransformPoint would double it.
-                    Vector3 world = mesh.transform.position + mesh.transform.rotation * vertices[index];
+                    Vector3 vertex = vertices[index];
+                    Vector3 world = skinToWorld[w.boneIndex0].MultiplyPoint3x4(vertex) * w.weight0 +
+                        skinToWorld[w.boneIndex1].MultiplyPoint3x4(vertex) * w.weight1 +
+                        skinToWorld[w.boneIndex2].MultiplyPoint3x4(vertex) * w.weight2 +
+                        skinToWorld[w.boneIndex3].MultiplyPoint3x4(vertex) * w.weight3;
+                    Vector3 legacy = mesh.transform.position + mesh.transform.rotation * bakedVertices[index];
+                    legacyGap = Math.Min(legacyGap, Vector3.Distance(legacy, bounds.ClosestPoint(legacy)));
+                    Vector3 transformed = mesh.transform.TransformPoint(bakedVertices[index]);
+                    transformedBakeGap = Math.Min(transformedBakeGap,
+                        Vector3.Distance(transformed, bounds.ClosestPoint(transformed)));
                     float distance = Vector3.Distance(world, bounds.ClosestPoint(world));
                     if (distance < gap) { gap = distance; closest = world; }
                     count++;
@@ -415,6 +466,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 row["mesh"] = mesh.sharedMesh.name;
                 row["weightedVertices"] = count;
                 row["nearestGapMeters"] = gap;
+                row["legacyBakeGapMeters"] = legacyGap;
+                row["transformedBakeGapMeters"] = transformedBakeGap;
+                row["worldPoseMethod"] = "sum(weight * bone.localToWorld * bindpose * originalVertex)";
+                row["rendererLossyScale"] = mesh.transform.lossyScale.ToString("F3");
+                row["ownerPosition"] = owner.Position.ToString("F3");
+                row["ownerRotation"] = owner.View.transform.eulerAngles.ToString("F3");
+                row["rendererBoundsCenter"] = mesh.bounds.center.ToString("F3");
+                row["rendererBoundsSize"] = mesh.bounds.size.ToString("F3");
+                row["bakedBoundsSize"] = baked.bounds.size.ToString("F3");
                 row["surfacePoint"] = closest.ToString("F3");
                 row["targetBoundsCenter"] = bounds.center.ToString("F3");
                 row["targetBoundsSize"] = bounds.size.ToString("F3");
@@ -480,7 +540,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "exact fixture, mode, clock, pause and awake-unit restoration");
             }
             Sprint16Check(_crocodilianAssertions, _crocCombatRows, "combat-cleanup", cleaned,
-                new JObject { ["cleaned"] = cleaned, ["cells"] = _crocCombatCell },
+                new JObject { ["cleaned"] = cleaned, ["cells"] = _crocCombatCell,
+                    ["awakeRestored"] = Game.Instance.State.AwakeUnits.SequenceEqual(_crocCombatAwakeBefore),
+                    ["modeRestored"] = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue == _crocCombatModeBefore,
+                    ["pauseRestored"] = Game.Instance.IsPaused == _crocCombatPauseBefore,
+                    ["clockRestored"] = Game.Instance.Player.GameTime == _crocCombatTimeBefore,
+                    ["unitCensusRestored"] = _crocCombatFixture != null &&
+                        SameReferences(_crocCombatFixture.UnitsBefore, SnapshotReferences(_crocCombatFixture.AllUnits)),
+                    ["partyCensusRestored"] = _crocCombatFixture != null &&
+                        SameReferences(_crocCombatFixture.PartyBefore, SnapshotReferences(_crocCombatFixture.Party)),
+                    ["originalUnitsLost"] = _crocCombatFixture == null ? null : new JArray(
+                        _crocCombatFixture.UnitsBefore.OfType<UnitEntityData>().Where(value => value.Destroyed ||
+                            !ContainsReference(_crocCombatFixture.AllUnits, value)).Select(value => value.UniqueId)),
+                    ["unexpectedUnits"] = _crocCombatFixture == null ? null : new JArray(
+                        SnapshotReferences(_crocCombatFixture.AllUnits).OfType<UnitEntityData>()
+                            .Where(value => !_crocCombatFixture.UnitsBefore.Any(prior => ReferenceEquals(prior, value)))
+                            .Select(value => value.Blueprint.name + ":" + value.UniqueId)) },
                 "exact fixture, mode, clock, pause and awake-unit restoration");
             File.WriteAllText(Path.Combine(_request.EvidenceDirectory, "sprint16-combat.json"),
                 _crocCombatRows.ToString(Formatting.Indented));

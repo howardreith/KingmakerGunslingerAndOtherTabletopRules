@@ -221,6 +221,13 @@ namespace KingmakerGunslinger.DomainTests
         /// </summary>
         internal static void DeathRollFollowsLiveStrength()
         {
+            foreach (int baseline in new[] { 4, 5, 6, 7 })
+            {
+                Assertions.Equal(4, CrocodilianRulesPolicy.ResolveDiceBaseline(false, baseline),
+                    "Native type dice remain Medium-relative at every creature size.");
+                Assertions.Equal(baseline, CrocodilianRulesPolicy.ResolveDiceBaseline(true, baseline),
+                    "Explicit printed dice retain their authored creature-size baseline.");
+            }
             foreach (var row in new[] {
                 new { Body = 5, Weapon = 4, Calculated = 4, Expected = 5 },
                 new { Body = 7, Weapon = 6, Calculated = 6, Expected = 7 },

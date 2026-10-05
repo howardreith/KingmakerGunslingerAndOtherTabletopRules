@@ -64,12 +64,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (verify && _expandedSummoningPersistenceCleanupStarted)
                 {
                     if (_expandedSummoningPersistenceCleanupSettleUpdates++ < 5) return;
+                    UnitEntityData[] references = ExpandedSummoningPersistentUnits(gameState, party);
+                    int live = references.Count(value => !value.Destroyed ||
+                        value.View != null || value.HoldingState != null);
                     bool gone = _sprint16PersistenceUnits.All(value => value.Destroyed &&
-                        value.View == null && value.HoldingState == null) &&
-                        ExpandedSummoningPersistentUnits(gameState, party).Length == 0;
+                        value.View == null && value.HoldingState == null) && live == 0;
                     Sprint16Check(_sprint16PersistenceChecks, _sprint16PersistenceRows,
                         "persistence-native-expiry-cleanup", gone,
-                        new JObject { ["remaining"] = ExpandedSummoningPersistentUnits(gameState, party).Length },
+                        new JObject { ["remainingLive"] = live, ["cachedReferences"] = references.Length,
+                            ["units"] = new JArray(_sprint16PersistenceUnits.Select(value => new JObject {
+                                ["id"] = value.UniqueId, ["destroyed"] = value.Destroyed,
+                                ["viewAbsent"] = value.View == null, ["areaAbsent"] = value.HoldingState == null })) },
                         "all five lifecycle-expired units and their views are detached before the cleanup save");
                     SaveSprint16PersistenceIfValid();
                     return;
@@ -88,7 +93,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _sprint16PersistenceUnits = SpawnExpandedSummoningVariants(blueprints, caster,
                         variants, "Sprint 16 targeted persistence");
                     foreach (UnitEntityData unit in _sprint16PersistenceUnits)
+                    {
                         SetExpandedSummoningBrainActive(unit, false);
+                        // These are already-materialized disposable fixtures.
+                        // Do not persist the unrelated native appearance lock.
+                        RemoveExpandedSummoningAppearanceBuffs(unit);
+                    }
                     ArmSprint16Persistence(blueprints);
                 }
                 else _sprint16PersistenceUnits = ExpandedSummoningPersistentUnits(gameState, party);
@@ -116,10 +126,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         Buff[] lifecycle = unit.Descriptor.Buffs.Enumerable.Where(value =>
                             ReferenceEquals(value.Blueprint, BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff)).ToArray();
                         if (lifecycle.Length != 1) throw new InvalidOperationException("Expected one owned native summon lifecycle.");
-                        // Use the already qualified owned-summon disposal path;
-                        // Destroy alone leaves persistent collection references.
+                        // Keep the native view until the destruction controller
+                        // handles it and removes the unit from its scene. Direct
+                        // Dispose beforehand can orphan private view resources.
                         CleanupExpandedSummoningUnit(unit);
-                        if (unit.HoldingState != null) unit.Dispose();
                     }
                     Game.Instance.EntityDestroyer.Tick();
                     _expandedSummoningPersistenceCleanupStarted = true;
@@ -318,7 +328,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["swallowed"] = unit.Get<UnitPartSwallowed>() != null,
                         ["swallowerCount"] = swallower == null ? 0 : swallower.SwallowedUnits.Count,
                         ["cantAct"] = unit.Descriptor.State.HasCondition(UnitCondition.CantAct),
-                        ["cantMove"] = unit.Descriptor.State.HasCondition(UnitCondition.CantMove) });
+                        ["cantMove"] = unit.Descriptor.State.HasCondition(UnitCondition.CantMove),
+                        ["buffs"] = new JArray(unit.Descriptor.Buffs.Enumerable.Select(value => value.Blueprint.name)) });
                 }
                 Sprint16Check(_sprint16PersistenceChecks, _sprint16PersistenceRows, "persistence-clean-session-links", reset,
                     new JObject { ["units"] = records },

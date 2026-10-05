@@ -175,6 +175,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 sheet.SetCharacter(restore);
                 sheet.ShowSection(section);
                 if (opened && ui.ServiceWindow.WindowTabs.IsShow && sheet.IsShow) ui.ServiceWindow.HandleOpenCharScreen();
+                // Tabs unbind their panel before closing. The detached sheet
+                // can retain IsShow; close the exact pane we opened through
+                // its native API before restoring its cached character.
+                if (opened && sheet.IsShow) sheet.Show(false);
                 if (originalCharacter == null && ReferenceEquals(characterField.GetValue(sheet), restore))
                     characterField.SetValue(sheet, null);
                 foreach (var widget in widgets) Kingmaker.UI.WidgetFactory.DisposeWidget(widget);
