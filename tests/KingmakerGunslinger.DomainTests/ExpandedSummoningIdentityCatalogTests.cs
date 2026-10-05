@@ -11,15 +11,15 @@ namespace KingmakerGunslinger.DomainTests
         {
             var first = ExpandedSummoningIdentityCatalog.Build();
             var second = ExpandedSummoningIdentityCatalog.Build();
-            Assertions.Equal(1834, first.Count, "Foundation identity count changed.");
+            Assertions.Equal(1847, first.Count, "Foundation identity count changed.");
             Assertions.Equal(95, first.Count(value => value.PlannedType == "BlueprintUnit"), "Unit identity count changed.");
-            Assertions.Equal(1579, first.Count(value => value.PlannedType == "BlueprintAbility"), "Ability identity count changed.");
+            Assertions.Equal(1581, first.Count(value => value.PlannedType == "BlueprintAbility"), "Ability identity count changed.");
             Assertions.Equal(2, first.Count(value => value.Symbol.StartsWith(
                 "KMG.Summoning.Native.", StringComparison.Ordinal)),
                 "Native tier-one preservation identity count changed.");
-            Assertions.Equal(65, first.Count(value => value.PlannedType == "BlueprintBuff"), "Buff identity count changed.");
-            Assertions.Equal(24, first.Count(value => value.PlannedType == "BlueprintAiCastSpell"), "AI identity count changed.");
-            Assertions.Equal(12, first.Count(value => value.PlannedType == "BlueprintBrain"), "Brain identity count changed.");
+            Assertions.Equal(72, first.Count(value => value.PlannedType == "BlueprintBuff"), "Buff identity count changed.");
+            Assertions.Equal(26, first.Count(value => value.PlannedType == "BlueprintAiCastSpell"), "AI identity count changed.");
+            Assertions.Equal(14, first.Count(value => value.PlannedType == "BlueprintBrain"), "Brain identity count changed.");
             Assertions.Equal(18, first.Count(value => value.PlannedType == "BlueprintItemWeapon"), "Weapon identity count changed.");
             Assertions.Equal(2, first.Count(value => value.PlannedType == "BlueprintWeaponType"), "Weapon-type identity count changed.");
             Assertions.Equal(4, first.Count(value => value.PlannedType == "BlueprintUnitType"), "Unit-type identity count changed.");
@@ -458,9 +458,8 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal("Tail1d12",
                 crocodile.AdditionalSecondaryWeapons.Single(),
                 "Crocodile tail dice contract changed.");
-            Assertions.True(crocodile.Deviations.Any(value =>
-                value.Contains("death roll")),
-                "Crocodile death-roll deviation is not explicit.");
+            Assertions.Equal("1d8+6", CrocodilianRulesPolicy.For("crocodile").DeathRollDamage,
+                "Crocodile's derived baseline Death Roll contract changed.");
             NaturalSummonProfile wolverine =
                 ExpandedSummoningNaturalProfiles.For("wolverine");
             // Printed: "2 claws +4 (1d6+2), bite +4 (1d4+2)". BAB 2 plus
