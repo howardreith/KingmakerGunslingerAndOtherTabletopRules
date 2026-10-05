@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Facts;
@@ -52,6 +53,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool cleaned = false;
             try
             {
+                UnitEntityData[] party = Game.Instance.Player.Party.Where(value => value != null).ToArray();
+                int staleLive = RemoveExpandedSummoningStaleSummons(Game.Instance.State, party);
+                assertions.Add(Assertion("sprint16-stale-disposable-summons-cleared", "zero live prior KMG summons",
+                    staleLive.ToString(), staleLive == 0,
+                    "same owned-only working-fixture cleanup as creature review; no save write"));
+                if (staleLive != 0) throw new InvalidOperationException("Prior disposable summons remain live.");
                 fixture = BeginExpandedSummoningCorrectionFixture(
                     "KMG_Runtime_Sprint16_SurveyCaster");
                 var census = DescribeSprint16NativeCensus(fixture.Blueprints);

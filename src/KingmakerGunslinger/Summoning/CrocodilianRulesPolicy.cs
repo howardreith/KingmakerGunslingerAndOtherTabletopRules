@@ -179,6 +179,11 @@ namespace KingmakerGunslinger.Summoning
             bool ownerConscious, bool targetDestroyed, bool targetDead)
         { return !ownerDestroyed && ownerConscious && !targetDestroyed && !targetDead; }
 
+        // A native weapon type's dice are Medium-relative. Our explicit
+        // printed dice are already relative to the creature's baseline size.
+        internal static int ResolveDiceBaseline(bool explicitDice, int baselineSize)
+        { return explicitDice ? baselineSize : 4; }
+
         internal static int ResolveWeaponSize(int bodySize, int weaponSize,
             int calculatedWeaponSize)
         {
