@@ -13,6 +13,7 @@ using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.RuleSystem.Rules.Abilities;
 using Kingmaker.UI.SettingsUI;
+using Kingmaker.UI.Group;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Commands;
@@ -94,6 +95,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         private Buff _crocCombatCooldown;
         private TimeSpan _crocCombatCooldownDeadline;
         private readonly JArray _crocCombatContacts = new JArray();
+        private readonly JArray _crocCombatAttackOrigins = new JArray();
+        private readonly List<UnitAttack> _crocCombatIssuedAttacks = new List<UnitAttack>();
+        private UnitEntityData[] _crocCombatSelectionBefore;
+        private UnitEntityData _crocCombatGroupBefore;
 
         private void PollSprint16Combat()
         {
@@ -105,6 +110,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _crocCombatPauseBefore = Game.Instance.IsPaused;
                     _crocCombatTimeBefore = Game.Instance.Player.GameTime;
                     _crocCombatAwakeBefore = Game.Instance.State.AwakeUnits.ToArray();
+                    _crocCombatSelectionBefore = Game.Instance.UI.SelectionManagerPC.SelectedUnits.ToArray();
+                    _crocCombatGroupBefore = GroupController.Instance.GetCurrentCharacter();
                     _crocCombatFixture = BeginExpandedSummoningCorrectionFixture("KMG_Runtime_Sprint16_CombatCaster");
                     CreateExpandedSummoningCorrectionHostile(_crocCombatFixture);
                     // This full-attack matrix isolates bite/tail commands from
@@ -163,7 +170,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _crocCombatRejectedCast != null && _crocCombatRejectedCast.IsFinished &&
                     !_crocCombatOwner.Commands.Raw.OfType<UnitUseAbility>().Any(value => !value.IsFinished))
                 {
+                    // Keep incidental native attacks from establishing a hold
+                    // while the deliberate cooldown rejection is still queued.
+                    // Remove only this target's fixture immunity immediately
+                    // before issuing the real held-target attack.
+                    string driver = Sprint16CombatCells[_crocCombatCell][2];
+                    if (driver == "manual-hold" || driver == "manual-swallow")
+                        _crocCombatFixture.Hostile.Descriptor.State.RemoveConditionAll(
+                            UnitCondition.ImmuneToCombatManeuvers);
                     var attack = new UnitAttack(_crocCombatFixture.Hostile) { ForceFullAttack = true };
+                    _crocCombatIssuedAttacks.Add(attack);
                     _crocCombatOwner.Commands.Run(attack);
                     _crocCombatManualAttackQueued = true;
                     _crocCombatManualAttackAttempts++;
@@ -179,8 +195,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // A native natural-1/escape can legitimately refuse a hold.
                     // Retry a bounded real command; never force a rule roll,
                     // a hit, an animation contact, a grapple or a rider.
-                    _crocCombatOwner.Commands.Run(new UnitAttack(_crocCombatFixture.Hostile)
-                        { ForceFullAttack = true });
+                    var retry = new UnitAttack(_crocCombatFixture.Hostile) { ForceFullAttack = true };
+                    _crocCombatIssuedAttacks.Add(retry);
+                    _crocCombatOwner.Commands.Run(retry);
                     _crocCombatManualAttackAttempts++;
                 }
                 bool twoWeapons = _crocCombatObserver.Attacks.Where(value => value.Weapon != null)
@@ -192,8 +209,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool heldCell = currentDriver == "manual-hold" || currentDriver == "manual-swallow";
                 bool rider = _crocCombatObserver.Damage.Any(value => ReferenceEquals(value.Initiator,
                     _crocCombatOwner) && value.AttackRoll == null);
-                bool done = (heldCell ? rider : twoWeapons) && _crocCombatFirstAttack >= 0 &&
-                    _crocCombatFrame - _crocCombatFirstAttack >= 90;
+                bool done = CrocodilianCommandReviewPolicy.CanFinish(manual,
+                    _crocCombatRejectedCast != null && _crocCombatRejectedCast.IsFinished,
+                    Sprint16IssuedAttackObserved(), heldCell ? rider : twoWeapons,
+                    _crocCombatFirstAttack < 0 ? -1 : _crocCombatFrame - _crocCombatFirstAttack);
                 // A native move/Sprint, rejected attempt, and later stationary
                 // full attack span more than the old 18-second wall window.
                 // Observe bounded subsequent native turns without driving AI.
@@ -285,7 +304,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             SetExpandedSummoningBrainActive(_crocCombatOwner, !manual);
             if (!manual) _crocCombatOwner.Brain.RestoreAvailableActions();
             hostile.Descriptor.State.RemoveConditionAll(UnitCondition.ImmuneToCombatManeuvers);
-            if (!heldCell) hostile.Descriptor.State.AddCondition(UnitCondition.ImmuneToCombatManeuvers, null);
+            hostile.Descriptor.State.AddCondition(UnitCondition.ImmuneToCombatManeuvers, null);
             if (heldCell) hostile.Descriptor.State.Size = cell[2] == "manual-swallow"
                 ? (Size)((int)_crocCombatOwner.Descriptor.State.Size - 1) : _crocCombatOwner.Descriptor.State.Size;
             _crocCombatAwaitPlayerCast = cell[2] == "ai-player-cooldown";
@@ -310,12 +329,23 @@ namespace KingmakerGunslinger.RuntimeTesting
             _crocCombatRejectedCast = null;
             _crocCombatCooldown = null;
             _crocCombatContacts.Clear();
+            _crocCombatAttackOrigins.Clear();
+            _crocCombatIssuedAttacks.Clear();
             _crocCombatCommands.Clear();
             _crocCombatPrepared.Clear();
             _crocCombatStartUtc = DateTime.UtcNow;
             _crocCombatObserver = new Sprint16RuleObserver { Owner = _crocCombatOwner, Target = hostile };
-            _crocCombatObserver.ObserveWeaponContact = rule => RecordSprint16Contact(
-                rule.Initiator, rule.Target, rule.Weapon.Blueprint.Category == WeaponCategory.Bite ? "bite" : "tail");
+            _crocCombatObserver.ObserveWeaponContact = rule =>
+            {
+                _crocCombatAttackOrigins.Add(new JObject {
+                    ["frame"] = _crocCombatFrame, ["weapon"] = rule.Weapon.Blueprint.name,
+                    ["opportunity"] = rule.IsAttackOfOpportunity,
+                    ["issuedCommandExecuting"] = _crocCombatIssuedAttacks.Any(value => value.IsStarted && !value.IsFinished),
+                    ["rejectionFinished"] = _crocCombatRejectedCast != null && _crocCombatRejectedCast.IsFinished,
+                    ["targetImmuneDuringSetup"] = hostile.Descriptor.State.HasCondition(UnitCondition.ImmuneToCombatManeuvers) });
+                RecordSprint16Contact(rule.Initiator, rule.Target,
+                    rule.Weapon.Blueprint.Category == WeaponCategory.Bite ? "bite" : "tail");
+            };
             _crocCombatObserver.ObserveRiderContact = rule => RecordSprint16Contact(
                 rule.Initiator, rule.Target, cell[2] == "manual-swallow" ? "swallow-initial-bite" : "death-roll");
             EventBus.Subscribe(_crocCombatObserver);
@@ -483,6 +513,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ReferenceEquals(SummonHoldComponent.HeldTarget(_crocCombatOwner), _crocCombatFixture.Hostile) &&
                     _crocCombatFixture.Hostile.Descriptor.State.HasCondition(UnitCondition.Prone);
             bool exact = _crocCombatReadyFrame >= 0 && (heldCell ? rider && relationship : twoWeapons) &&
+                (ai || Sprint16IssuedAttackObserved()) &&
                 rejected && casts.Length == 1 && casts[0].Success &&
                 _crocCombatSharedCooldown && noFailedSpam &&
                 _crocCombatObserver.Attacks.All(value => !value.SuspendCombatLog) &&
@@ -503,6 +534,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["rejectedCommandActed"] = _crocCombatRejectedCast != null && _crocCombatRejectedCast.IsActed,
                     ["directlyControllable"] = _crocCombatOwner.IsDirectlyControllable,
                     ["manualNativeAttackAttempts"] = _crocCombatManualAttackAttempts,
+                    ["issuedAttackObserved"] = Sprint16IssuedAttackObserved(),
+                    ["attackOrigins"] = new JArray(_crocCombatAttackOrigins),
                     ["nativeManualControlRules"] = _crocCombatControlRules,
                     ["disposableCapitalPetMaster"] = _crocCombatCapitalMaster,
                     ["disposableManualFactionChanged"] = _crocCombatFactionChanged,
@@ -527,7 +560,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["contacts"] = new JArray(_crocCombatContacts),
                     ["damage"] = new JArray(_crocCombatObserver.Damage.Select(Sprint16DamageEvent)),
                     ["commands"] = new JArray(_crocCombatCommands.Values), ["attacks"] = attacks,
-                    ["grabSuppression"] = heldCell ? "none: native bite/held rounds resolve the rider" :
+                    ["grabSuppression"] = heldCell ? "setup-only target immunity removed before queued native bite; later rounds resolve rider" :
                         "disposable target immune to maneuvers for full-attack separation only",
                     ["animationContactForced"] = false
                 }, heldCell ? "native bite establishes hold; native later-round maintain resolves exactly the selected rider" :
@@ -542,7 +575,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     new JObject { ["samples"] = new JArray(samples) },
                     "original weighted jaw/tail surface within 0.25m of live target bounds at each actual rule event");
             }
+            File.WriteAllText(Path.Combine(_request.EvidenceDirectory, "sprint16-combat.json"),
+                _crocCombatRows.ToString(Formatting.Indented));
             CleanupSprint16CombatCell();
+        }
+
+        private bool Sprint16IssuedAttackObserved()
+        {
+            return _crocCombatAttackOrigins.OfType<JObject>().Any(value =>
+                (bool?)value["issuedCommandExecuting"] == true && (bool?)value["opportunity"] == false &&
+                (bool?)value["rejectionFinished"] == true);
         }
 
         private void RecordSprint16Contact(UnitEntityData owner, UnitEntityData target, string kind)
@@ -678,17 +720,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_crocCombatFixture != null && _crocCombatFixture.Hostile != null)
                     _crocCombatFixture.Hostile.CombatState.LeaveCombat();
                 Game.Instance.Player.UpdateIsInCombat();
-                SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = _crocCombatModeBefore;
-                Game.Instance.TurnBasedCombatController.Activate();
                 EndExpandedSummoningCorrectionFixture(_crocCombatFixture, out cleaned);
                 if (_crocCombatAwakeBefore != null)
                 {
                     Game.Instance.State.AwakeUnits.Clear();
                     Game.Instance.State.AwakeUnits.AddRange(_crocCombatAwakeBefore);
                 }
+                Game.Instance.Player.UpdateIsInCombat();
+                SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = _crocCombatModeBefore;
+                Game.Instance.TurnBasedCombatController.Activate();
+                GroupController.Instance.SelectUnit(_crocCombatGroupBefore);
+                Game.Instance.UI.SelectionManagerPC.MultiSelect(
+                    _crocCombatSelectionBefore.Select(value => value.View).ToArray(), false);
                 Game.Instance.Player.GameTime = _crocCombatTimeBefore;
                 Game.Instance.IsPaused = _crocCombatPauseBefore;
                 cleaned = cleaned && Game.Instance.State.AwakeUnits.SequenceEqual(_crocCombatAwakeBefore) &&
+                    Game.Instance.UI.SelectionManagerPC.SelectedUnits.SequenceEqual(_crocCombatSelectionBefore) &&
+                    ReferenceEquals(GroupController.Instance.GetCurrentCharacter(), _crocCombatGroupBefore) &&
                     SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue == _crocCombatModeBefore &&
                     Game.Instance.IsPaused == _crocCombatPauseBefore &&
                     Game.Instance.Player.GameTime == _crocCombatTimeBefore;
@@ -705,6 +753,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["modeRestored"] = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue == _crocCombatModeBefore,
                     ["pauseRestored"] = Game.Instance.IsPaused == _crocCombatPauseBefore,
                     ["clockRestored"] = Game.Instance.Player.GameTime == _crocCombatTimeBefore,
+                    ["selectionRestored"] = Game.Instance.UI.SelectionManagerPC.SelectedUnits.SequenceEqual(_crocCombatSelectionBefore),
+                    ["groupRestored"] = ReferenceEquals(GroupController.Instance.GetCurrentCharacter(), _crocCombatGroupBefore),
                     ["unitCensusRestored"] = _crocCombatFixture != null &&
                         SameReferences(_crocCombatFixture.UnitsBefore, SnapshotReferences(_crocCombatFixture.AllUnits)),
                     ["partyCensusRestored"] = _crocCombatFixture != null &&

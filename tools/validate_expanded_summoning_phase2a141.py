@@ -27,7 +27,7 @@ VERSION = "0.0.141"
 INFORMATIONAL_VERSION = "0.0.141-expanded-summoning-phase2a"
 PACKAGE = "KingmakerGunslinger-0.0.141-local-runtime.zip"
 PACKAGE_SUFFIX = "expanded-summoning-phase2a"
-DETERMINISTIC_TEST_COUNT = 2018
+DETERMINISTIC_TEST_COUNT = 2019
 STATIC_KEY = "expandedSummoningPhase2A141"
 
 
@@ -97,7 +97,11 @@ def validate(root: Path) -> None:
     # itself a candidate and must keep the derived inventory equation.
     development = static.get("expandedSummoningPhase2Development", {})
     expected_development = {
-        "authorizedSprintRange": "12-21",
+        "branch": "codex/expanded-summoning-phase2b-sprints14-17",
+        "authorizedSprintRange": "9-21",
+        "phase2CAuthorized": True,
+        "phase2CStartDeferredUntilPhase2BOwnerAcceptance": True,
+        "currentMissionLastSprint": 17,
         "publicReleaseAuthorized": False,
         "candidateOnly": True,
         "deterministicTestCount": DETERMINISTIC_TEST_COUNT,

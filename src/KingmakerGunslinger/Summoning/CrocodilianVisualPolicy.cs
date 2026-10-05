@@ -24,11 +24,16 @@ namespace KingmakerGunslinger.Summoning
         };
 
         // A cosmetic approach, never mechanical reach or unit movement.
-        internal static float ContactApproach(float gap, float weight)
+        // Dire attacks legally stop at 15ft: the bc36 live AI sample needed
+        // up to 2.828m of approach. Bound its authored pose by half its 20ft
+        // footprint (10ft), not the ordinary Crocodile's 0.25m allowance.
+        // This does not widen the independently measured contact tolerance.
+        internal static float ContactApproach(string key, float gap, float weight)
         {
             if (float.IsNaN(gap) || float.IsInfinity(gap) || gap <= 0f ||
                 float.IsNaN(weight) || float.IsInfinity(weight) || weight <= 0f) return 0f;
-            return Math.Min(gap, 0.25f * Math.Min(weight, 1f));
+            if (key == "crocodile") return Math.Min(gap, 0.25f * Math.Min(weight, 1f));
+            return key == "dire-crocodile" ? Math.Min(gap, 3.048f) * Math.Min(weight, 1f) : 0f;
         }
 
         internal static bool IsPermitted(string key, IEnumerable<string> bones)

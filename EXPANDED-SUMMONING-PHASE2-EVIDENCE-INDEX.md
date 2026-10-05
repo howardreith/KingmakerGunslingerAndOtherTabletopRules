@@ -1,5 +1,8 @@
 # Expanded Summoning Phase 2 evidence index
 
+[Current bounded laptop correction](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-FIXTURE-REPAIR.md):
+NOT QUALIFIED; new exact-head prelaunch gates and six-scenario batch required.
+
 [Separate read-only DATA salvage audit](planning/EXPANDED-SUMMONING-PHASE2B-DATA-SALVAGE-AUDIT.md):
 all 29 differing files classified after pushed laptop checkpoint 9cd5cdc7;
 zero source imports, no frozen-branch mutation or transferred qualification.

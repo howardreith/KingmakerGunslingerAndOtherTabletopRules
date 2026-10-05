@@ -28,7 +28,8 @@
       15
     ],
     "currentSprint": 16,
-    "currentSubItem": "Sprint 16 laptop bc36 batch NOT QUALIFIED main 188/208; native-faction control works; Dire AI contacts and fixture sequencing/UI/lifecycle repairs next; closed persistence clean; read-only salvage audit complete, no ports; Dire withheld; Sprint 17 not started",
+    "currentSubItem": "Sprint 16 bounded laptop contact/command/restoration/lifecycle correction NOT QUALIFIED; focused 217/217 and incremental compile pass; commit/push then all exact-head gates and complete six-scenario batch; read-only salvage audit complete, no ports; Dire withheld; Sprint 17 not started",
+    "sprint16LaptopCorrectionReview": "planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-FIXTURE-REPAIR.md",
     "dataSalvageAudit": "planning/EXPANDED-SUMMONING-PHASE2B-DATA-SALVAGE-AUDIT.md",
     "lastGuardedRuntimePass": "20261005T2110323476981Z-working-save-expanded-summoning-verify-absent (5/5; not complete Sprint 16 qualification)",
     "lastGuardedRestoration": "20261005T2040235864744Z actual snapshot restored 2026-10-05T21:13:38.1407714Z; batch 387FE4AECCB70BC56EABB2271637673111ACE001A9073CB0A9F088606033FC47",
