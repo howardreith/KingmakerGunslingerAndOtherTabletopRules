@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json.Linq;
 
@@ -24,6 +25,129 @@ namespace KingmakerGunslinger.DomainTests
 
         private const string DireKey = "dire-crocodile";
         private const string CrocodileKey = "crocodile";
+
+        internal static void CrocodilianBonesFailClosed()
+        {
+            foreach (string key in CrocodilianVisualPolicy.Keys)
+            {
+                Assertions.True(CrocodilianVisualPolicy.IsPermitted(key,
+                    CrocodilianVisualPolicy.Bones), "Reviewed driver set must load.");
+                foreach (string bone in CrocodilianVisualPolicy.Bones)
+                    Assertions.False(CrocodilianVisualPolicy.IsPermitted(key,
+                        CrocodilianVisualPolicy.Bones.Where(value => value != bone)),
+                        "Missing driver must fail: " + bone);
+                foreach (string foreign in new[] { "cent_tongue1_jnt", "L_Foot3",
+                    "left_arm2_jnt", "cent_root1_jnt", "Head" })
+                    Assertions.False(CrocodilianVisualPolicy.IsPermitted(key,
+                        CrocodilianVisualPolicy.Bones.Concat(new[] { foreign })),
+                        "Unreviewed influence must fail: " + foreign);
+                Assertions.False(CrocodilianVisualPolicy.IsPermitted(key,
+                    CrocodilianVisualPolicy.Bones.Concat(new[] { "cent_jaw1_jnt" })),
+                    "Duplicate bone must fail.");
+            }
+            Assertions.False(CrocodilianVisualPolicy.IsPermitted("monitor-lizard",
+                CrocodilianVisualPolicy.Bones), "The native negative control is not a target.");
+            Assertions.False(CrocodilianVisualPolicy.IsPermitted(null, null),
+                "Unknown or absent input must fail closed.");
+        }
+
+        internal static void CrocodilianOriginalAssetsAreComplete()
+        {
+            string directory = Path.Combine(Environment.CurrentDirectory,
+                "assets", "sprint16-crocodilians");
+            string[] meshHashes = {
+                "770fa7c3c87fb74f3335358069cefde77529868e30184e090bf3c7c840065fd7",
+                "eb7a9182fbe5f66dc8b819efd9641a62da611230923bf4bd95ca1383d4e7173a" };
+            int keyIndex = 0;
+            foreach (string key in CrocodilianVisualPolicy.Keys)
+            {
+                string path = Path.Combine(directory, key + "-mesh.json");
+                using (SHA256 hash = SHA256.Create())
+                    Assertions.Equal(meshHashes[keyIndex++],
+                        BitConverter.ToString(hash.ComputeHash(File.ReadAllBytes(path)))
+                            .Replace("-", "").ToLowerInvariant(), "Reviewed original mesh.");
+                JObject mesh = JObject.Parse(File.ReadAllText(path));
+                string[] bones = mesh["bones"].Values<string>().ToArray();
+                Assertions.True(CrocodilianVisualPolicy.IsPermitted(key, bones),
+                    "The runtime policy must accept the actual packaged bone rows.");
+                Assertions.True((int)mesh["schemaVersion"] == 2 &&
+                    (int)mesh["visibleLegs"] == 4 && (int)mesh["tailJoints"] == 7 &&
+                    (bool)mesh["jawSeparated"] && mesh["bindposes"] == null &&
+                    mesh["bindMatrices"] == null, "Original-only anatomy/schema contract.");
+                byte[] data = Convert.FromBase64String((string)mesh["data"]);
+                int vertices = (int)mesh["vertexCount"];
+                int triangles = (int)mesh["triangleCount"];
+                Assertions.True(vertices == 2342 && triangles > 4000 &&
+                    data.Length == vertices * 64 + triangles * 12,
+                    "Complete vertices/normals/UVs/indices/weights, not a donor reference.");
+                using (var reader = new BinaryReader(new MemoryStream(data)))
+                {
+                    float minY = float.MaxValue, maxY = float.MinValue;
+                    float minZ = float.MaxValue, maxZ = float.MinValue;
+                    for (int i = 0; i < vertices; i++)
+                    {
+                        float x = reader.ReadSingle(), y = reader.ReadSingle(), z = reader.ReadSingle();
+                        Assertions.True(!float.IsNaN(x + y + z) && !float.IsInfinity(x + y + z),
+                            "Finite original positions.");
+                        minY = Math.Min(minY, y); maxY = Math.Max(maxY, y);
+                        minZ = Math.Min(minZ, z); maxZ = Math.Max(maxZ, z);
+                    }
+                    Assertions.True(minY >= 0 && maxY - minY < .75f &&
+                        maxZ - minZ > 3.4f, "Low, elongated crocodilian silhouette.");
+                    reader.BaseStream.Position = vertices * 24;
+                    for (int i = 0; i < vertices * 2; i++)
+                    {
+                        float uv = reader.ReadSingle();
+                        Assertions.True(uv > 0 && uv < 1, "Inset finite UV, no atlas outer seam.");
+                    }
+                    for (int i = 0; i < triangles * 3; i++)
+                    {
+                        int index = reader.ReadInt32();
+                        Assertions.True(index >= 0 && index < vertices, "In-range triangle index.");
+                    }
+                    var totals = new double[bones.Length];
+                    for (int i = 0; i < vertices; i++)
+                    {
+                        float sum = 0;
+                        for (int slot = 0; slot < 4; slot++)
+                        {
+                            int bone = reader.ReadInt32();
+                            float weight = reader.ReadSingle();
+                            Assertions.True(bone >= 0 && bone < bones.Length &&
+                                weight >= 0 && weight <= 1, "Valid bone influence.");
+                            sum += weight; totals[bone] += weight;
+                        }
+                        Assertions.True(Math.Abs(sum - 1) < .00001, "Normalized weights.");
+                    }
+                    Assertions.True(totals.All(value => value > 0),
+                        "Jaw, tail and all four leg chains carry actual original vertices.");
+                }
+                JObject albedo = (JObject)mesh["albedo"];
+                Assertions.Equal(key + "-albedo.png", (string)albedo["file"], "Own painting.");
+                using (SHA256 hash = SHA256.Create())
+                    Assertions.Equal((string)albedo["sha256"],
+                        BitConverter.ToString(hash.ComputeHash(File.ReadAllBytes(
+                            Path.Combine(directory, (string)albedo["file"]))))
+                            .Replace("-", "").ToLowerInvariant(), "Exact texture pairing.");
+            }
+        }
+
+        internal static void CrocodilianScaleChangesOnlyTheDireIdentity()
+        {
+            SummonViewScaleCatalog.Validate();
+            float multiplier;
+            Assertions.True(SummonViewScaleCatalog.TryGetMultiplier(
+                "KMG_Summoning_Unit_DireCrocodile", out multiplier) && multiplier == 2f,
+                "The Gargantuan original has an explicit 2x view step.");
+            foreach (string name in new[] { "KMG_Summoning_Unit_Crocodile",
+                "KMG_Summoning_Unit_MonitorLizard", "CR3_MonitorLizardStandard" })
+                Assertions.False(SummonViewScaleCatalog.TryGetMultiplier(name, out multiplier),
+                    "No scale mutation of ordinary Crocodile or native donor: " + name);
+            Assertions.True(SummonViewScaleCatalog.All.Where(value =>
+                value.CreatureKey != "dire-crocodile").All(value =>
+                    value.Multiplier >= .20f && value.Multiplier <= 1.25f),
+                "No general widening of existing creature scale bounds.");
+        }
 
         internal static void EveryProfileResolvesItsNativeNaturalArmor()
         {

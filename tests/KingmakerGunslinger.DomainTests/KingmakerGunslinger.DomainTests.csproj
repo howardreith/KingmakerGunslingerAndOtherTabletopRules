@@ -231,6 +231,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ExpandedSummoningSpecialProfiles.cs"><Link>Summoning\ExpandedSummoningSpecialProfiles.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ExpandedSummoningNaturalProfiles.cs"><Link>Summoning\ExpandedSummoningNaturalProfiles.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\Sprint14BonePolicy.cs"><Link>Summoning\Sprint14BonePolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\CrocodilianVisualPolicy.cs"><Link>Summoning\CrocodilianVisualPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonInjuryPoisonPolicy.cs"><Link>Summoning\SummonInjuryPoisonPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\GiantAntPoisonPolicy.cs"><Link>Summoning\GiantAntPoisonPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\GiantWaspPoisonPolicy.cs"><Link>Summoning\GiantWaspPoisonPolicy.cs</Link></Compile>
