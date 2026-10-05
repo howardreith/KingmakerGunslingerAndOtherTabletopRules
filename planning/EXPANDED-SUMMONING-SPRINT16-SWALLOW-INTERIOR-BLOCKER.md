@@ -2,13 +2,15 @@
 
 ## Current disposition, 2026-10-05
 
-**Owner decision supplied; live census pending.** The takeover order authorizes
-`OwnerAcceptedEngineLimitation: SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED` if the
-live component/type census confirms the offline audit below. Do not record
-acceptance before that census. If it reveals a faithful existing carrier, use
-it and correct this note. Otherwise activate the accepted limitation for both
-Dire Crocodile and Purple Worm without reopening Purple Worm's qualified
-mechanics. No custom interior subsystem or replacement save/check is authorized.
+**Accepted; not a blocker.**
+`OwnerAcceptedEngineLimitation: SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED`.
+The fresh live census in
+`20261005T1254571775971Z-disposable-expanded-summoning-crocodilians` confirms
+no faithful carrier. See `EXPANDED-SUMMONING-SPRINT16-SURVEY-REVIEW.md` for the
+complete type/component audit, correction of the old `SwallowWholeSettings`
+claim and exact hashes. The acceptance covers Dire Crocodile and Purple Worm
+without reopening the Worm's qualified mechanics. No custom interior subsystem
+or replacement save/check is authorized.
 
 Size legality, initial grapple/maintain/bite, exactly one later-round damage
 bundle, native escape timing/checks, exact source ownership and every cleanup
@@ -16,10 +18,10 @@ boundary remain mandatory. This decision waives none of those gates. Once the
 census confirms the omission and the other gates pass, the interior numbers
 alone must not withhold Dire Crocodile or be re-marked BLOCKED.
 
-The cloned swallowed graph and its 3d6+13 cadence are **NOT QUALIFIED**. The
-current top-level action rewrite does not yet prove nested damage, activation
-or deactivation behavior. The historical "implemented" wording below describes
-source intent only.
+Dire's explicit creature-owned graph passed its live audit: exactly the native
+two stat penalties and one NewRound 3d6+13 physical action; no activation or
+deactivation actions. Its **cadence and mechanics remain NOT QUALIFIED** until
+the full candidate. The historical rewrite wording below is superseded.
 
 ## Historical audit and pre-decision disposition (superseded)
 

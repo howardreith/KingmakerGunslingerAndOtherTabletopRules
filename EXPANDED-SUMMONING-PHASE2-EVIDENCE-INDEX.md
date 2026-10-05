@@ -2,6 +2,20 @@
 
 ## Current checkpoint, October 5: Sprint 16 NOT QUALIFIED
 
+Latest narrow survey **PASS 7/7**:
+`20261005T1254571775971Z-disposable-expanded-summoning-crocodilians`,
+source `8250ac8f8369699af7825459bc860682e3e5eae5`. Full wrapper, 2013 domain
+tests, clean exact-reference Release and strict package PASS.
+The [curated survey review](planning/EXPANDED-SUMMONING-SPRINT16-SURVEY-REVIEW.md)
+records all artifact/result/census/restoration hashes, exact skill breakdowns,
+complete swallowed graph, private bind metadata and the live census activating
+`OwnerAcceptedEngineLimitation: SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED`.
+Restoration `20261005T1258077246783Z-disposable-expanded-summoning-crocodilians.json`
+verified the exact 136-file baseline. No process remains. This is research,
+not the full hidden candidate or Sprint 16 mechanics qualification.
+
+### Earlier October 5 bootstrap failure (resolved)
+
 Takeover base: `a762ece553ab9b539a53a782102a29e5c70d44eb`.
 Research artifact: `3d0612f15333318e95b3741096102da27305cd18`.
 Complete repository wrapper PASS, complete domain suite 2012/2012 PASS,
@@ -29,7 +43,8 @@ Transcript capture avoids that invocation issue without changing the gates.
 The +15 native fact exists in the October 2 census as `NaturalArmor15`,
 `72c294dca841e3944869fb087bacf272`, `BlueprintUnitFact`, `AddStatBonus`.
 The follow-up source binds it and shares the native-armor map with domain
-validation; focused recheck 25/25 PASS, 2013 registered. Retry still required.
+validation; focused recheck 25/25 PASS, 2013 registered. The later survey above
+passed after the complete pipeline.
 The exact engineering audit and pre-existing empty-validator repair are in
 `planning/EXPANDED-SUMMONING-SPRINT16-PRE-CANDIDATE-REVIEW.md`.
 

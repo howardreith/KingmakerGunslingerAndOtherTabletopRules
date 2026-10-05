@@ -20,10 +20,10 @@ Sprints 18-21. No merge, release/tag, permanent deployment or Sprint 22.
 - Sprint 16 source exists for bite grab, live-bite Death Roll, one-rider
   maintain selection, one-round Sprint with ten-round cooldown, and a separate
   Dire Crocodile swallowed buff. **None has Sprint 16 runtime qualification.**
-  The narrow research artifact `3d0612f15333318e95b3741096102da27305cd18`
-  passed complete source/build/package checks, but failed during bootstrap.
+  The narrow research artifact `8250ac8f8369699af7825459bc860682e3e5eae5`
+  passed complete source/build/package checks and its seven survey assertions.
   It is not the stable hidden qualification candidate. Exact artifact and
-  restoration hashes are in the evidence index; no mechanics gate passed.
+  restoration hashes are in the evidence index and Sprint 16 survey review.
 - Source review now captures native base-bite identity before damage-list
   reordering, preserves weapon damage attribution, claims the maintain round
   before its check, and constructs one explicit Dire swallowed round action.
@@ -32,24 +32,28 @@ Sprints 18-21. No merge, release/tag, permanent deployment or Sprint 22.
 - Follow-up source: untyped +20 Sprint, retained natural-brain actions with
   one shared buff cooldown, and exact one-time land rank allocations. A narrow
   crocodilian survey is wired for live census/graphs/skills and private bind
-  capture. Focused checks pass; these changes still have no runtime proof.
-- Latest runtime: `20261005T1237562519865Z-disposable-expanded-summoning-crocodilians`,
-  FAIL before the save loaded: the natural builder lacked the native +15 armor
-  mapping. The follow-up source uses the censused exact native fact and shares
-  the map with domain validation. Focused recheck 25/25 PASS (2013 registered).
-  Retry the survey after its complete source/build/package pipeline.
+  capture. Exact live skill rows and swallowed graph now pass; Sprint remains
+  unqualified. The missing native +15 armor binding is corrected and tested.
+- Latest runtime: `20261005T1254571775971Z-disposable-expanded-summoning-crocodilians`,
+  PASS 7/7 after full wrapper, 2013/2013 domain tests, exact clean Release and
+  strict package PASS. Live Crocodile Perception/Stealth +8/+5; Dire +14/+0;
+  both Mobility ranks zero. Dire's complete graph has exactly one later-round
+  3d6+13 action and no activation/deactivation damage. Private 41-bone Monitor
+  Lizard bind metadata captured for original art. No save write was requested.
 - Open work: live base-bite/modifier/DR proof; recursive live swallowed-action
-  audit and damage cadence; Sprint speed interactions and AI
-  fallback; exact skills and Run disposition; both original crocodilian visuals;
+  damage cadence; Sprint speed interactions and AI
+  fallback; skill persistence; both original crocodilian visuals;
   focused scenarios/tests, candidate review, targeted persistence and publication.
 - `OwnerAcceptedEngineLimitation: PASSIVE_CREATURE_SENSES_UNMODELED` and
   `OwnerAcceptedEngineLimitation: ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD`
   remain accepted unchanged.
-- The owner authorizes `SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED` **conditional on
-  the planned live component/type census**. Acceptance is not activated yet.
-  If no faithful native carrier exists, record the exact accepted label for
-  Dire Crocodile and Purple Worm; do not build an interior subsystem or keep a
-  creature hidden solely for this limitation after its other gates pass.
+- `OwnerAcceptedEngineLimitation: SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED`
+  is now accepted: the live type/component census confirms no faithful carrier.
+  It applies to Dire Crocodile and Purple Worm. The old note incorrectly said
+  SwallowWholeSettings did not exist; it exists but holds only visual settings.
+  No interior subsystem or substitute check; no withholding solely for this
+  accepted limitation after the other gates pass. Dire's Run is an audited
+  engine omission. See `planning/EXPANDED-SUMMONING-SPRINT16-SURVEY-REVIEW.md`.
 - `OwnerAcceptedAdaptation: SWALLOW_ELIGIBLE_TARGET_ELSE_DEATH_ROLL`:
   bounded held-target command audit found no existing safe choice seam.
   The selector uses pre-roll state; production maintain-path proof remains open.
@@ -57,14 +61,12 @@ Sprints 18-21. No merge, release/tag, permanent deployment or Sprint 22.
   guarded transaction. Live install is **136 files, Info.json 0.0.117**, exact
   tree SHA-256
   `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
-  First survey restoration: `20261005T1240221065263Z-disposable-expanded-summoning-crocodilians.json`,
+  Latest restoration: `20261005T1258077246783Z-disposable-expanded-summoning-crocodilians.json`,
   verified. No Kingmaker process remains. Snapshot the actual baseline before
   each future transaction and restore that exact snapshot.
-- Next executable action: qualify/package the survey source, then run guarded
-  `disposable-expanded-summoning-crocodilians` with exact restoration. Review
-  its census before activating the conditional interior decision, select the
-  observed native AI consideration, and use private bind frames for original
-  assets. The full Sprint 16 scenario pack still must be built. Use focused inner-loop
+- Next executable action: author the original crocodilian assets on the measured
+  41-bone rig; audit inline native AI considerations (none library-indexed was
+  found) and finish the full Sprint 16 scenario pack. Use focused inner-loop
   checks; the complete sprint gate and
   guarded review apply to one stable hidden candidate.
 

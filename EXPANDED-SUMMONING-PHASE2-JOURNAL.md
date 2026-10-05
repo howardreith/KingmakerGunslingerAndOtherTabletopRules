@@ -1,5 +1,26 @@
 # Expanded Summoning Phase 2 journal
 
+## October 5 narrow survey: PASS, interior decision activated
+
+At `8250ac8f8369699af7825459bc860682e3e5eae5` the full wrapper, 2013 tests,
+exact clean Release and strict package passed. Guarded Steam run
+`20261005T1254571775971Z-disposable-expanded-summoning-crocodilians` passed
+seven assertions: exact version, native census, both skill rows, private rig
+capture, explicit swallowed graph and fixture cleanup. Exact restoration is
+`20261005T1258077246783Z-disposable-expanded-summoning-crocodilians.json`.
+No save write; no process remains.
+
+The census activates `OwnerAcceptedEngineLimitation:
+SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED` for Dire and Purple Worm. It corrects
+the offline note: SwallowWholeSettings exists but has only visual fields.
+Run has no faithful native fact. The curated Sprint 16 survey review contains
+the full component graph, skill breakdowns, scope and all hashes.
+
+Sprint 16 remains NOT QUALIFIED. Next: original geometry/paintings from the
+41 measured bind frames, bounded native AI engagement gate, and comprehensive
+candidate mechanics/cadence/Sprint/lifecycle/persistence scenarios. No accepted
+Sprint 14-15 gate is reopened. Dire alone remains withheld pending those gates.
+
 ## October 5 first guarded survey: bootstrap failure, exact restoration
 
 Research commit `3d0612f15333318e95b3741096102da27305cd18` passed the full
