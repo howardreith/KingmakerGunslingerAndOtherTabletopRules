@@ -246,6 +246,7 @@
     <Compile Include="RetiredVendorStockPolicyTests.cs" />
     <Compile Include="RareFirearmSeekingTests.cs" />
     <Compile Include="MidgameFirearmTests.cs" />
+    <Compile Include="FirearmItemDescriptionTests.cs" />
     <Compile Include="TeleportationContextTests.cs" />
     <Compile Include="TeleportationTransactionTests.cs" />
     <Compile Include="TeleportationOutcomeTests.cs" />
@@ -291,6 +292,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Spells\Teleportation\TeleportScrollReaderPolicy.cs"><Link>Spells\Teleportation\TeleportScrollReaderPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Spells\Teleportation\TeleportBeginPolicy.cs"><Link>Spells\Teleportation\TeleportBeginPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Firearms\MidgameFirearmCatalog.cs"><Link>Firearms\MidgameFirearmCatalog.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmEnchantmentItemText.cs"><Link>Firearms\FirearmEnchantmentItemText.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Acquisition\SkeletalSalesmanStockCatalog.cs"><Link>Acquisition\SkeletalSalesmanStockCatalog.cs</Link></Compile>
     <Compile Include="FeatureModuleSettingsTests.cs" />
     <Compile Include="ProtectionFromAlignmentControlImmunityTests.cs" />

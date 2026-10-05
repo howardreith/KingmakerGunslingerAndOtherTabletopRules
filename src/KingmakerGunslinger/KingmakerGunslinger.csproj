@@ -464,9 +464,11 @@
     <Compile Include="Blueprints\RareFirearmCampaignLootBlueprints.cs" />
     <Compile Include="Blueprints\SkeletalSalesmanBlueprints.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MidgameFirearms.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmDescriptions.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MidgameWorkingSave.cs" />
     <Compile Include="Acquisition\SkeletalSalesmanStockCatalog.cs" />
     <Compile Include="Firearms\MidgameFirearmCatalog.cs" />
+    <Compile Include="Firearms\FirearmEnchantmentItemText.cs" />
     <Compile Include="Blueprints\ScatterShotBlueprints.cs" />
     <Compile Include="Blueprints\ReloadTestMusketAbilityBlueprints.cs" />
     <Compile Include="Blueprints\FirearmProficiencyBlueprints.cs" />
