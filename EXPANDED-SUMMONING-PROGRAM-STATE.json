@@ -28,11 +28,11 @@
       15
     ],
     "currentSprint": 16,
-    "currentSubItem": "Sprint 16 bounded laptop contact/command/restoration/lifecycle correction NOT QUALIFIED; focused 217/217 and incremental compile pass; commit/push then all exact-head gates and complete six-scenario batch; read-only salvage audit complete, no ports; Dire withheld; Sprint 17 not started",
+    "currentSubItem": "Sprint 16 exact 4c3 laptop batch NOT QUALIFIED: main 204/209, other five stages PASS; exact restoration and fresh save absence verified. Next common visual-root correction plus owned awake/update lifecycle fixture, then new exact-head gates. DATA audit complete, zero ports; Dire withheld; Sprint 17 not started.",
     "sprint16LaptopCorrectionReview": "planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-FIXTURE-REPAIR.md",
     "dataSalvageAudit": "planning/EXPANDED-SUMMONING-PHASE2B-DATA-SALVAGE-AUDIT.md",
-    "lastGuardedRuntimePass": "20261005T2110323476981Z-working-save-expanded-summoning-verify-absent (5/5; not complete Sprint 16 qualification)",
-    "lastGuardedRestoration": "20261005T2040235864744Z actual snapshot restored 2026-10-05T21:13:38.1407714Z; batch 387FE4AECCB70BC56EABB2271637673111ACE001A9073CB0A9F088606033FC47",
+    "lastGuardedRuntimePass": "20261005T2209523262370Z-working-save-expanded-summoning-verify-absent (5/5; not complete Sprint 16 qualification)",
+    "lastGuardedRestoration": "20261005T2140053167749Z actual snapshot restored; batch closed 2026-10-05T22:12:50.5306966Z; journal E5AE36C7CC06AB399CDF2A98BAD09F4CBA2EB51EB62386BE2812211811ABC3C3",
     "activePullRequest": 26,
     "archivedSalvagePullRequest": 27,
     "giantWaspPublished": true,
@@ -123,6 +123,14 @@
       "review": "planning/EXPANDED-SUMMONING-SPRINT16-FIFTH-RECONCILED-BATCH-REVIEW.md",
       "restoration": "VERIFIED actual leased 0.0.140 / 254-file snapshot 20261005T1928465498770Z; lease released",
       "workingSave": "two authorized native writes; fresh absence zero KMG summons"
+    },
+    "sprint16LaptopContactBatch": {
+      "candidate": "4c3c76cee25a9cdc68d25f660ece43a443ffe2d5",
+      "status": "NOT QUALIFIED; smoke 11/11, main 204/209, crowd 20/20, prepare 9/9, cleanup 9/9, absence 5/5",
+      "review": "planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-BATCH-REVIEW.md",
+      "evidence": "planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-BATCH-EVIDENCE.json",
+      "restoration": "VERIFIED actual 136-file / Info 0.0.117 snapshot; lease Completed; no game, compatibility lock or staging",
+      "salvageImported": false
     }
   },
   "charter": {
@@ -134,7 +142,7 @@
     "automaticContinuationAllowed": false
   },
   "mission": {
-    "name": "Expanded Summoning Phase 0 \u2014 Sprints 0-2",
+    "name": "Expanded Summoning Phase 0 — Sprints 0-2",
     "authorizedSprints": [
       0,
       1,
@@ -400,7 +408,7 @@
       "detail": "Supplied by the owner and read. The Pteranodon passage confirms the shipped profile rather than changing it: ten-foot reach valued for attacks of opportunity, and a single main bite on which everything stacks (2d6 plus modifiers). The guide also positions multiple Pteranodons as the best single-target aerial attacker at their tier. This informs Sprint 2's acceptance emphasis on correct bite impact timing and location at Large reach; it changes no accepted statistic."
     }
   ],
-  "nextConcreteAction": "Complete authorized Sprint 12 on the Phase 2A branch: author and qualify distinct Dire Rat, Dog, Hyena and Goblin Dog silhouettes, then pass direct and quantity player paths, both turn modes, movement/contact, natural expiry, save/load, module-disabled cleanup, compatibility, inventory and internal visual review. Keep every choice hidden until all gates pass. Then complete Sprint 13 and prepare the Phase 2A draft PR checkpoint before stacking Phase 2B. No merge, release, permanent deployment or Sprint 22.",
+  "nextConcreteAction": "Finish Sprint 16 exact-artifact hidden and publication gates on the sole laptop Phase 2B branch / PR 26, then Sprint 17 and Phase 2B closure. Stop for owner review. Phase 2C authorized but deferred; no merge, release, version bump, permanent deployment or Sprints 18-22 in this mission.",
   "deploymentReconciliation": {
     "finding": "The first runs left this mission's 0.0.136 branch build installed over the pre-run 0.0.117 installation. The mission required restoration and did not authorize a permanent installation; a shared version string does not make a branch artifact an accepted release.",
     "ownershipVerified": "The live DLL hash matched this mission's exact build byte for byte, so the tree was unambiguously mission-owned.",

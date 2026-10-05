@@ -1,6 +1,10 @@
 # Laptop Sprint 16 contact and fixture correction
 
-Status: **NOT QUALIFIED**. Parent evidence checkpoint
+Status: **NOT QUALIFIED**. Subsequent exact 4c3 batch failed five assertions and
+was restored: [current review](EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-BATCH-REVIEW.md).
+The prelaunch/next-gate language below records this repair's earlier checkpoint.
+
+Parent evidence checkpoint
 `5da53f84d42079b02586c2db0252652dac4d7dbe`; failed runtime source
 `bc36f97612020d6d680144bcb6ebc01bebe11216`.
 All failures, immutable hashes and exact restoration remain in the
@@ -80,4 +84,3 @@ actual snapshot. No source PASS or historical partial PASS qualifies these bytes
 
 Dire remains withheld; Sprint 17 not started. All four accepted decisions and
 HumanReview: NOT_PERFORMED_NONBLOCKING remain unchanged. No permanent deployment.
-
