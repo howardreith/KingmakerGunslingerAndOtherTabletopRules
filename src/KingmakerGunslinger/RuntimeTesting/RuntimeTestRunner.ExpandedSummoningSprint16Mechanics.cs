@@ -219,19 +219,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 stats.GetStat(StatType.SaveFortitude).ModifiedValue == (dire ? 15 : 6) &&
                 stats.GetStat(StatType.SaveReflex).ModifiedValue == (dire ? 8 : 4) &&
                 stats.GetStat(StatType.SaveWill).ModifiedValue == (dire ? 8 : 2) &&
+                stats.GetStat(StatType.SkillPerception).ModifiedValue == (dire ? 14 : 8) &&
+                stats.GetStat(StatType.SkillStealth).ModifiedValue == (dire ? 0 : 5) &&
+                stats.GetStat(StatType.SkillMobility).BaseValue == 0 &&
                 cmd.Result + deniedDex == (dire ? 36 : 18) &&
                 trip.Result - cmd.Result == 4 &&
                 biteAttack == (dire ? 18 : 5) && tailAttack == (dire ? 13 : 0) &&
                 biteDamage.Dice.Rolls == (dire ? 3 : 1) && biteDamage.Dice.Dice == (dire ? DiceType.D6 : DiceType.D8) &&
                 biteDamage.Bonus == (dire ? 13 : 4) &&
                 tailDamage.Dice.Rolls == (dire ? 4 : 1) && tailDamage.Dice.Dice == (dire ? DiceType.D8 : DiceType.D12) &&
-                tailDamage.Bonus == (dire ? 6 : 2) && !biteStats.SecondaryWeapon && tailStats.SecondaryWeapon &&
+                tailDamage.Bonus == (dire ? 6 : 2) && !bite.IsSecondary && tail.IsSecondary &&
                 biteStats.DoubleCriticalEdge == dire &&
                 grab != null && grab.IsGrabLimb(owner, bite) && !grab.IsGrabLimb(owner, tail);
             Sprint16Check(assertions, rows, key + "-live-profile", exact, new JObject {
                 ["scores"] = new JArray(scores), ["size"] = owner.Descriptor.State.Size.ToString(),
                 ["hitDice"] = owner.Descriptor.Progression.CharacterLevel,
                 ["hitPoints"] = stats.HitPoints.ModifiedValue,
+                ["hitPointsBase"] = stats.HitPoints.BaseValue,
                 ["armor"] = stats.AC.ModifiedValue, ["touch"] = stats.AC.Touch, ["flatFooted"] = stats.AC.FlatFooted,
                 ["fortitude"] = stats.GetStat(StatType.SaveFortitude).ModifiedValue,
                 ["reflex"] = stats.GetStat(StatType.SaveReflex).ModifiedValue,
@@ -239,7 +243,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["cmd"] = cmd.Describe("CMD"), ["trip"] = trip.Describe("trip"), ["deniedDexRecovered"] = deniedDex,
                 ["biteAttack"] = biteAttack, ["tailAttack"] = tailAttack,
                 ["bite"] = Sprint16DamageLine(biteDamage), ["tail"] = Sprint16DamageLine(tailDamage),
-                ["tailSecondary"] = tailStats.SecondaryWeapon, ["biteImprovedCritical"] = biteStats.DoubleCriticalEdge,
+                ["tailSecondary"] = tail.IsSecondary,
+                ["tailSecondaryRuleOverride"] = tailStats.SecondaryWeapon,
+                ["biteImprovedCritical"] = biteStats.DoubleCriticalEdge,
                 ["perception"] = DescribeSprint16Skill(stats.GetStat(StatType.SkillPerception)),
                 ["stealth"] = DescribeSprint16Skill(stats.GetStat(StatType.SkillStealth)),
                 ["mobility"] = DescribeSprint16Skill(stats.GetStat(StatType.SkillMobility))
@@ -534,11 +540,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observer.Clear();
                     int claimed = -1;
                     string outcome;
+                    bool proneDuring;
                     try
                     {
                         UnityEngine.Random.InitState(FindNativeD20Seed(20));
                         outcome = SummonHoldComponent.MaintainLink(owner, target, grab, null,
                             owner.Descriptor.Buffs.GetBuff(grab.HoldBuff), held, ref claimed);
+                        proneDuring = target.Descriptor.State.HasCondition(UnitCondition.Prone);
                     }
                     finally
                     { if (immunity) target.Descriptor.State.RemoveConditionImmunity(UnitCondition.Prone); }
@@ -552,7 +560,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         observer.Checks.Count == 1 && observer.Damage.Count == 1 &&
                         observer.Attacks.Count == 0 && observer.WeaponAttacks == 0 &&
                         (target.Get<UnitPartSwallowed>() != null) == swallow &&
-                        (plain || swallow || prone == !immunity);
+                        (plain || swallow || (proneDuring == !immunity && prone == !immunity));
                     string replay = "not-applicable";
                     if (!swallow && variant != "fresh-hold")
                     {
@@ -628,6 +636,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 UnityEngine.Random.InitState(FindNativeD20Seed(20));
                 string outcome = SummonHoldComponent.MaintainLink(owner, victim, grab, null,
                     owner.Descriptor.Buffs.GetBuff(grab.HoldBuff), state, ref claimed);
+                bool deadOnDamageReturn = victim.Descriptor.State.IsDead;
+                // RuleDealDamage records damage; the native life controller
+                // settles death on its subsequent tick. Tick only this exact
+                // disposable victim, then the production holder's round path.
+                typeof(Kingmaker.Controllers.Units.UnitLifeController).GetMethod("TickOnUnit",
+                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                    .Invoke(new Kingmaker.Controllers.Units.UnitLifeController(), new object[] { victim });
+                Buff remainingHold = owner.Descriptor.Buffs.GetBuff(grab.HoldBuff);
+                if (remainingHold != null) remainingHold.TickMechanics();
                 bool dead = victim.Descriptor.State.IsDead;
                 bool free = SummonHoldComponent.HeldTarget(owner) == null &&
                     SummonGrappleLinks.EstablishingWeapon(owner, victim) == null &&
@@ -635,10 +652,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !victim.Descriptor.HasFact(grab.GrappledBuff);
                 Sprint16Check(assertions, rows, key + "-lethal-roll-cleanup",
                     held && dead && free && observer.Damage.Count == 1 &&
-                    observer.Attacks.Count == 0 && outcome.Contains("targetDied=True"),
+                    observer.Attacks.Count == 0 && outcome.StartsWith("death-roll:", StringComparison.Ordinal),
                     new JObject { ["held"] = held, ["dead"] = dead, ["free"] = free,
+                        ["deadOnDamageReturn"] = deadOnDamageReturn,
                         ["outcome"] = outcome, ["damageEvents"] = observer.Damage.Count },
-                    "one lethal Death Roll releases exact reciprocal parts, held buff and limb occupancy");
+                    "one lethal Death Roll; exact native per-unit life tick then production hold tick releases reciprocal state without more damage");
             }
             finally
             {

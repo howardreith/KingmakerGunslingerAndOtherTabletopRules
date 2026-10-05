@@ -1,5 +1,25 @@
 # Expanded Summoning Phase 2 journal
 
+## October 5, 15:55 UTC — first hidden batch failed safely; correction work
+
+`0238bf03166dfb3dd7bf0205c12f82a2d2757caa` passed full static/domain/build/
+package checks (2018/2018), but mechanics and independent visual/persistence
+reviews found real defects and fixture faults. Both save-writing stages refused
+to save. Final absence PASS is not persistence qualification. One deployment,
+five guarded Steam fresh launches, exact restoration verified at 15:55:17 UTC;
+136 files / 0.0.117, no game or lock remaining.
+
+Diagnosed shared-blueprint rank state, native bite 1.5x Strength and NPC dice
+override behavior, incorrect HP, latent Prone under immunity, wrong secondary
+flag observation, native death-update timing, a nonexistent reflected unit
+collection in fixture cleanup and omitted guided movement registration.
+Prepared narrowly scoped fixes after restoration; focused 216/216 and
+incremental exact-reference compile PASS. No suppression removed. Full evidence,
+artifact/restoration hashes and bounded partial passing results are in
+[the hidden candidate review](planning/EXPANDED-SUMMONING-SPRINT16-HIDDEN-CANDIDATE-REVIEW.md).
+Continue with the corrected candidate gate; these are engineering issues, not
+an owner-level blocker or a reason to relabel the accepted interior limitation.
+
 ## October 5 pre-launch gate correction (NOT QUALIFIED)
 
 Candidate `b6e26e2ef207cf5302e9796026527beb9556d17c` did not launch

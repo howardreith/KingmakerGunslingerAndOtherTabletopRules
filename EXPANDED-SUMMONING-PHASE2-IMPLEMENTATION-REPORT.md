@@ -1,5 +1,20 @@
 # Expanded Summoning Phase 2 implementation report
 
+## Current October 5 result — Sprint 16 NOT QUALIFIED
+
+Hidden candidate `0238bf03166dfb3dd7bf0205c12f82a2d2757caa` passed the full
+2018-test/build/package gate, then FAILED its guarded batch. Mechanics 55/19,
+visual 16/4, persistence prepare 6/3, cleanup 5/4; final absence 5/0. No save
+write occurred. The exact baseline was restored, record
+`20261005T1555173824556Z-disposable-expanded-summoning-crocodilians.json`.
+The current correction checkpoint addresses the observed per-copy ranks, HP,
+bite Strength/dice scaling, prone immunity and fixture defects. Focused 216/216
+and incremental compile PASS, not runtime qualification. See
+[the detailed review](planning/EXPANDED-SUMMONING-SPRINT16-HIDDEN-CANDIDATE-REVIEW.md).
+Source-derived publication remains 970 generated + 29 wrappers = 999 choices;
+all six Dire roots remain withheld. Sprints 14–15 are not reopened. Next:
+qualify the corrected hidden candidate, then finish Sprint 16 and continue.
+
 ## October 5 hidden-candidate fixture completion (NOT QUALIFIED)
 
 The candidate scenario pack now includes eighteen native RTWP/turn-based

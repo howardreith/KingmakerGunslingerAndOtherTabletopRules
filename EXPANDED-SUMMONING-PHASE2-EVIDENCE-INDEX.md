@@ -1,5 +1,17 @@
 # Expanded Summoning Phase 2 evidence index
 
+## October 5 hidden candidate 0238bf03 — FAIL, exactly restored
+
+Full source/build/package gates and 2018/2018 tests PASS did not qualify runtime.
+The five-run batch completed with four failed scenarios and one absence PASS.
+Both native save-writing stages refused their writes. The corrected source is
+NOT QUALIFIED. Exact hashes, partial passing measurements, nine diagnosed
+production/fixture issues and the next correction gate are recorded in
+[the hidden candidate review](planning/EXPANDED-SUMMONING-SPRINT16-HIDDEN-CANDIDATE-REVIEW.md).
+Restoration `20261005T1555173824556Z` verified the original 136 files / 0.0.117 /
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+No game or lock remains. No publication change or owner-level blocker.
+
 ## October 5 pre-launch gate correction (NOT QUALIFIED)
 
 Candidate `b6e26e2ef207cf5302e9796026527beb9556d17c` did not launch
