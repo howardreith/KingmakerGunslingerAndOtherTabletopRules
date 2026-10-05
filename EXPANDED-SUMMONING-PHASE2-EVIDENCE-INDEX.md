@@ -1,5 +1,68 @@
 # Expanded Summoning Phase 2 evidence index
 
+## October 5 authorized reconciliation (NOT QUALIFIED)
+
+Authoritative base `390f9a39d9cce2a40e6528d3215a678d6cd15757`; unpublished sibling `3ebefe7b6c5525156d8494de82435abf8574f503`
+preserved at local `codex/local-safety/phase2b-3ebefe7-2026-10-05`. Every
+runtime-derived correction and original failed-result hash is retained. The
+inspected independent preflight changes are replayed; overlapping state/evidence
+were manually reconciled. No merge/reset/rebase/force push. Ownership and
+per-change disposition: [reconciliation ledger](planning/EXPANDED-SUMMONING-PHASE2B-RECONCILIATION-2026-10-05.md).
+Previous passing sibling checks do not qualify the reconciled candidate; run the
+complete new gates before the corrected hidden batch. Lease precedes the actual
+live snapshot; neither historical installation is forced. Stop on remote motion.
+
+## Historical unpublished sibling preflight repair (source PASS; Sprint 16 NOT QUALIFIED)
+
+Intake/fetched remote: `0238bf03166dfb3dd7bf0205c12f82a2d2757caa`.
+The supplied Phase 2B worktree was absent; a new isolated checkout of that exact
+remote head was created without disturbing any sibling. The latest owner order
+supersedes the older Phase 2C authorization: stop after Phase 2B closure. The
+external mission file is absent here; committed contracts and the explicit
+current order are the authority. Intake is recorded locally in
+`artifacts/phase2b-closure/intake.json`.
+
+Meaningful failures and repairs, before any game launch:
+
+- Current preflight rejected stale positive version 0.0.134. Derive positive
+  fixtures from Info.json; preserve deliberately invalid and legacy contracts.
+  Add the six already-registered missing catalog IDs and five closed
+  crocodilian metadata/request/rejection checks.
+- The new request fixture initially omitted required stage timeouts; explicit
+  valid bounded values now isolate the intended save/parameter boundary.
+- Elevated preflight invocation correctly failed its unchanged normal-user
+  guard. All positive orchestration/WhatIf checks subsequently ran through
+  the existing desktop-shell normal-user launch convention.
+- Local ignored invocation helper initially omitted RuntimeHarness.Common;
+  Windows PowerShell also evaluated the orchestration test's optional script
+  root to an empty string. Dot-source the existing helper and pass the already
+  supported explicit `-ScriptRoot`. No tracked guard was weakened. Capture
+  complete child output while preserving child exit-code failures.
+
+Commands/outcomes (normal-user run 2026-10-05T16:09:17.7085837Z through
+16:11:32.6688552Z): `Test-RuntimeScenarioPreflight.ps1` **480 PASS**;
+`Test-ExpandedSummoningRuntimeOrchestration.ps1 -ScriptRoot <scripts>` **68 PASS**;
+`Test-ExpandedSummoningWorkingSavePersistence.ps1` **11 wiring + 3 round trips +
+19 rejections PASS**; `Test-ExpandedSummoningCrowdRequest.ps1` **5 round trips +
+7 rejections PASS**; `Invoke-KmgGate.ps1 -Level Sprint` **PASS**, including
+repository/static/icon validation, **2018/2018** unfiltered domain tests, clean
+exact-reference Release build, deterministic packaging and strict standalone
+validation. Earlier `-Level Focused -Filter expanded-summoning;sprint16;crocodilian`
+passed **216/216** of 2018 registered. Changed PowerShell parser and
+`git diff --check` pass.
+
+Pre-commit source HEAD is intake SHA above plus the preflight repair only:
+source-state SHA-256 `d1675d6ea3c0ac73c0fa24e7b4010db92d09f932f7c576308a98034e4de9d85c`;
+ZIP `3754b908bff83e680e160a91159428862e9ae5e34193028716c2aed1ecfa81c5`;
+DLL `a73ee73a9a3e482fac38b65b0262981b2cbade5e0d6c45a63a42cf3aad669994`;
+MVID `54284d45-d6d8-4d62-94c8-de99cb400917`; version unchanged **0.0.141**.
+The containing checkpoint's runtime candidate must be built and fingerprinted
+independently; this dirty pre-commit artifact has **no runtime qualification**.
+No deployment, game launch or save write occurred. Full logs, failed invocation
+records and build sidecar remain ignored under `artifacts/phase2b-closure` and
+`artifacts/local-runtime/0.0.141`. Current 976/970/6/29/999 surface is unchanged.
+
+
 ## October 5 hidden candidate 0238bf03 — FAIL, exactly restored
 
 Full source/build/package gates and 2018/2018 tests PASS did not qualify runtime.
