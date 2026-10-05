@@ -66,6 +66,30 @@ namespace KingmakerGunslinger.DomainTests
                     (rules.StealthRanks >= 10 ? 6 : 3) + row.SizePenalty;
                 if (perception != row.Perception || stealth != row.Stealth)
                     throw new InvalidOperationException("Printed land totals do not derive: " + row.Key);
+                Assertions.Equal(row.Key == "crocodile" ? 22 : 138,
+                    rules.BaseHitPoints + profile.HitDice * (profile.Constitution / 2 - 5),
+                    "Printed racial HP preserves the native live Constitution contribution.");
+                // One shared profile must initialize every independently
+                // created member, including later members of a quantity cast.
+                for (int copy = 0; copy < 5; copy++)
+                {
+                    int p = 0, s = 0;
+                    CrocodilianRulesPolicy.AllocateLandRanks(row.Key, ref p, ref s, 0);
+                    Assertions.True(p == row.PerceptionRanks && s == row.StealthRanks,
+                        "Every copy receives its own allocation.");
+                    bool rejected = false;
+                    try { CrocodilianRulesPolicy.AllocateLandRanks(row.Key, ref p, ref s, 0); }
+                    catch (InvalidOperationException) { rejected = true; }
+                    Assertions.True(rejected && p == row.PerceptionRanks && s == row.StealthRanks,
+                        "Existing ranks are never overwritten by a repeated creation callback.");
+                }
+                int cleanPerception = 0, cleanStealth = 0;
+                bool mobilityRejected = false;
+                try { CrocodilianRulesPolicy.AllocateLandRanks(row.Key,
+                    ref cleanPerception, ref cleanStealth, 1); }
+                catch (InvalidOperationException) { mobilityRejected = true; }
+                Assertions.True(mobilityRejected && cleanPerception == 0 && cleanStealth == 0,
+                    "Unprinted Mobility ranks fail before any partial allocation.");
                 if (profile.Deviations.Any(value => value.Contains("water-only Stealth")) == false)
                     throw new InvalidOperationException("Aquatic-only skill omission must be explicit.");
             }

@@ -113,6 +113,9 @@ namespace KingmakerGunslinger.Summoning
         internal int PerceptionRanks { get { return Key == "crocodile" ? 1 : 6; } }
         internal int StealthRanks { get { return Key == "crocodile" ? 2 : 6; } }
         internal int MobilityRanks { get { return 0; } }
+        // Printed racial dice only. Native Constitution/level dependencies
+        // remain live; the native class's generated HP is not the stat block.
+        internal int BaseHitPoints { get { return Key == "crocodile" ? 13 : 54; } }
 
         internal string DeathRollDamage
         {
@@ -158,6 +161,17 @@ namespace KingmakerGunslinger.Summoning
         internal const int SprintCooldownRounds = 10;
         internal const string MaintainAdaptation =
             "SWALLOW_ELIGIBLE_TARGET_ELSE_DEATH_ROLL";
+
+        internal static void AllocateLandRanks(string key, ref int perception,
+            ref int stealth, int mobility)
+        {
+            if (perception != 0 || stealth != 0 || mobility != 0)
+                throw new InvalidOperationException(
+                    "Crocodilian class ranks must start unallocated.");
+            CrocodilianRulesProfile rules = For(key);
+            perception = rules.PerceptionRanks;
+            stealth = rules.StealthRanks;
+        }
 
         internal static bool TryClaimMaintainRound(int roundsHeld,
             ref int lastResolvedRound)

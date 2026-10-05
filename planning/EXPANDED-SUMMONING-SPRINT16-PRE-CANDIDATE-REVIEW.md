@@ -1,5 +1,15 @@
 # Sprint 16 pre-candidate review - Crocodile and Dire Crocodile
 
+## Current result: hidden candidate 0238bf03 FAILED
+
+The earlier NOT RUN statements below describe preparation checkpoints. The first
+full candidate passed 2018/2018 tests and exact build/package gates, but its
+five-run runtime batch failed. The exact baseline is restored. See
+[the candidate review](EXPANDED-SUMMONING-SPRINT16-HIDDEN-CANDIDATE-REVIEW.md)
+for immutable hashes, partial evidence and nine diagnosed corrections.
+The containing correction checkpoint passes focused 216/216 and incremental
+compile, remains NOT QUALIFIED, and is the next hidden runtime candidate.
+
 ## October 5 takeover engineering review (NOT QUALIFIED)
 
 ### Current follow-up: crocodilian-only candidate evidence pack

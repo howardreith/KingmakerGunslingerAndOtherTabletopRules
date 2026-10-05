@@ -71,6 +71,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal object Party;
             internal object[] UnitsBefore;
             internal object[] PartyBefore;
+            internal readonly Dictionary<UnitEntityData, Kingmaker.EntitySystem.SceneEntitiesState>
+                OriginalAreas = new Dictionary<UnitEntityData, Kingmaker.EntitySystem.SceneEntitiesState>();
             internal object[] ExactStart;
             internal MethodInfo SummonRuleMethod;
             internal readonly List<UnitEntityData> Created = new List<UnitEntityData>();
@@ -92,12 +94,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             var fixture = new ExpandedSummoningCorrectionFixture();
             fixture.Blueprints = BlueprintBootstrap.Library.GetAllBlueprints()
                 .Where(value => value != null).ToArray();
-            object state = ReadExactMember(Game.Instance, "State");
-            fixture.AllUnits = ReadExactMember(state, "AllUnits");
-            object player = ReadExactMember(Game.Instance, "Player");
-            fixture.Party = ReadExactMember(player, "Party");
+            // State has Units.All, not an AllUnits member. A missing reflection
+            // member previously made both before/after snapshots vacuously
+            // empty and let cleanup mistake the native party for fixture units.
+            fixture.AllUnits = Game.Instance.State.Units.All;
+            fixture.Party = Game.Instance.Player.Party;
             fixture.UnitsBefore = SnapshotReferences(fixture.AllUnits);
             fixture.PartyBefore = SnapshotReferences(fixture.Party);
+            if (fixture.UnitsBefore.Length == 0 || fixture.PartyBefore.Length == 0 ||
+                fixture.PartyBefore.Any(value => !fixture.UnitsBefore.Any(prior => ReferenceEquals(prior, value))))
+                throw new InvalidOperationException("The correction fixture requires a nonempty native unit census containing the party.");
+            foreach (UnitEntityData original in fixture.UnitsBefore.OfType<UnitEntityData>())
+                fixture.OriginalAreas.Add(original, original.HoldingState);
             fixture.SummonRuleMethod = typeof(RuleSummonUnit).GetMethod("OnTrigger",
                 BindingFlags.Public | BindingFlags.Instance);
             if (fixture.SummonRuleMethod == null)
@@ -234,13 +242,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (fixture.SummonRuleMethod != null)
                     _context.Harmony.Unpatch(fixture.SummonRuleMethod, HarmonyPatchType.All,
                         _context.ModId);
-                IEnumerable<UnitEntityData> localUnits = fixture.SceneEntities == null
-                    ? Enumerable.Empty<UnitEntityData>()
-                    : SnapshotReferences(fixture.SceneEntities).OfType<UnitEntityData>();
-                foreach (UnitEntityData unit in localUnits.Concat(
-                    SnapshotReferences(fixture.AllUnits).OfType<UnitEntityData>())
-                    .Where(value => !fixture.UnitsBefore.Any(prior =>
-                        ReferenceEquals(prior, value))).Distinct().ToArray())
+                // Destroy only actors actually owned by this fixture. An
+                // unexpected new native unit is a failed census, not permission
+                // to destroy it. Never infer ownership from a missing snapshot.
+                foreach (UnitEntityData unit in fixture.Created.Concat(
+                    new[] { fixture.Caster, fixture.Hostile })
+                    .Where(value => value != null && !value.Destroyed &&
+                        !fixture.UnitsBefore.Any(prior => ReferenceEquals(prior, value)))
+                    .Distinct().ToArray())
                 {
                     if (unit.IsInState) unit.Destroy();
                     else unit.Dispose();
@@ -250,6 +259,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     UnityEngine.Object.Destroy(fixture.CasterBlueprint);
                 cleaned = SameReferences(fixture.UnitsBefore, SnapshotReferences(fixture.AllUnits)) &&
                     SameReferences(fixture.PartyBefore, SnapshotReferences(fixture.Party)) &&
+                    fixture.OriginalAreas.All(pair => !pair.Key.Destroyed &&
+                        ReferenceEquals(pair.Key.HoldingState, pair.Value)) &&
                     (fixture.Caster == null || !ContainsReference(fixture.AllUnits, fixture.Caster));
             }
         }

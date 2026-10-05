@@ -159,8 +159,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
             }
             assertions.Add(Assertion("sprint16-survey-cleanup",
-                "exact initial unit and party references restored",
-                "cleaned=" + cleaned, cleaned, "fixture snapshots after unit disposal"));
+                "nonempty native unit/party census and every original area membership preserved",
+                "cleaned=" + cleaned + ";nativeUnits=" + (fixture == null ? 0 : fixture.UnitsBefore.Length) +
+                    ";party=" + (fixture == null ? 0 : fixture.PartyBefore.Length), cleaned,
+                "typed Units.All census, owned-actor-only disposal and exact original HoldingState references"));
             assertions.Add(Assertion("loaded-mod-version", _request.ExpectedModVersion,
                 _context.ModEntry.Info.Version,
                 _context.ModEntry.Info.Version == _request.ExpectedModVersion,

@@ -35,7 +35,7 @@ using UnityEngine;
 namespace KingmakerGunslinger.Summoning
 {
     /// <summary>
-    /// Creation-only printed land skill allocation for the two crocodilians.
+    /// Creation-only printed land ranks and racial HP for the two crocodilians.
     /// Native class/attribute/size/feat modifiers still calculate the totals.
     /// No additive hidden bonus, donor mutation or reload-time reallocation.
     /// </summary>
@@ -46,11 +46,11 @@ namespace KingmakerGunslinger.Summoning
     {
         public string CreatureKey;
         public BlueprintUnit OwningBlueprint;
-        [JsonProperty] private bool m_Applied;
-
         public void OnEntityCreated(UnitEntityData unit)
         {
-            if (m_Applied) return;
+            // IHandleEntityComponent is invoked on the shared blueprint
+            // component, not a per-unit clone. Never keep an applied flag here.
+            // Native Initialize calls this only on creation, not deserialization.
             if (unit == null || !ReferenceEquals(unit.Blueprint, OwningBlueprint))
                 throw new InvalidOperationException(
                     "Crocodilian rank allocation requires its exact owning unit.");
@@ -61,16 +61,55 @@ namespace KingmakerGunslinger.Summoning
                 StatType.SkillStealth);
             ModifiableValue mobility = unit.Descriptor.Stats.GetStat(
                 StatType.SkillMobility);
-            if (perception.BaseValue != 0 || stealth.BaseValue != 0 ||
-                    mobility.BaseValue != 0)
-                throw new InvalidOperationException(
-                    "Crocodilian class ranks must start unallocated.");
-            perception.BaseValue = rules.PerceptionRanks;
-            stealth.BaseValue = rules.StealthRanks;
-            m_Applied = true;
+            int perceptionRanks = perception.BaseValue;
+            int stealthRanks = stealth.BaseValue;
+            CrocodilianRulesPolicy.AllocateLandRanks(CreatureKey,
+                ref perceptionRanks, ref stealthRanks, mobility.BaseValue);
+            perception.BaseValue = perceptionRanks;
+            stealth.BaseValue = stealthRanks;
+            unit.Descriptor.Stats.HitPoints.BaseValue = rules.BaseHitPoints;
         }
 
         public void OnEntityRemoved(UnitEntityData unit) { }
+    }
+
+    /// <summary>
+    /// The two printed crocodilian routines use full Strength on the bite,
+    /// half on the secondary tail, and dice relative to their native size.
+    /// Native weapon stats otherwise treat a lone primary-hand bite as 1.5x
+    /// Strength and suppress scaling on NPC weapon dice overrides.
+    /// </summary>
+    [Serializable]
+    public sealed class SummonCrocodilianWeaponStats :
+        RuleInitiatorLogicComponent<RuleCalculateWeaponStats>
+    {
+        public BlueprintUnit OwningBlueprint;
+        public BlueprintItemWeapon Bite;
+        public BlueprintItemWeapon Tail;
+        public Size BaselineSize;
+
+        public override void OnEventAboutToTrigger(RuleCalculateWeaponStats evt)
+        {
+            if (Owner == null || Owner.Unit == null || evt == null ||
+                !ReferenceEquals(evt.Initiator, Owner.Unit) ||
+                !ReferenceEquals(Owner.Unit.Blueprint, OwningBlueprint) ||
+                evt.Weapon == null) return;
+            bool bite = ReferenceEquals(evt.Weapon.Blueprint, Bite);
+            if (!bite && !ReferenceEquals(evt.Weapon.Blueprint, Tail)) return;
+            if (bite) evt.OverrideDamageBonusStatMultiplier(1f);
+            // Respect an existing legitimate dice override. For the printed
+            // weapons, use the native size table from the creature's baseline
+            // size rather than from Medium or from a frozen rider profile.
+            if (!evt.WeaponDamageDiceOverride.HasValue)
+            {
+                evt.WeaponDamageDiceOverride = WeaponDamageScaleTable.Scale(
+                    evt.Weapon.Blueprint.BaseDamage, evt.WeaponSize,
+                    BaselineSize, evt.Weapon.Blueprint);
+                evt.DoNotScaleDamage = true;
+            }
+        }
+
+        public override void OnEventDidTrigger(RuleCalculateWeaponStats evt) { }
     }
 
     [Serializable]
@@ -826,7 +865,8 @@ namespace KingmakerGunslinger.Summoning
                 UnitCondition.Prone);
             bool proneAfter = proneBefore;
             if (DeathRollKnocksProne && !target.Descriptor.State.IsDead &&
-                    !target.Destroyed)
+                    !target.Destroyed &&
+                    !target.Descriptor.State.HasConditionImmunity(UnitCondition.Prone))
             {
                 // The same two-argument call TwinShotKnockdownMechanics
                 // uses: the engine owns how long a creature stays down, and a
