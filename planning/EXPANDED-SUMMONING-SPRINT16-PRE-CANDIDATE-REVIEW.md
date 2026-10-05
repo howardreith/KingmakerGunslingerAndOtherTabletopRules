@@ -20,7 +20,8 @@ research evidence at its own source/DLL; it does not qualify these new cases.
 | Commands/AI | Both creatures x RTWP/turn-based x manual, fresh AI, AI after a player cast; movement, bite/tail events, actual AI command identity, one Sprint/no failed queue spam, shared cooldown | Written, NOT RUN |
 | Targeted persistence | Closed scope in existing guarded three-stage workflow; five summons, active/cooldown pairs, skills/visuals, hold/swallow reset, native buff expiry and saved cleanup | Written, NOT RUN |
 | Other lifecycle | Swallow/hold source-death/dismissal/expiry/transition; Worm/Flytrap regression controls | Still to finish |
-| Visible consumers/art | Original visual lifecycle, jaw/tail contacts, crowd/fallback/resource controls, native Monitor Lizard, Sprint/status icon dispositions | Still to finish |
+| Icon consumers | Nine visible consumers mapped to three original emblems; five AI internals explicitly inventoried; offline/profile/protection PASS | Live bindings written, NOT RUN; native UI use still open |
+| Original art | Visual lifecycle, jaw/tail contacts, crowd/fallback/resource controls, native Monitor Lizard | Still to finish |
 | Routes/publication | Fourteen changed Crocodile roots and six private Dire roots, then publication-only gate and 976/29/1005 totals | Still to finish |
 
 The command cells never write Animation.IsActed or call command.Tick to invent

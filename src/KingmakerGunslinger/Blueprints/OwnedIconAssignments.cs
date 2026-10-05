@@ -40,6 +40,15 @@ namespace KingmakerGunslinger.Blueprints
         }
 
         private static readonly Binding[] Entries = {
+            new Binding("KMG.Summoning.Special.Crocodile.CombatTraits", "crocodilian-death-roll", typeof(BlueprintBuff)),
+            new Binding("KMG.Summoning.Special.DireCrocodile.CombatTraits", "crocodilian-death-roll", typeof(BlueprintBuff)),
+            new Binding("KMG.Summoning.Special.Crocodile.Sprint", "crocodilian-sprint", typeof(BlueprintAbility)),
+            new Binding("KMG.Summoning.Special.Crocodile.SprintState", "crocodilian-sprint", typeof(BlueprintBuff)),
+            new Binding("KMG.Summoning.Special.Crocodile.SprintCooldown", "crocodilian-sprint", typeof(BlueprintBuff)),
+            new Binding("KMG.Summoning.Special.DireCrocodile.Sprint", "crocodilian-sprint", typeof(BlueprintAbility)),
+            new Binding("KMG.Summoning.Special.DireCrocodile.SprintState", "crocodilian-sprint", typeof(BlueprintBuff)),
+            new Binding("KMG.Summoning.Special.DireCrocodile.SprintCooldown", "crocodilian-sprint", typeof(BlueprintBuff)),
+            new Binding("KMG.Summoning.Special.DireCrocodile.Swallowed", "dire-crocodile-swallowed", typeof(BlueprintBuff)),
             new Binding("KMG.ElementalRaces.Ifrit.Race", "general-ifrit", typeof(BlueprintRace)),
             new Binding("KMG.ElementalRaces.Ifrit.FireResistance", "fire-resistance", typeof(BlueprintFeature)),
             new Binding("KMG.ElementalRaces.Ifrit.FireAffinity", "fire-affinity", typeof(BlueprintFeature)),

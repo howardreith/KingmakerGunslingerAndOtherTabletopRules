@@ -169,6 +169,17 @@ Neither review output is native game-screen evidence.
 
 ## Integration and catalog authority
 
+Sprint 16 extends the existing combat-emblem-64 family with three original
+crocodilian physical-action/condition emblems. The production exporter now
+selects 64px from the brief's explicit `combat-emblem-64` profile (128px for
+painted sources), instead of assuming every production record is painted.
+The existing cache and owned binding table load them; the catalog enumerates
+the three `additionalEmblemConcepts` and their nine exact consumers separately
+from the historical 100 painted concepts / 160 painted consumers. No existing
+pixels, family dimensions or assignments are redefined. The canonical catalog
+and production briefs/manifest retain source/export authority. See the
+Sprint 16 icon review for references, original geometry and remaining UI gates.
+
 Blueprints/ProjectAssetIcons.cs is the established cache: required-file failures,
 one load per registered file, Texture2D decode, centered Sprite at 100 pixels/unit
 and shared cached references. It leaves texture filter/wrap defaults unchanged.

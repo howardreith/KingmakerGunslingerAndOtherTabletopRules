@@ -207,8 +207,8 @@ namespace KingmakerGunslinger.DomainTests
                 "package.ps1"));
             Assertions.True(build.Contains("assets\\sprint12-quadrupeds") &&
                 package.Contains("assets\\sprint12-quadrupeds") &&
-                build.Contains("{ 309 } else { 307 }") &&
-                package.Contains("{ 309 } else { 307 }"),
+                build.Contains("{ 312 } else { 310 }") &&
+                package.Contains("{ 312 } else { 310 }"),
                 "All six quadruped asset files enter the strict standalone package.");
         }
 

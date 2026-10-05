@@ -166,7 +166,7 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
 # withheld creature still has to ship its visual - the loader resolves its
 # files from the creature key, so one missing from this staging would wear its
 # donor's body rather than fail.
-$expectedPackageFileCount = if ($hasFirearmSoundBank) { 309 } else { 307 }
+$expectedPackageFileCount = if ($hasFirearmSoundBank) { 312 } else { 310 }
 & $python (Join-Path $repositoryRoot 'tools\create_deterministic_package.py') `
     --source $modDirectory --output $packagePath `
     --expected-file-count $expectedPackageFileCount

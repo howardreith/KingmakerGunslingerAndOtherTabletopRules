@@ -11,6 +11,12 @@ The candidate mechanics, scheduler/timeline and twelve native-command/AI
 cells are now written and compile, but have NOT RUN. They add no qualified
 fidelity claim; the pre-candidate review lists their exact scope and open gates.
 
+Targeted active/cooldown/hold/swallow persistence is now written, NOT RUN.
+Nine visible action/status/trait consumers have three original physical emblems,
+with exact cataloged dispositions and no changes to existing summon portraits.
+Offline art checks do not qualify native UI or mechanics. See the Sprint 16
+icon review; `HumanReview: NOT_PERFORMED_NONBLOCKING`.
+
 `OwnerAcceptedAdaptation: SWALLOW_ELIGIBLE_TARGET_ELSE_DEATH_ROLL` is active
 after the bounded existing held-target command audit. It is deterministic AI
 behavior, not exact tabletop choice; live maintain-path proof is still required.

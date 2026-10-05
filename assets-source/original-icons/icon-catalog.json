@@ -19,6 +19,20 @@
     "KMG.MostlyHuman."
   ],
   "additionalRequiredSymbols": [
+    "KMG.Summoning.Special.Crocodile.CombatTraits",
+    "KMG.Summoning.Special.DireCrocodile.CombatTraits",
+    "KMG.Summoning.Special.Crocodile.Brain",
+    "KMG.Summoning.Special.Crocodile.Sprint",
+    "KMG.Summoning.Special.Crocodile.SprintAi",
+    "KMG.Summoning.Special.Crocodile.SprintState",
+    "KMG.Summoning.Special.Crocodile.SprintCooldown",
+    "KMG.Summoning.Special.DireCrocodile.Brain",
+    "KMG.Summoning.Special.DireCrocodile.Sprint",
+    "KMG.Summoning.Special.DireCrocodile.SprintAi",
+    "KMG.Summoning.Special.DireCrocodile.SprintState",
+    "KMG.Summoning.Special.DireCrocodile.SprintCooldown",
+    "KMG.Summoning.Special.DireCrocodile.Swallowed",
+    "KMG.Summoning.Special.Crocodilian.SprintNotEngaged",
     "KMG.Feats.FirearmWeaponFocus",
     "KMG.Feats.NativeWeaponFocusWithFirearms",
     "KMG.Feats.WeaponFocusPistol",
@@ -777,6 +791,10 @@
     }
   ],
   "currentArtSources": {
+    "crocodilian-emblems": {
+      "source": "tools/icon-art/New-CrocodilianEmblems.ps1",
+      "scope": "Three original combat-emblem-64 concepts; native reference pixels are not included; owner visual review is nonblocking and not performed."
+    },
     "internal": {
       "source": "src/KingmakerGunslinger/ElementalRaces/ElementalRaceIdentityCatalog.cs",
       "assignment": "No independent visible icon; preserve required existing contract.",
@@ -1439,6 +1457,75 @@
     }
   },
   "concepts": [
+    {
+      "key": "crocodilian-sprint",
+      "name": "Crocodilian Sprint",
+      "family": "combat-emblem",
+      "sharingReason": "A swift one-round +20-foot land-speed burst with one shared ten-round cooldown; Winded is cooldown, not the Fatigued condition.",
+      "exportProfile": "combat-emblem-64",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "crocodilian-sprint"
+      },
+      "technicalStatus": "source candidate; live binding/native UI NOT QUALIFIED",
+      "visualReview": {
+        "status": "HumanReview: NOT_PERFORMED_NONBLOCKING",
+        "reviewedExportSha256": null,
+        "evidence": null
+      },
+      "reviewGroup": "crocodilian-combat",
+      "runtimeExport": {
+        "path": "assets/game/icons/crocodilian-sprint.png",
+        "installedPath": "assets/icons/crocodilian-sprint.png",
+        "cacheKey": "crocodilian-sprint"
+      }
+    },
+    {
+      "key": "crocodilian-death-roll",
+      "name": "Crocodilian Grab and Death Roll",
+      "family": "combat-emblem",
+      "sharingReason": "Passive bite grab and a successful later-turn maintain rider. A clamped bite rolls its held prey; this is not a separately selectable attack.",
+      "exportProfile": "combat-emblem-64",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "crocodilian-death-roll"
+      },
+      "technicalStatus": "source candidate; live binding/native UI NOT QUALIFIED",
+      "visualReview": {
+        "status": "HumanReview: NOT_PERFORMED_NONBLOCKING",
+        "reviewedExportSha256": null,
+        "evidence": null
+      },
+      "reviewGroup": "crocodilian-combat",
+      "runtimeExport": {
+        "path": "assets/game/icons/crocodilian-death-roll.png",
+        "installedPath": "assets/icons/crocodilian-death-roll.png",
+        "cacheKey": "crocodilian-death-roll"
+      }
+    },
+    {
+      "key": "dire-crocodile-swallowed",
+      "name": "Dire Crocodile Swallowed",
+      "family": "combat-emblem",
+      "sharingReason": "A victim inside a Dire Crocodile takes one creature-owned crush bundle each later round and uses native break-free checks. No attackable interior or cut-out subsystem exists.",
+      "exportProfile": "combat-emblem-64",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "dire-crocodile-swallowed"
+      },
+      "technicalStatus": "source candidate; live binding/native UI NOT QUALIFIED",
+      "visualReview": {
+        "status": "HumanReview: NOT_PERFORMED_NONBLOCKING",
+        "reviewedExportSha256": null,
+        "evidence": null
+      },
+      "reviewGroup": "crocodilian-combat",
+      "runtimeExport": {
+        "path": "assets/game/icons/dire-crocodile-swallowed.png",
+        "installedPath": "assets/icons/dire-crocodile-swallowed.png",
+        "cacheKey": "dire-crocodile-swallowed"
+      }
+    },
     {
       "key": "internal",
       "name": "Internal helpers",
@@ -4335,6 +4422,202 @@
     }
   ],
   "consumers": [
+    {
+      "symbol": "KMG.Summoning.Special.Crocodile.CombatTraits",
+      "guid": "a254feca264547ce9157b781c83de88c",
+      "type": "BlueprintBuff",
+      "name": "Crocodile CombatTraits",
+      "module": "ExpandedSummoning",
+      "publication": "Sprint 16 source candidate; Dire Crocodile withheld; runtime NOT QUALIFIED",
+      "surface": "summon combat-trait buff icon and tooltip",
+      "currentArt": "crocodilian-emblems",
+      "concept": "crocodilian-death-roll",
+      "disposition": "intentional-family-share",
+      "reason": "Original physical-action emblem; exact effect consumers intentionally share their action identity. Native UI supplies duration, availability and selection overlays.",
+      "technicalEvidence": "planning/EXPANDED-SUMMONING-SPRINT16-ICON-REVIEW.md"
+    },
+    {
+      "symbol": "KMG.Summoning.Special.DireCrocodile.CombatTraits",
+      "guid": "89704fe84b90420a82bfcb2565bdc14d",
+      "type": "BlueprintBuff",
+      "name": "DireCrocodile CombatTraits",
+      "module": "ExpandedSummoning",
+      "publication": "Sprint 16 source candidate; Dire Crocodile withheld; runtime NOT QUALIFIED",
+      "surface": "summon combat-trait buff icon and tooltip",
+      "currentArt": "crocodilian-emblems",
+      "concept": "crocodilian-death-roll",
+      "disposition": "intentional-family-share",
+      "reason": "Original physical-action emblem; exact effect consumers intentionally share their action identity. Native UI supplies duration, availability and selection overlays.",
+      "technicalEvidence": "planning/EXPANDED-SUMMONING-SPRINT16-ICON-REVIEW.md"
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Crocodile.Brain",
+      "guid": "517004c345ca4a9a9e5869047e201cc7",
+      "type": "BlueprintBrain",
+      "name": "Crocodile Brain",
+      "module": "ExpandedSummoning",
+      "publication": "Sprint 16 source candidate; Dire Crocodile withheld; runtime NOT QUALIFIED",
+      "surface": "none; internal AI carrier",
+      "currentArt": "internal",
+      "concept": "internal",
+      "disposition": "hidden-internal",
+      "reason": "No player-selectable or visible fact; exact native AI type configured only for the two crocodilians.",
+      "technicalEvidence": "planning/EXPANDED-SUMMONING-SPRINT16-ICON-REVIEW.md"
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Crocodile.Sprint",
+      "guid": "727024ee29ac445a826c3b0fd6fa6056",
+      "type": "BlueprintAbility",
+      "name": "Crocodile Sprint",
+      "module": "ExpandedSummoning",
+      "publication": "Sprint 16 source candidate; Dire Crocodile withheld; runtime NOT QUALIFIED",
+      "surface": "summon action bar and Sprint ability tooltip",
+      "currentArt": "crocodilian-emblems",
+      "concept": "crocodilian-sprint",
+      "disposition": "original-required",
+      "reason": "Original physical-action emblem; exact effect consumers intentionally share their action identity. Native UI supplies duration, availability and selection overlays.",
+      "technicalEvidence": "planning/EXPANDED-SUMMONING-SPRINT16-ICON-REVIEW.md"
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Crocodile.SprintAi",
+      "guid": "daae0a5672334a16a9a9b1e7590887d1",
+      "type": "BlueprintAiCastSpell",
+      "name": "Crocodile SprintAi",
+      "module": "ExpandedSummoning",
+      "publication": "Sprint 16 source candidate; Dire Crocodile withheld; runtime NOT QUALIFIED",
+      "surface": "none; internal AI carrier",
+      "currentArt": "internal",
+      "concept": "internal",
+      "disposition": "hidden-internal",
+      "reason": "No player-selectable or visible fact; exact native AI type configured only for the two crocodilians.",
+      "technicalEvidence": "planning/EXPANDED-SUMMONING-SPRINT16-ICON-REVIEW.md"
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Crocodile.SprintState",
+      "guid": "eb2e7d46a8bf44b480136f3504e2cac9",
+      "type": "BlueprintBuff",
+      "name": "Crocodile SprintState",
+      "module": "ExpandedSummoning",
+      "publication": "Sprint 16 source candidate; Dire Crocodile withheld; runtime NOT QUALIFIED",
+      "surface": "Sprinting buff icon and tooltip",
+      "currentArt": "crocodilian-emblems",
+      "concept": "crocodilian-sprint",
+      "disposition": "intentional-family-share",
+      "reason": "Original physical-action emblem; exact effect consumers intentionally share their action identity. Native UI supplies duration, availability and selection overlays.",
+      "technicalEvidence": "planning/EXPANDED-SUMMONING-SPRINT16-ICON-REVIEW.md"
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Crocodile.SprintCooldown",
+      "guid": "a5c452aea97d4937b07bac2c515bd6b0",
+      "type": "BlueprintBuff",
+      "name": "Crocodile SprintCooldown",
+      "module": "ExpandedSummoning",
+      "publication": "Sprint 16 source candidate; Dire Crocodile withheld; runtime NOT QUALIFIED",
+      "surface": "Winded cooldown buff icon and tooltip",
+      "currentArt": "crocodilian-emblems",
+      "concept": "crocodilian-sprint",
+      "disposition": "intentional-family-share",
+      "reason": "Original physical-action emblem; exact effect consumers intentionally share their action identity. Native UI supplies duration, availability and selection overlays.",
+      "technicalEvidence": "planning/EXPANDED-SUMMONING-SPRINT16-ICON-REVIEW.md"
+    },
+    {
+      "symbol": "KMG.Summoning.Special.DireCrocodile.Brain",
+      "guid": "4dbbf03adb6548c4b846bd65f1bb1a0b",
+      "type": "BlueprintBrain",
+      "name": "DireCrocodile Brain",
+      "module": "ExpandedSummoning",
+      "publication": "Sprint 16 source candidate; Dire Crocodile withheld; runtime NOT QUALIFIED",
+      "surface": "none; internal AI carrier",
+      "currentArt": "internal",
+      "concept": "internal",
+      "disposition": "hidden-internal",
+      "reason": "No player-selectable or visible fact; exact native AI type configured only for the two crocodilians.",
+      "technicalEvidence": "planning/EXPANDED-SUMMONING-SPRINT16-ICON-REVIEW.md"
+    },
+    {
+      "symbol": "KMG.Summoning.Special.DireCrocodile.Sprint",
+      "guid": "73f3223a33ee435cbaa960638a912175",
+      "type": "BlueprintAbility",
+      "name": "DireCrocodile Sprint",
+      "module": "ExpandedSummoning",
+      "publication": "Sprint 16 source candidate; Dire Crocodile withheld; runtime NOT QUALIFIED",
+      "surface": "summon action bar and Sprint ability tooltip",
+      "currentArt": "crocodilian-emblems",
+      "concept": "crocodilian-sprint",
+      "disposition": "intentional-family-share",
+      "reason": "Original physical-action emblem; exact effect consumers intentionally share their action identity. Native UI supplies duration, availability and selection overlays.",
+      "technicalEvidence": "planning/EXPANDED-SUMMONING-SPRINT16-ICON-REVIEW.md"
+    },
+    {
+      "symbol": "KMG.Summoning.Special.DireCrocodile.SprintAi",
+      "guid": "57309a0dd2fa4a77982dd142fa830541",
+      "type": "BlueprintAiCastSpell",
+      "name": "DireCrocodile SprintAi",
+      "module": "ExpandedSummoning",
+      "publication": "Sprint 16 source candidate; Dire Crocodile withheld; runtime NOT QUALIFIED",
+      "surface": "none; internal AI carrier",
+      "currentArt": "internal",
+      "concept": "internal",
+      "disposition": "hidden-internal",
+      "reason": "No player-selectable or visible fact; exact native AI type configured only for the two crocodilians.",
+      "technicalEvidence": "planning/EXPANDED-SUMMONING-SPRINT16-ICON-REVIEW.md"
+    },
+    {
+      "symbol": "KMG.Summoning.Special.DireCrocodile.SprintState",
+      "guid": "0cfec46ae21142f780a99930c90141e3",
+      "type": "BlueprintBuff",
+      "name": "DireCrocodile SprintState",
+      "module": "ExpandedSummoning",
+      "publication": "Sprint 16 source candidate; Dire Crocodile withheld; runtime NOT QUALIFIED",
+      "surface": "Sprinting buff icon and tooltip",
+      "currentArt": "crocodilian-emblems",
+      "concept": "crocodilian-sprint",
+      "disposition": "intentional-family-share",
+      "reason": "Original physical-action emblem; exact effect consumers intentionally share their action identity. Native UI supplies duration, availability and selection overlays.",
+      "technicalEvidence": "planning/EXPANDED-SUMMONING-SPRINT16-ICON-REVIEW.md"
+    },
+    {
+      "symbol": "KMG.Summoning.Special.DireCrocodile.SprintCooldown",
+      "guid": "16c9015d2b3e4bbe99f8908da83db9ad",
+      "type": "BlueprintBuff",
+      "name": "DireCrocodile SprintCooldown",
+      "module": "ExpandedSummoning",
+      "publication": "Sprint 16 source candidate; Dire Crocodile withheld; runtime NOT QUALIFIED",
+      "surface": "Winded cooldown buff icon and tooltip",
+      "currentArt": "crocodilian-emblems",
+      "concept": "crocodilian-sprint",
+      "disposition": "intentional-family-share",
+      "reason": "Original physical-action emblem; exact effect consumers intentionally share their action identity. Native UI supplies duration, availability and selection overlays.",
+      "technicalEvidence": "planning/EXPANDED-SUMMONING-SPRINT16-ICON-REVIEW.md"
+    },
+    {
+      "symbol": "KMG.Summoning.Special.DireCrocodile.Swallowed",
+      "guid": "327f8a0108ae4e7eb50ec7793e67f92c",
+      "type": "BlueprintBuff",
+      "name": "DireCrocodile Swallowed",
+      "module": "ExpandedSummoning",
+      "publication": "Sprint 16 source candidate; Dire Crocodile withheld; runtime NOT QUALIFIED",
+      "surface": "victim swallowed buff icon and tooltip",
+      "currentArt": "crocodilian-emblems",
+      "concept": "dire-crocodile-swallowed",
+      "disposition": "original-required",
+      "reason": "Original physical-action emblem; exact effect consumers intentionally share their action identity. Native UI supplies duration, availability and selection overlays.",
+      "technicalEvidence": "planning/EXPANDED-SUMMONING-SPRINT16-ICON-REVIEW.md"
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Crocodilian.SprintNotEngaged",
+      "guid": "5c4c807c1f274ef3b82ff16f9f114cf8",
+      "type": "IsEngagedConsideration",
+      "name": "Crocodilian SprintNotEngaged",
+      "module": "ExpandedSummoning",
+      "publication": "Sprint 16 source candidate; Dire Crocodile withheld; runtime NOT QUALIFIED",
+      "surface": "none; internal AI carrier",
+      "currentArt": "internal",
+      "concept": "internal",
+      "disposition": "hidden-internal",
+      "reason": "No player-selectable or visible fact; exact native AI type configured only for the two crocodilians.",
+      "technicalEvidence": "planning/EXPANDED-SUMMONING-SPRINT16-ICON-REVIEW.md"
+    },
     {
       "symbol": "KMG.ElementalRaces.Diagnostics.ProbeRace",
       "guid": "57005fca40ab4775ae2fea5613214054",
@@ -12725,6 +13008,9 @@
     "stage": "after existing registration/publication, immediately before BlueprintInitializationResult in InitializeCore",
     "paintedConceptCount": 100,
     "paintedConsumerCount": 160,
+    "additionalEmblemConcepts": ["crocodilian-sprint", "crocodilian-death-roll", "dire-crocodile-swallowed"],
+    "additionalEmblemConsumerCount": 9,
+    "crocodilianStatus": "Sprint 16 source candidate; no live icon/native UI qualification or owner visual approval",
     "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
     "technicalStatus": "qualified-paired-census-and-working-save-smoke",
     "magicCircleStatus": "follow-up candidate; native verification pending; archived PR19 evidence applies only to its exact prior artifact"
