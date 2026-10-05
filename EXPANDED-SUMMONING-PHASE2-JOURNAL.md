@@ -1,5 +1,28 @@
 # Expanded Summoning Phase 2 journal
 
+## October 5 hidden-candidate fixture completion (NOT QUALIFIED)
+
+The candidate scenario pack now includes eighteen native RTWP/turn-based
+command cells, deliberate native cooldown-command rejection, event-time weighted
+jaw/tail surface measurements, real later-round hold/swallow cells, native
+character-sheet buff rows and action-row widgets, active/cooldown lifecycle
+boundaries, exact view-resource reclamation, post-swap fallback/recovery with a
+native Monitor Lizard control, fourteen Crocodile player paths and six private
+Dire routes. These cases have NOT RUN. The action-row probe establishes native
+widget rendering, not ordinary action-menu navigation; transition checks call
+the production safeguard on explicit disposable targets, not the campaign party.
+
+The existing crowd request now accepts only the two additional crocodilian keys.
+Five round trips/seven rejection cases PASS. The restoration wrapper can route
+per-scenario parameters within one snapshot/deployment; 63 pure orchestration
+assertions PASS, including isolation and fail-closed map cases. Every request
+still passes the unchanged scenario-specific guard. Focused 216/216 (2018
+registered), active static validation and incremental exact-reference Release
+compile PASS. No new runtime, save write, publication or accepted visual review.
+Next: freeze the containing source candidate, run the complete pre-launch
+pipeline once and execute the guarded candidate batch. Retain the 136-file
+0.0.117 live baseline and restore the exact transaction snapshot.
+
 ## October 5 crocodilian visible-icon checkpoint (NOT QUALIFIED)
 
 Closed the null-icon consumer inventory with three original combat-emblem-64
