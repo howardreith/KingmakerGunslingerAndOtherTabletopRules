@@ -516,3 +516,7 @@ both castes carry in place of the Skill Focus that was standing in for it; and
 creature that does not ask for its own unit type keeps its donor's and all
 three of these borrow the Giant Spider.
 The ledger now contains 2772 stable identifiers: 2770 active and 2 reserved.
+
+Sprint 15 and the withheld Sprint 16 registration extend it to
+2835 stable identifiers: 2833 active and 2 reserved. Dire Crocodile's six
+placements are allocated but unpublished; registration is not qualification.

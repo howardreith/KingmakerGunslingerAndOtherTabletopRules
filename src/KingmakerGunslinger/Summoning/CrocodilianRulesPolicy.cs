@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace KingmakerGunslinger.Summoning
@@ -149,6 +150,16 @@ namespace KingmakerGunslinger.Summoning
         internal const int SprintBonusFeet = 20;
         internal const int SprintRounds = 1;
         internal const int SprintCooldownRounds = 10;
+        internal const string MaintainAdaptation =
+            "SWALLOW_ELIGIBLE_TARGET_ELSE_DEATH_ROLL";
+
+        internal static bool TryClaimMaintainRound(int roundsHeld,
+            ref int lastResolvedRound)
+        {
+            if (roundsHeld <= 0 || roundsHeld <= lastResolvedRound) return false;
+            lastResolvedRound = roundsHeld;
+            return true;
+        }
 
         private static readonly CrocodilianRulesProfile[] Values = {
             // Crocodile: bite 1d8+4, death roll 1d8+6 plus trip. No swallow.
@@ -260,6 +271,27 @@ namespace KingmakerGunslinger.Summoning
         internal static int DeathRollExtraHalf(int liveStrengthModifier)
         {
             return liveStrengthModifier > 0 ? liveStrengthModifier / 2 : 0;
+        }
+
+        /// <summary>
+        /// Locate the exact base bite captured when the native weapon-stats
+        /// rule constructed it. Later subscribers may insert or reorder
+        /// supplemental damage; neither its position nor its physical type
+        /// alone identifies the bite. Missing or duplicated identity fails
+        /// closed instead of applying Strength to a different damage chunk.
+        /// </summary>
+        internal static int BaseBiteIndex<T>(IList<T> descriptions, T baseBite)
+            where T : class
+        {
+            if (descriptions == null || baseBite == null) return -1;
+            int found = -1;
+            for (int index = 0; index < descriptions.Count; index++)
+            {
+                if (!ReferenceEquals(descriptions[index], baseBite)) continue;
+                if (found >= 0) return -1;
+                found = index;
+            }
+            return found;
         }
 
         /// <summary>

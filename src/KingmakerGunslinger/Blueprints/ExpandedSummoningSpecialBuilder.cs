@@ -2023,21 +2023,13 @@ namespace KingmakerGunslinger.Blueprints
         }
 
         /// <summary>
-        /// Sprint 8: the Cheetah's sprint. A swift extraordinary ability, one
-        /// use per summoning, that applies a one-round state carrying an
-        /// enhancement bonus to speed (the game's own speed cap still applies);
-        /// a cast action on the cheetah's brain spends it once a fight starts.
-        /// </summary>
-        /// <summary>
         /// A crocodilian's own swallowed state.
         ///
-        /// <para>The components are the native swallowed buff's, deep-cloned,
-        /// so a victim's break-free attempts, inability to act and every other
-        /// engine behaviour are exactly what the game already does - this is
-        /// not a reimplementation of being swallowed. What changes is that the
-        /// state belongs to this creature, so its per-round crushing damage is
-        /// its own rather than the Purple Worm's, and the condition a player
-        /// reads names the creature that actually ate them.</para>
+        /// <para>Only the two audited native stat penalties are deep-cloned.
+        /// The damage graph is constructed explicitly: no activation or
+        /// deactivation damage, one creature-owned crush per later round.
+        /// Native UnitPartSwallowed still owns inability to act and escape.
+        /// Runtime graph, cadence and cleanup proof remains a separate gate.</para>
         ///
         /// <para>Interior armour class and interior hit points are not set
         /// here because the engine has nowhere to put them. The bounded audit
@@ -2061,34 +2053,44 @@ namespace KingmakerGunslinger.Blueprints
             swallowed.name = InternalName(DireCrocodileSwallowedSymbol);
             swallowed.Stacking = StackingType.Replace;
             swallowed.IsClassFeature = false;
-            BlueprintComponent[] cloned = (nativeSwallowed.ComponentsArray ??
-                Array.Empty<BlueprintComponent>()).Where(value => value != null)
+            // The recorded native graph has one action component (empty
+            // activation/deactivation, 4d8+12 crush on NewRound), plus -2 CMB
+            // and -4 Dexterity. Native break-free lives in UnitPartSwallowed,
+            // not in that damage graph. Keep the two audited penalties and
+            // construct our one damage action explicitly. No donor damage
+            // action, nested or otherwise, can survive this construction.
+            BlueprintComponent[] native = nativeSwallowed.ComponentsArray ??
+                Array.Empty<BlueprintComponent>();
+            AddStatBonus[] penalties = native.OfType<AddStatBonus>().ToArray();
+            if (native.Length != 3 ||
+                    native.OfType<AddFactContextActions>().Count() != 1 ||
+                    penalties.Length != 2 ||
+                    !penalties.Any(value => value.Stat == StatType.AdditionalCMB &&
+                        value.Value == -2) ||
+                    !penalties.Any(value => value.Stat == StatType.Dexterity &&
+                        value.Value == -4) ||
+                    penalties.Any(value => value.Descriptor !=
+                        ModifierDescriptor.UntypedStackable || value.ScaleByBasicAttackBonus))
+                throw new InvalidOperationException(
+                    "The native swallowed-state non-damage contract changed; " +
+                    "re-audit it before constructing Dire Crocodile swallow.");
+            var crush = ScriptableObject.CreateInstance<ContextActionDealDamage>();
+            crush.DamageType = new DamageTypeDescription {
+                Type = DamageType.Physical,
+                Physical = new DamageTypeDescription.PhysicalData {
+                    Form = PhysicalDamageForm.Bludgeoning } };
+            crush.Value = new ContextDiceValue {
+                DiceType = ParseDieSides(rules.SwallowDieSides),
+                DiceCountValue = Simple(rules.SwallowDiceCount),
+                BonusValue = Simple(rules.SwallowBonus) };
+            crush.IgnoreCritical = true;
+            var cadence = ScriptableObject.CreateInstance<AddFactContextActions>();
+            cadence.Activated = new ActionList { Actions = Array.Empty<GameAction>() };
+            cadence.Deactivated = new ActionList { Actions = Array.Empty<GameAction>() };
+            cadence.NewRound = new ActionList { Actions = new GameAction[] { crush } };
+            swallowed.ComponentsArray = penalties
                 .Select(ExpandedSummoningAbilityBuilder.DeepCloneComponent)
-                .ToArray();
-            // The per-round crush is this creature's, not the donor's. Every
-            // damage action the cloned state carries is retargeted; anything
-            // else the native state does is left exactly as it is.
-            foreach (ContextActionDealDamage action in cloned
-                .OfType<AddFactContextActions>()
-                .SelectMany(value => new[] { value.Activated, value.Deactivated,
-                    value.NewRound }
-                    .Where(list => list != null && list.Actions != null)
-                    .SelectMany(list => list.Actions))
-                .OfType<ContextActionDealDamage>())
-            {
-                action.DamageType = new DamageTypeDescription {
-                    Type = DamageType.Physical,
-                    Physical = new DamageTypeDescription.PhysicalData {
-                        Form = PhysicalDamageForm.Bludgeoning } };
-                action.Duration = new ContextDurationValue {
-                    Rate = DurationRate.Rounds, DiceType = DiceType.Zero,
-                    DiceCountValue = Simple(0), BonusValue = Simple(0) };
-                action.Value = new ContextDiceValue {
-                    DiceType = ParseDieSides(rules.SwallowDieSides),
-                    DiceCountValue = Simple(rules.SwallowDiceCount),
-                    BonusValue = Simple(rules.SwallowBonus) };
-            }
-            swallowed.ComponentsArray = cloned;
+                .Concat(new BlueprintComponent[] { cadence }).ToArray();
             BlueprintUnitFactAccess.Resolve().Configure(swallowed,
                 LocalizationService.Create(
                     "KMG.ExpandedSummoning.DireCrocodile.Swallowed.Name",

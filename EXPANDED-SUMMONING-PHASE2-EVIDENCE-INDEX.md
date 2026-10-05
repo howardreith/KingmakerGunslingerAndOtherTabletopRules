@@ -1,5 +1,22 @@
 # Expanded Summoning Phase 2 evidence index
 
+## Current checkpoint, October 5: Sprint 16 NOT QUALIFIED
+
+Takeover base: `a762ece553ab9b539a53a782102a29e5c70d44eb`.
+The source-only hardening checkpoint has no new runtime evidence,
+candidate/package qualification hash or restoration transaction ID.
+Repository wrapper PASS; focused Sprint 16 tests 12/12 PASS (2011 registered);
+incremental Release compile PASS. Full candidate qualification is deferred.
+The exact engineering audit and pre-existing empty-validator repair are in
+`planning/EXPANDED-SUMMONING-SPRINT16-PRE-CANDIDATE-REVIEW.md`.
+
+The October 2 native donor graph is supporting offline audit evidence only,
+not the fresh live census required for the interior limitation decision.
+Live baseline rechecked October 5: 136 files, version 0.0.117, hash
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+No runtime transaction was opened. Historical evidence below retains its own
+source, candidate and publication counts.
+
 Structured runtime artifacts are kept under
 `C:/Dev/KingmakerGunslingerLab/runtime-evidence/` and are not committed.
 The guarded wrapper restores the installed mod tree after each run. The

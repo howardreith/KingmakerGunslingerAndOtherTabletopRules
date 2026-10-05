@@ -122,6 +122,13 @@ VALIDATORS = {
 }
 
 
+def require_validator_source(validator: Path) -> None:
+    # An empty Python file exits zero without validating anything. This
+    # occurred in the 0.0.141 chain; reject it before launching the child.
+    if not validator.read_text(encoding="utf-8").strip():
+        raise RuntimeError(f"Repository validator is empty: {validator.name}")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[1])
@@ -135,6 +142,7 @@ def main() -> int:
         if validator_name is None:
             raise RuntimeError(f"Unsupported repository version: {version!r}")
         validator = Path(__file__).resolve().parent / validator_name
+        require_validator_source(validator)
         command = [sys.executable, str(validator)]
         if version in {"0.0.100", "0.0.101", "0.0.102", "0.0.103",
                 "0.0.104", "0.0.105", "0.0.106", "0.0.107", "0.0.108",

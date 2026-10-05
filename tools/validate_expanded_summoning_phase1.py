@@ -19,6 +19,7 @@ live in the Phase 1 state file.
 """
 from __future__ import annotations
 import json
+import re
 import sys
 from pathlib import Path
 sys.dont_write_bytecode = True
@@ -393,6 +394,10 @@ def validate(root: Path) -> None:
         # placements as well as the shared poison and venom, because the two
         # castes are one stat block and one poison graph.
         ".FireBeetle" in symbol or ".GiantAnt" in symbol or
+        ".GiantStagBeetle" in symbol or ".DireCrocodile" in symbol or
+        ".Special.Crocodile." in symbol or
+        symbol == "KMG.Summoning.Natural.Bite3d6" or
+        symbol == "KMG.Summoning.Natural.Tail4d8" or
         symbol == "KMG.Summoning.Natural.GoblinDog.Traits" or
         symbol == "KMG.Summoning.Natural.GoblinDog.AllergicReaction" or
         symbol == "KMG.Summoning.Natural.StirgeTouch" or
@@ -407,9 +412,9 @@ def validate(root: Path) -> None:
     expanded_summoning_manifest.validate(manifest, plan)
 
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningCatalog.cs",
-        "Creatures.Length != 92",
-        "ValidateFamily(SummonFamily.Monster, 84, 481)",
-        "ValidateFamily(SummonFamily.NaturesAlly, 81, 471)",
+        "Creatures.Length != 95",
+        "ValidateFamily(SummonFamily.Monster, 86, 490)",
+        "ValidateFamily(SummonFamily.NaturesAlly, 84, 486)",
         'C("pony","Pony",1,true,1)', 'C("horse","Horse",2,true,2)',
         'C("owlbear","Owlbear",null,false,4)', 'C("cyclops","Cyclops",null,false,5)',
         'C("shambling-mound","Shambling Mound",null,false,6)',
@@ -420,12 +425,12 @@ def validate(root: Path) -> None:
         'C("salt-mephit","Salt Mephit",4,false,4)', 'C("steam-mephit","Steam Mephit",4,false,4)',
         'C("tiger","Tiger",null,false,4,"Leopard")')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs",
-        "RegisteredLogicalPlacementCount = 952;",
-        "SuppressedLogicalPlacementCount = 48;")
+        "RegisteredLogicalPlacementCount = 976;",
+        "SuppressedLogicalPlacementCount = 6;")
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningIdentityCatalog.cs",
-        "UnitCount = 92;",
-        "LogicalAbilityCount = 952;",
-        "TemplatedPlacementCount = 262;",
+        "UnitCount = 95;",
+        "LogicalAbilityCount = 976;",
+        "TemplatedPlacementCount = 271;",
         "NativeExpandedOptionIdentityCount = %d;" % SPRINT3["nativeExpansionWrappers"])
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonNativeExpansionCatalog.cs",
         "Values.Length != %d" % SPRINT3["nativeExpansionWrappers"],
@@ -433,10 +438,10 @@ def validate(root: Path) -> None:
         '"256739c1e61e3f64eaf71734d271f4be","590cd3d5e76fdc649a5f97bc984cd3c4",true',
         '"9bd8cb6180842f44e9302c58e47b91f0","590cd3d5e76fdc649a5f97bc984cd3c4",true')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningNaturalProfiles.cs",
-        "Values.Length != 44",
+        "Values.Length != 47",
         '"Animal", "Vermin", "MagicalBeast", "Humanoid", "Plant"')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonIconCatalog.cs",
-        "Values.Length != %d" % (SPRINT3["projectIcons"] + 13))
+        "Values.Length != %d" % (SPRINT3["projectIcons"] + 16))
     # Correction order: the chartered mephit roles and the ally-safe cloud stay in the code.
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningSpecialProfiles.cs",
         '"Blur", "WindWall"', '"MagicMissile", "ChillMetal"', '"Pyrotechnics", "MagmaForm"',
@@ -494,7 +499,7 @@ def validate(root: Path) -> None:
         # Correction order: attack identity, target identity, the multi-link hold, the later-turn swallow
         "class SummonLimbs", "class SummonGrappleDamage", "class SummonMultiHoldComponent",
         "class SummonHeldComponent", "class ExpandedSummoningRakeSequencePatch",
-        "IsHeldSinceRoundStart", "ShouldSwallowOnMaintain", "IsGrabSizeAllowed", "UnitHelper.TryBreakFree")
+        "IsHeldSinceRoundStart", "CrocodilianRulesPolicy.SelectMaintainRider", "IsGrabSizeAllowed", "UnitHelper.TryBreakFree")
     require_tokens(root / "src/KingmakerGunslinger/Blueprints/ExpandedSummoningSpecialBuilder.cs",
         "ConfigureGrabber(library, bySymbol, LeopardUnitSymbol", "ConfigureGrabber(library, bySymbol, DireTigerUnitSymbol",
         "ExpandedSummoningSpecialProfiles.LionVisualTint", "GrappleMultiHoldSymbol", "GrappleMultiHeldSymbol",
@@ -512,9 +517,9 @@ def validate(root: Path) -> None:
             raise AssertionError("No Lightning Mephit may enter the catalogs: " + path.name)
     runtime_icons = json.loads((root / "assets/game/icons/expanded-summoning/icon-manifest.json")
                                .read_text(encoding="utf-8-sig"))
-    # Ten Phase 2 concepts through Sprint 13, and three Sprint 14 insects.
-    if runtime_icons["count"] != SPRINT3["projectIcons"] + 13 or \
-            len(runtime_icons["icons"]) != SPRINT3["projectIcons"] + 13 or \
+    # Sixteen Phase 2 concepts through the withheld Sprint 16 registration.
+    if runtime_icons["count"] != SPRINT3["projectIcons"] + 16 or \
+            len(runtime_icons["icons"]) != SPRINT3["projectIcons"] + 16 or \
             not {"pony", "horse", "owlbear", "cyclops", "shambling-mound", "giant-flytrap",
                  "purple-worm", "dust-mephit", "ice-mephit", "magma-mephit", "ooze-mephit",
                  "salt-mephit", "steam-mephit", "tiger", "giant-wasp", "stirge",
@@ -541,7 +546,7 @@ def validate(root: Path) -> None:
     # Keep the accepted Phase 1 metadata at 251, but validate the current
     # package count with the Phase 2 bird, vermin, quadruped and icon
     # additions.
-    package_count = SPRINT3["packageFileCountWithSoundBank"] + 47
+    package_count = SPRINT3["packageFileCountWithSoundBank"] + 54
     for script in ("Build-Local.ps1", "package.ps1"):
         require_tokens(root / "scripts" / script,
             "{ %d } else { %d }" % (package_count, package_count - 2),
@@ -553,8 +558,14 @@ def validate(root: Path) -> None:
             "@('dire-rat','hyena','goblin-dog')",
             "assets\\sprint13-creatures",
             "@('wolverine','shadow-mastiff','poisonous-frog')",
-            "assets\\sprint14-insects",
-            "@('fire-beetle','giant-ant-worker','giant-ant-soldier')")
+            "assets\\sprint14-insects")
+        insect_assets = {"fire-beetle", "giant-ant-worker", "giant-ant-soldier",
+                         "giant-ant-drone", "giant-stag-beetle"}
+        arrays = re.findall(r"@\(([^)]*)\)",
+                            (root / "scripts" / script).read_text(encoding="utf-8"))
+        if not any(insect_assets <= set(re.findall(r"'([^']+)'", array))
+                   for array in arrays):
+            raise AssertionError(script + " must package all five insect assets")
 
     state = json.loads((root / "validation/static-validation.json").read_text(
         encoding="utf-8"))[STATIC_KEY]

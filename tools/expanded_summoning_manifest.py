@@ -24,6 +24,12 @@ SUPPRESSED = re.compile(
 # line. A creature that is withheld never appears here: what it is waiting for
 # is decided by the visibility catalog, not by this table.
 QUALIFICATION_NOTES = {
+    "crocodile": "Existing fourteen roots and identity retained; Sprint 16 changed mechanics and original visual NOT QUALIFIED",
+    "fire-beetle": "Published; Sprint 14 qualified; owner visual review pending",
+    "giant-ant-worker": "Published; Sprint 14 qualified under PASSIVE_CREATURE_SENSES_UNMODELED; owner visual review pending",
+    "giant-ant-soldier": "Published; Sprint 14 qualified under PASSIVE_CREATURE_SENSES_UNMODELED; owner visual review pending",
+    "giant-ant-drone": "Published; Sprint 15 qualified under PASSIVE_CREATURE_SENSES_UNMODELED; owner visual review pending",
+    "giant-stag-beetle": "Published; Sprint 15 qualified; owner visual review pending",
     "giant-wasp": "Published; Sprint 10 Wasp mechanics, view, menu and player path technical PASS; owner visual review pending",
     "stirge": "Published; Stirge attach, drain, visual contact, icon, player path and live menu technical PASS; owner visual review pending",
     "aurochs": "Published; Sprint 11 mechanics, original visual, quantity and lifecycle technical PASS; owner visual review pending",
@@ -197,8 +203,8 @@ def parsed_creatures():
             "ally": None if ally == "null" else int(ally),
             "visual": visual or name,
         })
-    if len(values) != 92:
-        raise SystemExit(f"Expected 92 parsed creatures; observed {len(values)}")
+    if len(values) != 95:
+        raise SystemExit(f"Expected 95 parsed creatures; observed {len(values)}")
     return values
 
 
@@ -423,8 +429,27 @@ def planned():
         ("KMG.Summoning.Natural.GiantAnt.RacialSkills", "BlueprintFeature"),
         ("KMG.Summoning.Natural.FireBeetle.UnitType", "BlueprintUnitType"),
         ("KMG.Summoning.Natural.GiantAnt.UnitType", "BlueprintUnitType"),
+        # Existing Sprint 15-16 identities; never allocate replacements.
+        ("KMG.Summoning.Special.GiantAntDrone.Traits", "BlueprintBuff"),
+        ("KMG.Summoning.Special.GiantStagBeetle.Trample", "BlueprintAbility"),
+        ("KMG.Summoning.Natural.GiantStagBeetle.UnitType", "BlueprintUnitType"),
+        ("KMG.Summoning.Natural.Bite3d6", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Natural.Tail4d8", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Special.Crocodile.CombatTraits", "BlueprintBuff"),
+        ("KMG.Summoning.Special.DireCrocodile.CombatTraits", "BlueprintBuff"),
+        ("KMG.Summoning.Special.Crocodile.Brain", "BlueprintBrain"),
+        ("KMG.Summoning.Special.Crocodile.Sprint", "BlueprintAbility"),
+        ("KMG.Summoning.Special.Crocodile.SprintAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.Special.Crocodile.SprintState", "BlueprintBuff"),
+        ("KMG.Summoning.Special.Crocodile.SprintCooldown", "BlueprintBuff"),
+        ("KMG.Summoning.Special.DireCrocodile.Brain", "BlueprintBrain"),
+        ("KMG.Summoning.Special.DireCrocodile.Sprint", "BlueprintAbility"),
+        ("KMG.Summoning.Special.DireCrocodile.SprintAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.Special.DireCrocodile.SprintState", "BlueprintBuff"),
+        ("KMG.Summoning.Special.DireCrocodile.SprintCooldown", "BlueprintBuff"),
+        ("KMG.Summoning.Special.DireCrocodile.Swallowed", "BlueprintBuff"),
     ))
-    if len(rows) != 1784 or len({symbol for symbol, _ in rows}) != 1784:
+    if len(rows) != 1847 or len({symbol for symbol, _ in rows}) != 1847:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 
@@ -437,14 +462,14 @@ def generated_roster(manifest):
         for key, guid, dedicated in DONOR.findall(DONORS.read_text(encoding="utf-8"))
     }
     creatures = parsed_creatures()
-    if len(donors) != 92 or set(donors) != {value["key"] for value in creatures}:
+    if len(donors) != len(creatures) or set(donors) != {value["key"] for value in creatures}:
         raise SystemExit("Roster generation requires one exact donor per creature")
     lines = [
         "# Expanded Summoning roster and identity ledger",
         "",
         "Generated deterministically by `tools/expanded_summoning_manifest.py`; do not edit by hand.",
         "",
-        "Registered totals: 84 Summon Monster entries / 481 placements; 81 Summon Nature's Ally entries / 471 placements; 92 unique units; 952 registered placements of which 904 are published and 48 are withheld. The withheld 48 are the three Sprint 14 insects - Fire Beetle, Giant Ant (Worker) and Giant Ant (Soldier) - registered ahead of their own qualification so their identities are allocated once and never move, exactly as the Shadow Mastiff was in Sprint 13. Sprints 9 to 13 are qualified and published and nothing of theirs is withheld. The Frost Giant remains a retained native unit under Summon Monster VIII-IX and Summon Nature's Ally VII-IX wrappers.",
+        "Registered totals: 86 Summon Monster entries / 490 placements; 84 Summon Nature's Ally entries / 486 placements; 95 unique units; 976 registered placements of which 970 are published and 6 are withheld. Dire Crocodile's six placements remain withheld pending Sprint 16 qualification. Sprints 9-15 are qualified and published. The Frost Giant remains a retained native unit under Summon Monster VIII-IX and Summon Nature's Ally VII-IX wrappers.",
         "",
         "Phase 1 baseline qualification source: `5205805eab3fe0115d6888c53bce73c80474d1b7`. Structural run `20260812T1327062696968Z-bd09acfba08942df8f7c42e5c70252f4`; native cast run `20260812T1330147883834Z-ec8896f1d65b43e0913a6bea7cba4405`; visual run `20260812T1151394827201Z-add45a04f5de44c1a39e3251f7ff0778`; enabled/disabled persistence runs `20260812T1155220523013Z-6d2a18f9b33344d08d3127ffce7e5cb6` through `20260812T1208449380302Z-65c9b7056d97483fb48a4a9b76c22ea6`; all eight required compatibility transactions passed and restored their profiles. Phase 2 Sprint 10 and 11 mechanics, visual, quantity and lifecycle evidence is indexed in `EXPANDED-SUMMONING-PHASE2-EVIDENCE-INDEX.md`.",
         "",

@@ -1,5 +1,37 @@
 # Expanded Summoning Phase 2 journal
 
+## October 5 takeover checkpoint: Sprint 16 NOT QUALIFIED
+
+Continued the clean pushed `a762ece553ab9b539a53a782102a29e5c70d44eb`
+checkpoint on the existing Phase 2B branch; PR #26 remains draft, with the
+Phase 2A stacked base unchanged. No game launch or deployment occurred.
+The current source captures Death Roll's actual base bite, preserves weapon
+attribution, rejects repeated maintain rounds before another check, and builds
+an explicit Dire swallowed-round action with audited native stat penalties.
+The bounded held-target choice audit activates
+`OwnerAcceptedAdaptation: SWALLOW_ELIGIBLE_TARGET_ELSE_DEATH_ROLL`.
+The swallow-interior decision is still conditional on a fresh live census.
+
+A pre-existing qualification-infrastructure defect was found:
+`6b83eecd` emptied the active 0.0.141 validator. Restored its inherited checks,
+reconciled stale Sprint 15-16 counts/roster/icon-ledger hash, and added three
+dispatcher regression fixtures. Existing identities and art are unchanged;
+accepted Sprint 14-15 runtime records are not reopened or rewritten.
+
+Checks: repository wrapper PASS (including restored validator, icon/protection,
+three new dispatcher fixtures and 50 orchestration assertions); focused
+Sprint 16 domain checks 12/12 PASS, 2011 registered; incremental Release
+compilation PASS. Per mission checkpoint cadence, complete suite, clean exact
+Release, strict package and runtime qualification are deferred to the stable
+hidden candidate. No candidate/package/restoration ID is claimed.
+
+Machine recheck: no Kingmaker process or compatibility lock; live tree still
+136 files at 0.0.117 and
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+Next: Sprint speed/AI and skill/Run work, live census/graph/bind instrumentation,
+original models and candidate scenarios. Surface remains 976 registered /
+970 published / 6 withheld + 29 wrappers = 999 visible choices.
+
 ## Sprint 15 closeout, 2026-10-03: COMPLETE AND PUBLISHED
 
 The Giant Ant (Drone) and the Giant Stag Beetle are published. The visible

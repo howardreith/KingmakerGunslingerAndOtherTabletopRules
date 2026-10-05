@@ -15,6 +15,40 @@ namespace KingmakerGunslinger.DomainTests
     /// </summary>
     internal static class ExpandedSummoningCrocodilianRulesTests
     {
+        internal static void DeathRollAdjustsOnlyTheCapturedBaseBite()
+        {
+            // A supplemental physical chunk is just as unsuitable as an
+            // elemental rider. Reordering either ahead of the captured bite
+            // must not change which chunk receives the extra half.
+            var bite = new DamageChunk { Bonus = 4 };
+            var fire = new DamageChunk { Bonus = 2 };
+            var supplementalPhysical = new DamageChunk { Bonus = 4 };
+            foreach (DamageChunk[] chunks in new[] {
+                new[] { bite, fire, supplementalPhysical },
+                new[] { fire, bite, supplementalPhysical },
+                new[] { supplementalPhysical, fire, bite } })
+            {
+                bite.Bonus = 4;
+                int index = CrocodilianRulesPolicy.BaseBiteIndex(chunks, bite);
+                if (index < 0 || !ReferenceEquals(chunks[index], bite))
+                    throw new InvalidOperationException("The base bite lost its identity.");
+                chunks[index].Bonus += CrocodilianRulesPolicy.DeathRollExtraHalf(4);
+                if (bite.Bonus != 6 || fire.Bonus != 2 ||
+                        supplementalPhysical.Bonus != 4)
+                    throw new InvalidOperationException("Strength reached supplemental damage.");
+            }
+            foreach (DamageChunk[] invalid in new[] {
+                new[] { fire, supplementalPhysical },
+                new[] { bite, fire, bite }, new DamageChunk[0] })
+                if (CrocodilianRulesPolicy.BaseBiteIndex(invalid, bite) != -1)
+                    throw new InvalidOperationException("Missing/duplicated bite must fail closed.");
+            if (CrocodilianRulesPolicy.BaseBiteIndex<DamageChunk>(null, bite) != -1 ||
+                    CrocodilianRulesPolicy.BaseBiteIndex(new[] { bite }, null) != -1)
+                throw new InvalidOperationException("Absent capture must fail closed.");
+        }
+
+        private sealed class DamageChunk { internal int Bonus; }
+
         /// <summary>
         /// Death roll damage is derived, and is not the ordinary bite.
         ///
@@ -273,6 +307,16 @@ namespace KingmakerGunslinger.DomainTests
         /// </summary>
         internal static void OneMaintainResolvesExactlyOneRider()
         {
+            if (CrocodilianRulesPolicy.MaintainAdaptation !=
+                    "SWALLOW_ELIGIBLE_TARGET_ELSE_DEATH_ROLL")
+                throw new InvalidOperationException("The owner-authorized policy must be named.");
+            int lastRound = -1;
+            if (CrocodilianRulesPolicy.TryClaimMaintainRound(0, ref lastRound) ||
+                    !CrocodilianRulesPolicy.TryClaimMaintainRound(1, ref lastRound) ||
+                    CrocodilianRulesPolicy.TryClaimMaintainRound(1, ref lastRound) ||
+                    !CrocodilianRulesPolicy.TryClaimMaintainRound(2, ref lastRound) ||
+                    CrocodilianRulesPolicy.TryClaimMaintainRound(1, ref lastRound))
+                throw new InvalidOperationException("Replay must not resolve another maintain check.");
             // No success, no rider - whatever the creature can do.
             if (CrocodilianRulesPolicy.SelectMaintainRider(false, true, 1,
                     true, true, true, true, true) !=
