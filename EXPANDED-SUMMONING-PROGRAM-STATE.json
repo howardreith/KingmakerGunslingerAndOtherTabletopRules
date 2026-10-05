@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "program": "Kingmaker Expanded Summoning Ideal Roster",
   "phase2Mission": {
-    "authority": "Owner Phase 2B-only closure and synchronization orders 2026-10-05; committed contracts (external mission file absent locally)",
+    "authority": "Owner Coordination and Phase 2B Finalization Mission, 2026-10-05; finish 16-17 and Phase 2B closure, then stop for owner review",
     "authorizedSprints": [
       9,
       10,
@@ -12,7 +12,11 @@
       14,
       15,
       16,
-      17
+      17,
+      18,
+      19,
+      20,
+      21
     ],
     "completedSprints": [
       9,
@@ -24,7 +28,7 @@
       15
     ],
     "currentSprint": 16,
-    "currentSubItem": "Sprint 16 third reconciled batch FAIL; mechanics 35/35, final 80/80 and closed persistence PASS; combat contact/AI/control and crowd launch unresolved; narrow repair awaiting new gates; Dire withheld; Sprint 17 not started",
+    "currentSubItem": "Canonical finalization reconciliation of c5058203 onto imported 3fca5aba; Sprint 16 NOT QUALIFIED, six Dire roots withheld; exact-head gates and complete fresh-Steam batch next",
     "lastGuardedRuntimePass": "20260930T1314329155573Z-disposable-expanded-summoning",
     "lastGuardedRestoration": "20261005T1555173824556Z-disposable-expanded-summoning-crocodilians.json",
     "giantWaspPublished": true,
@@ -43,7 +47,10 @@
     "supersedesHistoricalMissionAuthorization": true,
     "acceptedMaster": "2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a",
     "trancheA": "codex/expanded-summoning-phase2a-sprints9-13",
-    "trancheB": "codex/expanded-summoning-phase2b-sprints14-17",
+    "trancheB": "codex/expanded-summoning-phase2b-finalize-20261005",
+    "frozenHistoricalTrancheB": "codex/expanded-summoning-phase2b-sprints14-17",
+    "canonicalImportedHead": "3fca5aba1cdaaf6215fd5712409fc208855c79cf",
+    "localReconciledHead": "c5058203f51633ed11d15ad35100dc01c53e250c",
     "trancheC": "codex/expanded-summoning-phase2c-sprints18-21",
     "ownerAcceptedEngineLimitation": "ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD",
     "ownerAcceptedEngineLimitations": [
@@ -76,8 +83,11 @@
     "totalVisibleChoices": 999,
     "sprint15Published": true,
     "sprint15Status": "COMPLETE AND PUBLISHED",
-    "phase2CAuthorized": false,
-    "sprint16Reconciliation": "planning/EXPANDED-SUMMONING-PHASE2B-RECONCILIATION-2026-10-05.md",
+    "phase2CAuthorized": true,
+    "phase2CStartDeferredUntilPhase2BOwnerAcceptance": true,
+    "phase2CDependency": "Successful complete Phase 2B closure, committed/pushed closing head and owner acceptance",
+    "currentMissionLastSprint": 17,
+    "sprint16Reconciliation": "planning/EXPANDED-SUMMONING-PHASE2B-FINALIZATION-RECONCILIATION.md",
     "sprint16SecondReconciledBatch": {
       "candidate": "634b6c18972747a4bff0ceb27f29af5189e5f586",
       "status": "FAIL; smoke 11/11, main 173/205, crowd 17/20, prepare 9/9, cleanup 6/9, absence 4/5",

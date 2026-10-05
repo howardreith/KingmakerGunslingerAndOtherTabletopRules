@@ -165,6 +165,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ExerciseSprint16GrabDelivery(fixture, owner, key, assertions, rows);
                         ExerciseSprint16DeathRollDamage(fixture, owner, key, assertions, rows);
                         ExerciseSprint16Maintain(fixture, owner, key, assertions, rows);
+                        ExerciseSprint16SessionReset(fixture, owner, key, assertions, rows);
                     }
                     finally
                     {
@@ -185,6 +186,58 @@ namespace KingmakerGunslinger.RuntimeTesting
                 UnityEngine.Random.state = randomBefore;
                 File.WriteAllText(Path.Combine(_request.EvidenceDirectory,
                     "sprint16-damage-maintain.json"), rows.ToString(Formatting.Indented));
+            }
+        }
+
+        private static void ExerciseSprint16SessionReset(ExpandedSummoningCorrectionFixture fixture,
+            UnitEntityData owner, string key, List<RuntimeTestAssertion> assertions, JArray rows)
+        {
+            UnitEntityData control = CastExpandedSummoningQuietUnit(fixture, "purple-worm");
+            UnitEntityData prey = CastExpandedSummoningQuietUnit(fixture, "wolf", fixture.Hostile);
+            SummonGrabComponent grab = SummonGrabComponent.Find(owner);
+            SummonGrabComponent controlGrab = SummonGrabComponent.Find(control);
+            try
+            {
+                control.Descriptor.Stats.BaseAttackBonus.BaseValue = 100;
+                PlaceExpandedSummoningUnit(prey, control.Position + Vector3.forward);
+                UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                bool controlHeld = controlGrab.TryGrab(prey, SummonLimbs.PrimaryWeapon(control), true);
+                var controlPart = control.Get<UnitPartGrappleInitiator>();
+                var preyPart = prey.Get<UnitPartGrappleTarget>();
+                Buff controlBuff = control.Descriptor.Buffs.GetBuff(controlGrab.HoldBuff);
+                Buff held = Sprint16EstablishHold(fixture, owner, grab,
+                    key == "crocodile" ? owner.Descriptor.State.Size : Size.Large, true);
+                if (key == "dire-crocodile")
+                {
+                    int claimed = -1;
+                    UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                    SummonHoldComponent.MaintainLink(owner, fixture.Hostile, grab, null,
+                        owner.Descriptor.Buffs.GetBuff(grab.HoldBuff), held, ref claimed);
+                }
+                bool armed = key == "crocodile" ? ReferenceEquals(SummonHoldComponent.HeldTarget(owner), fixture.Hostile) :
+                    fixture.Hostile.Get<UnitPartSwallowed>() != null;
+                // The negative control is deliberately outside the explicit reset cohort.
+                var cohort = new[] { owner, fixture.Hostile };
+                SummonGrappleAreaSafeguard.ResetLoadedGrapples(cohort);
+                SummonGrappleAreaSafeguard.ResetLoadedGrapples(cohort);
+                bool free = Sprint16RelationshipReleased(owner, fixture.Hostile, grab) &&
+                    owner.Get<UnitPartGrappleInitiator>() == null && !owner.Descriptor.HasFact(grab.HoldBuff) &&
+                    (owner.Get<UnitPartSummonGrappleLinks>() == null || owner.Get<UnitPartSummonGrappleLinks>().Count == 0);
+                bool untouched = controlHeld && controlPart != null && preyPart != null && controlBuff != null &&
+                    ReferenceEquals(control.Get<UnitPartGrappleInitiator>(), controlPart) &&
+                    ReferenceEquals(prey.Get<UnitPartGrappleTarget>(), preyPart) &&
+                    ReferenceEquals(control.Descriptor.Buffs.GetBuff(controlGrab.HoldBuff), controlBuff) &&
+                    ReferenceEquals(SummonHoldComponent.HeldTarget(control), prey);
+                Sprint16Check(assertions, rows, key + "-owned-session-reset", armed && free && untouched,
+                    new JObject { ["armed"] = armed, ["clearedTwice"] = free, ["purpleWormHoldUntouched"] = untouched },
+                    "production load-reset path is idempotent for the explicit crocodilian cohort; the separate Purple Worm/prey cohort is untouched; full fresh reload remains mandatory");
+            }
+            finally
+            {
+                SummonHoldComponent.ReleaseLink(control, prey, controlGrab, true);
+                if (control.Get<UnitPartGrappleInitiator>() != null) control.Remove<UnitPartGrappleInitiator>();
+                Sprint16Release(fixture, owner, grab);
+                DisposeExpandedSummoningUnits(fixture.Created, new[] { control, prey });
             }
         }
 
@@ -294,20 +347,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                 BlueprintBuff growth = fixture.Blueprints.OfType<BlueprintBuff>().Single(value =>
                     value.name == "AnimalGrowthBuff" &&
                     value.ComponentsArray.OfType<ChangeUnitSize>().Any());
+                Size sizeBeforeGrowth = owner.Descriptor.State.Size;
+                BaseDamage beforeGrowth = Rulebook.Trigger(new RuleCalculateWeaponStats(owner, bite, null))
+                    .DamageDescription.Select(value => value.CreateDamage()).OfType<PhysicalDamage>().Single();
+                string diceBeforeGrowth = beforeGrowth.Dice.Rolls + "d" + (int)beforeGrowth.Dice.Dice;
                 Buff grown = owner.Descriptor.AddBuff(growth, owner, TimeSpan.FromMinutes(1));
                 try
                 {
                     RuleCalculateWeaponStats current = Rulebook.Trigger(
                         new RuleCalculateWeaponStats(owner, bite, null));
-                    BaseDamage live = current.DamageDescription[0].CreateDamage();
+                    BaseDamage live = current.DamageDescription.Select(value => value.CreateDamage())
+                        .OfType<PhysicalDamage>().Single();
                     string dice = live.Dice.Rolls + "d" + (int)live.Dice.Dice;
                     ProbeSprint16DeathRoll(owner, bite, observer, key + "-animal-growth",
                         assertions, rows, dice, live.Bonus,
                         live.Bonus + Math.Max(0, owner.Descriptor.Stats.Strength.Bonus) / 2);
                     Sprint16Check(assertions, rows, key + "-growth-changes-dice",
-                        grown != null && dice != profile.DeathRollDiceCount + "d" +
-                            profile.DeathRollDieSides,
+                        grown != null && (int)owner.Descriptor.State.Size == (int)sizeBeforeGrowth + 1 &&
+                            diceBeforeGrowth == profile.DeathRollDiceCount + "d" + profile.DeathRollDieSides &&
+                            dice != diceBeforeGrowth && dice == (key == "crocodile" ? "2d6" : "4d6"),
                         new JObject { ["buff"] = growth.AssetGuid,
+                            ["sizeBefore"] = sizeBeforeGrowth.ToString(), ["diceBefore"] = diceBeforeGrowth,
+                            ["itemSize"] = bite.Size.ToString(), ["ruleSize"] = current.WeaponSize.ToString(),
                             ["size"] = owner.Descriptor.State.Size.ToString(), ["dice"] = dice },
                         "native Animal Growth changes the actual bite dice");
                 }
@@ -480,6 +541,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             Sprint16Check(assertions, rows, label, exact, new JObject {
                 ["strengthScore"] = owner.Descriptor.Stats.Strength.ModifiedValue,
                 ["strengthModifier"] = owner.Descriptor.Stats.Strength.Bonus,
+                ["creatureSize"] = owner.Descriptor.State.Size.ToString(),
+                ["itemSize"] = bite.Size.ToString(), ["ruleSize"] = before.WeaponSize.ToString(),
                 ["bite"] = new JArray(biteDamage.Select(Sprint16DamageLine)),
                 ["deathRoll"] = actual == null ? null : Sprint16DamageEvent(actual),
                 ["productionDetail"] = detail, ["attackRolls"] = observer.Attacks.Count,
@@ -643,24 +706,34 @@ namespace KingmakerGunslinger.RuntimeTesting
                 string outcome = SummonHoldComponent.MaintainLink(owner, victim, grab, null,
                     owner.Descriptor.Buffs.GetBuff(grab.HoldBuff), state, ref claimed);
                 bool deadOnDamageReturn = victim.Descriptor.State.IsDead;
+                int damageBeforeLife = observer.Damage.Count;
                 // RuleDealDamage records damage; the native life controller
                 // settles death on its subsequent tick. Tick only this exact
                 // disposable victim, then the production holder's round path.
                 typeof(Kingmaker.Controllers.Units.UnitLifeController).GetMethod("TickOnUnit",
                     BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
                     .Invoke(new Kingmaker.Controllers.Units.UnitLifeController(), new object[] { victim });
+                int damageAfterLife = observer.Damage.Count;
                 Buff remainingHold = owner.Descriptor.Buffs.GetBuff(grab.HoldBuff);
                 if (remainingHold != null) remainingHold.TickMechanics();
+                int checksAfterHold = observer.Checks.Count;
+                string deadReplay = SummonHoldComponent.MaintainLink(owner, victim, grab, null,
+                    remainingHold, state, ref claimed);
                 bool dead = victim.Descriptor.State.IsDead;
                 bool free = SummonHoldComponent.HeldTarget(owner) == null &&
                     SummonGrappleLinks.EstablishingWeapon(owner, victim) == null &&
                     victim.Get<UnitPartGrappleTarget>() == null &&
                     !victim.Descriptor.HasFact(grab.GrappledBuff);
                 Sprint16Check(assertions, rows, key + "-lethal-roll-cleanup",
-                    held && dead && free && observer.Damage.Count == 1 &&
+                    held && dead && free && damageBeforeLife == 1 && observer.Damage.Count == 1 &&
+                    observer.Checks.Count == checksAfterHold &&
+                    (deadReplay == "refused:no-exact-held-target" ||
+                     deadReplay == "released:invalid-crocodilian-owner-or-target") &&
                     observer.Attacks.Count == 0 && outcome.StartsWith("death-roll:", StringComparison.Ordinal),
                     new JObject { ["held"] = held, ["dead"] = dead, ["free"] = free,
                         ["deadOnDamageReturn"] = deadOnDamageReturn,
+                        ["deadReplay"] = deadReplay, ["beforeNativeLife"] = damageBeforeLife,
+                        ["afterNativeLife"] = damageAfterLife,
                         ["outcome"] = outcome, ["damageEvents"] = observer.Damage.Count,
                         ["damage"] = new JArray(observer.Damage.Select(Sprint16DamageEvent)) },
                     "one lethal Death Roll; exact native per-unit life tick then production hold tick releases reciprocal state without more damage");

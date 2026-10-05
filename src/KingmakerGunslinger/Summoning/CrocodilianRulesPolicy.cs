@@ -187,7 +187,12 @@ namespace KingmakerGunslinger.Summoning
         internal static int ResolveWeaponSize(int bodySize, int weaponSize,
             int calculatedWeaponSize)
         {
-            return Math.Max(2, Math.Min(8,
+            // The native Size enum and damage table include Fine and
+            // Diminutive, not only Tiny through Colossal.
+            if (bodySize < 0 || bodySize > 8 || weaponSize < 0 || weaponSize > 8 ||
+                calculatedWeaponSize < 0 || calculatedWeaponSize > 8)
+                throw new ArgumentOutOfRangeException("size", "Native size must be Fine through Colossal.");
+            return Math.Max(0, Math.Min(8,
                 bodySize + calculatedWeaponSize - weaponSize));
         }
 

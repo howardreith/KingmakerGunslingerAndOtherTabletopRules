@@ -518,13 +518,13 @@ namespace KingmakerGunslinger.Summoning
                 {
                     string ownedName = "KMG_" + attachment.VisualKey + "_Original";
                     foreach (Material candidate in donor.sharedMaterials)
-                        if (candidate != null && candidate.name.StartsWith(ownedName,
+                        if (candidate != null && !attachment.OriginalMaterials.Contains(candidate) && candidate.name.StartsWith(ownedName,
                                 StringComparison.Ordinal)) rollbackMaterials.Add(candidate);
                     IList<Material> driven = ControllerMaterials(
                         donor.GetComponentInParent<StandardMaterialController>());
                     if (driven != null)
                         foreach (Material candidate in driven)
-                            if (candidate != null && candidate.name.StartsWith(ownedName,
+                            if (candidate != null && !attachment.OriginalMaterials.Contains(candidate) && candidate.name.StartsWith(ownedName,
                                     StringComparison.Ordinal)) rollbackMaterials.Add(candidate);
                 }
                 if (swapped) Revert(attachment);
