@@ -155,6 +155,7 @@
     <Compile Include="Summoning\SummonRagePolicy.cs" />
     <Compile Include="Summoning\SummonShadowMastiffPolicy.cs" />
     <Compile Include="Summoning\UngulateRulesPolicy.cs" />
+    <Compile Include="Summoning\CrocodilianRulesPolicy.cs" />
     <Compile Include="Summoning\UngulatePowerfulCharge.cs" />
     <Compile Include="Summoning\ContextActionUngulateTrample.cs" />
     <Compile Include="Summoning\SummonGrappleLinkState.cs" />
