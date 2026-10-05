@@ -1,6 +1,6 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-05 (laptop sole owner; Sprint 16 NOT QUALIFIED)
+## CURRENT STATE, 2026-10-05 (laptop sole owner; Sprint 16 hidden PASS, publication pending)
 
 This section governs over all historical mission/ownership statements below.
 The latest owner directive designates HOWARD-LAPTOP and
@@ -15,8 +15,8 @@ No merge, release, tag, version bump, force push or permanent deployment.
 - Active worktree:
   `C:/Dev/KingmakerGunslingerLab/repo/KingmakerGunslinger/.worktrees/expanded-summoning-phase2b-laptop-20261005`.
   Latest tested source and fetched remote:
-  `197840577cb995beea726a34f5dc6ae9dd9674d9`; containing correction is
-  its normal descendant. Unexpected active-branch motion remains a stop;
+  `e3aeae630d51d27c45694fb9e92e9093048b1af9`; containing evidence checkpoint
+  is its normal descendant. Unexpected active-branch motion remains a stop;
   archived branch motion is informational only.
 - Exclusive receipt: ignored `artifacts/laptop-source-owner-20261005.json`;
   session `01a10bcd-8582-7551-826f-0f128807eb99`, owner PID 31796/start
@@ -25,29 +25,29 @@ No merge, release, tag, version bump, force push or permanent deployment.
 - All safety refs, local preserved commits, recovery bundle and failed
   candidates retained. DATA audit pushed at 5da53f84: 29 files classified,
   zero ports. PR #26 active; #27 archived accidental concurrent draft.
-- **Sprint 16 NOT QUALIFIED.** Exact 197 prelaunch PASS: 217 focused /
-  2019 full, all static/request/preflight/build/strict package gates.
-  Six fresh Steam runs: 11/11 smoke, **208/209 main FAIL**, 20/20 crowd,
-  9/9 prepare, 9/9 cleanup, 5/5 absence. Complete combat matrix 55/55:
-  all four Dire tail contacts now pass with the common root.
-- Sole failure: Crocodile active-source-death fixture paused for 343 of
-  344 frames, one native prey update and only 0.04 seconds of game time.
-  Other source-death rows pass with five prey ticks. No rule waiver.
-  [Exact 197 review](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-NATIVE-UPDATE-BATCH-REVIEW.md)
+- **Sprint 16 HIDDEN CANDIDATE QUALIFIED; publication NOT YET QUALIFIED.**
+  Exact e3 prelaunch PASS: 218 focused / 2020 full and every static/request/
+  preflight/build/strict-package gate. Six fresh Steam runs: 11/11 smoke,
+  **209/209 main**, 20/20 crowd, 9/9 prepare, 9/9 cleanup, 5/5 absence.
+  Combat 55/55 and final review 81/81; no assertion waived.
+- Crocodile active-source-death now proves three native prey ticks after
+  source death, one owned-death pause resume and 0.202 advancing seconds.
+  Native hold cleanup and exact pause/clock/mode/awake restoration pass.
+  [Exact hidden qualification](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-HIDDEN-PASS-REVIEW.md)
   and curated JSON retain every artifact/request/result/restoration hash.
-- Actual leased snapshot `20261005T2231051887980Z` restored exactly;
-  closed `2026-10-05T23:04:04.0535946Z`: 136 files / Info 0.0.117 /
+- Actual leased snapshot `20261005T2316265780723Z` restored exactly;
+  closed `2026-10-05T23:49:30.9580629Z`: 136 files / Info 0.0.117 /
   `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
   Lease Completed/recoveryRequired=false; no game/compatibility lock/staging.
   Native cleanup saved; fresh absence zero owned state. No save-file access.
-- Containing correction is NOT QUALIFIED: resume the fixture only after its
-  exact requested owned death, with no auto-pause-setting change; require
-  an observed native prey update after source death. Focused 218/218 of 2020
-  and incremental exact-reference compile PASS. No production rule, visual,
-  timeout, count, asset, version or publication change.
-- Next: commit/policy-push this coherent correction, run all exact-head gates,
-  then one complete immutable six-scenario batch and exact restoration.
-  Do not rerun failed 197 bytes. Sprint 17 remains closed.
+- Candidate DLL SHA `c9029e26c745daea5e9eb369e23f6595a69636fe1629620fd456e71039b4d4d4`;
+  MVID `ff5b805f-162b-4c77-a655-0318fe195caa`; ZIP
+  `fe6a8c62b0f50f908157810e0d8c963ddb9c5c4ac4c6334ad5258ec7da92c29e`.
+  Immutable 312-member package retained, unchanged version 0.0.141.
+- Next: push this evidence checkpoint, remove only Dire suppression and
+  regenerate controlled artifacts. Freeze a new publication candidate, run
+  its full Sprint gate and all 6 Dire + 14 Crocodile public routes, then
+  restore exactly and close Sprint 16. Sprint 17 must wait for that gate.
 - Sprints 14-15 complete; 976 registered / 970 published / 6 Dire withheld /
   29 wrappers / 999 visible choices. Publish Dire only after every required
   Sprint 16 exact-artifact gate passes, then qualify its 6 roots and the 14

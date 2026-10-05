@@ -1,5 +1,22 @@
 # Expanded Summoning Phase 2 journal
 
+## October 5, 23:49 UTC — complete laptop hidden candidate PASS, restored
+
+Exact e3aeae63 passed 218 focused / 2020 full and every prelaunch gate,
+then six fresh Steam processes: 11/11 smoke, 209/209 main, 20/20 crowd,
+9/9 prepare, 9/9 cleanup, 5/5 absence. No assertion waived. Final source-death
+cleanup has three native post-death prey ticks; all contact/command/UI/
+lifecycle/resource/save cases pass. Both authorized native saves succeeded.
+Actual leased snapshot restored exactly; no game/lock/staging. Post-restore
+fetch confirms the active remote still equals e3. Source ownership retained.
+[Evidence](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-HIDDEN-PASS-REVIEW.md).
+
+Hidden candidate internally qualified; publication remains pending. Still
+976 registered / 970 published / 6 Dire withheld / 29 wrappers / 999 visible.
+Next remove only Dire suppression, regenerate, qualify one exact publication
+candidate and all twenty public roots, restore, then close Sprint 16.
+Sprint 17 waits; stop after Phase 2B closure. No DATA ports or version bump.
+
 ## October 5, 23:04 UTC — native-update batch restored; pause fixture repair
 
 Exact 19784057: all prelaunch gates PASS; smoke 11/11, main 208/209 FAIL,
