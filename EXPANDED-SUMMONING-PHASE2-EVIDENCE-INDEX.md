@@ -1,13 +1,16 @@
 # Expanded Summoning Phase 2 evidence index
 
-[Current bounded laptop correction](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-FIXTURE-REPAIR.md):
-NOT QUALIFIED; new exact-head prelaunch gates and six-scenario batch required.
+[Current exact 4c3 laptop batch](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-BATCH-REVIEW.md):
+**NOT QUALIFIED**, main 204/209; other five stages PASS, exact restoration.
+[Curated artifact/request/result/restoration hashes](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-BATCH-EVIDENCE.json).
+Four Dire tail-root bindings and one native-update-context lifecycle case
+remain unresolved. [Prior bounded repair](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-FIXTURE-REPAIR.md).
 
 [Separate read-only DATA salvage audit](planning/EXPANDED-SUMMONING-PHASE2B-DATA-SALVAGE-AUDIT.md):
 all 29 differing files classified after pushed laptop checkpoint 9cd5cdc7;
 zero source imports, no frozen-branch mutation or transferred qualification.
 
-Current Sprint 16 laptop native-faction batch: **FAIL 188/208**, no publication.
+Historical Sprint 16 laptop native-faction batch: **FAIL 188/208**, no publication.
 [Exact bc36 artifact, six runs, classified failures and exact restoration](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-NATIVE-FACTION-REVIEW.md).
 Smoke 11/11; crowd 20/20; prepare 9/9; cleanup 9/9; fresh absence 5/5.
 Working save is clean; actual installation restored; runtime lease released.

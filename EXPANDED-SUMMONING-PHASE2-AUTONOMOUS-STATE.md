@@ -14,61 +14,44 @@ No merge, release, tag, version bump, force push or permanent deployment.
 
 - Active worktree:
   `C:/Dev/KingmakerGunslingerLab/repo/KingmakerGunslinger/.worktrees/expanded-summoning-phase2b-laptop-20261005`.
-  Exact tested source / intake remote:
-  `bc36f97612020d6d680144bcb6ebc01bebe11216`; this documentation checkpoint is
-  its normal descendant. Remote remained exact before launch and after restore.
-  Stop on unexpected motion of this active branch; archived branch motion is
-  informational only, never a reason to chase or reconcile it.
-- Exclusive source receipt: ignored `artifacts/laptop-source-owner-20261005.json`;
+  Exact latest tested source and fetched remote:
+  `4c3c76cee25a9cdc68d25f660ece43a443ffe2d5`; this evidence checkpoint is
+  its normal descendant. Unexpected active-branch motion remains a stop;
+  archived branch motion is informational only.
+- Exclusive receipt: ignored `artifacts/laptop-source-owner-20261005.json`;
   session `01a10bcd-8582-7551-826f-0f128807eb99`, owner PID 31796/start
-  `2026-10-05T19:29:25.9127956Z`, lock holder PID 15084/start
-  `2026-10-05T20:34:17.3075720Z`. Receipt is session-scoped, not perpetual.
-  A future owner must verify live PID/start identity before takeover.
-- Prior local `c5058203f51633ed11d15ad35100dc01c53e250c`, `2d334375`,
-  recovery bundle, all safety refs and failed candidates are preserved.
-  No reset, rebase, merge, force push or discarded runtime correction.
-  Preservation details: [laptop review](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-NATIVE-FACTION-REVIEW.md).
-- **Sprint 16 NOT QUALIFIED.** Exact bc36 prelaunch gates all PASS:
-  216 focused / 2018 unfiltered; repository/static/icon/manifest; 480 preflight;
-  68 orchestration; closed persistence/crowd tests; clean exact-reference Release;
-  deterministic strict 312-member package. These do not qualify gameplay.
-- Six fresh Steam 640820 runs: smoke 11/11, main **188/208 FAIL**, crowd 20/20,
-  prepare 9/9, cleanup 9/9, absence 5/5. Native-faction manual control worked;
-  all eighteen combat cells ran. Remaining failures: eight Dire AI contact
-  assertions, one manual-swallow sequencing assertion, one UI restoration
-  assertion and ten lifecycle scheduling assertions. No assertion waived.
-- Native working-save prepare and cleanup each wrote once. Fresh absence
-  proves no owned fixture summons/state remains. No manual save-file access,
-  protected baseline load/write or save surgery occurred.
-- Exact DLL `92dc8a4bc941dd5a4f41fbcb749f9459870149c9095fe752a5c4b20d8ec21b52`,
-  MVID `e5c68a9a-dfbc-4e23-a3a2-5327f5aab7c0`;
-  ZIP `416b4c6d8406479fd84cdb509c1ff8ac0fd6eae672b58cdab835475b92b40feb`.
-  Version remains 0.0.141. Full source fingerprint, requests, results, process
-  identities and failure classification are in the laptop review.
-- Lease `runtime-20261005T204023Z-8c4952571cc0480eb940d6ea31f9fbea`
-  preceded snapshot/deployment. Actual snapshot `20261005T2040235864744Z`
-  restored exactly at `2026-10-05T21:13:38.1407714Z`: 136 files, Info 0.0.117,
-  tree `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
-  Lease Completed/recoveryRequired=false; no game, compatibility lock or
-  staging remains. Old orphaned runtime journal labels are preserved history,
-  not a matching live owner/current transaction.
-- Restored evidence checkpoint `9cd5cdc7c31cd2914e69eff1f889b95fabdbdc90`
-  is pushed. The separate [read-only DATA salvage audit](planning/EXPANDED-SUMMONING-PHASE2B-DATA-SALVAGE-AUDIT.md)
-  is complete: all 29 differing files classified; zero source/authority ports.
-- Audit checkpoint `5da53f84d42079b02586c2db0252652dac4d7dbe` is pushed.
-  PR #26's top notice now identifies this as the sole active line and PR #27
-  as archived accidental concurrency; both remain draft/open/unmerged.
-- Containing contact/fixture repair is **NOT QUALIFIED**. Dire's cosmetic
-  approach is bounded to half its footprint; ordinary Crocodile is unchanged.
-  Manual completion requires the real issued command; held-target setup
-  immunity ends before that attack. Combat/UI restore native selection and
-  clock; final lifecycle uses an explicit restored RTWP scope and native
-  buff-expiry evidence. No DATA hunk was imported. Focused 217/217 and
-  incremental exact-reference Release PASS. Details:
-  [bounded repair](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-FIXTURE-REPAIR.md).
-- Next: commit/policy-push this NOT QUALIFIED correction, then freeze the
-  new exact-head artifact after every prelaunch gate and run the complete
-  affected six-scenario batch. Do not rerun the failed bc36 bytes.
+  `2026-10-05T19:29:25.9127956Z`, holder PID 15084/start
+  `2026-10-05T20:34:17.3075720Z`. Active/session-scoped, never perpetual.
+- All prior local tips, safety refs, recovery bundle and failed artifacts are
+  preserved. No reset, rebase, merge, force push or DATA source import.
+  [Read-only DATA audit](planning/EXPANDED-SUMMONING-PHASE2B-DATA-SALVAGE-AUDIT.md)
+  is pushed at 5da53f84: all 29 files classified, zero ports. PR #26's top
+  notice identifies it as active and PR #27 as archived accidental concurrency.
+- **Sprint 16 NOT QUALIFIED.** Exact 4c3 gates PASS: 217 focused / 2019 full,
+  repository/static/icon/manifest, 480 preflight, 68 orchestration, closed
+  persistence/crowd tests, clean exact Release and strict deterministic package.
+- Six fresh Steam processes: smoke 11/11, main **204/209 FAIL**, crowd 20/20,
+  prepare 9/9, cleanup 9/9, absence 5/5. All eighteen command cells and twenty
+  targeted routes ran. Manual-command/swallow, bite contact, UI restoration
+  and previous expiry failures now pass. Four Dire tail contacts still fail:
+  the pose binds the spine, not the common root. One Crocodile active-source-
+  death fixture needs verified native awake/update context. No waiver.
+- Exact source/artifact/request/result/process/restoration identities:
+  [4c3 batch review](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-BATCH-REVIEW.md)
+  and its curated JSON. DLL `9a8df047cc7712190438c056dce0e273eabf7592308f7bb7f16a8cd754b47ec7`,
+  MVID `69cfe3ef-7c55-4211-b1d1-22b339e788f4`,
+  ZIP `c0b17f1531f497ce1408ade84ee0e369c0d6e563d4d270432f68fd115c9770cc`;
+  312 members, unchanged version 0.0.141.
+- Actual leased snapshot `20261005T2140053167749Z` restored exactly;
+  batch closed `2026-10-05T22:12:50.5306966Z`: 136 files / Info 0.0.117 /
+  `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+  Lease Completed/recoveryRequired=false; no game, compatibility lock or staging.
+  Native prepare/cleanup each wrote once; fresh absence proves zero owned state.
+  No filesystem save access or protected baseline load/write.
+- Next: commit/policy-push this restored NOT QUALIFIED evidence; correct only
+  the common visual-root binding and owned lifecycle update fixture, focused
+  checks, then a new committed exact-head gate and complete six-scenario batch.
+  Do not blindly rerun 4c3 bytes or increase contact tolerances/waits.
 - Sprints 14-15 complete; 976 registered / 970 published / 6 Dire withheld /
   29 wrappers / 999 visible choices. Publish Dire only after every required
   Sprint 16 exact-artifact gate passes, then qualify its 6 roots and the 14
