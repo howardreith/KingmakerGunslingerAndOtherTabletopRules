@@ -1,5 +1,11 @@
 # Expanded Summoning Phase 2 evidence index
 
+
+Current Sprint 16 second reconciled batch: **FAIL**, no publication. See
+[the exact artifact, six fresh processes, failures and repairs](planning/EXPANDED-SUMMONING-SPRINT16-SECOND-RECONCILED-BATCH-REVIEW.md).
+Actual leased installation restored exactly and lease released. The new containing
+repair has passed source/package gates; it needs new clean-head runtime evidence.
+
 ## Reconciled clean-tip hidden batch (FAIL; safely restored)
 
 Clean `7c1690e61` passed all new source/package/preflight gates, then completed

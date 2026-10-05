@@ -97,16 +97,19 @@ namespace KingmakerGunslinger.Summoning
             bool bite = ReferenceEquals(evt.Weapon.Blueprint, Bite);
             if (!bite && !ReferenceEquals(evt.Weapon.Blueprint, Tail)) return;
             if (bite) evt.OverrideDamageBonusStatMultiplier(1f);
-            // Respect an existing legitimate dice override. For the printed
-            // weapons, use the native size table from the creature's baseline
-            // size rather than from Medium or from a frozen rider profile.
+            // Respect an existing legitimate dice override. Native type dice
+            // are Medium-relative; explicit printed dice are baseline-relative.
+            // Both then use the live creature size and native weapon-size shift.
             if (!evt.WeaponDamageDiceOverride.HasValue)
             {
                 evt.WeaponDamageDiceOverride = WeaponDamageScaleTable.Scale(
                     evt.Weapon.Blueprint.BaseDamage,
                     (Size)CrocodilianRulesPolicy.ResolveWeaponSize(
                         (int)Owner.State.Size, (int)evt.Weapon.Size,
-                        (int)evt.WeaponSize), BaselineSize, evt.Weapon.Blueprint);
+                        (int)evt.WeaponSize),
+                    (Size)CrocodilianRulesPolicy.ResolveDiceBaseline(
+                        evt.Weapon.Blueprint.IsDamageDiceOverridden,
+                        (int)BaselineSize), evt.Weapon.Blueprint);
                 evt.DoNotScaleDamage = true;
             }
         }

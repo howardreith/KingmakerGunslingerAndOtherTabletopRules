@@ -4732,10 +4732,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData[] party)
         {
             foreach (UnitEntityData stale in ExpandedSummoningPersistentUnits(gameState, party))
-            {
                 CleanupExpandedSummoningUnit(stale);
-                if (!stale.Destroyed) stale.Dispose();
-            }
+            // Native destruction owns view fade/destruction and scene removal.
+            // Disposing first clears View before that controller can release it.
             for (int pass = 0; pass < 4; pass++) Game.Instance.EntityDestroyer.Tick();
             return ExpandedSummoningPersistentUnits(gameState, party).Count(value =>
                 !value.Destroyed || value.View != null || value.HoldingState != null);

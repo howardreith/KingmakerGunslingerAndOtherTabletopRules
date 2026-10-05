@@ -46,16 +46,30 @@ release, tag, version bump, PR change or permanent deployment.
   write, absence 4/5. Actual leased 0.0.140 / 254-file installation restored
   exactly, lease released. Full ledger and exact fingerprints:
   `planning/EXPANDED-SUMMONING-SPRINT16-RECONCILED-BATCH-REVIEW.md`.
-- Next candidate repairs only demonstrated size, dead-target, load reset and
-  rollback-clone defects plus bounded fixture cadence/command/disposal paths.
-  More detailed UI, death, resource and size observations retain all required
-  assertions. Contact, visibility and other unresolved gates remain pending.
-- Next action: new focused/unfiltered/static/icon/preflight/clean Release/
-  deterministic/strict package gates; commit/push the source-qualified repair,
-  freeze a new clean exact-head artifact, and repeat the corrected hidden batch.
-  Lease before actual live snapshot, exact restoration, fresh Steam 640820
-  processes and closed working-save-only persistence authorization remain
-  mandatory. Stop on external remote motion; no old artifact qualifies repairs.
+- Second clean repaired candidate `634b6c189` passed new complete source,
+  preflight, build and package gates, then FAILED the complete six-run batch:
+  smoke 11/11, main 173/205, crowd 17/20, prepare 9/9, cleanup 6/9,
+  absence 4/5. Prepare made one authorized native working save; failed cleanup
+  refused to write. Exact leased 0.0.140 / 254-file installation restored,
+  lease released. Five closed fixture summons await successful native cleanup.
+  Exact artifact/process/save/restoration ledger:
+  `planning/EXPANDED-SUMMONING-SPRINT16-SECOND-RECONCILED-BATCH-REVIEW.md`.
+- The containing source-qualified repair distinguishes native Medium-relative
+  dice from explicit creature-baseline dice; corrects premature fixture Dispose,
+  native appearance lock, detached-sheet close and turn-based command rejection;
+  retains intact-frame acceptance with bounded native fade settlement. Original
+  contact uses explicit weighted bone/bind-pose world positions plus prior
+  BakeMesh diagnostics. Native turns and census diagnostics remain guarded.
+  No range, original art, icon, AI action, price, version or publication change.
+- New pre-commit repair gates PASS: 216 focused / 2018 unfiltered; repository,
+  static/icon, 480 preflight, 68 orchestration, closed request tests, clean Release,
+  deterministic and strict 312-member package. No runtime PASS is claimed.
+- Next action: commit/push the coherent source correction; qualify one new clean
+  exact-head artifact with the complete prelaunch gates and repeat the entire
+  corrected six-scenario batch. Keep contact, visual, AI, both combat modes,
+  persistence, cleanup and publication assertions. Acquire lease before actual
+  live snapshot; restore that snapshot exactly; fresh Steam 640820 processes.
+  Stop on external remote motion; no old artifact qualifies repairs.
 - Publish Dire only after every required exact-artifact Sprint 16 gate passes.
   Sprint 17 must not begin until Sprint 16 is qualified and pushed.
 - Accepted unchanged: `PASSIVE_CREATURE_SENSES_UNMODELED`,
