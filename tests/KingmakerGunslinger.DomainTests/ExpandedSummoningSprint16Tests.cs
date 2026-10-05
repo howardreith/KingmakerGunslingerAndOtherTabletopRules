@@ -21,7 +21,7 @@ namespace KingmakerGunslinger.DomainTests
     /// </summary>
     internal static class ExpandedSummoningSprint16Tests
     {
-        internal const int AppendedLedgerIdentities = 28;
+        internal const int AppendedLedgerIdentities = 29;
 
         private const string DireKey = "dire-crocodile";
         private const string CrocodileKey = "crocodile";

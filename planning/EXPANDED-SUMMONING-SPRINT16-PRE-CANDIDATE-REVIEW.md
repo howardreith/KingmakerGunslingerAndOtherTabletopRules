@@ -2,6 +2,34 @@
 
 ## October 5 takeover engineering review (NOT QUALIFIED)
 
+### Current follow-up: native Sprint AI engagement gate
+
+The narrow survey passed its seven assertions; see the separate survey review
+for census/graph/skill hashes and the activated interior limitation. Both
+original models/paintings now have deterministic exports and offline review.
+Those results do not qualify actual combat, Sprint AI or visual lifecycle.
+
+The native `IsEngagedConsideration.Score` reads
+`context.Target.Unit ?? context.Unit` and its actual combat engagement flag.
+The type extends BlueprintScriptableObject; no library-indexed existing
+instance was found. One exact owned native instance is therefore registered
+under `KMG.Summoning.Special.Crocodilian.SprintNotEngaged`,
+`5c4c807c1f274ef3b82ff16f9f114cf8`, with scores engaged=0/free=1 and multiplier=1.
+Only the two crocodilian Sprint AI actions reference it. This is native
+scoring configuration, not a new/global AI subsystem.
+
+The pure append helper preserves the native brain's action references and
+order, adds exactly one Sprint, refuses duplicate/null entries and never
+mutates the native array. The native BlueprintBrain has only Actions beyond
+its base blueprint fields; there are no omitted brain-specific fields.
+The census now explicitly traverses inline brain/action considerations and
+records native/owned action lists, because the generic component graph did not.
+Actual movement, bite/tail, cooldown fallback and both modes remain live gates.
+
+Checks: focused 215/215 PASS (2017 registered), incremental Release compile
+PASS. The manifest has 1848 summoning identities, 2836 total (2834 active,
+2 reserved). The consideration is hidden internal, with no icon consumer.
+
 ### Follow-up: preparing the narrow live survey
 
 Sprint now uses a temporary +20-foot UntypedStackable modifier. The audited

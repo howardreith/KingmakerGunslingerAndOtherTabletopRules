@@ -2088,7 +2088,7 @@
     "effectiveMission": "Kingmaker_Codex_TwoDay_Autonomous_Phase2_Mission.md; October 5 Codex takeover order",
     "authorizedSprintRange": "12-21",
     "activeSprint": 16,
-    "deterministicTestCount": 2016,
+    "deterministicTestCount": 2017,
     "tranche2AClosed": true,
     "publicReleaseAuthorized": false,
     "candidateOnly": true,
