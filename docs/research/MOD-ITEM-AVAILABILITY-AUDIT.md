@@ -12,7 +12,7 @@ count, restock behavior, price, chapter/quest gate, DLC/BTSL distribution,
 Better Vendors compatibility behavior or item balance was changed. The only
 artifacts of this slice are this report and the machine-readable table
 [`MOD-ITEM-AVAILABILITY-AUDIT.csv`](MOD-ITEM-AVAILABILITY-AUDIT.csv)
-(62 rows).
+(65 rows after fixed-baseline reconciliation).
 
 ## Scope and method
 
@@ -34,7 +34,7 @@ than guessed.
 1. **The capital blacksmith is the concentration point.** One vanilla table
    (`SmithVendorTable`) carries 10 Gunslinger rows (3 mundane + 3 +1
    firearms, 3 ammunition at 200 each, 1 kit) plus, when those modules are
-   on, up to 12 Eastern generic rows and 4 spear generic rows — up to ~26
+   on, up to 12 Eastern generic rows and 6 spear generic rows — up to 28
    mod rows on a single otherwise-vanilla merchant. On a sparse native list
    this is the clearest "overrepresentation" surface in the mod.
 2. **Broad merchant spread beyond the smith.** Mod stock currently appears
@@ -151,7 +151,7 @@ than guessed.
   first merchant); non-Gunslinger parties see only ammunition rows on
   these merchants.
 - **Sparse-store risk:** the preliminary claim was unsupported. Removing
-  only six firearm rows from about 26 leaves about 20 mod rows at the capital
+  only six firearm rows from 28 leaves 22 mod rows at the capital
   smith if the Eastern and spear rows remain. Fixed consumable rows are finite
   stock, not proof of renewable resupply.
 - **Implementation surface:** moderate — move lists between existing
@@ -169,14 +169,14 @@ This model is the frozen owner-approved contract for this mission.
 | Merchant | Final mod stock in this contract | Removed from this merchant |
 |---|---|---|
 | Oleg | Pistol 1; Musket 1; Blunderbuss 1; Black Powder Charge 50; Lead Ball 50 | no +1, Paper Cartridge, kit, named or Better Vendors rows from this publication |
-| Capital blacksmith | Pistol +1 1; Musket +1 1; Blunderbuss +1 1; Black Powder Charge 200; Lead Ball 200; Paper Cartridge 200; Gunsmith's Kit 1 | three mundane firearms; all 12 mod generic Eastern rows; all 4 mod generic spear rows |
+| Capital blacksmith | Pistol +1 1; Musket +1 1; Blunderbuss +1 1; Black Powder Charge 200; Lead Ball 200; Paper Cartridge 200; Gunsmith's Kit 1 | three mundane firearms; all 12 mod generic Eastern rows; all 6 mod generic spear rows |
 | Bokken | Black Powder Charge 100; Lead Ball 100; Paper Cartridge 100 | Gunsmith's Kit; no firearm addition |
 
 Oleg's five Gunslinger rows have their own Gunslinger-owned publication,
 independent of Eastern Weapons, Elven Branched Spear, Favored Class,
 Better Vendors and BTSL. Resolve exact table/item identities, never display names.
 Capital retains a standalone +1 path without requiring Better Vendors.
-The capital's modeled concentration falls from 26 rows to seven when the three
+The capital's modeled concentration falls from 28 rows to seven when the three
 relevant modules are enabled; this is not a promise that every merchant has
 only a handful of total mod rows.
 
@@ -211,3 +211,36 @@ research artifacts only.
 
 CSV reconciliation also corrects five transposed category/tier/price cells and
 replaces unsupported fixed-row restock claims with the bounded contract above.
+
+## Fixed Phase 2A reconciliation and Model D implementation
+
+The weekend CSV remains a historical **before** ledger, corrected against the
+fixed Phase 2A registry and catalogs. It used localization keys or invented
+shorthand for many symbols, omitted two cold-iron spear variants and World-Tree
+Severer, and understated capital spear stock. All single-item symbols now
+resolve in the registry; the explicitly aggregated progression row is not an
+item identity. Capital had 28 rows: 10 Gunslinger + 12 Eastern + 6 spear.
+Model D leaves seven. Oleg retains six Eastern and four spear rows, then adds
+five Gunslinger rows. Dire Narlmarches and Pitax retain 12 Eastern and six spear
+rows each. No claim that all merchants carry only a handful is made.
+
+`OlegFirearmVendorBlueprints` publishes directly under the Gunslinger gate.
+Capital owns retired mundane/Eastern/spear identities for cleanup even when
+those modules are disabled. Regional publishers keep their exact non-capital
+specs and an empty capital cleanup spec. Bokken retains kit identity only in its
+removal set. Exact-reference normalization builds detached rows before assignment,
+preserves native/foreign references and order, and supports exact rollback.
+
+Migration is normal initialization of blueprint/vendor tables, including tables
+seeded with the previous injected shape. It never walks or edits item instances.
+Purchased inventory, stash, equipment and container items are untouched.
+Previously materialized merchant inventory is native persisted state: this
+mission adds no refill or destructive inventory migration. New or natively
+regenerated stock uses the normalized table; whether/when regeneration happens
+is not promised. Fixed stock can deplete; crafting remains a separate path.
+
+The no-save `observe-model-d-vendors` scenario reads exact registered tables for
+Oleg, capital, Bokken, Dire Narlmarches and Pitax. It checks excluded identities,
+retained quantities, repeated real publication, and previous-stock normalization
+on detached native rows with native/foreign controls. No merchant UI, save load,
+input or inventory mutation is required.

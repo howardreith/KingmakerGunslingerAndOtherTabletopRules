@@ -543,3 +543,15 @@ published KMG racial selectors, and the native ordinary Trait roots when the ins
 optional contract enables them. KMG and Helpful reconciliation remain active. Missing
 optional background Traits are NOT-RUN. This control does not claim new trait commits;
 those use the separately qualified ON creator and native Player-respec scenarios.
+
+## Model D vendor observation
+
+`observe-model-d-vendors` is a save-free blueprint-library observation. It resolves
+exact GUID/name contracts for Oleg, capital, Bokken, Dire Narlmarches and Pitax;
+records item GUIDs/quantities; verifies retired rows are absent and regional stock
+is retained. Repeated real publishers must leave registered arrays unchanged.
+Previous stock, module disabling, native/foreign preservation and rollback use
+only detached native row arrays and a request-local unregistered item destroyed
+in `finally`. No merchant UI, inventories, save loading, input or save writes.
+Use the guarded Steam launcher with `-Scenario observe-model-d-vendors
+-ExpectedVersion 0.0.141` and automatic exit; restore the exact live backup.

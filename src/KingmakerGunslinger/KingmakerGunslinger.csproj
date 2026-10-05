@@ -399,7 +399,7 @@
     <Compile Include="Blueprints\PaperCartridgeModeBlueprints.cs" />
     <Compile Include="Blueprints\FirearmWeaponPresentation.cs" />
     <Compile Include="Blueprints\CapitalVendorBlueprints.cs" />
-    <Compile Include="Blueprints\OlegFirearmSupplyCleanupBlueprints.cs" />
+    <Compile Include="Blueprints\OlegFirearmVendorBlueprints.cs" />
     <Compile Include="Blueprints\BokkenFirearmSupplyVendorBlueprints.cs" />
     <Compile Include="Blueprints\BeneathStolenLandsVendorBlueprints.cs" />
     <Compile Include="Blueprints\BlueprintItemAccess.cs" />
@@ -465,6 +465,7 @@
     <Compile Include="Blueprints\SkeletalSalesmanBlueprints.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MidgameFirearms.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmDescriptions.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ModelDVendors.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MidgameWorkingSave.cs" />
     <Compile Include="Acquisition\SkeletalSalesmanStockCatalog.cs" />
     <Compile Include="Firearms\MidgameFirearmCatalog.cs" />

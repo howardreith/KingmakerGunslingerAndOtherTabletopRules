@@ -848,6 +848,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RunSummonSameTurnCompatibility();
                     return;
                 }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.ObserveModelDVendors)
+                {
+                    if (!BlueprintBootstrap.IsInitialized || ResourcesLibrary.Preloading) return;
+                    Complete(RunModelDVendorObservation());
+                    return;
+                }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.ObserveFirearmDescriptions)
                 {
                     if (!BlueprintBootstrap.IsInitialized || ResourcesLibrary.Preloading) return;
@@ -10782,19 +10788,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 BuildDirectBlueprintReferenceIndex(allBlueprints, tables);
             BlueprintSharedVendorTable olegTable = tables.SingleOrDefault(value =>
                 string.Equals(value.AssetGuid,
-                    OlegFirearmSupplyCleanupBlueprints.TableGuid,
+                    OlegFirearmVendorBlueprints.TableGuid,
                     StringComparison.Ordinal));
             List<string> olegReferenceList;
             string[] olegReferences = vendorReferences.TryGetValue(
-                OlegFirearmSupplyCleanupBlueprints.TableGuid,
+                OlegFirearmVendorBlueprints.TableGuid,
                 out olegReferenceList) ? olegReferenceList.ToArray() :
                 Array.Empty<string>();
             string expectedOlegOwner = typeof(BlueprintUnit).FullName + ":" +
-                OlegFirearmSupplyCleanupBlueprints.OlegOwnerName + ":" +
-                OlegFirearmSupplyCleanupBlueprints.OlegOwnerGuid + "*1";
+                OlegFirearmVendorBlueprints.OlegOwnerName + ":" +
+                OlegFirearmVendorBlueprints.OlegOwnerGuid + "*1";
             string expectedFirstVisitOwner = typeof(BlueprintUnit).FullName + ":" +
-                OlegFirearmSupplyCleanupBlueprints.FirstVisitOwnerName + ":" +
-                OlegFirearmSupplyCleanupBlueprints.FirstVisitOwnerGuid + "*1";
+                OlegFirearmVendorBlueprints.FirstVisitOwnerName + ":" +
+                OlegFirearmVendorBlueprints.FirstVisitOwnerGuid + "*1";
             olegOwnerContracts = olegReferences.Length == 2 &&
                 olegReferences.Contains(expectedOlegOwner) &&
                 olegReferences.Contains(expectedFirstVisitOwner);
@@ -10816,7 +10822,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 olegOverhaulCount = overhaulRows.Length == 1 ?
                     CapitalVendorBlueprints.ReadCount(overhaulRows[0]) : -1;
                 BlueprintItem[] ownedSupplies =
-                    OlegFirearmSupplyCleanupBlueprints.Owned(
+                    OlegFirearmVendorBlueprints.Owned(
                         BlueprintBootstrap.BasicAmmunition,
                         BlueprintBootstrap.FirearmRepairKit,
                         BlueprintBootstrap.GunsmithingSupplies);
@@ -10930,9 +10936,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 var expectedProjectItems = new Dictionary<BlueprintItem, int>
                 {
-                    { BlueprintBootstrap.ProductionFirearms.Pistol.Item, 1 },
-                    { BlueprintBootstrap.ProductionFirearms.Musket.Item, 1 },
-                    { BlueprintBootstrap.ProductionFirearms.Blunderbuss.Item, 1 },
                     { BlueprintBootstrap.MagicFirearms.Require(
                         MagicFirearmBlueprints.PistolPlus1Symbol).Item, 1 },
                     { BlueprintBootstrap.MagicFirearms.Require(
@@ -11170,7 +11173,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         CapitalVendorBlueprints.ReadItem(value), borderSentinel)));
             BlueprintSharedVendorTable easternOleg = tables.SingleOrDefault(value =>
                 string.Equals(value.AssetGuid,
-                    OlegFirearmSupplyCleanupBlueprints.TableGuid,
+                    OlegFirearmVendorBlueprints.TableGuid,
                     StringComparison.Ordinal));
             int borderSentinelOlegRows = easternOleg == null ? -1 :
                 (easternOleg.ComponentsArray ?? Array.Empty<BlueprintComponent>())
@@ -11392,23 +11395,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                         !capitalEntries.Any(value => value.Contains("<null>")),
                     "SmithVendorTable LootItemsPackFixed fields"),
                 Assertion("gunslinger-capital-vendor-publication",
-                    "ten exact early/+1/supply entries including Paper, one Blunderbuss, and zero retired maintenance kits",
-                    observed, projectEntries == 10 && invalidProjectCounts == 0 &&
-                        blunderbussEntries == 1 && capitalRetiredKitRows == 0,
-                    "registered early and +1 firearms, ammunition, and the reusable Gunsmith's Kit"),
-                Assertion("oleg-firearm-supplies-absent",
-                    "exact Oleg table contains zero project-owned firearm-supply rows",
+                    "seven exact +1/supply entries including Paper, no mundane Blunderbuss, and zero retired maintenance kits",
+                    observed, projectEntries == 7 && invalidProjectCounts == 0 &&
+                        blunderbussEntries == 0 && capitalRetiredKitRows == 0,
+                    "registered +1 firearms, ammunition, and the reusable Gunsmith's Kit"),
+                Assertion("oleg-firearm-supplies-model-d",
+                    "exact Oleg table contains powder and ball supply rows; no retired kits",
                     observed, olegTable != null && string.Equals(olegTable.name,
-                        OlegFirearmSupplyCleanupBlueprints.ExpectedTableName,
+                        OlegFirearmVendorBlueprints.ExpectedTableName,
                         StringComparison.Ordinal) && olegRepairRows == 0 &&
-                        olegOverhaulRows == 0 && olegOwnedSupplyRows == 0,
+                        olegOverhaulRows == 0 && olegOwnedSupplyRows == 2,
                     "exact BlueprintSharedVendorTable and project-owned item references"),
                 Assertion("oleg-vendor-owners",
                     "OTP_Oleg and OTP_Oleg_FirstVisit are the two exact direct table owners",
                     observed, olegOwnerContracts,
                     "read-only direct blueprint reference index and exact owner GUIDs"),
                 Assertion("bokken-firearm-supply-stock",
-                    "exact Bokken unit-loot table contains the four stocked firearm-supply rows and zero retired kit rows",
+                    "exact Bokken unit-loot table contains the three stocked firearm-supply rows and zero retired kit rows",
                     observed, bokkenTable != null && string.Equals(bokkenTable.name,
                         BokkenFirearmSupplyVendorBlueprints.ExpectedTableName,
                         StringComparison.Ordinal) && bokkenPowderRows == 1 &&
@@ -11419,8 +11422,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         bokkenPaperRows == 1 && bokkenPaperCount ==
                             BokkenFirearmSupplyVendorBlueprints.AmmunitionCount &&
                         bokkenRepairRows == 0 && bokkenOverhaulRows == 0 &&
-                        bokkenGunsmithRows == 1 && bokkenGunsmithCount ==
-                            BokkenFirearmSupplyVendorBlueprints.GunsmithKitCount,
+                        bokkenGunsmithRows == 0,
                     "exact BlueprintUnitLoot and project-owned item references"),
                 Assertion("bokken-vendor-owners",
                     "OTP_Bokken and OTP_Bokken_ZeroState are the two exact direct loot-table owners",

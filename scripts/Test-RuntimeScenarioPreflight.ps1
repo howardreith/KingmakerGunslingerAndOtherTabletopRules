@@ -41,6 +41,7 @@ Assert-True ($sourceStateFirst -cmatch '^[0-9a-f]{64}$' -and
     'source-state-attestation-is-stable-and-sha256'
 
 $expected = @(
+    'observe-model-d-vendors',
     'observe-firearm-descriptions',
     'disposable-expanded-summoning-projected-menu',
     'disposable-expanded-summoning-pteranodon-fault-drill',
