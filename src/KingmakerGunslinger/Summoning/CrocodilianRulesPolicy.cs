@@ -201,15 +201,27 @@ namespace KingmakerGunslinger.Summoning
         /// <summary>
         /// Which single rider a successful maintain resolves.
         ///
-        /// <para>The Dire Crocodile has both abilities, and one successful
-        /// grapple check must never resolve both. The choice is deterministic
-        /// and made from what is true before the check's outcome is applied,
-        /// so no future result decides it: a target small enough to swallow is
-        /// swallowed, and a target too large to swallow but no larger than the
-        /// crocodilian is death rolled. That leaves both abilities reachable -
-        /// swallow against a smaller foe, death roll against one of its own
-        /// size - and makes which one happened predictable from the target's
-        /// size alone.</para>
+        /// <para><b>Adaptation: SWALLOW_ELIGIBLE_TARGET_ELSE_DEATH_ROLL.</b>
+        /// At the table the crocodilian chooses. Kingmaker's maintain is an
+        /// automatic round tick rather than a player command - the hold's own
+        /// component resolves it from ITickEachRound - so there is no action
+        /// for a player to aim and no safe way to intercept one without
+        /// building a held-target action subsystem this sprint's scope
+        /// forbids. The audit of that seam found no existing player-facing
+        /// maintain action to extend: the rake has a command path, but a rake
+        /// is an attack the player orders, not a rider on an automatic
+        /// check.</para>
+        ///
+        /// <para>So the rider is selected deterministically, and this is not
+        /// exact tabletop choice and must not be described as such. The rule
+        /// is: a held target small enough to swallow is swallowed; a held
+        /// target too large to swallow but no larger than the crocodilian is
+        /// death rolled. It is decided from what is true before the check's
+        /// outcome is applied, so no future result informs it, and it leaves
+        /// both abilities reachable because the thresholds genuinely differ -
+        /// swallow needs one size category smaller, a death roll does not.
+        /// Which one happened is predictable from the target's size
+        /// alone.</para>
         ///
         /// <para>Returning a single value rather than two independent booleans
         /// is the point: there is no state in which a caller can act on both.
