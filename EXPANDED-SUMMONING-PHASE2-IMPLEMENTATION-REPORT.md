@@ -2,6 +2,12 @@
 
 ## Current checkpoint, October 5: Sprint 16 NOT QUALIFIED
 
+The guarded persistence trio now accepts a closed crocodilian-only scope,
+leaving its historical fixture untouched. Five summons cover active/cooldown
+Sprint states, exact reloaded skills/visuals and clean hold/swallow reset.
+Native save arming remains descriptor-bound. Three scoped/default request
+round trips and 19 rejection cases pass; this fixture compiles but has NOT RUN.
+
 The crocodilian scenario now contains the focused profile/bite/Death Roll/
 maintain/Swallow scheduler and Sprint speed/timeline cases plus twelve native
 command cells (two creatures, both modes, manual/fresh-AI/player-cooldown-AI).
