@@ -1,6 +1,11 @@
 # Expanded Summoning Phase 2 evidence index
 
-Current Sprint 16 third reconciled batch: **FAIL**, no publication.
+Current Sprint 16 fourth reconciled batch: **FAIL**, no publication.
+[Exact frozen artifact, failed ownership/control assumptions, six fresh processes and restoration](planning/EXPANDED-SUMMONING-SPRINT16-FOURTH-RECONCILED-BATCH-REVIEW.md).
+No working-save write; fresh absence confirms clean. Containing narrow repair
+requires new complete gates and runtime qualification.
+
+Historical Sprint 16 third reconciled batch: **FAIL**, no publication.
 [Exact artifact, fresh processes, passed persistence and unresolved combat/crowd gates](planning/EXPANDED-SUMMONING-SPRINT16-THIRD-RECONCILED-BATCH-REVIEW.md).
 Actual leased installation restored exactly, lease released, disposable working save clean.
 The containing visual/control/setup repair needs new full gates and runtime evidence.
