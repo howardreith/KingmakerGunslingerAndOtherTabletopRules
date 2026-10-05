@@ -1,6 +1,69 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-05 (Codex takeover; Sprint 16 NOT QUALIFIED)
+## CURRENT STATE, 2026-10-05 (reconciled Phase 2B candidate; NOT QUALIFIED)
+
+This header governs over all history below. The latest owner orders require
+Sprint 16 qualification, Sprint 17, Phase 2B closure, then **STOP**. Phase 2C
+is unauthorized in this mission. No merge, force push, rebase of published work,
+release, tag, version bump, PR change or permanent deployment.
+
+- Worktree: `C:/Dev/KingmakerGunslingerLab/.worktrees/expanded-summoning-phase2a`;
+  branch: `codex/expanded-summoning-phase2b-sprints14-17`. The previous remote
+  advance was reconciled only after the owner's explicit synchronization order.
+  Authoritative base: `390f9a39d9cce2a40e6528d3215a678d6cd15757`, retaining
+  every runtime-derived production/fixture correction and failed-attempt ledger.
+- Unpublished sibling `3ebefe7b6c5525156d8494de82435abf8574f503` is preserved
+  at local safety branch `codex/local-safety/phase2b-3ebefe7-2026-10-05`.
+  Rename-preservation and normal branch creation avoided reset, merge and
+  history rewrite. Both siblings' diffs and range-diff were reviewed. Replay:
+  independent positive-version/catalog/crocodilian preflight hardening. Manual
+  reconciliation: this header and evidence index. No runtime repair was replaced.
+  Detailed ledger: `planning/EXPANDED-SUMMONING-PHASE2B-RECONCILIATION-2026-10-05.md`.
+- Exclusive local source ownership was checked against all six agent process
+  directories, active command processes, Git operation state, clean worktree,
+  runtime coordination state and the stable remote. An owned exclusive file
+  handle records PID/start identities in worktree Git metadata; its local
+  receipt is `artifacts/phase2b-closure/source-ownership.json`. Do not steal it.
+  If the remote moves again, stop without history reconciliation.
+- Sprint 16 remains **NOT QUALIFIED**. The first hidden candidate on `0238bf0`
+  failed mechanics, visual and persistence assertions; both save-writing stages
+  refused to save. Its exact artifact/results/restoration are retained in
+  `planning/EXPANDED-SUMMONING-SPRINT16-HIDDEN-CANDIDATE-REVIEW.md`.
+  `390f9a39` corrects per-copy skills/HP, native bite multiplier/dice scaling,
+  prone immunity, native death settlement, owned-only typed fixture cleanup,
+  and guided movement. It has not passed a corrected runtime batch.
+- Current publication remains 976 registered generated placements / 970
+  published / 6 Dire withheld / 29 native wrappers / 999 visible choices.
+  These source pins must be checked by the reconciled full suite; previous
+  sibling passing tests/packages do not qualify this candidate.
+- Reconciled working-tree gates PASS: 216 focused; 2018/2018 unfiltered;
+  repository/static/icon validation; 480 preflight; 68 orchestration; closed
+  persistence/crowd request tests; clean Release and strict 312-member package.
+  This is pre-commit source qualification, not exact-head runtime evidence.
+- Next action: complete the clean checkpoint focused/unfiltered/static/icon/preflight/clean Release/
+  deterministic/strict package gates on this reconciled candidate, freeze exact
+  DLL/MVID/ZIP/source identities, then run the complete corrected hidden batch.
+  Acquire the runtime lease **before** snapshot/deployment; snapshot the actual
+  current live tree and restore those exact bytes after the guarded fresh Steam
+  640820 launches. Do not substitute either historical 0.0.117 or observed
+  0.0.140 installation. Only the closed working-save persistence fixture may
+  write its exact authorized working descriptor; baseline remains protected.
+- Publish Dire only after every required exact-artifact Sprint 16 gate passes.
+  Sprint 17 must not begin until Sprint 16 is qualified and pushed.
+- Accepted unchanged: `PASSIVE_CREATURE_SENSES_UNMODELED`,
+  `ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD`,
+  `SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED`,
+  `SWALLOW_ELIGIBLE_TARGET_ELSE_DEATH_ROLL`. No substitute subsystem.
+- The external mission file named below is absent from this checkout. Current
+  explicit owner orders and committed contracts govern; missing contents were
+  not invented. Content-followup `b28b5786d10a94f3257fafa5cf02bbd50471d182`,
+  Phase 2A `5482db429bd3c4009a031aa733a3091edfa5fe5e`, master
+  `2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a` and foreign worktrees are protected.
+  Content-followup human tooltip/merchant acceptance is outside this mission.
+
+`HumanReview: NOT_PERFORMED_NONBLOCKING`.
+
+## Historical first hidden batch and correction checkpoint, October 5
 
 This short header governs over all historical entries below. Authority is the
 owner's 2026-10-05 takeover order and
