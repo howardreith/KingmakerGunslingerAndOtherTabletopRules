@@ -24,7 +24,7 @@
       15
     ],
     "currentSprint": 16,
-    "currentSubItem": "Sprint 16 second reconciled batch FAIL; native dice/fixture repairs source-qualified; new exact-artifact batch pending; Dire withheld; Sprint 17 not started",
+    "currentSubItem": "Sprint 16 third reconciled batch FAIL; mechanics 35/35, final 80/80 and closed persistence PASS; combat contact/AI/control and crowd launch unresolved; narrow repair awaiting new gates; Dire withheld; Sprint 17 not started",
     "lastGuardedRuntimePass": "20260930T1314329155573Z-disposable-expanded-summoning",
     "lastGuardedRestoration": "20261005T1555173824556Z-disposable-expanded-summoning-crocodilians.json",
     "giantWaspPublished": true,
@@ -84,6 +84,13 @@
       "review": "planning/EXPANDED-SUMMONING-SPRINT16-SECOND-RECONCILED-BATCH-REVIEW.md",
       "restoration": "VERIFIED actual leased 0.0.140 / 254-file snapshot 20261005T1733246964445Z; lease released",
       "workingSave": "one authorized prepare write; cleanup refused; five fixture units require guarded cleanup"
+    },
+    "sprint16ThirdReconciledBatch": {
+      "candidate": "08df2611bfaf22f675ea13c31babf35f304de1d7",
+      "status": "FAIL; smoke 11/11, main 184/206, crowd ERROR before OnUpdate/result, prepare 9/9, cleanup 9/9, absence 5/5",
+      "review": "planning/EXPANDED-SUMMONING-SPRINT16-THIRD-RECONCILED-BATCH-REVIEW.md",
+      "restoration": "VERIFIED actual leased 0.0.140 / 254-file snapshot 20261005T1817018793607Z; lease released",
+      "workingSave": "two authorized native writes, prepare and cleanup; fresh absence confirms zero KMG summons"
     }
   },
   "charter": {
@@ -95,7 +102,7 @@
     "automaticContinuationAllowed": false
   },
   "mission": {
-    "name": "Expanded Summoning Phase 0 — Sprints 0-2",
+    "name": "Expanded Summoning Phase 0 \u2014 Sprints 0-2",
     "authorizedSprints": [
       0,
       1,
