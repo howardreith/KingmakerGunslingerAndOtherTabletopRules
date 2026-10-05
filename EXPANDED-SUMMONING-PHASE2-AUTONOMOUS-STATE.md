@@ -31,6 +31,11 @@ Sprints 18-21. No merge, release/tag, permanent deployment or Sprint 22.
   one shared buff cooldown, and exact one-time land rank allocations. A narrow
   crocodilian survey is wired for live census/graphs/skills and private bind
   capture. Focused checks pass; these changes still have no runtime proof.
+- Latest source checkpoint before this test-only correction:
+  `e9dae664a8f46ac68ca4d5244fac33db97c76c1c` (pushed). The complete survey
+  preflight stopped on four stale domain-test contracts; these are reconciled
+  and the focused 17-case recheck passes. No deployment or launch occurred.
+  The guarded launcher must rerun the complete pipeline before deployment.
 - Open work: live base-bite/modifier/DR proof; recursive live swallowed-action
   audit and damage cadence; Sprint speed interactions and AI
   fallback; exact skills and Run disposition; both original crocodilian visuals;
