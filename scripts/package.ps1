@@ -131,6 +131,15 @@ if (Test-Path -LiteralPath $sprint14InsectSource -PathType Container) {
         Copy-Item -LiteralPath (Join-Path $sprint14InsectSource "$kind-albedo.png") -Destination $sprint14InsectDestination
     }
 }
+$crocodilianSource = Join-Path $outputDirectory 'assets\sprint16-crocodilians'
+if (Test-Path -LiteralPath $crocodilianSource -PathType Container) {
+    $crocodilianDestination = Join-Path $modDirectory 'assets\sprint16-crocodilians'
+    New-Item -ItemType Directory -Path $crocodilianDestination -Force | Out-Null
+    foreach ($kind in @('crocodile','dire-crocodile')) {
+        Copy-Item -LiteralPath (Join-Path $crocodilianSource "$kind-mesh.json") -Destination $crocodilianDestination
+        Copy-Item -LiteralPath (Join-Path $crocodilianSource "$kind-albedo.png") -Destination $crocodilianDestination
+    }
+}
 $soundBankSource=Join-Path $repositoryRoot 'assets\soundbanks'
 if(Test-Path -LiteralPath (Join-Path $soundBankSource 'KMG_Firearms.bnk') -PathType Leaf){
     $soundBankDestination=Join-Path $modDirectory 'assets\soundbanks'
@@ -157,7 +166,7 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
 # withheld creature still has to ship its visual - the loader resolves its
 # files from the creature key, so one missing from this staging would wear its
 # donor's body rather than fail.
-$expectedPackageFileCount = if ($hasFirearmSoundBank) { 305 } else { 303 }
+$expectedPackageFileCount = if ($hasFirearmSoundBank) { 309 } else { 307 }
 & $python (Join-Path $repositoryRoot 'tools\create_deterministic_package.py') `
     --source $modDirectory --output $packagePath `
     --expected-file-count $expectedPackageFileCount

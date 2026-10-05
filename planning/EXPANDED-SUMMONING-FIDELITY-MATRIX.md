@@ -20,7 +20,12 @@ The accepted passive-sense and clean-on-reload grapple limitations are unchanged
 Land skills: Crocodile +8/+5, Dire +14/+0; both zero Mobility ranks. Run has no
 exact meaningful native fact and is omitted explicitly. Full survey breakdowns
 and hashes: `EXPANDED-SUMMONING-SPRINT16-SURVEY-REVIEW.md`. Sprint interactions/AI,
-full mechanics/lifecycle and both original visuals remain open.
+full mechanics/lifecycle and live original-visual qualification remain open.
+Both original models/paintings now have deterministic offline exports and a
+44-panel form/paint/pose/scale review. The exact 27-driver policy, four package
+files and identity-only 2x Dire view scale are documented in
+`assets-source/original-models/sprint16-crocodilians/SOURCE.md`. No live
+visual/contact/crowding/resource result has yet been claimed.
 `HumanReview: NOT_PERFORMED_NONBLOCKING`.
 
 ## Sprint 15 closeout, 2026-10-03: COMPLETE AND PUBLISHED

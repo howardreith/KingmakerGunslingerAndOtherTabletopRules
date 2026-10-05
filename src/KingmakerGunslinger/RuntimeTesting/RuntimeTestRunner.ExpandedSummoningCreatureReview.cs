@@ -145,9 +145,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool suppressedSprint14Candidate =
                     IsSprint14InsectReviewKey(key) &&
                     !SummonVisibilityCatalog.IsPublished(variant);
+                bool suppressedSprint16Candidate =
+                    CrocodilianVisualPolicy.Keys.Contains(key) &&
+                    !SummonVisibilityCatalog.IsPublished(variant);
                 if (!SummonVisibilityCatalog.IsPublished(variant) &&
                     !suppressedSprint13Candidate &&
-                    !suppressedSprint14Candidate)
+                    !suppressedSprint14Candidate &&
+                    !suppressedSprint16Candidate)
                     throw new InvalidOperationException(
                         "A suppressed creature cannot be reviewed through a parent: " +
                         key + ".");
@@ -165,7 +169,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static bool IsGroundCrowdReviewKey(string key)
         {
             return IsSprint11UngulateReviewKey(key) ||
-                IsSprint12QuadrupedReviewKey(key);
+                IsSprint12QuadrupedReviewKey(key) ||
+                CrocodilianVisualPolicy.Keys.Contains(key);
         }
 
         private static bool IsSprint11UngulateReviewKey(string key)
@@ -221,7 +226,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 key == "dire-rat" || key == "hyena" || key == "goblin-dog" ||
                 IsSprint11UngulateReviewKey(key) ||
                 IsSprint14InsectReviewKey(key) ||
-                IsSprint13CreatureReviewKey(key);
+                IsSprint13CreatureReviewKey(key) ||
+                CrocodilianVisualPolicy.Keys.Contains(key);
         }
 
         // The Sprint 12 quadrupeds already carry the "KMG_<key>_Original"

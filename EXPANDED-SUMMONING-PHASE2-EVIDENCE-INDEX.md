@@ -2,6 +2,16 @@
 
 ## Current checkpoint, October 5: Sprint 16 NOT QUALIFIED
 
+Original art checkpoint (not a runtime candidate):
+`assets-source/original-models/sprint16-crocodilians/SOURCE.md` records four
+asset hashes and the private bind-frame provenance. Four independent fresh
+exports match byte-for-byte. 44 offline clay/silhouette/paint/pose/scale panels
+were rendered under `artifacts/sprint16-authoring/review-final`; representative
+panels were inspected and the UV/collar/clay-exposure defects corrected.
+Focused 214/214 tests, static validator and incremental Release compile PASS.
+Full clean candidate/package and live visual/contact/cleanup proof are deferred
+to the stable Sprint 16 candidate, not waived.
+
 Latest narrow survey **PASS 7/7**:
 `20261005T1254571775971Z-disposable-expanded-summoning-crocodilians`,
 source `8250ac8f8369699af7825459bc860682e3e5eae5`. Full wrapper, 2013 domain
