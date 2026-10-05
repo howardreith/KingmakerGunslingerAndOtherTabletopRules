@@ -4,20 +4,24 @@
 
 Crocodile retains its identity and fourteen published roots. Dire Crocodile
 retains six registered, withheld roots. Changed mechanics are **NOT QUALIFIED**:
-base-bite identity/weapon attribution and single-action swallowed cadence have
-source hardening, but no Sprint 16 live proof.
+base-bite identity/weapon attribution and swallowed cadence still need live
+combat proof. The narrow `8250ac8f` survey passed exact land-skill rows and the
+complete creature-owned swallowed graph, not its damage-event cadence.
 
 `OwnerAcceptedAdaptation: SWALLOW_ELIGIBLE_TARGET_ELSE_DEATH_ROLL` is active
 after the bounded existing held-target command audit. It is deterministic AI
 behavior, not exact tabletop choice; live maintain-path proof is still required.
 
-`SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED` remains owner-authorized **conditional
-on the new live census**, not yet an accepted finding. Purple Worm's previously
-qualified mechanics are unchanged; its interior AC/hp fidelity entry will
-acknowledge the same engine-wide limitation if that census confirms no carrier.
+`OwnerAcceptedEngineLimitation: SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED`
+is activated by the fresh census; no interior target/AC/HP/cut-free carrier.
+Purple Worm's previously qualified mechanics are unchanged; the same
+engine-wide limitation is explicitly acknowledged for it.
 The accepted passive-sense and clean-on-reload grapple limitations are unchanged.
-Sprint interactions/AI, exact land skills, Run disposition and both original
-visuals remain open. `HumanReview: NOT_PERFORMED_NONBLOCKING`.
+Land skills: Crocodile +8/+5, Dire +14/+0; both zero Mobility ranks. Run has no
+exact meaningful native fact and is omitted explicitly. Full survey breakdowns
+and hashes: `EXPANDED-SUMMONING-SPRINT16-SURVEY-REVIEW.md`. Sprint interactions/AI,
+full mechanics/lifecycle and both original visuals remain open.
+`HumanReview: NOT_PERFORMED_NONBLOCKING`.
 
 ## Sprint 15 closeout, 2026-10-03: COMPLETE AND PUBLISHED
 
@@ -354,7 +358,7 @@ frozen quantity abilities generated for their higher-tier placements.
 | Frost Giant (Phase 1 Sprint 3) | SNA VII, VIII (1d3), IX (1d4+1) | retained native unit `590cd3d5e76fdc649a5f97bc984cd3c4` through creature-named wrappers; no KMG unit | native Frost Giant unchanged | none; the Nature's Ally wrappers spawn the same unit the SM VIII wrapper does | Phase 1 state file records the guarded evidence |
 | Shambling Mound (Phase 1 Sprint 4) | SNA VI | `KMG.Summoning.Unit.ShamblingMound`; body donor `b98ae409beb5e8543a75b82ecda082a7` | Large plant 9; 21/10/17/7/10/9; speed 20; NA +10; two 2d6 slams; fire resistance 10, electricity immunity; Power Attack, Iron Will, Lightning Reflexes, Cleave, Weapon Focus (slam); slam grab and constrict 2d6+7 on the shared summon grapple lifecycle | Electric Fortitude Constitution gain, swim and the native poison aura omitted; the holder cannot act while holding (native lockdown) | Phase 1 state file records the guarded evidence |
 | Giant Flytrap (Phase 1 Sprint 4) | SNA VII | `KMG.Summoning.Unit.GiantFlytrap`; body donor `fb824352b7968fb4d8103ac439644633` | Huge plant 13; 25/18/25/1/12/6; speed 10; NA +10; four 1d8 bites; acid resistance 20; native 60-ft blindsight for tremorsense; trip immunity; Cleave, Great Fortitude, Improved Initiative, Power Attack, Skill Focus (Stealth), Weapon Focus (bite); one grab link per bite (four at most) on the shared lifecycle, and a mouth that holds or has engulfed a foe attacks no one else; an active hold is session-scoped and releases cleanly on a reload (owner-accepted engine limitation, 2026-09-26); engulf of a Medium or smaller foe held since the round began, 1d8+7 bludgeoning plus 2d6 acid each round (corrected 2026-09-25) | Vital Strike omitted; Intelligence 1 for the absent score | Phase 1 state file records the guarded evidence |
-| Purple Worm (Phase 1 Sprint 4) | SNA VIII | `KMG.Summoning.Unit.PurpleWorm`; native summoned worm `bf2216f48b3f4d24c9c502007649340d` | Gargantuan magical beast 16; 35/6/25/1/8/8; speed 20; NA +22; native bite and sting; exact native Constitution-scaled sting poison; trip immunity; Critical Focus, Improved Critical (bite), Power Attack, Weapon Focus (bite); bite grab holds, and a later turn's successful maintain check swallows a foe up to one size smaller whole through the native swallow-whole part (corrected 2026-09-25) | burrow, swim and the native brain omitted; Awesome Blow, Improved Bull Rush, Staggering Critical, Weapon Focus (sting) omitted | Phase 1 state file records the guarded evidence |
+| Purple Worm (Phase 1 Sprint 4) | SNA VIII | `KMG.Summoning.Unit.PurpleWorm`; native summoned worm `bf2216f48b3f4d24c9c502007649340d` | Gargantuan magical beast 16; 35/6/25/1/8/8; speed 20; NA +22; native bite and sting; exact native Constitution-scaled sting poison; trip immunity; Critical Focus, Improved Critical (bite), Power Attack, Weapon Focus (bite); bite grab holds, and a later turn's successful maintain check swallows a foe up to one size smaller whole through the native swallow-whole part (corrected 2026-09-25) | burrow, swim and the native brain omitted; Awesome Blow, Improved Bull Rush, Staggering Critical, Weapon Focus (sting) omitted; OwnerAcceptedEngineLimitation: SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED (October 5 live census; no interior target/AC/HP/cut-free path) | Phase 1 guarded mechanics remain qualified; interior omission acknowledged without reopening them |
 | Dust Mephit (Phase 1 Sprint 5) | SM IV / SNA IV | `KMG.Summoning.Unit.DustMephit`; native summoned air mephit `50782bc4eb36aac4287023e20ee00808` | Small outsider 3; 13/15/12/6/11/14; speed 40; NA +3; two 1d4 claws; DR 5/magic; fast healing 2; air subtype; 15-ft enemies-only 1d4 slashing breath with a sickening rider; blur once per summoning; project Wind Wall once per summoning (15-ft shelter for 6 rounds for every creature inside that is not the mephit's enemy: arrows and bolts miss, other ranged weapons 30% miss chance; corrected 2026-09-25); warm sand rim glow (the mephit body's visible colour) | spell-like abilities once per summoning rather than per hour or per day; the wall is a cylinder around the mephit rather than a placed wall; allies in the cone take nothing | Phase 1 state file records the guarded evidence |
 | Ice Mephit (Phase 1 Sprint 5) | SM IV / SNA IV | `KMG.Summoning.Unit.IceMephit`; native summoned water mephit `4615328295cd7e84bb2ef09d3dba8403` | as the dust mephit; air subtype, cold immunity, fire vulnerability; 15-ft enemies-only 1d4 cold breath with a sickening rider; magic missile once per summoning; project Chill Metal once per summoning (a metal-bearing foe within close range, Will negates, seven-round cold table in full for metal armor and minimal for a metal weapon; corrected 2026-09-25); icy cyan-white rim glow | metal is judged by armor type and weapon category (padded, leather and hide are not metal; wooden weapons are not) | Phase 1 state file records the guarded evidence |
 | Magma Mephit (Phase 1 Sprint 5) | SM IV / SNA IV | `KMG.Summoning.Unit.MagmaMephit`; native summoned fire mephit `10a820de0a417f345866f794324205ad` | as the dust mephit; earth and fire subtypes (fire immunity, cold vulnerability); 15-ft enemies-only 1d8 fire breath; project Pyrotechnics once per summoning (enemies within 20 ft blinded 1d4+1 rounds, Will negates) and project Magma Form once per summoning (5 rounds: DR 20/magic, speed 10, no attacks; corrected 2026-09-25); ember-red rim glow (no emission slot on the shader) | pyrotechnics is a 20-ft burst from the mephit's own fire rather than a 120-ft fireworks radius; magma form lasts five rounds | Phase 1 state file records the guarded evidence |

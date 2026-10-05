@@ -5,16 +5,25 @@
 Death Roll now captures base-bite identity before after-rule list reordering,
 uses native weapon damage attribution and claims the maintain round before the
 check. Dire Crocodile's swallowed buff constructs one explicit round-damage
-action and preserves only the audited native penalties. Live proof is pending.
+action and preserves only the audited native penalties. Its live recursive graph
+audit now passes; damage cadence and escape/lifecycle proof remain pending.
 The deterministic rider adaptation is accepted after the bounded command-seam
-audit; the interior limitation still awaits its required live census.
+audit. The live census activates the owner's accepted
+`SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED` limitation for Dire and Purple Worm.
+
+Research source `8250ac8f8369699af7825459bc860682e3e5eae5` passed the full
+wrapper, 2013 domain tests, exact clean Release, strict package and seven live
+survey assertions. Exact skills are +8/+5 Crocodile and +14/+0 Dire with zero
+Mobility ranks; Run is an audited engine omission. The 41-bone Monitor Lizard
+bind frame is privately captured for original art. Exact 136-file restoration
+passed. See the Sprint 16 survey review for every evidence hash and boundary.
 
 The research artifact `3d0612f1` passed the repository wrapper, 2012 domain
 tests, clean exact build and strict package validation. Its guarded survey
 failed before save loading because +15 natural armor was not in the native
 fact map. The mapping is now shared with domain validation and includes the
 exact censused +15 fact; focused recheck 25/25 passes (2013 registered).
-This is not the hidden candidate gate. Sprint speed/AI, skills, Run, original
+This is not the hidden candidate gate. Sprint speed/AI, skill persistence, original
 visuals, runtime scenarios, targeted persistence and publication remain open.
 Sprints 14-15 stay accepted. Current surface: 976 registered / 970 published /
 6 withheld + 29 wrappers = 999 visible choices. The failed survey exited and
