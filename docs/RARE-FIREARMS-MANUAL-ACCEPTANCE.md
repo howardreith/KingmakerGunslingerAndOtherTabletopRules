@@ -8,8 +8,12 @@ only authoritative locally proven Bag of Tricks entry points. The automated
 observer remains authoritative for publication wiring; human checks cover only
 player-facing accessibility and appropriateness.
 
-- Inspect selected capital stock: three mundane and three +1 early firearms,
-  exact supplies, no Rifle/Revolver/named unique.
+- Inspect Model D stock: Oleg has the three mundane firearms (one each),
+  powder and balls (50 each); capital has the three +1 firearms (one each),
+  powder/balls/cartridges (200 each) and one Gunsmith's Kit. Bokken has the
+  three ammunition rows (100 each), with no kit. No Rifle/Revolver/named unique
+  is added by these publications. Existing materialized stock may persist;
+  fixed rows can deplete and regeneration is not guaranteed.
 - Inspect exact family icons/models and truthful Reliable/native properties.
 - Natural-1 Reliable Pistol: native miss and shot spend, no misfire/condition.
 - Check one Reliable Musket/Blunderbuss edge in direct and Scatter Shot paths.

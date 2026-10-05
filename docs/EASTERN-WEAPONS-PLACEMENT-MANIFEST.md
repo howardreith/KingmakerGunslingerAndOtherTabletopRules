@@ -1,5 +1,18 @@
 # Eastern Weapons placement manifest
 
+## Current Model D merchant contract (2026-10-04)
+
+Capital has zero generic Eastern rows. Oleg retains the six mundane/masterwork
+rows; Dire Narlmarches and Pitax retain all twelve generic rows each, one per
+item. Both Honest Guy tables retain twelve generic rows each. Named fixed loot
+is unchanged from the fixed Phase 2A baseline.
+Fixed rows can deplete. Native table regeneration is not guaranteed and no
+renewable merchant supply is created. Normal initialization removes retired
+mod-owned blueprint rows; purchased items and materialized inventories are not
+walked or rewritten. The historical tables and evidence below predate this
+supersession; use the [Model D audit](research/MOD-ITEM-AVAILABILITY-AUDIT.md)
+and mission handoff for current quantities and integrated runtime evidence.
+
 ## Live qualification
 
 Historical pre-Issue-7 guarded read-only vendor/loot run
