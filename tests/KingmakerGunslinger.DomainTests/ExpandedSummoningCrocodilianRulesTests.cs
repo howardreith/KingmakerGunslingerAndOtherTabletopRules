@@ -15,6 +15,35 @@ namespace KingmakerGunslinger.DomainTests
     /// </summary>
     internal static class ExpandedSummoningCrocodilianRulesTests
     {
+        internal static void LandSkillsUseExactRanksWithoutMobility()
+        {
+            foreach (var row in new[] {
+                new { Key = "crocodile", PerceptionRanks = 1, StealthRanks = 2,
+                    Perception = 8, Stealth = 5, SizePenalty = -4 },
+                new { Key = "dire-crocodile", PerceptionRanks = 6, StealthRanks = 6,
+                    Perception = 14, Stealth = 0, SizePenalty = -12 } })
+            {
+                CrocodilianRulesProfile rules = CrocodilianRulesPolicy.For(row.Key);
+                NaturalSummonProfile profile = ExpandedSummoningNaturalProfiles.For(row.Key);
+                if (rules.PerceptionRanks != row.PerceptionRanks ||
+                        rules.StealthRanks != row.StealthRanks || rules.MobilityRanks != 0 ||
+                        rules.PerceptionRanks + rules.StealthRanks != profile.HitDice ||
+                        !profile.Skills.SequenceEqual(new[] { "Perception", "Stealth" }))
+                    throw new InvalidOperationException("Incorrect land skill allocation: " + row.Key);
+                if (!profile.Facts.Contains("SkillFocusPerception") ||
+                        !profile.Facts.Contains("SkillFocusStealth"))
+                    throw new InvalidOperationException("Printed Skill Focus facts must remain native.");
+                int perception = rules.PerceptionRanks + 3 + profile.Wisdom / 2 - 5 +
+                    (rules.PerceptionRanks >= 10 ? 6 : 3);
+                int stealth = rules.StealthRanks + 3 + profile.Dexterity / 2 - 5 +
+                    (rules.StealthRanks >= 10 ? 6 : 3) + row.SizePenalty;
+                if (perception != row.Perception || stealth != row.Stealth)
+                    throw new InvalidOperationException("Printed land totals do not derive: " + row.Key);
+                if (profile.Deviations.Any(value => value.Contains("water-only Stealth")) == false)
+                    throw new InvalidOperationException("Aquatic-only skill omission must be explicit.");
+            }
+        }
+
         internal static void DeathRollAdjustsOnlyTheCapturedBaseBite()
         {
             // A supplemental physical chunk is just as unsuitable as an

@@ -2150,7 +2150,10 @@ namespace KingmakerGunslinger.Blueprints
 
             var speed = ScriptableObject.CreateInstance<
                 Kingmaker.Designers.Mechanics.Buffs.BuffMovementSpeed>();
-            speed.Descriptor = ModifierDescriptor.Enhancement;
+            // Bounded CRPG adaptation: +20 to the live land-speed stat,
+            // stacking with Haste. No mutable BaseValue snapshot/restore.
+            // Native Slow, penalties and caps still own their own semantics.
+            speed.Descriptor = ModifierDescriptor.UntypedStackable;
             speed.Value = rules.SprintBonusFeet;
             speed.CappedOnMultiplier = false;
             speed.CappedMinimum = false;
@@ -2250,7 +2253,9 @@ namespace KingmakerGunslinger.Blueprints
             ai.Ability = sprint;
             ai.Variant = null;
             ai.BaseScore = 3;
-            ai.CooldownRounds = rules.SprintCooldownRounds;
+            // The same serialized cooldown buff gates player and AI casts.
+            // A separate AI clock can drift after a player cast or reload.
+            ai.CooldownRounds = 0;
             ai.StartCooldownRounds = 0;
             ai.ActorConsiderations = Array.Empty<Kingmaker.Controllers.Brain
                 .Blueprints.Considerations.Consideration>();
@@ -2258,7 +2263,15 @@ namespace KingmakerGunslinger.Blueprints
                 .Blueprints.Considerations.Consideration>();
             ai.Locators = Array.Empty<EntityReference>();
             brain.name = InternalName(brainSymbol);
-            brain.Actions = new BlueprintAiAction[] { ai };
+            BlueprintBrain naturalBrain = unit.Brain;
+            if (naturalBrain == null || ReferenceEquals(naturalBrain, brain))
+                throw new InvalidOperationException(
+                    "Crocodilian Sprint requires the configured natural-attack brain.");
+            brain.ComponentsArray = (naturalBrain.ComponentsArray ??
+                Array.Empty<BlueprintComponent>())
+                .Select(ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
+            brain.Actions = (naturalBrain.Actions ?? Array.Empty<BlueprintAiAction>())
+                .Concat(new BlueprintAiAction[] { ai }).ToArray();
 
             var grant = ScriptableObject.CreateInstance<
                 AddAbilityToCharacterComponent>();
