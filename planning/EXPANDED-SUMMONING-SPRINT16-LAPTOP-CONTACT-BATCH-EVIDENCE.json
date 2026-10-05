@@ -1,0 +1,202 @@
+{
+  "schemaVersion": 1,
+  "status": "NOT QUALIFIED",
+  "candidate": "4c3c76cee25a9cdc68d25f660ece43a443ffe2d5",
+  "branch": "codex/expanded-summoning-phase2b-sprints14-17",
+  "sourceFingerprint": "61fbbce7d57260d40b4e39335ffe0f7a5a3920c09fd4bf1eddfd5c309a7da031",
+  "version": "0.0.141",
+  "dllSha256": "9a8df047cc7712190438c056dce0e273eabf7592308f7bb7f16a8cd754b47ec7",
+  "dllMvid": "69cfe3ef-7c55-4211-b1d1-22b339e788f4",
+  "zipSha256": "c0b17f1531f497ce1408ade84ee0e369c0d6e563d4d270432f68fd115c9770cc",
+  "packageMembers": 312,
+  "prelaunch": {
+    "focused": "217/217",
+    "fullUnfiltered": "2019/2019",
+    "repositoryStaticIconManifest": "PASS",
+    "preflight": 480,
+    "orchestration": 68,
+    "persistence": "11 wiring; 3 round trips/19 rejections",
+    "crowd": "5 round trips/7 rejections",
+    "cleanExactRelease": "PASS",
+    "deterministicPackage": "PASS",
+    "strictStandalone": "PASS"
+  },
+  "runs": [
+    {
+      "scenario": "working-save-smoke",
+      "startedAtUtc": "2026-10-05T21:40:29.4367387Z",
+      "parameters": {},
+      "launcherOutcome": "Clean",
+      "exitCode": 0,
+      "evidenceDirectory": "20261005T2140303871623Z-working-save-smoke",
+      "requestId": "20261005T2140304094368Z-7819772d20f84f868e2c9f704a4ae752",
+      "requestSha256": "2fd5aa089729afe20122d7028fbe206777013265cda1c6ae9152c863822451ac",
+      "resultSha256": "4dde666e1d2092c9d6b9e8ee52f7f682a90cf7fce0973b0e02e8e4a8032c9ea3",
+      "assertions": 11,
+      "passed": 11,
+      "failed": [],
+      "orchestrationSha256": "1f028dd7542c8027a1def1ad1344b152b74f4c7beb21b5d43c257f04dab0e792",
+      "processId": 26464,
+      "processStartedUtc": "2026-10-05T21:40:31.4091075Z",
+      "scenarioStatus": "PASS",
+      "outcome": "PASS",
+      "completedAtUtc": "2026-10-05T21:43:24.0834268Z"
+    },
+    {
+      "scenario": "disposable-expanded-summoning-crocodilians",
+      "startedAtUtc": "2026-10-05T21:43:29.5077468Z",
+      "parameters": {},
+      "launcherOutcome": "Unclean",
+      "exitCode": 1,
+      "evidenceDirectory": "20261005T2143302595821Z-disposable-expanded-summoning-crocodilians",
+      "requestId": "20261005T2143302753308Z-81eee0c32db1449bb7ad4eb0afd34d46",
+      "requestSha256": "72ba26b34402cd4862af1684f0f9de7bd807d18f638f8f18586f606b8aaa73a8",
+      "resultSha256": "c42187468b75597d7fe4bec1dd3175b8fcf986a3d54c7b5680f9c774c8219826",
+      "assertions": 209,
+      "passed": 204,
+      "failed": [
+        {
+          "name": "sprint16-dire-crocodile-rtwp-ai-fresh-contact-tail",
+          "status": "FAIL"
+        },
+        {
+          "name": "sprint16-dire-crocodile-rtwp-ai-player-cooldown-contact-tail",
+          "status": "FAIL"
+        },
+        {
+          "name": "sprint16-dire-crocodile-turn-based-ai-fresh-contact-tail",
+          "status": "FAIL"
+        },
+        {
+          "name": "sprint16-dire-crocodile-turn-based-ai-player-cooldown-contact-tail",
+          "status": "FAIL"
+        },
+        {
+          "name": "sprint16-crocodile-active-source-death",
+          "status": "FAIL"
+        }
+      ],
+      "orchestrationSha256": "3e627869865693bc552cc8eecdebc155e46f73fb59802163d48343be35a553f6",
+      "processId": 29864,
+      "processStartedUtc": "2026-10-05T21:43:32.0023819Z",
+      "scenarioStatus": "FAIL",
+      "outcome": "FAIL",
+      "completedAtUtc": "2026-10-05T21:55:23.4841862Z"
+    },
+    {
+      "scenario": "working-save-expanded-summoning-creature-review",
+      "startedAtUtc": "2026-10-05T21:55:23.8403771Z",
+      "parameters": {
+        "quantity": "OneD4PlusOne",
+        "creatures": "crocodile,dire-crocodile"
+      },
+      "launcherOutcome": "Clean",
+      "exitCode": 0,
+      "evidenceDirectory": "20261005T2155245617167Z-working-save-expanded-summoning-creature-review",
+      "requestId": "20261005T2155245617167Z-050be4ee6a414793942f028c0710a7b0",
+      "requestSha256": "a6c0352da09f80084e1a63f5011cd7851fd87d7b20bb5dcdda2b0a0928115ade",
+      "resultSha256": "03e8ada2ce1daadd2c9e1fc4f850bfe0a96c597d200d4112dec9c8b28edbb298",
+      "assertions": 20,
+      "passed": 20,
+      "failed": [],
+      "orchestrationSha256": "baa3d12e2f6e3ce5bcdcb19f42bef8a544c0609f5336837a082ef8f35742971e",
+      "processId": 14124,
+      "processStartedUtc": "2026-10-05T21:55:25.6718012Z",
+      "scenarioStatus": "PASS",
+      "outcome": "PASS",
+      "completedAtUtc": "2026-10-05T22:03:03.2590146Z"
+    },
+    {
+      "scenario": "working-save-expanded-summoning-prepare",
+      "startedAtUtc": "2026-10-05T22:03:03.6489403Z",
+      "parameters": {
+        "persistenceScope": "crocodilians"
+      },
+      "launcherOutcome": "Clean",
+      "exitCode": 0,
+      "evidenceDirectory": "20261005T2203044157819Z-working-save-expanded-summoning-prepare",
+      "requestId": "20261005T2203044314172Z-d0cda5c3a1f1437bbf016b8660d724f2",
+      "requestSha256": "c4227f8973d1ab534ce90ca179d20696fbcd0e79213d6cfbc330c062848fe86b",
+      "resultSha256": "5b5601819ce27ecc23d75d23cbb03f6ca2e056781836ee99e7a728dfea84ee17",
+      "assertions": 9,
+      "passed": 9,
+      "failed": [],
+      "orchestrationSha256": "238c03a15c55f2425738beccc1deaf56cdcb4c44bf93de27091575a41044a006",
+      "processId": 33392,
+      "processStartedUtc": "2026-10-05T22:03:05.4754050Z",
+      "scenarioStatus": "PASS",
+      "outcome": "PASS",
+      "completedAtUtc": "2026-10-05T22:06:28.0314577Z"
+    },
+    {
+      "scenario": "working-save-expanded-summoning-verify-cleanup",
+      "startedAtUtc": "2026-10-05T22:06:28.3889304Z",
+      "parameters": {
+        "persistenceScope": "crocodilians"
+      },
+      "launcherOutcome": "Clean",
+      "exitCode": 0,
+      "evidenceDirectory": "20261005T2206291026293Z-working-save-expanded-summoning-verify-cleanup",
+      "requestId": "20261005T2206291026293Z-9d76456174724f8c8dbfe0e5c3002bfd",
+      "requestSha256": "63e6e8e3f4e63627f2fac08c6834943af1749a97193e0725ee5e077114413f88",
+      "resultSha256": "0938172b441649d97a7fbd817f4a322497e737ed69b656262de28dc1022b013a",
+      "assertions": 9,
+      "passed": 9,
+      "failed": [],
+      "orchestrationSha256": "679e2c29df4ea30778acd0a982077c3f6b7addee15e84a0e1c8048ac9af13880",
+      "processId": 29720,
+      "processStartedUtc": "2026-10-05T22:06:29.9598566Z",
+      "scenarioStatus": "PASS",
+      "outcome": "PASS",
+      "completedAtUtc": "2026-10-05T22:09:51.2172072Z"
+    },
+    {
+      "scenario": "working-save-expanded-summoning-verify-absent",
+      "startedAtUtc": "2026-10-05T22:09:51.6088438Z",
+      "parameters": {
+        "persistenceScope": "crocodilians"
+      },
+      "launcherOutcome": "Clean",
+      "exitCode": 0,
+      "evidenceDirectory": "20261005T2209523262370Z-working-save-expanded-summoning-verify-absent",
+      "requestId": "20261005T2209523262370Z-b6637be45f61476bb70b50d908cef5f6",
+      "requestSha256": "c5a5959df3964d39fea2af0188c9d8c5f35b36f0363cbf5f756bb56af72f1403",
+      "resultSha256": "0968d5edd11c23f1548c280cdb1b1b21ef913e7e0afb315b5715668d6d59a4e5",
+      "assertions": 5,
+      "passed": 5,
+      "failed": [],
+      "orchestrationSha256": "c7f49629d629867b7c742e63fac854d806356ce91109045a52e6ac547fd2ff5a",
+      "processId": 9072,
+      "processStartedUtc": "2026-10-05T22:09:53.1154204Z",
+      "scenarioStatus": "PASS",
+      "outcome": "PASS",
+      "completedAtUtc": "2026-10-05T22:12:42.2557360Z"
+    }
+  ],
+  "baseline": {
+    "files": 136,
+    "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+    "version": "0.0.117",
+    "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+  },
+  "restored": {
+    "files": 136,
+    "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+    "version": "0.0.117",
+    "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+  },
+  "snapshot": "20261005T2140053167749Z",
+  "lease": "runtime-20261005T214004Z-d16cba73d8bc4ed08b6cdcf57956d17c",
+  "leaseReleased": true,
+  "restoration": "VERIFIED",
+  "completedAtUtc": "2026-10-05T22:12:50.5306966Z",
+  "gameProcessesRemaining": [],
+  "batchJournal": "artifacts/laptop-runtime-20261005T2140043816665Z/batch.json",
+  "batchJournalSha256": "E5AE36C7CC06AB399CDF2A98BAD09F4CBA2EB51EB62386BE2812211811ABC3C3",
+  "deploymentManifestSha256": "6117c09144697742e4a94893214e18fbcfb31cd7187838f4c0146862f8a633dc",
+  "detailedEvidence": {
+    "combat": "AE03E12FF60503634F495B2E8DF23E6D8F65F120353BDE8AF86E4E71C4C88484",
+    "finalReview": "EA5A72017E6AE356950DB7BF6D8A079A4E5CC2003E858D5074615E1FD80E251C",
+    "rig": "8B0C0309A03782753A825B825EA8598C5F3D84BE1A81B618E458C92BDC43A83F"
+  }
+}

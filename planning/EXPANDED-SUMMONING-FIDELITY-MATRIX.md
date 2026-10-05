@@ -3,20 +3,17 @@
 ## Current Sprint 16 disposition, October 5
 
 Sprint 16 remains **NOT QUALIFIED**, not published. Exact laptop candidate
-`bc36f97612020d6d680144bcb6ebc01bebe11216` passed full source/build/package
-gates, then completed six guarded runs: smoke 11/11, main 188/208 FAIL,
-crowd 20/20, prepare 9/9, cleanup 9/9, absence 5/5. All eighteen command
-cells executed after the request-local native-faction repair. Exact artifact
-and failure dispositions: [laptop review](EXPANDED-SUMMONING-SPRINT16-LAPTOP-NATIVE-FACTION-REVIEW.md).
+`4c3c76cee25a9cdc68d25f660ece43a443ffe2d5` passed all prelaunch gates
+(2019/2019 full), then smoke 11/11, main **204/209 FAIL**, crowd 20/20,
+prepare 9/9, cleanup 9/9, absence 5/5. All eighteen command cells and twenty
+targeted routes executed. [Exact review](EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-BATCH-REVIEW.md).
 
-Bounded passing evidence on these bytes: damage/maintain 37/37; speed/timeline
-19/19; icon bindings 9/9; all 14 existing Crocodile and 6 private Dire routes;
-crowd and closed active/cooldown/hold/swallow persistence. It is not a complete
-gameplay gate. Still failed: eight Dire AI bite/tail contacts, manual-swallow
-command sequencing, exact UI selection/clock restoration, ten lifecycle
-scheduling assertions. No assertion or production visual requirement waived.
-The actual 136-file / 0.0.117 installation was restored exactly; fresh absence
-proves the native cleanup save contains no owned fixture units/state.
+Damage/maintain 37/37, speed/timeline 19/19, icons 9/9, manual-swallow commands,
+bite contacts and UI/native expiry restoration now pass. Four Dire tail
+contacts still fail due to the wrong visual root; one Crocodile active-source-
+death row lacks proof of target update eligibility. No assertion waived.
+Actual 136-file / 0.0.117 tree restored exactly; fresh absence proves zero
+owned fixture state. This is partial evidence, not complete qualification.
 
 Crocodile identity and fourteen published roots are unchanged. All six Dire
 roots remain withheld: 976 registered / 970 published / 29 native wrappers /
