@@ -1,6 +1,62 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-03 (Sprint 15 complete and published; Sprint 16 next)
+## CURRENT STATE, 2026-10-05 (Codex takeover; Sprint 16 NOT QUALIFIED)
+
+This short header governs over all historical entries below. Authority is the
+owner's 2026-10-05 takeover order and
+`C:/Dev/KingmakerGunslingerLab/handoffs/Kingmaker_Codex_TwoDay_Autonomous_Phase2_Mission.md`.
+Continue Sprint 16, Sprint 17, Phase 2B closure, then the authorized Phase 2C
+Sprints 18-21. No merge, release/tag, permanent deployment or Sprint 22.
+
+- Worktree: `.worktrees/expanded-summoning-phase2a`; actual branch:
+  `codex/expanded-summoning-phase2b-sprints14-17`.
+- Intake source and remote head: `a762ece553ab9b539a53a782102a29e5c70d44eb`.
+  Clean, tracking divergence 0/0, no newer local descendant. PR #26 is OPEN,
+  DRAFT, stacked on `codex/expanded-summoning-phase2a-sprints9-13` at
+  `5482db429bd3c4009a031aa733a3091edfa5fe5e` (verified through GitHub and SSH).
+- Sprints 14-15 remain complete and published. Current surface: **976
+  registered generated placements, 970 published, 6 withheld, 29 native
+  wrappers, 999 visible choices**. Only Dire Crocodile is withheld.
+- Sprint 16 source exists for bite grab, live-bite Death Roll, one-rider
+  maintain selection, one-round Sprint with ten-round cooldown, and a separate
+  Dire Crocodile swallowed buff. **None has Sprint 16 runtime qualification.**
+  No Sprint 16 immutable candidate, package/DLL qualification hashes or runtime
+  evidence IDs exist yet. Do not present the implementation as a passed gate.
+- Source review now captures native base-bite identity before damage-list
+  reordering, preserves weapon damage attribution, claims the maintain round
+  before its check, and constructs one explicit Dire swallowed round action.
+  The previously empty active validator and stale metadata are repaired.
+  See the October 5 section of the Sprint 16 pre-candidate review.
+- Open work: live base-bite/modifier/DR proof; recursive live swallowed-action
+  audit and damage cadence; Sprint speed interactions and AI
+  fallback; exact skills and Run disposition; both original crocodilian visuals;
+  focused scenarios/tests, candidate review, targeted persistence and publication.
+- `OwnerAcceptedEngineLimitation: PASSIVE_CREATURE_SENSES_UNMODELED` and
+  `OwnerAcceptedEngineLimitation: ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD`
+  remain accepted unchanged.
+- The owner authorizes `SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED` **conditional on
+  the planned live component/type census**. Acceptance is not activated yet.
+  If no faithful native carrier exists, record the exact accepted label for
+  Dire Crocodile and Purple Worm; do not build an interior subsystem or keep a
+  creature hidden solely for this limitation after its other gates pass.
+- `OwnerAcceptedAdaptation: SWALLOW_ELIGIBLE_TARGET_ELSE_DEATH_ROLL`:
+  bounded held-target command audit found no existing safe choice seam.
+  The selector uses pre-roll state; production maintain-path proof remains open.
+- Intake machine state: no Kingmaker process, compatibility lock or active
+  guarded transaction. Live install is **136 files, Info.json 0.0.117**, exact
+  tree SHA-256
+  `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+  No runtime transaction has been opened during takeover. Snapshot the actual
+  baseline before each future transaction and restore that exact snapshot.
+- Next executable action: finish Sprint speed/AI, exact skill allocation and
+  Run disposition; instrument the live graph/census and donor-bind capture,
+  then original assets and the full scenario pack. Use focused inner-loop
+  checks; the complete sprint gate and
+  guarded review apply to one stable hidden candidate.
+
+`HumanReview: NOT_PERFORMED_NONBLOCKING`.
+
+## Historical state, 2026-10-03 (superseded by the current header)
 
 This header is the single current-state record and is written to be enough on
 its own: a fresh session with no chat history should be able to resume from it

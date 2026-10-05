@@ -382,6 +382,29 @@ namespace KingmakerGunslinger.Summoning
     /// </summary>
     internal static class SummonGrappleDamage
     {
+        /// <summary>
+        /// Native OnTrigger constructs the weapon's base description and
+        /// assigns it to slot zero (audited Assembly-CSharp IL_03ad-03b6).
+        /// Capture that object before after-rule subscribers can reorder the
+        /// list. RulebookSubscriptionManager walks base types, so ordinary
+        /// RuleCalculateWeaponStats subscribers still run on this rule.
+        /// This is local to Death Roll; it installs no global rule patch.
+        /// </summary>
+        private sealed class DeathRollWeaponStats : RuleCalculateWeaponStats
+        {
+            internal DeathRollWeaponStats(UnitEntityData owner,
+                ItemEntityWeapon weapon) : base(owner, weapon, null) { }
+
+            internal DamageDescription BaseBite { get; private set; }
+
+            public override void OnTrigger(RulebookEventContext context)
+            {
+                base.OnTrigger(context);
+                BaseBite = DamageDescription.Count == 0 ? null :
+                    DamageDescription[0];
+            }
+        }
+
         internal static int DealWeaponDamage(UnitEntityData owner, UnitEntityData target,
             ItemEntityWeapon weapon, MechanicsContext context)
         {
@@ -432,24 +455,35 @@ namespace KingmakerGunslinger.Summoning
             dealt = 0;
             if (owner == null || target == null || weapon == null)
                 return "no-weapon";
-            var stats = new RuleCalculateWeaponStats(owner, weapon, null);
-            if (context != null) context.TriggerRule(stats);
-            else Rulebook.Trigger(stats);
-            var damages = new List<BaseDamage>();
-            if (stats.DamageDescription != null)
-                foreach (DamageDescription description in stats.DamageDescription)
-                    if (description != null) damages.Add(description.CreateDamage());
-            if (damages.Count == 0) return "no-damage";
+            var stats = new DeathRollWeaponStats(owner, weapon);
+            if (context != null)
+                context.TriggerRule<RuleCalculateWeaponStats>(stats);
+            else Rulebook.Trigger<RuleCalculateWeaponStats>(stats);
+            int baseIndex = CrocodilianRulesPolicy.BaseBiteIndex(
+                stats.DamageDescription, stats.BaseBite);
+            if (baseIndex < 0 || stats.BaseBite.TypeDescription == null ||
+                    stats.BaseBite.TypeDescription.Type != DamageType.Physical ||
+                    stats.DamageDescription.Any(value => value == null))
+                return "no-unique-physical-base-bite";
+            var damages = stats.DamageDescription.Select(value =>
+                value.CreateDamage()).ToList();
             // The live Strength modifier, which the primary natural attack
             // already contributes once. The death roll adds the other half.
             int strengthModifier = owner.Descriptor == null ||
                 owner.Descriptor.Stats == null ? 0 :
                 owner.Descriptor.Stats.Strength.Bonus;
-            int extraHalf = strengthModifier > 0 ? strengthModifier / 2 : 0;
+            int strengthScore = owner.Descriptor.Stats.Strength.ModifiedValue;
+            int extraHalf = CrocodilianRulesPolicy.DeathRollExtraHalf(
+                strengthModifier);
             string baseline = DescribeDamage(damages);
-            if (extraHalf != 0) damages[0].AddBonus(extraHalf);
-            var bundle = new DamageBundle(damages.ToArray());
-            bundle.Weapon = weapon;
+            BaseDamage baseBite = damages[baseIndex];
+            if (extraHalf != 0) baseBite.AddBonus(extraHalf);
+            // The weapon constructor sets WeaponDamage and WeaponSize as
+            // well as Weapon. Merely assigning Weapon leaves the native
+            // base-damage attribution null. Supplemental chunks stay intact.
+            var bundle = new DamageBundle(weapon, stats.WeaponSize, baseBite);
+            for (int index = 0; index < damages.Count; index++)
+                if (index != baseIndex) bundle.Add(damages[index]);
             var rule = new RuleDealDamage(owner, target, bundle);
             if (context != null) context.TriggerRule(rule);
             else Rulebook.Trigger(rule);
@@ -458,6 +492,8 @@ namespace KingmakerGunslinger.Summoning
                     weapon.Blueprint.name) +
                 ";biteDamage=" + baseline +
                 ";deathRollDamage=" + DescribeDamage(damages) +
+                ";baseBiteIndex=" + baseIndex +
+                ";liveStrengthScore=" + strengthScore +
                 ";liveStrengthModifier=" + strengthModifier +
                 ";extraHalf=" + extraHalf + ";dealt=" + dealt;
         }
@@ -731,11 +767,22 @@ namespace KingmakerGunslinger.Summoning
             // raised, not a line rebuilt from the profile: a buffed, enlarged
             // or weakened creature death rolls for what it actually bites for.
             ItemEntityWeapon bite =
-                SummonGrappleLinks.EstablishingWeapon(owner, target) ??
-                FirstGrabWeapon(owner) ?? SummonLimbs.PrimaryWeapon(owner);
+                SummonGrappleLinks.EstablishingWeapon(owner, target);
+            if (bite == null || bite.Blueprint == null ||
+                    bite.Blueprint.Category != WeaponCategory.Bite ||
+                    !ReferenceEquals(SummonHoldComponent.HeldTarget(owner), target) ||
+                    !IsDeathRollSizeAllowed(owner, target))
+                return "refused:no-exact-held-bite";
             int dealt;
             string damageDetail = SummonGrappleDamage.DealDeathRollDamage(
                 owner, target, bite, context, out dealt);
+            if (damageDetail == "no-unique-physical-base-bite")
+                return "refused:" + damageDetail;
+            if (target.Descriptor.State.IsDead || target.Destroyed)
+            {
+                SummonHoldComponent.ReleaseLink(owner, target, this, true);
+                return damageDetail + ";targetDied=True;heldKept=False";
+            }
             bool proneBefore = target.Descriptor.State.HasCondition(
                 UnitCondition.Prone);
             bool proneAfter = proneBefore;
@@ -1234,13 +1281,34 @@ namespace KingmakerGunslinger.Summoning
 
         /// <summary>
         /// One maintain check for one link. <paramref name="lastRiderRound"/>
-        /// is the held-round number a rider last fired on for this link, and
-        /// is updated when one fires; a caller with no rider passes a throwaway.
+        /// is the held-round number last claimed for this crocodilian link,
+        /// before its check resolves; a caller with no rider passes a throwaway.
         /// </summary>
         internal static string MaintainLink(UnitEntityData owner, UnitEntityData target,
             SummonGrabComponent grab, MechanicsContext context, Buff holdBuff,
             Buff heldState, ref int lastRiderRound)
         {
+            bool crocodilian = grab != null && grab.HasDeathRoll;
+            bool targetOwned = !crocodilian ||
+                ReferenceEquals(HeldTarget(owner), target);
+            if (!targetOwned) return "refused:no-exact-held-target";
+            int roundsHeld = RoundsHeld(heldState);
+            // Capture the choice entirely from pre-roll state. Claim the
+            // round before the maneuver, so re-entry or replay cannot roll
+            // another check (and release a hold on that second result).
+            CrocodilianMaintainRider rider =
+                CrocodilianRulesPolicy.SelectMaintainRider(true, targetOwned,
+                    roundsHeld,
+                    grab != null && grab.HasDeathRoll,
+                    grab != null && grab.IsDeathRollSizeAllowed(owner, target),
+                    grab != null && grab.SwallowedBuff != null,
+                    grab != null && grab.IsSwallowSizeAllowed(owner, target),
+                    grab != null && grab.SwallowedBuff != null);
+            if (crocodilian && roundsHeld > 0 &&
+                    !CrocodilianRulesPolicy.TryClaimMaintainRound(roundsHeld,
+                        ref lastRiderRound))
+                return "crocodilian-maintain:already-resolved-this-round;round=" +
+                    roundsHeld;
             var maneuver = new RuleCombatManeuver(owner, target, CombatManeuver.Grapple);
             if (context != null) context.TriggerRule(maneuver);
             else Rulebook.Trigger(maneuver);
@@ -1250,32 +1318,16 @@ namespace KingmakerGunslinger.Summoning
                 ReleaseLink(owner, target, grab, true);
                 return "released";
             }
-            int roundsHeld = RoundsHeld(heldState);
             // One successful check resolves one rider. The selector returns a
             // single value rather than two booleans, so a creature with both a
             // death roll and a swallow cannot do both on the same check; for a
             // creature with no death roll it answers exactly as the swallow
             // condition it replaced, which is what leaves the Purple Worm and
             // the Giant Flytrap untouched.
-            CrocodilianMaintainRider rider =
-                CrocodilianRulesPolicy.SelectMaintainRider(success, true,
-                    roundsHeld,
-                    grab != null && grab.HasDeathRoll,
-                    grab != null && grab.IsDeathRollSizeAllowed(owner, target),
-                    grab != null && grab.SwallowedBuff != null,
-                    grab != null && grab.IsSwallowSizeAllowed(owner, target),
-                    grab != null && grab.SwallowedBuff != null);
             if (rider == CrocodilianMaintainRider.SwallowWhole)
                 return "swallowed:" + grab.SwallowHeld(owner, target, context);
             if (rider == CrocodilianMaintainRider.DeathRoll)
             {
-                // Once per round of holding, whatever calls this. A replayed
-                // round finds its own number already claimed and resolves as
-                // an ordinary maintain instead of crushing twice.
-                if (lastRiderRound == roundsHeld)
-                    return "death-roll:already-resolved-this-round;round=" +
-                        roundsHeld;
-                lastRiderRound = roundsHeld;
                 return "death-roll:" +
                     grab.DealDeathRoll(owner, target, context);
             }

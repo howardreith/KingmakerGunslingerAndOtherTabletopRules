@@ -1,5 +1,24 @@
 # Expanded Summoning fidelity matrix
 
+## Current Sprint 16 disposition, October 5
+
+Crocodile retains its identity and fourteen published roots. Dire Crocodile
+retains six registered, withheld roots. Changed mechanics are **NOT QUALIFIED**:
+base-bite identity/weapon attribution and single-action swallowed cadence have
+source hardening, but no Sprint 16 live proof.
+
+`OwnerAcceptedAdaptation: SWALLOW_ELIGIBLE_TARGET_ELSE_DEATH_ROLL` is active
+after the bounded existing held-target command audit. It is deterministic AI
+behavior, not exact tabletop choice; live maintain-path proof is still required.
+
+`SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED` remains owner-authorized **conditional
+on the new live census**, not yet an accepted finding. Purple Worm's previously
+qualified mechanics are unchanged; its interior AC/hp fidelity entry will
+acknowledge the same engine-wide limitation if that census confirms no carrier.
+The accepted passive-sense and clean-on-reload grapple limitations are unchanged.
+Sprint interactions/AI, exact land skills, Run disposition and both original
+visuals remain open. `HumanReview: NOT_PERFORMED_NONBLOCKING`.
+
 ## Sprint 15 closeout, 2026-10-03: COMPLETE AND PUBLISHED
 
 The Giant Ant (Drone) and the Giant Stag Beetle are published. The visible

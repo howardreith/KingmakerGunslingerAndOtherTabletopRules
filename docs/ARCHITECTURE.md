@@ -916,6 +916,12 @@ creature asks for its own, so without them all three would have been classified
 as the Giant Spider they borrow.
 The resulting append-only ledger contains 2772 stable IDs: 2770 active and 2 reserved.
 
+Sprint 15 and the withheld Sprint 16 registration extend that ledger to
+2835 stable IDs: 2833 active and 2 reserved. The current source registers 95
+creatures and 976 generated placements, publishes 970, and withholds only the
+six Dire Crocodile placements. These are identity/publication counts, not a
+claim that the unfinished Sprint 16 mechanics or visuals are runtime qualified.
+
 - **Pure policy** (`FavoredClass/`): `FavoredClassRankPolicy` (the host's
   full/partial alternation, N = fullRank + partialRank, with KMG-owned ceilings
   T = min(20, d * cap)), `FavoredClassCatalog` (all 54 charter appearances and

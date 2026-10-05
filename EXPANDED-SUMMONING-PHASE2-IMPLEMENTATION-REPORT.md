@@ -1,5 +1,21 @@
 # Expanded Summoning Phase 2 implementation report
 
+## Current checkpoint, October 5: Sprint 16 NOT QUALIFIED
+
+Death Roll now captures base-bite identity before after-rule list reordering,
+uses native weapon damage attribution and claims the maintain round before the
+check. Dire Crocodile's swallowed buff constructs one explicit round-damage
+action and preserves only the audited native penalties. Live proof is pending.
+The deterministic rider adaptation is accepted after the bounded command-seam
+audit; the interior limitation still awaits its required live census.
+
+The restored previously empty repository validator and focused checks pass.
+This is not the hidden candidate gate. Sprint speed/AI, skills, Run, original
+visuals, runtime scenarios, targeted persistence and publication remain open.
+Sprints 14-15 stay accepted. Current surface: 976 registered / 970 published /
+6 withheld + 29 wrappers = 999 visible choices. No runtime launch or deployment;
+the exact 136-file 0.0.117 baseline is unchanged.
+
 ## Sprint 15 closeout, 2026-10-03: COMPLETE AND PUBLISHED
 
 The Giant Ant (Drone) and the Giant Stag Beetle are published. The visible
