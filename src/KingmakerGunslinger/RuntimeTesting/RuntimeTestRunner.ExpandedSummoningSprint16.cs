@@ -39,7 +39,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             if (_crocodilianMechanicsComplete)
             {
-                PollSprint16Combat();
+                if (_sprint16CombatComplete) PollSprint16FinalReview();
+                else PollSprint16Combat();
                 return;
             }
             string loading;
