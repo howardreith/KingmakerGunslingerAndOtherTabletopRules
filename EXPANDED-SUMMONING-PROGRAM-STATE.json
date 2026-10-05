@@ -24,7 +24,7 @@
       15
     ],
     "currentSprint": 16,
-    "currentSubItem": "Sprint 16 reconciled batch FAIL; narrow repairs prepared; new exact-artifact qualification pending; Dire withheld; Sprint 17 not started",
+    "currentSubItem": "Sprint 16 second reconciled batch FAIL; native dice/fixture repairs source-qualified; new exact-artifact batch pending; Dire withheld; Sprint 17 not started",
     "lastGuardedRuntimePass": "20260930T1314329155573Z-disposable-expanded-summoning",
     "lastGuardedRestoration": "20261005T1555173824556Z-disposable-expanded-summoning-crocodilians.json",
     "giantWaspPublished": true,
@@ -77,7 +77,14 @@
     "sprint15Published": true,
     "sprint15Status": "COMPLETE AND PUBLISHED",
     "phase2CAuthorized": false,
-    "sprint16Reconciliation": "planning/EXPANDED-SUMMONING-PHASE2B-RECONCILIATION-2026-10-05.md"
+    "sprint16Reconciliation": "planning/EXPANDED-SUMMONING-PHASE2B-RECONCILIATION-2026-10-05.md",
+    "sprint16SecondReconciledBatch": {
+      "candidate": "634b6c18972747a4bff0ceb27f29af5189e5f586",
+      "status": "FAIL; smoke 11/11, main 173/205, crowd 17/20, prepare 9/9, cleanup 6/9, absence 4/5",
+      "review": "planning/EXPANDED-SUMMONING-SPRINT16-SECOND-RECONCILED-BATCH-REVIEW.md",
+      "restoration": "VERIFIED actual leased 0.0.140 / 254-file snapshot 20261005T1733246964445Z; lease released",
+      "workingSave": "one authorized prepare write; cleanup refused; five fixture units require guarded cleanup"
+    }
   },
   "charter": {
     "title": "Kingmaker_Expanded_Summoning_Implementation_Charter_v1.0.docx",

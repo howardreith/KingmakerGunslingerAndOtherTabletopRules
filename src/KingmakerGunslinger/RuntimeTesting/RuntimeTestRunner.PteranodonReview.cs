@@ -61,6 +61,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private string _motionReviewFilePrefix = "pteranodon-review";
         private int _motionReviewFrame = -1;
         private int _motionReviewWaited;
+        private int _motionReviewCaptureFadeWaited;
+        private int _motionReviewCaptureFadeTotal;
         private bool _motionReviewComplete;
         private bool _motionReviewSubjectResolved;
         private UnitEntityData _motionReviewSubject;
@@ -124,6 +126,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             _motionReviewFilePrefix = filePrefix;
             _motionReviewFrame = -1;
             _motionReviewWaited = 0;
+            _motionReviewCaptureFadeWaited = 0;
+            _motionReviewCaptureFadeTotal = 0;
             _motionReviewComplete = false;
             _motionReviewSubjectResolved = false;
             _motionReviewSubject = null;
@@ -315,6 +319,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 int moveFrames = _motionReviewDoorwayRoute ? 100 :
                     MotionReviewMoveFrames;
+                bool crocodilian = _motionReviewSubjectName == "KMG_Summoning_Unit_Crocodile" ||
+                    _motionReviewSubjectName == "KMG_Summoning_Unit_DireCrocodile";
+                bool captureFrame = _motionReviewFrame == moveFrames || _motionReviewFrame == moveFrames * 2 ||
+                    _motionReviewFrame >= (_motionReviewDoorwayRoute ? moveFrames * 2 + 6 : MotionReviewAttackFrame);
+                // A surveyed doorway route can cross a native fog fade between
+                // captures. Wait for that native transition, without overriding
+                // visibility/materials or relaxing the intact-frame assertion.
+                if (crocodilian && captureFrame && _motionReviewCaptureFadeWaited < MotionReviewFadeBudget &&
+                    (!EntityFadedIn(unit) || DissolveAmount(unit) > MotionReviewIntactDissolve))
+                {
+                    _motionReviewCaptureFadeWaited++;
+                    _motionReviewCaptureFadeTotal++;
+                    return false;
+                }
                 if (_motionReviewFrame == moveFrames)
                 {
                     Capture(unit, stage, "moving-a");
@@ -769,7 +787,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             string fileName = _motionReviewFilePrefix + "-" + stage + "-" + moment + ".png";
             _motionReviewCaptures.Add(WriteExpandedSummoningPartyCameraCapture(
-                unit, _request.EvidenceDirectory, fileName) + ";moment=" + moment);
+                unit, _request.EvidenceDirectory, fileName) + ";moment=" + moment +
+                ";nativeFadeWaitFrames=" + _motionReviewCaptureFadeWaited +
+                ";nativeFadeWaitTotal=" + _motionReviewCaptureFadeTotal);
+            _motionReviewCaptureFadeWaited = 0;
         }
 
         /// <summary>
