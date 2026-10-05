@@ -1,6 +1,13 @@
 # Expanded Summoning Phase 2 evidence index
 
-Current Sprint 16 fourth reconciled batch: **FAIL**, no publication.
+Current Sprint 16 fifth reconciled batch: **FAIL**, no publication.
+[Exact artifact, passed crowd/persistence and remaining strict manual-control gate](planning/EXPANDED-SUMMONING-SPRINT16-FIFTH-RECONCILED-BATCH-REVIEW.md).
+Main 154/155; combat matrix did not execute. Actual installation restored,
+lease released, closed working save clean. Native faction fixture/diagnostics
+repair requires all new source/package/runtime gates.
+
+
+Historical Sprint 16 fourth reconciled batch: **FAIL**, no publication.
 [Exact frozen artifact, failed ownership/control assumptions, six fresh processes and restoration](planning/EXPANDED-SUMMONING-SPRINT16-FOURTH-RECONCILED-BATCH-REVIEW.md).
 No working-save write; fresh absence confirms clean. Containing narrow repair
 requires new complete gates and runtime qualification.

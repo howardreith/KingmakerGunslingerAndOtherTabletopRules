@@ -24,7 +24,7 @@
       15
     ],
     "currentSprint": 16,
-    "currentSubItem": "Sprint 16 fourth reconciled batch FAIL; exact CombatTraits lookup and disposable capital control repair await full gates; all writes refused, working save absent; Dire withheld; Sprint 17 not started",
+    "currentSubItem": "Sprint 16 fifth batch FAIL strict manual-control guard; damage 37/37, lifecycle 80/80, crowd and persistence PASS; native faction fixture/diagnostics repair awaits full gates; Dire withheld; Sprint 17 not started",
     "lastGuardedRuntimePass": "20260930T1314329155573Z-disposable-expanded-summoning",
     "lastGuardedRestoration": "20261005T1555173824556Z-disposable-expanded-summoning-crocodilians.json",
     "giantWaspPublished": true,
@@ -98,6 +98,13 @@
       "review": "planning/EXPANDED-SUMMONING-SPRINT16-FOURTH-RECONCILED-BATCH-REVIEW.md",
       "restoration": "VERIFIED actual leased 0.0.140 / 254-file snapshot 20261005T1902387026669Z; lease released",
       "workingSave": "no write; prepare and cleanup refused; fresh absence zero KMG summons"
+    },
+    "sprint16FifthReconciledBatch": {
+      "candidate": "31c9ff0f4949bfda5db21225366f52d110953d13",
+      "status": "FAIL; smoke 11/11, main 154/155, crowd 20/20, prepare 9/9, cleanup 9/9, absence 5/5; combat not executed",
+      "review": "planning/EXPANDED-SUMMONING-SPRINT16-FIFTH-RECONCILED-BATCH-REVIEW.md",
+      "restoration": "VERIFIED actual leased 0.0.140 / 254-file snapshot 20261005T1928465498770Z; lease released",
+      "workingSave": "two authorized native writes; fresh absence zero KMG summons"
     }
   },
   "charter": {

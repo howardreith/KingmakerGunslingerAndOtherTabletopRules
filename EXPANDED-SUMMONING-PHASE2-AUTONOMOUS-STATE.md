@@ -65,20 +65,26 @@ release, tag, version bump, PR change or permanent deployment.
   refused; fresh absence confirms the working save remains clean. Actual leased
   0.0.140 / 254-file snapshot restored, lease released. Exact ledger:
   `planning/EXPANDED-SUMMONING-SPRINT16-FOURTH-RECONCILED-BATCH-REVIEW.md`.
-- Containing correction resolves the exact owned AddFacts component graph;
-  caches owner/weapon references; adds positive native contact-carrier checks.
-  The disposable manual actor alone receives the capital Master prerequisite,
-  with original Master restored before cleanup and native summoner retained.
-  New 216 focused / 2018 unfiltered, repository/static/icon, 480 preflight,
-  68 orchestration, closed requests, clean Release and deterministic strict
-  312-member package gates PASS; runtime NOT QUALIFIED.
-  No art, icon, GUID, mechanical range, player/party/area/turn flag, version or
-  publication change.
-- Next: complete source/preflight/build/package gates, commit/push the repair,
-  then complete clean-head gates and freeze one exact artifact for the full
-  six-scenario batch. No old evidence qualifies new bytes. Acquire lease before
-  actual live snapshot, restore it exactly; fresh Steam 640820 processes only.
-  Stop on external remote motion.
+- Fifth clean candidate `31c9ff0f4` passed all new prelaunch gates, then FAILED:
+  smoke 11/11, main 154/155, crowd 20/20, prepare 9/9, cleanup 9/9, absence 5/5.
+  Damage/carriers 37/37, final UI/lifecycle 80/80, speed 19/19, icons 9/9 PASS.
+  Strict manual control stopped combat before execution; native summon rule/flag
+  are proven, other control operands unrecorded. No contact/AI/mode qualification.
+  Two authorized native writes completed the closed working cycle; fresh absence
+  proves clean. Actual leased live installation restored exactly, lease released.
+  Exact ledger: `planning/EXPANDED-SUMMONING-SPRINT16-FIFTH-RECONCILED-BATCH-REVIEW.md`.
+- Containing request-local repair uses the established native faction-switch API
+  only on the disposable manual actor, records all native control conditions,
+  retains summon identity, restores original faction/attack factions and capital
+  Master before disposal. Strict guard unchanged; no global patch or player/
+  party/area/turn flag, production/art/icon/GUID/version/publication change.
+- Containing repair source gates PASS: 216 focused / 2018 unfiltered, static/icon,
+  480 preflight, 68 orchestration, closed requests, clean Release and deterministic
+  strict 312-member package. Runtime remains unqualified.
+- Next: commit/push the repair; then complete clean-head
+  gates and freeze one artifact for all six guarded scenarios. Old evidence does
+  not qualify new bytes. Lease precedes actual snapshot; restore it exactly.
+  Fresh Steam 640820 processes only. Stop on external remote motion.
 - Publish Dire only after every required exact-artifact Sprint 16 gate passes.
   Sprint 17 must not begin until Sprint 16 is qualified and pushed.
 - Accepted unchanged: `PASSIVE_CREATURE_SENSES_UNMODELED`,
