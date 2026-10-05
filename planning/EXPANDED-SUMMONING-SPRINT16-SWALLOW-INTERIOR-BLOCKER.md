@@ -20,8 +20,12 @@ alone must not withhold Dire Crocodile or be re-marked BLOCKED.
 
 Dire's explicit creature-owned graph passed its live audit: exactly the native
 two stat penalties and one NewRound 3d6+13 physical action; no activation or
-deactivation actions. Its **cadence and mechanics remain NOT QUALIFIED** until
-the full candidate. The historical rewrite wording below is superseded.
+deactivation actions. The complete exact e3aeae63 hidden candidate now passes
+its initial bite, three later-round single 3d6+13 bundles, native escape,
+source/prey death, spit-out, dismissal, expiry, transition and reload cleanup.
+See `EXPANDED-SUMMONING-SPRINT16-LAPTOP-HIDDEN-PASS-REVIEW.md`.
+Publication still needs its own exact-artifact player-path gate.
+The historical rewrite/blocked wording below is superseded.
 
 ## Historical audit and pre-decision disposition (superseded)
 

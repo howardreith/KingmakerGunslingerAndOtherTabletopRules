@@ -1,0 +1,276 @@
+{
+  "schemaVersion": 1,
+  "status": "HIDDEN CANDIDATE QUALIFIED; publication gate pending",
+  "candidate": "e3aeae630d51d27c45694fb9e92e9093048b1af9",
+  "branch": "codex/expanded-summoning-phase2b-sprints14-17",
+  "sourceFingerprint": "5bc688cd0ecff25c4b851afee1b786a17d63d0d43005c4c180fadca4f7eaa750",
+  "version": "0.0.141",
+  "dllSha256": "c9029e26c745daea5e9eb369e23f6595a69636fe1629620fd456e71039b4d4d4",
+  "dllMvid": "ff5b805f-162b-4c77-a655-0318fe195caa",
+  "zipSha256": "fe6a8c62b0f50f908157810e0d8c963ddb9c5c4ac4c6334ad5258ec7da92c29e",
+  "packageMembers": 312,
+  "prelaunch": {
+    "focused": "218/218",
+    "fullUnfiltered": "2020/2020",
+    "repositoryStaticIconManifest": "PASS",
+    "preflight": 480,
+    "orchestration": 68,
+    "persistence": "11 wiring; 3 round trips/19 rejections",
+    "crowd": "5 round trips/7 rejections",
+    "cleanExactRelease": "PASS",
+    "deterministicPackage": "PASS",
+    "strictStandalone": "PASS",
+    "logs": [
+      {
+        "file": "laptop-focused-e3aeae63.log",
+        "sha256": "1B939EAE6217C4F473448F02A1555EE03E7F420E36AAC10581B5C17A59406DCE"
+      },
+      {
+        "file": "laptop-prelaunch-e3aeae63.log",
+        "sha256": "148F522E877FDD628907B05B40AF760A48221B185449D4174F12F5BDD33BFF59"
+      },
+      {
+        "file": "guarded-driver.ps1",
+        "sha256": "4D857B9BCB0C96F3F0AB52680D669B8BA7296514AAA67E424B71574BF9E4EC52"
+      },
+      {
+        "file": "immutable-candidate.zip.build-local.json",
+        "sha256": "D11EE223A0FD2D6873A2EEE78B8103262A366C0F142931E4151F8F590283F1EC"
+      }
+    ]
+  },
+  "runs": [
+    {
+      "scenario": "working-save-smoke",
+      "startedAtUtc": "2026-10-05T23:16:51.1615787Z",
+      "parameters": {},
+      "launcherOutcome": "Clean",
+      "exitCode": 0,
+      "evidenceDirectory": "20261005T2316521284137Z-working-save-smoke",
+      "requestId": "20261005T2316521596846Z-12936d86f24c413ca9cff89a0a01b6de",
+      "requestSha256": "bcd6303f5a924dc098cab5580afc8ea6d92a82b471d0b427e3c948b355297364",
+      "resultSha256": "53951a0d90214029e0684cfe2ef072ea7dda6b03c7ca96ec50717c09f6b68fb1",
+      "assertions": 11,
+      "passed": 11,
+      "failed": [],
+      "orchestrationSha256": "caa9bfa22566b589c281789fca9d5fcf2059f17566ffaada3212f3738b506fbe",
+      "processId": 32176,
+      "processStartedUtc": "2026-10-05T23:16:53.2469982Z",
+      "scenarioStatus": "PASS",
+      "outcome": "PASS",
+      "completedAtUtc": "2026-10-05T23:20:05.1272140Z"
+    },
+    {
+      "scenario": "disposable-expanded-summoning-crocodilians",
+      "startedAtUtc": "2026-10-05T23:20:11.1743246Z",
+      "parameters": {},
+      "launcherOutcome": "Clean",
+      "exitCode": 0,
+      "evidenceDirectory": "20261005T2320119561287Z-disposable-expanded-summoning-crocodilians",
+      "requestId": "20261005T2320119561287Z-1b55bf3e9c114b4995ca04fa41b77a96",
+      "requestSha256": "ef5d31089d1b5811f89babc75145329ec934354a8f1e3fd053f2804bcf712c2c",
+      "resultSha256": "be1b1de5862b3dfbc75ebefd33030f4c58cc9ec8809ac8944cbba91fea33106d",
+      "assertions": 209,
+      "passed": 209,
+      "failed": [],
+      "orchestrationSha256": "ddf3d78dd0f46a8c76086aca631665febf81642e3ed2349fdcd046c1355716c1",
+      "processId": 3088,
+      "processStartedUtc": "2026-10-05T23:20:13.2575771Z",
+      "scenarioStatus": "PASS",
+      "outcome": "PASS",
+      "completedAtUtc": "2026-10-05T23:32:00.3159310Z"
+    },
+    {
+      "scenario": "working-save-expanded-summoning-creature-review",
+      "startedAtUtc": "2026-10-05T23:32:00.6736524Z",
+      "parameters": {
+        "quantity": "OneD4PlusOne",
+        "creatures": "crocodile,dire-crocodile"
+      },
+      "launcherOutcome": "Clean",
+      "exitCode": 0,
+      "evidenceDirectory": "20261005T2332014341488Z-working-save-expanded-summoning-creature-review",
+      "requestId": "20261005T2332014341488Z-2425dca5408341049a74a09ac64a2cc5",
+      "requestSha256": "ce682c3bb07cd7a1feb381c2db80f3f5a409dcd0c9e4f0dad87a34374df19e45",
+      "resultSha256": "0906f42601408576e34ed311f49d2c32064f907e576b6eb3da403aac5f641023",
+      "assertions": 20,
+      "passed": 20,
+      "failed": [],
+      "orchestrationSha256": "3c201b95e8aa9bba2f2a4bf99fcf7a9af4cf183656bb942b1515653b9676d8ec",
+      "processId": 32936,
+      "processStartedUtc": "2026-10-05T23:32:02.3381092Z",
+      "scenarioStatus": "PASS",
+      "outcome": "PASS",
+      "completedAtUtc": "2026-10-05T23:39:41.5487097Z"
+    },
+    {
+      "scenario": "working-save-expanded-summoning-prepare",
+      "startedAtUtc": "2026-10-05T23:39:41.9161678Z",
+      "parameters": {
+        "persistenceScope": "crocodilians"
+      },
+      "launcherOutcome": "Clean",
+      "exitCode": 0,
+      "evidenceDirectory": "20261005T2339426661753Z-working-save-expanded-summoning-prepare",
+      "requestId": "20261005T2339426737272Z-bd13fe7b829b4f8884a42e320cf8fe4a",
+      "requestSha256": "52e879fb97f1bd251d6cb3f6ed6953d7348e4aee8477c92a75903c81bf103550",
+      "resultSha256": "53b6864e64a65c6f96a092a46a0118d467bcdd8ebc26e02b6705e5de615942b5",
+      "assertions": 9,
+      "passed": 9,
+      "failed": [],
+      "orchestrationSha256": "f24b156542115740c175bd1b3c6317ed21909390132324288a245ffef24ba25b",
+      "processId": 15200,
+      "processStartedUtc": "2026-10-05T23:39:43.6716343Z",
+      "scenarioStatus": "PASS",
+      "outcome": "PASS",
+      "completedAtUtc": "2026-10-05T23:43:06.7337969Z"
+    },
+    {
+      "scenario": "working-save-expanded-summoning-verify-cleanup",
+      "startedAtUtc": "2026-10-05T23:43:07.1037930Z",
+      "parameters": {
+        "persistenceScope": "crocodilians"
+      },
+      "launcherOutcome": "Clean",
+      "exitCode": 0,
+      "evidenceDirectory": "20261005T2343078144400Z-working-save-expanded-summoning-verify-cleanup",
+      "requestId": "20261005T2343078144400Z-dd5ce36c64c046c09f466b8be7a78e3d",
+      "requestSha256": "c77574d3473a5acb4e2e5b1ebfa972ba3d0304d5de4ea3ea5d7b132b9866c1f5",
+      "resultSha256": "b092d2b3a0f43debfa3af9d23b760020d75f712218830b1f81b1aa5314c7ca00",
+      "assertions": 9,
+      "passed": 9,
+      "failed": [],
+      "orchestrationSha256": "7f4318bc9ef1a5c2a272ecdb529bd70e71d775fb25f0341fb72421ef896cc63f",
+      "processId": 14144,
+      "processStartedUtc": "2026-10-05T23:43:08.8694517Z",
+      "scenarioStatus": "PASS",
+      "outcome": "PASS",
+      "completedAtUtc": "2026-10-05T23:46:32.3445110Z"
+    },
+    {
+      "scenario": "working-save-expanded-summoning-verify-absent",
+      "startedAtUtc": "2026-10-05T23:46:32.7055940Z",
+      "parameters": {
+        "persistenceScope": "crocodilians"
+      },
+      "launcherOutcome": "Clean",
+      "exitCode": 0,
+      "evidenceDirectory": "20261005T2346334238023Z-working-save-expanded-summoning-verify-absent",
+      "requestId": "20261005T2346334238023Z-3d1a5697a5b6465c9e6d40bb1dc52e4e",
+      "requestSha256": "286d9cf1b20cc69a99b7117fc09a0ecae4078c4e1738cd25bf94eca9b3ba1e5d",
+      "resultSha256": "8a3e1af09c1aed374f8758719e58b31a2304a6893a3b58fb9008edeb88c63399",
+      "assertions": 5,
+      "passed": 5,
+      "failed": [],
+      "orchestrationSha256": "21c1ddadf6e0154106e7fc9b46321dbe952e4ae13f9daa931e41a79511ae594e",
+      "processId": 21816,
+      "processStartedUtc": "2026-10-05T23:46:34.4433182Z",
+      "scenarioStatus": "PASS",
+      "outcome": "PASS",
+      "completedAtUtc": "2026-10-05T23:49:22.7341074Z"
+    }
+  ],
+  "mainEvidence": [
+    {
+      "file": "sprint16-combat.json",
+      "bytes": 214875,
+      "sha256": "EBF2C2467C436D5C74AADD433023836746672E151CDD7CC4CFCE088D8B6D6896"
+    },
+    {
+      "file": "sprint16-damage-maintain.json",
+      "bytes": 44896,
+      "sha256": "001DDB47C42A2EC2B2EE3DC5AEAFF3E07DC8D6014296F69B3E709DF9785D9C65"
+    },
+    {
+      "file": "sprint16-final-review.json",
+      "bytes": 83899,
+      "sha256": "4C50C1FFACD16F05CA8AA5CA566F6F76EB4E40B094A82E2727BC6668D4F99E83"
+    },
+    {
+      "file": "sprint16-icon-bindings.json",
+      "bytes": 2326,
+      "sha256": "08D789E122B8DDE1C1766843EF925130F90FD782C1E5A4C027A03B608FED04DD"
+    },
+    {
+      "file": "sprint16-monitor-lizard-bind-rig.json",
+      "bytes": 16209,
+      "sha256": "8B0C0309A03782753A825B825EA8598C5F3D84BE1A81B618E458C92BDC43A83F"
+    },
+    {
+      "file": "sprint16-native-census.json",
+      "bytes": 114904,
+      "sha256": "793645C26EEB49F0B02EEE8657667FF09FB5B9AE4EDC03B3E3A5E70E7DD29DBF"
+    },
+    {
+      "file": "sprint16-speed.json",
+      "bytes": 22985,
+      "sha256": "EB7E2E2C056DC54C0FFB84E9CD62ECC9E58CCE37564A33EFDA84176700410365"
+    }
+  ],
+  "nativeDeathWitness": {
+    "case": "crocodile-active-source-death",
+    "ownedPair": true,
+    "sourceDead": true,
+    "targetTicksAfterSourceDeath": 3,
+    "targetGrappleTicks": 4,
+    "pausedFrames": 1,
+    "resumedOwnedDeathPauses": 1,
+    "advancedSeconds": 0.202,
+    "released": true,
+    "heldPart": false,
+    "swallowedPart": false,
+    "heldBuff": false,
+    "swallowedBuff": false,
+    "cantMove": false,
+    "cantAct": false,
+    "fixtureForcedRelationshipRelease": false
+  },
+  "restoration": {
+    "status": "VERIFIED",
+    "closedAtUtc": "2026-10-05T23:49:30.9580629Z",
+    "lease": "runtime-20261005T231625Z-a5656b61123643399e6ef50ce567f946",
+    "leaseOwnerPid": 14764,
+    "leaseOwnerStartedUtc": "2026-10-05T23:16:17.0499915Z",
+    "leaseStatus": "Completed",
+    "recoveryRequired": false,
+    "snapshot": "20261005T2316265780723Z",
+    "before": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "after": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "leaseReleased": true,
+    "gameProcessesRemaining": 0,
+    "stagingRemaining": false,
+    "sharedCompatibilityLockRemaining": false,
+    "sourceOwnership": "Retained by laptop session; no competing owner",
+    "workingSave": "Two authorized native KMG_AUTOMATION_WORKING writes (prepare/cleanup); fresh absence zero owned fixture units/state; no filesystem save access; protected baseline untouched"
+  },
+  "batchJournalSha256": "1FE92F008D9D5A587B6A6B7D5EE9F1DDBFBE536E341EF6FD57FAFA584484A688",
+  "deploymentManifestSha256": "a4771af183f07540a590f20af594118530d01da17bb4c258a190650d42c73917",
+  "publication": {
+    "registered": 976,
+    "published": 970,
+    "withheld": 6,
+    "nativeWrappers": 29,
+    "visibleChoices": 999,
+    "next": "Remove only dire-crocodile suppression; new exact-head publication gate must prove all 6 Dire and 14 Crocodile published routes before Sprint 16 completion."
+  },
+  "acceptedDecisions": [
+    "PASSIVE_CREATURE_SENSES_UNMODELED",
+    "ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD",
+    "SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED",
+    "SWALLOW_ELIGIBLE_TARGET_ELSE_DEATH_ROLL"
+  ],
+  "humanReview": "NOT_PERFORMED_NONBLOCKING",
+  "dataImports": 0,
+  "phase2CAuthorized": true,
+  "phase2CStartDeferredUntilPhase2BOwnerAcceptance": true
+}
