@@ -21,14 +21,18 @@ $base = @{
     ExitAfterCompletion = $true
     EvidenceDirectory = (Join-Path $script:KmgRuntimeEvidenceRoot 'ground-crowd-request-test')
 }
-$allowed = @{ saveName = 'KMG_AUTOMATION_WORKING'
-    creatures = 'aurochs,bison,rhinoceros,woolly-rhinoceros'
-    quantity = 'OneD4PlusOne' }
-$request = New-KmgRuntimeRequest @base -Parameters $allowed
-if ($request.parameters.quantity -cne 'OneD4PlusOne' -or
-    $request.parameters.creatures -cne $allowed.creatures -or
-    $request.parameters.saveName -cne 'KMG_AUTOMATION_WORKING') {
-    throw 'The bounded crowd request did not round-trip exactly.'
+$rosters = @('aurochs,bison,rhinoceros,woolly-rhinoceros',
+    'dire-rat,dog,hyena,goblin-dog', 'crocodile,dire-crocodile',
+    'crocodile', 'dire-crocodile')
+foreach ($roster in $rosters) {
+    $allowed = @{ saveName = 'KMG_AUTOMATION_WORKING'
+        creatures = $roster; quantity = 'OneD4PlusOne' }
+    $request = New-KmgRuntimeRequest @base -Parameters $allowed
+    if ($request.parameters.quantity -cne 'OneD4PlusOne' -or
+        $request.parameters.creatures -cne $roster -or
+        $request.parameters.saveName -cne 'KMG_AUTOMATION_WORKING') {
+        throw "The bounded crowd request did not round-trip exactly: $roster."
+    }
 }
 
 function Assert-Rejected([hashtable]$parameters, [string]$label) {
@@ -47,4 +51,11 @@ Assert-Rejected @{ saveName = 'KMG_AUTOMATION_WORKING'
     creatures = 'aurochs'; quantity = 'OneD4PlusOne'; extra = 'unexpected' } `
     'an unexpected parameter'
 
-Write-Host 'PASS Sprint 11 crowd request: exact round trip and four fail-closed cases.'
+Assert-Rejected @{ saveName = 'KMG_AUTOMATION_WORKING'
+    creatures = 'crocodile,purple-worm'; quantity = 'OneD4PlusOne' } 'an unrelated swallower'
+Assert-Rejected @{ saveName = 'KMG_AUTOMATION_WORKING'
+    creatures = 'Dire-Crocodile'; quantity = 'OneD4PlusOne' } 'a differently cased creature key'
+Assert-Rejected @{ saveName = 'KMG_AUTOMATION_WORKING'
+    creatures = 'dire-crocodile'; quantity = 'OneD3' } 'an unauthorized crocodilian quantity'
+
+Write-Host 'PASS ground crowd request: five exact round trips and seven fail-closed cases.'

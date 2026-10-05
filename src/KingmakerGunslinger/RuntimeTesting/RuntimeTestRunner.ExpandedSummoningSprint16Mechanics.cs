@@ -53,6 +53,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal readonly List<RuleCombatManeuver> Checks = new List<RuleCombatManeuver>();
             internal readonly List<RuleCastSpell> Casts = new List<RuleCastSpell>();
             internal int WeaponAttacks;
+            internal Action<RuleAttackWithWeapon> ObserveWeaponContact;
+            internal Action<RuleDealDamage> ObserveRiderContact;
 
             public void OnEventAboutToTrigger(RuleCalculateWeaponStats evt) { }
             public void OnEventDidTrigger(RuleCalculateWeaponStats evt)
@@ -67,13 +69,22 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             public void OnEventAboutToTrigger(RuleDealDamage evt) { }
             public void OnEventDidTrigger(RuleDealDamage evt)
-            { if (ReferenceEquals(evt.Target, Target)) Damage.Add(evt); }
+            {
+                if (!ReferenceEquals(evt.Target, Target)) return;
+                Damage.Add(evt);
+                if (ReferenceEquals(evt.Initiator, Owner) && evt.AttackRoll == null &&
+                    ObserveRiderContact != null) ObserveRiderContact(evt);
+            }
             public void OnEventAboutToTrigger(RuleAttackRoll evt) { }
             public void OnEventDidTrigger(RuleAttackRoll evt)
             { if (ReferenceEquals(evt.Initiator, Owner)) Attacks.Add(evt); }
             public void OnEventAboutToTrigger(RuleAttackWithWeapon evt) { }
             public void OnEventDidTrigger(RuleAttackWithWeapon evt)
-            { if (ReferenceEquals(evt.Initiator, Owner)) WeaponAttacks++; }
+            {
+                if (!ReferenceEquals(evt.Initiator, Owner)) return;
+                WeaponAttacks++;
+                if (ObserveWeaponContact != null) ObserveWeaponContact(evt);
+            }
             public void OnEventAboutToTrigger(RuleCastSpell evt) { }
             public void OnEventDidTrigger(RuleCastSpell evt)
             { if (ReferenceEquals(evt.Initiator, Owner)) Casts.Add(evt); }

@@ -7,9 +7,11 @@ retains six registered, withheld roots. Changed mechanics are **NOT QUALIFIED**:
 base-bite identity/weapon attribution and swallowed cadence still need live
 combat proof. The narrow `8250ac8f` survey passed exact land-skill rows and the
 complete creature-owned swallowed graph, not its damage-event cadence.
-The candidate mechanics, scheduler/timeline and twelve native-command/AI
-cells are now written and compile, but have NOT RUN. They add no qualified
-fidelity claim; the pre-candidate review lists their exact scope and open gates.
+The candidate mechanics, scheduler/timeline and eighteen native-command/AI/
+maintain cells are now written and compile, but have NOT RUN. Native cooldown
+rejection, UI widgets/sheet, weighted contact, lifecycle, exact resource/fallback
+controls and 14+6 routes are also written, not qualified. The complete candidate
+gate and runtime batch are next. They add no qualified fidelity claim.
 
 Targeted active/cooldown/hold/swallow persistence is now written, NOT RUN.
 Nine visible action/status/trait consumers have three original physical emblems,

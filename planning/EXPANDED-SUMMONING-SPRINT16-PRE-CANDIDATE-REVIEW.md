@@ -5,7 +5,7 @@
 ### Current follow-up: crocodilian-only candidate evidence pack
 
 The guarded `disposable-expanded-summoning-crocodilians` implementation now
-extends the original survey with focused live mechanics and twelve real-command
+extends the original survey with focused live mechanics and eighteen real-command
 cells. It has **NOT RUN** in this form. The old seven-assertion survey remains
 research evidence at its own source/DLL; it does not qualify these new cases.
 
@@ -17,12 +17,26 @@ research evidence at its own source/DLL; it does not qualify these new cases.
 | Maintain selection | Fresh hold, own size, smaller size, target growing ineligible, prone/already-prone/immunity; real maintain check counts, replay refusal, live hold component round guard, lethal cleanup | Written, NOT RUN |
 | Swallowed cadence | Initial bite count; initial native next-tick delay; three BuffCollection-delivered rounds and duplicate scheduler ticks; source ownership; native six-second escape gate/check; zero removal damage | Written, NOT RUN |
 | Sprint speed/time | Native queued/executed ability; Haste both orders, Slow, -5 and floor-reaching penalties, native command speed cap; six-/sixty-second buff deadlines, all intermediate rounds and recast | Written, NOT RUN |
-| Commands/AI | Both creatures x RTWP/turn-based x manual, fresh AI, AI after a player cast; movement, bite/tail events, actual AI command identity, one Sprint/no failed queue spam, shared cooldown | Written, NOT RUN |
+| Commands/AI | Both creatures x RTWP/turn-based x manual, fresh AI, AI after a player cast; additional real bite/hold/maintain and Dire Swallow cells; movement, bite/tail events, actual AI command identity, one Sprint/no failed queue spam, native second-command rejection | Written, NOT RUN |
 | Targeted persistence | Closed scope in existing guarded three-stage workflow; five summons, active/cooldown pairs, skills/visuals, hold/swallow reset, native buff expiry and saved cleanup | Written, NOT RUN |
-| Other lifecycle | Swallow/hold source-death/dismissal/expiry/transition; Worm/Flytrap regression controls | Still to finish |
-| Icon consumers | Nine visible consumers mapped to three original emblems; five AI internals explicitly inventoried; offline/profile/protection PASS | Live bindings written, NOT RUN; native UI use still open |
-| Original art | Visual lifecycle, jaw/tail contacts, crowd/fallback/resource controls, native Monitor Lizard | Still to finish |
-| Routes/publication | Fourteen changed Crocodile roots and six private Dire roots, then publication-only gate and 976/29/1005 totals | Still to finish |
+| Other lifecycle | Active/cooldown Swallow/hold source-death/dismissal/expiry/transition; Dire spit-out/target death; Worm/Flytrap unchanged graph controls | Written, NOT RUN |
+| Icon consumers | Nine visible consumers mapped to three original emblems; five AI internals explicitly inventoried; live bindings, native action-row widgets and actual character-sheet buffs | Written, NOT RUN; offline/profile/protection PASS |
+| Original art | Cross-frame visual/crowd lifecycle; event-time weighted jaw/tail contact; post-swap fallback/recovery, exact owned objects and native Monitor Lizard | Written, NOT RUN |
+| Routes/publication | Fourteen changed Crocodile player paths and six private Dire routes; only then publication-only gate and 976/29/1005 totals | Targeted routes written, NOT RUN; publication pending |
+
+The final review writes `sprint16-final-review.json`. Native action widgets
+are real rendered converted-row prefabs, not an ordinary action-menu-flow
+claim. Area transitions invoke the production safeguard with explicit disposable
+prey; no campaign party mutation or actual area load is requested. Source-death
+uses native KillUnit and subsequent game updates; expiry advances only the exact
+disposable summon marker. Per-view mesh/material references must compare destroyed
+after the native boundary/cleanup. Combat contacts bake only original geometry at
+actual native rule events; no bone, renderer, animation or target pose is changed
+by the observer. Images remain supporting art evidence, not mechanical proof.
+
+Inner-loop results: 216 focused tests / 2018 registered, static/icon validation,
+incremental exact-reference Release compile, five crowd round trips/seven
+rejections and 63 pure orchestration assertions PASS. Full candidate gates next.
 
 The command cells never write Animation.IsActed or call command.Tick to invent
 a contact. AI cells retain their production action list and receive no fixture

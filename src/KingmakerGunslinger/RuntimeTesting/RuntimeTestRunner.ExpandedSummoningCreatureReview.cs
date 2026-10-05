@@ -851,7 +851,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             MotionReviewDoorwayValid,
                             "named native area landmark, same-area endpoints, native UnitMoveTo and cross-frame position samples"));
                     }
-                    if (IsSprint12QuadrupedReviewKey(key))
+                    if (IsSprint12QuadrupedReviewKey(key) || CrocodilianVisualPolicy.Keys.Contains(key))
                     {
                         _creatureReviewAssertions.Add(Assertion(
                             "expanded-summoning-ground-travel-" + key,
@@ -860,7 +860,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             MotionReviewTravelValid,
                             "native floor survey in the party's own area and graph, native UnitMoveTo and cross-frame position/velocity samples"));
                     }
-                    if (IsSprint11UngulateReviewKey(key))
+                    if (IsSprint11UngulateReviewKey(key) || CrocodilianVisualPolicy.Keys.Contains(key))
                     {
                         _creatureReviewAssertions.Add(Assertion(
                             "expanded-summoning-ungulate-travel-" + key,

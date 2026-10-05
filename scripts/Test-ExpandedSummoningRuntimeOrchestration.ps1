@@ -51,6 +51,37 @@ function Assert-Equal {
     $script:Passed++
 }
 
+# Parameter routing cannot leak a crowd or save-writing fixture scope into
+# an unrelated scenario. These drive the shipped pure resolver, not tokens.
+$batchNames = @('mechanics', 'crowd', 'persistence')
+$parameterMap = @{ crowd = @{ creatures = 'crocodile,dire-crocodile'; quantity = 'OneD4PlusOne' }
+    persistence = @{ persistenceScope = 'crocodilians' } }
+$resolved = Resolve-KmgBatchScenarioParameters -Scenarios $batchNames -CurrentScenario 'crowd' -ParameterMap $parameterMap
+Assert-Equal 'crocodile,dire-crocodile' $resolved.creatures 'crowd retains its exact creature scope'
+Assert-Equal 2 $resolved.Count 'crowd receives only its own parameters'
+$resolved.quantity = 'changed'
+Assert-Equal 'OneD4PlusOne' $parameterMap.crowd.quantity 'returned parameters are a defensive copy'
+$resolved = Resolve-KmgBatchScenarioParameters -Scenarios $batchNames -CurrentScenario 'mechanics' -ParameterMap $parameterMap
+Assert-Equal 0 $resolved.Count 'parameterless mechanics does not inherit another scenario scope'
+$resolved = Resolve-KmgBatchScenarioParameters -Scenarios $batchNames -CurrentScenario 'persistence' -ParameterMap $parameterMap
+Assert-Equal 'crocodilians' $resolved.persistenceScope 'persistence retains only its own scope'
+Assert-Equal 1 $resolved.Count 'persistence scope has no crowd parameters'
+$resolved = Resolve-KmgBatchScenarioParameters -Scenarios $batchNames -CurrentScenario 'crowd' -DefaultParameters @{ historical = 'retained' }
+Assert-Equal 'retained' $resolved.historical 'historical common-parameter behavior is retained'
+foreach ($bad in @(
+    @{ CurrentScenario = 'foreign'; ParameterMap = @{} },
+    @{ CurrentScenario = 'crowd'; ParameterMap = @{ foreign = @{} } },
+    @{ CurrentScenario = 'crowd'; ParameterMap = @{ Crowd = @{} } },
+    @{ CurrentScenario = 'crowd'; ParameterMap = @{ crowd = 'not-a-hashtable' } },
+    @{ CurrentScenario = 'crowd'; ParameterMap = @{ crowd = $null } },
+    @{ CurrentScenario = 'crowd'; ParameterMap = $parameterMap; DefaultParameters = @{ extra = 'mixed' } }
+)) {
+    $rejected = $false
+    try { $null = Resolve-KmgBatchScenarioParameters -Scenarios $batchNames @bad }
+    catch { $rejected = $true }
+    Assert-True $rejected 'invalid or ambiguous batch parameter routing fails closed before snapshot or launch'
+}
+
 # The outer restoration wrapper must expose the guarded harness's two stage
 # deadlines. A slow first OnUpdate must not be mistaken for a mechanical test
 # failure merely because the aggregate timeout was raised while the startup
