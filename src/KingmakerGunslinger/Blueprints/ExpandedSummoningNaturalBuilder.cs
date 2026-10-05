@@ -827,12 +827,26 @@ namespace KingmakerGunslinger.Blueprints
             // its own gets exactly those, and a vermin whose stat block prints
             // no skill ranks names none. Giving ranks nobody printed is how a
             // Giant Ant read Perception 7 against a printed +5.
-            levels.Skills = profile.Skills.Select(SkillStat).ToArray();
+            bool crocodilian = profile.Key == "crocodile" ||
+                profile.Key == "dire-crocodile";
+            // AddClassLevels repeatedly spends points in one fixed priority
+            // list; it cannot express 1/2 or 6/6 at these low Int scores.
+            // Only these two profiles use the exact one-time rank allocation.
+            levels.Skills = crocodilian ? Array.Empty<StatType>() :
+                profile.Skills.Select(SkillStat).ToArray();
             levels.Archetypes = Array.Empty<BlueprintArchetype>();
             levels.SelectSpells = Array.Empty<BlueprintAbility>();
             levels.MemorizeSpells = Array.Empty<BlueprintAbility>();
             levels.Selections = Array.Empty<SelectionEntry>();
             unit.ComponentsArray = new BlueprintComponent[] { levels };
+            if (crocodilian)
+            {
+                var ranks = UnityEngine.ScriptableObject.CreateInstance<
+                    SummonCrocodilianSkillRanks>();
+                ranks.CreatureKey = profile.Key;
+                ranks.OwningBlueprint = unit;
+                unit.ComponentsArray = new BlueprintComponent[] { levels, ranks };
+            }
 
             BlueprintItemWeapon primary = Weapon(library, bySymbol,
                 profile.PrimaryWeapon);
