@@ -8,22 +8,22 @@ has been imported. The controlling state supersedes historical authority
 statements below. Phase 2C remains authorized but cannot start until Phase 2B
 owner acceptance; this mission stops after Phase 2B closure.
 
-Exact `4c3c76cee25a9cdc68d25f660ece43a443ffe2d5` passed all prelaunch gates
-(217 focused / 2019 full; clean exact build; strict deterministic 312-member ZIP).
-Six fresh Steam runs: smoke 11/11, main **204/209 FAIL**, crowd 20/20,
-prepare 9/9, cleanup 9/9, absence 5/5. All eighteen command cells and twenty
-targeted roots ran. Manual-command/swallow sequencing, bite contact, UI and
-expiry restoration now pass. Four Dire tail contacts expose the wrong visual
-root; one Crocodile source-death row needs native update-eligibility evidence.
-No runtime qualification or publication.
+Exact `197840577cb995beea726a34f5dc6ae9dd9674d9` passed every prelaunch gate
+(2019/2019 full), then smoke 11/11, main **208/209 FAIL**, crowd 20/20,
+prepare 9/9, cleanup 9/9, absence 5/5. All 55 combat assertions, including
+the four Dire tail contacts, passed. The sole remaining lifecycle row spent
+343 frames paused with only 0.04 native seconds. Other source-death rows
+released with five native prey updates.
 
-Actual leased snapshot restored by 22:12:50 UTC: 136 files / Info 0.0.117 /
+The containing fixture-only correction resumes only after its requested owned
+death and requires a witnessed post-death native prey update. Focused 218/218
+of 2020 and incremental compile PASS; new exact-artifact gate still required.
+[Exact evidence and correction](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-NATIVE-UPDATE-BATCH-REVIEW.md).
+
+Actual leased snapshot restored at 23:04:04 UTC: 136 files / Info 0.0.117 /
 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
-Lease completed; no game/compatibility lock/staging remains. Authorized native
-cleanup save and fresh absence are clean. Exact hashes and bounded next actions:
-[4c3 laptop review](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-BATCH-REVIEW.md).
-DATA audit complete/read-only, zero ports. Surface remains 970 + 29 = 999;
-six Dire roots withheld. Sprints 14-15 complete; Sprint 17 not started.
+Lease completed, no game/lock/staging; fresh save absence clean. DATA audit
+complete/read-only, zero ports. Six Dire roots remain withheld; Sprint 17 waits.
 
 ## Historical first hidden candidate, October 5
 
