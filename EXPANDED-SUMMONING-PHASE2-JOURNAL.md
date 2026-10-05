@@ -1,5 +1,21 @@
 # Expanded Summoning Phase 2 journal
 
+## October 5 follow-up: narrow crocodilian survey source
+
+The next source checkpoint adds explicit 1/2 and 6/6 land-skill rank
+allocations on the exact owned units, a Haste-stackable temporary Sprint
+modifier, natural-brain action preservation and one shared cooldown buff.
+The new guarded crocodilian scenario reuses the established correction
+fixture for census/graph/skill/bind-frame research only. Full combat, cadence,
+AI, lifecycle and original-visual qualification remains NOT PERFORMED.
+
+Focused checks passed: 21/21 Sprint 16/correction and 17/17 Sprint 16/scenario
+wiring (2012 total registered). Restored static dispatcher and incremental
+Release compilation pass. Before the survey launch, run the complete source,
+clean exact Release and strict-package pipeline against the committed source.
+This research artifact is not the one stable hidden qualification candidate;
+private donor frames and live census are prerequisites to finish its assets.
+
 ## October 5 takeover checkpoint: Sprint 16 NOT QUALIFIED
 
 Continued the clean pushed `a762ece553ab9b539a53a782102a29e5c70d44eb`

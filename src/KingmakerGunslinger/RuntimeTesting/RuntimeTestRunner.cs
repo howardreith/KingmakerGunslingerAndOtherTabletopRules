@@ -728,7 +728,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !RuntimeTestScenarioCatalog.IsSummonSameTurnScenario(
                         _request.Scenario) &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts &&
-                    _request.Scenario != RuntimeTestScenarioCatalog.DisposableExpandedSummoningRules &&
+                    !RuntimeTestScenarioCatalog.IsExpandedSummoningRulesScenario(_request.Scenario) &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualLifecycle &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveExpandedSummoningVariantMenu &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableMagicCircleEvil &&
@@ -2064,7 +2064,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .IsSummonSameTurnWorkingSaveScenario(
                         _request.Scenario) ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
-                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningRules ||
+                    RuntimeTestScenarioCatalog.IsExpandedSummoningRulesScenario(_request.Scenario) ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualLifecycle ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleEvil ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleUi ||
@@ -2182,7 +2182,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .IsSummonSameTurnWorkingSaveScenario(
                         _request.Scenario) ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
-                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningRules ||
+                    RuntimeTestScenarioCatalog.IsExpandedSummoningRulesScenario(_request.Scenario) ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualLifecycle ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleEvil ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleUi ||
@@ -2772,6 +2772,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .DisposableExpandedSummoningVisualContracts)
                 {
                     Complete(RunDisposableExpandedSummoningVisualContracts());
+                }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableExpandedSummoningCrocodilians)
+                {
+                    PollExpandedSummoningCrocodilianSurvey();
                 }
                 else if (_request.Scenario == RuntimeTestScenarioCatalog
                     .DisposableExpandedSummoningRules)
@@ -6423,7 +6428,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .IsSummonSameTurnWorkingSaveScenario(
                     _request.Scenario) ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualContracts ||
-                _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningRules ||
+                RuntimeTestScenarioCatalog.IsExpandedSummoningRulesScenario(_request.Scenario) ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualLifecycle ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleEvil ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleUi ||

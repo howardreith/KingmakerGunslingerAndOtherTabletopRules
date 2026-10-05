@@ -1030,6 +1030,12 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
     }
     # Correction order (2026-09-25): the focused rules cases and the visual
     # resource lifecycle, on disposable units in the guarded working save.
+    'disposable-expanded-summoning-crocodilians' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
     'disposable-expanded-summoning-rules' = [pscustomobject]@{
         RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
         RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
