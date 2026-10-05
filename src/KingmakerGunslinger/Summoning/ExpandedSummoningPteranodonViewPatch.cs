@@ -496,8 +496,27 @@ namespace KingmakerGunslinger.Summoning
                     UnityEngine.Object.Destroy(attachment.BeetleGlow);
                     attachment.BeetleGlow = null;
                 }
+                // ReinitMaterials instantiates a controller-driven clone. On a
+                // post-swap fault, capture that exact owned family before
+                // Revert drops its references. Donor/cache materials survive.
+                var rollbackMaterials = new HashSet<Material>();
+                if (material != null) rollbackMaterials.Add(material);
+                if (swapped && IsCrocodilian(attachment.VisualKey))
+                {
+                    string ownedName = "KMG_" + attachment.VisualKey + "_Original";
+                    foreach (Material candidate in donor.sharedMaterials)
+                        if (candidate != null && candidate.name.StartsWith(ownedName,
+                                StringComparison.Ordinal)) rollbackMaterials.Add(candidate);
+                    IList<Material> driven = ControllerMaterials(
+                        donor.GetComponentInParent<StandardMaterialController>());
+                    if (driven != null)
+                        foreach (Material candidate in driven)
+                            if (candidate != null && candidate.name.StartsWith(ownedName,
+                                    StringComparison.Ordinal)) rollbackMaterials.Add(candidate);
+                }
                 if (swapped) Revert(attachment);
-                if (material != null) UnityEngine.Object.Destroy(material);
+                foreach (Material candidate in rollbackMaterials)
+                    if (candidate != null) UnityEngine.Object.Destroy(candidate);
                 if (mesh != null) UnityEngine.Object.Destroy(mesh);
                 attachment.Material = null;
                 attachment.Mesh = null;

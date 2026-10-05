@@ -1,5 +1,17 @@
 # Expanded Summoning Phase 2 evidence index
 
+## Reconciled clean-tip hidden batch (FAIL; safely restored)
+
+Clean `7c1690e61` passed all new source/package/preflight gates, then completed
+six fresh Steam processes. Main mechanics 156/205; crowd 18/20; smoke 11/11;
+persistence prepare 9/9, cleanup 6/9, absence 4/5. Exact native working prepare
+write: one; cleanup refused its write. The actual leased 254-file 0.0.140 live
+installation was restored exactly and the lease released. Failed assertions,
+artifacts, PIDs and evidence hashes are retained in
+[reconciled batch review](planning/EXPANDED-SUMMONING-SPRINT16-RECONCILED-BATCH-REVIEW.md).
+No publication and no runtime qualification claim. Repairs require new gates
+and fresh artifact evidence.
+
 ## October 5 authorized reconciliation (NOT QUALIFIED)
 
 Authoritative base `390f9a39d9cce2a40e6528d3215a678d6cd15757`; unpublished sibling `3ebefe7b6c5525156d8494de82435abf8574f503`

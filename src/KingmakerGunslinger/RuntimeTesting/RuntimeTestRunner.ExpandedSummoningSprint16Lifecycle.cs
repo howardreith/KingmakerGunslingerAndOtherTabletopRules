@@ -122,6 +122,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                             armed && speedState && free && boundaryReached && noDamage,
                             new JObject { ["armed"] = armed, ["initialSpeedState"] = speedState,
                                 ["boundaryReached"] = boundaryReached, ["released"] = free,
+                                ["targetHeldPart"] = target.Get<UnitPartGrappleTarget>() != null,
+                                ["targetSwallowedPart"] = target.Get<UnitPartSwallowed>() != null,
+                                ["swallowerCount"] = owner.Get<UnitPartSwallowWhole>() == null ? 0 :
+                                    owner.Get<UnitPartSwallowWhole>().SwallowedUnits.Count,
+                                ["cantAct"] = target.Descriptor.State.HasCondition(UnitCondition.CantAct),
+                                ["cantMove"] = target.Descriptor.State.HasCondition(UnitCondition.CantMove),
+                                ["heldBuff"] = target.Descriptor.HasFact(grab.GrappledBuff),
+                                ["swallowedBuff"] = grab.SwallowedBuff != null && target.Descriptor.HasFact(grab.SwallowedBuff),
                                 ["victimDamageBefore"] = damageBefore, ["victimDamageAfter"] = target.Damage,
                                 ["destroyed"] = owner.Destroyed,
                                 ["transitionScope"] = boundary == "transition" ?
@@ -277,6 +285,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     finally { ExpandedSummoningPteranodonViewPatch.PostSuppressionFaultForTest = null; }
                     SetExpandedSummoningBrainActive(unit, false);
+                    bool pausedBefore = Game.Instance.IsPaused;
+                    bool awakeAdded = !Game.Instance.State.AwakeUnits.Contains(unit);
+                    try
+                    {
+                        if (awakeAdded) Game.Instance.State.AwakeUnits.Add(unit);
+                        Game.Instance.IsPaused = false;
+                        for (int frame = 0; frame < 30; frame++) yield return 0;
+                    }
+                    finally
+                    {
+                        if (awakeAdded) Game.Instance.State.AwakeUnits.Remove(unit);
+                        Game.Instance.IsPaused = pausedBefore;
+                    }
                     var renderers = unit.View.GetComponentsInChildren<SkinnedMeshRenderer>(true).Where(value => value.enabled).ToArray();
                     string outcome = ExpandedSummoningPteranodonViewPatch.DescribeView(unit.View);
                     bool original = renderers.Any(value => value.sharedMesh != null && value.sharedMesh.name == "KMG_" + key + "_Original");
@@ -284,6 +305,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         reached == 0 && original && outcome.StartsWith("visual:attached;", StringComparison.Ordinal);
                     Sprint16Check(_crocodilianAssertions, _sprint16FinalRows, key + (fault ? "-fault-fallback" : "-recovery"), exact,
                         new JObject { ["faultReached"] = reached, ["outcome"] = outcome, ["original"] = original,
+                            ["faderVisible"] = EntityFadedIn(unit), ["awakeAdded"] = awakeAdded,
+                            ["allRenderers"] = new JArray(unit.View.GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                                .Select(value => (value.sharedMesh == null ? "<null>" : value.sharedMesh.name) +
+                                    ":enabled=" + value.enabled + ":active=" + value.gameObject.activeInHierarchy)),
                             ["meshes"] = new JArray(renderers.Select(value => value.sharedMesh == null ? null : value.sharedMesh.name)) },
                         "post-swap fault restores the enabled native donor exactly; subsequent cast recovers the original");
                     DisposeExpandedSummoningUnits(fixture.Created, new[] { unit });

@@ -221,6 +221,19 @@ namespace KingmakerGunslinger.DomainTests
         /// </summary>
         internal static void DeathRollFollowsLiveStrength()
         {
+            foreach (var row in new[] {
+                new { Body = 5, Weapon = 4, Calculated = 4, Expected = 5 },
+                new { Body = 7, Weapon = 6, Calculated = 6, Expected = 7 },
+                new { Body = 6, Weapon = 4, Calculated = 4, Expected = 6 },
+                new { Body = 4, Weapon = 4, Calculated = 4, Expected = 4 },
+                new { Body = 5, Weapon = 4, Calculated = 5, Expected = 6 },
+                new { Body = 7, Weapon = 6, Calculated = 5, Expected = 6 },
+                new { Body = 8, Weapon = 6, Calculated = 7, Expected = 8 },
+                new { Body = 2, Weapon = 4, Calculated = 3, Expected = 2 } })
+                if (CrocodilianRulesPolicy.ResolveWeaponSize(row.Body,
+                        row.Weapon, row.Calculated) != row.Expected)
+                    throw new InvalidOperationException(
+                        "Live body size and native weapon shift must compose without donor-size bias.");
             // The printed creatures, as the baseline the unmodified case must
             // reproduce. Both come out of the live derivation too, which is
             // what makes the baseline a contract rather than a separate path.
@@ -294,6 +307,14 @@ namespace KingmakerGunslinger.DomainTests
         /// </summary>
         internal static void DeathRollIsRefusedWhereTheRulesRefuseIt()
         {
+            foreach (bool ownerDestroyed in new[] { false, true })
+            foreach (bool ownerConscious in new[] { false, true })
+            foreach (bool targetDestroyed in new[] { false, true })
+            foreach (bool targetDead in new[] { false, true })
+                if (CrocodilianRulesPolicy.CanMaintainLiveTarget(ownerDestroyed,
+                        ownerConscious, targetDestroyed, targetDead) !=
+                    (!ownerDestroyed && ownerConscious && !targetDestroyed && !targetDead))
+                    throw new InvalidOperationException("A dead or invalid participant cannot receive another maintain roll or damage.");
             // The ordinary case: held since the round began, maintain
             // succeeded, target no larger than the crocodilian.
             if (!CrocodilianRulesPolicy.ShouldDeathRollOnMaintain(true, true,
