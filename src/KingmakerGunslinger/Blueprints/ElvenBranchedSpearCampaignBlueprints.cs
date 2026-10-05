@@ -22,7 +22,7 @@ namespace KingmakerGunslinger.Blueprints
                     ElvenBranchedSpearItemKind.MasterworkColdIron }, null),
             new VendorSpec(CapitalVendorBlueprints.TableGuid,
                 CapitalVendorBlueprints.ExpectedTableName,
-                AllFoundationKinds(), null),
+                new ElvenBranchedSpearItemKind[0], null),
             new VendorSpec("f072a8f6889b5f345b7f4e7c74cb3e4c",
                 "DireNarlmarchesVillageVendorTable", AllFoundationKinds(), null),
             new VendorSpec("e5ab1fccf37c55f41a20a80c6ba6a460",
