@@ -17,8 +17,11 @@ section and this header disagree, **this header governs**.
   `handoffs/Kingmaker_Codex_TwoDay_Autonomous_Phase2_Mission.md`, the owner's
   two-day unattended order of 2026-10-03. It authorises continuous work through
   Sprints 15-21 without routine check-ins.
-- **No blocker is open, and nothing is withheld.** Every creature this phase
-  registered has published.
+- **No blocker is open.** One creature is withheld: Sprint 16's Dire
+  Crocodile, whose six placements are suppressed because it was registered
+  ahead of its own qualification, which is how every sprint in this phase has
+  worked. Everything of Sprints 9-15 is published. Withheld is not blocked -
+  nothing is waiting on an owner decision or an engine barrier.
 
 ### Effective mission
 
