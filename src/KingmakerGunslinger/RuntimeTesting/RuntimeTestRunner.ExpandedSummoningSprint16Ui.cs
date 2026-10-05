@@ -190,7 +190,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     (int)sectionField.GetValue(sheet) == section && ReferenceEquals(group.GetCurrentCharacter(), groupCharacter) &&
                     ui.SelectionManagerPC.SelectedUnits.SequenceEqual(selected) && game.Player.GameTime == clock;
                 Sprint16Check(_crocodilianAssertions, _sprint16FinalRows, "native-ui-restoration", restored,
-                    new JObject { ["restored"] = restored }, "exact sheet, selection, group, pause and game time restored");
+                    new JObject { ["restored"] = restored,
+                        ["tabsClosed"] = !ui.ServiceWindow.WindowTabs.IsShow, ["sheetClosed"] = !sheet.IsShow,
+                        ["characterRestored"] = ReferenceEquals(characterField.GetValue(sheet), originalCharacter),
+                        ["sectionRestored"] = (int)sectionField.GetValue(sheet) == section,
+                        ["groupRestored"] = ReferenceEquals(group.GetCurrentCharacter(), groupCharacter),
+                        ["selectionRestored"] = ui.SelectionManagerPC.SelectedUnits.SequenceEqual(selected),
+                        ["clockBefore"] = clock.ToString(), ["clockAfter"] = game.Player.GameTime.ToString(),
+                        ["pauseRestored"] = game.IsPaused == pause },
+                    "exact sheet, selection, group, pause and game time restored");
             }
             for (int frame = 0; frame < 5; frame++) yield return 0;
         }

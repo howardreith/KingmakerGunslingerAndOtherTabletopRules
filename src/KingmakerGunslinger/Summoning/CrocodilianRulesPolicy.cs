@@ -173,6 +173,19 @@ namespace KingmakerGunslinger.Summoning
             stealth = rules.StealthRanks;
         }
 
+        // Native NPC weapon entities can retain a donor's fixed size. Apply
+        // only the native weapon-size shift to this creature's live body size.
+        internal static bool CanMaintainLiveTarget(bool ownerDestroyed,
+            bool ownerConscious, bool targetDestroyed, bool targetDead)
+        { return !ownerDestroyed && ownerConscious && !targetDestroyed && !targetDead; }
+
+        internal static int ResolveWeaponSize(int bodySize, int weaponSize,
+            int calculatedWeaponSize)
+        {
+            return Math.Max(2, Math.Min(8,
+                bodySize + calculatedWeaponSize - weaponSize));
+        }
+
         internal static bool TryClaimMaintainRound(int roundsHeld,
             ref int lastResolvedRound)
         {
