@@ -1,14 +1,20 @@
 # Sprint 16 pre-candidate review - Crocodile and Dire Crocodile
 
-## Current result: hidden candidate 0238bf03 FAILED
+## Current finalization result — NOT QUALIFIED
 
-The earlier NOT RUN statements below describe preparation checkpoints. The first
-full candidate passed 2018/2018 tests and exact build/package gates, but its
-five-run runtime batch failed. The exact baseline is restored. See
-[the candidate review](EXPANDED-SUMMONING-SPRINT16-HIDDEN-CANDIDATE-REVIEW.md)
-for immutable hashes, partial evidence and nine diagnosed corrections.
-The containing correction checkpoint passes focused 216/216 and incremental
-compile, remains NOT QUALIFIED, and is the next hidden runtime candidate.
+Canonical base 3fca5aba preserves the runtime-derived dice, native cleanup,
+control and contact repairs; c5058203's independent improvements are reconciled
+in the [finalization ledger](EXPANDED-SUMMONING-PHASE2B-FINALIZATION-RECONCILIATION.md).
+The latest imported full batch 08df2611 failed 22 main assertions and its crowd
+launch, despite passing mechanics, final lifecycle and targeted persistence.
+Historical NOT RUN/partial-PASS text below describes its named artifacts only.
+
+A new immutable committed candidate must pass all source gates and the complete
+six-scenario fresh-Steam batch. No diagnostic subset qualifies Sprint 16.
+Lease precedes actual installation observation/snapshot; native working-save
+prepare/cleanup/absence handles the five stale owned fixtures without save
+surgery. All six Dire roots remain withheld. Phase 2B closure is this mission's
+endpoint; Phase 2C remains authorized but deferred for owner acceptance.
 
 ## October 5 takeover engineering review (NOT QUALIFIED)
 

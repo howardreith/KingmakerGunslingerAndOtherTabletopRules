@@ -45,6 +45,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _sprint16FinalRows.ToString(Formatting.Indented));
             }
             if (_sprint16FinalReview != null) _sprint16FinalReview.Dispose();
+            if ((string)_request.Parameters?["crocodilianReview"] == "lifecycle")
+            { CompleteSprint16DiagnosticScope("lifecycle"); return; }
             Complete(CreateResult(_crocodilianAssertions.All(value => value.Status == RuntimeTestStatuses.Pass)
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, _crocodilianAssertions, null));
         }
@@ -198,6 +200,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["tabsClosed"] = !ui.ServiceWindow.WindowTabs.IsShow, ["sheetClosed"] = !sheet.IsShow,
                         ["characterRestored"] = ReferenceEquals(characterField.GetValue(sheet), originalCharacter),
                         ["sectionRestored"] = (int)sectionField.GetValue(sheet) == section,
+                        ["sectionBefore"] = section, ["sectionAfter"] = (int)sectionField.GetValue(sheet),
                         ["groupRestored"] = ReferenceEquals(group.GetCurrentCharacter(), groupCharacter),
                         ["selectionRestored"] = ui.SelectionManagerPC.SelectedUnits.SequenceEqual(selected),
                         ["clockBefore"] = clock.ToString(), ["clockAfter"] = game.Player.GameTime.ToString(),

@@ -1997,11 +1997,17 @@ function Assert-KmgRuntimeScenarioPreflight {
         $crocodilianPersistence = $Scenario -cin @('working-save-expanded-summoning-prepare',
             'working-save-expanded-summoning-verify-cleanup', 'working-save-expanded-summoning-verify-absent') -and
             $Parameters.ContainsKey('persistenceScope')
+        $crocodilianReview = $Scenario -ceq 'disposable-expanded-summoning-crocodilians' -and
+            $Parameters.ContainsKey('crocodilianReview')
+        if ($crocodilianReview -and ($Parameters.crocodilianReview -isnot [string] -or
+            $Parameters.crocodilianReview -cnotin @('mechanics','combat','lifecycle') -or -not $ExitAfterCompletion)) {
+            throw 'Crocodilian diagnosis permits only mechanics, combat or lifecycle, with automatic exit.'
+        }
         if ($crocodilianPersistence -and ($Parameters.persistenceScope -isnot [string] -or
             $Parameters.persistenceScope -cne 'crocodilians' -or -not $ExitAfterCompletion)) {
             throw 'The targeted persistence trio permits only persistenceScope=crocodilians and automatic exit.'
         }
-        $requiredParameterCount = if ($circleBound) { 2 } elseif ($persistence -or $fcbPersistence) { 3 } elseif ($Scenario -ceq 'working-save-elemental-nereid-respec') { 5 } elseif ($nativeActionCase) { 5 } elseif ($creatorRegression -or $visualLifecycle -or (Test-KmgCompletionSceneScope $Scenario $Parameters)) { 4 } elseif ((Test-KmgTreacherousEffectScope $Scenario $Parameters) -or $crowdReview) { 3 } elseif ($Scenario -ceq 'working-save-expanded-summoning-creature-review' -or $flightActivation -or $crocodilianPersistence) { 2 } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers' -or (Test-KmgNereidPersistenceScope $Scenario $Parameters)) { 2 } else { 1 }
+        $requiredParameterCount = if ($circleBound) { 2 } elseif ($persistence -or $fcbPersistence) { 3 } elseif ($Scenario -ceq 'working-save-elemental-nereid-respec') { 5 } elseif ($nativeActionCase) { 5 } elseif ($creatorRegression -or $visualLifecycle -or (Test-KmgCompletionSceneScope $Scenario $Parameters)) { 4 } elseif ((Test-KmgTreacherousEffectScope $Scenario $Parameters) -or $crowdReview) { 3 } elseif ($Scenario -ceq 'working-save-expanded-summoning-creature-review' -or $flightActivation -or $crocodilianPersistence -or $crocodilianReview) { 2 } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers' -or (Test-KmgNereidPersistenceScope $Scenario $Parameters)) { 2 } else { 1 }
         if ($Parameters.Count -ne $requiredParameterCount -or
             -not $Parameters.ContainsKey('saveName') -or
             $Parameters.saveName -isnot [string] -or
@@ -2277,6 +2283,8 @@ function New-KmgRuntimeRequest {
             }
         } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers') {
             [ordered]@{ saveName = [string]$Parameters.saveName; fixtureCase = [string]$Parameters.fixtureCase }
+        } elseif ($Scenario -ceq 'disposable-expanded-summoning-crocodilians' -and $Parameters.ContainsKey('crocodilianReview')) {
+            [ordered]@{ saveName = [string]$Parameters.saveName; crocodilianReview = [string]$Parameters.crocodilianReview }
         } elseif ($Scenario -cin @('working-save-expanded-summoning-prepare',
                 'working-save-expanded-summoning-verify-cleanup', 'working-save-expanded-summoning-verify-absent') -and
                 $Parameters.ContainsKey('persistenceScope')) {

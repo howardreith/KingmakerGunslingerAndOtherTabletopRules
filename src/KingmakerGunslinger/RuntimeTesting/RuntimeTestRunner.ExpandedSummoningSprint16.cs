@@ -38,6 +38,14 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// </summary>
         private void PollExpandedSummoningCrocodilianSurvey()
         {
+            string scope = (string)_request.Parameters?["crocodilianReview"];
+            if (scope == "lifecycle") { PollSprint16FinalReview(); return; }
+            if (scope == "combat")
+            {
+                if (!_sprint16CombatComplete) { PollSprint16Combat(); return; }
+                CompleteSprint16DiagnosticScope(scope);
+                return;
+            }
             if (_crocodilianMechanicsComplete)
             {
                 if (_sprint16CombatComplete) PollSprint16FinalReview();
@@ -175,6 +183,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _context.ModEntry.Info.Version == _request.ExpectedModVersion,
                 "Unity Mod Manager ModEntry.Info.Version"));
             _crocodilianMechanicsComplete = true;
+            if (scope == "mechanics") CompleteSprint16DiagnosticScope(scope);
+        }
+
+        private void CompleteSprint16DiagnosticScope(string scope)
+        {
+            RuntimeTestResult result = CreateResult(_crocodilianAssertions.All(value => value.Status == RuntimeTestStatuses.Pass)
+                ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, _crocodilianAssertions, null);
+            result.Warnings.Add("Diagnostic crocodilianReview=" + scope + "; not a complete Sprint 16 qualification.");
+            Complete(result);
         }
 
         private static string DescribeSprint16Skill(ModifiableValue value)

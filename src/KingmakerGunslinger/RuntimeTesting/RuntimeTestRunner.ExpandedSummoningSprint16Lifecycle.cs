@@ -130,6 +130,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ["cantMove"] = target.Descriptor.State.HasCondition(UnitCondition.CantMove),
                                 ["heldBuff"] = target.Descriptor.HasFact(grab.GrappledBuff),
                                 ["swallowedBuff"] = grab.SwallowedBuff != null && target.Descriptor.HasFact(grab.SwallowedBuff),
+                                ["targetDead"] = target.Descriptor.State.IsDead,
+                                ["nativeTurnBased"] = TurnBased.Controllers.CombatController.IsInTurnBasedCombat(),
+                                ["gameTime"] = Game.Instance.TimeController.GameTime.ToString(),
+                                ["turnStartTime"] = Game.Instance.TurnBasedCombatController.TurnStartTime.ToString(),
+                                ["sprintEnd"] = sprint == null ? null : sprint.EndTime.ToString(),
                                 ["victimDamageBefore"] = damageBefore, ["victimDamageAfter"] = target.Damage,
                                 ["destroyed"] = owner.Destroyed,
                                 ["transitionScope"] = boundary == "transition" ?

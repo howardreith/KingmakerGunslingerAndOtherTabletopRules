@@ -109,6 +109,12 @@ if ($scenarioMetadata.RequiresSaveName) {
             throw 'The deferred-marker probe requires typed -SaveName and only fixtureCase.'
         }
         $Parameters = @{saveName=$SaveName;fixtureCase=$Parameters.fixtureCase}
+    } elseif ($Scenario -ceq 'disposable-expanded-summoning-crocodilians' -and $Parameters.ContainsKey('crocodilianReview')) {
+        if ($Parameters.Count -ne 1 -or $Parameters.crocodilianReview -isnot [string] -or
+            $Parameters.crocodilianReview -cnotin @('mechanics','combat','lifecycle') -or -not $ExitAfterCompletion) {
+            throw 'Crocodilian diagnosis permits only mechanics, combat or lifecycle, with automatic exit.'
+        }
+        $Parameters = @{ saveName = $SaveName; crocodilianReview = $Parameters.crocodilianReview }
     } elseif ($Scenario -cin @('working-save-expanded-summoning-prepare',
             'working-save-expanded-summoning-verify-cleanup',
             'working-save-expanded-summoning-verify-absent') -and

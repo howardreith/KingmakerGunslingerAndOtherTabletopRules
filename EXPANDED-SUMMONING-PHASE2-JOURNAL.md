@@ -1,5 +1,35 @@
 # Expanded Summoning Phase 2 journal
 
+## October 5 canonical finalization reconciliation — NOT QUALIFIED
+
+Owner froze the contested branch and made
+`codex/expanded-summoning-phase2b-finalize-20261005` canonical. Created its
+fresh worktree from the actual fetched 3fca5aba tip, preserving c5058203,
+2d334375, the previous tip and every existing safety ref. Verified c505 recovery
+bundle SHA-256 `92EB8F0FE4E43D5918A1DB15C4576883E477C41D006773B31D6EE87A577FD22D`.
+The required helper initially rejected the new name. Owner added it; no guard
+was bypassed or edited by this session. No push to the frozen branch.
+
+After daemon restart, verified the clean canonical tip and absent helper/lock,
+then acquired a new exclusive canonical receipt at 19:31:23 UTC (owner 31796,
+helper 11596; exact starts in the state header). No separate process referenced
+this worktree; ordinary process metadata did not expose arbitrary process CWDs.
+Later historical 31c9ff0f is preserved as information, not integrated.
+
+Compared range-diff/cherry and each local hunk. Retained remote native dice
+baseline, dead-target/load reset, native destruction, native sheet closure,
+contact pose and command/AI repairs. Replayed independent closed diagnostics,
+actual growth oracle, lethal no-replay/idempotent cohort reset checks,
+native size bounds and donor-material ownership exclusion. Omitted duplicate
+appearance/census/buff observations and stale UI/disposal strategies.
+[Full ledger](planning/EXPANDED-SUMMONING-PHASE2B-FINALIZATION-RECONCILIATION.md).
+
+Phase 2C true, start deferred until Phase 2B owner acceptance; this mission stops
+after Phase 2B closure. No runtime/install observation/deployment/save write yet.
+Next: focused source checks, commit/policy push/new draft PR, then every exact
+candidate gate and the complete fresh-Steam batch. Historical sections below
+are evidence, never current scope or ownership instructions.
+
 ## October 5, 15:55 UTC — first hidden batch failed safely; correction work
 
 `0238bf03166dfb3dd7bf0205c12f82a2d2757caa` passed full static/domain/build/
