@@ -28,11 +28,11 @@
       15
     ],
     "currentSprint": 16,
-    "currentSubItem": "Sprint 16 NOT QUALIFIED: corrected common visual-root binding and owned awake/update lifecycle witness; focused 217/217 and incremental compile PASS. Pushed evidence 0144ebbb records exact 4c3 main 204/209 and five passing stages, clean working save and exact restoration. Commit/push correction, then all exact-head gates and complete six-scenario batch. DATA audit complete, zero ports; Dire withheld; Sprint 17 not started.",
+    "currentSubItem": "Sprint 16 NOT QUALIFIED: exact 197 main 208/209, complete combat 55/55 and five other stages PASS; exact restoration and fresh save absence. Containing fixture-only owned-death pause correction focused 218/218 of 2020 and compile PASS; commit/push then all exact-head gates and six-scenario batch. DATA audit complete, zero ports; Dire withheld; Sprint 17 not started.",
     "sprint16LaptopCorrectionReview": "planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-FIXTURE-REPAIR.md",
     "dataSalvageAudit": "planning/EXPANDED-SUMMONING-PHASE2B-DATA-SALVAGE-AUDIT.md",
-    "lastGuardedRuntimePass": "20261005T2209523262370Z-working-save-expanded-summoning-verify-absent (5/5; not complete Sprint 16 qualification)",
-    "lastGuardedRestoration": "20261005T2140053167749Z actual snapshot restored; batch closed 2026-10-05T22:12:50.5306966Z; journal E5AE36C7CC06AB399CDF2A98BAD09F4CBA2EB51EB62386BE2812211811ABC3C3",
+    "lastGuardedRuntimePass": "20261005T2301082826307Z-working-save-expanded-summoning-verify-absent (5/5; not complete Sprint 16 qualification)",
+    "lastGuardedRestoration": "20261005T2231051887980Z actual snapshot restored 2026-10-05T23:04:04.0535946Z; journal D4AA5CBBE2C885EDBABEE36C1161F4C03E7411E12AAEB0A18D395A9FEE919342",
     "activePullRequest": 26,
     "archivedSalvagePullRequest": 27,
     "giantWaspPublished": true,
@@ -123,6 +123,14 @@
       "review": "planning/EXPANDED-SUMMONING-SPRINT16-FIFTH-RECONCILED-BATCH-REVIEW.md",
       "restoration": "VERIFIED actual leased 0.0.140 / 254-file snapshot 20261005T1928465498770Z; lease released",
       "workingSave": "two authorized native writes; fresh absence zero KMG summons"
+    },
+    "sprint16LaptopNativeUpdateBatch": {
+      "candidate": "197840577cb995beea726a34f5dc6ae9dd9674d9",
+      "status": "NOT QUALIFIED; smoke 11/11, main 208/209, crowd 20/20, prepare 9/9, cleanup 9/9, absence 5/5",
+      "review": "planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-NATIVE-UPDATE-BATCH-REVIEW.md",
+      "evidence": "planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-NATIVE-UPDATE-BATCH-EVIDENCE.json",
+      "restoration": "VERIFIED actual 136-file / Info 0.0.117 snapshot; lease Completed; no game, compatibility lock or staging",
+      "salvageImported": false
     },
     "sprint16LaptopContactBatch": {
       "candidate": "4c3c76cee25a9cdc68d25f660ece43a443ffe2d5",

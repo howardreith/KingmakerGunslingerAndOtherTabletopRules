@@ -27,6 +27,22 @@ namespace KingmakerGunslinger.DomainTests
         private const string DireKey = "dire-crocodile";
         private const string CrocodileKey = "crocodile";
 
+        internal static void DeathReviewResumesOnlyItsRequestedOwnedDeath()
+        {
+            foreach (bool owned in new[] { false, true })
+            foreach (bool sourceDead in new[] { false, true })
+            foreach (bool targetDead in new[] { false, true })
+            foreach (string boundary in new[] { "source-death", "target-death",
+                "dismissal", "expiry", "transition", "spit-out", "Source-Death", "", null })
+            {
+                bool expected = owned && (boundary == "source-death" ? sourceDead :
+                    boundary == "target-death" && targetDead);
+                Assertions.Equal(expected, CrocodilianLifecycleReviewPolicy.CanResumeAfterRequestedDeath(
+                    owned, boundary, sourceDead, targetDead),
+                    "Only the exact owned death requested by this drill permits clock resumption.");
+            }
+        }
+
         internal static void ManualReviewRequiresItsOwnCompletedCommands()
         {
             foreach (bool manual in new[] { false, true })

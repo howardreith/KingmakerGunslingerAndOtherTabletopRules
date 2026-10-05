@@ -3,17 +3,17 @@
 ## Current Sprint 16 disposition, October 5
 
 Sprint 16 remains **NOT QUALIFIED**, not published. Exact laptop candidate
-`4c3c76cee25a9cdc68d25f660ece43a443ffe2d5` passed all prelaunch gates
-(2019/2019 full), then smoke 11/11, main **204/209 FAIL**, crowd 20/20,
-prepare 9/9, cleanup 9/9, absence 5/5. All eighteen command cells and twenty
-targeted routes executed. [Exact review](EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-BATCH-REVIEW.md).
+`197840577cb995beea726a34f5dc6ae9dd9674d9` passed all prelaunch gates
+(2019 full), then 11/11 smoke, **208/209 main FAIL**, 20/20 crowd,
+9/9 prepare, 9/9 cleanup and 5/5 absence.
+[Exact review](EXPANDED-SUMMONING-SPRINT16-LAPTOP-NATIVE-UPDATE-BATCH-REVIEW.md).
 
-Damage/maintain 37/37, speed/timeline 19/19, icons 9/9, manual-swallow commands,
-bite contacts and UI/native expiry restoration now pass. Four Dire tail
-contacts still fail due to the wrong visual root; one Crocodile active-source-
-death row lacks proof of target update eligibility. No assertion waived.
-Actual 136-file / 0.0.117 tree restored exactly; fresh absence proves zero
-owned fixture state. This is partial evidence, not complete qualification.
+The complete combat matrix passes 55/55, including all four repaired Dire
+tail contacts. Mechanics 37/37, speed 19/19, icons 9/9, all twenty routes,
+UI/fallback/resource controls pass. Sole failure: Crocodile active-source-death
+observation paused for 343 frames/0.04 native seconds. Fixture-only correction
+must obtain a real post-death update; no assertion waived or rule changed.
+Actual installation and clean working-save absence verified; no complete gate.
 
 Crocodile identity and fourteen published roots are unchanged. All six Dire
 roots remain withheld: 976 registered / 970 published / 29 native wrappers /

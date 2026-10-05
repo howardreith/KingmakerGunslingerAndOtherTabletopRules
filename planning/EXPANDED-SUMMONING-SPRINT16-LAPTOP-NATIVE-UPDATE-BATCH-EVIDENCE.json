@@ -1,0 +1,200 @@
+{
+  "schemaVersion": 1,
+  "status": "NOT QUALIFIED",
+  "candidate": "197840577cb995beea726a34f5dc6ae9dd9674d9",
+  "branch": "codex/expanded-summoning-phase2b-sprints14-17",
+  "sourceFingerprint": "c5c0d09a0f0d939f5a67a7544da804420ddfb213899ed91024e04a638b671738",
+  "version": "0.0.141",
+  "dllSha256": "d0f10d1c7ac5dfb4f065663aae1d26a3972c8ec3078d28be0bfb2e810a087415",
+  "dllMvid": "522bc65a-ce2a-4235-b08b-9401b5a2ce34",
+  "zipSha256": "0335cd8edad43c653d6c58168b6e1da80d95b40384ebdc88c70f8328909048f4",
+  "packageMembers": 312,
+  "prelaunch": {
+    "focused": "217/217",
+    "fullUnfiltered": "2019/2019",
+    "repositoryStaticIconManifest": "PASS",
+    "preflight": 480,
+    "orchestration": 68,
+    "persistence": "11 wiring; 3 round trips/19 rejections",
+    "crowd": "5 round trips/7 rejections",
+    "cleanExactRelease": "PASS",
+    "deterministicPackage": "PASS",
+    "strictStandalone": "PASS"
+  },
+  "runs": [
+    {
+      "scenario": "working-save-smoke",
+      "startedAtUtc": "2026-10-05T22:31:29.7643549Z",
+      "parameters": {},
+      "launcherOutcome": "Clean",
+      "exitCode": 0,
+      "evidenceDirectory": "20261005T2231306780688Z-working-save-smoke",
+      "requestId": "20261005T2231307086965Z-9838abc40eaa435aa23e10f8394c75e2",
+      "requestSha256": "8acf912d991502561be85d7cd72e625fc110c7d276e1120993046e1fe4a3edff",
+      "resultSha256": "9825215c8538784e59448738be7a032d85cf201aeacd815acb1d95caf26e3bf7",
+      "assertions": 11,
+      "passed": 11,
+      "failed": [],
+      "orchestrationSha256": "ae8700b5e8ec11f88c86ae2b2135deb86df9bb3b24a159c8b7bbd460c772e443",
+      "processId": 4832,
+      "processStartedUtc": "2026-10-05T22:31:31.6085882Z",
+      "scenarioStatus": "PASS",
+      "outcome": "PASS",
+      "completedAtUtc": "2026-10-05T22:34:21.9745985Z"
+    },
+    {
+      "scenario": "disposable-expanded-summoning-crocodilians",
+      "startedAtUtc": "2026-10-05T22:34:27.4268538Z",
+      "parameters": {},
+      "launcherOutcome": "Unclean",
+      "exitCode": 1,
+      "evidenceDirectory": "20261005T2234282023355Z-disposable-expanded-summoning-crocodilians",
+      "requestId": "20261005T2234282023355Z-05f950a92ebb46499943d0ff8d849c1c",
+      "requestSha256": "aca85e34391974383c4bc5eaab3e5108b6e84243cedbc5de32efb1d9fd89e7ff",
+      "resultSha256": "58f67a7b58037ea7777891ae175b1c75340bd20668650dbea633953177786b38",
+      "assertions": 209,
+      "passed": 208,
+      "failed": [
+        {
+          "name": "sprint16-crocodile-active-source-death",
+          "status": "FAIL"
+        }
+      ],
+      "orchestrationSha256": "62905bcaf16f3e30a8ab41798e1d7d177d53c65f35309bc560f674b43a6ab370",
+      "processId": 21820,
+      "processStartedUtc": "2026-10-05T22:34:29.6677599Z",
+      "scenarioStatus": "FAIL",
+      "outcome": "FAIL",
+      "completedAtUtc": "2026-10-05T22:46:40.8359273Z"
+    },
+    {
+      "scenario": "working-save-expanded-summoning-creature-review",
+      "startedAtUtc": "2026-10-05T22:46:41.2397956Z",
+      "parameters": {
+        "quantity": "OneD4PlusOne",
+        "creatures": "crocodile,dire-crocodile"
+      },
+      "launcherOutcome": "Clean",
+      "exitCode": 0,
+      "evidenceDirectory": "20261005T2246420007889Z-working-save-expanded-summoning-creature-review",
+      "requestId": "20261005T2246420007889Z-95af1973ebfd40ee92bff125717fdb0b",
+      "requestSha256": "7ee274c4b297d7aaa0627a4dcc738493c6d2e2f86475f5c6119549a5751c7d2c",
+      "resultSha256": "93aff2b2a2d507f37761e2c4913699132f3cd50a7cbf5eac24f67c2a5323952e",
+      "assertions": 20,
+      "passed": 20,
+      "failed": [],
+      "orchestrationSha256": "51ceb4b18df67b5f59b1005d8d0f264fcd71cb9af9c6aa472ff7c497119148ce",
+      "processId": 30936,
+      "processStartedUtc": "2026-10-05T22:46:42.8862624Z",
+      "scenarioStatus": "PASS",
+      "outcome": "PASS",
+      "completedAtUtc": "2026-10-05T22:54:20.0149080Z"
+    },
+    {
+      "scenario": "working-save-expanded-summoning-prepare",
+      "startedAtUtc": "2026-10-05T22:54:20.4167792Z",
+      "parameters": {
+        "persistenceScope": "crocodilians"
+      },
+      "launcherOutcome": "Clean",
+      "exitCode": 0,
+      "evidenceDirectory": "20261005T2254211860085Z-working-save-expanded-summoning-prepare",
+      "requestId": "20261005T2254211860085Z-6d1438bb44af43ee90100626efbe9c32",
+      "requestSha256": "91a63149b6e4f921d8b08645f7c40215214a01fd425690585b1477905192c1da",
+      "resultSha256": "8cdf5aa5499a6f8893693c874fa93f393d2178ed18b44d947d17f2bf64a30e10",
+      "assertions": 9,
+      "passed": 9,
+      "failed": [],
+      "orchestrationSha256": "eab58ec0eb2560dfcf69981d4bce68bf940e68476c4f5704d1a071f1d096ae18",
+      "processId": 29468,
+      "processStartedUtc": "2026-10-05T22:54:22.0208431Z",
+      "scenarioStatus": "PASS",
+      "outcome": "PASS",
+      "completedAtUtc": "2026-10-05T22:57:44.4499080Z"
+    },
+    {
+      "scenario": "working-save-expanded-summoning-verify-cleanup",
+      "startedAtUtc": "2026-10-05T22:57:44.8181031Z",
+      "parameters": {
+        "persistenceScope": "crocodilians"
+      },
+      "launcherOutcome": "Clean",
+      "exitCode": 0,
+      "evidenceDirectory": "20261005T2257455654795Z-working-save-expanded-summoning-verify-cleanup",
+      "requestId": "20261005T2257455654795Z-2b19f5b299094b65aed8f73e5c510c88",
+      "requestSha256": "6242671c348296e750884b4aea5b32bae3cf8d64656020f13e442458516fd927",
+      "resultSha256": "d4f7a9dacf3240d4f6843f56cdac2ce08046733c8da029f100b1432fcd0eea51",
+      "assertions": 9,
+      "passed": 9,
+      "failed": [],
+      "orchestrationSha256": "504d2208c654560d897bc6435505a8dead489ec7f5064231db5c2c6f4e2a6c87",
+      "processId": 27820,
+      "processStartedUtc": "2026-10-05T22:57:46.4920273Z",
+      "scenarioStatus": "PASS",
+      "outcome": "PASS",
+      "completedAtUtc": "2026-10-05T23:01:07.2130407Z"
+    },
+    {
+      "scenario": "working-save-expanded-summoning-verify-absent",
+      "startedAtUtc": "2026-10-05T23:01:07.5890250Z",
+      "parameters": {
+        "persistenceScope": "crocodilians"
+      },
+      "launcherOutcome": "Clean",
+      "exitCode": 0,
+      "evidenceDirectory": "20261005T2301082826307Z-working-save-expanded-summoning-verify-absent",
+      "requestId": "20261005T2301082826307Z-b5878ada2509482caf5604f7e9920323",
+      "requestSha256": "78fc1b50d7db3ba9eafc2f472d93d6af8779d117c064b12c736025182eab8281",
+      "resultSha256": "4347f35cac0e863745f0affbf4c87d706fdc7644e860c7891681c5ae11b23ca0",
+      "assertions": 5,
+      "passed": 5,
+      "failed": [],
+      "orchestrationSha256": "650efe776c5c0a66b49f79880359b7a1e2f9177827e031255feeaa3d320be383",
+      "processId": 33020,
+      "processStartedUtc": "2026-10-05T23:01:09.1807544Z",
+      "scenarioStatus": "PASS",
+      "outcome": "PASS",
+      "completedAtUtc": "2026-10-05T23:03:55.8476016Z"
+    }
+  ],
+  "baseline": {
+    "files": 136,
+    "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+    "version": "0.0.117",
+    "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+  },
+  "restored": {
+    "files": 136,
+    "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+    "version": "0.0.117",
+    "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+  },
+  "snapshot": "20261005T2231051887980Z",
+  "lease": "runtime-20261005T223104Z-ac3fdac11f8d4a6fb6346b28d09ac564",
+  "leaseStatus": "Completed",
+  "recoveryRequired": false,
+  "restoration": "VERIFIED",
+  "completedAtUtc": "2026-10-05T23:04:04.0535946Z",
+  "gameProcessesRemaining": [],
+  "staging": false,
+  "batchJournal": "artifacts/laptop-runtime-20261005T2231044417386Z/batch.json",
+  "batchJournalSha256": "D4AA5CBBE2C885EDBABEE36C1161F4C03E7411E12AAEB0A18D395A9FEE919342",
+  "deploymentManifestSha256": "5e6fa7c787e80cb287892a51730063feb3b506e5245b674b6470e4d3907c5c4f",
+  "detailedEvidence": {
+    "combat": "9D986218A691DB1A100943E28AAAC68E6752C4E30D3E862E6DEADC60B40B23B7",
+    "finalReview": "45C069E088B08E0E5965B38BB89260FBE43032B1CD583E8BD60235699C8236B0"
+  },
+  "remainingFailure": {
+    "case": "crocodile-active-source-death",
+    "classification": "fixture/update scheduling",
+    "pausedFrames": 343,
+    "frames": 344,
+    "nativeSeconds": 0.04,
+    "preyGrappleTicks": 1,
+    "awakeThroughout": true,
+    "requestedDeathReached": true,
+    "released": false,
+    "pauseOrigin": "not recorded; do not claim a specific auto-pause setting",
+    "otherSourceDeathRows": "Crocodile cooldown and both Dire states pass with five prey ticks and 0.205/0.207/0.205 seconds"
+  }
+}

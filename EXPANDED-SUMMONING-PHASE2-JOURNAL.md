@@ -1,5 +1,20 @@
 # Expanded Summoning Phase 2 journal
 
+## October 5, 23:04 UTC — native-update batch restored; pause fixture repair
+
+Exact 19784057: all prelaunch gates PASS; smoke 11/11, main 208/209 FAIL,
+crowd 20/20, prepare 9/9, cleanup 9/9, absence 5/5. Complete combat 55/55,
+including the four Dire tail contacts. Sole failure was paused lifecycle
+observation (343 frames, one prey tick, 0.04 native seconds), not a proved
+production death-rule defect. Exact actual snapshot restored, native working
+save clean, no game/runtime lock/staging. Active remote still exact.
+
+Containing fixture-only correction resumes after its exact requested owned
+death and requires an observed post-death prey tick, without changing auto-
+pause settings, cleanup criteria or timeout. Focused 218/218 of 2020 and
+incremental compile PASS. New complete exact-artifact gate next, no publication.
+[Evidence and disposition](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-NATIVE-UPDATE-BATCH-REVIEW.md).
+
 ## October 5 — common-root and native-update correction, NOT QUALIFIED
 
 Pushed restored batch evidence at 0144ebbb and updated PR #26. The next bounded
