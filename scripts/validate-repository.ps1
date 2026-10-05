@@ -25,6 +25,8 @@ if ($null -eq $python) {
     throw 'Python 3 is required to run tools\validate_repository.py.'
 }
 
+& $python.Source (Join-Path $repositoryRoot 'tools\test_repository_validator.py')
+if ($LASTEXITCODE -ne 0) { throw 'Repository validator regression fixtures failed.' }
 & $python.Source $validator --root $repositoryRoot
 if ($LASTEXITCODE -ne 0) {
     throw "Repository validation failed with exit code $LASTEXITCODE."

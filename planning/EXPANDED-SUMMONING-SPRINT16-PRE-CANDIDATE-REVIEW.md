@@ -1,5 +1,77 @@
 # Sprint 16 pre-candidate review - Crocodile and Dire Crocodile
 
+## October 5 takeover engineering review (NOT QUALIFIED)
+
+The following source corrections are descendants of intake
+`a762ece553ab9b539a53a782102a29e5c70d44eb`. They are not a hidden runtime
+candidate. Full gate, package, graph/cadence proof and all live cases remain
+pending until the Sprint 16 source, art and scenarios are stable.
+
+- Native `RuleCalculateWeaponStats.OnTrigger` writes its computed base damage
+  description at index zero (exact-reference IL offsets 03ad-03b6). A local
+  derived rule now captures that object's identity immediately after native
+  construction, before after-rule subscribers can reorder it. The native
+  subscription manager walks base types, preserving ordinary stats handlers.
+  Unique reference lookup, not final index or physical type alone, identifies
+  the bite. Missing, duplicated or nonphysical captures fail closed.
+- `ModifiableValueAttributeStat.Bonus` derives from `ModifiedValue / 2 - 5`;
+  native weapon stats uses the same getter. Death Roll records modified
+  Strength, modifier, before/after dice/bonus and captured index. Only the
+  positive extra half reaches the base bite. The weapon-aware DamageBundle
+  constructor also sets WeaponDamage and WeaponSize; assigning Weapon alone
+  did not. Live enchantment, material, DR and negative modifier cases are open.
+- The actual establishing bite and reciprocal held target are mandatory.
+  The crocodilian maintain claims its held-round counter before rolling;
+  replay cannot roll another check or rider. A lethal roll releases its link.
+  Death Roll triggers weapon stats and damage, not another attack or on-hit
+  event. These are source findings, not live rider/cleanup proof.
+- Bounded command-seam audit: the existing summon hold is driven by
+  `SummonHoldComponent.OnNewRound -> MaintainLink`; its native grapple parts
+  hold relationship state, and its existing attack-command seam is rake, not
+  a choice between maintain riders. No existing bounded held-target command
+  selector was found. Do not build a reaction/menu subsystem.
+
+`OwnerAcceptedAdaptation: SWALLOW_ELIGIBLE_TARGET_ELSE_DEATH_ROLL`.
+On a successful later-turn maintain, a Dire Crocodile swallows an eligible
+target at least one size smaller; otherwise it Death Rolls a legal same-size
+target. An ineligible target gets neither special rider. The policy is chosen
+from pre-roll ownership/age/size state and can resolve only one rider. This is
+the owner's deterministic RTWP/AI adaptation, not exact tabletop choice;
+actual maintain-path runtime proof remains open.
+
+The existing recorded native swallowed graph
+(`20261002T1440160968919Z-observe-expanded-summoning-native-donors`) has:
+
+| Component | Timing / effect |
+| --- | --- |
+| AddFactContextActions | Activated empty; Deactivated empty; NewRound one physical bludgeoning 4d8+12 action |
+| AddStatBonus | AdditionalCMB -2, UntypedStackable, not BAB-scaled |
+| AddStatBonus | Dexterity -4, UntypedStackable, not BAB-scaled |
+
+Dire Crocodile now verifies and clones only those two stat penalties, then
+constructs empty Activated/Deactivated lists and exactly one NewRound physical
+bludgeoning 3d6+13 action. No donor action graph is mutated or retained, nested
+or otherwise. Native UnitPartSwallowed still owns escape. The initial bite
+remains in SwallowHeld. A fresh recursive live graph and damage-event audit
+must prove later-round cadence, no application-frame double hit, no damage on
+removal and unchanged Purple Worm/Flytrap. The existing donor observation is
+not the new live census required to activate
+`SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED`; that decision remains conditional.
+
+Validation repair discovered at takeover: commit `6b83eecd` emptied the active
+0.0.141 validator. It is restored, with a dispatcher regression fixture for
+empty/missing source. Its stale roster/identity/icon/package-count records and
+the icon catalog's stale ledger hash are reconciled to existing source:
+95 creatures, 1847 summoning identities, 2835 total identities, 107 icons,
+976 registered / 970 published / 6 withheld roots. No GUID or artwork changes.
+Accepted Sprint 14-15 runtime evidence is retained; this repair does not
+retroactively claim their old empty static check performed validation.
+
+Remaining implementation: Sprint speed and AI interaction, exact land skills,
+Run disposition, original crocodilian assets and icon-consumer/UI review,
+runtime scenario matrix and private donor bind frames. Runtime and owner
+visual approval are separate; `HumanReview: NOT_PERFORMED_NONBLOCKING`.
+
 Written while the Sprint 15 guarded batch ran, from source reading only. The
 point of doing it here is the standing rule that the adversarial rules and
 architecture review happens *before* the expensive candidate, so a
