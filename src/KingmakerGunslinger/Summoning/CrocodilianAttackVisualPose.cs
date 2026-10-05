@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Linq;
 using Harmony12;
 using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Facts;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.RuleSystem;
@@ -54,8 +55,16 @@ namespace KingmakerGunslinger.Summoning
         internal void Configure(string key, UnitEntityView view,
             SkinnedMeshRenderer renderer)
         {
-            var stats = view == null || view.EntityData == null ? null :
-                view.EntityData.Blueprint.GetComponent<SummonCrocodilianWeaponStats>();
+            var blueprint = view == null || view.EntityData == null ? null : view.EntityData.Blueprint;
+            // The weapon rules belong to the owned CombatTraits fact, not to
+            // the unit's direct components. Resolve that exact attached graph
+            // once and cache its owner/weapon references for attack callbacks.
+            var stats = blueprint == null ? null :
+                (blueprint.AddFacts ?? Array.Empty<BlueprintUnitFact>())
+                    .Where(fact => fact != null)
+                    .SelectMany(fact => fact.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                    .OfType<SummonCrocodilianWeaponStats>()
+                    .SingleOrDefault(value => ReferenceEquals(value.OwningBlueprint, blueprint));
             if (stats == null || !ReferenceEquals(stats.OwningBlueprint,
                     view.EntityData.Blueprint) || stats.Bite == null || stats.Tail == null ||
                 renderer == null || renderer.sharedMesh == null || renderer.rootBone == null ||

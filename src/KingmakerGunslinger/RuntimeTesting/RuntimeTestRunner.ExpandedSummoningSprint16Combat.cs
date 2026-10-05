@@ -59,6 +59,9 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private ExpandedSummoningCorrectionFixture _crocCombatFixture;
         private UnitEntityData _crocCombatOwner;
+        private UnitReference _crocCombatMasterBefore;
+        private bool _crocCombatCapitalMaster;
+        private int _crocCombatControlRules;
         private UnitEntityData[] _crocCombatAwakeBefore;
         private Sprint16RuleObserver _crocCombatObserver;
         private readonly JArray _crocCombatRows = new JArray();
@@ -224,8 +227,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                 EventBus.Subscribe(control);
                 try { _crocCombatOwner = CastExpandedSummoningOwnTier(_crocCombatFixture, cell[0]); }
                 finally { EventBus.Unsubscribe(control); }
-                if (control.Matched != 1 || !_crocCombatOwner.IsDirectlyControllable)
-                    throw new InvalidOperationException("Manual fixture did not receive exact native summon control.");
+                _crocCombatControlRules = control.Matched;
+                var part = _crocCombatOwner.Get<UnitPartSummonedMonster>();
+                if (control.Matched != 1 || part == null || !part.IsDirectlyControllable)
+                    throw new InvalidOperationException("Manual native summon rule/control mismatch: rules=" +
+                        control.Matched + ";part=" + (part != null) + ";flag=" +
+                        (part != null && part.IsDirectlyControllable));
+                _crocCombatMasterBefore = _crocCombatOwner.Descriptor.Master;
+                _crocCombatCapitalMaster = false;
+                // The capital's native control predicate additionally requires
+                // MainCharacter or its pet. Give only this disposable manual
+                // actor that identity; retain its native summoner link. Never
+                // edit the player, party, area flag or a turn-controller flag.
+                if (Game.Instance.CurrentlyLoadedArea != null &&
+                    Game.Instance.CurrentlyLoadedArea.IsCapital && !_crocCombatOwner.IsDirectlyControllable)
+                {
+                    _crocCombatOwner.Descriptor.Master = Game.Instance.Player.MainCharacter;
+                    _crocCombatCapitalMaster = true;
+                }
+                if (!_crocCombatOwner.IsDirectlyControllable)
+                    throw new InvalidOperationException("Manual fixture fails the native area/faction control predicate.");
             }
             else _crocCombatOwner = CastExpandedSummoningOwnTier(_crocCombatFixture, cell[0]);
             // Never empty an AI cell's action list. The manual cell explicitly
@@ -431,6 +452,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["rejectedCommandActed"] = _crocCombatRejectedCast != null && _crocCombatRejectedCast.IsActed,
                     ["directlyControllable"] = _crocCombatOwner.IsDirectlyControllable,
                     ["manualNativeAttackAttempts"] = _crocCombatManualAttackAttempts,
+                    ["nativeManualControlRules"] = _crocCombatControlRules,
+                    ["disposableCapitalPetMaster"] = _crocCombatCapitalMaster,
+                    ["nativeSummonerRetained"] = _crocCombatOwner.Get<UnitPartSummonedMonster>() != null &&
+                        ReferenceEquals(_crocCombatOwner.Get<UnitPartSummonedMonster>().Summoner,
+                            _crocCombatFixture.Caster),
                     ["maneuvers"] = new JArray(_crocCombatObserver.Checks.Select(value => new JObject {
                         ["initiator"] = value.Initiator.UniqueId,
                         ["roll"] = value.InitiatorRoll.Value, ["success"] = value.Success,
@@ -569,6 +595,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 InterruptExpandedSummoningFixtureCommands(_crocCombatOwner);
                 _crocCombatOwner.CombatState.LeaveCombat();
+                if (_crocCombatCapitalMaster)
+                    _crocCombatOwner.Descriptor.Master = _crocCombatMasterBefore;
+                _crocCombatCapitalMaster = false;
+                _crocCombatControlRules = 0;
                 DisposeExpandedSummoningUnits(_crocCombatFixture.Created, new[] { _crocCombatOwner });
             }
             _crocCombatOwner = null;
