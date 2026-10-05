@@ -241,6 +241,15 @@ try {
         if (Test-KmgScenarioOutcomeFailed $run.outcome) { $failures++ }
         $run.completedAtUtc = [DateTime]::UtcNow.ToString('o')
         $record.runs += $run
+        if (Test-KmgBatchCandidateUnavailable -FirstScenario $first -HasEvidence ([bool]$evidence) `
+            -HasDeployment ([bool]$reuseManifest) -LauncherOutcome $launcher) {
+            # A rejected source/build candidate cannot run any later scenario.
+            # Do not repeat that same full gate once per scenario. Runtime
+            # failures with current-run evidence still allow independent cells.
+            $record.abortedBeforeCandidate = $true
+            Write-Warning 'Batch stopped before a candidate existed; remaining scenarios were not launched.'
+            break
+        }
         $first = $false
     }
 }

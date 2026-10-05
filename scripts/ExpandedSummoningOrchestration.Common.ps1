@@ -21,6 +21,12 @@ branch without a runtime lease, a deployment, or a launch.
 
 Set-StrictMode -Version Latest
 
+function Test-KmgBatchCandidateUnavailable {
+    param([bool]$FirstScenario, [bool]$HasEvidence, [bool]$HasDeployment,
+          [ValidateSet('Clean', 'Unclean')][string]$LauncherOutcome)
+    return $FirstScenario -and -not $HasEvidence -and -not $HasDeployment -and $LauncherOutcome -ceq 'Unclean'
+}
+
 function Resolve-KmgBatchScenarioParameters {
     param([Parameter(Mandatory = $true)][string[]]$Scenarios,
           [Parameter(Mandatory = $true)][string]$CurrentScenario,

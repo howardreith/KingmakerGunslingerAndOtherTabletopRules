@@ -8,6 +8,14 @@ owner's 2026-10-05 takeover order and
 Continue Sprint 16, Sprint 17, Phase 2B closure, then the authorized Phase 2C
 Sprints 18-21. No merge, release/tag, permanent deployment or Sprint 22.
 
+Latest pre-launch attempt: `b6e26e2ef207cf5302e9796026527beb9556d17c` rejected
+before deployment by two stale package-count tests (2016/2018 pass). Corrected
+to current 312/310; private route suffix corrected; wrapper now stops a rejected
+pre-launch candidate without repeating full gates. Focused 218/218 and 68
+orchestration assertions PASS. No game/save write occurred. Exact generic lease
+recovery and unchanged 136-file baseline proof are in the evidence index.
+The containing descendant is the corrected prepared candidate; full gate next.
+
 - Worktree: `.worktrees/expanded-summoning-phase2a`; actual branch:
   `codex/expanded-summoning-phase2b-sprints14-17`.
 - Intake source and remote head: `a762ece553ab9b539a53a782102a29e5c70d44eb`.

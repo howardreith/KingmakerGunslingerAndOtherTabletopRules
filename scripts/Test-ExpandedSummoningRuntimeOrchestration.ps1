@@ -51,6 +51,18 @@ function Assert-Equal {
     $script:Passed++
 }
 
+Assert-True (Test-KmgBatchCandidateUnavailable -FirstScenario $true -HasEvidence $false -HasDeployment $false -LauncherOutcome 'Unclean') `
+    'a failed pre-launch candidate stops repeated full gates'
+foreach ($case in @(
+    @{ FirstScenario=$false; HasEvidence=$false; HasDeployment=$false; LauncherOutcome='Unclean' },
+    @{ FirstScenario=$true; HasEvidence=$true; HasDeployment=$false; LauncherOutcome='Unclean' },
+    @{ FirstScenario=$true; HasEvidence=$false; HasDeployment=$true; LauncherOutcome='Unclean' },
+    @{ FirstScenario=$true; HasEvidence=$false; HasDeployment=$false; LauncherOutcome='Clean' }
+)) {
+    Assert-True (-not (Test-KmgBatchCandidateUnavailable @case)) `
+        'an existing artifact or real current-run evidence preserves independent scenario execution'
+}
+
 # Parameter routing cannot leak a crowd or save-writing fixture scope into
 # an unrelated scenario. These drive the shipped pure resolver, not tokens.
 $batchNames = @('mechanics', 'crowd', 'persistence')
