@@ -229,6 +229,16 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Summoning.Unit.GiantStagBeetle";
         private const string GiantStagBeetleTrampleSymbol =
             "KMG.Summoning.Special.GiantStagBeetle.Trample";
+        // Sprint 16: the crocodilians. The Crocodile's unit already exists
+        // and must keep its identity; only its combat traits carrier is new.
+        private const string CrocodileUnitSymbol =
+            "KMG.Summoning.Unit.Crocodile";
+        private const string CrocodileCombatTraitsSymbol =
+            "KMG.Summoning.Special.Crocodile.CombatTraits";
+        private const string DireCrocodileUnitSymbol =
+            "KMG.Summoning.Unit.DireCrocodile";
+        private const string DireCrocodileCombatTraitsSymbol =
+            "KMG.Summoning.Special.DireCrocodile.CombatTraits";
         private const string MonitorLizardUnitSymbol = "KMG.Summoning.Unit.MonitorLizard";
         private const string MonitorLizardCombatTraitsSymbol =
             "KMG.Summoning.Special.MonitorLizard.CombatTraits";
@@ -1719,6 +1729,31 @@ namespace KingmakerGunslinger.Blueprints
                 "Giant Ant Grab",
                 "A bite hit lets the drone attempt to grab a foe no larger than itself. Its sting never grabs.",
                 new GrabSpec { Primary = true, Hold = hold, Grappled = grappled });
+            // Sprint 16. The Crocodile's stat block has read "bite +5
+            // (1d8+4 plus grab)" since Phase 1 and the creature has never had
+            // the grab: its profile recorded grab, death roll, sprint and hold
+            // breath together as omitted. Its spec is the Monitor Lizard's -
+            // the primary limb grabs and nothing else does - and the death
+            // roll rides the same maintain as every other rider, taking its
+            // numbers from the rules profile.
+            ConfigureGrabber(library, bySymbol, CrocodileUnitSymbol,
+                CrocodileCombatTraitsSymbol, "Crocodile",
+                "Crocodile Grab and Death Roll",
+                "A bite hit lets the crocodile attempt to grab a foe no larger than itself. While grappling a foe of its own size or smaller it can death roll on a successful grapple check, dealing 1d8+6 and knocking the foe prone while keeping its hold.",
+                new GrabSpec { Primary = true, Hold = hold, Grappled = grappled,
+                    DeathRollCreatureKey = "crocodile" });
+            // The Dire Crocodile has both riders, so one successful check must
+            // resolve exactly one of them; the choice lives in
+            // CrocodilianRulesPolicy.SelectMaintainRider rather than here.
+            ConfigureGrabber(library, bySymbol, DireCrocodileUnitSymbol,
+                DireCrocodileCombatTraitsSymbol, "DireCrocodile",
+                "Dire Crocodile Grab, Death Roll and Swallow Whole",
+                "A bite hit lets the dire crocodile attempt to grab a foe no larger than itself. On a successful grapple check against a foe it began its turn holding it swallows a foe at least one size category smaller, or death rolls one too large to swallow for 3d6+19 and knocks it prone while keeping its hold. One check resolves one of the two.",
+                new GrabSpec { Primary = true, Hold = hold, Grappled = grappled,
+                    Swallowed = swallowed,
+                    SwallowDelta = CrocodilianRulesPolicy.For("dire-crocodile")
+                        .SwallowSizeDelta,
+                    DeathRollCreatureKey = "dire-crocodile" });
             ConfigureGiantSpiderWeb(library, bySymbol);
             // Sprint 7, rebuilt: the cats grab with the bite (the tiger and the
             // smilodon also with their two foreclaws); the last two claws are
@@ -1934,6 +1969,14 @@ namespace KingmakerGunslinger.Blueprints
             internal int SwallowDelta = -1;
             internal int ConstrictDice;
             internal int ConstrictBonus;
+            /// <summary>
+            /// A crocodilian's key. The death roll's dice and flat bonus are
+            /// read from its rules profile rather than written here, because
+            /// the bonus is one and a half times Strength and a number copied
+            /// into a call site is a number that can disagree with the stat
+            /// block later.
+            /// </summary>
+            internal string DeathRollCreatureKey;
         }
 
         /// <summary>
@@ -2204,6 +2247,29 @@ namespace KingmakerGunslinger.Blueprints
                 WebProjectileGuid, "native thrown-object projectile for the summoned web");
         }
 
+        /// <summary>
+        /// A die size as the engine's enum. The rules profiles carry plain
+        /// integers because they are arithmetic rather than engine data, and
+        /// this is the one place that translation happens.
+        /// </summary>
+        private static DiceType ParseDieSides(int sides)
+        {
+            switch (sides)
+            {
+                case 2: return DiceType.D2;
+                case 3: return DiceType.D3;
+                case 4: return DiceType.D4;
+                case 6: return DiceType.D6;
+                case 8: return DiceType.D8;
+                case 10: return DiceType.D10;
+                case 12: return DiceType.D12;
+                case 20: return DiceType.D20;
+                default:
+                    throw new InvalidOperationException(
+                        "No die of " + sides + " sides.");
+            }
+        }
+
         private static void ConfigureGrabber(LibraryScriptableObject library,
             IDictionary<string, BlueprintScriptableObject> bySymbol,
             string unitSymbol, string traitsSymbol, string token,
@@ -2236,6 +2302,17 @@ namespace KingmakerGunslinger.Blueprints
             grab.ConstrictDiceCount = spec.ConstrictDice;
             grab.ConstrictDiceType = DiceType.D6;
             grab.ConstrictBonus = spec.ConstrictBonus;
+            if (!string.IsNullOrEmpty(spec.DeathRollCreatureKey))
+            {
+                CrocodilianRulesProfile rules = CrocodilianRulesPolicy.For(
+                    spec.DeathRollCreatureKey);
+                grab.DeathRollDiceCount = rules.DeathRollDiceCount;
+                grab.DeathRollDiceType = ParseDieSides(rules.DeathRollDieSides);
+                grab.DeathRollBonus = rules.DeathRollBonus;
+                grab.DeathRollMaxTargetSizeDelta =
+                    rules.DeathRollTargetSizeDelta;
+                grab.DeathRollKnocksProne = true;
+            }
             var bonus = ScriptableObject.CreateInstance<ManeuverBonus>();
             bonus.Type = CombatManeuver.Grapple;
             bonus.Bonus = ExpandedSummoningSpecialProfiles.SummonGrabManeuverBonus;

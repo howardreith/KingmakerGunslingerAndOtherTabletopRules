@@ -20,7 +20,7 @@ namespace KingmakerGunslinger.DomainTests
     /// </summary>
     internal static class ExpandedSummoningSprint16Tests
     {
-        internal const int AppendedLedgerIdentities = 15;
+        internal const int AppendedLedgerIdentities = 17;
 
         private const string DireKey = "dire-crocodile";
         private const string CrocodileKey = "crocodile";
@@ -202,10 +202,13 @@ namespace KingmakerGunslinger.DomainTests
                 .Where(value => value.Contains("DireCrocodile")).ToArray();
             // One unit, three abilities in each family, a Celestial and a
             // Fiendish child for each of the three Monster abilities: 13.
-            if (mine.Length != 13)
+            if (mine.Length != 14)
                 throw new InvalidOperationException(
                     "The ledger holds " + mine.Length +
-                    " Dire Crocodile identities, not 13.");
+                    " Dire Crocodile identities, not 14: a unit, three " +
+                    "abilities in each family, a Celestial and a Fiendish " +
+                    "child for each of the three Monster abilities, and the " +
+                    "combat traits carrier its riders ride.");
             foreach (string required in new[] {
                 "KMG.Summoning.Unit.DireCrocodile",
                 "KMG.Summoning.Ability.SM.Tier7.DireCrocodile.One",
@@ -215,7 +218,10 @@ namespace KingmakerGunslinger.DomainTests
                 // The printed routine's two weapons, which no native
                 // blueprint carries at these dice.
                 "KMG.Summoning.Natural.Bite3d6",
-                "KMG.Summoning.Natural.Tail4d8" })
+                "KMG.Summoning.Natural.Tail4d8",
+                // Sprint 16's riders ride one carrier per creature.
+                "KMG.Summoning.Special.Crocodile.CombatTraits",
+                "KMG.Summoning.Special.DireCrocodile.CombatTraits" })
                 if (!symbols.Contains(required, StringComparer.Ordinal))
                     throw new InvalidOperationException(
                         "The ledger is missing " + required + ".");
