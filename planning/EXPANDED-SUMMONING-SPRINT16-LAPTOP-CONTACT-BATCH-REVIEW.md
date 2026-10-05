@@ -82,3 +82,29 @@ then all new exact-head gates and a complete affected guarded batch.
 Dire remains withheld: 976 registered / 970 published / 6 withheld /
 29 wrappers / 999 visible. Sprint 17 has not started. Phase 2C remains authorized
 but deferred until Phase 2B owner acceptance. HumanReview: NOT_PERFORMED_NONBLOCKING.
+
+## Corrected descendant of pushed evidence 0144ebbb — NOT QUALIFIED
+
+The production pose now resolves only cent_root1_jnt inside the exact owned
+view and requires all 27 approved skin drivers to descend from it. A spine-only,
+foreign-view, missing-driver or native Monitor Lizard candidate fails closed.
+The pose reports the resolved root and restores translation in parent-local
+space, so ordinary unit movement cannot be undone by restoring an old world
+position. Approach caps, weighted-world contact tolerance, native attack
+timing, unit movement/reach/collision and authored assets are unchanged.
+
+The request-local lifecycle drill verifies its actor/prey are owned, uses the
+existing native Wake/AwakeUnits seam only on those two units, and installs a
+read-only native UnitGrappleController.TickOnUnit witness. It never invokes
+that controller or changes its arguments/relationship state. Every row records
+before/after eligibility, actual controller ticks, clock advancement, pause and
+awake frames. Crocodile source-death additionally requires a real living-prey
+controller tick and advancing native clock. No manual release or larger wait
+was introduced. The witness is removed in finally; per-row added awake entries
+and the final scope's exact starting awake census are restored.
+
+Focused 217/217 of 2019 and incremental exact-reference Release PASS. Existing
+bone-policy tests now behaviorally reject the incorrect root and every missing
+descendant. Full exact-head gates and a new six-scenario batch remain mandatory.
+No DATA implementation or diagnostic hunk imported; these changes follow this
+laptop batch's rig census and failed native lifecycle evidence.

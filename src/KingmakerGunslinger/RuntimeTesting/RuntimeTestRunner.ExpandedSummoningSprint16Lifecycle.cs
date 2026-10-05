@@ -7,6 +7,7 @@ using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Root;
+using Kingmaker.Controllers.Units;
 using Kingmaker.Designers;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Enums;
@@ -28,6 +29,20 @@ namespace KingmakerGunslinger.RuntimeTesting
 {
     internal sealed partial class RuntimeTestRunner
     {
+        private static UnitEntityData _sprint16LifecycleOwner;
+        private static UnitEntityData _sprint16LifecycleTarget;
+        private static int _sprint16LifecycleOwnerTicks;
+        private static int _sprint16LifecycleTargetTicks;
+
+        // Request-local read-only witness. Never invokes a controller or
+        // alters its arguments, return value, relationship or damage.
+        private static void ObserveSprint16NativeGrappleTick(UnitEntityData unit)
+        {
+            if (unit == null) return;
+            if (ReferenceEquals(unit, _sprint16LifecycleOwner)) _sprint16LifecycleOwnerTicks++;
+            if (ReferenceEquals(unit, _sprint16LifecycleTarget)) _sprint16LifecycleTargetTicks++;
+        }
+
         private IEnumerable<int> ReviewSprint16Lifecycle(ExpandedSummoningCorrectionFixture fixture)
         {
             UnityEngine.Random.State random = UnityEngine.Random.state;
@@ -37,8 +52,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 value.name == "KMG_Summoning_Special_GiantFlytrap_Engulfed").ToArray();
             string[] before = controls.Select(value => DescribeGraph(value, 0,
                 new HashSet<object>(NativeDonorReferenceComparer.Instance), 32).ToString()).ToArray();
+            MethodInfo nativeTick = typeof(UnitGrappleController).GetMethod("TickOnUnit",
+                BindingFlags.Instance | BindingFlags.NonPublic, null, new[] { typeof(UnitEntityData) }, null);
+            MethodInfo witness = typeof(RuntimeTestRunner).GetMethod("ObserveSprint16NativeGrappleTick",
+                BindingFlags.Static | BindingFlags.NonPublic);
+            if (nativeTick == null || witness == null || _sprint16LifecycleOwner != null ||
+                _sprint16LifecycleTarget != null)
+                throw new InvalidOperationException("Native lifecycle witness is missing or already owned.");
+            bool observing = false;
             try
             {
+                _context.Harmony.Patch(nativeTick, null, new HarmonyMethod(witness), null);
+                observing = true;
                 foreach (string key in CrocodilianVisualPolicy.Keys)
                 foreach (bool active in new[] { true, false })
                 foreach (string boundary in new[] { "source-death", "dismissal", "expiry", "transition" }
@@ -59,8 +84,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var targetBefore = fixture.Hostile;
                     var damaged = fixture.HostileDamage;
                     var sizeBefore = fixture.HostileSize;
+                    var awakeAdded = new List<UnitEntityData>();
                     try
                     {
+                        bool ownedPair = fixture.Created.Contains(owner) &&
+                            (fixture.Created.Contains(target) ||
+                                ReferenceEquals(target, fixture.Hostile) &&
+                                ReferenceEquals(target.Blueprint, fixture.HostileBlueprint)) &&
+                            !fixture.UnitsBefore.Any(value => ReferenceEquals(value, owner) || ReferenceEquals(value, target));
+                        if (!ownedPair) throw new InvalidOperationException("Lifecycle wake scope must contain only this request's units.");
+                        var beforeUpdate = new JArray(new[] { owner, target }.Select(Sprint16LifecycleUpdateState));
+                        foreach (UnitEntityData unit in new[] { owner, target })
+                        {
+                            // Quiet disposable units do not join combat. Use
+                            // the existing native awake registration seam so
+                            // a living prey actually receives its controller.
+                            unit.Wake(20f);
+                            if (!Game.Instance.State.AwakeUnits.Contains(unit))
+                            { Game.Instance.State.AwakeUnits.Add(unit); awakeAdded.Add(unit); }
+                        }
                         if (targets.Count > 0)
                         { fixture.Hostile = target; fixture.HostileDamage = 0; fixture.HostileSize = target.Descriptor.State.Size; }
                         ExecuteExpandedSummoningRuntimeAbility(owner, Sprint16Sprint(fixture.Blueprints, key), 0,
@@ -90,6 +132,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                             .SelectMany(value => value.sharedMaterials).Where(value => value != null &&
                                 value.name.StartsWith("KMG_" + key + "_Original", StringComparison.Ordinal)).ToArray();
                         int damageBefore = target.Damage;
+                        _sprint16LifecycleOwner = owner;
+                        _sprint16LifecycleTarget = target;
+                        _sprint16LifecycleOwnerTicks = _sprint16LifecycleTargetTicks = 0;
+                        TimeSpan clockBefore = Game.Instance.Player.GameTime;
                         if (boundary == "source-death") GameHelper.KillUnit(owner, fixture.Hostile);
                         else if (boundary == "target-death") GameHelper.KillUnit(target, owner);
                         else if (boundary == "dismissal") CleanupExpandedSummoningUnit(owner);
@@ -103,15 +149,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                         else owner.Get<UnitPartSwallowWhole>().SpitOut(true);
                         Game.Instance.IsPaused = false;
                         DateTime until = DateTime.UtcNow.AddSeconds(15);
-                        for (int frame = 0; frame < 1200; frame++)
+                        int frames = 0, pausedFrames = 0, targetAwakeFrames = 0;
+                        for (; frames < 1200; frames++)
                         {
+                            if (Game.Instance.IsPaused) pausedFrames++;
+                            if (Game.Instance.State.AwakeUnits.Contains(target)) targetAwakeFrames++;
                             bool reached = Sprint16RelationshipReleased(owner, target, grab) &&
                                 (boundary != "source-death" || owner.Descriptor.State.IsDead) &&
                                 (boundary != "target-death" || target.Descriptor.State.IsDead) &&
                                 (boundary != "expiry" || owner.Destroyed);
-                            if (frame >= 5 && (reached || DateTime.UtcNow >= until)) break;
+                            if (frames >= 5 && (reached || DateTime.UtcNow >= until)) break;
                             yield return 0;
                         }
+                        TimeSpan clockAfter = Game.Instance.Player.GameTime;
+                        bool nativeDeathWitness = key != "crocodile" || boundary != "source-death" ||
+                            _sprint16LifecycleTargetTicks > 0 && clockAfter > clockBefore;
                         Game.Instance.IsPaused = pause;
                         bool free = Sprint16RelationshipReleased(owner, target, grab);
                         bool boundaryReached = boundary == "source-death" ? owner.Descriptor.State.IsDead :
@@ -120,8 +172,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                         bool noDamage = boundary == "target-death" || target.Damage == damageBefore;
                         Sprint16Check(_crocodilianAssertions, _sprint16FinalRows,
                             key + "-" + (active ? "active" : "cooldown") + "-" + boundary,
-                            armed && speedState && free && boundaryReached && noDamage,
+                            armed && speedState && free && boundaryReached && noDamage && nativeDeathWitness,
                             new JObject { ["armed"] = armed, ["initialSpeedState"] = speedState,
+                                ["nativeUpdate"] = new JObject { ["ownedPair"] = ownedPair,
+                                    ["before"] = beforeUpdate,
+                                    ["after"] = new JArray(new[] { owner, target }.Select(Sprint16LifecycleUpdateState)),
+                                    ["awakeAdded"] = new JArray(awakeAdded.Select(value => value.UniqueId)),
+                                    ["ownerGrappleTicks"] = _sprint16LifecycleOwnerTicks,
+                                    ["targetGrappleTicks"] = _sprint16LifecycleTargetTicks,
+                                    ["frames"] = frames, ["pausedFrames"] = pausedFrames,
+                                    ["targetAwakeFrames"] = targetAwakeFrames,
+                                    ["clockBefore"] = clockBefore.ToString(), ["clockAfter"] = clockAfter.ToString(),
+                                    ["advancedSeconds"] = (clockAfter - clockBefore).TotalSeconds,
+                                    ["turnBased"] = TurnBased.Controllers.CombatController.IsInTurnBasedCombat(),
+                                    ["nativeDeathWitness"] = nativeDeathWitness },
                                 ["sprintNativeExpiry"] = sprintExpiry, ["summonNativeExpiry"] = summonExpiry,
                                 ["boundaryReached"] = boundaryReached, ["released"] = free,
                                 ["targetHeldPart"] = target.Get<UnitPartGrappleTarget>() != null,
@@ -152,11 +216,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     finally
                     {
+                        _sprint16LifecycleOwner = _sprint16LifecycleTarget = null;
                         Game.Instance.IsPaused = pause;
                         if (!owner.Destroyed) DisposeExpandedSummoningUnits(fixture.Created, new[] { owner });
                         if (targets.Count > 0) DisposeExpandedSummoningUnits(fixture.Created, targets.ToArray());
                         fixture.Hostile = targetBefore; fixture.HostileDamage = damaged; fixture.HostileSize = sizeBefore;
                         ResetExpandedSummoningHostile(fixture);
+                        foreach (UnitEntityData unit in awakeAdded) Game.Instance.State.AwakeUnits.Remove(unit);
                     }
                 }
                 bool controlsIntact = controls.Length == 2 && controls.Select((value, index) =>
@@ -166,7 +232,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["controls"] = new JArray(controls.Select(value => value.AssetGuid)) },
                     "both qualified swallowed/engulfed component graphs remain byte-for-byte unchanged through the Dire cases");
             }
-            finally { UnityEngine.Random.state = random; Game.Instance.IsPaused = pause; }
+            finally
+            {
+                _sprint16LifecycleOwner = _sprint16LifecycleTarget = null;
+                try { if (observing) _context.Harmony.Unpatch(nativeTick, witness); }
+                finally { UnityEngine.Random.state = random; Game.Instance.IsPaused = pause; }
+            }
+        }
+
+        private static JObject Sprint16LifecycleUpdateState(UnitEntityData unit)
+        {
+            return new JObject { ["id"] = unit.UniqueId, ["destroyed"] = unit.Destroyed,
+                ["dead"] = unit.Descriptor.State.IsDead, ["conscious"] = unit.Descriptor.State.IsConscious,
+                ["inGame"] = unit.IsInGame, ["awake"] = Game.Instance.State.AwakeUnits.Contains(unit),
+                ["awakeTimer"] = unit.AwakeTimer, ["viewInGame"] = unit.View != null && unit.View.IsInGame,
+                ["heldPart"] = unit.Get<UnitPartGrappleTarget>() != null };
         }
 
         private static bool Sprint16RelationshipReleased(UnitEntityData owner, UnitEntityData target, SummonGrabComponent grab)
