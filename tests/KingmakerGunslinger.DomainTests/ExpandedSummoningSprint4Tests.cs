@@ -131,11 +131,16 @@ namespace KingmakerGunslinger.DomainTests
                 "9393cc36ea29d084bab7433e3a28d40b", "case \"Plant\"",
                 "27eee74857c42db499b3a6b20cfa6211", "ec35ef997ed5a984280e1a6d87ae80a8",
                 "7e4b9b41a9358264d9e3c69c183ca0a2", "287cd06241fdaf8408410b226f744093",
-                "4179c5c08d606a6439a62bf178b738e1", "eee672c8f6555b445a89dbbb91361d64",
                 "24700a71dd3dc844ea585345f6dd18f6", "416386972c8de2e42953533c4946599a",
                 "236ec7f226d3d784884f066aa4be1570", "728446b9d0bf47144a1b621169299c2a" })
                 Assertions.True(builder.Contains(token),
                     "Sprint 4 natural builder contract is missing: " + token);
+            Assertions.Equal("4179c5c08d606a6439a62bf178b738e1",
+                ExpandedSummoningNaturalProfiles.NaturalArmorGuid(10),
+                "Sprint 4 native +10 natural-armor binding changed.");
+            Assertions.Equal("eee672c8f6555b445a89dbbb91361d64",
+                ExpandedSummoningNaturalProfiles.NaturalArmorGuid(22),
+                "Purple Worm native natural-armor binding changed.");
         }
 
         internal static void GrappleLifecycleIsBounded()
