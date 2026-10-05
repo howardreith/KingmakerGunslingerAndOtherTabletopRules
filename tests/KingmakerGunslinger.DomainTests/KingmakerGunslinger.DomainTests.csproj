@@ -248,6 +248,8 @@
     <Compile Include="MidgameFirearmTests.cs" />
     <Compile Include="FirearmItemDescriptionTests.cs" />
     <Compile Include="ModelDVendorTests.cs" />
+    <Compile Include="WhiteoutPolicyTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\WhiteoutPolicy.cs"><Link>ElementalRaces\WhiteoutPolicy.cs</Link></Compile>
     <Compile Include="TeleportationContextTests.cs" />
     <Compile Include="TeleportationTransactionTests.cs" />
     <Compile Include="TeleportationOutcomeTests.cs" />
