@@ -2,6 +2,42 @@
 
 ## October 5 takeover engineering review (NOT QUALIFIED)
 
+### Current follow-up: crocodilian-only candidate evidence pack
+
+The guarded `disposable-expanded-summoning-crocodilians` implementation now
+extends the original survey with focused live mechanics and twelve real-command
+cells. It has **NOT RUN** in this form. The old seven-assertion survey remains
+research evidence at its own source/DLL; it does not qualify these new cases.
+
+| Gate | Added live measurement | Current disposition |
+| --- | --- | --- |
+| Exact profiles | Unmodified scores, size/HD/HP, AC/touch/flat-footed, saves, CMD/trip breakdown, bite/tail attack and damage, secondary flag, Improved Critical, final skills | Written, NOT RUN |
+| Bite-only grab | Actual tail and bite RuleAttackWithWeapon events, exact establishing weapon, one hit bundle and no initial rider | Written, NOT RUN |
+| Death Roll | Both base lines; +4 Strength and penalty to score 7; native Animal Growth; native Flaming/+1 with the energy description reordered ahead of the base; real bite versus Death Roll through native Stoneskin | Written, NOT RUN |
+| Maintain selection | Fresh hold, own size, smaller size, target growing ineligible, prone/already-prone/immunity; real maintain check counts, replay refusal, live hold component round guard, lethal cleanup | Written, NOT RUN |
+| Swallowed cadence | Initial bite count; initial native next-tick delay; three BuffCollection-delivered rounds and duplicate scheduler ticks; source ownership; native six-second escape gate/check; zero removal damage | Written, NOT RUN |
+| Sprint speed/time | Native queued/executed ability; Haste both orders, Slow, -5 and floor-reaching penalties, native command speed cap; six-/sixty-second buff deadlines, all intermediate rounds and recast | Written, NOT RUN |
+| Commands/AI | Both creatures x RTWP/turn-based x manual, fresh AI, AI after a player cast; movement, bite/tail events, actual AI command identity, one Sprint/no failed queue spam, shared cooldown | Written, NOT RUN |
+| Persistence/lifecycle | Active/cooldown reload, exact skill persistence, clean grapple reset, swallow/hold source-death/dismissal/expiry/transition; Worm/Flytrap regression controls | Still to finish |
+| Visible consumers/art | Original visual lifecycle, jaw/tail contacts, crowd/fallback/resource controls, native Monitor Lizard, Sprint/status icon dispositions | Still to finish |
+| Routes/publication | Fourteen changed Crocodile roots and six private Dire roots, then publication-only gate and 976/29/1005 totals | Still to finish |
+
+The command cells never write Animation.IsActed or call command.Tick to invent
+a contact. AI cells retain their production action list and receive no fixture
+attack command. In the player-cooldown AI cell, only its next-decision timestamp
+is held until the player's queued Sprint installs the cooldown, then released.
+The full-attack cells make only the disposable target maneuver-immune, to keep
+grab from correctly truncating the bite/tail sequence; positive bite grab has
+its own immunity-free case. Native RNG is preserved around the synchronous
+mechanics pack. Buff scheduling tests move only exact disposable deadlines,
+never the campaign clock. These fixture choices are disclosed, not substitutes
+for a PASS result.
+
+Inner-loop checks: 215/215 focused summoning tests (2017 registered), active
+static/icon validators and incremental exact-reference Release compile PASS.
+Full suite/clean build/package/guarded qualification remain deferred to the
+stable hidden candidate. No new game launch or publication change.
+
 ### Current follow-up: native Sprint AI engagement gate
 
 The narrow survey passed its seven assertions; see the separate survey review
@@ -51,8 +87,8 @@ Native class-skill, ability, size and Skill Focus modifiers retain control of
 totals. Other profiles and donor blueprints are untouched. Both profiles
 explicitly omit aquatic Swim and water-only Stealth.
 
-`disposable-expanded-summoning-crocodilians` is a narrow survey at this
-checkpoint, requiring the normal guarded `KMG_AUTOMATION_WORKING` load.
+At the historical research checkpoint, `disposable-expanded-summoning-crocodilians`
+was a narrow survey, requiring the normal guarded `KMG_AUTOMATION_WORKING` load.
 It reuses the existing disposable correction fixture, records current native
 swallow types/members and complete simple action graphs, Run candidates,
 engagement considerations and speed buff graphs, checks live land skills and

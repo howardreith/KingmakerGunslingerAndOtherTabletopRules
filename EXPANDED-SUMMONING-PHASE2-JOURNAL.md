@@ -1,5 +1,30 @@
 # Expanded Summoning Phase 2 journal
 
+## October 5 candidate mechanics and native-command fixtures (NOT RUN)
+
+Extended the crocodilian-only guarded scenario with exact live profiles and
+limb roles, real bite-only grab, all required live-modifier Death Roll paths,
+native Flaming/+1 reordered after stats calculation, native Stoneskin comparison,
+the actual maintain selector, prone and duplicate-round/lethal cases. Swallowed
+cadence uses BuffCollection delivery at request-local due boundaries, observes
+the native next tick and rejects duplicate scheduler delivery. The native escape
+countdown/check and damage-free removal have separate observations.
+
+Sprint fixtures cover Haste both orders, Slow, penalties/native floor and a
+native command speed cap, then every cooldown round with no campaign-clock
+advance. Twelve later command cells observe real world-frame RTWP/turn-based
+manual and AI behavior. They never force animation contact; AI cells keep the
+production brain and receive no test-issued attack. The inactive-Sprint case
+starts AI after an actual player cast so the same serialized buff is tested.
+
+Focused 215/215 PASS (2017 registered), static/icon validators PASS and
+incremental Release compile PASS. An initial missing RuleCastSpell namespace
+was corrected before the compile passed. No new runtime launch, save write,
+package gate, publication or qualification claim. The 7/7 research result and
+exact restoration remain the latest runtime evidence. Targeted persistence,
+remaining lifecycle/visual/contact/icon consumers and 14+6 route coverage are
+next before freezing one hidden candidate.
+
 ## October 5 bounded native Sprint AI gate (NOT QUALIFIED)
 
 Registered one owned native IsEngagedConsideration shared only by the two
