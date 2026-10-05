@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using KingmakerGunslinger.Summoning;
+using KingmakerGunslinger.RuntimeTesting;
 using Newtonsoft.Json.Linq;
 
 namespace KingmakerGunslinger.DomainTests
@@ -25,6 +26,24 @@ namespace KingmakerGunslinger.DomainTests
 
         private const string DireKey = "dire-crocodile";
         private const string CrocodileKey = "crocodile";
+
+        internal static void ManualReviewRequiresItsOwnCompletedCommands()
+        {
+            foreach (bool manual in new[] { false, true })
+            foreach (bool rejected in new[] { false, true })
+            foreach (bool issued in new[] { false, true })
+            foreach (bool combat in new[] { false, true })
+            foreach (int frames in new[] { -1, 0, 89, 90, 5000 })
+            {
+                bool expected = combat && frames >= 90;
+                if (manual && (!rejected || !issued)) expected = false;
+                Assertions.Equal(expected, CrocodilianCommandReviewPolicy.CanFinish(
+                    manual, rejected, issued, combat, frames),
+                    "Manual completion requires its real attack and finished rejection; AI never needs an injected command.");
+            }
+            Assertions.False(CrocodilianCommandReviewPolicy.CanFinish(true, false, false, true, 5000),
+                "An incidental bite/rider cannot finish the manual-swallow drill, regardless of elapsed frames.");
+        }
 
         internal static void CrocodilianIconConsumerGraphIsComplete()
         {
@@ -69,21 +88,34 @@ namespace KingmakerGunslinger.DomainTests
 
         internal static void CrocodilianBonesFailClosed()
         {
+            foreach (string key in CrocodilianVisualPolicy.Keys)
             foreach (float invalid in new[] { -1f, 0f, float.NaN, float.PositiveInfinity })
             {
-                Assertions.Equal(0f, CrocodilianVisualPolicy.ContactApproach(invalid, 1f),
+                Assertions.Equal(0f, CrocodilianVisualPolicy.ContactApproach(key, invalid, 1f),
                     "Invalid distances never displace a visual.");
-                Assertions.Equal(0f, CrocodilianVisualPolicy.ContactApproach(1f, invalid),
+                Assertions.Equal(0f, CrocodilianVisualPolicy.ContactApproach(key, 1f, invalid),
                     "Invalid timing never displaces a visual.");
             }
-            Assertions.Equal(0.1f, CrocodilianVisualPolicy.ContactApproach(0.1f, 1f),
+            Assertions.Equal(0.1f, CrocodilianVisualPolicy.ContactApproach("crocodile", 0.1f, 1f),
                 "An approach stops at the existing target surface.");
-            Assertions.Equal(0.25f, CrocodilianVisualPolicy.ContactApproach(4f, 1f),
-                "Native 15-foot reach cannot create a multi-meter visual lunge.");
-            Assertions.Equal(0.125f, CrocodilianVisualPolicy.ContactApproach(4f, 0.5f),
+            Assertions.Equal(0.25f, CrocodilianVisualPolicy.ContactApproach("crocodile", 4f, 1f),
+                "Ordinary reduced-reach Crocodile keeps its original cosmetic limit.");
+            Assertions.Equal(0.125f, CrocodilianVisualPolicy.ContactApproach("crocodile", 4f, 0.5f),
                 "The cosmetic offset follows the attack envelope.");
-            Assertions.Equal(0.25f, CrocodilianVisualPolicy.ContactApproach(4f, 2f),
+            Assertions.Equal(0.25f, CrocodilianVisualPolicy.ContactApproach("crocodile", 4f, 2f),
                 "Repeated/overshooting timing never exceeds the cosmetic cap.");
+            foreach (float gap in new[] { 0.1f, 1.292f, 2.828f })
+            {
+                Assertions.Equal(gap, CrocodilianVisualPolicy.ContactApproach("dire-crocodile", gap, 1f),
+                    "The Dire reaches the measured live AI surface without overshooting it.");
+                Assertions.Equal(gap / 2f, CrocodilianVisualPolicy.ContactApproach("dire-crocodile", gap, 0.5f),
+                    "Even a close target eases in and out; the offset does not plateau until the envelope ends.");
+            }
+            Assertions.Equal(3.048f, CrocodilianVisualPolicy.ContactApproach("dire-crocodile", 99f, 1f),
+                "Dire pose never exceeds half its printed 20ft footprint.");
+            foreach (string unknown in new[] { "monitor-lizard", "Dire-Crocodile", "", null })
+                Assertions.Equal(0f, CrocodilianVisualPolicy.ContactApproach(unknown, 3f, 1f),
+                    "No native or unknown creature receives a contact pose.");
             foreach (string key in CrocodilianVisualPolicy.Keys)
             {
                 Assertions.True(CrocodilianVisualPolicy.IsPermitted(key,

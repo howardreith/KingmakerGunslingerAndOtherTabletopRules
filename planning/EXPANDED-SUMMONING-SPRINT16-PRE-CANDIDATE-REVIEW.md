@@ -1,6 +1,18 @@
 # Sprint 16 pre-candidate review - Crocodile and Dire Crocodile
 
-## Current result: hidden candidate 0238bf03 FAILED
+## Current laptop candidate boundary: NOT QUALIFIED
+
+Sole active line is PR #26 / laptop Phase 2B. The complete bc36 batch failed
+188/208 main assertions, while smoke/crowd/closed persistence passed and the
+actual installation was restored exactly. See the
+[exact review](EXPANDED-SUMMONING-SPRINT16-LAPTOP-NATIVE-FACTION-REVIEW.md).
+The separate DATA audit is complete with zero imports. The containing bounded
+[contact/fixture repair](EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-FIXTURE-REPAIR.md)
+passes focused source checks and incremental compile, not gameplay. Freeze
+a new committed/pushed exact artifact, run every prelaunch gate and all six
+fresh-Steam scenarios; publish nothing until that full gate passes.
+
+## Historical result: hidden candidate 0238bf03 FAILED
 
 The earlier NOT RUN statements below describe preparation checkpoints. The first
 full candidate passed 2018/2018 tests and exact build/package gates, but its

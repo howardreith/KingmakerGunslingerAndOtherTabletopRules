@@ -66,7 +66,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ExecuteExpandedSummoningRuntimeAbility(owner, Sprint16Sprint(fixture.Blueprints, key), 0,
                             new TargetWrapper(owner), false);
                         Buff sprint = owner.Descriptor.Buffs.GetBuff(Sprint16SprintBuff(fixture.Blueprints, key, false));
-                        if (!active) ExpireSprint16OwnedBuff(owner, sprint);
+                        JObject sprintExpiry = !active ? ExpireSprint16OwnedBuff(owner, sprint) : null;
+                        JObject summonExpiry = null;
                         Buff held = Sprint16EstablishHold(fixture, owner, grab,
                             key == "crocodile" ? owner.Descriptor.State.Size : Size.Large, key == "dire-crocodile");
                         if (key == "dire-crocodile")
@@ -96,7 +97,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         {
                             Buff marker = owner.Descriptor.Buffs.Enumerable.Single(value => ReferenceEquals(
                                 value.Blueprint, BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff));
-                            ExpireSprint16OwnedBuff(owner, marker);
+                            summonExpiry = ExpireSprint16OwnedBuff(owner, marker);
                         }
                         else if (boundary == "transition") SummonGrappleAreaSafeguard.Sweep(true, new[] { target });
                         else owner.Get<UnitPartSwallowWhole>().SpitOut(true);
@@ -121,6 +122,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             key + "-" + (active ? "active" : "cooldown") + "-" + boundary,
                             armed && speedState && free && boundaryReached && noDamage,
                             new JObject { ["armed"] = armed, ["initialSpeedState"] = speedState,
+                                ["sprintNativeExpiry"] = sprintExpiry, ["summonNativeExpiry"] = summonExpiry,
                                 ["boundaryReached"] = boundaryReached, ["released"] = free,
                                 ["targetHeldPart"] = target.Get<UnitPartGrappleTarget>() != null,
                                 ["targetSwallowedPart"] = target.Get<UnitPartSwallowed>() != null,

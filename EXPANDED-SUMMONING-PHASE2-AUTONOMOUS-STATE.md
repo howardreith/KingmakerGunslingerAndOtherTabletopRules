@@ -55,10 +55,20 @@ No merge, release, tag, version bump, force push or permanent deployment.
 - Restored evidence checkpoint `9cd5cdc7c31cd2914e69eff1f889b95fabdbdc90`
   is pushed. The separate [read-only DATA salvage audit](planning/EXPANDED-SUMMONING-PHASE2B-DATA-SALVAGE-AUDIT.md)
   is complete: all 29 differing files classified; zero source/authority ports.
-- Next: update PR #26's owner-designated notice after publishing the audit.
-  Fix only demonstrated contact/fixture defects, run focused checks,
-  commit/push and freeze a new exact-head artifact for the complete affected
-  six-scenario batch. Do not blindly rerun bc36.
+- Audit checkpoint `5da53f84d42079b02586c2db0252652dac4d7dbe` is pushed.
+  PR #26's top notice now identifies this as the sole active line and PR #27
+  as archived accidental concurrency; both remain draft/open/unmerged.
+- Containing contact/fixture repair is **NOT QUALIFIED**. Dire's cosmetic
+  approach is bounded to half its footprint; ordinary Crocodile is unchanged.
+  Manual completion requires the real issued command; held-target setup
+  immunity ends before that attack. Combat/UI restore native selection and
+  clock; final lifecycle uses an explicit restored RTWP scope and native
+  buff-expiry evidence. No DATA hunk was imported. Focused 217/217 and
+  incremental exact-reference Release PASS. Details:
+  [bounded repair](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-FIXTURE-REPAIR.md).
+- Next: commit/policy-push this NOT QUALIFIED correction, then freeze the
+  new exact-head artifact after every prelaunch gate and run the complete
+  affected six-scenario batch. Do not rerun the failed bc36 bytes.
 - Sprints 14-15 complete; 976 registered / 970 published / 6 Dire withheld /
   29 wrappers / 999 visible choices. Publish Dire only after every required
   Sprint 16 exact-artifact gate passes, then qualify its 6 roots and the 14
