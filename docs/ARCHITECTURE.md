@@ -917,7 +917,9 @@ as the Giant Spider they borrow.
 The resulting append-only ledger contains 2772 stable IDs: 2770 active and 2 reserved.
 
 Sprint 15 and the withheld Sprint 16 registration extend that ledger to
-2835 stable IDs: 2833 active and 2 reserved. The current source registers 95
+2836 stable IDs: 2834 active and 2 reserved. The final addition is one native
+IsEngagedConsideration owned only by the crocodilian Sprint AI actions; it
+has no independent player-facing icon. The current source registers 95
 creatures and 976 generated placements, publishes 970, and withholds only the
 six Dire Crocodile placements. These are identity/publication counts, not a
 claim that the unfinished Sprint 16 mechanics or visuals are runtime qualified.

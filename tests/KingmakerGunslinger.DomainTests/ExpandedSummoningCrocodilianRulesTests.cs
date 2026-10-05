@@ -17,6 +17,31 @@ namespace KingmakerGunslinger.DomainTests
     /// </summary>
     internal static class ExpandedSummoningCrocodilianRulesTests
     {
+        internal static void SprintBrainKeepsNaturalActionsAndOneEngagementGate()
+        {
+            var attack = new object();
+            var movement = new object();
+            var sprint = new object();
+            object[] natural = { attack, movement };
+            object[] result = CrocodilianRulesPolicy.AppendSprintAction(natural, sprint);
+            Assertions.True(result.Length == 3 && ReferenceEquals(result[0], attack) &&
+                ReferenceEquals(result[1], movement) && ReferenceEquals(result[2], sprint) &&
+                natural.Length == 2 && natural[0] == attack && natural[1] == movement &&
+                !ReferenceEquals(result, natural), "Natural entries retain identity/order and are never mutated.");
+            Assertions.True(CrocodilianRulesPolicy.AppendSprintAction<object>(null, sprint)
+                .SequenceEqual(new[] { sprint }), "Empty native list is handled without inventing actions.");
+            bool duplicateRejected = false;
+            try { CrocodilianRulesPolicy.AppendSprintAction(result, sprint); }
+            catch (InvalidOperationException) { duplicateRejected = true; }
+            Assertions.True(duplicateRejected, "A repeated append cannot queue a second Sprint action.");
+            Assertions.True(CrocodilianRulesPolicy.SprintAiEngagedScore == 0f &&
+                CrocodilianRulesPolicy.SprintAiFreeScore == 1f, "Engaged units must not score Sprint.");
+            var identity = ExpandedSummoningIdentityCatalog.Build().Single(
+                value => value.Symbol == CrocodilianRulesPolicy.SprintNotEngagedSymbol);
+            Assertions.Equal("IsEngagedConsideration", identity.PlannedType,
+                "Use the existing native scorer, not a custom global AI subsystem.");
+        }
+
         internal static void LandSkillsUseExactRanksWithoutMobility()
         {
             foreach (var row in new[] {

@@ -185,11 +185,36 @@ namespace KingmakerGunslinger.RuntimeTesting
             result["runCandidates"] = DescribeNamed(blueprints.OfType<BlueprintUnitFact>()
                 .Where(value => Matches(value.name, new[] { "run", "sprint" })));
             var considerations = new JArray();
-            foreach (IsEngagedConsideration value in blueprints.OfType<IsEngagedConsideration>())
+            BlueprintBrain[] brains = blueprints.OfType<BlueprintBrain>().ToArray();
+            IsEngagedConsideration[] inline = brains.SelectMany(brain =>
+                    brain.Actions ?? Array.Empty<BlueprintAiAction>())
+                .Where(action => action != null)
+                .SelectMany(action => (action.ActorConsiderations ??
+                    Array.Empty<Consideration>()).Concat(action.TargetConsiderations ??
+                    Array.Empty<Consideration>())).OfType<IsEngagedConsideration>().ToArray();
+            foreach (IsEngagedConsideration value in blueprints.OfType<IsEngagedConsideration>()
+                .Concat(inline).Distinct())
                 considerations.Add(new JObject { ["name"] = value.name,
                     ["guid"] = value.AssetGuid, ["engaged"] = value.EngagedScore,
                     ["free"] = value.NotEngagedScore, ["multiplier"] = value.BaseScoreModifier });
             result["engagementConsiderations"] = considerations;
+            result["crocodilianAndNaturalBrains"] = new JArray(brains.Where(brain =>
+                Matches(brain.name, new[] { "dumb", "crocodile" })).Select(brain =>
+                    new JObject {
+                        ["name"] = brain.name, ["guid"] = brain.AssetGuid,
+                        ["actions"] = new JArray((brain.Actions ??
+                            Array.Empty<BlueprintAiAction>()).Select(action =>
+                                new JObject {
+                                    ["name"] = action == null ? null : action.name,
+                                    ["guid"] = action == null ? null : action.AssetGuid,
+                                    ["type"] = action == null ? null : action.GetType().FullName,
+                                    ["actorConsiderations"] = new JArray(action == null
+                                        ? Array.Empty<string>() : (action.ActorConsiderations ??
+                                            Array.Empty<Consideration>()).Select(value =>
+                                                value == null ? "<null>" :
+                                                value.name + ":" + value.AssetGuid).ToArray())
+                                }))
+                    }));
             var graphs = new JObject();
             foreach (BlueprintScriptableObject value in blueprints.Where(value =>
                 Matches(value.name, new[] { "swallow", "engulf", "hastebuff", "slowbuff" }) ||

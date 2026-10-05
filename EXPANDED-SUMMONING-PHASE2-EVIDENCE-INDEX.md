@@ -2,6 +2,12 @@
 
 ## Current checkpoint, October 5: Sprint 16 NOT QUALIFIED
 
+AI source follow-up: owned native IsEngagedConsideration
+`5c4c807c1f274ef3b82ff16f9f114cf8`, plus behavior-first natural-action append
+coverage. Focused 215/215 PASS (2017 registered), active static/icon validators
+PASS, incremental Release compile PASS. No new game launch. The next runtime
+pack records inline considerations and native/owned brain action lists.
+
 Original art checkpoint (not a runtime candidate):
 `assets-source/original-models/sprint16-crocodilians/SOURCE.md` records four
 asset hashes and the private bind-frame provenance. Four independent fresh

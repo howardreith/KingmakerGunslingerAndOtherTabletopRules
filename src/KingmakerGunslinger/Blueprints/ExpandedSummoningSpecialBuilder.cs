@@ -2037,7 +2037,9 @@ namespace KingmakerGunslinger.Blueprints
         /// carries a swallower, a break-free timer and a flag; its only
         /// methods are Init, OnRemove and TryToBreakFree; the controller's
         /// whole surface is TickOnUnit; ContextActionSwallowWhole carries only
-        /// the buff to apply; and no settings type exists. There is no
+        /// the buff to apply; SwallowWholeSettings has only a Head transform
+        /// and SpitOutAnimation. The live census activated the owner's
+        /// SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED decision. There is no
         /// interior to attack and no damage pool to fill, so the printed AC 16
         /// and 13 hp have no carrier.</para>
         /// </summary>
@@ -2257,8 +2259,15 @@ namespace KingmakerGunslinger.Blueprints
             // A separate AI clock can drift after a player cast or reload.
             ai.CooldownRounds = 0;
             ai.StartCooldownRounds = 0;
-            ai.ActorConsiderations = Array.Empty<Kingmaker.Controllers.Brain
-                .Blueprints.Considerations.Consideration>();
+            var notEngaged = Require<Kingmaker.Controllers.Brain.Blueprints
+                .Considerations.IsEngagedConsideration>(bySymbol,
+                    CrocodilianRulesPolicy.SprintNotEngagedSymbol);
+            notEngaged.EngagedScore = CrocodilianRulesPolicy.SprintAiEngagedScore;
+            notEngaged.NotEngagedScore = CrocodilianRulesPolicy.SprintAiFreeScore;
+            notEngaged.BaseScoreModifier = 1f;
+            notEngaged.ComponentsArray = Array.Empty<BlueprintComponent>();
+            ai.ActorConsiderations = new Kingmaker.Controllers.Brain.Blueprints
+                .Considerations.Consideration[] { notEngaged };
             ai.TargetConsiderations = Array.Empty<Kingmaker.Controllers.Brain
                 .Blueprints.Considerations.Consideration>();
             ai.Locators = Array.Empty<EntityReference>();
@@ -2270,8 +2279,8 @@ namespace KingmakerGunslinger.Blueprints
             brain.ComponentsArray = (naturalBrain.ComponentsArray ??
                 Array.Empty<BlueprintComponent>())
                 .Select(ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
-            brain.Actions = (naturalBrain.Actions ?? Array.Empty<BlueprintAiAction>())
-                .Concat(new BlueprintAiAction[] { ai }).ToArray();
+            brain.Actions = CrocodilianRulesPolicy.AppendSprintAction<BlueprintAiAction>(
+                naturalBrain.Actions, ai);
 
             var grant = ScriptableObject.CreateInstance<
                 AddAbilityToCharacterComponent>();

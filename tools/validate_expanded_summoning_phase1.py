@@ -396,6 +396,7 @@ def validate(root: Path) -> None:
         ".FireBeetle" in symbol or ".GiantAnt" in symbol or
         ".GiantStagBeetle" in symbol or ".DireCrocodile" in symbol or
         ".Special.Crocodile." in symbol or
+        symbol == "KMG.Summoning.Special.Crocodilian.SprintNotEngaged" or
         symbol == "KMG.Summoning.Natural.Bite3d6" or
         symbol == "KMG.Summoning.Natural.Tail4d8" or
         symbol == "KMG.Summoning.Natural.GoblinDog.Traits" or

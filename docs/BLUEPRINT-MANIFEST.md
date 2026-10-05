@@ -518,5 +518,7 @@ three of these borrow the Giant Spider.
 The ledger now contains 2772 stable identifiers: 2770 active and 2 reserved.
 
 Sprint 15 and the withheld Sprint 16 registration extend it to
-2835 stable identifiers: 2833 active and 2 reserved. Dire Crocodile's six
+2836 stable identifiers: 2834 active and 2 reserved. The final entry is the
+owned native engagement consideration shared by the two Sprint AI actions.
+Dire Crocodile's six
 placements are allocated but unpublished; registration is not qualification.

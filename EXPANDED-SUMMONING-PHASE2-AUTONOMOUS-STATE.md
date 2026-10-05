@@ -72,9 +72,13 @@ Sprints 18-21. No merge, release/tag, permanent deployment or Sprint 22.
   Latest restoration: `20261005T1258077246783Z-disposable-expanded-summoning-crocodilians.json`,
   verified. No Kingmaker process remains. Snapshot the actual baseline before
   each future transaction and restore that exact snapshot.
-- Next executable action: finish the bounded native AI engagement gate (the
-  native IsEngagedConsideration type exists; no library-indexed instance was
-  found), then the full Sprint 16 scenario pack. Original art is ready for its
+- The bounded AI gate now uses one exact owned native IsEngagedConsideration
+  (engaged score 0/free score 1), shared only by the two Sprint actions.
+  Native action order/reference preservation has a behavior-first append test;
+  inline consideration/action-list census is added. Focused 215/215 PASS,
+  2017 registered; incremental Release compile PASS. Live AI remains unqualified.
+- Next executable action: finish the full Sprint 16 scenario pack, including
+  combat-mode real commands and AI/cooldown fallback. Original art is ready for its
   first guarded live review. Use focused inner-loop
   checks; the complete sprint gate and
   guarded review apply to one stable hidden candidate.

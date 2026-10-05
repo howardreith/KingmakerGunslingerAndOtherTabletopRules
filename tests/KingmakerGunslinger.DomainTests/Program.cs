@@ -645,6 +645,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.crocodilian-one-rider", ExpandedSummoningCrocodilianRulesTests.OneMaintainResolvesExactlyOneRider),
             Case("expanded-summoning.crocodilian-swallow-numbers", ExpandedSummoningCrocodilianRulesTests.SwallowNumbersComeFromTheCreature),
             Case("expanded-summoning.crocodilian-sprint-limit", ExpandedSummoningCrocodilianRulesTests.SprintIsOncePerMinuteAndNotOncePerSummoning),
+            Case("expanded-summoning.crocodilian-sprint-ai-fallback", ExpandedSummoningCrocodilianRulesTests.SprintBrainKeepsNaturalActionsAndOneEngagementGate),
             Case("expanded-summoning.sprint15-drone-advanced-template", ExpandedSummoningSprint15Tests.TheDroneIsTheSoldierWithTheAdvancedTemplate),
             Case("expanded-summoning.sprint15-stag-beetle-trample", ExpandedSummoningSprint15Tests.TheStagBeetleTrampleDerivesToItsPrintedLine),
             Case("expanded-summoning.sprint15-stag-beetle-stat-block", ExpandedSummoningSprint15Tests.TheStagBeetleMatchesItsPrintedStatBlock),
