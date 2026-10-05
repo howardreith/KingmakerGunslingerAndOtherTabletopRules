@@ -1,5 +1,28 @@
 # Sprint 16 blocker: swallow-whole interior armour class and hit points
 
+## Current disposition, 2026-10-05
+
+**Owner decision supplied; live census pending.** The takeover order authorizes
+`OwnerAcceptedEngineLimitation: SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED` if the
+live component/type census confirms the offline audit below. Do not record
+acceptance before that census. If it reveals a faithful existing carrier, use
+it and correct this note. Otherwise activate the accepted limitation for both
+Dire Crocodile and Purple Worm without reopening Purple Worm's qualified
+mechanics. No custom interior subsystem or replacement save/check is authorized.
+
+Size legality, initial grapple/maintain/bite, exactly one later-round damage
+bundle, native escape timing/checks, exact source ownership and every cleanup
+boundary remain mandatory. This decision waives none of those gates. Once the
+census confirms the omission and the other gates pass, the interior numbers
+alone must not withhold Dire Crocodile or be re-marked BLOCKED.
+
+The cloned swallowed graph and its 3d6+13 cadence are **NOT QUALIFIED**. The
+current top-level action rewrite does not yet prove nested damage, activation
+or deactivation behavior. The historical "implemented" wording below describes
+source intent only.
+
+## Historical audit and pre-decision disposition (superseded)
+
 **Status: BLOCKED — submechanic only.** The Dire Crocodile's printed swallow
 whole is `3d6+13, AC 16, 13 hp`. The damage is implemented. The interior armour
 class and the interior hit points are not, because Kingmaker has nowhere to put
