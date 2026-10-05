@@ -116,8 +116,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         Buff[] lifecycle = unit.Descriptor.Buffs.Enumerable.Where(value =>
                             ReferenceEquals(value.Blueprint, BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff)).ToArray();
                         if (lifecycle.Length != 1) throw new InvalidOperationException("Expected one owned native summon lifecycle.");
-                        lifecycle[0].Remove();
-                        unit.Destroy();
+                        // Use the already qualified owned-summon disposal path;
+                        // Destroy alone leaves persistent collection references.
+                        CleanupExpandedSummoningUnit(unit);
+                        if (unit.HoldingState != null) unit.Dispose();
                     }
                     Game.Instance.EntityDestroyer.Tick();
                     _expandedSummoningPersistenceCleanupStarted = true;
@@ -310,7 +312,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         !unit.Descriptor.State.HasCondition(UnitCondition.CantMove);
                     reset = reset && free;
                     records.Add(new JObject { ["id"] = unit.UniqueId, ["free"] = free,
-                        ["storedLinks"] = links == null ? 0 : links.Count, ["stuckBuffs"] = new JArray(stuckBuffs) });
+                        ["storedLinks"] = links == null ? 0 : links.Count, ["stuckBuffs"] = new JArray(stuckBuffs),
+                        ["heldInitiator"] = unit.Get<UnitPartGrappleInitiator>() != null,
+                        ["heldTarget"] = unit.Get<UnitPartGrappleTarget>() != null,
+                        ["swallowed"] = unit.Get<UnitPartSwallowed>() != null,
+                        ["swallowerCount"] = swallower == null ? 0 : swallower.SwallowedUnits.Count,
+                        ["cantAct"] = unit.Descriptor.State.HasCondition(UnitCondition.CantAct),
+                        ["cantMove"] = unit.Descriptor.State.HasCondition(UnitCondition.CantMove) });
                 }
                 Sprint16Check(_sprint16PersistenceChecks, _sprint16PersistenceRows, "persistence-clean-session-links", reset,
                     new JObject { ["units"] = records },

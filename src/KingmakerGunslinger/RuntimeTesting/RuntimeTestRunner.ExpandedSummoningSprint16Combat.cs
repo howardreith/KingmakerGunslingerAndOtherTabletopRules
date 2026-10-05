@@ -142,7 +142,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _crocCombatOwner) && value.AttackRoll == null);
                 bool done = (heldCell ? rider : twoWeapons) && _crocCombatFirstAttack >= 0 &&
                     _crocCombatFrame - _crocCombatFirstAttack >= 90;
-                if (done || (DateTime.UtcNow - _crocCombatStartUtc).TotalSeconds >= (heldCell ? 36d : 18d))
+                // A native move/Sprint, rejected attempt, and later stationary
+                // full attack span more than the old 18-second wall window.
+                // Observe bounded subsequent native turns without driving AI.
+                if (done || (DateTime.UtcNow - _crocCombatStartUtc).TotalSeconds >= 60d)
                 {
                     CompleteSprint16CombatCell();
                     _crocCombatCell++;
@@ -316,7 +319,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool noFailedSpam = _crocCombatCommands.Count(value => value.Key is UnitUseAbility &&
                 !ReferenceEquals(value.Key, _crocCombatRejectedCast)) <= 1;
             bool rejected = ai || _crocCombatRejectedCast != null && _crocCombatRejectedCast.IsFinished &&
-                !_crocCombatRejectedCast.IsActed && _crocCombatCooldown != null &&
+                _crocCombatRejectedCast.Result == UnitCommand.ResultType.Fail && _crocCombatCooldown != null &&
                 _crocCombatCooldown.EndTime == _crocCombatCooldownDeadline &&
                 ReferenceEquals(_crocCombatOwner.Descriptor.Buffs.GetBuff(
                     Sprint16SprintBuff(_crocCombatFixture.Blueprints, cell[0], true)), _crocCombatCooldown);

@@ -40,14 +40,22 @@ release, tag, version bump, PR change or permanent deployment.
   repository/static/icon validation; 480 preflight; 68 orchestration; closed
   persistence/crowd request tests; clean Release and strict 312-member package.
   This is pre-commit source qualification, not exact-head runtime evidence.
-- Next action: complete the clean checkpoint focused/unfiltered/static/icon/preflight/clean Release/
-  deterministic/strict package gates on this reconciled candidate, freeze exact
-  DLL/MVID/ZIP/source identities, then run the complete corrected hidden batch.
-  Acquire the runtime lease **before** snapshot/deployment; snapshot the actual
-  current live tree and restore those exact bytes after the guarded fresh Steam
-  640820 launches. Do not substitute either historical 0.0.117 or observed
-  0.0.140 installation. Only the closed working-save persistence fixture may
-  write its exact authorized working descriptor; baseline remains protected.
+- New clean reconciled `7c1690e61` candidate gates passed; its complete six-run
+  hidden batch failed. Main 156/205, crowd 18/20, smoke 11/11; persistence
+  prepare 9/9 made one authorized native working save, cleanup 6/9 refused its
+  write, absence 4/5. Actual leased 0.0.140 / 254-file installation restored
+  exactly, lease released. Full ledger and exact fingerprints:
+  `planning/EXPANDED-SUMMONING-SPRINT16-RECONCILED-BATCH-REVIEW.md`.
+- Next candidate repairs only demonstrated size, dead-target, load reset and
+  rollback-clone defects plus bounded fixture cadence/command/disposal paths.
+  More detailed UI, death, resource and size observations retain all required
+  assertions. Contact, visibility and other unresolved gates remain pending.
+- Next action: new focused/unfiltered/static/icon/preflight/clean Release/
+  deterministic/strict package gates; commit/push the source-qualified repair,
+  freeze a new clean exact-head artifact, and repeat the corrected hidden batch.
+  Lease before actual live snapshot, exact restoration, fresh Steam 640820
+  processes and closed working-save-only persistence authorization remain
+  mandatory. Stop on external remote motion; no old artifact qualifies repairs.
 - Publish Dire only after every required exact-artifact Sprint 16 gate passes.
   Sprint 17 must not begin until Sprint 16 is qualified and pushed.
 - Accepted unchanged: `PASSIVE_CREATURE_SENSES_UNMODELED`,
