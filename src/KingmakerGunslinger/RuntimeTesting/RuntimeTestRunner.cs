@@ -848,6 +848,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RunSummonSameTurnCompatibility();
                     return;
                 }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.ObserveFirearmDescriptions)
+                {
+                    if (!BlueprintBootstrap.IsInitialized || ResourcesLibrary.Preloading) return;
+                    Complete(RunFirearmDescriptionObservation());
+                    return;
+                }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.ModLoadSmoke)
                 {
                     Complete(RunModLoadSmoke());

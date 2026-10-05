@@ -11,16 +11,15 @@ namespace KingmakerGunslinger.Firearms
             if (definition == null) throw new ArgumentNullException("definition");
             double range = FirearmPenetrationRangePolicy
                 .EffectivePenetrationRangeFeet(definition, 0);
-            string rule = definition.Era == FirearmEra.Advanced
-                ? string.Format(CultureInfo.InvariantCulture,
-                    "Penetration: Touch AC within the first five range increments ({0:0} ft. base); Normal AC beyond.",
-                    range)
-                : string.Format(CultureInfo.InvariantCulture,
-                    "Penetration: Touch AC within the first range increment ({0:0} ft. base); Normal AC beyond.",
-                    range);
-            if (definition.Kind == FirearmKind.Blunderbuss)
-                rule += " This applies to ordinary direct fire; Scatter Shot retains its separate cone rules.";
-            return rule;
+            string attacks = definition.Kind == FirearmKind.Blunderbuss
+                ? "Attacks with a lead ball"
+                : "Attacks with this firearm";
+            string window = definition.Era == FirearmEra.Advanced
+                ? "its first five range increments"
+                : "its first range increment";
+            return string.Format(CultureInfo.InvariantCulture,
+                "{0} are resolved against touch AC out to {1:0} ft. ({2}), and against normal AC at greater distances.",
+                attacks, range, window);
         }
     }
 }
