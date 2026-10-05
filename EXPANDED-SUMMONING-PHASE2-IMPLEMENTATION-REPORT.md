@@ -1,6 +1,32 @@
 # Expanded Summoning Phase 2 implementation report
 
-## Current October 5 result — Sprint 16 NOT QUALIFIED
+## Current October 5 laptop result — Sprint 16 NOT QUALIFIED
+
+PR #26 / `codex/expanded-summoning-phase2b-sprints14-17` is the sole
+owner-designated development line. PR #27 is frozen salvage-only; no source
+has been imported. The controlling state supersedes historical authority
+statements below. Phase 2C remains authorized but cannot start until Phase 2B
+owner acceptance; this mission stops after Phase 2B closure.
+
+Exact `bc36f97612020d6d680144bcb6ebc01bebe11216` passed all prelaunch gates
+(216 focused / 2018 unfiltered, static/manifest/icon, preflight/orchestration/
+requests, clean exact Release and strict deterministic 312-member package).
+Its six-process Steam batch FAILED: smoke 11/11, main 188/208, crowd 20/20,
+prepare 9/9, cleanup 9/9, absence 5/5. Native-faction manual control now works
+and all eighteen combat cells executed. Eight Dire AI contact assertions,
+one manual-swallow sequence, one in-memory UI restore and ten lifecycle
+scheduling assertions remain failed. No runtime qualification or publication.
+
+The authorized native working-save cycle is clean on fresh load. Exact actual
+snapshot restoration completed at 21:13:38 UTC: 136 files / Info 0.0.117 /
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+No game, runtime lease, compatibility lock or staging remains. Artifact,
+request/result and restoration hashes plus bounded next repairs:
+[laptop native-faction review](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-NATIVE-FACTION-REVIEW.md).
+Surface remains 970 generated + 29 wrappers = 999 choices, six Dire withheld.
+Sprints 14-15 remain complete; Sprint 17 has not started.
+
+## Historical first hidden candidate, October 5
 
 Hidden candidate `0238bf03166dfb3dd7bf0205c12f82a2d2757caa` passed the full
 2018-test/build/package gate, then FAILED its guarded batch. Mechanics 55/19,
