@@ -218,8 +218,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     else
                     {
                         UnitEntityData[] units = CastExpandedSummoningVariant(fixture.Blueprints,
-                            fixture.Caster, variant, variant.Family == SummonFamily.Monster ?
-                                "Celestial" : null, fixture.Evidence);
+                            fixture.Caster, variant, null, fixture.Evidence);
                         fixture.Created.AddRange(units);
                         int min = variant.Multiplicity == SummonMultiplicity.OneD4PlusOne ? 2 : 1;
                         int max = variant.Multiplicity == SummonMultiplicity.One ? 1 :

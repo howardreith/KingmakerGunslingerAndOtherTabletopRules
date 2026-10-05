@@ -1,5 +1,27 @@
 # Expanded Summoning Phase 2 journal
 
+## October 5 pre-launch gate correction (NOT QUALIFIED)
+
+Candidate `b6e26e2ef207cf5302e9796026527beb9556d17c` did not launch
+Kingmaker. Repository validation passed; the full domain suite completed
+2018 tests with two failures: old Paper Cartridge and Scroll Icon source-contract
+tests pinned the earlier 305/303 package counts. Current authored payloads require
+312/310. Those stale checks are corrected without changing production behavior.
+The private Dire route fixture also now uses the existing default execution
+resolver; its explicit suffix had omitted the required dot.
+
+The batch began repeating the same rejected build for the next scenario and was
+interrupted before any deployment/request/game. Its exact generic pre-launch
+lease `runtime-20261005T152644Z-eab402037ef5434fa69602bf6689bfb6` was completed
+through the guarded recovery command after owner exit. Snapshot
+`20261005T1524442963100Z` and actual live tree both remain 136 files with SHA-256
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+No game, lock, staging tree or save write remains; no restore copy was necessary.
+The wrapper now stops before repeating a rejected pre-launch candidate, while
+preserving independent execution after actual runtime failures. Focused 218/218
+(2018 registered) and 68 orchestration assertions PASS. Run the full corrected
+candidate gate and guarded batch next; this is not a runtime correction result.
+
 ## October 5 hidden-candidate fixture completion (NOT QUALIFIED)
 
 The candidate scenario pack now includes eighteen native RTWP/turn-based
