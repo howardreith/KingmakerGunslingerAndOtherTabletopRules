@@ -8,23 +8,22 @@ has been imported. The controlling state supersedes historical authority
 statements below. Phase 2C remains authorized but cannot start until Phase 2B
 owner acceptance; this mission stops after Phase 2B closure.
 
-Exact `bc36f97612020d6d680144bcb6ebc01bebe11216` passed all prelaunch gates
-(216 focused / 2018 unfiltered, static/manifest/icon, preflight/orchestration/
-requests, clean exact Release and strict deterministic 312-member package).
-Its six-process Steam batch FAILED: smoke 11/11, main 188/208, crowd 20/20,
-prepare 9/9, cleanup 9/9, absence 5/5. Native-faction manual control now works
-and all eighteen combat cells executed. Eight Dire AI contact assertions,
-one manual-swallow sequence, one in-memory UI restore and ten lifecycle
-scheduling assertions remain failed. No runtime qualification or publication.
+Exact `4c3c76cee25a9cdc68d25f660ece43a443ffe2d5` passed all prelaunch gates
+(217 focused / 2019 full; clean exact build; strict deterministic 312-member ZIP).
+Six fresh Steam runs: smoke 11/11, main **204/209 FAIL**, crowd 20/20,
+prepare 9/9, cleanup 9/9, absence 5/5. All eighteen command cells and twenty
+targeted roots ran. Manual-command/swallow sequencing, bite contact, UI and
+expiry restoration now pass. Four Dire tail contacts expose the wrong visual
+root; one Crocodile source-death row needs native update-eligibility evidence.
+No runtime qualification or publication.
 
-The authorized native working-save cycle is clean on fresh load. Exact actual
-snapshot restoration completed at 21:13:38 UTC: 136 files / Info 0.0.117 /
+Actual leased snapshot restored by 22:12:50 UTC: 136 files / Info 0.0.117 /
 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
-No game, runtime lease, compatibility lock or staging remains. Artifact,
-request/result and restoration hashes plus bounded next repairs:
-[laptop native-faction review](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-NATIVE-FACTION-REVIEW.md).
-Surface remains 970 generated + 29 wrappers = 999 choices, six Dire withheld.
-Sprints 14-15 remain complete; Sprint 17 has not started.
+Lease completed; no game/compatibility lock/staging remains. Authorized native
+cleanup save and fresh absence are clean. Exact hashes and bounded next actions:
+[4c3 laptop review](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-BATCH-REVIEW.md).
+DATA audit complete/read-only, zero ports. Surface remains 970 + 29 = 999;
+six Dire roots withheld. Sprints 14-15 complete; Sprint 17 not started.
 
 ## Historical first hidden candidate, October 5
 

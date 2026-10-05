@@ -1,5 +1,19 @@
 # Expanded Summoning Phase 2 journal
 
+## October 5, 22:12 UTC — corrected laptop batch closed, NOT QUALIFIED
+
+Exact pushed 4c3c76ce passed 2019/2019 and every prelaunch gate, then main
+204/209; smoke/crowd/prepare/cleanup/absence all PASS. Both native working-save
+writes succeeded and the fresh load is clean. Actual leased installation
+restored exactly; no game/compatibility lock/staging. Source ownership retained.
+[Exact review and curated hashes](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-BATCH-REVIEW.md).
+
+Five failed assertions classified: four production tail-contact bindings
+(spine root excludes sibling tail), one lifecycle fixture with unobserved
+native awake/update eligibility. Prior command/UI/expiry repairs passed.
+Next change observation/root binding, not waits or tolerances; then new exact
+artifact and full affected batch. No DATA ports, no publication, no Sprint 17.
+
 ## October 5 laptop contact/fixture correction — NOT QUALIFIED
 
 Pushed 9cd5cdc7 runtime/restoration evidence, then 5da53f84 read-only DATA audit.
