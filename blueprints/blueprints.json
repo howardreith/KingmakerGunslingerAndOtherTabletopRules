@@ -22687,6 +22687,14 @@
       "status": "active",
       "milestone": "Expanded Summoning",
       "notes": "Registered in every feature-module state; the creature-owned swallowed state so a victim is not placed in the Purple Worm’s stomach with the worm’s crush."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Crocodilian.SprintNotEngaged",
+      "guid": "5c4c807c1f274ef3b82ff16f9f114cf8",
+      "plannedType": "IsEngagedConsideration",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "One owned native consideration shared only by the two crocodilian Sprint AI actions: score zero while engaged. No visible icon consumer or global AI change."
     }
   ]
 }

@@ -190,6 +190,22 @@ namespace KingmakerGunslinger.Summoning
             return profile;
         }
 
+        internal const string SprintNotEngagedSymbol =
+            "KMG.Summoning.Special.Crocodilian.SprintNotEngaged";
+        internal const float SprintAiEngagedScore = 0f;
+        internal const float SprintAiFreeScore = 1f;
+
+        /// <summary>Append one owned action without replacing, reordering or
+        /// mutating any qualified natural-attack entry.</summary>
+        internal static T[] AppendSprintAction<T>(T[] naturalActions, T sprint) where T : class
+        {
+            if (sprint == null) throw new ArgumentNullException("sprint");
+            T[] natural = naturalActions ?? Array.Empty<T>();
+            if (natural.Any(action => action == null || ReferenceEquals(action, sprint)))
+                throw new InvalidOperationException("Invalid or duplicate natural Sprint action.");
+            return natural.Concat(new[] { sprint }).ToArray();
+        }
+
         internal static bool Has(string key)
         {
             return Values.Any(value =>
