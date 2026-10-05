@@ -65,7 +65,11 @@ namespace KingmakerGunslinger.Summoning
             // is the wrong direction. Whether 1.25 reads as Large is a
             // question for the guarded party-camera review, and if it does not
             // that is a finding to raise rather than a bound to quietly move.
-            S("giant-stag-beetle", 1.25f)
+            S("giant-stag-beetle", 1.25f),
+            // Sprint 16 original Gargantuan body on the Large crocodilian
+            // frame: exactly this identity gets the 2x visual-only step.
+            // Existing creatures retain their old bounds and multipliers.
+            S("dire-crocodile", 2.0f)
         };
 
         internal static IReadOnlyList<SummonViewScaleSpec> All
@@ -83,8 +87,9 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Values.Length != 16 || Values.Any(value => value.Multiplier <
-                    0.20f || value.Multiplier > 1.25f) ||
+            if (Values.Length != 17 || Values.Any(value => value.Multiplier <
+                    0.20f || value.Multiplier >
+                    (value.CreatureKey == "dire-crocodile" ? 2.0f : 1.25f)) ||
                 Values.Select(value => value.CreatureKey).Distinct(
                     StringComparer.Ordinal).Count() != Values.Length ||
                 Values.Any(value => !ExpandedSummoningCatalog.All.Any(

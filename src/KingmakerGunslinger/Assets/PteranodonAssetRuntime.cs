@@ -72,6 +72,7 @@ namespace KingmakerGunslinger.Assets
             "assets/sprint13-creatures/";
         private const string Sprint14InsectDirectory =
             "assets/sprint14-insects/";
+        private const string CrocodilianDirectory = "assets/sprint16-crocodilians/";
         internal const int SupportedSchemaVersion = 2;
 
         /// <summary>
@@ -489,6 +490,31 @@ namespace KingmakerGunslinger.Assets
             }
         }
 
+        private static readonly Dictionary<string, Sprint13CreatureVisual>
+            Crocodilians = CrocodilianVisualPolicy.Keys.ToDictionary(
+                key => key, key => new Sprint13CreatureVisual(), StringComparer.Ordinal);
+
+        internal static bool TryGetCrocodilianVisual(string key,
+            out Mesh mesh, out string[] boneNames, out Texture2D albedo,
+            out string status)
+        {
+            lock (Sync)
+            {
+                Sprint13CreatureVisual visual;
+                if (!Crocodilians.TryGetValue(key, out visual))
+                {
+                    mesh = null; boneNames = null; albedo = null;
+                    status = "donor-visual:unknown-crocodilian";
+                    return false;
+                }
+                mesh = visual.Mesh;
+                boneNames = visual.Bones == null ? null : (string[])visual.Bones.Clone();
+                albedo = visual.Albedo;
+                status = visual.Status;
+                return mesh != null && boneNames != null && albedo != null;
+            }
+        }
+
         internal static bool TryGetSprint14InsectVisual(string key,
             out Mesh mesh, out string[] boneNames, out Texture2D albedo,
             out string status)
@@ -548,6 +574,71 @@ namespace KingmakerGunslinger.Assets
             ConfigureSprint12Quadrupeds(context);
             ConfigureSprint13Creatures(context);
             ConfigureSprint14Insects(context);
+            ConfigureCrocodilians(context);
+        }
+
+        private static void ConfigureCrocodilians(ModContext context)
+        {
+            if (context == null) throw new ArgumentNullException("context");
+            foreach (var entry in Crocodilians)
+            {
+                string key = entry.Key;
+                Sprint13CreatureVisual visual = entry.Value;
+                if (!context.FeatureModules.Active.ExpandedSummoning)
+                {
+                    lock (Sync) visual.Status = "donor-visual:module-disabled";
+                    continue;
+                }
+                lock (Sync)
+                    if (visual.Mesh != null && visual.Bones != null &&
+                        visual.Albedo != null) continue;
+                string path = Path.Combine(context.ModEntry.Path,
+                    (CrocodilianDirectory + key + "-mesh.json")
+                    .Replace('/', Path.DirectorySeparatorChar));
+                Mesh mesh = null;
+                Texture2D albedo = null;
+                try
+                {
+                    string json = File.ReadAllText(path);
+                    JObject payload = JObject.Parse(json);
+                    if (payload["bones"] == null ||
+                        !CrocodilianVisualPolicy.IsPermitted(key,
+                            payload["bones"].Values<string>()) ||
+                        (int?)payload["visibleLegs"] != 4 ||
+                        (int?)payload["tailJoints"] != 7 ||
+                        (bool?)payload["jawSeparated"] != true)
+                        throw new InvalidDataException("crocodilian anatomy/bone contract");
+                    string[] names;
+                    AlbedoRequirement requirement;
+                    mesh = BuildMesh(json, out names, out requirement,
+                        CrocodilianVisualPolicy.Bones);
+                    string reason;
+                    albedo = LoadAlbedo(Path.GetDirectoryName(path), requirement, out reason);
+                    if (albedo == null) throw new InvalidDataException("albedo:" + reason);
+                    mesh.name = "KMG_" + key;
+                    albedo.name = "KMG_" + key + "_Albedo";
+                    lock (Sync)
+                    {
+                        visual.Mesh = mesh; visual.Bones = names;
+                        visual.Albedo = albedo; visual.Status = "visual:published";
+                    }
+                    context.Logger.Info(key, "mesh.published",
+                        "Validated original crocodilian mesh: vertices=" + mesh.vertexCount +
+                        ";bones=" + names.Length + ";albedo=" + albedo.width + "x" + albedo.height);
+                }
+                catch (Exception error)
+                {
+                    if (mesh != null) UnityEngine.Object.Destroy(mesh);
+                    if (albedo != null) UnityEngine.Object.Destroy(albedo);
+                    lock (Sync)
+                    {
+                        visual.Mesh = null; visual.Bones = null; visual.Albedo = null;
+                        visual.Status = "donor-visual:invalid-mesh-data";
+                    }
+                    context.Logger.Warning(key, "mesh.rejected",
+                        "Original crocodilian rejected; donor remains active: " + error.Message);
+                }
+            }
         }
 
         private static void ConfigureSprint14Insects(ModContext context)

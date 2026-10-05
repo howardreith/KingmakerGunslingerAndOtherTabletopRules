@@ -1,5 +1,24 @@
 # Expanded Summoning Phase 2 journal
 
+## October 5 original crocodilian art checkpoint (NOT QUALIFIED)
+
+Authored both original models/paintings on the privately measured Monitor
+Lizard rig. Fixed atlas-boundary pale bands and disconnected primitive collars
+during offline review, before any game launch. Each final mesh has 2,342
+vertices and 27 weighted drivers; independent fresh mesh/painting exports
+match byte-for-byte. The 44-panel review includes clay, silhouette, unlit,
+textured, jaw-open, both tail extremes, stride and 2x ordinary/Dire comparison.
+Clay exposure was corrected separately without changing asset bytes.
+
+Implemented the fail-closed anatomy/bone contract, existing per-view
+swap/cleanup path, hidden Dire art-review route and four-file strict packaging.
+Only Dire's own view gets the Gargantuan 2x scale; no mechanical size/reach,
+native donor or existing view multiplier changes. Three behavior/manifest
+tests added: focused 214/214 and static validation PASS (2016 registered);
+incremental Release compile PASS. Full clean candidate gate and all live
+mechanics/visual/persistence gates remain open. Exact source asset hashes and
+provenance are in the family's SOURCE.md.
+
 ## October 5 narrow survey: PASS, interior decision activated
 
 At `8250ac8f8369699af7825459bc860682e3e5eae5` the full wrapper, 2013 tests,
