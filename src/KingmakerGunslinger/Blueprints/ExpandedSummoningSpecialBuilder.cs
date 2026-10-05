@@ -260,6 +260,8 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Summoning.Special.DireCrocodile.SprintState";
         private const string DireCrocodileSprintCooldownSymbol =
             "KMG.Summoning.Special.DireCrocodile.SprintCooldown";
+        private const string DireCrocodileSwallowedSymbol =
+            "KMG.Summoning.Special.DireCrocodile.Swallowed";
         private const string MonitorLizardUnitSymbol = "KMG.Summoning.Unit.MonitorLizard";
         private const string MonitorLizardCombatTraitsSymbol =
             "KMG.Summoning.Special.MonitorLizard.CombatTraits";
@@ -1750,6 +1752,17 @@ namespace KingmakerGunslinger.Blueprints
                 "Giant Ant Grab",
                 "A bite hit lets the drone attempt to grab a foe no larger than itself. Its sting never grabs.",
                 new GrabSpec { Primary = true, Hold = hold, Grappled = grappled });
+            // Sprint 16: the Dire Crocodile's own swallowed state. It
+            // shared the Purple Worm's until now, which put a victim in a
+            // worm's stomach with the worm's crush. The engine behaviour the
+            // victim depends on is the native one either way - the components
+            // are the same deep clone - but the per-round damage is this
+            // creature's own.
+            BlueprintBuff direSwallowed = Require<BlueprintBuff>(bySymbol,
+                DireCrocodileSwallowedSymbol);
+            ConfigureCrocodilianSwallowedState(library, direSwallowed,
+                "dire-crocodile");
+
             // Sprint 16. The Crocodile's stat block has read "bite +5
             // (1d8+4 plus grab)" since Phase 1 and the creature has never had
             // the grab: its profile recorded grab, death roll, sprint and hold
@@ -1771,7 +1784,7 @@ namespace KingmakerGunslinger.Blueprints
                 "Dire Crocodile Grab, Death Roll and Swallow Whole",
                 "A bite hit lets the dire crocodile attempt to grab a foe no larger than itself. On a successful grapple check against a foe it began its turn holding it swallows a foe at least one size category smaller, or death rolls one too large to swallow for 3d6+19 and knocks it prone while keeping its hold. One check resolves one of the two.",
                 new GrabSpec { Primary = true, Hold = hold, Grappled = grappled,
-                    Swallowed = swallowed,
+                    Swallowed = direSwallowed,
                     SwallowDelta = CrocodilianRulesPolicy.For("dire-crocodile")
                         .SwallowSizeDelta,
                     DeathRollCreatureKey = "dire-crocodile" });
@@ -2015,6 +2028,81 @@ namespace KingmakerGunslinger.Blueprints
         /// enhancement bonus to speed (the game's own speed cap still applies);
         /// a cast action on the cheetah's brain spends it once a fight starts.
         /// </summary>
+        /// <summary>
+        /// A crocodilian's own swallowed state.
+        ///
+        /// <para>The components are the native swallowed buff's, deep-cloned,
+        /// so a victim's break-free attempts, inability to act and every other
+        /// engine behaviour are exactly what the game already does - this is
+        /// not a reimplementation of being swallowed. What changes is that the
+        /// state belongs to this creature, so its per-round crushing damage is
+        /// its own rather than the Purple Worm's, and the condition a player
+        /// reads names the creature that actually ate them.</para>
+        ///
+        /// <para>Interior armour class and interior hit points are not set
+        /// here because the engine has nowhere to put them. The bounded audit
+        /// is recorded in the Sprint 16 blocker note: UnitPartSwallowed
+        /// carries a swallower, a break-free timer and a flag; its only
+        /// methods are Init, OnRemove and TryToBreakFree; the controller's
+        /// whole surface is TickOnUnit; ContextActionSwallowWhole carries only
+        /// the buff to apply; and no settings type exists. There is no
+        /// interior to attack and no damage pool to fill, so the printed AC 16
+        /// and 13 hp have no carrier.</para>
+        /// </summary>
+        private static void ConfigureCrocodilianSwallowedState(
+            LibraryScriptableObject library, BlueprintBuff swallowed,
+            string creatureKey)
+        {
+            CrocodilianRulesProfile rules =
+                CrocodilianRulesPolicy.For(creatureKey);
+            BlueprintBuff nativeSwallowed = BlueprintLibraryLookup.RequireExact<
+                BlueprintBuff>(library, NativePurpleWormSwallowedGuid,
+                    "native purple worm swallowed state");
+            swallowed.name = InternalName(DireCrocodileSwallowedSymbol);
+            swallowed.Stacking = StackingType.Replace;
+            swallowed.IsClassFeature = false;
+            BlueprintComponent[] cloned = (nativeSwallowed.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Where(value => value != null)
+                .Select(ExpandedSummoningAbilityBuilder.DeepCloneComponent)
+                .ToArray();
+            // The per-round crush is this creature's, not the donor's. Every
+            // damage action the cloned state carries is retargeted; anything
+            // else the native state does is left exactly as it is.
+            foreach (ContextActionDealDamage action in cloned
+                .OfType<AddFactContextActions>()
+                .SelectMany(value => new[] { value.Activated, value.Deactivated,
+                    value.NewRound }
+                    .Where(list => list != null && list.Actions != null)
+                    .SelectMany(list => list.Actions))
+                .OfType<ContextActionDealDamage>())
+            {
+                action.DamageType = new DamageTypeDescription {
+                    Type = DamageType.Physical,
+                    Physical = new DamageTypeDescription.PhysicalData {
+                        Form = PhysicalDamageForm.Bludgeoning } };
+                action.Duration = new ContextDurationValue {
+                    Rate = DurationRate.Rounds, DiceType = DiceType.Zero,
+                    DiceCountValue = Simple(0), BonusValue = Simple(0) };
+                action.Value = new ContextDiceValue {
+                    DiceType = ParseDieSides(rules.SwallowDieSides),
+                    DiceCountValue = Simple(rules.SwallowDiceCount),
+                    BonusValue = Simple(rules.SwallowBonus) };
+            }
+            swallowed.ComponentsArray = cloned;
+            BlueprintUnitFactAccess.Resolve().Configure(swallowed,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.DireCrocodile.Swallowed.Name",
+                    "Swallowed Whole"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.DireCrocodile.Swallowed.Description",
+                    "Swallowed by a summoned dire crocodile: crushed for " +
+                    rules.SwallowDamage + " each round, unable to act, with a " +
+                    "break-free attempt each round. Kingmaker does not model " +
+                    "cutting one's way out, so the printed interior armour " +
+                    "class and hit points are not represented."),
+                null);
+        }
+
         /// <summary>
         /// Sprint (Ex) for a crocodilian: +20 feet for one round, once per
         /// minute.
