@@ -12643,6 +12643,31 @@
       "authorization": "Icon overhaul v2 mission section 7; exact cache extension / post-registration owned mapping and guarded read-only census. Entire remaining source must match baseline.",
       "authorizedFeatureEdits": [
         {
+          "before": "            OlegVendorCleanupPublication olegSupplyCleanupPublication = null;",
+          "after": "            OlegVendorPublication olegVendorPublication = null;",
+          "mission": "gunslinger-content-followup-2026-10-04 sections 10.2/10.4/10.5; exact vendor wiring only; no art or icon assignments"
+        },
+        {
+          "before": "                    publicationPlan.CapitalGunslingerStock,\n                    cordOfStubbornResolve, context.Logger);",
+          "after": "                    publicationPlan.CapitalGunslingerStock,\n                    easternWeapons, elvenBranchedSpears,\n                    cordOfStubbornResolve, context.Logger);",
+          "mission": "gunslinger-content-followup-2026-10-04 sections 10.2/10.4/10.5; exact vendor wiring only; no art or icon assignments"
+        },
+        {
+          "before": "                olegSupplyCleanupPublication =\n                    OlegFirearmSupplyCleanupBlueprints.Normalize(library,\n                        basicAmmunition, firearmRepairKit, gunsmithingSupplies,",
+          "after": "                olegVendorPublication =\n                    OlegFirearmVendorBlueprints.Publish(library,\n                        productionFirearms, magicFirearms, basicAmmunition, firearmRepairKit, gunsmithingSupplies,",
+          "mission": "gunslinger-content-followup-2026-10-04 sections 10.2/10.4/10.5; exact vendor wiring only; no art or icon assignments"
+        },
+        {
+          "before": "                if (olegSupplyCleanupPublication != null)",
+          "after": "                if (olegVendorPublication != null)",
+          "mission": "gunslinger-content-followup-2026-10-04 sections 10.2/10.4/10.5; exact vendor wiring only; no art or icon assignments"
+        },
+        {
+          "before": "                    try { olegSupplyCleanupPublication.Rollback(); }",
+          "after": "                    try { olegVendorPublication.Rollback(); }",
+          "mission": "gunslinger-content-followup-2026-10-04 sections 10.2/10.4/10.5; exact vendor wiring only; no art or icon assignments"
+        },
+        {
           "before": "                        \"Core initialization failed; exact Magic Circle rollback was refused.\", circleRollbackException);\n                }",
           "after": "                        \"Core initialization failed; exact Magic Circle rollback was refused.\", circleRollbackException);\n                }\n\n                try {\n                    _favoredClass = null;\n                    favoredClassRegistry.RollbackAll();\n                }\n                catch (Exception favoredClassRollbackException) {\n                    context.Logger.Failure(\"favored-class\", \"bootstrap.rollback-failed\",\n                        \"Core initialization failed; favored-class exact rollback was refused.\", favoredClassRollbackException);\n                }\n\n                try {\n                    if (_mostlyHuman != null && _mostlyHuman.Publication != null)\n                        _mostlyHuman.Publication.Rollback();\n                    _mostlyHuman = null;\n                    KingmakerGunslinger.FavoredClass.FavoredClassRuntime.ConfigureMostlyHumanIdentity(null);\n                    mostlyHumanRegistry.RollbackAll();\n                }\n                catch (Exception mostlyHumanRollbackException) {\n                    context.Logger.Failure(\"elemental-races\", \"bootstrap.mostly-human-rollback-failed\",\n                        \"Core initialization failed; Mostly Human exact rollback was refused.\", mostlyHumanRollbackException);\n                }",
           "mission": "favored-class-integration"

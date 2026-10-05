@@ -60,13 +60,13 @@ def validate(root: Path) -> None:
         "src/KingmakerGunslinger/Blueprints/"
         "BokkenFirearmSupplyVendorBlueprints.cs"),
         "BlueprintUnitLoot", "AmmunitionCount = 100",
-        "GunsmithKitCount = 1", "supplies.GunsmithKit")
+        "NormalizeOwned", "supplies.GunsmithKit")
     oleg = require_tokens(root / (
         "src/KingmakerGunslinger/Blueprints/"
-        "OlegFirearmSupplyCleanupBlueprints.cs"),
+        "OlegFirearmVendorBlueprints.cs"),
         "BlueprintSharedVendorTable", "ammunition.BlackPowder",
         "ammunition.PaperCartridge", "supplies.OverhaulKit",
-        "supplies.GunsmithKit", "retained")
+        "supplies.GunsmithKit", "NormalizeOwned", "AmmunitionCount = 50")
     if "BokkenAmmunitionVendorBlueprints" in bokken or \
             "OlegMaintenanceVendorBlueprints" in oleg:
         raise AssertionError("Obsolete early-vendor abstraction remains")

@@ -331,3 +331,12 @@ the complete catalog/protection/package gates still apply afterward.
 
 Every follow-up consumer is recorded in the canonical catalog. New spell and
 scroll pixels await owner review, independently of technical/native checks.
+
+Model D vendor redistribution (2026-10-04 followup) records five exact non-art
+bootstrap substitutions in `authorizedFeatureEdits`: Oleg publication declaration,
+capital retired-weapon inputs, Oleg publication inputs, and two rollback references.
+Reversing those substitutions must reproduce the prior protected source exactly.
+Every relocated firearm, ammunition and kit consumer remains protected-existing;
+all Eastern and spear consumers retain their existing assignments. No artwork,
+consumer identity, icon mapping, hash baseline or approved family changes.
+Technical vendor qualification is not owner visual approval.

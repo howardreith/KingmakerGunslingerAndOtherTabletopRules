@@ -247,6 +247,7 @@
     <Compile Include="RareFirearmSeekingTests.cs" />
     <Compile Include="MidgameFirearmTests.cs" />
     <Compile Include="FirearmItemDescriptionTests.cs" />
+    <Compile Include="ModelDVendorTests.cs" />
     <Compile Include="TeleportationContextTests.cs" />
     <Compile Include="TeleportationTransactionTests.cs" />
     <Compile Include="TeleportationOutcomeTests.cs" />

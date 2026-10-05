@@ -264,7 +264,7 @@ namespace KingmakerGunslinger.DomainTests
             string root = Environment.CurrentDirectory;
             string source = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "Blueprints",
-                "OlegFirearmSupplyCleanupBlueprints.cs"));
+                "OlegFirearmVendorBlueprints.cs"));
             foreach (string token in new[] {
                 "f720440559fc00949900bfa1575196ac",
                 "C11_OlegVendorTable",
@@ -274,25 +274,25 @@ namespace KingmakerGunslinger.DomainTests
                 "OTP_Oleg_FirstVisit",
                 "BlueprintLibraryLookup.RequireExact<BlueprintSharedVendorTable>",
                 "VendorCatalogPublication<BlueprintComponent>.Create",
-                "OlegVendorCleanupPublication.Unchanged",
+                "OlegVendorPublication.Unchanged",
                 "publication.Validate()",
-                "owned.Contains",
+                "NormalizeOwned",
                 "ReferenceEquals",
                 "ammunition.BlackPowder",
                 "ammunition.LeadBall",
                 "ammunition.PaperCartridge",
                 "supplies.OverhaulKit",
                 "supplies.GunsmithKit",
-                "retained a project-owned firearm-supply row"
+                "AmmunitionCount = 50"
             }) Assertions.True(source.Contains(token),
                 "Oleg maintenance publication contract missing: " + token);
 
             string bootstrap = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "Bootstrap", "BlueprintBootstrap.cs"));
             int publish = bootstrap.IndexOf(
-                "OlegFirearmSupplyCleanupBlueprints.Normalize", StringComparison.Ordinal);
+                "OlegFirearmVendorBlueprints.Publish", StringComparison.Ordinal);
             int rollback = bootstrap.IndexOf(
-                "olegSupplyCleanupPublication.Rollback()", StringComparison.Ordinal);
+                "olegVendorPublication.Rollback()", StringComparison.Ordinal);
             int capitalRollback = bootstrap.IndexOf(
                 "capitalVendorPublication.Rollback()", StringComparison.Ordinal);
             Assertions.True(publish >= 0 && rollback > publish &&
@@ -335,7 +335,6 @@ namespace KingmakerGunslinger.DomainTests
                 "57f84fdde3cc2994284fb3acc4a3cb97",
                 "OTP_Bokken_ZeroState",
                 "AmmunitionCount = 100",
-                "GunsmithKitCount = 1",
                 "BlueprintLibraryLookup.RequireExact<BlueprintUnitLoot>",
                 "ammunition.BlackPowder",
                 "ammunition.LeadBall",
@@ -362,7 +361,7 @@ namespace KingmakerGunslinger.DomainTests
                 "bokkenSupplyPublication.Rollback()",
                 StringComparison.Ordinal);
             int olegRollback = bootstrap.IndexOf(
-                "olegSupplyCleanupPublication.Rollback()", StringComparison.Ordinal);
+                "olegVendorPublication.Rollback()", StringComparison.Ordinal);
             Assertions.True(publish >= 0 && rollback > publish &&
                 olegRollback > rollback && bootstrap.Contains(
                     "publicationPlan.CapitalGunslingerStock"),

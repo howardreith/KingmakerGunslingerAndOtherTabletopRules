@@ -1,6 +1,6 @@
 # Gunslinger content followup — 2026-10-04
 
-Status: mission in progress. Research and firearm descriptions are qualified. Model D, Whiteout and final
+Status: mission in progress. Research, firearm descriptions and Model D are qualified. Whiteout and final
 integrated qualification remain in progress.
 
 ## Repository and isolation
@@ -119,3 +119,70 @@ Runtime guard correctly rejected the elevated tool process before launch.
 A hidden PowerShell launched through the existing desktop Shell application
 was token-checked as the normal user and ran the unchanged guarded scripts.
 No process was killed, OS setting changed, or runtime guard bypassed.
+
+## Model D checkpoint
+
+Status: PASS. Firearm checkpoint commit is
+`3cbeb4c6766eb7a500a9fbbc58d0d1e28768d5aa`; its approved-wrapper push matched.
+Model D uses a dedicated `OlegFirearmVendorBlueprints` publication independent
+of the Eastern/spear/BV/FC/BTSL gates. The existing exact-reference transaction
+now normalizes owned stock before assignment; wrong quantities, duplicate owned
+rows and retired rows are replaced atomically. Native/unknown foreign rows retain
+reference identity and order. Capital includes all generic Eastern/spear identities
+in cleanup even when those modules are disabled. No purchased item is inspected
+or removed. Materialized merchant inventories are native persisted state; no new
+refill or destructive item-instance migration is introduced.
+
+| Surface | Before | After |
+|---|---|---|
+| Oleg Gunslinger | no firearm/supply rows | Pistol/Musket/Blunderbuss 1 each; powder/ball 50 each |
+| Capital Gunslinger | mundane 3 + plus-one 3, each 1; powder/ball/cartridge 200 each; kit 1 | plus-one 3, each 1; powder/ball/cartridge 200 each; kit 1 |
+| Bokken | powder/ball/cartridge 100 each; kit 1 | powder/ball/cartridge 100 each; no kit |
+| Eastern generics | capital 12; Oleg 6; Dire Narlmarches/Pitax 12 each; quantity 1 | capital 0; all regional rows/quantities unchanged |
+| Spear generics | capital 6; Oleg 4; Dire Narlmarches/Pitax 6 each; quantity 1 | capital 0; all regional rows/quantities unchanged |
+| BTSL | Honest Guy six firearm equipment rows, one each; Xelliren powder/ball/cartridge 200 each and kit 1; Eastern 12 and spear 6 on each Honest Guy | unchanged |
+| Better Vendors | 50 catalog rows; exact Military I/III/V/VII/IX rank schedule and quantities/ledger | unchanged |
+| Skeletal Salesman | Roadwarden and Dead Reckoning, one each on existing generated C3/C4 paths | unchanged |
+| Named fixed loot | existing five firearm placements, 18 Eastern and six spear named placements, quantity 1 each | unchanged |
+
+These are fixed stock entries that can deplete. Native regeneration is not
+guaranteed. No renewable or infinite supply is claimed. Existing crafting and all
+prices, GUIDs, enchantments, recipes, initial equipment and loot paths are retained.
+
+The imported before-audit had additional factual errors: 4 rather than 6 capital
+spear rows, invalid shorthand/localization symbols, two missing spear variants,
+and omitted World-Tree Severer. CSV is corrected to **65 rows**, with all
+single-item symbols checked against the fixed registry. The explicitly grouped
+progression row is not an item identity. Capital concentration is **28 to 7**.
+
+Validation:
+
+- `scripts/Invoke-KmgGate.ps1 -Level Focused -Filter 'model-d;paper-cartridge;unified-repair'`:
+  **34/34 PASS**, including 26 new Model D cases; actual registered count **2,005**.
+- `scripts/Test-RuntimeScenarioPreflight.ps1`: **475 PASS** plus teleport metadata.
+- `scripts/Invoke-KmgGate.ps1 -Level Sprint`: full repository wrapper,
+  **2,005/2,005 domain tests**, clean Release, deterministic package and strict
+  standalone package PASS. Logs: `artifacts/mission/vendor-gate.log` and
+  `artifacts/mission/vendor-runtime-batch.log` (local, not committed).
+- Guarded `observe-model-d-vendors`, same arguments/lease/deployment discipline
+  as the firearm checkpoint: **26/26 runtime assertions PASS**, fresh Steam
+  App 640820 launch, no save load/input/inventory mutation, automatic exit.
+  Evidence: `20261005T0522299980364Z-observe-model-d-vendors`.
+- DLL `ace366cd36cdd625a6d052b7d23ebf043b2f7710484b83b0ca4ab2580f3b85fa`;
+  MVID `15c79d68-b35b-4691-8990-8375b5ba44cc`;
+  package `feb551e65183ef5082ece3b9d90e1cc2c7df0ba3d61facf2f59567703ea7f3df`;
+  source fingerprint `d60607ea0dd8962c66a2206c496eb218251a6b9a1c2be5b13180555c30489eb7`.
+- Exact live backup `20261005T0522221476379Z` restored and verified; own shared
+  lease released. Batch record: `PASS`, `restored=true`.
+
+Meaningful failures and repairs: legacy source guards expected removed stock or
+inlined ownership code; they now check the Model D contract and shared normalizer.
+A Windows text rewrite temporarily broke an LF-specific source assertion; canonical
+UTF-8/LF was restored, with no assertion weakened. The icon guard correctly
+rejected bootstrap wiring changes; automatic approval review rejected an overly
+broad generated hunk proposal. A read-only proof established exactly five literal
+vendor-only substitutions whose reversal equals the prior complete source; that
+narrow ledger update was then accepted. Original icon baseline hashes, assignments,
+artwork and all earlier integrity checks remain enforced. The validator import
+created one local Python cache; that exact generated file was removed before the
+passing gate. No generated or proprietary artifacts enter the commit.

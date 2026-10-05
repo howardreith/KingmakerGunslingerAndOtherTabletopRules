@@ -1377,7 +1377,7 @@ namespace KingmakerGunslinger.DomainTests
                 "ElvenBranchedSpearCampaignBlueprints.cs",
                 "RareFirearmCampaignLootBlueprints.cs", "SkeletalSalesmanBlueprints.cs",
                 "BokkenFirearmSupplyVendorBlueprints.cs",
-                "OlegFirearmSupplyCleanupBlueprints.cs"
+                "OlegFirearmVendorBlueprints.cs"
             };
             foreach (string path in paths)
             {
