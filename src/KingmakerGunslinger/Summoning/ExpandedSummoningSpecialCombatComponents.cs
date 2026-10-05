@@ -443,6 +443,25 @@ namespace KingmakerGunslinger.Summoning
         public int ConstrictDiceCount;
         public DiceType ConstrictDiceType;
         public int ConstrictBonus;
+        /// <summary>
+        /// Set for a crocodilian. A death roll is a maintain-time rider like
+        /// constrict, but it is not the bite: its flat bonus is one and a half
+        /// times Strength where an ordinary natural attack adds Strength
+        /// once, so these dice and this bonus come from the creature's own
+        /// rules profile rather than from the limb that established the hold.
+        /// </summary>
+        public int DeathRollDiceCount;
+        public DiceType DeathRollDiceType;
+        public int DeathRollBonus;
+        /// <summary>
+        /// 0: a death roll works on a foe of the crocodilian's own size or
+        /// smaller, which is a wider threshold than swallow whole's.
+        /// </summary>
+        public int DeathRollMaxTargetSizeDelta;
+        /// <summary>The prone condition a successful death roll applies.</summary>
+        public bool DeathRollKnocksProne = true;
+
+        internal bool HasDeathRoll { get { return DeathRollDiceCount > 0; } }
 
         internal bool MultiLink { get { return MaxHeldTargets > 1; } }
 
@@ -602,6 +621,62 @@ namespace KingmakerGunslinger.Summoning
             var rule = new RuleDealDamage(owner, target, damage);
             if (context != null) context.TriggerRule(rule);
             else Rulebook.Trigger(rule);
+        }
+
+        /// <summary>
+        /// A death roll's own size threshold: the crocodilian's size or
+        /// smaller, which is deliberately not the swallow's one-category-
+        /// smaller rule. A Large crocodile death rolls a Large foe and cannot
+        /// swallow one, which is what keeps both abilities reachable.
+        /// </summary>
+        internal bool IsDeathRollSizeAllowed(UnitEntityData owner,
+            UnitEntityData target)
+        {
+            if (owner == null || target == null) return false;
+            return ExpandedSummoningSpecialProfiles.IsGrabSizeAllowed(
+                (int)target.Descriptor.State.Size,
+                (int)owner.Descriptor.State.Size, DeathRollMaxTargetSizeDelta);
+        }
+
+        /// <summary>
+        /// The death roll itself: its own crushing damage, the native prone
+        /// condition, and the hold kept.
+        ///
+        /// <para>The prone condition is read back after it is added rather
+        /// than assumed to have taken, because a target can be immune or
+        /// already prone and the difference matters to the record. The return
+        /// value names what actually happened for the runtime fixture.</para>
+        /// </summary>
+        internal string DealDeathRoll(UnitEntityData owner,
+            UnitEntityData target, MechanicsContext context)
+        {
+            if (!HasDeathRoll || owner == null || target == null)
+                return "not-applicable";
+            var damage = new PhysicalDamage(new DiceFormula(DeathRollDiceCount,
+                DeathRollDiceType), PhysicalDamageForm.Bludgeoning);
+            damage.AddBonus(DeathRollBonus);
+            var rule = new RuleDealDamage(owner, target, damage);
+            if (context != null) context.TriggerRule(rule);
+            else Rulebook.Trigger(rule);
+            int dealt = rule.Damage;
+            bool proneBefore = target.Descriptor.State.HasCondition(
+                UnitCondition.Prone);
+            bool proneAfter = proneBefore;
+            if (DeathRollKnocksProne && !target.Descriptor.State.IsDead &&
+                    !target.Destroyed)
+            {
+                // The same two-argument call TwinShotKnockdownMechanics
+                // uses: the engine owns how long a creature stays down, and a
+                // duration passed here would be this project inventing one.
+                target.Descriptor.State.AddCondition(UnitCondition.Prone,
+                    null);
+                proneAfter = target.Descriptor.State.HasCondition(
+                    UnitCondition.Prone);
+            }
+            return "damage=" + dealt + ";dice=" + DeathRollDiceCount + "d" +
+                (int)DeathRollDiceType + "+" + DeathRollBonus +
+                ";proneBefore=" + proneBefore + ";proneAfter=" + proneAfter +
+                ";heldKept=" + CrocodilianRulesPolicy.KeepsGrappleAfterDeathRoll;
         }
 
         /// <summary>
@@ -1043,6 +1118,16 @@ namespace KingmakerGunslinger.Summoning
     public sealed class SummonHoldComponent : BuffLogic, ITickEachRound,
         IInitiatorRulebookHandler<RuleCalculateCMB>
     {
+        /// <summary>
+        /// The held-round number this hold last resolved a rider on. A round
+        /// processed twice would otherwise crush and knock prone twice, so the
+        /// rider fires at most once per distinct round of holding. Serialized
+        /// with the buff, because a save during a hold must not hand the
+        /// target a second death roll on load.
+        /// </summary>
+        [JsonProperty]
+        private int m_LastRiderRound = -1;
+
         public void OnNewRound()
         {
             UnitEntityData owner = Owner == null ? null : Owner.Unit;
@@ -1050,7 +1135,8 @@ namespace KingmakerGunslinger.Summoning
             if (target == null) return;
             MechanicsContext context = Fact == null ? null : Fact.MaybeContext;
             SummonGrabComponent grab = SummonGrabComponent.Find(owner);
-            MaintainLink(owner, target, grab, context, Buff, HeldState(owner, target, grab));
+            MaintainLink(owner, target, grab, context, Buff,
+                HeldState(owner, target, grab), ref m_LastRiderRound);
         }
 
         /// <summary>
@@ -1060,6 +1146,20 @@ namespace KingmakerGunslinger.Summoning
         /// </summary>
         internal static string MaintainLink(UnitEntityData owner, UnitEntityData target,
             SummonGrabComponent grab, MechanicsContext context, Buff holdBuff, Buff heldState)
+        {
+            int ignored = -1;
+            return MaintainLink(owner, target, grab, context, holdBuff,
+                heldState, ref ignored);
+        }
+
+        /// <summary>
+        /// One maintain check for one link. <paramref name="lastRiderRound"/>
+        /// is the held-round number a rider last fired on for this link, and
+        /// is updated when one fires; a caller with no rider passes a throwaway.
+        /// </summary>
+        internal static string MaintainLink(UnitEntityData owner, UnitEntityData target,
+            SummonGrabComponent grab, MechanicsContext context, Buff holdBuff,
+            Buff heldState, ref int lastRiderRound)
         {
             var maneuver = new RuleCombatManeuver(owner, target, CombatManeuver.Grapple);
             if (context != null) context.TriggerRule(maneuver);
@@ -1071,10 +1171,34 @@ namespace KingmakerGunslinger.Summoning
                 return "released";
             }
             int roundsHeld = RoundsHeld(heldState);
-            if (grab != null && ExpandedSummoningSpecialProfiles.ShouldSwallowOnMaintain(
-                    grab.SwallowedBuff != null, success, roundsHeld,
-                    grab.IsSwallowSizeAllowed(owner, target)))
+            // One successful check resolves one rider. The selector returns a
+            // single value rather than two booleans, so a creature with both a
+            // death roll and a swallow cannot do both on the same check; for a
+            // creature with no death roll it answers exactly as the swallow
+            // condition it replaced, which is what leaves the Purple Worm and
+            // the Giant Flytrap untouched.
+            CrocodilianMaintainRider rider =
+                CrocodilianRulesPolicy.SelectMaintainRider(success, true,
+                    roundsHeld,
+                    grab != null && grab.HasDeathRoll,
+                    grab != null && grab.IsDeathRollSizeAllowed(owner, target),
+                    grab != null && grab.SwallowedBuff != null,
+                    grab != null && grab.IsSwallowSizeAllowed(owner, target),
+                    grab != null && grab.SwallowedBuff != null);
+            if (rider == CrocodilianMaintainRider.SwallowWhole)
                 return "swallowed:" + grab.SwallowHeld(owner, target, context);
+            if (rider == CrocodilianMaintainRider.DeathRoll)
+            {
+                // Once per round of holding, whatever calls this. A replayed
+                // round finds its own number already claimed and resolves as
+                // an ordinary maintain instead of crushing twice.
+                if (lastRiderRound == roundsHeld)
+                    return "death-roll:already-resolved-this-round;round=" +
+                        roundsHeld;
+                lastRiderRound = roundsHeld;
+                return "death-roll:" +
+                    grab.DealDeathRoll(owner, target, context);
+            }
             ItemEntityWeapon weapon = SummonGrappleLinks.EstablishingWeapon(owner, target);
             bool substituted = weapon == null;
             if (substituted)
