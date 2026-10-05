@@ -394,7 +394,7 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(harness.Contains("'" + name + "' = [pscustomobject]@{"), "Harness allowlist missing: " + name);
             }
             RequireTokens("Scenario wiring", request,
-                "RuntimeTestScenarioCatalog.DisposableExpandedSummoningRules",
+                "RuntimeTestScenarioCatalog.IsExpandedSummoningRulesScenario(request.Scenario)",
                 "RuntimeTestScenarioCatalog.DisposableExpandedSummoningVisualLifecycle");
             RequireTokens("Runner dispatch", runner,
                 "PollExpandedSummoningRules();", "PollExpandedSummoningVisualLifecycle();",

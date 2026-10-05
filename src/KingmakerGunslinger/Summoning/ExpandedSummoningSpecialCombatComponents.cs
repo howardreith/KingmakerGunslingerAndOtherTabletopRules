@@ -34,6 +34,45 @@ using UnityEngine;
 
 namespace KingmakerGunslinger.Summoning
 {
+    /// <summary>
+    /// Creation-only printed land skill allocation for the two crocodilians.
+    /// Native class/attribute/size/feat modifiers still calculate the totals.
+    /// No additive hidden bonus, donor mutation or reload-time reallocation.
+    /// </summary>
+    [Serializable]
+    public sealed class SummonCrocodilianSkillRanks :
+        OwnedGameLogicComponent<UnitDescriptor>,
+        IHandleEntityComponent<UnitEntityData>
+    {
+        public string CreatureKey;
+        public BlueprintUnit OwningBlueprint;
+        [JsonProperty] private bool m_Applied;
+
+        public void OnEntityCreated(UnitEntityData unit)
+        {
+            if (m_Applied) return;
+            if (unit == null || !ReferenceEquals(unit.Blueprint, OwningBlueprint))
+                throw new InvalidOperationException(
+                    "Crocodilian rank allocation requires its exact owning unit.");
+            CrocodilianRulesProfile rules = CrocodilianRulesPolicy.For(CreatureKey);
+            ModifiableValue perception = unit.Descriptor.Stats.GetStat(
+                StatType.SkillPerception);
+            ModifiableValue stealth = unit.Descriptor.Stats.GetStat(
+                StatType.SkillStealth);
+            ModifiableValue mobility = unit.Descriptor.Stats.GetStat(
+                StatType.SkillMobility);
+            if (perception.BaseValue != 0 || stealth.BaseValue != 0 ||
+                    mobility.BaseValue != 0)
+                throw new InvalidOperationException(
+                    "Crocodilian class ranks must start unallocated.");
+            perception.BaseValue = rules.PerceptionRanks;
+            stealth.BaseValue = rules.StealthRanks;
+            m_Applied = true;
+        }
+
+        public void OnEntityRemoved(UnitEntityData unit) { }
+    }
+
     [Serializable]
     public sealed class BebelithCombatComponent :
         RuleInitiatorLogicComponent<RuleAttackRoll>,

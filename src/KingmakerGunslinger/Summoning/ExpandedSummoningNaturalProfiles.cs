@@ -254,24 +254,27 @@ namespace KingmakerGunslinger.Summoning
                         "WeaponFinesse", "ImprovedInitiative"),
                     "Sprint is a bounded once-per-summoning swift burst on the special builder (Sprint 8): +30 feet for one round under the game's own speed cap, never repeatable within one summoning.",
                     "Cheetah visual: a procedural spotted coat on the leopard rig at a lean view scale (Sprint 8)."),
-                PS("dire-crocodile", "Dire Crocodile", "Animal", 12,
+                PSK("dire-crocodile", "Dire Crocodile", "Animal", 12,
                     "Gargantuan", 37, 10, 25, 1, 14, 2, 20, 15, "Bite3d6",
                     Array.Empty<string>(), A("Tail4d8"),
                     A("TripDefenseFourLegs", "SkillFocusPerception",
                         "SkillFocusStealth", "ImprovedInitiative", "IronWill",
-                        "ImprovedCriticalBite"),
+                        "ImprovedCriticalBite"), A("Perception", "Stealth"),
                     "Kingmaker exposes one movement speed; the 20-foot ground speed is used and the 30-foot swim is omitted. No underwater movement system is introduced, which the sprint's order forbids, and omitting the mode rather than the rate keeps the creature at its printed land speed.",
                     "The printed tail slap is a secondary natural attack - five lower than the bite and at half the Strength bonus - so it is declared in the secondary limb slot rather than among the additional primaries. A Gargantuan creature's printed Space 20 feet with Reach 15 feet is the standard footprint for its size, so unlike the Crocodile it must not carry the reduced-reach carrier.",
                     "The printed Run feat is omitted. Kingmaker has no running action distinct from ordinary movement and no jumping, so nothing in the rules layer could consult it; nothing is substituted for it and no record claims it works. Hold breath is omitted for the same kind of reason - the game models neither swimming nor drowning - and neither omission is covered by the passive-sense label, which is only for Scent, Darkvision and Low-light Vision.",
                     "The printed low-light vision is omitted under OwnerAcceptedEngineLimitation: PASSIVE_CREATURE_SENSES_UNMODELED, accepted 2026-10-03, on the evidence recorded there.",
-                    "REGISTERED AND WITHHELD. Its grab, death roll and swallow whole are not implemented yet, which is exactly why every one of its placements is suppressed; this profile is the stat block the implementation will be measured against, not a claim that the creature is finished."),
-                PS("crocodile", "Crocodile", "Animal", 3, "Large",
+                    "Land-use skills allocate six Perception and six Stealth ranks, yielding +14 and +0 through native ability, class-skill, size and Skill Focus modifiers. No Mobility ranks, Swim or water-only Stealth bonus is added.",
+                    "REGISTERED AND WITHHELD. Grab, live-bite Death Roll, creature-owned swallow and Sprint are implemented but NOT QUALIFIED. Sprint is a one-round +20-foot untyped land-speed modifier on a ten-round native buff cooldown, a bounded CRPG adaptation rather than a temporary base-speed rewrite. Original visuals and all live gates remain open."),
+                PSK("crocodile", "Crocodile", "Animal", 3, "Large",
                     19, 12, 17, 1, 12, 2, 20, 4, "Bite1d8",
                     Array.Empty<string>(), A("Tail1d12"),
                     A("ReducedReach", "TripDefenseFourLegs",
                         "SkillFocusPerception", "SkillFocusStealth"),
+                    A("Perception", "Stealth"),
                     "Kingmaker exposes one movement speed; the 20-foot ground speed is used and swim movement is omitted.",
-                    "Grab, death roll, sprint, and hold breath are omitted because no duration-bound summon-safe native graph was proven."),
+                    "Land-use skills allocate one Perception and two Stealth ranks, yielding +8 and +5 through native ability, class-skill, size and Skill Focus modifiers. No Mobility ranks, Swim or water-only Stealth bonus is added.",
+                    "Grab, live-bite Death Roll and Sprint are implemented but NOT QUALIFIED. Sprint is a one-round +20-foot untyped land-speed modifier on a ten-round native buff cooldown, a bounded CRPG adaptation rather than a temporary base-speed rewrite. Hold Breath is omitted because there is no swimming/drowning consumer; low-light vision is omitted under OwnerAcceptedEngineLimitation: PASSIVE_CREATURE_SENSES_UNMODELED."),
                 P("dire-bat", "Dire Bat", "Animal", 4, "Large",
                     17, 15, 13, 2, 14, 6, 40, 3, "Bite1d8",
                     Array.Empty<string>(),
@@ -480,6 +483,19 @@ namespace KingmakerGunslinger.Summoning
                 size, strength, dexterity, constitution, intelligence, wisdom,
                 charisma, speed, naturalArmor, primary, additional,
                 Array.Empty<string>(), facts, deviations, skills);
+        }
+
+        private static NaturalSummonProfile PSK(string key, string name,
+            string hitDieClass, int hitDice, string size, int strength,
+            int dexterity, int constitution, int intelligence, int wisdom,
+            int charisma, int speed, int naturalArmor, string primary,
+            string[] additional, string[] secondary, string[] facts,
+            string[] skills, params string[] deviations)
+        {
+            return new NaturalSummonProfile(key, name, hitDieClass, hitDice,
+                size, strength, dexterity, constitution, intelligence, wisdom,
+                charisma, speed, naturalArmor, primary, additional, secondary,
+                facts, deviations, skills);
         }
 
         private static NaturalSummonProfile PS(string key, string name,

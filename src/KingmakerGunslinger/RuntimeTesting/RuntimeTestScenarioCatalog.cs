@@ -163,6 +163,14 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// </summary>
         internal const string DisposableExpandedSummoningRules =
             "disposable-expanded-summoning-rules";
+        internal const string DisposableExpandedSummoningCrocodilians =
+            "disposable-expanded-summoning-crocodilians";
+
+        internal static bool IsExpandedSummoningRulesScenario(string scenario)
+        {
+            return scenario == DisposableExpandedSummoningRules ||
+                scenario == DisposableExpandedSummoningCrocodilians;
+        }
         /// <summary>
         /// Correction order (2026-09-25): repeated cast-and-dispose cycles of
         /// the tinted and coated summons with the variant-owned material and
@@ -681,6 +689,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SummonSameTurnCompatibilityAcadamae,
                 DisposableExpandedSummoningVisualContracts,
                 DisposableExpandedSummoningRules,
+                DisposableExpandedSummoningCrocodilians,
                 DisposableExpandedSummoningVisualLifecycle,
                 WorkingSaveExpandedSummoningPrepare,
                 WorkingSaveExpandedSummoningVerifyCleanup,

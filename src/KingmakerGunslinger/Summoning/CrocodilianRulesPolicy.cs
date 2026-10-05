@@ -108,6 +108,12 @@ namespace KingmakerGunslinger.Summoning
         internal int SprintRounds { get; private set; }
         internal int SprintCooldownRounds { get; private set; }
 
+        // Land-use allocations, not flat total bonuses. Attribute, class-skill,
+        // size and Skill Focus contributions remain native and dynamic.
+        internal int PerceptionRanks { get { return Key == "crocodile" ? 1 : 6; } }
+        internal int StealthRanks { get { return Key == "crocodile" ? 2 : 6; } }
+        internal int MobilityRanks { get { return 0; } }
+
         internal string DeathRollDamage
         {
             get

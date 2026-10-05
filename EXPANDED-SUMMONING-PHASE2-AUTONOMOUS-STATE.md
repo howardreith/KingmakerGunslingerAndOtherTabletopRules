@@ -27,6 +27,10 @@ Sprints 18-21. No merge, release/tag, permanent deployment or Sprint 22.
   before its check, and constructs one explicit Dire swallowed round action.
   The previously empty active validator and stale metadata are repaired.
   See the October 5 section of the Sprint 16 pre-candidate review.
+- Follow-up source: untyped +20 Sprint, retained natural-brain actions with
+  one shared buff cooldown, and exact one-time land rank allocations. A narrow
+  crocodilian survey is wired for live census/graphs/skills and private bind
+  capture. Focused checks pass; these changes still have no runtime proof.
 - Open work: live base-bite/modifier/DR proof; recursive live swallowed-action
   audit and damage cadence; Sprint speed interactions and AI
   fallback; exact skills and Run disposition; both original crocodilian visuals;
@@ -48,9 +52,11 @@ Sprints 18-21. No merge, release/tag, permanent deployment or Sprint 22.
   `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
   No runtime transaction has been opened during takeover. Snapshot the actual
   baseline before each future transaction and restore that exact snapshot.
-- Next executable action: finish Sprint speed/AI, exact skill allocation and
-  Run disposition; instrument the live graph/census and donor-bind capture,
-  then original assets and the full scenario pack. Use focused inner-loop
+- Next executable action: qualify/package the survey source, then run guarded
+  `disposable-expanded-summoning-crocodilians` with exact restoration. Review
+  its census before activating the conditional interior decision, select the
+  observed native AI consideration, and use private bind frames for original
+  assets. The full Sprint 16 scenario pack still must be built. Use focused inner-loop
   checks; the complete sprint gate and
   guarded review apply to one stable hidden candidate.
 

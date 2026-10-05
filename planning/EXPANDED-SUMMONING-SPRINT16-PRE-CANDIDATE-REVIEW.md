@@ -2,6 +2,41 @@
 
 ## October 5 takeover engineering review (NOT QUALIFIED)
 
+### Follow-up: preparing the narrow live survey
+
+Sprint now uses a temporary +20-foot UntypedStackable modifier. The audited
+native BuffMovementSpeed seam modifies speed; it exposes no temporary
+base-speed-to-40 override. Saving/restoring mutable BaseValue would conflict
+with other base changes, so the owner's second fallback is used. This is a
+bounded CRPG adaptation, not a claim that Haste/Slow/caps are qualified.
+The per-creature brain retains the configured natural brain's components and
+actions and appends Sprint; its AI cooldown is zero because the same native
+cooldown buff gates player and AI. Adjacent-use scoring and live AI proof remain
+open pending the native consideration census.
+
+The rank allocations are Crocodile Perception 1 / Stealth 2, Dire Crocodile
+6 / 6, Mobility 0 for both. Native AddClassLevels can only repeatedly spend
+through a fixed priority list, not express these allocations. A component on
+the exact two owned units writes their initially empty rank base values once
+at creation; it has a serialized applied guard and does not run at reactivation.
+Native class-skill, ability, size and Skill Focus modifiers retain control of
+totals. Other profiles and donor blueprints are untouched. Both profiles
+explicitly omit aquatic Swim and water-only Stealth.
+
+`disposable-expanded-summoning-crocodilians` is a narrow survey at this
+checkpoint, requiring the normal guarded `KMG_AUTOMATION_WORKING` load.
+It reuses the existing disposable correction fixture, records current native
+swallow types/members and complete simple action graphs, Run candidates,
+engagement considerations and speed buff graphs, checks live land skills and
+captures only Monitor Lizard renderer-local bind frames. It writes no save,
+changes no publication and runs no historical-root census. It must not be
+reported as the completed combat/Sprint/visual qualification pack.
+
+Follow-up checks: focused Sprint 16/correction checks 21/21 and focused
+Sprint 16/scenario-wiring checks 17/17 PASS (2012 registered); incremental
+Release compile PASS before the additional skill-breakdown fields. Full
+pre-launch source/package validation is next, then the narrow guarded survey.
+
 The following source corrections are descendants of intake
 `a762ece553ab9b539a53a782102a29e5c70d44eb`. They are not a hidden runtime
 candidate. Full gate, package, graph/cadence proof and all live cases remain
