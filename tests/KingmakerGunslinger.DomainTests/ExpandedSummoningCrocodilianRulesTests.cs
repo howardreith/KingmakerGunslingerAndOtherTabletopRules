@@ -94,6 +94,88 @@ namespace KingmakerGunslinger.DomainTests
         }
 
         /// <summary>
+        /// The death roll follows the creature's live Strength, not the
+        /// Strength its profile was written with.
+        ///
+        /// <para>The first implementation built the rider's damage from the
+        /// profile, which reproduces the printed line on an unmodified
+        /// creature and is wrong for every other one: a buffed or weakened
+        /// crocodile would have death rolled for exactly what the stat block
+        /// says while its bite did something else. These are the arithmetic
+        /// cases; that the runtime actually reads live stats is a guarded
+        /// runtime assertion, because only the engine can answer it.</para>
+        /// </summary>
+        internal static void DeathRollFollowsLiveStrength()
+        {
+            // The printed creatures, as the baseline the unmodified case must
+            // reproduce. Both come out of the live derivation too, which is
+            // what makes the baseline a contract rather than a separate path.
+            foreach (var creature in new[] {
+                new { Key = "crocodile", Modifier = 4, Bonus = 6 },
+                new { Key = "dire-crocodile", Modifier = 13, Bonus = 19 } })
+            {
+                CrocodilianRulesProfile rules =
+                    CrocodilianRulesPolicy.For(creature.Key);
+                if (rules.StrengthModifier != creature.Modifier)
+                    throw new InvalidOperationException(
+                        creature.Key + " has a Strength modifier of " +
+                        rules.StrengthModifier + ".");
+                if (CrocodilianRulesPolicy.DeathRollBonusFor(
+                        creature.Modifier) != creature.Bonus ||
+                        rules.DeathRollBonus != creature.Bonus)
+                    throw new InvalidOperationException(
+                        "The live derivation and the baseline must agree at " +
+                        "the printed Strength for " + creature.Key + ".");
+            }
+
+            // A Strength increase raises both, and keeps the one-times versus
+            // one-and-a-half distinction. A belt of +4 Strength is +2 modifier.
+            foreach (var raised in new[] {
+                new { Modifier = 6, Bite = 6, DeathRoll = 9 },
+                new { Modifier = 15, Bite = 15, DeathRoll = 22 } })
+            {
+                if (CrocodilianRulesPolicy.DeathRollBonusFor(raised.Modifier)
+                        != raised.DeathRoll)
+                    throw new InvalidOperationException(
+                        "At Strength modifier " + raised.Modifier +
+                        " the death roll adds " + raised.DeathRoll + ".");
+                if (CrocodilianRulesPolicy.DeathRollBonusFor(raised.Modifier)
+                        <= raised.Bite)
+                    throw new InvalidOperationException(
+                        "The death roll must stay above the bite as Strength " +
+                        "rises, or it has become the bite.");
+            }
+
+            // A Strength penalty lowers both. The extra half is not applied to
+            // a penalty - one and a half times multiplies a bonus - but the
+            // penalty is already inside the live bite, so the death roll falls
+            // with it rather than staying at the printed line.
+            foreach (var weakened in new[] {
+                new { Modifier = 0, DeathRoll = 0 },
+                new { Modifier = -1, DeathRoll = -1 },
+                new { Modifier = -5, DeathRoll = -5 } })
+                if (CrocodilianRulesPolicy.DeathRollBonusFor(weakened.Modifier)
+                        != weakened.DeathRoll)
+                    throw new InvalidOperationException(
+                        "At Strength modifier " + weakened.Modifier +
+                        " the death roll adds " + weakened.DeathRoll +
+                        ", because a penalty applies once.");
+            if (CrocodilianRulesPolicy.DeathRollExtraHalf(-5) != 0)
+                throw new InvalidOperationException(
+                    "A Strength penalty gets no extra half.");
+
+            // The extra half is exactly the difference between the two, at
+            // every modifier, which is the whole rule in one line.
+            for (int modifier = -6; modifier <= 20; modifier++)
+                if (CrocodilianRulesPolicy.DeathRollBonusFor(modifier) -
+                        modifier !=
+                        CrocodilianRulesPolicy.DeathRollExtraHalf(modifier))
+                    throw new InvalidOperationException(
+                        "The death roll is the bite's Strength plus the extra " +
+                        "half at modifier " + modifier + ".");
+        }
+
+        /// <summary>
         /// Every way a death roll is refused, one at a time.
         /// </summary>
         internal static void DeathRollIsRefusedWhereTheRulesRefuseIt()
