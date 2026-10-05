@@ -186,3 +186,59 @@ narrow ledger update was then accepted. Original icon baseline hashes, assignmen
 artwork and all earlier integrity checks remain enforced. The validator import
 created one local Python cache; that exact generated file was removed before the
 passing gate. No generated or proprietary artifacts enter the commit.
+
+## Whiteout policy/observation checkpoint
+
+Status: PARTIAL-SAFE-FOUNDATION; further bounded engine investigation remains in
+progress. No marker/buff blueprint, attack patch, public setting, icon, trait/feat
+selection, automatic racial grant or player acquisition path exists. New code is
+pure policy, per-owner state/replay models, and guarded read-only observation.
+
+The 34 focused policy cases cover Rain/Snow at Light through Storm, inactive
+clear/Normal/unmarked/Fog/VFX cases, 1/10/11/100 boundaries, independent exhaustive
+28% stacking, ordinary-miss short circuit, Seeking/IgnoreConcealment, both attack
+kinds, replay protection, independent unit state and lifecycle cleanup. No source
+or domain-test result is represented as an installed combat patch qualification.
+
+`Invoke-KmgGate.ps1 -Level Focused -Filter whiteout-policy`: 34/34 PASS, actual
+registered count **2,039**. `Invoke-KmgGate.ps1 -Level Sprint`: repository wrapper,
+2,039/2,039 full suite, clean Release and deterministic/strict package PASS.
+`Test-RuntimeScenarioPreflight.ps1`: **480 PASS**. The new positive preflight
+initially lacked required per-stage timeouts; it now supplies the same existing
+working-save timeout contract, retaining all negative save/parameter/exit cases.
+
+Guarded `observe-whiteout-weather -ExpectedVersion 0.0.141 -SaveName
+KMG_AUTOMATION_WORKING -TimeoutSeconds 900 -CompletionTimeoutSeconds 600
+-ExitAfterCompletion:$true` (exact artifact reuse, owned lease, dirty-source
+fingerprint and deployment receipt) produced:
+
+| Run evidence directory | Result | Exact finding |
+|---|---|---|
+| `20261005T0536125560594Z-observe-whiteout-weather` | FAIL | 5/6 assertions passed; the observer incorrectly required a weather-change notification while actual intensity stayed Clear; all restoration/write checks passed |
+| `20261005T0540413348351Z-observe-whiteout-weather` | PASS | 6/6; two native area unload/load pairs; zero weather-change notifications recorded without fabricating events |
+
+Both runs observed mansion `2849fdde28fe50f4d935bf2cf3405051`: indoor true,
+Normal/Clear; Oleg `ead426a6c23d39548a670ee515d77df4`: indoor false, visual
+Rain but CurrentWeather=ActualWeather=Clear and intensity 0. Returning to the
+mansion restored Normal/Clear. The proposed marker/weather predicate was false
+throughout. No active precipitation or combat effect has been qualified.
+
+The exact native attack-stage signature exists:
+`RuleAttackRoll.TryOvercomeTargetConcealmentAndMissChance(): bool`, private
+instance, zero parameters, IL length 149, native MVID
+`07fa1e4d-8618-41b3-9b8d-faa17d3b26f7`. This is a potential narrow patch boundary,
+not a missing-method blocker or proof that a patch is safe.
+
+PASS assembly: DLL `6a09eea3944a444a1007fc9c50a8297f74332e505ff8a5e97072ca9595681495`,
+MVID `da93a2fc-a3ba-4ed8-a2b7-337ec4769e00`, package
+`53eed3d5dc83c54cb4343b8b8f9a6e3ad39cda41e6d5a3fe37ecb524b39c2144`, source
+fingerprint `4b7cdadb234d7497b3495c6bd0c6faa130073a181e37b658439a29f9c1773311`.
+Both independent Steam runs auto-exited, observed zero save writes and verified
+exact restoration of their own live-mod backups. Successful repeat backup:
+`20261005T0540340565882Z`; owned lease released.
+
+Remaining investigation: native scene projection has an explicit
+`BlueprintAreaPart.OverrideWeather` branch even for indoor parts. Read-only
+registered area metadata can narrow whether there are authored precipitation
+cases suitable for further observation. The working save's Clear weather cannot
+by itself qualify an active-precipitation indoor decision or a new combat patch.

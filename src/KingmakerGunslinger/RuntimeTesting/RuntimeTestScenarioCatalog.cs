@@ -5,6 +5,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 {
     internal static class RuntimeTestScenarioCatalog
     {
+        internal const string ObserveWhiteoutWeather = "observe-whiteout-weather";
         internal const string ObserveModelDVendors = "observe-model-d-vendors";
         internal const string ObserveFirearmDescriptions = "observe-firearm-descriptions";
         internal const string ModLoadSmoke = "mod-load-smoke";
@@ -625,6 +626,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static readonly HashSet<string> Allowed =
             new HashSet<string>(StringComparer.Ordinal)
             {
+                ObserveWhiteoutWeather,
                 ObserveModelDVendors,
             ObserveFirearmDescriptions,
                 ModLoadSmoke,
