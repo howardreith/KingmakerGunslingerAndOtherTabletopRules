@@ -252,6 +252,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     owner.Descriptor.Stats.GetStat(stat).ModifiedValue).ToArray();
             ItemEntityWeapon bite = SummonLimbs.PrimaryWeapon(owner);
             ItemEntityWeapon tail = LiveLimbWeapons(owner).Single(value => !ReferenceEquals(value, bite));
+            var traitStats = CrocodilianAttackVisualPose.ResolveWeaponStats(owner.Blueprint);
+            Sprint16Check(assertions, rows, key + "-owned-visual-weapon-binding",
+                traitStats != null && ReferenceEquals(traitStats.OwningBlueprint, owner.Blueprint) &&
+                    ReferenceEquals(traitStats.Bite, bite.Blueprint) && ReferenceEquals(traitStats.Tail, tail.Blueprint),
+                new JObject { ["owner"] = owner.Blueprint.AssetGuid,
+                    ["bindingFound"] = traitStats != null,
+                    ["bindingSource"] = "declared combat-trait AddFacts, not unit components" },
+                "the original-view adapter resolves this exact creature's bite and tail from its owned trait");
             RuleCalculateWeaponStats biteStats = Rulebook.Trigger(new RuleCalculateWeaponStats(owner, bite, null));
             RuleCalculateWeaponStats tailStats = Rulebook.Trigger(new RuleCalculateWeaponStats(owner, tail, null));
             BaseDamage biteDamage = biteStats.DamageDescription[0].CreateDamage();

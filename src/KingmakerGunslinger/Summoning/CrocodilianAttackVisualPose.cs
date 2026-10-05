@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Linq;
 using Harmony12;
 using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Facts;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.RuleSystem;
@@ -55,7 +56,7 @@ namespace KingmakerGunslinger.Summoning
             SkinnedMeshRenderer renderer)
         {
             var stats = view == null || view.EntityData == null ? null :
-                view.EntityData.Blueprint.GetComponent<SummonCrocodilianWeaponStats>();
+                ResolveWeaponStats(view.EntityData.Blueprint);
             if (stats == null || !ReferenceEquals(stats.OwningBlueprint,
                     view.EntityData.Blueprint) || stats.Bite == null || stats.Tail == null ||
                 renderer == null || renderer.sharedMesh == null || renderer.rootBone == null ||
@@ -96,6 +97,16 @@ namespace KingmakerGunslinger.Summoning
                 Driver(weight.boneIndex1, weight.weight1, tail) ||
                 Driver(weight.boneIndex2, weight.weight2, tail) ||
                 Driver(weight.boneIndex3, weight.weight3, tail);
+        }
+
+        internal static SummonCrocodilianWeaponStats ResolveWeaponStats(BlueprintUnit unit)
+        {
+            if (unit == null) return null;
+            return CrocodilianVisualPolicy.SelectWeaponStats(unit,
+                (unit.AddFacts ?? Array.Empty<BlueprintUnitFact>()).Where(fact => fact != null)
+                    .Select(fact => (fact.ComponentsArray ?? Array.Empty<BlueprintComponent>())
+                        .OfType<SummonCrocodilianWeaponStats>().ToArray()),
+                value => value.OwningBlueprint);
         }
 
         private bool Driver(int index, float weight, bool tail)
