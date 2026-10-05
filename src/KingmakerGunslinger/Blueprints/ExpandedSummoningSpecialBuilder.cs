@@ -2622,6 +2622,15 @@ namespace KingmakerGunslinger.Blueprints
             bonus.Type = CombatManeuver.Grapple;
             bonus.Bonus = ExpandedSummoningSpecialProfiles.SummonGrabManeuverBonus;
             var components = new List<BlueprintComponent> { grab, bonus };
+            if (!string.IsNullOrEmpty(spec.DeathRollCreatureKey))
+            {
+                var weaponStats = ScriptableObject.CreateInstance<SummonCrocodilianWeaponStats>();
+                weaponStats.OwningBlueprint = unit;
+                weaponStats.Bite = (BlueprintItemWeapon)unit.Body.PrimaryHand;
+                weaponStats.Tail = unit.Body.AdditionalSecondaryLimbs.Single();
+                weaponStats.BaselineSize = unit.Size;
+                components.Add(weaponStats);
+            }
             if (spec.Swallowed != null)
                 components.Add(ScriptableObject.CreateInstance<
                     SummonSwallowLifecycleComponent>());

@@ -2,6 +2,17 @@
 
 ## Current Sprint 16 disposition, October 5
 
+Controlling update: candidate `0238bf03166dfb3dd7bf0205c12f82a2d2757caa`
+FAILED its first full runtime batch after source qualification. Sprint speed
+interactions/timeline, later swallowed tick ownership/cadence, crowd movement,
+original-view cleanup and selected damage-attribution cases passed; positive
+bite/Death Roll damage, HP and per-copy ranks did not. Native combat/UI/routes
+were not reached because the first fixture damaged in-memory area membership.
+No save write occurred. Exact restoration `20261005T1555173824556Z` PASS.
+Corrections compile and focused tests pass, but are NOT runtime-qualified. See
+[the detailed review](EXPANDED-SUMMONING-SPRINT16-HIDDEN-CANDIDATE-REVIEW.md).
+Historical NOT RUN statements below are superseded only to this measured extent.
+
 Crocodile retains its identity and fourteen published roots. Dire Crocodile
 retains six registered, withheld roots. Changed mechanics are **NOT QUALIFIED**:
 base-bite identity/weapon attribution and swallowed cadence still need live
