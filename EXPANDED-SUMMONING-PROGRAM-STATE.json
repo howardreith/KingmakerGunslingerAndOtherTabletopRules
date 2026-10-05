@@ -24,7 +24,7 @@
       15
     ],
     "currentSprint": 16,
-    "currentSubItem": "Sprint 16 NOT QUALIFIED. Authoritative runtime-correction base 390f9a39d9cce2a40e6528d3215a678d6cd15757; independent preflight hardening from preserved local safety checkpoint 3ebefe7 replayed after explicit owner synchronization order. No production correction discarded. Full reconciled candidate gates and corrected guarded hidden batch next. Acquire lease before actual live snapshot, deploy frozen artifact, restore exact snapshot. Stop on remote motion. Dire remains withheld; Sprint 17 follows only a qualified pushed Sprint 16 checkpoint. STOP after Phase 2B closure; Phase 2C unauthorized.",
+    "currentSubItem": "Sprint 16 reconciled batch FAIL; narrow repairs prepared; new exact-artifact qualification pending; Dire withheld; Sprint 17 not started",
     "lastGuardedRuntimePass": "20260930T1314329155573Z-disposable-expanded-summoning",
     "lastGuardedRestoration": "20261005T1555173824556Z-disposable-expanded-summoning-crocodilians.json",
     "giantWaspPublished": true,

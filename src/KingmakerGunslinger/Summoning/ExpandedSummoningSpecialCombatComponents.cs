@@ -103,8 +103,10 @@ namespace KingmakerGunslinger.Summoning
             if (!evt.WeaponDamageDiceOverride.HasValue)
             {
                 evt.WeaponDamageDiceOverride = WeaponDamageScaleTable.Scale(
-                    evt.Weapon.Blueprint.BaseDamage, evt.WeaponSize,
-                    BaselineSize, evt.Weapon.Blueprint);
+                    evt.Weapon.Blueprint.BaseDamage,
+                    (Size)CrocodilianRulesPolicy.ResolveWeaponSize(
+                        (int)Owner.State.Size, (int)evt.Weapon.Size,
+                        (int)evt.WeaponSize), BaselineSize, evt.Weapon.Blueprint);
                 evt.DoNotScaleDamage = true;
             }
         }
@@ -1371,6 +1373,13 @@ namespace KingmakerGunslinger.Summoning
             bool targetOwned = !crocodilian ||
                 ReferenceEquals(HeldTarget(owner), target);
             if (!targetOwned) return "refused:no-exact-held-target";
+            if (crocodilian && !CrocodilianRulesPolicy.CanMaintainLiveTarget(
+                    owner.Destroyed, owner.Descriptor.State.IsConscious,
+                    target.Destroyed, target.Descriptor.State.IsDead))
+            {
+                ReleaseLink(owner, target, grab, true);
+                return "released:invalid-crocodilian-owner-or-target";
+            }
             int roundsHeld = RoundsHeld(heldState);
             // Capture the choice entirely from pre-roll state. Claim the
             // round before the maneuver, so re-entry or replay cannot roll
@@ -1719,8 +1728,29 @@ namespace KingmakerGunslinger.Summoning
     /// creature that is gone.
     /// </summary>
     [Serializable]
-    public sealed class SummonSwallowLifecycleComponent : BuffLogic
+    public sealed class SummonSwallowLifecycleComponent : BuffLogic,
+        IUnitHandler, IGlobalSubscriber
     {
+        public void HandleUnitSpawned(UnitEntityData unit) { }
+        public void HandleUnitDestroyed(UnitEntityData unit) { HandleUnitDeath(unit); }
+        public void HandleUnitDeath(UnitEntityData unit)
+        {
+            UnitEntityData owner = Owner == null ? null : Owner.Unit;
+            // Existing worm/flytrap graphs keep their qualified native paths.
+            // Native swallow only watches the source's death, so Dire also
+            // releases its exact swallowed victim at that victim's boundary.
+            if (owner == null || owner.Blueprint == null ||
+                owner.Blueprint.name != "KMG_Summoning_Unit_DireCrocodile" ||
+                unit == null) return;
+            SummonGrabComponent grab = SummonGrabComponent.Find(owner);
+            UnitPartSwallowWhole part = owner.Get<UnitPartSwallowWhole>();
+            if (grab == null || part == null || !part.SwallowedUnits.Any(value =>
+                    ReferenceEquals(value.Value, unit))) return;
+            part.Free(unit);
+            SummonGrappleLinks.Release(owner, unit);
+            if (grab.SwallowedBuff != null) unit.Descriptor.Buffs.RemoveFact(grab.SwallowedBuff);
+        }
+
         public override void OnTurnOff()
         {
             base.OnTurnOff();
@@ -1758,7 +1788,51 @@ namespace KingmakerGunslinger.Summoning
 
         public void OnAreaScenesLoaded() { }
 
-        public void OnAreaLoadingComplete() { Sweep(false); }
+        public void OnAreaLoadingComplete()
+        {
+            if (Game.Instance != null && Game.Instance.State != null &&
+                Game.Instance.State.Units != null)
+                ResetLoadedGrapples(Game.Instance.State.Units.All);
+            Sweep(false);
+        }
+
+        // Native parts and their state buffs can survive deserialization even
+        // though the session link is not reconstructible. Reset only KMG-owned
+        // relationships, including nonparty summons/prey, at the load boundary.
+        internal static void ResetLoadedGrapples(IEnumerable<UnitEntityData> units)
+        {
+            UnitEntityData[] all = (units ?? Enumerable.Empty<UnitEntityData>())
+                .Where(value => value != null && value.Descriptor != null).ToArray();
+            foreach (UnitEntityData owner in all.Where(IsKmgSummon))
+            {
+                SummonGrabComponent grab = SummonGrabComponent.Find(owner);
+                UnitPartSwallowWhole swallower = owner.Get<UnitPartSwallowWhole>();
+                if (swallower != null)
+                    foreach (UnitReference reference in swallower.SwallowedUnits.ToArray())
+                    {
+                        UnitEntityData target = reference.Value;
+                        swallower.Free(reference);
+                        if (target != null && grab != null && grab.SwallowedBuff != null)
+                            target.Descriptor.Buffs.RemoveFact(grab.SwallowedBuff);
+                    }
+                foreach (UnitEntityData target in all)
+                {
+                    UnitPartGrappleTarget held = target.Get<UnitPartGrappleTarget>();
+                    bool exactNative = held != null && ReferenceEquals(held.Initiator.Value, owner);
+                    bool exactMulti = grab != null && grab.MultiLink && ReferenceEquals(
+                        SummonHeldComponent.HolderOf(target, grab.GrappledBuff), owner);
+                    if (!exactNative && !exactMulti) continue;
+                    SummonHoldComponent.ReleaseLink(owner, target, grab, true);
+                    if (exactNative && grab != null && grab.GrappledBuff != null)
+                        target.Descriptor.Buffs.RemoveFact(grab.GrappledBuff);
+                }
+                // Native OnRemove releases the conditions installed by Init.
+                owner.Remove<UnitPartGrappleInitiator>();
+                if (grab != null && grab.HoldBuff != null)
+                    owner.Descriptor.Buffs.RemoveFact(grab.HoldBuff);
+                SummonGrappleLinks.ReleaseAll(owner);
+            }
+        }
 
         /// <summary>
         /// Releases party members held or swallowed by a KMG summon (always

@@ -243,6 +243,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["cmd"] = cmd.Describe("CMD"), ["trip"] = trip.Describe("trip"), ["deniedDexRecovered"] = deniedDex,
                 ["biteAttack"] = biteAttack, ["tailAttack"] = tailAttack,
                 ["bite"] = Sprint16DamageLine(biteDamage), ["tail"] = Sprint16DamageLine(tailDamage),
+                ["biteEntitySize"] = bite.Size.ToString(), ["biteRuleSize"] = biteStats.WeaponSize.ToString(),
+                ["tailEntitySize"] = tail.Size.ToString(), ["tailRuleSize"] = tailStats.WeaponSize.ToString(),
                 ["tailSecondary"] = tail.IsSecondary,
                 ["tailSecondaryRuleOverride"] = tailStats.SecondaryWeapon,
                 ["biteImprovedCritical"] = biteStats.DoubleCriticalEdge,
@@ -655,7 +657,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observer.Attacks.Count == 0 && outcome.StartsWith("death-roll:", StringComparison.Ordinal),
                     new JObject { ["held"] = held, ["dead"] = dead, ["free"] = free,
                         ["deadOnDamageReturn"] = deadOnDamageReturn,
-                        ["outcome"] = outcome, ["damageEvents"] = observer.Damage.Count },
+                        ["outcome"] = outcome, ["damageEvents"] = observer.Damage.Count,
+                        ["damage"] = new JArray(observer.Damage.Select(Sprint16DamageEvent)) },
                     "one lethal Death Roll; exact native per-unit life tick then production hold tick releases reciprocal state without more damage");
             }
             finally
