@@ -1,6 +1,13 @@
 # Expanded Summoning Phase 2 evidence index
 
-Current Sprint 16 fifth reconciled batch: **FAIL**, no publication.
+Current Sprint 16 laptop native-faction batch: **FAIL 188/208**, no publication.
+[Exact bc36 artifact, six runs, classified failures and exact restoration](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-NATIVE-FACTION-REVIEW.md).
+Smoke 11/11; crowd 20/20; prepare 9/9; cleanup 9/9; fresh absence 5/5.
+Working save is clean; actual installation restored; runtime lease released.
+PR #26 is the sole active line; PR #27 is frozen salvage-only. The controlling
+state supersedes every historical branch/Phase 2C authority statement below.
+
+Historical Sprint 16 fifth reconciled batch: **FAIL**, no publication.
 [Exact artifact, passed crowd/persistence and remaining strict manual-control gate](planning/EXPANDED-SUMMONING-SPRINT16-FIFTH-RECONCILED-BATCH-REVIEW.md).
 Main 154/155; combat matrix did not execute. Actual installation restored,
 lease released, closed working save clean. Native faction fixture/diagnostics
