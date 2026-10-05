@@ -61,6 +61,11 @@ namespace KingmakerGunslinger.RuntimeTesting
         private UnitEntityData _crocCombatOwner;
         private UnitReference _crocCombatMasterBefore;
         private bool _crocCombatCapitalMaster;
+        private BlueprintFaction _crocCombatFactionBefore;
+        private BlueprintFaction[] _crocCombatAttackFactionsBefore;
+        private bool _crocCombatFactionChanged;
+        private JObject _crocCombatControlBefore;
+        private JObject _crocCombatControlAfter;
         private int _crocCombatControlRules;
         private UnitEntityData[] _crocCombatAwakeBefore;
         private Sprint16RuleObserver _crocCombatObserver;
@@ -233,8 +238,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException("Manual native summon rule/control mismatch: rules=" +
                         control.Matched + ";part=" + (part != null) + ";flag=" +
                         (part != null && part.IsDirectlyControllable));
+                _crocCombatControlBefore = Sprint16ControlObservation(_crocCombatOwner);
                 _crocCombatMasterBefore = _crocCombatOwner.Descriptor.Master;
                 _crocCombatCapitalMaster = false;
+                _crocCombatFactionBefore = _crocCombatOwner.Faction;
+                _crocCombatAttackFactionsBefore = _crocCombatOwner.AttackFactions.ToArray();
+                _crocCombatFactionChanged = false;
+                // RuleSummonUnit matches attack factions/group, not the native
+                // faction identity. Outside the capital the control predicate
+                // also requires a controllable faction. Switch only this owned
+                // manual fixture through the existing native API; keep its
+                // summon identity and attack-faction differences intact.
+                if (!_crocCombatOwner.Faction.IsDirectlyControllable &&
+                    !(Game.Instance.CurrentlyLoadedArea != null &&
+                        Game.Instance.CurrentlyLoadedArea.IsCapital))
+                {
+                    UnitEntityData main = Game.Instance.Player.MainCharacter.Value;
+                    BlueprintFaction faction = main == null ? null : main.Faction;
+                    if (faction == null || !faction.IsDirectlyControllable)
+                        throw new InvalidOperationException("No exact controllable player faction: " +
+                            _crocCombatControlBefore.ToString(Formatting.None));
+                    _crocCombatFactionChanged = true;
+                    _crocCombatOwner.Descriptor.SwitchFactions(faction, false);
+                }
                 // The capital's native control predicate additionally requires
                 // MainCharacter or its pet. Give only this disposable manual
                 // actor that identity; retain its native summoner link. Never
@@ -245,8 +271,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _crocCombatOwner.Descriptor.Master = Game.Instance.Player.MainCharacter;
                     _crocCombatCapitalMaster = true;
                 }
+                _crocCombatControlAfter = Sprint16ControlObservation(_crocCombatOwner);
                 if (!_crocCombatOwner.IsDirectlyControllable)
-                    throw new InvalidOperationException("Manual fixture fails the native area/faction control predicate.");
+                    throw new InvalidOperationException("Manual fixture fails the native control predicate; before=" +
+                        _crocCombatControlBefore.ToString(Formatting.None) + ";after=" +
+                        _crocCombatControlAfter.ToString(Formatting.None));
             }
             else _crocCombatOwner = CastExpandedSummoningOwnTier(_crocCombatFixture, cell[0]);
             // Never empty an AI cell's action list. The manual cell explicitly
@@ -302,6 +331,28 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (!manual)
                 _crocCombatOwner.CombatState.AIData.NextCommandTime = float.MaxValue;
             Game.Instance.IsPaused = false;
+        }
+
+        private static JObject Sprint16ControlObservation(UnitEntityData unit)
+        {
+            var area = Game.Instance.CurrentlyLoadedArea;
+            var part = unit.Get<UnitPartSummonedMonster>();
+            return new JObject {
+                ["area"] = area == null ? null : area.AssetGuid,
+                ["capital"] = area != null && area.IsCapital,
+                ["faction"] = unit.Faction == null ? null : unit.Faction.AssetGuid,
+                ["factionControllable"] = unit.Faction != null && unit.Faction.IsDirectlyControllable,
+                ["summonPartControllable"] = part != null && part.IsDirectlyControllable,
+                ["finallyDead"] = unit.Descriptor.State.IsFinallyDead,
+                ["panicked"] = unit.Descriptor.State.IsPanicked,
+                ["detached"] = unit.IsDetached,
+                ["preventDirectControl"] = (bool)unit.PreventDirectControl,
+                ["exCompanion"] = Game.Instance.Player.ExCompanions.Any(value =>
+                    ReferenceEquals(value.Value, unit.Descriptor.Master.Value ?? unit)),
+                ["master"] = unit.Descriptor.Master.Value == null ? null : unit.Descriptor.Master.Value.UniqueId,
+                ["summoner"] = part == null || part.Summoner == null ? null : part.Summoner.UniqueId,
+                ["controllable"] = unit.IsDirectlyControllable
+            };
         }
 
         private bool StepSprint16CombatTurn()
@@ -454,6 +505,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["manualNativeAttackAttempts"] = _crocCombatManualAttackAttempts,
                     ["nativeManualControlRules"] = _crocCombatControlRules,
                     ["disposableCapitalPetMaster"] = _crocCombatCapitalMaster,
+                    ["disposableManualFactionChanged"] = _crocCombatFactionChanged,
+                    ["controlBefore"] = _crocCombatControlBefore,
+                    ["controlAfter"] = _crocCombatControlAfter,
                     ["nativeSummonerRetained"] = _crocCombatOwner.Get<UnitPartSummonedMonster>() != null &&
                         ReferenceEquals(_crocCombatOwner.Get<UnitPartSummonedMonster>().Summoner,
                             _crocCombatFixture.Caster),
@@ -598,6 +652,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_crocCombatCapitalMaster)
                     _crocCombatOwner.Descriptor.Master = _crocCombatMasterBefore;
                 _crocCombatCapitalMaster = false;
+                if (_crocCombatFactionChanged)
+                {
+                    _crocCombatOwner.Descriptor.SwitchFactions(_crocCombatFactionBefore, false);
+                    _crocCombatOwner.AttackFactions.Match(_crocCombatAttackFactionsBefore);
+                    if (!ReferenceEquals(_crocCombatOwner.Faction, _crocCombatFactionBefore) ||
+                        !_crocCombatOwner.AttackFactions.SequenceEqual(_crocCombatAttackFactionsBefore))
+                        throw new InvalidOperationException("Disposable manual faction restoration failed.");
+                }
+                _crocCombatFactionChanged = false;
+                _crocCombatControlBefore = null;
+                _crocCombatControlAfter = null;
                 _crocCombatControlRules = 0;
                 DisposeExpandedSummoningUnits(_crocCombatFixture.Created, new[] { _crocCombatOwner });
             }
