@@ -1,5 +1,25 @@
 # Expanded Summoning Phase 2 journal
 
+## October 5 targeted crocodilian persistence fixture (NOT RUN)
+
+Added the closed `persistenceScope=crocodilians` option to the existing guarded
+working-save prepare/verify-cleanup/verify-absent trio. It retains the exact
+working descriptor, write sentinel and native SaveGame boundary. The historical
+fixture is unchanged. Five disposable summons carry one active and one
+cooldown-only copy of each crocodilian, a Crocodile hold and a Dire swallowed
+Wolf. The short state is inspected with game time paused, not extended. After
+fresh load, the checks require exact identity/context/duration, skill ranks and
+clean totals, buff source/deadlines, native expiry, visual reattachment and the
+accepted clean session-link reset; cleanup is saved only after every check
+passes. Prepared Stealth accounts for the live grapple Dexterity penalty.
+
+Request round trips and 19 fail-closed cases PASS; original 11 wiring checks
+PASS. Focused 215/215 (2017 registered), static/icon validators and incremental
+exact-reference Release compile PASS. Initial missing bootstrap import was
+corrected. No runtime launch or save write; NOT QUALIFIED. Next: visible
+consumer identities, contact/lifecycle/resource controls and the 14+6 routes,
+then freeze and run the full hidden candidate batch.
+
 ## October 5 candidate mechanics and native-command fixtures (NOT RUN)
 
 Extended the crocodilian-only guarded scenario with exact live profiles and

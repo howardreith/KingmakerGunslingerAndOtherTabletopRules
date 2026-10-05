@@ -3824,6 +3824,11 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private void StartExpandedSummoningPersistence()
         {
+            if (Sprint16PersistenceScope)
+            {
+                StartSprint16Persistence();
+                return;
+            }
             UnitEntityData[] party = Game.Instance.Player.Party.Where(value =>
                 value != null && value.Descriptor != null).ToArray();
             if (party.Length != WorkingSaveSmokeScenario.ExpectedPartyCount)
@@ -4104,6 +4109,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         false,
                         out _expandedSummoningPersistenceAntVenomValid);
             }
+            BeginExpandedSummoningPersistenceSave();
+        }
+
+        private void BeginExpandedSummoningPersistenceSave()
+        {
             _workingSaveSmoke.ArmExactWorkingSaveWrite();
             MethodInfo saveGame = typeof(Game).GetMethods(BindingFlags.Instance |
                 BindingFlags.Public | BindingFlags.NonPublic).Single(value =>
@@ -4891,6 +4901,11 @@ namespace KingmakerGunslinger.RuntimeTesting
         private void CompleteExpandedSummoningPersistence(string status,
             string warning)
         {
+            if (Sprint16PersistenceScope)
+            {
+                CompleteSprint16Persistence(status, warning);
+                return;
+            }
             WorkingSaveSmokeEvidence evidence = _workingSaveSmoke.Stop();
             bool prepare = _request.Scenario == RuntimeTestScenarioCatalog
                 .WorkingSaveExpandedSummoningPrepare;

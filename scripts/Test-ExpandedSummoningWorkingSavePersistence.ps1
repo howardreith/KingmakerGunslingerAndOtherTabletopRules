@@ -73,3 +73,53 @@ if ($failed.Count -ne 0) {
     throw "Expanded Summoning working-save persistence tests failed: $($failed -join ', ')"
 }
 Write-Host "Expanded Summoning working-save persistence tests passed: $($checks.Count)"
+
+# Exercise the request contract, not source spelling: the closed fixture scope
+# must survive serialization, while every unrelated parameter remains denied.
+. (Join-Path $PSScriptRoot 'RuntimeAutomation.Common.ps1')
+$requestBase = @{
+    ExpectedVersion = '0.0.141'; TimeoutSeconds = 300
+    CatalogTimeoutSeconds = 180; SelectionTimeoutSeconds = 300
+    CompletionTimeoutSeconds = 180; MainMenuTimeoutSeconds = 180
+    ActionResolutionTimeoutSeconds = 180; ActionInvocationTimeoutSeconds = 30
+    DescriptorResolutionTimeoutSeconds = 30; LoadEntryTimeoutSeconds = 30
+    FingerprintTimeoutSeconds = 180; ExitAfterCompletion = $true
+    EvidenceDirectory = (Join-Path $script:KmgRuntimeEvidenceRoot 'crocodilian-persistence-request-test')
+}
+foreach ($scenario in $scenarios) {
+    $targeted = New-KmgRuntimeRequest @requestBase -Scenario $scenario -Parameters @{
+        saveName = 'KMG_AUTOMATION_WORKING'; persistenceScope = 'crocodilians' }
+    if ($targeted.parameters.Count -ne 2 -or
+        $targeted.parameters.saveName -cne 'KMG_AUTOMATION_WORKING' -or
+        $targeted.parameters.persistenceScope -cne 'crocodilians') {
+        throw "Targeted persistence scope did not round-trip for $scenario."
+    }
+    $historical = New-KmgRuntimeRequest @requestBase -Scenario $scenario -Parameters @{
+        saveName = 'KMG_AUTOMATION_WORKING' }
+    if ($historical.parameters.Count -ne 1) { throw 'The historical fixture was changed.' }
+    foreach ($bad in @(
+        @{ saveName = 'KMG_AUTOMATION_BASELINE'; persistenceScope = 'crocodilians' },
+        @{ saveName = 'KMG_AUTOMATION_WORKING'; persistenceScope = 'Crocodilians' },
+        @{ saveName = 'KMG_AUTOMATION_WORKING'; persistenceScope = 'wolf' },
+        @{ saveName = 'KMG_AUTOMATION_WORKING'; persistenceScope = @('crocodilians') },
+        @{ saveName = 'KMG_AUTOMATION_WORKING'; persistenceScope = 'crocodilians'; extra = 'untrusted' }
+    )) {
+        $rejected = $false
+        try { $null = New-KmgRuntimeRequest @requestBase -Scenario $scenario -Parameters $bad }
+        catch { $rejected = $true }
+        if (-not $rejected) { throw "Targeted persistence accepted an invalid request for $scenario." }
+    }
+    $manualExit = $requestBase.Clone()
+    $manualExit.ExitAfterCompletion = $false
+    $rejected = $false
+    try { $null = New-KmgRuntimeRequest @manualExit -Scenario $scenario -Parameters @{
+        saveName = 'KMG_AUTOMATION_WORKING'; persistenceScope = 'crocodilians' } }
+    catch { $rejected = $true }
+    if (-not $rejected) { throw 'Targeted persistence accepted a non-exiting request.' }
+}
+$rejected = $false
+try { $null = New-KmgRuntimeRequest @requestBase -Scenario 'working-save-smoke' -Parameters @{
+    saveName = 'KMG_AUTOMATION_WORKING'; persistenceScope = 'crocodilians' } }
+catch { $rejected = $true }
+if (-not $rejected) { throw 'The targeted fixture scope leaked into another scenario.' }
+Write-Host 'PASS crocodilian persistence request: three exact scopes, historical defaults and 19 fail-closed cases.'
