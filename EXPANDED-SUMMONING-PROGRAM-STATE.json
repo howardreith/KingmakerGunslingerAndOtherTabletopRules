@@ -28,7 +28,7 @@
       15
     ],
     "currentSprint": 16,
-    "currentSubItem": "Sprint 16 NOT QUALIFIED. Research 3d0612f1 passed full wrapper, 2012 tests, exact Release and strict package but guarded survey 20261005T1237562519865Z failed at bootstrap: unmapped natural armor 15. Exact live restoration verified by 20261005T1240221065263Z record. Native +15 binding now shared with domain validation, focused 25/25 PASS (2013 registered). Retry narrow census/graph/skills/rig survey, then finish original visuals and full candidate scenarios. Interior decision remains conditional. Dire Crocodile alone withheld; Sprints 9-15 remain qualified and published.",
+    "currentSubItem": "Sprint 16 NOT QUALIFIED. Research 8250ac8f passed full wrapper, 2013 tests, exact clean Release, strict package and narrow survey 20261005T1254571775971Z (7/7). Exact skills, swallowed graph and private 41-bone rig capture pass. Interior limitation accepted after live census; Run is an audited omission. Exact restoration 20261005T1258077246783Z verified. Next original visuals, bounded AI gate, comprehensive mechanics/cadence/Sprint/lifecycle/persistence candidate. Dire alone withheld; Sprints 9-15 stay qualified and published.",
     "lastGuardedRuntimePass": "20260930T1314329155573Z-disposable-expanded-summoning",
     "lastGuardedRestoration": "20260930T1318353465055Z-disposable-expanded-summoning.json",
     "giantWaspPublished": true,
@@ -52,9 +52,17 @@
     "ownerAcceptedEngineLimitation": "ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD",
     "ownerAcceptedEngineLimitations": [
       "ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD",
-      "PASSIVE_CREATURE_SENSES_UNMODELED"
+      "PASSIVE_CREATURE_SENSES_UNMODELED",
+      "SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED"
     ],
-    "swallowInteriorDecision": "SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED: owner authorization conditional on live component/type census; NOT YET ACTIVATED",
+    "swallowInteriorDecision": "OwnerAcceptedEngineLimitation: SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED; live census activation condition satisfied by 20261005T1254571775971Z. No custom interior, substitute check, or claim of working AC/HP. All non-interior gates remain mandatory.",
+    "sprint16Research": {
+      "source": "8250ac8f8369699af7825459bc860682e3e5eae5",
+      "run": "20261005T1254571775971Z-disposable-expanded-summoning-crocodilians",
+      "status": "PASS 7/7; RESEARCH ONLY",
+      "restoration": "20261005T1258077246783Z-disposable-expanded-summoning-crocodilians.json",
+      "curatedEvidence": "planning/EXPANDED-SUMMONING-SPRINT16-SURVEY-REVIEW.md"
+    },
     "crocodilianRiderDecision": "OwnerAcceptedAdaptation: SWALLOW_ELIGIBLE_TARGET_ELSE_DEATH_ROLL; bounded existing held-target command-seam audit found no safe choice carrier. Maintain-path runtime proof pending.",
     "sprint16TechnicalQualified": false,
     "sprint16Published": false,
@@ -517,6 +525,15 @@
       "acceptedUtc": "2026-10-03",
       "summary": "Kingmaker models none of Scent, Darkvision or Low-light Vision. Those traits are omitted wherever a bounded native audit proves no faithful carrier exists. No substitute sense, no OverrideVisionRange as darkvision, no new sense subsystem, and no claim that the omitted traits work. A creature is never kept hidden for one of these three alone.",
       "evidence": "senseComponentCensus=Blindsensex74/OverrideVisionRangex23 over every component on every loaded blueprint; visionEnum=<none> on BlueprintUnit, UnitEntityData and UnitDescriptor."
+    },
+    {
+      "label": "SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED",
+      "acceptedUtc": "2026-10-05",
+      "mode": "unmodeled",
+      "scope": ["dire-crocodile", "purple-worm"],
+      "summary": "No attackable interior target, interior AC, cumulative HP or damage-based cut-free path. No custom subsystem or substitute check. Size, initial grab/maintain/bite, later damage, native escape, ownership and cleanup remain mandatory.",
+      "evidence": "20261005T1254571775971Z-disposable-expanded-summoning-crocodilians",
+      "censusSha256": "9A20AC89EA8F2B330FD050525C84786B94CE07998888D2EB4FA63E06ED9A120C"
     }
   ]
 }
