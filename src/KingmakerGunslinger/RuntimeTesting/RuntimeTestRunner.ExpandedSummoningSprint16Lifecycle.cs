@@ -33,6 +33,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static UnitEntityData _sprint16LifecycleTarget;
         private static int _sprint16LifecycleOwnerTicks;
         private static int _sprint16LifecycleTargetTicks;
+        private static int _sprint16LifecycleTargetTicksAfterSourceDeath;
 
         // Request-local read-only witness. Never invokes a controller or
         // alters its arguments, return value, relationship or damage.
@@ -40,7 +41,12 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             if (unit == null) return;
             if (ReferenceEquals(unit, _sprint16LifecycleOwner)) _sprint16LifecycleOwnerTicks++;
-            if (ReferenceEquals(unit, _sprint16LifecycleTarget)) _sprint16LifecycleTargetTicks++;
+            if (ReferenceEquals(unit, _sprint16LifecycleTarget))
+            {
+                _sprint16LifecycleTargetTicks++;
+                if (_sprint16LifecycleOwner != null && _sprint16LifecycleOwner.Descriptor.State.IsDead)
+                    _sprint16LifecycleTargetTicksAfterSourceDeath++;
+            }
         }
 
         private IEnumerable<int> ReviewSprint16Lifecycle(ExpandedSummoningCorrectionFixture fixture)
@@ -135,6 +141,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _sprint16LifecycleOwner = owner;
                         _sprint16LifecycleTarget = target;
                         _sprint16LifecycleOwnerTicks = _sprint16LifecycleTargetTicks = 0;
+                        _sprint16LifecycleTargetTicksAfterSourceDeath = 0;
                         TimeSpan clockBefore = Game.Instance.Player.GameTime;
                         if (boundary == "source-death") GameHelper.KillUnit(owner, fixture.Hostile);
                         else if (boundary == "target-death") GameHelper.KillUnit(target, owner);
@@ -149,10 +156,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                         else owner.Get<UnitPartSwallowWhole>().SpitOut(true);
                         Game.Instance.IsPaused = false;
                         DateTime until = DateTime.UtcNow.AddSeconds(15);
-                        int frames = 0, pausedFrames = 0, targetAwakeFrames = 0;
+                        int frames = 0, pausedFrames = 0, resumedDeathPauses = 0, targetAwakeFrames = 0;
                         for (; frames < 1200; frames++)
                         {
-                            if (Game.Instance.IsPaused) pausedFrames++;
+                            if (Game.Instance.IsPaused)
+                            {
+                                pausedFrames++;
+                                // 19784057 witnessed 343 paused frames after
+                                // only one observed controller update. Resume
+                                // this owned death drill without changing any
+                                // global auto-pause setting or invoking cleanup.
+                                if (CrocodilianLifecycleReviewPolicy.CanResumeAfterRequestedDeath(
+                                    ownedPair, boundary, owner.Descriptor.State.IsDead, target.Descriptor.State.IsDead))
+                                {
+                                    Game.Instance.IsPaused = false;
+                                    resumedDeathPauses++;
+                                }
+                            }
                             if (Game.Instance.State.AwakeUnits.Contains(target)) targetAwakeFrames++;
                             bool reached = Sprint16RelationshipReleased(owner, target, grab) &&
                                 (boundary != "source-death" || owner.Descriptor.State.IsDead) &&
@@ -163,7 +183,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         }
                         TimeSpan clockAfter = Game.Instance.Player.GameTime;
                         bool nativeDeathWitness = key != "crocodile" || boundary != "source-death" ||
-                            _sprint16LifecycleTargetTicks > 0 && clockAfter > clockBefore;
+                            _sprint16LifecycleTargetTicksAfterSourceDeath > 0 && clockAfter > clockBefore;
                         Game.Instance.IsPaused = pause;
                         bool free = Sprint16RelationshipReleased(owner, target, grab);
                         bool boundaryReached = boundary == "source-death" ? owner.Descriptor.State.IsDead :
@@ -180,7 +200,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     ["awakeAdded"] = new JArray(awakeAdded.Select(value => value.UniqueId)),
                                     ["ownerGrappleTicks"] = _sprint16LifecycleOwnerTicks,
                                     ["targetGrappleTicks"] = _sprint16LifecycleTargetTicks,
+                                    ["targetTicksAfterSourceDeath"] = _sprint16LifecycleTargetTicksAfterSourceDeath,
                                     ["frames"] = frames, ["pausedFrames"] = pausedFrames,
+                                    ["resumedOwnedDeathPauses"] = resumedDeathPauses,
                                     ["targetAwakeFrames"] = targetAwakeFrames,
                                     ["clockBefore"] = clockBefore.ToString(), ["clockAfter"] = clockAfter.ToString(),
                                     ["advancedSeconds"] = (clockAfter - clockBefore).TotalSeconds,

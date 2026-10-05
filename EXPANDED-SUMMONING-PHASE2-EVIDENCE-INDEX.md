@@ -1,6 +1,12 @@
 # Expanded Summoning Phase 2 evidence index
 
-[Current exact 4c3 laptop batch](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-BATCH-REVIEW.md):
+[Current exact 197 laptop batch and bounded pause correction](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-NATIVE-UPDATE-BATCH-REVIEW.md):
+**NOT QUALIFIED**, main 208/209; all 55 combat assertions and five other stages
+PASS, exact restoration and fresh save absence verified.
+[Exact hashes](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-NATIVE-UPDATE-BATCH-EVIDENCE.json).
+Fixture-only pause correction needs a new exact-head gate.
+
+[Historical exact 4c3 laptop batch](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-BATCH-REVIEW.md):
 **NOT QUALIFIED**, main 204/209; other five stages PASS, exact restoration.
 [Curated artifact/request/result/restoration hashes](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-BATCH-EVIDENCE.json).
 Four Dire tail-root bindings and one native-update-context lifecycle case

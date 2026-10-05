@@ -150,6 +150,7 @@
     <Compile Include="Summoning\Sprint14BonePolicy.cs" />
     <Compile Include="Summoning\CrocodilianVisualPolicy.cs" />
     <Compile Include="RuntimeTesting\CrocodilianCommandReviewPolicy.cs" />
+    <Compile Include="RuntimeTesting\CrocodilianLifecycleReviewPolicy.cs" />
     <Compile Include="Summoning\CrocodilianAttackVisualPose.cs" />
     <Compile Include="Summoning\StirgeAttachPolicy.cs" />
     <Compile Include="Summoning\SummonInjuryPoison.cs" />
