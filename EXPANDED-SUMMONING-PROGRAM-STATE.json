@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "program": "Kingmaker Expanded Summoning Ideal Roster",
   "phase2Mission": {
-    "authority": "Owner takeover order 2026-10-05 and C:/Dev/KingmakerGunslingerLab/handoffs/Kingmaker_Codex_TwoDay_Autonomous_Phase2_Mission.md",
+    "authority": "Owner Phase 2B-only closure and synchronization orders 2026-10-05; committed contracts (external mission file absent locally)",
     "authorizedSprints": [
       9,
       10,
@@ -12,11 +12,7 @@
       14,
       15,
       16,
-      17,
-      18,
-      19,
-      20,
-      21
+      17
     ],
     "completedSprints": [
       9,
@@ -28,7 +24,7 @@
       15
     ],
     "currentSprint": 16,
-    "currentSubItem": "Sprint 16 NOT QUALIFIED. Hidden candidate 0238bf03166dfb3dd7bf0205c12f82a2d2757caa passed full 2018/2018 domain/repository/clean Release/strict package gates, then failed mechanics 55/19, visual 16/4, prepare 6/3 and cleanup 5/4; final absence passed 5/0. Both save-writing stages refused to save. Exact baseline restoration 20261005T1555173824556Z verified; no game/lock remains. Containing correction checkpoint fixes per-copy ranks, printed racial HP, native bite multiplier/dice scaling, immunity and fixture defects; focused 216/216 and incremental compile PASS. Corrected runtime NOT RUN. Next corrected hidden candidate gate/batch. Dire alone withheld; Sprints 9-15 remain qualified/published.",
+    "currentSubItem": "Sprint 16 NOT QUALIFIED. Authoritative runtime-correction base 390f9a39d9cce2a40e6528d3215a678d6cd15757; independent preflight hardening from preserved local safety checkpoint 3ebefe7 replayed after explicit owner synchronization order. No production correction discarded. Full reconciled candidate gates and corrected guarded hidden batch next. Acquire lease before actual live snapshot, deploy frozen artifact, restore exact snapshot. Stop on remote motion. Dire remains withheld; Sprint 17 follows only a qualified pushed Sprint 16 checkpoint. STOP after Phase 2B closure; Phase 2C unauthorized.",
     "lastGuardedRuntimePass": "20260930T1314329155573Z-disposable-expanded-summoning",
     "lastGuardedRestoration": "20261005T1555173824556Z-disposable-expanded-summoning-crocodilians.json",
     "giantWaspPublished": true,
@@ -79,7 +75,9 @@
     "retainedNativeWrappers": 29,
     "totalVisibleChoices": 999,
     "sprint15Published": true,
-    "sprint15Status": "COMPLETE AND PUBLISHED"
+    "sprint15Status": "COMPLETE AND PUBLISHED",
+    "phase2CAuthorized": false,
+    "sprint16Reconciliation": "planning/EXPANDED-SUMMONING-PHASE2B-RECONCILIATION-2026-10-05.md"
   },
   "charter": {
     "title": "Kingmaker_Expanded_Summoning_Implementation_Charter_v1.0.docx",
@@ -532,7 +530,10 @@
       "label": "SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED",
       "acceptedUtc": "2026-10-05",
       "mode": "unmodeled",
-      "scope": ["dire-crocodile", "purple-worm"],
+      "scope": [
+        "dire-crocodile",
+        "purple-worm"
+      ],
       "summary": "No attackable interior target, interior AC, cumulative HP or damage-based cut-free path. No custom subsystem or substitute check. Size, initial grab/maintain/bite, later damage, native escape, ownership and cleanup remain mandatory.",
       "evidence": "20261005T1254571775971Z-disposable-expanded-summoning-crocodilians",
       "censusSha256": "9A20AC89EA8F2B330FD050525C84786B94CE07998888D2EB4FA63E06ED9A120C"
