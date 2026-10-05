@@ -18,6 +18,11 @@ No other native mapping changes. Focused recheck: 25/25 PASS, 2013 registered.
 Next: retry the narrow survey with an explicit 300-second guarded allowance
 for the installed compatibility stack's bootstrap, then finish assets/scenarios.
 
+The first retry of that correction stopped in repository validation before
+deployment: the active static validator still pinned 2012 after the new test
+made 2013. Corrected that gate metadata; no bypass. Its not-needed restoration
+record is `20261005T1246003806699Z-disposable-expanded-summoning-crocodilians.json`.
+
 ## October 5 survey preflight: test-contract reconciliation
 
 The clean source preflight at `e9dae664a8f46ac68ca4d5244fac33db97c76c1c`
