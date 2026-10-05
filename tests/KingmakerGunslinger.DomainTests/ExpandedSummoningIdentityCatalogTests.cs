@@ -11,7 +11,7 @@ namespace KingmakerGunslinger.DomainTests
         {
             var first = ExpandedSummoningIdentityCatalog.Build();
             var second = ExpandedSummoningIdentityCatalog.Build();
-            Assertions.Equal(1847, first.Count, "Foundation identity count changed.");
+            Assertions.Equal(1848, first.Count, "Foundation identity count changed.");
             Assertions.Equal(95, first.Count(value => value.PlannedType == "BlueprintUnit"), "Unit identity count changed.");
             Assertions.Equal(1581, first.Count(value => value.PlannedType == "BlueprintAbility"), "Ability identity count changed.");
             Assertions.Equal(2, first.Count(value => value.Symbol.StartsWith(
@@ -20,6 +20,8 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(72, first.Count(value => value.PlannedType == "BlueprintBuff"), "Buff identity count changed.");
             Assertions.Equal(26, first.Count(value => value.PlannedType == "BlueprintAiCastSpell"), "AI identity count changed.");
             Assertions.Equal(14, first.Count(value => value.PlannedType == "BlueprintBrain"), "Brain identity count changed.");
+            Assertions.Equal(1, first.Count(value => value.PlannedType == "IsEngagedConsideration"),
+                "Only the bounded crocodilian engagement scorer is registered.");
             Assertions.Equal(18, first.Count(value => value.PlannedType == "BlueprintItemWeapon"), "Weapon identity count changed.");
             Assertions.Equal(2, first.Count(value => value.PlannedType == "BlueprintWeaponType"), "Weapon-type identity count changed.");
             Assertions.Equal(4, first.Count(value => value.PlannedType == "BlueprintUnitType"), "Unit-type identity count changed.");

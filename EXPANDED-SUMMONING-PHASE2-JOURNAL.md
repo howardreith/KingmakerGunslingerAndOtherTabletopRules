@@ -1,5 +1,20 @@
 # Expanded Summoning Phase 2 journal
 
+## October 5 bounded native Sprint AI gate (NOT QUALIFIED)
+
+Registered one owned native IsEngagedConsideration shared only by the two
+crocodilian Sprint actions (engaged=0, free=1). Native action references/order
+are preserved by a tested append helper; a second append is refused. No global
+AI code or native blueprint is changed. The generic census did not traverse
+BlueprintBrain.Actions, so explicit inline-consideration/action-list evidence
+is now included for the next candidate. The native class's own Score method,
+not a custom engagement implementation, decides the live flag.
+
+The one appended identity has no visible icon consumer. Registry and icon
+catalog hashes are reconciled without changing protected art. Focused 215/215
+PASS, 2017 registered; incremental Release compile PASS. This is still source
+qualification only; the combined Sprint 16 live pack is next.
+
 ## October 5 original crocodilian art checkpoint (NOT QUALIFIED)
 
 Authored both original models/paintings on the privately measured Monitor

@@ -448,8 +448,9 @@ def planned():
         ("KMG.Summoning.Special.DireCrocodile.SprintState", "BlueprintBuff"),
         ("KMG.Summoning.Special.DireCrocodile.SprintCooldown", "BlueprintBuff"),
         ("KMG.Summoning.Special.DireCrocodile.Swallowed", "BlueprintBuff"),
+        ("KMG.Summoning.Special.Crocodilian.SprintNotEngaged", "IsEngagedConsideration"),
     ))
-    if len(rows) != 1847 or len({symbol for symbol, _ in rows}) != 1847:
+    if len(rows) != 1848 or len({symbol for symbol, _ in rows}) != 1848:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 

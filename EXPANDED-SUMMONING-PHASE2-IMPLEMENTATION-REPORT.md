@@ -2,6 +2,12 @@
 
 ## Current checkpoint, October 5: Sprint 16 NOT QUALIFIED
 
+The Sprint AI actions now share one owned native engagement scorer (zero while
+engaged) and use a tested append operation preserving native action identity
+and order. One hidden-internal identity is appended; no visible icon or native
+brain is replaced. Focused 215/215, static/icon checks and incremental Release
+compile pass. These source checks are not live AI qualification.
+
 Both original crocodilian models and deterministic albedos are implemented.
 The per-instance swap uses an exact 27-name driver policy on the measured
 41-bone Monitor Lizard rig and keeps the donor as a negative control/fallback.
