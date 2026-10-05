@@ -77,14 +77,19 @@ Sprints 18-21. No merge, release/tag, permanent deployment or Sprint 22.
   Native action order/reference preservation has a behavior-first append test;
   inline consideration/action-list census is added. Focused 215/215 PASS,
   2017 registered; incremental Release compile PASS. Live AI remains unqualified.
+- A closed crocodilian-only persistence scope now uses the existing exact
+  working-save three-stage guard. Five summons carry both Sprint save states,
+  a hold and a swallow; fresh-load checks include skills, owned buffs, visuals,
+  native expiry and clean session-link reset. Request boundary tests and compile
+  PASS; **NOT RUN**, no working-save write. Historical fixture unchanged.
 - Next executable action: finish the full Sprint 16 scenario pack, including
-  targeted persistence/lifecycle, visible-consumer dispositions, original-view
+  remaining lifecycle, visible-consumer dispositions, original-view
   contacts/resource controls and 14+6 routes. The crocodilian-only mechanics,
   native Swallow scheduler/escape, Sprint interaction/timeline and twelve
   RTWP/turn-based manual/AI cells are now implemented, **NOT RUN**. They extend
   the original seven-case survey without retroactively qualifying new behavior.
   The pre-candidate review maps each written and still-open gate. Latest source
-  work descends from pushed `83abf9980518d477abdbd769e8b38535fb3f1c1a`;
+  work descends from pushed `76cea730197583257b0f850c9a89b98ba0871c37`;
   the containing checkpoint is not a frozen runtime candidate.
   Original art is ready for its first guarded live review. Use focused inner-loop
   checks; the complete sprint gate and

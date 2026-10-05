@@ -109,6 +109,15 @@ if ($scenarioMetadata.RequiresSaveName) {
             throw 'The deferred-marker probe requires typed -SaveName and only fixtureCase.'
         }
         $Parameters = @{saveName=$SaveName;fixtureCase=$Parameters.fixtureCase}
+    } elseif ($Scenario -cin @('working-save-expanded-summoning-prepare',
+            'working-save-expanded-summoning-verify-cleanup',
+            'working-save-expanded-summoning-verify-absent') -and
+            $Parameters.ContainsKey('persistenceScope')) {
+        if ($Parameters.Count -ne 1 -or $Parameters.persistenceScope -isnot [string] -or
+            $Parameters.persistenceScope -cne 'crocodilians' -or -not $ExitAfterCompletion) {
+            throw 'The targeted persistence trio permits only persistenceScope=crocodilians and automatic exit.'
+        }
+        $Parameters = @{ saveName = $SaveName; persistenceScope = 'crocodilians' }
     } elseif ($Scenario -ceq 'working-save-expanded-summoning-creature-review') {
         $crowd = $Parameters.ContainsKey('quantity')
         if ($Parameters.Count -ne $(if ($crowd) { 2 } else { 1 }) -or

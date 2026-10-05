@@ -2,6 +2,13 @@
 
 ## Current checkpoint, October 5: Sprint 16 NOT QUALIFIED
 
+Targeted persistence source (NOT RUN): the existing three guarded working-save
+stages accept only `persistenceScope=crocodilians` with automatic exit and the
+exact working save. Evidence will be `sprint16-persistence.json` in each run.
+11 original wiring checks plus three scoped/default round trips and 19
+fail-closed request cases PASS. No persistence evidence or save write is yet
+claimed for Sprint 16. Focused 215/215 and incremental compile/static gates PASS.
+
 Candidate-fixture source follow-up (NOT RUN): the existing guarded crocodilian
 scenario now emits `sprint16-damage-maintain.json`, `sprint16-speed.json` and
 `sprint16-combat.json` in addition to its census. No such new runtime evidence
