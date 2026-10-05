@@ -112,7 +112,7 @@ than guessed.
   single fixed firearm source; Bokken keeps ammunition only (drop the
   kit); BTSL keeps ammunition + kit on Xelliren and drops the six firearm
   rows from Honest Guy; regional smiths and Oleg keep eastern/spear
-  generics but the smith's 12 eastern + 4 spear generic rows move to the
+  generics but the smith's 12 eastern + 6 spear generic rows move to the
   regional tables only (Dire Narlmarches/Pitax/Oleg).
 - **Progression logic:** regional spread supplies implicit pacing (Oleg =
   Act I early kinds; Dire Narlmarches/Pitax = later); no new gates.
@@ -121,7 +121,7 @@ than guessed.
   path.
 - **Discoverability:** unchanged for firearms (smith remains the obvious
   source); eastern/spear slightly harder early.
-- **Sparse-store risk:** materially reduced on the smith (26 → 10 mod rows)
+- **Sparse-store risk:** materially reduced on the smith (28 → 10 mod rows)
   and Bokken; BTSL loses its only firearms.
 - **Implementation surface:** smallest — delete rows from three existing
   publication lists; every existing safety mechanism already covers
@@ -199,7 +199,7 @@ Stock can deplete. Table regeneration remains native and is not guaranteed.
 This mission creates no renewable or infinite merchant supply. Crafting is a
 separate acquisition path where already supported.
 
-The accompanying CSV retains the 62-row pre-redistribution acquisition audit as
+The accompanying CSV retains the corrected 65-row pre-redistribution acquisition audit as
 an explicitly historical before-ledger. The mission handoff records exact
 implemented after-rows, migration scope and runtime evidence.
 
