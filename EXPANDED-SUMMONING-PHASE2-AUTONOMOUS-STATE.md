@@ -16,7 +16,8 @@ No merge, release, tag, version bump, force push or permanent deployment.
   `C:/Dev/KingmakerGunslingerLab/repo/KingmakerGunslinger/.worktrees/expanded-summoning-phase2b-laptop-20261005`.
   Exact latest tested source and fetched remote:
   `4c3c76cee25a9cdc68d25f660ece43a443ffe2d5`; this evidence checkpoint is
-  its normal descendant. Unexpected active-branch motion remains a stop;
+  its normal descendant, after pushed evidence checkpoint 0144ebbb.
+  Unexpected active-branch motion remains a stop;
   archived branch motion is informational only.
 - Exclusive receipt: ignored `artifacts/laptop-source-owner-20261005.json`;
   session `01a10bcd-8582-7551-826f-0f128807eb99`, owner PID 31796/start
@@ -48,10 +49,14 @@ No merge, release, tag, version bump, force push or permanent deployment.
   Lease Completed/recoveryRequired=false; no game, compatibility lock or staging.
   Native prepare/cleanup each wrote once; fresh absence proves zero owned state.
   No filesystem save access or protected baseline load/write.
-- Next: commit/policy-push this restored NOT QUALIFIED evidence; correct only
-  the common visual-root binding and owned lifecycle update fixture, focused
-  checks, then a new committed exact-head gate and complete six-scenario batch.
-  Do not blindly rerun 4c3 bytes or increase contact tolerances/waits.
+- Containing correction is NOT QUALIFIED: fixed common visual root with all
+  approved descendants and local-offset restoration; owned awake enrollment
+  and a read-only native grapple-controller witness for lifecycle rows.
+  Focused 217/217 and incremental exact-reference compile PASS. No changes
+  to caps/tolerances, relationship rules, waits, assets, counts or version.
+- Next: commit/policy-push this correction, run every exact-head prelaunch
+  gate, then one immutable complete six-scenario batch with exact restoration.
+  Do not rerun the failed 4c3 bytes. Sprint 17 remains closed.
 - Sprints 14-15 complete; 976 registered / 970 published / 6 Dire withheld /
   29 wrappers / 999 visible choices. Publish Dire only after every required
   Sprint 16 exact-artifact gate passes, then qualify its 6 roots and the 14

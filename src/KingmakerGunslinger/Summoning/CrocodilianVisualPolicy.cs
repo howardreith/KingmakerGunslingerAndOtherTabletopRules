@@ -10,6 +10,7 @@ namespace KingmakerGunslinger.Summoning
     internal static class CrocodilianVisualPolicy
     {
         internal static readonly string[] Keys = { "crocodile", "dire-crocodile" };
+        internal const string ContactRoot = "cent_root1_jnt";
         internal static readonly string[] Bones =
         {
             "cent_ass1_jnt", "cent_head1_jnt", "cent_jaw1_jnt",
@@ -45,6 +46,16 @@ namespace KingmakerGunslinger.Summoning
             return actual.Length == Bones.Length &&
                 actual.Distinct(StringComparer.Ordinal).Count() == actual.Length &&
                 new HashSet<string>(actual, StringComparer.Ordinal).SetEquals(Bones);
+        }
+
+        internal static bool IsContactRootPermitted(string key, string rootName,
+            bool insideOwnedView, IEnumerable<string> descendantSkinDrivers)
+        {
+            // The native renderer root is the spine, not the common ancestor
+            // of the spine and tail. Every approved influence must move with
+            // this exact, instance-owned rig root; a matching name is not proof.
+            return insideOwnedView && rootName == ContactRoot &&
+                IsPermitted(key, descendantSkinDrivers);
         }
     }
 }
