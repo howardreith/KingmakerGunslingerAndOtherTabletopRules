@@ -597,12 +597,14 @@ namespace KingmakerGunslinger.DomainTests
                 "KMG.Summoning.Natural.Talon2d6",
                 "de42c58801037b84c9d992634ddd7220",
                 "c2ce7bc3559b2024ea91ddf5bb321f0a",
-                "209a2920891b580418b4e5e80466e134",
                 "153937f44fcd42a429a286a10babd82d",
                 "76a335b7d69691c4e8376f9379338778" })
                 Assertions.True(builder.Contains(token),
                     "Tier V-VII natural builder contract is missing: " +
                     token);
+            Assertions.Equal("209a2920891b580418b4e5e80466e134",
+                ExpandedSummoningNaturalProfiles.NaturalArmorGuid(14),
+                "Ankylosaurus native natural-armor binding changed.");
         }
 
         internal static void TemplateExecutionsAreFamilyScoped()

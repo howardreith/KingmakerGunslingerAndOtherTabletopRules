@@ -176,22 +176,6 @@ namespace KingmakerGunslinger.Blueprints
             "6efea466862f014469cec6c3f2b85cb7";
         private const string DumbBrainGuid =
             "5abc8884c6f15204c8604cb01a2efbab";
-        private static readonly IDictionary<int, string> NaturalArmorGuids =
-            new Dictionary<int, string> {
-                { 1, "10c7c5e3c5806bc4ca676e22d6fbf17e" },
-                { 2, "45a52ce762f637f4c80cc741c91f58b7" },
-                { 3, "f6e106931f95fec4eb995f0d0629fb84" },
-                { 4, "16fc201a83edcde4cbd64c291ebe0d07" },
-                { 5, "7661741dbb9604842a642457456fd0e4" },
-                { 6, "987ba44303e88054c9504cb3083ba0c9" },
-                { 7, "e73864391ccf0894997928443a29d755" },
-                { 8, "b9342e2a6dc5165489ba3412c50ca3d1" },
-                { 9, "da6417809bdedfa468dd2fd0cc74be92" },
-                { 10, "4179c5c08d606a6439a62bf178b738e1" },
-                { 12, "0b2d92c6aac8093489dfdadf1e448280" },
-                { 14, "209a2920891b580418b4e5e80466e134" },
-                { 22, "eee672c8f6555b445a89dbbb91361d64" }
-            };
         private static readonly IDictionary<string, string> FactGuids =
             new Dictionary<string, string>(StringComparer.Ordinal) {
                 { "TripDefenseFourLegs", "13c87ac5985cc85498ef9d1ac8b78923" },
@@ -902,12 +886,8 @@ namespace KingmakerGunslinger.Blueprints
             var facts = new List<BlueprintUnitFact>();
             if (profile.NaturalArmor != 0)
             {
-                string armorGuid;
-                if (!NaturalArmorGuids.TryGetValue(profile.NaturalArmor,
-                        out armorGuid))
-                    throw new InvalidOperationException(
-                        "Unsupported natural armor value " +
-                        profile.NaturalArmor + ".");
+                string armorGuid = ExpandedSummoningNaturalProfiles
+                    .NaturalArmorGuid(profile.NaturalArmor);
                 facts.Add(BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(
                     library, armorGuid, "natural armor +" +
                         profile.NaturalArmor));

@@ -25,6 +25,28 @@ namespace KingmakerGunslinger.DomainTests
         private const string DireKey = "dire-crocodile";
         private const string CrocodileKey = "crocodile";
 
+        internal static void EveryProfileResolvesItsNativeNaturalArmor()
+        {
+            foreach (NaturalSummonProfile profile in ExpandedSummoningNaturalProfiles.All)
+            {
+                string guid = ExpandedSummoningNaturalProfiles.NaturalArmorGuid(
+                    profile.NaturalArmor);
+                Guid parsed;
+                Assertions.True(profile.NaturalArmor == 0 ? guid == null :
+                    Guid.TryParseExact(guid, "N", out parsed),
+                    "Natural armor has no exact native identity: " + profile.Key);
+            }
+            Assertions.Equal("72c294dca841e3944869fb087bacf272",
+                ExpandedSummoningNaturalProfiles.NaturalArmorGuid(15),
+                "Dire Crocodile must resolve the censused native +15 fact.");
+            Assertions.Throws<InvalidOperationException>(() =>
+                ExpandedSummoningNaturalProfiles.NaturalArmorGuid(-1),
+                "Negative natural armor must not guess a donor.");
+            Assertions.Throws<InvalidOperationException>(() =>
+                ExpandedSummoningNaturalProfiles.NaturalArmorGuid(999),
+                "Unsupported natural armor must fail closed.");
+        }
+
         /// <summary>
         /// A tier-7 creature in both families registers six placements, and
         /// none of them is published.

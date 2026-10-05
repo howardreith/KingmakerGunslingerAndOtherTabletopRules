@@ -628,6 +628,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint14-ant-poison-dc", ExpandedSummoningSprint14Tests.AntPoisonDcDerivesToThePrintedFourteen),
             Case("expanded-summoning.sprint14-printed-skill-totals", ExpandedSummoningSprint14Tests.InsectSkillTotalsMatchThePrintedStatBlocks),
             Case("expanded-summoning.sprint15-registered-and-withheld", ExpandedSummoningSprint15Tests.BothCreaturesAreRegisteredAndPublished),
+            Case("expanded-summoning.sprint16-natural-armor-binding", ExpandedSummoningSprint16Tests.EveryProfileResolvesItsNativeNaturalArmor),
             Case("expanded-summoning.sprint16-dire-crocodile-registered", ExpandedSummoningSprint16Tests.TheDireCrocodileIsRegisteredAndWithheld),
             Case("expanded-summoning.sprint16-dire-crocodile-stat-block", ExpandedSummoningSprint16Tests.TheDireCrocodileMatchesItsPrintedStatBlock),
             Case("expanded-summoning.sprint16-crocodile-preserved", ExpandedSummoningSprint16Tests.TheCrocodilesIdentityAndPlacementsArePreserved),

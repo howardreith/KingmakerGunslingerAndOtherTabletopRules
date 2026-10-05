@@ -20,8 +20,10 @@ Sprints 18-21. No merge, release/tag, permanent deployment or Sprint 22.
 - Sprint 16 source exists for bite grab, live-bite Death Roll, one-rider
   maintain selection, one-round Sprint with ten-round cooldown, and a separate
   Dire Crocodile swallowed buff. **None has Sprint 16 runtime qualification.**
-  No Sprint 16 immutable candidate, package/DLL qualification hashes or runtime
-  evidence IDs exist yet. Do not present the implementation as a passed gate.
+  The narrow research artifact `3d0612f15333318e95b3741096102da27305cd18`
+  passed complete source/build/package checks, but failed during bootstrap.
+  It is not the stable hidden qualification candidate. Exact artifact and
+  restoration hashes are in the evidence index; no mechanics gate passed.
 - Source review now captures native base-bite identity before damage-list
   reordering, preserves weapon damage attribution, claims the maintain round
   before its check, and constructs one explicit Dire swallowed round action.
@@ -31,11 +33,11 @@ Sprints 18-21. No merge, release/tag, permanent deployment or Sprint 22.
   one shared buff cooldown, and exact one-time land rank allocations. A narrow
   crocodilian survey is wired for live census/graphs/skills and private bind
   capture. Focused checks pass; these changes still have no runtime proof.
-- Latest source checkpoint before this test-only correction:
-  `e9dae664a8f46ac68ca4d5244fac33db97c76c1c` (pushed). The complete survey
-  preflight stopped on four stale domain-test contracts; these are reconciled
-  and the focused 17-case recheck passes. No deployment or launch occurred.
-  The guarded launcher must rerun the complete pipeline before deployment.
+- Latest runtime: `20261005T1237562519865Z-disposable-expanded-summoning-crocodilians`,
+  FAIL before the save loaded: the natural builder lacked the native +15 armor
+  mapping. The follow-up source uses the censused exact native fact and shares
+  the map with domain validation. Focused recheck 25/25 PASS (2013 registered).
+  Retry the survey after its complete source/build/package pipeline.
 - Open work: live base-bite/modifier/DR proof; recursive live swallowed-action
   audit and damage cadence; Sprint speed interactions and AI
   fallback; exact skills and Run disposition; both original crocodilian visuals;
@@ -55,8 +57,9 @@ Sprints 18-21. No merge, release/tag, permanent deployment or Sprint 22.
   guarded transaction. Live install is **136 files, Info.json 0.0.117**, exact
   tree SHA-256
   `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
-  No runtime transaction has been opened during takeover. Snapshot the actual
-  baseline before each future transaction and restore that exact snapshot.
+  First survey restoration: `20261005T1240221065263Z-disposable-expanded-summoning-crocodilians.json`,
+  verified. No Kingmaker process remains. Snapshot the actual baseline before
+  each future transaction and restore that exact snapshot.
 - Next executable action: qualify/package the survey source, then run guarded
   `disposable-expanded-summoning-crocodilians` with exact restoration. Review
   its census before activating the conditional interior decision, select the

@@ -77,6 +77,37 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class ExpandedSummoningNaturalProfiles
     {
+        // Shared by construction and domain validation, so a profile cannot
+        // register an armor value the live builder cannot resolve. The +15
+        // native identity is pinned by the October 2 loaded-blueprint census.
+        private static readonly IDictionary<int, string> NaturalArmorGuids =
+            new Dictionary<int, string> {
+                { 1, "10c7c5e3c5806bc4ca676e22d6fbf17e" },
+                { 2, "45a52ce762f637f4c80cc741c91f58b7" },
+                { 3, "f6e106931f95fec4eb995f0d0629fb84" },
+                { 4, "16fc201a83edcde4cbd64c291ebe0d07" },
+                { 5, "7661741dbb9604842a642457456fd0e4" },
+                { 6, "987ba44303e88054c9504cb3083ba0c9" },
+                { 7, "e73864391ccf0894997928443a29d755" },
+                { 8, "b9342e2a6dc5165489ba3412c50ca3d1" },
+                { 9, "da6417809bdedfa468dd2fd0cc74be92" },
+                { 10, "4179c5c08d606a6439a62bf178b738e1" },
+                { 12, "0b2d92c6aac8093489dfdadf1e448280" },
+                { 14, "209a2920891b580418b4e5e80466e134" },
+                { 15, "72c294dca841e3944869fb087bacf272" },
+                { 22, "eee672c8f6555b445a89dbbb91361d64" }
+            };
+
+        internal static string NaturalArmorGuid(int bonus)
+        {
+            if (bonus == 0) return null;
+            string guid;
+            if (!NaturalArmorGuids.TryGetValue(bonus, out guid))
+                throw new InvalidOperationException(
+                    "Unsupported natural armor value " + bonus + ".");
+            return guid;
+        }
+
         /// <summary>
         /// Racial hit-die classes the natural builder can bind. Sprint 3 added
         /// the magical beast (Owlbear) and humanoid (Cyclops) classes to the
@@ -102,6 +133,7 @@ namespace KingmakerGunslinger.Summoning
                     "The natural reconstruction catalog is incomplete or duplicated.");
             foreach (NaturalSummonProfile value in Values)
             {
+                NaturalArmorGuid(value.NaturalArmor);
                 if (!ExpandedSummoningCatalog.All.Any(creature =>
                         creature.Key == value.Key) ||
                     !SupportedHitDieClasses.Contains(value.HitDieClass) ||
