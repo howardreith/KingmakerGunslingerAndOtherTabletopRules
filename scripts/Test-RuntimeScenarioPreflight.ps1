@@ -41,6 +41,7 @@ Assert-True ($sourceStateFirst -cmatch '^[0-9a-f]{64}$' -and
     'source-state-attestation-is-stable-and-sha256'
 
 $expected = @(
+    'observe-unpublished-race-trait-foundations',
     'observe-whiteout-weather-catalog',
     'observe-whiteout-weather',
     'observe-model-d-vendors',
@@ -1458,6 +1459,15 @@ Assert-Throws { Assert-KmgRuntimeScenarioPreflight @whiteoutArgs -ExitAfterCompl
 foreach ($invalid in @(@{}, @{saveName='KMG_AUTOMATION_BASELINE'}, @{saveName='KMG_AUTOMATION_WORKING';weather='Rain'})) {
     $whiteoutArgs.Parameters=$invalid
     Assert-Throws { Assert-KmgRuntimeScenarioPreflight @whiteoutArgs } 'whiteout-no-unscoped-weather-or-save'
+}
+
+foreach ($case in @(
+    @{ Parameters = @{}; Exit = $true; Label = 'missing-working-save' },
+    @{ Parameters = @{ saveName = 'WRONG_SAVE' }; Exit = $true; Label = 'wrong-working-save' },
+    @{ Parameters = @{ saveName = 'KMG_AUTOMATION_WORKING' }; Exit = $false; Label = 'automatic-exit-required' },
+    @{ Parameters = @{ saveName = 'KMG_AUTOMATION_WORKING'; arbitrary = 'forbidden' }; Exit = $true; Label = 'closed-parameters' }
+)) {
+    Assert-Throws { Assert-KmgRuntimeScenarioPreflight -Scenario 'observe-unpublished-race-trait-foundations' -ExpectedVersion $activeVersion -TimeoutSeconds 900 -ExitAfterCompletion:$case.Exit -Parameters $case.Parameters } ('unpublished-traits-' + $case.Label)
 }
 
 if ($failures.Count -ne 0) {
