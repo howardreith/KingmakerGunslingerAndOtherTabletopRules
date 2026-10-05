@@ -9,12 +9,16 @@ action and preserves only the audited native penalties. Live proof is pending.
 The deterministic rider adaptation is accepted after the bounded command-seam
 audit; the interior limitation still awaits its required live census.
 
-The restored previously empty repository validator and focused checks pass.
+The research artifact `3d0612f1` passed the repository wrapper, 2012 domain
+tests, clean exact build and strict package validation. Its guarded survey
+failed before save loading because +15 natural armor was not in the native
+fact map. The mapping is now shared with domain validation and includes the
+exact censused +15 fact; focused recheck 25/25 passes (2013 registered).
 This is not the hidden candidate gate. Sprint speed/AI, skills, Run, original
 visuals, runtime scenarios, targeted persistence and publication remain open.
 Sprints 14-15 stay accepted. Current surface: 976 registered / 970 published /
-6 withheld + 29 wrappers = 999 visible choices. No runtime launch or deployment;
-the exact 136-file 0.0.117 baseline is unchanged.
+6 withheld + 29 wrappers = 999 visible choices. The failed survey exited and
+restored the exact 136-file 0.0.117 baseline; see the evidence index for hashes.
 
 ## Sprint 15 closeout, 2026-10-03: COMPLETE AND PUBLISHED
 

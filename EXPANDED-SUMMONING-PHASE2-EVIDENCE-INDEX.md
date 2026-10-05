@@ -3,10 +3,33 @@
 ## Current checkpoint, October 5: Sprint 16 NOT QUALIFIED
 
 Takeover base: `a762ece553ab9b539a53a782102a29e5c70d44eb`.
-The source-only hardening checkpoint has no new runtime evidence,
-candidate/package qualification hash or restoration transaction ID.
-Repository wrapper PASS; focused Sprint 16 tests 12/12 PASS (2011 registered);
-incremental Release compile PASS. Full candidate qualification is deferred.
+Research artifact: `3d0612f15333318e95b3741096102da27305cd18`.
+Complete repository wrapper PASS, complete domain suite 2012/2012 PASS,
+clean exact-reference Release build PASS, strict 305-file package PASS.
+Package SHA-256 `3c3f706b1114bb90caca98c7718c88625aeab40952f29abd02275d90db24410f`;
+DLL SHA-256 `a527c9d880899abc8645a90dc18c8d2c6fa91fc8bdef02247b9bd3303ae2f95a`.
+These are pre-launch checks, not Sprint 16 runtime qualification.
+
+Guarded survey `20261005T1237562519865Z-disposable-expanded-summoning-crocodilians`
+**FAIL** before working-save loading: blueprint registration rejected the
+unmapped natural-armor value 15. No census, skill or rig assertion ran.
+Result SHA-256 `033D6FA997F8A40876D336E73F7D0CB5751676ADD15E55DE6605BC22BFDEB7C3`.
+The exact loaded source/DLL identity matched the artifact above. The process
+exited automatically after emitting bootstrap failure; the launcher had timed
+out, so its outcome was unclean. Restoration was verified in
+`expanded-summoning-restoration/20261005T1240221065263Z-disposable-expanded-summoning-crocodilians.json`,
+SHA-256 `9BDCDFD6E643E238AD5624838E0A4E4A282ABBB93EEAAA6D77C431E5AD0D3266`.
+Before/after: the same 136 files and baseline fingerprint below.
+
+An earlier attempt never deployed or launched: all-stream PowerShell log
+redirection treated Python unittest progress as an error. Its not-needed
+restoration record is `20261005T1233428599509Z-disposable-expanded-summoning-crocodilians.json`.
+Transcript capture avoids that invocation issue without changing the gates.
+
+The +15 native fact exists in the October 2 census as `NaturalArmor15`,
+`72c294dca841e3944869fb087bacf272`, `BlueprintUnitFact`, `AddStatBonus`.
+The follow-up source binds it and shares the native-armor map with domain
+validation; focused recheck 25/25 PASS, 2013 registered. Retry still required.
 The exact engineering audit and pre-existing empty-validator repair are in
 `planning/EXPANDED-SUMMONING-SPRINT16-PRE-CANDIDATE-REVIEW.md`.
 
@@ -14,7 +37,7 @@ The October 2 native donor graph is supporting offline audit evidence only,
 not the fresh live census required for the interior limitation decision.
 Live baseline rechecked October 5: 136 files, version 0.0.117, hash
 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
-No runtime transaction was opened. Historical evidence below retains its own
+The failed survey was restored exactly. Historical evidence below retains its own
 source, candidate and publication counts.
 
 Structured runtime artifacts are kept under

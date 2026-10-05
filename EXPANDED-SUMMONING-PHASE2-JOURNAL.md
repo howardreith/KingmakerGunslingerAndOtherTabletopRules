@@ -1,5 +1,23 @@
 # Expanded Summoning Phase 2 journal
 
+## October 5 first guarded survey: bootstrap failure, exact restoration
+
+Research commit `3d0612f15333318e95b3741096102da27305cd18` passed the full
+repository wrapper, 2012/2012 tests, clean exact Release and strict package.
+The Steam survey failed before loading the working save: Dire Crocodile's
++15 natural armor was unsupported by the builder's map. No requested census,
+skill or bind-frame evidence was produced. The game exited and restoration
+`20261005T1240221065263Z-disposable-expanded-summoning-crocodilians.json`
+verified the exact pre-run 136-file 0.0.117 tree. All IDs and hashes are in the
+evidence index. The limitation remains conditional; Sprint 16 NOT QUALIFIED.
+
+The native +15 fact was present in the October 2 donor census. The correction
+adds its exact identity and moves the armor lookup into the shared profile
+contract so domain validation exercises every reconstructed creature's binding.
+No other native mapping changes. Focused recheck: 25/25 PASS, 2013 registered.
+Next: retry the narrow survey with an explicit 300-second guarded allowance
+for the installed compatibility stack's bootstrap, then finish assets/scenarios.
+
 ## October 5 survey preflight: test-contract reconciliation
 
 The clean source preflight at `e9dae664a8f46ac68ca4d5244fac33db97c76c1c`
