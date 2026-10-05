@@ -33,6 +33,32 @@ class IconCatalogTests(unittest.TestCase):
     def test_current_candidate_is_technically_consistent(self):
         self.assertEqual([], validate(ROOT))
 
+    def test_crocodilian_emblems_retain_the_approved_size_family(self):
+        for key in ("crocodilian-sprint", "crocodilian-death-roll", "dire-crocodile-swallowed"):
+            record = next(row for row in self.production["records"] if row["key"] == key)
+            self.assertEqual([512, 512], record["sourceSize"])
+            self.assertEqual([64, 64], record["exportSize"])
+            self.assertIsNone(record["approvedHash"])
+        production = copy.deepcopy(self.production)
+        next(row for row in production["records"] if row["key"] == "crocodilian-sprint")["exportSize"] = [128, 128]
+        self.rejects("Export profile mismatch: crocodilian-sprint", production=production)
+
+    def test_crocodilian_emblem_bindings_cannot_lose_a_status_consumer(self):
+        source = (ROOT / self.catalog["runtimeMapping"]["source"]).read_text(encoding="utf-8")
+        source = "\n".join(line for line in source.splitlines()
+                           if 'new Binding("KMG.Summoning.Special.DireCrocodile.SprintCooldown"' not in line)
+        self.assertIn("Compiled owned icon bindings disagree with exact catalog consumers",
+                      runtime_mapping_errors(ROOT, self.catalog, source))
+
+    def test_crocodilian_emblem_scope_does_not_change_painted_history(self):
+        mapping = self.catalog["runtimeMapping"]
+        self.assertEqual(100, mapping["paintedConceptCount"])
+        self.assertEqual(160, mapping["paintedConsumerCount"])
+        self.assertEqual(9, mapping["additionalEmblemConsumerCount"])
+        catalog = copy.deepcopy(self.catalog)
+        catalog["runtimeMapping"]["additionalEmblemConcepts"].remove("dire-crocodile-swallowed")
+        self.rejects("Additional emblem coverage counts disagree", catalog=catalog)
+
     def test_source_file_without_compile_item_is_rejected(self):
         project = (ROOT / 'src/KingmakerGunslinger/KingmakerGunslinger.csproj').read_text(encoding='utf-8-sig')
         self.assertEqual([], validator.compiled_authority_errors(ROOT, self.catalog, project))
