@@ -11,12 +11,15 @@ blocked by the observed weather prerequisite below. No release is authorized.
 - Branch: `codex/gunslinger-content-followup-2026-10-04`.
 - Isolated worktree: `C:/Dev/KingmakerGunslingerLab/worktrees/gunslinger-content-followup-2026-10-04`.
 - Final implementation/source HEAD: `d4afa40947741c2f8c7a15024375ad4618550a9b`.
-  The final handoff/documentation commit is its direct successor; resolve its
-  exact self-referential HEAD with `git rev-parse HEAD` and the approved wrapper's
-  remote equality check. The final chat reports that exact documentation SHA.
-- Final pushed implementation HEAD: `d4afa40947741c2f8c7a15024375ad4618550a9b`.
-  Every implementation checkpoint is remote-verified. The documentation
-  closeout uses the same exact wrapper; its containing commit is the final tip.
+- Original mission documentation/pushed tip:
+  `c092a060a5c01f963e5954d6e6f1882bd16b6114`.
+- Clean artifact qualified during the 2026-10-05 Pro-review followup:
+  **`c092a060a5c01f963e5954d6e6f1882bd16b6114`**, with no dirty-tree override.
+  The followup below changes only this handoff and the manual acceptance guide;
+  neither is packaged. It does not create another gameplay candidate.
+- Every checkpoint is pushed through the approved wrapper. Resolve the
+  containing documentation commit with `git rev-parse HEAD`; the wrapper
+  verifies remote equality, and the final chat records that exact SHA.
 - Master began and remains `2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a`;
   no main ref exists. Phase 2A remains the exact fixed starting SHA.
 - Phase 2B moved remotely from `cdec0180b948dea0c41f4d6b09d97b37f5c478ad`
@@ -265,6 +268,112 @@ adds documentation/evidence only and is not misrepresented as the embedded SHA.
 Raw logs, receipts, packages and private inspection output remain untracked in
 authorized evidence/artifact locations.
 
+## Pro-review followup - clean artifact closure, 2026-10-05
+
+**QualificationProvenance: PASS. HumanTooltipReview: NOT_PERFORMED.
+HumanMerchantReview: NOT_PERFORMED. Phase2BIntegration: DEFERRED.**
+
+The review's exact clean tip, `c092a060a5c01f963e5954d6e6f1882bd16b6114`,
+was still the local and remote content branch head. Its working tree was clean
+through build, deployment, runtime and restoration. No source, test, script,
+asset, package input or version was changed for this followup.
+
+The clean build does **not** reproduce the older ZIP hash. The original dirty
+candidate already contained exactly the final committed README bytes: SHA256
+`dd7ad8df2960014f2152769c0fd9c6cfc641e3865bb7972399baf4cdcac45589`.
+Both archives have the same 289 members in the same order; all 288 non-DLL
+members are byte-identical. Only `KingmakerGunslinger.dll` differs.
+The build deliberately embeds its current Git commit in
+`AssemblyMetadata("GitCommit", ...)`, so a documentation commit changes the
+assembly identity and MVID even when all gameplay source is unchanged.
+The clean build correctly embeds c092a060; it was not made to impersonate d4afa409.
+
+| Artifact identity | Original five-scenario candidate | Clean c092a060 candidate |
+|---|---|---|
+| ZIP SHA256 | `2475d4ec04d2a3208267934e1a4d946c8ac54b5853b2abe8d952802e1476eaa8` | `2971a4f167f3943e580934ad302ec5b8acb420ee68310e21a50a01c64a67c006` |
+| DLL SHA256 | `e0895e76e2d756431a6041f5f0202016eabbf2d67ac028b2abcc67ae9043416a` | `17bbba68ad7c7d1bb2822fcafeef4f7c341b6642b376ad78fae2e6a2fef90e83` |
+| MVID | `7ae9fd3c-d00d-4d24-8841-2c7fc0828435` | `6c5f4c56-1dbe-45ac-929c-ced3bfa0e312` |
+| Source-state SHA256 | `5cb1c7af359d9d9d018bef085a699ecf4a514181bad488938125f614a1b9e2eb` | `78a871213f75e0a9d14b10914a2d83252e7a34394f43b75b8ab3b43563d61f3d` |
+
+Installed ILDASM inspected both extracted project DLLs with
+`/text /nobar /utf8 /caverbal`. A streaming comparison of 2,163,962 lines found
+only the GitCommit attribute, MVID, the tool's process image-base comment and
+its output-resource-path comment changed. All remaining managed IL is identical
+(SHA256 `3eda9b62a05351bcdbe8a4a1eb8381580f995debac7a538323a0abf08f9a57be`);
+the emitted Win32 resources are byte-identical. Thus the DLL is not byte-identical,
+but the executable gameplay implementation is unchanged. No specialized gameplay
+scenario was repeated or represented as a fresh c092a060 run.
+
+Commands and results, from this isolated worktree:
+
+```powershell
+& ./scripts/Invoke-KmgGate.ps1 -Level Sprint
+scripts/Deploy-Local.ps1 -PackagePath <clean-c092-package> -RuntimeLease <owned-lease> -PassThru -Confirm:$false
+scripts/Invoke-KingmakerRuntimeTest.ps1 -Scenario working-save-smoke -ExpectedVersion 0.0.141 -TimeoutSeconds 900 -SaveName KMG_AUTOMATION_WORKING -ExitAfterCompletion:$true -ReuseInstalledArtifact -PackagePath <clean-c092-package> -DeploymentManifestPath <verified-receipt> -RuntimeLease <owned-lease> -Confirm:$false
+scripts/Restore-Live-Mod.ps1 -BackupDirectory <that-receipt.backupDirectory> -RuntimeLease <owned-lease> -Confirm:$false
+```
+
+- Sprint gate: **PASS**, repository validation, complete **2,040/2,040** suite,
+  clean Release build, deterministic packaging and strict standalone validation.
+  Both standard and local-runtime ZIPs equal the new hash above.
+- Clean artifact smoke: **PASS 11/11**, evidence directory
+  `20261005T1215438099696Z-working-save-smoke`, run ID
+  `20261005T1215438259709Z-94e178cb5f5c4005a086a30a07a65a72`.
+  Steam App ID **640820**, fresh Kingmaker PID **6500**, started
+  `2026-10-05T12:15:46.0087416Z`. Loaded commit, DLL hash and MVID equal the
+  clean candidate. `runtime-evidence.json` records an empty Git status.
+  **No `-AllowDirtyGit` was used.**
+- Only `KMG_AUTOMATION_WORKING` was loaded by the guarded mechanism.
+  Native save-write sentinels observed no save-writing API;
+  the exact normal load path, descriptor, completion and fingerprint passed.
+  The game exited automatically; the batch verified its exit without killing it.
+- Exact live installation restoration: **PASS**, backup
+  `20261005T1215360630804Z`, deployment receipt
+  `deployments/20261005T1215421488903Z/deployment.json`.
+  Restoration and owned-lease release completed at
+  `2026-10-05T12:16:51.2909276Z`.
+- Local records: `artifacts/review-followup/clean-c092-gate.log`,
+  `clean-c092-smoke.log`, `clean-c092-smoke.json`,
+  `package-comparison.json` and `assembly-line-comparison.json`.
+  The original and clean packages/build receipts are preserved in that ignored
+  directory. No package, raw IL or runtime log is committed.
+- Documentation closeout: `powershell.exe -NoProfile -ExecutionPolicy Bypass
+  -File scripts/validate-repository.ps1`, `git diff --check`,
+  `git diff --cached --check` and
+  `python -X utf8 artifacts/mission/Audit-Followup.py`: **PASS**.
+  Only this handoff and the manual acceptance guide differ from c092a060;
+  neither is a ZIP member. Protected source/version/package inputs are
+  unchanged, with no untracked, generated, binary, secret or private additions.
+  The approved push wrapper audits and verifies the containing clean commit.
+- No gate or runtime failure occurred in this followup. A slow whole-file
+  disassembly diff was stopped in its own analysis process and replaced with
+  the streaming comparison; no game or foreign process was interrupted.
+
+This closes the review's artifact-provenance gap using a clean, strictly
+validated package plus an exact-artifact smoke test. The older specialized
+results remain explicitly attached to their original DLL, with the unchanged
+managed implementation established above. The tested artifact remains c092a060;
+this subsequent evidence/manual-checklist commit is not a newly built or
+runtime-tested DLL. A future build will correctly embed that future commit.
+
+The followup also corrects the stale capital-stock paragraph in
+[the manual acceptance guide](docs/RARE-FIREARMS-MANUAL-ACCEPTANCE.md#content-followup-acceptance---2026-10-05).
+Its new six-case merchant matrix distinguishes newly generated inventories from
+already materialized campaign stock, plus tooltip appearance and Oleg supply
+acceptance. Every human result remains **NOT_PERFORMED**. Blueprint normalization
+does not migrate persisted merchant inventory, and the smoke test does not
+establish shopping UI quality or owner acceptance of that limitation.
+
+Read-only remote/committed-state inspection found Phase 2B at
+`a46cec1ed58c56ef2c214808413153956195fc2e`. Its authoritative
+`EXPANDED-SUMMONING-PHASE2-AUTONOMOUS-STATE.md` header explicitly says
+**Sprint 16 NOT QUALIFIED**; Sprint 17 and Phase 2B closure remain open.
+The review's prerequisite for integration is therefore unmet. No integration
+branch, merge, cherry-pick, PR, release, tag or version bump was made.
+Master remains `2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a`; Phase 2A and the
+foreign Phase 2B worktree were untouched. Whiteout remains the same unpublished
+policy/observation foundation with its existing exact blocker.
+
 ## Checkpoint evidence and meaningful failure history
 
 | Checkpoint | Full gate count | Guarded evidence directory | Result |
@@ -368,10 +477,14 @@ report and no uncommitted source changes.
 ## Human review list
 
 1. Manual in-game tooltip appearance for Pistol, Blunderbuss and The Last Word.
-2. Later original icon authoring for Fiery Glare and Stoic Dignity.
-3. Later visible Whiteout publication review, after its missing native-weather
+2. Oleg/capital/Bokken merchant UI acceptance in newly generated and already
+   materialized stock, including ordering, quantities and the 50-shot early
+   supply budget. Use the six-case matrix in the manual acceptance guide;
+   explicitly accept or reject persisted old-stock behavior.
+3. Later original icon authoring for Fiery Glare and Stoic Dignity.
+4. Later visible Whiteout publication review, after its missing native-weather
    prerequisite and full combat qualification are resolved.
-4. Later integration strategy with the active Phase 2B stack.
+5. Later integration with the qualified Phase 2B stack, using the sequence below.
 
 ## Integration forecast - no integration performed
 
@@ -398,3 +511,26 @@ binding/publication is separate work, not an invitation to enable it during
 integration. Integration must rerun the combined suite, package checks and
 applicable fresh guarded runtime scenarios; this branch's results alone do not
 qualify the combined stack.
+
+### Integration sequence after prerequisites pass
+
+1. Complete and record the human tooltip and merchant acceptance matrix. Let
+   Phase 2B reach its coherent, qualified stopping point; verify its current
+   committed closure evidence and freeze the exact final Phase 2B SHA.
+2. In a new isolated integration worktree/branch based on that SHA, merge the
+   **entire** content-followup branch, including this evidence followup. Do not
+   select only production commits and lose tests, contracts or runtime guards.
+   This is the future sequence, not an integration performed by this followup.
+3. Reconcile both sides of every overlap in the forecast: test/project
+   registration, active count pins and validation records, runtime scenario
+   metadata/preflight, icon current-file hashes and authorized wiring records,
+   package counts/Phase 2B assets, Better Vendors and Paper Cartridge tests.
+   Recheck production vendor changes at the final Phase 2B head.
+4. Derive the actual integrated domain count from the complete suite. Run
+   repository validation, clean Release, deterministic/strict package gates,
+   the Phase 2B tranche qualification, guarded working-save smoke, resolved
+   firearm-description observer and Model D vendor observer. Apply all current
+   exact-artifact and fresh-process requirements to the combined candidate.
+5. Record combined evidence before proposing any release. A version bump belongs
+   only to a separately authorized integrated release boundary. Neither source
+   branch's independent qualification proves the combined stack.
