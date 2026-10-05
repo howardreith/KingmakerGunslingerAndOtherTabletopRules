@@ -1,5 +1,21 @@
 # Expanded Summoning Phase 2 journal
 
+## October 5 laptop contact/fixture correction — NOT QUALIFIED
+
+Pushed 9cd5cdc7 runtime/restoration evidence, then 5da53f84 read-only DATA audit.
+All 29 differing files classified; no code imported. PR #26's top notice now
+identifies the owner-designated active line; PR #27 is archived accidental
+concurrency. Both remain draft/open/unmerged.
+
+The containing correction addresses only the bc36 live failures: bounded Dire
+visual approach at legal native reach; manual drill completion tied to its
+actual issued command and completed rejection; setup-only target immunity;
+native selection/clock restoration; explicit RTWP final-lifecycle scope and
+native expiry diagnostics. No reach/contact threshold/AI or gameplay-rule
+waiver. Focused 217/217, incremental exact-reference compile, static/manifest
+and 480 preflight PASS. Full exact committed gate/runtime is next, not claimed.
+[Correction review](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-FIXTURE-REPAIR.md).
+
 ## October 5, 21:13 UTC — laptop native-faction batch failed safely
 
 The latest owner directive returns sole development ownership to the laptop

@@ -24,6 +24,7 @@ namespace KingmakerGunslinger.Summoning
     internal sealed class CrocodilianAttackVisualPose : MonoBehaviour
     {
         private UnitEntityView _view;
+        private string _key;
         private BlueprintUnit _owner;
         private BlueprintItemWeapon _bite;
         private BlueprintItemWeapon _tailWeapon;
@@ -93,6 +94,7 @@ namespace KingmakerGunslinger.Summoning
             _tailTip = _tailVertices.OrderByDescending(index =>
                 (WorldVertex(index) - _tail.position).sqrMagnitude).First();
             _owner = stats.OwningBlueprint;
+            _key = key;
             _bite = stats.Bite;
             _tailWeapon = stats.Tail;
             _view = view;
@@ -149,6 +151,8 @@ namespace KingmakerGunslinger.Summoning
         internal string Describe()
         {
             return "impacts=" + _impacts + ";kind=" + (_tailAttack ? "tail" : "bite") +
+                ";approachCap=" + CrocodilianVisualPolicy.ContactApproach(_key, float.MaxValue, 1f)
+                    .ToString("0.###", CultureInfo.InvariantCulture) +
                 ";gap=" + _gapBefore.ToString("0.###", CultureInfo.InvariantCulture) +
                 "->" + _gapAfter.ToString("0.###", CultureInfo.InvariantCulture);
         }
@@ -220,7 +224,7 @@ namespace KingmakerGunslinger.Summoning
             float gap;
             Vector3 surface = ClosestSurface(bounds, out gap);
             Vector3 approach = bounds.ClosestPoint(surface) - surface;
-            float distance = CrocodilianVisualPolicy.ContactApproach(approach.magnitude, weight);
+            float distance = CrocodilianVisualPolicy.ContactApproach(_key, approach.magnitude, weight);
             if (distance > 0.001f) _root.position += approach.normalized * distance;
             _appliedTail = _tail.rotation;
             _appliedRoot = _root.position;

@@ -208,15 +208,27 @@ namespace KingmakerGunslinger.RuntimeTesting
             finally { owner.Descriptor.Stats.BaseAttackBonus.BaseValue = bab; }
         }
 
-        private static void ExpireSprint16OwnedBuff(UnitEntityData owner, Buff buff)
+        private static JObject ExpireSprint16OwnedBuff(UnitEntityData owner, Buff buff)
         {
-            if (buff == null) throw new InvalidOperationException("Expected owned disposable buff is missing.");
+            if (owner == null || buff == null || !ReferenceEquals(buff.Owner.Unit, owner))
+                throw new InvalidOperationException("Expected exact owned disposable buff is missing.");
+            if (TurnBased.Controllers.CombatController.IsInTurnBasedCombat())
+                throw new InvalidOperationException("Synchronous expiry requires its explicit RTWP fixture scope; native TB skips off-turn buff owners.");
+            string identity = buff.Blueprint.AssetGuid;
+            TimeSpan previousDeadline = buff.EndTime;
+            TimeSpan nativeClock = Game.Instance.TimeController.GameTime;
+            TimeSpan due = nativeClock - TimeSpan.FromMilliseconds(1);
             PropertyInfo endTime = typeof(Buff).GetProperty("EndTime",
                 BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             if (endTime == null || !endTime.CanWrite) throw new MissingMemberException("Buff.EndTime setter");
-            endTime.SetValue(buff, Game.Instance.TimeController.GameTime - TimeSpan.FromMilliseconds(1), null);
+            endTime.SetValue(buff, due, null);
             owner.Descriptor.Buffs.UpdateNextEvent();
             owner.Descriptor.Buffs.Tick();
+            return new JObject { ["buff"] = identity, ["owner"] = owner.UniqueId,
+                ["previousDeadlineTicks"] = previousDeadline.Ticks,
+                ["nativeClockTicks"] = nativeClock.Ticks, ["requestedDeadlineTicks"] = due.Ticks,
+                ["stillAttachedAfterNativeTick"] = owner.Descriptor.Buffs.Enumerable.Any(value => ReferenceEquals(value, buff)),
+                ["scheduler"] = "native RTWP BuffCollection.UpdateNextEvent/Tick; no direct removal" };
         }
 
         private void InspectSprint16PersistentUnits(BlueprintScriptableObject[] blueprints,

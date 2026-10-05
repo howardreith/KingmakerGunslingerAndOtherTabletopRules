@@ -8,6 +8,7 @@ using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Enums;
 using Kingmaker.UI.ActionBar;
 using Kingmaker.UI.Group;
+using Kingmaker.UI.SettingsUI;
 using Kingmaker.UI.ServiceWindow.CharacterScreen;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
@@ -53,8 +54,21 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             ExpandedSummoningCorrectionFixture fixture = null;
             bool cleaned = false;
+            var game = Game.Instance;
+            bool mode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue;
+            bool pause = game.IsPaused;
+            TimeSpan clock = game.Player.GameTime;
+            UnitEntityData[] selection = game.UI.SelectionManagerPC.SelectedUnits.ToArray();
+            UnitEntityData groupCharacter = GroupController.Instance.GetCurrentCharacter();
             try
             {
+                // The preceding matrix already exercises real commands in
+                // both modes. This synchronous lifecycle drill must use the
+                // RTWP buff clock, not inherit an unrelated final TB turn.
+                SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
+                game.TurnBasedCombatController.Activate();
+                if (TurnBased.Controllers.CombatController.IsInTurnBasedCombat())
+                    throw new InvalidOperationException("Final lifecycle fixture did not enter its explicit RTWP scope.");
                 fixture = BeginExpandedSummoningCorrectionFixture("KMG_Runtime_Sprint16_FinalCaster");
                 CreateExpandedSummoningCorrectionHostile(fixture);
                 foreach (int frame in ReviewSprint16NativeUi(fixture)) yield return frame;
@@ -64,9 +78,31 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
-                EndExpandedSummoningCorrectionFixture(fixture, out cleaned);
+                try { EndExpandedSummoningCorrectionFixture(fixture, out cleaned); }
+                finally
+                {
+                    try
+                    {
+                        SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = mode;
+                        game.TurnBasedCombatController.Activate();
+                        GroupController.Instance.SelectUnit(groupCharacter);
+                        game.UI.SelectionManagerPC.MultiSelect(selection.Select(value => value.View).ToArray(), false);
+                    }
+                    finally { game.Player.GameTime = clock; game.IsPaused = pause; }
+                }
+                bool scopeRestored = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue == mode &&
+                    game.Player.GameTime == clock && game.IsPaused == pause &&
+                    game.UI.SelectionManagerPC.SelectedUnits.SequenceEqual(selection) &&
+                    ReferenceEquals(GroupController.Instance.GetCurrentCharacter(), groupCharacter);
                 Sprint16Check(_crocodilianAssertions, _sprint16FinalRows, "final-fixture-cleanup", cleaned,
                     new JObject { ["cleaned"] = cleaned }, "exact pre-fixture unit and party references restored");
+                Sprint16Check(_crocodilianAssertions, _sprint16FinalRows, "final-lifecycle-scope-restoration", scopeRestored,
+                    new JObject { ["restored"] = scopeRestored, ["configuredModeRestored"] =
+                        SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue == mode,
+                        ["selectionRestored"] = game.UI.SelectionManagerPC.SelectedUnits.SequenceEqual(selection),
+                        ["groupRestored"] = ReferenceEquals(GroupController.Instance.GetCurrentCharacter(), groupCharacter),
+                        ["clockRestored"] = game.Player.GameTime == clock, ["pauseRestored"] = game.IsPaused == pause },
+                    "request-local RTWP lifecycle scope restores the exact preceding mode, selection, group, clock and pause");
             }
         }
 
@@ -188,6 +224,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ResetExpandedSummoningHostile(fixture);
                 DisposeExpandedSummoningUnits(fixture.Created, owners.ToArray());
                 UnityEngine.Random.state = random;
+                group.SelectUnit(groupCharacter);
+                ui.SelectionManagerPC.MultiSelect(selected.Select(value => value.View).ToArray(), false);
+                game.Player.GameTime = clock;
                 game.IsPaused = pause;
                 bool restored = !ui.ServiceWindow.WindowTabs.IsShow && !sheet.IsShow &&
                     ReferenceEquals(characterField.GetValue(sheet), originalCharacter) &&
