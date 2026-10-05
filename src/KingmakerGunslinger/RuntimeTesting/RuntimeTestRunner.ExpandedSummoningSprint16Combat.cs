@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Kingmaker;
+using Kingmaker.Blueprints;
 using Kingmaker.Controllers.Combat;
 using Kingmaker.Controllers.Units;
 using Kingmaker.EntitySystem.Entities;
@@ -39,6 +40,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                  : new[] { "manual", "ai-fresh", "ai-player-cooldown", "manual-hold", "manual-swallow" })
              select new[] { key, mode, driver }).ToArray();
 
+        // Scoped only to one synchronous manual-cell summon. The native rule
+        // creates its normal controllable summon part; no global control patch.
+        private sealed class Sprint16ManualSummonControl : IGlobalRulebookHandler<RuleSummonUnit>
+        {
+            internal UnitEntityData Caster;
+            internal BlueprintUnit Blueprint;
+            internal int Matched;
+            public void OnEventAboutToTrigger(RuleSummonUnit evt)
+            {
+                if (!ReferenceEquals(evt.Initiator, Caster) ||
+                    !ReferenceEquals(evt.Blueprint, Blueprint)) return;
+                evt.IsDirectlyControllable = true;
+                Matched++;
+            }
+            public void OnEventDidTrigger(RuleSummonUnit evt) { }
+        }
+
         private ExpandedSummoningCorrectionFixture _crocCombatFixture;
         private UnitEntityData _crocCombatOwner;
         private UnitEntityData[] _crocCombatAwakeBefore;
@@ -53,6 +71,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private int _crocCombatFrame;
         private int _crocCombatReadyFrame = -1;
         private bool _crocCombatManualAttackQueued;
+        private int _crocCombatManualAttackAttempts;
         private bool _crocCombatModeBefore;
         private bool _crocCombatPauseBefore;
         private TimeSpan _crocCombatTimeBefore;
@@ -89,11 +108,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 if (_crocCombatOwner == null) BeginSprint16CombatCell();
                 _crocCombatFrame++;
-                bool ready = StepSprint16CombatTurn();
+                // Join/mode activation may interrupt a command during setup.
+                // Keep AI's native action list intact, but open its decision
+                // clock only after this request-local fixture is in game and
+                // the normal appearance/setup controllers have settled.
+                bool nativeReady = _crocCombatFrame >= 30 && _crocCombatOwner.IsInGame &&
+                    _crocCombatOwner.View != null && _crocCombatOwner.View.IsInGame &&
+                    _crocCombatOwner.Descriptor.State.CanAct;
+                bool ready = StepSprint16CombatTurn() && nativeReady;
                 if (ready && _crocCombatReadyFrame < 0)
                 {
                     _crocCombatReadyFrame = _crocCombatFrame;
                     string driver = Sprint16CombatCells[_crocCombatCell][2];
+                    if (driver == "ai-fresh")
+                        _crocCombatOwner.CombatState.AIData.NextCommandTime = Time.time;
                     if (driver.StartsWith("manual", StringComparison.Ordinal) || driver == "ai-player-cooldown")
                     {
                         var sprint = Sprint16Sprint(_crocCombatFixture.Blueprints,
@@ -130,6 +158,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var attack = new UnitAttack(_crocCombatFixture.Hostile) { ForceFullAttack = true };
                     _crocCombatOwner.Commands.Run(attack);
                     _crocCombatManualAttackQueued = true;
+                    _crocCombatManualAttackAttempts++;
+                }
+                string heldDriver = Sprint16CombatCells[_crocCombatCell][2];
+                if (manual && ready && (heldDriver == "manual-hold" || heldDriver == "manual-swallow") &&
+                    _crocCombatManualAttackQueued && _crocCombatManualAttackAttempts < 4 &&
+                    _crocCombatObserver.Checks.Count > 0 &&
+                    SummonHoldComponent.HeldTarget(_crocCombatOwner) == null &&
+                    _crocCombatFixture.Hostile.Get<UnitPartSwallowed>() == null &&
+                    !_crocCombatOwner.Commands.Raw.Any(value => value != null && !value.IsFinished))
+                {
+                    // A native natural-1/escape can legitimately refuse a hold.
+                    // Retry a bounded real command; never force a rule roll,
+                    // a hit, an animation contact, a grapple or a rider.
+                    _crocCombatOwner.Commands.Run(new UnitAttack(_crocCombatFixture.Hostile)
+                        { ForceFullAttack = true });
+                    _crocCombatManualAttackAttempts++;
                 }
                 bool twoWeapons = _crocCombatObserver.Attacks.Where(value => value.Weapon != null)
                     .Select(value => value.Weapon.Blueprint.AssetGuid).Distinct().Count() >= 2;
@@ -169,10 +213,23 @@ namespace KingmakerGunslinger.RuntimeTesting
             string[] cell = Sprint16CombatCells[_crocCombatCell];
             UnitEntityData hostile = _crocCombatFixture.Hostile;
             ResetExpandedSummoningHostile(_crocCombatFixture);
-            _crocCombatOwner = CastExpandedSummoningOwnTier(_crocCombatFixture, cell[0]);
+            bool manual = cell[2].StartsWith("manual", StringComparison.Ordinal);
+            if (manual)
+            {
+                var control = new Sprint16ManualSummonControl {
+                    Caster = _crocCombatFixture.Caster,
+                    Blueprint = _crocCombatFixture.Blueprints.OfType<BlueprintUnit>().Single(value =>
+                        value.name == "KMG_Summoning_Unit_" +
+                            (cell[0] == "crocodile" ? "Crocodile" : "DireCrocodile")) };
+                EventBus.Subscribe(control);
+                try { _crocCombatOwner = CastExpandedSummoningOwnTier(_crocCombatFixture, cell[0]); }
+                finally { EventBus.Unsubscribe(control); }
+                if (control.Matched != 1 || !_crocCombatOwner.IsDirectlyControllable)
+                    throw new InvalidOperationException("Manual fixture did not receive exact native summon control.");
+            }
+            else _crocCombatOwner = CastExpandedSummoningOwnTier(_crocCombatFixture, cell[0]);
             // Never empty an AI cell's action list. The manual cell explicitly
             // disables its brain, which is disclosed in its evidence.
-            bool manual = cell[2].StartsWith("manual", StringComparison.Ordinal);
             bool heldCell = cell[2] == "manual-hold" || cell[2] == "manual-swallow";
             RemoveExpandedSummoningAppearanceBuffs(_crocCombatOwner);
             SetExpandedSummoningBrainActive(_crocCombatOwner, !manual);
@@ -199,6 +256,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             _crocCombatSprintFirstSeen = -1;
             _crocCombatSharedCooldown = false;
             _crocCombatManualAttackQueued = false;
+            _crocCombatManualAttackAttempts = 0;
             _crocCombatRejectedCast = null;
             _crocCombatCooldown = null;
             _crocCombatContacts.Clear();
@@ -220,7 +278,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             Game.Instance.Player.UpdateIsInCombat();
             _crocCombatJoin.Tick();
             _crocCombatPrepare.Tick();
-            if (_crocCombatAwaitPlayerCast)
+            if (!manual)
                 _crocCombatOwner.CombatState.AIData.NextCommandTime = float.MaxValue;
             Game.Instance.IsPaused = false;
         }
@@ -372,6 +430,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["rejectedCommandResult"] = _crocCombatRejectedCast == null ? null : _crocCombatRejectedCast.Result.ToString(),
                     ["rejectedCommandActed"] = _crocCombatRejectedCast != null && _crocCombatRejectedCast.IsActed,
                     ["directlyControllable"] = _crocCombatOwner.IsDirectlyControllable,
+                    ["manualNativeAttackAttempts"] = _crocCombatManualAttackAttempts,
+                    ["maneuvers"] = new JArray(_crocCombatObserver.Checks.Select(value => new JObject {
+                        ["initiator"] = value.Initiator.UniqueId,
+                        ["roll"] = value.InitiatorRoll.Value, ["success"] = value.Success,
+                        ["cmb"] = value.InitiatorCMB, ["cmd"] = value.TargetCMD })),
                     ["brainActive"] = _crocCombatOwner.IsBrainActive,
                     ["ownerBuffs"] = new JArray(_crocCombatOwner.Buffs.Enumerable.Select(value => new JObject {
                         ["name"] = value.Blueprint.name, ["nextTick"] = ReadExactMember(value, "NextTickTime").ToString(),
@@ -463,6 +526,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (distance < gap) { gap = distance; closest = world; }
                     count++;
                 }
+                var pose = CrocodilianAttackVisualPose.For(owner);
+                row["visualContactPose"] = pose == null ? null : pose.Describe();
                 row["mesh"] = mesh.sharedMesh.name;
                 row["weightedVertices"] = count;
                 row["nearestGapMeters"] = gap;

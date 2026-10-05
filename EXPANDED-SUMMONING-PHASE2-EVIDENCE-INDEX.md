@@ -1,7 +1,12 @@
 # Expanded Summoning Phase 2 evidence index
 
+Current Sprint 16 third reconciled batch: **FAIL**, no publication.
+[Exact artifact, fresh processes, passed persistence and unresolved combat/crowd gates](planning/EXPANDED-SUMMONING-SPRINT16-THIRD-RECONCILED-BATCH-REVIEW.md).
+Actual leased installation restored exactly, lease released, disposable working save clean.
+The containing visual/control/setup repair needs new full gates and runtime evidence.
 
-Current Sprint 16 second reconciled batch: **FAIL**, no publication. See
+
+Historical Sprint 16 second reconciled batch: **FAIL**, no publication. See
 [the exact artifact, six fresh processes, failures and repairs](planning/EXPANDED-SUMMONING-SPRINT16-SECOND-RECONCILED-BATCH-REVIEW.md).
 Actual leased installation restored exactly and lease released. The new containing
 repair has passed source/package gates; it needs new clean-head runtime evidence.

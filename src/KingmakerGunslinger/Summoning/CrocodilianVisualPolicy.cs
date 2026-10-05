@@ -23,6 +23,14 @@ namespace KingmakerGunslinger.Summoning
             "right_hand2_jnt", "right_leg1_jnt", "right_leg2_jnt"
         };
 
+        // A cosmetic approach, never mechanical reach or unit movement.
+        internal static float ContactApproach(float gap, float weight)
+        {
+            if (float.IsNaN(gap) || float.IsInfinity(gap) || gap <= 0f ||
+                float.IsNaN(weight) || float.IsInfinity(weight) || weight <= 0f) return 0f;
+            return Math.Min(gap, 0.25f * Math.Min(weight, 1f));
+        }
+
         internal static bool IsPermitted(string key, IEnumerable<string> bones)
         {
             if (!Keys.Contains(key, StringComparer.Ordinal) || bones == null)

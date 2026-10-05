@@ -69,6 +69,21 @@ namespace KingmakerGunslinger.DomainTests
 
         internal static void CrocodilianBonesFailClosed()
         {
+            foreach (float invalid in new[] { -1f, 0f, float.NaN, float.PositiveInfinity })
+            {
+                Assertions.Equal(0f, CrocodilianVisualPolicy.ContactApproach(invalid, 1f),
+                    "Invalid distances never displace a visual.");
+                Assertions.Equal(0f, CrocodilianVisualPolicy.ContactApproach(1f, invalid),
+                    "Invalid timing never displaces a visual.");
+            }
+            Assertions.Equal(0.1f, CrocodilianVisualPolicy.ContactApproach(0.1f, 1f),
+                "An approach stops at the existing target surface.");
+            Assertions.Equal(0.25f, CrocodilianVisualPolicy.ContactApproach(4f, 1f),
+                "Native 15-foot reach cannot create a multi-meter visual lunge.");
+            Assertions.Equal(0.125f, CrocodilianVisualPolicy.ContactApproach(4f, 0.5f),
+                "The cosmetic offset follows the attack envelope.");
+            Assertions.Equal(0.25f, CrocodilianVisualPolicy.ContactApproach(4f, 2f),
+                "Repeated/overshooting timing never exceeds the cosmetic cap.");
             foreach (string key in CrocodilianVisualPolicy.Keys)
             {
                 Assertions.True(CrocodilianVisualPolicy.IsPermitted(key,
