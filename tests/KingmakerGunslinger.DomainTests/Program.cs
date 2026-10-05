@@ -935,6 +935,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("midgame-firearms.stable-identities", MidgameFirearmTests.StableIdentitiesAreNewAndExact),
             Case("midgame-firearms.exact-merchant-scope", MidgameFirearmTests.MerchantScopeIncludesBothNativeVariants),
             Case("midgame-firearms.integrated-stock-repeat", MidgameFirearmTests.InsertionPreservesOtherStockAndRepeats),
+            Case("whiteout-policy.WeatherCatalogObservationIsTypedAndReadOnly", WhiteoutPolicyTests.WeatherCatalogObservationIsTypedAndReadOnly),
             Case("whiteout-policy.ClearWithMarkerInactive", WhiteoutPolicyTests.ClearWithMarkerInactive),
             Case("whiteout-policy.NormalWithMarkerInactive", WhiteoutPolicyTests.NormalWithMarkerInactive),
             Case("whiteout-policy.LightRainActive", WhiteoutPolicyTests.LightRainActive),

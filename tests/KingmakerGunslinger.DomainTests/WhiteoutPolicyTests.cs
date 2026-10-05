@@ -13,6 +13,13 @@ namespace KingmakerGunslinger.DomainTests
             bool ignore = false, bool seeking = false, bool module = true, bool contract = true)
         { return WhiteoutPolicy.ShouldRoll(active, stage, native, ignore, seeking, module, contract); }
         private static void Check(bool expected, bool actual) { Assertions.Equal(expected, actual, "Whiteout frozen policy."); }
+        internal static void WeatherCatalogObservationIsTypedAndReadOnly()
+        {
+            string source=File.ReadAllText(Path.Combine(Environment.CurrentDirectory,"src","KingmakerGunslinger","RuntimeTesting","RuntimeTestRunner.WhiteoutCatalog.cs"));
+            Assertions.True(source.Contains("OfType<BlueprintAreaPart>()") && source.Contains("p.OverrideWeather") && source.Contains("p.IsIndoor"), "Typed native weather metadata discovery.");
+            foreach(string token in new[]{"SetValue(","LoadArea(","SendInput",".OverrideWeather =",".WeatherType =",".RainIntensity =",".SnowIntensity =","GetMethods("})
+                Assertions.False(source.Contains(token),"Catalog observation cannot mutate or broadly reflect: "+token);
+        }
         internal static void ClearWithMarkerInactive()
         { Check(false, Active(true, WhiteoutPrecipitation.Rain, 0)); }
         internal static void NormalWithMarkerInactive()
