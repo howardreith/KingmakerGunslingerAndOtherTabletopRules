@@ -22599,6 +22599,86 @@
       "status": "active",
       "milestone": "Expanded Summoning",
       "notes": "Registered in every feature-module state; the creature-owned combat traits carrier for its grab and maintain-time riders."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Crocodile.Brain",
+      "guid": "517004c345ca4a9a9e5869047e201cc7",
+      "plannedType": "BlueprintBrain",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; the creature-owned Sprint burst, its one-round speed state, its ten-round recharge and the AI entry that uses it."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Crocodile.Sprint",
+      "guid": "727024ee29ac445a826c3b0fd6fa6056",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; the creature-owned Sprint burst, its one-round speed state, its ten-round recharge and the AI entry that uses it."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Crocodile.SprintAi",
+      "guid": "daae0a5672334a16a9a9b1e7590887d1",
+      "plannedType": "BlueprintAiCastSpell",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; the creature-owned Sprint burst, its one-round speed state, its ten-round recharge and the AI entry that uses it."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Crocodile.SprintState",
+      "guid": "eb2e7d46a8bf44b480136f3504e2cac9",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; the creature-owned Sprint burst, its one-round speed state, its ten-round recharge and the AI entry that uses it."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Crocodile.SprintCooldown",
+      "guid": "a5c452aea97d4937b07bac2c515bd6b0",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; the creature-owned Sprint burst, its one-round speed state, its ten-round recharge and the AI entry that uses it."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.DireCrocodile.Brain",
+      "guid": "4dbbf03adb6548c4b846bd65f1bb1a0b",
+      "plannedType": "BlueprintBrain",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; the creature-owned Sprint burst, its one-round speed state, its ten-round recharge and the AI entry that uses it."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.DireCrocodile.Sprint",
+      "guid": "73f3223a33ee435cbaa960638a912175",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; the creature-owned Sprint burst, its one-round speed state, its ten-round recharge and the AI entry that uses it."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.DireCrocodile.SprintAi",
+      "guid": "57309a0dd2fa4a77982dd142fa830541",
+      "plannedType": "BlueprintAiCastSpell",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; the creature-owned Sprint burst, its one-round speed state, its ten-round recharge and the AI entry that uses it."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.DireCrocodile.SprintState",
+      "guid": "0cfec46ae21142f780a99930c90141e3",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; the creature-owned Sprint burst, its one-round speed state, its ten-round recharge and the AI entry that uses it."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.DireCrocodile.SprintCooldown",
+      "guid": "16c9015d2b3e4bbe99f8908da83db9ad",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; the creature-owned Sprint burst, its one-round speed state, its ten-round recharge and the AI entry that uses it."
     }
   ]
 }
