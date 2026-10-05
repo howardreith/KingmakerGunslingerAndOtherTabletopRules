@@ -182,6 +182,20 @@ namespace KingmakerGunslinger.DomainTests
                 !ExpandedSummoningSpecialProfiles.ShouldSwallowOnMaintain(false, true, 1, true) &&
                 !ExpandedSummoningSpecialProfiles.ShouldSwallowOnMaintain(true, true, 1, false),
                 "A swallow is a later turn's successful check on a held target of an allowed size, never the grab.");
+            // The shared maintain path now uses the single-rider selector.
+            // Pin the older swallow-only behavior for every combination, not
+            // the spelling of the helper that used to implement it.
+            foreach (bool success in new[] { false, true })
+            foreach (bool held in new[] { false, true })
+            foreach (int rounds in new[] { 0, 1, 2 })
+            foreach (bool allowed in new[] { false, true })
+                Assertions.Equal(
+                    ExpandedSummoningSpecialProfiles.ShouldSwallowOnMaintain(
+                        success, held, rounds, allowed),
+                    CrocodilianRulesPolicy.SelectMaintainRider(success, held,
+                        rounds, false, false, true, allowed, true) ==
+                        CrocodilianMaintainRider.SwallowWhole,
+                    "The shared selector changed a non-crocodilian swallow condition.");
             Assertions.Equal(4, ExpandedSummoningSpecialProfiles.GiantFlytrapBiteCount,
                 "The Flytrap holds one target per bite.");
             Assertions.True(ExpandedSummoningSpecialProfiles.ShouldMaintainSummonHold(true, true),
@@ -217,7 +231,7 @@ namespace KingmakerGunslinger.DomainTests
                 "UnitPartGrappleTarget", "UnitPartSwallowWhole", "SpitOut(true)",
                 "IPartyLeaveAreaHandler", "IAreaLoadingStagesHandler",
                 "public override void OnTurnOff()", "UnitHelper.TryBreakFree",
-                "ShouldAttemptSummonGrab", "ShouldMaintainSummonHold", "ShouldSwallowOnMaintain",
+                "ShouldAttemptSummonGrab", "ShouldMaintainSummonHold",
                 "IsGrabSizeAllowed", "IsSwallowSizeAllowed", "IsHeldSinceRoundStart" })
                 Assertions.True(components.Contains(token),
                     "Grapple lifecycle component contract is missing: " + token);
