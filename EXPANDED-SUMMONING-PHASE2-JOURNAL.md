@@ -23,6 +23,12 @@ deployment: the active static validator still pinned 2012 after the new test
 made 2013. Corrected that gate metadata; no bypass. Its not-needed restoration
 record is `20261005T1246003806699Z-disposable-expanded-summoning-crocodilians.json`.
 
+The next preflight at `2008d1dd` stopped with one of 2013 domain tests failing:
+Sprint 3 still required the unchanged +5/+7 GUID literals in the old builder
+file. It now asserts the shared production mapping by value, as Sprints 4 and
+16 do. No runtime deployment occurred; not-needed restoration record
+`20261005T1249137127875Z-disposable-expanded-summoning-crocodilians.json`.
+
 ## October 5 survey preflight: test-contract reconciliation
 
 The clean source preflight at `e9dae664a8f46ac68ca4d5244fac33db97c76c1c`
