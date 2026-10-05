@@ -849,6 +849,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RunSummonSameTurnCompatibility();
                     return;
                 }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutWeatherCatalog)
+                {
+                    if (!BlueprintBootstrap.IsInitialized || ResourcesLibrary.Preloading) return;
+                    Complete(RunWhiteoutWeatherCatalogObservation());
+                    return;
+                }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.ObserveModelDVendors)
                 {
                     if (!BlueprintBootstrap.IsInitialized || ResourcesLibrary.Preloading) return;

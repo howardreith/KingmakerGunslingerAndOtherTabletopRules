@@ -468,6 +468,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ModelDVendors.cs" />
     <Compile Include="ElementalRaces\WhiteoutPolicy.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.WhiteoutWeather.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.WhiteoutCatalog.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MidgameWorkingSave.cs" />
     <Compile Include="Acquisition\SkeletalSalesmanStockCatalog.cs" />
     <Compile Include="Firearms\MidgameFirearmCatalog.cs" />
