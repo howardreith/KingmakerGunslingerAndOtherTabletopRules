@@ -1,6 +1,6 @@
 # Expanded Summoning Phase 2 implementation report
 
-## Current October 5 laptop result — Sprint 16 NOT QUALIFIED
+## Current October 5 laptop result — Sprint 16 hidden PASS; publication pending
 
 PR #26 / `codex/expanded-summoning-phase2b-sprints14-17` is the sole
 owner-designated development line. PR #27 is frozen salvage-only; no source
@@ -8,19 +8,21 @@ has been imported. The controlling state supersedes historical authority
 statements below. Phase 2C remains authorized but cannot start until Phase 2B
 owner acceptance; this mission stops after Phase 2B closure.
 
-Exact `197840577cb995beea726a34f5dc6ae9dd9674d9` passed every prelaunch gate
-(2019/2019 full), then smoke 11/11, main **208/209 FAIL**, crowd 20/20,
-prepare 9/9, cleanup 9/9, absence 5/5. All 55 combat assertions, including
-the four Dire tail contacts, passed. The sole remaining lifecycle row spent
-343 frames paused with only 0.04 native seconds. Other source-death rows
-released with five native prey updates.
+Exact `e3aeae630d51d27c45694fb9e92e9093048b1af9` passed every prelaunch gate
+(218/218 focused; 2020/2020 full), then smoke 11/11, main **209/209 PASS**,
+crowd 20/20, prepare 9/9, cleanup 9/9 and fresh absence 5/5. All 55 combat
+assertions and 81 final review rows pass. Crocodile source death now proves
+three native post-death prey ticks and exact relationship cleanup after one
+bounded owned-death pause resume; clock/pause/mode/awake restoration passes.
 
-The containing fixture-only correction resumes only after its requested owned
-death and requires a witnessed post-death native prey update. Focused 218/218
-of 2020 and incremental compile PASS; new exact-artifact gate still required.
-[Exact evidence and correction](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-NATIVE-UPDATE-BATCH-REVIEW.md).
+No assertion waived, no DATA imports, no altered production rule to pass a
+fixture. Hidden qualification includes live-bite damage, one-rider/cadence,
+Sprint interactions, both modes, original views, UI, targeted routes and
+persistence. [Exact evidence](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-HIDDEN-PASS-REVIEW.md).
+Publication still requires a new exact artifact with only Dire suppression
+removed and all twenty roots proved through their public parents.
 
-Actual leased snapshot restored at 23:04:04 UTC: 136 files / Info 0.0.117 /
+Actual leased snapshot restored at 23:49:30 UTC: 136 files / Info 0.0.117 /
 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
 Lease completed, no game/lock/staging; fresh save absence clean. DATA audit
 complete/read-only, zero ports. Six Dire roots remain withheld; Sprint 17 waits.

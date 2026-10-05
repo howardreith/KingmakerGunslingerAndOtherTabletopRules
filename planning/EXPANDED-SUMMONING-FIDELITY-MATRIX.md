@@ -2,18 +2,19 @@
 
 ## Current Sprint 16 disposition, October 5
 
-Sprint 16 remains **NOT QUALIFIED**, not published. Exact laptop candidate
-`197840577cb995beea726a34f5dc6ae9dd9674d9` passed all prelaunch gates
-(2019 full), then 11/11 smoke, **208/209 main FAIL**, 20/20 crowd,
+Sprint 16's **hidden candidate is internally QUALIFIED; publication pending**.
+Exact laptop `e3aeae630d51d27c45694fb9e92e9093048b1af9` passed all prelaunch
+gates (218 focused / 2020 full), then 11/11 smoke, **209/209 main PASS**, 20/20 crowd,
 9/9 prepare, 9/9 cleanup and 5/5 absence.
-[Exact review](EXPANDED-SUMMONING-SPRINT16-LAPTOP-NATIVE-UPDATE-BATCH-REVIEW.md).
+[Exact review](EXPANDED-SUMMONING-SPRINT16-LAPTOP-HIDDEN-PASS-REVIEW.md).
 
 The complete combat matrix passes 55/55, including all four repaired Dire
 tail contacts. Mechanics 37/37, speed 19/19, icons 9/9, all twenty routes,
-UI/fallback/resource controls pass. Sole failure: Crocodile active-source-death
-observation paused for 343 frames/0.04 native seconds. Fixture-only correction
-must obtain a real post-death update; no assertion waived or rule changed.
-Actual installation and clean working-save absence verified; no complete gate.
+UI/fallback/resource controls pass. Crocodile active-source-death proves three
+native post-death prey updates after one bounded owned-death resume, then exact
+hold cleanup. Final review 81/81 and exact mode/pause/clock/awake restoration
+pass. Actual installation and fresh clean working-save absence verified.
+No assertion waived. New publication artifact must prove all twenty public roots.
 
 Crocodile identity and fourteen published roots are unchanged. All six Dire
 roots remain withheld: 976 registered / 970 published / 29 native wrappers /
@@ -21,7 +22,7 @@ roots remain withheld: 976 registered / 970 published / 29 native wrappers /
 zero Mobility ranks. Run is an explicit evidence-backed engine omission, not
 a silent substitution; aquatic skills/Hold Breath are outside land-use scope.
 The deterministic original models, four packaged assets and qualified rig
-binding exist; contact qualification remains incomplete. No visible identity
+binding are now technically qualified, including live jaw/tail contact. No visible identity
 or icon was reauthored in this laptop checkpoint.
 
 `OwnerAcceptedAdaptation: SWALLOW_ELIGIBLE_TARGET_ELSE_DEATH_ROLL`
