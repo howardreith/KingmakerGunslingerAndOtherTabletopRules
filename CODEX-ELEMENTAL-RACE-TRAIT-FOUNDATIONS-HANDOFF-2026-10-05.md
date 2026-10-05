@@ -5,7 +5,7 @@
 FieryGlarePublished: false
 StoicDignityPublished: false
 
-Both unpublished mechanical foundations passed the first qualified candidate's real-engine qualification. This checkpoint records genuine candidate evidence; the clean-commit artifact closure is recorded below when completed. Neither trait is player-acquirable or claimed to ship. Howie supplied no human visual or acceptance results in this mission.
+**COMPLETE:** both unpublished mechanical foundations passed real-engine qualification twice from independent fresh processes on the exact clean committed artifact, followed by exact-artifact working-save smoke and byte-exact live restoration. The initial candidate evidence below remains historical; the clean-commit closure is authoritative. Neither trait is player-acquirable or claimed to ship. Howie supplied no human visual or acceptance results in this mission.
 
 - Repository: `howardreith/KingmakerGunslingerAndOtherTabletopRules`; origin `https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules.git`.
 - Exact starting SHA: `b28b5786d10a94f3257fafa5cf02bbd50471d182`, fetched solely from `origin/codex/gunslinger-content-followup-2026-10-04` without pull, rebase or tags; local and remote content tips verified equal before isolation and before this checkpoint.
@@ -150,7 +150,39 @@ Exact live transaction:
 
 ## Clean committed artifact closure
 
-The first coherent source checkpoint is qualified above. The exact clean source commit, final local/remote verification, clean-artifact hashes and repeated native evidence are populated in the final documentation checkpoint. Documentation-only closure will not alter packaged source or imply a different tested DLL identity.
+- Qualified source commit and verified local/remote SHA at completion of mechanics qualification: `2c5bbcaf428b3e0ac017ba5eb5a7969674bcf56e`.
+- Source tree at build and all three final launches: **clean**; no `AllowDirtyGit` switch.
+- First commit: `feat(traits): qualify unpublished elemental mechanics foundations`, `2c5bbcaf428b3e0ac017ba5eb5a7969674bcf56e`; pushed through the required wrapper before clean rebuild.
+- Final checkpoint: a direct documentation-only child, `docs: close elemental trait foundation qualification`. Its exact final local/remote SHA is recorded after guarded push in the completion message and ignored `artifacts/mission/final-git-state.json`. `git rev-parse HEAD` and the exact remote branch SHA must agree; the handoff cannot embed its own commit hash.
+- All packaged inputs are identical to the qualified source commit. ZIP inspection confirms this handoff is not packaged; no rebuild merely for documentation identity, no claim that the final documentation tip is the DLL's embedded commit.
+
+| Clean artifact identity | Value |
+|---|---|
+| Version | `0.0.141` — unchanged |
+| Embedded/source commit | `2c5bbcaf428b3e0ac017ba5eb5a7969674bcf56e` |
+| Source fingerprint | `c8dff63bb1a9148de4f0eee8e14b2b0cf536089b5abbd37551fda3754cc42f91` |
+| DLL SHA-256 | `508025890be9b9cf682f1fc70377dd11ab1f9b87d2a1d6b132cdca1bead4d046` |
+| DLL MVID | `922d085c-1755-4595-b16e-da0d43a9343e` |
+| ZIP SHA-256 | `ab0edb84d065a003415cf802d5c1d086ea244320cdecbf8a5c4676e5e475b993` |
+| Package location | `artifacts/local-runtime/0.0.141/KingmakerGunslinger-0.0.141-local-runtime.zip` |
+
+Clean source `Invoke-KmgGate.ps1 -Level Sprint`: **2093/2093**, repository/static/icon/manifest checks, exact-reference clean Release build, deterministic package and strict standalone validation **PASS** (98.5 seconds). Focused 53/53, changed PowerShell parser checks and changed Python syntax pass. The 484 runtime-request/preflight checks passed on the unchanged request/PowerShell contracts. Final documentation validation and staged audits run again before the final checkpoint.
+
+| Final scenario | Run/evidence identifier | Fresh game PID | Assertions |
+|---|---|---:|---|
+| observe-unpublished-race-trait-foundations | `20261005T2242315307611Z-ca9af45095bf44359b7f5a3a39347957` | 20856 | 49/49 PASS |
+| observe-unpublished-race-trait-foundations | `20261005T2244356552048Z-c6c5cb7779bc4d02b004134b3b937c59` | 38432 | 49/49 PASS |
+| working-save-smoke | `20261005T2245417200280Z-9f2961040df44d39a1bacf1cebb18140` | 33156 | 11/11 PASS |
+
+Final native runs use the exact same immutable clean artifact, Steam App 640820, closed requests, `KMG_AUTOMATION_WORKING`, no arbitrary input, automatic exit and no forced termination. All results have `saveWritingApiObserved = false`; read-only native header/counter suppression and descriptor restoration are recorded. No save write or raw-save operation occurred. Curated assertions are in each runtime-evidence directory's `unpublished-race-trait-foundations.json` / `runtime-result.json`; no machine-local or proprietary artifacts are committed.
+
+- Final lease: `C:\Dev\KingmakerGunslingerLab\compatibility-state\runtime-20261005T224151Z-6eb549fa1d654427a548f808c073710c\runtime-lease.json` — **Completed**.
+- Final deployment receipt: `C:\Dev\KingmakerGunslingerLab\runtime-evidence\deployments\20261005T2242213583917Z\deployment.json`.
+- Exact current-install backup, acquired after lease: `C:\Dev\KingmakerGunslingerLab\runtime-backups\live-mod\20261005T2242146583778Z`.
+- **254/254 original files** and every directory restored, with identical filename, length and SHA-256 inventories; original settings and pre-existing cache files preserved. Ignored `clean-2c5bbcaf4-live-before.json` equals `clean-2c5bbcaf4-live-after.json`.
+- Final helper status: **PASS**; restoration **true**; no active Kingmaker process or compatibility lock after closure. Final branch clean/push and process/lease/source/ancestry audits are recorded in the final receipt.
+
+Neither trait is player-acquirable. No concern was converted into publication, art or unrelated engineering. Stoic Dignity is a **qualified unpublished mechanics foundation**, not `BLOCKED-WITH-EVIDENCE`. Fiery Glare remains explicitly **ADAPTED**.
 
 ## Finite future publication work
 
