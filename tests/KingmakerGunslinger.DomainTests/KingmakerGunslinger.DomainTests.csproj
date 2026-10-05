@@ -1076,4 +1076,9 @@
   </ItemGroup>
 
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Compile Include="FieryGlareFoundationTests.cs" />
+    <Compile Include="StoicDignityFoundationTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\StoicDignityPolicy.cs"><Link>ElementalRaces\StoicDignityPolicy.cs</Link></Compile>
+  </ItemGroup>
 </Project>

@@ -3,6 +3,12 @@ Set-StrictMode -Version Latest
 
 $script:KmgRuntimeEvidenceRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-evidence'
 $script:KmgRuntimeScenarioMetadata = [ordered]@{
+    'observe-unpublished-race-trait-foundations' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
     'observe-whiteout-weather-catalog' = [pscustomobject]@{
         RequiresSaveName = $false; PermittedSaveName = $null
         RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
@@ -1906,6 +1912,9 @@ function Assert-KmgRuntimeScenarioPreflight {
     }
     if ($Scenario -ceq 'observe-whiteout-weather' -and -not $ExitAfterCompletion) {
         throw 'Whiteout read-only observation requires automatic exit.'
+    }
+    if ($Scenario -ceq 'observe-unpublished-race-trait-foundations' -and -not $ExitAfterCompletion) {
+        throw 'Unpublished race trait foundations require automatic exit.'
     }
     $metadata = Get-KmgRuntimeScenarioMetadata -Scenario $Scenario
     $qualifiedElementalRaces114 =

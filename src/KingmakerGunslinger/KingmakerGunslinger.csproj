@@ -1561,4 +1561,10 @@
   </Target>
 
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Compile Include="ElementalRaces\StoicDignityPolicy.cs" />
+    <Compile Include="ElementalRaces\StoicDignityMechanics.cs" />
+    <Compile Include="ElementalRaces\UnpublishedRaceTraitFoundationFactory.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.UnpublishedRaceTraitFoundations.cs" />
+  </ItemGroup>
 </Project>
