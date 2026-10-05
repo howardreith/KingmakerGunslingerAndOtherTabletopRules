@@ -569,3 +569,9 @@ are recorded in `whiteout-weather-observation.json`. No weather state is forced
 or written; no Whiteout marker/buff/patch/icon/acquisition is registered; no UI
 input or screenshot is used. A PASS establishes the observation/restoration
 contract only, not Whiteout gameplay or a universal indoor-weather conclusion.
+
+`observe-whiteout-weather-catalog` is the companion save-free typed blueprint
+observation. It records exact area-part IDs with authored Rain/Snow overrides
+and Light-or-greater inclemency, indoor flags and native intensity thresholds.
+It does not load those areas or equate metadata with actual gameplay weather.
+It changes no weather, blueprint field, time, scene, unit or save.

@@ -242,3 +242,37 @@ Remaining investigation: native scene projection has an explicit
 registered area metadata can narrow whether there are authored precipitation
 cases suitable for further observation. The working save's Clear weather cannot
 by itself qualify an active-precipitation indoor decision or a new combat patch.
+
+
+## Whiteout catalog checkpoint and bounded stopping decision
+
+Whiteout finishes this mission as **PARTIAL-SAFE-FOUNDATION**, with the native
+binding **BLOCKED-WITH-EVIDENCE** by the unresolved indoor/active-weather
+prerequisite under mission section 11.4. No marker/buff/patch identity exists.
+The exact attack method exists; that is not the blocker. No global weather
+mutation, unqualified late-area load or player publication was introduced.
+
+The no-save catalog observer passed 2/2 assertions in
+`20261005T0556341614778Z-observe-whiteout-weather-catalog`: 607 area parts,
+eight precipitation overrides, five marked indoor. These are FinalDungeon,
+FinalDungeon2, FinalDungeon3, CultistsVillage and HouseAtTheEdgeOfTime_FB.
+Authored configuration is not actual loaded-area weather evidence. The clear
+mansion/Oleg observations therefore cannot choose the indoor gate safely.
+The research contract records the exact missing native-weather fixture and
+future qualification required, rather than asserting the engine cannot support it.
+
+The added focused test brings Whiteout to 35 cases and the full suite to
+**2,040/2,040 PASS**. Repository validation, clean Release, deterministic package,
+strict standalone validation and preflight (480 cases) pass. The first catalog
+build failed because CreateResult expects a List rather than an assertion array;
+ToList repaired only that adapter error. No deployment occurred on that failure.
+Local attempt logs: `artifacts/mission/whiteout-catalog-batch.log` and
+`artifacts/mission/whiteout-catalog-batch-2.log`.
+
+Qualified DLL `d0c9c0cbc9033292e60baa99dcd4620c3583cb850e763299639cb786325f1b5a`,
+MVID `c5375964-8425-43c6-8aa8-da2cad96346c`, package
+`f0884a97481f4e4b2cdbc9a4d335f4e4005b4698cbe7844dc6576fcf86ac3ec7`, source
+fingerprint `e2f4833bfc14c795d2063e565110803cdafaf3a81d2fa457d157a30b134036a9`.
+The fresh Steam process auto-exited; exact live backup
+`20261005T0556256463280Z` restored and verified; lease released.
+Final integrated qualification and handoff consolidation remain.

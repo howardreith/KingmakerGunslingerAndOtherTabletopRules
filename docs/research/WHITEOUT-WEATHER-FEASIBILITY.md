@@ -89,3 +89,46 @@ same assembly before runtime qualification. Save writes are forbidden.
 If the exact patch or deterministic weather fixture cannot be proven safe,
 retain the strongest safe policy/observation foundation and record the exact
 missing contract. Successful compilation is not mechanical runtime evidence.
+
+## Followup result: policy and observation only
+
+Disposition: **PARTIAL-SAFE-FOUNDATION**. There is no registered Whiteout marker,
+buff, attack patch, acquisition path, icon or public setting. The policy/state/
+replay models have deterministic coverage; they are not bound to gameplay.
+
+Guarded scene run `20261005T0540413348351Z-observe-whiteout-weather` observed
+indoor mansion `2849fdde28fe50f4d935bf2cf3405051` as Normal/Clear and outdoor
+Oleg `ead426a6c23d39548a670ee515d77df4` as visual Rain with ActualWeather=Clear.
+The exact native indoor predicates agreed. The proposed activation was false
+in both, two load/unload pairs were observed, and no weather-change notification
+was fabricated. The round trip restored the observed state with zero save writes.
+
+The safer no-save catalog run
+`20261005T0556341614778Z-observe-whiteout-weather-catalog` then inspected 607
+registered area parts. Eight have authored precipitation overrides at Light or
+higher; five are marked indoor: FinalDungeon, FinalDungeon2, FinalDungeon3,
+CultistsVillage, and HouseAtTheEdgeOfTime_FB. Native scene projection contains
+an indoor OverrideWeather exception. These configured identities are evidence
+against assuming all indoor areas are clear, but are **not loaded-scene proof**
+that precipitation remains active indoors. Neither adding an indoor gate nor
+omitting one is runtime-qualified by these observations.
+
+**Exact remaining prerequisite:** a safely controlled, native active-precipitation
+indoor/outdoor observation, followed by real weather-event and attack qualification.
+The existing harness has no deterministic weather fixture; source inspection
+found no qualified WeatherType/intensity setter or weather-event injector.
+The working-save round trip stays Clear. The authored alternatives are late,
+scripted or unqualified area/part destinations, outside the established safe
+round-trip fixture. Loading one indiscriminately or forcing shared weather would
+substitute an unproven fixture for the missing contract. Mission section 11.4
+requires stopping this slice at policy plus observation when indoor evidence is
+ambiguous. No indoor rule is chosen. This is a current qualification boundary,
+not a claim that a future narrowly designed fixture or patch is impossible.
+
+The native private instance method
+`RuleAttackRoll.TryOvercomeTargetConcealmentAndMissChance(): bool` does exist
+(zero parameters, 149 IL bytes on native MVID
+`07fa1e4d-8618-41b3-9b8d-faa17d3b26f7`). A missing patch point is **not** the blocker.
+No attack patch was installed, so no two-process combat qualification is claimed.
+See the mission handoff for exact assembly identities, failed attempts, final
+integrated reruns and restoration records.
