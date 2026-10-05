@@ -20,7 +20,7 @@ namespace KingmakerGunslinger.DomainTests
     /// </summary>
     internal static class ExpandedSummoningSprint16Tests
     {
-        internal const int AppendedLedgerIdentities = 17;
+        internal const int AppendedLedgerIdentities = 27;
 
         private const string DireKey = "dire-crocodile";
         private const string CrocodileKey = "crocodile";
@@ -202,13 +202,16 @@ namespace KingmakerGunslinger.DomainTests
                 .Where(value => value.Contains("DireCrocodile")).ToArray();
             // One unit, three abilities in each family, a Celestial and a
             // Fiendish child for each of the three Monster abilities: 13.
-            if (mine.Length != 14)
+            if (mine.Length != 19)
                 throw new InvalidOperationException(
                     "The ledger holds " + mine.Length +
-                    " Dire Crocodile identities, not 14: a unit, three " +
+                    " Dire Crocodile identities, not 19: a unit, three " +
                     "abilities in each family, a Celestial and a Fiendish " +
                     "child for each of the three Monster abilities, and the " +
-                    "combat traits carrier its riders ride.");
+                    "combat traits carrier its riders ride, and the " +
+                    "five its Sprint needs - the ability, its " +
+                    "one-round speed state, its ten-round recharge, " +
+                    "the AI entry and the brain that carries it.");
             foreach (string required in new[] {
                 "KMG.Summoning.Unit.DireCrocodile",
                 "KMG.Summoning.Ability.SM.Tier7.DireCrocodile.One",
@@ -221,7 +224,13 @@ namespace KingmakerGunslinger.DomainTests
                 "KMG.Summoning.Natural.Tail4d8",
                 // Sprint 16's riders ride one carrier per creature.
                 "KMG.Summoning.Special.Crocodile.CombatTraits",
-                "KMG.Summoning.Special.DireCrocodile.CombatTraits" })
+                "KMG.Summoning.Special.DireCrocodile.CombatTraits",
+                // Sprint recharges rather than running out, so it
+                // needs a cooldown the ability refuses to run under.
+                "KMG.Summoning.Special.Crocodile.Sprint",
+                "KMG.Summoning.Special.Crocodile.SprintCooldown",
+                "KMG.Summoning.Special.DireCrocodile.Sprint",
+                "KMG.Summoning.Special.DireCrocodile.SprintCooldown" })
                 if (!symbols.Contains(required, StringComparer.Ordinal))
                     throw new InvalidOperationException(
                         "The ledger is missing " + required + ".");
