@@ -20,7 +20,7 @@ namespace KingmakerGunslinger.DomainTests
     /// </summary>
     internal static class ExpandedSummoningSprint16Tests
     {
-        internal const int AppendedLedgerIdentities = 27;
+        internal const int AppendedLedgerIdentities = 28;
 
         private const string DireKey = "dire-crocodile";
         private const string CrocodileKey = "crocodile";
@@ -202,10 +202,10 @@ namespace KingmakerGunslinger.DomainTests
                 .Where(value => value.Contains("DireCrocodile")).ToArray();
             // One unit, three abilities in each family, a Celestial and a
             // Fiendish child for each of the three Monster abilities: 13.
-            if (mine.Length != 19)
+            if (mine.Length != 20)
                 throw new InvalidOperationException(
                     "The ledger holds " + mine.Length +
-                    " Dire Crocodile identities, not 19: a unit, three " +
+                    " Dire Crocodile identities, not 20: a unit, three " +
                     "abilities in each family, a Celestial and a Fiendish " +
                     "child for each of the three Monster abilities, and the " +
                     "combat traits carrier its riders ride, and the " +

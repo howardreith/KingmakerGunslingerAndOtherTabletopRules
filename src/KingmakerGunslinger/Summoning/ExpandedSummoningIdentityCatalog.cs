@@ -36,7 +36,7 @@ namespace KingmakerGunslinger.Summoning
         // 3d6 bite or a 4d8 tail slap, which is the Dire Crocodile's printed
         // routine. Its death roll and swallow whole will add their own when
         // they are implemented.
-        internal const int SpecialIdentityCount = 191;
+        internal const int SpecialIdentityCount = 192;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -287,6 +287,7 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.DireCrocodile.SprintAi", "BlueprintAiCastSpell"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.DireCrocodile.SprintState", "BlueprintBuff"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.DireCrocodile.SprintCooldown", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.DireCrocodile.Swallowed", "BlueprintBuff"));
             Validate(result);
             return result.AsReadOnly();
         }

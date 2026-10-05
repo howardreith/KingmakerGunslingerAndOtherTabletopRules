@@ -22679,6 +22679,14 @@
       "status": "active",
       "milestone": "Expanded Summoning",
       "notes": "Registered in every feature-module state; the creature-owned Sprint burst, its one-round speed state, its ten-round recharge and the AI entry that uses it."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.DireCrocodile.Swallowed",
+      "guid": "327f8a0108ae4e7eb50ec7793e67f92c",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; the creature-owned swallowed state so a victim is not placed in the Purple Worm’s stomach with the worm’s crush."
     }
   ]
 }
