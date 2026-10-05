@@ -1,5 +1,9 @@
 # Expanded Summoning Phase 2 evidence index
 
+[Separate read-only DATA salvage audit](planning/EXPANDED-SUMMONING-PHASE2B-DATA-SALVAGE-AUDIT.md):
+all 29 differing files classified after pushed laptop checkpoint 9cd5cdc7;
+zero source imports, no frozen-branch mutation or transferred qualification.
+
 Current Sprint 16 laptop native-faction batch: **FAIL 188/208**, no publication.
 [Exact bc36 artifact, six runs, classified failures and exact restoration](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-NATIVE-FACTION-REVIEW.md).
 Smoke 11/11; crowd 20/20; prepare 9/9; cleanup 9/9; fresh absence 5/5.
