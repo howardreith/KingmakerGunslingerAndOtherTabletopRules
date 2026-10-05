@@ -22583,6 +22583,22 @@
       "status": "active",
       "milestone": "Expanded Summoning",
       "notes": "Registered in every feature-module state; live parent publication remains independently gated and every Dire Crocodile placement is suppressed until its own guarded review passes."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Crocodile.CombatTraits",
+      "guid": "a254feca264547ce9157b781c83de88c",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; the creature-owned combat traits carrier for its grab and maintain-time riders."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.DireCrocodile.CombatTraits",
+      "guid": "89704fe84b90420a82bfcb2565bdc14d",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; the creature-owned combat traits carrier for its grab and maintain-time riders."
     }
   ]
 }
