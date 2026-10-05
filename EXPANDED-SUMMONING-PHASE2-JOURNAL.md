@@ -1,5 +1,30 @@
 # Expanded Summoning Phase 2 journal
 
+## October 5, 21:13 UTC — laptop native-faction batch failed safely
+
+The latest owner directive returns sole development ownership to the laptop
+Phase 2B branch / PR #26. The side branch / PR #27 is frozen salvage-only,
+with all safety refs and prior local work preserved. No DATA source imported.
+Exclusive source receipt records the current live PID/start identity.
+
+Exact bc36 candidate passed all prelaunch gates, then six fresh Steam runs:
+smoke 11/11, main 188/208 FAIL, crowd 20/20, prepare 9/9, cleanup 9/9,
+absence 5/5. Native-faction manual control worked; all eighteen combat cells
+ran. Remaining demonstrated defects are Dire AI contact reach, manual-swallow
+fixture sequencing, in-memory UI restoration and lifecycle clock/turn context.
+Keep strict assertions; change the observation/fixture strategy before retry.
+No source-only qualification, no publication, no Sprint 17.
+
+Prepare and cleanup each wrote the authorized working save natively; a fresh
+load proves zero owned state. Actual leased 136-file 0.0.117 installation
+restored exactly, no Kingmaker/runtime lock/staging remains. Exact hashes,
+requests, failure classification and source ownership:
+[laptop native-faction review](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-NATIVE-FACTION-REVIEW.md).
+Next: push this checkpoint, perform the owner's separate read-only salvage
+audit, update PR #26's notice, then bounded repairs and a new exact-artifact gate.
+Phase 2C stays authorized but deferred until Phase 2B owner acceptance.
+
+
 ## October 5, 15:55 UTC — first hidden batch failed safely; correction work
 
 `0238bf03166dfb3dd7bf0205c12f82a2d2757caa` passed full static/domain/build/

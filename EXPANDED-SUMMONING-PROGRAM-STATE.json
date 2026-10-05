@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "program": "Kingmaker Expanded Summoning Ideal Roster",
   "phase2Mission": {
-    "authority": "Owner Phase 2B-only closure and synchronization orders 2026-10-05; committed contracts (external mission file absent locally)",
+    "authority": "Latest owner directive 2026-10-05: laptop sole Phase 2B source owner, PR 26 active; PR 27 frozen salvage-only; finish Phase 2B and stop for owner review",
     "authorizedSprints": [
       9,
       10,
@@ -12,7 +12,11 @@
       14,
       15,
       16,
-      17
+      17,
+      18,
+      19,
+      20,
+      21
     ],
     "completedSprints": [
       9,
@@ -24,9 +28,11 @@
       15
     ],
     "currentSprint": 16,
-    "currentSubItem": "Sprint 16 fifth batch FAIL strict manual-control guard; damage 37/37, lifecycle 80/80, crowd and persistence PASS; native faction fixture/diagnostics repair awaits full gates; Dire withheld; Sprint 17 not started",
-    "lastGuardedRuntimePass": "20260930T1314329155573Z-disposable-expanded-summoning",
-    "lastGuardedRestoration": "20261005T1555173824556Z-disposable-expanded-summoning-crocodilians.json",
+    "currentSubItem": "Sprint 16 laptop bc36 batch NOT QUALIFIED main 188/208; native-faction control works; Dire AI contacts and fixture sequencing/UI/lifecycle repairs remain; closed persistence clean; separate read-only salvage audit next; Dire withheld; Sprint 17 not started",
+    "lastGuardedRuntimePass": "20261005T2110323476981Z-working-save-expanded-summoning-verify-absent (5/5; not complete Sprint 16 qualification)",
+    "lastGuardedRestoration": "20261005T2040235864744Z actual snapshot restored 2026-10-05T21:13:38.1407714Z; batch 387FE4AECCB70BC56EABB2271637673111ACE001A9073CB0A9F088606033FC47",
+    "activePullRequest": 26,
+    "archivedSalvagePullRequest": 27,
     "giantWaspPublished": true,
     "stirgeRegistered": true,
     "stirgePublished": true,
@@ -59,7 +65,7 @@
       "restoration": "20261005T1258077246783Z-disposable-expanded-summoning-crocodilians.json",
       "curatedEvidence": "planning/EXPANDED-SUMMONING-SPRINT16-SURVEY-REVIEW.md"
     },
-    "crocodilianRiderDecision": "OwnerAcceptedAdaptation: SWALLOW_ELIGIBLE_TARGET_ELSE_DEATH_ROLL; bounded existing held-target command-seam audit found no safe choice carrier. Maintain-path runtime proof pending.",
+    "crocodilianRiderDecision": "OwnerAcceptedAdaptation: SWALLOW_ELIGIBLE_TARGET_ELSE_DEATH_ROLL; bounded existing held-target command-seam audit found no safe choice carrier. Exact bc36 damage/maintain rows pass; complete Sprint 16 gate still fails.",
     "sprint16TechnicalQualified": false,
     "sprint16HiddenCandidateReview": "planning/EXPANDED-SUMMONING-SPRINT16-HIDDEN-CANDIDATE-REVIEW.md",
     "sprint16PrelaunchCorrection": "b6e26e2ef207cf5302e9796026527beb9556d17c rejected before deployment: full suite 2018 tests, two stale 305/303 package expectations. Corrected to current 312/310; private execution suffix corrected; prelaunch abort policy now prevents repeated failed builds. Focused 218/218 and 68 orchestration assertions PASS. No runtime/save write; exact interrupted generic lease completed, actual live tree equals snapshot 20261005T1524442963100Z at the accepted 136-file fingerprint. Full corrected candidate gate next.",
@@ -76,7 +82,17 @@
     "totalVisibleChoices": 999,
     "sprint15Published": true,
     "sprint15Status": "COMPLETE AND PUBLISHED",
-    "phase2CAuthorized": false,
+    "phase2CAuthorized": true,
+    "phase2CStartDeferredUntilPhase2BOwnerAcceptance": true,
+    "phase2CDependency": "Successful Phase 2B closure and owner acceptance; do not start Sprints 18-22 under this finalization mission",
+    "sprint16LaptopNativeFactionBatch": {
+      "candidate": "bc36f97612020d6d680144bcb6ebc01bebe11216",
+      "status": "NOT QUALIFIED; smoke 11/11, main 188/208, crowd 20/20, prepare 9/9, cleanup 9/9, absence 5/5",
+      "review": "planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-NATIVE-FACTION-REVIEW.md",
+      "restoration": "VERIFIED actual leased 136-file / Info 0.0.117 snapshot 20261005T2040235864744Z; lease Completed; no game, shared lock or staging",
+      "workingSave": "two authorized native writes; fresh absence zero owned fixture units/state",
+      "salvageImported": false
+    },
     "sprint16Reconciliation": "planning/EXPANDED-SUMMONING-PHASE2B-RECONCILIATION-2026-10-05.md",
     "sprint16SecondReconciledBatch": {
       "candidate": "634b6c18972747a4bff0ceb27f29af5189e5f586",

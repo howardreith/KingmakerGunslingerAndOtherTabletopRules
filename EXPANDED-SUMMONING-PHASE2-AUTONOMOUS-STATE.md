@@ -1,112 +1,80 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-05 (reconciled Phase 2B candidate; NOT QUALIFIED)
+## CURRENT STATE, 2026-10-05 (laptop sole owner; Sprint 16 NOT QUALIFIED)
 
-This header governs over all history below. The latest owner orders require
-Sprint 16 qualification, Sprint 17, Phase 2B closure, then **STOP**. Phase 2C
-is unauthorized in this mission. No merge, force push, rebase of published work,
-release, tag, version bump, PR change or permanent deployment.
+This section governs over all historical mission/ownership statements below.
+The latest owner directive designates HOWARD-LAPTOP and
+`codex/expanded-summoning-phase2b-sprints14-17` / draft PR #26 as the sole
+development line. PR #27 / `codex/expanded-summoning-phase2b-finalize-20261005`
+are frozen salvage-only evidence. No DATA source has been imported.
+Finish Sprint 16, Sprint 17 and Phase 2B closure, then STOP for owner review.
+Phase 2C is authorized in principle (sprints 9-21 authorized), but its start
+is deferred until Phase 2B owner acceptance. Do not start Sprints 18-22 here.
+No merge, release, tag, version bump, force push or permanent deployment.
 
-- Worktree: `C:/Dev/KingmakerGunslingerLab/.worktrees/expanded-summoning-phase2a`;
-  branch: `codex/expanded-summoning-phase2b-sprints14-17`. The previous remote
-  advance was reconciled only after the owner's explicit synchronization order.
-  Authoritative base: `390f9a39d9cce2a40e6528d3215a678d6cd15757`, retaining
-  every runtime-derived production/fixture correction and failed-attempt ledger.
-- Unpublished sibling `3ebefe7b6c5525156d8494de82435abf8574f503` is preserved
-  at local safety branch `codex/local-safety/phase2b-3ebefe7-2026-10-05`.
-  Rename-preservation and normal branch creation avoided reset, merge and
-  history rewrite. Both siblings' diffs and range-diff were reviewed. Replay:
-  independent positive-version/catalog/crocodilian preflight hardening. Manual
-  reconciliation: this header and evidence index. No runtime repair was replaced.
-  Detailed ledger: `planning/EXPANDED-SUMMONING-PHASE2B-RECONCILIATION-2026-10-05.md`.
-- Exclusive local source ownership was checked against all six agent process
-  directories, active command processes, Git operation state, clean worktree,
-  runtime coordination state and the stable remote. An owned exclusive file
-  handle records PID/start identities in worktree Git metadata; its local
-  receipt is `artifacts/phase2b-closure/source-ownership.json`. Do not steal it.
-  If the remote moves again, stop without history reconciliation.
-- Sprint 16 remains **NOT QUALIFIED**. The first hidden candidate on `0238bf0`
-  failed mechanics, visual and persistence assertions; both save-writing stages
-  refused to save. Its exact artifact/results/restoration are retained in
-  `planning/EXPANDED-SUMMONING-SPRINT16-HIDDEN-CANDIDATE-REVIEW.md`.
-  `390f9a39` corrects per-copy skills/HP, native bite multiplier/dice scaling,
-  prone immunity, native death settlement, owned-only typed fixture cleanup,
-  and guided movement. It has not passed a corrected runtime batch.
-- Current publication remains 976 registered generated placements / 970
-  published / 6 Dire withheld / 29 native wrappers / 999 visible choices.
-  These source pins must be checked by the reconciled full suite; previous
-  sibling passing tests/packages do not qualify this candidate.
-- Reconciled working-tree gates PASS: 216 focused; 2018/2018 unfiltered;
-  repository/static/icon validation; 480 preflight; 68 orchestration; closed
-  persistence/crowd request tests; clean Release and strict 312-member package.
-  This is pre-commit source qualification, not exact-head runtime evidence.
-- New clean reconciled `7c1690e61` candidate gates passed; its complete six-run
-  hidden batch failed. Main 156/205, crowd 18/20, smoke 11/11; persistence
-  prepare 9/9 made one authorized native working save, cleanup 6/9 refused its
-  write, absence 4/5. Actual leased 0.0.140 / 254-file installation restored
-  exactly, lease released. Full ledger and exact fingerprints:
-  `planning/EXPANDED-SUMMONING-SPRINT16-RECONCILED-BATCH-REVIEW.md`.
-- Second clean repaired candidate `634b6c189` failed its six-run batch;
-  exact history: `planning/EXPANDED-SUMMONING-SPRINT16-SECOND-RECONCILED-BATCH-REVIEW.md`.
-- Third clean candidate `08df2611b` passed new complete source/preflight/build/
-  package gates, then FAILED: smoke 11/11, main 184/206, crowd ERROR before
-  OnUpdate/result, prepare 9/9, cleanup 9/9, absence 5/5. Damage/maintain 35/35,
-  final UI/lifecycle 80/80, speed 19/19 and icons 9/9 PASS. Combat 33/55 FAIL.
-  Exact leased 0.0.140 / 254-file installation restored, lease released.
-  Two authorized native working writes completed the closed persistence cycle;
-  fresh absence proves zero remaining KMG summons. Failed attempts retained in
-  `planning/EXPANDED-SUMMONING-SPRINT16-THIRD-RECONCILED-BATCH-REVIEW.md`.
-- Fourth clean candidate `3fca5aba1` passed new complete prelaunch gates, then
-  FAILED: smoke 11/11, main 124/153, crowd 18/20, prepare 6/9, cleanup 5/9,
-  absence 5/5. Exact original contact adapter was rejected because weapon stats
-  belong to the CombatTraits fact, not direct unit components. Manual native
-  control also requires the capital's main-character/pet identity. These narrow
-  assumptions require repair; no assertion is weakened. Both persistence writes
-  refused; fresh absence confirms the working save remains clean. Actual leased
-  0.0.140 / 254-file snapshot restored, lease released. Exact ledger:
-  `planning/EXPANDED-SUMMONING-SPRINT16-FOURTH-RECONCILED-BATCH-REVIEW.md`.
-- Fifth clean candidate `31c9ff0f4` passed all new prelaunch gates, then FAILED:
-  smoke 11/11, main 154/155, crowd 20/20, prepare 9/9, cleanup 9/9, absence 5/5.
-  Damage/carriers 37/37, final UI/lifecycle 80/80, speed 19/19, icons 9/9 PASS.
-  Strict manual control stopped combat before execution; native summon rule/flag
-  are proven, other control operands unrecorded. No contact/AI/mode qualification.
-  Two authorized native writes completed the closed working cycle; fresh absence
-  proves clean. Actual leased live installation restored exactly, lease released.
-  Exact ledger: `planning/EXPANDED-SUMMONING-SPRINT16-FIFTH-RECONCILED-BATCH-REVIEW.md`.
-- Containing request-local repair uses the established native faction-switch API
-  only on the disposable manual actor, records all native control conditions,
-  retains summon identity, restores original faction/attack factions and capital
-  Master before disposal. Strict guard unchanged; no global patch or player/
-  party/area/turn flag, production/art/icon/GUID/version/publication change.
-- Containing repair source gates PASS: 216 focused / 2018 unfiltered, static/icon,
-  480 preflight, 68 orchestration, closed requests, clean Release and deterministic
-  strict 312-member package. Runtime remains unqualified.
-- Next: commit/push the repair; then complete clean-head
-  gates and freeze one artifact for all six guarded scenarios. Old evidence does
-  not qualify new bytes. Lease precedes actual snapshot; restore it exactly.
-  Fresh Steam 640820 processes only. Stop on external remote motion.
-- Publish Dire only after every required exact-artifact Sprint 16 gate passes.
-  Sprint 17 must not begin until Sprint 16 is qualified and pushed.
+- Active worktree:
+  `C:/Dev/KingmakerGunslingerLab/repo/KingmakerGunslinger/.worktrees/expanded-summoning-phase2b-laptop-20261005`.
+  Exact tested source / intake remote:
+  `bc36f97612020d6d680144bcb6ebc01bebe11216`; this documentation checkpoint is
+  its normal descendant. Remote remained exact before launch and after restore.
+  Stop on unexpected motion of this active branch; archived branch motion is
+  informational only, never a reason to chase or reconcile it.
+- Exclusive source receipt: ignored `artifacts/laptop-source-owner-20261005.json`;
+  session `01a10bcd-8582-7551-826f-0f128807eb99`, owner PID 31796/start
+  `2026-10-05T19:29:25.9127956Z`, lock holder PID 15084/start
+  `2026-10-05T20:34:17.3075720Z`. Receipt is session-scoped, not perpetual.
+  A future owner must verify live PID/start identity before takeover.
+- Prior local `c5058203f51633ed11d15ad35100dc01c53e250c`, `2d334375`,
+  recovery bundle, all safety refs and failed candidates are preserved.
+  No reset, rebase, merge, force push or discarded runtime correction.
+  Preservation details: [laptop review](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-NATIVE-FACTION-REVIEW.md).
+- **Sprint 16 NOT QUALIFIED.** Exact bc36 prelaunch gates all PASS:
+  216 focused / 2018 unfiltered; repository/static/icon/manifest; 480 preflight;
+  68 orchestration; closed persistence/crowd tests; clean exact-reference Release;
+  deterministic strict 312-member package. These do not qualify gameplay.
+- Six fresh Steam 640820 runs: smoke 11/11, main **188/208 FAIL**, crowd 20/20,
+  prepare 9/9, cleanup 9/9, absence 5/5. Native-faction manual control worked;
+  all eighteen combat cells ran. Remaining failures: eight Dire AI contact
+  assertions, one manual-swallow sequencing assertion, one UI restoration
+  assertion and ten lifecycle scheduling assertions. No assertion waived.
+- Native working-save prepare and cleanup each wrote once. Fresh absence
+  proves no owned fixture summons/state remains. No manual save-file access,
+  protected baseline load/write or save surgery occurred.
+- Exact DLL `92dc8a4bc941dd5a4f41fbcb749f9459870149c9095fe752a5c4b20d8ec21b52`,
+  MVID `e5c68a9a-dfbc-4e23-a3a2-5327f5aab7c0`;
+  ZIP `416b4c6d8406479fd84cdb509c1ff8ac0fd6eae672b58cdab835475b92b40feb`.
+  Version remains 0.0.141. Full source fingerprint, requests, results, process
+  identities and failure classification are in the laptop review.
+- Lease `runtime-20261005T204023Z-8c4952571cc0480eb940d6ea31f9fbea`
+  preceded snapshot/deployment. Actual snapshot `20261005T2040235864744Z`
+  restored exactly at `2026-10-05T21:13:38.1407714Z`: 136 files, Info 0.0.117,
+  tree `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+  Lease Completed/recoveryRequired=false; no game, compatibility lock or
+  staging remains. Old orphaned runtime journal labels are preserved history,
+  not a matching live owner/current transaction.
+- Next: push this coherent NOT QUALIFIED evidence checkpoint; perform the
+  owner's exact separate read-only DATA range-diff/stat audit; update PR #26's
+  top notice after the audit. Do not import production or authority text.
+  Then fix only demonstrated contact/fixture defects, run focused checks,
+  commit/push and freeze a new exact-head artifact for the complete affected
+  six-scenario batch. Do not blindly rerun bc36.
+- Sprints 14-15 complete; 976 registered / 970 published / 6 Dire withheld /
+  29 wrappers / 999 visible choices. Publish Dire only after every required
+  Sprint 16 exact-artifact gate passes, then qualify its 6 roots and the 14
+  changed Crocodile roots. Sprint 17 has not started and must wait.
 - Accepted unchanged: `PASSIVE_CREATURE_SENSES_UNMODELED`,
   `ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD`,
   `SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED`,
   `SWALLOW_ELIGIBLE_TARGET_ELSE_DEATH_ROLL`. No substitute subsystem.
-- The external mission file named below is absent from this checkout. Current
-  explicit owner orders and committed contracts govern; missing contents were
-  not invented. Content-followup `b28b5786d10a94f3257fafa5cf02bbd50471d182`,
-  Phase 2A `5482db429bd3c4009a031aa733a3091edfa5fe5e`, master
-  `2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a` and foreign worktrees are protected.
-  Content-followup human tooltip/merchant acceptance is outside this mission.
-
-`HumanReview: NOT_PERFORMED_NONBLOCKING`.
+  `HumanReview: NOT_PERFORMED_NONBLOCKING`.
 
 ## Historical first hidden batch and correction checkpoint, October 5
 
-This short header governs over all historical entries below. Authority is the
-owner's 2026-10-05 takeover order and
+Historical authority (superseded by CURRENT STATE above): the
+owner's earlier 2026-10-05 takeover order and
 `C:/Dev/KingmakerGunslingerLab/handoffs/Kingmaker_Codex_TwoDay_Autonomous_Phase2_Mission.md`.
-Continue Sprint 16, Sprint 17, Phase 2B closure, then the authorized Phase 2C
-Sprints 18-21. No merge, release/tag, permanent deployment or Sprint 22.
+That earlier order continued through Phase 2C Sprints 18-21; the current
+mission instead stops after Phase 2B closure for owner acceptance.
 
 Latest hidden candidate: `0238bf03166dfb3dd7bf0205c12f82a2d2757caa` passed
 full repository validation, 2018/2018 tests, clean Release and strict package.
