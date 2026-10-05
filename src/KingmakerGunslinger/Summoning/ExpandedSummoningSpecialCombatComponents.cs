@@ -594,10 +594,10 @@ namespace KingmakerGunslinger.Summoning
         public int ConstrictBonus;
         /// <summary>
         /// Set for a crocodilian. A death roll is a maintain-time rider like
-        /// constrict, but it is not the bite: its flat bonus is one and a half
-        /// times Strength where an ordinary natural attack adds Strength
-        /// once, so these dice and this bonus come from the creature's own
-        /// rules profile rather than from the limb that established the hold.
+        /// constrict, but it is not a second attack. These fields retain the
+        /// static unmodified profile contract and identify an eligible owner.
+        /// Runtime damage comes from the actual establishing bite's live
+        /// weapon stats plus half of a positive current Strength modifier.
         /// </summary>
         public int DeathRollDiceCount;
         public DiceType DeathRollDiceType;

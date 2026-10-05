@@ -24,20 +24,28 @@ namespace KingmakerGunslinger.RuntimeTesting
     internal sealed partial class RuntimeTestRunner
     {
         private int _crocodilianSurveyLoadingWait;
+        private bool _crocodilianMechanicsComplete;
+        private readonly List<RuntimeTestAssertion> _crocodilianAssertions =
+            new List<RuntimeTestAssertion>();
 
         /// <summary>
-        /// Narrow pre-candidate research, not a full Sprint 16 qualification:
-        /// native type/component census, explicit damage graph, live skill
-        /// rows and private Monitor Lizard bind frames. No historical-root
-        /// census, save write, AI command or publication mutation.
+        /// Crocodilian-only candidate mechanics plus the reproducible native
+        /// census. The original seven-assertion survey remains historical
+        /// research evidence; new mechanics are not qualified until this
+        /// expanded scenario runs. No historical-root census or save write.
         /// </summary>
         private void PollExpandedSummoningCrocodilianSurvey()
         {
+            if (_crocodilianMechanicsComplete)
+            {
+                PollSprint16Combat();
+                return;
+            }
             string loading;
             if (ExpandedSummoningLoadingActive(out loading) &&
                     _crocodilianSurveyLoadingWait++ < ExpandedSummoningLoadingGateFrames)
                 return;
-            var assertions = new List<RuntimeTestAssertion>();
+            var assertions = _crocodilianAssertions;
             ExpandedSummoningCorrectionFixture fixture = null;
             bool cleaned = false;
             try
@@ -112,6 +120,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     DescribeGraph(swallowed, 0, new HashSet<object>(
                         NativeDonorReferenceComparer.Instance), 32).ToString(Formatting.None),
                     exact, "recursive live graph; cadence events require separate later-round proof"));
+                ExerciseSprint16DamageAndMaintain(fixture, assertions);
+                ExerciseSprint16Speed(fixture, assertions);
             }
             catch (Exception exception)
             {
@@ -136,9 +146,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _context.ModEntry.Info.Version,
                 _context.ModEntry.Info.Version == _request.ExpectedModVersion,
                 "Unity Mod Manager ModEntry.Info.Version"));
-            Complete(CreateResult(assertions.All(value => value.Status ==
-                RuntimeTestStatuses.Pass) ? RuntimeTestStatuses.Pass :
-                RuntimeTestStatuses.Fail, assertions, null));
+            _crocodilianMechanicsComplete = true;
         }
 
         private static string DescribeSprint16Skill(ModifiableValue value)

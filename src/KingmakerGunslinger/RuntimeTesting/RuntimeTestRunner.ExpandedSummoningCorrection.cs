@@ -195,7 +195,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             string[] states = { "KMG_Summoning_Special_Grapple_Grappled",
                 "KMG_Summoning_Special_Grapple_MultiHeld", "KMG_Summoning_Special_PurpleWorm_Swallowed",
-                "KMG_Summoning_Special_GiantFlytrap_Engulfed" };
+                "KMG_Summoning_Special_GiantFlytrap_Engulfed",
+                "KMG_Summoning_Special_DireCrocodile_Swallowed" };
             foreach (Buff buff in hostile.Descriptor.Buffs.RawFacts.OfType<Buff>().Where(value =>
                     value.Blueprint != null && (states.Contains(value.Blueprint.name) ||
                         value.Blueprint.AssetGuid == ExpandedSummoningSpecialBuilder.NativeWebGrappledGuid))
