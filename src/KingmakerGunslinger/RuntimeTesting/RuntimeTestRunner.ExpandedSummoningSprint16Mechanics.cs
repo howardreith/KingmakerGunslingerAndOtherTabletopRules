@@ -231,6 +231,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 tailDamage.Bonus == (dire ? 6 : 2) && !bite.IsSecondary && tail.IsSecondary &&
                 biteStats.DoubleCriticalEdge == dire &&
                 grab != null && grab.IsGrabLimb(owner, bite) && !grab.IsGrabLimb(owner, tail);
+            var contactPose = CrocodilianAttackVisualPose.For(owner);
+            Sprint16Check(assertions, rows, key + "-exact-original-contact-carrier", contactPose != null,
+                new JObject { ["owner"] = owner.Blueprint.AssetGuid,
+                    ["pose"] = contactPose == null ? null : contactPose.Describe() },
+                "exact original view caches the owned CombatTraits weapon identities; native donor control remains untouched");
             Sprint16Check(assertions, rows, key + "-live-profile", exact, new JObject {
                 ["scores"] = new JArray(scores), ["size"] = owner.Descriptor.State.Size.ToString(),
                 ["hitDice"] = owner.Descriptor.Progression.CharacterLevel,

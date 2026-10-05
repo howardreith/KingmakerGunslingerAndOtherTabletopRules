@@ -56,19 +56,29 @@ release, tag, version bump, PR change or permanent deployment.
   Two authorized native working writes completed the closed persistence cycle;
   fresh absence proves zero remaining KMG summons. Failed attempts retained in
   `planning/EXPANDED-SUMMONING-SPRINT16-THIRD-RECONCILED-BATCH-REVIEW.md`.
-- Containing narrow repair: exact-owner crocodilian visual-only fixed tail/jaw
-  contact pose, capped 0.25m root approach, established native attack timing and
-  owned teardown; exact native direct-control rule for manual fixtures; native
-  AI setup settling with complete action lists; bounded real hold retries and
-  maneuver diagnostics. No artwork, icon, range, collision, version or publication
-  change. New 216 focused / 2018 unfiltered, repository/static/icon, 480 preflight,
-  68 orchestration, closed request, clean Release, deterministic and strict
-  312-member package gates PASS. Runtime NOT QUALIFIED.
-- Next action: complete new source/preflight/build/package gates, commit and
-  push a source-qualified repair, then freeze one new clean exact-head artifact
-  and rerun the complete corrected six-scenario batch. No old runtime result
-  qualifies the new DLL. Acquire lease before actual live snapshot; restore
-  it exactly; only fresh Steam 640820 processes. Stop on external remote motion.
+- Fourth clean candidate `3fca5aba1` passed new complete prelaunch gates, then
+  FAILED: smoke 11/11, main 124/153, crowd 18/20, prepare 6/9, cleanup 5/9,
+  absence 5/5. Exact original contact adapter was rejected because weapon stats
+  belong to the CombatTraits fact, not direct unit components. Manual native
+  control also requires the capital's main-character/pet identity. These narrow
+  assumptions require repair; no assertion is weakened. Both persistence writes
+  refused; fresh absence confirms the working save remains clean. Actual leased
+  0.0.140 / 254-file snapshot restored, lease released. Exact ledger:
+  `planning/EXPANDED-SUMMONING-SPRINT16-FOURTH-RECONCILED-BATCH-REVIEW.md`.
+- Containing correction resolves the exact owned AddFacts component graph;
+  caches owner/weapon references; adds positive native contact-carrier checks.
+  The disposable manual actor alone receives the capital Master prerequisite,
+  with original Master restored before cleanup and native summoner retained.
+  New 216 focused / 2018 unfiltered, repository/static/icon, 480 preflight,
+  68 orchestration, closed requests, clean Release and deterministic strict
+  312-member package gates PASS; runtime NOT QUALIFIED.
+  No art, icon, GUID, mechanical range, player/party/area/turn flag, version or
+  publication change.
+- Next: complete source/preflight/build/package gates, commit/push the repair,
+  then complete clean-head gates and freeze one exact artifact for the full
+  six-scenario batch. No old evidence qualifies new bytes. Acquire lease before
+  actual live snapshot, restore it exactly; fresh Steam 640820 processes only.
+  Stop on external remote motion.
 - Publish Dire only after every required exact-artifact Sprint 16 gate passes.
   Sprint 17 must not begin until Sprint 16 is qualified and pushed.
 - Accepted unchanged: `PASSIVE_CREATURE_SENSES_UNMODELED`,
