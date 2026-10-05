@@ -8,13 +8,19 @@ owner's 2026-10-05 takeover order and
 Continue Sprint 16, Sprint 17, Phase 2B closure, then the authorized Phase 2C
 Sprints 18-21. No merge, release/tag, permanent deployment or Sprint 22.
 
-Latest pre-launch attempt: `b6e26e2ef207cf5302e9796026527beb9556d17c` rejected
-before deployment by two stale package-count tests (2016/2018 pass). Corrected
-to current 312/310; private route suffix corrected; wrapper now stops a rejected
-pre-launch candidate without repeating full gates. Focused 218/218 and 68
-orchestration assertions PASS. No game/save write occurred. Exact generic lease
-recovery and unchanged 136-file baseline proof are in the evidence index.
-The containing descendant is the corrected prepared candidate; full gate next.
+Latest hidden candidate: `0238bf03166dfb3dd7bf0205c12f82a2d2757caa` passed
+full repository validation, 2018/2018 tests, clean Release and strict package.
+Its five-run batch FAILED (mechanics 55/19, visual 16/4, prepare 6/3, cleanup 5/4;
+final absence 5/0). Both save-writing stages refused to write. Exact restoration
+`20261005T1555173824556Z` restored the 136-file 0.0.117 baseline; no game or lock
+remains. See `planning/EXPANDED-SUMMONING-SPRINT16-HIDDEN-CANDIDATE-REVIEW.md`
+for immutable artifact/result/restoration hashes and precise partial evidence.
+
+The containing descendant corrects shared creation state, printed HP, the native
+bite multiplier/dice-size seam, immunity handling, secondary-role observation,
+native death settlement, typed/owned-only fixture cleanup and guided movement.
+Focused 216/216 and incremental Release compile PASS; corrected runtime is NOT
+RUN. Freeze and qualify this corrected hidden candidate next. Dire stays hidden.
 
 - Worktree: `.worktrees/expanded-summoning-phase2a`; actual branch:
   `codex/expanded-summoning-phase2b-sprints14-17`.
@@ -42,7 +48,7 @@ The containing descendant is the corrected prepared candidate; full gate next.
   crocodilian survey is wired for live census/graphs/skills and private bind
   capture. Exact live skill rows and swallowed graph now pass; Sprint remains
   unqualified. The missing native +15 armor binding is corrected and tested.
-- Latest runtime: `20261005T1254571775971Z-disposable-expanded-summoning-crocodilians`,
+- Earlier research runtime: `20261005T1254571775971Z-disposable-expanded-summoning-crocodilians`,
   PASS 7/7 after full wrapper, 2013/2013 domain tests, exact clean Release and
   strict package PASS. Live Crocodile Perception/Stealth +8/+5; Dire +14/+0;
   both Mobility ranks zero. Dire's complete graph has exactly one later-round

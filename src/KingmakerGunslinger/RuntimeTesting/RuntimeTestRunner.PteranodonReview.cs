@@ -514,7 +514,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // same guided measurement.
                 name == ExpandedSummoningPteranodonViewPatch.WolverineBlueprintName ||
                 name == ExpandedSummoningPteranodonViewPatch.ShadowMastiffBlueprintName ||
-                name == ExpandedSummoningPteranodonViewPatch.PoisonousFrogBlueprintName;
+                name == ExpandedSummoningPteranodonViewPatch.PoisonousFrogBlueprintName ||
+                // The Sprint 16 ground assertions require the same real
+                // awake/unpaused native movement measurement as these rigs.
+                name == "KMG_Summoning_Unit_Crocodile" ||
+                name == "KMG_Summoning_Unit_DireCrocodile";
         }
 
         private Vector3 PrepareSprint9FlightMovement(UnitEntityData unit)
