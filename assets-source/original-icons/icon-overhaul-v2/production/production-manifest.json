@@ -310,6 +310,44 @@
                         "approvedHash":  "a7d5d81c98583fe604c4232806829dc3561af2fa88a2e801331674a0b95cebd2"
                     },
                     {
+                        "key":  "crocodilian-death-roll",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/crocodilian-death-roll.png",
+                        "sourceSha256":  "bea6aea3640506d93061d816a0111e91299fca4d7d4073b9b248d5f6ba3d4cd9",
+                        "sourceSize":  [
+                                           512,
+                                           512
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/crocodilian-death-roll.png",
+                        "exportSha256":  "c17272a78fb7a4443e0fb8461e96873440f2865b8029ccb0039bcc0c95a63a2c",
+                        "exportSize":  [
+                                           64,
+                                           64
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/crocodilian-death-roll.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
+                        "key":  "crocodilian-sprint",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/crocodilian-sprint.png",
+                        "sourceSha256":  "e5afc35fe1be0168b1a408f1e45d43125311ec7b64cfd37bc76924b1f1d39a3c",
+                        "sourceSize":  [
+                                           512,
+                                           512
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/crocodilian-sprint.png",
+                        "exportSha256":  "50919ada896b8f9b60a8ecd8b65021d9eff00ea4e9524393d826fd167622a9a3",
+                        "exportSize":  [
+                                           64,
+                                           64
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/crocodilian-sprint.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
+                    },
+                    {
                         "key":  "crystal-affinity",
                         "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/crystal-affinity.png",
                         "sourceSha256":  "4a00033e34c24b2da71d901cffc83acb0c966e387d2273ac82b06eac4dccc49a",
@@ -365,6 +403,25 @@
                         "technicalStatus":  "candidate-export",
                         "visualStatus":  "approved",
                         "approvedHash":  "1d9eed7bebc482b47ef1f3f325db8aa6242c43dcc2036c34d268ee2d4fbd4691"
+                    },
+                    {
+                        "key":  "dire-crocodile-swallowed",
+                        "source":  "assets-source/original-icons/icon-overhaul-v2/production/sources/dire-crocodile-swallowed.png",
+                        "sourceSha256":  "5238700358a3cad7f4944572b360ba7cd57f68f0e0fca24ba7466d308e24b443",
+                        "sourceSize":  [
+                                           512,
+                                           512
+                                       ],
+                        "export":  "assets-source/original-icons/icon-overhaul-v2/production/exports/dire-crocodile-swallowed.png",
+                        "exportSha256":  "ac9ae26f578f701983049b330b2c254bab77d139fc943170ecbd26f49665ef5f",
+                        "exportSize":  [
+                                           64,
+                                           64
+                                       ],
+                        "brief":  "assets-source/original-icons/icon-overhaul-v2/production/briefs/dire-crocodile-swallowed.json",
+                        "technicalStatus":  "candidate-export",
+                        "visualStatus":  "awaiting-owner-production-review",
+                        "approvedHash":  null
                     },
                     {
                         "key":  "earth-insight",
