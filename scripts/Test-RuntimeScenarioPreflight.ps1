@@ -41,6 +41,7 @@ Assert-True ($sourceStateFirst -cmatch '^[0-9a-f]{64}$' -and
     'source-state-attestation-is-stable-and-sha256'
 
 $expected = @(
+    'observe-whiteout-weather',
     'observe-model-d-vendors',
     'observe-firearm-descriptions',
     'disposable-expanded-summoning-projected-menu',
@@ -1446,6 +1447,17 @@ $offCreatorArgs.Parameters=@{creatorCase='module-off'}
 $offCreatorArgs.MainMenuTimeoutSeconds=30
 Assert-Throws { Assert-KmgRuntimeScenarioPreflight @offCreatorArgs } 'elemental-off-creator-rejects-load-stage-timeout'
 $offCreatorArgs.MainMenuTimeoutSeconds=0
+
+$whiteoutArgs = @{Scenario='observe-whiteout-weather';ExpectedVersion=$activeVersion;TimeoutSeconds=600;StartupTimeoutSeconds=300;Parameters=@{saveName='KMG_AUTOMATION_WORKING'}}
+foreach ($timeout in $disabledTimeouts.Keys) { $whiteoutArgs[$timeout] = $disabledTimeouts[$timeout] }
+$whiteoutMetadata = Get-KmgRuntimeScenarioMetadata -Scenario 'observe-whiteout-weather'
+Assert-True ($whiteoutMetadata.RequiresSaveName -and $whiteoutMetadata.PermittedSaveName -ceq 'KMG_AUTOMATION_WORKING' -and -not $whiteoutMetadata.RequiresManualInteraction -and $whiteoutMetadata.UsesWorkingStageTimeouts) 'whiteout-exact-working-save-metadata'
+[void](Assert-KmgRuntimeScenarioPreflight @whiteoutArgs)
+Assert-Throws { Assert-KmgRuntimeScenarioPreflight @whiteoutArgs -ExitAfterCompletion:$false } 'whiteout-mandatory-exit'
+foreach ($invalid in @(@{}, @{saveName='KMG_AUTOMATION_BASELINE'}, @{saveName='KMG_AUTOMATION_WORKING';weather='Rain'})) {
+    $whiteoutArgs.Parameters=$invalid
+    Assert-Throws { Assert-KmgRuntimeScenarioPreflight @whiteoutArgs } 'whiteout-no-unscoped-weather-or-save'
+}
 
 if ($failures.Count -ne 0) {
     throw "Runtime scenario preflight tests failed: $($failures -join ', ')"

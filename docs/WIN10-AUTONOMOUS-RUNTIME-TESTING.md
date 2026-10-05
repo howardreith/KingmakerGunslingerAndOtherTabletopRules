@@ -555,3 +555,17 @@ only detached native row arrays and a request-local unregistered item destroyed
 in `finally`. No merchant UI, inventories, save loading, input or save writes.
 Use the guarded Steam launcher with `-Scenario observe-model-d-vendors
 -ExpectedVersion 0.0.141` and automatic exit; restore the exact live backup.
+
+## Whiteout weather observation
+
+`observe-whiteout-weather` requires exactly `KMG_AUTOMATION_WORKING`, active
+version 0.0.141, and automatic exit. It uses the existing guarded save loader,
+then reads the native indoor predicate, visual weather, CurrentWeather and
+ActualWeather in the working mansion and authored Oleg outdoor scene. The
+native `Game.LoadArea` round trip uses `AutoSaveMode.None`; original party,
+positions, inventory, money, saved weather schedule and camera must be restored.
+Native weather/area event counts and the exact proposed marker-weather predicate
+are recorded in `whiteout-weather-observation.json`. No weather state is forced
+or written; no Whiteout marker/buff/patch/icon/acquisition is registered; no UI
+input or screenshot is used. A PASS establishes the observation/restoration
+contract only, not Whiteout gameplay or a universal indoor-weather conclusion.
