@@ -69,6 +69,22 @@ namespace KingmakerGunslinger.DomainTests
 
         internal static void CrocodilianBonesFailClosed()
         {
+            var owner = new object();
+            var other = new object();
+            var owned = new object[] { owner };
+            var foreignBinding = new object[] { other };
+            var facts = new[] { new[] { foreignBinding }, Array.Empty<object[]>(), new[] { owned } };
+            Assertions.True(ReferenceEquals(owned, CrocodilianVisualPolicy.SelectWeaponStats(
+                owner, facts, value => value[0])), "Resolve the exact owner's stats across its declared trait facts.");
+            Assertions.True(CrocodilianVisualPolicy.SelectWeaponStats(
+                new object(), facts, value => value[0]) == null, "Foreign owners cannot supply contact weapons.");
+            Assertions.True(CrocodilianVisualPolicy.SelectWeaponStats<object[]>(
+                null, facts, value => value[0]) == null, "Missing owner fails closed.");
+            bool duplicate = false;
+            try { CrocodilianVisualPolicy.SelectWeaponStats(owner,
+                facts.Concat(new[] { new[] { owned } }), value => value[0]); }
+            catch (InvalidOperationException) { duplicate = true; }
+            Assertions.True(duplicate, "Ambiguous matching trait facts must never select an arbitrary weapon owner.");
             foreach (float invalid in new[] { -1f, 0f, float.NaN, float.PositiveInfinity })
             {
                 Assertions.Equal(0f, CrocodilianVisualPolicy.ContactApproach(invalid, 1f),

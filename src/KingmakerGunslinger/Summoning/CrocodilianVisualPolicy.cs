@@ -23,6 +23,18 @@ namespace KingmakerGunslinger.Summoning
             "right_hand2_jnt", "right_leg1_jnt", "right_leg2_jnt"
         };
 
+        // Resolve only the exact actor's declared weapon-stat trait.
+        internal static T SelectWeaponStats<T>(object owner,
+            IEnumerable<T[]> factComponents, Func<T, object> ownerOf) where T : class
+        {
+            if (owner == null || factComponents == null) return null;
+            // The stats are declared on a combat-trait fact, not on the unit.
+            // Never choose a foreign owner's component or silently accept two.
+            return factComponents.Where(values => values != null)
+                .SelectMany(values => values).Where(value => value != null &&
+                    ReferenceEquals(ownerOf(value), owner)).SingleOrDefault();
+        }
+
         // A cosmetic approach, never mechanical reach or unit movement.
         internal static float ContactApproach(float gap, float weight)
         {
