@@ -123,13 +123,13 @@ if ($scenarioMetadata.RequiresSaveName) {
         if ($Parameters.Count -ne $(if ($crowd) { 2 } else { 1 }) -or
             -not $Parameters.ContainsKey('creatures') -or
             [string]::IsNullOrWhiteSpace([string]$Parameters.creatures)) {
-            throw 'The creature review requires typed -SaveName plus creatures and optionally the bounded ungulate quantity.'
+            throw 'The creature review requires typed -SaveName plus creatures and optionally the bounded ground-creature quantity.'
         }
         if ($crowd -and ([string]$Parameters.quantity -cne 'OneD4PlusOne' -or
             @(([string]$Parameters.creatures -split ',') | ForEach-Object { $_.Trim() } |
                 Where-Object { $_ -cnotin @('aurochs','bison','rhinoceros','woolly-rhinoceros',
-                    'dire-rat','dog','hyena','goblin-dog') }).Count -ne 0)) {
-            throw 'The crowd review permits only quantity=OneD4PlusOne for Sprint 11 ungulates or Sprint 12 quadrupeds.'
+                    'dire-rat','dog','hyena','goblin-dog','crocodile','dire-crocodile') }).Count -ne 0)) {
+            throw 'The crowd review permits only quantity=OneD4PlusOne for Sprint 11 ungulates, Sprint 12 quadrupeds or Sprint 16 crocodilians.'
         }
         $Parameters = @{ saveName = $SaveName; creatures = [string]$Parameters.creatures }
         if ($crowd) { $Parameters.quantity = 'OneD4PlusOne' }

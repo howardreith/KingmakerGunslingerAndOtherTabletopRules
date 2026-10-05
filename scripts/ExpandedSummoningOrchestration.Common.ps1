@@ -21,6 +21,27 @@ branch without a runtime lease, a deployment, or a launch.
 
 Set-StrictMode -Version Latest
 
+function Resolve-KmgBatchScenarioParameters {
+    param([Parameter(Mandatory = $true)][string[]]$Scenarios,
+          [Parameter(Mandatory = $true)][string]$CurrentScenario,
+          [hashtable]$DefaultParameters = @{},
+          [hashtable]$ParameterMap = @{})
+    if ($Scenarios -cnotcontains $CurrentScenario) {
+        throw 'The current scenario must be an exact member of the requested batch.'
+    }
+    if ($ParameterMap.Count -gt 0 -and $DefaultParameters.Count -gt 0) {
+        throw 'Use common parameters or a per-scenario map, never both.'
+    }
+    foreach ($key in $ParameterMap.Keys) {
+        if ($key -isnot [string] -or $Scenarios -cnotcontains $key -or
+            $ParameterMap[$key] -isnot [hashtable]) {
+            throw 'Every parameter-map entry must name an exact requested scenario and contain a hashtable.'
+        }
+    }
+    if ($ParameterMap.ContainsKey($CurrentScenario)) { return $ParameterMap[$CurrentScenario].Clone() }
+    return $DefaultParameters.Clone()
+}
+
 function ConvertTo-KmgDisabledExpandedSummoningSettingsBytes {
     param([Parameter(Mandatory = $true)][byte[]]$OriginalBytes)
     $encoding = New-Object System.Text.UTF8Encoding($false, $true)

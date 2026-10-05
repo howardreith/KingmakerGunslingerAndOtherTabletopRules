@@ -87,18 +87,21 @@ Sprints 18-21. No merge, release/tag, permanent deployment or Sprint 22.
   portraits/protected art are unchanged. Offline/repeat exports, 216 focused
   tests (2018 registered), 27 icon corruption tests, static/icon validation and
   incremental compile PASS. Native UI/live bindings remain **NOT QUALIFIED**.
-- Next executable action: finish the full Sprint 16 scenario pack, including
-  remaining lifecycle, native visible-consumer use, original-view
-  contacts/resource controls and 14+6 routes. The crocodilian-only mechanics,
-  native Swallow scheduler/escape, Sprint interaction/timeline and twelve
-  RTWP/turn-based manual/AI cells are now implemented, **NOT RUN**. They extend
+- Next executable action: freeze and run the complete pre-launch pipeline and
+  guarded hidden candidate batch. The full Sprint 16 pack now includes lifecycle,
+  native visible-consumer widgets/sheet, original-view contacts/resources/fallback,
+  native Monitor Lizard control and 14+6 targeted routes. Crocodilian mechanics,
+  native Swallow scheduler/escape, Sprint interaction/timeline and eighteen
+  RTWP/turn-based manual/AI/maintain cells are implemented, **NOT RUN**. They extend
   the original seven-case survey without retroactively qualifying new behavior.
   The pre-candidate review maps each written and still-open gate. Latest source
-  work descends from pushed `0d3b03bb5801db0b80f1d5e24a44dbe3a01a1896`;
-  the containing checkpoint is not a frozen runtime candidate.
-  Original art is ready for its first guarded live review. Use focused inner-loop
-  checks; the complete sprint gate and
-  guarded review apply to one stable hidden candidate.
+  work descends from pushed `fca87ce29ce44499671de2746968b715d95e6113`;
+  the containing checkpoint is the prepared hidden candidate, not qualified.
+  Current source checks: 216 focused (2018 registered), static/icon gates,
+  incremental compile, five crowd round trips/seven rejections, and 63 pure
+  orchestration assertions PASS. Per-scenario parameter routing permits one
+  snapshot/deployment while preserving each closed request guard. No new launch
+  or save write yet. Full gate/package and runtime results remain pending.
 
 `HumanReview: NOT_PERFORMED_NONBLOCKING`.
 
