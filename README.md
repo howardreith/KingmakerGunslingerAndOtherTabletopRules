@@ -722,11 +722,14 @@ mechanical diagnostic guide.
 
 ## Production equipment and presentation
 
-Pistol, Musket, and Blunderbuss are the complete supported firearm set. Their
-mundane and +1 items are available through the qualified capital and Beneath
-the Stolen Lands merchant routes alongside ammunition and maintenance supplies;
-named firearm variants retain their documented fixed-loot paths. Gunslinger
-starting grants resolve only to Pistol or Musket.
+Pistol, Musket, and Blunderbuss are the complete supported firearm set. Oleg
+stocks the mundane firearms and starter powder/balls; the capital blacksmith
+stocks +1 firearms, ammunition and the Gunsmith's Kit. Bokken stocks ammunition.
+These fixed rows can deplete; merchant regeneration is not guaranteed. Beneath
+the Stolen Lands, Better Vendors, named firearm loot and crafting keep their
+existing acquisition paths. Gunslinger starting grants resolve only to Pistol
+or Musket. Exact quantities and migration limits are documented in
+`docs/research/MOD-ITEM-AVAILABILITY-AUDIT.md`.
 
 The package uses distinct project firearm models, audio, projectiles, and
 transparent 128 px item icons. Rapid Reload and every firearm-category selector

@@ -1,5 +1,18 @@
 # Gunslinger Acquisition Rebalance
 
+## Current generic vendor redistribution (2026-10-04)
+
+Model D changes generic merchant stock only: Oleg has three mundane firearms
+at one each plus powder/balls at 50 each; capital has three +1 firearms at one
+each, powder/balls/cartridges at 200 each and one Gunsmith's Kit; Bokken has the
+three ammunition rows at 100 each. Capital's generic Eastern and spear rows
+are retired. Regional stock, BTSL, Better Vendors, the Skeletal Salesman and
+all named loot below are unchanged. The dedicated Oleg publisher depends only
+on Gunslinger publication. Blueprint normalization preserves native/foreign
+rows and purchased items, with exact rollback and repeated-init idempotence.
+Fixed stock can deplete; this creates no renewable or infinite supply. See the
+[Model D audit](research/MOD-ITEM-AVAILABILITY-AUDIT.md) and mission handoff.
+
 ## Superseding 2026-08-27 discoverability correction
 
 The 0.0.105 audit rechecked all 30 project-added discoverable items against the
