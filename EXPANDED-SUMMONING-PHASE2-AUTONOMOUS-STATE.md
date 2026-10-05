@@ -52,10 +52,11 @@ No merge, release, tag, version bump, force push or permanent deployment.
   Lease Completed/recoveryRequired=false; no game, compatibility lock or
   staging remains. Old orphaned runtime journal labels are preserved history,
   not a matching live owner/current transaction.
-- Next: push this coherent NOT QUALIFIED evidence checkpoint; perform the
-  owner's exact separate read-only DATA range-diff/stat audit; update PR #26's
-  top notice after the audit. Do not import production or authority text.
-  Then fix only demonstrated contact/fixture defects, run focused checks,
+- Restored evidence checkpoint `9cd5cdc7c31cd2914e69eff1f889b95fabdbdc90`
+  is pushed. The separate [read-only DATA salvage audit](planning/EXPANDED-SUMMONING-PHASE2B-DATA-SALVAGE-AUDIT.md)
+  is complete: all 29 differing files classified; zero source/authority ports.
+- Next: update PR #26's owner-designated notice after publishing the audit.
+  Fix only demonstrated contact/fixture defects, run focused checks,
   commit/push and freeze a new exact-head artifact for the complete affected
   six-scenario batch. Do not blindly rerun bc36.
 - Sprints 14-15 complete; 976 registered / 970 published / 6 Dire withheld /
