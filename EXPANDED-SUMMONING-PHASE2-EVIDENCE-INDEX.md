@@ -2,6 +2,14 @@
 
 ## Current checkpoint, October 5: Sprint 16 NOT QUALIFIED
 
+Candidate-fixture source follow-up (NOT RUN): the existing guarded crocodilian
+scenario now emits `sprint16-damage-maintain.json`, `sprint16-speed.json` and
+`sprint16-combat.json` in addition to its census. No such new runtime evidence
+is claimed yet. Source gate map and fixture limitations are in
+`planning/EXPANDED-SUMMONING-SPRINT16-PRE-CANDIDATE-REVIEW.md`.
+Focused 215/215 (2017 registered), static/icon validation and incremental
+Release compile PASS; the full stable candidate gate has not been run.
+
 AI source follow-up: owned native IsEngagedConsideration
 `5c4c807c1f274ef3b82ff16f9f114cf8`, plus behavior-first natural-action append
 coverage. Focused 215/215 PASS (2017 registered), active static/icon validators

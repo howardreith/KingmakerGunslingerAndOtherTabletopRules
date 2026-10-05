@@ -2,6 +2,15 @@
 
 ## Current checkpoint, October 5: Sprint 16 NOT QUALIFIED
 
+The crocodilian scenario now contains the focused profile/bite/Death Roll/
+maintain/Swallow scheduler and Sprint speed/timeline cases plus twelve native
+command cells (two creatures, both modes, manual/fresh-AI/player-cooldown-AI).
+Native command contacts are read, not forced; AI attacks are not supplied by
+the fixture. Exact evidence rows and cleanup are written separately. These
+cases compile but have NOT RUN. The pre-candidate review records the remaining
+persistence, lifecycle, visual consumer/contact, root and publication gates.
+No new live artifact supersedes the seven-assertion research run below.
+
 The Sprint AI actions now share one owned native engagement scorer (zero while
 engaged) and use a tested append operation preserving native action identity
 and order. One hidden-internal identity is appended; no visible icon or native

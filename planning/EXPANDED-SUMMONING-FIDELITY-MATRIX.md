@@ -7,6 +7,9 @@ retains six registered, withheld roots. Changed mechanics are **NOT QUALIFIED**:
 base-bite identity/weapon attribution and swallowed cadence still need live
 combat proof. The narrow `8250ac8f` survey passed exact land-skill rows and the
 complete creature-owned swallowed graph, not its damage-event cadence.
+The candidate mechanics, scheduler/timeline and twelve native-command/AI
+cells are now written and compile, but have NOT RUN. They add no qualified
+fidelity claim; the pre-candidate review lists their exact scope and open gates.
 
 `OwnerAcceptedAdaptation: SWALLOW_ELIGIBLE_TARGET_ELSE_DEATH_ROLL` is active
 after the bounded existing held-target command audit. It is deterministic AI
