@@ -2,6 +2,15 @@
 
 ## Current checkpoint, October 5: Sprint 16 NOT QUALIFIED
 
+Both original crocodilian models and deterministic albedos are implemented.
+The per-instance swap uses an exact 27-name driver policy on the measured
+41-bone Monitor Lizard rig and keeps the donor as a negative control/fallback.
+The package adds exactly four files; the Gargantuan Dire identity alone gets
+a 2x view multiplier. Independent exports are byte-identical; 44 offline
+review panels cover form, painting, jaw/tail/stride stress and relative scale.
+All asset hashes/provenance are in the family's SOURCE.md. Live visuals,
+contacts and resource/lifecycle proof are still NOT QUALIFIED.
+
 Death Roll now captures base-bite identity before after-rule list reordering,
 uses native weapon damage attribution and claims the maintain round before the
 check. Dire Crocodile's swallowed buff constructs one explicit round-damage

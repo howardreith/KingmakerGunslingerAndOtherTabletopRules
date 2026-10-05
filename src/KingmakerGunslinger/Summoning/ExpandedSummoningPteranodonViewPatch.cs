@@ -113,7 +113,9 @@ namespace KingmakerGunslinger.Summoning
                 { GiantAntWorkerBlueprintName, "giant-ant-worker" },
                 { GiantAntSoldierBlueprintName, "giant-ant-soldier" },
                 { GiantAntDroneBlueprintName, "giant-ant-drone" },
-                { GiantStagBeetleBlueprintName, "giant-stag-beetle" }
+                { GiantStagBeetleBlueprintName, "giant-stag-beetle" },
+                { "KMG_Summoning_Unit_Crocodile", "crocodile" },
+                { "KMG_Summoning_Unit_DireCrocodile", "dire-crocodile" }
             };
         private static readonly HashSet<string> UngulateKeys =
             new HashSet<string>(StringComparer.Ordinal)
@@ -132,6 +134,8 @@ namespace KingmakerGunslinger.Summoning
             { "fire-beetle", "giant-ant-worker", "giant-ant-soldier",
               "giant-ant-drone", "giant-stag-beetle" };
         private const string MainTexture = "_MainTex";
+        private static bool IsCrocodilian(string key)
+        { return CrocodilianVisualPolicy.Keys.Contains(key, StringComparer.Ordinal); }
 
         internal static bool HandlesBlueprintName(string blueprintName)
         {
@@ -329,6 +333,13 @@ namespace KingmakerGunslinger.Summoning
                     out albedo, out status))
                     return Fallback(status);
             }
+            else if (IsCrocodilian(attachment.VisualKey))
+            {
+                string status;
+                if (!PteranodonAssetRuntime.TryGetCrocodilianVisual(
+                    attachment.VisualKey, out source, out boneNames, out albedo, out status))
+                    return Fallback(status);
+            }
             else
             {
                 if (!PteranodonAssetRuntime.TryGetMembrane(out source,
@@ -390,7 +401,8 @@ namespace KingmakerGunslinger.Summoning
                                     Sprint13CreatureKeys.Contains(
                                         attachment.VisualKey) ||
                                     Sprint14InsectKeys.Contains(
-                                        attachment.VisualKey))
+                                        attachment.VisualKey) ||
+                                    IsCrocodilian(attachment.VisualKey))
                                     ? "KMG_" + attachment.VisualKey + "_Original"
                                     : CustomVisualName;
                 mesh.name = visualName;
@@ -623,7 +635,8 @@ namespace KingmakerGunslinger.Summoning
                  !Sprint12QuadrupedKeys.Contains(attachment.VisualKey) &&
                  !Sprint13CreatureKeys.Contains(attachment.VisualKey) &&
                  !Sprint14InsectKeys.Contains(
-                    attachment.VisualKey))) return;
+                    attachment.VisualKey) &&
+                 !IsCrocodilian(attachment.VisualKey))) return;
             string visualName = attachment.VisualKey == "stirge"
                 ? StirgeVisualName : attachment.VisualKey == "giant-wasp"
                     ? GiantWaspVisualName

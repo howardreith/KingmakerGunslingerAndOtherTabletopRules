@@ -44,6 +44,14 @@ Sprints 18-21. No merge, release/tag, permanent deployment or Sprint 22.
   damage cadence; Sprint speed interactions and AI
   fallback; skill persistence; both original crocodilian visuals;
   focused scenarios/tests, candidate review, targeted persistence and publication.
+- Original Crocodile/Dire mesh and painting sources are now authored on the
+  measured rig, with 44 offline review panels and byte-identical independent
+  exports of all four shipped files. Exact hashes and provenance:
+  `assets-source/original-models/sprint16-crocodilians/SOURCE.md`.
+  Loader, private per-view swap/cleanup, quantity-review route and strict
+  package manifests include both originals; Dire has an identity-only 2x
+  visual scale. Focused 214/214 and static validation PASS; incremental
+  Release compile PASS. **Live visual qualification remains NOT PERFORMED**.
 - `OwnerAcceptedEngineLimitation: PASSIVE_CREATURE_SENSES_UNMODELED` and
   `OwnerAcceptedEngineLimitation: ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD`
   remain accepted unchanged.
@@ -64,9 +72,10 @@ Sprints 18-21. No merge, release/tag, permanent deployment or Sprint 22.
   Latest restoration: `20261005T1258077246783Z-disposable-expanded-summoning-crocodilians.json`,
   verified. No Kingmaker process remains. Snapshot the actual baseline before
   each future transaction and restore that exact snapshot.
-- Next executable action: author the original crocodilian assets on the measured
-  41-bone rig; audit inline native AI considerations (none library-indexed was
-  found) and finish the full Sprint 16 scenario pack. Use focused inner-loop
+- Next executable action: finish the bounded native AI engagement gate (the
+  native IsEngagedConsideration type exists; no library-indexed instance was
+  found), then the full Sprint 16 scenario pack. Original art is ready for its
+  first guarded live review. Use focused inner-loop
   checks; the complete sprint gate and
   guarded review apply to one stable hidden candidate.
 

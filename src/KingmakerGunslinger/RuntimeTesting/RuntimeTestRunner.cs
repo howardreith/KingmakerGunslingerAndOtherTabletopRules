@@ -17521,6 +17521,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             // views here too and their outcomes have to be accounted for.
             int sprint14VisualChecked = 0;
             int sprint14VisualAttached = 0;
+            int crocodilianVisualChecked = 0;
+            int crocodilianVisualAttached = 0;
             BlueprintScriptableObject[] blueprints = BlueprintBootstrap.Library
                 .GetAllBlueprints().Where(value => value != null).ToArray();
             BlueprintFeature direBatSense = blueprints.OfType<BlueprintFeature>()
@@ -18044,6 +18046,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                             if (outcome.StartsWith("visual:attached;",
                                     StringComparison.Ordinal))
                                 sprint14VisualAttached++;
+                        }
+                    }
+                    else if (CrocodilianVisualPolicy.Keys.Contains(variant.Creature.Key))
+                    {
+                        foreach (UnitEntityData unit in spawned)
+                        {
+                            if (unit == null || unit.View == null) continue;
+                            crocodilianVisualChecked++;
+                            string outcome = ExpandedSummoningPteranodonViewPatch
+                                .DescribeView(unit.View);
+                            if (outcome.StartsWith("visual:attached;", StringComparison.Ordinal))
+                                crocodilianVisualAttached++;
                         }
                     }
                     else if (InsectDonorSelves.Contains(variant.Creature.Key))
@@ -18595,7 +18609,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _pteranodonVisualOutcomes.Count + ";patchOutcomes=" +
                         (patchOutcomesAfterCoverage - patchOutcomesBefore) +
                         ";sprint14Views=" + sprint14VisualChecked +
-                        ";sprint14Attached=" + sprint14VisualAttached,
+                        ";sprint14Attached=" + sprint14VisualAttached +
+                        ";crocodilianViews=" + crocodilianVisualChecked +
+                        ";crocodilianAttached=" + crocodilianVisualAttached,
                     _pteranodonCastsSeen >= 4 &&
                         _pteranodonVisualOutcomes.Count >= _pteranodonCastsSeen &&
                         patchOutcomesAfterCoverage - patchOutcomesBefore ==
@@ -18604,10 +18620,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 _giantWaspVisualChecked + _stirgeVisualChecked +
                                 ungulateVisualChecked + sprint12VisualChecked +
                                 sprint13VisualChecked +
-                                sprint14VisualChecked &&
+                                sprint14VisualChecked + crocodilianVisualChecked &&
                         sprint12VisualAttached == sprint12VisualChecked &&
                         sprint13VisualAttached == sprint13VisualChecked &&
                         sprint14VisualAttached == sprint14VisualChecked &&
+                        crocodilianVisualAttached == crocodilianVisualChecked &&
                         pteranodonAttachedClean,
                     "one patch outcome per attached view; per-cast cleanup is enforced by the cast loop itself"),
                 Assertion("expanded-summoning-stirge-visual-attached",
