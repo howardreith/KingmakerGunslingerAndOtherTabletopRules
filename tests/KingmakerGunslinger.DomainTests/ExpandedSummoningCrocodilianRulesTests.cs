@@ -1,6 +1,8 @@
 using System;
+using System.IO;
 using System.Linq;
 using KingmakerGunslinger.Summoning;
+using Newtonsoft.Json.Linq;
 
 namespace KingmakerGunslinger.DomainTests
 {
@@ -431,6 +433,21 @@ namespace KingmakerGunslinger.DomainTests
         /// </summary>
         internal static void SwallowNumbersComeFromTheCreature()
         {
+            // Printed contract numbers must never masquerade as implemented
+            // interior mechanics. Pin the owner's activated decision as data.
+            JObject state = JObject.Parse(File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "EXPANDED-SUMMONING-PROGRAM-STATE.json")));
+            const string limitation = "SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED";
+            JToken decision = state["acceptedEngineLimitations"].Single(
+                entry => (string)entry["label"] == limitation);
+            if ((string)decision["mode"] != "unmodeled" ||
+                    !decision["scope"].Values<string>().OrderBy(value => value)
+                        .SequenceEqual(new[] { "dire-crocodile", "purple-worm" }) ||
+                    ((string)decision["censusSha256"]).Length != 64 ||
+                    !state["phase2Mission"]["ownerAcceptedEngineLimitations"]
+                        .Values<string>().Contains(limitation))
+                throw new InvalidOperationException(
+                    "The accepted interior omission must cover both swallowers with census evidence.");
             CrocodilianRulesProfile dire =
                 CrocodilianRulesPolicy.For("dire-crocodile");
             if (dire.SwallowDamage != "3d6+13")
