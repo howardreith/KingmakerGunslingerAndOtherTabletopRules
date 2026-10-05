@@ -17,6 +17,12 @@ namespace KingmakerGunslinger.Summoning
     /// One crocodilian's rules numbers, derived from its stat block rather
     /// than copied out of it.
     ///
+    /// <para>These numbers are the static baseline contract: what an
+    /// unmodified creature must reproduce. They are not the runtime source of
+    /// the damage, which is the creature's live bite with its Strength
+    /// contribution raised, so a buffed, enlarged or weakened crocodilian
+    /// death rolls for what it actually bites for.</para>
+    ///
     /// <para>The distinction this type exists for is that a death roll is not
     /// a second bite. The printed blocks separate them - the Crocodile bites
     /// for 1d8+4 and death rolls for 1d8+6, the Dire Crocodile bites for
@@ -223,6 +229,35 @@ namespace KingmakerGunslinger.Summoning
             if (hasDeathRoll && deathRollSizeAllowed)
                 return CrocodilianMaintainRider.DeathRoll;
             return CrocodilianMaintainRider.None;
+        }
+
+        /// <summary>
+        /// The extra Strength a death roll adds to the creature's live bite.
+        ///
+        /// <para>The bite already contributes the Strength modifier once, so
+        /// the death roll adds the other half. The half is added only for a
+        /// positive modifier, which is the tabletop reading: one and a half
+        /// times Strength multiplies a bonus, while a penalty applies once.
+        /// A weakened creature's death roll still falls, because the penalty
+        /// is already inside the bite the rider is built from.</para>
+        ///
+        /// <para>This is the runtime derivation. The dice and flat bonus on a
+        /// profile are the static baseline an unmodified creature must
+        /// reproduce, not the source of what is dealt.</para>
+        /// </summary>
+        internal static int DeathRollExtraHalf(int liveStrengthModifier)
+        {
+            return liveStrengthModifier > 0 ? liveStrengthModifier / 2 : 0;
+        }
+
+        /// <summary>
+        /// What a death roll's flat bonus comes to for a given live Strength
+        /// modifier: the bite's one times plus the rider's extra half.
+        /// </summary>
+        internal static int DeathRollBonusFor(int liveStrengthModifier)
+        {
+            return liveStrengthModifier +
+                DeathRollExtraHalf(liveStrengthModifier);
         }
 
         /// <summary>

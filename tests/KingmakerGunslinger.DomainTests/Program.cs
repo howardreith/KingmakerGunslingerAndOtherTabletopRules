@@ -633,6 +633,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint16-crocodile-preserved", ExpandedSummoningSprint16Tests.TheCrocodilesIdentityAndPlacementsArePreserved),
             Case("expanded-summoning.sprint16-ledger-identities", ExpandedSummoningSprint16Tests.TheLedgerCarriesTheNewIdentities),
             Case("expanded-summoning.crocodilian-death-roll-damage", ExpandedSummoningCrocodilianRulesTests.DeathRollDamageIsDerivedAndNotTheBite),
+            Case("expanded-summoning.crocodilian-death-roll-live-strength", ExpandedSummoningCrocodilianRulesTests.DeathRollFollowsLiveStrength),
             Case("expanded-summoning.crocodilian-death-roll-refusals", ExpandedSummoningCrocodilianRulesTests.DeathRollIsRefusedWhereTheRulesRefuseIt),
             Case("expanded-summoning.crocodilian-death-roll-maneuver", ExpandedSummoningCrocodilianRulesTests.DeathRollObeysTheManeuverRollRules),
             Case("expanded-summoning.crocodilian-one-rider", ExpandedSummoningCrocodilianRulesTests.OneMaintainResolvesExactlyOneRider),
