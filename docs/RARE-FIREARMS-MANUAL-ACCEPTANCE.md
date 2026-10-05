@@ -1,12 +1,11 @@
 # Rare Firearms Manual Acceptance
 
-This checklist will be expanded with the development-only Rare Firearm
-Acceptance panel and a no-full-playthrough location-validation workflow. It
-will require disposable save copies, prohibit `KMG_AUTOMATION_BASELINE`, explain
-old instantiated-container limits, list exact target/area identities, and name
-only authoritative locally proven Bag of Tricks entry points. The automated
-observer remains authoritative for publication wiring; human checks cover only
-player-facing accessibility and appropriateness.
+This guide records rare-firearm acceptance history and human checks for
+player-facing accessibility and appropriateness. For the current content
+followup, use the [2026-10-05 acceptance matrix](#content-followup-acceptance---2026-10-05),
+including its existing-fixture and no-save-write boundaries. Earlier acceptance
+does not approve Model D or the revised firearm tooltip appearance. Automated
+observers remain authoritative for the specific publication contracts they test.
 
 - Inspect Model D stock: Oleg has the three mundane firearms (one each),
   powder and balls (50 each); capital has the three +1 firearms (one each),
@@ -54,10 +53,14 @@ pre-entry save or a separately human-validated travel/teleport route.
 ### Exact physical-location checks
 
 - Capital stock: inspect blacksmith stock backed by `SmithVendorTable`
-  (`7de959347266092448d8a72089ef9778`). It must contain mundane Pistol, Musket,
-  and Blunderbuss; their three +1 variants; 200 Black Powder; 200 Lead Balls;
-  10 Repair Kits; 5 Overhaul Kits; and one Gunsmith Kit. It must not contain a
-  Rifle, Revolver, or named unique.
+  (`7de959347266092448d8a72089ef9778`). Its Model D Gunslinger publication has
+  Pistol +1, Musket +1 and Blunderbuss +1 (one each); Black Powder Charge,
+  Lead Ball and Paper Cartridge (200 each); and one Gunsmith's Kit.
+  No mundane firearm, retired Repair/Overhaul Kit, Rifle, Revolver or named
+  unique is added by this publication. Mod-owned generic Eastern Weapons and
+  Elven Branched Spear rows are also removed from this table. Native and
+  unrelated stock remain. Use the current matrix below to distinguish newly
+  generated stock from inventory already materialized in an existing save.
 - Representative midgame: `Forest_cache` in `VordakaiTombLevel2` contains
   **Duelist's Rebuttal**.
 - Pitax: `PoorHuman_IrovettiChambers_ChestHuge_Outline (3)` and
@@ -100,3 +103,89 @@ The user completed manual testing of the installed build from feature commit
 great. The feature is accepted for integration. Some graphical issues were
 observed and are intentionally deferred to a separate cleanup effort; they do
 not block the accepted firearm mechanics or campaign integration.
+
+## Content followup acceptance - 2026-10-05
+
+**HumanTooltipReview: NOT_PERFORMED. HumanMerchantReview: NOT_PERFORMED.**
+The 2026-08-08 acceptance above is historical; it does not approve the new
+description appearance, Model D shopping experience or existing-save behavior.
+
+Use the clean, technically qualified **0.0.141** candidate from source commit
+`c092a060a5c01f963e5954d6e6f1882bd16b6114`, ZIP SHA256
+`2971a4f167f3943e580934ad302ec5b8acb420ee68310e21a50a01c64a67c006`,
+or identify and qualify a later candidate separately. The clean build, 2,040
+tests, strict package validation and guarded smoke passed; provenance is in the
+[root handoff](../CODEX-ALL-NIGHT-GUNSLINGER-FOLLOWUP-HANDOFF-2026-10-04.md#pro-review-followup---clean-artifact-closure-2026-10-05).
+The resolved-description and vendor-table observers prove their in-memory
+contracts. They do not approve wrapping, merchant row presentation, a campaign's
+persisted inventory, or the sufficiency of the early ammunition budget.
+
+### Human procedure and exact expected stock
+
+A human uses the ordinary merchant screens. For each merchant, inspect both
+a named disposable fixture where inventory is newly generated and an existing
+campaign's already materialized stock in an authorized disposable fixture.
+Record how first generation or prior visitation is known; if uncertain, mark
+that case **INCONCLUSIVE**, not PASS. Do not invent a stock-regeneration trigger.
+No raw-save copying, renaming, deletion, parsing or migration is authorized by
+this followup. Use only an already authorized disposable fixture; do not touch
+`KMG_AUTOMATION_BASELINE`. If the needed fixture does not exist, leave the case
+pending. Do not save changes during this acceptance pass.
+
+Launch through Steam App ID 640820 and use the guarded deployment/restoration
+workflow. No automated merchant navigation or inventory rewrite is part of this
+checklist. Record the loaded version/commit, module profile, Better Vendors
+presence/rank and any other stock-changing mod so its rows are not incorrectly
+attributed to Model D. The base expectations below concern these mod-owned
+publications; they are not the merchant's entire native/foreign inventory.
+Check the standalone Model D profile without Better Vendors before assessing
+any separately qualified combined profile.
+
+| Merchant / exact table | Expected newly generated Model D rows | Exclusions from this publication |
+|---|---|---|
+| Oleg / `C11_OlegVendorTable` / `f720440559fc00949900bfa1575196ac` | Pistol 1; Musket 1; Blunderbuss 1; Black Powder Charge 50; Lead Ball 50 (five Gunslinger rows) | No +1 firearm, Paper Cartridge, Gunsmith's Kit, named firearm or Better Vendors variant; existing regional Eastern/spear rows remain |
+| Capital / `SmithVendorTable` / `7de959347266092448d8a72089ef9778` | Pistol +1 1; Musket +1 1; Blunderbuss +1 1; Black Powder Charge 200; Lead Ball 200; Paper Cartridge 200; Gunsmith's Kit 1 (seven Gunslinger rows) | No mundane firearm or mod-owned generic Eastern/spear row; no retired Repair/Overhaul Kit |
+| Bokken / `C11_BokkenVendorTable` / `4778ecb5df5d48742b9be5a204ed4657` | Black Powder Charge 100; Lead Ball 100; Paper Cartridge 100 (three rows) | No Gunsmith's Kit or firearm |
+
+For new, unspent stock, check exact quantities, absence of duplicate mod rows,
+and retained ordinary native stock. For previously visited merchants, record
+the actual rows, prior purchases/sales if known, and differences from Model D.
+Old stock or reduced quantities may persist: the implementation normalizes
+blueprint tables, **not** merchant inventory already serialized in a campaign.
+Purchased equipment, inventory and stash remain untouched. Record whether this
+bounded behavior is acceptable to the owner; do not label persistence alone a
+blueprint-normalization defect or promise that reopening the shop refreshes it.
+
+Fixed stock can deplete; regeneration is native and not guaranteed. This change
+does not create renewable or infinite supply. Crafting remains a separate
+existing acquisition path.
+
+### Acceptance record to complete
+
+Operator/date, loaded commit/package hash, fixture name, module profile and
+Better Vendors state: **NOT_RECORDED**. For every row, record observed item
+quantities/order, how generation timing is known, and **ACCEPT / CONCERN /
+INCONCLUSIVE**. All current results below are pending human observation.
+
+| Case | Inventory state | Human result / observations |
+|---|---|---|
+| Oleg | Newly generated, unspent | NOT_PERFORMED |
+| Capital blacksmith | Newly generated, unspent | NOT_PERFORMED |
+| Bokken | Newly generated, unspent | NOT_PERFORMED |
+| Oleg | Previously materialized campaign stock | NOT_PERFORMED |
+| Capital blacksmith | Previously materialized campaign stock | NOT_PERFORMED |
+| Bokken | Previously materialized campaign stock | NOT_PERFORMED |
+
+| Presentation / owner decision | Acceptance question | Human result |
+|---|---|---|
+| Pistol tooltip | Does the complete description wrap legibly and display natural spacing/punctuation? | NOT_PERFORMED |
+| Blunderbuss tooltip | Is the distinction between lead-ball attacks and Scatter Shot clear in the rendered tooltip? | NOT_PERFORMED |
+| The Last Word tooltip | Are both complete Reliable and Seeking clauses readable, with no visual duplication or clipping? | NOT_PERFORMED |
+| Merchant ordering and quantities | Do firearms, ammunition and kit rows look natural and make their quantities clear in all three screens? | NOT_PERFORMED |
+| Oleg early supply | Is 50 powder plus 50 lead balls, a budget of 50 ordinary matched shots, sufficient for the intended early discovery/use? Record the owner's judgment; do not change quantities during testing. | NOT_PERFORMED |
+| Existing-save limitation | Is retention of already materialized old stock acceptable for existing campaigns, with no promised regeneration or inventory migration? | NOT_PERFORMED |
+
+Record concerns with merchant, fixture timing, module profile and the observed
+row/tooltip. Screenshots may support human appearance feedback but do not replace
+mechanical assertions. Balance changes or persisted-inventory migration would
+require a separate owner decision; this review does not authorize either.
