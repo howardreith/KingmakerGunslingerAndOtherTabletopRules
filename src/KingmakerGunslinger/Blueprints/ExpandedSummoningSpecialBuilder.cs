@@ -23,6 +23,7 @@ using Kingmaker.RuleSystem.Rules.Damage;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Components;
+using Kingmaker.UnitLogic.Abilities.Components.CasterCheckers;
 using Kingmaker.UnitLogic.Abilities.Components.TargetCheckers;
 using Kingmaker.UnitLogic.ActivatableAbilities;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
@@ -239,6 +240,26 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Summoning.Unit.DireCrocodile";
         private const string DireCrocodileCombatTraitsSymbol =
             "KMG.Summoning.Special.DireCrocodile.CombatTraits";
+        private const string CrocodileBrainSymbol =
+            "KMG.Summoning.Special.Crocodile.Brain";
+        private const string CrocodileSprintSymbol =
+            "KMG.Summoning.Special.Crocodile.Sprint";
+        private const string CrocodileSprintAiSymbol =
+            "KMG.Summoning.Special.Crocodile.SprintAi";
+        private const string CrocodileSprintStateSymbol =
+            "KMG.Summoning.Special.Crocodile.SprintState";
+        private const string CrocodileSprintCooldownSymbol =
+            "KMG.Summoning.Special.Crocodile.SprintCooldown";
+        private const string DireCrocodileBrainSymbol =
+            "KMG.Summoning.Special.DireCrocodile.Brain";
+        private const string DireCrocodileSprintSymbol =
+            "KMG.Summoning.Special.DireCrocodile.Sprint";
+        private const string DireCrocodileSprintAiSymbol =
+            "KMG.Summoning.Special.DireCrocodile.SprintAi";
+        private const string DireCrocodileSprintStateSymbol =
+            "KMG.Summoning.Special.DireCrocodile.SprintState";
+        private const string DireCrocodileSprintCooldownSymbol =
+            "KMG.Summoning.Special.DireCrocodile.SprintCooldown";
         private const string MonitorLizardUnitSymbol = "KMG.Summoning.Unit.MonitorLizard";
         private const string MonitorLizardCombatTraitsSymbol =
             "KMG.Summoning.Special.MonitorLizard.CombatTraits";
@@ -1793,6 +1814,15 @@ namespace KingmakerGunslinger.Blueprints
             ExpandedSummoningVisualVariantPatch.Register(new SummonVisualVariant(
                 InternalName(TigerUnitSymbol), ExpandedSummoningSpecialProfiles.TigerCoat));
             ConfigureCheetahSprint(bySymbol);
+            ConfigureCrocodilianSprint(bySymbol, "crocodile", "Crocodile",
+                CrocodileUnitSymbol, CrocodileBrainSymbol,
+                CrocodileSprintSymbol, CrocodileSprintAiSymbol,
+                CrocodileSprintStateSymbol, CrocodileSprintCooldownSymbol);
+            ConfigureCrocodilianSprint(bySymbol, "dire-crocodile",
+                "DireCrocodile", DireCrocodileUnitSymbol,
+                DireCrocodileBrainSymbol, DireCrocodileSprintSymbol,
+                DireCrocodileSprintAiSymbol, DireCrocodileSprintStateSymbol,
+                DireCrocodileSprintCooldownSymbol);
             ExpandedSummoningVisualVariantPatch.Register(new SummonVisualVariant(
                 InternalName(CheetahUnitSymbol), ExpandedSummoningSpecialProfiles.CheetahCoat));
         }
@@ -1985,6 +2015,169 @@ namespace KingmakerGunslinger.Blueprints
         /// enhancement bonus to speed (the game's own speed cap still applies);
         /// a cast action on the cheetah's brain spends it once a fight starts.
         /// </summary>
+        /// <summary>
+        /// Sprint (Ex) for a crocodilian: +20 feet for one round, once per
+        /// minute.
+        ///
+        /// <para>The recharge is the difference from the Cheetah's burst and
+        /// is the whole reason this is a separate builder. A ten-round
+        /// cooldown buff is applied alongside the one-round speed buff, and
+        /// the ability carries a restriction refusing to run while that buff
+        /// is present. Making the limit engine state rather than project
+        /// bookkeeping is what gets save and load, double-activation races and
+        /// every lifecycle boundary right without any of them being handled
+        /// here: a buff is serialized, is applied before a second activation
+        /// could be requested, and leaves with the creature.</para>
+        ///
+        /// <para>CRPG adaptation, disclosed: the source text names no action
+        /// type for Sprint. This uses the swift action the Cheetah's sprint
+        /// uses, which is the project's narrowest consistent convention for a
+        /// monster's self-targeted movement burst.</para>
+        /// </summary>
+        private static void ConfigureCrocodilianSprint(
+            IDictionary<string, BlueprintScriptableObject> bySymbol,
+            string creatureKey, string token, string unitSymbol,
+            string brainSymbol, string sprintSymbol, string aiSymbol,
+            string stateSymbol, string cooldownSymbol)
+        {
+            CrocodilianRulesProfile rules =
+                CrocodilianRulesPolicy.For(creatureKey);
+            BlueprintUnit unit = Require<BlueprintUnit>(bySymbol, unitSymbol);
+            BlueprintAbility sprint = Require<BlueprintAbility>(bySymbol,
+                sprintSymbol);
+            BlueprintBuff state = Require<BlueprintBuff>(bySymbol, stateSymbol);
+            BlueprintBuff cooldown = Require<BlueprintBuff>(bySymbol,
+                cooldownSymbol);
+            BlueprintAiCastSpell ai = Require<BlueprintAiCastSpell>(bySymbol,
+                aiSymbol);
+            BlueprintBrain brain = Require<BlueprintBrain>(bySymbol,
+                brainSymbol);
+            if (unit.ComponentsArray == null ||
+                unit.ComponentsArray.OfType<AddClassLevels>().Count() != 1)
+                throw new InvalidOperationException(
+                    "The " + token + " chassis must be configured before its " +
+                    "sprint.");
+
+            var speed = ScriptableObject.CreateInstance<
+                Kingmaker.Designers.Mechanics.Buffs.BuffMovementSpeed>();
+            speed.Descriptor = ModifierDescriptor.Enhancement;
+            speed.Value = rules.SprintBonusFeet;
+            speed.CappedOnMultiplier = false;
+            speed.CappedMinimum = false;
+            state.name = InternalName(stateSymbol);
+            state.Stacking = StackingType.Replace;
+            state.IsClassFeature = false;
+            state.ComponentsArray = new BlueprintComponent[] { speed };
+            BlueprintUnitFactAccess.Resolve().Configure(state,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning." + token + ".SprintState.Name",
+                    "Sprinting"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning." + token + ".SprintState.Description",
+                    "Its land speed is increased by " + rules.SprintBonusFeet +
+                    " feet for this round."),
+                null);
+
+            // The recharge. Inert: it exists to be present, and the ability
+            // refuses to run while it is.
+            cooldown.name = InternalName(cooldownSymbol);
+            cooldown.Stacking = StackingType.Replace;
+            cooldown.IsClassFeature = false;
+            cooldown.ComponentsArray = Array.Empty<BlueprintComponent>();
+            BlueprintUnitFactAccess.Resolve().Configure(cooldown,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning." + token + ".SprintCooldown.Name",
+                    "Winded"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning." + token +
+                    ".SprintCooldown.Description",
+                    "It has sprinted within the last minute and cannot sprint " +
+                    "again until it recovers."),
+                null);
+
+            sprint.name = InternalName(sprintSymbol);
+            sprint.Type = AbilityType.Extraordinary;
+            sprint.Parent = null;
+            sprint.Hidden = false;
+            sprint.ActionBarAutoFillIgnored = false;
+            sprint.Range = AbilityRange.Personal;
+            sprint.CanTargetEnemies = false;
+            sprint.CanTargetSelf = true;
+            sprint.CanTargetFriends = false;
+            sprint.CanTargetPoint = false;
+            sprint.SpellResistance = false;
+            sprint.NeedEquipWeapons = false;
+            sprint.EffectOnEnemy = AbilityEffectOnUnit.None;
+            sprint.EffectOnAlly = AbilityEffectOnUnit.Helpful;
+            sprint.ActionType = UnitCommand.CommandType.Swift;
+            sprint.Animation = UnitAnimationActionCastSpell
+                .CastAnimationStyle.Immediate;
+            sprint.MaterialComponent = new BlueprintAbility.MaterialComponentData();
+            sprint.ResourceAssetIds = Array.Empty<string>();
+
+            var applyState = ScriptableObject.CreateInstance<ContextActionApplyBuff>();
+            applyState.Buff = state;
+            applyState.ToCaster = true;
+            applyState.DurationValue = new ContextDurationValue {
+                Rate = DurationRate.Rounds,
+                DiceType = DiceType.Zero,
+                DiceCountValue = Simple(0),
+                BonusValue = Simple(rules.SprintRounds)
+            };
+            applyState.IsFromSpell = false;
+            applyState.IsNotDispelable = true;
+            var applyCooldown = ScriptableObject.CreateInstance<ContextActionApplyBuff>();
+            applyCooldown.Buff = cooldown;
+            applyCooldown.ToCaster = true;
+            applyCooldown.DurationValue = new ContextDurationValue {
+                Rate = DurationRate.Rounds,
+                DiceType = DiceType.Zero,
+                DiceCountValue = Simple(0),
+                BonusValue = Simple(rules.SprintCooldownRounds)
+            };
+            applyCooldown.IsFromSpell = false;
+            applyCooldown.IsNotDispelable = true;
+            var effect = ScriptableObject.CreateInstance<AbilityEffectRunAction>();
+            effect.Actions = new ActionList {
+                Actions = new GameAction[] { applyState, applyCooldown } };
+            var unavailable = ScriptableObject.CreateInstance<
+                AbilityCasterHasNoFacts>();
+            unavailable.Facts = new BlueprintUnitFact[] { cooldown };
+            sprint.ComponentsArray = new BlueprintComponent[] {
+                unavailable, effect };
+            BlueprintUnitFactAccess.Resolve().Configure(sprint,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning." + token + ".Sprint.Name", "Sprint"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning." + token + ".Sprint.Description",
+                    "Once per minute, as a swift action, it sprints: +" +
+                    rules.SprintBonusFeet + " feet of land speed for one " +
+                    "round. It cannot sprint again for " +
+                    rules.SprintCooldownRounds + " rounds."),
+                null);
+
+            ai.name = InternalName(aiSymbol);
+            ai.Ability = sprint;
+            ai.Variant = null;
+            ai.BaseScore = 3;
+            ai.CooldownRounds = rules.SprintCooldownRounds;
+            ai.StartCooldownRounds = 0;
+            ai.ActorConsiderations = Array.Empty<Kingmaker.Controllers.Brain
+                .Blueprints.Considerations.Consideration>();
+            ai.TargetConsiderations = Array.Empty<Kingmaker.Controllers.Brain
+                .Blueprints.Considerations.Consideration>();
+            ai.Locators = Array.Empty<EntityReference>();
+            brain.name = InternalName(brainSymbol);
+            brain.Actions = new BlueprintAiAction[] { ai };
+
+            var grant = ScriptableObject.CreateInstance<
+                AddAbilityToCharacterComponent>();
+            grant.Abilities = new[] { sprint };
+            unit.ComponentsArray = unit.ComponentsArray.Concat(
+                new BlueprintComponent[] { grant }).ToArray();
+            unit.Brain = brain;
+        }
+
         private static void ConfigureCheetahSprint(
             IDictionary<string, BlueprintScriptableObject> bySymbol)
         {
