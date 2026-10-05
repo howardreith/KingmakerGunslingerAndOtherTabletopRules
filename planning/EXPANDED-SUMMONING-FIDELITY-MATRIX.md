@@ -1,54 +1,33 @@
 # Expanded Summoning fidelity matrix
 
-## Current Sprint 16 disposition, October 5
+## Current Sprint 16 fidelity — canonical finalization, NOT QUALIFIED
 
-Controlling update: candidate `0238bf03166dfb3dd7bf0205c12f82a2d2757caa`
-FAILED its first full runtime batch after source qualification. Sprint speed
-interactions/timeline, later swallowed tick ownership/cadence, crowd movement,
-original-view cleanup and selected damage-attribution cases passed; positive
-bite/Death Roll damage, HP and per-copy ranks did not. Native combat/UI/routes
-were not reached because the first fixture damaged in-memory area membership.
-No save write occurred. Exact restoration `20261005T1555173824556Z` PASS.
-Corrections compile and focused tests pass, but are NOT runtime-qualified. See
-[the detailed review](EXPANDED-SUMMONING-SPRINT16-HIDDEN-CANDIDATE-REVIEW.md).
-Historical NOT RUN statements below are superseded only to this measured extent.
+The canonical branch imports 3fca5aba and reconciles c5058203. The
+[finalization ledger](EXPANDED-SUMMONING-PHASE2B-FINALIZATION-RECONCILIATION.md)
+governs the new candidate. Prior passing subsets are artifact-specific:
+08df2611 passed 35 damage/maintain, 19 speed, 9 icon, 80 final UI/lifecycle
+checks and closed persistence, but failed its complete combat/contact batch
+and crowd launch. No new candidate is qualified.
 
-Crocodile retains its identity and fourteen published roots. Dire Crocodile
-retains six registered, withheld roots. Changed mechanics are **NOT QUALIFIED**:
-base-bite identity/weapon attribution and swallowed cadence still need live
-combat proof. The narrow `8250ac8f` survey passed exact land-skill rows and the
-complete creature-owned swallowed graph, not its damage-event cadence.
-The candidate mechanics, scheduler/timeline and eighteen native-command/AI/
-maintain cells are now written and compile, but have NOT RUN. Native cooldown
-rejection, UI widgets/sheet, weighted contact, lifecycle, exact resource/fallback
-controls and 14+6 routes are also written, not qualified. The complete candidate
-gate and runtime batch are next. They add no qualified fidelity claim.
+Crocodile identity/fourteen published roots and Dire identity/six withheld roots
+are unchanged. Native-versus-explicit dice scaling, dead-prey refusal, native
+load release and native destruction repairs are retained. Both original
+crocodilian assets and the narrow fixed contact adapter still require the
+new complete runtime batch. No tolerance, reach or mandatory assertion is waived.
 
-Targeted active/cooldown/hold/swallow persistence is now written, NOT RUN.
-Nine visible action/status/trait consumers have three original physical emblems,
-with exact cataloged dispositions and no changes to existing summon portraits.
-Offline art checks do not qualify native UI or mechanics. See the Sprint 16
-icon review; `HumanReview: NOT_PERFORMED_NONBLOCKING`.
-
-`OwnerAcceptedAdaptation: SWALLOW_ELIGIBLE_TARGET_ELSE_DEATH_ROLL` is active
-after the bounded existing held-target command audit. It is deterministic AI
-behavior, not exact tabletop choice; live maintain-path proof is still required.
-
+Accepted unchanged:
+`OwnerAcceptedAdaptation: SWALLOW_ELIGIBLE_TARGET_ELSE_DEATH_ROLL`;
 `OwnerAcceptedEngineLimitation: SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED`
-is activated by the fresh census; no interior target/AC/HP/cut-free carrier.
-Purple Worm's previously qualified mechanics are unchanged; the same
-engine-wide limitation is explicitly acknowledged for it.
-The accepted passive-sense and clean-on-reload grapple limitations are unchanged.
-Land skills: Crocodile +8/+5, Dire +14/+0; both zero Mobility ranks. Run has no
-exact meaningful native fact and is omitted explicitly. Full survey breakdowns
-and hashes: `EXPANDED-SUMMONING-SPRINT16-SURVEY-REVIEW.md`. Sprint interactions/AI,
-full mechanics/lifecycle and live original-visual qualification remain open.
-Both original models/paintings now have deterministic offline exports and a
-44-panel form/paint/pose/scale review. The exact 27-driver policy, four package
-files and identity-only 2x Dire view scale are documented in
-`assets-source/original-models/sprint16-crocodilians/SOURCE.md`. No live
-visual/contact/crowding/resource result has yet been claimed.
-`HumanReview: NOT_PERFORMED_NONBLOCKING`.
+(Dire and Purple Worm; no working interior AC/HP claim);
+`PASSIVE_CREATURE_SENSES_UNMODELED`;
+`ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD`.
+Land skills remain Crocodile +8/+5, Dire +14/+0, no Mobility ranks.
+Run and Hold Breath remain documented engine omissions; aquatic-only bonuses
+are not applied on land. HumanReview: NOT_PERFORMED_NONBLOCKING.
+
+All lower rows preserve historical qualification/proxy records; they do not
+override this current disposition. Sprint 17 remains open and Phase 2C is
+authorized but deferred until Phase 2B owner acceptance.
 
 ## Sprint 15 closeout, 2026-10-03: COMPLETE AND PUBLISHED
 

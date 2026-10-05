@@ -17,6 +17,32 @@ namespace KingmakerGunslinger.DomainTests
     /// </summary>
     internal static class ExpandedSummoningCrocodilianRulesTests
     {
+        internal static void NaturalDiceFollowLiveCreatureSize()
+        {
+            foreach (int baseline in new[] { 5, 7 })
+            foreach (int live in new[] { baseline - 1, baseline, baseline + 1 })
+            foreach (int item in new[] { baseline - 1, live })
+            {
+                Assertions.Equal(live, CrocodilianRulesPolicy.ResolveWeaponSize(live, item, item),
+                    "NPC fixed donor and player dynamic item sizes must resolve the live animal.");
+                if (item < 8)
+                    Assertions.Equal(Math.Min(8, live + 1),
+                        CrocodilianRulesPolicy.ResolveWeaponSize(live, item, item + 1),
+                        "Retain a legitimate native weapon-size increase exactly once.");
+                if (item > 0)
+                    Assertions.Equal(Math.Max(0, live - 1),
+                        CrocodilianRulesPolicy.ResolveWeaponSize(live, item, item - 1),
+                        "Retain a legitimate native weapon-size decrease exactly once.");
+            }
+            Assertions.Equal(0, CrocodilianRulesPolicy.ResolveWeaponSize(0, 8, 0), "Native Fine lower bound.");
+            Assertions.Equal(1, CrocodilianRulesPolicy.ResolveWeaponSize(1, 4, 4), "Native Diminutive is not Tiny.");
+            Assertions.Equal(8, CrocodilianRulesPolicy.ResolveWeaponSize(8, 0, 8), "Colossal upper bound.");
+            bool refused = false;
+            try { CrocodilianRulesPolicy.ResolveWeaponSize(9, 4, 4); }
+            catch (ArgumentOutOfRangeException) { refused = true; }
+            Assertions.True(refused, "Unknown native sizes cannot silently supply damage dice.");
+        }
+
         internal static void SprintBrainKeepsNaturalActionsAndOneEngagementGate()
         {
             var attack = new object();
@@ -236,7 +262,7 @@ namespace KingmakerGunslinger.DomainTests
                 new { Body = 5, Weapon = 4, Calculated = 5, Expected = 6 },
                 new { Body = 7, Weapon = 6, Calculated = 5, Expected = 6 },
                 new { Body = 8, Weapon = 6, Calculated = 7, Expected = 8 },
-                new { Body = 2, Weapon = 4, Calculated = 3, Expected = 2 } })
+                new { Body = 2, Weapon = 4, Calculated = 3, Expected = 1 } })
                 if (CrocodilianRulesPolicy.ResolveWeaponSize(row.Body,
                         row.Weapon, row.Calculated) != row.Expected)
                     throw new InvalidOperationException(

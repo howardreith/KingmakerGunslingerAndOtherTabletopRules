@@ -1,6 +1,17 @@
 # Expanded Summoning Phase 2 evidence index
 
-Current Sprint 16 third reconciled batch: **FAIL**, no publication.
+## Current canonical finalization evidence
+
+Imported head `3fca5aba1cdaaf6215fd5712409fc208855c79cf`; local patch set
+`c5058203f51633ed11d15ad35100dc01c53e250c`; earlier `2d334375` retained.
+[Finalization reconciliation and next exact gates](planning/EXPANDED-SUMMONING-PHASE2B-FINALIZATION-RECONCILIATION.md).
+Sprint 16 remains **NOT QUALIFIED**, Dire withheld. No new runtime artifact
+or restoration is claimed. The local 390f9a39 failed attempt and exact hashes
+are retained in the [hidden review](planning/EXPANDED-SUMMONING-SPRINT16-HIDDEN-CANDIDATE-REVIEW.md).
+Its five stale working-save fixtures require guarded native normalization.
+The following records describe distinct historical artifacts/environments.
+
+Historical Sprint 16 third reconciled batch: **FAIL**, no publication.
 [Exact artifact, fresh processes, passed persistence and unresolved combat/crowd gates](planning/EXPANDED-SUMMONING-SPRINT16-THIRD-RECONCILED-BATCH-REVIEW.md).
 Actual leased installation restored exactly, lease released, disposable working save clean.
 The containing visual/control/setup repair needs new full gates and runtime evidence.

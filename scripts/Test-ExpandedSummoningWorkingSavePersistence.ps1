@@ -123,3 +123,35 @@ try { $null = New-KmgRuntimeRequest @requestBase -Scenario 'working-save-smoke' 
 catch { $rejected = $true }
 if (-not $rejected) { throw 'The targeted fixture scope leaked into another scenario.' }
 Write-Host 'PASS crocodilian persistence request: three exact scopes, historical defaults and 19 fail-closed cases.'
+
+foreach ($s16scope in @('mechanics','combat','lifecycle')) {
+    $s16request = New-KmgRuntimeRequest @requestBase -Scenario 'disposable-expanded-summoning-crocodilians' -Parameters @{
+        saveName = 'KMG_AUTOMATION_WORKING'; crocodilianReview = $s16scope }
+    if ($s16request.parameters.Count -ne 2 -or $s16request.parameters.crocodilianReview -cne $s16scope) {
+        throw 'Crocodilian diagnostic scope failed to round-trip.'
+    }
+}
+foreach ($s16bad in @(
+    @{ saveName = 'KMG_AUTOMATION_BASELINE'; crocodilianReview = 'mechanics' },
+    @{ saveName = 'KMG_AUTOMATION_WORKING'; crocodilianReview = 'Mechanics' },
+    @{ saveName = 'KMG_AUTOMATION_WORKING'; crocodilianReview = '' },
+    @{ saveName = 'KMG_AUTOMATION_WORKING'; crocodilianReview = 'all' },
+    @{ saveName = 'KMG_AUTOMATION_WORKING'; crocodilianReview = @('mechanics') },
+    @{ saveName = 'KMG_AUTOMATION_WORKING'; crocodilianReview = 'mechanics'; skip = 'cleanup' }
+)) {
+    $s16denied = $false
+    try { $null = New-KmgRuntimeRequest @requestBase -Scenario 'disposable-expanded-summoning-crocodilians' -Parameters $s16bad }
+    catch { $s16denied = $true }
+    if (-not $s16denied) { throw 'Invalid diagnostic scope accepted.' }
+}
+$s16denied = $false
+try { $null = New-KmgRuntimeRequest @manualExit -Scenario 'disposable-expanded-summoning-crocodilians' -Parameters @{
+    saveName = 'KMG_AUTOMATION_WORKING'; crocodilianReview = 'mechanics' } }
+catch { $s16denied = $true }
+if (-not $s16denied) { throw 'Diagnostic request must exit automatically.' }
+$s16denied = $false
+try { $null = New-KmgRuntimeRequest @requestBase -Scenario 'working-save-smoke' -Parameters @{
+    saveName = 'KMG_AUTOMATION_WORKING'; crocodilianReview = 'mechanics' } }
+catch { $s16denied = $true }
+if (-not $s16denied) { throw 'Diagnostic scope leaked to another scenario.' }
+Write-Host 'PASS crocodilian diagnostic requests: three closed scopes and eight fail-closed cases; default remains full review.'

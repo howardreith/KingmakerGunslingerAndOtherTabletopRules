@@ -1,88 +1,58 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-05 (reconciled Phase 2B candidate; NOT QUALIFIED)
+## Current canonical finalization state — Sprint 16 NOT QUALIFIED
 
-This header governs over all history below. The latest owner orders require
-Sprint 16 qualification, Sprint 17, Phase 2B closure, then **STOP**. Phase 2C
-is unauthorized in this mission. No merge, force push, rebase of published work,
-release, tag, version bump, PR change or permanent deployment.
+Authority: **Owner Coordination and Phase 2B Finalization Mission**, October 5,
+2026. This is the only controlling section; all older checkpoint instructions
+below are historical. Finish Sprint 16, Sprint 17 and complete Phase 2B closure,
+then **STOP for owner review**. Phase 2C remains authorized in principle:
+`phase2CAuthorized: true`,
+`phase2CStartDeferredUntilPhase2BOwnerAcceptance: true`.
+No Sprint 18-22, merge, release/tag/version bump or permanent deployment.
 
-- Worktree: `C:/Dev/KingmakerGunslingerLab/.worktrees/expanded-summoning-phase2a`;
-  branch: `codex/expanded-summoning-phase2b-sprints14-17`. The previous remote
-  advance was reconciled only after the owner's explicit synchronization order.
-  Authoritative base: `390f9a39d9cce2a40e6528d3215a678d6cd15757`, retaining
-  every runtime-derived production/fixture correction and failed-attempt ledger.
-- Unpublished sibling `3ebefe7b6c5525156d8494de82435abf8574f503` is preserved
-  at local safety branch `codex/local-safety/phase2b-3ebefe7-2026-10-05`.
-  Rename-preservation and normal branch creation avoided reset, merge and
-  history rewrite. Both siblings' diffs and range-diff were reviewed. Replay:
-  independent positive-version/catalog/crocodilian preflight hardening. Manual
-  reconciliation: this header and evidence index. No runtime repair was replaced.
-  Detailed ledger: `planning/EXPANDED-SUMMONING-PHASE2B-RECONCILIATION-2026-10-05.md`.
-- Exclusive local source ownership was checked against all six agent process
-  directories, active command processes, Git operation state, clean worktree,
-  runtime coordination state and the stable remote. An owned exclusive file
-  handle records PID/start identities in worktree Git metadata; its local
-  receipt is `artifacts/phase2b-closure/source-ownership.json`. Do not steal it.
-  If the remote moves again, stop without history reconciliation.
-- Sprint 16 remains **NOT QUALIFIED**. The first hidden candidate on `0238bf0`
-  failed mechanics, visual and persistence assertions; both save-writing stages
-  refused to save. Its exact artifact/results/restoration are retained in
-  `planning/EXPANDED-SUMMONING-SPRINT16-HIDDEN-CANDIDATE-REVIEW.md`.
-  `390f9a39` corrects per-copy skills/HP, native bite multiplier/dice scaling,
-  prone immunity, native death settlement, owned-only typed fixture cleanup,
-  and guided movement. It has not passed a corrected runtime batch.
-- Current publication remains 976 registered generated placements / 970
-  published / 6 Dire withheld / 29 native wrappers / 999 visible choices.
-  These source pins must be checked by the reconciled full suite; previous
-  sibling passing tests/packages do not qualify this candidate.
-- Reconciled working-tree gates PASS: 216 focused; 2018/2018 unfiltered;
-  repository/static/icon validation; 480 preflight; 68 orchestration; closed
-  persistence/crowd request tests; clean Release and strict 312-member package.
-  This is pre-commit source qualification, not exact-head runtime evidence.
-- New clean reconciled `7c1690e61` candidate gates passed; its complete six-run
-  hidden batch failed. Main 156/205, crowd 18/20, smoke 11/11; persistence
-  prepare 9/9 made one authorized native working save, cleanup 6/9 refused its
-  write, absence 4/5. Actual leased 0.0.140 / 254-file installation restored
-  exactly, lease released. Full ledger and exact fingerprints:
-  `planning/EXPANDED-SUMMONING-SPRINT16-RECONCILED-BATCH-REVIEW.md`.
-- Second clean repaired candidate `634b6c189` failed its six-run batch;
-  exact history: `planning/EXPANDED-SUMMONING-SPRINT16-SECOND-RECONCILED-BATCH-REVIEW.md`.
-- Third clean candidate `08df2611b` passed new complete source/preflight/build/
-  package gates, then FAILED: smoke 11/11, main 184/206, crowd ERROR before
-  OnUpdate/result, prepare 9/9, cleanup 9/9, absence 5/5. Damage/maintain 35/35,
-  final UI/lifecycle 80/80, speed 19/19 and icons 9/9 PASS. Combat 33/55 FAIL.
-  Exact leased 0.0.140 / 254-file installation restored, lease released.
-  Two authorized native working writes completed the closed persistence cycle;
-  fresh absence proves zero remaining KMG summons. Failed attempts retained in
-  `planning/EXPANDED-SUMMONING-SPRINT16-THIRD-RECONCILED-BATCH-REVIEW.md`.
-- Containing narrow repair: exact-owner crocodilian visual-only fixed tail/jaw
-  contact pose, capped 0.25m root approach, established native attack timing and
-  owned teardown; exact native direct-control rule for manual fixtures; native
-  AI setup settling with complete action lists; bounded real hold retries and
-  maneuver diagnostics. No artwork, icon, range, collision, version or publication
-  change. New 216 focused / 2018 unfiltered, repository/static/icon, 480 preflight,
-  68 orchestration, closed request, clean Release, deterministic and strict
-  312-member package gates PASS. Runtime NOT QUALIFIED.
-- Next action: complete new source/preflight/build/package gates, commit and
-  push a source-qualified repair, then freeze one new clean exact-head artifact
-  and rerun the complete corrected six-scenario batch. No old runtime result
-  qualifies the new DLL. Acquire lease before actual live snapshot; restore
-  it exactly; only fresh Steam 640820 processes. Stop on external remote motion.
-- Publish Dire only after every required exact-artifact Sprint 16 gate passes.
-  Sprint 17 must not begin until Sprint 16 is qualified and pushed.
-- Accepted unchanged: `PASSIVE_CREATURE_SENSES_UNMODELED`,
+- Canonical branch: `codex/expanded-summoning-phase2b-finalize-20261005`;
+  worktree: `.worktrees/expanded-summoning-phase2b-finalize-20261005`.
+  Imported base: `3fca5aba1cdaaf6215fd5712409fc208855c79cf`; the containing
+  commit is its reconciled descendant. No exact-head runtime candidate yet.
+- Frozen branch `codex/expanded-summoning-phase2b-sprints14-17` and PR #26 are
+  historical evidence only. Later `31c9ff0f4949bfda5db21225366f52d110953d13`
+  was preserved, not integrated. Later frozen-branch motion is informational;
+  unexpected canonical-branch motion still requires a stop.
+- Local `c5058203f51633ed11d15ad35100dc01c53e250c` and
+  `2d33437567ad2983763fd13c0900ba717a5b0f35`, prior local tip and all safety
+  refs are retained. Recovery bundle verified. Per-file/hunk decisions:
+  [finalization reconciliation](planning/EXPANDED-SUMMONING-PHASE2B-FINALIZATION-RECONCILIATION.md).
+- Canonical source receipt: ignored `artifacts/canonical-owner-20261005T1930.json`.
+  Owner PID 31796/start `2026-10-05T19:29:25.9127956Z`; helper PID 11596/start
+  `2026-10-05T19:31:23.3048649Z`. Exclusive common-Git handle acquired
+  19:31:23 UTC. Receipt is session-scoped, not perpetual authority; verify its
+  live PID/start and terminal status before takeover.
+- Sprints 14-15 remain complete/published. Sprint 16 **NOT QUALIFIED**;
+  Sprint 17 not started. **976 registered / 970 published / 6 Dire withheld /
+  29 native wrappers / 999 visible choices**. No suppression, identity, art,
+  icon, version or placement changes in reconciliation.
+- Latest imported runtime artifact `08df2611`: main 184/206 FAIL; crowd
+  launch ERROR; smoke 11/11 and closed persistence 9/9 + 9/9 + 5/5 PASS on
+  that artifact only. The 3fca5aba contact/control repair and this reconciliation
+  require a new complete exact-head candidate and fresh guarded batch.
+- This machine's working save retains five prior owned fixtures from the local
+  failed 390f9a39 cleanup. The remote environment's successful absence is not
+  evidence about this save. Normalize only through smoke, prepare, successful
+  native cleanup save and fresh verify-absent. No save copying/parsing/manual
+  replacement, and never load/write the protected baseline.
+- Four accepted decisions remain unchanged: `PASSIVE_CREATURE_SENSES_UNMODELED`,
   `ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD`,
   `SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED`,
-  `SWALLOW_ELIGIBLE_TARGET_ELSE_DEATH_ROLL`. No substitute subsystem.
-- The external mission file named below is absent from this checkout. Current
-  explicit owner orders and committed contracts govern; missing contents were
-  not invented. Content-followup `b28b5786d10a94f3257fafa5cf02bbd50471d182`,
-  Phase 2A `5482db429bd3c4009a031aa733a3091edfa5fe5e`, master
-  `2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a` and foreign worktrees are protected.
-  Content-followup human tooltip/merchant acceptance is outside this mission.
-
-`HumanReview: NOT_PERFORMED_NONBLOCKING`.
+  `SWALLOW_ELIGIBLE_TARGET_ELSE_DEATH_ROLL`.
+- Inner checks PASS: 217/217 focused (2019 registered), active static/manifest,
+  incremental Release, 68 orchestration and closed persistence/crowd requests.
+- Next: coherent NOT QUALIFIED commit and policy push, new stacked draft PR;
+  finish the identified trait-lookup/capital-manual-control pre-candidate review,
+  then complete exact-head source/build/package
+  gates and all six guarded scenarios. Acquire runtime lease **before**
+  observing/snapshotting the actual installation; restore that exact snapshot.
+  No new runtime, installation observation/deployment or save write yet.
+- HumanReview: **NOT_PERFORMED_NONBLOCKING**.
 
 ## Historical first hidden batch and correction checkpoint, October 5
 
