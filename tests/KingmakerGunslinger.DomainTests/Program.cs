@@ -631,6 +631,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint16-natural-armor-binding", ExpandedSummoningSprint16Tests.EveryProfileResolvesItsNativeNaturalArmor),
             Case("expanded-summoning.sprint16-bone-policy", ExpandedSummoningSprint16Tests.CrocodilianBonesFailClosed),
             Case("expanded-summoning.sprint16-original-assets", ExpandedSummoningSprint16Tests.CrocodilianOriginalAssetsAreComplete),
+            Case("expanded-summoning.sprint16-icon-consumers", ExpandedSummoningSprint16Tests.CrocodilianIconConsumerGraphIsComplete),
             Case("expanded-summoning.sprint16-view-scale", ExpandedSummoningSprint16Tests.CrocodilianScaleChangesOnlyTheDireIdentity),
             Case("expanded-summoning.sprint16-dire-crocodile-registered", ExpandedSummoningSprint16Tests.TheDireCrocodileIsRegisteredAndWithheld),
             Case("expanded-summoning.sprint16-dire-crocodile-stat-block", ExpandedSummoningSprint16Tests.TheDireCrocodileMatchesItsPrintedStatBlock),

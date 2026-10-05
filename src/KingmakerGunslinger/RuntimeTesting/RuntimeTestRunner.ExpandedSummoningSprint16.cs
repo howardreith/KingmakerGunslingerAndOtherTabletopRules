@@ -16,6 +16,7 @@ using Kingmaker.UnitLogic.Mechanics.Actions;
 using Kingmaker.UnitLogic.Mechanics.Components;
 using Kingmaker.UnitLogic.Parts;
 using KingmakerGunslinger.Summoning;
+using KingmakerGunslinger.Blueprints;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -122,6 +123,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                     exact, "recursive live graph; cadence events require separate later-round proof"));
                 ExerciseSprint16DamageAndMaintain(fixture, assertions);
                 ExerciseSprint16Speed(fixture, assertions);
+                var icons = new JArray();
+                foreach (var binding in OwnedIconAssignments.Bindings.Where(value =>
+                    value.Symbol.StartsWith("KMG.Summoning.Special.Crocodile.", StringComparison.Ordinal) ||
+                    value.Symbol.StartsWith("KMG.Summoning.Special.DireCrocodile.", StringComparison.Ordinal)))
+                {
+                    BlueprintUnitFact fact = fixture.Blueprints.OfType<BlueprintUnitFact>().Single(value =>
+                        value.name == binding.Symbol.Replace('.', '_'));
+                    var expected = ProjectAssetIcons.RequireIcon(binding.Key);
+                    bool assigned = ReferenceEquals(fact.Icon, expected) && fact.Icon.rect.width == 64 &&
+                        fact.Icon.rect.height == 64 && fact.GetType() == binding.BlueprintType;
+                    Sprint16Check(assertions, icons, "icon-" + binding.Symbol, assigned,
+                        new JObject { ["symbol"] = binding.Symbol, ["guid"] = fact.AssetGuid,
+                            ["sprite"] = fact.Icon == null ? null : fact.Icon.name },
+                        "exact cached 64px emblem after all late registration and owned-assignment stages; native UI separate");
+                }
+                File.WriteAllText(Path.Combine(_request.EvidenceDirectory,
+                    "sprint16-icon-bindings.json"), icons.ToString(Formatting.Indented));
             }
             catch (Exception exception)
             {

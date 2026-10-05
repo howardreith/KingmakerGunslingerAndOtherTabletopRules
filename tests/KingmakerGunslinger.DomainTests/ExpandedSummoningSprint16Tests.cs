@@ -26,6 +26,47 @@ namespace KingmakerGunslinger.DomainTests
         private const string DireKey = "dire-crocodile";
         private const string CrocodileKey = "crocodile";
 
+        internal static void CrocodilianIconConsumerGraphIsComplete()
+        {
+            string root = Environment.CurrentDirectory;
+            JObject catalog = JObject.Parse(File.ReadAllText(Path.Combine(root,
+                "assets-source/original-icons/icon-catalog.json")));
+            JObject production = JObject.Parse(File.ReadAllText(Path.Combine(root,
+                "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json")));
+            string[] prefixes = { "KMG.Summoning.Special.Crocodile.",
+                "KMG.Summoning.Special.DireCrocodile.", "KMG.Summoning.Special.Crocodilian." };
+            JObject[] consumers = catalog["consumers"].OfType<JObject>().Where(value =>
+                prefixes.Any(prefix => ((string)value["symbol"]).StartsWith(prefix, StringComparison.Ordinal))).ToArray();
+            Assertions.Equal(14, consumers.Length, "All nine visible and five internal consumers have dispositions.");
+            Assertions.Equal(5, consumers.Count(value => (string)value["disposition"] == "hidden-internal"),
+                "Brains, cast actions and scorer remain non-icon carriers.");
+            foreach (string token in new[] { "Crocodile", "DireCrocodile" })
+                foreach (string suffix in new[] { "Sprint", "SprintState", "SprintCooldown", "CombatTraits" })
+                    Assertions.Equal(suffix == "CombatTraits" ? "crocodilian-death-roll" : "crocodilian-sprint",
+                        (string)consumers.Single(value => (string)value["symbol"] ==
+                            "KMG.Summoning.Special." + token + "." + suffix)["concept"],
+                        "Each action, effect and cooldown explicitly shares the correct identity.");
+            Assertions.Equal("dire-crocodile-swallowed", (string)consumers.Single(value =>
+                (string)value["symbol"] == "KMG.Summoning.Special.DireCrocodile.Swallowed")["concept"],
+                "The victim has its own swallowed identity, not Purple Worm art.");
+            foreach (string key in new[] { "crocodilian-sprint", "crocodilian-death-roll", "dire-crocodile-swallowed" })
+            {
+                JObject concept = catalog["concepts"].OfType<JObject>().Single(value => (string)value["key"] == key);
+                JObject record = production["records"].OfType<JObject>().Single(value => (string)value["key"] == key);
+                Assertions.Equal("combat-emblem-64", (string)concept["exportProfile"], "Existing approved physical-emblem family.");
+                Assertions.True(record["exportSize"].Values<int>().SequenceEqual(new[] { 64, 64 }) &&
+                    record["sourceSize"].Values<int>().SequenceEqual(new[] { 512, 512 }), "Source and runtime profiles stay distinct.");
+                Assertions.True(record["approvedHash"].Type == JTokenType.Null &&
+                    concept["visualReview"]["reviewedExportSha256"].Type == JTokenType.Null,
+                    "Offline technical checks are not owner approval.");
+                using (SHA256 hash = SHA256.Create())
+                    Assertions.Equal((string)record["exportSha256"],
+                        BitConverter.ToString(hash.ComputeHash(File.ReadAllBytes(Path.Combine(root,
+                            (string)concept["runtimeExport"]["path"])))).Replace("-", "").ToLowerInvariant(),
+                        "The packaged icon is the exact reviewed export.");
+            }
+        }
+
         internal static void CrocodilianBonesFailClosed()
         {
             foreach (string key in CrocodilianVisualPolicy.Keys)

@@ -2,6 +2,13 @@
 
 ## Current checkpoint, October 5: Sprint 16 NOT QUALIFIED
 
+The icon consumer inventory now gives nine exact action/status/trait consumers
+three original combat-emblem-64 identities and records five hidden AI carriers.
+Existing portraits/protected art are unchanged. Hashes, dispositions and offline
+review: `planning/EXPANDED-SUMMONING-SPRINT16-ICON-REVIEW.md`. Focused 216/216
+(2018 registered), 27 icon corruption tests, static/icon gates and incremental
+Release compile PASS. No new runtime result; native UI/binding proof remains open.
+
 The guarded persistence trio now accepts a closed crocodilian-only scope,
 leaving its historical fixture untouched. Five summons cover active/cooldown
 Sprint states, exact reloaded skills/visuals and clean hold/swallow reset.

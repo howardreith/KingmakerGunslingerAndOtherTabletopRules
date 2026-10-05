@@ -1,5 +1,25 @@
 # Expanded Summoning Phase 2 journal
 
+## October 5 crocodilian visible-icon checkpoint (NOT QUALIFIED)
+
+Closed the null-icon consumer inventory with three original combat-emblem-64
+concepts on nine exact action/status/trait consumers; five AI carriers are
+explicitly hidden-internal. Existing summon portraits and protected assignments
+are unchanged. The existing cache/late binding table owns runtime integration.
+Scoped production export now honors the already-approved 64px emblem profile;
+the catalog keeps these three concepts/nine bindings separate from historical
+painted coverage. Independent repeats match all six source/export files.
+
+Inspected 32/48/64px, parchment, dark and grayscale comparisons with the approved
+Rapid Reload pilot/native-10. Exact briefs/hashes/dispositions are in the
+Sprint 16 icon review. Owner visual approval and native UI proof are not claimed.
+Focused 216/216 PASS (2018 registered), all 27 icon corruption tests, icon/static
+validation and incremental Release compile PASS. Current package metadata is
+312/310 (+3 icons); the four legacy package-count checks were updated because
+their pinned count changed. Full package qualification stays at the candidate
+boundary. No game launch/save write/publication. Next: remaining lifecycle,
+native UI/contact/resource controls, direct/quantity routes, then candidate batch.
+
 ## October 5 targeted crocodilian persistence fixture (NOT RUN)
 
 Added the closed `persistenceScope=crocodilians` option to the existing guarded
