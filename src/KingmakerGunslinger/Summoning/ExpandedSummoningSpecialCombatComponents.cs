@@ -401,6 +401,80 @@ namespace KingmakerGunslinger.Summoning
             else Rulebook.Trigger(rule);
             return rule.Damage;
         }
+
+        /// <summary>
+        /// A death roll: the creature's current bite, with the Strength
+        /// contribution raised from the bite's one times to one and a half.
+        ///
+        /// <para>Everything else about the bite is preserved because the
+        /// damage descriptions are the live ones the weapon-stats rule
+        /// resolved - the current dice after any legitimate size or dice
+        /// change, the damage forms, enhancement, material and weapon
+        /// properties, and every rule modifier and buff in play - and the
+        /// bundle carries the weapon itself, so damage reduction and
+        /// resistance treat this exactly as that bite. What it is not is a
+        /// second attack: no attack roll is made, so nothing that keys on a
+        /// hit can fire again.</para>
+        ///
+        /// <para>The extra half is added only for a positive modifier. One
+        /// and a half times Strength multiplies a bonus; a penalty applies
+        /// once, and is already inside the live bite this is built from, so a
+        /// weakened creature's death roll falls with its bite.</para>
+        ///
+        /// <para>Returns a description of what was dealt, including the live
+        /// Strength the half came from, so the runtime fixture can show the
+        /// derivation rather than a total.</para>
+        /// </summary>
+        internal static string DealDeathRollDamage(UnitEntityData owner,
+            UnitEntityData target, ItemEntityWeapon weapon,
+            MechanicsContext context, out int dealt)
+        {
+            dealt = 0;
+            if (owner == null || target == null || weapon == null)
+                return "no-weapon";
+            var stats = new RuleCalculateWeaponStats(owner, weapon, null);
+            if (context != null) context.TriggerRule(stats);
+            else Rulebook.Trigger(stats);
+            var damages = new List<BaseDamage>();
+            if (stats.DamageDescription != null)
+                foreach (DamageDescription description in stats.DamageDescription)
+                    if (description != null) damages.Add(description.CreateDamage());
+            if (damages.Count == 0) return "no-damage";
+            // The live Strength modifier, which the primary natural attack
+            // already contributes once. The death roll adds the other half.
+            int strengthModifier = owner.Descriptor == null ||
+                owner.Descriptor.Stats == null ? 0 :
+                owner.Descriptor.Stats.Strength.Bonus;
+            int extraHalf = strengthModifier > 0 ? strengthModifier / 2 : 0;
+            string baseline = DescribeDamage(damages);
+            if (extraHalf != 0) damages[0].AddBonus(extraHalf);
+            var bundle = new DamageBundle(damages.ToArray());
+            bundle.Weapon = weapon;
+            var rule = new RuleDealDamage(owner, target, bundle);
+            if (context != null) context.TriggerRule(rule);
+            else Rulebook.Trigger(rule);
+            dealt = rule.Damage;
+            return "weapon=" + (weapon.Blueprint == null ? "none" :
+                    weapon.Blueprint.name) +
+                ";biteDamage=" + baseline +
+                ";deathRollDamage=" + DescribeDamage(damages) +
+                ";liveStrengthModifier=" + strengthModifier +
+                ";extraHalf=" + extraHalf + ";dealt=" + dealt;
+        }
+
+        /// <summary>
+        /// A damage list as dice and bonus, so a fixture can show that the
+        /// death roll's line is the bite's line plus the extra half rather
+        /// than a number invented somewhere else.
+        /// </summary>
+        private static string DescribeDamage(List<BaseDamage> damages)
+        {
+            if (damages == null || damages.Count == 0) return "<none>";
+            return string.Join("+", damages.Select(value =>
+                value == null ? "<null>" :
+                value.Dice.Rolls + "d" + (int)value.Dice.Dice + "+" +
+                value.Bonus + "/" + value.Type).ToArray());
+        }
     }
 
     /// <summary>
@@ -652,13 +726,16 @@ namespace KingmakerGunslinger.Summoning
         {
             if (!HasDeathRoll || owner == null || target == null)
                 return "not-applicable";
-            var damage = new PhysicalDamage(new DiceFormula(DeathRollDiceCount,
-                DeathRollDiceType), PhysicalDamageForm.Bludgeoning);
-            damage.AddBonus(DeathRollBonus);
-            var rule = new RuleDealDamage(owner, target, damage);
-            if (context != null) context.TriggerRule(rule);
-            else Rulebook.Trigger(rule);
-            int dealt = rule.Damage;
+            // The bite that established the hold is the one that rolls. The
+            // damage is that bite's live damage with the Strength contribution
+            // raised, not a line rebuilt from the profile: a buffed, enlarged
+            // or weakened creature death rolls for what it actually bites for.
+            ItemEntityWeapon bite =
+                SummonGrappleLinks.EstablishingWeapon(owner, target) ??
+                FirstGrabWeapon(owner) ?? SummonLimbs.PrimaryWeapon(owner);
+            int dealt;
+            string damageDetail = SummonGrappleDamage.DealDeathRollDamage(
+                owner, target, bite, context, out dealt);
             bool proneBefore = target.Descriptor.State.HasCondition(
                 UnitCondition.Prone);
             bool proneAfter = proneBefore;
@@ -673,8 +750,11 @@ namespace KingmakerGunslinger.Summoning
                 proneAfter = target.Descriptor.State.HasCondition(
                     UnitCondition.Prone);
             }
-            return "damage=" + dealt + ";dice=" + DeathRollDiceCount + "d" +
-                (int)DeathRollDiceType + "+" + DeathRollBonus +
+            // The profile's line is reported beside the live one as the
+            // baseline an unmodified creature must reproduce, which is what
+            // makes a divergence legible rather than invisible.
+            return damageDetail + ";baselineContract=" + DeathRollDiceCount +
+                "d" + (int)DeathRollDiceType + "+" + DeathRollBonus +
                 ";proneBefore=" + proneBefore + ";proneAfter=" + proneAfter +
                 ";heldKept=" + CrocodilianRulesPolicy.KeepsGrappleAfterDeathRoll;
         }
