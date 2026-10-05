@@ -965,9 +965,18 @@ namespace KingmakerGunslinger.DomainTests
             string[] printsNoSkillRanks = InsectKeys
                 .Concat(new[] { "giant-ant-drone", "giant-stag-beetle" })
                 .ToArray();
+            // Sprint 16 explicitly replaces the crocodilians' generic skill
+            // allocation with printed land-use ranks. Keep this exception
+            // exact; no unrelated animal may silently lose the default.
+            string[] crocodilians = { "crocodile", "dire-crocodile" };
+            foreach (string key in crocodilians)
+                Assertions.True(ExpandedSummoningNaturalProfiles.For(key)
+                    .Skills.SequenceEqual(new[] { "Perception", "Stealth" }),
+                    "The explicit crocodilian land skill row changed: " + key);
             string[] movedCreatures = ExpandedSummoningNaturalProfiles.All
                 .Where(value => !printsNoSkillRanks.Contains(value.Key,
                     StringComparer.Ordinal) &&
+                    !crocodilians.Contains(value.Key, StringComparer.Ordinal) &&
                     !value.Skills.SequenceEqual(expectedDefault))
                 .Select(value => value.Key).ToArray();
             if (movedCreatures.Length != 0)

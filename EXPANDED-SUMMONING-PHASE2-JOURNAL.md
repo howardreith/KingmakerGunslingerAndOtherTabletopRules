@@ -1,5 +1,23 @@
 # Expanded Summoning Phase 2 journal
 
+## October 5 survey preflight: test-contract reconciliation
+
+The clean source preflight at `e9dae664a8f46ac68ca4d5244fac33db97c76c1c`
+passed the complete repository wrapper, then stopped with four failures in
+2012 domain tests. No package was deployed and no runtime transaction opened.
+The failures were stale summoning identity/type counts, a case-sensitive
+Death Roll prose assertion, the replaced swallow helper's source-name check,
+and the Sprint 14 generic-skill guard not accounting for Sprint 16's explicit
+crocodilian rows. No accepted Sprint 14-15 creature behavior was changed.
+
+The tests now pin the registered 1847 summoning identities and their type
+counts, the baseline damage contract, all 24 older swallow-only selection
+combinations, and the exact two crocodilian skill-row exceptions. A complete
+diagnostic rerun after the first two corrections found only the latter two
+failures (2012 tests, two failures); the final focused recheck passes 17/17.
+Complete source/build/package checks must pass in the guarded survey launcher
+before any runtime observation can count. Sprint 16 remains NOT QUALIFIED.
+
 ## October 5 follow-up: narrow crocodilian survey source
 
 The next source checkpoint adds explicit 1/2 and 6/6 land-skill rank
