@@ -58,6 +58,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool mode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue;
             bool pause = game.IsPaused;
             TimeSpan clock = game.Player.GameTime;
+            UnitEntityData[] awake = game.State.AwakeUnits.ToArray();
             UnitEntityData[] selection = game.UI.SelectionManagerPC.SelectedUnits.ToArray();
             UnitEntityData groupCharacter = GroupController.Instance.GetCurrentCharacter();
             try
@@ -88,10 +89,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                         GroupController.Instance.SelectUnit(groupCharacter);
                         game.UI.SelectionManagerPC.MultiSelect(selection.Select(value => value.View).ToArray(), false);
                     }
-                    finally { game.Player.GameTime = clock; game.IsPaused = pause; }
+                    finally
+                    {
+                        game.State.AwakeUnits.Clear();
+                        game.State.AwakeUnits.AddRange(awake);
+                        game.Player.GameTime = clock;
+                        game.IsPaused = pause;
+                    }
                 }
                 bool scopeRestored = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue == mode &&
                     game.Player.GameTime == clock && game.IsPaused == pause &&
+                    game.State.AwakeUnits.SequenceEqual(awake) &&
                     game.UI.SelectionManagerPC.SelectedUnits.SequenceEqual(selection) &&
                     ReferenceEquals(GroupController.Instance.GetCurrentCharacter(), groupCharacter);
                 Sprint16Check(_crocodilianAssertions, _sprint16FinalRows, "final-fixture-cleanup", cleaned,
@@ -101,8 +109,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue == mode,
                         ["selectionRestored"] = game.UI.SelectionManagerPC.SelectedUnits.SequenceEqual(selection),
                         ["groupRestored"] = ReferenceEquals(GroupController.Instance.GetCurrentCharacter(), groupCharacter),
-                        ["clockRestored"] = game.Player.GameTime == clock, ["pauseRestored"] = game.IsPaused == pause },
-                    "request-local RTWP lifecycle scope restores the exact preceding mode, selection, group, clock and pause");
+                        ["clockRestored"] = game.Player.GameTime == clock, ["pauseRestored"] = game.IsPaused == pause,
+                        ["awakeRestored"] = game.State.AwakeUnits.SequenceEqual(awake) },
+                    "request-local RTWP lifecycle scope restores the exact preceding mode, selection, group, clock, pause and awake census");
             }
         }
 

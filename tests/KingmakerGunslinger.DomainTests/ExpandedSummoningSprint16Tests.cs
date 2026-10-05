@@ -118,12 +118,26 @@ namespace KingmakerGunslinger.DomainTests
                     "No native or unknown creature receives a contact pose.");
             foreach (string key in CrocodilianVisualPolicy.Keys)
             {
+                Assertions.True(CrocodilianVisualPolicy.IsContactRootPermitted(key,
+                    "cent_root1_jnt", true, CrocodilianVisualPolicy.Bones),
+                    "The owned common ancestor carries the complete approved skin.");
+                Assertions.False(CrocodilianVisualPolicy.IsContactRootPermitted(key,
+                    "cent_spine1_jnt", true, CrocodilianVisualPolicy.Bones),
+                    "The renderer spine root is not the common jaw/tail root.");
+                Assertions.False(CrocodilianVisualPolicy.IsContactRootPermitted(key,
+                    "cent_root1_jnt", false, CrocodilianVisualPolicy.Bones),
+                    "A matching rig on another view is never an owned root.");
                 Assertions.True(CrocodilianVisualPolicy.IsPermitted(key,
                     CrocodilianVisualPolicy.Bones), "Reviewed driver set must load.");
                 foreach (string bone in CrocodilianVisualPolicy.Bones)
+                {
+                    Assertions.False(CrocodilianVisualPolicy.IsContactRootPermitted(key,
+                        "cent_root1_jnt", true, CrocodilianVisualPolicy.Bones.Where(value => value != bone)),
+                        "A skin driver outside the common root fails closed: " + bone);
                     Assertions.False(CrocodilianVisualPolicy.IsPermitted(key,
                         CrocodilianVisualPolicy.Bones.Where(value => value != bone)),
                         "Missing driver must fail: " + bone);
+                }
                 foreach (string foreign in new[] { "cent_tongue1_jnt", "L_Foot3",
                     "left_arm2_jnt", "cent_root1_jnt", "Head" })
                     Assertions.False(CrocodilianVisualPolicy.IsPermitted(key,
@@ -137,6 +151,13 @@ namespace KingmakerGunslinger.DomainTests
                 CrocodilianVisualPolicy.Bones), "The native negative control is not a target.");
             Assertions.False(CrocodilianVisualPolicy.IsPermitted(null, null),
                 "Unknown or absent input must fail closed.");
+            Assertions.False(CrocodilianVisualPolicy.IsContactRootPermitted("monitor-lizard",
+                "cent_root1_jnt", true, CrocodilianVisualPolicy.Bones),
+                "A correct native rig is still not a project-owned crocodilian.");
+            Assertions.False(CrocodilianVisualPolicy.IsContactRootPermitted("crocodile",
+                null, true, CrocodilianVisualPolicy.Bones), "A missing root fails closed.");
+            Assertions.False(CrocodilianVisualPolicy.IsContactRootPermitted("crocodile",
+                "cent_root1_jnt", true, null), "Absent descendants fail closed.");
         }
 
         internal static void CrocodilianOriginalAssetsAreComplete()

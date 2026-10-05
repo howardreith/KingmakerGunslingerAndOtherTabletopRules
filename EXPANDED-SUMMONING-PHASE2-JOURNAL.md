@@ -1,5 +1,16 @@
 # Expanded Summoning Phase 2 journal
 
+## October 5 — common-root and native-update correction, NOT QUALIFIED
+
+Pushed restored batch evidence at 0144ebbb and updated PR #26. The next bounded
+change fixes the demonstrated spine-versus-tail root mismatch and replaces
+unobserved quiet-fixture assumptions with owned awake registration plus an
+actual read-only native grapple-controller tick witness. No controller is
+called by the fixture; no relationship is released to pass a check. Caps and
+timeouts unchanged. Focused 217/217 and incremental exact-reference compile
+PASS. Full exact-head gates/runtime next; no DATA ports or publication.
+[Detailed change and failed evidence](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-BATCH-REVIEW.md).
+
 ## October 5, 22:12 UTC — corrected laptop batch closed, NOT QUALIFIED
 
 Exact pushed 4c3c76ce passed 2019/2019 and every prelaunch gate, then main

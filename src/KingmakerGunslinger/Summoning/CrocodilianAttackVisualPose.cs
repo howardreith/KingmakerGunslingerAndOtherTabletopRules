@@ -46,8 +46,8 @@ namespace KingmakerGunslinger.Summoning
         private float _impactAt = -1f;
         private Quaternion _nativeTail;
         private Quaternion _appliedTail;
-        private Vector3 _nativeRoot;
-        private Vector3 _appliedRoot;
+        private Vector3 _nativeRootLocal;
+        private Vector3 _appliedRootLocal;
         private bool _applied;
         private int _impacts;
         private float _gapBefore = -1f;
@@ -87,7 +87,20 @@ namespace KingmakerGunslinger.Summoning
             _tailVertices = Enumerable.Range(0, _vertices.Length).Where(index =>
                 HasDriver(_weights[index], true)).ToArray();
             _tail = _bones.Single(bone => bone.name == "cent_tail1_jnt");
-            _root = renderer.rootBone;
+            // The audited renderer.rootBone is cent_spine1_jnt. The tail is
+            // under its sibling cent_ass1_jnt, so moving that renderer root
+            // never approaches with the tail. Resolve only this fixed rig's
+            // common root, bounded by the exact owning view.
+            Transform root = renderer.rootBone;
+            while (root != null && root != view.transform &&
+                root.name != CrocodilianVisualPolicy.ContactRoot) root = root.parent;
+            bool owned = root != null && root != view.transform &&
+                root.IsChildOf(view.transform) && renderer.transform.IsChildOf(view.transform);
+            if (!CrocodilianVisualPolicy.IsContactRootPermitted(key,
+                root == null ? null : root.name, owned,
+                _bones.Where(bone => root != null && bone.IsChildOf(root)).Select(bone => bone.name)))
+                throw new InvalidOperationException("Crocodilian contact root does not own every approved skin driver.");
+            _root = root;
             if (_jawVertices.Length == 0 || _tailVertices.Length == 0)
                 throw new InvalidOperationException("Crocodilian contact drivers are absent.");
             RefreshSkin();
@@ -151,6 +164,7 @@ namespace KingmakerGunslinger.Summoning
         internal string Describe()
         {
             return "impacts=" + _impacts + ";kind=" + (_tailAttack ? "tail" : "bite") +
+                ";root=" + (_root == null ? "<absent>" : _root.name) +
                 ";approachCap=" + CrocodilianVisualPolicy.ContactApproach(_key, float.MaxValue, 1f)
                     .ToString("0.###", CultureInfo.InvariantCulture) +
                 ";gap=" + _gapBefore.ToString("0.###", CultureInfo.InvariantCulture) +
@@ -209,7 +223,7 @@ namespace KingmakerGunslinger.Summoning
             if (targetRenderer == null) return;
             Bounds bounds = targetRenderer.bounds;
             _nativeTail = _tail.rotation;
-            _nativeRoot = _root.position;
+            _nativeRootLocal = _root.localPosition;
             RefreshSkin();
             ClosestSurface(bounds, out _gapBefore);
             if (_tailAttack)
@@ -227,7 +241,7 @@ namespace KingmakerGunslinger.Summoning
             float distance = CrocodilianVisualPolicy.ContactApproach(_key, approach.magnitude, weight);
             if (distance > 0.001f) _root.position += approach.normalized * distance;
             _appliedTail = _tail.rotation;
-            _appliedRoot = _root.position;
+            _appliedRootLocal = _root.localPosition;
             _applied = true;
             RefreshSkin();
             ClosestSurface(bounds, out _gapAfter);
@@ -238,8 +252,11 @@ namespace KingmakerGunslinger.Summoning
             if (!_applied) return;
             if (_tail != null && Quaternion.Angle(_tail.rotation, _appliedTail) <=
                     Quaternion.Angle(_tail.rotation, _nativeTail)) _tail.rotation = _nativeTail;
-            if (_root != null && Vector3.Distance(_root.position, _appliedRoot) <=
-                    Vector3.Distance(_root.position, _nativeRoot)) _root.position = _nativeRoot;
+            // Parent/unit movement must not be undone while restoring our
+            // own visual translation. Compare and restore in parent space.
+            if (_root != null && Vector3.Distance(_root.localPosition, _appliedRootLocal) <=
+                    Vector3.Distance(_root.localPosition, _nativeRootLocal))
+                _root.localPosition = _nativeRootLocal;
             _applied = false;
         }
         private void OnDisable() { RestoreNative(); }
