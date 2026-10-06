@@ -47,6 +47,31 @@ namespace KingmakerGunslinger.Summoning
             return key != null;
         }
 
+        internal static bool TrySnakeBiteAnimationDistance(bool moduleEnabled, string guid,
+            string blueprintName, string prefab, bool originalBody, bool bite,
+            float worldDistance, out float animationDistance)
+        {
+            animationDistance = worldDistance;
+            string key;
+            if (!originalBody || !bite || !TryProductionSnake(moduleEnabled, guid,
+                blueprintName, prefab, out key) || worldDistance < 0 ||
+                float.IsNaN(worldDistance) || float.IsInfinity(worldDistance)) return false;
+            float corrected = worldDistance / SnakeViewMultiplier;
+            if (float.IsInfinity(corrected)) return false;
+            // Only native visual range selection uses this projection. The
+            // stored handle distance, command approach and weapon reach stay
+            // in world metres. Native clips/events/rigs are never rewritten.
+            animationDistance = corrected;
+            return true;
+        }
+
+        internal static bool IsNativeSnakeBiteAction(string actionName, IEnumerable<string> clipNames)
+        {
+            return actionName == "Purple_Worm_AnimationSet_Bite 1" && clipNames != null &&
+                clipNames.SequenceEqual(new[] { "BiteAttack01_Short_3.5m", "BiteAttack01_Long_8m",
+                    "BiteAttack02_Short_3.5m", "BiteAttack02_Long_8m" });
+        }
+
         internal static bool PermitsOriginalWinding(string key, string marker)
         { return Keys.Contains(key, StringComparer.Ordinal) && marker == OutwardWinding; }
 

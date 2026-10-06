@@ -1,6 +1,6 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-06 — laptop sole owner; command43/51 FAIL, restored; only contact open; full Sprint17 NOT QUALIFIED
+## CURRENT STATE, 2026-10-06 — laptop sole owner; Bite-distance repair SOURCE PASS, NOT RUN; Sprint17 NOT QUALIFIED
 
 This section governs over historical mission/ownership statements below.
 HOWARD-LAPTOP / `codex/expanded-summoning-phase2b-sprints14-17` / draft PR26
@@ -21,7 +21,8 @@ deployment, force push or prohibited substitute subsystems.
 - Last exact runtime candidate `474be538bf9b1ce89a700ed7fbe61eb0d9e8f528`,
   clean/pushed for smoke11/profile-body-rules62 PASS and commands43/51 FAIL.
   Paired contact diagnostics completed; timing-only remedy rejected.
-  This evidence-only descendant has no production behavior change.
+  Current source descends from evidence head24924453 and narrowly corrects
+  native Bite-distance selection for the two original snake bodies; NOT RUN.
   Earlier exact130bf7a2 bounded rules PASS remains unchanged; no qualification
   transfers to an untested artifact.
   Owner/holder identities unchanged; no competing source/runtime process.
@@ -30,30 +31,33 @@ deployment, force push or prohibited substitute subsystems.
 
 ### Latest transaction and exact next gate
 
-[Latest snake command attempt](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-ATTEMPT4-EVIDENCE.json):
-exact474be538 prelaunch PASS:259 focused,2061 full84.8s,complete182.2s,
-508 preflight,168 orchestration,clean14-reference Release,strict320.
-Fresh-Steam smoke11/11 and profile/body/rules62/62 PASS (46 metadata rows).
-Commands43/51 FAIL: only8 contact assertions; every setup/approach/real bite/
-signature/native-AI/cleanup check passes across all8 cells and both modes.
-All8 rule-event gaps0.37891674-0.426136971m are horizontal only (Y=Z=0).
+[Latest runtime](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-ATTEMPT4-EVIDENCE.json):
+exact474be538 smoke11/profile-body-rules62 PASS; commands43/51 FAIL.
+Only8 rule-event contacts fail (0.37891674-0.426136971m horizontal gaps).
+All setup/approach/real bite/signature/native-AI/cleanup checks pass.
+Paired same-frame Viper observations reject a timing-only remedy; Constrictor
+commands have already ended at frame end, so those poses cannot qualify contact.
 
-The paired observer disproves a timing-only remedy: all4 Viper same-frame/
-same-command/handle/animation/clip pairs remain0.380765915-0.426655769m away
-(maximum gap change1.253mm). Constrictor commands have ended by frame end;
-those transition-out samples correctly reject correlation and cannot qualify
-contact. All51 assertions/0.25m threshold unchanged; observer cleanup PASS.
-No pose/animation/reach/clock/actor correction or later-peak acceptance.
+[Bounded native Bite-distance repair](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-BITE-DISTANCE-REVIEW.md):
+offline original-vertex replay reproduces every gap within1 micrometre.
+The exact native audit shows world-distance input to the existing short/long
+Bite selector without view-scale compensation. Only the two exact original-body
+snakes now project that getter result into donor clip space (distance/0.2).
+No stored distance, combat reach, movement, shared action/clip, bone or mesh is
+rewritten. Native Worm, Salamander, disabled/fallback views and other actions
+are excluded. The actual selected clip/contact still needs live proof.
+Source PASS:260 focused,2062 unfiltered90.0s,complete188.7s,
+repository/static/icon/manifest,clean14-reference Release,strict320.
+This repair is NOT RUN and does not supersede the failed runtime result.
 
 Actual snapshot2214490404756Z restored2026-10-06T22:27:03.4374771Z:
 136/.117/exact tree;lease Completed/recovery=false/released;no game/shared
 lock/this-worktree staging/save write. All failed artifacts retained.
 
-[Next bounded work](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-SLICE.md):
-replay exact original vertices through the captured rule/end-frame matrices,
-review head/neck contact alignment and author only evidence-supported original
-geometry. No unchanged runtime retry, reach change or tolerance waiver.
-Source/full/exact-artifact gates precede a new guarded affected batch.
+Next: push the source checkpoint, rebuild on its exact clean head, complete
+prelaunch gates, then fresh-Steam smoke/62-rule/51-command batch under one
+lease-first actual snapshot and exact restoration. Keep all51 assertions and
+the0.25m at-rule threshold; inspect actual clip and projected distance.
 32 roots hidden; Sprint17/full Phase2B NOT QUALIFIED. Phase2C deferred.
 
 ### Qualified versus NOT QUALIFIED
