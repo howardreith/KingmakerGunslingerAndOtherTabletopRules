@@ -612,12 +612,20 @@ namespace KingmakerGunslinger.RuntimeTesting
         private Vector3 FindExpandedSummoningUngulateArtPoint(
             out string survey)
         {
-            if (AstarPath.active == null || _creatureReviewCaster == null ||
-                Kingmaker.Visual.FogOfWar.LineOfSightGeometry.Instance == null)
-                throw new InvalidOperationException(
-                    "Ungulate art review has no native floor or sight survey.");
+            return FindExpandedSummoningArtPoint(_creatureReviewCaster, out survey);
+        }
+
+        // The anchor belongs to the caller's fixture. Other guarded scenarios
+        // must not depend on CreatureReview's private initialization state.
+        private static Vector3 FindExpandedSummoningArtPoint(UnitEntityData anchorCaster,
+            out string survey)
+        {
+            if (anchorCaster == null) throw new InvalidOperationException("Art review has no fixture anchor.");
+            if (AstarPath.active == null) throw new InvalidOperationException("Art review has no native path graph.");
+            if (Kingmaker.Visual.FogOfWar.LineOfSightGeometry.Instance == null)
+                throw new InvalidOperationException("Art review has no native sight survey.");
             Pathfinding.NNInfo anchor = AstarPath.active.GetNearest(
-                _creatureReviewCaster.Position);
+                anchorCaster.Position);
             if (anchor.node == null || !anchor.node.Walkable)
                 throw new InvalidOperationException(
                     "Ungulate art review has no walkable party anchor.");
