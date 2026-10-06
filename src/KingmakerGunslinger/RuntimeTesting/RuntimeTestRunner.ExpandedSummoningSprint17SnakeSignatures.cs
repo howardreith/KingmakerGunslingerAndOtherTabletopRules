@@ -66,9 +66,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     BuffSaves.Add(row);
                     return;
                 }
-                // ContextActionSavingThrow leaves Reason null. Correlate its
-                // initial injury gate to the exact synchronous owned bite,
-                // not to an assumed buff fact or any unrelated target save.
+                // The injury action is not venom-buff-owned. Runtime may give
+                // it a Reason; correlate its initial gate to the exact owned
+                // bite, not an assumed buff fact or unrelated target save.
                 var context = Rulebook.CurrentContext;
                 var attack = context == null ? null : context.LastEvent<RuleAttackWithWeapon>();
                 if (InjuryAttack == null || !ReferenceEquals(attack, InjuryAttack) ||

@@ -1,16 +1,33 @@
 # Expanded Summoning fidelity matrix
 
-## Current boundary: snake profiles PASS, signatures61/62 FAIL; full Sprint17 NOT QUALIFIED
+## Current boundary: bounded snake rules62/62 PASS; full Sprint17 NOT QUALIFIED
 
-[Latest signature evidence](EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-ATTEMPT3-EVIDENCE.json):
-exactdc12 smoke11,signature61/62 FAIL, restored19:30UTC. All Constrictor rules
-pass. Six damage events and removal/no replay pass. The fixture missed the
-separate injury-action save and incorrectly required six buff saves instead
-of one injury plus five later saves. Phase-aware observer251 focused/2053 full,
-clean Release/strict320 source PASS; exact runtime next. All62 requirements,
-no production change or new adaptation.
-Seeded rule delivery is not real command/AI/contact
-or full lifecycle proof. Earlier qualified profile/body slice:
+Exact `130bf7a2de4cbd636df921f36e7f6afefe8523ca` passes the complete
+bounded rules batch: fresh Steam640820 smoke **11/11**, profile/body/signature
+**62/62**, strict collector **46/46 metadata rows**, batch PASS.
+[Exact artifact, results and restoration](EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-PASS-EVIDENCE.json).
+
+Prelaunch PASS:251 focused,2053 unfiltered83.4s, complete repository/static/icon/
+manifest, clean14-reference Release and deterministic strict320 package179.8s;
+502 standalone preflight,142 orchestration,17 provenance,persistence11/3/19,
+crowd5/7. All38 inherited profile/body and24 signature checks pass.
+
+Runtime proves one exact wounding-bite injury save plus five venom-owned saves,
+six native1d2 Constitution exposures, live counter6, native removal and no
+seventh/duplicate damage. Each raw roll resolved to2; actual damage was1 each
+in this environment. Reduction factors were not recorded, so none is inferred.
+The initial save had a Reason at dispatch, but was not venom-buff-owned:
+this corrects the prior partial offline inference of a reason-less dispatch.
+All13 Constrictor rule checks pass. No production behavior change or waiver;
+all three failed signature attempts and their artifacts remain unchanged.
+
+Actual snapshot1951101231925Z restored19:58:09.8692950UTC:136 files,
+Info0.0.117,tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
+Lease Completed/recovery=false/released; no game/shared lock/staging/save write.
+This qualifies seeded native RULES, not real commands/AI/contact or full Sprint17.
+32 snake roots stay hidden; no publication. HumanReview: NOT_PERFORMED_NONBLOCKING.
+
+Earlier qualified profile/body boundary:
 
 Exact `22be90c0c768acc710b9dfef2a6d42d1cb917a04` passes the complete
 bounded smoke/profile transaction: fresh Steam640820 **11/11 smoke,38/38 snake
@@ -34,8 +51,9 @@ The prior2dd31/38 FAIL and e1 native38/38/collectorERROR remain unchanged.
 
 Exact HP/skills, live bite/dice, automatic original bodies, rollback/normal
 intact settlement, scale/once/native teardown and donor isolation PASS.
-Poison/constrict, real commands/AI/contacts/full lifecycle, persistence/crowds/
-UI/routes and Salamander remain unqualified.32 roots hidden; no new limitation.
+Seeded poison/constrict rules PASS on exact130bf7a2. Real commands/AI/contacts/
+full lifecycle, persistence/crowds/UI/routes and Salamander remain unqualified.
+32 roots hidden; no new limitation or adaptation.
 
 ## Historical Sprint17 snake source, October 6 UTC — NOT QUALIFIED
 
