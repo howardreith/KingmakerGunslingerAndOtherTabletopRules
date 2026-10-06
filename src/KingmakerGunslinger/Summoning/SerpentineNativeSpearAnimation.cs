@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Items.Weapons;
+using Kingmaker.Blueprints.Root;
 using Kingmaker.View;
 using Kingmaker.View.Animation;
 using Kingmaker.Visual.Animation;
@@ -45,11 +46,16 @@ namespace KingmakerGunslinger.Summoning
             // campaign NPC, mutate its manager or drive a detached clip.
             UnitEntityView prefab = source.Prefab.Load(false);
             var manager = _view.AnimationManager;
-            var donorManager = prefab == null ? null : prefab.GetComponent<UnitAnimationManager>();
+            // Native UnitEntityView resolves this on its Animator, not
+            // necessarily on the view root. Detached prefabs have no cached
+            // m_AnimatorManager: inspect the single actual component read-only.
+            var donorManager = prefab == null ? null : prefab.GetComponentsInChildren<UnitAnimationManager>(true).SingleOrDefault();
             if (manager == null || donorManager == null || donorManager.AnimationSet == null)
                 throw new InvalidDataException("Native piercing animation set is unavailable.");
+            if (donorManager.GetComponent<Animator>() == null)
+                throw new InvalidDataException("Native piercing manager is not on its Animator.");
             _original = manager.AnimationSet; _donor = donorManager.AnimationSet;
-            if (_original == null || !_donor.name.StartsWith("Lizardfolk_", StringComparison.Ordinal))
+            if (_original == null || ReferenceEquals(_donor, BlueprintRoot.Instance.HumanAnimationSet))
                 throw new InvalidDataException("Native piercing set cannot fall back to a human set.");
             _originalActions = _original.Actions.ToArray(); _donorActions = _donor.Actions.ToArray();
             var oldHand = _originalActions.OfType<UnitAnimationActionHandAttack>()

@@ -20,7 +20,7 @@ deployment, force push or prohibited substitute subsystems.
   Session-scoped, not perpetual. Refresh heartbeat; release only on actual
   session ending. All safety refs, bundles and failed artifacts retained.
 - Last verified pushed evidence checkpoint:
-  `3eb23d06e0459ac929971a33439ac2230d63cc1f`; last runtime candidate
+  `b396c8f2ee93af7a6d7857ad4e665999d547d620`; last runtime candidate
   `09087d0f45103ed8ba94084ac059f253b97f6a10`.
   This containing bounded native-piercing adapter is a normal descendant,
   source-only NOT QUALIFIED; exact-head complete prelaunch/runtime next.
@@ -65,6 +65,10 @@ bone paths/binds within1e-5, no explicit transitions, and a private action-list
 container replacing exactly one main-hand reference. Other actions, shared
 native sets/actions/clips, bones, weapon rules and original meshes unchanged.
 234 focused/2036 registered tests and incremental exact compile PASS.
+Exactb396 passed full2036/strict318-member package but was never deployed:
+native IL prelaunch review corrected detached manager lookup from assumed
+view root to the single actual Animator component. Its ZIP/sidecar remain
+archived. Re-freeze this descendant and rerun full exact prelaunch.
 No live compatibility claim. Rollback/native destruction assertions now
 include exact original-set restoration/private-container release/borrowed
 native survival. One new binding assertion makes48 total; all47 prior checks

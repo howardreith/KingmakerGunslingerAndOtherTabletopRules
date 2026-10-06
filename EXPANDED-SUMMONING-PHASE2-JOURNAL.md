@@ -1,5 +1,17 @@
 # Expanded Summoning Phase 2 journal
 
+## October 6 -- prelaunch native manager-location review
+
+Exactb396c8f2 passed the full source gate:2036 unfiltered84.1s/gate179s,
+strict318-member packagebe64b43830d2e5f2ed7ac40be76be549899d658163402f517b23d14f801c427a.
+It was NEVER deployed/launched. Native IL confirms UnitEntityView resolves
+its animation manager on the Animator, not necessarily on the view root;
+the detached view's cached m_AnimatorManager is uninitialized. The bounded
+adapter now reads the single actual manager under that exact prefab and
+requires its Animator component, rather than assuming root placement.
+The b396 immutable ZIP/sidecar remain in the private prelaunch-only archive.
+Re-freeze this correction and rerun complete exact prelaunch before runtime.
+
 ## October 6 -- conditional native piercing carrier adapter, source only
 
 09087 missing-clip evidence and exact restoration preserved/pushed as3eb23d06.
