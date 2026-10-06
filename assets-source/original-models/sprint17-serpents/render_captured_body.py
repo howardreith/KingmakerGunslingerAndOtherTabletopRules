@@ -20,7 +20,10 @@ from render_snake_review import framing, look_at, apply_shading, VIEWS
 def render(args, row, sample, label, shading):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     original = observed.decode_mesh(Path(args.mesh_directory) / (row["key"] + "-mesh.json"))
-    points = observed.replay(original["vertices"], original["weights"], sample)
+    support = observed.HYBRID_SUPPORT in original["payload"]["bones"]
+    if support and row["key"] != "salamander":
+        raise ValueError("support driver on non-hybrid original mesh")
+    points = observed.replay(original["vertices"], original["weights"], sample, support)
     origin = sample["actorPosition"]
     # Unity world +Y up -> Blender +Z up. The axis swap reverses handedness;
     # reverse the Unity triangles too, preserving the original outer surface.

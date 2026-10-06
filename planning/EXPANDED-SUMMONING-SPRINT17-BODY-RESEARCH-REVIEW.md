@@ -87,8 +87,29 @@ Lease Completed/recoveryRequired=false, released; no game/lock/staging/save writ
 Journal SHA `97357EA07776B7FACD1427826280F10DE858773F16CA75AD2D11E959A5427150`.
 [All four exact attempts](EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-EVIDENCE.json).
 
-Next: finish the bounded hybrid support/weapon seam, integrate stable original
-assets, then new exact-head body/contact/lifecycle qualification. Preserve all
+The containing support integration now stages original snake v3 and hybrid v7
+for this closed fixture ONLY. Original exports reproduce byte-for-byte;
+25 authoring/replay tests and225 focused domain checks PASS. All39 measured
+poses replay without floor penetration (snakes2–3mm, hybrid5mm). These remain
+offline results, not new native qualification. The hybrid support is one
+project-owned driver name mapped to the existing renderer with a static
+authored half-turn about original +Z; no Transform or native joint is created.
+All27 native hybrid drivers retain exact native bindposes. Bone4 is set only
+on this owned body's renderer for its maximum3 weights and restored on release.
+
+Preserved private identity-frame v5 panels fail: the renderer faces opposite
+the body, causing horizontal stretch despite correct height. The first aligned
+thin underside stretches into a skirt; whole cross-section support plus a
+smooth tail2/tail3 transition corrects that artifact in v7. All pure-tail3
+distal-coil coordinates/weights, upper body/hands and original paint stay exact.
+Representative clay/textured idle/moving/settled panels were inspected. No
+final art/contact/death/slope acceptance is inferred. The runtime fixture adds
+three ground-support assertions (-2..15mm for every measured pose), records
+driver alias versus actual native transform, and checks quality rollback too.
+
+Next: freeze this source candidate, full exact-head prelaunch and fresh-Steam
+smoke/body26 batch with exact restoration, then separate weapon/contact/lifecycle
+work. Preserve all
 S16 production behavior, accepted limitations and current published counts.
 The later source-development notes below describe the earlier boundary, not
 an unrun f31 artifact.

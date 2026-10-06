@@ -645,6 +645,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint17-original-body-drivers", ExpandedSummoningSprint17Tests.OriginalBodyBindingRejectsUnreviewedDrivers),
             Case("expanded-summoning.sprint17-original-body-payloads", ExpandedSummoningSprint17Tests.OriginalBodyPayloadsAreCompleteAndRedistributionSafe),
             Case("expanded-summoning.sprint17-exact-two-skin-binding", ExpandedSummoningSprint17Tests.MultiRendererBodySwapRequiresExactDonorSet),
+            Case("expanded-summoning.sprint17-hybrid-support-native-slot-mapping", ExpandedSummoningSprint17Tests.HybridSupportMappingPreservesEveryNativeSlotAndRejectsUnknowns),
             Case("expanded-summoning.crocodilian-death-roll-damage", ExpandedSummoningCrocodilianRulesTests.DeathRollDamageIsDerivedAndNotTheBite),
             Case("expanded-summoning.crocodilian-death-roll-live-strength", ExpandedSummoningCrocodilianRulesTests.DeathRollFollowsLiveStrength),
             Case("expanded-summoning.crocodilian-death-roll-base-bite", ExpandedSummoningCrocodilianRulesTests.DeathRollAdjustsOnlyTheCapturedBaseBite),

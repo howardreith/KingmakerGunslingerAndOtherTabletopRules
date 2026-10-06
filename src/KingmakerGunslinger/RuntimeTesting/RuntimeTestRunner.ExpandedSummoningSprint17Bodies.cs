@@ -142,7 +142,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             "No visibility forcing; native appearance lock/fader."));
                         var originalSkins = unit.View.GetComponentsInChildren<SkinnedMeshRenderer>(true)
                             .Select(value => new { Renderer = value, Mesh = value.sharedMesh,
-                                Bones = value.bones, Root = value.rootBone }).ToArray();
+                                Bones = value.bones, Root = value.rootBone, Quality = value.quality }).ToArray();
                         var originalStatics = unit.View.GetComponentsInChildren<MeshFilter>(true)
                             .Select(value => new { Filter = value, Mesh = value.sharedMesh }).ToArray();
                         UnityEngine.Object[] rollbackResources = new UnityEngine.Object[0];
@@ -163,7 +163,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             outcome + ";captured=" + rollbackResources.Length,
                             failedAttach && rollbackResources.Length >= 5 &&
                                 originalSkins.All(value => value.Renderer.sharedMesh == value.Mesh &&
-                                    value.Renderer.bones.SequenceEqual(value.Bones) && value.Renderer.rootBone == value.Root) &&
+                                    value.Renderer.bones.SequenceEqual(value.Bones) && value.Renderer.rootBone == value.Root &&
+                                    value.Renderer.quality == value.Quality) &&
                                 originalStatics.All(value => value.Filter.sharedMesh == value.Mesh) &&
                                 rollbackResources.All(value => value == null),
                             "Exact object references, not a name-only resource count."));
@@ -172,6 +173,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                         var attachment = unit.View.GetComponent<SerpentineVisualAttachment>();
                         resources = attachment.CaptureOwnedResources();
                         row["attachment"] = outcome;
+                        if (key == "salamander")
+                        {
+                            int support = Array.IndexOf(attachment.DriverNames, SerpentineVisualPolicy.HybridSupport);
+                            if (support < 0 || attachment.Body.bones[support] != attachment.Body.transform ||
+                                attachment.Body.quality != SkinQuality.Bone4 ||
+                                attachment.Body.sharedMesh.bindposes[support] != Matrix4x4.Scale(new Vector3(-1, -1, 1)))
+                                throw new InvalidOperationException("Hybrid support is not the exact original renderer-frame binding.");
+                        }
                         for (int frame = 0; frame < 90; frame++) yield return 0;
                         _serpentineBodyAssertions.Add(Assertion("sprint17-body-intact-" + key,
                             "original on native body renderer; all audited auxiliary geometry absent; native blueprint unchanged",
@@ -226,6 +235,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 value["lowestVertexFloor"]["clearance"].Type == JTokenType.Float &&
                                 ((JArray)value["skinTransforms"]).Count == SerpentineVisualPolicy.Bones(key).Length),
                             "Research completeness only: negative clearance and visible gaps are retained, not waived."));
+                        _serpentineBodyAssertions.Add(Assertion("sprint17-corrected-ground-support-" + key,
+                            "every measured idle/movement pose has original support within -2..15mm of the actual floor",
+                            "minimum=" + measured.Min(value => (float?)value["lowestVertexFloor"]["clearance"]) +
+                                ";maximum=" + measured.Max(value => (float?)value["lowestVertexFloor"]["clearance"]),
+                            measured.All(value => {
+                                float? clearance = (float?)value["lowestVertexFloor"]["clearance"];
+                                return clearance.HasValue && clearance.Value >= -.002f && clearance.Value <= .015f;
+                            }), "Bounded sampled flat-ground proof only; not attack, slope, death or final visual qualification."));
                         row["supportingFrame"] = CaptureSprint17OriginalBodyFrame(unit, attachment.Body, key);
                     }
                     finally
@@ -291,7 +308,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool poseFinite = skin.All(matrix => Enumerable.Range(0, 16)
                 .All(index => SerpentineRigSurveyPolicy.Finite(matrix[index / 4, index % 4])));
             var transforms = new JArray(bones.Select((bone, index) => new JObject {
-                ["name"] = bone.name, ["worldPosition"] = SurveyVector(bone.position),
+                ["name"] = body.GetComponentInParent<SerpentineVisualAttachment>().DriverNames[index],
+                ["nativeTransformName"] = bone.name, ["worldPosition"] = SurveyVector(bone.position),
                 ["skinToWorldRowMajor"] = Sprint17SurveyMatrix(skin[index]) }));
             return new JObject { ["frame"] = Time.frameCount, ["finite"] = finite, ["poseFinite"] = poseFinite,
                 ["actorPosition"] = SurveyVector(unit.Position), ["vertices"] = points.Length,

@@ -68,11 +68,18 @@ restored06:24:18 UTC, exact136/.117/tree; no game/lease/staging/save write.
 Private original snake v3 geometry compensates the measured stable root-plane
 tilt; all26 captured poses replay with roughly2–3mm floor clearance, versus
 the original negative measurements reproduced independently. Both exports
-are byte-reproducible,21 authoring/replay checks PASS,36 private diagnostic
-panels. Not staged or runtime-qualified; hybrid unchanged. Its stable renderer
-bind frame may support a bounded original support-weight seam while leaving
-native torso/tail/weapon animation intact. Audit/implement/prove that next,
-then printed profiles and full Sprint17 qualification/publication. No DATA import.
+are byte-reproducible. The containing support integration now stages snake v3
+and hybrid v7 for the closed research fixture only:25 authoring/replay checks,
+225 focused domain tests and incremental exact-reference compile PASS. All39
+captured poses replay without penetration. Hybrid support uses an original
+half-turned renderer frame and smooth proximal weights; failed identity-frame/
+thin-underside/abrupt-transition prototypes are preserved. Exact native bindposes,
+distal coil, upper body/hands and paint remain intact. Renderer-only Bone4 quality
+is restored with native references. No new native joint/animation/actor change.
+New runtime gate is26 assertions, including actual -2..15mm floor support in
+every sampled pose. Full exact-head prelaunch/runtime still pending, no final
+visual/gameplay qualification. Spear/contact/lifecycle, printed profiles and
+full Sprint17 hidden/publication gates follow. No DATA import.
 
 Sprint 17's [bounded native-rig survey](planning/EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md)
 uses the native Medium Water Elemental source of the proposed serpentine

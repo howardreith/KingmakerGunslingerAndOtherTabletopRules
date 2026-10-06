@@ -17,6 +17,7 @@ import generate_salamander as model
 import paint_salamander_albedo as painting
 
 CAPTURE = None
+BODY_REVIEW = None
 
 
 class HybridTests(unittest.TestCase):
@@ -124,12 +125,64 @@ class HybridTests(unittest.TestCase):
         self.assertTrue(all(uvs[v][1] < midpoint for v in bottom))
         bm.free()
 
+    def test_supported_body_is_closed_deterministic_and_preserves_upper_body_and_distal_tail(self):
+        _, rig, _ = model.measured_rig(CAPTURE)
+        results = []
+        for _ in range(2):
+            bm, weights, uvs = bmesh.new(), {}, {}
+            model.build_body(bm, weights, uvs, rig, "salamander")
+            original = {v: (tuple(v.co), list(weights[v]), uvs[v]) for v in bm.verts}
+            model.author_ground_support(weights)
+            changed = 0
+            for v in bm.verts:
+                before = original[v]
+                now = (tuple(v.co), weights[v], uvs[v])
+                if (any(name not in {"Torso_Lower", "tail", "tail1", "tail2", "tail3"} for name, _ in before[1])
+                        or all(name == "tail3" for name, _ in before[1])):
+                    self.assertEqual(before, now, "upper body and the complete pure-tail3 distal coil are untouched")
+                if before != now:
+                    changed += 1
+                    self.assertEqual(before[0][:2], tuple(v.co)[:2], "only original vertical sculpt")
+                    self.assertEqual(before[2], uvs[v], "paint coordinates unchanged")
+                    self.assertTrue(-1.45 < v.co.y < -.55)
+                    self.assertGreaterEqual(v.co.z, .0049999)
+                self.assertTrue(0 < len(weights[v]) <= 3)
+                self.assertAlmostEqual(1, sum(weight for _, weight in weights[v]), places=6)
+                self.assertTrue(all(0 < weight <= 1 for _, weight in weights[v]))
+            self.assertGreater(changed, 10, "nontrivial authored belly support")
+            self.assertTrue(any(row == [(model.observed.HYBRID_SUPPORT, 1)] for row in weights.values()))
+            self.assertTrue(all(edge.is_manifold for edge in bm.edges))
+            self.assertTrue(all(face.calc_area() > 1e-10 for face in bm.faces))
+            self.assertTrue(all(math.isfinite(c) for v in bm.verts for c in v.co))
+            results.append([(tuple(v.co), weights[v], uvs[v]) for v in bm.verts])
+            bm.free()
+        self.assertEqual(results[0], results[1])
+
+    def test_supported_original_body_clears_all_measured_floor_poses(self):
+        _, rig, _ = model.measured_rig(CAPTURE)
+        bm, weights, uvs = bmesh.new(), {}, {}
+        model.build_body(bm, weights, uvs, rig, "salamander", supported=True)
+        row = model.observed.capture_rows(BODY_REVIEW)[2]
+        vertices = [tuple(v.co) for v in bm.verts]
+        influences = [weights[v] for v in bm.verts]
+        samples = [row["idleSample"]] + row["movementSamples"]
+        self.assertGreaterEqual(len(samples), 4)
+        for sample in samples:
+            points = model.observed.replay(vertices, influences, sample, hybrid_support=True)
+            floor = sample["lowestVertexFloor"]["hitPoint"][1]
+            clearance = min(p[1] for p in points) - floor
+            self.assertGreaterEqual(clearance, -.00001, "no original vertex below measured floor")
+            self.assertLess(clearance, .006, "authored support remains within 6mm, not the former 31cm float")
+        bm.free()
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--capture", required=True)
+    parser.add_argument("--body-review", required=True)
     args = parser.parse_args(sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else [])
     CAPTURE = args.capture
+    BODY_REVIEW = args.body_review
     result = unittest.TextTestRunner(verbosity=2).run(unittest.defaultTestLoader.loadTestsFromTestCase(HybridTests))
     if not result.wasSuccessful():
         raise RuntimeError("original hybrid prototype checks failed")
