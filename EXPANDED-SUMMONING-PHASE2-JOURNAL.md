@@ -1,5 +1,16 @@
 # Expanded Summoning Phase 2 journal
 
+## October 6, 15:30 UTC — exact79cf snake SOURCE gate PASS
+
+Corrected `79cf2bf14b0b3ebd25e619ff34373caad93d1448` passed complete repository/
+static/icon/manifest,2048 unfiltered tests83.8s, clean14-reference Release,
+deterministic320-member package and strict standalone validation;177.8s total.
+Exact source/DLL/MVID/ZIP/manifest/log hashes are recorded in the snake source
+review. Byte-identical package/DLL/manifest/log copies are retained under
+`artifacts/sprint17-snake-source-pass-79cf2bf1/`; rejected7ab remains separate.
+No deployment, runtime transaction or save operation. Sprint17 NOT QUALIFIED;
+next original-body production integration and closed mechanics fixtures.
+
 ## October 6, 15:25 UTC — exact7ab source PASS; package guard correction
 
 The committed7ab gate passed2048 tests (84.9s) and exact Release, then stopped

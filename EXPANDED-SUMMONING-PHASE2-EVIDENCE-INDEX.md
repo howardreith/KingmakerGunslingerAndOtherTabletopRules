@@ -6,7 +6,10 @@ dirty-tree exact-reference compile PASS. 73 append-only IDs,32 hidden roots;
 1008 registered /976 published +29 wrappers =1005 visible. No new runtime.
 Exact7ab passed2048 tests/Release, then rejected before runtime on stale107-icon
 package guards. Both guards corrected to109; direct strict320-member diagnostic
-PASS. Corrected committed gate and all Sprint17 gameplay gates remain pending.
+PASS. Corrected committed79cf2bf1 gate subsequently PASS:2048 unfiltered tests
+(83.8s), complete repository wrapper, clean exact Release, deterministic320-member
+and strict standalone package;177.8s total. Exact source/DLL/MVID/ZIP/log hashes
+and preserved archive are in the review. All Sprint17 gameplay gates remain open.
 
 [Last guarded a90494e1 bind census, RESEARCH ONLY 16/16 PASS](planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-BIND-REVIEW.md):
 
