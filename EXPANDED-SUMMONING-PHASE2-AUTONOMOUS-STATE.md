@@ -19,12 +19,12 @@ deployment, force push or prohibited substitute subsystems.
  2026-10-05T19:29:25.9127956Z; holder PID15084/start2026-10-05T20:34:17.3075720Z.
   Session-scoped, not perpetual. Refresh the owned heartbeat during work;
   release only on an actual session ending. All safety refs/bundles retained.
-- Last pushed evidence/current verified remote before this extension:
-  `5e3b2e1fe00806ba74e6c2c8a68ba269a3b0c31d`.
-  This containing diagnostic source commit is its normal descendant.
+- Last pushed exact diagnostic/current verified remote:
+  `32b2f26e04d6b36471d39586b64731429afd8cbc`.
+  This containing evidence commit is its normal descendant.
   Unexpected active-branch motion is a stop; frozen DATA motion informational.
-- Latest exact runtime artifact: `8d3081c34cfee82239fdc908df0b561975131d24`.
-  The new diagnostic extension has NOT RUN in-game.
+- Latest exact runtime artifact: `32b2f26e04d6b36471d39586b64731429afd8cbc`.
+  Fresh Steam smoke11/11 and body29/29; complete research batch PASS.
 
 ### Qualified versus open
 
@@ -36,10 +36,10 @@ deployment, force push or prohibited substitute subsystems.
 - Current surface:976 registered/published generated,0 withheld,29 native
   wrappers,1005 visible. No new snakes registered; existing Salamander
   identity/placements/production remain unchanged.
-- Sprint17 **NOT QUALIFIED**. Exact8d research passes225 focused/2027 full
-  (83.0s), full gate177.7s,491 preflight/81 orchestration/17 provenance,
+- Sprint17 **NOT QUALIFIED**. Exact32b research passes226 focused/2028 full
+  (83.7s), full gate179.1s,491 preflight/81 orchestration/17 provenance,
   persistence11/3/19,crowd5/7,clean exact Release/strict318-member package.
-  Steam smoke11/11/body26/26, complete batch PASS. All39 native poses support
+  Steam smoke11/11/body29/29, complete batch PASS. All39 native poses support
   at2.91mm/1.85mm/5.00mm; native movement, quality/reference rollback and all
   five exact resources per body clean. No save-writing API observed.
 - Snake v3/hybrid v7 original payloads are staged for closed research only,
@@ -47,38 +47,40 @@ deployment, force push or prohibited substitute subsystems.
   byte-reproduced exports. Hybrid adds one original renderer-frame support
   with authored half-turn, preserving exact native bind slots; renderer-only
   Bone4 restores on release. No new native joint/transform/animation.
-- Final art/contact/lifecycle remains open. Native supporting frames show
-  suspicious open/ribbon-like snake coil portions; current original replay
-  is closed and every captured skin determinant positive. Hybrid tail partly
-  occluded, spear absent. No floor PASS or screenshot qualifies final visuals.
+- Final art/contact/lifecycle remains open. All six native supporting frames
+  inspected as ART ONLY: reversed triangle order renders both snake coils and
+  the hybrid surface solid; original order exposes apparent inner surfaces.
+  Indices restore exactly, normals/material/vertices/rig unchanged. Correct
+  the S17 exporter locally; no global exporter or shader/culling override.
   Earlier fixture failures,6bee driver ERROR and failed private art preserved.
-- Current extension: exact owned triangle-order A/B art comparison, restore in
-  finally; original normals/material references pinned. Read-only material and
-  existing primary-spear prefab/bounds/WeaponSnap.SnapTo metadata. No equip,
-  native geometry export or visibility/culling override.226 focused/incremental
-  compile PASS,2028 tests registered; full exact-head/runtime NOT RUN.
-  Original assets and production unchanged. Research expands to29 assertions.
+- Read-only spear metadata: existing project Spear uses TH_SpearArmy, about
+  1.7707m along local Y; WeaponPivot follows R_Palm. No rendered spear, two-hand
+  grip or contact is proved. Hybrid tail partly occluded. The generic animation
+  survey returned only the first SpecialAttack; it does NOT rule out Bite/Tail
+  actions. Enumerate the actual special-attack types and prove real commands.
+  Staged assets/production unchanged by this reversible research run.
 
 ### Machine restoration and exact next action
 
-Actual snapshot `20261006T0714257255801Z` restored
-`2026-10-06T07:21:34.2656814Z`:136 files/Info0.0.117/
+Actual snapshot `20261006T0752138198384Z` restored
+`2026-10-06T07:59:27.6045620Z`:136 files/Info0.0.117/
 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
 Lease Completed/recoveryRequired=false/released; no game/shared lock/staging.
 No save-file/protected-baseline access or save write. Journal
-`763DD4F79FE9B0FE45C9FBC2372C4A2E6DBE852BF913AE76FA6DCF68D5E9C746`.
+`27AFD367DDA5E61485AC3BB8D34C53BB4AE85AE76785F5ED872E43C05A1A46A5`.
 
-Next: freeze this diagnostic candidate, full exact prelaunch using
+Next: S17-only original winding correction, behavior tests and backface-aware
+offline review; bounded native spear attachment and actual bite/tail/spear
+command/contact diagnostics. Freeze a new candidate; full exact prelaunch using
 `-ReferenceBundleDir artifacts/private-references-ground-20261006/KingmakerGunslinger-private-build-references`
-(the older default bundle lacks PhysicsModule), then fresh-Steam smoke/body29
+(the older default bundle lacks PhysicsModule), then fresh-Steam guarded research
 under a lease acquired BEFORE installation observation/snapshot/deployment.
-Restore the actual snapshot exactly. Compare both original triangle orders
-without forcing visibility; use evidence for bounded visual/weapon corrections.
+Restore the actual snapshot exactly. No shader/culling/visibility workaround.
 Then actual attacks/spear/tail contact, full lifecycle, printed profiles/signatures,
 complete Sprint17 hidden/publication gate and exhaustive Phase2B closure.
 
 [Current research review](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-REVIEW.md)
-and [all five exact artifacts/results/restorations](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-EVIDENCE.json).
+and [all six exact artifacts/results/restorations](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-EVIDENCE.json).
 [S16 publication authority](planning/EXPANDED-SUMMONING-SPRINT16-PUBLICATION-PASS-REVIEW.md).
 Accepted unchanged: PASSIVE_CREATURE_SENSES_UNMODELED;
 ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD;
