@@ -2,29 +2,39 @@
 
 ## Sprint 17 research, October 6 UTC — NOT QUALIFIED
 
-Latest exact66900038: all prelaunch PASS (231 focused/2033 full), smoke11
-PASS/body46 of47 FAIL, exactly restored10:40:47UTC. All three native movements,
-both snake bite contacts(gap0), exact hybrid tail(gap0.166540m), native resource
-adoption/rollback/destruction and sustained owned-pair isolation PASS.
-Original v9 hybrid support PASSES at5.0001mm through sampled attacks and
-exact event poses; both unchanged palms lie on the shaft at native spear
-event5833. Forward spear contact remains FAIL at0.594228m conservative gap.
-Grip is not contact. No threshold waived; no fixture/environment/restoration
-failure. [Ten exact attempts](EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-REVIEW.md).
+Exact09087d0f passes all prelaunch:232 focused/2034 full83.3s, gate180.5s,
+491 preflight/81 orchestration/17 provenance, persistence11/3/19,crowd5/7,
+clean exact Release/strict318-member package. Fresh Steam smoke11 PASS/body
+44 of47 FAIL. Three dependent failures expose one original-view integration
+defect: the spear requests PiercingTwoHanded but the native main-hand action
+supports only SlashingTwoHanded/AxeTwoHanded. Exact event5787 has no active
+animation; IsActed is native fallback at0.12s. Conservative gap0.5922998m.
+Zero shaft distances are numeric grip evidence, NOT actual-attack grip proof.
+The prior acted-only playback/grip interpretation is withdrawn, not re-marked
+qualified. All eleven immutable attempts/numbers/restorations remain.
 
-Six outward-winding original files use the native Purple Worm body chain and
-the separate Lizardfolk hybrid. Native Water Elemental provenance was resolved
-without an optional Eidolon dependency, but its body lacks the continuous tail.
-No new snakes registered or production visual attachment enabled; existing
-Salamander identity/placements unchanged. Final printed profiles/signatures,
-land skills, full pose/lifecycle/contact/crowd, persistence and publication open.
-The fixture scopes RTWP, isolates each owned pair while retaining native
-control/BAB, and records actual same-event poses. The remaining spear miss
-is an original hybrid visual/pose defect: view faces target, palm axis points
-across it. Next bounded existing manufactured-attack style/clip/settings
-audit and exact-pose offline proof before the smallest owned correction.
-No native-asset edit, global limb/animation rewrite or reach inflation.
-Prior S16 and accepted limitations remain unchanged.
+Native snake bites play BiteAttack01_Short_3.5m, gap0. Hybrid tail uses
+Bite_Attack, gap0.164152145m: research measurement, not final tail-action
+qualification. Original v9 support5.0001mm, all movement/isolation/resources/
+rollback/native destruction/environment checks PASS. No threshold waived.
+
+Next: single bounded existing shortspear carrier from the archived donor
+census, CR10_LizardfolkKing9f7a7364b76d65d43b72086aedce68ae/
+prefabc664715ff7165984285f66acc764b4b3. Require actual piercing style and exact
+rig/bind compatibility before instance-only main-hand adoption, preserving
+other actions and native references. No bone twist to conceal no animation,
+style relabel, native asset mutation, global animation framework or waiver.
+
+Actual1112148857824Z snapshot restored11:20:06.3390196UTC,136/.117/exact tree.
+JournalB10ED8A40739015EC306E04665552768D625659128AA1D744A4A1F87008A7092;
+capture804225C6943055C85B18676A0E9CBB610AD08DC93F6FFB543537D5E42313BBF9.
+Lease Completed/recoveryRequired=false/released; no game/lock/staging/save write.
+No production hook/new registration;976+29=1005 visible, Sprints14–16 unchanged.
+
+Six original files remain on the Purple Worm chain/separate Lizardfolk hybrid.
+Printed profiles/signatures/skills/lifecycle/crowd/persistence/publication remain
+open. HumanReview: NOT_PERFORMED_NONBLOCKING; accepted limitations unchanged.
+[Eleven exact attempts](EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-REVIEW.md).
 
 ## Current Sprint 16 disposition, October 6 UTC — COMPLETE AND PUBLISHED
 

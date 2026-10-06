@@ -19,11 +19,9 @@ deployment, force push or prohibited substitute subsystems.
   2026-10-05T19:29:25.9127956Z; holder PID15084/start2026-10-05T20:34:17.3075720Z.
   Session-scoped, not perpetual. Refresh heartbeat; release only on actual
   session ending. All safety refs, bundles and failed artifacts retained.
-- Last verified pushed evidence checkpoint:
-  `a1068544358b0c7d2b993af07adbb691d14d0c04`; last runtime candidate
-  `66900038d04ee8f5c64bcbaecc96fa61ae348f68`.
-  This containing read-only clip diagnostic is a normal descendant,
-  source-qualified only; exact-head prelaunch/runtime remains next.
+- Last verified pushed exact runtime candidate:
+  `09087d0f45103ed8ba94084ac059f253b97f6a10`.
+  This containing evidence checkpoint is its normal descendant.
   Unexpected active-branch motion is a stop; frozen DATA motion informational.
 
 ### Qualified versus NOT QUALIFIED
@@ -33,36 +31,34 @@ deployment, force push or prohibited substitute subsystems.
   Hidden e3aeae63 retains crowd20,prepare9,cleanup9,absence5. No reopening.
 - Surface unchanged:976 published generated,0 withheld,29 wrappers,1005 visible.
   No snakes registered; existing Salamander production/identity/placements unchanged.
-- Sprint17 **NOT QUALIFIED**. Exact66900038:231 focused/2033 full86.3s,
-  gate180.2s,491 preflight/81 orchestration/17 provenance, persistence11/3/19,
+- Sprint17 **NOT QUALIFIED**. Exact09087d0f:232 focused/2034 full83.3s,
+  gate180.5s,491 preflight/81 orchestration/17 provenance, persistence11/3/19,
   crowd5/7, clean exact Release/strict318-member package PASS.
-  Fresh Steam smoke11/11 PASS; body **46/47 FAIL**, driver NOT-QUALIFIED.
-- All three move; both native snake bite gaps0, exact hybrid tail gap0.16654m.
+  Fresh Steam smoke11/11 PASS; body **44/47 FAIL**, driver NOT-QUALIFIED.
+- All three move; both native snake bite gaps0, exact hybrid tail gap0.16415m.
   Sustained owned-pair isolation, all resource/reference/rollback/native
   destruction/environment/census checks PASS. No save writing.
-- Original v9 distal coil now has live sampled attack AND exact-event support
-  at5.0001mm. Both palms lie exactly on the existing spear shaft at native
-  contact frame5833. Those corrections pass their new positive assertions.
-- Sole failure: native spear forward-end gap0.562879m plus0.031350m
-  conservative uncertainty =0.594228m. Two-hand grip does NOT prove spear
-  contact. The miss is real; native clip/style versus owned pose causation
-  remains open. No environment/restoration failure or threshold waived.
+- Original v9 sampled support remains5.0001mm. Both palms have zero shaft
+  distance at event5787, but this is NOT an actual played spear animation.
+- Demonstrated cause: spear requests PiercingTwoHanded; attached native
+  Lizardfolk_2H_Slashing action supports only SlashingTwoHanded/AxeTwoHanded.
+  No active clip; native fallback sets IsActed at0.12s. Spear gap0.59230m.
+  Three dependent failures: native attack proof, contact and actual-attack
+  grip. Prior acted-only playback/grip interpretation is withdrawn; archived
+  numbers/failures remain. No environment/restoration failure or waiver.
 
 ### Next exact work
 
-Native IL confirms hand-attack OnUpdate marks IsActed after .1s even when
-ActiveAnimation is null. Previous IsActed alone cannot prove playback.
-The containing diagnostic reads this exact issued command's action/style/
-variant/active clip/time/state at sampled frames and the rule event, plus
-the existing attached hand-action settings and clip-event metadata. It does
-not select/play/sample/change native clips, bones, targets or rules.
-The stronger playback predicate and negative fallback test pass232 focused/
-2034 registered tests and incremental exact-reference compile. No new live
-claim. Freeze/push this diagnostic, run complete exact prelaunch, then the
-same47-assertion smoke/body guarded batch with all contact gates retained.
-Use actual clip evidence before selecting any owned pose correction.
-Preserve v9 support/two-palm mounting; no unchanged retry, native asset edit,
-global limb/animation rewrite, target teleport, reach inflation or waiver.
+The bounded clip census succeeded diagnostically and exposed missing native
+PiercingTwoHanded support. Do not add a bone twist to compensate for no clip.
+The archived native donor census identifies one existing shortspear carrier:
+CR10_LizardfolkKing9f7a7364b76d65d43b72086aedce68ae,
+prefabc664715ff7165984285f66acc764b4b3. Check its exact style and native bind
+compatibility before any instance-only main-hand action adoption. Preserve
+all other actions, original native references and exact cleanup. No native
+asset edit, style relabel, global animation/limb rewrite or contact waiver.
+Freeze only a demonstrated bounded correction with focused checks, then
+new exact full prelaunch and complete affected batch. All gates retained.
 
 Then printed profiles/signatures/icons, full S17 hidden/publication and
 exhaustive Phase2B closure. Use the explicit14-reference bundle
@@ -72,15 +68,15 @@ actual snapshot exactly. No source-only gameplay qualification.
 
 ### Restored machine
 
-Actual snapshot `20261006T1032557994699Z` restored
-`2026-10-06T10:40:47.0701589Z`:136 files/Info0.0.117/
+Actual snapshot `20261006T1112148857824Z` restored
+`2026-10-06T11:20:06.3390196Z`:136 files/Info0.0.117/
 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
 Lease Completed/recoveryRequired=false/released; no game/shared lock/staging.
 No save-file/protected-baseline access or native save write. Journal
-`A3EA13FC4F385C2992F9BCE50B42374821EFAD45DE50118ADAD0DBEF175113BE`.
+`B10ED8A40739015EC306E04665552768D625659128AA1D744A4A1F87008A7092`.
 
 [Current research review](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-REVIEW.md)
-and [all ten exact artifacts/results/restorations](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-EVIDENCE.json).
+and [all eleven exact artifacts/results/restorations](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-EVIDENCE.json).
 [S16 publication authority](planning/EXPANDED-SUMMONING-SPRINT16-PUBLICATION-PASS-REVIEW.md).
 Accepted unchanged: PASSIVE_CREATURE_SENSES_UNMODELED;
 ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD;

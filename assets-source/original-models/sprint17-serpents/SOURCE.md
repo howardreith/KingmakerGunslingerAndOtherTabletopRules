@@ -1,18 +1,17 @@
 # Sprint 17 original serpentine and hybrid bodies
 
-## Current original-art disposition, exact66900038 research, October 6 UTC
+## Current original-art disposition, exact09087d0f research, October 6 UTC
 
-Final visuals remain NOT QUALIFIED. Exact66900038 smoke11 PASS/body46 of47 FAIL;
-exact actual restoration10:40:47UTC. Snake bite gaps0; hybrid tail0.166540m.
-Original v9 attack/exact-event support PASSES at5.0001mm, and the two-palm
-instance spear mount PASSES zero shaft distance at the actual native event.
-Sole failure: forward spear end0.594228m conservative miss. Correct grip
-does not establish contact. All resources/reference/native destruction PASS.
-Next bounded existing manufactured-attack style/clip/pose audit and exact-event
-offline review; no unchanged retry, native-asset edit, global animation/limb
-rewrite, reach inflation or contact waiver.
-All earlier prototypes/evidence remain preserved; headings below are historical.
-HumanReview: NOT_PERFORMED_NONBLOCKING.
+Final visuals NOT QUALIFIED: smoke11/body44 of47 FAIL, exact restoration
+11:20:06UTC. The missing PiercingTwoHanded clip is now demonstrated: only
+slashing/axe settings exist, activeAnimationPresent=false at spear event5787,
+IsActed at0.12s is fallback. Gap0.5922998m. Zero two-palm distances are numeric
+mount evidence, NOT actual-attack grip proof. Prior acted-only interpretation
+is withdrawn without altering archived data/failures. Original v9 support
+remains5.0001mm; resources/rollback/native destruction PASS. No mesh/paint/
+pose edits in this diagnostic. Existing shortspear carrier/action compatibility
+is the next bounded check, not a bone twist or native asset rewrite.
+HumanReview: NOT_PERFORMED_NONBLOCKING. Earlier headings/evidence are historical.
 
 ### Current v9 correction -- bounded ground/grip PASS, spear contact FAIL
 

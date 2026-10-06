@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "status": "Sprint17 NOT QUALIFIED; ten exact research attempts preserved. Latest66900038 smoke11 PASS/body46 of47 FAIL; exact restoration PASS. Ground support and exact two-palm grip pass; native spear forward-end contact remains open. No final visual/gameplay qualification.",
+  "status": "Sprint17 NOT QUALIFIED; eleven exact research attempts preserved. Latest09087d0f smoke11 PASS/body44 of47 FAIL; exact restoration PASS. Native missing PiercingTwoHanded clip demonstrated; acted-only fallback is not playback or actual-attack grip qualification.",
   "scope": "Closed original-body/native command-contact/resource research only; no gameplay/publication qualification",
   "attempts": [
     {
@@ -2086,6 +2086,499 @@
         "open": "Spear forward-end gap0.562879m plus0.031350m conservative uncertainty =0.594228m. Both palms exactly on shaft at native contact frame5833, but native greatclub-derived arm pose points spear across rather than into target. No threshold waived; no runtime or source-qualified claim for this contact.",
         "next": "Read-only native manufactured-attack action/pose audit and exact-event original-pose replay before selecting the smallest owned-view correction. No unchanged-candidate retry, native-asset edits, global limb/animation rewrite or contact waiver.",
         "supportingArt": "Native same-event spear frame inspected as ART ONLY. Original hybrid/two palms visible; forward spear/tail partly occluded by native wall. Structured measurement, not image, establishes failure."
+      }
+    },
+    {
+      "candidate": "09087d0f45103ed8ba94084ac059f253b97f6a10",
+      "sourceFingerprint": "c9b6a3d1e9473a392706987acf1a603aa293c9fbe0fc49e6345d805d647451ae",
+      "dllSha256": "f24dea708569df9c50f211b9467dfe0c3c375e6f71005057bd2db018b1b194cd",
+      "dllMvid": "9e372fa7-8567-42e0-8655-0bd24b93819e",
+      "packageSha256": "13587ad8c72ddc90cdd1100314a54c0b41aae288a390f3879c8d3a64fe234620",
+      "packageMembers": 318,
+      "version": "0.0.141",
+      "prelaunch": {
+        "focused": 232,
+        "full": 2034,
+        "fullSeconds": 83.3,
+        "completeGateSeconds": 180.5,
+        "runtimePreflight": 491,
+        "orchestration": 81,
+        "provenance": 17,
+        "persistenceWiring": 11,
+        "persistenceScopes": 3,
+        "persistenceRejections": 19,
+        "crowdRoundTrips": 5,
+        "crowdRejections": 7,
+        "exactBuildAndStrictPackage": "PASS"
+      },
+      "runs": [
+        {
+          "scenario": "working-save-smoke",
+          "startedAtUtc": "2026-10-06T11:12:40.6037217Z",
+          "parameters": {},
+          "launcherOutcome": "Clean",
+          "exitCode": 0,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T1112415176370Z-working-save-smoke",
+          "requestId": "20261006T1112415460404Z-b0ab5578faaf4c93871457ae2e84d87d",
+          "requestSha256": "b853665bd966d5917fdc5626adcb5f5660704203c2d8a69752071b936e34c4f0",
+          "resultSha256": "e8a4e35a29488617bb4977aef219199ed968ab27558643d0fd135ae750d675c7",
+          "assertions": 11,
+          "passed": 11,
+          "failed": [],
+          "orchestrationSha256": "91fbcdf63bb87c4c58c740146471ac5e535dc64675ce251449d1af78feedcdf2",
+          "processId": 29104,
+          "processStartedUtc": "2026-10-06T11:12:42.5446647Z",
+          "scenarioStatus": "PASS",
+          "outcome": "PASS",
+          "completedAtUtc": "2026-10-06T11:15:34.6027158Z"
+        },
+        {
+          "scenario": "disposable-expanded-summoning-serpentine-bodies",
+          "startedAtUtc": "2026-10-06T11:15:42.2445052Z",
+          "parameters": {},
+          "launcherOutcome": "Unclean",
+          "exitCode": 1,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T1115430240618Z-disposable-expanded-summoning-serpentine-bodies",
+          "requestId": "20261006T1115430306171Z-86987099c56e4389a896f50f9715ee7e",
+          "requestSha256": "07bc5addf99ba77034ece4abe7b0e17c7a1af1a431cd7bc6ac6c4cffb7634eb1",
+          "resultSha256": "c28cde640c196408d2d1e0cf184d7e40962d7861444c24a61d45ba351e306df3",
+          "assertions": 47,
+          "passed": 44,
+          "failed": [
+            {
+              "name": "sprint17-native-attack-research-salamander",
+              "status": "FAIL"
+            },
+            {
+              "name": "sprint17-issued-attack-contact-salamander",
+              "status": "FAIL"
+            },
+            {
+              "name": "sprint17-spear-two-palm-contact-grip",
+              "status": "FAIL"
+            }
+          ],
+          "orchestrationSha256": "2fb6381464bf21be3e520c34ab3243fb301e51ccb50a20ba4ebee429e025730c",
+          "processId": 25552,
+          "processStartedUtc": "2026-10-06T11:15:44.1214313Z",
+          "scenarioStatus": "FAIL",
+          "outcome": "FAIL",
+          "completedAtUtc": "2026-10-06T11:20:03.8886688Z"
+        }
+      ],
+      "restoration": {
+        "status": "VERIFIED",
+        "snapshot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20261006T1112148857824Z",
+        "before": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "after": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "completedAtUtc": "2026-10-06T11:20:06.3390196Z",
+        "lease": "C:\\Dev\\KingmakerGunslingerLab\\compatibility-state\\runtime-20261006T111214Z-47ff415fe79d4b07b2a85b305206f35a\\runtime-lease.json",
+        "leaseStatus": "Completed",
+        "recoveryRequired": false,
+        "leaseReleased": true,
+        "gameProcessesRemaining": [],
+        "sharedLock": false,
+        "staging": false,
+        "saveWrite": false
+      },
+      "journalSha256": "B10ED8A40739015EC306E04665552768D625659128AA1D744A4A1F87008A7092",
+      "bodyCaptureSha256": "804225C6943055C85B18676A0E9CBB610AD08DC93F6FFB543537D5E42313BBF9",
+      "driverSha256": "28A20EEF6715ADFEA40400CA415F441E6ED1DAE4DD203D17E6F9D89170688FC9",
+      "nativeOutputLogSha256": "090E5C7D90784AC7ED546F79C6BC90BCFF3D7BE8C3816689FC74CADAD5B5FC67",
+      "status": "NOT QUALIFIED; smoke11/11 PASS; body44/47 FAIL; exact restoration VERIFIED; Sprint17 NOT QUALIFIED",
+      "findings": {
+        "classification": "One demonstrated original-view integration defect: spear requires PiercingTwoHanded but donor MainHandAttack offers only SlashingTwoHanded and AxeTwoHanded. Three dependent strengthened assertions fail; no environment/restoration failure.",
+        "bodies": [
+          {
+            "key": "viper",
+            "travel": 2.459797,
+            "maxVelocity": 3.04798913,
+            "attackPoseSamples": 19,
+            "isolatedAfterSettlement": true,
+            "allCommandPosesIsolated": true,
+            "minAttackFloor": 0.00290822983,
+            "handCensus": [
+              {
+                "kind": "MainHandAttack",
+                "actionClass": null,
+                "actionName": null
+              },
+              {
+                "kind": "OffHandAttack",
+                "actionClass": null,
+                "actionName": null
+              }
+            ],
+            "contacts": [
+              {
+                "frame": 4685,
+                "category": "Bite",
+                "weapon": "7e4b9b41a9358264d9e3c69c183ca0a2",
+                "exactHybridTail": false,
+                "nativeAnimationContact": true,
+                "issuedCommandExecuting": true,
+                "nearestGapMeters": 0,
+                "endCentreGapMeters": null,
+                "transverseUncertaintyMeters": null,
+                "RPalmToSpearAxisMeters": null,
+                "LPalmToSpearAxisMeters": null,
+                "spearMountStatus": null,
+                "spearMountFrame": null,
+                "issuedAnimation": {
+                  "frame": 4685,
+                  "handlePresent": true,
+                  "observedActedClip": true,
+                  "handleStarted": true,
+                  "handleActed": true,
+                  "handleTime": 1.08,
+                  "weaponStyle": "None",
+                  "variant": 0,
+                  "actionClass": "Kingmaker.Visual.Animation.Kingmaker.Actions.UnitAnimationActionSpecialAttack",
+                  "actionName": "Purple_Worm_AnimationSet_Bite 1",
+                  "activeAnimationPresent": true,
+                  "activeClass": "Kingmaker.Visual.Animation.PlayableInfo",
+                  "activeState": "Playing",
+                  "activeTime": 1.07999992,
+                  "activeWeight": 1,
+                  "activeSpeed": 1,
+                  "clip": {
+                    "name": "BiteAttack01_Short_3.5m",
+                    "durationSeconds": 2.4,
+                    "events": []
+                  }
+                }
+              },
+              {
+                "frame": 4760,
+                "category": "OtherNaturalWeapons",
+                "weapon": "287cd06241fdaf8408410b226f744093",
+                "exactHybridTail": false,
+                "nativeAnimationContact": true,
+                "issuedCommandExecuting": true,
+                "nearestGapMeters": null,
+                "endCentreGapMeters": null,
+                "transverseUncertaintyMeters": null,
+                "RPalmToSpearAxisMeters": null,
+                "LPalmToSpearAxisMeters": null,
+                "spearMountStatus": null,
+                "spearMountFrame": null,
+                "issuedAnimation": {
+                  "frame": 4760,
+                  "handlePresent": true,
+                  "observedActedClip": true,
+                  "handleStarted": true,
+                  "handleActed": true,
+                  "handleTime": 1.11144054,
+                  "weaponStyle": "None",
+                  "variant": 0,
+                  "actionClass": "Kingmaker.Visual.Animation.Kingmaker.Actions.UnitAnimationActionSpecialAttack",
+                  "actionName": "Purple_Worm_AnimationSet_Sting",
+                  "activeAnimationPresent": true,
+                  "activeClass": "Kingmaker.Visual.Animation.PlayableInfo",
+                  "activeState": "Playing",
+                  "activeTime": 1.07144034,
+                  "activeWeight": 1,
+                  "activeSpeed": 1,
+                  "clip": {
+                    "name": "StingAttack_4.5m",
+                    "durationSeconds": 2.4666667,
+                    "events": []
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "key": "constrictor-snake",
+            "travel": 2.46163225,
+            "maxVelocity": 3.047989,
+            "attackPoseSamples": 19,
+            "isolatedAfterSettlement": true,
+            "allCommandPosesIsolated": true,
+            "minAttackFloor": 0.00184631348,
+            "handCensus": [
+              {
+                "kind": "MainHandAttack",
+                "actionClass": null,
+                "actionName": null
+              },
+              {
+                "kind": "OffHandAttack",
+                "actionClass": null,
+                "actionName": null
+              }
+            ],
+            "contacts": [
+              {
+                "frame": 5248,
+                "category": "Bite",
+                "weapon": "7e4b9b41a9358264d9e3c69c183ca0a2",
+                "exactHybridTail": false,
+                "nativeAnimationContact": true,
+                "issuedCommandExecuting": true,
+                "nearestGapMeters": 0,
+                "endCentreGapMeters": null,
+                "transverseUncertaintyMeters": null,
+                "RPalmToSpearAxisMeters": null,
+                "LPalmToSpearAxisMeters": null,
+                "spearMountStatus": null,
+                "spearMountFrame": null,
+                "issuedAnimation": {
+                  "frame": 5248,
+                  "handlePresent": true,
+                  "observedActedClip": true,
+                  "handleStarted": true,
+                  "handleActed": true,
+                  "handleTime": 1.09507537,
+                  "weaponStyle": "None",
+                  "variant": 0,
+                  "actionClass": "Kingmaker.Visual.Animation.Kingmaker.Actions.UnitAnimationActionSpecialAttack",
+                  "actionName": "Purple_Worm_AnimationSet_Bite 1",
+                  "activeAnimationPresent": true,
+                  "activeClass": "Kingmaker.Visual.Animation.PlayableInfo",
+                  "activeState": "Playing",
+                  "activeTime": 1.05507541,
+                  "activeWeight": 1,
+                  "activeSpeed": 1,
+                  "clip": {
+                    "name": "BiteAttack01_Short_3.5m",
+                    "durationSeconds": 2.4,
+                    "events": []
+                  }
+                }
+              },
+              {
+                "frame": 5323,
+                "category": "OtherNaturalWeapons",
+                "weapon": "287cd06241fdaf8408410b226f744093",
+                "exactHybridTail": false,
+                "nativeAnimationContact": true,
+                "issuedCommandExecuting": true,
+                "nearestGapMeters": null,
+                "endCentreGapMeters": null,
+                "transverseUncertaintyMeters": null,
+                "RPalmToSpearAxisMeters": null,
+                "LPalmToSpearAxisMeters": null,
+                "spearMountStatus": null,
+                "spearMountFrame": null,
+                "issuedAnimation": {
+                  "frame": 5323,
+                  "handlePresent": true,
+                  "observedActedClip": true,
+                  "handleStarted": true,
+                  "handleActed": true,
+                  "handleTime": 1.11758792,
+                  "weaponStyle": "None",
+                  "variant": 0,
+                  "actionClass": "Kingmaker.Visual.Animation.Kingmaker.Actions.UnitAnimationActionSpecialAttack",
+                  "actionName": "Purple_Worm_AnimationSet_Sting",
+                  "activeAnimationPresent": true,
+                  "activeClass": "Kingmaker.Visual.Animation.PlayableInfo",
+                  "activeState": "Playing",
+                  "activeTime": 1.07758772,
+                  "activeWeight": 1,
+                  "activeSpeed": 1,
+                  "clip": {
+                    "name": "StingAttack_4.5m",
+                    "durationSeconds": 2.4666667,
+                    "events": []
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "key": "salamander",
+            "travel": 2.48433256,
+            "maxVelocity": 3.04798937,
+            "attackPoseSamples": 17,
+            "isolatedAfterSettlement": true,
+            "allCommandPosesIsolated": true,
+            "minAttackFloor": 0.00500011444,
+            "handCensus": [
+              {
+                "kind": "MainHandAttack",
+                "actionClass": "Kingmaker.Visual.Animation.Kingmaker.Actions.UnitAnimationActionHandAttack",
+                "actionName": "Lizardfolk_2H_Slashing_AnimationSet_MainHandAttack",
+                "styles": [
+                  {
+                    "style": "SlashingTwoHanded",
+                    "variants": [
+                      {
+                        "name": "Attack_02_1",
+                        "durationSeconds": 2,
+                        "events": [
+                          {
+                            "function": "PostEventMapped",
+                            "time": 0.186226964
+                          },
+                          {
+                            "function": "PostMainWeaponWhooshEvent",
+                            "time": 0.587778866
+                          },
+                          {
+                            "function": "PostCommandActEvent",
+                            "time": 0.7984395
+                          }
+                        ]
+                      },
+                      {
+                        "name": "Attack_02_2",
+                        "durationSeconds": 1.33333337,
+                        "events": [
+                          {
+                            "function": "PostEventMapped",
+                            "time": 0.3
+                          },
+                          {
+                            "function": "PostMainWeaponWhooshEvent",
+                            "time": 0.314258
+                          },
+                          {
+                            "function": "PostCommandActEvent",
+                            "time": 0.6311227
+                          }
+                        ]
+                      }
+                    ],
+                    "rend": null,
+                    "charge": null
+                  },
+                  {
+                    "style": "AxeTwoHanded",
+                    "variants": [
+                      {
+                        "name": "Attack_02_1",
+                        "durationSeconds": 2,
+                        "events": [
+                          {
+                            "function": "PostEventMapped",
+                            "time": 0.186226964
+                          },
+                          {
+                            "function": "PostMainWeaponWhooshEvent",
+                            "time": 0.587778866
+                          },
+                          {
+                            "function": "PostCommandActEvent",
+                            "time": 0.7984395
+                          }
+                        ]
+                      },
+                      {
+                        "name": "Attack_02_2",
+                        "durationSeconds": 1.33333337,
+                        "events": [
+                          {
+                            "function": "PostEventMapped",
+                            "time": 0.3
+                          },
+                          {
+                            "function": "PostMainWeaponWhooshEvent",
+                            "time": 0.314258
+                          },
+                          {
+                            "function": "PostCommandActEvent",
+                            "time": 0.6311227
+                          }
+                        ]
+                      }
+                    ],
+                    "rend": null,
+                    "charge": null
+                  }
+                ]
+              },
+              {
+                "kind": "OffHandAttack",
+                "actionClass": null,
+                "actionName": null
+              }
+            ],
+            "contacts": [
+              {
+                "frame": 5787,
+                "category": "Spear",
+                "weapon": "99394d453c6f425f84d4b92f7a8deea0",
+                "exactHybridTail": false,
+                "nativeAnimationContact": false,
+                "issuedCommandExecuting": true,
+                "nearestGapMeters": 0.5922998,
+                "endCentreGapMeters": 0.56095016,
+                "transverseUncertaintyMeters": 0.03134963,
+                "RPalmToSpearAxisMeters": 0,
+                "LPalmToSpearAxisMeters": 4.76837158e-7,
+                "spearMountStatus": "two-native-palms:instance-weapon-only",
+                "spearMountFrame": 5787,
+                "issuedAnimation": {
+                  "frame": 5787,
+                  "handlePresent": true,
+                  "observedActedClip": false,
+                  "handleStarted": true,
+                  "handleActed": true,
+                  "handleTime": 0.12,
+                  "weaponStyle": "PiercingTwoHanded",
+                  "variant": 0,
+                  "actionClass": "Kingmaker.Visual.Animation.Kingmaker.Actions.UnitAnimationActionHandAttack",
+                  "actionName": "Lizardfolk_2H_Slashing_AnimationSet_MainHandAttack",
+                  "activeAnimationPresent": false
+                }
+              },
+              {
+                "frame": 5876,
+                "category": "OtherNaturalWeapons",
+                "weapon": "93e097b8d3db42d3a37656502899e1a9",
+                "exactHybridTail": true,
+                "nativeAnimationContact": true,
+                "issuedCommandExecuting": true,
+                "nearestGapMeters": 0.164152145,
+                "endCentreGapMeters": null,
+                "transverseUncertaintyMeters": null,
+                "RPalmToSpearAxisMeters": null,
+                "LPalmToSpearAxisMeters": null,
+                "spearMountStatus": null,
+                "spearMountFrame": null,
+                "issuedAnimation": {
+                  "frame": 5876,
+                  "handlePresent": true,
+                  "observedActedClip": true,
+                  "handleStarted": true,
+                  "handleActed": true,
+                  "handleTime": 0.636114,
+                  "weaponStyle": "None",
+                  "variant": 0,
+                  "actionClass": "Kingmaker.Visual.Animation.Kingmaker.Actions.UnitAnimationActionSpecialAttack",
+                  "actionName": "Lizardfolk_2H_Slashing_AnimationSet_Bite",
+                  "activeAnimationPresent": true,
+                  "activeClass": "Kingmaker.Visual.Animation.PlayableInfo",
+                  "activeState": "Playing",
+                  "activeTime": 0.636114,
+                  "activeWeight": 1,
+                  "activeSpeed": 1,
+                  "clip": {
+                    "name": "Bite_Attack",
+                    "durationSeconds": 1.4666667,
+                    "events": []
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "cause": "Exact spear frame5787: issued handle started/acted at0.12s, requested PiercingTwoHanded, activeAnimationPresent=false. This is native missing-clip fallback, not an actual spear animation. The two-palm distances remain zero but actual-attack grip is NOT QUALIFIED. Conservative spear miss0.5922998m. No native bone correction is justified from a missing animation.",
+        "resolved": "Stronger exact-command read-only observations separate missing-clip fallback from real native playback. Snake bites play BiteAttack01_Short_3.5m, gap0. Hybrid tail uses native Bite_Attack, gap0.164152145m; that is a research measurement, not final tail-action qualification. All original support, movement, isolation, rollback/native destruction/resources/environment checks pass.",
+        "next": "Use archived native LizardfolkKing shortspear carrier9f7a7364b76d65d43b72086aedce68ae/prefabc664715ff7165984285f66acc764b4b3 as the single bounded existing piercing-action candidate. Verify its style/rig bindings before instance-only adoption; no style relabel, native asset mutation, bone twist, reach inflation, global animation framework or threshold waiver.",
+        "priorClaims": "Prior669 exact-event shaft grip measurements remain numeric evidence, but acted-only did not establish a real attack clip; withdraw that interpretation without changing the archived failure."
       }
     }
   ]
