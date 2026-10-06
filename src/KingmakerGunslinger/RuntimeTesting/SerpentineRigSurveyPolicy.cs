@@ -16,6 +16,29 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal const string HybridWeaponPrefab = "31cb7e484faf8734fa2c0ef1936b1806";
         internal const string HybridPrimaryWeapon = "c926ffbdccc4d124c8e8dedfe2e6f499";
 
+        // One representative of each of the eleven distinct Lizardfolk views
+        // in the archived October 2 native census. Read-only metadata only:
+        // no campaign actor, caller-supplied asset, or action adoption.
+        internal static string[][] ManufacturedPrefabSources
+        {
+            get { return new[] {
+                new[] { "9f7a7364b76d65d43b72086aedce68ae", "c664715ff7165984285f66acc764b4b3" },
+                new[] { "e8276e28b2234a745900fed80670bfdb", "9b1744531a4428e44aa9837ca984513a" },
+                new[] { "f080877221934ea40b29e1d9fa71bc1c", "31cb7e484faf8734fa2c0ef1936b1806" },
+                new[] { "f27f96f4bcc432c478615f2e9013ec2e", "cf7994611698da2428a07515d718e252" },
+                new[] { "a8cbd4cdb0feaf64eab1452257c3c971", "d6db6ba3b2c459a48ba0730beef0bac8" },
+                new[] { "bb980b317d907254093595b817a3b7ee", "067f4c19b91b0b2488ed1121f24aac9a" },
+                new[] { "bdc2c0f401cad70449452b372d26b59d", "4f11f063a6293a140b24c5b84596e418" },
+                new[] { "5eb33299047235146936bb18a38a0af4", "d879364ccc52bb74dabbc16851c83fd5" },
+                new[] { "73b06130e76c4554897f97a8ac453cfb", "d706840419a712a4eb07fc74c8f1d2b8" },
+                new[] { "4d98f6f765a999f40b587ef22f79db95", "c7799f73648f812439fc422edd6ffc7a" },
+                new[] { "a01e73eab5d86fe4e88eff103d87684a", "0a44e2f97be8f2d4980d3abc81dbfa92" }
+            }; }
+        }
+
+        internal static bool MatchesManufacturedPrefab(string blueprint, string prefab)
+        { return ManufacturedPrefabSources.Any(row => row[0] == blueprint && row[1] == prefab); }
+
         internal static bool MatchesHybridWeaponSource(string blueprint, string prefab,
             string primaryWeapon, bool hasOffhand)
         {
