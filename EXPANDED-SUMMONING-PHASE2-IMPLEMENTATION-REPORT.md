@@ -2,15 +2,24 @@
 
 ## Current October 6 UTC laptop result — Sprint 16 COMPLETE AND PUBLISHED
 
-[Closed snake command slice](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-SLICE.md)
-is now implemented but NOT RUN: eight production-identity manual/AI RTWP/TB
-cells,51 mandatory assertions,8 ordered evidence rows.255 focused,508 request
-preflight and168 orchestration PASS. Complete source gate181.7s PASS:
-2057 unfiltered84.7s,repository/static/icon/manifest,clean14-reference Release,
-deterministic strict320 package;17 provenance,persistence11/3/19,crowd5/7 PASS.
-Production behavior and the passing38/62 requests are unchanged;32 routes
-stay hidden. Next freeze a committed exact artifact and run smoke/commands
-under the lease-first actual-snapshot protocol. No full Sprint17 claim.
+[Latest snake command attempt](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-ATTEMPT1-EVIDENCE.json):
+exacte993e8a7 prelaunch PASS (2057 tests85.7s,complete183.2s,strict320);
+smoke11/11 PASS, command FAIL before the first cell:3/4 teardown/version/
+environment assertions passed; required51-cell assertion set not reached.
+Original Viper view did not settle at the fixture's offset spawn. Precise
+attachment/renderer/dissolve state was not recorded, so no production cause
+is asserted. Actual snapshot2038147898163Z restored20:45:10.6429821UTC:
+136/.117/exact tree;lease Completed/recovery=false/released;no game/shared
+lock/this-worktree staging/save write. All artifacts retained.
+
+[Changed fixture strategy](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-SLICE.md):
+keep snake at the qualified art anchor; move only the inert target. Capture
+visibility/attachment/control before failure. Same60..600-frame bounds and
+all51 requirements; no production/renderer/appearance mutation or waiver.
+Repair source PASS:256 focused,2058 unfiltered84.9s,complete179.8s,
+repository/static/icon/manifest,clean14-reference Release/deterministic strict320.
+New exact artifact/runtime next; repair NOT RUN.
+32 roots remain hidden; earlier exact130bf7a2 rules62/62 PASS is unchanged.
 
 PR #26 / `codex/expanded-summoning-phase2b-sprints14-17` remains the sole
 owner-designated development line. PR #27 is frozen salvage-only; no DATA

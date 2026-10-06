@@ -660,6 +660,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint17-snake-closed-signature-request", SerpentineRulesTests.SignatureRequestIsClosedWorkingSaveSlice),
             Case("expanded-summoning.sprint17-poison-native-save-phases", SerpentineRulesTests.NativePoisonSavePhasesRemainDistinct),
             Case("expanded-summoning.sprint17-command-closed-matrix", SerpentineRulesTests.CommandRequestAndMatrixAreClosed),
+            Case("expanded-summoning.sprint17-command-native-setup", SerpentineRulesTests.CommandSetupRequiresIntactOriginalAndNativeControl),
             Case("expanded-summoning.sprint17-command-retry-policy", SerpentineRulesTests.CommandRetryNeverDrivesAiOrReplaysHeldAttack),
             Case("expanded-summoning.sprint17-command-contact-policy", SerpentineRulesTests.CommandContactRequiresPlayedClipAndActualGap),
             Case("expanded-summoning.sprint17-command-maintain-policy", SerpentineRulesTests.CommandMaintainRequiresLaterRoundWithoutSecondAttack),

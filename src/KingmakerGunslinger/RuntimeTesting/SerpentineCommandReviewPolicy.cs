@@ -20,6 +20,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 !pending && !signature && !held && targetAlive;
         }
 
+        internal static bool ReadyToStart(bool originalAttached, bool intact,
+            bool canAct, bool manual, bool controllable, int frames)
+        {
+            return frames >= 60 && frames <= 600 && originalAttached && intact &&
+                canAct && (!manual || controllable);
+        }
+
         internal static bool Contact(bool owned, bool executing, bool opportunity,
             bool nativeClip, int points, float gap)
         {

@@ -1,0 +1,216 @@
+{
+  "schemaVersion": 1,
+  "classification": "FAILED COMMAND FIXTURE BEFORE FIRST CELL; FULL SPRINT17 NOT QUALIFIED",
+  "authority": "Laptop sole owner; PR26 active; DATA PR27 salvage-only, zero ports",
+  "candidate": {
+    "commit": "e993e8a719f83be3ea9c23c0d0ae0c06c142ad06",
+    "branch": "codex/expanded-summoning-phase2b-sprints14-17",
+    "version": "0.0.141",
+    "sourceStateSha256": "d0dadd1fe163d191bd47e233462701fc4806f4e45d0ba037417d172c730c91bb",
+    "dllSha256": "1902b460c132103d235749810ad0cbed118c07526a89eb2021415f1c32a4b72a",
+    "dllMvid": "5daf479c-d841-4344-b7f1-571b642ebdbc",
+    "zipSha256": "e7908ab093333121fde86d8a5e652e322c94f47c9b753f253949d93413589a3b",
+    "packageMembers": 320,
+    "archive": "artifacts/sprint17-snake-commands-source-pass-e993e8a7"
+  },
+  "prelaunch": {
+    "status": "PASS",
+    "focused": 255,
+    "fullUnfiltered": 2057,
+    "fullDomainSeconds": 85.7,
+    "completeGateSeconds": 183.2,
+    "cleanExactReferences": 14,
+    "strictPackage": true,
+    "standalonePreflight": 508,
+    "orchestration": 168,
+    "provenance": 17,
+    "persistence": [
+      11,
+      3,
+      19
+    ],
+    "crowd": [
+      5,
+      7
+    ]
+  },
+  "transaction": {
+    "batch": "artifacts/laptop-runtime-20261006T2038139599729Z",
+    "driver": "artifacts/Invoke-LaptopSprint17-SnakeCommands-Attempt1.ps1",
+    "status": "NOT-QUALIFIED",
+    "startedAtUtc": "2026-10-06T20:38:14.0120359Z",
+    "completedAtUtc": "2026-10-06T20:45:10.6429821Z",
+    "scenarioOrder": [
+      "working-save-smoke",
+      "disposable-expanded-summoning-snake-commands"
+    ],
+    "runs": [
+      {
+        "scenario": "working-save-smoke",
+        "startedAtUtc": "2026-10-06T20:38:38.6930148Z",
+        "parameters": {},
+        "launcherOutcome": "Clean",
+        "exitCode": 0,
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T2038396110721Z-working-save-smoke",
+        "requestId": "20261006T2038396423729Z-51c8da4e6d8b4f46a3b95c04d2cb45d8",
+        "requestSha256": "0af26254a13a7c17e2f1d2ec276062e0c2ba5acf3fcf2d1a22d50417abdb5769",
+        "resultSha256": "5e6c746d770f0359f0b2a210dc457229e05d568080fbba2b55834dc9655d53fa",
+        "assertions": 11,
+        "passed": 11,
+        "failed": [],
+        "orchestrationSha256": "1f6511b5c35f6f5c43c5b79cef173494504fdfa528285d425cfec8299c968228",
+        "processId": 24204,
+        "processStartedUtc": "2026-10-06T20:38:40.6801323Z",
+        "scenarioStatus": "PASS",
+        "outcome": "PASS",
+        "completedAtUtc": "2026-10-06T20:41:33.0724260Z"
+      },
+      {
+        "scenario": "disposable-expanded-summoning-snake-commands",
+        "startedAtUtc": "2026-10-06T20:41:38.5762948Z",
+        "parameters": {},
+        "launcherOutcome": "Unclean",
+        "exitCode": 1,
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T2041393594017Z-disposable-expanded-summoning-snake-commands",
+        "requestId": "20261006T2041393594017Z-5071f06d01b14ef4b4b3022a11c862e1",
+        "requestSha256": "78fed4bd7344fe1bb99ba7bb627f6747cab4d04e1c2bbcc50ab4bff98e21e346",
+        "resultSha256": "4466490426025bab91fc2604302d4b48b3f9cbf114dd2e344b3ff1e17c32fce8",
+        "assertions": 4,
+        "passed": 3,
+        "failed": [
+          {
+            "name": "sprint17-body-exception",
+            "status": "FAIL"
+          }
+        ],
+        "orchestrationSha256": "d3d4742f40de097d1f0c19d3a2e41e9352ecebecadf75fd408e8fccd8cd01032",
+        "processId": 5308,
+        "processStartedUtc": "2026-10-06T20:41:40.7251397Z",
+        "scenarioStatus": "FAIL",
+        "outcome": "FAIL",
+        "completedAtUtc": "2026-10-06T20:45:07.8538295Z"
+      }
+    ]
+  },
+  "failure": {
+    "requiredCommandAssertions": 51,
+    "executedAssertions": 4,
+    "passedAssertions": 3,
+    "completedCells": 0,
+    "failedAssertions": [
+      {
+        "$id": "2",
+        "name": "sprint17-body-exception",
+        "expected": "bounded original-body review",
+        "observed": "InvalidOperationException:Production original body did not settle naturally.;at=KingmakerGunslinger.RuntimeTesting.RuntimeTestRunner+<ReviewSprint17SnakeCommands>d__1401.MoveNext () [0x0088f] < KingmakerGunslinger.RuntimeTesting.RuntimeTestRunner+<ReviewSprint17Bodies>d__1372.MoveNext () [0x000ed] < KingmakerGunslinger.RuntimeTesting.RuntimeTestRunner.PollSprint17Bodies () [0x00099]",
+        "status": "FAIL",
+        "evidence": "No gameplay/publication qualification."
+      }
+    ],
+    "classification": "FIXTURE_SETUP_OR_OBSERVATION; precise attachment/renderer/dissolve cause not captured",
+    "facts": [
+      "Failure occurred before any native command cell executed.",
+      "Owner was placed five metres away from the previously qualified intact-frame art anchor.",
+      "The view slice already qualifies natural intact settlement at that art anchor; no new production regression has been demonstrated.",
+      "No renderer/attachment/visibility samples were captured by this first command fixture before its early throw."
+    ],
+    "repair": "Keep owner at the qualified art point and move only the inert target; capture existing read-only visibility samples, attachment outcome and native control/CanAct states before a failure. Enforce all setup prerequisites with unchanged60..600 frame bound. No visibility forcing, appearance removal, production mutation or waiver. Settlement also uses the existing command-phase unpause behavior and records pause/game time; native enemy-triggered auto-pause is a source-supported possibility, not established by the failed runtime record.",
+    "leasePurposeMetadata": "The archived driver/lease retained an outdated descriptive poison/constrict purpose string. Actual closed scenario/request/savePolicy records are command-specific. Correct that description only in the next driver; preserve this exact failed driver/lease unchanged."
+  },
+  "capturedRows": [
+    {
+      "cell": "viper-rtwp-manual",
+      "key": "viper",
+      "mode": "rtwp",
+      "driver": "manual",
+      "scope": "production hidden-snake native command/contact slice",
+      "inputs": "owned owner additionalAttackBonus100/additionalCMB100/HP100000; owned inert target HP100000/Con60/Fort-100/Medium; native BAB/dice/AI actions retained; no forced positive results",
+      "floorSurvey": "candidates=41;clearance=8/8;partyGap=6.01;point=(9.0, -5.6, -9.3)",
+      "contacts": [],
+      "riders": [],
+      "poses": [],
+      "checks": {},
+      "passed": false,
+      "controlBefore": {
+        "area": "2849fdde28fe50f4d935bf2cf3405051",
+        "capital": false,
+        "faction": "1b08d9ed04518ec46a9b3e4e23cb5105",
+        "factionControllable": false,
+        "summonPartControllable": true,
+        "finallyDead": false,
+        "panicked": false,
+        "detached": false,
+        "preventDirectControl": false,
+        "exCompanion": false,
+        "master": null,
+        "summoner": "bc38a12f-eedd-4ad6-ba92-3d028246d29f",
+        "controllable": false
+      },
+      "placement": "dir0@5m",
+      "targetLinkBeforeNativeCleanup": false,
+      "targetLinkClearedAfterNativeCleanup": true
+    }
+  ],
+  "restoration": {
+    "status": "VERIFIED",
+    "snapshot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20261006T2038147898163Z",
+    "completedAtUtc": "2026-10-06T20:45:10.6429821Z",
+    "before": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "after": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "lease": "C:\\Dev\\KingmakerGunslingerLab\\compatibility-state\\runtime-20261006T203814Z-f8f49183485f4302bb316d9dc9bcf4c7\\runtime-lease.json",
+    "leaseStatus": "Completed",
+    "recoveryRequired": false,
+    "leaseReleased": true,
+    "gameProcessesRemaining": [],
+    "sharedLockPresent": false,
+    "thisWorktreeStagingPresent": false,
+    "nativeSaveWriteObserved": false,
+    "unrelatedRootStage": "September14 inactive0.0.129 extraction,224 files; not this transaction and untouched"
+  },
+  "hashes": [
+    {
+      "path": "C:\\Dev\\KingmakerGunslingerLab\\repo\\KingmakerGunslinger\\.worktrees\\expanded-summoning-phase2b-laptop-20261005\\artifacts\\laptop-runtime-20261006T2038139599729Z\\batch.json",
+      "sha256": "c909101aaeecf032dc2ebacf741cd2d50fb1fe1ebe0a2e9c50fd74846f368191"
+    },
+    {
+      "path": "C:\\Dev\\KingmakerGunslingerLab\\repo\\KingmakerGunslinger\\.worktrees\\expanded-summoning-phase2b-laptop-20261005\\artifacts\\Invoke-LaptopSprint17-SnakeCommands-Attempt1.ps1",
+      "sha256": "257cbff149ba076b5f004976f41d5c5431c4d1f706207fbbeeeed0fa5babebad"
+    },
+    {
+      "path": "C:\\Dev\\KingmakerGunslingerLab\\repo\\KingmakerGunslinger\\.worktrees\\expanded-summoning-phase2b-laptop-20261005\\artifacts\\sprint17-commands-exact-e993e8a7-gate.log",
+      "sha256": "79d9c2801808caefe146a557cd07ef6ca1b5f307a2c7edd305a08f3ead6d95d0"
+    },
+    {
+      "path": "C:\\Dev\\KingmakerGunslingerLab\\repo\\KingmakerGunslinger\\.worktrees\\expanded-summoning-phase2b-laptop-20261005\\artifacts\\sprint17-commands-exact-e993e8a7-preflight.log",
+      "sha256": "34af6c9f3c7703a443d282389820efaa2dc891caeb25cbc48e32397061a4f806"
+    },
+    {
+      "path": "C:\\Dev\\KingmakerGunslingerLab\\repo\\KingmakerGunslinger\\.worktrees\\expanded-summoning-phase2b-laptop-20261005\\artifacts\\sprint17-snake-commands-source-pass-e993e8a7\\KingmakerGunslinger-0.0.141-local-runtime.zip.build-local.json",
+      "sha256": "4cff0b334163fbcf1e527f26c0a0afbfd83de5b61b26d10dc2b2e325708262e8"
+    },
+    {
+      "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T2041393594017Z-disposable-expanded-summoning-snake-commands\\sprint17-original-body-review.json",
+      "sha256": "1710ddd79c36ea0b0ab144c2ae4e8b7fd3107b632be25037a8ebc3a7724478cf"
+    }
+  ],
+  "earlierQualifiedBoundary": {
+    "candidate": "130bf7a2de4cbd636df921f36e7f6afefe8523ca",
+    "scope": "bounded profile/body/signature rules only",
+    "assertions": 62,
+    "passed": 62,
+    "reopened": false
+  },
+  "fullSprintQualified": false,
+  "publicationAuthorized": false,
+  "humanReview": "NOT_PERFORMED_NONBLOCKING"
+}

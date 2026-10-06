@@ -1,6 +1,6 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-06 — laptop sole owner; rules62/62 PASS; commands implemented NOT RUN; full Sprint17 NOT QUALIFIED
+## CURRENT STATE, 2026-10-06 — laptop sole owner; command startup FAIL, restored; anchor repair NOT RUN; full Sprint17 NOT QUALIFIED
 
 This section governs over historical mission/ownership statements below.
 HOWARD-LAPTOP / `codex/expanded-summoning-phase2b-sprints14-17` / draft PR26
@@ -18,13 +18,34 @@ deployment, force push or prohibited substitute subsystems.
   session01a10bcd-8582-7551-826f-0f128807eb99; ownerPID31796/start
   2026-10-05T19:29:25.9127956Z; holderPID15084/start2026-10-05T20:34:17.3075720Z.
   Session-scoped; refresh heartbeat and release only on actual session ending.
-- Last exact runtime candidate `130bf7a2de4cbd636df921f36e7f6afefe8523ca`,
-  clean/pushed for the bounded PASS batch. Evidence checkpoint
-  `fc2b3414ca58bcf882cf391440fb7b0315f24ee6` pushed; new command source is its
-  normal descendant. Neither checkpoint transfers qualification to an untested artifact.
+- Last exact runtime candidate `e993e8a719f83be3ea9c23c0d0ae0c06c142ad06`,
+  clean/pushed for the FAILED command batch. New anchor/observation correction
+  is its normal descendant, NOT RUN. Earlier exact130bf7a2 bounded rules PASS
+  remains unchanged; no qualification transfers to an untested artifact.
   Owner/holder identities unchanged; no competing source/runtime process.
   This checkpoint is a normal descendant. Unexpected active-branch
   motion remains a stop; DATA motion informational. All old artifacts retained.
+
+### Latest transaction and exact next gate
+
+[Latest snake command attempt](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-ATTEMPT1-EVIDENCE.json):
+exacte993e8a7 prelaunch PASS (2057 tests85.7s,complete183.2s,strict320);
+smoke11/11 PASS, command FAIL before the first cell:3/4 teardown/version/
+environment assertions passed; required51-cell assertion set not reached.
+Original Viper view did not settle at the fixture's offset spawn. Precise
+attachment/renderer/dissolve state was not recorded, so no production cause
+is asserted. Actual snapshot2038147898163Z restored20:45:10.6429821UTC:
+136/.117/exact tree;lease Completed/recovery=false/released;no game/shared
+lock/this-worktree staging/save write. All artifacts retained.
+
+[Changed fixture strategy](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-SLICE.md):
+keep snake at the qualified art anchor; move only the inert target. Capture
+visibility/attachment/control before failure. Same60..600-frame bounds and
+all51 requirements; no production/renderer/appearance mutation or waiver.
+Repair source PASS:256 focused,2058 unfiltered84.9s,complete179.8s,
+repository/static/icon/manifest,clean14-reference Release/deterministic strict320.
+New exact artifact/runtime next; repair NOT RUN.
+32 roots remain hidden; earlier exact130bf7a2 rules62/62 PASS is unchanged.
 
 ### Qualified versus NOT QUALIFIED
 
@@ -96,13 +117,11 @@ external state change. Independent snakes proceed; no phase-wide blocker.
 
 ### Exact next action
 
-The closed eight-cell native command/contact fixture is implemented, NOT RUN.
-255 focused/508 request preflight/168 orchestration PASS; complete source gate
-181.7s PASS:2057 unfiltered84.7s,repository/static/icon/manifest,clean14-reference
-Release,strict320 package;all ancillary checks PASS. Commit/push NOT QUALIFIED,
-freeze a new exact-head candidate and
-repeat all prelaunch gates, then guarded smoke/command51 batch. Keep the
-qualified38/62 requests unchanged; no global rewrite or dirty deployment.
+Changed anchor/observation fixture passes256 focused/2058 full/complete179.8s
+source gate. Commit/push NOT QUALIFIED, freeze a new exact-head artifact
+and repeat all prelaunch gates and the complete affected smoke/command51
+batch. Do not rerun e993e8a7 unchanged. Qualified38/62 requests remain unchanged;
+no global rewrite, visibility forcing, wait extension or dirty deployment.
 [Command scope](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-SLICE.md).
 [Scope and honest exclusions](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-SLICE.md).
 Then targeted persistence/crowds/UI/routes and bounded Salamander-specific
