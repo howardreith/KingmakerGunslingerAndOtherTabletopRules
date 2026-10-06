@@ -251,8 +251,8 @@ Swallow whole has a qualified project carrier from the Purple Worm.
 
 ## Sprint 17
 
-Current bounded evidence (October 6): exact09087d0f all prelaunch PASS;
-smoke11/body44 of47 FAIL, exact snapshot restored11:20:06UTC. S17 NOT QUALIFIED.
+Current bounded evidence (October 6): exact570a14cd all prelaunch PASS;
+smoke11/body33 of35 FAIL, exact snapshot restored12:11:30UTC. S17 NOT QUALIFIED.
 Both original snakes play native bite clips with gap0; no printed mechanics
 or new registration. The earlier Water Elemental prototype remains archived.
 No optional Eidolon dependency or native geometry/animation export.
@@ -261,10 +261,12 @@ The original hybrid v9 supports at5.0001mm. Native spear event5787 has zero
 palm-to-shaft distance but NO active animation: PiercingTwoHanded is absent
 from its slashing/axe-only main-hand action. IsActed at0.12s is fallback, not
 actual-attack grip/playback proof. Gap0.5922998m. Tail uses native Bite_Attack,
-gap0.164152145m; no final tail-action claim. Next bounded existing shortspear
-carrier action/bind audit and instance-only adoption only if compatible.
+gap0.164152145m; no final tail-action claim. Exact570 rejects the proposed
+shortspear carrier before attachment: native Lizardfolk_RH_Spear_Shield has
+no PiercingTwoHanded support or matching39-bone body. No hybrid action adopted.
+Next bounded read-only native action/style/renderer metadata; no blind retry.
 No bone twist, style relabel, native asset edit or threshold waiver.
-232 focused/2034 full; all11 attempts preserved. No production hook or
+234 focused/2036 full; all12 attempts preserved. No production hook or
 identity/placement change. The Medium Viper contract below still governs.
 [Current research/disposition](EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-REVIEW.md).
 
