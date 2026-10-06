@@ -76,10 +76,16 @@ half-turned renderer frame and smooth proximal weights; failed identity-frame/
 thin-underside/abrupt-transition prototypes are preserved. Exact native bindposes,
 distal coil, upper body/hands and paint remain intact. Renderer-only Bone4 quality
 is restored with native references. No new native joint/animation/actor change.
-New runtime gate is26 assertions, including actual -2..15mm floor support in
-every sampled pose. Full exact-head prelaunch/runtime still pending, no final
-visual/gameplay qualification. Spear/contact/lifecycle, printed profiles and
-full Sprint17 hidden/publication gates follow. No DATA import.
+Exact8d3081c3 now passes that full gate:225 focused/2027 full,491 preflight,
+81 orchestration/17 provenance, exact strict318-member artifact; fresh Steam
+smoke11/11/body26/26, complete driver PASS. Native support2.91mm/1.85mm/5.00mm
+over39 poses, all five exact resources per body released, quality/references
+restored, no save write. Actual0714257255801Z snapshot restored07:21:34UTC,
+same136/.117/tree; no game/lease/staging. Final shape remains open: supporting
+native frames show questionable open/folded snake coil sections, while hybrid
+tail is partly occluded and spear absent. Investigate actual winding/deformation;
+do not infer final art/contact acceptance from floor PASS. Spear/contact/lifecycle,
+printed profiles and full Sprint17 hidden/publication follow. No DATA import.
 
 Sprint 17's [bounded native-rig survey](planning/EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md)
 uses the native Medium Water Elemental source of the proposed serpentine

@@ -1,5 +1,16 @@
 # Expanded Summoning Phase 2 evidence index
 
+[Sprint17 exact8d3081c3 corrected-support PASS](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-REVIEW.md):
+225 focused/2027 full,491 preflight/81 orchestration/17 provenance, exact clean
+Release/strict318-member package; fresh Steam smoke11/body26, complete driver
+PASS. All39 sampled native poses support at2.91mm/1.85mm/5.00mm; rollback,
+native destruction of all five resources/body and exact references PASS.
+No save write. Actual0714257255801Z snapshot restored07:21:34UTC,136/.117/tree,
+no game/lease/staging. [Five preserved attempts and exact hashes](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-EVIDENCE.json).
+Final visuals/gameplay still NOT QUALIFIED: suspicious open/folded snake coil
+sections in supporting art need winding/deformation review; hybrid tail partly
+occluded, spear absent. No production hook/new registration/count change.
+
 [Sprint 17 closed body-research fixture](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-REVIEW.md):
 exact f31 prelaunch PASS (224 focused/2026 full/491 preflight/81 orchestration/
 17 provenance), smoke11/11/body23/23, complete batch PASS and exact restoration
@@ -15,7 +26,7 @@ smooth proximal weights and isolated quality rollback preserve native drivers,
 distal coil and upper body. Failed offline prototypes are retained. Next exact
 prelaunch and smoke/body26 with three added measured-floor support assertions.
 Spear/contact/lifecycle and final Sprint17 qualification remain open.
-[All four attempts and hashes](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-EVIDENCE.json).
+[All attempts and hashes](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-EVIDENCE.json).
 No printed-profile/weapon/contact or new-publication acceptance is inferred.
 
 [Sprint 17 owned-body source slice](assets-source/original-models/sprint17-serpents/SOURCE.md):

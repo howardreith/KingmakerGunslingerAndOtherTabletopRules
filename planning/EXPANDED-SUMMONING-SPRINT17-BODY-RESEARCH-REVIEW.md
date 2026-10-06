@@ -1,10 +1,10 @@
 # Sprint 17 bounded original-body research
 
-Status: Sprint 17 NOT QUALIFIED. Exact `f31c0e3d85a83129e92b8918b66e9697fc3e4969`
-measured-floor research batch **PASS: smoke11/11, body23/23**, exactly restored.
-It measured real snake penetration and hybrid floating; it does not accept
-the bodies' final visuals. Earlier 7b76/2045 fixture failures and 6bee driver
-ERROR remain preserved. This containing private-authoring/evidence checkpoint
+Status: Sprint 17 NOT QUALIFIED. Exact `8d3081c34cfee82239fdc908df0b561975131d24`
+corrected-support research batch **PASS: smoke11/11, body26/26**, exactly restored.
+Prior f31 measured penetration/float; 8d corrects sampled floor support but does
+not accept final shape/attack/lifecycle. Earlier 7b76/2045 fixture failures and
+6bee driver ERROR remain preserved. This containing evidence checkpoint
 is their normal descendant. Laptop PR #26 only; no DATA
 imports. Sprint 16 remains complete. Published surface is unchanged:
 976 generated + 29 wrappers = 1005 visible.
@@ -40,6 +40,36 @@ auxiliary mesh, albedo and owned material clone. Final unit/party/area reference
 censuses must match. Iterator disposal restores pause/random/control state on
 an outer timeout or error before the working-save sentinels close. Every
 claimed live result remains pending until the frozen artifact runs.
+
+## Fifth exact batch: corrected support and exact cleanup PASS
+
+Exact8d full prelaunch PASS:225 focused/2027 full83.0s, complete gate177.7s,
+491 preflight/81 orchestration/17 provenance, persistence11/3/19,crowd5/7,
+clean exact-reference Release and strict deterministic318-member package.
+Fresh Steam smoke11/11 and body26/26, complete driver PASS. Each body records
+13 actual native poses with support above measured floor: Viper2.91mm,
+Constrictor1.85mm, Salamander5.00mm. Travel about2.45–2.46m and velocity3.048m/s
+are research carrier measurements, not acceptance of printed speeds or size.
+Hybrid support aliases the existing _lizardman001 transform with authored
+half-turn; quality rollback passes. Every body's rollback and native destruction
+release all five exact owned resources. Final references restore; no save write.
+
+The new native matrices replay the same original support measurements offline.
+Supporting native images were inspected as art only: snake coils have suspicious
+open/ribbon-like or folded sections despite closed/manifold source topology;
+hybrid distal tail is partly occluded and the spear is absent. Floor PASS does
+NOT waive these final visual/contact gates. No native donor geometry leaks by
+the audited renderer-reference checks, but actual rendered shape still needs
+current-pose winding/deformation review. No visibility forcing is authorized.
+
+Actual snapshot0714257255801Z restored2026-10-06T07:21:34.2656814Z:136 files/
+Info0.0.117/tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
+Lease Completed/recoveryRequired=false/released; no game/shared lock/staging.
+Journal763DD4F79FE9B0FE45C9FBC2372C4A2E6DBE852BF913AE76FA6DCF68D5E9C746.
+[Five exact attempts and artifact hashes](EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-EVIDENCE.json).
+Next: bounded coil shape/winding investigation, actual snake attack and hybrid
+spear/tail seam, complete visual/contact/lifecycle, then printed profiles and
+Sprint17 hidden/publication gates. S16 and existing production remain unchanged.
 
 ## Fourth exact batch: measurements PASS, geometry defects confirmed
 
