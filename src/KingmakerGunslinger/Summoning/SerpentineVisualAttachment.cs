@@ -15,8 +15,8 @@ using UnityEngine;
 namespace KingmakerGunslinger.Summoning
 {
     /// <summary>Instance-owned Sprint 17 body swap on the two audited skins.
-    /// No automatic production attachment yet: the guarded donor acceptance
-    /// slice must prove movement, ground, contacts, fades and cleanup first.
+    /// The separate production hook permits only two exact hidden snake units.
+    /// Their final movement, contacts, fades and cleanup are not yet qualified.
     /// Existing Purple Worm, Water Elemental and Salamander are unchanged.
     /// The optional spear seam is closed two-hand research only.</summary>
     [DefaultExecutionOrder(10010)]

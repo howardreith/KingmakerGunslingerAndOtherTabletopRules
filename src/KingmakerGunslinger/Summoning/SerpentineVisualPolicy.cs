@@ -20,6 +20,22 @@ namespace KingmakerGunslinger.Summoning
         internal static string[] Keys { get { return new[] { "viper", "constrictor-snake", "salamander" }; } }
         internal static bool IsSnake(string key) { return key == "viper" || key == "constrictor-snake"; }
 
+        // The production hook is narrower than the three-key research helper.
+        // Match immutable identity, name AND prefab; never bind native worms,
+        // the existing Salamander or request-local visual research carriers.
+        internal const float SnakeViewMultiplier = .20f;
+        internal static bool TryProductionSnake(bool moduleEnabled, string guid,
+            string blueprintName, string prefab, out string key)
+        {
+            key = null;
+            if (!moduleEnabled || prefab != WormPrefab) return false;
+            if (guid == "d8be82543ab64dc988c33e9f13608bad" &&
+                blueprintName == "KMG_Summoning_Unit_Viper") key = "viper";
+            else if (guid == "f1a2eadf588e4c3b9fb670724d706364" &&
+                blueprintName == "KMG_Summoning_Unit_ConstrictorSnake") key = "constrictor-snake";
+            return key != null;
+        }
+
         internal static bool PermitsOriginalWinding(string key, string marker)
         { return Keys.Contains(key, StringComparer.Ordinal) && marker == OutwardWinding; }
 
