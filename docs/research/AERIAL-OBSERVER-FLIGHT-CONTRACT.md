@@ -74,17 +74,63 @@ visual height or cloned object with a copied GUID is not enough.
 - `IInitiatorRulebookHandler<T>` is contravariant in its exact native event type.
   Runtime must prove the base skill handler receives cached Perception too.
 
-A per-fact `RuleInitiatorLogicComponent<RuleSkillCheck>` can evaluate the exact
-carrier immediately before resolution and add a temporary **+2 Trait** to the
-native Perception stat, using `RulebookEvent.AddTemporaryModifier` for cleanup.
-This preserves native Trait stacking, affects both rule paths, and leaves no
-persistent overlay after flight ends. No polling, movement patch, global stat
-patch, scan of foreign units or flight-state mutation is needed. Cached rolls
-remain native. UI character-sheet presentation between checks is future visible
-publication work, not claimed by this unpublished rule-time foundation.
+The first candidate used a temporary +2 Trait during RuleSkillCheck. Real active
+and cached rules passed twice, but a final complete stat-consumer review exposed
+a gap: world-map preselection/discovery and fog radius read raw Perception before
+any skill rule. That candidate proves those rule paths only; it is superseded
+for full Perception coverage by the event-driven provider below.
+
+Additional exact native paths:
+
+- `LocationRevealController.Tick` (476 bytes) takes the maximum raw Perception,
+  uses it for discovery radius and last-roll eligibility, then calls
+  `GameHelper.CheckPartySkillResult(SkillPerception, ...)` for secret locations.
+- `LocationRevealController.<>c.<Tick>b__0_0(UnitEntityData): int` is its pure
+  native raw-stat reader. The fixture invokes only this reader, never the
+  controller's Tick or location revelation.
+- `FogOfWarSettings.get_Radius` (147 bytes) uses raw Perception on the global map.
+  Its pure `<>c.<get_Radius>b__19_0(UnitEntityData): int` reader can be measured
+  on a disposable actor without changing fog, party, camera or discovery state.
+- Camp guard sorting and skill description UI also read the same raw stat.
+  A maintained native Trait modifier covers these reads without patching them.
+
+## Exact event-driven skill lifecycle
+
+`Fact.Components` is a public `List<GameLogicComponent>` getter (7 bytes).
+`GameLogicComponent.Fact` has a public setter. Native
+`Fact.InitializeLogicInternal` (207 bytes) uses that setter for fact-local cloned
+components; registered blueprint components remain a separate immutable source.
+`Fact.TurnOn` (177 bytes) and `TurnOff(bool)` (129 bytes) invoke each instance
+component's native `OnTurnOn`/`OnTurnOff` callbacks. `Buff.Activate` (52 bytes) and
+`Deactivate` (47 bytes) preserve those callbacks. `UnitPartBuffSuppress.Update`
+(105 bytes) deactivates before setting suppression and activates after release.
+`IUnitBuffHandler` adds exact owner-filtered membership notifications.
+
+The unpublished provider attaches one request-owned
+`AerialObserverFlightTransition` component to each exact carrier fact on its own
+unit. It changes **only that fact's instance component list**. It never changes
+the canonical flight blueprint, its three source components, or another unit's
+facts. A listener records the native TurnOn/TurnOff boundary, so activation is
+observed after the carrier's mechanical components turn on, and deactivation
+removes the bonus before a subsequent raw-stat or skill resolution.
+
+`AerialObserverPerceptionBonus` maintains one **+2 Trait SkillPerception** modifier
+per provider. Native descriptor rules handle duplicate/foreign modifiers.
+Perception rule handling reconciles exact membership once per rule as a narrow
+additional guard; it does not add another rule modifier. Removing the provider
+detaches only its exact listener instances and removes only its own modifier.
+Flight removal, inactivity, native suppression/release and later reactivation
+are event driven. No frame/round polling, global patch, movement mutation,
+altitude test, foreign-unit scan or registered identity is introduced.
+
+The public list/setter, exact native lifecycle, skill stat and carrier graph are
+verified before construction. A mismatch fails closed. Request-local listener
+names are unique; provider blueprints have random request GUIDs and remain
+unregistered, hidden, iconless and unreachable in ordinary play.
 
 Required runtime evidence is two independent fresh-process PASS runs on one
-artifact because the provider is a custom handler: grounded/absent, exact flight,
-active and cached Perception, loss/suppression, foreign Trait and duplicate
-providers, unaffected skill, independent units, replay and exact cleanup.
-No player acquisition, icon or ordinary save identity is created.
+artifact: grounded/absent, exact flight, active and cached Perception, the actual
+native passive stat readers, immediate inactivity/removal, native suppression
+and release, foreign Trait and duplicate providers, unrelated skill, independent
+units, replay and exact instance-list/modifier/actor cleanup. No save write,
+player acquisition, icon or ordinary save identity is created.

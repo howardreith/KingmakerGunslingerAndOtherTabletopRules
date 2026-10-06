@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using Kingmaker.UnitLogic.Parts;
 using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.EntitySystem.Entities;
@@ -97,15 +99,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 TraitCheck(assertions, "aerial-native-flight-state", flight.Active && !flight.IsSuppressed &&
                     holder.Descriptor.State.HasConditionImmunity(UnitCondition.DifficultTerrain),
                     "real native flight fact activates the mechanical terrain-immunity state");
+                TraitCheck(assertions, "aerial-passive-stat-consumers", holder.Stats.SkillPerception.ModifiedValue == basis + 2 &&
+                    AerialPassiveValue(holder, "Kingmaker.Controllers.GlobalMap.LocationRevealController", "<Tick>b__0_0") == basis + 2 &&
+                    AerialPassiveValue(holder, "Kingmaker.Visual.FogOfWar.FogOfWarSettings", "<get_Radius>b__19_0") == basis + 2,
+                    "actual native passive Perception lambdas consume +2 before any skill rule; no discovery/radius controller is ticked");
                 var active = AerialSkill(holder, false);
                 TraitCheck(assertions, "aerial-active-perception", active.StatValue == basis + 2,
                     "native RuleSkillCheck stat=" + active.StatValue + ";base=" + basis);
                 var cached = AerialSkill(holder, true);
                 TraitCheck(assertions, "aerial-cached-perception", cached.StatValue == basis + 2,
                     "real RuleCachedPerceptionCheck uses the same +2 Trait stat resolution");
-                TraitCheck(assertions, "aerial-rule-cleanup", holder.Stats.SkillPerception.ModifiedValue == basis &&
-                    !holder.Stats.SkillPerception.Modifiers.Any(m => ReferenceEquals(m.Source, first)),
-                    "native temporary modifier is removed after both rules; no lasting skill overlay");
+                TraitCheck(assertions, "aerial-rule-cleanup", holder.Stats.SkillPerception.ModifiedValue == basis + 2 &&
+                    holder.Stats.SkillPerception.Modifiers.Count(m => ReferenceEquals(m.Source, first)) == 1,
+                    "one event-maintained Trait modifier survives rules; neither rule adds a second modifier");
                 TraitCheck(assertions, "aerial-other-skill", TraitSkill(holder, StatType.SkillStealth, 1000, 317).StatValue == otherSkill,
                     "native Stealth remains unchanged while flight is active");
                 TraitCheck(assertions, "aerial-independent-units", AerialSkill(other, false).StatValue == otherBasis,
@@ -141,13 +147,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "each of two native provider instances receives replay twice; exact actual modifier count=" + probe.OwnModifierCount);
                 replayFact.Remove(); duplicateFact.Remove();
                 flight.Deactivate();
-                TraitCheck(assertions, "aerial-flight-inactive", !flight.Active && AerialSkill(holder, false).StatValue == basis &&
+                TraitCheck(assertions, "aerial-flight-inactive", !flight.Active && holder.Stats.SkillPerception.ModifiedValue == basis && AerialSkill(holder, false).StatValue == basis &&
                     AerialSkill(holder, true).StatValue == basis, "inactive exact carrier does not qualify either native Perception path");
                 flight.Activate();
-                TraitCheck(assertions, "aerial-flight-reactivated", flight.Active && AerialSkill(holder, false).StatValue == basis + 2,
+                TraitCheck(assertions, "aerial-flight-reactivated", flight.Active && holder.Stats.SkillPerception.ModifiedValue == basis + 2 && AerialSkill(holder, false).StatValue == basis + 2,
                     "later native reactivation benefits a new rule without polling");
+                var suppression = holder.Descriptor.Ensure<UnitPartBuffSuppress>();
+                suppression.Suppress(carrier);
+                TraitCheck(assertions, "aerial-native-flight-suppression", flight.IsSuppressed && !flight.Active &&
+                    holder.Stats.SkillPerception.ModifiedValue == basis && AerialSkill(holder, true).StatValue == basis,
+                    "native exact-buff suppression removes the bonus before raw/cached Perception resolution");
+                suppression.Release(carrier);
+                TraitCheck(assertions, "aerial-native-flight-suppression-release", !flight.IsSuppressed && flight.Active &&
+                    holder.Stats.SkillPerception.ModifiedValue == basis + 2,
+                    "native release reactivates the flight listener and bonus without a rule or polling");
                 flight.Remove();
-                TraitCheck(assertions, "aerial-flight-removed", AerialSkill(holder, false).StatValue == basis &&
+                TraitCheck(assertions, "aerial-flight-removed", holder.Stats.SkillPerception.ModifiedValue == basis && AerialSkill(holder, false).StatValue == basis &&
                     AerialSkill(holder, true).StatValue == basis && !holder.Descriptor.State.HasConditionImmunity(UnitCondition.DifficultTerrain),
                     "native flight removal restores grounded active/cached Perception and terrain-immunity baseline");
                 for (int cycle = 0; cycle < 3; ++cycle)
@@ -159,8 +174,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 TraitCheck(assertions, "aerial-repeated-transitions", holder.Buffs.Enumerable.Count(b => ReferenceEquals(b.Blueprint, provider)) == 1,
                     "three native flight grant/remove cycles retain one provider");
-                first.Remove(); secondUnit.Remove();
                 flight = AerialBuff(holder, carrier);
+                first.Remove(); secondUnit.Remove();
+                TraitCheck(assertions, "aerial-flight-listener-detached", flight.Components.Count == carrier.ComponentsArray.Length &&
+                    !flight.Components.OfType<AerialObserverFlightTransition>().Any() && holder.Stats.SkillPerception.ModifiedValue == basis,
+                    "foundation removal detaches only its owned listener and modifier from the still-active native flight fact");
                 TraitCheck(assertions, "aerial-provider-removal", AerialSkill(holder, false).StatValue == basis,
                     "real mechanical flight after foundation removal supplies no bonus");
                 flight.Remove();
@@ -200,6 +218,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 adaptation = "+2 Trait Perception during exact active released Wings of Air mechanical flight; no altitude inference",
                 assertions, saveWriteObserved = _workingSaveSmoke.WriteObserved, error = failure });
             result.EvidenceFiles.Add(path); result.WorkingSaveSmoke = _workingSaveSmoke.Stop(); return result;
+        }
+
+        private static int AerialPassiveValue(UnitEntityData unit, string outerName, string methodName)
+        {
+            var outer = typeof(UnitEntityData).Assembly.GetType(outerName, true);
+            var nested = outer.GetNestedType("<>c", BindingFlags.NonPublic);
+            var singleton = nested?.GetField("<>9", BindingFlags.Public | BindingFlags.Static)?.GetValue(null);
+            var method = nested?.GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance,
+                null, new[] { typeof(UnitEntityData) }, null);
+            if (singleton == null || method == null || method.ReturnType != typeof(int))
+                throw new InvalidOperationException("Exact native passive Perception stat-reader contract missing.");
+            return (int)method.Invoke(singleton, new object[] { unit });
         }
 
         private static Buff AerialBuff(UnitEntityData unit, BlueprintBuff blueprint)
