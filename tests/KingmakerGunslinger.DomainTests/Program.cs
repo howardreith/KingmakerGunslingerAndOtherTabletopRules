@@ -2150,6 +2150,10 @@ namespace KingmakerGunslinger.DomainTests
             Case("aerial-foundation.ReplayOnce", AerialObserverFoundationTests.ReplayOnce),
             Case("aerial-foundation.NoPollingOrGlobalPatch", AerialObserverFoundationTests.NoPollingOrGlobalPatch),
             Case("aerial-foundation.CompleteMechanicalCarrier", AerialObserverFoundationTests.CompleteMechanicalCarrier),
+            Case("aerial-foundation.PassiveRawConsumers", AerialObserverFoundationTests.PassiveRawConsumers),
+            Case("aerial-foundation.NativeFlightTransitions", AerialObserverFoundationTests.NativeFlightTransitions),
+            Case("aerial-foundation.NativeSuppressionLifecycle", AerialObserverFoundationTests.NativeSuppressionLifecycle),
+            Case("aerial-foundation.OwnedListenerCleanup", AerialObserverFoundationTests.OwnedListenerCleanup),
         };
 
         /// <summary>
