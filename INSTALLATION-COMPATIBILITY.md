@@ -740,3 +740,7 @@ The presentation calibration changes no item acquisition or save identity.
 Static merchant and fixed-loot blueprint behavior remains as qualified in
 `0.0.88`; no refresh is promised for an already opened container or already
 materialized merchant in an existing save.
+
+## 0.0.142 candidate
+
+The candidate archive is `KingmakerGunslinger-0.0.142-elemental-race-traits-and-content.zip`. It preserves the exact released 0.0.141 summoning checkpoint. Original trait art has objective admission but owner aesthetic approval is not recorded. Technical publication, runtime and persistence qualification are tracked in the DATA integration handoff; this is not release authorization.

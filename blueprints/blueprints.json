@@ -21199,6 +21199,94 @@
       "status": "active",
       "milestone": "Expanded Summoning",
       "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.CharacterTraits.FieryGlare.Feature",
+      "guid": "ca5d4d43d35548679ed6b533f055cb20",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "0.0.142 elemental character race traits",
+      "notes": "Stable save identity. All-four Favored Class racial_traits acquisition is independently conditional; hidden providers are never choices."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.CharacterTraits.FieryGlare.Toggle",
+      "guid": "15549c6f936f4000a7c476f5d50d2585",
+      "plannedType": "BlueprintActivatableAbility",
+      "status": "active",
+      "milestone": "0.0.142 elemental character race traits",
+      "notes": "Stable save identity. All-four Favored Class racial_traits acquisition is independently conditional; hidden providers are never choices."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.CharacterTraits.FieryGlare.ActivationBuff",
+      "guid": "7883b258441e4e179b07cacbdc5416ac",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "0.0.142 elemental character race traits",
+      "notes": "Stable save identity. All-four Favored Class racial_traits acquisition is independently conditional; hidden providers are never choices."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.CharacterTraits.StoicDignity.Feature",
+      "guid": "51faa3c273df41738553c18c088ef565",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "0.0.142 elemental character race traits",
+      "notes": "Stable save identity. All-four Favored Class racial_traits acquisition is independently conditional; hidden providers are never choices."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.CharacterTraits.StoicDignity.ProviderBuff",
+      "guid": "46e6b683b15a4811886730027994e58d",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "0.0.142 elemental character race traits",
+      "notes": "Stable save identity. All-four Favored Class racial_traits acquisition is independently conditional; hidden providers are never choices."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.CharacterTraits.StoicDignity.Area",
+      "guid": "b3f85f9663b44129b222ae69bb3e8cd3",
+      "plannedType": "BlueprintAbilityAreaEffect",
+      "status": "active",
+      "milestone": "0.0.142 elemental character race traits",
+      "notes": "Stable save identity. All-four Favored Class racial_traits acquisition is independently conditional; hidden providers are never choices."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.CharacterTraits.StoicDignity.RecipientBuff",
+      "guid": "461f898838864ff0b50ab355efa0c644",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "0.0.142 elemental character race traits",
+      "notes": "Stable save identity. All-four Favored Class racial_traits acquisition is independently conditional; hidden providers are never choices."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.CharacterTraits.AerialObserver.Feature",
+      "guid": "4064cbe37690440a8650ea5689354a65",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "0.0.142 elemental character race traits",
+      "notes": "Stable save identity. All-four Favored Class racial_traits acquisition is independently conditional; hidden providers are never choices."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.CharacterTraits.AerialObserver.ProviderBuff",
+      "guid": "12f9760b84264e178af8a5251d559242",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "0.0.142 elemental character race traits",
+      "notes": "Stable save identity. All-four Favored Class racial_traits acquisition is independently conditional; hidden providers are never choices."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.CharacterTraits.Whiteout.Feature",
+      "guid": "7aa5dc9716e4437daa8e00506f6ddd83",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "0.0.142 elemental character race traits",
+      "notes": "Stable save identity. All-four Favored Class racial_traits acquisition is independently conditional; hidden providers are never choices."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.CharacterTraits.Whiteout.ProviderBuff",
+      "guid": "901f9f54462846149cf7fb24ec04a5a5",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "0.0.142 elemental character race traits",
+      "notes": "Stable save identity. All-four Favored Class racial_traits acquisition is independently conditional; hidden providers are never choices."
     }
   ]
 }

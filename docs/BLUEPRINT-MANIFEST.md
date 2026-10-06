@@ -1,4 +1,4 @@
-﻿# Blueprint manifest and registration contract
+# Blueprint manifest and registration contract
 
 The owner-authorized public-master 0.0.115 integration into the 117 expansion
 adds no blueprint identities and changes no elemental manifest entry. Its
@@ -486,3 +486,7 @@ Goblin Dog disease-traits feature, and Goblin Dog allergic-reaction buff. The
 ledger now contains 2649 stable identifiers: 2647 active and 2 reserved. All 68
 Dire Rat, Dog, Hyena and Goblin Dog placements remain registered but hidden
 until their mechanics, distinct visual identities and lifecycle qualify.
+
+## DATA 0.0.142 candidate append
+
+The current manifest contains 2660 stable identifiers: 2658 active and 2 reserved. The eleven character-trait nodes append after the exact released v0.0.141 entries; every previous identity and status is preserved. Four features and the Fiery Glare toggle are visible; six provider/buff/area nodes are hidden. All-four Favored Class acquisition is conditional and foreign-preserving; registered save identities remain resolvable when acquisition is disabled. Current runtime/persistence qualification is pending.

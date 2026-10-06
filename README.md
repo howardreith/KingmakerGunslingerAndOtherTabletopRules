@@ -1,4 +1,4 @@
-# Kingmaker Gunslinger
+﻿# Kingmaker Gunslinger
 
 The current full release, **0.0.141-expanded-summoning-phase2a**, publishes
 Expanded Summoning Sprints 9 through 11: Eagle, Dire Bat, Giant Wasp, Stirge,
@@ -784,3 +784,7 @@ candidate (see `TELEPORTATION-COMPLETION-HANDOFF.md` for exact evidence):
   them from the world-map menu, and using one from inventory tells you to
   select a destination on the world map. Each activation consumes exactly
   one scroll; bought-out stock stays bought out.
+
+## 0.0.142 candidate
+
+The 0.0.142-elemental-race-traits-and-content candidate selectively integrates DATA content onto the released 0.0.141 checkpoint. See [release notes](docs/RELEASE-NOTES-0.0.142.md) for its adaptations and pending automated/manual acceptance. This candidate has not been merged, tagged or released.

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using KingmakerGunslinger.Ammunition;
@@ -264,7 +264,7 @@ namespace KingmakerGunslinger.DomainTests
             string root = Environment.CurrentDirectory;
             string source = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "Blueprints",
-                "OlegFirearmSupplyCleanupBlueprints.cs"));
+                "OlegFirearmVendorBlueprints.cs"));
             foreach (string token in new[] {
                 "f720440559fc00949900bfa1575196ac",
                 "C11_OlegVendorTable",
@@ -274,25 +274,25 @@ namespace KingmakerGunslinger.DomainTests
                 "OTP_Oleg_FirstVisit",
                 "BlueprintLibraryLookup.RequireExact<BlueprintSharedVendorTable>",
                 "VendorCatalogPublication<BlueprintComponent>.Create",
-                "OlegVendorCleanupPublication.Unchanged",
+                "OlegVendorPublication.Unchanged",
                 "publication.Validate()",
-                "owned.Contains",
+                "NormalizeOwned",
                 "ReferenceEquals",
                 "ammunition.BlackPowder",
                 "ammunition.LeadBall",
                 "ammunition.PaperCartridge",
                 "supplies.OverhaulKit",
                 "supplies.GunsmithKit",
-                "retained a project-owned firearm-supply row"
+                "AmmunitionCount = 50"
             }) Assertions.True(source.Contains(token),
                 "Oleg maintenance publication contract missing: " + token);
 
             string bootstrap = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "Bootstrap", "BlueprintBootstrap.cs"));
             int publish = bootstrap.IndexOf(
-                "OlegFirearmSupplyCleanupBlueprints.Normalize", StringComparison.Ordinal);
+                "OlegFirearmVendorBlueprints.Publish", StringComparison.Ordinal);
             int rollback = bootstrap.IndexOf(
-                "olegSupplyCleanupPublication.Rollback()", StringComparison.Ordinal);
+                "olegVendorPublication.Rollback()", StringComparison.Ordinal);
             int capitalRollback = bootstrap.IndexOf(
                 "capitalVendorPublication.Rollback()", StringComparison.Ordinal);
             Assertions.True(publish >= 0 && rollback > publish &&
@@ -335,7 +335,6 @@ namespace KingmakerGunslinger.DomainTests
                 "57f84fdde3cc2994284fb3acc4a3cb97",
                 "OTP_Bokken_ZeroState",
                 "AmmunitionCount = 100",
-                "GunsmithKitCount = 1",
                 "BlueprintLibraryLookup.RequireExact<BlueprintUnitLoot>",
                 "ammunition.BlackPowder",
                 "ammunition.LeadBall",
@@ -362,7 +361,7 @@ namespace KingmakerGunslinger.DomainTests
                 "bokkenSupplyPublication.Rollback()",
                 StringComparison.Ordinal);
             int olegRollback = bootstrap.IndexOf(
-                "olegSupplyCleanupPublication.Rollback()", StringComparison.Ordinal);
+                "olegVendorPublication.Rollback()", StringComparison.Ordinal);
             Assertions.True(publish >= 0 && rollback > publish &&
                 olegRollback > rollback && bootstrap.Contains(
                     "publicationPlan.CapitalGunslingerStock"),
@@ -593,10 +592,10 @@ namespace KingmakerGunslinger.DomainTests
                 "package.ps1"));
             string packager = File.ReadAllText(Path.Combine(root, "tools",
                 "create_deterministic_package.py"));
-            Assertions.True(localBuild.Contains("{ 282 } else { 280 }") &&
+            Assertions.True(localBuild.Contains("{ 286 } else { 284 }") &&
                 packager.Contains("133, 135, 222, 224, 225, 227, 229, 231, 233, 234, 235,") &&
-                packager.Contains("236, 237, 239, 241, 242, 244, 248, 249, 250, 251, 253, 254, 255, 256, 258, 259, 260, 261, 262, 264, 266, 272, 273, 274, 275, 276, 280, 281, 282))"),
-                "deterministic package counts include prepared ungulate icons and flying visuals");
+                packager.Contains("236, 237, 239, 241, 242, 244, 248, 249, 250, 251, 253, 254, 255, 256, 258, 259, 260, 261, 262, 264, 266, 272, 273, 274, 275, 276, 280, 281, 282, 284, 286))"),
+                "deterministic package counts preserve released assets and add four original trait exports");
             Assertions.True(package.Contains("create_deterministic_package.py") &&
                 package.Contains("expectedPackageFileCount") &&
                 !package.Contains("Compress-Archive"),

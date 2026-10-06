@@ -1,43 +1,41 @@
-# DATA 0.0.142 human acceptance — 2026-10-06
-
-No release candidate was built: Whiteout failed the required objective 32px
-review, and the exact released base failed inherited icon-catalog hash validation.
-These rows are future owner checks, not acceptance or technical qualification.
+# DATA 0.0.142 manual acceptance — 2026-10-06
 
 OwnerAestheticApproval: NOT_RECORDED
 HumanTooltipAcceptance: PENDING
 HumanMerchantAcceptance: PENDING
 
-The ignored review packet contains originals, crop-free 128/48/32 previews,
-grayscale 32px previews and diagnostics:
-C:/Dev/KingmakerGunslingerLab/worktrees/data-content-traits-0.0.142-integration-2026-10-06/artifacts/mission/icon-review/contact-sheet.png
+All four selected originals passed Codex objective inspection. Whiteout attempt
+3 replaced the rejected source; the other three source bytes are unchanged.
+Technical admission does not record Howie's aesthetic approval.
 
-The curated objective review is
-reports/elemental-character-traits/ICON-INTAKE-OBJECTIVE-REVIEW-2026-10-06.json.
-Three icons passed Codex objective inspection; Whiteout did not. None has
-owner aesthetic approval. No source was regenerated or edited in this mission.
+Review packet: artifacts/mission/icon-review-qualified/contact-sheet.png
+Whiteout: whiteout-128.png, whiteout-32.png, whiteout-32-gray.png in that packet.
+The packet includes original sources, crop-free 128/48/32 previews and grayscale
+32px previews. Sources and exact prompt lineage are tracked in the production
+icon directory. Historical rejected evidence remains unchanged.
 
-Only Howie may record ACCEPT, CONCERN or INCONCLUSIVE for a human row.
+Only Howie may enter ACCEPT, CONCERN or INCONCLUSIVE below.
 
 | Owner check | Actual result |
 | --- | --- |
-| Fiery Glare feature icon at native size | NOT PERFORMED |
+| Fiery Glare feature icon | NOT PERFORMED |
 | Fiery Glare action-bar toggle icon | NOT PERFORMED |
-| Stoic Dignity feature icon | NOT PERFORMED |
-| Aerial Observer feature icon | NOT PERFORMED |
-| Whiteout feature icon | BLOCKED by objective small-size defect |
-| Four trait names/tooltips, wrapping and readability | NOT PERFORMED |
-| Correct-race trait selection placement | NOT PERFORMED |
-| Hidden provider/area/recipient visibility | NOT PERFORMED |
-| Pistol tooltip wrapping, spacing and punctuation | NOT PERFORMED |
+| Stoic Dignity icon | NOT PERFORMED |
+| Aerial Observer icon | NOT PERFORMED |
+| Whiteout icon, figure/arrow at native size | NOT PERFORMED |
+| Four trait tooltip wrapping and readable copy | NOT PERFORMED |
+| Correct-race Favored Class character trait placement | NOT PERFORMED |
+| Hidden provider/recipient/area absent from visible choices | NOT PERFORMED |
+| Pistol prose, spacing and punctuation | NOT PERFORMED |
 | Blunderbuss lead-ball penetration versus Scatter Shot clarity | NOT PERFORMED |
-| The Last Word complete Reliable/Seeking text without duplication or clipping | NOT PERFORMED |
-| Oleg generated rows, ordering/quantities and 50 matched shots | NOT PERFORMED |
-| Capital blacksmith generated rows, ordering/quantities | NOT PERFORMED |
-| Bokken generated rows, ordering/quantities | NOT PERFORMED |
-| Already serialized stock for those merchants in an authorized disposable fixture | NOT PERFORMED |
-| Acceptance of retained old serialized merchant stock | NOT PERFORMED |
+| Last Word Reliable/Seeking text without duplication or clipping | NOT PERFORMED |
+| Oleg stock, ordering, quantities and 50 matched shots | NOT PERFORMED |
+| Capital smith exact stock and ordering | NOT PERFORMED |
+| Bokken three consumable rows and quantities | NOT PERFORMED |
+| Old serialized merchant stock remaining unchanged | NOT PERFORMED |
 
-No merchant save migration, raw-save access, game launch or save write occurred.
-A future native UI/art review requires the qualified candidate and guarded
-deployment/restoration. Offline previews do not prove native sprite rendering.
+Use the guarded temporary deployment and exact restoration workflow.
+Launch only through Steam 640820. Codex does not automate merchant navigation.
+Do not write a save during manual review. A review must never use
+KMG_AUTOMATION_BASELINE. An existing merchant inventory is not rewritten by
+blueprint normalization. Report concerns without inferring a new code mandate.

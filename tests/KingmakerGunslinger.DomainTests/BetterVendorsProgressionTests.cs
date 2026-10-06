@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -144,7 +144,8 @@ namespace KingmakerGunslinger.DomainTests
                     ExpandedSummoningSprint10Tests.StirgeAppendedLedgerIdentities +
                     ExpandedSummoningSprint11Tests.AppendedLedgerIdentities +
                     ExpandedSummoningSprint10Tests.StirgeRemovalIdentityCount +
-                    ExpandedSummoningSprint12Tests.AppendedLedgerIdentities,
+                    ExpandedSummoningSprint12Tests.AppendedLedgerIdentities +
+                    KingmakerGunslinger.ElementalRaces.ElementalCharacterTraitCatalog.Nodes().Length,
                 entries.Length,
                 "Manifest preserves accepted blocks and appends only approved Phase 2 identities.");
             string prefix = string.Concat(entries.Take(PreservedManifestEntries)
@@ -1376,7 +1377,7 @@ namespace KingmakerGunslinger.DomainTests
                 "ElvenBranchedSpearCampaignBlueprints.cs",
                 "RareFirearmCampaignLootBlueprints.cs", "SkeletalSalesmanBlueprints.cs",
                 "BokkenFirearmSupplyVendorBlueprints.cs",
-                "OlegFirearmSupplyCleanupBlueprints.cs"
+                "OlegFirearmVendorBlueprints.cs"
             };
             foreach (string path in paths)
             {
