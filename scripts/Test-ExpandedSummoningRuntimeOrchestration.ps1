@@ -151,6 +151,76 @@ foreach ($badAssertions in @(@(), $snakeAssertions[0..36], ($snakeAssertions + $
     Assert-True $rejected 'empty, partial or extra native assertion sets fail closed'
 }
 
+# The extended rules request cannot inherit PASS from the closed profile
+# slice alone. Root arrays, all24 ordered rows and all62 verdicts are required.
+$signatureNames = @('viper-contract', 'viper-wounds', 'viper-misses', 'viper-zero-damage',
+    'viper-non-bite', 'viper-live-dc-0', 'viper-live-dc-4', 'viper-live-dc--6',
+    'viper-six-exposures', 'viper-native-cure', 'viper-source-destruction',
+    'constrict-grab-rejections', 'constrict-bite-delivery', 'constrict-no-application-frame-maintain',
+    'constrict-later-maintain-once', 'constrict-strength-0', 'constrict-strength-4',
+    'constrict-strength--10', 'constrict-native-growth', 'constrict-modifiers-restored',
+    'constrict-lethal-prey', 'constrict-dead-prey-rejected', 'constrict-destroyed-prey-rejected',
+    'constrict-owner-death')
+$signatureRows = @($snakeRows)
+$signatureAssertions = @($snakeAssertions)
+foreach ($name in $signatureNames) {
+    $signatureRows += [pscustomobject]@{ signature=$name; passed=$true }
+    $signatureAssertions += [pscustomobject]@{ name=('sprint17-snake-signature-' + $name); status='PASS' }
+}
+$signatureJson = ConvertTo-Json -InputObject $signatureRows -Depth 6
+$signatureAssertionsJson = ConvertTo-Json -InputObject $signatureAssertions
+$observed = @(ConvertFrom-KmgSnakeSignatureSliceEvidence -Json $signatureJson -Assertions $signatureAssertions)
+Assert-Equal 46 $observed.Count 'complete signature request emits46 flat rows'
+Assert-Equal ($signatureNames -join ',') ($observed[22..45].signature -join ',') 'all24 signatures retain exact order'
+foreach ($badJson in @('null', '{}', '[]', '[', ('[' + $signatureJson + ']'), $snakeJson,
+    (ConvertTo-Json -InputObject $signatureRows[0..44] -Depth 6),
+    (ConvertTo-Json -InputObject ($signatureRows + $signatureRows[0]) -Depth 6))) {
+    $rejected = $false
+    try { $null = ConvertFrom-KmgSnakeSignatureSliceEvidence -Json $badJson -Assertions $signatureAssertions }
+    catch { $rejected = $true }
+    Assert-True $rejected 'incomplete, nested or malformed signatures fail closed'
+}
+foreach ($mutate in @(
+    { param($rows) $rows[22].signature=$rows[23].signature },
+    { param($rows) $rows[22].signature='foreign' },
+    { param($rows) $rows[22].passed=$false },
+    { param($rows) $rows[22].passed='true' },
+    { param($rows) $rows[22].PSObject.Properties.Remove('passed') },
+    { param($rows) $rows[22]=$null },
+    { param($rows) $rows[22]=@($rows[22]) },
+    { param($rows) $rows[0].intact=$false },
+    { param($rows) $rows[4].passed=$false }
+)) {
+    $changedRows = $signatureJson | ConvertFrom-Json
+    & $mutate $changedRows
+    $rejected = $false
+    try { $null = ConvertFrom-KmgSnakeSignatureSliceEvidence -Json (ConvertTo-Json -InputObject $changedRows -Depth 6) -Assertions $signatureAssertions }
+    catch { $rejected = $true }
+    Assert-True $rejected 'signature rows and inherited body/profile rows must independently pass'
+}
+foreach ($mutate in @(
+    { param($rows) $rows[38].name=$rows[39].name },
+    { param($rows) $rows[38].name='sprint17-snake-signature-foreign' },
+    { param($rows) $rows[38].status='FAIL' },
+    { param($rows) $rows[38].PSObject.Properties.Remove('status') },
+    { param($rows) $rows[0].status='FAIL' },
+    { param($rows) $rows[38]=$null }
+)) {
+    $changedAssertions = $signatureAssertionsJson | ConvertFrom-Json
+    & $mutate $changedAssertions
+    $rejected = $false
+    try { $null = ConvertFrom-KmgSnakeSignatureSliceEvidence -Json $signatureJson -Assertions $changedAssertions }
+    catch { $rejected = $true }
+    Assert-True $rejected '62 exact native assertions cannot hide missing, duplicate, foreign or failed results'
+}
+foreach ($badAssertions in @(@(), $snakeAssertions, $signatureAssertions[0..60],
+    ($signatureAssertions + $signatureAssertions[0]))) {
+    $rejected = $false
+    try { $null = ConvertFrom-KmgSnakeSignatureSliceEvidence -Json $signatureJson -Assertions $badAssertions }
+    catch { $rejected = $true }
+    Assert-True $rejected 'profile-only, incomplete or extra assertion sets cannot qualify signatures'
+}
+
 Assert-True (Test-KmgBatchCandidateUnavailable -FirstScenario $true -HasEvidence $false -HasDeployment $false -LauncherOutcome 'Unclean') `
     'a failed pre-launch candidate stops repeated full gates'
 foreach ($case in @(

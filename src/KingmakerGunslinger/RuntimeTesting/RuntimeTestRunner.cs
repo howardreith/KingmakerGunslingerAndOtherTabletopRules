@@ -2775,7 +2775,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 else if (_request.Scenario == RuntimeTestScenarioCatalog
                     .DisposableExpandedSummoningSerpentineBodies ||
-                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSnakeProfiles)
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSnakeProfiles ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSnakeSignatures)
                 {
                     PollSprint17Bodies();
                 }
