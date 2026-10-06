@@ -1,5 +1,17 @@
 # Expanded Summoning Phase 2 journal
 
+## October 6, 16:01 UTC — exact c1ece8d7 view SOURCE gate PASS
+
+2049 unfiltered tests85.1s, complete repository/static/icon/manifest, clean
+exact Release and deterministic/strict320-member package PASS179.2s.
+Exact source/DLL/MVID/ZIP/manifest/log hashes and immutable ignored archive
+recorded in the view integration review. All17 new runtime assertions remain
+NOT RUN. No game, runtime transaction, installation observation or save action.
+One hidden existing-Unity2018 probe reported invalid license and self-exited;
+no activation/credentials/install. Its hashed private log is retained. That
+authoring route is unavailable until external state changes, not a phase-wide
+blocker or permission to waive Salamander. Continue independent snake fixtures.
+
 ## October 6, 15:55 UTC — hidden snake automatic body binding implemented
 
 [View integration review](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-VIEW-INTEGRATION.md).

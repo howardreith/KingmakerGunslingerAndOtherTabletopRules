@@ -4,7 +4,11 @@
 two exact hidden identities automatically bind original bodies, with one view
 scale and native-owned rollback.17 guarded assertions written, NOT RUN.
 247 focused/2049 full86.4s, repository, clean exact-reference Release and strict
-320-member package PASS184.1s on dirty source; committed artifact gate next.
+320-member package PASS184.1s on dirty source. Committed c1ece8d7 subsequently
+PASS179.2s:2049 tests85.1s, complete repository/clean exact Release/strict320.
+Exact source/DLL/MVID/ZIP/manifest/log hashes and archive recorded in review.
+One existing-Unity2018 batch probe confirmed invalid license and self-exited;
+no activation or game launch, and no phase-wide blocker claim.
 
 [Current hidden snake source checkpoint, NOT QUALIFIED](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SOURCE-REVIEW.md):
 250 focused / 2048 unfiltered tests PASS; repository/static/manifest/icon and
