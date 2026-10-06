@@ -1,15 +1,16 @@
 # Expanded Summoning Phase 2 evidence index
 
-[Latest signature attempt](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-ATTEMPT2-EVIDENCE.json):
-exactccba source/prelaunch PASS; smoke11/11,signature61/62 FAIL; exactly restored
-19:04:19UTC. Remaining fixture failure reads an already-disposed poison component.
-Native poison removal/no extra damage and all Constrictor checks pass.
+[Latest signature attempt](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-ATTEMPT3-EVIDENCE.json):
+exactdc12 source/prelaunch PASS; smoke11/11,signature61/62 FAIL; exactly restored
+19:30:35UTC. Six damage events and five buff saves were observed; native activation
+uses the separate initial injury save. All Constrictor checks/removal/no replay pass.
 [Changed event-observation strategy](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-SLICE.md).
 All62 requirements retained; production unchanged; repair NOT RUN. New exact
 artifact and complete affected batch next. No publication or full Sprint17 PASS.
-Repair source gate:249 focused,2051 unfiltered83.0s, complete178.8s,
-clean14-reference Release/strict320 and142 orchestration PASS; log
-`artifacts/sprint17-signatures-event-observer-dirty-gate.log`.
+Phase-aware repair:251 focused/2053 full86.8s,complete183.6s,clean14-reference
+Release/strict320 and142 orchestration PASS. Native activation,
+injury action and save constructors audited in exact private assembly; audit
+SHA26dce5ebb45d8ccf4238a2e1b803c619229464b990b2435486f89980781de8d0.
 The earlier qualified profile/body boundary follows.
 
 Exact `22be90c0c768acc710b9dfef2a6d42d1cb917a04` passes the complete

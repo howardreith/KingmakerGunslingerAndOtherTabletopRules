@@ -1,5 +1,25 @@
 # Expanded Summoning Phase 2 journal
 
+## October6,19:30UTC — signature61/62 FAIL; distinguish native save phases
+
+Exactdc1208d2 complete2051 tests85.5s/gate181.7s/strict320 and all prelaunch
+PASS. Steam smoke11/11,signature61/62; all62 ran. Six native poison damage
+events and five buff-owned saves, live counter6, correct removal/no replay.
+The observer missed the initial reason-less injury-action save and expected
+six buff saves. Exact native audit confirms OnFactActivate deals exposure1
+without another save; OnNewRound supplies the five later saves.
+[Attempt3 evidence](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-ATTEMPT3-EVIDENCE.json).
+New observer null-guards Reason and ties the initial save to the exact
+in-flight wounding bite. Separate phase counters retain six total saves and
+damage events; tests reject duplicate/missing phases and replay.251 focused,
+2053 full86.8s/complete183.6s/clean14-reference Release/strict320/142 orchestration
+PASS. Initial source gate caught stale2051 static metadata; corrected to2053,
+immutable1992 published evidence unchanged. New exact artifact/runtime next.
+Production unchanged.
+Actual snapshot1923327993552Z restored19:30:35UTC136/.117/exact tree,
+lease Completed/recovery=false/released; no game/staging/save write.
+Sprints14–16 complete; Sprint17 NOT QUALIFIED;32 snake roots remain hidden.
+
 ## October6,19:04UTC — signature61/62 FAIL; change to live event observation
 
 Exactccba full2051 tests84.0s/complete gate180.7s/strict320/all prelaunch PASS;
