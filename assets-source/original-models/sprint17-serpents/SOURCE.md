@@ -1,5 +1,34 @@
 # Sprint 17 original serpentine and hybrid bodies
 
+## Current authored winding correction -- source checked, NOT RUNTIME QUALIFIED
+
+The exact32b reversible native comparison supports a correction only in this
+S17 family's exporter. `serpentine_export.py` reverses each triangle once and
+adds an explicit convention marker; the shared Pteranodon exporter and all
+qualified families remain untouched. Input payloads are preserved and missing,
+foreign, malformed or already-finalized exports fail closed. The attachment
+requires the marker, so an old inside-out payload cannot silently bind.
+
+Snake v4/hybrid v8 private and independently staged exports match byte-for-byte.
+Comparison against the prior staged files proves every original vertex, normal,
+UV, weight, paint and other metadata unchanged; only indices/marker differ.
+
+| Corrected original | Mesh SHA-256 |
+| --- | --- |
+| Viper v4 | `754d82bbdd4a030b0bddb150202bc6ec9bf2d149754741e9d2900a1286463d8e` |
+| Constrictor v4 | `f7811906bbc1e257536371d2d8192e04d412e26bd2864aa55ae56e68c7e0356f` |
+| Salamander v8 | `eb189795bc717e71fc874136f386286bc2fb20fa00c24f83a50d2d89557f9a29` |
+
+29 checks PASS:4 water,7 worm,8 hybrid,6 replay,4 byte-preserving winding.
+227 focused/2029 registered domain tests, exact-reference incremental compile
+and complete repository wrapper PASS. Full exact artifact/runtime is deferred
+until the next bounded command/spear diagnostic is ready, not claimed passed.
+24 backface-aware current-pose panels were produced; representative textured and
+moving-clay views inspected. Whole-body signed volume/area-weighted normals are
+outward. Tight neck/coil and proximal-hybrid transitions still need attack-pose
+and lifecycle stress review; this is not final visual or human acceptance.
+No native asset export, production hook, registration or publication change.
+
 ## Current support integration, October 6 UTC
 
 **BOUNDED SUPPORT RESEARCH PASS; FINAL VISUALS NOT QUALIFIED.** Snake v3 and

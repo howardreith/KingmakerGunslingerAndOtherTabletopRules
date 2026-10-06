@@ -82,9 +82,9 @@ namespace KingmakerGunslinger.DomainTests
         {
             string directory = Path.Combine(Environment.CurrentDirectory, "assets", "sprint17-serpents");
             string[] hashes = {
-                "866123e15e287c05b67b9d9509463559e4d55fce81f5bf9654ad9e98bac7cd29",
-                "fa6799bde8dea193db04dbe4893b665d873b83697d72eba5a7633a2fc78b7411",
-                "298d832320a01144ebc4f6245ddc3851cd9d01ed3e9e167c998c94fd558d8b28" };
+                "754d82bbdd4a030b0bddb150202bc6ec9bf2d149754741e9d2900a1286463d8e",
+                "f7811906bbc1e257536371d2d8192e04d412e26bd2864aa55ae56e68c7e0356f",
+                "eb189795bc717e71fc874136f386286bc2fb20fa00c24f83a50d2d89557f9a29" };
             int keyIndex = 0;
             foreach (string key in SerpentineVisualPolicy.Keys)
             {
@@ -95,7 +95,7 @@ namespace KingmakerGunslinger.DomainTests
                 JObject mesh = JObject.Parse(System.Text.Encoding.UTF8.GetString(bytes));
                 Assertions.True(SerpentineVisualPolicy.ExactSet(mesh.Properties().Select(value => value.Name),
                     new[] { "schemaVersion", "space", "rigSha256", "bones", "uvAtlas", "albedo",
-                        "vertexCount", "triangleCount", "data", "visibleLegs", "jawSeparated" }),
+                        "vertexCount", "triangleCount", "data", "visibleLegs", "jawSeparated", "triangleWinding" }),
                     "Only original mesh/paint and bone names; no bind transforms, animation curves or native assets.");
                 string[] bones = mesh["bones"].Values<string>().ToArray();
                 Assertions.True(SerpentineVisualPolicy.PermitsBones(key, bones) &&
@@ -146,6 +146,48 @@ namespace KingmakerGunslinger.DomainTests
                         Path.Combine(directory, key + "-albedo.png")))).Replace("-", "").ToLowerInvariant(),
                         "Exact deterministic original paint pairing.");
             }
+        }
+
+        internal static void OriginalBodyWindingHasOutwardGeometryAndFailsClosedOnOldAssets()
+        {
+            foreach (string key in SerpentineVisualPolicy.Keys)
+            {
+                JObject mesh = JObject.Parse(File.ReadAllText(Path.Combine(Environment.CurrentDirectory,
+                    "assets", "sprint17-serpents", key + "-mesh.json")));
+                Assertions.True(SerpentineVisualPolicy.PermitsOriginalWinding(key, (string)mesh["triangleWinding"]),
+                    "Only the measured original-body export convention is accepted.");
+                foreach (string bad in new[] { null, "", "clockwise", "foreign", SerpentineVisualPolicy.OutwardWinding.ToUpperInvariant() })
+                    Assertions.False(SerpentineVisualPolicy.PermitsOriginalWinding(key, bad),
+                        "Missing, historic or unreviewed face conventions fail before attachment.");
+                int count = (int)mesh["vertexCount"], triangles = (int)mesh["triangleCount"];
+                byte[] data = Convert.FromBase64String((string)mesh["data"]);
+                var vertices = new double[count][]; var normals = new double[count][];
+                for (int i = 0; i < count; i++)
+                {
+                    vertices[i] = Enumerable.Range(0, 3).Select(axis => (double)BitConverter.ToSingle(data, i * 12 + axis * 4)).ToArray();
+                    normals[i] = Enumerable.Range(0, 3).Select(axis => (double)BitConverter.ToSingle(data, count * 12 + i * 12 + axis * 4)).ToArray();
+                }
+                double orientation = 0, volume = 0;
+                for (int i = 0; i < triangles; i++)
+                {
+                    int offset = count * 32 + i * 12;
+                    int a = BitConverter.ToInt32(data, offset), b = BitConverter.ToInt32(data, offset + 4),
+                        c = BitConverter.ToInt32(data, offset + 8);
+                    double[] u = Enumerable.Range(0, 3).Select(axis => vertices[b][axis] - vertices[a][axis]).ToArray();
+                    double[] v = Enumerable.Range(0, 3).Select(axis => vertices[c][axis] - vertices[a][axis]).ToArray();
+                    double[] cross = { u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0] };
+                    for (int axis = 0; axis < 3; axis++)
+                    {
+                        orientation += cross[axis] * (normals[a][axis] + normals[b][axis] + normals[c][axis]);
+                        volume += vertices[a][axis] * cross[axis] / 6;
+                    }
+                }
+                Assertions.True(orientation > 0 && volume > 0,
+                    "Whole-body signed volume and area-weighted normals point outward; historic inverted indices fail both.");
+            }
+            foreach (string key in new[] { null, "", "purple-worm", "crocodile", "Viper" })
+                Assertions.False(SerpentineVisualPolicy.PermitsOriginalWinding(key, SerpentineVisualPolicy.OutwardWinding),
+                    "The winding correction cannot opt a different family into attachment.");
         }
 
         internal static void OriginalBodyBindingRejectsUnreviewedDrivers()
