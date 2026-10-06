@@ -1,5 +1,48 @@
 # Sprint 17 closed snake profile/body slice
 
+Current status: **exact2dd FAIL31/38; NOT QUALIFIED; machine restored**.
+[Exact source/artifact/requests/results/restoration](EXPANDED-SUMMONING-SPRINT17-SNAKE-PROFILE-ATTEMPT1-EVIDENCE.json).
+Complete source gate PASS:248 focused,2050 full83.7s, repository/static/icon/
+manifest, clean14-reference Release/deterministic strict320 package180.9s.
+496 preflight,81 orchestration,17 provenance,persistence11/3/19,crowd5/7 PASS.
+Fresh Steam640820 smoke11/11 PASS; bounded profile/body31/38 FAIL; all38 ran.
+
+| Failed checks | Classification and evidence | Correction/next observation |
+|---|---|---|
+| Viper defenses/skills | Production: HP15/base11 instead of13/base9; Perception13/ranks5, Stealth5/ranks0 | Clear own blueprint skill seed before guarded creation allocation |
+| Constrictor defenses/skills | Production: HP23/base17 instead of19/base13; Perception16/ranks5, Stealth7/ranks0, Mobility11/ranks0 | Same two-identity correction, exact final HP/ranks and all11 blueprint seeds zero |
+| Both one-bite checks | Fixture: null fixture.Hostile made the old helper return int.MinValue without a rule | Native RuleCalculateAttackBonusWithoutTarget, recording actual result/stat/modifier |
+| Constrictor fallback binding | Visibility unresolved: fault once, donor geometry restored, resources freed, intact=false after600 frames | Qualified art point and enabled/active/material/dissolve/control observations; unchanged threshold/deadline |
+
+BlueprintUnit.Skills is distinct from AddClassLevels.Skills. The inherited
+five-rank input is rejected before the creation allocator's HP write.
+Corrected source clears only the two new blueprint seeds, leaving the donor
+and existing roster unchanged. The next runtime records donor seed/object
+preservation too. Focused rejection tests include the observed five ranks;
+no guard weakening, hidden compensation or fixture stat repair.
+
+Passed partial evidence: Viper1d4-1,Str12=>1d4+1,Str7=>1d4-2,
+AnimalGrowth Str16/Large=>1d6+4; Constrictor1d4+4,Str21=>1d4+7,
+Str7=>1d4-2,AnimalGrowth Str25/Large=>1d6+10. Both restore exactly.
+Both normal original attachments, all scale/once/destruction checks and
+native Worm isolation PASS. No full movement/contact/signature/AI/UI/
+persistence/routes/publication qualification or fallback waiver.
+
+Snapshot1630496086373Z restored16:38:05.9137042UTC:136 files/Info0.0.117/
+tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
+Native environment/unit/party/area restoration PASS; lease Completed,
+recoveryRequired=false,released; no game/shared lock/staging/save write.
+No save-file/protected-baseline access. Immutable failed artifacts retained.
+
+Corrected source248 focused and2050 full103.3s PASS; repository/static/icon/
+manifest, clean exact Release/deterministic strict320 package PASS206.1s,
+dirty-tree diagnostic only. Initial outer PowerShell stderr handling aborted
+before tests; no child remained, log retained, corrected wrapper run passed.
+Commit/push and new exact-head prelaunch/runtime NEXT. Never retry unchanged
+2dd or treat a future38/38 slice as full Sprint17 acceptance.32 roots hidden.
+
+## Historical prelaunch source preparation
+
 Status: source checked; runtime **NOT RUN / NOT QUALIFIED**.
 Laptop PR26, parent `a554858f41283e3ae60fcdfa2eb81de0f27f3eb3`.
 Sprints14–16 remain complete. Neither snake is published; Salamander unchanged.

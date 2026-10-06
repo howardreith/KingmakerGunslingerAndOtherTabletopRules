@@ -1,5 +1,22 @@
 # Expanded Summoning Phase 2 journal
 
+## October6,16:38UTC — exact2dd snake slice FAIL31/38, restored
+
+Full source/prelaunch PASS:2050 tests83.7s, complete gate180.9s, strict320;
+496 request checks/all ancillary gates. Steam smoke11/11 PASS; bounded slice
+31/38 FAIL, all38 ran. Four production HP/rank failures, two absent-target
+probe failures, one unresolved fallback visibility. All10 live bite modifier/
+dice checks and normal original bindings/cleanup pass as partial evidence.
+[Complete curated result](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-PROFILE-ATTEMPT1-EVIDENCE.json).
+Snapshot1630496086373Z restored16:38:05UTC,136/.117/exact tree; lease Completed,
+recoveryRequired=false; no game/lock/staging/save write/protected-save access.
+Correcting own blueprint skill seeds, native no-target attack calculation and
+qualified art-point visibility observations; no increased wait/relaxed criterion.
+248 focused/2050 full103.3s, complete repository/build/strict320 package
+PASS206.1s as dirty diagnostics; initial outer stderr interruption retained,
+no orphan child. Commit/push and exact artifact/prelaunch/runtime NEXT.
+32 roots stay hidden. This does not reopen Sprints14–16 or import DATA work.
+
 ## October 6, 16:17 UTC — closed snake profile/body request source checked
 
 New fixed request exercises17 existing production-view checks and18 actual

@@ -29,21 +29,27 @@
       16
     ],
     "currentSprint": 17,
-    "currentSubItem": "Sprint17 closed snake profile/body slice implemented, NOT RUN.248 focused/2050 full83.0s, repository/clean exact Release/strict320-member package PASS179.5s on dirty source;496 standalone guarded-request checks PASS. Exact working-save-only request runs17 view+18 actual profile/live-modifier checks and cleanup/version; no Salamander census replay or full gameplay qualification. Next freeze/push, exact committed artifact/prelaunch gates, then lease-first fresh Steam smoke/profile batch.32 roots hidden,1005 visible;Phase2C deferred.",
+    "currentSubItem": "Sprint17 NOT QUALIFIED. Exact2dd48884 source/prelaunch PASS, smoke11/11, bounded snake profile/body31/38 FAIL, exact restoration16:38:05UTC. Four HP/rank failures are production; two attack probes lacked a target; one fallback-visibility failure needs narrower observation. Corrected source clears only the two snakes' inherited blueprint skill seeds, uses native no-target attack calculation, and records visibility at a qualified art point.248 focused PASS; complete corrected gates and fresh exact artifact/runtime remain NEXT.32 hidden,1005 visible; Phase2C deferred.",
     "sprint17SnakeProfileSlice": {
-      "status": "SOURCE CHECKED; NOT RUN / NOT QUALIFIED",
+      "status": "FAIL 31/38 on2dd; corrected source NOT QUALIFIED",
       "review": "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-PROFILE-SLICE.md",
       "scenario": "disposable-expanded-summoning-snake-profiles",
       "sourceBase": "a554858f41283e3ae60fcdfa2eb81de0f27f3eb3",
       "focusedTests": 248,
       "fullUnfilteredTests": 2050,
-      "fullDomainSeconds": 83.0,
-      "sourceGateSeconds": 179.5,
+      "fullDomainSeconds": 83.7,
+      "sourceGateSeconds": 180.9,
       "standalonePreflightChecks": 496,
       "minimumAssertions": 38,
-      "exactCommittedGate": "NEXT",
-      "newRuntimeTransaction": false,
-      "publicationAuthorized": false
+      "exactCommittedGate": "PASS on2dd:2050 unfiltered/complete repository/clean14-reference Release/deterministic strict320; corrected source gate NEXT",
+      "newRuntimeTransaction": true,
+      "publicationAuthorized": false,
+      "sourceCandidate": "2dd48884f728c218015e5a6d472b4305121da6c9",
+      "evidence": "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-PROFILE-ATTEMPT1-EVIDENCE.json",
+      "runtimeAssertions": 38,
+      "runtimePassed": 31,
+      "correctedSourceQualified": false,
+      "correctedPrecommitGate": "PASS206.1s dirty source:248 focused/2050 unfiltered103.3s;repository/static/icon/manifest,clean14-reference Release,deterministic strict320 package. Initial outer stderr wrapper interruption preserved; new committed artifact/runtime NEXT."
     },
     "sprint17SnakeSource": {
       "status": "SOURCE CHECKPOINT; NOT QUALIFIED",
@@ -57,7 +63,7 @@
       "fullUnfilteredTests": 2048,
       "fullDomainSeconds": 83.8,
       "exactReferenceCompile": "PASS; clean exact committed79cf2bf1 Release with14 references",
-      "originalSnakeBodyProductionAttached": false,
+      "originalSnakeBodyProductionAttached": true,
       "runtimeQualified": false,
       "publicationAuthorized": false,
       "exactHeadPackageGate": "PASS on79cf2bf14b0b3ebd25e619ff34373caad93d1448:complete source gate177.8s; deterministic320-member strict standalone package. Earlier7ab rejection retained; no gameplay qualification.",
@@ -88,9 +94,10 @@
       "dllMvid": "b2acf0d6-d757-45ce-9474-fc09b96e7723",
       "zipSha256": "b174c4747f332cdc5bfc9673d2b3a725e379055ce128a79b1aeef06769146072",
       "packageMembers": 320,
-      "runtimeAssertionsExecuted": 0,
+      "runtimeAssertionsExecuted": 17,
       "unity2018AuthoringProbe": "Invalid license, self-exited before2026-10-06T16:00:26Z;no activation;not a phase-wide blocker",
-      "newRuntimeTransaction": false
+      "newRuntimeTransaction": false,
+      "lastRuntimeResult": "2dd:16/17 view checks PASS; Constrictor fallback non-intact despite restored donor geometry/exact resource cleanup; no waiver."
     },
     "sprint17PrivatePrototypes": {
       "status": "Six original files staged; exact two-snake production hook now implemented but not runtime qualified; Salamander remains research-only",
@@ -136,8 +143,8 @@
     "sprint16LaptopCorrectionReview": "planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-FIXTURE-REPAIR.md",
     "dataSalvageAudit": "planning/EXPANDED-SUMMONING-PHASE2B-DATA-SALVAGE-AUDIT.md",
     "lastGuardedRuntimePass": "Exacta90494e1 RESEARCH ONLY PASS: fresh Steam smoke11/11 and20261006T1410474320785Z-disposable-expanded-summoning-serpentine-survey16/16; complete driver PASS. Finite/invertible metadata complete, duplicate disagreement retained, no action adopted. S17 NOT QUALIFIED.",
-    "lastGuardedRuntimeResult": "Exacta90494e1 smoke11/11 and metadata16/16 PASS.17 of177 human Transform groups disagree across duplicate palette entries, so blindly selecting first binds is rejected. Torso/hand groups agree; no playback, tail or whole-body qualification. Latest body570 remains33/35 FAIL; all12 attempts retained.",
-    "lastGuardedRestoration": "20261006T1407190713978Z actual snapshot restored2026-10-06T14:14:02.7035876Z; journalAE954F51929981B232F2DAF48FB1B717D26739D06E50E11CC368A6694F4B2D03; exact restoration VERIFIED, no game/lease/lock/staging/save write",
+    "lastGuardedRuntimeResult": "Exact2dd48884: smoke11/11 PASS, bounded snake profile/body31/38 FAIL. Live bite modifiers/dice PASS; wrong HP/skills, invalid attack probe, one fallback-visibility failure. Entire batch NOT QUALIFIED. Source fixes require a new exact artifact and complete affected rerun.",
+    "lastGuardedRestoration": "20261006T1630496086373Z actual snapshot restored2026-10-06T16:38:05.9137042Z; journalaa6935124168245f377b7e6caf9008aede43224449d8ceafc8f3ef961fc0d29c;136 files/Info0.0.117/exact fingerprint VERIFIED; lease Completed/recoveryRequired=false;no game/shared lock/staging/save write.",
     "activePullRequest": 26,
     "archivedSalvagePullRequest": 27,
     "giantWaspPublished": true,
@@ -550,7 +557,7 @@
       "detail": "Supplied by the owner and read. The Pteranodon passage confirms the shipped profile rather than changing it: ten-foot reach valued for attacks of opportunity, and a single main bite on which everything stacks (2d6 plus modifiers). The guide also positions multiple Pteranodons as the best single-target aerial attacker at their tier. This informs Sprint 2's acceptance emphasis on correct bite impact timing and location at Large reach; it changes no accepted statistic."
     }
   ],
-  "nextConcreteAction": "Freeze/push closed snake profile/body slice; run exact committed source/artifact and full prelaunch checks; run fresh Steam smoke plus fixed snake-profile request under one lease-first actual snapshot/deployment/restoration transaction. It cannot close Sprint17; continue complete signatures/commands/AI/persistence/crowds/routes and bounded Salamander-specific solution, then hidden/publication and Phase2B closure. Stop for owner review after Phase2B;Phase2C authorized but deferred.",
+  "nextConcreteAction": "Run complete corrected source gate/prelaunch, commit/push NOT QUALIFIED checkpoint, build exact-head artifact and repeat fresh Steam smoke plus closed38-assertion snake-profile batch under lease-first snapshot/restoration. No unchanged-candidate retry or visibility waiver. Then finish signatures/real commands/AI/persistence/crowds/routes and bounded Salamander solution, hidden/publication and Phase2B closure; stop for owner review. Phase2C authorized but deferred.",
   "deploymentReconciliation": {
     "finding": "The first runs left this mission's 0.0.136 branch build installed over the pre-run 0.0.117 installation. The mission required restoration and did not authorize a permanent installation; a shared version string does not make a branch artifact an accepted release.",
     "ownershipVerified": "The live DLL hash matched this mission's exact build byte for byte, so the tree was unambiguously mission-owned.",

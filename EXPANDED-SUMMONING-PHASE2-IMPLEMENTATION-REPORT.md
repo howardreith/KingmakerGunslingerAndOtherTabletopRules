@@ -8,10 +8,17 @@ source imported. Phase 2C is authorized but deferred until Phase 2B owner
 acceptance; this mission stops after Sprint 17 and full Phase 2B closure.
 
 The current [closed profile/body slice](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-PROFILE-SLICE.md)
-has248 focused/2050 full83.0s, complete repository/build/strict package PASS
-179.5s on dirty source, plus496 request preflight PASS.17 view and18 actual
-profile assertions are written but NOT RUN. Freeze/push and exact-head gates
-precede a bounded smoke/profile batch; it cannot close Sprint17 by itself.
+is **FAIL31/38 on exact2dd48884**, after2050 full83.7s, complete repository/
+clean14-reference Release/strict320 package180.9s and all prelaunch PASS.
+Smoke11/11 PASS. Four production HP/rank failures, two null-target probe
+failures, one fallback-visibility failure; live bite modifiers/dice and normal
+original bodies/cleanup pass only as partial evidence. Actual136/.117 snapshot
+restored16:38UTC; no game/lock/staging/save write. [Exact evidence](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-PROFILE-ATTEMPT1-EVIDENCE.json).
+Correction clears only two inherited blueprint skill seeds, uses native
+no-target attack calculation and narrows visibility observations.248 focused/
+2050 full103.3s and complete repository/build/strict320 package PASS206.1s as
+dirty diagnostics; committed exact gates/runtime NEXT. No waiver/publication.
+Earlier source checkpoints below describe their historical boundaries.
 
 Sprint17 exact hidden-snake source `79cf2bf14b0b3ebd25e619ff34373caad93d1448`
 passes2048 unfiltered tests (83.8s), complete repository validation, clean exact

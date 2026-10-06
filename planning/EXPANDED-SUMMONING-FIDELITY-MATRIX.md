@@ -1,15 +1,19 @@
 # Expanded Summoning fidelity matrix
 
-## Current closed snake profile/body slice — NOT RUN
+## Current snake profile/body slice — FAIL31/38; NOT QUALIFIED
 
 [Slice review](EXPANDED-SUMMONING-SPRINT17-SNAKE-PROFILE-SLICE.md):
-248 focused/2050 full83.0s, clean build/strict320-member package PASS179.5s
-as dirty source diagnostics;496 guarded-request preflight PASS. Actual live
-stats, modifier/dice and body assertions await the committed guarded artifact.
+exact2dd source/prelaunch PASS2050 full83.7s/strict320 package180.9s;
+smoke11/11 PASS, profile/body31/38 FAIL. Wrong HP/ranks are production defects;
+two attack probes had no target; one fallback visibility failure unresolved.
+Live bite/Strength/size cases and normal body binding/native cleanup passed
+as partial evidence. Corrected source248 focused/2050 full103.3s and complete
+repository/build/strict320 package PASS206.1s as dirty diagnostics; exact gates NEXT.
+Actual136/.117 snapshot restored16:38UTC; no save write/game/lock/staging.
 Poison/constrict, real commands, AI, persistence, crowds/routes and Salamander
 remain unqualified. No publication or new limitation acceptance.
 
-## Current Sprint17 snake source, October 6 UTC — NOT QUALIFIED
+## Historical Sprint17 snake source, October 6 UTC — NOT QUALIFIED
 
 [Source review](EXPANDED-SUMMONING-SPRINT17-SNAKE-SOURCE-REVIEW.md): Medium
 Viper and Constrictor Snake are registered but wholly hidden. Exact land
