@@ -29,7 +29,7 @@
       16
     ],
     "currentSprint": 17,
-    "currentSubItem": "Sprint17 NOT QUALIFIED. Exact983828bf bounded smoke11/rules62/commands51 PASS; actual snapshot2258281699283Z restored23:11:14UTC. Closed snake direct/crowd extension SOURCE PASS261 focused/2063 full87.6s/complete183.9s/strict320,NOT RUN;8 request round trips/11 rejections. Next native lifecycle/hit/death/fade,UI/private-route/persistence coverage and separate Salamander.32 roots hidden;Phase2C deferred.",
+    "currentSubItem": "Sprint17 NOT QUALIFIED. Exact983828bf bounded smoke11/rules62/commands51 PASS; actual snapshot2258281699283Z restored23:11:14UTC. Closed snake crowd/persistence fixtures SOURCE PASS, NOT RUN. Latest264 focused/2066 full85.7s/complete180.1s/strict320; persistence6 JSON round trips/3 historical defaults/56 rejections. Next exact bounded crowd/persistence batch, then lifecycle/UI/private routes and separate Salamander.32 roots hidden;Phase2C deferred.",
     "sprint17SnakeCommandSlice": {
       "pairedContactObserver": "RUNTIME DIAGNOSTIC COMPLETE; same-frame Viper gap does not improve; Constrictor commands ended and correlation rejected. Existing51 assertions unchanged; no waiver.",
       "status": "BOUNDED NATIVE COMMAND/CONTACT SLICE PASS51/51; FULL SPRINT17 NOT QUALIFIED",
@@ -382,6 +382,30 @@
       "publicationAuthorized": false,
       "saveWrite": false,
       "legacyMainHandProbe": false
+    },
+    "sprint17SnakePersistenceSlice": {
+      "status": "SOURCE PASS; NOT RUN; FULL SPRINT17 NOT QUALIFIED",
+      "sourceBase": "685aea21fc6b93954294fe9f2dd8ab8a6e813430",
+      "review": "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-PERSISTENCE-SLICE.md",
+      "scope": "snakes",
+      "roles": ["viper", "constrictor-snake", "venom-target", "hold-target"],
+      "ownership": "Exact serialized test receipt plus native registered blueprint, unit, caster, area and lifecycle context; unmarked units fail closed untouched",
+      "sourceExpectedAssertions": { "prepare": 13, "cleanup": 12, "absent": 5 },
+      "focused": 264,
+      "domain": 2066,
+      "domainSeconds": 85.7,
+      "sourceGateSeconds": 180.1,
+      "cleanExactReferences": 14,
+      "strictPackageMembers": 320,
+      "requestRoundTrips": 6,
+      "requestHistoricalDefaults": 3,
+      "requestRejections": 56,
+      "runtimeQualified": false,
+      "publicationAuthorized": false,
+      "saveWritePerformed": false,
+      "workingSaveWriteAuthority": "Existing exact native prepare/cleanup sentinel only; absent never writes",
+      "acceptedGrappleReset": true,
+      "grappleReestablishment": false
     }
   },
   "charter": {
@@ -659,7 +683,7 @@
       "detail": "Supplied by the owner and read. The Pteranodon passage confirms the shipped profile rather than changing it: ten-foot reach valued for attacks of opportunity, and a single main bite on which everything stacks (2d6 plus modifiers). The guide also positions multiple Pteranodons as the best single-target aerial attacker at their tier. This informs Sprint 2's acceptance emphasis on correct bite impact timing and location at Large reach; it changes no accepted statistic."
     }
   ],
-  "nextConcreteAction": "Complete the two snakes' native hit/death/fade/lifecycle observation,UI/private-route and targeted persistence fixture coverage; then freeze a clean exact candidate and batch those gates with direct14/crowd18. Separate Salamander spear/tail implementation remains open. Finish Sprint17 hidden/publication/fullPhase2B closure and STOP for owner review. Phase2C authorized but deferred.",
+  "nextConcreteAction": "Freeze a clean exact candidate for bounded snake crowd14/18 and persistence13/12/5 qualification, with complete prelaunch and exact restoration. Then finish native hit/death/fade/lifecycle,UI/private32 routes and separate Salamander. Finish Sprint17 hidden/publication/fullPhase2B closure and STOP for owner review. Phase2C authorized but deferred.",
   "deploymentReconciliation": {
     "finding": "The first runs left this mission's 0.0.136 branch build installed over the pre-run 0.0.117 installation. The mission required restoration and did not authorize a permanent installation; a shared version string does not make a branch artifact an accepted release.",
     "ownershipVerified": "The live DLL hash matched this mission's exact build byte for byte, so the tree was unambiguously mission-owned.",

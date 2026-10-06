@@ -86,40 +86,54 @@ $requestBase = @{
     FingerprintTimeoutSeconds = 180; ExitAfterCompletion = $true
     EvidenceDirectory = (Join-Path $script:KmgRuntimeEvidenceRoot 'crocodilian-persistence-request-test')
 }
+$roundTrips = 0
+$rejections = 0
 foreach ($scenario in $scenarios) {
-    $targeted = New-KmgRuntimeRequest @requestBase -Scenario $scenario -Parameters @{
-        saveName = 'KMG_AUTOMATION_WORKING'; persistenceScope = 'crocodilians' }
-    if ($targeted.parameters.Count -ne 2 -or
-        $targeted.parameters.saveName -cne 'KMG_AUTOMATION_WORKING' -or
-        $targeted.parameters.persistenceScope -cne 'crocodilians') {
-        throw "Targeted persistence scope did not round-trip for $scenario."
-    }
     $historical = New-KmgRuntimeRequest @requestBase -Scenario $scenario -Parameters @{
         saveName = 'KMG_AUTOMATION_WORKING' }
     if ($historical.parameters.Count -ne 1) { throw 'The historical fixture was changed.' }
-    foreach ($bad in @(
-        @{ saveName = 'KMG_AUTOMATION_BASELINE'; persistenceScope = 'crocodilians' },
-        @{ saveName = 'KMG_AUTOMATION_WORKING'; persistenceScope = 'Crocodilians' },
-        @{ saveName = 'KMG_AUTOMATION_WORKING'; persistenceScope = 'wolf' },
-        @{ saveName = 'KMG_AUTOMATION_WORKING'; persistenceScope = @('crocodilians') },
-        @{ saveName = 'KMG_AUTOMATION_WORKING'; persistenceScope = 'crocodilians'; extra = 'untrusted' }
-    )) {
+    foreach ($scope in @('crocodilians', 'snakes')) {
+        $targeted = New-KmgRuntimeRequest @requestBase -Scenario $scenario -Parameters @{
+            saveName = 'KMG_AUTOMATION_WORKING'; persistenceScope = $scope }
+        $json = $targeted | ConvertTo-Json -Depth 20 | ConvertFrom-Json
+        if ($targeted.parameters.Count -ne 2 -or
+            $json.parameters.saveName -cne 'KMG_AUTOMATION_WORKING' -or
+            $json.parameters.persistenceScope -cne $scope) {
+            throw "Targeted persistence scope did not round-trip for $scenario/$scope."
+        }
+        $roundTrips++
+        foreach ($bad in @(
+            @{ saveName = 'KMG_AUTOMATION_BASELINE'; persistenceScope = $scope },
+            @{ saveName = 'KMG_AUTOMATION_WORKING'; persistenceScope = $scope.ToUpperInvariant() },
+            @{ saveName = 'KMG_AUTOMATION_WORKING'; persistenceScope = 'wolf' },
+            @{ saveName = 'KMG_AUTOMATION_WORKING'; persistenceScope = 'salamander' },
+            @{ saveName = 'KMG_AUTOMATION_WORKING'; persistenceScope = @($scope) },
+            @{ saveName = 'KMG_AUTOMATION_WORKING'; persistenceScope = $null },
+            @{ saveName = 'KMG_AUTOMATION_WORKING'; persistenceScope = '' },
+            @{ saveName = 'KMG_AUTOMATION_WORKING'; persistenceScope = $scope; extra = 'untrusted' }
+        )) {
+            $rejected = $false
+            try { $null = New-KmgRuntimeRequest @requestBase -Scenario $scenario -Parameters $bad }
+            catch { $rejected = $true }
+            if (-not $rejected) { throw "Targeted persistence accepted an invalid request for $scenario/$scope." }
+            $rejections++
+        }
+        $manualExit = $requestBase.Clone()
+        $manualExit.ExitAfterCompletion = $false
         $rejected = $false
-        try { $null = New-KmgRuntimeRequest @requestBase -Scenario $scenario -Parameters $bad }
+        try { $null = New-KmgRuntimeRequest @manualExit -Scenario $scenario -Parameters @{
+            saveName = 'KMG_AUTOMATION_WORKING'; persistenceScope = $scope } }
         catch { $rejected = $true }
-        if (-not $rejected) { throw "Targeted persistence accepted an invalid request for $scenario." }
+        if (-not $rejected) { throw 'Targeted persistence accepted a non-exiting request.' }
+        $rejections++
     }
-    $manualExit = $requestBase.Clone()
-    $manualExit.ExitAfterCompletion = $false
-    $rejected = $false
-    try { $null = New-KmgRuntimeRequest @manualExit -Scenario $scenario -Parameters @{
-        saveName = 'KMG_AUTOMATION_WORKING'; persistenceScope = 'crocodilians' } }
-    catch { $rejected = $true }
-    if (-not $rejected) { throw 'Targeted persistence accepted a non-exiting request.' }
 }
-$rejected = $false
-try { $null = New-KmgRuntimeRequest @requestBase -Scenario 'working-save-smoke' -Parameters @{
-    saveName = 'KMG_AUTOMATION_WORKING'; persistenceScope = 'crocodilians' } }
-catch { $rejected = $true }
-if (-not $rejected) { throw 'The targeted fixture scope leaked into another scenario.' }
-Write-Host 'PASS crocodilian persistence request: three exact scopes, historical defaults and 19 fail-closed cases.'
+foreach ($scope in @('crocodilians', 'snakes')) {
+    $rejected = $false
+    try { $null = New-KmgRuntimeRequest @requestBase -Scenario 'working-save-smoke' -Parameters @{
+        saveName = 'KMG_AUTOMATION_WORKING'; persistenceScope = $scope } }
+    catch { $rejected = $true }
+    if (-not $rejected) { throw 'The targeted fixture scope leaked into another scenario.' }
+    $rejections++
+}
+Write-Host "PASS targeted persistence request: $roundTrips exact JSON round trips, three historical defaults and $rejections fail-closed cases."
