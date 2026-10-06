@@ -1096,4 +1096,10 @@
     <Compile Include="WhiteoutNativeFoundationTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\WhiteoutFoundationPolicy.cs"><Link>ElementalRaces\WhiteoutFoundationPolicy.cs</Link></Compile>
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\ElementalCharacterTraitCatalog.cs"><Link>ElementalRaces\ElementalCharacterTraitCatalog.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\ElementalCharacterTraitAssetGate.cs"><Link>ElementalRaces\ElementalCharacterTraitAssetGate.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\ElementalCharacterTraitPublicationTransaction.cs"><Link>ElementalRaces\ElementalCharacterTraitPublicationTransaction.cs</Link></Compile>
+    <Compile Include="ElementalCharacterTraitReadinessTests.cs" />
+  </ItemGroup>
 </Project>

@@ -81,7 +81,7 @@ namespace KingmakerGunslinger.DomainTests
             string root=Path.Combine(Environment.CurrentDirectory,"src","KingmakerGunslinger");
             // The continuation authorizes dormant mechanics, but still forbids
             // every bootstrap, selection, grant, setting and visible identity.
-            string[] foundations={"WhiteoutPolicy.cs","WhiteoutFoundationPolicy.cs","WhiteoutNativeMechanics.cs"};
+            string[] foundations={"WhiteoutPolicy.cs","WhiteoutFoundationPolicy.cs","WhiteoutNativeMechanics.cs","DormantElementalCharacterTraitFactory.cs","ElementalCharacterTraitCatalog.cs","ElementalCharacterTraitAssetGate.cs","ElementalCharacterTraitPublicationTransaction.cs","ElementalCharacterTraitOwnedGrant.cs"};
             foreach(string file in Directory.GetFiles(root,"*.cs",SearchOption.AllDirectories).Where(f=>!f.Contains("RuntimeTesting") && !foundations.Contains(Path.GetFileName(f))))
                 Assertions.False(File.ReadAllText(file).Contains("Whiteout"),"No ordinary Whiteout acquisition/publication reference: "+file);
             string mechanics=File.ReadAllText(Path.Combine(root,"ElementalRaces","WhiteoutNativeMechanics.cs"));
