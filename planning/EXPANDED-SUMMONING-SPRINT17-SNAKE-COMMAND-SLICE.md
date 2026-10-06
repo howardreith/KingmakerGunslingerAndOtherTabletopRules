@@ -1,71 +1,54 @@
 # Sprint 17 closed production-snake native command slice
 
-Status: exact17aefc2a smoke11 PASS, commands31/51 FAIL; AI/footprint repair NOT RUN.
+Status: exact16f6494e smoke11/profile-body-rules62 PASS, commands43/51 FAIL.
 Laptop PR26 only. Sprints14–16 complete; full Sprint17 NOT QUALIFIED.
 32 snake roots withheld;976 published+29 wrappers=1005 visible. ZERO DATA ports.
 
 ## Latest exact evidence and failure disposition
 
-[Attempt2 evidence](EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-ATTEMPT2-EVIDENCE.json)
-pins source17aefc2a, DLL4b0ce461, MVID81d7482a, ZIP030495bc,320 members.
-Exact prelaunch:256 focused,2058 full86.3s,complete180.9s,508 preflight,
+[Attempt3 evidence](EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-ATTEMPT3-EVIDENCE.json)
+pins source16f6494e, DLL496fddcf, MVID8a781c0d, ZIPfcbee447,320 members.
+Exact prelaunch:258 focused,2060 full86.1s,complete180.7s,508 preflight,
 168 orchestration,17 provenance,persistence11/3/19,crowd5/7,clean14-reference
-Release/strict package PASS. All8 runtime rows and51 assertions executed;
-31 PASS,20 FAIL. Source PASS did not qualify the gameplay gate.
+Release/strict package PASS. Fresh Steam smoke11/11 and profile/body/rules62/62
+with46 metadata rows PASS. Command batch executes all8 cells/51 assertions:
+43 PASS, only8 contact FAIL. Source PASS does not qualify gameplay.
 
-All8 appearance/control setups and native cleanup checks pass. Normal
-original bodies settle63–64 frames;0–1 native pauses were cleared per cell.
-Manual RTWP/TB approaches and bites succeed, apply source-owned Viper venom,
-and produce Constrictor initial constrict followed by exactly two later-round
-bundles without a second weapon attack. Native bite playback is observed.
-The four manual contacts fail: weighted jaw gaps2.708435–2.73593235m.
+Every native setup, approach, real bite, signature and native cleanup passes,
+manual/AI in RTWP/turn-based. Each AI preserves its original source action
+reference, issues1 native command and1 attack, with0 manual commands.
+Constrictors apply1 initial constrict then2 later-round bundles with the
+weapon-attack count unchanged. No direct-rule substitute produces these bites.
 
-Every AI cell has zero travel, commands, attacks or signature effects.
-The fixture called its destructive brain-off helper before all cells,
-clearing both Actions and AvailableActions. Native RestoreAvailableActions
-only enumerates Actions; it cannot reconstruct an emptied source list.
-These16 dependent failures are FIXTURE failures, not proof of production AI.
+Footprint repair regression passes: native Worm3m unchanged; exact snake
+normal/rollback radius0.6m/body scale0.2; repeated view callbacks do not
+accumulate. Actual approach terms are owner0.6m + target0.5m + live bite2ft
+=1.7096m. Weapon range, native minimum/live-size rules and animation unchanged.
+All8 jaw gaps0.376383781–0.415125847m still fail the unchanged0.25m threshold.
 
-The body/footprint mismatch is a production defect: the .2 view scale does
-not enter the native Corpulence calculation. The exact private-assembly audit
-shows Corpulence=max(.5,serialized base radius*live rules-size multiplier);
-UnitAttack approach sums both actors' corpulences and live weapon range.
-Actual runtime radius/range were not recorded by17ae; no numerical breakdown
-of the full gap is invented. The repaired fixture records each term.
-
-Actual snapshot2106059589634Z restored2026-10-06T21:17:33.2486583Z:
+Actual snapshot2138515276616Z restored2026-10-06T21:50:56.1249217Z:
 136 files,Info0.0.117,tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
 Lease Completed/recovery=false/released;no game/shared runtime lock/this-worktree
-staging/save write. Environment and restoration have no failed checks.
-Unrelated September14 root-worktree extraction remains untouched.
+staging/save write. No environment/restoration failure. Unrelated September14
+root-worktree extraction remains untouched.
 
-## Bounded corrections, not assertion waivers
+## Changed observation strategy before the next candidate
 
-Manual appearance setup may disable/empty its brain. AI appearance setup
-only defers the native next-command time, preserving the original action
-references. Native setup now also requires their preservation through the
-command window. No manual AI command, action transplant or replacement brain.
+After repeated contact failure, do not rerun16f unchanged or merely increase
+waits. Audit native animation timing; correlate the real rule callback with
+same-command post-animation contact and record closest world points/gap
+vectors. The current callback's playable time trails the handle by about40ms;
+that is an UNCONFIRMED timing hypothesis, not proof that geometry is correct.
+Do not qualify an unrelated later animation peak, force a pose, weaken0.25m,
+or change reach/footprint merely to obtain PASS.
 
-Only the exact two hidden snake identities/name/prefab with the module enabled
-scale their own serialized base footprint by the existing .2 body multiplier.
-The one-time view guard prevents accumulation; native .5m minimum, later
-rules-size changes, weapon reach and animation remain native. No global
-corpulence/movement patch, model extension or contact-threshold change.
-The normal/rollback/repeated-callback/native-Worm checks now cover footprint
-as well as body scale. Fallback keeps the same correctly scaled instance.
-
-258 focused tests PASS;2060 registered. Two new behavior tests exercise AI
-action preservation/manual isolation and finite base-radius scaling while
-retaining native minimum/live-size semantics. Complete source gate178.8s PASS:
-2060 unfiltered83.8s, repository/static/icon/manifest,clean14-reference Release,
-deterministic strict320 package. Log artifacts/sprint17-commands-footprint-ai-dirty-gate.log.
-Repairs NOT RUN. No assertion is removed or weakened.
-
-Next: complete source gates, commit/push a coherent NOT QUALIFIED checkpoint,
-freeze one exact artifact and rerun prelaunch. Guarded fresh-Steam batch:
-smoke11, profile/body/signature62 regression, commands51 with8 metadata rows.
-Lease before actual installation snapshot; exact restoration after the batch.
-Do not reuse17ae or transfer its partial passes to a changed package.
+The previous [Attempt2](EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-ATTEMPT2-EVIDENCE.json)
+31/51 FAIL is preserved: manual gaps2.708–2.736m and AI action-list loss.
+Its source repairs were qualified in16f only to the partial boundary above.
+All earlier candidates and failed assertions remain immutable.
+The next change needs focused/full source gates, a committed/pushed exact
+artifact, standalone preflight and the complete affected guarded batch with
+actual-snapshot restoration. No publication until every mandatory gate passes.
 
 ## Closed command contract
 
@@ -96,8 +79,7 @@ unobserved. Its stale lease-purpose label was corrected only in Attempt2.
 
 [Exact130 rules PASS](EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-PASS-EVIDENCE.json)
 remains62/62 seeded profile/body/rules evidence, not complete gameplay proof.
-All prior failures/packages remain immutable. The current footprint change
-requires fresh regression qualification of normal/fallback/native isolation.
+All prior failures/packages remain immutable. Exact16f adds62/62 regression proof of normal/fallback/native isolation.
 
 Full Sprint17 still needs complete lifecycle/crowds/UI/routes/persistence and
 the separate Salamander spear/tail implementation, then hidden/publication gates.
