@@ -1,5 +1,14 @@
 # Expanded Summoning fidelity matrix
 
+## Current closed snake profile/body slice — NOT RUN
+
+[Slice review](EXPANDED-SUMMONING-SPRINT17-SNAKE-PROFILE-SLICE.md):
+248 focused/2050 full83.0s, clean build/strict320-member package PASS179.5s
+as dirty source diagnostics;496 guarded-request preflight PASS. Actual live
+stats, modifier/dice and body assertions await the committed guarded artifact.
+Poison/constrict, real commands, AI, persistence, crowds/routes and Salamander
+remain unqualified. No publication or new limitation acceptance.
+
 ## Current Sprint17 snake source, October 6 UTC — NOT QUALIFIED
 
 [Source review](EXPANDED-SUMMONING-SPRINT17-SNAKE-SOURCE-REVIEW.md): Medium
