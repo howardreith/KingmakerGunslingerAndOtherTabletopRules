@@ -716,6 +716,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableMagicCircleUi &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableMagicCircleTerrain &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveUnpublishedRaceTraitFoundations &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.ObserveWhiteoutDisposableWeatherFixture &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveUnpublishedAerialObserverFoundation &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWhiteoutWeather &&
                     !RuntimeTestScenarioCatalog.IsMagicCirclePersistence(_request.Scenario) &&
@@ -2072,6 +2073,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleUi ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleTerrain ||
                 _request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedRaceTraitFoundations ||
+                _request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutDisposableWeatherFixture ||
                 _request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedAerialObserverFoundation ||
                 _request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutWeather ||
                     RuntimeTestScenarioCatalog.IsMagicCirclePersistence(_request.Scenario) ||
@@ -2193,6 +2195,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleUi ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleTerrain ||
                 _request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedRaceTraitFoundations ||
+                _request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutDisposableWeatherFixture ||
                 _request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedAerialObserverFoundation ||
                 _request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutWeather ||
                     RuntimeTestScenarioCatalog.IsMagicCirclePersistence(_request.Scenario) ||
@@ -2864,6 +2867,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (loading.IsLoadingInProcess || loading.IsLoadingScreenActive || loading.IsManualLoadingScreenActive) return;
                     Complete(RunUnpublishedRaceTraitFoundations());
                 }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutDisposableWeatherFixture)
+                { PollWhiteoutDisposableFixture(); }
                 else if (_request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutWeather)
                 { PollWhiteoutWeather(); }
                 else if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleUi ||
@@ -6115,6 +6120,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleUi ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleTerrain ||
                 _request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedRaceTraitFoundations ||
+                _request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutDisposableWeatherFixture ||
                 _request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedAerialObserverFoundation ||
                 _request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutWeather ||
                     RuntimeTestScenarioCatalog.IsMagicCirclePersistence(_request.Scenario) ||
@@ -35382,6 +35388,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             StopTeleportationSpellbookUi(result);
             StopMagicCircleUi(result);
             StopWhiteoutWeather(result);
+            StopWhiteoutDisposableFixture(result);
             StopTeleportationLoadDiagnostics(result);
             if (_saveLoadObservation != null && result.SaveLoadObservation == null)
                 result.SaveLoadObservation = _saveLoadObservation.Stop();

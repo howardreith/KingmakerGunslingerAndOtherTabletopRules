@@ -245,6 +245,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return "race-trait-foundation-exit-required";
             if (request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedAerialObserverFoundation && !request.ExitAfterCompletion)
                 return "aerial-observer-foundation-exit-required";
+            if (request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutDisposableWeatherFixture && !request.ExitAfterCompletion)
+                return "whiteout-disposable-exit-required";
             bool workingSmoke = request.Scenario ==
                 RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation ||
@@ -301,6 +303,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleUi ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleTerrain ||
                 request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedRaceTraitFoundations ||
+                request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutDisposableWeatherFixture ||
                 request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedAerialObserverFoundation ||
                 request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutWeather ||
                 RuntimeTestScenarioCatalog.IsMagicCirclePersistence(request.Scenario) ||
