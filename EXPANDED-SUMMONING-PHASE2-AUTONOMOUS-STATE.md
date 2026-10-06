@@ -1,6 +1,6 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-06 UTC — laptop sole owner; Sprints14–16 COMPLETE
+## CURRENT STATE, 2026-10-06 12:11 UTC — laptop sole owner; Sprints14–16 COMPLETE
 
 This section governs over historical mission/ownership statements below.
 HOWARD-LAPTOP / `codex/expanded-summoning-phase2b-sprints14-17` / draft PR #26
@@ -19,60 +19,40 @@ deployment, force push or prohibited substitute subsystems.
   2026-10-05T19:29:25.9127956Z; holder PID15084/start2026-10-05T20:34:17.3075720Z.
   Session-scoped, not perpetual. Refresh heartbeat; release only on actual
   session ending. All safety refs, bundles and failed artifacts retained.
-- Last verified pushed evidence checkpoint:
-  `b396c8f2ee93af7a6d7857ad4e665999d547d620`; last runtime candidate
-  `09087d0f45103ed8ba94084ac059f253b97f6a10`.
-  This containing bounded native-piercing adapter is a normal descendant,
-  source-only NOT QUALIFIED; exact-head complete prelaunch/runtime next.
+- Last pushed exact candidate `570a14cd48d9008058e524f732b79c9701c1076c`.
+  The containing evidence-only checkpoint is its normal descendant.
   Unexpected active-branch motion is a stop; frozen DATA motion informational.
 
 ### Qualified versus NOT QUALIFIED
 
-- Sprints14–16 complete/published. S16 exact155ada89 publication:
-  full prelaunch PASS, Steam smoke11/main211, all14 Crocodile+6 Dire roots.
+- Sprints14–16 complete/published. S16 exact155ada89 publication: full
+  prelaunch PASS, Steam smoke11/main211, all14 Crocodile+6 Dire roots.
   Hidden e3aeae63 retains crowd20,prepare9,cleanup9,absence5. No reopening.
 - Surface unchanged:976 published generated,0 withheld,29 wrappers,1005 visible.
   No snakes registered; existing Salamander production/identity/placements unchanged.
-- Sprint17 **NOT QUALIFIED**. Exact09087d0f:232 focused/2034 full83.3s,
-  gate180.5s,491 preflight/81 orchestration/17 provenance, persistence11/3/19,
-  crowd5/7, clean exact Release/strict318-member package PASS.
-  Fresh Steam smoke11/11 PASS; body **44/47 FAIL**, driver NOT-QUALIFIED.
-- All three move; both native snake bite gaps0, exact hybrid tail gap0.16415m.
-  Sustained owned-pair isolation, all resource/reference/rollback/native
-  destruction/environment/census checks PASS. No save writing.
-- Original v9 sampled support remains5.0001mm. Both palms have zero shaft
-  distance at event5787, but this is NOT an actual played spear animation.
-- Demonstrated cause: spear requests PiercingTwoHanded; attached native
-  Lizardfolk_2H_Slashing action supports only SlashingTwoHanded/AxeTwoHanded.
-  No active clip; native fallback sets IsActed at0.12s. Spear gap0.59230m.
-  Three dependent failures: native attack proof, contact and actual-attack
-  grip. Prior acted-only playback/grip interpretation is withdrawn; archived
-  numbers/failures remain. No environment/restoration failure or waiver.
+- Sprint17 **NOT QUALIFIED**. Exact570a14cd full prelaunch PASS:
+  234 focused/2036 unfiltered84.6s/gate181.3s,491 preflight/81 orchestration/
+  17 provenance,persistence11/3/19,crowd5/7,strict318-member package.
+- Fresh Steam smoke11 PASS/body33 of35 FAIL. Complete48-assertion gate NOT
+  reached. Fixed donor c664715ff7165984285f66acc764b4b3 uses native
+  Lizardfolk_RH_Spear_Shield, lacks PiercingTwoHanded support and has zero
+  matching39-bone bodies. Guard rejects before owned action-set adoption.
+  Rollback drill not reached (captured=0); not a restoration leak.
+- All28 snake body/movement/floor/contact/isolation/rollback/resource checks
+  PASS, plus Salamander native-control/appearance and environment/census/
+  version. No new hybrid movement/contact proof, no save write.
+- Prior09087 proves existing two-hand slashing carrier has no piercing clip;
+  acted-only fallback is not playback or actual-attack grip qualification.
+  All twelve immutable attempts remain. No failed assertion waived.
 
 ### Next exact work
 
-The bounded clip census succeeded diagnostically and exposed missing native
-PiercingTwoHanded support. Do not add a bone twist to compensate for no clip.
-The archived native donor census identifies one existing shortspear carrier:
-CR10_LizardfolkKing9f7a7364b76d65d43b72086aedce68ae,
-prefabc664715ff7165984285f66acc764b4b3. Check its exact style and native bind
-compatibility before any instance-only main-hand action adoption. Preserve
-all other actions, original native references and exact cleanup. No native
-asset edit, style relabel, global animation/limb rewrite or contact waiver.
-The containing source implements that single conditional carrier adoption:
-exact donor identity, actual nonempty native piercing variants, all39 relative
-bone paths/binds within1e-5, no explicit transitions, and a private action-list
-container replacing exactly one main-hand reference. Other actions, shared
-native sets/actions/clips, bones, weapon rules and original meshes unchanged.
-234 focused/2036 registered tests and incremental exact compile PASS.
-Exactb396 passed full2036/strict318-member package but was never deployed:
-native IL prelaunch review corrected detached manager lookup from assumed
-view root to the single actual Animator component. Its ZIP/sidecar remain
-archived. Re-freeze this descendant and rerun full exact prelaunch.
-No live compatibility claim. Rollback/native destruction assertions now
-include exact original-set restoration/private-container release/borrowed
-native survival. One new binding assertion makes48 total; all47 prior checks
-retained. Freeze/push, full exact prelaunch, then guarded smoke/body batch.
+Change observation strategy to bounded read-only native action/style/renderer
+metadata before choosing another carrier. Do not retry this rejected donor,
+map one-handed/slashing clips to the two-handed spear, twist bones to hide a
+missing animation, edit native assets or build a global animation framework.
+Original meshes/paints and production are unchanged. Preserve all contact,
+ownership, reference and cleanup assertions.
 
 Then printed profiles/signatures/icons, full S17 hidden/publication and
 exhaustive Phase2B closure. Use the explicit14-reference bundle
@@ -80,17 +60,22 @@ exhaustive Phase2B closure. Use the explicit14-reference bundle
 Lease BEFORE installation observation/snapshot/deployment; restore each
 actual snapshot exactly. No source-only gameplay qualification.
 
-### Restored machine
+### Exact artifact and restored machine
 
-Actual snapshot `20261006T1112148857824Z` restored
-`2026-10-06T11:20:06.3390196Z`:136 files/Info0.0.117/
+Source fingerprint2c0f74048b524ed0563cf311cf817e4b29e9001a477216a90e10cc68bbabc94e;
+DLLe1d283e4a7e7609c24cba3044936a5e6210d682fdcf90d7da907dfde7d5f6a29;
+MVID8f77bf87-282f-456a-9eb4-79c391f73341;
+ZIPa0db47e8b5dd18a267537020b09c3d8ca34d62296972674d3457336bec3372c9.
+
+Actual snapshot `20261006T1204024052635Z` restored
+`2026-10-06T12:11:30.6828777Z`:136 files/Info0.0.117/
 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
 Lease Completed/recoveryRequired=false/released; no game/shared lock/staging.
 No save-file/protected-baseline access or native save write. Journal
-`B10ED8A40739015EC306E04665552768D625659128AA1D744A4A1F87008A7092`.
+`008A868413EA81BC9845B2200C24C5B1579368CBCC8041BD453E5ABC2C2B1E55`.
 
 [Current research review](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-REVIEW.md)
-and [all eleven exact artifacts/results/restorations](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-EVIDENCE.json).
+and [all twelve exact artifacts/results/restorations](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-EVIDENCE.json).
 [S16 publication authority](planning/EXPANDED-SUMMONING-SPRINT16-PUBLICATION-PASS-REVIEW.md).
 Accepted unchanged: PASSIVE_CREATURE_SENSES_UNMODELED;
 ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD;
