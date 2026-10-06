@@ -1,9 +1,11 @@
 # Sprint 17 bounded original-body research
 
-Status: Sprint 17 NOT QUALIFIED. Exact `6bee8d5716bba1340adc3c629c88d15a1a1d8f25`
-game-side research passes 20/20, but its batch remains **ERROR** on a driver
-JSON-reader defect. Earlier 7b76dba2/2045c302 fixture failures are preserved.
-This containing reader/evidence checkpoint is their normal descendant. Laptop PR #26 only; no DATA
+Status: Sprint 17 NOT QUALIFIED. Exact `f31c0e3d85a83129e92b8918b66e9697fc3e4969`
+measured-floor research batch **PASS: smoke11/11, body23/23**, exactly restored.
+It measured real snake penetration and hybrid floating; it does not accept
+the bodies' final visuals. Earlier 7b76/2045 fixture failures and 6bee driver
+ERROR remain preserved. This containing private-authoring/evidence checkpoint
+is their normal descendant. Laptop PR #26 only; no DATA
 imports. Sprint 16 remains complete. Published surface is unchanged:
 976 generated + 29 wrappers = 1005 visible.
 
@@ -38,6 +40,58 @@ auxiliary mesh, albedo and owned material clone. Final unit/party/area reference
 censuses must match. Iterator disposal restores pause/random/control state on
 an outer timeout or error before the working-save sentinels close. Every
 claimed live result remains pending until the frozen artifact runs.
+
+## Fourth exact batch: measurements PASS, geometry defects confirmed
+
+Exact f31 passes 224 focused / 2026 complete tests (84.3s), complete repository
+wrapper/clean exact Release/strict318-member package (179.3s),491 isolated
+preflight,81 orchestration,17 provenance and all persistence/crowd request
+checks. Fresh Steam640820 smoke11/11 and body23/23, then complete driver PASS.
+All prior binding/rollback/movement/resource/reference checks remain passing.
+Save-writing API observed false. The repaired evidence reader is now proved
+in the complete transaction, not just on an offline JSON fixture.
+
+All three bodies have thirteen measured poses. Actor and native movement
+projection settle on the same flat upward-facing layer8 collider, at Y=-6.
+Viper's lowest point is -0.107901..-0.107900m; Constrictor -0.108740..-0.108739m:
+these are now **measured penetrations**, not assumptions from actor height.
+Salamander is +0.034391..+0.309258m above that floor. These geometry defects
+remain open; no assertion is relabeled or waived for publication.
+
+Both snake Hips frames share a stable approximately16-degree ground-normal
+tilt over all26 samples. Native SnapToTerrain belongs only to Stone_Joints,
+whose geometry is suppressed; altering it would not fix this authored body.
+Salamander's Torso_Lower rises during movement, whereas its renderer bind frame
+stays fixed at the floor (original +Z maps to world +Y). This suggests a bounded
+original support-weight carrier for the next hybrid prototype, not permission
+to change native animation, movement, actor height or a global rig.
+
+Private current-pose replay of the original exported vertices reproduces all
+three live lowest-point measurements within sub-micrometre arithmetic tolerance.
+The snake v3 prototypes author the supporting coil against the measured root
+plane, with a small skin allowance for Catmull curvature. They replay with no
+vertices below the measured flat plane in all26 poses: Viper about2.91mm and
+Constrictor about1.85mm clearance. No bone/rig/animation/actor change. Both
+exports reproduce byte-for-byte; original paint unchanged. Seven worm, four
+water, six hybrid and four replay-arithmetic tests PASS. Thirty-six private
+captured-pose panels were generated; representative snake/hybrid clay/textured
+views were inspected. The repaired snake support is intact, while the hybrid's
+float remains obvious. Supporting art only, not mechanical qualification.
+**v3 is private, not staged or runtime-qualified**; shipped/staged assets remain
+the exact f31 originals until the stable integration checkpoint.
+
+Actual snapshot `20261006T0617038921947Z` restored at
+`2026-10-06T06:24:18.5391362Z`:136 files/Info0.0.117/
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+Lease Completed/recoveryRequired=false, released; no game/lock/staging/save write.
+Journal SHA `97357EA07776B7FACD1427826280F10DE858773F16CA75AD2D11E959A5427150`.
+[All four exact attempts](EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-EVIDENCE.json).
+
+Next: finish the bounded hybrid support/weapon seam, integrate stable original
+assets, then new exact-head body/contact/lifecycle qualification. Preserve all
+S16 production behavior, accepted limitations and current published counts.
+The later source-development notes below describe the earlier boundary, not
+an unrun f31 artifact.
 
 ## First exact batch: fixture failure, exactly restored
 
