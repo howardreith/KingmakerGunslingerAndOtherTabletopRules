@@ -15,7 +15,8 @@ No runtime/deployment/save operation; Sprint17 remains NOT QUALIFIED.
 The later [production view integration](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-VIEW-INTEGRATION.md)
 implements exact-identity automatic body binding and17 guarded view assertions.
 247 focused/2049 full86.4s and clean build/strict package PASS on dirty source;
-committed exact gate and actual runtime checks remain next. No gameplay claim.
+committed c1ece8d7 exact gate then PASS179.2s with2049 tests85.1s and strict320
+members. Actual runtime checks remain open. No gameplay claim.
 
 Exact publication `155ada89869c6937b4a801e1fc384dbe38d36f3b` passed every
 prelaunch gate (218 focused / 2020 full), then fresh Steam smoke **11/11**
