@@ -18,8 +18,8 @@ deployment, force push or prohibited substitute subsystems.
   session01a10bcd-8582-7551-826f-0f128807eb99; ownerPID31796/start
   2026-10-05T19:29:25.9127956Z; holderPID15084/start2026-10-05T20:34:17.3075720Z.
   Session-scoped; refresh heartbeat and release only on actual session ending.
-- Last exact runtime candidate `ccba3bacce36f9ec88509b21893b43a8aa5a4f7e`,
-  clean/pushed for the failed batch. New event-observation correction NOT RUN.
+- Last exact runtime candidate `dc1208d2572d254f6cf3c1506f19503215e76808`,
+  clean/pushed for the failed batch. New phase-aware observation correction NOT RUN.
   Owner/holder identities unchanged; no competing source/runtime process.
   This checkpoint is a normal descendant. Unexpected active-branch
   motion remains a stop; DATA motion informational. All old artifacts retained.
@@ -30,17 +30,18 @@ Sprints14–16 COMPLETE/PUBLISHED. S16 exact155ada89 publication smoke11/main211
 passed all14 Crocodile+6 Dire roots after hiddene3 main209,crowd20,prepare9,
 cleanup9,absence5. No historical qualification reopened.
 
-Latest signature batch on exactccba: complete2051-test/strict320/prelaunch
+Latest signature batch on exactdc12: complete2051-test/strict320/prelaunch
 PASS; smoke11/11, signature61/62 FAIL (all62 executed). [Exact evidence and
-failure classification](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-ATTEMPT2-EVIDENCE.json).
-All Constrictor checks pass. Poison removed correctly without seventh damage,
-but the fixture inspected its already-disposed component counter. After two
-failures of that assertion, change to live native event counting plus final
-buff absence. Retain all62 requirements; no production change or extra wait.
-Event-observation repair source gate PASS:249 focused,2051 unfiltered83.0s,
-complete repository/static/icon/manifest/clean14-reference Release/strict320
-package178.8s and142 orchestration checks. New exact-head runtime NOT RUN.
-Actual snapshot1857178703604Z restored19:04:19UTC:136/.117/exact tree;
+failure classification](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-ATTEMPT3-EVIDENCE.json).
+All Constrictor checks pass. Six live damage events and clean removal are
+observed; only five saves are buff-owned. Native OnFactActivate consumes the
+injury action's preceding save instead of making a second one. The fixture
+incorrectly required six buff saves. New observer separately correlates the
+exact in-flight wounding bite's injury save and five subsequent venom saves.
+All62 requirements retained; production unchanged. Repair source PASS:
+251 focused,2053 full86.8s,complete repository/static/icon/manifest/clean
+14-reference Release/strict320 package183.6s,142 orchestration. New exact runtime next.
+Actual snapshot1923327993552Z restored19:30:35UTC:136/.117/exact tree;
 lease Completed/recovery=false/released,
 no game/shared lock/staging/save write.
 
@@ -83,8 +84,7 @@ external state change. Independent snakes proceed; no phase-wide blocker.
 
 ### Exact next action
 
-Event-observation fixture repair focused249 PASS; complete full source,
-clean14-reference Release/strict package, commit/push NOT QUALIFIED, freeze
+Phase-aware event fixture repair full source gate PASS; commit/push NOT QUALIFIED, freeze
 a new exact-head artifact, run all prelaunch checks and rerun the
 complete affected smoke/signature batch. No repeat of the failing artifact.
 [Scope and honest exclusions](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-SLICE.md).

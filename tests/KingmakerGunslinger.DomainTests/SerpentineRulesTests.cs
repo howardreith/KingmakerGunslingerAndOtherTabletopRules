@@ -12,6 +12,45 @@ namespace KingmakerGunslinger.DomainTests
     internal static class SerpentineRulesTests
     {
         internal const int AppendedLedgerIdentities = 73;
+        internal static void NativePoisonSavePhasesRemainDistinct()
+        {
+            for (int exposure = 1; exposure <= 6; exposure++)
+            {
+                Assertions.True(SerpentinePoisonReviewPolicy.ExactExposureCounts(exposure,
+                    exposure, 1, exposure - 1), "One injury gate, then native buff saves.");
+                Assertions.False(SerpentinePoisonReviewPolicy.ExactExposureCounts(exposure,
+                    exposure, 0, exposure), "Buff saves cannot substitute for the injury gate.");
+                Assertions.False(SerpentinePoisonReviewPolicy.ExactExposureCounts(exposure,
+                    exposure, 1, exposure), "No invented second save on initial application.");
+                Assertions.False(SerpentinePoisonReviewPolicy.ExactExposureCounts(exposure,
+                    exposure + 1, 1, exposure - 1), "Duplicate damage remains a failure.");
+                Assertions.False(SerpentinePoisonReviewPolicy.ExactExposureCounts(exposure,
+                    exposure, 2, exposure - 1), "Duplicate injury gate remains a failure.");
+            }
+            foreach (int invalid in new[] { -1, 0, 7, int.MaxValue })
+                Assertions.False(SerpentinePoisonReviewPolicy.ExactExposureCounts(invalid,
+                    invalid, 1, invalid - 1), "Only six native exposures are in scope.");
+        }
+
+        internal static void NativePoisonExhaustionRequiresRemovalWithoutReplay()
+        {
+            Assertions.True(SerpentinePoisonReviewPolicy.ExactExhaustion(6, 1, 5, false, 0, 0),
+                "Six total saves/damage events, split into their actual native phases.");
+            foreach (int damage in new[] { -1, 1, 2 })
+            {
+                Assertions.False(SerpentinePoisonReviewPolicy.ExactExhaustion(6, 1, 5, false, damage, 0),
+                    "Exhaustion cannot mutate Constitution.");
+                Assertions.False(SerpentinePoisonReviewPolicy.ExactExhaustion(6, 1, 5, false, 0, damage),
+                    "Duplicate exhausted callback cannot mutate Constitution.");
+            }
+            Assertions.False(SerpentinePoisonReviewPolicy.ExactExhaustion(6, 1, 5, true, 0, 0),
+                "A retained exhausted buff is not removal.");
+            Assertions.False(SerpentinePoisonReviewPolicy.ExactExhaustion(7, 1, 6, false, 0, 0),
+                "A seventh event fails even if its damage was masked.");
+            Assertions.False(SerpentinePoisonReviewPolicy.ExactExhaustion(6, 0, 5, false, 0, 0),
+                "The initial injury save must be positively observed.");
+        }
+
         internal static void SignatureRequestIsClosedWorkingSaveSlice()
         {
             string scenario = RuntimeTestScenarioCatalog.DisposableExpandedSummoningSnakeSignatures;

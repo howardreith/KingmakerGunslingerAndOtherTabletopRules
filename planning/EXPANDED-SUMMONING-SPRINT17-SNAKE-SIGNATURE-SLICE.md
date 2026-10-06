@@ -1,11 +1,43 @@
 # Sprint 17 closed snake signature rules slice
 
-Status: exact ccba3bac runtime FAIL61/62; event-observation repair NOT RUN.
-Laptop PR26 only; failed candidate ccba3bacce36f9ec88509b21893b43a8aa5a4f7e.
+Status: exact dc1208d2 runtime FAIL61/62; phase-aware observer NOT RUN.
+Laptop PR26 only; failed candidate dc1208d2572d254f6cf3c1506f19503215e76808.
 Sprints14–16 complete.32 snake roots remain withheld;1005 visible choices.
 No DATA ports, version change, publication or new adaptation.
 
-## Latest runtime and changed observation strategy
+## Latest runtime and separate native save phases
+
+[Exact Attempt3 evidence](EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-ATTEMPT3-EVIDENCE.json).
+Exactdc12 full2051 tests85.5s/complete181.7s/strict320/all prelaunch PASS;
+smoke11/11,signature61/62 FAIL. Six damage events, live ticks6 and removal with
+zero seventh/duplicate damage passed. Five saves were buff-owned, not six.
+All38 profile/body and13 Constrictor checks pass; result remains FAIL.
+
+Native audit explains the initial boundary: ContextActionSavingThrow executes
+the injury gate before applying poison; RuleSavingThrow/RulebookEvent constructors
+and MechanicsContext.TriggerRule leave its Reason null. BuffPoisonStatDamage
+OnFactActivate deals exposure1 and increments ticks without a second save.
+OnNewRound makes the five later buff-owned saves/damage events.
+Private audit log SHA26dce5ebb45d8ccf4238a2e1b803c619229464b990b2435486f89980781de8d0.
+
+The new observer null-guards Reason and captures the initial Fortitude save
+only while the exact synchronous owned wounding bite is in Rulebook.CurrentContext.
+It records that save separately from five exact venom/owner saves; all must be
+DC13 and failed for this seeded cadence cell. Six native damage events and
+their actual1..2 damage/pre-difficulty1..2 bonus remain mandatory, plus live
+counter6, final absence and zero exhaustion/replay events. No production fix,
+extra wait or waiver. Two behavior tests cover each phase and reject duplicates.
+251 focused,2053 unfiltered86.8s,complete repository/static/icon/manifest,
+clean14-reference Release/deterministic strict320 package183.6s,142 orchestration
+PASS. Initial source gate rejected stale2051 development metadata; updated only
+that count to2053; immutable1992 published record unchanged. Logs
+`artifacts/sprint17-signatures-native-phases-dirty-gate-2.log` and preceding
+failed metadata log retained. New exact artifact next; repair runtime NOT RUN.
+
+Actual snapshot1923327993552Z restored19:30:35.0087296UTC:136/.117/exact tree;
+lease Completed/recovery=false/released, no game/lock/staging/save write.
+
+## Attempt2 retained: changed from disposed counters to live events
 
 [Exact Attempt2 evidence](EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-ATTEMPT2-EVIDENCE.json).
 Exactccba full2051 tests84.0s/complete gate180.7s/strict320 and all prelaunch
@@ -33,7 +65,7 @@ Event-observer repair source gate PASS:249 focused,2051 unfiltered83.0s;
 complete repository/static/icon/manifest, clean14-reference Release and
 deterministic strict320 package178.8s;142 orchestration checks.
 Log: `artifacts/sprint17-signatures-event-observer-dirty-gate.log`.
-Commit/push NOT QUALIFIED, then a new exact-head complete affected batch.
+This repair became the separately recorded dc1208d2 Attempt3 above.
 
 ## Attempt1 retained and first boundary repair
 
