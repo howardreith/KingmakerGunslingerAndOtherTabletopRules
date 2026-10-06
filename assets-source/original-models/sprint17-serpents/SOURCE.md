@@ -2,12 +2,20 @@
 
 ## Current support integration, October 6 UTC
 
-**STAGED FOR CLOSED RESEARCH ONLY; NOT RUNTIME QUALIFIED.** Snake v3 and
+**BOUNDED SUPPORT RESEARCH PASS; FINAL VISUALS NOT QUALIFIED.** Snake v3 and
 Salamander v7 now replace the six-file fixture's original mesh payloads; paints
 and package count318 are unchanged. No production attachment or new creature.
 All three staged exports match independently generated private exports exactly.
 25 checks PASS:7 worm,4 water,8 hybrid and6 replay.225 focused domain checks and
-exact-reference incremental compile PASS; full exact-head/runtime pending.
+exact-reference incremental compile PASS. Exact8d3081c3 full prelaunch then
+passes225 focused/2027 full/491 preflight/81 orchestration/17 provenance and
+strict318-member package. Fresh Steam smoke11/body26, complete batch PASS,
+exact restoration07:21:34UTC, no game/lease/staging/save write. Actual39 sampled
+poses support at2.91mm/1.85mm/5.00mm. All five exact resources/body release;
+quality rollback and reference census pass. Native support frame is proved.
+Supporting native frames still show suspicious open/folded snake coil sections;
+compare current-pose topology/winding and rendered mesh before final visual
+acceptance. Hybrid tail partly occluded; weapon/contact/full lifecycle open.
 
 Hybrid v7 mesh SHA `298d832320a01144ebc4f6245ddc3851cd9d01ed3e9e167c998c94fd558d8b28`.
 It keeps2592 vertices, all27 native drivers plus one original

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "status": "Sprint 17 NOT QUALIFIED; fourth measured-floor research batch PASS 11/11 + 23/23, with geometry defects measured; prior failures/driver ERROR preserved",
+  "status": "Sprints14-16 complete; Sprint17 NOT QUALIFIED. Latest exact8d3081c3 body-support research PASS26/26; complete batch PASS and exact restoration. No printed-profile, final visual or gameplay acceptance.",
   "scope": "Original body binding, native movement and owned resource lifetime only; no gameplay/publication qualification",
   "attempts": [
     {
@@ -669,6 +669,182 @@
           0.0018463331806168881
         ],
         "description": "Original supporting coil authored in the measured stable root plane with small skin allowance; no native rig/animation/position changes. Original staged meshes reproduce live low points to sub-micrometre arithmetic tolerance. Corrected prototypes have zero vertices below the measured flat plane in all26 captured poses. This is not a new runtime pass. Salamander unchanged."
+      }
+    },
+    {
+      "candidate": "8d3081c34cfee82239fdc908df0b561975131d24",
+      "sourceFingerprint": "c273d8f2f95096e627b2b10191c57b35ee1fffe3463c9bae0fcec0a276e00f53",
+      "dllSha256": "527e6535fb411dc993abb8303995b8a720ef9dc703e07f1bfdeefde0f64dc991",
+      "dllMvid": "5274438d-5977-4c25-bf65-fa0c1d974760",
+      "packageSha256": "d4818cdce62b72dcc72a0b49c55f39a2d763c6060d40840b3e3fe38483ceaf64",
+      "packageMembers": 318,
+      "version": "0.0.141",
+      "prelaunch": {
+        "focused": 225,
+        "full": 2027,
+        "fullSeconds": 83,
+        "completeGateSeconds": 177.7,
+        "runtimePreflight": 491,
+        "orchestration": 81,
+        "referenceProvenance": 17,
+        "persistenceWiring": 11,
+        "persistenceScopes": 3,
+        "persistenceRejections": 19,
+        "crowdRoundTrips": 5,
+        "crowdRejections": 7,
+        "exactBuildAndStrictPackage": "PASS"
+      },
+      "runs": [
+        {
+          "scenario": "working-save-smoke",
+          "startedAtUtc": "2026-10-06T07:14:51.1103397Z",
+          "parameters": {},
+          "launcherOutcome": "Clean",
+          "exitCode": 0,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T0714520090316Z-working-save-smoke",
+          "requestId": "20261006T0714520312386Z-503cf965ddd2447b9b2ce79b8840e516",
+          "requestSha256": "54510bfeeffbfbac03619848ce3543fee26d663826e6469c79ac51593a51d521",
+          "resultSha256": "ad9881f3cc9ac3bf65d44c9891c6edb6ef68075a97930e7182ae6043ffc40cbc",
+          "assertions": 11,
+          "passed": 11,
+          "failed": [],
+          "orchestrationSha256": "6ef10dc044fd308752d9d953f9e0bedfc166fd16c08218041ef7a635dcbac6ec",
+          "processId": 3172,
+          "processStartedUtc": "2026-10-06T07:14:53.1185267Z",
+          "scenarioStatus": "PASS",
+          "outcome": "PASS",
+          "completedAtUtc": "2026-10-06T07:17:42.4313194Z"
+        },
+        {
+          "scenario": "disposable-expanded-summoning-serpentine-bodies",
+          "startedAtUtc": "2026-10-06T07:17:48.4336361Z",
+          "parameters": {},
+          "launcherOutcome": "Clean",
+          "exitCode": 0,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T0717492333982Z-disposable-expanded-summoning-serpentine-bodies",
+          "requestId": "20261006T0717492439321Z-456b9411d66c49b983ef96861a5687cd",
+          "requestSha256": "49a47e79e4db6b151dfeb2e01199584f3e68d7cdd9ca99bdf600aced96576a0c",
+          "researchMetadata": [
+            {
+              "key": "viper",
+              "scope": "original body binding/movement/lifetime only; not printed profile or attack/contact qualification",
+              "samples": 12,
+              "travel": 2.4625144,
+              "maxVelocity": 3.04798865,
+              "supportingFrameSha256": "2bb8d7e3c533ecca84f70a6dea85664df06fe98b84081e413121bde12ca2bf4f",
+              "minClearance": 0.00290822983,
+              "maxClearance": 0.00290822983
+            },
+            {
+              "key": "constrictor-snake",
+              "scope": "original body binding/movement/lifetime only; not printed profile or attack/contact qualification",
+              "samples": 12,
+              "travel": 2.45631862,
+              "maxVelocity": 3.04798913,
+              "supportingFrameSha256": "bdbaf419277e07563380b1ecc86fb1d43dba538bae96838e4d7a9a77947b5450",
+              "minClearance": 0.00184631348,
+              "maxClearance": 0.00184679031
+            },
+            {
+              "key": "salamander",
+              "scope": "original body binding/movement/lifetime only; not printed profile or attack/contact qualification",
+              "samples": 12,
+              "travel": 2.4543314,
+              "maxVelocity": 3.04798913,
+              "supportingFrameSha256": "0e3f00fe6d68af259936db5b042b31e6cdb18e1dc8200ccdcadb6bd236937ad2",
+              "minClearance": 0.00500011444,
+              "maxClearance": 0.00500011444
+            }
+          ],
+          "bodyReviewSha256": "7fb88e1640c4754ce58e564a5bc02a29a9928a05c66111aecbdcc98574c6548a",
+          "resultSha256": "90ab6cf2af2b7e7a0ec2792c5db78692aff6c6308100cbddec49331f478e999b",
+          "assertions": 26,
+          "passed": 26,
+          "failed": [],
+          "orchestrationSha256": "865736a992b12a6575d67fbde2583bffb8b13c13773938acfa0915c2101b07d3",
+          "processId": 34196,
+          "processStartedUtc": "2026-10-06T07:17:50.4471293Z",
+          "scenarioStatus": "PASS",
+          "outcome": "PASS",
+          "completedAtUtc": "2026-10-06T07:21:31.6599705Z"
+        }
+      ],
+      "batchStatus": "PASS",
+      "batchJournalSha256": "763DD4F79FE9B0FE45C9FBC2372C4A2E6DBE852BF913AE76FA6DCF68D5E9C746",
+      "guardedDriverSha256": "9E679BAAF2942ADB98A596F1C01CEC9249A6702F81F7404B19F51976DB9757E5",
+      "buildSidecarSha256": "848DF66080DC578D6E0AC5CEE6731D71545CE9A9FE01F62CFDCBA580B641CA60",
+      "gameResearchStatus": "PASS26/26; original binding, native movement, sampled measured flat-ground support, quality rollback and exact resource cleanup ONLY. Final anatomy, attacks, slopes, weapon/contact/full lifecycle/gameplay NOT QUALIFIED.",
+      "saveWritingApiObserved": false,
+      "restoration": {
+        "status": "VERIFIED",
+        "snapshot": "20261006T0714257255801Z",
+        "completedAtUtc": "2026-10-06T07:21:34.2656814Z",
+        "before": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "after": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "leaseStatus": "Completed",
+        "recoveryRequired": false,
+        "leaseReleased": true,
+        "noGame": true,
+        "lockPresent": false,
+        "stagingPresent": false
+      },
+      "findings": {
+        "samplesPerBody": 13,
+        "viperClearanceMetres": [
+          0.00290822983,
+          0.00290822983
+        ],
+        "constrictorClearanceMetres": [
+          0.00184631348,
+          0.00184679031
+        ],
+        "salamanderClearanceMetres": [
+          0.00500011444,
+          0.00500011444
+        ],
+        "nativeDrivers": [
+          16,
+          16,
+          28
+        ],
+        "hybridSupportNativeTransform": "_lizardman001",
+        "sampledHeightsMetres": [
+          1.5388484,
+          1.6918211,
+          2.0830133
+        ],
+        "ownedResourceCleanup": "All3 native destruction and injected rollback assertions PASS; exact project-owned references, not name-only counts.",
+        "sourceMeshClosedManifold": true,
+        "artReview": "Supporting native frames inspected only as art. Snake supporting coils show open/ribbon-like portions or folded surfaces; investigate topology/winding/deformation through current-pose replay and actual runtime mesh before final visual acceptance. Hybrid tail partly occluded; no spear. Floor PASS does not waive these visual/weapon gates.",
+        "noNativeGeometryExport": true
+      },
+      "offlineFollowup": {
+        "tests": {
+          "water": 4,
+          "worm": 7,
+          "hybrid": 8,
+          "replayArithmetic": 6
+        },
+        "meshHashes": {
+          "viper": "866123e15e287c05b67b9d9509463559e4d55fce81f5bf9654ad9e98bac7cd29",
+          "constrictor-snake": "fa6799bde8dea193db04dbe4893b665d873b83697d72eba5a7633a2fc78b7411",
+          "salamander": "298d832320a01144ebc4f6245ddc3851cd9d01ed3e9e167c998c94fd558d8b28"
+        },
+        "staged": true,
+        "automaticProductionHook": false,
+        "byteReproduced": true,
+        "capturedReplayMatchesLiveSupport": true,
+        "failedPrototypesPreserved": "v4-v6 identity/alignment/underside/transition panels; no failed art claimed acceptable."
       }
     }
   ]
