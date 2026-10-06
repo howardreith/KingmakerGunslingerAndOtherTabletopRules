@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Root;
@@ -19,6 +20,7 @@ using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.Utility;
 using Kingmaker.Visual.Animation.Kingmaker;
+using Kingmaker.Visual.Animation.Kingmaker.Actions;
 using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -70,6 +72,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["gameTimeSeconds"] = Game.Instance.Player.GameTime.TotalSeconds,
                 ["canStart"] = command.CanStart, ["started"] = command.IsStarted, ["finished"] = command.IsFinished,
                 ["acted"] = command.IsActed, ["result"] = command.Result.ToString(),
+                ["animation"] = Sprint17IssuedAnimationObservation(command as UnitAttack),
                 ["queued"] = owner.Commands.Contains(command), ["inCombat"] = owner.IsInCombat,
                 ["ownerGroup"] = owner.GroupId, ["ownerGroupIsParty"] = owner.Group.IsPlayerParty,
                 ["ownerIsPlayerFaction"] = owner.IsPlayerFaction,
@@ -85,6 +88,78 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["ownerEnemy"] = owner.IsEnemy(target), ["targetEnemy"] = target.IsEnemy(owner),
                     ["conditions"] = new JArray(Enum.GetValues(typeof(UnitCondition)).Cast<UnitCondition>()
                         .Where(value => target.Descriptor.State.HasCondition(value)).Select(value => value.ToString())) } };
+        }
+
+        private static JObject Sprint17IssuedAnimationObservation(UnitAttack command)
+        {
+            // Observe this exact issued command, not an incidental attack in
+            // the owner's queue. All native calls below are read-only getters.
+            var handle = command == null ? null : command.Animation;
+            var result = new JObject { ["frame"] = Time.frameCount, ["handlePresent"] = handle != null,
+                ["observedActedClip"] = false };
+            if (handle == null) return result;
+            result["handleStarted"] = handle.IsStarted; result["handleActed"] = handle.IsActed;
+            result["handleTime"] = handle.GetTime(); result["weaponStyle"] = handle.AttackWeaponStyle.ToString();
+            result["variant"] = handle.Variant;
+            result["actionClass"] = handle.Action == null ? null : handle.Action.GetType().FullName;
+            result["actionName"] = handle.Action == null ? null : handle.Action.name;
+            var active = handle.ActiveAnimation;
+            result["activeAnimationPresent"] = active != null;
+            if (active == null) return result;
+            result["activeClass"] = active.GetType().FullName;
+            result["activeState"] = active.State.ToString(); result["activeTime"] = active.GetTime();
+            result["activeWeight"] = active.GetWeight(); result["activeSpeed"] = active.GetSpeed();
+            AnimationClip clip = active.GetPlayableClip();
+            result["clip"] = Sprint17ClipMetadata(clip);
+            result["observedActedClip"] = SerpentineRigSurveyPolicy.IsObservedAttackClip(
+                handle.IsStarted, handle.IsActed, true, clip == null ? null : clip.name,
+                clip == null ? float.NaN : clip.length, active.GetTime());
+            return result;
+        }
+
+        private static JToken Sprint17ClipMetadata(AnimationClip clip)
+        {
+            // Metadata only: no native curves, mesh, texture or asset export.
+            return clip == null ? (JToken)JValue.CreateNull() : new JObject {
+                ["name"] = clip.name, ["durationSeconds"] = clip.length,
+                ["events"] = new JArray(clip.events.Select(value => new JObject {
+                    ["function"] = value.functionName, ["time"] = value.time })) };
+        }
+
+        private static JArray Sprint17NativeHandAttackCensus(UnitEntityData owner)
+        {
+            var rows = new JArray();
+            foreach (UnitAnimationType kind in new[] { UnitAnimationType.MainHandAttack, UnitAnimationType.OffHandAttack })
+            {
+                var action = owner.View.AnimationManager.GetAction(kind);
+                var row = new JObject { ["kind"] = kind.ToString(),
+                    ["actionClass"] = action == null ? null : action.GetType().FullName,
+                    ["actionName"] = action == null ? null : action.name };
+                rows.Add(row);
+                var hand = action as UnitAnimationActionHandAttack;
+                if (hand == null) continue;
+                // The exact audited native settings field is read, never
+                // rewritten or invoked to choose/play a variant.
+                FieldInfo field = typeof(UnitAnimationActionHandAttack).GetField("m_Settings",
+                    BindingFlags.Instance | BindingFlags.NonPublic);
+                var settings = field == null ? null : field.GetValue(hand) as Array;
+                if (settings == null || settings.Length > 32)
+                    throw new InvalidOperationException("Native hand-attack settings census unavailable or unbounded.");
+                var styles = new JArray(); row["styles"] = styles;
+                foreach (object setting in settings)
+                {
+                    if (setting == null) throw new InvalidOperationException("Null native hand-attack setting.");
+                    Type type = setting.GetType();
+                    var clips = type.GetField("Variants").GetValue(setting) as AnimationClip[];
+                    if (clips == null || clips.Length > 32)
+                        throw new InvalidOperationException("Native hand-attack variants unavailable or unbounded.");
+                    styles.Add(new JObject { ["style"] = type.GetField("Style").GetValue(setting).ToString(),
+                        ["variants"] = new JArray(clips.Select(Sprint17ClipMetadata)),
+                        ["rend"] = Sprint17ClipMetadata(type.GetField("Rend").GetValue(setting) as AnimationClip),
+                        ["charge"] = Sprint17ClipMetadata(type.GetField("Charge").GetValue(setting) as AnimationClip) });
+                }
+            }
+            return rows;
         }
 
         private void CaptureSprint17BodyEnvironment()
@@ -185,6 +260,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         new JObject { ["name"] = clip.name, ["duration"] = clip.length })) });
             }
             row["nativeSpecialAttackCensus"] = actions;
+            row["nativeHandAttackCensus"] = Sprint17NativeHandAttackCensus(owner);
             owner.Descriptor.Stats.HitPoints.BaseValue = 100000;
             // Preserve native BAB/iterative count, especially the spear.
             owner.Descriptor.Stats.AdditionalAttackBonus.BaseValue = 100;
@@ -245,7 +321,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 JObject contact;
                 try
                 {
-                    contact = Sprint17MeasuredAttackContact(owner, target, attachment, rule);
+                    contact = Sprint17MeasuredAttackContact(owner, target, attachment, rule, attack);
                     contact["bodyPose"] = Sprint17OriginalBodySample(owner, attachment.Body);
                 }
                 catch (Exception error)
@@ -396,14 +472,15 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private static JObject Sprint17MeasuredAttackContact(UnitEntityData owner, UnitEntityData target,
-            SerpentineVisualAttachment attachment, RuleAttackWithWeapon rule)
+            SerpentineVisualAttachment attachment, RuleAttackWithWeapon rule, UnitAttack issued)
         {
+            JObject animation = Sprint17IssuedAnimationObservation(issued);
             var result = new JObject { ["frame"] = Time.frameCount, ["category"] = rule.Weapon.Blueprint.Category.ToString(),
                 ["weapon"] = rule.Weapon.Blueprint.AssetGuid, ["opportunity"] = rule.IsAttackOfOpportunity,
                 ["ownedPair"] = ReferenceEquals(rule.Initiator, owner) && ReferenceEquals(rule.Target, target),
                 ["exactHybridTail"] = rule.Weapon.Blueprint.name == "KMG_Summoning_Special_Salamander_Tail",
-                ["nativeAnimationContact"] = owner.Commands.Raw.OfType<UnitAttack>().Any(value =>
-                    value.Animation != null && value.Animation.IsActed), ["finite"] = false };
+                ["nativeAnimationContact"] = (bool)animation["observedActedClip"],
+                ["issuedAnimation"] = animation, ["finite"] = false };
             var targetMesh = target.View.GetComponentsInChildren<SkinnedMeshRenderer>(true)
                 .Where(value => value.enabled && value.sharedMesh != null && value.sharedMesh.vertexCount >= 100)
                 .OrderByDescending(value => value.bones.Length).FirstOrDefault();

@@ -1,5 +1,19 @@
 # Expanded Summoning Phase 2 journal
 
+## October 6 -- native clip/style observation, source-only checkpoint
+
+The native hand-attack OnUpdate marks IsActed after .1s if ActiveAnimation
+is null. That makes the previous acted-only playback claim insufficient;
+it does not erase the measured spear miss or qualify any prior failure.
+Read-only metadata now comes from the exact issued UnitAttack and existing
+attached main/off-hand settings: action/style/variant, actual clip/time/state,
+weight/speed and clip events. No animation selection/playback, native curve/
+asset export, bone/target/rule change or new production hook. Missing active
+clip fails closed.232 focused/2034 registered and incremental exact compile
+PASS; complete exact-head gate and same47-assertion guarded batch next.
+No new runtime transaction. Last669 snapshot remains exactly restored.
+Laptop ownership/clean starting remotea106 verified; DATA untouched.
+
 ## October 6,10:40 UTC -- exact66900038 body46/47 FAIL, restored
 
 All prelaunch PASS:231 focused/2033 full86.3s/gate180.2s,491 preflight,

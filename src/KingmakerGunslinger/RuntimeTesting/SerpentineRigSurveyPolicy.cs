@@ -75,6 +75,14 @@ namespace KingmakerGunslinger.RuntimeTesting
         { return ownedPair && executing && !opportunity && nativeContact &&
             measuredPoints > 0 && Finite(gap) && gap >= 0; }
 
+        // Native hand-attack OnUpdate can mark IsActed after .1 seconds when
+        // ActiveAnimation is null. That fallback is not clip-playback proof.
+        // This proves observed playback metadata, never geometric contact.
+        internal static bool IsObservedAttackClip(bool started, bool acted, bool active,
+            string clip, float duration, float time)
+        { return started && acted && active && !string.IsNullOrWhiteSpace(clip) &&
+            Finite(duration) && duration > 0 && Finite(time) && time >= 0; }
+
         // An unreadable native spear may expose bounds, not vertices. The
         // end-centre estimate must include the full transverse uncertainty;
         // never present a bounding-box corner as a measured surface vertex.

@@ -7,6 +7,21 @@ Actual snapshot restored10:40:47UTC. All ten attempts preserved.
 Sprints14–16 complete;976 generated+29 wrappers=1005 visible,0 withheld.
 Laptop PR26 only, ZERO DATA imports. No production hook/new registration.
 
+## Current diagnostic checkpoint — read-only native clip evidence
+
+Native hand-attack OnUpdate can set IsActed after .1 seconds with no active
+animation. Therefore the old IsActed-only contact flag does not prove a clip
+played. The remaining measured spear miss is real, but its native style/clip
+versus owned pose cause is still open. No pose correction is selected yet.
+The exact issued UnitAttack now records action/style/variant, active clip,
+time/state/weight/speed at command samples and the exact rule event. The
+attached native main/off-hand settings census records styles, variants and
+clip-event metadata only. No native assets/curves exported, no playback or
+bone/target/rule mutation. Missing active clip fails the stronger predicate.
+New negative fallback regression:232 focused/2034 registered PASS; incremental
+exact-reference compile PASS. All47 runtime assertions/contact limits retained.
+Next exact-head complete prelaunch and guarded smoke/body batch; NOT QUALIFIED.
+
 ## Latest tenth exact batch — one original hybrid contact defect
 
 All prelaunch PASS:231 focused/2033 full86.3s, gate180.2s,
@@ -24,8 +39,9 @@ destruction/borrowed survival and environment/census restoration checks PASS.
 | Exact tail event5923 gap0.166540m | Measured original vertices PASS bounded quarter-metre contact gate. |
 |56 command poses plus6 exact contact poses, owned pairs isolated | Native faction/controller/party unchanged; no foreign damage. |
 
-Classification: original hybrid weapon visual/pose defect. No fixture,
-environment or restoration failure. ExitCode1 follows the structured FAIL.
+Classification: measured original hybrid weapon contact defect; native
+clip/style versus owned pose causation remains open after the IL audit above.
+No environment/restoration failure. ExitCode1 follows the structured FAIL.
 The view already faces the target; at the native contact instant the palm
 axis points across it. Adjacent-frame prediction was insufficient, which is
 why the new same-event pose is retained. No threshold waived or reinterpretation
