@@ -29,7 +29,7 @@
       16
     ],
     "currentSprint": 17,
-    "currentSubItem": "S16 COMPLETE AND PUBLISHED; S17 NOT QUALIFIED. Latest native8d3081c3 smoke11/body26 research PASS and exact07:21:34 restoration preserved at pushed5e3b2e1f. New fixture-only triangle-order/spear-metadata extension:226 focused/2028 registered tests and exact-reference incremental compile PASS; full exact-head prelaunch/runtime NOT RUN. Current original-pose replay is closed while native supporting art looks open; no native reflected drivers evidenced. Probe reverses only exact owned original triangle indices for a supporting comparison, restores in finally, asserts normals/material identity unchanged; adds three checks for body29. Reads existing material state and Salamander primary-spear prefab/component/bounds/WeaponSnap.SnapTo anchors only, no equip/native geometry export/visibility or culling override. Original payloads and production unchanged. Next freeze exact candidate, full prelaunch with fresh14-reference bundle, guarded fresh-Steam smoke/body29, exact restoration and evidence-backed visual/weapon work. Printed profiles/signatures and full Sprint17 hidden/publication remain open;976+29=1005 visible. No DATA import; Phase2C authorized but deferred.",
+    "currentSubItem": "S16 COMPLETE AND PUBLISHED; S17 NOT QUALIFIED. Exact32b2f26e full prelaunch PASS:226 focused/2028 full83.7s, full gate179.1s,491 preflight/81 orchestration/17 provenance, strict318-member package; fresh Steam smoke11/body29 complete batch PASS. All six supporting native art frames inspected: reversed triangle order makes snake coils and hybrid surface solid, with exact restoration of indices/normals/material identity and no visibility/culling/rig change. No original payload or production change. Existing TH_SpearArmy model/1.7707m local-Y bounds/R_Palm WeaponPivot recorded, not grip/contact proof. Generic SpecialAttack survey was not exhaustive; enumerate actual Bite/Tail types. Next S17-only authored winding correction/tests/backface-aware review, bounded native spear and actual attack/contact diagnostics, then printed profiles/signatures and full Sprint17 hidden/publication. Actual0752138198384Z snapshot exactly restored07:59:27UTC, no game/lease/staging/save write.976+29=1005 visible. No DATA import; Phase2C authorized but deferred.",
     "sprint17PrivatePrototypes": {
       "status": "Six original files staged for bounded body acceptance; not automatically attached or runtime qualified",
       "source": "assets-source/original-models/sprint17-serpents/SOURCE.md",
@@ -61,8 +61,8 @@
     },
     "sprint16LaptopCorrectionReview": "planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-FIXTURE-REPAIR.md",
     "dataSalvageAudit": "planning/EXPANDED-SUMMONING-PHASE2B-DATA-SALVAGE-AUDIT.md",
-    "lastGuardedRuntimePass": "Exact8d3081c3 research ONLY: smoke11/11; 20261006T0717492333982Z-disposable-expanded-summoning-serpentine-bodies26/26; complete batch PASS. S16 complete; S17 final visual/gameplay NOT QUALIFIED.",
-    "lastGuardedRestoration": "20261006T0714257255801Z actual snapshot restored2026-10-06T07:21:34.2656814Z; journal763DD4F79FE9B0FE45C9FBC2372C4A2E6DBE852BF913AE76FA6DCF68D5E9C746; exact restoration VERIFIED, no game/lease/staging/save write",
+    "lastGuardedRuntimePass": "Exact32b2f26e research ONLY: smoke11/11; 20261006T0755404990129Z-disposable-expanded-summoning-serpentine-bodies29/29; complete batch PASS. S16 complete; S17 final visual/gameplay NOT QUALIFIED.",
+    "lastGuardedRestoration": "20261006T0752138198384Z actual snapshot restored2026-10-06T07:59:27.6045620Z; journal27AFD367DDA5E61485AC3BB8D34C53BB4AE85AE76785F5ED872E43C05A1A46A5; exact restoration VERIFIED, no game/lease/staging/save write",
     "activePullRequest": 26,
     "archivedSalvagePullRequest": 27,
     "giantWaspPublished": true,

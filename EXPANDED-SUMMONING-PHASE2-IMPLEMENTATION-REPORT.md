@@ -87,13 +87,17 @@ tail is partly occluded and spear absent. Investigate actual winding/deformation
 do not infer final art/contact acceptance from floor PASS. Spear/contact/lifecycle,
 printed profiles and full Sprint17 hidden/publication follow. No DATA import.
 
-Containing diagnostic extension (NOT RUN): current8d original replay has closed
-coils and positive driver determinants, so native reflection is not evidenced.
-The closed fixture now compares both triangle orders on the exact owned mesh,
-restores in finally and pins normals/material identity; research29 assertions.
-Material state and existing primary-spear prefab/bounds/WeaponSnap anchors are
-read only. No equip/native geometry export or visibility/culling override.
-226 focused/incremental compile PASS; full exact-head prelaunch/runtime next.
+Latest exact32b2f26e diagnostic PASS:226 focused/2028 full83.7s, full gate179.1s,
+491 preflight/81 orchestration/17 provenance, strict318-member package; fresh
+Steam smoke11/body29 and complete batch PASS. All six supporting native images
+inspected as art only: reversed triangle order renders the snake coils and
+hybrid surface solid. Original indices restore exactly with unchanged normals,
+materials/vertices/rig. Next S17-only exporter correction, not a global winding
+or culling workaround. Read-only TH_SpearArmy bounds and R_Palm WeaponPivot
+are metadata, not spear grip/contact proof. Generic SpecialAttack survey does
+not enumerate all Bite/Tail actions; extend that bounded diagnostic too.
+Actual0752138198384Z snapshot restored07:59:27UTC;136/.117/exact tree, no game/
+lease/staging/save write. Original assets/production unchanged; S17 NOT QUALIFIED.
 
 Sprint 17's [bounded native-rig survey](planning/EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md)
 uses the native Medium Water Elemental source of the proposed serpentine

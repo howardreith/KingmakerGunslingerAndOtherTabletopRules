@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "status": "Sprints14-16 complete; Sprint17 NOT QUALIFIED. Latest exact8d3081c3 body-support research PASS26/26; complete batch PASS and exact restoration. No printed-profile, final visual or gameplay acceptance.",
+  "status": "Sprint17 NOT QUALIFIED; six exact original-body research attempts preserved; latest reversible winding diagnostic PASS, sampled support/cleanup PASS; original winding correction and weapon/contact/gameplay gates remain open.",
   "scope": "Original body binding, native movement and owned resource lifetime only; no gameplay/publication qualification",
   "attempts": [
     {
@@ -845,6 +845,227 @@
         "byteReproduced": true,
         "capturedReplayMatchesLiveSupport": true,
         "failedPrototypesPreserved": "v4-v6 identity/alignment/underside/transition panels; no failed art claimed acceptable."
+      }
+    },
+    {
+      "candidate": "32b2f26e04d6b36471d39586b64731429afd8cbc",
+      "sourceFingerprint": "d8495a15dc75b6074c6a084447e0a7f67a1d89548f7052e41d959c287bcf0c53",
+      "dllSha256": "14bee1c2098ca297e438ac0ae8ca7946ad16c6fa045bc3690320c2c0c1084f26",
+      "dllMvid": "9575ffaf-3a64-455d-bbdf-b7877325c4c8",
+      "packageSha256": "92e99c4fa6921e4bb881e54939f86ff8bdd9458ee816529148fcff6f2c297ee0",
+      "packageMembers": 318,
+      "version": "0.0.141",
+      "prelaunch": {
+        "focused": 226,
+        "full": 2028,
+        "fullSeconds": 83.7,
+        "completeGateSeconds": 179.1,
+        "runtimePreflight": 491,
+        "orchestration": 81,
+        "referenceProvenance": 17,
+        "persistenceWiring": 11,
+        "persistenceScopes": 3,
+        "persistenceRejections": 19,
+        "crowdRoundTrips": 5,
+        "crowdRejections": 7,
+        "exactBuildAndStrictPackage": "PASS"
+      },
+      "runs": [
+        {
+          "scenario": "working-save-smoke",
+          "startedAtUtc": "2026-10-06T07:52:39.5965396Z",
+          "parameters": {},
+          "launcherOutcome": "Clean",
+          "exitCode": 0,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T0752405983120Z-working-save-smoke",
+          "requestId": "20261006T0752406295611Z-42387160ee214eb583030f5f8684354e",
+          "requestSha256": "aea0c785e791f85c15a105eb7604da5310879d563610ee8c3b244c0feadd3bc5",
+          "resultSha256": "fac965003154f794800f1699da02479d0671bae0d939cb35f1c9e2ffb4dab15d",
+          "assertions": 11,
+          "passed": 11,
+          "failed": [],
+          "orchestrationSha256": "87d6207b2e8c98b61411c3d862d3972441b98fc3d07c1f09446a8d85d838cb61",
+          "processId": 34288,
+          "processStartedUtc": "2026-10-06T07:52:41.6350506Z",
+          "scenarioStatus": "PASS",
+          "outcome": "PASS",
+          "completedAtUtc": "2026-10-06T07:55:34.2413642Z"
+        },
+        {
+          "scenario": "disposable-expanded-summoning-serpentine-bodies",
+          "startedAtUtc": "2026-10-06T07:55:39.7068052Z",
+          "parameters": {},
+          "launcherOutcome": "Clean",
+          "exitCode": 0,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T0755404990129Z-disposable-expanded-summoning-serpentine-bodies",
+          "requestId": "20261006T0755404990129Z-b9688e0e07cd4826a834abff583929c6",
+          "requestSha256": "be64ca3ede9620e0b3c0fac771a5ca2abc66c4869378fec66debd6bab28224e6",
+          "researchMetadata": [
+            {
+              "key": "viper",
+              "scope": "original body binding/movement/lifetime only; not printed profile or attack/contact qualification",
+              "samples": 12,
+              "travel": 2.45604873,
+              "maxVelocity": 3.04798937,
+              "supportingFrameSha256": "82fd958d0b72bec868d85995cefc903942f78ff4db8175a609a93ea8f5c9791c",
+              "reverseWindingFrameSha256": "a81669dff7c8faa710f857bf017ddc46ee51868a43f17427dbb999979a65c6ac",
+              "materialResearch": {
+                "shader": "PF/StandardDynamic",
+                "renderQueue": 2450,
+                "keywords": [
+                  "FOG_OF_WAR_AFFECTED",
+                  "FOG_OF_WAR_DISSOLVE_ON",
+                  "SPECULAR_ON",
+                  "_ALPHAPREMULTIPLY_ON",
+                  "_ALPHATOMASK_OFF",
+                  "_RIMLIGHTING_OFF",
+                  "_RIMSHADENDOTL_OFF",
+                  "_VERTEXINTERACTION_OFF"
+                ],
+                "declaredFloatProperties": {
+                  "_Cull": null,
+                  "_CullMode": null,
+                  "_ZWrite": 1,
+                  "_ZTest": null,
+                  "_SrcBlend": 1,
+                  "_DstBlend": 0,
+                  "_Cutoff": null,
+                  "_AlphaClip": null,
+                  "_Alpha": null,
+                  "_Opacity": null,
+                  "_Dissolve": 0
+                },
+                "scope": "read only; no visibility/culling override; no shader or texture export"
+              },
+              "minClearance": 0.00290822983,
+              "maxClearance": 0.00290822983
+            },
+            {
+              "key": "constrictor-snake",
+              "scope": "original body binding/movement/lifetime only; not printed profile or attack/contact qualification",
+              "samples": 12,
+              "travel": 2.46460152,
+              "maxVelocity": 3.04798913,
+              "supportingFrameSha256": "2b8f94122d018d72038d9f7c09484792a4f4d74d2c61f2c7ac03aa6dc480990c",
+              "reverseWindingFrameSha256": "8f5e8169856f5d33b4b03a36702b060f111a773e75658aa3c504f391150420c8",
+              "materialResearch": {
+                "shader": "PF/StandardDynamic",
+                "renderQueue": 2450,
+                "keywords": [
+                  "FOG_OF_WAR_AFFECTED",
+                  "FOG_OF_WAR_DISSOLVE_ON",
+                  "SPECULAR_ON",
+                  "_ALPHAPREMULTIPLY_ON",
+                  "_ALPHATOMASK_OFF",
+                  "_RIMLIGHTING_OFF",
+                  "_RIMSHADENDOTL_OFF",
+                  "_VERTEXINTERACTION_OFF"
+                ],
+                "declaredFloatProperties": {
+                  "_Cull": null,
+                  "_CullMode": null,
+                  "_ZWrite": 1,
+                  "_ZTest": null,
+                  "_SrcBlend": 1,
+                  "_DstBlend": 0,
+                  "_Cutoff": null,
+                  "_AlphaClip": null,
+                  "_Alpha": null,
+                  "_Opacity": null,
+                  "_Dissolve": 0
+                },
+                "scope": "read only; no visibility/culling override; no shader or texture export"
+              },
+              "minClearance": 0.00184631348,
+              "maxClearance": 0.00184679031
+            },
+            {
+              "key": "salamander",
+              "scope": "original body binding/movement/lifetime only; not printed profile or attack/contact qualification",
+              "samples": 12,
+              "travel": 2.46562,
+              "maxVelocity": 3.04798961,
+              "supportingFrameSha256": "732386d3c9199d2709471efc37bd092308aaf74ab5acd530389f75dbcd5a122e",
+              "reverseWindingFrameSha256": "c4fbf050c4064d7aceeed5512771b6a3e11c12c1c6f252b1b1367b441fe9b3ee",
+              "materialResearch": {
+                "shader": "PF/StandardDynamic",
+                "renderQueue": 2000,
+                "keywords": [
+                  "DISSOLVE_ON",
+                  "FOG_OF_WAR_AFFECTED",
+                  "FOG_OF_WAR_DISSOLVE_ON",
+                  "_ALPHATOMASK_OFF",
+                  "_RIMLIGHTING_OFF",
+                  "_RIMSHADENDOTL_OFF",
+                  "_VERTEXINTERACTION_OFF"
+                ],
+                "declaredFloatProperties": {
+                  "_Cull": null,
+                  "_CullMode": null,
+                  "_ZWrite": 1,
+                  "_ZTest": null,
+                  "_SrcBlend": 1,
+                  "_DstBlend": 0,
+                  "_Cutoff": null,
+                  "_AlphaClip": null,
+                  "_Alpha": null,
+                  "_Opacity": null,
+                  "_Dissolve": 0
+                },
+                "scope": "read only; no visibility/culling override; no shader or texture export"
+              },
+              "minClearance": 0.00500011444,
+              "maxClearance": 0.00500011444
+            }
+          ],
+          "bodyReviewSha256": "083a13e42bec20aae5b3b872e1819c0f081f8883f3820c4b1f8e609242a11f29",
+          "resultSha256": "4747423dc8f29853b97e924a0716a10921f4297e8d215212d9338ae22fd478ed",
+          "assertions": 29,
+          "passed": 29,
+          "failed": [],
+          "orchestrationSha256": "9676e2ce9efa8d6170c972d7ba59e653a1897f688da876f23e5fab7af838dc24",
+          "processId": 33812,
+          "processStartedUtc": "2026-10-06T07:55:42.2176240Z",
+          "scenarioStatus": "PASS",
+          "outcome": "PASS",
+          "completedAtUtc": "2026-10-06T07:59:24.9581902Z"
+        }
+      ],
+      "batchStatus": "PASS",
+      "batchJournalSha256": "27AFD367DDA5E61485AC3BB8D34C53BB4AE85AE76785F5ED872E43C05A1A46A5",
+      "guardedDriverSha256": "E15FCF8B65E84658064E635FA2CA7FBA1891263D59389D774DA03831BA84EE3F",
+      "buildSidecarSha256": "4BE45BC4564C59C1C3BACDBE1AF4A654DEB33CFC212544BB7C068349F49B7B5E",
+      "gameResearchStatus": "PASS29/29; original binding, native movement, sampled support, exact reversible triangle-order comparison, rollback and owned-resource cleanup ONLY. Final visuals, weapon/contact/full lifecycle/gameplay NOT QUALIFIED.",
+      "saveWritingApiObserved": false,
+      "restoration": {
+        "status": "VERIFIED",
+        "snapshot": "20261006T0752138198384Z",
+        "completedAtUtc": "2026-10-06T07:59:27.6045620Z",
+        "before": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "after": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "leaseStatus": "Completed",
+        "recoveryRequired": false,
+        "leaseReleased": true,
+        "noGame": true,
+        "lockPresent": false,
+        "stagingPresent": false
+      },
+      "findings": {
+        "artComparison": "All six native supporting frames inspected as ART ONLY. Reversed original triangle order renders the snake coils and hybrid surface solid; original order exposes apparent inner surfaces/open coils. Normals, material references, bones, visibility/culling, and vertices stayed unchanged; indices restored exactly. Evidence supports an S17-only authored winding correction, not a global exporter or shader change.",
+        "material": "PF/StandardDynamic; original snake queue2450, hybrid2000; ZWrite1, SrcBlend1, DstBlend0, Dissolve0 on all3; no declared Cull/CullMode. No property changes.",
+        "primarySpear": "Existing project weapon99394d453c6f425f84d4b92f7a8deea0, category Spear, native TH_SpearArmy/WP_SpearArmy model; bounds approximately .0494 x1.7707 x.0386m, local longitudinal Y. Existing WeaponPivot follows R_Palm. This is metadata, not equipped-view or two-hand grip/contact proof.",
+        "animationSurveyLimit": "Generic UnitAnimationType.SpecialAttack returns only the first matching action. Earlier survey is NOT an exhaustive census of UnitAnimationSpecialAttackType.Bite/Tail/etc. Expand the bounded census and prove actual commands before deciding attack support.",
+        "noNativeGeometryExport": true
       }
     }
   ]
