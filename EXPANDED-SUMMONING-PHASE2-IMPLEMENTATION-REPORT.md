@@ -66,12 +66,17 @@ not include or qualify a weapon. Next bounded native motion/contact and
 owned-view lifecycle proof, separate spear/tail seam, then profiles/signatures.
 [Source/private hashes](assets-source/original-models/sprint17-serpents/SOURCE.md).
 
-The next bounded research extension records current attached bone positions,
+Exact c55b4f08 research records current attached bone positions,
 native action clip names/durations (not curves), and the archived Lizardfolk
 greatclub prefab read-only without spawning its campaign NPC. This helps
 resolve native pose and potential manufactured-weapon carrier questions.
-219 focused/incremental compile PASS; its new exact gate and 13-assertion/
-four-capture guarded batch have NOT RUN. No asset or production change.
+Complete prelaunch PASS (219 focused/2021 full/486 preflight), smoke 11/11,
+survey 13/13 and four captures. Actual snapshot 20261006T0334314516624Z
+restored exactly at 03:41:08 UTC; no game/lock/staging/save write. Both
+Lizardfolk body/armor bind frames match exactly (39/19 bones). Water's special
+actions are slams; worm's locomotion list exposes only idle and the sampled
+body is reared. Credible snake motion and actual spear/tail contact remain
+mandatory, not inferred from metadata. No asset or production change.
 
 ## Historical first hidden candidate, October 5
 

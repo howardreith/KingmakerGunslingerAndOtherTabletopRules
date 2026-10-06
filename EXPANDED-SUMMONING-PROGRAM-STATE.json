@@ -29,7 +29,7 @@
       16
     ],
     "currentSprint": 17,
-    "currentSubItem": "S16 COMPLETE AND PUBLISHED; S17 NOT QUALIFIED. Exact a173 research PASS and restored; private original prototypes pushed fc1e880e (14 Blender tests, 74 panels, full 2021 PASS). Next bounded research extension adds current attached pose/action metadata and one read-only detached greatclub prefab, no fourth actor or production changes. 219 focused/incremental compile PASS; freeze new exact artifact, all gates then smoke and 13-assertion/four-capture survey with exact restoration. Actual Salamander spear/tail seam and profiles remain open. No shipped prototypes. 976 + 29 = 1005 visible; zero DATA imports.",
+    "currentSubItem": "S16 COMPLETE AND PUBLISHED; S17 NOT QUALIFIED. Exact c55b4f08 research all prelaunch PASS, smoke 11/11, survey 13/13, four captures and exact restoration at 03:41:08 UTC. Private prototypes fc1e880e: 14 Blender tests, 74 panels, none shipped. Two-hand Lizardfolk body/armor frames match 39/19 bones exactly, grip unqualified. Water exposes slams; worm locomotion idle only and sampled body reared; credible snake motion still mandatory. Next bounded owned original-view integration, actual Salamander spear/tail seam and printed profiles. No fourth actor, production change or save write. 976 + 29 = 1005 visible; zero DATA imports.",
     "sprint17PrivatePrototypes": {
       "status": "AUTHORING ONLY; NOT PACKAGED OR RUNTIME QUALIFIED",
       "source": "assets-source/original-models/sprint17-serpents/SOURCE.md",
@@ -47,17 +47,17 @@
       "saveWrite": false
     },
     "sprint17FallbackResearch": {
-      "candidate": "a173da3a396b3c7f1bddef3bee92c476150d8639",
-      "status": "RESEARCH ONLY PASS; smoke 11/11; three-target metadata 11/11; exact restoration PASS",
+      "candidate": "c55b4f084cfabeafa83be839c47683330e78eb76",
+      "status": "RESEARCH ONLY PASS; smoke 11/11; pose/weapon metadata 13/13 with four captures; exact restoration PASS",
       "evidence": "planning/EXPANDED-SUMMONING-SPRINT17-FALLBACK-RESEARCH-EVIDENCE.json",
       "correction": "Missing versus empty clip enumeration distinguished and exact-artifact tested; b289 fixture failure preserved",
-      "restoration": "VERIFIED actual snapshot 20261006T0239169703799Z; lease Completed; no game, runtime lock or staging",
+      "restoration": "VERIFIED actual snapshot 20261006T0334314516624Z; lease Completed; no game, runtime lock or staging",
       "saveWrite": false
     },
     "sprint16LaptopCorrectionReview": "planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-FIXTURE-REPAIR.md",
     "dataSalvageAudit": "planning/EXPANDED-SUMMONING-PHASE2B-DATA-SALVAGE-AUDIT.md",
-    "lastGuardedRuntimePass": "Exact a173 research ONLY: smoke 11/11, 20261006T0242403834515Z-disposable-expanded-summoning-serpentine-survey 11/11. S16 publication 155ada89 remains complete; S17 gameplay/visuals NOT QUALIFIED.",
-    "lastGuardedRestoration": "20261006T0239169703799Z actual snapshot restored 2026-10-06T02:45:49.8363590Z; journal 4D1413AE11DB29A8E6C1C2E43F3553E87060CAA47914F6A80CF586B879C62265",
+    "lastGuardedRuntimePass": "Exact c55 research ONLY: smoke 11/11, 20261006T0337577273450Z-disposable-expanded-summoning-serpentine-survey 13/13. S16 publication 155ada89 remains complete; S17 gameplay/visuals NOT QUALIFIED.",
+    "lastGuardedRestoration": "20261006T0334314516624Z actual snapshot restored 2026-10-06T03:41:08.6416921Z; journal CD66E4576A3DBF3845F85290A1092A31412C3BAE5CC858A02ADF7FDDFE440330",
     "activePullRequest": 26,
     "archivedSalvagePullRequest": 27,
     "giantWaspPublished": true,

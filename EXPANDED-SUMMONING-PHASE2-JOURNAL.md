@@ -1,5 +1,21 @@
 # Expanded Summoning Phase 2 journal
 
+## October 6, 03:41 UTC — exact pose/weapon research 13/13, restored
+
+Exact c55b4f08 full prelaunch PASS: 219 focused/2021 full (87.5s), 486
+preflight, 68 orchestration, request tests, repository/static/icon/manifest,
+clean exact Release and strict deterministic 312-member package. Fresh Steam
+smoke 11/11, extended survey 13/13, all four metadata files. No fourth actor,
+prefab mutation, save write or protected-baseline access. Native cleanup
+restores 955 original unit references, three party references and area state.
+Actual snapshot 20261006T0334314516624Z restored exactly at 03:41:08 UTC:
+136 files/.117/original fingerprint. Lease Completed; no game/lock/staging.
+Two-hand Lizardfolk body/armor frames match 39/19 bones exactly. Water exposes
+slam clips, worm locomotion only idle and a reared sampled pose. These remain
+motion/contact risks to prove, not waivers or owner blockers. Next bounded
+owned original-view integration, actual spear/tail seam and profiles. S17
+NOT QUALIFIED; S14-16 complete. [Hashes](planning/EXPANDED-SUMMONING-SPRINT17-FALLBACK-RESEARCH-EVIDENCE.json).
+
 ## October 6 — bounded attached-pose and detached weapon-prefab research
 
 Private original authoring checkpoint fc1e880e pushed through policy wrapper;
