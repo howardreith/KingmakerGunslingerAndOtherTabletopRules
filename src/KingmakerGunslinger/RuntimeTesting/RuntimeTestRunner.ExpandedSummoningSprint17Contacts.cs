@@ -100,6 +100,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (handle == null) return result;
             result["handleStarted"] = handle.IsStarted; result["handleActed"] = handle.IsActed;
             result["handleTime"] = handle.GetTime(); result["weaponStyle"] = handle.AttackWeaponStyle.ToString();
+            result["animationTargetDistance"] = handle.AttackTargetDistance;
             result["variant"] = handle.Variant;
             result["actionClass"] = handle.Action == null ? null : handle.Action.GetType().FullName;
             result["actionName"] = handle.Action == null ? null : handle.Action.name;
