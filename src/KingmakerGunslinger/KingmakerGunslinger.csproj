@@ -1576,4 +1576,12 @@
   <ItemGroup>
     <Compile Include="RuntimeTesting\RuntimeTestRunner.UnpublishedWhiteoutFoundation.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ElementalRaces\WhiteoutFoundationPolicy.cs" />
+    <Compile Include="ElementalRaces\WhiteoutNativeMechanics.cs" />
+    <Compile Include="RuntimeTesting\WhiteoutGuardedDiagnostics.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.WhiteoutAttackFixture.cs" />
+  </ItemGroup>
 </Project>

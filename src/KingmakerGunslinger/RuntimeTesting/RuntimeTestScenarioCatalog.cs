@@ -6,6 +6,7 @@ namespace KingmakerGunslinger.RuntimeTesting
     internal static class RuntimeTestScenarioCatalog
     {
         internal const string ObserveUnpublishedRaceTraitFoundations = "observe-unpublished-race-trait-foundations";
+        internal const string ObserveUnpublishedWhiteoutFoundation = "observe-unpublished-whiteout-foundation";
         internal const string ObserveWhiteoutDisposableWeatherFixture = "observe-whiteout-disposable-weather-fixture";
         internal const string ObserveUnpublishedAerialObserverFoundation = "observe-unpublished-aerial-observer-foundation";
         internal const string ObserveWhiteoutWeatherCatalog = "observe-whiteout-weather-catalog";
@@ -631,6 +632,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             new HashSet<string>(StringComparer.Ordinal)
             {
                 ObserveUnpublishedRaceTraitFoundations,
+                ObserveUnpublishedWhiteoutFoundation,
                 ObserveWhiteoutDisposableWeatherFixture,
                 ObserveUnpublishedAerialObserverFoundation,
                 ObserveWhiteoutWeatherCatalog,

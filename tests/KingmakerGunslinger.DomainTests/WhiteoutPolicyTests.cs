@@ -77,7 +77,18 @@ namespace KingmakerGunslinger.DomainTests
         internal static void NoSaveVisibleAcquisitionIdentity()
         { string registry=File.ReadAllText(Path.Combine(Environment.CurrentDirectory,"blueprints","blueprints.json")); Assertions.False(registry.Contains("Whiteout"),"No registered/serialized or published Whiteout identity at the observation stage."); }
         internal static void NoTraitOrFeatPublication()
-        { string root=Path.Combine(Environment.CurrentDirectory,"src","KingmakerGunslinger"); foreach(string file in Directory.GetFiles(root,"*.cs",SearchOption.AllDirectories).Where(f=>!f.Contains("RuntimeTesting") && !f.EndsWith("WhiteoutPolicy.cs"))) Assertions.False(File.ReadAllText(file).Contains("Whiteout"),"No acquisition/native patch binding at observation stage: "+file); }
+        {
+            string root=Path.Combine(Environment.CurrentDirectory,"src","KingmakerGunslinger");
+            // The continuation authorizes dormant mechanics, but still forbids
+            // every bootstrap, selection, grant, setting and visible identity.
+            string[] foundations={"WhiteoutPolicy.cs","WhiteoutFoundationPolicy.cs","WhiteoutNativeMechanics.cs"};
+            foreach(string file in Directory.GetFiles(root,"*.cs",SearchOption.AllDirectories).Where(f=>!f.Contains("RuntimeTesting") && !foundations.Contains(Path.GetFileName(f))))
+                Assertions.False(File.ReadAllText(file).Contains("Whiteout"),"No ordinary Whiteout acquisition/publication reference: "+file);
+            string mechanics=File.ReadAllText(Path.Combine(root,"ElementalRaces","WhiteoutNativeMechanics.cs"));
+            Assertions.True(mechanics.Contains("HiddenInUi") && mechanics.Contains("Guid.NewGuid()") && mechanics.Contains("ReferenceEquals(buff.Blueprint,ProviderIdentity)"),"Only the exact hidden unregistered transient provider can bind dormant mechanics.");
+            foreach(string token in new[]{"BlueprintFeature","LocalizedString","BasicFeatSelection","racial_traits",".Register(","m_Icon"})
+                Assertions.False(mechanics.Contains(token),"Foundation must not publish or create an icon consumer: "+token);
+        }
         internal static void NoIconOrVisibleLocalization()
         { string source=File.ReadAllText(Path.Combine(Environment.CurrentDirectory,"src","KingmakerGunslinger","ElementalRaces","WhiteoutPolicy.cs")); foreach(string token in new[]{"m_Icon","LocalizationService","BlueprintFeature","BlueprintBuff","HarmonyPatch"}) Assertions.False(source.Contains(token),"Pure policy is unpublished: "+token); }
         internal static void ReplayedRuleUsesOneRoll()

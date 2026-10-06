@@ -716,6 +716,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableMagicCircleUi &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableMagicCircleTerrain &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveUnpublishedRaceTraitFoundations &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.ObserveUnpublishedWhiteoutFoundation &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWhiteoutDisposableWeatherFixture &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveUnpublishedAerialObserverFoundation &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveWhiteoutWeather &&
@@ -2073,6 +2074,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleUi ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleTerrain ||
                 _request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedRaceTraitFoundations ||
+                _request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedWhiteoutFoundation ||
                 _request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutDisposableWeatherFixture ||
                 _request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedAerialObserverFoundation ||
                 _request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutWeather ||
@@ -2195,6 +2197,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleUi ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleTerrain ||
                 _request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedRaceTraitFoundations ||
+                _request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedWhiteoutFoundation ||
                 _request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutDisposableWeatherFixture ||
                 _request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedAerialObserverFoundation ||
                 _request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutWeather ||
@@ -2867,7 +2870,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (loading.IsLoadingInProcess || loading.IsLoadingScreenActive || loading.IsManualLoadingScreenActive) return;
                     Complete(RunUnpublishedRaceTraitFoundations());
                 }
-                else if (_request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutDisposableWeatherFixture)
+                else if (_request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedWhiteoutFoundation ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutDisposableWeatherFixture)
                 { PollWhiteoutDisposableFixture(); }
                 else if (_request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutWeather)
                 { PollWhiteoutWeather(); }
@@ -6120,6 +6124,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleUi ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleTerrain ||
                 _request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedRaceTraitFoundations ||
+                _request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedWhiteoutFoundation ||
                 _request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutDisposableWeatherFixture ||
                 _request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedAerialObserverFoundation ||
                 _request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutWeather ||
