@@ -251,12 +251,13 @@ Swallow whole has a qualified project carrier from the Purple Worm.
 
 ## Sprint 17
 
-Latest separate native-action census8022fee2: smoke11/metadata14 PASS with
-all exact prelaunch gates (236 focused/2038 full). All11 Lizardfolk prefabs
-lack PiercingTwoHanded; FreeHands has14 slots with null3,5,8. Earlier failed
-reader attempt preserved. Exact restored13:02:18UTC; no carrier adoption.
-Next bounded actual spear/longspear donor audit; no style/contact substitution.
-[Census disposition](EXPANDED-SUMMONING-SPRINT17-NATIVE-ACTION-REVIEW.md).
+Latest separate spear census291059aa: smoke11/metadata15 PASS with all exact
+prelaunch gates (237 focused/2039 full). Three actual spear/longspear prefabs
+reference native human two-handed piercing clips. No compatible39-bone hybrid
+binding follows from that fact; no action adopted. Exact restored13:33:27UTC.
+The closed11 Lizardfolk census remains negative. Next bounded project-owned
+human-prefab binding/weapon proof, not a clip transplant or assumed cape/tail.
+[Census disposition](EXPANDED-SUMMONING-SPRINT17-SPEAR-CARRIER-AUDIT.md).
 
 Current bounded evidence (October 6): exact570a14cd all prelaunch PASS;
 smoke11/body33 of35 FAIL, exact snapshot restored12:11:30UTC. S17 NOT QUALIFIED.
