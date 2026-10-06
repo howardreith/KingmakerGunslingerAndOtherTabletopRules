@@ -51,7 +51,9 @@ namespace KingmakerGunslinger.Summoning
                 "aurochs|5bb9579fdb2b26b48bb10d61c81cfdfb|1",
                 "bison|5bb9579fdb2b26b48bb10d61c81cfdfb|1",
                 "rhinoceros|028cc6f46e7998f46855a33ffde89567|1",
-                "woolly-rhinoceros|028cc6f46e7998f46855a33ffde89567|1"
+                "woolly-rhinoceros|028cc6f46e7998f46855a33ffde89567|1",
+                "viper|bf2216f48b3f4d24c9c502007649340d|1",
+                "constrictor-snake|bf2216f48b3f4d24c9c502007649340d|1"
             });
         }
 

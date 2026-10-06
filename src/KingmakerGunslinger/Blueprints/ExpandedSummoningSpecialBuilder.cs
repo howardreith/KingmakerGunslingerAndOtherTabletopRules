@@ -1724,6 +1724,15 @@ namespace KingmakerGunslinger.Blueprints
                 MonitorLizardCombatTraitsSymbol, "MonitorLizard", "Monitor Lizard Grab",
                 "A bite hit lets the lizard attempt to grab a foe no larger than itself.",
                 new GrabSpec { Primary = true, Hold = hold, Grappled = grappled });
+            ConfigureGrabber(library, bySymbol, "KMG.Summoning.Unit.ConstrictorSnake",
+                "KMG.Summoning.Special.ConstrictorSnake.CombatTraits",
+                "ConstrictorSnake", "Constrictor Snake Grab and Constrict",
+                "A bite hit allows a grab against a foe no larger than the snake. " +
+                "A successful grab and each later successful maintain deal constrict damage " +
+                "(1d4+4 at baseline, with live size and Strength). Active holds reset cleanly on reload.",
+                new GrabSpec { Primary = true, Hold = hold, Grappled = grappled,
+                    ConstrictDice = 1, ConstrictDie = DiceType.D4, ConstrictBonus = 4,
+                    LiveSerpentineConstrict = true });
             ConfigureGrabber(library, bySymbol, GrizzlyBearUnitSymbol,
                 GrizzlyBearCombatTraitsSymbol, "GrizzlyBear", "Grizzly Bear Grab",
                 "A claw hit lets the bear attempt to grab a foe no larger than itself.",
@@ -2011,7 +2020,9 @@ namespace KingmakerGunslinger.Blueprints
             internal Size SwallowMaxSize;
             internal int SwallowDelta = -1;
             internal int ConstrictDice;
+            internal DiceType ConstrictDie = DiceType.D6;
             internal int ConstrictBonus;
+            internal bool LiveSerpentineConstrict;
             /// <summary>
             /// A crocodilian's key. The death roll's dice and flat bonus are
             /// read from its rules profile rather than written here, because
@@ -2605,8 +2616,9 @@ namespace KingmakerGunslinger.Blueprints
             grab.SwallowMaxSize = spec.SwallowMaxSize;
             grab.SwallowMaxSizeDelta = spec.SwallowDelta;
             grab.ConstrictDiceCount = spec.ConstrictDice;
-            grab.ConstrictDiceType = DiceType.D6;
+            grab.ConstrictDiceType = spec.ConstrictDie;
             grab.ConstrictBonus = spec.ConstrictBonus;
+            if (spec.LiveSerpentineConstrict) grab.ConstrictProfileOwner = unit;
             if (!string.IsNullOrEmpty(spec.DeathRollCreatureKey))
             {
                 CrocodilianRulesProfile rules = CrocodilianRulesPolicy.For(

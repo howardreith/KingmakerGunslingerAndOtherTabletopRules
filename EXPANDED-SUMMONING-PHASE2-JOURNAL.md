@@ -1,5 +1,25 @@
 # Expanded Summoning Phase 2 journal
 
+## October 6 — hidden Medium snakes and original icons; source checks PASS only
+
+[Source checkpoint review](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SOURCE-REVIEW.md).
+250 focused /2048 unfiltered tests (82.1s), repository/static/icon/manifest,
+exact-reference dirty compile PASS. Registered Viper and Constrictor Snake
+without publishing:73 appended identities, all2836 prior entries unchanged,
+32 withheld roots;976 published +29 native wrappers =1005 visible. Own poison,
+land skills/HP, scoped live bite dice and constrict; eight new behavior/schema
+tests. Built-in image generation supplied two original paintings; small-size/
+grayscale review PASS, actual UI and HumanReview still pending.
+Source checks first exposed stale global ledger/package expectations and one
+missing namespace. All corrected; no gameplay assertion waived. Generator's
+29 historical-note rewrites were restored, and activation now leaves already
+active entries unchanged. Full suite finally2048/2048; no failed source result
+is reclassified as runtime evidence.
+No runtime/lease/deployment/save work. Last actual restoration remains a904's
+14:14:02UTC snapshot. Next committed source build/package, snake-body hooks/
+fixtures and bounded separate Salamander spear/tail. Sprint17 NOT QUALIFIED;
+Sprints14–16 complete; ZERO DATA ports; Phase2C authorized but deferred.
+
 ## October 6, 14:14 UTC — exact a904 bind diagnostic PASS, unsafe duplicates exposed
 
 Exact a90494e1: 238 focused / 2040 unfiltered tests (83.0s), complete gate

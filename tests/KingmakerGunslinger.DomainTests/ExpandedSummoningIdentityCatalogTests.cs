@@ -11,22 +11,22 @@ namespace KingmakerGunslinger.DomainTests
         {
             var first = ExpandedSummoningIdentityCatalog.Build();
             var second = ExpandedSummoningIdentityCatalog.Build();
-            Assertions.Equal(1848, first.Count, "Foundation identity count changed.");
-            Assertions.Equal(95, first.Count(value => value.PlannedType == "BlueprintUnit"), "Unit identity count changed.");
-            Assertions.Equal(1581, first.Count(value => value.PlannedType == "BlueprintAbility"), "Ability identity count changed.");
+            Assertions.Equal(1921, first.Count, "Foundation identity count changed.");
+            Assertions.Equal(97, first.Count(value => value.PlannedType == "BlueprintUnit"), "Unit identity count changed.");
+            Assertions.Equal(1645, first.Count(value => value.PlannedType == "BlueprintAbility"), "Ability identity count changed.");
             Assertions.Equal(2, first.Count(value => value.Symbol.StartsWith(
                 "KMG.Summoning.Native.", StringComparison.Ordinal)),
                 "Native tier-one preservation identity count changed.");
-            Assertions.Equal(72, first.Count(value => value.PlannedType == "BlueprintBuff"), "Buff identity count changed.");
+            Assertions.Equal(74, first.Count(value => value.PlannedType == "BlueprintBuff"), "Buff identity count changed.");
             Assertions.Equal(26, first.Count(value => value.PlannedType == "BlueprintAiCastSpell"), "AI identity count changed.");
             Assertions.Equal(14, first.Count(value => value.PlannedType == "BlueprintBrain"), "Brain identity count changed.");
             Assertions.Equal(1, first.Count(value => value.PlannedType == "IsEngagedConsideration"),
                 "Only the bounded crocodilian engagement scorer is registered.");
             Assertions.Equal(18, first.Count(value => value.PlannedType == "BlueprintItemWeapon"), "Weapon identity count changed.");
             Assertions.Equal(2, first.Count(value => value.PlannedType == "BlueprintWeaponType"), "Weapon-type identity count changed.");
-            Assertions.Equal(4, first.Count(value => value.PlannedType == "BlueprintUnitType"), "Unit-type identity count changed.");
+            Assertions.Equal(6, first.Count(value => value.PlannedType == "BlueprintUnitType"), "Unit-type identity count changed.");
             Assertions.Equal(17, first.Count(value => value.PlannedType == "BlueprintAbilityResource"), "Resource identity count changed.");
-            Assertions.Equal(14, first.Count(value => value.PlannedType == "BlueprintFeature"), "Feature identity count changed.");
+            Assertions.Equal(17, first.Count(value => value.PlannedType == "BlueprintFeature"), "Feature identity count changed.");
             Assertions.Equal(2, first.Count(value => value.PlannedType == "BlueprintAbilityAreaEffect"), "Area effect identity count changed.");
             // The alignment-mode toggle, plus the Shadow Mastiff's shadow
             // blend, whose printed text makes suspending and resuming it a
@@ -333,7 +333,7 @@ namespace KingmakerGunslinger.DomainTests
         internal static void LowTierNaturalProfilesAreExact()
         {
             ExpandedSummoningNaturalProfiles.Validate();
-            Assertions.Equal(47, ExpandedSummoningNaturalProfiles.All.Count,
+            Assertions.Equal(49, ExpandedSummoningNaturalProfiles.All.Count,
                 "Natural reconstruction count changed.");
             NaturalSummonProfile dog = ExpandedSummoningNaturalProfiles.For("dog");
             Assertions.Equal("Small", dog.Size, "Dog size changed.");
@@ -612,9 +612,9 @@ namespace KingmakerGunslinger.DomainTests
         internal static void TemplateExecutionsAreFamilyScoped()
         {
             var identities = ExpandedSummoningIdentityCatalog.Build();
-            Assertions.Equal(271, identities.Count(value => value.Symbol.EndsWith(".Celestial", StringComparison.Ordinal)),
+            Assertions.Equal(287, identities.Count(value => value.Symbol.EndsWith(".Celestial", StringComparison.Ordinal)),
                 "Celestial execution count changed.");
-            Assertions.Equal(271, identities.Count(value => value.Symbol.EndsWith(".Fiendish", StringComparison.Ordinal)),
+            Assertions.Equal(287, identities.Count(value => value.Symbol.EndsWith(".Fiendish", StringComparison.Ordinal)),
                 "Fiendish execution count changed.");
             Assertions.True(!identities.Any(value => value.Symbol.Contains(".SNA.") &&
                 (value.Symbol.EndsWith(".Celestial", StringComparison.Ordinal) ||
@@ -749,13 +749,13 @@ namespace KingmakerGunslinger.DomainTests
                     "Logical placement identity missing or duplicated: " + symbol);
                 found++;
             }
-            Assertions.Equal(976, found, "Logical placement traversal changed.");
+            Assertions.Equal(1008, found, "Logical placement traversal changed.");
         }
 
         internal static void DonorsCoverEveryFrozenCreature()
         {
             ExpandedSummoningDonorCatalog.Validate();
-            Assertions.Equal(95, ExpandedSummoningDonorCatalog.All.Count,
+            Assertions.Equal(97, ExpandedSummoningDonorCatalog.All.Count,
                 "Every unique creature requires exactly one frozen donor decision.");
             Assertions.Equal("676f8b7d0a170674cb6e504e0e30b4f0",
                 ExpandedSummoningDonorCatalog.For("invisible-stalker").Guid,
