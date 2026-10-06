@@ -1,0 +1,282 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Kingmaker;
+using Kingmaker.Blueprints;
+using Kingmaker.Controllers.Combat;
+using Kingmaker.Controllers.Units;
+using Kingmaker.EntitySystem.Entities;
+using Kingmaker.Enums;
+using Kingmaker.PubSubSystem;
+using Kingmaker.RuleSystem;
+using Kingmaker.RuleSystem.Rules;
+using Kingmaker.UI.Group;
+using Kingmaker.UI.SettingsUI;
+using Kingmaker.UnitLogic;
+using Kingmaker.UnitLogic.Abilities;
+using Kingmaker.UnitLogic.Commands;
+using Kingmaker.Utility;
+using Kingmaker.Visual.Animation.Kingmaker;
+using KingmakerGunslinger.Summoning;
+using Newtonsoft.Json.Linq;
+using UnityEngine;
+
+namespace KingmakerGunslinger.RuntimeTesting
+{
+    internal sealed partial class RuntimeTestRunner
+    {
+        private BlueprintUnit _serpentineBodyPrototype;
+        private bool _serpentineEnvironmentCaptured, _serpentineMode, _serpentinePause;
+        private TimeSpan _serpentineClock;
+        private UnitEntityData[] _serpentineAwake, _serpentineSelected;
+        private UnitEntityData _serpentineGroup;
+
+        private void CaptureSprint17BodyEnvironment()
+        {
+            if (_serpentineEnvironmentCaptured) throw new InvalidOperationException("Environment already captured.");
+            _serpentineMode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue;
+            _serpentinePause = Game.Instance.IsPaused;
+            _serpentineClock = Game.Instance.Player.GameTime;
+            _serpentineAwake = Game.Instance.State.AwakeUnits.ToArray();
+            _serpentineSelected = Game.Instance.UI.SelectionManagerPC.SelectedUnits.ToArray();
+            _serpentineGroup = GroupController.Instance.GetCurrentCharacter();
+            _serpentineEnvironmentCaptured = true;
+        }
+
+        private void RestoreSprint17BodyEnvironment()
+        {
+            if (!_serpentineEnvironmentCaptured) return;
+            Game.Instance.State.AwakeUnits.Clear();
+            Game.Instance.State.AwakeUnits.AddRange(_serpentineAwake);
+            Game.Instance.Player.UpdateIsInCombat();
+            SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = _serpentineMode;
+            Game.Instance.TurnBasedCombatController.Activate();
+            GroupController.Instance.SelectUnit(_serpentineGroup);
+            Game.Instance.UI.SelectionManagerPC.MultiSelect(_serpentineSelected.Select(value => value.View).ToArray(), false);
+            Game.Instance.Player.GameTime = _serpentineClock;
+            Game.Instance.IsPaused = _serpentinePause;
+            bool restored = Game.Instance.State.AwakeUnits.SequenceEqual(_serpentineAwake) &&
+                Game.Instance.UI.SelectionManagerPC.SelectedUnits.SequenceEqual(_serpentineSelected) &&
+                ReferenceEquals(GroupController.Instance.GetCurrentCharacter(), _serpentineGroup) &&
+                SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue == _serpentineMode &&
+                Game.Instance.IsPaused == _serpentinePause && Game.Instance.Player.GameTime == _serpentineClock;
+            _serpentineBodyAssertions.Add(Assertion("sprint17-body-environment-restored",
+                "exact awake, selection, group, mode, pause and clock snapshots", "restored=" + restored, restored,
+                "Native guarded fixture restoration; no save write."));
+            _serpentineEnvironmentCaptured = false;
+        }
+
+        private UnitEntityData SummonSprint17BodyCarrier(ExpandedSummoningCorrectionFixture fixture,
+            string key, out Sprint16ManualSummonControl control)
+        {
+            bool snake = SerpentineVisualPolicy.IsSnake(key);
+            BlueprintUnit published = fixture.Blueprints.OfType<BlueprintUnit>().Single(value =>
+                value.name == "KMG_Summoning_Unit_" + (snake ? "PurpleWorm" : "Salamander"));
+            BlueprintUnit prototype = published;
+            if (!snake)
+            {
+                if (key != "salamander" || _serpentineBodyPrototype != null ||
+                    published.Prefab.AssetId != SerpentineVisualPolicy.ClubShieldPrefab)
+                    throw new InvalidOperationException("Unreviewed hybrid prototype source.");
+                var twoHand = fixture.Blueprints.OfType<BlueprintUnit>().Single(value =>
+                    value.AssetGuid == "f080877221934ea40b29e1d9fa71bc1c");
+                if (twoHand.Prefab.AssetId != SerpentineVisualPolicy.TwoHandPrefab)
+                    throw new InvalidOperationException("Two-hand native view identity changed.");
+                prototype = _serpentineBodyPrototype = UnityEngine.Object.Instantiate(published);
+                prototype.name = "KMG_Runtime_Sprint17_SalamanderTwoHandBody";
+                prototype.Prefab = twoHand.Prefab;
+                // No native NPC facts, inventory, faction, loot or weapons
+                // are imported. No registration or shared blueprint mutation.
+            }
+            control = new Sprint16ManualSummonControl { Caster = fixture.Caster, Blueprint = prototype };
+            EventBus.Subscribe(control);
+            try
+            {
+                if (snake) return CastExpandedSummoningVariant(fixture.Blueprints, fixture.Caster,
+                    ExpandedSummoningOwnTierVariant("purple-worm", SummonMultiplicity.One), null, fixture.Evidence).Single();
+                var variant = ExpandedSummoningOwnTierVariant("salamander", SummonMultiplicity.One);
+                var data = new AbilityData(ResolveExpandedSummoningExecution(fixture.Blueprints, variant, null),
+                    fixture.Caster.Descriptor);
+                var context = new AbilityExecutionContext(data, data.CalculateParams(),
+                    new TargetWrapper(fixture.Caster.Position), Rulebook.CurrentContext);
+                var rule = new RuleSummonUnit(fixture.Caster, prototype, fixture.Caster.Position, 100.Rounds(), 20)
+                    { Context = context, Reason = context };
+                Rulebook.Trigger(rule);
+                if (rule.SummonedUnit == null) throw new InvalidOperationException("Native hybrid summon did not resolve.");
+                fixture.Created.Add(rule.SummonedUnit);
+                Game.Instance.EntityCreator.Tick();
+                if (!ReferenceEquals(rule.SummonedUnit.Blueprint, prototype) ||
+                    published.Prefab.AssetId != SerpentineVisualPolicy.ClubShieldPrefab)
+                    throw new InvalidOperationException("Prototype or published view identity changed.");
+                return rule.SummonedUnit;
+            }
+            finally { EventBus.Unsubscribe(control); }
+        }
+
+        private IEnumerable<int> ReviewSprint17NativeAttacks(ExpandedSummoningCorrectionFixture fixture,
+            UnitEntityData owner, SerpentineVisualAttachment attachment, string key, JObject row)
+        {
+            var actions = new JArray();
+            foreach (UnitAnimationSpecialAttackType kind in Enum.GetValues(typeof(UnitAnimationSpecialAttackType)))
+            {
+                var action = owner.View.AnimationManager.GetAction(kind);
+                if (action == null) continue;
+                var clips = action.Clips == null ? null : action.Clips.Where(value => value != null).ToArray();
+                actions.Add(new JObject { ["kind"] = kind.ToString(), ["actionClass"] = action.GetType().FullName,
+                    ["clips"] = clips == null ? JValue.CreateNull() : (JToken)new JArray(clips.Select(clip =>
+                        new JObject { ["name"] = clip.name, ["duration"] = clip.length })) });
+            }
+            row["nativeSpecialAttackCensus"] = actions;
+            var target = fixture.Hostile;
+            ResetExpandedSummoningHostile(fixture);
+            target.Descriptor.State.AddCondition(UnitCondition.ImmuneToCombatManeuvers, null);
+            owner.Descriptor.Stats.HitPoints.BaseValue = 100000;
+            owner.Descriptor.Stats.BaseAttackBonus.BaseValue = 100;
+            row["contactFixtureInputs"] = "owned donor-only actor: BAB100/HP100000; owned target maneuver-immune; brain off; real RTWP full-attack command; no forced hit/animation/contact";
+            var directions = new List<int>();
+            string placement;
+            Vector3 targetPoint = ExpandedSummoningOpenPoint(owner.Position, 1.5f, directions, out placement);
+            PlaceExpandedSummoningUnit(target, targetPoint);
+            row["attackTargetPlacement"] = placement;
+            owner.Memory.Add(target); target.Memory.Add(owner);
+            foreach (UnitEntityData unit in new[] { owner, target })
+                if (!Game.Instance.State.AwakeUnits.Contains(unit)) Game.Instance.State.AwakeUnits.Add(unit);
+            SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
+            Game.Instance.TurnBasedCombatController.Activate();
+            owner.JoinCombat(); target.JoinCombat(); Game.Instance.Player.UpdateIsInCombat();
+            var join = new UnitCombatJoinController(); var prepare = new UnitCombatPrepareController();
+            join.Tick(); prepare.Tick(); Game.Instance.IsPaused = false;
+            var contacts = new JArray(); row["nativeAttackContacts"] = contacts;
+            var poses = new JArray(); row["attackPoseSamples"] = poses;
+            var observer = new Sprint16RuleObserver { Owner = owner, Target = target };
+            var attack = new UnitAttack(target) { ForceFullAttack = true };
+            observer.ObserveWeaponContact = rule =>
+            {
+                if (!ReferenceEquals(rule.Target, target) || contacts.Count >= 12) return;
+                JObject contact = Sprint17MeasuredAttackContact(owner, target, attachment, rule);
+                contact["issuedCommandExecuting"] = attack.IsStarted && !attack.IsFinished;
+                contacts.Add(contact);
+                if (contacts.Count <= 3)
+                    contact["supportingFrame"] = CaptureSprint17OriginalBodyFrame(owner, attachment.Body,
+                        key + "-attack-" + contacts.Count);
+            };
+            EventBus.Subscribe(observer);
+            try
+            {
+                // Let the owned hostile's native appearance settle too.
+                for (int frame = 0; frame < 90; frame++) yield return 0;
+                attack.Init(owner);
+                row["attackCanStart"] = attack.CanStart;
+                owner.Commands.Run(attack);
+                row["attackQueued"] = owner.Commands.Contains(attack);
+                DateTime deadline = DateTime.UtcNow.AddSeconds(45);
+                int frames = 0;
+                string required = key == "salamander" ? "Spear" : "Bite";
+                while (DateTime.UtcNow < deadline && frames++ < 1800)
+                {
+                    yield return 0;
+                    if (frames % 10 == 0 && poses.Count < 160)
+                        poses.Add(Sprint17OriginalBodySample(owner, attachment.Body));
+                    bool primary = contacts.OfType<JObject>().Any(value => (string)value["category"] == required);
+                    bool secondary = key != "salamander" ||
+                        contacts.OfType<JObject>().Any(value => (string)value["category"] != "Spear");
+                    if (primary && secondary && attack.IsFinished) break;
+                }
+                row["attackFrames"] = frames;
+                row["attackStarted"] = attack.IsStarted; row["attackFinished"] = attack.IsFinished;
+                row["attackRows"] = observer.Attacks.Count; row["damageRows"] = observer.Damage.Count;
+                bool complete = contacts.OfType<JObject>().Any(value => (string)value["category"] == required &&
+                    (bool?)value["issuedCommandExecuting"] == true && (bool?)value["opportunity"] == false &&
+                    (bool?)value["nativeAnimationContact"] == true) &&
+                    contacts.OfType<JObject>().All(value => (bool?)value["finite"] == true) &&
+                    poses.Count >= 3 && poses.OfType<JObject>().All(value => (bool)value["poseFinite"]) && attack.IsStarted;
+                _serpentineBodyAssertions.Add(Assertion("sprint17-native-attack-research-" + key,
+                    "actual issued native primary attack with finite exact current-pose measurements",
+                    "contacts=" + contacts.Count + ";poses=" + poses.Count + ";started=" + attack.IsStarted,
+                    complete, "Research completeness only. Measured gaps and grip failures remain unqualified, never waived."));
+                if (key == "salamander")
+                {
+                    var renderer = attachment.SpearFilter.GetComponent<MeshRenderer>();
+                    var materialController = owner.View.GetComponentInChildren<Kingmaker.Visual.MaterialEffects.StandardMaterialController>(true);
+                    var driven = ExpandedSummoningPteranodonViewPatch.ControllerMaterials(materialController);
+                    bool adopted = attachment.SpearFilter.sharedMesh == attachment.NativeSpearMesh &&
+                        renderer.enabled && renderer.gameObject.activeInHierarchy &&
+                        renderer.sharedMaterials.All(value => driven != null && driven.Contains(value));
+                    row["spearRenderer"] = new JObject { ["enabled"] = renderer.enabled,
+                        ["active"] = renderer.gameObject.activeInHierarchy, ["nativeMeshAlive"] = attachment.NativeSpearMesh != null,
+                        ["materialsAdopted"] = adopted };
+                    _serpentineBodyAssertions.Add(Assertion("sprint17-native-spear-instance-ownership",
+                        "existing native weapon renderer uses live borrowed spear mesh and controller-owned material clone",
+                        row["spearRenderer"].ToString(), adopted,
+                        "Native mesh/texture borrowed, never destroyed. This alone does not prove grip or attack contact."));
+                }
+            }
+            finally
+            {
+                EventBus.Unsubscribe(observer);
+                InterruptExpandedSummoningFixtureCommands(owner);
+                owner.CombatState.LeaveCombat(); target.CombatState.LeaveCombat();
+                target.Descriptor.State.RemoveConditionAll(UnitCondition.ImmuneToCombatManeuvers);
+                Game.Instance.Player.UpdateIsInCombat();
+            }
+        }
+
+        private static JObject Sprint17MeasuredAttackContact(UnitEntityData owner, UnitEntityData target,
+            SerpentineVisualAttachment attachment, RuleAttackWithWeapon rule)
+        {
+            var result = new JObject { ["frame"] = Time.frameCount, ["category"] = rule.Weapon.Blueprint.Category.ToString(),
+                ["weapon"] = rule.Weapon.Blueprint.AssetGuid, ["opportunity"] = rule.IsAttackOfOpportunity,
+                ["nativeAnimationContact"] = owner.Commands.Raw.OfType<UnitAttack>().Any(value =>
+                    value.Animation != null && value.Animation.IsActed), ["finite"] = false };
+            var targetMesh = target.View.GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                .Where(value => value.enabled && value.sharedMesh != null && value.sharedMesh.vertexCount >= 100)
+                .OrderByDescending(value => value.bones.Length).FirstOrDefault();
+            if (targetMesh == null) { result["failure"] = "no native target renderer"; return result; }
+            Vector3[] points;
+            if (rule.Weapon.Blueprint.Category == WeaponCategory.Spear)
+            {
+                MeshFilter filter = attachment.SpearFilter;
+                points = filter.sharedMesh.vertices.Select(value => filter.transform.TransformPoint(value)).ToArray();
+                foreach (string side in new[] { "R", "L" })
+                {
+                    Transform palm = attachment.Body.bones.Single(value => value.name == side + "_Palm");
+                    result[side + "PalmToSpearMeters"] = points.Min(point => Vector3.Distance(point, palm.position));
+                }
+                result["poseMethod"] = "native spear vertex transformed by its existing weapon renderer";
+            }
+            else
+            {
+                var body = attachment.Body;
+                bool bite = rule.Weapon.Blueprint.Category == WeaponCategory.Bite;
+                var anchors = new HashSet<int>(Enumerable.Range(0, body.bones.Length).Where(index =>
+                    bite ? body.bones[index].name == "Head" || body.bones[index].name == "Jaw_Down" :
+                        body.bones[index].name.StartsWith("tail", StringComparison.Ordinal)));
+                Vector3[] all = Sprint17OriginalWorldVertices(body);
+                BoneWeight[] weights = body.sharedMesh.boneWeights;
+                points = all.Where((value, index) => {
+                    BoneWeight w = weights[index];
+                    return anchors.Contains(w.boneIndex0) && w.weight0 >= .25f ||
+                        anchors.Contains(w.boneIndex1) && w.weight1 >= .25f ||
+                        anchors.Contains(w.boneIndex2) && w.weight2 >= .25f ||
+                        anchors.Contains(w.boneIndex3) && w.weight3 >= .25f;
+                }).ToArray();
+                // The worm's retained donor sting is not a printed snake
+                // attack or a tail binding. Preserve it as an unmeasured row.
+                if (points.Length == 0) { result["notApplicable"] = "unprinted donor attack"; result["finite"] = true; return result; }
+                result["poseMethod"] = "sum(weight * bone.localToWorld * bindpose * originalVertex)";
+            }
+            Bounds bounds = targetMesh.bounds;
+            bool finite = points.Length > 0 && points.All(value => SerpentineRigSurveyPolicy.Finite(value.x) &&
+                SerpentineRigSurveyPolicy.Finite(value.y) && SerpentineRigSurveyPolicy.Finite(value.z));
+            result["finite"] = finite; result["vertices"] = points.Length;
+            result["targetBoundsCenter"] = SurveyVector(bounds.center); result["targetBoundsSize"] = SurveyVector(bounds.size);
+            result["actorPosition"] = SurveyVector(owner.Position); result["targetPosition"] = SurveyVector(target.Position);
+            if (finite)
+            {
+                float gap = points.Min(value => Vector3.Distance(value, bounds.ClosestPoint(value)));
+                result["nearestGapMeters"] = gap; result["withinQuarterMetre"] = gap <= .25f;
+            }
+            return result;
+        }
+    }
+}
