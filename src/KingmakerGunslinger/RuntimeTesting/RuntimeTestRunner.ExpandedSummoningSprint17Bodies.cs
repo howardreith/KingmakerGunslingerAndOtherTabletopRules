@@ -63,6 +63,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 Game.Instance.IsPaused = false;
                 foreach (int step in ReviewSprint17ProductionSnakeViews(fixture)) yield return step;
+                if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSnakeSignatures)
+                {
+                    foreach (int step in ReviewSprint17SnakeProfiles(fixture)) yield return step;
+                    foreach (int step in ReviewSprint17SnakeSignatures(fixture)) yield return step;
+                    yield break; // Fixed two-snake rules slice; no Salamander or arbitrary assets.
+                }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSnakeProfiles)
                 {
                     foreach (int step in ReviewSprint17SnakeProfiles(fixture)) yield return step;

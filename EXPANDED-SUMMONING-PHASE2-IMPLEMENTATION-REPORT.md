@@ -7,6 +7,14 @@ owner-designated development line. PR #27 is frozen salvage-only; no DATA
 source imported. Phase 2C is authorized but deferred until Phase 2B owner
 acceptance; this mission stops after Sprint 17 and full Phase 2B closure.
 
+[New snake signature fixture](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-SLICE.md)
+is source-only, NOT RUN / NOT QUALIFIED. It adds24 seeded native rule assertions
+to the38-check profile/body regression; real command/AI/contact proof remains
+separate. Precommit2051 full84.5s/complete gate183.9s/strict320,502 preflight,
+142 collector/orchestration and all ancillary checks PASS. No gameplay source,
+publication, DATA import or new limitation. Full exact-head gate is next.
+The last closed runtime transaction remains:
+
 Exact `22be90c0c768acc710b9dfef2a6d42d1cb917a04` passes the complete
 bounded smoke/profile transaction: fresh Steam640820 **11/11 smoke,38/38 snake
 profile/body,22/22 metadata rows; batch PASS**. [Exact candidate/results/

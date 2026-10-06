@@ -1,5 +1,11 @@
 # Expanded Summoning Phase 2 evidence index
 
+[Current signature fixture](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-SLICE.md):
+source-only, runtime NOT RUN. Closed62-rule request/46-row collector;2051 full
+tests84.5s/complete gate183.9s/strict320,502 preflight,142 orchestration PASS.
+Full exact-artifact/runtime gate next. No new gameplay
+qualification or publication. Last runtime result remains the bounded slice below.
+
 Exact `22be90c0c768acc710b9dfef2a6d42d1cb917a04` passes the complete
 bounded smoke/profile transaction: fresh Steam640820 **11/11 smoke,38/38 snake
 profile/body,22/22 metadata rows; batch PASS**. [Exact candidate/results/

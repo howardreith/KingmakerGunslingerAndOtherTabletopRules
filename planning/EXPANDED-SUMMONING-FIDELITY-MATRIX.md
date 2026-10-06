@@ -2,6 +2,11 @@
 
 ## Current snake profile/body slice PASS; full Sprint17 NOT QUALIFIED
 
+[Signature rules fixture](EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-SLICE.md)
+now instruments24 poison/constrict cases, NOT RUN. The unchanged38-check
+profile/body slice below remains the last qualified boundary. Seeded rule
+delivery is not real command/AI/contact or full lifecycle proof.
+
 Exact `22be90c0c768acc710b9dfef2a6d42d1cb917a04` passes the complete
 bounded smoke/profile transaction: fresh Steam640820 **11/11 smoke,38/38 snake
 profile/body,22/22 metadata rows; batch PASS**. [Exact candidate/results/

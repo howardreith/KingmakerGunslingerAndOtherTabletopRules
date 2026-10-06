@@ -1,6 +1,6 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-06 — laptop sole owner; Sprint17 bounded snake slice PASS; full Sprint17 NOT QUALIFIED
+## CURRENT STATE, 2026-10-06 — laptop sole owner; Sprint17 signature fixture source-only; full Sprint17 NOT QUALIFIED
 
 This section governs over historical mission/ownership statements below.
 HOWARD-LAPTOP / `codex/expanded-summoning-phase2b-sprints14-17` / draft PR26
@@ -18,10 +18,11 @@ deployment, force push or prohibited substitute subsystems.
   session01a10bcd-8582-7551-826f-0f128807eb99; ownerPID31796/start
   2026-10-05T19:29:25.9127956Z; holderPID15084/start2026-10-05T20:34:17.3075720Z.
   Session-scoped; refresh heartbeat and release only on actual session ending.
-- Exact pushed runtime candidate `22be90c0c768acc710b9dfef2a6d42d1cb917a04`.
-  Source clean/remote equal after the restored batch. Owner/holder identities
-  unchanged; no competing source/runtime process. This evidence checkpoint is
-  a normal descendant; executable source unchanged. Unexpected active-branch
+- Last exact runtime candidate `22be90c0c768acc710b9dfef2a6d42d1cb917a04`;
+  pushed evidence parent `e368c91cee51fdd6953eaf97f138bbae50182078`.
+  New closed signature fixture is source-only, NOT RUN / NOT QUALIFIED.
+  Owner/holder identities unchanged; no competing source/runtime process.
+  This checkpoint is a normal descendant. Unexpected active-branch
   motion remains a stop; DATA motion informational. All old artifacts retained.
 
 ### Qualified versus NOT QUALIFIED
@@ -67,12 +68,16 @@ external state change. Independent snakes proceed; no phase-wide blocker.
 
 ### Exact next action
 
-Implement the bounded snake signature/real-command matrix on this passing
-profile/body base: actual bite injury poison (including miss/zero damage),
-live DC/cadence/source lifecycle, bite-only grab/constrict/maintain/dedup/
-dead-target cleanup, RTWP/turn-based manual and AI commands with measured jaw
-contact. Preserve the closed38-check request unchanged. Use existing native
-request-local fixture/control seams; do not introduce a global rewrite.
+Precommit source gates PASS:249 focused/2051 full84.5s; complete gate183.9s,
+clean14-reference Release/strict320;502 preflight,142 orchestration and ancillary
+checks. New closed62-check `disposable-expanded-summoning-snake-signatures`
+rules request still NOT RUN. Commit/push, freeze exact-head artifact and repeat
+the full prelaunch gate, then guarded smoke/signature batch and exact
+restoration. [Scope and honest exclusions](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-SLICE.md).
+The passing closed38-check request is unchanged. Native poison/constrict rules
+are now instrumented; actual RTWP/turn-based manual/AI commands and measured jaw
+contacts still need implementation. Use existing native request-local seams;
+no global rewrite and no dirty diagnostic deployment.
 Then targeted persistence/crowds/UI/routes and bounded Salamander-specific
 implementation. Stable full Sprint17 hidden gate, publication, Phase2B closure;
 STOP for owner review. Phase2C authorized but deferred, no Sprints18–22 here.
