@@ -149,6 +149,8 @@
     <Compile Include="Summoning\GiantWaspPoisonPolicy.cs" />
     <Compile Include="Summoning\Sprint14BonePolicy.cs" />
     <Compile Include="Summoning\CrocodilianVisualPolicy.cs" />
+    <Compile Include="Summoning\SerpentineVisualPolicy.cs" />
+    <Compile Include="Summoning\SerpentineVisualAttachment.cs" />
     <Compile Include="RuntimeTesting\CrocodilianCommandReviewPolicy.cs" />
     <Compile Include="RuntimeTesting\SerpentineRigSurveyPolicy.cs" />
     <Compile Include="RuntimeTesting\CrocodilianLifecycleReviewPolicy.cs" />
@@ -1539,6 +1541,14 @@
     </Content>
     <Content Include="..\..\assets\sprint16-crocodilians\*-albedo.png">
       <Link>assets\sprint16-crocodilians\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\sprint17-serpents\*-mesh.json">
+      <Link>assets\sprint17-serpents\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\sprint17-serpents\*-albedo.png">
+      <Link>assets\sprint17-serpents\%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\..\assets\game\icons\expanded-summoning\*.png">

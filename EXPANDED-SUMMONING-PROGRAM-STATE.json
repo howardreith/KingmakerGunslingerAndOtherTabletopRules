@@ -29,12 +29,15 @@
       16
     ],
     "currentSprint": 17,
-    "currentSubItem": "S16 COMPLETE AND PUBLISHED; S17 NOT QUALIFIED. Exact c55b4f08 research all prelaunch PASS, smoke 11/11, survey 13/13, four captures and exact restoration at 03:41:08 UTC. Private prototypes fc1e880e: 14 Blender tests, 74 panels, none shipped. Two-hand Lizardfolk body/armor frames match 39/19 bones exactly, grip unqualified. Water exposes slams; worm locomotion idle only and sampled body reared; credible snake motion still mandatory. Next bounded owned original-view integration, actual Salamander spear/tail seam and printed profiles. No fourth actor, production change or save write. 976 + 29 = 1005 visible; zero DATA imports.",
+    "currentSubItem": "S16 COMPLETE AND PUBLISHED; S17 NOT QUALIFIED. Exact c55 research smoke 11/11, survey 13/13 restored; evidence pushed 4940ca77. Current owned-body source slice adds supporting coils, six reproduced original assets and closed two-skin attachment/rollback. 222 focused/2024 full (83.0s), repository wrapper, clean exact-reference Release and strict 318-member package PASS (180.7s); working-tree source gate, not a runtime candidate. No automatic production attachment, new registration, gameplay or save change. Next request-local body acceptance scenario, frozen exact-head gate and guarded movement/contact/lifecycle review. Separate Salamander spear/tail and printed profiles remain open. 976 + 29 = 1005 visible; zero DATA imports.",
     "sprint17PrivatePrototypes": {
-      "status": "AUTHORING ONLY; NOT PACKAGED OR RUNTIME QUALIFIED",
+      "status": "Six original files staged for bounded body acceptance; not automatically attached or runtime qualified",
       "source": "assets-source/original-models/sprint17-serpents/SOURCE.md",
       "blenderBehaviorTests": 14,
       "newReviewPanels": 74,
+      "supportingCoilTests": 5,
+      "supportingCoilNativeUpPanels": 48,
+      "stagedOriginalAssetFiles": 6,
       "salamanderWeaponImplemented": false
     },
     "sprint17TechnicalQualified": false,
@@ -470,7 +473,7 @@
       "detail": "Supplied by the owner and read. The Pteranodon passage confirms the shipped profile rather than changing it: ten-foot reach valued for attacks of opportunity, and a single main bite on which everything stacks (2d6 plus modifiers). The guide also positions multiple Pteranodons as the best single-target aerial attacker at their tier. This informs Sprint 2's acceptance emphasis on correct bite impact timing and location at Large reach; it changes no accepted statistic."
     }
   ],
-  "nextConcreteAction": "Sprint 16 complete and published on exact 155ada89. Begin Sprint 17 bounded serpentine donor/rig proof, Viper, Constrictor Snake and a separate Salamander hybrid/weapon seam as needed; preserve its identity/placements. Then complete Phase 2B closure and stop for owner review. Phase 2C authorized but deferred; no merge, release, version bump, permanent deployment or Sprints 18-22 here.",
+  "nextConcreteAction": "Sprint 16 complete on exact 155ada89. Connect Sprint 17 request-local original-body acceptance, freeze/push exact source, complete exact-artifact gate and guarded fresh-Steam motion/contact/lifecycle proof with exact restoration. Then printed snake profiles/signatures and separate Salamander spear/tail, preserving its identity/placements. Complete Sprint 17 and Phase 2B closure, then stop for owner review. Phase 2C authorized but deferred; no merge, release, version bump, permanent deployment or Sprints 18-22 here.",
   "deploymentReconciliation": {
     "finding": "The first runs left this mission's 0.0.136 branch build installed over the pre-run 0.0.117 installation. The mission required restoration and did not authorize a permanent installation; a shared version string does not make a branch artifact an accepted release.",
     "ownershipVerified": "The live DLL hash matched this mission's exact build byte for byte, so the tree was unambiguously mission-owned.",

@@ -26,7 +26,12 @@ Exact actual snapshot `20261006T0334314516624Z` restored at
 Lease Completed/recoveryRequired=false; no game/shared lock/staging. Cleanup
 restores 955 original unit references, three party references and exact area
 membership. No save write/protected-baseline access. [All attempt hashes](EXPANDED-SUMMONING-SPRINT17-FALLBACK-RESEARCH-EVIDENCE.json).
-No prototype asset is packaged, and Sprint 17 remains NOT QUALIFIED.
+That c55 research packaged no prototype assets. The subsequent owned-body
+source slice stages six byte-reproduced mesh/paint files, a supporting coil
+and closed two-skin attachment/rollback. 222 focused tests pass; no automatic
+production hook, new registration or runtime qualification. Next request-local
+body acceptance must exercise it on a new exact-head artifact. Sprint 17
+remains NOT QUALIFIED. [Authoring/binding details](../assets-source/original-models/sprint17-serpents/SOURCE.md).
 
 ### New findings and remaining production gate
 
