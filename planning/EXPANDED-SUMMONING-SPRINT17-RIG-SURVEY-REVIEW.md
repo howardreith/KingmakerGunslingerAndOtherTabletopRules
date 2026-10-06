@@ -2,6 +2,27 @@
 
 ## Current disposition, 2026-10-06 UTC
 
+Private prototype source/evidence is pushed at
+`fc1e880e2ee2eeb1fbd259cf226418de3f04eb32` (14 Blender tests, full repository
+and 2021-domain PASS). The containing **research-only extension is NOT RUN**:
+it records a single current attached bone-position sample plus native action
+clip names/durations (never curves) on the three existing disposable summons.
+It also reads one archived native greatclub view **without instantiating it**:
+blueprint `f080877221934ea40b29e1d9fa71bc1c`, prefab
+`31cb7e484faf8734fa2c0ef1936b1806`, weapon
+`c926ffbdccc4d124c8e8dedfe2e6f499`, no offhand. This fourth metadata target
+does not become a fourth actor, new summon, dependency or production donor.
+Detached frames cannot qualify attached animation or a two-handed spear grip.
+No shared prefab mutation or detached animation-manager invocation occurs.
+
+The extension passes 219 focused tests and incremental Release compile.
+Next freeze/push it, complete the exact artifact gate and run guarded fresh
+Steam smoke plus the extended **13-assertion/four-capture** research survey,
+with the actual snapshot restored. Do not reuse the earlier eleven-assertion
+PASS as proof of the new observations. No prototype asset is packaged.
+
+### Latest completed exact runtime research
+
 Exact corrected research **a173da3a396b3c7f1bddef3bee92c476150d8639**
 passes the complete prelaunch gate: 219 focused, 2021 unfiltered (84.5 seconds),
 486 preflight, 68 orchestration, persistence/crowd request tests, full repository/

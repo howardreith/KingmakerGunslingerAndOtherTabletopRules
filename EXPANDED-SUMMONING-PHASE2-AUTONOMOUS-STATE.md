@@ -22,10 +22,12 @@ no merge, release, tag, version bump, force push or permanent deployment.
   Pushed first research-evidence checkpoint:
   **`e5e79fe9c428f0db7b7205fcc481cb3c4a868e3d`**.
   Failed extended research candidate **`b2893abefc89079af49c22d3b028865ed2189f95`**
-  is preserved. Latest pushed exact research candidate/current fetched remote:
+  is preserved. Latest completed exact research artifact:
   **`a173da3a396b3c7f1bddef3bee92c476150d8639`** (research PASS).
   Research evidence pushed at **`6dee947dbdf35419348a0c68555291a1e5f55bec`**.
-  This containing private-prototype checkpoint is its normal descendant; Sprint 17
+  Private original prototypes/current fetched remote:
+  **`fc1e880e2ee2eeb1fbd259cf226418de3f04eb32`**.
+  This containing bounded research extension is its normal descendant; Sprint 17
   gameplay and visuals are still NOT QUALIFIED.
   Unexpected active-branch motion remains a stop; archive motion is informational.
 - Exclusive ignored receipt: `artifacts/laptop-source-owner-20261005.json`;
@@ -94,9 +96,15 @@ no merge, release, tag, version bump, force push or permanent deployment.
   dorsal-paint regressions. No packaged assets or production code changed;
   Salamander body has no weapon and does not qualify weapon handling.
   [Authoring source/private hashes](assets-source/original-models/sprint17-serpents/SOURCE.md).
-- Exact next action: bounded live original-view donor acceptance (motion,
-  ground/jaw, multi-renderer fallback/lifecycle) and separate Salamander
-  manufactured-spear/tail seam, then profiles/signatures. Research PASS
+- Source-only research extension now records current attached bone positions,
+  native action names/durations and a read-only detached archived Lizardfolk
+  greatclub prefab (no fourth actor/shared mutation). 219 focused/incremental
+  Release PASS; new 13-assertion/four-capture batch NOT RUN.
+- Exact next action: freeze/push the pose/weapon research extension, run its
+  complete exact artifact gate, then guarded fresh Steam smoke/survey and
+  exact restoration. Use the measurements for original-view donor acceptance
+  (motion, ground/jaw, multi-renderer fallback/lifecycle), separate Salamander
+  manufactured-spear/tail seam and profiles/signatures. Research PASS
   is not gameplay/visual qualification. Preserve Salamander identity and
   placements. One hidden candidate/batched review/publication gate, then full
   Phase 2B closure; no Phase 2C start under this mission.
