@@ -1,5 +1,13 @@
 # Expanded Summoning Phase 2 journal
 
+## October 6 — bounded native spear metadata extension, source only
+
+The containing source-only diagnostic extends the closed survey with three
+exact archived spear/longspear prefab/weapon pairs, without spawning NPCs or
+adopting actions. Focused 237/237 PASS, 2039 registered; full exact prelaunch
+and fresh-Steam smoke11/survey15 are next. No new body/gameplay qualification.
+See [bounded spear audit](planning/EXPANDED-SUMMONING-SPRINT17-SPEAR-CARRIER-AUDIT.md).
+
 ## October 6, 13:02 UTC — closed native-action census, research only
 
 Exact 8022fee2: 236 focused / 2038 unfiltered tests (81.8s), complete gate
