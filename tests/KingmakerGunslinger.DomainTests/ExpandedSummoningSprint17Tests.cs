@@ -9,8 +9,8 @@ namespace KingmakerGunslinger.DomainTests
         internal static void RigSurveyUsesOnlyExactNativeSources()
         {
             Assertions.True(SerpentineRigSurveyPolicy.Keys.SequenceEqual(
-                new[] { "medium-water-elemental", "salamander" }),
-                "Only the two pre-existing rig carriers are in the research scope; no new publication.");
+                new[] { "medium-water-elemental", "salamander", "purple-worm" }),
+                "Only the three fixed pre-existing rig carriers are in the research scope; no new publication.");
             string[] copy = SerpentineRigSurveyPolicy.Keys;
             copy[0] = "foreign";
             Assertions.Equal("medium-water-elemental", SerpentineRigSurveyPolicy.Keys[0],
@@ -28,6 +28,15 @@ namespace KingmakerGunslinger.DomainTests
                 foreach (string bad in new[] { "", null, "foreign", prefab.ToUpperInvariant() })
                     Assertions.False(SerpentineRigSurveyPolicy.MatchesNativeSource(key, native, bad),
                         "View resolution is exact, not a permissive arbitrary-asset loader.");
+                foreach (string other in SerpentineRigSurveyPolicy.Keys.Where(value => value != key))
+                {
+                    Assertions.False(SerpentineRigSurveyPolicy.MatchesNativeSource(key,
+                        SerpentineRigSurveyPolicy.NativeBlueprint(other), prefab),
+                        "A different allowed donor cannot substitute for the selected source.");
+                    Assertions.False(SerpentineRigSurveyPolicy.MatchesNativeSource(key,
+                        native, SerpentineRigSurveyPolicy.Prefab(other)),
+                        "A different allowed view cannot substitute for the selected source.");
+                }
             }
             foreach (string key in new[] { null, "", "viper", "constrictor-snake", "Salamander", "foreign" })
                 Assertions.False(SerpentineRigSurveyPolicy.MatchesNativeSource(key, null, null),
