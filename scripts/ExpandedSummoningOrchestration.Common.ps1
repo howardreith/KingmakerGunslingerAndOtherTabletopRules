@@ -170,6 +170,58 @@ function ConvertFrom-KmgSnakeSignatureSliceEvidence {
     return $rows
 }
 
+function ConvertFrom-KmgSnakeCommandSliceEvidence {
+    param(
+        [Parameter(Mandatory = $true)][AllowEmptyString()][string]$Json,
+        [Parameter(Mandatory = $true)][AllowEmptyCollection()][object[]]$Assertions
+    )
+    $cells = @()
+    foreach ($key in @('viper', 'constrictor-snake')) {
+        foreach ($mode in @('rtwp', 'turn-based')) {
+            foreach ($driver in @('manual', 'ai')) { $cells += "$key-$mode-$driver" }
+        }
+    }
+    $checks = @('native-setup', 'approach', 'attack', 'signature', 'contact', 'cleanup')
+    $names = @('sprint17-body-environment-restored', 'sprint17-body-fixture-cleanup', 'loaded-mod-version')
+    foreach ($cell in $cells) {
+        foreach ($check in $checks) { $names += "sprint17-snake-command-$cell-$check" }
+    }
+    if ($Assertions.Count -ne 51) { throw 'Every closed command assertion is mandatory:48 cell checks and3 restoration/version.' }
+    $actual = @()
+    foreach ($assertion in $Assertions) {
+        if ($null -eq $assertion -or $assertion -is [Array] -or
+            $null -eq $assertion.PSObject.Properties['name'] -or $assertion.name -isnot [string] -or
+            $null -eq $assertion.PSObject.Properties['status'] -or $assertion.status -cne 'PASS') {
+            throw 'Every native command assertion must explicitly pass.'
+        }
+        $actual += $assertion.name
+    }
+    if ((($actual | Sort-Object) -join ',') -cne (($names | Sort-Object) -join ',')) {
+        throw 'Missing, duplicate or foreign command assertions.'
+    }
+    $rows = $Json | ConvertFrom-Json -ErrorAction Stop
+    if ($rows -isnot [Array] -or $rows.Count -ne 8) { throw 'The command matrix requires exactly8 flat rows.' }
+    for ($index = 0; $index -lt 8; $index++) {
+        $row = $rows[$index]
+        if ($null -eq $row -or $row -is [Array] -or
+            $null -eq $row.PSObject.Properties['cell'] -or $row.cell -cne $cells[$index] -or
+            $null -eq $row.PSObject.Properties['scope'] -or $row.scope -cne 'production hidden-snake native command/contact slice' -or
+            $null -eq $row.PSObject.Properties['passed'] -or $row.passed -isnot [bool] -or -not $row.passed -or
+            $null -eq $row.PSObject.Properties['checks'] -or $null -eq $row.checks -or $row.checks -is [Array]) {
+            throw 'Malformed, failed, reordered or foreign command row.'
+        }
+        if ((($row.checks.PSObject.Properties.Name | Sort-Object) -join ',') -cne (($checks | Sort-Object) -join ',')) {
+            throw 'The six independent command requirements cannot be omitted or renamed.'
+        }
+        foreach ($check in $checks) {
+            if ($row.checks.$check -isnot [bool] -or -not $row.checks.$check) {
+                throw 'A row-level PASS cannot hide a failed or mistyped native requirement.'
+            }
+        }
+    }
+    return $rows
+}
+
 function Test-KmgBatchCandidateUnavailable {
     param([bool]$FirstScenario, [bool]$HasEvidence, [bool]$HasDeployment,
           [ValidateSet('Clean', 'Unclean')][string]$LauncherOutcome)

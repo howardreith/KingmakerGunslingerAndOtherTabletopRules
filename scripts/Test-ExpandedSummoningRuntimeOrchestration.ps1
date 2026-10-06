@@ -221,6 +221,71 @@ foreach ($badAssertions in @(@(), $snakeAssertions, $signatureAssertions[0..60],
     Assert-True $rejected 'profile-only, incomplete or extra assertion sets cannot qualify signatures'
 }
 
+# A distinct eight-cell request, never an alias of profile/rules qualification.
+$commandRows = @()
+$commandAssertions = @()
+foreach ($key in @('viper', 'constrictor-snake')) {
+    foreach ($mode in @('rtwp', 'turn-based')) {
+        foreach ($driver in @('manual', 'ai')) {
+            $id = "$key-$mode-$driver"
+            $checks = [ordered]@{}
+            foreach ($check in @('native-setup', 'approach', 'attack', 'signature', 'contact', 'cleanup')) {
+                $checks[$check] = $true
+                $commandAssertions += [pscustomobject]@{ name="sprint17-snake-command-$id-$check"; status='PASS' }
+            }
+            $commandRows += [pscustomobject]@{ cell=$id; scope='production hidden-snake native command/contact slice'; checks=[pscustomobject]$checks; passed=$true }
+        }
+    }
+}
+foreach ($name in @('sprint17-body-environment-restored', 'sprint17-body-fixture-cleanup', 'loaded-mod-version')) {
+    $commandAssertions += [pscustomobject]@{ name=$name; status='PASS' }
+}
+$commandJson = ConvertTo-Json -InputObject $commandRows -Depth 8
+$commandAssertionJson = ConvertTo-Json -InputObject $commandAssertions
+$commandObserved = @(ConvertFrom-KmgSnakeCommandSliceEvidence -Json $commandJson -Assertions $commandAssertions)
+Assert-Equal 8 $commandObserved.Count 'all eight native command cells collected separately'
+foreach ($bad in @('null', '[]', '{}', '[', ('[' + $commandJson + ']'), $snakeJson,
+    (ConvertTo-Json -InputObject $commandRows[0..6] -Depth 8),
+    (ConvertTo-Json -InputObject ($commandRows + $commandRows[0]) -Depth 8))) {
+    $rejected=$false
+    try { $null=ConvertFrom-KmgSnakeCommandSliceEvidence -Json $bad -Assertions $commandAssertions } catch { $rejected=$true }
+    Assert-True $rejected 'partial, nested, malformed or unrelated metadata is not a command pass'
+}
+foreach ($mutate in @(
+    { param($rows) $rows[0].cell=$rows[1].cell },
+    { param($rows) $rows[0].cell='salamander-rtwp-manual' },
+    { param($rows) $rows[0].scope='donor research' },
+    { param($rows) $rows[0].passed=$false },
+    { param($rows) $rows[0].passed='true' },
+    { param($rows) $rows[0].checks.contact=$false },
+    { param($rows) $rows[0].checks.contact='true' },
+    { param($rows) $rows[0].checks.PSObject.Properties.Remove('cleanup') },
+    { param($rows) $rows[0]=$null }
+)) {
+    $changed=$commandJson | ConvertFrom-Json
+    & $mutate $changed
+    $rejected=$false
+    try { $null=ConvertFrom-KmgSnakeCommandSliceEvidence -Json (ConvertTo-Json -InputObject $changed -Depth 8) -Assertions $commandAssertions } catch { $rejected=$true }
+    Assert-True $rejected 'row-level pass never substitutes for exact six native requirements'
+}
+foreach ($mutate in @(
+    { param($rows) $rows[0].name=$rows[1].name },
+    { param($rows) $rows[0].status='FAIL' },
+    { param($rows) $rows[0].name='foreign' },
+    { param($rows) $rows[0]=$null }
+)) {
+    $changed=$commandAssertionJson | ConvertFrom-Json
+    & $mutate $changed
+    $rejected=$false
+    try { $null=ConvertFrom-KmgSnakeCommandSliceEvidence -Json $commandJson -Assertions $changed } catch { $rejected=$true }
+    Assert-True $rejected 'all51 exact native assertions independently mandatory'
+}
+foreach ($bad in @(@(), $snakeAssertions, $commandAssertions[0..49], ($commandAssertions+$commandAssertions[0]))) {
+    $rejected=$false
+    try { $null=ConvertFrom-KmgSnakeCommandSliceEvidence -Json $commandJson -Assertions $bad } catch { $rejected=$true }
+    Assert-True $rejected 'incomplete or extra command assertion sets fail closed'
+}
+
 Assert-True (Test-KmgBatchCandidateUnavailable -FirstScenario $true -HasEvidence $false -HasDeployment $false -LauncherOutcome 'Unclean') `
     'a failed pre-launch candidate stops repeated full gates'
 foreach ($case in @(
