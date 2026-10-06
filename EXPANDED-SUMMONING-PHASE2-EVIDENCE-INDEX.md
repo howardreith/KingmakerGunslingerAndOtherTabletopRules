@@ -1,26 +1,28 @@
 # Expanded Summoning Phase 2 evidence index
 
-[Latest7ebb34eb research PASS, Sprint17 NOT QUALIFIED](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-REVIEW.md):
-Exact7ebb34eb passes all prelaunch:230 focused/2032 full83.2s, gate179.4s,
+[Latest66900038 body46/47 FAIL, Sprint17 NOT QUALIFIED](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-REVIEW.md):
+Exact66900038 passes all prelaunch:231 focused/2033 full86.3s, gate180.2s,
 491 preflight/81 orchestration/17 provenance, persistence11/3/19,crowd5/7,
-clean exact Release/strict318-member package. Fresh Steam smoke11/body40 and
-complete research driver PASS. Three movements, both issued snake bites gap0,
-actual spear/exact tail events and sustained owned-pair isolation in all56
-command pose samples pass. All rollback/material/reference/owned destruction/
-borrowed-native survival/environment/census restoration checks PASS.
-Hybrid final visuals remain open: left palm0.638m from shaft, conservative
-spear gap0.37510m, tail gap0.16190m, distal coil floor minimum-0.112885m.
-Research completeness does not waive these findings. Native unreadable mesh
-remains untouched; explicit bounds metadata never masquerades as vertices.
-Actual0951581493121Z snapshot restored09:59:49UTC,136/.117/tree;
-no game/lease/lock/staging/save write. Current source corrects original distal
-coil geometry and the instance-only two-palm mount. v9 export independently
-byte-reproduced; all a096/7ebb sampled poses clear the floor offline.10 replay/
-9 hybrid/4 winding checks,231 focused/2033 registered and incremental compile
-PASS;24 original-pose panels with representative attack art inspected.
-Next full exact prelaunch and47-assertion smoke/body batch; no production
-hook/new registration or S17 qualification.
-[Nine preserved attempts and exact hashes](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-EVIDENCE.json).
+clean exact Release/strict318-member package. Fresh Steam smoke11 PASS/body
+46 of47 FAIL. Original v9 hybrid support is5.0001mm at sampled attacks and
+exact events; both native palms lie on the existing shaft at contact5833.
+Those new positive gates pass, along with snake bites0 gap, tail contact
+0.166540m, all movement/isolation/resources/rollback and environment cleanup.
+
+Sole failure is forward spear contact: raw0.562879m plus0.031350m conservative
+uncertainty =0.594228m. This is an original hybrid visual/pose defect; no
+fixture, environment or restoration failure and no threshold waived. View
+forward points at target, but the native contact-time palms point across it.
+Next bounded native manufactured-attack style/clip/settings audit and offline
+exact-event pose proof before a narrowly scoped correction and new exact gate.
+No unchanged retry, native-asset edit, global limb/animation rewrite or reach
+inflation. All ten attempts retained; no gameplay/publication qualification.
+
+Actual1032557994699Z snapshot restored10:40:47.0701589UTC,136/.117/exact tree.
+JournalA3EA13FC4F385C2992F9BCE50B42374821EFAD45DE50118ADAD0DBEF175113BE;
+lease Completed/recoveryRequired=false/released, no game/lock/staging/save write.
+No production hook/new registration;976+29=1005 visible, S14–16 unchanged.
+[Ten preserved attempts and exact hashes](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-EVIDENCE.json).
 
 [Historical7f S17-only authored winding correction](assets-source/original-models/sprint17-serpents/SOURCE.md):
 snake v4/hybrid v8 independently byte-reproduced; only triangle indices and
