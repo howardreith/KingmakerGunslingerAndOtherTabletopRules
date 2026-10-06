@@ -1,5 +1,18 @@
 # Expanded Summoning Phase 2 journal
 
+## October 6, 15:55 UTC — hidden snake automatic body binding implemented
+
+[View integration review](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-VIEW-INTEGRATION.md).
+Two exact GUID/name/prefab/module matches; one weak per-view attempt and0.20
+visual scale; shared17-entry scale table untouched.17 guarded production
+binding/rollback/once/teardown/native-Worm checks written, not executed.
+Raw private casts preserve native appearance buffs. No borrowed rig/animation
+or visibility override.247 focused/2049 full86.4s, repository/exact Release/
+strict320-member package PASS184.1s, dirty-tree diagnostic only. First build
+rejected fixture-local variable shadow; corrected and both logs retained.
+No runtime or save operation. Committed artifact gate and mechanics fixtures
+next; Sprint17 remains NOT QUALIFIED and32 snake roots remain hidden.
+
 ## October 6, 15:30 UTC — exact79cf snake SOURCE gate PASS
 
 Corrected `79cf2bf14b0b3ebd25e619ff34373caad93d1448` passed complete repository/

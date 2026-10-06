@@ -1,6 +1,6 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-06 — laptop sole owner; Sprint 17 hidden snake source checkpoint
+## CURRENT STATE, 2026-10-06 — laptop sole owner; Sprint 17 hidden snake view integration
 
 This section governs over historical mission/ownership statements below.
 HOWARD-LAPTOP / `codex/expanded-summoning-phase2b-sprints14-17` / draft PR #26
@@ -19,8 +19,8 @@ deployment, force push or prohibited substitute subsystems.
   2026-10-05T19:29:25.9127956Z; holder PID15084/start2026-10-05T20:34:17.3075720Z.
   Session-scoped; refresh heartbeat and release only on actual session ending.
   All safety refs, bundles and failed artifacts are retained.
-- Exact source candidate `79cf2bf14b0b3ebd25e619ff34373caad93d1448` is pushed;
-  this evidence-only checkpoint descends from it; no concurrent remote motion.
+- This view-integration checkpoint descends from pushed evidence
+  `dfe12b8ec971e99b721585204b49a51b3aed6f15`; no concurrent remote motion.
   Unexpected active-branch motion remains a stop; DATA motion informational.
 - [Snake source review](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SOURCE-REVIEW.md):
   exact79cf complete source gate PASS:2048 unfiltered tests (83.8s), repository/
@@ -29,6 +29,13 @@ deployment, force push or prohibited substitute subsystems.
   Exact source fingerprint/DLL/MVID/ZIP/log hashes and immutable local archive
   are recorded in the review. Earlier7ab prelaunch rejection remains preserved.
   No gameplay PASS, deployment, new runtime transaction or save operation.
+- [New view integration](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-VIEW-INTEGRATION.md):
+  exact two-identity automatic binding and once-per-view0.20 scale implemented;
+  no shared rig/animation/visibility changes.17 closed runtime assertions are
+  written, NOT RUN.247 focused/2049 full86.4s, repository, clean exact-reference
+  Release and strict320-member package PASS184.1s on dirty source. Initial
+  fixture variable-shadow compile failure retained; corrected locally.
+  Committed exact artifact gate next; no dirty package may be deployed.
 - 73 identities append to the unchanged2836-entry prefix. Current surface:
   97 units,1008 registered /976 published /32 withheld placements,29 wrappers,
   1005 visible choices. Viper and Constrictor Snake remain wholly hidden.
@@ -41,13 +48,15 @@ crowd20,prepare9,cleanup9,absence5. No historical qualification is reopened.
 
 Sprint17 NOT QUALIFIED. Medium snake profiles, exact land ranks/HP, owned
 Viper poison, bounded live Constrictor damage and original icons now exist.
-Original-body production attachment, complete real commands/signatures,
-UI, lifecycle/crowding/persistence and publication gates remain open.
+Original-body production attachment is implemented but NOT runtime qualified.
+Complete real commands/signatures, UI, lifecycle/crowding/persistence and
+publication gates remain open.
 Salamander identity/placements/art remain unchanged; its separate spear/tail
 implementation is unresolved. No Lizardfolk spear relabeling, blind human
 bind deduplication or contact waiver is accepted.
 
-Next: connect the two original snake views and closed mechanics fixtures;
+Next: freeze/push the view checkpoint and run its committed source gate;
+complete closed snake mechanics fixtures and qualify the exact production views;
 continue the bounded Salamander-specific native spear/tail implementation.
 Then one stable Sprint17 hidden batch, publication gate, full Phase2B closure.
 Do not repeat the closed donor metadata census as a substitute for playback.

@@ -655,6 +655,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint17-closed-manufactured-action-census", ExpandedSummoningSprint17Tests.ManufacturedActionCensusIsClosedAndDefensive),
             Case("expanded-summoning.sprint17-bind-matrix-observation", ExpandedSummoningSprint17Tests.BindMatrixObservationKeepsDisagreementAndMissingData),
             Case("expanded-summoning.sprint17-snake-printed-profiles", SerpentineRulesTests.PrintedProfilesAreMediumAndCreatureOwned),
+            Case("expanded-summoning.sprint17-snake-production-body-identity", SerpentineRulesTests.ProductionBodyHookRequiresExactHiddenSnakeIdentity),
             Case("expanded-summoning.sprint17-snake-exact-land-ranks", SerpentineRulesTests.ExactRanksPreserveNativeContributions),
             Case("expanded-summoning.sprint17-snake-ranks-fail-closed", SerpentineRulesTests.RankAllocationRejectsDonorOrRepeatRanks),
             Case("expanded-summoning.sprint17-snake-live-modifiers", SerpentineRulesTests.PoisonAndDamageUseLiveModifiers),
