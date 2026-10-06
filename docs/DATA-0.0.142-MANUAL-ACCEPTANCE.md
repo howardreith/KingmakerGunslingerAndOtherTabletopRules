@@ -4,6 +4,10 @@ OwnerAestheticApproval: NOT_RECORDED
 HumanTooltipAcceptance: PENDING
 HumanMerchantAcceptance: PENDING
 
+PR #28 remains draft. Automated no-save native checks passed, but saved-character
+persistence/respec remains BLOCKED-PERSISTENCE-FIXTURE. Human review does not
+substitute for that engineering gate.
+
 All four selected originals passed Codex objective inspection. Whiteout attempt
 3 replaced the rejected source; the other three source bytes are unchanged.
 Technical admission does not record Howie's aesthetic approval.

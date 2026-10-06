@@ -7,7 +7,10 @@ hooks were reconciled against the exact released v0.0.141 API. The table records
 the original source hashes, not a claim that adapted runtime fixtures remain
 byte-identical. Full native compilation proves that no later Summoning symbol
 is needed. Specialized runtime evidence from the source branches is provenance;
-the new release candidate still requires its own runtime qualification.
+the release candidate now has eight fresh-process no-save runs on clean source
+64870d327b513077f0032a0ee1d544301378a5d4 (291 assertions). Its working-save
+persistence transaction remains blocked; source-branch runs are not reused as
+qualification of this new artifact.
 
 ## Dependency and reconciliation ledger
 
