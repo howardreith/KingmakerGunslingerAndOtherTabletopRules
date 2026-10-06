@@ -1,5 +1,26 @@
 # Expanded Summoning Phase 2 journal
 
+## October 6 -- owned triangle-order and spear metadata diagnostic, NOT RUN
+
+The8d current-pose original replay renders a closed coil, unlike supporting
+native frames; all captured bone determinants are positive. That rules out a
+native reflected bone in those samples, not a shader or winding diagnosis.
+New fixture-only comparison swaps each triangle's second/third index on the
+exact captured project-owned mesh for one additional supporting frame, then
+restores in finally. It never changes normals, shader/culling, visibility,
+native geometry, bones, camera or gameplay. Three exact restoration checks
+bring research to29. Pure behavior test proves input preservation, exact swaps,
+roundtrip and fail-closed invalid lists.226 focused and exact-reference
+incremental compile PASS; full exact candidate/runtime remain pending.
+
+The same closed hybrid cell reads its existing primary weapon's prefab names,
+component types, static bounds/model-local frames and native WeaponSnap targets.
+No model instantiation/equip/native vertex/texture/clip export, and no claim
+that metadata solves spear handling. No staged original mesh/paint or production
+attachment change. Latest completed native authority remains8d research PASS
+and exact07:21:34 restoration. Next immutable full gate, smoke/body29 and exact
+leased restore. No DATA import, merge/release/version bump or Phase2C start.
+
 ## October 6,07:21 UTC -- original ground-support batch PASS, restored
 
 Exact8d3081c3 passes225 focused/2027 full83.0s, complete exact gate177.7s,

@@ -87,6 +87,14 @@ tail is partly occluded and spear absent. Investigate actual winding/deformation
 do not infer final art/contact acceptance from floor PASS. Spear/contact/lifecycle,
 printed profiles and full Sprint17 hidden/publication follow. No DATA import.
 
+Containing diagnostic extension (NOT RUN): current8d original replay has closed
+coils and positive driver determinants, so native reflection is not evidenced.
+The closed fixture now compares both triangle orders on the exact owned mesh,
+restores in finally and pins normals/material identity; research29 assertions.
+Material state and existing primary-spear prefab/bounds/WeaponSnap anchors are
+read only. No equip/native geometry export or visibility/culling override.
+226 focused/incremental compile PASS; full exact-head prelaunch/runtime next.
+
 Sprint 17's [bounded native-rig survey](planning/EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md)
 uses the native Medium Water Elemental source of the proposed serpentine
 view, not the optional Eidolon blueprint from the earlier mixed-library

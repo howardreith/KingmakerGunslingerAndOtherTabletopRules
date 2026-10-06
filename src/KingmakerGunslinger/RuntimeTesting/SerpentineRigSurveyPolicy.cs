@@ -66,5 +66,22 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         internal static bool Finite(float value)
         { return !float.IsNaN(value) && !float.IsInfinity(value); }
+
+        // A request-local ORIGINAL-mesh art diagnostic, never native geometry
+        // or a renderer visibility/culling override. Preserve input ownership.
+        internal static int[] ReverseOriginalTriangleOrder(int[] triangles, int vertexCount)
+        {
+            if (triangles == null || triangles.Length == 0 || triangles.Length % 3 != 0 ||
+                vertexCount < 3 || triangles.Any(index => index < 0 || index >= vertexCount))
+                throw new ArgumentException("Incomplete original triangle list.");
+            int[] result = (int[])triangles.Clone();
+            for (int i = 0; i < result.Length; i += 3)
+            {
+                if (result[i] == result[i + 1] || result[i] == result[i + 2] || result[i + 1] == result[i + 2])
+                    throw new ArgumentException("Degenerate original triangle indices.");
+                int second = result[i + 1]; result[i + 1] = result[i + 2]; result[i + 2] = second;
+            }
+            return result;
+        }
     }
 }

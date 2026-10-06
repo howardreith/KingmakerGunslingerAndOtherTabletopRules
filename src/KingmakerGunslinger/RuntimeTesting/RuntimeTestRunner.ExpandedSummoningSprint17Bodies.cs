@@ -244,6 +244,30 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 return clearance.HasValue && clearance.Value >= -.002f && clearance.Value <= .015f;
                             }), "Bounded sampled flat-ground proof only; not attack, slope, death or final visual qualification."));
                         row["supportingFrame"] = CaptureSprint17OriginalBodyFrame(unit, attachment.Body, key);
+                        Mesh originalMesh = attachment.Body.sharedMesh;
+                        if (!resources.Any(value => ReferenceEquals(value, originalMesh)))
+                            throw new InvalidOperationException("Winding research must own this exact original mesh.");
+                        int[] originalTriangles = originalMesh.triangles;
+                        Vector3[] originalNormals = originalMesh.normals;
+                        Material originalMaterial = attachment.Body.sharedMaterial;
+                        row["materialResearch"] = Sprint17BodyMaterialResearch(originalMaterial);
+                        try
+                        {
+                            originalMesh.triangles = SerpentineRigSurveyPolicy.ReverseOriginalTriangleOrder(
+                                originalTriangles, originalMesh.vertexCount);
+                            row["reverseWindingSupportingFrame"] = CaptureSprint17OriginalBodyFrame(
+                                unit, attachment.Body, key + "-reverse-winding");
+                        }
+                        finally { originalMesh.triangles = originalTriangles; }
+                        _serpentineBodyAssertions.Add(Assertion("sprint17-original-winding-probe-restored-" + key,
+                            "only exact owned triangle order changes for one supporting art comparison, then restores",
+                            "triangles=" + originalTriangles.Length / 3 + ";materialReferenceUnchanged=" +
+                                ReferenceEquals(originalMaterial, attachment.Body.sharedMaterial),
+                            originalMesh.triangles.SequenceEqual(originalTriangles) &&
+                                originalMesh.normals.SequenceEqual(originalNormals) &&
+                                ReferenceEquals(originalMaterial, attachment.Body.sharedMaterial),
+                            "No native geometry, shader/culling, visibility, camera, bone, gameplay or save change. Not visual acceptance."));
+                        if (key == "salamander") row["nativeSpearResearch"] = Sprint17NativeSpearResearch(unit);
                     }
                     finally
                     {
@@ -340,6 +364,42 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private static JArray Sprint17SurveyMatrix(Matrix4x4 matrix)
         { return new JArray(Enumerable.Range(0, 16).Select(index => matrix[index / 4, index % 4]).ToArray()); }
+
+        private static JObject Sprint17BodyMaterialResearch(Material material)
+        {
+            var properties = new JObject();
+            foreach (string name in new[] { "_Cull", "_CullMode", "_ZWrite", "_ZTest", "_SrcBlend", "_DstBlend",
+                "_Cutoff", "_AlphaClip", "_Alpha", "_Opacity", "_Dissolve" })
+                properties[name] = material.HasProperty(name) ? new JValue(material.GetFloat(name)) : JValue.CreateNull();
+            return new JObject { ["shader"] = material.shader.name, ["renderQueue"] = material.renderQueue,
+                ["keywords"] = new JArray(material.shaderKeywords), ["declaredFloatProperties"] = properties,
+                ["scope"] = "read only; no visibility/culling override; no shader or texture export" };
+        }
+
+        private static JObject Sprint17NativeSpearResearch(UnitEntityData unit)
+        {
+            var item = unit.Body.PrimaryHand.MaybeWeapon;
+            var weapon = item == null ? null : item.Blueprint;
+            GameObject model = weapon == null || weapon.VisualParameters == null ? null : weapon.VisualParameters.Model;
+            return new JObject { ["scope"] = "read-only existing primary weapon prefab/anchors; no equip, model clone or weapon handling claim",
+                ["weapon"] = weapon == null ? null : weapon.AssetGuid,
+                ["category"] = weapon == null ? null : weapon.Category.ToString(),
+                ["model"] = model == null ? null : model.name,
+                ["modelComponents"] = model == null ? JValue.CreateNull() : (JToken)new JArray(
+                    model.GetComponentsInChildren<Component>(true).Where(value => value != null)
+                        .Select(value => value.GetType().FullName).Distinct().OrderBy(value => value)),
+                ["modelMeshes"] = model == null ? JValue.CreateNull() : (JToken)new JArray(
+                    model.GetComponentsInChildren<MeshFilter>(true).Select(filter => new JObject {
+                        ["name"] = filter.name, ["mesh"] = filter.sharedMesh == null ? null : filter.sharedMesh.name,
+                        ["modelLocalFrame"] = Sprint17SurveyMatrix(model.transform.worldToLocalMatrix * filter.transform.localToWorldMatrix),
+                        ["boundsCenter"] = filter.sharedMesh == null ? null : SurveyVector(filter.sharedMesh.bounds.center),
+                        ["boundsSize"] = filter.sharedMesh == null ? null : SurveyVector(filter.sharedMesh.bounds.size) })),
+                ["nativeWeaponSnaps"] = new JArray(unit.View.GetComponentsInChildren<Kingmaker.Assets.Visual.WeaponSnap>(true)
+                    .Select(snap => new JObject { ["name"] = snap.name,
+                        ["parent"] = snap.transform.parent == null ? null : snap.transform.parent.name,
+                        ["target"] = snap.SnapTo == null ? null : snap.SnapTo.name,
+                        ["viewLocalFrame"] = Sprint17SurveyMatrix(unit.View.transform.worldToLocalMatrix * snap.transform.localToWorldMatrix) })) };
+        }
 
         private static JObject Sprint17MeasuredFloor(UnitEntityData unit, Vector3 point)
         {
