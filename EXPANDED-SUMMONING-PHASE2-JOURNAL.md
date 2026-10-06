@@ -1,5 +1,17 @@
 # Expanded Summoning Phase 2 journal
 
+## October 6 — bounded attached-pose and detached weapon-prefab research
+
+Private original authoring checkpoint fc1e880e pushed through policy wrapper;
+no active-branch race or DATA imports. The next fixed research extension adds
+single current bone-position samples, action clip names/durations and static
+weapon anchors. One archived Lizardfolk greatclub/no-offhand source is pinned
+by native blueprint, prefab and weapon GUID; its prefab is read-only, never
+instantiated, activated or attached. No fourth actor or production change.
+219 focused / incremental Release PASS. New exact artifact gate and fresh
+Steam smoke plus 13-assertion/four-capture survey next; not qualified by a173.
+No new runtime transaction yet; last actual restoration remains verified.
+
 ## October 6 — private continuous-chain snakes and separate hybrid body
 
 Starting from pushed research evidence 6dee947d, authored original Viper and

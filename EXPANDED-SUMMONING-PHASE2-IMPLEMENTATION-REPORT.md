@@ -66,6 +66,13 @@ not include or qualify a weapon. Next bounded native motion/contact and
 owned-view lifecycle proof, separate spear/tail seam, then profiles/signatures.
 [Source/private hashes](assets-source/original-models/sprint17-serpents/SOURCE.md).
 
+The next bounded research extension records current attached bone positions,
+native action clip names/durations (not curves), and the archived Lizardfolk
+greatclub prefab read-only without spawning its campaign NPC. This helps
+resolve native pose and potential manufactured-weapon carrier questions.
+219 focused/incremental compile PASS; its new exact gate and 13-assertion/
+four-capture guarded batch have NOT RUN. No asset or production change.
+
 ## Historical first hidden candidate, October 5
 
 Hidden candidate `0238bf03166dfb3dd7bf0205c12f82a2d2757caa` passed the full

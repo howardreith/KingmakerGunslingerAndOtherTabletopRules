@@ -29,7 +29,7 @@
       16
     ],
     "currentSprint": 17,
-    "currentSubItem": "Sprint 16 COMPLETE AND PUBLISHED at exact 155ada89. S17 NOT QUALIFIED. Research a173 full prelaunch/smoke 11/11/survey 11/11 PASS, evidence pushed 6dee947d. Original continuous-chain snakes and separate Salamander hybrid body now private: 14 Blender tests and 74 new framed panels. No shipped asset/production/registration changes; weapon handling not implemented by the hybrid body. Next bounded native motion/ground/contact and owned-view lifecycle proof, actual Salamander spear/tail seam, then profiles/signatures. Actual snapshot restored 02:45:49 UTC; no new launch/save write. 976 + 29 = 1005 visible. DATA audit complete; zero imports.",
+    "currentSubItem": "S16 COMPLETE AND PUBLISHED; S17 NOT QUALIFIED. Exact a173 research PASS and restored; private original prototypes pushed fc1e880e (14 Blender tests, 74 panels, full 2021 PASS). Next bounded research extension adds current attached pose/action metadata and one read-only detached greatclub prefab, no fourth actor or production changes. 219 focused/incremental compile PASS; freeze new exact artifact, all gates then smoke and 13-assertion/four-capture survey with exact restoration. Actual Salamander spear/tail seam and profiles remain open. No shipped prototypes. 976 + 29 = 1005 visible; zero DATA imports.",
     "sprint17PrivatePrototypes": {
       "status": "AUTHORING ONLY; NOT PACKAGED OR RUNTIME QUALIFIED",
       "source": "assets-source/original-models/sprint17-serpents/SOURCE.md",
