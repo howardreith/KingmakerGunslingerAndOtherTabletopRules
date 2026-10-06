@@ -39,8 +39,12 @@ descends from a35993fc and reuses the laptop-owned native control seam.
 Exact 7b76 passed every prelaunch gate (223 focused/2025 full), smoke 11/11,
 then failed body research 2/3 before attachment on a fixture-only implicit
 caster dependency. Native cleanup and exact installation restoration passed
-at 05:05:58 UTC. The explicit-anchor repair retains native floor/sight rules
-and needs a new exact-head batch. No automatic production attachment or
+at 05:05:58 UTC. Exact 2045 anchor repair passes all prelaunch gates and smoke
+11/11; floor clearance 8/8, then body 2/3 FAIL before attachment at native
+control. Its fixture omitted the qualified scoped summon-rule input. Latest
+cleanup/restoration PASS at 05:23:35 UTC. Current repair reuses that exact
+one-cast handler, records all native predicate terms and expands the complete
+body gate to 20. A new exact-head batch is required. No automatic production attachment or
 gameplay changes; no body, weapon, locomotion or contact qualification.
 
 Sprint 17's [bounded native-rig survey](planning/EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md)
