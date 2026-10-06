@@ -1,11 +1,15 @@
 # Expanded Summoning Phase 2 evidence index
 
-[Sprint17 winding/weapon metadata extension, NOT RUN](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-REVIEW.md):
-226 focused checks and incremental exact-reference compile PASS; no original
-payload or production change. Request-local exact owned mesh triangle-order
-comparison restores in finally and pins normals/material identity. Read-only
-existing spear prefab/bounds/WeaponSnap metadata; no equip/native geometry export.
-Full exact prelaunch and smoke/body29 remain pending; latest native pass is8d below.
+[Sprint17 exact32b2f26e winding/weapon metadata research PASS](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-REVIEW.md):
+226 focused/2028 full83.7s; full exact gate179.1s;491 preflight/81 orchestration/
+17 provenance, persistence11/3/19,crowd5/7,strict318-member package. Fresh Steam
+smoke11/body29, complete batch PASS. Original triangle reversal makes coils
+and hybrid surface render solid; exact restoration of indices/normals/material
+identity PASS. All six supporting frames reviewed as ART ONLY. Native spear
+prefab/anchors recorded, not weapon/contact proof. Actual0752138198384Z snapshot
+restored07:59:27UTC,136/.117/tree, no game/lease/staging/save write. Next S17-only
+authored winding correction and bounded actual attack/weapon diagnostics;
+production, original payloads and counts unchanged. [Six exact attempts](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-EVIDENCE.json).
 
 [Sprint17 exact8d3081c3 corrected-support PASS](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-REVIEW.md):
 225 focused/2027 full,491 preflight/81 orchestration/17 provenance, exact clean
