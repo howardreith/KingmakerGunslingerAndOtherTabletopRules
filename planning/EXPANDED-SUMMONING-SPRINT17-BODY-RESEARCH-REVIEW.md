@@ -5,6 +5,12 @@ Laptop PR26 only; Sprints14–16 complete;976+29=1005 visible; ZERO DATA ports.
 
 ## Current twelfth exact batch — proposed native carrier rejected
 
+Subsequent exact291059aa [spear-carrier audit](EXPANDED-SUMMONING-SPRINT17-SPEAR-CARRIER-AUDIT.md)
+passes smoke11/metadata15 and exact restoration. Native human spear clips
+exist, but no new original-body binding, tail or contact qualification. A
+bounded project-owned human-prefab prototype is next; no clip transplant
+onto the rejected39-bone rig. Current failed body result remains unchanged.
+
 Separate exact 8022fee2 metadata survey PASS14/14 after smoke11/11 and all
 exact prelaunch gates (236 focused/2038 full). All11 Lizardfolk prefabs lack
 PiercingTwoHanded; fifth FreeHands list has14 slots with null3,5,8. Failed

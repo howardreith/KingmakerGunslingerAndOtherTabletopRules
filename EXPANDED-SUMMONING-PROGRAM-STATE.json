@@ -29,7 +29,7 @@
       16
     ],
     "currentSprint": 17,
-    "currentSubItem": "S16 COMPLETE/PUBLISHED; S17 NOT QUALIFIED. Exact8022fee2 complete prelaunch PASS:236 focused/2038 full81.8s/gate178.4s; isolated491 preflight/81 orchestration/17 provenance/persistence11/3/19/crowd5/7/strict318. Fresh Steam smoke11/metadata14 PASS, all11 Lizardfolk prefabs captured; none supports PiercingTwoHanded. FreeHands14 slots has null3,5,8; f6 failure preserved. Initial preflight heartbeat-write interference retained, isolated rerun PASS. Actual1255443757094Z snapshot restored13:02:18UTC; no game/lease/lock/staging/save write. Research only: no action adopted; body570 still33/35 FAIL; all12 body attempts retained. Next bounded actual spear/longspear donor audit, then exact body/gameplay qualification.976+29=1005;ZERO DATA ports;Phase2C authorized but deferred.",
+    "currentSubItem": "S16 COMPLETE/PUBLISHED; S17 NOT QUALIFIED. Exact291059aa complete prelaunch PASS:237 focused/2039 full88.3s/gate183.2s;491 preflight/81 orchestration/17 provenance/persistence11/3/19/crowd5/7/strict318. Fresh Steam smoke11/metadata15 PASS. Three archived spear-bearing prefabs reference native HumanAnimationSet with two PiercingTwoHanded clips;177 unique bone paths plus duplicate combined palettes/cape renderer. No playback, compatible hybrid binding or tail qualification; no action adopted. Actual1326496740021Z snapshot restored13:33:27UTC, no game/lease/lock/staging/save write. Body570 remains33/35 FAIL; all12 attempts preserved. Next bounded project-owned human-prefab binding/weapon proof; continue independent snake work if no safe hybrid seam.976+29=1005;ZERO DATA ports;Phase2C authorized but deferred.",
     "sprint17PrivatePrototypes": {
       "status": "Six original files staged for bounded body acceptance; not automatically attached or runtime qualified",
       "source": "assets-source/original-models/sprint17-serpents/SOURCE.md",
@@ -61,9 +61,9 @@
     },
     "sprint16LaptopCorrectionReview": "planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-FIXTURE-REPAIR.md",
     "dataSalvageAudit": "planning/EXPANDED-SUMMONING-PHASE2B-DATA-SALVAGE-AUDIT.md",
-    "lastGuardedRuntimePass": "Exact8022fee2 RESEARCH ONLY PASS: fresh Steam smoke11/11 and20261006T1259072936468Z-disposable-expanded-summoning-serpentine-survey14/14; complete driver PASS. All11 Lizardfolk prefab rows; no PiercingTwoHanded carrier or action adoption. S17 NOT QUALIFIED.",
-    "lastGuardedRuntimeResult": "Exact8022fee2 smoke11/11 and native-action metadata14/14 PASS. All11 native prefab rows; no two-handed piercing action. FreeHands14 slots includes null3,5,8, confirming f6 observation defect. No native actor instantiated or production action adopted. Latest body570 remains33/35 FAIL and all12 attempts preserved.",
-    "lastGuardedRestoration": "20261006T1255443757094Z actual snapshot restored2026-10-06T13:02:18.5290194Z; journalD85CB9DF2C4FAABED2C7DD0D4DF8D6AF6C8B52CE09712AA0287594240A9A8A89; exact restoration VERIFIED, no game/lease/lock/staging/save write",
+    "lastGuardedRuntimePass": "Exact291059aa RESEARCH ONLY PASS: fresh Steam smoke11/11 and20261006T1330139092770Z-disposable-expanded-summoning-serpentine-survey15/15; complete driver PASS. Three native human spear-action metadata sources, no action adopted. S17 NOT QUALIFIED.",
+    "lastGuardedRuntimeResult": "Exact291059aa smoke11/11 and metadata15/15 PASS. Native human main-hand PiercingTwoHanded clips exist for all3 archived spear-bearing prefabs. Their177 unique paths/duplicate palettes differ from the39-bone Lizardfolk hybrid. No compatible binding, tail or playback claim. Latest body570 remains33/35 FAIL; all12 attempts retained.",
+    "lastGuardedRestoration": "20261006T1326496740021Z actual snapshot restored2026-10-06T13:33:27.2332485Z; journal97A08A2FD8C08DB595ED36637633F9156F5567724068489DAD7C4FF2AF6FF207; exact restoration VERIFIED, no game/lease/lock/staging/save write",
     "activePullRequest": 26,
     "archivedSalvagePullRequest": 27,
     "giantWaspPublished": true,

@@ -1,6 +1,6 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-06 13:02 UTC — laptop sole owner; Sprints14–16 COMPLETE
+## CURRENT STATE, 2026-10-06 13:33 UTC — laptop sole owner; Sprints14–16 COMPLETE
 
 This section governs over historical mission/ownership statements below.
 HOWARD-LAPTOP / `codex/expanded-summoning-phase2b-sprints14-17` / draft PR #26
@@ -19,45 +19,44 @@ deployment, force push or prohibited substitute subsystems.
   2026-10-05T19:29:25.9127956Z; holder PID15084/start2026-10-05T20:34:17.3075720Z.
   Session-scoped, not perpetual. Refresh heartbeat; release only on actual
   session ending. All safety refs, bundles and failed artifacts retained.
-- Last pushed/exact runtime candidate `8022fee249b537d3da90adc502c2f62a7fbf59ed`.
+- Last pushed/exact runtime candidate `291059aa1ae56518a74d041e3fe004969f69e5bf`.
   The containing evidence checkpoint records RESEARCH ONLY PASS, not Sprint 17 qualification.
   Unexpected active-branch motion is a stop; frozen DATA motion informational.
 
 ### Qualified versus NOT QUALIFIED; next exact work
 
-The containing source-only diagnostic extends the closed survey with three
-exact archived spear/longspear prefab/weapon pairs, without spawning NPCs or
-adopting actions. Focused 237/237 PASS, 2039 registered; full exact prelaunch
-and fresh-Steam smoke11/survey15 are next. No new body/gameplay qualification.
-See [bounded spear audit](planning/EXPANDED-SUMMONING-SPRINT17-SPEAR-CARRIER-AUDIT.md).
+[Current spear-carrier review](planning/EXPANDED-SUMMONING-SPRINT17-SPEAR-CARRIER-AUDIT.md)
+and [exact artifact/restoration](planning/EXPANDED-SUMMONING-SPRINT17-SPEAR-CARRIER-EVIDENCE.json).
 
-Exact 8022fee2: 236 focused / 2038 unfiltered tests (81.8s), complete gate
-178.4s; 491 isolated preflight / 81 orchestration / 17 provenance,
-persistence 11/3/19, crowd 5/7, clean exact Release / strict 318-member package
-PASS. Fresh Steam smoke 11/11 and native-action metadata survey 14/14 PASS.
-This is RESEARCH ONLY; Sprint 17 remains NOT QUALIFIED.
+Exact 291059aa: 237 focused / 2039 unfiltered tests (88.3s), complete gate
+183.2s; 491 preflight / 81 orchestration / 17 provenance, persistence 11/3/19,
+crowd 5/7, clean exact Release / strict 318-member package PASS. Fresh Steam
+smoke 11/11 and metadata survey 15/15 PASS. RESEARCH ONLY; Sprint 17 remains
+NOT QUALIFIED.
 
-All 11 native Lizardfolk prefabs were captured with unchanged native references
-and actor membership. None provides a PiercingTwoHanded main-hand action.
-The fifth FreeHands set has 14 slots, with null slots 3,5,8: this confirms the
-earlier reader defect without retroactively qualifying failed f6a0a20b.
-No NPC instantiated, action adopted, native asset changed or new body/contact
-qualification. The latest body gate remains 570a14cd: 33/35 FAIL before hybrid
-attachment; all 12 body attempts and the failed partial census are preserved.
+All three archived spear/longspear prefabs reference the native human
+MyAnimationSet (24 actions), with PiercingTwoHanded clips
+Human_2H_spear_attack_01 / _02 (1.46666718 / 1.40000057 seconds).
+Command-act events are at 0.620427966 / 0.734528542 seconds. Native references
+and actor membership are unchanged. This is metadata, not actual playback,
+grip, contact or a safe Salamander binding. No action adopted or NPC spawned.
 
-Actual snapshot 1255443757094Z restored at 13:02:18.5290194 UTC:
+Each prefab has 177 unique bone paths but a combined duplicate bone palette
+(2252 / 1776 / 2507 entries) and a zero-bone cape renderer. Cape bones do not
+prove an articulated tail. These human clips cannot simply replace the
+incompatible 39-bone Lizardfolk action. The latest body570 gate remains 33/35
+FAIL before hybrid attachment; all 12 body attempts and prior censuses remain.
+
+Actual snapshot 1326496740021Z restored at 13:33:27.2332485 UTC:
 136 files / Info 0.0.117 / exact tree. Journal
-D85CB9DF2C4FAABED2C7DD0D4DF8D6AF6C8B52CE09712AA0287594240A9A8A89;
-census F99D1E5841DA05C04ADEA19233526A81A70FD2D3075A6B74B1EBB0EB947D2A0A.
+97A08A2FD8C08DB595ED36637633F9156F5567724068489DAD7C4FF2AF6FF207;
+spear census 3AF2CBC78820708586547C36952FF76BF9921823EDEA78ED7BA1243F4DAC2687.
 Lease Completed/recoveryRequired=false/released; no game/lock/staging/save write.
 
-First preflight failed because this session changed its heartbeat during the
-artifact fingerprint; failure log retained. Isolated rerun passed all 491.
-Preflight must run without concurrent heartbeat or artifact-writing work.
-
-Next: evaluate a bounded actual spear/longspear donor from the archived native
-inventory; equipped weapon alone does not prove animation compatibility.
-No retry of known rejected Lizardfolk carriers or weakening of contact gates.
+Next: bounded exact human-prefab binding/native spear-handling proof on a
+request-local project-owned Salamander prototype; no native NPC facts/loot,
+human-to-Lizardfolk clip transplant or assumed cape/tail compatibility.
+Keep independent snake work moving if a bounded hybrid seam is unavailable.
 Sprints 14–16 complete; 976+29=1005 visible choices; ZERO DATA ports.
 Phase 2C remains authorized but deferred until Phase 2B owner acceptance.
 
@@ -68,10 +67,10 @@ and [exact census evidence](planning/EXPANDED-SUMMONING-SPRINT17-NATIVE-ACTION-E
 exact155ada89 smoke11/main211, all14 Crocodile+6 Dire public roots;
 hidden e3 retains crowd20/prepare9/cleanup9/absence5. No reopening.
 
-Exact 8022 source fingerprint 12164ea36b9d59fde1e229148a34edf04ad31d0666f7097f7111dae831188ee4;
-DLL cc7bbfa44055b85dd24161b5276d41b37abab5641818219cf81c7c874cf9ddfe;
-MVID 5f958584-c719-4840-baae-ad1b06e54775;
-ZIP b0a1a0354128dae44f8f8fea6858f92667d5feaf7918ce3f49dd849dde39f6f0.
+Exact 2910 source fingerprint c8ec8837252eb62129d028a01f2b587f8dbf651675239b06fecd2a9d8da2a321;
+DLL 3aec6d01dc6bbd4fd64ece49c2f08f06077cff72b9b581b8cbe5d7d8df063d6b;
+MVID 91d17a0f-a7d4-49e2-99c3-ab6d526bbb0c;
+ZIP 4471ea5d845188808d219b6132fb94b9fae497543fec40279b3e5fb987125d1c.
 
 Then printed profiles/signatures/icons, full S17 hidden/publication and
 exhaustive Phase2B closure. Explicit14-reference bundle:
