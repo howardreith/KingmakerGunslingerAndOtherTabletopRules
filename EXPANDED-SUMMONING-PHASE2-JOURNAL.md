@@ -1,5 +1,21 @@
 # Expanded Summoning Phase 2 journal
 
+## October 6 -- conditional native piercing carrier adapter, source only
+
+09087 missing-clip evidence and exact restoration preserved/pushed as3eb23d06.
+The adapter loads only archived native shortspear carrier9f7a7364b76d65d43b72086aedce68ae,
+prefabc664715ff7165984285f66acc764b4b3, read-only and never instantiated. It
+requires actual PiercingTwoHanded variants and matching39 native bone paths/
+bind frames, then owns only a copied action-list container with one main-hand
+reference replaced. Explicit transition graphs fail closed pending review.
+All other actions and native sets/clips remain borrowed/unchanged. No style
+relabel, forced attack, bone twist, native asset edit or production hook.
+Exact rollback restores the original set; native teardown destroys only the
+private container and preserves borrowed assets. New policy/reference-copy
+tests pass234 focused/2036 registered; incremental exact compile PASS.
+48-assertion guarded body batch retains all47 prior gates plus exact native
+binding. Full exact-head prelaunch/runtime remains next; NOT QUALIFIED.
+
 ## October 6,11:20 UTC -- exact09087d0f exposes missing piercing animation
 
 All prelaunch PASS:232 focused/2034 full83.3s/gate180.5s,491 preflight,
