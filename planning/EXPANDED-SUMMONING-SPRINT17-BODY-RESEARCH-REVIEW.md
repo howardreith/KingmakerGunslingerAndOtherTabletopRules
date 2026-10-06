@@ -1,8 +1,9 @@
 # Sprint 17 bounded original-body research
 
-Status: NOT QUALIFIED. Failed exact research candidates 7b76dba2 and
-`2045c302b071281c5dff71c883612d55218c7643` are preserved. This containing
-native-control fixture repair is their normal descendant. Laptop PR #26 only; no DATA
+Status: Sprint 17 NOT QUALIFIED. Exact `6bee8d5716bba1340adc3c629c88d15a1a1d8f25`
+game-side research passes 20/20, but its batch remains **ERROR** on a driver
+JSON-reader defect. Earlier 7b76dba2/2045c302 fixture failures are preserved.
+This containing reader/evidence checkpoint is their normal descendant. Laptop PR #26 only; no DATA
 imports. Sprint 16 remains complete. Published surface is unchanged:
 976 generated + 29 wrappers = 1005 visible.
 
@@ -97,12 +98,50 @@ require the exact working save and reject caller-selected assets/creatures.
 This is an engineering checkpoint, not source or runtime
 qualification of the complete sprint.
 
-Next: freeze/push this coherent NOT QUALIFIED native-control repair, then run the complete
-unfiltered exact-head Sprint gate, request/preflight/orchestration checks and
-strict deterministic 318-member package validation. One immutable package,
-fresh Steam App ID 640820 processes: smoke then all 20 bounded body assertions. Acquire
-the shared runtime lease before observing or snapshotting the live install;
-restore that actual snapshot and prove no game/lease/staging remains.
+## Third exact batch: game research 20/20; driver ERROR, restored
+
+Exact 6bee8d57 passes all prelaunch gates: 223 focused / 2025 full (85.9s),
+complete wrapper/build/strict 318-member package (181.8s), 491 preflight,
+68 orchestration and persistence/crowd request checks. Fresh Steam smoke 11/11,
+then the game records **20/20 research PASS**. Every body passes native control
+and appearance, original attachment, all-renderer rollback, real native movement
+and destruction of all five exact project-owned resources. Final reference
+census and loaded version pass. Save-writing API observed: false.
+
+The driver then rejects its own parsed row count: Windows PowerShell wraps
+`@(Get-Content -Raw | ConvertFrom-Json)` around the top-level array, reporting
+one outer item instead of the three real rows. The body result belongs to the
+exact candidate/request; independent read confirms the three ordered keys.
+This is **ORCHESTRATION**, not game FAIL. Keep the original batch ERROR and do
+not rewrite it as a complete PASS. The new pure reader assigns before emitting
+rows and rejects malformed, missing, wrapped, duplicate, foreign and reordered
+data. All **81** orchestration tests pass, as does reading the actual capture.
+Future guarded drivers must use `ConvertFrom-KmgSerpentineBodyReviewJson`.
+
+Measured movement is about 2.46m per actor, 12 weighted-world samples each.
+The snakes' lowest vertices are approximately -0.108m relative to actor origin;
+Salamander varies +0.035 to +0.312m. These are **not measured floor distances**:
+the survey nav point is Y=-5.6 whereas moving actor origins settle at Y=-6.0.
+Supporting art frames show a questionable snake coil/body junction and an
+occluded hybrid tail. No image is mechanical ground-contact evidence. Neither
+the scalar samples nor research PASS accepts final anatomy, credible locomotion,
+ground support, contacts, weapon handling, full lifecycle or printed profiles.
+The next bounded probe must capture current bone/view transforms and a native
+floor reference so original geometry can be corrected from measured poses.
+
+Latest actual snapshot `20261006T0534456803703Z` restored at
+`2026-10-06T05:41:55.0949538Z`: exact 136 files / Info 0.0.117 /
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+Lease Completed/recoveryRequired=false; no game/shared lock/staging.
+No save write or save-file access. All raw artifacts/three frames stay private;
+curated exact hashes and separate runtime/batch outcomes are in the evidence JSON.
+
+Next: push this coherent reader/evidence checkpoint, inspect the bounded native
+floor/pose seam, extend original-body measurements and correct/review the
+original geometry. Do not blindly rerun unchanged models just to repair a
+driver verdict. Freeze the next stable research candidate, run the complete
+exact-head gate and isolated preflight, use the tested reader, then the complete
+affected fresh-Steam smoke/body batch and exact leased restoration.
 
 After the evidence review, continue the separate manufactured-spear/tail seam,
 printed profiles/signatures, full visual lifecycle/contact/crowd and persistence

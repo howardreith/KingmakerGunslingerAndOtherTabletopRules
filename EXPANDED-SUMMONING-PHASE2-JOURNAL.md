@@ -1,5 +1,25 @@
 # Expanded Summoning Phase 2 journal
 
+## October 6, 05:41 UTC -- game research20/20, driver ERROR, exactly restored
+
+Exact6bee prelaunch PASS:223 focused/2025 full85.9s, complete gate181.8s,
+491 isolated preflight/68 orchestration, request checks, strict318-member
+package. Fresh Steam smoke11/11; game original-body research20/20. Each body
+passes native control/appearance, attachment, all-renderer rollback, movement
+and exact five-resource cleanup. Final reference census PASS; no save-writing
+API observed. Driver ERROR afterward: @(ConvertFrom-Json) wraps the actual
+three-row array as one Windows PowerShell pipeline item. No game result is
+rewritten, and ERROR stays ERROR. New pure three-key reader passes81 orchestration
+tests and reads the actual capture. Focused223 PASS; source/asset behavior unchanged.
+Latest actual136-file/.117 snapshot restored05:41:55, no game/lease/staging.
+Three private art frames reviewed; supporting only, not mechanical evidence.
+Snake coil/body junction and hybrid tail framing still need work. Lowest
+vertices relative to actor are about -0.108m (snakes), +0.035..+0.312m (hybrid).
+Nav survey Y=-5.6 differs from moving actor Y=-6.0: do not equate those scalars
+to true floor distance. Next bounded native floor/current-transform observation
+and original mesh review before the next stable research candidate. No publication,
+gameplay/profile qualification or DATA import.
+
 ## October 6, 05:23 UTC -- floor fixed; native control fixture incomplete, restored
 
 2045c302 passed all exact prelaunch gates (223 focused/2025 full, 82.5s;

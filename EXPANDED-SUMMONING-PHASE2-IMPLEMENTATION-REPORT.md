@@ -47,6 +47,16 @@ one-cast handler, records all native predicate terms and expands the complete
 body gate to 20. A new exact-head batch is required. No automatic production attachment or
 gameplay changes; no body, weapon, locomotion or contact qualification.
 
+That next exact 6bee batch passed every prelaunch gate and smoke11/11, then
+**game-side research20/20** (all three attachments/rollback/native movement/
+exact resource cleanup). The driver itself remains ERROR on JSON-array wrapping;
+the pure reader repair passes 81 orchestration checks and the actual three-row
+capture. Preserve both outcomes. Actual snapshot restored at 05:41:55 UTC,
+136 files / .117 / exact expected tree, no game/lease/staging/save writes.
+Supporting art and actor-relative heights leave coil/ground/pose quality open;
+neither measures actual floor clearance. Next bounded current-transform/native
+floor measurements and original-geometry review; no final Sprint 17 qualification.
+
 Sprint 17's [bounded native-rig survey](planning/EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md)
 uses the native Medium Water Elemental source of the proposed serpentine
 view, not the optional Eidolon blueprint from the earlier mixed-library
