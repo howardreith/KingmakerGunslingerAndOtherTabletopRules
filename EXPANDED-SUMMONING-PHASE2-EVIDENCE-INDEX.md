@@ -1,16 +1,35 @@
 # Expanded Summoning Phase 2 evidence index
 
-[Current snake profile/body slice, FAIL31/38](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-PROFILE-SLICE.md)
-and [exact artifact/results/restoration](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-PROFILE-ATTEMPT1-EVIDENCE.json):
-2dd48884 complete source2050 tests83.7s/strict320 package180.9s PASS;
-all prelaunch PASS. Fresh Steam smoke11/11, bounded slice31/38 FAIL.
-Four production HP/rank failures, two null-target probe failures, one
-unresolved fallback-visibility failure. Live bite modifiers/dice PASS.
-Actual136-file/0.0.117 snapshot restored16:38:05UTC; no game/lease/lock/
-staging/save write. Corrected source248 focused/2050 full103.3s, complete
-repository/build/strict320 package PASS206.1s as dirty diagnostics; new exact gates NEXT.
-No waiver/publication/Sprint17 qualification. Entries below are historical
-source/research checkpoints, not the current runtime status.
+Exact `e1ba198ebd5afede8efbcacda2a46a91c0916cf6`: smoke11/11 and native
+snake profile/body38/38 PASS. The outer collector rejected its22-row JSON
+because Windows PowerShell wrapped the root array as one item. The closed batch
+remains **ERROR**, not retroactively PASS; Sprint17 remains **NOT QUALIFIED**.
+[Exact evidence](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-PROFILE-ATTEMPT2-EVIDENCE.json).
+All previous7 failures now pass in-game: correct HP/ranks/attacks and intact
+Constrictor fallback at the qualified art point. No visibility forcing, longer
+wait or relaxed criterion. Original native donor seeds remain unchanged.
+
+Source/prelaunch:248 focused,2050 full87.7s, complete repository/static/icon/
+manifest, clean14-reference Release/deterministic strict320 package189.8s;
+496 preflight,81 orchestration,17 provenance,persistence11/3/19,crowd5/7 PASS.
+The collector repair now has113 orchestration assertions and read-only replay
+returns22 rows while rejecting missing/duplicate/foreign/failed/mistyped data.
+No gameplay source change in this repair. New committed exact gates/runtime
+remain NEXT; the old failed batch journal is immutable.
+
+Repair precommit SOURCE PASS:248 focused,2050 full85.9s, complete repository/
+static/icon/manifest, clean14-reference Release/deterministic strict320 package
+184.4s.113 orchestration,17 provenance,persistence11/3/19,crowd5/7 PASS.
+
+Actual snapshot1709359050479Z restored17:16:40.6949558UTC:136 files,
+Info0.0.117,tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
+Lease Completed/recoveryRequired=false/released; no game/shared lock/staging.
+No native save write or save-file/protected-baseline access.
+Journal120b3bac56210a678d4f3f2d1925e3b9beb312ce0e370f6c120872931c5e4e9d.
+
+[Current slice review](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-PROFILE-SLICE.md).
+Entries below are historical source/research checkpoints.32 roots remain hidden;
+no full Sprint17 qualification or publication.
 
 [Historical snake view integration, NOT QUALIFIED](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-VIEW-INTEGRATION.md):
 two exact hidden identities automatically bind original bodies, with one view

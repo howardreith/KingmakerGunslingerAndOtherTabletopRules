@@ -1,5 +1,18 @@
 # Expanded Summoning Phase 2 journal
 
+## October6,17:16UTC — exacte1 native snake38/38 PASS; collector ERROR, restored
+
+Smoke11/11 and all38 profile/body assertions PASS on exacte1ba198e after full
+2050-test/strict320/prelaunch qualification. Outer driver mistook the22-row
+JSON root array for one wrapped PowerShell item and reported ERROR. Preserve
+both facts; no retroactive batch PASS. Source-controlled parser now passes113
+orchestration checks and reads the same22 rows; stricter identity/Boolean
+rejections retain all38 requirements. No gameplay source change.
+[Exact artifact/results/restoration](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-PROFILE-ATTEMPT2-EVIDENCE.json).
+Actual136/.117 snapshot restored17:16:40UTC; lease Completed/recovery=false,
+no game/lock/staging/save write. Commit/push repair, new exact gates and affected
+batch NEXT.32 roots hidden; Sprint17 NOT QUALIFIED. No DATA import.
+
 ## October6,16:38UTC — exact2dd snake slice FAIL31/38, restored
 
 Full source/prelaunch PASS:2050 tests83.7s, complete gate180.9s, strict320;

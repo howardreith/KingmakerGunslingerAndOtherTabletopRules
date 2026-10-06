@@ -1,45 +1,56 @@
 # Sprint 17 closed snake profile/body slice
 
-Current status: **exact2dd FAIL31/38; NOT QUALIFIED; machine restored**.
-[Exact source/artifact/requests/results/restoration](EXPANDED-SUMMONING-SPRINT17-SNAKE-PROFILE-ATTEMPT1-EVIDENCE.json).
-Complete source gate PASS:248 focused,2050 full83.7s, repository/static/icon/
-manifest, clean14-reference Release/deterministic strict320 package180.9s.
+Exact `e1ba198ebd5afede8efbcacda2a46a91c0916cf6`: smoke11/11 and native
+snake profile/body38/38 PASS. The outer collector rejected its22-row JSON
+because Windows PowerShell wrapped the root array as one item. The closed batch
+remains **ERROR**, not retroactively PASS; Sprint17 remains **NOT QUALIFIED**.
+[Exact evidence](EXPANDED-SUMMONING-SPRINT17-SNAKE-PROFILE-ATTEMPT2-EVIDENCE.json).
+All previous7 failures now pass in-game: correct HP/ranks/attacks and intact
+Constrictor fallback at the qualified art point. No visibility forcing, longer
+wait or relaxed criterion. Original native donor seeds remain unchanged.
+
+Source/prelaunch:248 focused,2050 full87.7s, complete repository/static/icon/
+manifest, clean14-reference Release/deterministic strict320 package189.8s;
 496 preflight,81 orchestration,17 provenance,persistence11/3/19,crowd5/7 PASS.
-Fresh Steam640820 smoke11/11 PASS; bounded profile/body31/38 FAIL; all38 ran.
+The collector repair now has113 orchestration assertions and read-only replay
+returns22 rows while rejecting missing/duplicate/foreign/failed/mistyped data.
+No gameplay source change in this repair. New committed exact gates/runtime
+remain NEXT; the old failed batch journal is immutable.
 
-| Failed checks | Classification and evidence | Correction/next observation |
-|---|---|---|
-| Viper defenses/skills | Production: HP15/base11 instead of13/base9; Perception13/ranks5, Stealth5/ranks0 | Clear own blueprint skill seed before guarded creation allocation |
-| Constrictor defenses/skills | Production: HP23/base17 instead of19/base13; Perception16/ranks5, Stealth7/ranks0, Mobility11/ranks0 | Same two-identity correction, exact final HP/ranks and all11 blueprint seeds zero |
-| Both one-bite checks | Fixture: null fixture.Hostile made the old helper return int.MinValue without a rule | Native RuleCalculateAttackBonusWithoutTarget, recording actual result/stat/modifier |
-| Constrictor fallback binding | Visibility unresolved: fault once, donor geometry restored, resources freed, intact=false after600 frames | Qualified art point and enabled/active/material/dissolve/control observations; unchanged threshold/deadline |
+Repair precommit SOURCE PASS:248 focused,2050 full85.9s, complete repository/
+static/icon/manifest, clean14-reference Release/deterministic strict320 package
+184.4s.113 orchestration,17 provenance,persistence11/3/19,crowd5/7 PASS.
 
-BlueprintUnit.Skills is distinct from AddClassLevels.Skills. The inherited
-five-rank input is rejected before the creation allocator's HP write.
-Corrected source clears only the two new blueprint seeds, leaving the donor
-and existing roster unchanged. The next runtime records donor seed/object
-preservation too. Focused rejection tests include the observed five ranks;
-no guard weakening, hidden compensation or fixture stat repair.
+Actual snapshot1709359050479Z restored17:16:40.6949558UTC:136 files,
+Info0.0.117,tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
+Lease Completed/recoveryRequired=false/released; no game/shared lock/staging.
+No native save write or save-file/protected-baseline access.
+Journal120b3bac56210a678d4f3f2d1925e3b9beb312ce0e370f6c120872931c5e4e9d.
 
-Passed partial evidence: Viper1d4-1,Str12=>1d4+1,Str7=>1d4-2,
-AnimalGrowth Str16/Large=>1d6+4; Constrictor1d4+4,Str21=>1d4+7,
-Str7=>1d4-2,AnimalGrowth Str25/Large=>1d6+10. Both restore exactly.
-Both normal original attachments, all scale/once/destruction checks and
-native Worm isolation PASS. No full movement/contact/signature/AI/UI/
-persistence/routes/publication qualification or fallback waiver.
+## Attempt1 retained; Attempt2 narrow correction results
 
-Snapshot1630496086373Z restored16:38:05.9137042UTC:136 files/Info0.0.117/
-tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
-Native environment/unit/party/area restoration PASS; lease Completed,
-recoveryRequired=false,released; no game/shared lock/staging/save write.
-No save-file/protected-baseline access. Immutable failed artifacts retained.
+Exact2dd failed31/38. [Immutable failed evidence](EXPANDED-SUMMONING-SPRINT17-SNAKE-PROFILE-ATTEMPT1-EVIDENCE.json).
+Inherited blueprint Perception5 blocked creation-only allocation: Viper HP15/
+Constrictor23 and wrong ranks. Two attack probes returned int.MinValue without
+a hostile. Constrictor fallback remained non-intact at an uncontrolled raw spawn.
+Exacte1 clears only owned skill seeds, uses native no-target attack calculation,
+and observes the existing qualified art point. All38 native checks now PASS:
 
-Corrected source248 focused and2050 full103.3s PASS; repository/static/icon/
-manifest, clean exact Release/deterministic strict320 package PASS206.1s,
-dirty-tree diagnostic only. Initial outer PowerShell stderr handling aborted
-before tests; no child remained, log retained, corrected wrapper run passed.
-Commit/push and new exact-head prelaunch/runtime NEXT. Never retry unchanged
-2dd or treat a future38/38 slice as full Sprint17 acceptance.32 roots hidden.
+- Viper HP13/base9, AC14/11/13, Fort5/Ref4/Will1, Perception9/rank1,
+  Stealth9/rank1, Mobility9/rank0; bite attack+2 using Dexterity.
+- Constrictor HP19/base13, AC15/13/12, Fort4/Ref6/Will2, Perception12/rank1,
+  Stealth11/rank1, Mobility15/rank1; bite attack+5 using Strength.
+- Viper1d4-1; Str12=>1d4+1; Str7=>1d4-2; Growth Str16/Large=>1d6+4.
+  Constrictor1d4+4; Str21=>1d4+7; Str7=>1d4-2; Growth Str25/Large=>1d6+10.
+  Both restore exactly; native seed5 remains unchanged.
+- Both normal and rollback bodies settle intact; fallbacks frame64 and63,
+  unchanged600-frame bound and dissolve<0.02 criterion. Scale/once/native
+  destruction/project-resource isolation/native-Worm negative control PASS.
+
+Collector-only failure must not erase these observations or promote batchERROR.
+New parser independently requires all38 native assertion identities/statuses and
+22 metadata rows, including genuine Boolean verdicts and exact two-snake scope.
+Full signature/command/persistence/publication qualification remains open.
 
 ## Historical prelaunch source preparation
 

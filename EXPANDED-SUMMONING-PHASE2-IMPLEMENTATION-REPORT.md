@@ -7,18 +7,36 @@ owner-designated development line. PR #27 is frozen salvage-only; no DATA
 source imported. Phase 2C is authorized but deferred until Phase 2B owner
 acceptance; this mission stops after Sprint 17 and full Phase 2B closure.
 
-The current [closed profile/body slice](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-PROFILE-SLICE.md)
-is **FAIL31/38 on exact2dd48884**, after2050 full83.7s, complete repository/
-clean14-reference Release/strict320 package180.9s and all prelaunch PASS.
-Smoke11/11 PASS. Four production HP/rank failures, two null-target probe
-failures, one fallback-visibility failure; live bite modifiers/dice and normal
-original bodies/cleanup pass only as partial evidence. Actual136/.117 snapshot
-restored16:38UTC; no game/lock/staging/save write. [Exact evidence](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-PROFILE-ATTEMPT1-EVIDENCE.json).
-Correction clears only two inherited blueprint skill seeds, uses native
-no-target attack calculation and narrows visibility observations.248 focused/
-2050 full103.3s and complete repository/build/strict320 package PASS206.1s as
-dirty diagnostics; committed exact gates/runtime NEXT. No waiver/publication.
-Earlier source checkpoints below describe their historical boundaries.
+Exact `e1ba198ebd5afede8efbcacda2a46a91c0916cf6`: smoke11/11 and native
+snake profile/body38/38 PASS. The outer collector rejected its22-row JSON
+because Windows PowerShell wrapped the root array as one item. The closed batch
+remains **ERROR**, not retroactively PASS; Sprint17 remains **NOT QUALIFIED**.
+[Exact evidence](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-PROFILE-ATTEMPT2-EVIDENCE.json).
+All previous7 failures now pass in-game: correct HP/ranks/attacks and intact
+Constrictor fallback at the qualified art point. No visibility forcing, longer
+wait or relaxed criterion. Original native donor seeds remain unchanged.
+
+Source/prelaunch:248 focused,2050 full87.7s, complete repository/static/icon/
+manifest, clean14-reference Release/deterministic strict320 package189.8s;
+496 preflight,81 orchestration,17 provenance,persistence11/3/19,crowd5/7 PASS.
+The collector repair now has113 orchestration assertions and read-only replay
+returns22 rows while rejecting missing/duplicate/foreign/failed/mistyped data.
+No gameplay source change in this repair. New committed exact gates/runtime
+remain NEXT; the old failed batch journal is immutable.
+
+Repair precommit SOURCE PASS:248 focused,2050 full85.9s, complete repository/
+static/icon/manifest, clean14-reference Release/deterministic strict320 package
+184.4s.113 orchestration,17 provenance,persistence11/3/19,crowd5/7 PASS.
+
+Actual snapshot1709359050479Z restored17:16:40.6949558UTC:136 files,
+Info0.0.117,tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
+Lease Completed/recoveryRequired=false/released; no game/shared lock/staging.
+No native save write or save-file/protected-baseline access.
+Journal120b3bac56210a678d4f3f2d1925e3b9beb312ce0e370f6c120872931c5e4e9d.
+
+This bounded slice does not qualify signatures/commands/AI/contacts/crowds/UI/
+persistence/routes or Salamander.32 snake roots remain hidden. Earlier source
+checkpoints below retain their historical boundaries.
 
 Sprint17 exact hidden-snake source `79cf2bf14b0b3ebd25e619ff34373caad93d1448`
 passes2048 unfiltered tests (83.8s), complete repository validation, clean exact

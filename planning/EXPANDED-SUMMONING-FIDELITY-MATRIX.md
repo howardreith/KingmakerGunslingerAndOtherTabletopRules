@@ -1,17 +1,36 @@
 # Expanded Summoning fidelity matrix
 
-## Current snake profile/body slice — FAIL31/38; NOT QUALIFIED
+## Current snake profile/body slice — native38/38 PASS; collector ERROR
 
-[Slice review](EXPANDED-SUMMONING-SPRINT17-SNAKE-PROFILE-SLICE.md):
-exact2dd source/prelaunch PASS2050 full83.7s/strict320 package180.9s;
-smoke11/11 PASS, profile/body31/38 FAIL. Wrong HP/ranks are production defects;
-two attack probes had no target; one fallback visibility failure unresolved.
-Live bite/Strength/size cases and normal body binding/native cleanup passed
-as partial evidence. Corrected source248 focused/2050 full103.3s and complete
-repository/build/strict320 package PASS206.1s as dirty diagnostics; exact gates NEXT.
-Actual136/.117 snapshot restored16:38UTC; no save write/game/lock/staging.
-Poison/constrict, real commands, AI, persistence, crowds/routes and Salamander
-remain unqualified. No publication or new limitation acceptance.
+Exact `e1ba198ebd5afede8efbcacda2a46a91c0916cf6`: smoke11/11 and native
+snake profile/body38/38 PASS. The outer collector rejected its22-row JSON
+because Windows PowerShell wrapped the root array as one item. The closed batch
+remains **ERROR**, not retroactively PASS; Sprint17 remains **NOT QUALIFIED**.
+[Exact evidence](EXPANDED-SUMMONING-SPRINT17-SNAKE-PROFILE-ATTEMPT2-EVIDENCE.json).
+All previous7 failures now pass in-game: correct HP/ranks/attacks and intact
+Constrictor fallback at the qualified art point. No visibility forcing, longer
+wait or relaxed criterion. Original native donor seeds remain unchanged.
+
+Source/prelaunch:248 focused,2050 full87.7s, complete repository/static/icon/
+manifest, clean14-reference Release/deterministic strict320 package189.8s;
+496 preflight,81 orchestration,17 provenance,persistence11/3/19,crowd5/7 PASS.
+The collector repair now has113 orchestration assertions and read-only replay
+returns22 rows while rejecting missing/duplicate/foreign/failed/mistyped data.
+No gameplay source change in this repair. New committed exact gates/runtime
+remain NEXT; the old failed batch journal is immutable.
+
+Repair precommit SOURCE PASS:248 focused,2050 full85.9s, complete repository/
+static/icon/manifest, clean14-reference Release/deterministic strict320 package
+184.4s.113 orchestration,17 provenance,persistence11/3/19,crowd5/7 PASS.
+
+Actual snapshot1709359050479Z restored17:16:40.6949558UTC:136 files,
+Info0.0.117,tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
+Lease Completed/recoveryRequired=false/released; no game/shared lock/staging.
+No native save write or save-file/protected-baseline access.
+Journal120b3bac56210a678d4f3f2d1925e3b9beb312ce0e370f6c120872931c5e4e9d.
+
+Poison/constrict, real commands/AI, contacts, persistence, crowds/routes and
+Salamander remain unqualified. No publication or new limitation acceptance.
 
 ## Historical Sprint17 snake source, October 6 UTC — NOT QUALIFIED
 
