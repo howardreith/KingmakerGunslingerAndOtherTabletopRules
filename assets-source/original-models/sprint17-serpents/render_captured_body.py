@@ -96,6 +96,8 @@ def main():
         parser.add_argument("--" + name, required=True)
     parser.add_argument("--key", choices=observed.KEYS)
     parser.add_argument("--views", default="three-quarter,side,top")
+    parser.add_argument("--attack-poses", action="store_true",
+                        help="Also review the first, lowest captured and last actual attack poses.")
     args = parser.parse_args(sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else [])
     for row in observed.capture_rows(args.capture):
         if args.key and args.key != row["key"]:
@@ -104,6 +106,15 @@ def main():
                               ("settled", row["movementSamples"][-1])):
             render(args, row, sample, label, "clay")
         render(args, row, row["idleSample"], "idle", "textured")
+        if args.attack_poses:
+            samples = row.get("attackPoseSamples", [])
+            if not samples:
+                raise ValueError("no measured attack poses; never synthesize missing attack evidence")
+            worst = min(samples, key=lambda sample: sample["lowestVertexFloor"]["clearance"])
+            for label, sample in (("attack-first", samples[0]), ("attack-lowest", worst),
+                                  ("attack-last", samples[-1])):
+                render(args, row, sample, label, "clay")
+            render(args, row, worst, "attack-lowest", "textured")
 
 
 if __name__ == "__main__":

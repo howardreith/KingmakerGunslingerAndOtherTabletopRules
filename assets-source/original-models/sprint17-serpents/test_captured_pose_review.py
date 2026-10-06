@@ -12,6 +12,103 @@ import captured_pose_review as replay
 
 
 class PoseReplayTests(unittest.TestCase):
+    @staticmethod
+    def capture(contacts):
+        matrix = [1, 0, 0, 0, 0, 1, 0, -6, 0, 0, 1, 0, 0, 0, 0, 1]
+        floor = dict(rayHit=True, ownedCollider=False, layerMask="0x200101",
+                     clearance=.005, hitPoint=[0, -6, 0], normal=[0, 1, 0])
+        rows = []
+        for key in replay.KEYS:
+            names = ["driver" + str(i) for i in range(27 if key == "salamander" else 16)]
+            sample = dict(frame=1, finite=True, poseFinite=True,
+                          rendererLocalToWorldRowMajor=matrix,
+                          skinTransforms=[dict(name=name, skinToWorldRowMajor=list(matrix)) for name in names],
+                          actorFloor=copy.deepcopy(floor), lowestVertexFloor=copy.deepcopy(floor))
+            row = dict(key=key, sourceCreature="salamander" if key == "salamander" else "purple-worm",
+                       scope=replay.CONTACT_SCOPE if contacts else replay.BODY_SCOPE,
+                       idleSample=copy.deepcopy(sample), movementSamples=[copy.deepcopy(sample) for _ in range(3)])
+            if contacts:
+                row["attackPoseSamples"] = [copy.deepcopy(sample) for _ in range(3)]
+                row["nativeAttackContacts"] = [dict(frame=1, bodyPose=copy.deepcopy(sample))]
+            rows.append(row)
+        return rows
+
+    def test_closed_capture_keeps_old_and_new_phases_without_input_mutation(self):
+        for contacts in (False, True):
+            rows = self.capture(contacts)
+            original = copy.deepcopy(rows)
+            self.assertIs(rows, replay.validate_capture(rows))
+            self.assertEqual(original, rows)
+            for row in rows:
+                expected = ["idle"] + ["movement"] * 3 + (["attack"] * 3 + ["contact"] if contacts else [])
+                self.assertEqual(expected, [phase for phase, _ in replay.pose_samples(row)])
+                if contacts:
+                    self.assertIs(row["attackPoseSamples"][0], replay.pose_samples(row)[4][1])
+                    self.assertIs(row["nativeAttackContacts"][0]["bodyPose"], replay.pose_samples(row)[-1][1])
+
+    def test_capture_rejects_foreign_or_mislabeled_scope(self):
+        for scope in ("", "unknown", replay.CONTACT_SCOPE + " qualified", replay.BODY_SCOPE):
+            rows = self.capture(True)
+            rows[2]["scope"] = scope
+            with self.assertRaises(ValueError):
+                replay.validate_capture(rows)
+        rows = self.capture(False)
+        rows[0]["sourceCreature"] = "foreign"
+        with self.assertRaises(ValueError):
+            replay.validate_capture(rows)
+
+    def test_attack_sample_bounds_are_not_hidden_by_valid_idle_and_movement(self):
+        for count in (1, 2, 161):
+            rows = self.capture(True)
+            sample = rows[2]["attackPoseSamples"][0]
+            rows[2]["attackPoseSamples"] = [copy.deepcopy(sample) for _ in range(count)]
+            with self.assertRaises(ValueError):
+                replay.validate_capture(rows)
+        for count in (0, 3, 160):
+            rows = self.capture(True)
+            sample = rows[2]["attackPoseSamples"][0]
+            rows[2]["attackPoseSamples"] = [copy.deepcopy(sample) for _ in range(count)]
+            replay.validate_capture(rows)  # A missing attack remains explicitly zero, never invented.
+        rows = self.capture(True)
+        rows[2]["nativeAttackContacts"] *= 13
+        with self.assertRaises(ValueError):
+            replay.validate_capture(rows)
+        rows = self.capture(True)
+        rows[2]["nativeAttackContacts"][0]["frame"] = 2
+        with self.assertRaises(ValueError):
+            replay.validate_capture(rows)
+        rows = self.capture(True)
+        rows[2]["nativeAttackContacts"][0]["bodyPose"]["skinTransforms"][0]["skinToWorldRowMajor"][0] = math.nan
+        with self.assertRaises(ValueError):
+            replay.validate_capture(rows)
+
+    def test_attack_frame_matrix_driver_and_floor_defects_are_rejected(self):
+        for defect in ("frame", "finite", "matrix", "renderer", "driver", "duplicate",
+                       "hit", "owned", "mask", "slope", "point", "clearance"):
+            rows = self.capture(True)
+            sample = rows[2]["attackPoseSamples"][1]
+            if defect == "frame":
+                sample["frame"] = -1
+            elif defect == "finite":
+                sample["poseFinite"] = False
+            elif defect == "matrix":
+                sample["skinTransforms"][0]["skinToWorldRowMajor"][3] = math.nan
+            elif defect == "renderer":
+                sample["rendererLocalToWorldRowMajor"] = [1]
+            elif defect == "driver":
+                sample["skinTransforms"][0]["name"] = "foreign"
+            elif defect == "duplicate":
+                sample["skinTransforms"][0]["name"] = sample["skinTransforms"][1]["name"]
+            else:
+                floor = sample["lowestVertexFloor"]
+                field, value = dict(hit=("rayHit", False), owned=("ownedCollider", True),
+                                    mask=("layerMask", "0"), slope=("normal", [0, .5, 0]),
+                                    point=("hitPoint", [0, math.inf, 0]),
+                                    clearance=("clearance", math.nan))[defect]
+                floor[field] = value
+            with self.assertRaises(ValueError, msg=defect):
+                replay.validate_capture(rows)
+
     def test_row_major_affine_transform_uses_translation_once(self):
         matrix = [2, 0, 0, 10, 0, 3, 0, -6, 0, 0, 4, 20, 0, 0, 0, 1]
         self.assertEqual((12, 0, 32), replay.transform_point(matrix, (1, 2, 3)))
