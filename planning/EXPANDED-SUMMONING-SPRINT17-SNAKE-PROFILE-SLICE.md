@@ -1,31 +1,37 @@
 # Sprint 17 closed snake profile/body slice
 
-Exact `e1ba198ebd5afede8efbcacda2a46a91c0916cf6`: smoke11/11 and native
-snake profile/body38/38 PASS. The outer collector rejected its22-row JSON
-because Windows PowerShell wrapped the root array as one item. The closed batch
-remains **ERROR**, not retroactively PASS; Sprint17 remains **NOT QUALIFIED**.
-[Exact evidence](EXPANDED-SUMMONING-SPRINT17-SNAKE-PROFILE-ATTEMPT2-EVIDENCE.json).
-All previous7 failures now pass in-game: correct HP/ranks/attacks and intact
-Constrictor fallback at the qualified art point. No visibility forcing, longer
-wait or relaxed criterion. Original native donor seeds remain unchanged.
+Exact `22be90c0c768acc710b9dfef2a6d42d1cb917a04` passes the complete
+bounded smoke/profile transaction: fresh Steam640820 **11/11 smoke,38/38 snake
+profile/body,22/22 metadata rows; batch PASS**. [Exact candidate/results/
+restoration](EXPANDED-SUMMONING-SPRINT17-SNAKE-PROFILE-PASS-EVIDENCE.json).
+This qualifies only the named slice, NOT full Sprint17 or publication.
 
-Source/prelaunch:248 focused,2050 full87.7s, complete repository/static/icon/
-manifest, clean14-reference Release/deterministic strict320 package189.8s;
-496 preflight,81 orchestration,17 provenance,persistence11/3/19,crowd5/7 PASS.
-The collector repair now has113 orchestration assertions and read-only replay
-returns22 rows while rejecting missing/duplicate/foreign/failed/mistyped data.
-No gameplay source change in this repair. New committed exact gates/runtime
-remain NEXT; the old failed batch journal is immutable.
+Prelaunch PASS:248 focused,2050 unfiltered87.2s, complete repository/static/icon/
+manifest, clean14-reference Release/deterministic strict320 package181.8s;
+496 request preflight,113 orchestration,17 provenance,persistence11/3/19,
+crowd5/7. DLL24c7f095fc3f76d36c2aecbd05181b6d354606c69f955cf0421db3f0c819ab86;
+MVID01308b49-0b58-408c-b733-12982b404717;
+ZIP91d9ef831bed4f2840a74f36bfd2d74122233487ed185f74b53790c38af907c9.
 
-Repair precommit SOURCE PASS:248 focused,2050 full85.9s, complete repository/
-static/icon/manifest, clean14-reference Release/deterministic strict320 package
-184.4s.113 orchestration,17 provenance,persistence11/3/19,crowd5/7 PASS.
-
-Actual snapshot1709359050479Z restored17:16:40.6949558UTC:136 files,
+Actual snapshot1740460863584Z restored17:47:43.1321555UTC:136 files,
 Info0.0.117,tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
 Lease Completed/recoveryRequired=false/released; no game/shared lock/staging.
-No native save write or save-file/protected-baseline access.
-Journal120b3bac56210a678d4f3f2d1925e3b9beb312ce0e370f6c120872931c5e4e9d.
+No native save write or save-file/protected-baseline access. Journal
+20d596aa3745b648a897cf93b14bbb839cb69ebebb129b1e186a10634400df36.
+The prior2dd31/38 FAIL and e1 native38/38/collectorERROR remain unchanged.
+
+Normal and rollback Viper/Constrictor views all settle intact in63–64 frames.
+Native donor Perception seed5 is unchanged; owned seeds allzero; exact live
+HP/rank/attack lines, native Strength/AnimalGrowth dice and restoration PASS.
+The tested collector accepted all38 native assertions and22 metadata rows.
+No source/fixture assertion was removed, no deadline/visibility criterion relaxed.
+The data is limited to this request; it cannot establish full gameplay approval.
+
+Next: snake injury-poison/constrict lifecycle and actual RTWP/turn-based manual/
+AI commands with contact proof, then targeted persistence/crowds/UI/routes.
+Keep this closed request unchanged as a bounded regression. Salamander still
+needs its separate weapon/tail implementation. Full Sprint17 and publication
+remain NOT QUALIFIED. HumanReview: NOT_PERFORMED_NONBLOCKING.
 
 ## Attempt1 retained; Attempt2 narrow correction results
 
