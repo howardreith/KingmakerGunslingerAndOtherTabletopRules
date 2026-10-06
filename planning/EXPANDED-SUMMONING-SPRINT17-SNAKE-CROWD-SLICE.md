@@ -48,9 +48,10 @@ did not change. The failed focused log remains preserved.
 
 ## Next exact boundary
 
-Complete the remaining snake native hit/death/fade/lifecycle observation,
-UI/private-route and targeted persistence fixtures, then freeze a clean exact
-candidate and batch the relevant scenarios, including these direct/crowd rows.
+The separate closed persistence fixture is now source-tested, not run.
+Freeze an exact candidate and batch these direct/crowd rows with its guarded
+prepare/cleanup/fresh-absence trio. Native hit/death/fade/lifecycle observation
+and UI/private-route coverage remain open after this bounded gate.
 Reuse the qualified command slice as evidence of its exact artifact, not as a
 waiver for new source. Full Sprint17 also needs the separate Salamander
 spear/tail implementation, complete hidden/publication gates and Phase2B close.
