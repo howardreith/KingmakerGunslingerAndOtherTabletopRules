@@ -2154,6 +2154,22 @@ namespace KingmakerGunslinger.DomainTests
             Case("aerial-foundation.NativeFlightTransitions", AerialObserverFoundationTests.NativeFlightTransitions),
             Case("aerial-foundation.NativeSuppressionLifecycle", AerialObserverFoundationTests.NativeSuppressionLifecycle),
             Case("aerial-foundation.OwnedListenerCleanup", AerialObserverFoundationTests.OwnedListenerCleanup),
+
+            Case("whiteout-native-contract.ActualWeatherCarrier", WhiteoutNativeContractTests.ActualWeatherCarrier),
+            Case("whiteout-native-contract.ExactThresholds", WhiteoutNativeContractTests.ExactThresholds),
+            Case("whiteout-native-contract.NativeNotificationRoute", WhiteoutNativeContractTests.NativeNotificationRoute),
+            Case("whiteout-native-contract.ControllerIntensitySetter", WhiteoutNativeContractTests.ControllerIntensitySetter),
+            Case("whiteout-native-contract.PointIndoorPredicate", WhiteoutNativeContractTests.PointIndoorPredicate),
+            Case("whiteout-native-contract.ExistingConditionHazard", WhiteoutNativeContractTests.ExistingConditionHazard),
+            Case("whiteout-native-contract.SynchronousNotificationContract", WhiteoutNativeContractTests.SynchronousNotificationContract),
+            Case("whiteout-native-contract.ClosedAreaRoute", WhiteoutNativeContractTests.ClosedAreaRoute),
+            Case("whiteout-native-contract.NoScheduleWriterInNotification", WhiteoutNativeContractTests.NoScheduleWriterInNotification),
+            Case("whiteout-native-contract.NativeAttackStage", WhiteoutNativeContractTests.NativeAttackStage),
+            Case("whiteout-native-contract.StageRemainsUnbound", WhiteoutNativeContractTests.StageRemainsUnbound),
+            Case("whiteout-native-contract.NativeAttackOrdering", WhiteoutNativeContractTests.NativeAttackOrdering),
+            Case("whiteout-native-contract.CrossAreaStashDisposesOriginals", WhiteoutNativeContractTests.CrossAreaStashDisposesOriginals),
+            Case("whiteout-native-contract.ReloadDeserializesReplacementObjects", WhiteoutNativeContractTests.ReloadDeserializesReplacementObjects),
+            Case("whiteout-native-contract.OriginalFactCollectionsAreDisposed", WhiteoutNativeContractTests.OriginalFactCollectionsAreDisposed),
         };
 
         /// <summary>
