@@ -251,11 +251,15 @@ Swallow whole has a qualified project carrier from the Purple Worm.
 
 ## Sprint 17
 
-Current native-rig evidence (October 6): exact f507 research passed smoke
-11/11 and metadata 8/8, with exact restoration. The proposed serpentine
+Current native-rig evidence (October 6): exact a173da3a research passed smoke
+11/11 and three-target metadata 11/11, with exact restoration. Purple Worm
+has two skins and a continuous body/head chain, suitable for an original
+prototype comparison, not yet qualified snake locomotion or contacts. The
+earlier proposed serpentine
 prefab is native Medium Water Elemental, not dependent on the optional Eidolon
 unit named in the historical mixed-library census below. Its seven skins
-include a 43-bone body with spine/head/jaw. Salamander remains separate:
+include a 43-bone body with spine/head/jaw, but no continuous tail chain.
+Salamander remains separate:
 39-bone Lizardfolk body, armor skin, and stale native club/shield visuals.
 These measurements support a bounded original prototype, not completed art
 or gameplay. [Exact research and disposition](EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md).

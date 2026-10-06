@@ -44,15 +44,21 @@ Purple Worm comparison and material/action extension at exact b2893abe passed
 all prelaunch gates and smoke 11/11, but survey FAILED 8/9 on a null native
 action Clips collection. Six donor/view checks and exact cleanup passed.
 Actual snapshot restored exactly at 02:29:30 UTC, lease Completed, no game,
-lock or staging. Null-versus-empty diagnostic repair is focused-tested; a new
-exact artifact/batch remains mandatory. No prototype asset or new summon ships.
+lock or staging. Corrected exact a173da3a passes the complete prelaunch gate
+(219 focused/2021 full/486 preflight), fresh Steam smoke 11/11 and survey
+11/11. Three complete captures distinguish absent clip enumeration from empty.
+Purple Worm exposes a continuous body chain and two standard-material skins;
+water has a standard body material but no continuous lower-coil chain. No
+prototype asset or new summon ships. Actual snapshot 20261006T0239169703799Z
+restored exactly at 02:45:49 UTC; no game/lock/staging/save write.
 Exact f507 passes all prelaunch gates (219 focused/2021 full/486 preflight),
 fresh Steam smoke 11/11 and metadata survey 8/8. Both native source/view pairs
 are confirmed. Water has seven skins and a 43-bone body; Salamander has a
 39-bone body plus armor and stale club/shield visuals requiring the separate
 weapon seam. Exact actual snapshot 20261006T0139078842255Z restored at
 01:45:45 UTC, same 136-file/0.0.117 tree, no process/lock/staging or save write.
-No new gameplay/visual qualification: original binding prototype is next.
+No new gameplay/visual qualification: compare an original Purple Worm-chain
+snake prototype, then separate Salamander hybrid/weapon work and profiles.
 
 ## Historical first hidden candidate, October 5
 
