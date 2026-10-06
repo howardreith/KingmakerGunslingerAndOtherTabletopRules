@@ -60,6 +60,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var faction = owner.Faction;
                 var attackFactions = owner.AttackFactions.ToArray();
                 UnityEngine.Object[] resources = new UnityEngine.Object[0];
+                Sprint17SnakeContactFrameProbe frameProbe = null;
                 var observer = new Sprint16RuleObserver { Owner = owner, Target = target };
                 var contacts = new JArray();
                 var riders = new JArray();
@@ -143,6 +144,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (!settled)
                         throw new InvalidOperationException("Production body/control did not settle: " + row.ToString(Formatting.None));
                     resources = attachment.CaptureOwnedResources();
+                    frameProbe = owner.View.gameObject.AddComponent<Sprint17SnakeContactFrameProbe>();
                     row["controlAfter"] = Sprint16ControlObservation(owner);
                     row["brain"] = owner.Blueprint.Brain == null ? null : owner.Blueprint.Brain.name;
                     owner.Memory.Add(target); target.Memory.Add(owner);
@@ -167,7 +169,42 @@ namespace KingmakerGunslinger.RuntimeTesting
                         contact["hit"] = rule.AttackRoll != null && rule.AttackRoll.IsHit;
                         contact["wounding"] = rule.MeleeDamage != null && rule.MeleeDamage.Damage > 0;
                         contact["modeObserved"] = CombatController.IsInTurnBasedCombat() == turnBased;
+                        contact["phase"] = "rule-on-did";
                         contacts.Add(contact);
+                        // Read-only paired observation. Keep the existing
+                        // rule-event assertion unchanged until timing is
+                        // demonstrated. Never sample an arbitrary later peak.
+                        int ruleFrame = Time.frameCount;
+                        var handle = command == null ? null : command.Animation;
+                        var active = handle == null ? null : handle.ActiveAnimation;
+                        var clip = active == null ? null : active.GetPlayableClip();
+                        frameProbe.Capture(() =>
+                        {
+                            JObject rendered;
+                            try
+                            {
+                                rendered = Sprint17MeasuredAttackContact(owner, target, attachment, rule, command);
+                                var currentHandle = command == null ? null : command.Animation;
+                                var currentActive = currentHandle == null ? null : currentHandle.ActiveAnimation;
+                                var currentClip = currentActive == null ? null : currentActive.GetPlayableClip();
+                                bool sameCommand = command != null && command.IsStarted && !command.IsFinished &&
+                                    owner.Commands.Raw.Any(value => ReferenceEquals(value, command));
+                                bool sameHandle = handle != null && ReferenceEquals(handle, currentHandle);
+                                bool sameAnimation = active != null && ReferenceEquals(active, currentActive);
+                                bool sameClip = clip != null && ReferenceEquals(clip, currentClip);
+                                rendered["sameCommand"] = sameCommand; rendered["sameHandle"] = sameHandle;
+                                rendered["sameAnimation"] = sameAnimation; rendered["sameClip"] = sameClip;
+                                rendered["correlated"] = SerpentineCommandReviewPolicy.SameRenderedAttack(
+                                    ruleFrame, Time.frameCount, sameCommand, sameHandle, sameAnimation, sameClip);
+                                rendered["pose"] = Sprint17OriginalBodySample(owner, attachment.Body);
+                                rendered["geometry"] = Sprint17CommandGeometry(owner, target);
+                            }
+                            catch (Exception error)
+                            { rendered = new JObject { ["measurementFailure"] = error.ToString(), ["correlated"] = false }; }
+                            rendered["phase"] = "same-frame-end-of-frame";
+                            rendered["ruleFrame"] = ruleFrame; rendered["observedFrame"] = Time.frameCount;
+                            contact["renderedFrame"] = rendered;
+                        });
                         if (ReferenceEquals(SummonHoldComponent.HeldTarget(owner), target) && attacksAtEstablishment < 0)
                             attacksAtEstablishment = observer.WeaponAttacks;
                     };
@@ -284,6 +321,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 finally
                 {
                     if (subscribed) EventBus.Unsubscribe(observer);
+                    if (frameProbe != null)
+                    {
+                        frameProbe.StopAllCoroutines();
+                        UnityEngine.Object.Destroy(frameProbe);
+                    }
                     var ownedGrab = SummonGrabComponent.Find(owner);
                     var turn = Game.Instance.TurnBasedCombatController.CurrentTurn;
                     if (turn != null && ReferenceEquals(turn.Unit, owner)) EndSprint17SnakeTurn(turn);
@@ -316,7 +358,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 yield return 0; yield return 0;
                 CheckSprint17Command(row, "cleanup", owner.Destroyed && target.Destroyed &&
-                    targetLinkCleared && resources.Length >= 5 && resources.All(value => value == null),
+                    targetLinkCleared && frameProbe == null && resources.Length >= 5 && resources.All(value => value == null),
                     "native owner/target destruction clears relationship and exact project-owned resources");
                 row["passed"] = ((JObject)row["checks"]).Properties().Count() == 6 &&
                     ((JObject)row["checks"]).Properties().All(value => (bool)value.Value);
@@ -382,6 +424,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return false;
             }
             return acting;
+        }
+    }
+
+    // Exists only on one owned disposable snake during the closed request.
+    // No pose, animation, timing, camera, renderer or gameplay writes.
+    internal sealed class Sprint17SnakeContactFrameProbe : MonoBehaviour
+    {
+        internal void Capture(Action observe) { StartCoroutine(AtEndOfFrame(observe)); }
+
+        private static System.Collections.IEnumerator AtEndOfFrame(Action observe)
+        {
+            yield return new WaitForEndOfFrame();
+            observe();
         }
     }
 }

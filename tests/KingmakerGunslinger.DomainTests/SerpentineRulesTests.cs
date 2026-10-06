@@ -123,6 +123,20 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(SerpentineCommandReviewPolicy.LaterMaintain(1, 1, 2, 1, 2), "No second attack credited as maintain.");
         }
 
+        internal static void RenderedContactRequiresExactEventFrameAndIdentities()
+        {
+            for (int mask = 0; mask < 16; mask++)
+                foreach (int frame in new[] { -1, 0, 10, 11, 12, int.MaxValue })
+                    Assertions.Equal(frame == 11 && mask == 15,
+                        SerpentineCommandReviewPolicy.SameRenderedAttack(11, frame,
+                            (mask & 1) != 0, (mask & 2) != 0, (mask & 4) != 0, (mask & 8) != 0),
+                        "No earlier/later frame, replacement command, handle, animation or clip is correlated.");
+            Assertions.False(SerpentineCommandReviewPolicy.SameRenderedAttack(-1, -1, true, true, true, true),
+                "Absent frame identity is not evidence.");
+            Assertions.True(SerpentineCommandReviewPolicy.SameRenderedAttack(0, 0, true, true, true, true),
+                "Frame zero is valid when all exact identities match.");
+        }
+
         internal static void NativePoisonSavePhasesRemainDistinct()
         {
             for (int exposure = 1; exposure <= 6; exposure++)
