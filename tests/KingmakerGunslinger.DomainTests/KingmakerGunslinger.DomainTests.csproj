@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.props" Condition="Exists('$(MSBuildToolsPath)\Microsoft.Common.props')" />
   <Import Project="..\..\GamePath.props" Condition="Exists('..\..\GamePath.props')" />
@@ -1093,5 +1093,9 @@
   <ItemGroup>
     <Compile Include="ElementalCharacterTraitCanonicalTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\CharacterTraitCanonicalAdmission.cs"><Link>ElementalRaces\CharacterTraitCanonicalAdmission.cs</Link></Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ElementalCharacterTraitSaveTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\ElementalCharacterTraitSaveContract.cs"><Link>RuntimeTesting\ElementalCharacterTraitSaveContract.cs</Link></Compile>
   </ItemGroup>
 </Project>
