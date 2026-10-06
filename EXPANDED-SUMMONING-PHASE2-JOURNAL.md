@@ -1,5 +1,21 @@
 # Expanded Summoning Phase 2 journal
 
+## October6,18:38UTC — signature60/62 FAIL; exact restoration, fixture repair
+
+Exactaebf source/prelaunch PASS:2051 full84.2s,complete gate181.9s,strict320,
+502 preflight,142 orchestration/all ancillary. Steam smoke11/11,
+signature60/62; all38 inherited profile/body and22/24 signatures passed.
+[Immutable failed evidence/classification](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-ATTEMPT1-EVIDENCE.json).
+Native code explains two fixture boundaries: poison removes at the next
+exhausted callback after six exposures; native grapple controller clears the
+initiator before a second synchronous terminal grapple can establish.
+Source fixture now observes those exact callbacks, requires no seventh
+damage and both grapple parts/buffs absent; production unchanged.
+Snapshot1831551306710Z restored18:38:54UTC136/.117/exact tree; no game/lease/
+staging/save write. Repair source PASS:249 focused/2051 full85.1s,complete
+gate181.3s,clean14-reference Release/strict320,142 orchestration. Coherent push/
+new exact artifact/prelaunch/batch next. Failures preserved, no waiver/publication.
+
 ## October6 — snake signature rules fixture, source-only
 
 Parent e368c91c; new closed working-save request adds24 poison/constrict

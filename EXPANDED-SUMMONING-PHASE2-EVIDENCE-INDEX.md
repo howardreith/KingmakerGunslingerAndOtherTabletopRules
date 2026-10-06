@@ -1,10 +1,11 @@
 # Expanded Summoning Phase 2 evidence index
 
-[Current signature fixture](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-SLICE.md):
-source-only, runtime NOT RUN. Closed62-rule request/46-row collector;2051 full
-tests84.5s/complete gate183.9s/strict320,502 preflight,142 orchestration PASS.
-Full exact-artifact/runtime gate next. No new gameplay
-qualification or publication. Last runtime result remains the bounded slice below.
+[Latest signature attempt](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-ATTEMPT1-EVIDENCE.json):
+exactaebf source/prelaunch PASS; smoke11/11,signature60/62 FAIL; exactly restored
+18:38:54UTC. Two fixture/native-scheduling boundary failures; [repair scope](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-SLICE.md).
+All62 requirements retained; production unchanged; repair NOT RUN. New exact
+artifact and complete affected batch next. No publication or full Sprint17 PASS.
+The earlier qualified profile/body boundary follows.
 
 Exact `22be90c0c768acc710b9dfef2a6d42d1cb917a04` passes the complete
 bounded smoke/profile transaction: fresh Steam640820 **11/11 smoke,38/38 snake
