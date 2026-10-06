@@ -5,10 +5,10 @@ Laptop PR26 only; Sprints14–16 complete;976+29=1005 visible; ZERO DATA ports.
 
 ## Current twelfth exact batch — proposed native carrier rejected
 
-Separate exactf6a0a20b metadata survey failed13/14 after4 of11 prefab rows;
-its action-list shape guard rejected the fifth before recording that shape.
-The containing read-only structural-reader correction passes236 focused/
-2038 registered and incremental compile; full exact prelaunch/rerun next.
+Separate exact 8022fee2 metadata survey PASS14/14 after smoke11/11 and all
+exact prelaunch gates (236 focused/2038 full). All11 Lizardfolk prefabs lack
+PiercingTwoHanded; fifth FreeHands list has14 slots with null3,5,8. Failed
+f6 reader attempt preserved. Exact restoration13:02:18UTC; no save write.
 [Separate census evidence](EXPANDED-SUMMONING-SPRINT17-NATIVE-ACTION-REVIEW.md).
 No action adopted. The48-assertion body gate is unchanged and still failed.
 

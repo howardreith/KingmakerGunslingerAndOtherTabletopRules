@@ -1,6 +1,6 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-06 12:38 UTC — laptop sole owner; Sprints14–16 COMPLETE
+## CURRENT STATE, 2026-10-06 13:02 UTC — laptop sole owner; Sprints14–16 COMPLETE
 
 This section governs over historical mission/ownership statements below.
 HOWARD-LAPTOP / `codex/expanded-summoning-phase2b-sprints14-17` / draft PR #26
@@ -19,39 +19,41 @@ deployment, force push or prohibited substitute subsystems.
   2026-10-05T19:29:25.9127956Z; holder PID15084/start2026-10-05T20:34:17.3075720Z.
   Session-scoped, not perpetual. Refresh heartbeat; release only on actual
   session ending. All safety refs, bundles and failed artifacts retained.
-- Last pushed/exact runtime candidate `f6a0a20b5fe57a6e4f8c7fe76feabceb80204016`.
-  The containing read-only census correction/evidence is NOT QUALIFIED.
+- Last pushed/exact runtime candidate `8022fee249b537d3da90adc502c2f62a7fbf59ed`.
+  The containing evidence checkpoint records RESEARCH ONLY PASS, not Sprint 17 qualification.
   Unexpected active-branch motion is a stop; frozen DATA motion informational.
 
 ### Qualified versus NOT QUALIFIED; next exact work
 
-Exactf6a0a20b:235 focused/2037 unfiltered87.1s, complete gate186.5s,
-491 preflight/81 orchestration/17 provenance,persistence11/3/19,crowd5/7,
-clean exact Release/strict318-member package PASS. Fresh Steam smoke11 PASS;
-metadata survey13 of14 FAIL. Its original13 rig/cleanup/version checks pass.
-The new diagnostic captured4 of11 fixed prefab rows, then rejected the fifth
-action list before recording its shape. Exact empty/null/oversized cause is
-UNKNOWN; this is an observation defect, not proof all carriers are unsuitable.
+Exact 8022fee2: 236 focused / 2038 unfiltered tests (81.8s), complete gate
+178.4s; 491 isolated preflight / 81 orchestration / 17 provenance,
+persistence 11/3/19, crowd 5/7, clean exact Release / strict 318-member package
+PASS. Fresh Steam smoke 11/11 and native-action metadata survey 14/14 PASS.
+This is RESEARCH ONLY; Sprint 17 remains NOT QUALIFIED.
 
-Observed native styles: King has PiercingOneHanded on a41-bone body/26-bone
-armor; Standard and Rogue have SlashingOneHanded on39/19; Barbarian has only
-SlashingTwoHanded/AxeTwoHanded on39/19. All four native-reference checks pass.
-The other seven rows remain unknown. No action adopted, native asset changed,
-NPC instantiated or new body/contact/gameplay qualification.
+All 11 native Lizardfolk prefabs were captured with unchanged native references
+and actor membership. None provides a PiercingTwoHanded main-hand action.
+The fifth FreeHands set has 14 slots, with null slots 3,5,8: this confirms the
+earlier reader defect without retroactively qualifying failed f6a0a20b.
+No NPC instantiated, action adopted, native asset changed or new body/contact
+qualification. The latest body gate remains 570a14cd: 33/35 FAIL before hybrid
+attachment; all 12 body attempts and the failed partial census are preserved.
 
-Actual1232150916257Z snapshot restored12:38:50.3928089UTC,136/.117/exact tree.
-Journal8A0408F46C5A5874FD04878E51C3D0EA37CE6F11599779938586BD581753E491;
-census945B6095036D5AF52D56FF48F087AFF56A8D140DF28166AB3362B9AC2AE189A0.
+Actual snapshot 1255443757094Z restored at 13:02:18.5290194 UTC:
+136 files / Info 0.0.117 / exact tree. Journal
+D85CB9DF2C4FAABED2C7DD0D4DF8D6AF6C8B52CE09712AA0287594240A9A8A89;
+census F99D1E5841DA05C04ADEA19233526A81A70FD2D3075A6B74B1EBB0EB947D2A0A.
 Lease Completed/recoveryRequired=false/released; no game/lock/staging/save write.
 
-The containing reader correction preserves absent enumeration, empty lists,
-null slots and duplicate references as different metadata; exact identities,
-128-slot cap, native-reference and adoption guards remain.236 focused/2038
-registered and incremental exact compile PASS. Full exact-head prelaunch and
-complete corrected smoke/14-assertion survey next. No compatibility claim.
-Sprints14–16 complete; Sprint17 NOT QUALIFIED. Latest body570 remains33/35
-FAIL before hybrid attachment; all12 body attempts preserved.976+29=1005,
-ZERO DATA ports, Phase2C authorized but deferred.
+First preflight failed because this session changed its heartbeat during the
+artifact fingerprint; failure log retained. Isolated rerun passed all 491.
+Preflight must run without concurrent heartbeat or artifact-writing work.
+
+Next: evaluate a bounded actual spear/longspear donor from the archived native
+inventory; equipped weapon alone does not prove animation compatibility.
+No retry of known rejected Lizardfolk carriers or weakening of contact gates.
+Sprints 14–16 complete; 976+29=1005 visible choices; ZERO DATA ports.
+Phase 2C remains authorized but deferred until Phase 2B owner acceptance.
 
 [Latest native-action review](planning/EXPANDED-SUMMONING-SPRINT17-NATIVE-ACTION-REVIEW.md)
 and [exact census evidence](planning/EXPANDED-SUMMONING-SPRINT17-NATIVE-ACTION-EVIDENCE.json).
@@ -60,10 +62,10 @@ and [exact census evidence](planning/EXPANDED-SUMMONING-SPRINT17-NATIVE-ACTION-E
 exact155ada89 smoke11/main211, all14 Crocodile+6 Dire public roots;
 hidden e3 retains crowd20/prepare9/cleanup9/absence5. No reopening.
 
-Exactf6 source fingerprintf3b0eb496080fade83d465c786d26fe94a0a6e7079ab68cf835a21dee9e0e091;
-DLLede2ebe5d9d090e6df73fc201eed4b7c75b1e133f3263344045b79b16641965c;
-MVID1acc7c4a-0351-4fe7-bd92-b5cd183c3aa2;
-ZIPa2beea4c0d6fcd22792fefb5a4cbee8d15a8b119259d6bc8fa5a2d67fd90763d.
+Exact 8022 source fingerprint 12164ea36b9d59fde1e229148a34edf04ad31d0666f7097f7111dae831188ee4;
+DLL cc7bbfa44055b85dd24161b5276d41b37abab5641818219cf81c7c874cf9ddfe;
+MVID 5f958584-c719-4840-baae-ad1b06e54775;
+ZIP b0a1a0354128dae44f8f8fea6858f92667d5feaf7918ce3f49dd849dde39f6f0.
 
 Then printed profiles/signatures/icons, full S17 hidden/publication and
 exhaustive Phase2B closure. Explicit14-reference bundle:
