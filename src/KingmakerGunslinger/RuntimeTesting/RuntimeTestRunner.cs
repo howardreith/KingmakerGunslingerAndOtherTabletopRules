@@ -2774,6 +2774,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Complete(RunDisposableExpandedSummoningVisualContracts());
                 }
                 else if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableExpandedSummoningSerpentineBodies)
+                {
+                    PollSprint17Bodies();
+                }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog
                     .DisposableExpandedSummoningSerpentineSurvey)
                 {
                     PollSprint17RigSurvey();
@@ -35885,6 +35890,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private void Complete(RuntimeTestResult result)
         {
+            StopSprint17Bodies(result);
             if (_firearmInputFixture != null || _firearmInputSaveGuard != null)
             {
                 try { StopFirearmInput(); }

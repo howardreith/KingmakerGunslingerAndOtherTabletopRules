@@ -29,9 +29,10 @@ no merge, release, tag, version bump, force push or permanent deployment.
   **`fc1e880e2ee2eeb1fbd259cf226418de3f04eb32`**.
   Latest exact research artifact:
   **`c55b4f084cfabeafa83be839c47683330e78eb76`** (13/13 research PASS).
-  Research evidence/current fetched remote before this source checkpoint:
-  **`4940ca7749c9dcae13e24e0f77b8ad36b2e6a9c0`**.
-  This containing owned-body source checkpoint is its normal descendant; Sprint 17
+  Research evidence pushed at **`4940ca7749c9dcae13e24e0f77b8ad36b2e6a9c0`**.
+  Owned-body source/current verified remote before this fixture checkpoint:
+  **`a35993fc8b4000466f68f2a7bd98c579021b1f23`**.
+  This containing body-research fixture checkpoint is its normal descendant; Sprint 17
   gameplay and visuals are still NOT QUALIFIED.
   Unexpected active-branch motion remains a stop; archive motion is informational.
 - Exclusive ignored receipt: `artifacts/laptop-source-owner-20261005.json`;
@@ -116,9 +117,15 @@ no merge, release, tag, version bump, force push or permanent deployment.
   clean exact-reference Release and strict 318-member package PASS (180.7s).
   This is a working-tree source gate, not an immutable runtime candidate;
   freeze/rebuild after the request-local acceptance fixture is connected.
-- Exact next action: connect the request-local body acceptance scenario, then
-  freeze/push and run its complete exact artifact gate and guarded fresh-Steam
-  review/restoration. Prove motion, supporting coil/ground/jaw, multi-renderer
+- The bounded body-research scenario is now connected: exact working-save
+  guard, owned-only carriers/control, minimum 60 native appearance frames,
+  all-renderer rollback, weighted-world motion samples, native destruction and
+  exact resources/reference census. Outer timeout disposes/restores the iterator.
+  223 focused tests and incremental Release compile PASS; NOT QUALIFIED.
+  [Scope and gate](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-REVIEW.md).
+- Exact next action: freeze/push this fixture, run the complete exact artifact
+  gate and guarded fresh-Steam smoke/body review with exact restoration.
+  Inspect motion, supporting coil/ground/jaw, multi-renderer
   fallback/lifecycle. Continue separate Salamander manufactured-spear/tail seam and printed
   profiles/signatures. Research PASS
   is not gameplay/visual qualification. Preserve Salamander identity and

@@ -44,6 +44,22 @@ namespace KingmakerGunslinger.Summoning
         internal SkinnedMeshRenderer Body { get; private set; }
         internal static Action PostSwapFaultForTest { get; set; }
 
+        internal UnityEngine.Object[] CaptureOwnedResources()
+        {
+            var owned = new HashSet<UnityEngine.Object>();
+            foreach (UnityEngine.Object value in new UnityEngine.Object[] { _body, _empty, _albedo, _material })
+                if (value != null) owned.Add(value);
+            if (Body != null)
+                foreach (Material material in Body.sharedMaterials)
+                    if (IsOwned(material)) owned.Add(material);
+            var controller = _view == null ? null : _view.GetComponentInChildren<StandardMaterialController>(true);
+            var driven = ExpandedSummoningPteranodonViewPatch.ControllerMaterials(controller);
+            if (driven != null)
+                foreach (Material material in driven)
+                    if (IsOwned(material)) owned.Add(material);
+            return owned.ToArray();
+        }
+
         internal static bool TryAttach(UnitEntityView view, string key, ModContext context,
             out string outcome)
         {
