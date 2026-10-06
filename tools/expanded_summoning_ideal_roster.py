@@ -295,7 +295,7 @@ def trace_doc(entries):
             13: "Internally complete and published; Phase 2 evidence index owns exact qualification; owner visual review pending",
             14: "Internally complete and published under PASSIVE_CREATURE_SENSES_UNMODELED; owner visual review pending",
             15: "Internally complete and published; owner visual review pending",
-            16: "Exact e3aeae63 hidden candidate PASS; six Dire roots exposed in publication candidate; new public-route gate pending"}
+            16: "Internally complete and published: exact e3aeae63 hidden and 155ada89 publication PASS, all twenty public roots; accepted engine limitations/adaptation retained; owner visual review pending"}
     for number, phase, name, weight in SPRINTS:
         owned = by_sprint.get(number, [])
         if number in AUDIT_SPRINTS:

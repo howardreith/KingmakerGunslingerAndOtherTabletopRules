@@ -1,6 +1,13 @@
 # Expanded Summoning Phase 2 evidence index
 
-[Latest publication attempt and missed-bite fixture repair](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-PUBLICATION-RETRY-REVIEW.md):
+[Sprint 16 COMPLETE AND PUBLISHED](planning/EXPANDED-SUMMONING-SPRINT16-PUBLICATION-PASS-REVIEW.md):
+exact 155ada89 all prelaunch gates PASS, smoke 11/11, main **211/211**, all
+20 public roots, both missed-bite regressions, exact restoration. 976 generated
++ 29 wrappers = 1005 visible choices. No game/lock/staging; no save write.
+[Exact hashes](planning/EXPANDED-SUMMONING-SPRINT16-PUBLICATION-PASS-EVIDENCE.json).
+Hidden e3 below remains the complete crowd/persistence qualification.
+
+[Historical failed publication attempt and missed-bite fixture repair](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-PUBLICATION-RETRY-REVIEW.md):
 exact 3d13108e prelaunch PASS, smoke 11/11, main **207/209 FAIL** despite all
 20 public roots passing. Publication NOT QUALIFIED. Exact actual snapshot
 restored; no save write/game/lock/staging. Bounded fixture-only correction

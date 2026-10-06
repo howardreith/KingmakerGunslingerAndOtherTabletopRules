@@ -1,40 +1,38 @@
 # Expanded Summoning Phase 2 implementation report
 
-## Current October 6 UTC laptop result — hidden PASS; publication FAIL/restored
+## Current October 6 UTC laptop result — Sprint 16 COMPLETE AND PUBLISHED
 
-PR #26 / `codex/expanded-summoning-phase2b-sprints14-17` is the sole
-owner-designated development line. PR #27 is frozen salvage-only; no source
-has been imported. The controlling state supersedes historical authority
-statements below. Phase 2C remains authorized but cannot start until Phase 2B
-owner acceptance; this mission stops after Phase 2B closure.
+PR #26 / `codex/expanded-summoning-phase2b-sprints14-17` remains the sole
+owner-designated development line. PR #27 is frozen salvage-only; no DATA
+source imported. Phase 2C is authorized but deferred until Phase 2B owner
+acceptance; this mission stops after Sprint 17 and full Phase 2B closure.
 
-Exact `e3aeae630d51d27c45694fb9e92e9093048b1af9` passed every prelaunch gate
-(218/218 focused; 2020/2020 full), then smoke 11/11, main **209/209 PASS**,
-crowd 20/20, prepare 9/9, cleanup 9/9 and fresh absence 5/5. All 55 combat
-assertions and 81 final review rows pass. Crocodile source death now proves
-three native post-death prey ticks and exact relationship cleanup after one
-bounded owned-death pause resume; clock/pause/mode/awake restoration passes.
+Exact publication `155ada89869c6937b4a801e1fc384dbe38d36f3b` passed every
+prelaunch gate (218 focused / 2020 full), then fresh Steam smoke **11/11**
+and full main **211/211**. All six Dire + fourteen Crocodile public roots pass;
+source-derived totals are **976 generated + 29 wrappers = 1005 visible**,
+zero withheld. Crocodile and every existing identity/placement are preserved.
 
-No assertion waived, no DATA imports, no altered production rule to pass a
-fixture. Hidden qualification includes live-bite damage, one-rider/cadence,
-Sprint interactions, both modes, original views, UI, targeted routes and
-persistence. [Exact evidence](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-HIDDEN-PASS-REVIEW.md).
-Publication source 3d13108e passed every prelaunch gate, smoke 11/11 and all
-twenty public roots, but its full main scenario FAILED 207/209. A missed
-issued bite emitted no grapple check, so the fixture never retried; hold and
-Death Roll contact therefore failed. This does not close Sprint 16.
-[Failure and bounded retry correction](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-PUBLICATION-RETRY-REVIEW.md).
+The missed-bite fixture correction is proved in both modes: a disclosed first
+miss causes zero maneuvers, bounded actual commands retry, then unforced native
+hits/maintains/Death Roll and contacts pass. RTWP takes two commands; turn-based
+takes three because its second bite naturally rolls 1. All original assertions
+remain, plus two negative-input regressions; combat 57/57, final review 81/81.
+The older 3d13108e publication remains failed, not retroactively qualified.
 
-Latest actual leased snapshot restored at October 6 00:24:45 UTC: 136 files / Info 0.0.117 /
+[Publication evidence and hashes](planning/EXPANDED-SUMMONING-SPRINT16-PUBLICATION-PASS-REVIEW.md)
+join the [complete hidden e3 qualification](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-HIDDEN-PASS-REVIEW.md):
+209/209 main, 20/20 crowd, 9/9 prepare, 9/9 cleanup and 5/5 fresh absence.
+No mechanics, visual, asset or serialized-state code changed after hidden e3;
+only the publication switch and guarded fixture did. No unrelated-root replay.
+
+Latest actual leased snapshot restored at `2026-10-06T00:59:25.6235093Z`:
+136 files / Info 0.0.117 /
 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
-Lease completed, no game/lock/staging; fresh save absence clean. DATA audit
-complete/read-only, zero ports. Hidden-pass evidence pushed at 1393b669.
-The containing publication candidate removes only Dire suppression: 976
-published generated + 29 wrappers = 1005 visible, none withheld in source.
-The containing fixture-only correction adds completed-miss retry, fresh-turn
-handling and explicit negative-input evidence; no production change, timeout
-increase or weakened assertion. New exact full prelaunch/publication gate
-must pass all 211 assertions and twenty public routes. Sprint 17 waits.
+No game/lease/shared lock/staging. No publication save write or save-file
+access; prior authorized native cleanup/absence remains clean.
+HumanReview: NOT_PERFORMED_NONBLOCKING. Accepted engine limitations/adaptation
+unchanged. Sprint 17 may now begin; Phase 2B itself is not yet closed.
 
 ## Historical first hidden candidate, October 5
 

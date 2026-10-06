@@ -1,75 +1,68 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-06 UTC (laptop sole owner; hidden PASS, publication FAIL/restored)
+## CURRENT STATE, 2026-10-06 UTC (laptop sole owner; Sprint 16 COMPLETE AND PUBLISHED)
 
-This section governs over all historical mission/ownership statements below.
-The latest owner directive designates HOWARD-LAPTOP and
-`codex/expanded-summoning-phase2b-sprints14-17` / draft PR #26 as the sole
-development line. PR #27 / `codex/expanded-summoning-phase2b-finalize-20261005`
-are frozen salvage-only evidence. No DATA source has been imported.
-Finish Sprint 16, Sprint 17 and Phase 2B closure, then STOP for owner review.
-Phase 2C is authorized in principle (sprints 9-21 authorized), but its start
-is deferred until Phase 2B owner acceptance. Do not start Sprints 18-22 here.
-No merge, release, tag, version bump, force push or permanent deployment.
+This section governs over historical mission/ownership statements below.
+HOWARD-LAPTOP / `codex/expanded-summoning-phase2b-sprints14-17` / draft PR #26
+is the sole owner-designated development line. PR #27 and
+`codex/expanded-summoning-phase2b-finalize-20261005` are frozen salvage-only.
+No DATA source imported. Finish Sprint 17 and full Phase 2B closure, then STOP
+for owner review. Phase 2C is authorized (sprints 9–21), but its start is
+deferred until Phase 2B owner acceptance. No Sprints 18–22 under this mission;
+no merge, release, tag, version bump, force push or permanent deployment.
 
 - Active worktree:
   `C:/Dev/KingmakerGunslingerLab/repo/KingmakerGunslinger/.worktrees/expanded-summoning-phase2b-laptop-20261005`.
-  Qualified hidden source: `e3aeae630d51d27c45694fb9e92e9093048b1af9`.
-  Evidence checkpoint pushed at `1393b669078044d0bdabe2251594c2b28e4a04a7`;
-  Failed publication head/remote: `3d13108ea941af4e736ca30e6d9cc78a67796d63`.
-  The containing fixture-repair checkpoint is its normal descendant.
-  Unexpected active-branch motion remains a stop;
-  archived branch motion is informational only.
-- Exclusive receipt: ignored `artifacts/laptop-source-owner-20261005.json`;
+  Exact qualified publication/source and fetched remote:
+  **`155ada89869c6937b4a801e1fc384dbe38d36f3b`**.
+  The containing closure-evidence checkpoint is its normal descendant.
+  Unexpected active-branch motion remains a stop; archive motion is informational.
+- Exclusive ignored receipt: `artifacts/laptop-source-owner-20261005.json`;
   session `01a10bcd-8582-7551-826f-0f128807eb99`, owner PID 31796/start
   `2026-10-05T19:29:25.9127956Z`, holder PID 15084/start
   `2026-10-05T20:34:17.3075720Z`. Active/session-scoped, never perpetual.
-- All safety refs, local preserved commits, recovery bundle and failed
-  candidates retained. DATA audit pushed at 5da53f84: 29 files classified,
-  zero ports. PR #26 active; #27 archived accidental concurrent draft.
-- **Sprint 16 HIDDEN CANDIDATE QUALIFIED; publication NOT YET QUALIFIED.**
-  Exact e3 prelaunch PASS: 218 focused / 2020 full and every static/request/
-  preflight/build/strict-package gate. Six fresh Steam runs: 11/11 smoke,
-  **209/209 main**, 20/20 crowd, 9/9 prepare, 9/9 cleanup, 5/5 absence.
-  Combat 55/55 and final review 81/81; no assertion waived.
-- Crocodile active-source-death now proves three native prey ticks after
-  source death, one owned-death pause resume and 0.202 advancing seconds.
-  Native hold cleanup and exact pause/clock/mode/awake restoration pass.
-  [Exact hidden qualification](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-HIDDEN-PASS-REVIEW.md)
-  and curated JSON retain every artifact/request/result/restoration hash.
-- Latest publication batch: prelaunch PASS; smoke 11/11, main **207/209 FAIL**.
-  All 20 public paths pass, but one missed-bite/no-retry fixture failure also
-  prevents Death Roll contact. No qualification waiver. Containing repair
-  adds bounded retry plus a disclosed first-miss negative control in both
-  modes; no positive rule override, production change or increased deadline.
-  [Failure and correction](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-PUBLICATION-RETRY-REVIEW.md).
-- Actual latest snapshot `20261006T0009119881581Z` restored exactly;
-  closed `2026-10-06T00:24:45.7342342Z`: 136 files / Info 0.0.117 /
+  Safety refs, recovery bundle and every failed candidate retained.
+  Read-only DATA audit pushed at 5da53f84: 29 files classified, zero ports.
+- **Sprints 14–16 internally complete and published. Sprint 17 next.**
+  Exact 155 prelaunch PASS: 218 focused / 2020 full, repository/static/icon/
+  manifest, 480 preflight, 68 orchestration, persistence/crowd request tests,
+  clean exact Release, deterministic strict 312-member package.
+  Fresh Steam publication: **11/11 smoke; 211/211 main; all 20 public roots**.
+  Mechanics 37/37, speed 19/19, icons 9/9, combat 57/57, final review 81/81.
+  No assertion waived. [Publication evidence](planning/EXPANDED-SUMMONING-SPRINT16-PUBLICATION-PASS-REVIEW.md).
+- Both deliberate first-bite miss cases pass through issued non-opportunity
+  retries and unforced native positive hits/maintains/Death Roll: RTWP two
+  attempts, turn-based three (including a real natural-1 second bite).
+  The earlier 3d publication failure stays failed and preserved.
+- Qualified hidden e3aeae63 remains the crowd/persistence authority:
+  11/11 smoke, 209/209 main, 20/20 crowd, 9/9 prepare, 9/9 cleanup, 5/5 absence.
+  No mechanics, visual, asset or serialized-state delta since that pass;
+  only Dire suppression and guarded fixture changes, with full main rerun.
+- Latest actual snapshot `20261006T0043094214625Z` restored exactly;
+  closed `2026-10-06T00:59:25.6235093Z`: 136 files / Info 0.0.117 /
   `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
-  Lease Completed/recoveryRequired=false; no game/compatibility lock/staging.
-  Prior hidden native cleanup/absence clean; publication did not write saves.
-  No save-file access. Journal SHA
-  `7A4109860C9EA7F445C0A5AC1D129BAA16758B92B2FF80E5BAD999791AC8AD5A`.
-- Qualified hidden DLL SHA `c9029e26c745daea5e9eb369e23f6595a69636fe1629620fd456e71039b4d4d4`;
-  MVID `ff5b805f-162b-4c77-a655-0318fe195caa`; ZIP
-  `fe6a8c62b0f50f908157810e0d8c963ddb9c5c4ac4c6334ad5258ec7da92c29e`.
-  Immutable 312-member package retained, unchanged version 0.0.141.
-- Only Dire suppression is removed in the containing publication candidate.
-  Identity/damage/AI/visual/version code is unchanged. Generated roster and
-  count tests follow the exact six-root delta; no DATA source imported.
-- Next: freeze/push the corrected publication candidate, run all exact
-  prelaunch gates and complete affected smoke/main batch (211 assertions,
-  including all 6 Dire + 14 Crocodile public routes), then
-  restore exactly and close Sprint 16. Sprint 17 must wait for that gate.
-- Sprints 14-15 complete. Hidden qualified artifact: 970 published + 29 wrappers
-  = 999 visible, 6 Dire withheld. Publication candidate source: 976 registered /
-  976 published / 0 withheld / 29 wrappers / 1005 visible choices.
-  These new public paths are NOT YET QUALIFIED. Sprint 17 has not started.
+  Lease Completed/recoveryRequired=false; no game/shared lock/staging.
+  Prior native working-save cleanup/absence clean; publication did not write
+  saves. No save-file or protected-baseline access. Journal SHA
+  `6928D7494A6953A7965127846D04797589E0E349F929BF8B225B92F8E5E190EF`.
+- Publication DLL SHA `8c76fcbed3eb73ffb6ca6c6121e610f96a2b36a82fa8f3c6c55edae66da885d9`;
+  MVID `ed8fe210-31e2-4016-870e-8623d3a55fa2`; ZIP
+  `eb930278836f0c3953decef589c7214b69c1d1a2fc69f625af56bdc4af254ac2`.
+  Source fingerprint `662bc768c67858453cc426e6b085190de6c54448cae572c59d23145054dae06e`.
+  Immutable artifact/sidecar/driver retained; version unchanged at 0.0.141.
+- Qualified surface: **976 registered/published generated / 0 withheld /
+  29 native wrappers / 1005 visible choices**. Fourteen Crocodile roots and
+  accepted identity preserved; six Dire roots now public and qualified.
+- Exact next action: Sprint 17 bounded serpentine donor/rig proof, Viper and
+  Constrictor Snake, separate Salamander hybrid/weapon seam where necessary.
+  Preserve Salamander identity/placements. One hidden candidate/batched review/
+  publication gate, then complete Phase 2B closure. Sprint 17 not yet implemented.
 - Accepted unchanged: `PASSIVE_CREATURE_SENSES_UNMODELED`,
   `ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD`,
   `SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED`,
-  `SWALLOW_ELIGIBLE_TARGET_ELSE_DEATH_ROLL`. No substitute subsystem.
-  `HumanReview: NOT_PERFORMED_NONBLOCKING`.
+  `SWALLOW_ELIGIBLE_TARGET_ELSE_DEATH_ROLL`.
+  Run remains an evidence-backed native-engine omission; aquatic skills and
+  Hold Breath are outside land-use scope. `HumanReview: NOT_PERFORMED_NONBLOCKING`.
 
 ## Historical first hidden batch and correction checkpoint, October 5
 
