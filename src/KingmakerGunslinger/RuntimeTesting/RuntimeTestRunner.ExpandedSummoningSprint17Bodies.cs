@@ -62,6 +62,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             try
             {
                 Game.Instance.IsPaused = false;
+                if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSnakeCommands)
+                {
+                    foreach (int step in ReviewSprint17SnakeCommands(fixture)) yield return step;
+                    yield break; // Separate closed native-command slice; qualified rules requests unchanged.
+                }
                 foreach (int step in ReviewSprint17ProductionSnakeViews(fixture)) yield return step;
                 if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSnakeSignatures)
                 {

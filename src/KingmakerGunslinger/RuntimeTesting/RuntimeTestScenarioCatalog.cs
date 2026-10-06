@@ -173,6 +173,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-expanded-summoning-snake-profiles";
         internal const string DisposableExpandedSummoningSnakeSignatures =
             "disposable-expanded-summoning-snake-signatures";
+        internal const string DisposableExpandedSummoningSnakeCommands =
+            "disposable-expanded-summoning-snake-commands";
 
         internal static bool IsExpandedSummoningRulesScenario(string scenario)
         {
@@ -181,7 +183,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 scenario == DisposableExpandedSummoningSerpentineSurvey ||
                 scenario == DisposableExpandedSummoningSerpentineBodies ||
                 scenario == DisposableExpandedSummoningSnakeProfiles ||
-                scenario == DisposableExpandedSummoningSnakeSignatures;
+                scenario == DisposableExpandedSummoningSnakeSignatures ||
+                scenario == DisposableExpandedSummoningSnakeCommands;
         }
         /// <summary>
         /// Correction order (2026-09-25): repeated cast-and-dispose cycles of
@@ -706,6 +709,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableExpandedSummoningSerpentineBodies,
                 DisposableExpandedSummoningSnakeProfiles,
                 DisposableExpandedSummoningSnakeSignatures,
+                DisposableExpandedSummoningSnakeCommands,
                 DisposableExpandedSummoningVisualLifecycle,
                 WorkingSaveExpandedSummoningPrepare,
                 WorkingSaveExpandedSummoningVerifyCleanup,

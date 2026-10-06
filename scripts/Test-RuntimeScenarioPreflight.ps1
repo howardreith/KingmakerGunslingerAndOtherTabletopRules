@@ -179,6 +179,7 @@ $expected = @(
     'disposable-expanded-summoning-serpentine-bodies',
     'disposable-expanded-summoning-snake-profiles',
     'disposable-expanded-summoning-snake-signatures',
+    'disposable-expanded-summoning-snake-commands',
     'disposable-expanded-summoning-rules',
     'disposable-expanded-summoning-visual-lifecycle',
     'disposable-expanded-summoning-projected-menu',
@@ -440,6 +441,21 @@ foreach ($invalidSignatureParameters in @(@{}, @{saveName='KMG_AUTOMATION_BASELI
     @{saveName='KMG_AUTOMATION_WORKING'; saveWrite='true'})) {
     Assert-Throws { New-KmgRuntimeRequest @snakeSignatureArguments -Parameters $invalidSignatureParameters } `
         'snake-signature-review-rejects-extra-scope-and-save-write'
+}
+$snakeCommandArguments = $snakeSignatureArguments.Clone()
+$snakeCommandArguments.Scenario = 'disposable-expanded-summoning-snake-commands'
+$snakeCommandArguments.EvidenceDirectory = Join-Path $script:KmgRuntimeEvidenceRoot 'snake-command-preflight-test'
+$snakeCommandMetadata = Get-KmgRuntimeScenarioMetadata $snakeCommandArguments.Scenario
+$snakeCommandRequest = New-KmgRuntimeRequest @snakeCommandArguments -Parameters @{saveName='KMG_AUTOMATION_WORKING'}
+Assert-True ($snakeCommandMetadata.RequiresSaveName -and $snakeCommandMetadata.UsesWorkingStageTimeouts -and
+    $snakeCommandMetadata.PermittedSaveName -ceq 'KMG_AUTOMATION_WORKING' -and
+    -not $snakeCommandMetadata.RequiresManualInteraction -and
+    $snakeCommandRequest.scenario -ceq $snakeCommandArguments.Scenario -and $snakeCommandRequest.exitAfterCompletion) 'snake-command-review-uses-closed-working-save-guard'
+foreach ($invalid in @(@{}, @{saveName='KMG_AUTOMATION_BASELINE'},
+    @{saveName='KMG_AUTOMATION_WORKING'; creature='salamander'},
+    @{saveName='KMG_AUTOMATION_WORKING'; prefab='arbitrary'},
+    @{saveName='KMG_AUTOMATION_WORKING'; saveWrite='true'})) {
+    Assert-Throws { New-KmgRuntimeRequest @snakeCommandArguments -Parameters $invalid } 'snake-command-rejects-extra-scope-or-save-authority'
 }
 Assert-True (-not $midgameDisposable.RequiresSaveName -and
     -not $midgameDisposable.RequiresManualInteraction) `
