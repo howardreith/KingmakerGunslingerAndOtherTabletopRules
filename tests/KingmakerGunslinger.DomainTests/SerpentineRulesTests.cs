@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using KingmakerGunslinger.Summoning;
+using KingmakerGunslinger.RuntimeTesting;
 using Newtonsoft.Json.Linq;
 
 namespace KingmakerGunslinger.DomainTests
@@ -11,6 +12,20 @@ namespace KingmakerGunslinger.DomainTests
     internal static class SerpentineRulesTests
     {
         internal const int AppendedLedgerIdentities = 73;
+        internal static void ProfileRequestIsClosedWorkingSaveSlice()
+        {
+            string scenario = RuntimeTestScenarioCatalog.DisposableExpandedSummoningSnakeProfiles;
+            Assertions.Equal("disposable-expanded-summoning-snake-profiles", scenario, "One bounded profile/body request.");
+            Assertions.True(RuntimeTestScenarioCatalog.IsAllowed(scenario) &&
+                RuntimeTestScenarioCatalog.IsExpandedSummoningRulesScenario(scenario),
+                "Native request traverses the exact working-save guard.");
+            foreach (string other in new[] { null, "", scenario.ToUpperInvariant(), scenario + "-arbitrary",
+                "working-save-expanded-summoning-snake-profiles" })
+                Assertions.False(RuntimeTestScenarioCatalog.IsAllowed(other) ||
+                    RuntimeTestScenarioCatalog.IsExpandedSummoningRulesScenario(other),
+                    "No alternate spelling, write authority or arbitrary creature scope.");
+        }
+
         internal static void ProductionBodyHookRequiresExactHiddenSnakeIdentity()
         {
             JArray entries = (JArray)JObject.Parse(File.ReadAllText(Path.Combine(

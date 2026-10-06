@@ -1,5 +1,16 @@
 # Expanded Summoning Phase 2 journal
 
+## October 6, 16:17 UTC — closed snake profile/body request source checked
+
+New fixed request exercises17 existing production-view checks and18 actual
+profile/live-Strength/native-size assertions, plus cleanup/version; no caller
+creature selection, native appearance removal or save write. Salamander and
+metadata census are excluded.248 focused/2050 full83.0s, complete source build/
+strict320-member package PASS179.5s;496 standalone preflight PASS. First compile
+missed two fixture namespace imports, now corrected; diagnostic log retained.
+NOT RUN. Exact committed candidate/prelaunch gates, then one guarded smoke/
+profile batch next. Full signatures/commands/persistence/publication remain open.
+
 ## October 6, 16:01 UTC — exact c1ece8d7 view SOURCE gate PASS
 
 2049 unfiltered tests85.1s, complete repository/static/icon/manifest, clean
