@@ -1,5 +1,23 @@
 # Expanded Summoning Phase 2 journal
 
+## October 6 — private continuous-chain snakes and separate hybrid body
+
+Starting from pushed research evidence 6dee947d, authored original Viper and
+Constrictor on the measured Purple Worm chain (16 drivers, no radial petals,
+horn, stones or legs), plus a separate Salamander hybrid body (27 drivers,
+two arms, continuous tail/waist, no legs/armor/weapon). 14 Blender tests PASS:
+four preserved water regressions, four worm-family checks and six hybrid
+checks. Review produced 48 snake and 26 hybrid framed panels. Fixed actual
+offline findings: clipped framing/bright lighting, detached digits, waist
+seam and belly paint rolling onto the dorsal coil; regressions added.
+Focused domain 219/219, repository wrapper and unfiltered domain 2021/2021
+(83.2 seconds) PASS. All outputs stay private; no production code,
+registration, icon, packaged asset, gameplay or save change. No new game
+launch; exact a173 research/restoration remains the latest runtime record.
+Next native motion/ground/jaw and owned-view lifecycle proof, separate actual
+Salamander spear/tail seam, then profiles/signatures and hidden candidate.
+S17 remains NOT QUALIFIED. [Hashes/source](assets-source/original-models/sprint17-serpents/SOURCE.md).
+
 ## October 6, 02:45 UTC — corrected three-target research 11/11, restored
 
 Exact a173da3a full prelaunch PASS: 219 focused, 2021 unfiltered (84.5s),

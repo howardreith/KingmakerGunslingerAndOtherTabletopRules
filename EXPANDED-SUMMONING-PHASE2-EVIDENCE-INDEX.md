@@ -1,5 +1,11 @@
 # Expanded Summoning Phase 2 evidence index
 
+[Sprint 17 private original authoring checkpoint](assets-source/original-models/sprint17-serpents/SOURCE.md):
+continuous-chain Viper/Constrictor and separate Salamander hybrid body;
+14 Blender behavior checks PASS, 74 new framed offline panels. No weapon
+handling, native motion/contact or lifecycle qualification; nothing packaged.
+Earlier water prototypes and failed offline iterations remain preserved.
+
 [Sprint 17 corrected three-target research PASS](planning/EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md):
 exact a173da3a full prelaunch PASS (219 focused/2021 full/486 preflight), fresh
 Steam smoke **11/11**, survey **11/11**, exact restoration. Native Purple Worm
