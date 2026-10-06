@@ -13,9 +13,11 @@ no merge, release, tag, version bump, force push or permanent deployment.
 
 - Active worktree:
   `C:/Dev/KingmakerGunslingerLab/repo/KingmakerGunslinger/.worktrees/expanded-summoning-phase2b-laptop-20261005`.
-  Exact qualified publication/source and fetched remote:
+  Exact qualified Sprint 16 publication/source:
   **`155ada89869c6937b4a801e1fc384dbe38d36f3b`**.
-  The containing closure-evidence checkpoint is its normal descendant.
+  Pushed closure-evidence checkpoint/fetched remote before Sprint 17 research:
+  **`b27b6aea04d4e1e2b151339fca36407ba45bb8a9`**.
+  The containing Sprint 17 research checkpoint is its normal descendant.
   Unexpected active-branch motion remains a stop; archive motion is informational.
 - Exclusive ignored receipt: `artifacts/laptop-source-owner-20261005.json`;
   session `01a10bcd-8582-7551-826f-0f128807eb99`, owner PID 31796/start
@@ -53,10 +55,20 @@ no merge, release, tag, version bump, force push or permanent deployment.
 - Qualified surface: **976 registered/published generated / 0 withheld /
   29 native wrappers / 1005 visible choices**. Fourteen Crocodile roots and
   accepted identity preserved; six Dire roots now public and qualified.
-- Exact next action: Sprint 17 bounded serpentine donor/rig proof, Viper and
-  Constrictor Snake, separate Salamander hybrid/weapon seam where necessary.
-  Preserve Salamander identity/placements. One hidden candidate/batched review/
-  publication gate, then complete Phase 2B closure. Sprint 17 not yet implemented.
+- Sprint 17 **NOT QUALIFIED**: guarded research-only survey added for the
+  native Medium Water Elemental view and existing Salamander/Lizardfolk view.
+  Archived inventory identifies the same serpentine prefab on the native
+  elemental, without using the optional Eidolon blueprint. No new creature,
+  asset, identity, publication, mechanic or save state changed.
+  Focused 219/219, incremental Release compile, 486 preflight, 68 orchestration
+  and persistence/crowd request tests PASS. Exact-head full gate and runtime
+  survey remain pending; [scope and intake](planning/EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md).
+- Exact next action: freeze/build this research checkpoint, run fresh Steam
+  working-save smoke plus the bounded serpentine survey, restore its actual
+  leased snapshot, then author Viper/Constrictor and the separate Salamander
+  hybrid/weapon seam from measured evidence. Preserve Salamander identity and
+  placements. One hidden candidate/batched review/publication gate, then full
+  Phase 2B closure; no Phase 2C start under this mission.
 - Accepted unchanged: `PASSIVE_CREATURE_SENSES_UNMODELED`,
   `ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD`,
   `SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED`,

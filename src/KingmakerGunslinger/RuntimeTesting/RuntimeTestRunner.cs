@@ -2774,6 +2774,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Complete(RunDisposableExpandedSummoningVisualContracts());
                 }
                 else if (_request.Scenario == RuntimeTestScenarioCatalog
+                    .DisposableExpandedSummoningSerpentineSurvey)
+                {
+                    PollSprint17RigSurvey();
+                }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog
                     .DisposableExpandedSummoningCrocodilians)
                 {
                     PollExpandedSummoningCrocodilianSurvey();

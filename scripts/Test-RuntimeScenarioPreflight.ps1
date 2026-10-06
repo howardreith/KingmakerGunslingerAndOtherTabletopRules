@@ -175,6 +175,7 @@ $expected = @(
     'summon-same-turn-compatibility-acadamae',
     'disposable-expanded-summoning-visual-contracts',
     'disposable-expanded-summoning-crocodilians',
+    'disposable-expanded-summoning-serpentine-survey',
     'disposable-expanded-summoning-rules',
     'disposable-expanded-summoning-visual-lifecycle',
     'disposable-expanded-summoning-projected-menu',
@@ -372,6 +373,24 @@ foreach ($invalidCrocodilianParameters in @(@{}, @{ saveName='KMG_AUTOMATION_BAS
     } 'crocodilian-invalid-save-or-unscoped-parameter-rejected'
 }
 $midgameDisposable = Get-KmgRuntimeScenarioMetadata 'disposable-midgame-firearms'
+$serpentineMetadata = Get-KmgRuntimeScenarioMetadata 'disposable-expanded-summoning-serpentine-survey'
+Assert-True ($serpentineMetadata.RequiresSaveName -and
+    $serpentineMetadata.PermittedSaveName -ceq 'KMG_AUTOMATION_WORKING' -and
+    -not $serpentineMetadata.RequiresManualInteraction -and
+    $serpentineMetadata.UsesWorkingStageTimeouts) 'serpentine-research-is-guarded-working-save-only'
+$serpentineArguments = $crocodilianRequestArguments.Clone()
+$serpentineArguments.Scenario = 'disposable-expanded-summoning-serpentine-survey'
+$serpentineArguments.EvidenceDirectory = Join-Path $script:KmgRuntimeEvidenceRoot 'serpentine-preflight-test'
+$serpentineRequest = New-KmgRuntimeRequest @serpentineArguments -Parameters @{saveName='KMG_AUTOMATION_WORKING'}
+Assert-True ($serpentineRequest.scenario -ceq $serpentineArguments.Scenario -and
+    $serpentineRequest.parameters.saveName -ceq 'KMG_AUTOMATION_WORKING' -and
+    $serpentineRequest.exitAfterCompletion) 'serpentine-research-request-round-trips'
+foreach ($invalidSerpentineParameters in @(@{}, @{saveName='KMG_AUTOMATION_BASELINE'},
+    @{saveName='KMG_AUTOMATION_WORKING'; prefab='arbitrary'},
+    @{saveName='KMG_AUTOMATION_WORKING'; qualificationCreatures='viper'})) {
+    Assert-Throws { New-KmgRuntimeRequest @serpentineArguments -Parameters $invalidSerpentineParameters } `
+        'serpentine-research-rejects-other-saves-or-unscoped-assets'
+}
 Assert-True (-not $midgameDisposable.RequiresSaveName -and
     -not $midgameDisposable.RequiresManualInteraction) `
     'midgame-firearms-is-autonomous-save-free'
