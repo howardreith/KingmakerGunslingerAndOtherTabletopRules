@@ -29,7 +29,26 @@
       16
     ],
     "currentSprint": 17,
-    "currentSubItem": "S16 COMPLETE/PUBLISHED; S17 NOT QUALIFIED. Exacta90494e1 complete prelaunch PASS:238 focused/2040 full83.0s/gate178s;491 preflight/81 orchestration/17 provenance/persistence11/3/19/crowd5/7/strict318. Fresh Steam smoke11/metadata16 PASS. Human prefab1776 palette entries/177 transforms;17 weapon-storage duplicate binds disagree, maximum2.880282. Blind first-slot binding rejected; no human-based Salamander, tail or actual spear playback qualified. Actual1407190713978Z snapshot restored14:14:02UTC; no game/lease/lock/staging/save write. Body570 remains33/35 FAIL; all12 attempts preserved. Next independent printed snakes plus bounded Salamander-specific spear/tail review.976+29=1005;ZERO DATA ports;Phase2C authorized but deferred.",
+    "currentSubItem": "Sprint 17 snake source checkpoint: 250 focused / 2048 unfiltered tests (82.1s), repository/static/manifest/icon checks and dirty-tree exact-reference Release compile PASS. Not a gameplay qualification. Viper and Constrictor Snake add 73 append-only identities and 32 withheld roots; 1008 registered / 976 published + 29 wrappers = 1005 visible. Original icons reviewed; production body attachment, native mechanics/UI/persistence/routes and Salamander's separate spear/tail seam remain open. No runtime transaction or DATA port. Committed exact build/package gate next, then complete Sprint 17 and Phase 2B closure; Phase 2C authorized but deferred.",
+    "sprint17SnakeSource": {
+      "status": "SOURCE CHECKPOINT; NOT QUALIFIED",
+      "review": "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SOURCE-REVIEW.md",
+      "sourceBase": "aa5289cb980f064f682aee7c98e0da3f725c063f",
+      "appendedIdentities": 73,
+      "preservedPrefixEntries": 2836,
+      "preservedPrefixSha256": "bf46e4e3d2d709935f2a27fa32f2bd8ad640098801174680c755c89287ea0570",
+      "hiddenPlacements": 32,
+      "focusedTests": 250,
+      "fullUnfilteredTests": 2048,
+      "fullDomainSeconds": 82.1,
+      "exactReferenceCompile": "PASS; dirty-tree diagnostic only, not exact-head runtime artifact",
+      "originalSnakeBodyProductionAttached": false,
+      "runtimeQualified": false,
+      "publicationAuthorized": false,
+      "exactHeadPackageGate": "NEXT",
+      "humanReview": "NOT_PERFORMED_NONBLOCKING",
+      "newRuntimeTransaction": false
+    },
     "sprint17PrivatePrototypes": {
       "status": "Six original files staged for bounded body acceptance; not automatically attached or runtime qualified",
       "source": "assets-source/original-models/sprint17-serpents/SOURCE.md",
@@ -150,8 +169,8 @@
     "sprint14Published": true,
     "sprint14Status": "COMPLETE WITH OWNER-ACCEPTED ENGINE LIMITATION (PASSIVE_CREATURE_SENSES_UNMODELED)",
     "publishedGeneratedPlacements": 976,
-    "registeredGeneratedPlacements": 976,
-    "withheldGeneratedPlacements": 0,
+    "registeredGeneratedPlacements": 1008,
+    "withheldGeneratedPlacements": 32,
     "retainedNativeWrappers": 29,
     "totalVisibleChoices": 1005,
     "sprint15Published": true,
@@ -488,7 +507,7 @@
       "detail": "Supplied by the owner and read. The Pteranodon passage confirms the shipped profile rather than changing it: ten-foot reach valued for attacks of opportunity, and a single main bite on which everything stacks (2d6 plus modifiers). The guide also positions multiple Pteranodons as the best single-target aerial attacker at their tier. This informs Sprint 2's acceptance emphasis on correct bite impact timing and location at Large reach; it changes no accepted statistic."
     }
   ],
-  "nextConcreteAction": "Sprint 16 complete on exact 155ada89. Connect Sprint 17 request-local original-body acceptance, freeze/push exact source, complete exact-artifact gate and guarded fresh-Steam motion/contact/lifecycle proof with exact restoration. Then printed snake profiles/signatures and separate Salamander spear/tail, preserving its identity/placements. Complete Sprint 17 and Phase 2B closure, then stop for owner review. Phase 2C authorized but deferred; no merge, release, version bump, permanent deployment or Sprints 18-22 here.",
+  "nextConcreteAction": "Freeze/push the hidden snake source checkpoint, then run the complete committed exact build/deterministic package/strict package gate. Connect original snake views and closed mechanical fixtures; resolve Salamander's separate native spear/tail seam without blind bind deduplication or animation relabeling. Sprint 17 remains NOT QUALIFIED. Complete its hidden/publication gates and full Phase 2B closure, then stop for owner review. Phase 2C authorized but deferred; no merge, release, version bump, permanent deployment or Sprints 18-22 here.",
   "deploymentReconciliation": {
     "finding": "The first runs left this mission's 0.0.136 branch build installed over the pre-run 0.0.117 installation. The mission required restoration and did not authorize a permanent installation; a shared version string does not make a branch artifact an accepted release.",
     "ownershipVerified": "The live DLL hash matched this mission's exact build byte for byte, so the tree was unambiguously mission-owned.",

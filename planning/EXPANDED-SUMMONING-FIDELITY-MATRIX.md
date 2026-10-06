@@ -1,6 +1,20 @@
 # Expanded Summoning fidelity matrix
 
-## Sprint 17 research, October 6 UTC — NOT QUALIFIED
+## Current Sprint17 snake source, October 6 UTC — NOT QUALIFIED
+
+[Source review](EXPANDED-SUMMONING-SPRINT17-SNAKE-SOURCE-REVIEW.md): Medium
+Viper and Constrictor Snake are registered but wholly hidden. Exact land
+skills/HP, native feats, owned Viper poison and scoped Constrictor grab/damage
+are implemented; original icons pass agent small-size/grayscale inspection.
+250 focused /2048 full tests, repository/static/icon/manifest and dirty-tree
+exact-reference compile PASS; committed build/package remains next. No new
+runtime evidence. Original-body production attachment, actual final profiles,
+poison/constrict cadence,commands,UI,lifecycle,persistence and routes remain
+unqualified. Salamander's existing unit,placements and painting are unchanged;
+its separate native spear/tail solution remains unresolved. Surface1008
+registered/976 published/32 withheld +29 wrappers =1005 visible.
+
+## Prior Sprint17 bind research, October 6 UTC — RESEARCH ONLY
 
 Exact a90494e1: 238 focused / 2040 unfiltered tests (83.0s), complete gate
 178s; 491 preflight / 81 orchestration / 17 provenance, persistence 11/3/19,

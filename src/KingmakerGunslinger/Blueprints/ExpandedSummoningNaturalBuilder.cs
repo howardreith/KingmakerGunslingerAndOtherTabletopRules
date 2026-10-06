@@ -29,7 +29,7 @@ using UnityEngine;
 
 namespace KingmakerGunslinger.Blueprints
 {
-    internal static class ExpandedSummoningNaturalBuilder
+    internal static partial class ExpandedSummoningNaturalBuilder
     {
         private const string Bite1d4Symbol =
             "KMG.Summoning.Natural.Bite1d4";
@@ -353,6 +353,7 @@ namespace KingmakerGunslinger.Blueprints
                         ExpandedSummoningCatalog.All.Single(creature =>
                             creature.Key == profile.Key))), profile, bySymbol,
                     extraplanar);
+            ConfigureSerpentines(library, bySymbol);
         }
 
         private static void ConfigureWeapon(BlueprintItemWeapon native,
@@ -816,7 +817,8 @@ namespace KingmakerGunslinger.Blueprints
             // AddClassLevels repeatedly spends points in one fixed priority
             // list; it cannot express 1/2 or 6/6 at these low Int scores.
             // Only these two profiles use the exact one-time rank allocation.
-            levels.Skills = crocodilian ? Array.Empty<StatType>() :
+            levels.Skills = crocodilian || SerpentineRulesPolicy.IsSnake(profile.Key)
+                ? Array.Empty<StatType>() :
                 profile.Skills.Select(SkillStat).ToArray();
             levels.Archetypes = Array.Empty<BlueprintArchetype>();
             levels.SelectSpells = Array.Empty<BlueprintAbility>();

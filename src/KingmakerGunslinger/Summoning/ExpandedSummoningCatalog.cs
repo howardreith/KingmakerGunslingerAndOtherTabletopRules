@@ -26,11 +26,11 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Creatures.Length != 95) throw new InvalidOperationException("Expanded Summoning unique creature count must be 95.");
+            if (Creatures.Length != 97) throw new InvalidOperationException("Expanded Summoning unique creature count must be 97.");
             if (Creatures.Select(v => v.Key).Distinct(StringComparer.Ordinal).Count() != Creatures.Length)
                 throw new InvalidOperationException("Duplicate creature key.");
-            ValidateFamily(SummonFamily.Monster, 86, 490);
-            ValidateFamily(SummonFamily.NaturesAlly, 84, 486);
+            ValidateFamily(SummonFamily.Monster, 88, 506);
+            ValidateFamily(SummonFamily.NaturesAlly, 86, 502);
         }
 
         private static void ValidateFamily(SummonFamily family, int roster, int placements)
@@ -62,7 +62,9 @@ namespace KingmakerGunslinger.Summoning
                 C("aurochs","Aurochs",3,true,3,"Horse"),
                 C("bison","Bison",4,true,4,"Horse"),
                 C("rhinoceros","Rhinoceros",4,true,4,"Mastodon"),
-                C("woolly-rhinoceros","Woolly Rhinoceros",5,true,5,"Mastodon")
+                C("woolly-rhinoceros","Woolly Rhinoceros",5,true,5,"Mastodon"),
+                C("viper","Viper",1,true,1,"Snake"),
+                C("constrictor-snake","Constrictor Snake",3,true,3,"Snake")
             };
         }
 

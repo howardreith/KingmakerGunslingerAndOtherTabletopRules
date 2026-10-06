@@ -395,6 +395,7 @@ def validate(root: Path) -> None:
         # castes are one stat block and one poison graph.
         ".FireBeetle" in symbol or ".GiantAnt" in symbol or
         ".GiantStagBeetle" in symbol or ".DireCrocodile" in symbol or
+        ".Viper" in symbol or ".ConstrictorSnake" in symbol or
         ".Special.Crocodile." in symbol or
         symbol == "KMG.Summoning.Special.Crocodilian.SprintNotEngaged" or
         symbol == "KMG.Summoning.Natural.Bite3d6" or
@@ -413,9 +414,9 @@ def validate(root: Path) -> None:
     expanded_summoning_manifest.validate(manifest, plan)
 
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningCatalog.cs",
-        "Creatures.Length != 95",
-        "ValidateFamily(SummonFamily.Monster, 86, 490)",
-        "ValidateFamily(SummonFamily.NaturesAlly, 84, 486)",
+        "Creatures.Length != 97",
+        "ValidateFamily(SummonFamily.Monster, 88, 506)",
+        "ValidateFamily(SummonFamily.NaturesAlly, 86, 502)",
         'C("pony","Pony",1,true,1)', 'C("horse","Horse",2,true,2)',
         'C("owlbear","Owlbear",null,false,4)', 'C("cyclops","Cyclops",null,false,5)',
         'C("shambling-mound","Shambling Mound",null,false,6)',
@@ -426,12 +427,12 @@ def validate(root: Path) -> None:
         'C("salt-mephit","Salt Mephit",4,false,4)', 'C("steam-mephit","Steam Mephit",4,false,4)',
         'C("tiger","Tiger",null,false,4,"Leopard")')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs",
-        "RegisteredLogicalPlacementCount = 976;",
-        "SuppressedLogicalPlacementCount = 0;")
+        "RegisteredLogicalPlacementCount = 1008;",
+        "SuppressedLogicalPlacementCount = 32;")
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningIdentityCatalog.cs",
-        "UnitCount = 95;",
-        "LogicalAbilityCount = 976;",
-        "TemplatedPlacementCount = 271;",
+        "UnitCount = 97;",
+        "LogicalAbilityCount = 1008;",
+        "TemplatedPlacementCount = 287;",
         "NativeExpandedOptionIdentityCount = %d;" % SPRINT3["nativeExpansionWrappers"])
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonNativeExpansionCatalog.cs",
         "Values.Length != %d" % SPRINT3["nativeExpansionWrappers"],
@@ -439,10 +440,10 @@ def validate(root: Path) -> None:
         '"256739c1e61e3f64eaf71734d271f4be","590cd3d5e76fdc649a5f97bc984cd3c4",true',
         '"9bd8cb6180842f44e9302c58e47b91f0","590cd3d5e76fdc649a5f97bc984cd3c4",true')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningNaturalProfiles.cs",
-        "Values.Length != 47",
+        "Values.Length != 49",
         '"Animal", "Vermin", "MagicalBeast", "Humanoid", "Plant"')
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonIconCatalog.cs",
-        "Values.Length != %d" % (SPRINT3["projectIcons"] + 16))
+        "Values.Length != %d" % (SPRINT3["projectIcons"] + 18))
     # Correction order: the chartered mephit roles and the ally-safe cloud stay in the code.
     require_tokens(root / "src/KingmakerGunslinger/Summoning/ExpandedSummoningSpecialProfiles.cs",
         '"Blur", "WindWall"', '"MagicMissile", "ChillMetal"', '"Pyrotechnics", "MagmaForm"',
@@ -518,9 +519,9 @@ def validate(root: Path) -> None:
             raise AssertionError("No Lightning Mephit may enter the catalogs: " + path.name)
     runtime_icons = json.loads((root / "assets/game/icons/expanded-summoning/icon-manifest.json")
                                .read_text(encoding="utf-8-sig"))
-    # Sixteen Phase 2 concepts through the withheld Sprint 16 registration.
-    if runtime_icons["count"] != SPRINT3["projectIcons"] + 16 or \
-            len(runtime_icons["icons"]) != SPRINT3["projectIcons"] + 16 or \
+    # Eighteen Phase 2 concepts including the two hidden Sprint 17 snakes.
+    if runtime_icons["count"] != SPRINT3["projectIcons"] + 18 or \
+            len(runtime_icons["icons"]) != SPRINT3["projectIcons"] + 18 or \
             not {"pony", "horse", "owlbear", "cyclops", "shambling-mound", "giant-flytrap",
                  "purple-worm", "dust-mephit", "ice-mephit", "magma-mephit", "ooze-mephit",
                  "salt-mephit", "steam-mephit", "tiger", "giant-wasp", "stirge",
@@ -547,7 +548,7 @@ def validate(root: Path) -> None:
     # Keep the accepted Phase 1 metadata at 251, but validate the current
     # package count with the Phase 2 bird, vermin, quadruped and icon
     # additions, including the six original Sprint 17 body/painting files.
-    package_count = SPRINT3["packageFileCountWithSoundBank"] + 67
+    package_count = SPRINT3["packageFileCountWithSoundBank"] + 69
     for script in ("Build-Local.ps1", "package.ps1"):
         require_tokens(root / "scripts" / script,
             "{ %d } else { %d }" % (package_count, package_count - 2),

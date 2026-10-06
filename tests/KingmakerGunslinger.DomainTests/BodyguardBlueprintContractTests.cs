@@ -48,7 +48,8 @@ namespace KingmakerGunslinger.DomainTests
                     ExpandedSummoningSprint13Tests.AppendedLedgerIdentities +
                     ExpandedSummoningSprint14Tests.AppendedLedgerIdentities +
                 ExpandedSummoningSprint15Tests.AppendedLedgerIdentities +
-                ExpandedSummoningSprint16Tests.AppendedLedgerIdentities,
+                ExpandedSummoningSprint16Tests.AppendedLedgerIdentities +
+                SerpentineRulesTests.AppendedLedgerIdentities,
                 entries.Length,
                 "Current blueprint ledger count changed.");
             Assertions.Equal(1911 + KingmakerGunslinger.Acquisition
@@ -69,7 +70,8 @@ namespace KingmakerGunslinger.DomainTests
                     ExpandedSummoningSprint13Tests.AppendedLedgerIdentities +
                     ExpandedSummoningSprint14Tests.AppendedLedgerIdentities +
                 ExpandedSummoningSprint15Tests.AppendedLedgerIdentities +
-                ExpandedSummoningSprint16Tests.AppendedLedgerIdentities,
+                ExpandedSummoningSprint16Tests.AppendedLedgerIdentities +
+                SerpentineRulesTests.AppendedLedgerIdentities,
                 entries.Count(value => string.Equals(
                 (string)value["status"], "active", StringComparison.Ordinal)),
                 "Current active identity count changed.");

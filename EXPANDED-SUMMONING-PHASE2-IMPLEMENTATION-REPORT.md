@@ -11,7 +11,9 @@ Exact publication `155ada89869c6937b4a801e1fc384dbe38d36f3b` passed every
 prelaunch gate (218 focused / 2020 full), then fresh Steam smoke **11/11**
 and full main **211/211**. All six Dire + fourteen Crocodile public roots pass;
 source-derived totals are **976 generated + 29 wrappers = 1005 visible**,
-zero withheld. Crocodile and every existing identity/placement are preserved.
+zero withheld at that publication. Sprint17's later hidden registration adds
+32 withheld snake placements without changing those976 published roots.
+Crocodile and every existing identity/placement are preserved.
 
 The missed-bite fixture correction is proved in both modes: a disclosed first
 miss causes zero maneuvers, bounded actual commands retry, then unforced native
@@ -34,7 +36,20 @@ access; prior authorized native cleanup/absence remains clean.
 HumanReview: NOT_PERFORMED_NONBLOCKING. Accepted engine limitations/adaptation
 unchanged. Sprint 17 research is underway; Phase 2B itself is not yet closed.
 
-### Current Sprint17 research result — NOT QUALIFIED; exact restoration PASS
+### Current Sprint17 snake source checkpoint — NOT QUALIFIED
+
+[Source review](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SOURCE-REVIEW.md):
+250 focused /2048 unfiltered tests (82.1s), repository/static/manifest/icon and
+dirty-tree exact-reference Release compile PASS. New Medium snake profiles,
+creation-only land ranks/HP, owned poison and bounded live constrict, original
+icons;73 append-only IDs and32 hidden roots. Surface1008 registered/976
+published/32 withheld +29 wrappers =1005 visible. Salamander unchanged.
+No runtime/installation/save operation. Production body attachment and every
+native mechanics,UI,lifecycle,persistence/private/public route remain gated.
+Next: committed exact build/package, snake-body/fixtures and separate native
+Salamander spear/tail implementation, then full Sprint17 and Phase2B closure.
+
+### Last guarded Sprint17 research result — NOT QUALIFIED; exact restoration PASS
 
 Exact a90494e1: 238 focused / 2040 unfiltered tests (83.0s), complete gate
 178s; 491 preflight / 81 orchestration / 17 provenance, persistence 11/3/19,

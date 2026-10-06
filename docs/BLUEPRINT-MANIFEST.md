@@ -517,8 +517,10 @@ creature that does not ask for its own unit type keeps its donor's and all
 three of these borrow the Giant Spider.
 The ledger now contains 2772 stable identifiers: 2770 active and 2 reserved.
 
-Sprint 15 and the withheld Sprint 16 registration extend it to
-2836 stable identifiers: 2834 active and 2 reserved. The final entry is the
-owned native engagement consideration shared by the two Sprint AI actions.
-Dire Crocodile's six
-placements are allocated but unpublished; registration is not qualification.
+Sprints 15-16 extended it to 2836 entries and are now qualified and published.
+Sprint 17 preserves that exact prefix and appends 73 snake identities:
+2909 stable identifiers: 2907 active and 2 reserved. Viper and Constrictor
+Snake add two units, 32 logical placements, 32 SM template children and seven
+owned profile/type/poison/grab carriers. All 32 placements remain hidden:
+1008 registered, 976 published, 29 retained wrappers and 1005 visible choices.
+Registration is not qualification. Salamander's existing identities do not move.
