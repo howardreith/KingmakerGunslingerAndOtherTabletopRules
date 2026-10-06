@@ -10,6 +10,40 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class ExpandedSummoningSprint17Tests
     {
+        internal static void SpearCensusPinsArchivedEquipmentWithoutAdoption()
+        {
+            var sources = SerpentineRigSurveyPolicy.SpearPrefabSources;
+            Assertions.Equal(3, sources.Length, "Three distinct archived spear-bearing prefabs, not a new all-unit search.");
+            Assertions.Equal(3, sources.Select(row => row[1]).Distinct().Count(), "No repeated prefab.");
+            foreach (var source in sources)
+            {
+                Func<string[], bool, bool> allowed = (row, offhand) =>
+                    SerpentineRigSurveyPolicy.MatchesSpearPrefab(row[0], row[1], row[2], row[3], offhand);
+                Assertions.Equal(4, source.Length, "Blueprint, prefab, weapon and category are each pinned.");
+                Assertions.True(allowed(source, false), "Exact source is only permission to observe, not adopt.");
+                Assertions.False(allowed(source, true), "Unexpected offhand equipment is not silently ignored.");
+                for (int i = 0; i < 4; i++)
+                    foreach (string bad in new[] { null, "", "foreign", source[i].ToUpperInvariant() })
+                    {
+                        var changed = (string[])source.Clone(); changed[i] = bad;
+                        Assertions.False(allowed(changed, false), "All identity fields are exact and case-sensitive.");
+                    }
+                foreach (var other in sources.Where(row => row[0] != source[0]))
+                    for (int i = 0; i < 3; i++)
+                    {
+                        var changed = (string[])source.Clone(); changed[i] = other[i];
+                        Assertions.False(allowed(changed, false), "Another allowed source cannot supply one field.");
+                    }
+                Assertions.False(SerpentineRigSurveyPolicy.MatchesManufacturedPrefab(source[0], source[1]),
+                    "This does not broaden the eleven-row Lizardfolk authority or any action-adoption policy.");
+            }
+            var retained = (string[])sources[0].Clone(); sources[0][0] = "changed";
+            sources[1] = new[] { "foreign" };
+            Assertions.True(SerpentineRigSurveyPolicy.MatchesSpearPrefab(
+                retained[0], retained[1], retained[2], retained[3], false),
+                "Returned nested arrays cannot change the closed source authority.");
+        }
+
         internal static void ActionMetadataPreservesMissingEmptyAndNullSlots()
         {
             Assertions.True(SerpentineRigSurveyPolicy.SnapshotMetadataSlots<object>(null) == null,
