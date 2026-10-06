@@ -82,6 +82,7 @@ def main() -> int:
         managed / "UnityEngine.AudioModule.dll",
         managed / "UnityEngine.AssetBundleModule.dll",
         managed / "UnityEngine.CoreModule.dll",
+        managed / "UnityEngine.PhysicsModule.dll",
         managed / "UnityEngine.UI.dll",
         managed / "UnityEngine.UIModule.dll",
         managed / "UnityEngine.TextRenderingModule.dll",

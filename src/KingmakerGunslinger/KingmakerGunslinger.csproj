@@ -362,6 +362,10 @@
       <HintPath>$(KingmakerManagedDir)\UnityEngine.CoreModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="UnityEngine.PhysicsModule">
+      <HintPath>$(KingmakerManagedDir)\UnityEngine.PhysicsModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>$(KingmakerManagedDir)\UnityEngine.UI.dll</HintPath>
       <Private>False</Private>
@@ -1570,6 +1574,7 @@
     <RequiredKingmakerAssembly Include="$(KingmakerManagedDir)\UnityEngine.AnimationModule.dll" />
     <RequiredKingmakerAssembly Include="$(KingmakerManagedDir)\UnityEngine.AssetBundleModule.dll" />
     <RequiredKingmakerAssembly Include="$(KingmakerManagedDir)\UnityEngine.CoreModule.dll" />
+    <RequiredKingmakerAssembly Include="$(KingmakerManagedDir)\UnityEngine.PhysicsModule.dll" />
     <RequiredKingmakerAssembly Include="$(KingmakerManagedDir)\UnityEngine.UI.dll" />
     <RequiredKingmakerAssembly Include="$(KingmakerInstallDir)\Kingmaker_Data\Managed\UnityEngine.UIModule.dll" />
     <RequiredKingmakerAssembly Include="$(KingmakerInstallDir)\Kingmaker_Data\Managed\UnityEngine.TextRenderingModule.dll" />
