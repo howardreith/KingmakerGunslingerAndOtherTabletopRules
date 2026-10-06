@@ -1,3 +1,52 @@
+# DATA 0.0.142 continuation — active record
+
+ContinuationStartingHead: 13ddbb17d083d9cc112aacd69f0f07f648b75cc7
+MergeReadyTechnical: false
+MasterMerged: false
+TagCreated: false
+ReleasePublished: false
+OwnerAestheticApproval: NOT_RECORDED
+HumanTooltipAcceptance: PENDING
+HumanMerchantAcceptance: PENDING
+
+The owner's continuation supersedes the two earlier admission blockers only as
+specified: repair the stale metadata pins to exact released bytes, and permit
+up to three deliberate Whiteout image attempts. The previous rejected icon and
+its evidence remain preserved below and in the objective-review report.
+
+## Stage 1 — released catalog authority qualification
+
+RuntimeBehaviorChanged: false
+SummoningContentChanged: false
+AuthorityMetadataCorrected: true
+
+Verified both immutable authority files against the exact 97f0a966... Git objects
+and the two authorized SHA-256 values. The delegated manifest has 100 source/icon
+records; the registry has 2,649 entries (2,647 active and 2 reserved). The released
+README/notes publish Sprints 9–11 with 911 choices and keep all 68 Sprint 12
+placements hidden. None of those bytes, claims, identities or counts changed.
+
+Only baseline.registrySha256 and the exact delegated manifest SHA changed in
+icon-catalog.json. Two in-memory corruption regressions require exact disk hashes
+and reject the stale pins. Icon catalog/protection validation and all 26 corruption
+tests pass. The complete baseline suite passes 1,958/1,958; repository validation,
+clean exact-reference Release build, deterministic package creation and strict
+standalone package validation pass. No game launch or live deployment occurred.
+
+The first build lacked this new worktree's ignored local reference configuration.
+After adding the established GamePath.props, two tests required an absent ignored
+native IL fixture. It was regenerated from the exact installed/private assembly
+using the installed SDK ildasm. All passing production/test assertions are unchanged.
+
+The exact commands, hashes, MVID, development source fingerprint and failed-attempt
+theories are in reports/elemental-character-traits/RELEASE-CATALOG-AUTHORITY-REPAIR-2026-10-06.json.
+Its 0.0.141 development artifact is not represented as a published-trait candidate.
+
+Stage 2 is pending: Whiteout replacement; the three passing sources remain frozen.
+No production DATA transplantation, stable trait registration or publication yet.
+
+## Historical intake record — preserved, superseded only by this continuation
+
 # DATA content 0.0.142 integration handoff — 2026-10-06
 
 Disposition: BLOCKED-OBJECTIVE-WHITEOUT-ICON-AND-INHERITED-RELEASE-CATALOG.
