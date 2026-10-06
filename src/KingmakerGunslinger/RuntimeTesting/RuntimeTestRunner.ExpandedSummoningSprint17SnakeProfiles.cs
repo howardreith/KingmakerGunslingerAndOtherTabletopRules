@@ -43,6 +43,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     int[] scores = new[] { StatType.Strength, StatType.Dexterity, StatType.Constitution,
                         StatType.Intelligence, StatType.Wisdom, StatType.Charisma }.Select(stat =>
                             stats.GetStat(stat).ModifiedValue).ToArray();
+                    var blueprintRanks = new JObject();
+                    foreach (var field in typeof(Kingmaker.Blueprints.BlueprintUnit.UnitSkills)
+                        .GetFields(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public))
+                        blueprintRanks[field.Name] = (int)field.GetValue(unit.Blueprint.Skills);
                     var row = new JObject { ["key"] = key, ["scope"] = "actual untemplated private snake profile",
                         ["scores"] = new JArray(scores), ["size"] = unit.Descriptor.State.Size.ToString(),
                         ["hitDice"] = unit.Descriptor.Progression.CharacterLevel,
@@ -54,6 +58,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["will"] = stats.GetStat(StatType.SaveWill).ModifiedValue,
                         ["speed"] = stats.GetStat(StatType.Speed).ModifiedValue,
                         ["initiative"] = stats.GetStat(StatType.Initiative).ModifiedValue,
+                        ["blueprintSkillSeeds"] = blueprintRanks,
+                        ["creationComponents"] = new JArray(unit.Blueprint.ComponentsArray.Select(value => value.GetType().Name)),
                         ["perception"] = DescribeSprint16Skill(stats.GetStat(StatType.SkillPerception)),
                         ["stealth"] = DescribeSprint16Skill(stats.GetStat(StatType.SkillStealth)),
                         ["mobility"] = DescribeSprint16Skill(stats.GetStat(StatType.SkillMobility)) };
@@ -77,11 +83,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                         stats.GetStat(StatType.SkillMobility).ModifiedValue == (viper ? 9 : 15) &&
                         stats.GetStat(StatType.SkillPerception).BaseValue == 1 &&
                         stats.GetStat(StatType.SkillStealth).BaseValue == 1 &&
-                        stats.GetStat(StatType.SkillMobility).BaseValue == (viper ? 0 : 1),
+                        stats.GetStat(StatType.SkillMobility).BaseValue == (viper ? 0 : 1) &&
+                        blueprintRanks.Count == 11 && blueprintRanks.Properties().All(value => (int)value.Value == 0),
                         row, "native ranks/class/ability/racial/feat breakdown; aquatic uses excluded");
 
                     var bite = SummonLimbs.PrimaryWeapon(unit);
-                    int attack = ProbeEntityAttackBonus(unit, fixture.Hostile, bite);
+                    // This slice has no hostile target. The old attack helper
+                    // returned int.MinValue before making any rule. Use the
+                    // native profile calculation, not a fabricated target or
+                    // an attack/on-hit delivery in a no-damage profile check.
+                    var attackRule = Rulebook.Trigger(new RuleCalculateAttackBonusWithoutTarget(unit, bite, 0));
+                    int attack = attackRule.Result;
                     var grab = SummonGrabComponent.Find(unit);
                     CheckSprint17SnakeProfile(key + "-one-bite", bite != null &&
                         bite.Blueprint.Category == WeaponCategory.Bite && !bite.IsSecondary &&
@@ -89,6 +101,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         (viper ? grab == null : grab != null && grab.GrabWithPrimaryHand &&
                             grab.GrabAdditionalLimbCount == 0 && grab.IsGrabLimb(unit, bite)),
                         new JObject { ["key"] = key, ["attackBonus"] = attack,
+                            ["attackRule"] = attackRule.GetType().Name,
+                            ["attackStat"] = attackRule.AttackBonusStat.ToString(),
+                            ["attackStatModifier"] = attackRule.AttackBonusStatModifier,
                             ["limbCount"] = LiveLimbWeapons(unit).Count(),
                             ["weapon"] = bite == null ? null : bite.Blueprint.AssetGuid,
                             ["secondary"] = bite != null && bite.IsSecondary, ["grabPresent"] = grab != null },

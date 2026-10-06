@@ -52,6 +52,14 @@ namespace KingmakerGunslinger.Blueprints
                 type.SignatureAbilities = Array.Empty<BlueprintUnitFact>();
                 unit.Type = type;
 
+                // The donor's BlueprintUnit.Skills is separate from
+                // AddClassLevels.Skills. Its inherited Perception seed made
+                // creation-only allocation reject the nonzero input, leaving
+                // both ranks and racial HP at native donor/default values.
+                // Clear only these new units, not the borrowed Worm blueprint
+                // or any already qualified profile. Native class/feat/ability
+                // contributions remain live after exact creation allocation.
+                unit.Skills = new BlueprintUnit.UnitSkills();
                 var ranks = ScriptableObject.CreateInstance<SummonSerpentineSkillRanks>();
                 ranks.CreatureKey = key; ranks.OwningBlueprint = unit;
                 unit.ComponentsArray = unit.ComponentsArray.Concat(

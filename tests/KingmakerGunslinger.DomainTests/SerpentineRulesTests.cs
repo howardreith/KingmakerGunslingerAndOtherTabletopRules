@@ -139,13 +139,15 @@ namespace KingmakerGunslinger.DomainTests
         {
             foreach (string key in new[] { "viper", "constrictor-snake" })
             foreach (int dirtyIndex in new[] { 0, 1, 2 })
+            foreach (int donorRanks in new[] { 1, 5 })
             {
-                int m = dirtyIndex == 0 ? 1 : 0, p = dirtyIndex == 1 ? 1 : 0,
-                    s = dirtyIndex == 2 ? 1 : 0;
+                int m = dirtyIndex == 0 ? donorRanks : 0, p = dirtyIndex == 1 ? donorRanks : 0,
+                    s = dirtyIndex == 2 ? donorRanks : 0;
                 Assertions.Throws<InvalidOperationException>(() =>
                     SerpentineRulesPolicy.AllocateLandRanks(key, ref m, ref p, ref s),
                     "Unexpected ranks must fail, not be overwritten silently.");
-                Assertions.Equal(1, m + p + s, "Failure is atomic.");
+                Assertions.Equal(donorRanks, m + p + s,
+                    "The observed donor five-rank seed is rejected atomically, not canceled with a hidden bonus.");
             }
             foreach (string key in new[] { null, "", "salamander", "purple-worm" })
                 Assertions.Throws<ArgumentException>(() => SerpentineRulesPolicy.For(key),
