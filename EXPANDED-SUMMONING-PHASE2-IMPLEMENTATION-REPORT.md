@@ -34,7 +34,27 @@ access; prior authorized native cleanup/absence remains clean.
 HumanReview: NOT_PERFORMED_NONBLOCKING. Accepted engine limitations/adaptation
 unchanged. Sprint 17 research is underway; Phase 2B itself is not yet closed.
 
-The current [closed body-research fixture](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-REVIEW.md)
+### Current Sprint17 research result — NOT QUALIFIED
+
+Exact21eecc67 passes all prelaunch gates (228 focused/2030 full86.8s,
+full gate180.5s,491 preflight/81 orchestration/17 provenance, strict318-member
+package), then smoke11 PASS/body32 of34 FAIL. Viper movement was zero;
+Salamander's queued attack finished without starting. Exact cause is not
+recorded; no production diagnosis is invented. Both snakes produce actual
+issued native bite events with measured gap0. Native spear adoption/rollback,
+owned cleanup/borrowed survival and exact environment/census restoration pass.
+Hybrid contact-window support reaches-8.83cm and remains open.
+Actual0845286601577Z snapshot restored08:55:18UTC,136/.117/exact tree;
+no game/lease/staging/save write. Source correction scopes RTWP before movement,
+creates a fresh isolated target only per contact cell, retains native owner
+control/BAB, adds command/condition/damage provenance and requires spear AND
+tail.229 focused/2031 registered, incremental compile/repository PASS only.
+No production attachment, new registration or Sprint17 qualification.
+[Exact current review](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-REVIEW.md).
+
+### Historical research sequence — current result above governs
+
+The [closed body-research fixture](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-REVIEW.md)
 descends from a35993fc and reuses the laptop-owned native control seam.
 Exact 7b76 passed every prelaunch gate (223 focused/2025 full), smoke 11/11,
 then failed body research 2/3 before attachment on a fixture-only implicit
