@@ -16,7 +16,7 @@ namespace KingmakerGunslinger.Summoning
     /// No automatic production attachment yet: the guarded donor acceptance
     /// slice must prove movement, ground, contacts, fades and cleanup first.
     /// Existing Purple Worm, Water Elemental and Salamander are unchanged.
-    /// The hybrid body deliberately contains no spear implementation.</summary>
+    /// The optional spear seam is closed two-hand research only.</summary>
     internal sealed class SerpentineVisualAttachment : MonoBehaviour
     {
         private sealed class SkinState
@@ -31,6 +31,10 @@ namespace KingmakerGunslinger.Summoning
         {
             internal MeshFilter Filter;
             internal Mesh Mesh;
+            internal MeshRenderer Renderer;
+            internal Material[] Materials;
+            internal Vector3 Position, Scale;
+            internal Quaternion Rotation;
         }
 
         private UnitEntityView _view;
@@ -39,21 +43,28 @@ namespace KingmakerGunslinger.Summoning
         private Mesh _body, _empty;
         private Texture2D _albedo;
         private Material _material;
+        private Material _spearMaterial;
         private string _ownedName;
         private bool _swapped, _released;
         internal string Outcome { get; private set; }
         internal SkinnedMeshRenderer Body { get; private set; }
         internal string[] DriverNames { get; private set; }
+        internal MeshFilter SpearFilter { get; private set; }
+        internal Mesh NativeSpearMesh { get; private set; }
         internal static Action PostSwapFaultForTest { get; set; }
 
         internal UnityEngine.Object[] CaptureOwnedResources()
         {
             var owned = new HashSet<UnityEngine.Object>();
-            foreach (UnityEngine.Object value in new UnityEngine.Object[] { _body, _empty, _albedo, _material })
+            foreach (UnityEngine.Object value in new UnityEngine.Object[] { _body, _empty, _albedo, _material, _spearMaterial })
                 if (value != null) owned.Add(value);
             if (Body != null)
                 foreach (Material material in Body.sharedMaterials)
                     if (IsOwned(material)) owned.Add(material);
+            if (_statics != null)
+                foreach (StaticState row in _statics.Where(value => value.Renderer != null))
+                    foreach (Material material in row.Renderer.sharedMaterials)
+                        if (IsOwned(material)) owned.Add(material);
             var controller = _view == null ? null : _view.GetComponentInChildren<StandardMaterialController>(true);
             var driven = ExpandedSummoningPteranodonViewPatch.ControllerMaterials(controller);
             if (driven != null)
@@ -63,7 +74,7 @@ namespace KingmakerGunslinger.Summoning
         }
 
         internal static bool TryAttach(UnitEntityView view, string key, ModContext context,
-            out string outcome)
+            out string outcome, bool nativeSpearResearch = false)
         {
             outcome = "donor-visual:not-permitted";
             if (view == null || view.EntityData == null || view.EntityData.Blueprint == null || context == null ||
@@ -76,7 +87,7 @@ namespace KingmakerGunslinger.Summoning
             owned._ownedName = "KMG_" + key + "_Original_" + view.GetInstanceID();
             try
             {
-                outcome = owned.Attach(key, context);
+                outcome = owned.Attach(key, context, nativeSpearResearch);
                 owned.Outcome = outcome;
                 return true;
             }
@@ -90,7 +101,7 @@ namespace KingmakerGunslinger.Summoning
             }
         }
 
-        private string Attach(string key, ModContext context)
+        private string Attach(string key, ModContext context, bool nativeSpearResearch)
         {
             SkinnedMeshRenderer[] skins = _view.GetComponentsInChildren<SkinnedMeshRenderer>(true)
                 .Where(value => value != null && value.sharedMesh != null).ToArray();
@@ -153,7 +164,13 @@ namespace KingmakerGunslinger.Summoning
             _empty = new Mesh { name = _ownedName + "_SuppressedGeometry" };
             _skins = skins.Select(skin => new SkinState { Renderer = skin, Mesh = skin.sharedMesh,
                 Bones = skin.bones, Materials = skin.sharedMaterials, Quality = skin.quality }).ToArray();
-            _statics = statics.Select(filter => new StaticState { Filter = filter, Mesh = filter.sharedMesh }).ToArray();
+            _statics = statics.Select(filter => {
+                var renderer = filter.GetComponent<MeshRenderer>();
+                return new StaticState { Filter = filter, Mesh = filter.sharedMesh, Renderer = renderer,
+                    Materials = renderer == null ? null : renderer.sharedMaterials,
+                    Position = filter.transform.localPosition, Rotation = filter.transform.localRotation,
+                    Scale = filter.transform.localScale };
+            }).ToArray();
 
             _swapped = true;
             Body.sharedMesh = _body;
@@ -169,6 +186,7 @@ namespace KingmakerGunslinger.Summoning
             auxiliary.sharedMesh = _empty;
             auxiliary.bones = new Transform[0];
             foreach (StaticState row in _statics) row.Filter.sharedMesh = _empty;
+            if (nativeSpearResearch) AttachNativeSpearResearch(key);
             string adoption = ExpandedSummoningPteranodonViewPatch.AdoptByMaterialController(_view, Body, _material);
             StandardMaterialController controller = _view.GetComponentInChildren<StandardMaterialController>(true);
             IList<Material> driven = ExpandedSummoningPteranodonViewPatch.ControllerMaterials(controller);
@@ -179,7 +197,36 @@ namespace KingmakerGunslinger.Summoning
             if (fault != null) fault();
             return "visual:attached;key=" + key + ";vertices=" + _body.vertexCount +
                 ";bones=" + names.Length + ";suppressedSkins=1;suppressedStatic=" + statics.Length +
-                ";bodyOnly=true;" + dressing + ";" + adoption;
+                ";nativeSpearResearch=" + nativeSpearResearch + ";" + dressing + ";" + adoption;
+        }
+
+        private void AttachNativeSpearResearch(string key)
+        {
+            var weapon = _view.EntityData.Body.PrimaryHand.MaybeWeapon;
+            var blueprint = weapon == null ? null : weapon.Blueprint;
+            GameObject model = blueprint == null || blueprint.VisualParameters == null ? null : blueprint.VisualParameters.Model;
+            MeshFilter source = model == null ? null : model.GetComponentsInChildren<MeshFilter>(true).SingleOrDefault();
+            MeshRenderer sourceRenderer = source == null ? null : source.GetComponent<MeshRenderer>();
+            StaticState slot = _statics.SingleOrDefault(value => value.Filter.name == "lizardman_club");
+            var snap = slot == null ? null : slot.Filter.GetComponentInParent<Kingmaker.Assets.Visual.WeaponSnap>();
+            if (source == null || source.sharedMesh == null || sourceRenderer == null ||
+                sourceRenderer.sharedMaterials.Length != 1 || sourceRenderer.sharedMaterial == null ||
+                slot == null || slot.Renderer == null || snap == null || snap.SnapTo == null ||
+                !SerpentineVisualPolicy.PermitsNativeSpearResearch(key, _view.EntityData.Blueprint.Prefab.AssetId,
+                    blueprint.AssetGuid, blueprint.Category.ToString(), model.name, source.sharedMesh.name,
+                    snap.name, snap.SnapTo.name))
+                throw new InvalidDataException("unreviewed native spear/two-hand/palm seam");
+            // Reuse the existing native weapon renderer and R_Palm snap. Only
+            // its instance's mesh/material/local mounting change. No prefab,
+            // bone, animation, visibility state, mesh data or texture is edited.
+            NativeSpearMesh = source.sharedMesh;
+            _spearMaterial = new Material(sourceRenderer.sharedMaterial) { name = _ownedName + "_Spear" };
+            slot.Filter.sharedMesh = NativeSpearMesh;
+            slot.Renderer.sharedMaterials = new[] { _spearMaterial };
+            slot.Filter.transform.localPosition = Vector3.zero;
+            slot.Filter.transform.localRotation = model.transform.localRotation;
+            slot.Filter.transform.localScale = model.transform.localScale;
+            SpearFilter = slot.Filter;
         }
 
         /// <summary>Called before native view destruction, or after a failed
@@ -189,12 +236,16 @@ namespace KingmakerGunslinger.Summoning
             if (_released) return;
             var materials = new HashSet<Material>();
             if (_material != null) materials.Add(_material);
+            if (_spearMaterial != null) materials.Add(_spearMaterial);
             if (_swapped)
             {
                 foreach (SkinState row in _skins)
                     if (row.Renderer != null)
                         foreach (Material material in row.Renderer.sharedMaterials)
                             if (IsOwned(material)) materials.Add(material);
+                foreach (StaticState row in _statics.Where(value => value.Renderer != null))
+                    foreach (Material material in row.Renderer.sharedMaterials)
+                        if (IsOwned(material)) materials.Add(material);
                 StandardMaterialController controller = _view == null ? null :
                     _view.GetComponentInChildren<StandardMaterialController>(true);
                 IList<Material> driven = ExpandedSummoningPteranodonViewPatch.ControllerMaterials(controller);
@@ -206,7 +257,14 @@ namespace KingmakerGunslinger.Summoning
                     { row.Renderer.sharedMesh = row.Mesh; row.Renderer.bones = row.Bones;
                       row.Renderer.sharedMaterials = row.Materials; row.Renderer.quality = row.Quality; }
                 foreach (StaticState row in _statics)
-                    if (row.Filter != null) row.Filter.sharedMesh = row.Mesh;
+                    if (row.Filter != null)
+                    {
+                        row.Filter.sharedMesh = row.Mesh;
+                        row.Filter.transform.localPosition = row.Position;
+                        row.Filter.transform.localRotation = row.Rotation;
+                        row.Filter.transform.localScale = row.Scale;
+                        if (row.Renderer != null) row.Renderer.sharedMaterials = row.Materials;
+                    }
                 _swapped = false;
                 // Even a controller exception must not strand project-owned
                 // clones. Native references are already back on every renderer.
@@ -227,13 +285,14 @@ namespace KingmakerGunslinger.Summoning
             if (_body != null) UnityEngine.Object.DestroyImmediate(_body);
             if (_empty != null) UnityEngine.Object.DestroyImmediate(_empty);
             if (_albedo != null) UnityEngine.Object.DestroyImmediate(_albedo);
-            _body = null; _empty = null; _material = null; _albedo = null;
+            _body = null; _empty = null; _material = null; _spearMaterial = null; _albedo = null;
             _released = true;
         }
 
         private bool IsOwned(Material material)
         { return material != null && !string.IsNullOrEmpty(_ownedName) &&
-            (material.name == _ownedName || material.name.StartsWith(_ownedName + " (", StringComparison.Ordinal)); }
+            (material.name == _ownedName || material.name.StartsWith(_ownedName + " (", StringComparison.Ordinal) ||
+             material.name == _ownedName + "_Spear" || material.name.StartsWith(_ownedName + "_Spear (", StringComparison.Ordinal)); }
 
         private void OnDestroy()
         { try { Release(); } catch (Exception) { /* Native teardown must finish. */ } }
