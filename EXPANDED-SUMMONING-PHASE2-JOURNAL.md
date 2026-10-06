@@ -1,5 +1,24 @@
 # Expanded Summoning Phase 2 journal
 
+## October 6, 05:23 UTC -- floor fixed; native control fixture incomplete, restored
+
+2045c302 passed all exact prelaunch gates (223 focused/2025 full, 82.5s;
+complete gate 178.2s; 491 preflight/68 orchestration; request checks), smoke
+11/11. Floor survey now succeeds with 41 candidates and 8/8 clearance. Body
+probe 2/3 FAIL before attachment at native manual control; exact fixture
+cleanup/version PASS. The body fixture had copied only faction/Master setup,
+not the qualified native controllable-summon rule input. Native predicate/source
+audit identified the omission; other predicate terms were not captured and
+are not assumed passing. Current bounded repair reuses the unchanged scoped
+one-cast handler, verifies its native part and captures complete predicate
+terms before setup, after setup and after native appearance. Three explicit
+control checks expand the nominal body gate to 20. No global control override,
+appearance removal, production change or relaxed assertion. Focused 223 PASS.
+Exact actual baseline restored at 05:23:35 UTC, no game/lease/staging/save writes.
+Both failed candidates remain preserved. Separate preflight heartbeat collision
+was fixed by serialized observation, not source/expectation edits: isolated491 PASS.
+Next coherent push, new exact-head full gate and complete affected smoke/body batch.
+
 ## October 6, 05:05 UTC -- body research fixture failure, restored
 
 Exact 7b76dba2 passed 223 focused/2025 full (92.4s), complete repository/static/
