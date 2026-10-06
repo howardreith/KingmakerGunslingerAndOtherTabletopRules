@@ -19,9 +19,11 @@ deployment, force push or prohibited substitute subsystems.
   2026-10-05T19:29:25.9127956Z; holder PID15084/start2026-10-05T20:34:17.3075720Z.
   Session-scoped, not perpetual. Refresh heartbeat; release only on actual
   session ending. All safety refs, bundles and failed artifacts retained.
-- Last pushed/current verified remote and exact runtime candidate:
+- Last verified pushed evidence checkpoint:
+  `a1068544358b0c7d2b993af07adbb691d14d0c04`; last runtime candidate
   `66900038d04ee8f5c64bcbaecc96fa61ae348f68`.
-  This containing evidence checkpoint is its normal descendant.
+  This containing read-only clip diagnostic is a normal descendant,
+  source-qualified only; exact-head prelaunch/runtime remains next.
   Unexpected active-branch motion is a stop; frozen DATA motion informational.
 
 ### Qualified versus NOT QUALIFIED
@@ -43,19 +45,24 @@ deployment, force push or prohibited substitute subsystems.
   contact frame5833. Those corrections pass their new positive assertions.
 - Sole failure: native spear forward-end gap0.562879m plus0.031350m
   conservative uncertainty =0.594228m. Two-hand grip does NOT prove spear
-  contact. This is an original hybrid visual/pose defect, not fixture,
-  environment or restoration failure. No threshold waived.
+  contact. The miss is real; native clip/style versus owned pose causation
+  remains open. No environment/restoration failure or threshold waived.
 
 ### Next exact work
 
-Do one bounded audit of the existing native manufactured-attack action:
-actual selected weapon style/clip and available native settings, plus the
-captured exact-event hand/body frame. View forward already points at target;
-the two palms point the spear across it. Do not guess from an adjacent frame.
-Preserve v9 support and the proved two-palm mount; no unchanged-candidate retry.
-Select only the smallest owned-view/native-existing seam, with offline pose
-proof and fresh exact qualification. No native asset edit, global limb/
-animation rewrite, target teleport, reach inflation or contact waiver.
+Native IL confirms hand-attack OnUpdate marks IsActed after .1s even when
+ActiveAnimation is null. Previous IsActed alone cannot prove playback.
+The containing diagnostic reads this exact issued command's action/style/
+variant/active clip/time/state at sampled frames and the rule event, plus
+the existing attached hand-action settings and clip-event metadata. It does
+not select/play/sample/change native clips, bones, targets or rules.
+The stronger playback predicate and negative fallback test pass232 focused/
+2034 registered tests and incremental exact-reference compile. No new live
+claim. Freeze/push this diagnostic, run complete exact prelaunch, then the
+same47-assertion smoke/body guarded batch with all contact gates retained.
+Use actual clip evidence before selecting any owned pose correction.
+Preserve v9 support/two-palm mounting; no unchanged retry, native asset edit,
+global limb/animation rewrite, target teleport, reach inflation or waiver.
 
 Then printed profiles/signatures/icons, full S17 hidden/publication and
 exhaustive Phase2B closure. Use the explicit14-reference bundle

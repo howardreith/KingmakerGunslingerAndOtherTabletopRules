@@ -10,6 +10,30 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class ExpandedSummoningSprint17Tests
     {
+        internal static void NativeActedFallbackCannotProveClipPlayback()
+        {
+            Assertions.True(SerpentineRigSurveyPolicy.IsObservedAttackClip(true, true, true,
+                "observed-native-clip", 1.5f, .7f), "Actual active clip metadata is usable playback evidence.");
+            Assertions.False(SerpentineRigSurveyPolicy.IsObservedAttackClip(true, true, false,
+                "observed-native-clip", 1.5f, .11f), "Native IsActed fallback without ActiveAnimation is rejected.");
+            Assertions.False(SerpentineRigSurveyPolicy.IsObservedAttackClip(false, true, true,
+                "observed-native-clip", 1.5f, .7f), "An unstarted handle is not executing playback.");
+            Assertions.False(SerpentineRigSurveyPolicy.IsObservedAttackClip(true, false, true,
+                "observed-native-clip", 1.5f, .7f), "A pre-contact animation frame is not an acted event.");
+            foreach (string missing in new[] { null, "", " " })
+                Assertions.False(SerpentineRigSurveyPolicy.IsObservedAttackClip(true, true, true,
+                    missing, 1.5f, .7f), "Missing clip identity fails closed.");
+            foreach (float invalid in new[] { -1f, float.NaN, float.NegativeInfinity, float.PositiveInfinity })
+            {
+                Assertions.False(SerpentineRigSurveyPolicy.IsObservedAttackClip(true, true, true,
+                    "observed-native-clip", invalid, .7f), "Duration must be finite and positive.");
+                Assertions.False(SerpentineRigSurveyPolicy.IsObservedAttackClip(true, true, true,
+                    "observed-native-clip", 1.5f, invalid), "Playback time must be finite and nonnegative.");
+            }
+            Assertions.False(SerpentineRigSurveyPolicy.IsObservedAttackClip(true, true, true,
+                "observed-native-clip", 0, 0), "A zero-duration placeholder is not playback proof.");
+        }
+
         internal static void TwoPalmSpearMountFitsExistingShaftWithoutRescaling()
         {
             foreach (float length in new[] { .88533658f, 1.77067316f, 3.54134632f })

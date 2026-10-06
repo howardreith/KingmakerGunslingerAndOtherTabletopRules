@@ -45,13 +45,18 @@ Those new positive gates pass, along with snake bites0 gap, tail contact
 0.166540m, all movement/isolation/resources/rollback and environment cleanup.
 
 Sole failure is forward spear contact: raw0.562879m plus0.031350m conservative
-uncertainty =0.594228m. This is an original hybrid visual/pose defect; no
-fixture, environment or restoration failure and no threshold waived. View
+uncertainty =0.594228m. Native clip/style versus owned pose causation remains
+open; no environment/restoration failure or threshold waived. View
 forward points at target, but the native contact-time palms point across it.
 Next bounded native manufactured-attack style/clip/settings audit and offline
 exact-event pose proof before a narrowly scoped correction and new exact gate.
 No unchanged retry, native-asset edit, global limb/animation rewrite or reach
 inflation. All ten attempts retained; no gameplay/publication qualification.
+The containing read-only diagnostic corrects an evidence weakness: native
+hand-attack IsActed can be set without an active clip. Exact issued-command
+clip/style/settings observations and a negative fallback regression now pass
+232 focused/2034 registered tests and incremental compile. All47 live contact
+assertions remain; full exact-head prelaunch and guarded batch are pending.
 
 Actual1032557994699Z snapshot restored10:40:47.0701589UTC,136/.117/exact tree.
 JournalA3EA13FC4F385C2992F9BCE50B42374821EFAD45DE50118ADAD0DBEF175113BE;
