@@ -147,3 +147,25 @@ handoff; the two required clean-source runs and smoke remain the next gate.
 No nonattack save/damage path, automatic-hit/miss branch or unproven maneuver
 coverage is claimed. No provider is registered, localized, icon-assigned or
 ordinarily acquired. WhiteoutPublished: false.
+
+
+## Final clean-artifact attack qualification - 2026-10-06
+
+Current continuation outcome: **EXACT-NARROW-ATTACK-SEAM / RUNTIME QUALIFIED**.
+Clean source `db3725d7eb665731c3b8c238217cd39f2d0a65b8` passed two consecutive
+independent fresh-process runs, 65/65 each (PIDs 26792 and 27500), then exact-artifact
+working-save smoke 11/11 (PID 39572). Each full run recorded 30 real attack rules
+and 32 native-stage calls including replay, with exact native concealment
+short-circuiting, boundary rolls, Seeking/Ignore bypass, foreign lookalike
+rejection, native d100 and exact-attack diagnostic isolation. All three loaded
+DLL identities, MVID and embedded commit match; zero save writes, automatic
+exit, per-area weather restoration and exact live restoration passed.
+
+The fixture ray uses actual native Neutral=true on a request-local faction,
+not an AutoHit rewrite. Stage-bypassing AutoHit/AutoMiss and unproven maneuver
+paths remain outside coverage. No unrelated attack system, Seeking source,
+concealment tier, global RNG or player publication was changed. The original
+inspection-only blocker record and the failed engineering ray control remain
+historical. See the [continuation handoff](../../CODEX-WHITEOUT-DISPOSABLE-PROCESS-CONTINUATION-HANDOFF-2026-10-05.md)
+for the exact package/source ledger and failure/restoration evidence.
+WhiteoutPublished: false.

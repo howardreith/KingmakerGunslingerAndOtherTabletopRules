@@ -164,3 +164,29 @@ blocker. [The attack contract](WHITEOUT-NATIVE-ATTACK-CONTRACT.md) records an
 inspected exact narrow boolean seam; it remains unpatched and has no Whiteout
 combat qualification. The pure policy/state/replay foundation is unchanged.
 No marker, provider, icon, localization, acquisition or production binding exists.
+
+
+## Disposable-process continuation closeout - 2026-10-06
+
+The remaining native fixture/attack foundation is now qualified under the
+owner's revised one-way disposable no-save process contract. Native non-party
+scene replacement is accepted only inside that exiting process; exact same-area
+weather, owned fixtures and acquired live-installation restoration remain
+mandatory. The original reference-restoration failure remains historical.
+
+Two 65/65 fresh-process foundation runs and 11/11 exact-artifact smoke passed at
+clean commit `db3725d7eb665731c3b8c238217cd39f2d0a65b8`. The foundation is
+**ADAPTED - OUTDOORS ONLY**, using actual Rain/Snow Light+, a real non-indoor
+map point, an unregistered hidden random-identity provider and one independent
+10% native d100 after native miss-chance success. Native failures and exact
+Seeking/IgnoreConcealment bypass remain intact; 20% plus 10% is sequential 28%.
+No fog/waterfall or unknown-map carrier was added.
+
+This continuation uses random request-local identities; it registers no stable
+hidden or visible marker. WhiteoutPublished: false. No icon, localization,
+selection, Undine grant, setting or ordinary acquisition exists. Original art,
+owner approval and deliberate final publication are separate finite follow-up.
+Exact evidence is in the [continuation handoff](../../CODEX-WHITEOUT-DISPOSABLE-PROCESS-CONTINUATION-HANDOFF-2026-10-05.md);
+its exact native [weather](WHITEOUT-NATIVE-WEATHER-CONTRACT.md) and
+[attack](WHITEOUT-NATIVE-ATTACK-CONTRACT.md) contracts supersede earlier
+unqualified implementation status without rewriting historical observations.
