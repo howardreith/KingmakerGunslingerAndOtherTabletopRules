@@ -29,27 +29,28 @@
       16
     ],
     "currentSprint": 17,
-    "currentSubItem": "Sprint17 NOT QUALIFIED. Exact2dd48884 source/prelaunch PASS, smoke11/11, bounded snake profile/body31/38 FAIL, exact restoration16:38:05UTC. Four HP/rank failures are production; two attack probes lacked a target; one fallback-visibility failure needs narrower observation. Corrected source clears only the two snakes' inherited blueprint skill seeds, uses native no-target attack calculation, and records visibility at a qualified art point.248 focused PASS; complete corrected gates and fresh exact artifact/runtime remain NEXT.32 hidden,1005 visible; Phase2C deferred.",
+    "currentSubItem": "Sprint17 NOT QUALIFIED. Exacte1ba198e source/prelaunch PASS; smoke11/11 and native snake profile/body38/38 PASS, but outer batch ERROR from Windows PowerShell root-array wrapping. Exact restoration17:16:40UTC. Collector-only repair113 orchestration checks PASS;22-row read-only replay PASS. New committed artifact and complete affected batch NEXT.32 roots hidden,1005 visible; Phase2C deferred.",
     "sprint17SnakeProfileSlice": {
-      "status": "FAIL 31/38 on2dd; corrected source NOT QUALIFIED",
+      "status": "Native38/38 PASS; outer batch ERROR; Sprint17 NOT QUALIFIED",
       "review": "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-PROFILE-SLICE.md",
       "scenario": "disposable-expanded-summoning-snake-profiles",
       "sourceBase": "a554858f41283e3ae60fcdfa2eb81de0f27f3eb3",
       "focusedTests": 248,
       "fullUnfilteredTests": 2050,
-      "fullDomainSeconds": 83.7,
-      "sourceGateSeconds": 180.9,
+      "fullDomainSeconds": 87.7,
+      "sourceGateSeconds": 189.8,
       "standalonePreflightChecks": 496,
       "minimumAssertions": 38,
-      "exactCommittedGate": "PASS on2dd:2050 unfiltered/complete repository/clean14-reference Release/deterministic strict320; corrected source gate NEXT",
+      "exactCommittedGate": "PASS on e1:2050 unfiltered/complete repository/clean14-reference Release/deterministic strict320; collector-only source repair needs new exact gate",
       "newRuntimeTransaction": true,
       "publicationAuthorized": false,
-      "sourceCandidate": "2dd48884f728c218015e5a6d472b4305121da6c9",
-      "evidence": "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-PROFILE-ATTEMPT1-EVIDENCE.json",
+      "sourceCandidate": "e1ba198ebd5afede8efbcacda2a46a91c0916cf6",
+      "evidence": "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-PROFILE-ATTEMPT2-EVIDENCE.json",
       "runtimeAssertions": 38,
-      "runtimePassed": 31,
+      "runtimePassed": 38,
       "correctedSourceQualified": false,
-      "correctedPrecommitGate": "PASS206.1s dirty source:248 focused/2050 unfiltered103.3s;repository/static/icon/manifest,clean14-reference Release,deterministic strict320 package. Initial outer stderr wrapper interruption preserved; new committed artifact/runtime NEXT."
+      "correctedPrecommitGate": "PASS184.4s dirty source:248 focused/2050 full85.9s,complete repository/static/icon/manifest,clean14-reference Release,deterministic strict320 package;113 orchestration,17 provenance,persistence11/3/19,crowd5/7 PASS. New exact artifact/runtime NEXT.",
+      "collectorStatus": "ERROR on e1; original journal unchanged"
     },
     "sprint17SnakeSource": {
       "status": "SOURCE CHECKPOINT; NOT QUALIFIED",
@@ -97,7 +98,7 @@
       "runtimeAssertionsExecuted": 17,
       "unity2018AuthoringProbe": "Invalid license, self-exited before2026-10-06T16:00:26Z;no activation;not a phase-wide blocker",
       "newRuntimeTransaction": false,
-      "lastRuntimeResult": "2dd:16/17 view checks PASS; Constrictor fallback non-intact despite restored donor geometry/exact resource cleanup; no waiver."
+      "lastRuntimeResult": "e1:17/17 native view checks PASS; both fallback intact, exact native resource teardown and donor seed isolation. Overall batch ERROR is collector-only; full gameplay/visual qualification still open."
     },
     "sprint17PrivatePrototypes": {
       "status": "Six original files staged; exact two-snake production hook now implemented but not runtime qualified; Salamander remains research-only",
@@ -143,8 +144,8 @@
     "sprint16LaptopCorrectionReview": "planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-FIXTURE-REPAIR.md",
     "dataSalvageAudit": "planning/EXPANDED-SUMMONING-PHASE2B-DATA-SALVAGE-AUDIT.md",
     "lastGuardedRuntimePass": "Exacta90494e1 RESEARCH ONLY PASS: fresh Steam smoke11/11 and20261006T1410474320785Z-disposable-expanded-summoning-serpentine-survey16/16; complete driver PASS. Finite/invertible metadata complete, duplicate disagreement retained, no action adopted. S17 NOT QUALIFIED.",
-    "lastGuardedRuntimeResult": "Exact2dd48884: smoke11/11 PASS, bounded snake profile/body31/38 FAIL. Live bite modifiers/dice PASS; wrong HP/skills, invalid attack probe, one fallback-visibility failure. Entire batch NOT QUALIFIED. Source fixes require a new exact artifact and complete affected rerun.",
-    "lastGuardedRestoration": "20261006T1630496086373Z actual snapshot restored2026-10-06T16:38:05.9137042Z; journalaa6935124168245f377b7e6caf9008aede43224449d8ceafc8f3ef961fc0d29c;136 files/Info0.0.117/exact fingerprint VERIFIED; lease Completed/recoveryRequired=false;no game/shared lock/staging/save write.",
+    "lastGuardedRuntimeResult": "Exacte1ba198e: smoke11/11 PASS and native bounded snake38/38 PASS, orchestration PASS; outer batch ERROR because JSON root array wrapped as one item. No reduced/waived assertion. Original ERROR retained; tested collector repair requires new exact artifact/batch.",
+    "lastGuardedRestoration": "20261006T1709359050479Z actual snapshot restored2026-10-06T17:16:40.6949558Z; journal120b3bac56210a678d4f3f2d1925e3b9beb312ce0e370f6c120872931c5e4e9d;136 files/Info0.0.117/exact fingerprint VERIFIED; lease Completed/recoveryRequired=false;no game/shared lock/staging/save write.",
     "activePullRequest": 26,
     "archivedSalvagePullRequest": 27,
     "giantWaspPublished": true,
