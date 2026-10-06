@@ -1,6 +1,6 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-06 — laptop sole owner; Sprint17 game slice38/38; collector ERROR, restored
+## CURRENT STATE, 2026-10-06 — laptop sole owner; Sprint17 bounded snake slice PASS; full Sprint17 NOT QUALIFIED
 
 This section governs over historical mission/ownership statements below.
 HOWARD-LAPTOP / `codex/expanded-summoning-phase2b-sprints14-17` / draft PR26
@@ -18,11 +18,11 @@ deployment, force push or prohibited substitute subsystems.
   session01a10bcd-8582-7551-826f-0f128807eb99; ownerPID31796/start
   2026-10-05T19:29:25.9127956Z; holderPID15084/start2026-10-05T20:34:17.3075720Z.
   Session-scoped; refresh heartbeat and release only on actual session ending.
-- Pushed parent/exact artifact `e1ba198ebd5afede8efbcacda2a46a91c0916cf6`.
-  Active remote verified equal after the closed batch. Owner/holder identities
-  unchanged; no competing worktree or runtime process. This correcting
-  checkpoint is a normal descendant. Unexpected active-branch motion remains
-  a stop; DATA motion informational. All safety refs/artifacts retained.
+- Exact pushed runtime candidate `22be90c0c768acc710b9dfef2a6d42d1cb917a04`.
+  Source clean/remote equal after the restored batch. Owner/holder identities
+  unchanged; no competing source/runtime process. This evidence checkpoint is
+  a normal descendant; executable source unchanged. Unexpected active-branch
+  motion remains a stop; DATA motion informational. All old artifacts retained.
 
 ### Qualified versus NOT QUALIFIED
 
@@ -30,50 +30,54 @@ Sprints14–16 COMPLETE/PUBLISHED. S16 exact155ada89 publication smoke11/main211
 passed all14 Crocodile+6 Dire roots after hiddene3 main209,crowd20,prepare9,
 cleanup9,absence5. No historical qualification reopened.
 
-Exact `e1ba198ebd5afede8efbcacda2a46a91c0916cf6`: smoke11/11 and native
-snake profile/body38/38 PASS. The outer collector rejected its22-row JSON
-because Windows PowerShell wrapped the root array as one item. The closed batch
-remains **ERROR**, not retroactively PASS; Sprint17 remains **NOT QUALIFIED**.
-[Exact evidence](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-PROFILE-ATTEMPT2-EVIDENCE.json).
-All previous7 failures now pass in-game: correct HP/ranks/attacks and intact
-Constrictor fallback at the qualified art point. No visibility forcing, longer
-wait or relaxed criterion. Original native donor seeds remain unchanged.
+Exact `22be90c0c768acc710b9dfef2a6d42d1cb917a04` passes the complete
+bounded smoke/profile transaction: fresh Steam640820 **11/11 smoke,38/38 snake
+profile/body,22/22 metadata rows; batch PASS**. [Exact candidate/results/
+restoration](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-PROFILE-PASS-EVIDENCE.json).
+This qualifies only the named slice, NOT full Sprint17 or publication.
 
-Source/prelaunch:248 focused,2050 full87.7s, complete repository/static/icon/
-manifest, clean14-reference Release/deterministic strict320 package189.8s;
-496 preflight,81 orchestration,17 provenance,persistence11/3/19,crowd5/7 PASS.
-The collector repair now has113 orchestration assertions and read-only replay
-returns22 rows while rejecting missing/duplicate/foreign/failed/mistyped data.
-No gameplay source change in this repair. New committed exact gates/runtime
-remain NEXT; the old failed batch journal is immutable.
+Prelaunch PASS:248 focused,2050 unfiltered87.2s, complete repository/static/icon/
+manifest, clean14-reference Release/deterministic strict320 package181.8s;
+496 request preflight,113 orchestration,17 provenance,persistence11/3/19,
+crowd5/7. DLL24c7f095fc3f76d36c2aecbd05181b6d354606c69f955cf0421db3f0c819ab86;
+MVID01308b49-0b58-408c-b733-12982b404717;
+ZIP91d9ef831bed4f2840a74f36bfd2d74122233487ed185f74b53790c38af907c9.
 
-Repair precommit SOURCE PASS:248 focused,2050 full85.9s, complete repository/
-static/icon/manifest, clean14-reference Release/deterministic strict320 package
-184.4s.113 orchestration,17 provenance,persistence11/3/19,crowd5/7 PASS.
-
-Actual snapshot1709359050479Z restored17:16:40.6949558UTC:136 files,
+Actual snapshot1740460863584Z restored17:47:43.1321555UTC:136 files,
 Info0.0.117,tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
 Lease Completed/recoveryRequired=false/released; no game/shared lock/staging.
-No native save write or save-file/protected-baseline access.
-Journal120b3bac56210a678d4f3f2d1925e3b9beb312ce0e370f6c120872931c5e4e9d.
+No native save write or save-file/protected-baseline access. Journal
+20d596aa3745b648a897cf93b14bbb839cb69ebebb129b1e186a10634400df36.
+The prior2dd31/38 FAIL and e1 native38/38/collectorERROR remain unchanged.
 
-Current surface97 units;1008 registered/976 published/32 withheld placements;
-29 wrappers;1005 visible choices. Viper18,Constrictor14 remain hidden.
+Printed snake scores/HP/defenses/skills/one-bite attack bonuses, live
+Strength/native-size dice, automatic original bodies, normal/rollback scale,
+idempotence/native owned-resource teardown and native-Worm isolation PASS.
+Fallback/normal intact settlement63–64 frames without visibility forcing.
+
+Sprint17 NOT QUALIFIED: signatures/real commands/AI, movement/contact/full
+lifecycle/crowds/UI/routes/persistence and Salamander remain open.
+Surface97 units;1008 registered/976 published/32 withheld placements;
+29 wrappers;1005 visible. Viper18,Constrictor14 remain hidden.
 
 Salamander identity/placements/art unchanged; separate spear/tail solution
 unresolved. No Lizardfolk spear relabeling, blind human-bind deduplication or
-contact waiver. Unity2018 probe reported invalid license and self-exited;
-no activation/retry without external state change. Independent snakes proceed.
+contact waiver. Unity2018 license route unavailable; no activation/retry without
+external state change. Independent snakes proceed; no phase-wide blocker.
 
 ### Exact next action
 
-Commit/push the source-checked collector repair with honest NOT QUALIFIED state;
-new exact-head prelaunch/build, then fresh Steam640820 smoke and closed38-check
-snake profile/body request using the tested parser. Acquire lease BEFORE live
-observation/snapshot/deployment; restore actual snapshot. Do not rerun old driver.
-Then signatures/real commands/AI, contacts/crowds/UI/routes/persistence and
-bounded Salamander-specific solution; stable full hidden gate, publication and
-Phase2B closure. Stop for owner review; Phase2C authorized but deferred.
+Implement the bounded snake signature/real-command matrix on this passing
+profile/body base: actual bite injury poison (including miss/zero damage),
+live DC/cadence/source lifecycle, bite-only grab/constrict/maintain/dedup/
+dead-target cleanup, RTWP/turn-based manual and AI commands with measured jaw
+contact. Preserve the closed38-check request unchanged. Use existing native
+request-local fixture/control seams; do not introduce a global rewrite.
+Then targeted persistence/crowds/UI/routes and bounded Salamander-specific
+implementation. Stable full Sprint17 hidden gate, publication, Phase2B closure;
+STOP for owner review. Phase2C authorized but deferred, no Sprints18–22 here.
+Every future runtime transaction leases BEFORE live observation and restores
+its actual snapshot. Do not repeat old failed artifacts or the closed donor census.
 
 Accepted unchanged: PASSIVE_CREATURE_SENSES_UNMODELED;
 ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD;
