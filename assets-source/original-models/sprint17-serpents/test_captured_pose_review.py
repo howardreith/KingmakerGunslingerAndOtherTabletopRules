@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Behavior regressions for the private original-vertex replay arithmetic."""
 import math
+import copy
 from pathlib import Path
 import sys
 import unittest
@@ -45,6 +46,41 @@ class PoseReplayTests(unittest.TestCase):
         for value in ((0, 0, 0), (math.nan, 0, 0), (math.inf, 0, 0)):
             with self.assertRaises(ValueError):
                 replay.normalized(value)
+
+    def test_hybrid_support_uses_only_explicit_renderer_frame_without_mutating_capture(self):
+        native = [1, 0, 0, 0, 0, 1, 0, 3, 0, 0, 1, 0, 0, 0, 0, 1]
+        renderer = [1, 0, 0, 10, 0, 0, 1, -6, 0, -1, 0, 20, 0, 0, 0, 1]
+        sample = dict(skinTransforms=[dict(name="Torso_Lower", skinToWorldRowMajor=native)],
+                      rendererLocalToWorldRowMajor=renderer)
+        original = copy.deepcopy(sample)
+        influences = [[(replay.HYBRID_SUPPORT, 1)], [("Torso_Lower", 1)]]
+        points = [(1, 2, .005), (1, 2, .005)]
+        with self.assertRaises(KeyError):
+            replay.replay(points, influences, sample)
+        self.assertEqual([(9, -5.995, 22), (1, 5, .005)],
+                         replay.replay(points, influences, sample, hybrid_support=True))
+        self.assertEqual(original, sample)
+
+    def test_hybrid_support_rejects_foreign_missing_nonfinite_and_ambiguous_frames(self):
+        matrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+        sample = dict(skinTransforms=[dict(name="Torso_Lower", skinToWorldRowMajor=matrix)],
+                      rendererLocalToWorldRowMajor=matrix)
+        for defect in ("worm", "foreign", "missing", "short", "nonfinite", "duplicate", "captured-support"):
+            changed = copy.deepcopy(sample)
+            if defect in ("worm", "foreign"):
+                changed["skinTransforms"][0]["name"] = "Hips_Joints" if defect == "worm" else "foreign"
+            elif defect == "missing":
+                changed.pop("rendererLocalToWorldRowMajor")
+            elif defect == "short":
+                changed["rendererLocalToWorldRowMajor"] = [1]
+            elif defect == "nonfinite":
+                changed["rendererLocalToWorldRowMajor"][7] = math.nan
+            elif defect == "duplicate":
+                changed["skinTransforms"].append(copy.deepcopy(changed["skinTransforms"][0]))
+            else:
+                changed["skinTransforms"].append(dict(name=replay.HYBRID_SUPPORT, skinToWorldRowMajor=matrix))
+            with self.assertRaises((ValueError, KeyError), msg=defect):
+                replay.replay([(0, 0, 0)], [[(replay.HYBRID_SUPPORT, 1)]], changed, hybrid_support=True)
 
 
 if __name__ == "__main__":

@@ -11,6 +11,7 @@ namespace KingmakerGunslinger.Summoning
         internal const string WormPrefab = "130f0866af3249a4e817ec7e6e9ecd89";
         internal const string ClubShieldPrefab = "9b1744531a4428e44aa9837ca984513a";
         internal const string TwoHandPrefab = "31cb7e484faf8734fa2c0ef1936b1806";
+        internal const string HybridSupport = "KMG_SalamanderSupport";
         internal static string[] Keys { get { return new[] { "viper", "constrictor-snake", "salamander" }; } }
         internal static bool IsSnake(string key) { return key == "viper" || key == "constrictor-snake"; }
 
@@ -23,7 +24,33 @@ namespace KingmakerGunslinger.Summoning
             return new[] { "Torso_Lower", "Torso_Upper", "neck", "neck1", "Head", "jaw", "jaw1",
                 "tail", "tail1", "tail2", "tail3" }.Concat(new[] { "L", "R" }.SelectMany(side =>
                     new[] { "clavicle", "Arm_Upper", "Arm_Lower", "Palm", "finger1", "finger2",
-                        "Bfinger1", "Bfinger2" }.Select(part => side + "_" + part))).ToArray();
+                        "Bfinger1", "Bfinger2" }.Select(part => side + "_" + part)))
+                .Concat(new[] { HybridSupport }).ToArray();
+        }
+
+        /// <summary>Only this original hybrid support uses the renderer frame.
+        /// All other slots preserve the exact native bone AND native bindpose.
+        /// -1 is an explicit renderer slot, never an unknown-bone fallback.</summary>
+        internal static bool TryResolveDriverSlots(string key, string[] originalNames,
+            string[] nativeNames, out int[] slots)
+        {
+            slots = null;
+            if (!PermitsBones(key, originalNames) || nativeNames == null ||
+                nativeNames.Length != (IsSnake(key) ? 40 : 39) ||
+                nativeNames.Any(string.IsNullOrEmpty) || nativeNames.Contains(HybridSupport) ||
+                nativeNames.Distinct(StringComparer.Ordinal).Count() != nativeNames.Length) return false;
+            var found = new int[originalNames.Length];
+            for (int i = 0; i < originalNames.Length; i++)
+            {
+                if (key == "salamander" && originalNames[i] == HybridSupport) found[i] = -1;
+                else
+                {
+                    found[i] = Array.IndexOf(nativeNames, originalNames[i]);
+                    if (found[i] < 0) return false;
+                }
+            }
+            slots = found;
+            return true;
         }
 
         internal static string BodyRenderer(string key)

@@ -8,8 +8,13 @@ measure about10.8cm snake penetration and3.4..30.9cm hybrid float: visual defect
 remain NOT QUALIFIED. Prior6bee game20/20 with driver ERROR and both earlier
 fixture failures remain preserved. Private snake v3 authoring/replay corrects
 the observed coil plane (26 poses about2–3mm clearance),21 checks/36 panels,
-byte-reproduced original exports; **not staged or runtime-qualified**. Hybrid
-support and spear handling remain open.
+byte-reproduced original exports. The containing integration stages snake v3
+and hybrid v7 for closed research only;25 authoring/replay and225 focused tests
+PASS, no new runtime qualification. Hybrid authored renderer-frame half-turn,
+smooth proximal weights and isolated quality rollback preserve native drivers,
+distal coil and upper body. Failed offline prototypes are retained. Next exact
+prelaunch and smoke/body26 with three added measured-floor support assertions.
+Spear/contact/lifecycle and final Sprint17 qualification remain open.
 [All four attempts and hashes](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-EVIDENCE.json).
 No printed-profile/weapon/contact or new-publication acceptance is inferred.
 

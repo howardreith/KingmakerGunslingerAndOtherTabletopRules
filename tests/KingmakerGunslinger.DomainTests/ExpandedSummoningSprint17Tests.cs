@@ -57,9 +57,9 @@ namespace KingmakerGunslinger.DomainTests
         {
             string directory = Path.Combine(Environment.CurrentDirectory, "assets", "sprint17-serpents");
             string[] hashes = {
-                "bd0d6f7ff16ac47886e621628f8f91391e684e8f299e128af1e88c7e75ce751f",
-                "1c521c1bca191a73942a9886706de6415255f18caf787a7f411267283a14df02",
-                "80de7840d183666c7e7553c41d96d5bc3f532f4ab2556f62147f867a26371fb6" };
+                "866123e15e287c05b67b9d9509463559e4d55fce81f5bf9654ad9e98bac7cd29",
+                "fa6799bde8dea193db04dbe4893b665d873b83697d72eba5a7633a2fc78b7411",
+                "298d832320a01144ebc4f6245ddc3851cd9d01ed3e9e167c998c94fd558d8b28" };
             int keyIndex = 0;
             foreach (string key in SerpentineVisualPolicy.Keys)
             {
@@ -109,8 +109,8 @@ namespace KingmakerGunslinger.DomainTests
                             sum += weight; totals[bone] += weight;
                             if (weight > 0) positive++;
                         }
-                        Assertions.True(Math.Abs(sum - 1) < .00001 && positive >= 1 && positive <= 2,
-                            "At most two normalized original influences.");
+                        Assertions.True(Math.Abs(sum - 1) < .00001 && positive >= 1 && positive <= (key == "salamander" ? 3 : 2),
+                            "At most two native influences plus the hybrid-only original support.");
                     }
                     Assertions.True(totals.All(value => value > 0), "Each declared driver carries real geometry.");
                 }
@@ -128,7 +128,7 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string key in SerpentineVisualPolicy.Keys)
             {
                 string[] bones = SerpentineVisualPolicy.Bones(key);
-                Assertions.Equal(key == "salamander" ? 27 : 16, bones.Length, "Measured original driver count.");
+                Assertions.Equal(key == "salamander" ? 28 : 16, bones.Length, "Measured native drivers plus the hybrid-only support.");
                 Assertions.True(SerpentineVisualPolicy.PermitsBones(key, bones.Reverse()),
                     "Native name mapping is independent of export order.");
                 foreach (string bone in bones)
@@ -181,6 +181,37 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(SerpentineVisualPolicy.PermitsDonor("salamander", SerpentineVisualPolicy.TwoHandPrefab,
                 hybridSkins, 39, 19, "Torso_Lower", new[] { "lizardman_club", "WP_ShieldLightDamaged" }),
                 "A shield must not silently appear on the two-hand donor.");
+        }
+
+        internal static void HybridSupportMappingPreservesEveryNativeSlotAndRejectsUnknowns()
+        {
+            foreach (string key in SerpentineVisualPolicy.Keys)
+            {
+                string[] original = SerpentineVisualPolicy.Bones(key).Reverse().ToArray();
+                string[] required = original.Where(name => name != SerpentineVisualPolicy.HybridSupport).ToArray();
+                string[] native = required.Concat(Enumerable.Range(0, (key == "salamander" ? 39 : 40) - required.Length)
+                    .Select(index => "UnusedNative" + index)).Reverse().ToArray();
+                int[] slots;
+                Assertions.True(SerpentineVisualPolicy.TryResolveDriverSlots(key, original, native, out slots),
+                    "Complete original driver mapping works independently of native/export order.");
+                Assertions.Equal(original.Length, slots.Length, "No missing or appended native mapping.");
+                for (int i = 0; i < original.Length; i++)
+                    if (original[i] == SerpentineVisualPolicy.HybridSupport)
+                        Assertions.True(key == "salamander" && slots[i] == -1, "Only named hybrid support selects renderer frame.");
+                    else Assertions.Equal(original[i], native[slots[i]], "Every real driver retains its exact native bindpose slot.");
+                foreach (string[] bad in new[] { null, native.Take(native.Length - 1).ToArray(),
+                    native.Concat(new[] { "foreign" }).ToArray(), native.Select(name => name == required[0] ? "missing" : name).ToArray(),
+                    native.Select(name => name == required[0] ? native[0] : name).ToArray(),
+                    native.Select(name => name == required[0] ? SerpentineVisualPolicy.HybridSupport : name).ToArray() })
+                {
+                    Assertions.False(SerpentineVisualPolicy.TryResolveDriverSlots(key, original, bad, out slots),
+                        "Missing, duplicate, foreign-count and project-named native mappings never fall back.");
+                    Assertions.Equal((int[])null, slots, "No partially usable mapping on rejection.");
+                }
+                Assertions.False(SerpentineVisualPolicy.TryResolveDriverSlots(key,
+                    original.Concat(new[] { SerpentineVisualPolicy.HybridSupport }).ToArray(), native, out slots),
+                    "A support cannot be added to snakes or duplicated on the hybrid.");
+            }
         }
 
         internal static void RigSurveyUsesOnlyExactNativeSources()

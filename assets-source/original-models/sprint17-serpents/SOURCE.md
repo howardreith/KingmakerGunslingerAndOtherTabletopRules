@@ -1,6 +1,39 @@
 # Sprint 17 original serpentine and hybrid bodies
 
-## Current measured-pose correction, October 6 UTC
+## Current support integration, October 6 UTC
+
+**STAGED FOR CLOSED RESEARCH ONLY; NOT RUNTIME QUALIFIED.** Snake v3 and
+Salamander v7 now replace the six-file fixture's original mesh payloads; paints
+and package count318 are unchanged. No production attachment or new creature.
+All three staged exports match independently generated private exports exactly.
+25 checks PASS:7 worm,4 water,8 hybrid and6 replay.225 focused domain checks and
+exact-reference incremental compile PASS; full exact-head/runtime pending.
+
+Hybrid v7 mesh SHA `298d832320a01144ebc4f6245ddc3851cd9d01ed3e9e167c998c94fd558d8b28`.
+It keeps2592 vertices, all27 native drivers plus one original
+`KMG_SalamanderSupport` name. Runtime maps that one slot to the existing body
+renderer with a static authored half-turn about +Z; every native driver uses
+its exact native bindpose. No Transform, joint, clip, native mesh or native
+asset is created/exported. Maximum3 weights require renderer-only Bone4,
+restored on rollback/destruction. No global quality or movement/rig override.
+
+Private v4–v6 and their failed panels are preserved. Identity renderer binding
+passed height but stretched the belly due to opposite forward axes. Corrected
+orientation alone left an underside skirt; carrying the whole proximal cross
+section and fading through existing tail2/tail3 weights removed the hard fold.
+Complete pure-tail3 distal coil and all upper-body/hand geometry/weights are
+unchanged. v7 generated8 new clay/textured captured-pose panels; representative
+idle/moving/settled views reviewed. Every sampled pose replays5mm above the
+actual floor; snakes about2–3mm. This is supporting offline evidence only.
+
+Generate the supported hybrid with `--supported-prototype`; its tests now
+require `--body-review PRIVATE_CURRENT_BODY_CAPTURE`. Replay accepts preserved
+27-driver captures and validates the exact renderer relationship on new28-driver
+captures. The research fixture adds three actual-ground assertions (26 total),
+not a waiver of slopes, attack/weapon contacts or death/fade/transition behavior.
+Spear remains unimplemented; HumanReview: NOT_PERFORMED_NONBLOCKING.
+
+## Preserved measured-pose correction before integration, October 6 UTC
 
 **PRIVATE PROTOTYPE v3; NOT STAGED OR RUNTIME QUALIFIED.** Exact f31c0e3d
 research passed smoke11/11/body23/23 and restored the machine exactly. Its
