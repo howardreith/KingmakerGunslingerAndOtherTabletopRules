@@ -5,7 +5,8 @@
 11/11 smoke, 209/209 main, 20/20 crowd, 9/9 prepare, 9/9 cleanup, 5/5 absence.
 Actual snapshot restored exactly; no game/lock/staging; working save clean.
 [Exact hashes](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-HIDDEN-PASS-EVIDENCE.json).
-Six Dire roots remain withheld until the new publication candidate gate.
+The containing publication candidate exposes only the six Dire roots after
+that hidden pass; all twenty public Crocodile/Dire routes still need its gate.
 
 [Historical exact 197 laptop batch and bounded pause correction](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-NATIVE-UPDATE-BATCH-REVIEW.md):
 **NOT QUALIFIED**, main 208/209; all 55 combat assertions and five other stages

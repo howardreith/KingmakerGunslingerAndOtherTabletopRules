@@ -24,7 +24,8 @@ SUPPRESSED = re.compile(
 # line. A creature that is withheld never appears here: what it is waiting for
 # is decided by the visibility catalog, not by this table.
 QUALIFICATION_NOTES = {
-    "crocodile": "Existing fourteen roots and identity retained; Sprint 16 changed mechanics and original visual NOT QUALIFIED",
+    "crocodile": "Existing fourteen roots and identity retained; Sprint 16 hidden mechanics/original visual PASS on exact e3aeae63; publication candidate gate pending",
+    "dire-crocodile": "Six preserved roots exposed in publication candidate after exact e3aeae63 hidden PASS; public-route gate pending; SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED; owner visual review pending",
     "fire-beetle": "Published; Sprint 14 qualified; owner visual review pending",
     "giant-ant-worker": "Published; Sprint 14 qualified under PASSIVE_CREATURE_SENSES_UNMODELED; owner visual review pending",
     "giant-ant-soldier": "Published; Sprint 14 qualified under PASSIVE_CREATURE_SENSES_UNMODELED; owner visual review pending",
@@ -470,7 +471,7 @@ def generated_roster(manifest):
         "",
         "Generated deterministically by `tools/expanded_summoning_manifest.py`; do not edit by hand.",
         "",
-        "Registered totals: 86 Summon Monster entries / 490 placements; 84 Summon Nature's Ally entries / 486 placements; 95 unique units; 976 registered placements of which 970 are published and 6 are withheld. Dire Crocodile's six placements remain withheld pending Sprint 16 qualification. Sprints 9-15 are qualified and published. The Frost Giant remains a retained native unit under Summon Monster VIII-IX and Summon Nature's Ally VII-IX wrappers.",
+        "Registered totals: 86 Summon Monster entries / 490 placements; 84 Summon Nature's Ally entries / 486 placements; 95 unique units; 976 registered placements of which 976 are published in source and 0 are withheld. Dire Crocodile's six preserved placements enter the publication candidate after the complete exact e3aeae63 hidden gate; public-route qualification is pending. Sprints 9-15 are qualified and published. With 29 retained wrappers the candidate has 1005 visible choices. The Frost Giant remains a retained native unit under Summon Monster VIII-IX and Summon Nature's Ally VII-IX wrappers.",
         "",
         "Phase 1 baseline qualification source: `5205805eab3fe0115d6888c53bce73c80474d1b7`. Structural run `20260812T1327062696968Z-bd09acfba08942df8f7c42e5c70252f4`; native cast run `20260812T1330147883834Z-ec8896f1d65b43e0913a6bea7cba4405`; visual run `20260812T1151394827201Z-add45a04f5de44c1a39e3251f7ff0778`; enabled/disabled persistence runs `20260812T1155220523013Z-6d2a18f9b33344d08d3127ffce7e5cb6` through `20260812T1208449380302Z-65c9b7056d97483fb48a4a9b76c22ea6`; all eight required compatibility transactions passed and restored their profiles. Phase 2 Sprint 10 and 11 mechanics, visual, quantity and lifecycle evidence is indexed in `EXPANDED-SUMMONING-PHASE2-EVIDENCE-INDEX.md`.",
         "",

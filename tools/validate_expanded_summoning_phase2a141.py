@@ -6,10 +6,9 @@ Sprints 12-21 continues on the same version, which is why the static record
 carries a separate development section; this validator pins the published
 boundary and guards that development state.
 
-Sprints 12-15 have since qualified and published. Sprint 16 registers Dire
-Crocodile ahead of qualification and withholds its six placements. So the
-suppression check runs in both directions: a creature that has qualified must
-not be suppressed, and a creature that has not must be.
+Sprints 12-15 have since qualified and published. Sprint 16's complete hidden
+candidate passed, so its publication candidate exposes six Dire Crocodile
+placements. Public-route qualification is recorded separately from visibility.
 """
 from __future__ import annotations
 
@@ -44,17 +43,15 @@ def validate(root: Path) -> None:
     # static guard keeps metadata and publication suppression synchronized.
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs",
         "RegisteredLogicalPlacementCount = 976",
-        "SuppressedLogicalPlacementCount = 6",
+        "SuppressedLogicalPlacementCount = 0",
         "RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount")
     visibility = (root / "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs").read_text(encoding="utf-8")
     for key in ('"dire-rat"', '"dog"', '"hyena"', '"goblin-dog"',
                 '"shadow-mastiff"', '"wolverine"', '"poisonous-frog"',
                 '"fire-beetle"', '"giant-ant-worker"', '"giant-ant-soldier"',
-                '"giant-ant-drone"', '"giant-stag-beetle"'):
+                '"giant-ant-drone"', '"giant-stag-beetle"', '"dire-crocodile"'):
         if key in visibility:
             raise AssertionError(f"A qualified creature is still suppressed: {key}")
-    if '"dire-crocodile"' not in visibility:
-        raise AssertionError("Unqualified Dire Crocodile must remain suppressed")
     require_tokens(root / "EXPANDED-SUMMONING-PHASE2-INVENTORY-RECONCILIATION.md",
         "832 + 29 = 861", "881db758", "d7822297",
         "visible in v0.0.140 and are hidden in v0.0.141")
@@ -106,10 +103,10 @@ def validate(root: Path) -> None:
         "candidateOnly": True,
         "deterministicTestCount": DETERMINISTIC_TEST_COUNT,
         "registeredGeneratedPlacements": 976,
-        "suppressedGeneratedPlacements": 6,
-        "publishedGeneratedPlacements": 970,
+        "suppressedGeneratedPlacements": 0,
+        "publishedGeneratedPlacements": 976,
         "retainedNativeWrappers": 29,
-        "visibleChoiceTotal": 999,
+        "visibleChoiceTotal": 1005,
         "mergeAuthorized": False,
         "newReleaseAuthorized": False,
         "sprint22Authorized": False,

@@ -334,11 +334,11 @@ namespace KingmakerGunslinger.DomainTests
             // Beetle's 18 on qualification, and the two ant castes' 30 once the
             // owner accepted PASSIVE_CREATURE_SENSES_UNMODELED, which was the
             // only thing holding them - and then Sprint 15's 18.
-            if (SummonVisibilityCatalog.PublishedLogicalPlacementCount != 970)
+            if (SummonVisibilityCatalog.PublishedLogicalPlacementCount < 970)
                 throw new InvalidOperationException(
-                    "The published surface must be 970: the 904 published " +
+                    "The published surface cannot fall below 970: the 904 published " +
                     "before Sprint 14, plus all 48 of its placements, plus " +
-                    "Sprint 15's 18, with nothing withheld. It is " +
+                    "Sprint 15's 18. Later qualified sprints may add roots. It is " +
                     SummonVisibilityCatalog
                         .PublishedLogicalPlacementCount + ".");
             if (SummonVisibilityCatalog.RegisteredLogicalPlacementCount -
