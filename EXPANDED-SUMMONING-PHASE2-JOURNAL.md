@@ -1,34 +1,35 @@
 # Expanded Summoning Phase 2 journal
 
-## October6 — bounded native Bite-distance correction SOURCE PASS, NOT RUN
+## October6,23:11UTC — bounded native snake command/contact51/51 PASS; restored
 
-[Latest runtime](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-ATTEMPT4-EVIDENCE.json):
-exact474be538 smoke11/profile-body-rules62 PASS; commands43/51 FAIL.
-Only8 rule-event contacts fail (0.37891674-0.426136971m horizontal gaps).
-All setup/approach/real bite/signature/native-AI/cleanup checks pass.
-Paired same-frame Viper observations reject a timing-only remedy; Constrictor
-commands have already ended at frame end, so those poses cannot qualify contact.
+[Exact snake command/contact PASS](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-PASS-EVIDENCE.json):
+candidate983828bfa9b1aff2d79fab3eb8a2954ec28e4a2f passes fresh-Steam
+smoke11/11,profile/body/rules62/62 (46 metadata rows),commands51/51 (8 rows).
+All8 manual/AI RTWP/turn-based cells pass native setup, approach, real bite,
+signature, at-rule jaw contact and cleanup. AI cells receive no manual command.
 
-[Bounded native Bite-distance repair](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-BITE-DISTANCE-REVIEW.md):
-offline original-vertex replay reproduces every gap within1 micrometre.
-The exact native audit shows world-distance input to the existing short/long
-Bite selector without view-scale compensation. Only the two exact original-body
-snakes now project that getter result into donor clip space (distance/0.2).
-No stored distance, combat reach, movement, shared action/clip, bone or mesh is
-rewritten. Native Worm, Salamander, disabled/fallback views and other actions
-are excluded. The actual selected clip/contact still needs live proof.
-Source PASS:260 focused,2062 unfiltered90.0s,complete188.7s,
+Every at-rule gap is0m with actual BiteAttack01_Long_8m playback,weight1.
+Projected native clip distance8.321414-8.514899 corresponds to world
+1.6642828-1.70297992m at the unchanged0.2 view scale. Bite remains2ft,
+corpulence0.6/0.5m and native approach sum1.7096m. No actor/reach/mesh/range/
+clip mutation or0.25m threshold waiver. Constrictor's command-ended end-frame
+samples remain uncorrelated; at-rule contact is the acceptance measurement.
+This proves the observed long-variant01 cells, not every possible size/variant.
+
+Exact prelaunch PASS:260 focused,2062 full85.9s,complete184.7s,
+508 preflight,168 orchestration,17 provenance,persistence11/3/19,crowd5/7,
 repository/static/icon/manifest,clean14-reference Release,strict320.
-This repair is NOT RUN and does not supersede the failed runtime result.
+[Native distance review](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-BITE-DISTANCE-REVIEW.md).
+All four failed command candidates and earlier research remain preserved.
 
-Actual snapshot2214490404756Z restored2026-10-06T22:27:03.4374771Z:
-136/.117/exact tree;lease Completed/recovery=false/released;no game/shared
-lock/this-worktree staging/save write. All failed artifacts retained.
+Actual snapshot2258281699283Z restored2026-10-06T23:11:14.0412304Z:
+136 files/Info0.0.117/tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
+Lease Completed/recovery=false/released;no game/shared runtime lock/this-
+worktree staging/save write. This is bounded slice qualification only.
 
-Next: push the source checkpoint, rebuild on its exact clean head, complete
-prelaunch gates, then fresh-Steam smoke/62-rule/51-command batch under one
-lease-first actual snapshot and exact restoration. Keep all51 assertions and
-the0.25m at-rule threshold; inspect actual clip and projected distance.
+Next: remaining snake lifecycle/crowds/UI/private routes/persistence and
+bounded separate Salamander implementation; complete hidden/publication
+Sprint17 gates,then fullPhase2B closure and STOP for owner review.
 32 roots hidden; Sprint17/full Phase2B NOT QUALIFIED. Phase2C deferred.
 The previous e993 attempt's stale descriptive lease label is preserved in its
 archive. Attempt2 correctly names commands/contact and remains immutable.
