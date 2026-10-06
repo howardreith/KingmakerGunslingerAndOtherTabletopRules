@@ -22,12 +22,14 @@ no merge, release, tag, version bump, force push or permanent deployment.
   Pushed first research-evidence checkpoint:
   **`e5e79fe9c428f0db7b7205fcc481cb3c4a868e3d`**.
   Failed extended research candidate **`b2893abefc89079af49c22d3b028865ed2189f95`**
-  is preserved. Latest completed exact research artifact:
+  is preserved. Completed three-target research artifact:
   **`a173da3a396b3c7f1bddef3bee92c476150d8639`** (research PASS).
   Research evidence pushed at **`6dee947dbdf35419348a0c68555291a1e5f55bec`**.
-  Private original prototypes/current fetched remote:
+  Private original prototypes:
   **`fc1e880e2ee2eeb1fbd259cf226418de3f04eb32`**.
-  This containing bounded research extension is its normal descendant; Sprint 17
+  Latest exact research artifact/current fetched remote:
+  **`c55b4f084cfabeafa83be839c47683330e78eb76`** (13/13 research PASS).
+  This containing evidence checkpoint is its normal descendant; Sprint 17
   gameplay and visuals are still NOT QUALIFIED.
   Unexpected active-branch motion remains a stop; archive motion is informational.
 - Exclusive ignored receipt: `artifacts/laptop-source-owner-20261005.json`;
@@ -51,13 +53,13 @@ no merge, release, tag, version bump, force push or permanent deployment.
   11/11 smoke, 209/209 main, 20/20 crowd, 9/9 prepare, 9/9 cleanup, 5/5 absence.
   No mechanics, visual, asset or serialized-state delta since that pass;
   only Dire suppression and guarded fixture changes, with full main rerun.
-- Latest actual snapshot `20261006T0239169703799Z` restored exactly;
-  closed `2026-10-06T02:45:49.8363590Z`: 136 files / Info 0.0.117 /
+- Latest actual snapshot `20261006T0334314516624Z` restored exactly;
+  closed `2026-10-06T03:41:08.6416921Z`: 136 files / Info 0.0.117 /
   `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
   Lease Completed/recoveryRequired=false; no game/shared lock/staging.
   Prior native working-save cleanup/absence clean; publication and research did not write
   saves. No save-file or protected-baseline access. Journal SHA
-  `4D1413AE11DB29A8E6C1C2E43F3553E87060CAA47914F6A80CF586B879C62265`.
+  `CD66E4576A3DBF3845F85290A1092A31412C3BAE5CC858A02ADF7FDDFE440330`.
 - Publication DLL SHA `8c76fcbed3eb73ffb6ca6c6121e610f96a2b36a82fa8f3c6c55edae66da885d9`;
   MVID `ed8fe210-31e2-4016-870e-8623d3a55fa2`; ZIP
   `eb930278836f0c3953decef589c7214b69c1d1a2fc69f625af56bdc4af254ac2`.
@@ -96,15 +98,18 @@ no merge, release, tag, version bump, force push or permanent deployment.
   dorsal-paint regressions. No packaged assets or production code changed;
   Salamander body has no weapon and does not qualify weapon handling.
   [Authoring source/private hashes](assets-source/original-models/sprint17-serpents/SOURCE.md).
-- Source-only research extension now records current attached bone positions,
+- Exact c55 research extension records current attached bone positions,
   native action names/durations and a read-only detached archived Lizardfolk
-  greatclub prefab (no fourth actor/shared mutation). 219 focused/incremental
-  Release PASS; new 13-assertion/four-capture batch NOT RUN.
-- Exact next action: freeze/push the pose/weapon research extension, run its
-  complete exact artifact gate, then guarded fresh Steam smoke/survey and
-  exact restoration. Use the measurements for original-view donor acceptance
-  (motion, ground/jaw, multi-renderer fallback/lifecycle), separate Salamander
-  manufactured-spear/tail seam and profiles/signatures. Research PASS
+  greatclub prefab (no fourth actor/shared mutation). Complete prelaunch PASS
+  (219 focused/2021 full/486 preflight/68 orchestration), smoke 11/11 and
+  survey 13/13; four complete captures and exact restoration. Lizardfolk
+  two-hand donor's 39/19-bone bind frames match exactly, not yet grip/contact
+  proof. Water exposes slam actions; worm locomotion exposes idle only and
+  its sampled body is reared. Credible snake movement remains an open gate.
+- Exact next action: bounded exact-owned original-view integration and live
+  donor acceptance (motion, supporting coil/ground/jaw, multi-renderer fallback/
+  lifecycle), separate Salamander manufactured-spear/tail seam, and printed
+  profiles/signatures. Research PASS
   is not gameplay/visual qualification. Preserve Salamander identity and
   placements. One hidden candidate/batched review/publication gate, then full
   Phase 2B closure; no Phase 2C start under this mission.

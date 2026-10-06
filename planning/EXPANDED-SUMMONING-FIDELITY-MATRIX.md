@@ -2,8 +2,8 @@
 
 ## Sprint 17 research, October 6 UTC — NOT QUALIFIED
 
-Exact a173da3a all prelaunch PASS (219 focused/2021 full), smoke 11/11,
-three-target rig metadata 11/11, exact restoration. Failed b289 retained.
+Exact c55b4f08 all prelaunch PASS (219 focused/2021 full), smoke 11/11,
+pose/weapon metadata 13/13, four captures, exact restoration. Failed b289 retained.
 [Research evidence](EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md).
 No Viper/Constrictor registration, new visuals or gameplay qualification yet.
 Native Water Elemental provenance is confirmed without an Eidolon dependency:
@@ -11,8 +11,12 @@ seven skins, 43-bone body with spine/head/jaw but no continuous tail. Purple
 Worm's two-skin, continuous body chain supports a second original prototype;
 neither donor has snake motion/contact qualification. The existing Lizardfolk donor
 has a 39-bone body, armor skin and static club/shield meshes that must not
-survive Salamander's new owned visual/weapon seam. Identity/placements stay.
-Next bounded original prototype, printed profiles/signatures and full hidden
+survive Salamander's new owned visual/weapon seam. A separate native two-hand
+view has identical 39/19-bone body/armor bind frames, but grip/contact is
+unqualified. Water's actions are slams; worm locomotion exposes idle only.
+Fourteen private authoring tests and 74 new panels do not waive credible
+motion, ground support, jaw or spear/tail contacts. Identity/placements stay.
+Next bounded original-view integration, printed profiles/signatures and full hidden
 candidate. Prior S16 and accepted limitations remain unchanged.
 
 ## Current Sprint 16 disposition, October 6 UTC — COMPLETE AND PUBLISHED

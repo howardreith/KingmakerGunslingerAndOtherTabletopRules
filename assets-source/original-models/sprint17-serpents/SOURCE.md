@@ -83,9 +83,15 @@ armature; hybrid adds synthetic tail and arm poses. Always use
 Next required: bounded live donor motion/ground/jaw acceptance, exact-owned
 multi-renderer fallback/lifecycle, and Salamander's actual spear carrier and
 tail contact. The archived native donor audit contains a separate Lizardfolk
-greatclub/two-hand candidate, but its rig and animation are **not yet measured
-or accepted**. Do not infer two-hand spear handling from the current club/shield
-view or force all three creatures onto one rig. Printed profiles/signatures,
+greatclub/two-hand candidate. Exact c55 research subsequently confirms its
+39-bone body and 19-bone armor frames match the current view's bind positions,
+rotations, parents and indices exactly. Its attached grip/animation remain
+**unqualified**. Native clip names also expose water's slam actions and only
+idle in the worm locomotion list; a reared sampled worm pose is not proof of
+snake movement. Refine/prove the supporting coil/body in a bounded owned-view
+slice, without a global animation/limb rewrite or movement waiver. Do not infer
+two-hand spear handling from the old club/shield view or force all three
+creatures onto one rig. Printed profiles/signatures,
 icons, hidden candidate and publication remain open. HumanReview:
 NOT_PERFORMED_NONBLOCKING.
 

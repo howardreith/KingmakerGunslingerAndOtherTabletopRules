@@ -4,7 +4,8 @@
 
 Private prototype source/evidence is pushed at
 `fc1e880e2ee2eeb1fbd259cf226418de3f04eb32` (14 Blender tests, full repository
-and 2021-domain PASS). The containing **research-only extension is NOT RUN**:
+and 2021-domain PASS). Exact research extension
+**`c55b4f084cfabeafa83be839c47683330e78eb76` PASSES**:
 it records a single current attached bone-position sample plus native action
 clip names/durations (never curves) on the three existing disposable summons.
 It also reads one archived native greatclub view **without instantiating it**:
@@ -15,13 +16,46 @@ does not become a fourth actor, new summon, dependency or production donor.
 Detached frames cannot qualify attached animation or a two-handed spear grip.
 No shared prefab mutation or detached animation-manager invocation occurs.
 
-The extension passes 219 focused tests and incremental Release compile.
-Next freeze/push it, complete the exact artifact gate and run guarded fresh
-Steam smoke plus the extended **13-assertion/four-capture** research survey,
-with the actual snapshot restored. Do not reuse the earlier eleven-assertion
-PASS as proof of the new observations. No prototype asset is packaged.
+All prelaunch gates PASS: 219 focused, 2021 full (87.5 seconds), 486 preflight,
+68 orchestration, persistence/crowd requests, repository/static/icon/manifest,
+clean exact Release and deterministic strict 312-member package (0.0.141).
+Fresh Steam smoke **11/11**, extended survey **13/13**, four metadata captures.
+Exact actual snapshot `20261006T0334314516624Z` restored at
+`2026-10-06T03:41:08.6416921Z`: 136 files / Info 0.0.117 / tree
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+Lease Completed/recoveryRequired=false; no game/shared lock/staging. Cleanup
+restores 955 original unit references, three party references and exact area
+membership. No save write/protected-baseline access. [All attempt hashes](EXPANDED-SUMMONING-SPRINT17-FALLBACK-RESEARCH-EVIDENCE.json).
+No prototype asset is packaged, and Sprint 17 remains NOT QUALIFIED.
 
-### Latest completed exact runtime research
+### New findings and remaining production gate
+
+- `Lizardfolk2HClub_Brown` has the same two skins as the existing club/shield
+  view. All 39 body and 19 armor bones have **zero** bind-position/rotation
+  delta, identical parents and identical indices. Its static weapon is under
+  `WeaponPivot`, with no shield renderer. This permits a bounded body-binding
+  comparison without reauthoring the measured frame; it does not prove an
+  attached two-hand grip, a spear attack or tail contact.
+- Water's native special actions are `left_slam` and `right_slam`, not a named
+  bite. It exposes four locomotion clips. A matching head/jaw skeleton alone
+  was never bite proof.
+- Purple Worm's locomotion list exposes only `idle`; its special action is
+  `SuperSlam`. The sampled native-scale pose is reared: hips at the view
+  origin, head height about 4.666 units and highest body joint about 5.607.
+  Those are one frame, not a motion trajectory or a ground-contact verdict.
+  A continuous bind chain does not by itself establish credible snake motion.
+- Null action enumerations remain null, not fabricated empty capability.
+  No animation curves/native art were exported, no fourth actor was spawned,
+  and no shared native prefab was modified.
+
+Next: integrate a bounded exact-owned original view slice, refine the snake's
+supporting coil/body against these measured poses, and prove real native
+movement/jaw contact plus fallback/lifecycle. Salamander uses its separate
+hybrid/actual manufactured-spear seam. Do not waive credible movement or
+invent a global animation/limb system because a clip list is sparse. Printed
+profiles/signatures and one stable hidden Sprint 17 candidate remain open.
+
+### Previous completed three-target research
 
 Exact corrected research **a173da3a396b3c7f1bddef3bee92c476150d8639**
 passes the complete prelaunch gate: 219 focused, 2021 unfiltered (84.5 seconds),
