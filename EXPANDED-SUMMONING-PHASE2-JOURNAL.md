@@ -1,13 +1,36 @@
 # Expanded Summoning Phase 2 journal
 
-## October 6 — exact human bind-palette diagnostic, source only
+## October 6, 14:14 UTC — exact a904 bind diagnostic PASS, unsafe duplicates exposed
 
-Containing source-only follow-up: one exact human prefab's duplicate bind
-palette is now measured without adoption. Focused238/238,2040 registered,
-static and incremental exact compile PASS; full exact prelaunch and smoke11/
-survey16 are next. No new runtime or body/gameplay qualification.
+Exact a90494e1: 238 focused / 2040 unfiltered tests (83.0s), complete gate
+178s; 491 preflight / 81 orchestration / 17 provenance, persistence 11/3/19,
+crowd 5/7, clean exact Release / strict 318-member package PASS. Fresh Steam
+smoke 11/11 and metadata survey 16/16 PASS. RESEARCH ONLY; Sprint 17 remains
+NOT QUALIFIED.
 
-[Scope and preserved fixture failure](planning/EXPANDED-SUMMONING-SPRINT17-SPEAR-CARRIER-AUDIT.md).
+The exact human Guard Captain prefab has1776 bind-palette entries for177
+Transform references. All are finite/invertible, but17 weapon-storage
+transforms have disagreeing duplicate matrices (maximum2.880282, tolerance
+0.00001). Blind first-slot deduplication is rejected. Torso/hand entries agree;
+that is not a qualified body binding or actual native spear/tail playback.
+No human-based Salamander was constructed; no action or NPC facts adopted.
+Native references/actor membership unchanged; raw native frames stay private.
+The prior three-spear and eleven-Lizardfolk metadata files reproduce exactly.
+Cape bones are not a tail. Body570 remains33/35 FAIL; all12 attempts retained.
+
+Actual snapshot1407190713978Z restored14:14:02.7035876UTC:
+136 files / Info0.0.117 / exact tree. Journal
+AE954F51929981B232F2DAF48FB1B717D26739D06E50E11CC368A6694F4B2D03;
+bind metadata EB0D5EAAF4BEC8BF68506D42F299DED5D3D86CB676FF72E53F15D0CFBCE9BFD2.
+Lease Completed/recoveryRequired=false/released; no game/lock/staging/save write.
+
+Next: independent printed snake profiles and a bounded Salamander-specific
+spear/tail implementation review. Do not repeat the closed donor census or
+assume compatibility, silently relabel an attack, or waive contact/playback.
+Sprints14–16 complete; 976+29=1005 visible choices; ZERO DATA ports.
+Phase2C remains authorized but deferred until Phase2B owner acceptance.
+
+[Exact findings/artifact/restoration](planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-BIND-REVIEW.md).
 
 ## October 6, 13:33 UTC — native spear metadata PASS, exact restoration
 
