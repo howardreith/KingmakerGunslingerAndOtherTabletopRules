@@ -1,5 +1,23 @@
 # Expanded Summoning Phase 2 journal
 
+## October 6, 00:59 UTC — Sprint 16 COMPLETE AND PUBLISHED, restored
+
+Exact 155ada89 passed all prelaunch gates (218 focused / 2020 full), smoke
+11/11 and the complete publication main **211/211**. Both added first-miss
+regressions pass through actual issued commands and native positive outcomes:
+RTWP two attempts, turn-based three including a naturally missed second bite.
+Combat 57/57, final 81/81, all twenty public roots. No assertion waived.
+Qualified surface 976 generated + 29 wrappers = 1005 visible; zero withheld.
+
+Actual snapshot 20261006T0043094214625Z restored exactly at 00:59:25 UTC;
+136 files / Info 0.0.117 / original fingerprint. Lease Completed, no game,
+shared lock or staging. No save write; preceding hidden native clean-save
+protocol remains authoritative. Fetch confirms active remote still 155ada89.
+All failed candidates preserved. No DATA port or version bump. Human review
+remains NOT_PERFORMED_NONBLOCKING; accepted limits/adaptation unchanged.
+[Publication evidence](planning/EXPANDED-SUMMONING-SPRINT16-PUBLICATION-PASS-REVIEW.md).
+Close/push this evidence checkpoint, then Sprint 17 and Phase 2B closure.
+
 ## October 6, 00:24 UTC — publication 207/209, restored; missed-bite retry
 
 Exact 3d13108e passed 218 focused / 2020 full and every prelaunch gate.

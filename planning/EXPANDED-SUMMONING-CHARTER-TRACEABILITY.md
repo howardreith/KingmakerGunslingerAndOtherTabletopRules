@@ -25,7 +25,7 @@ forbids an automatic Sprint 46.
 | S13 | 2 | Canines and Small Quadrupeds II plus Tiny Frog | 6 | Poisonous Frog, Shadow Mastiff, Wolverine | Internally complete and published; Phase 2 evidence index owns exact qualification; owner visual review pending |
 | S14 | 2 | Insect Rig I - Fire Beetle and Ground Ants | 8 | Fire Beetle, Giant Ant (Soldier), Giant Ant (Worker) | Internally complete and published under PASSIVE_CREATURE_SENSES_UNMODELED; owner visual review pending |
 | S15 | 2 | Insect Rig II - Drone Ant and Giant Stag Beetle | 5 | Giant Ant (Drone), Giant Stag Beetle | Internally complete and published; owner visual review pending |
-| S16 | 2 | Crocodilian Rig | 5 | Crocodile, Dire Crocodile | Exact e3aeae63 hidden candidate PASS; six Dire roots exposed in publication candidate; new public-route gate pending |
+| S16 | 2 | Crocodilian Rig | 5 | Crocodile, Dire Crocodile | Internally complete and published: exact e3aeae63 hidden and 155ada89 publication PASS, all twenty public roots; accepted engine limitations/adaptation retained; owner visual review pending |
 | S17 | 2 | Snake and Serpentine Rig | 9 | Constrictor Snake, Salamander, Viper | Not started |
 | S18 | 2 | Primate Rig | 5 | Ape, Dire Ape | Not started |
 | S19 | 2 | Four-Arm Rig - Girallon and Xill | 8 | Girallon, Xill | Not started |

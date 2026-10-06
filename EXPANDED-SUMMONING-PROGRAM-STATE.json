@@ -25,14 +25,15 @@
       12,
       13,
       14,
-      15
+      15,
+      16
     ],
-    "currentSprint": 16,
-    "currentSubItem": "Sprint 16 hidden e3aeae63 QUALIFIED. Publication 3d13108e NOT QUALIFIED: prelaunch PASS, smoke 11/11, main 207/209; all 20 public routes pass but missed-bite fixture never retried. Exact restoration verified. Containing fixture-only correction adds bounded missed-bite retry and negative-input checks; new exact full gates/211-assertion batch next. Sprint 17 waits. DATA audit complete; zero imports.",
+    "currentSprint": 17,
+    "currentSubItem": "Sprint 16 COMPLETE AND PUBLISHED: exact 155ada89 all prelaunch PASS, smoke 11/11, full main 211/211, all 20 public roots, both missed-bite regressions, exact restoration. 976 generated + 29 wrappers = 1005 visible. Next Sprint 17 bounded serpentine donor/rig proof and separate Salamander weapon seam; not yet implemented. DATA audit complete; zero imports.",
     "sprint16LaptopCorrectionReview": "planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-FIXTURE-REPAIR.md",
     "dataSalvageAudit": "planning/EXPANDED-SUMMONING-PHASE2B-DATA-SALVAGE-AUDIT.md",
-    "lastGuardedRuntimePass": "Exact e3aeae63 complete six-stage hidden PASS; final 20261005T2346334238023Z-working-save-expanded-summoning-verify-absent 5/5. Publication gate pending.",
-    "lastGuardedRestoration": "20261006T0009119881581Z actual snapshot restored 2026-10-06T00:24:45.7342342Z; journal 7A4109860C9EA7F445C0A5AC1D129BAA16758B92B2FF80E5BAD999791AC8AD5A",
+    "lastGuardedRuntimePass": "Exact 155ada89 publication PASS: smoke 11/11; 20261006T0046338051934Z-disposable-expanded-summoning-crocodilians 211/211 including all 20 public roots. Hidden e3 complete crowd/native cleanup/fresh absence remains qualified.",
+    "lastGuardedRestoration": "20261006T0043094214625Z actual snapshot restored 2026-10-06T00:59:25.6235093Z; journal 6928D7494A6953A7965127846D04797589E0E349F929BF8B225B92F8E5E190EF",
     "activePullRequest": 26,
     "archivedSalvagePullRequest": 27,
     "giantWaspPublished": true,
@@ -67,10 +68,20 @@
       "restoration": "20261005T1258077246783Z-disposable-expanded-summoning-crocodilians.json",
       "curatedEvidence": "planning/EXPANDED-SUMMONING-SPRINT16-SURVEY-REVIEW.md"
     },
-    "crocodilianRiderDecision": "OwnerAcceptedAdaptation: SWALLOW_ELIGIBLE_TARGET_ELSE_DEATH_ROLL; bounded command-seam audit found no safe choice carrier. Real maintain path passes complete exact e3aeae63 hidden candidate; publication gate pending.",
-    "sprint16TechnicalQualified": false,
+    "crocodilianRiderDecision": "OwnerAcceptedAdaptation: SWALLOW_ELIGIBLE_TARGET_ELSE_DEATH_ROLL; bounded command-seam audit found no safe choice carrier. Real maintain path passes exact e3aeae63 hidden and 155ada89 publication gates.",
+    "sprint16TechnicalQualified": true,
     "sprint16HiddenTechnicalQualified": true,
-    "sprint16PublicationStatus": "NOT QUALIFIED; 3d13108e main 207/209 failed despite all 20 public roots passing; exact restored; corrected fixture needs new exact artifact/full batch",
+    "sprint16PublicationStatus": "COMPLETE AND PUBLISHED; exact 155ada89 full prelaunch and smoke 11/11, main 211/211, all 20 public roots, exact restoration",
+    "sprint16PublicationPass": {
+      "candidate": "155ada89869c6937b4a801e1fc384dbe38d36f3b",
+      "status": "PASS; all prelaunch, smoke 11/11, main 211/211, 20 public roots",
+      "review": "planning/EXPANDED-SUMMONING-SPRINT16-PUBLICATION-PASS-REVIEW.md",
+      "evidence": "planning/EXPANDED-SUMMONING-SPRINT16-PUBLICATION-PASS-EVIDENCE.json",
+      "restoration": "VERIFIED actual 136-file / Info 0.0.117 snapshot; lease Completed; no game, compatibility lock or staging",
+      "saveWrite": false,
+      "salvageImported": false,
+      "humanReview": "NOT_PERFORMED_NONBLOCKING"
+    },
     "sprint16LaptopPublicationRetry": {
       "candidate": "3d13108ea941af4e736ca30e6d9cc78a67796d63",
       "status": "NOT QUALIFIED; smoke 11/11, main 207/209; 20 public routes PASS",
@@ -90,7 +101,7 @@
     },
     "sprint16HiddenCandidateReview": "planning/EXPANDED-SUMMONING-SPRINT16-HIDDEN-CANDIDATE-REVIEW.md",
     "sprint16PrelaunchCorrection": "b6e26e2ef207cf5302e9796026527beb9556d17c rejected before deployment: full suite 2018 tests, two stale 305/303 package expectations. Corrected to current 312/310; private execution suffix corrected; prelaunch abort policy now prevents repeated failed builds. Focused 218/218 and 68 orchestration assertions PASS. No runtime/save write; exact interrupted generic lease completed, actual live tree equals snapshot 20261005T1524442963100Z at the accepted 136-file fingerprint. Full corrected candidate gate next.",
-    "sprint16Published": false,
+    "sprint16Published": true,
     "releaseAuthorized": false,
     "mergeAuthorized": false,
     "sprint22Authorized": false,
@@ -435,7 +446,7 @@
       "detail": "Supplied by the owner and read. The Pteranodon passage confirms the shipped profile rather than changing it: ten-foot reach valued for attacks of opportunity, and a single main bite on which everything stacks (2d6 plus modifiers). The guide also positions multiple Pteranodons as the best single-target aerial attacker at their tier. This informs Sprint 2's acceptance emphasis on correct bite impact timing and location at Large reach; it changes no accepted statistic."
     }
   ],
-  "nextConcreteAction": "Finish Sprint 16 exact-artifact hidden and publication gates on the sole laptop Phase 2B branch / PR 26, then Sprint 17 and Phase 2B closure. Stop for owner review. Phase 2C authorized but deferred; no merge, release, version bump, permanent deployment or Sprints 18-22 in this mission.",
+  "nextConcreteAction": "Sprint 16 complete and published on exact 155ada89. Begin Sprint 17 bounded serpentine donor/rig proof, Viper, Constrictor Snake and a separate Salamander hybrid/weapon seam as needed; preserve its identity/placements. Then complete Phase 2B closure and stop for owner review. Phase 2C authorized but deferred; no merge, release, version bump, permanent deployment or Sprints 18-22 here.",
   "deploymentReconciliation": {
     "finding": "The first runs left this mission's 0.0.136 branch build installed over the pre-run 0.0.117 installation. The mission required restoration and did not authorize a permanent installation; a shared version string does not make a branch artifact an accepted release.",
     "ownershipVerified": "The live DLL hash matched this mission's exact build byte for byte, so the tree was unambiguously mission-owned.",
