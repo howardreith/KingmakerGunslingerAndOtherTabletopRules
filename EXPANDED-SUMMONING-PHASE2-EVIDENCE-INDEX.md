@@ -1,10 +1,12 @@
 # Expanded Summoning Phase 2 evidence index
 
 [Sprint 17 closed body-research fixture](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-REVIEW.md):
-223 focused tests and incremental Release compile PASS; exact-head gate/runtime
-pending. All-renderer rollback, exact owned resource references, native motion
-samples and interruption cleanup. No printed-profile/weapon/contact acceptance
-or new publication is inferred. Latest actual restoration remains c55.
+exact 7b76 prelaunch PASS (223 focused/2025 full/491 preflight), smoke 11/11;
+body probe 2/3 FAIL before attachment, due to a cross-scenario caster-field
+dependency in the fixture floor helper. Exact native cleanup and installation
+restoration PASS at 05:05:58 UTC. Explicit-anchor repair retains all floor/sight
+rules and requires a new exact-head batch. [Failure and hashes](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-EVIDENCE.json).
+No printed-profile/weapon/contact or new-publication acceptance is inferred.
 
 [Sprint 17 owned-body source slice](assets-source/original-models/sprint17-serpents/SOURCE.md):
 five supporting-coil authoring tests, 48 corrected native-up stress panels,
