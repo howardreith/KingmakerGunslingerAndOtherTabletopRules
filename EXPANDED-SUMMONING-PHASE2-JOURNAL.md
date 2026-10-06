@@ -1,29 +1,29 @@
 # Expanded Summoning Phase 2 journal
 
-## October6,21:17UTC — command31/51 FAIL; restored; AI/footprint repairs NOT RUN
+## October6,21:50UTC — command43/51 FAIL; restored; only8 contact assertions open
 
-[Latest snake command attempt](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-ATTEMPT2-EVIDENCE.json):
-exact17aefc2a prelaunch PASS (2058 tests86.3s,complete180.9s,strict320);
-fresh-Steam smoke11/11 PASS, command31/51 FAIL across all8 cells.
-Native appearance settles63-64 frames; all setup/cleanup checks pass.
-Manual RTWP/TB bites apply exact venom and initial/later Constrictor riders,
-but measured jaw gaps2.708-2.736m fail contact. All four AI cells issue zero
-commands because the fixture emptied their source action lists.
-Actual snapshot2106059589634Z restored21:17:33.2486583UTC:
+[Latest snake command attempt](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-ATTEMPT3-EVIDENCE.json):
+exact16f6494e prelaunch PASS:258 focused,2060 full86.1s,complete180.7s,
+508 preflight,168 orchestration,clean14-reference Release,strict320.
+Fresh-Steam smoke11/11 and profile/body/rules62/62 PASS (46 metadata rows).
+Commands43/51 FAIL across all8 cells: only the8 contact assertions fail.
+Every native setup, approach, bite, signature and cleanup passes, both modes,
+manual and AI. AI preserves original actions; no manual AI command.
+Owned snake footprint0.6m, target0.5m, live bite2ft, approach sum1.7096m;
+normal/rollback/once-only/native-Worm regression passes.
+Weighted jaw gaps0.376383781-0.415125847m still exceed0.25m. NOT QUALIFIED.
+
+Actual snapshot2138515276616Z restored2026-10-06T21:50:56.1249217Z:
 136/.117/exact tree;lease Completed/recovery=false/released;no game/shared
-lock/this-worktree staging/save write. All prior candidates retained.
+lock/this-worktree staging/save write. All failed candidates remain immutable.
 
-[Bounded repairs](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-SLICE.md):
-preserve native AI actions and defer only the appearance-phase scheduler;
-scale only each exact snake instance's base footprint with its existing .2
-body scale. Native radius minimum, live rules-size scaling, weapon reach and
-animation remain unchanged. Read-only native audit confirms transform scale
-does not affect Corpulence; next runtime records each approach-distance term.
-No contact threshold or assertion waiver.258 focused/2060 full83.8s PASS;
-complete178.8s/clean14-reference Release/strict320 PASS. Repairs NOT RUN.
-Next exact batch: smoke11, profile/body/rules62
-regression and commands51, all required, with actual-snapshot restoration.
-32 roots stay hidden; earlier130 rules PASS remains exact-artifact history.
+[Next bounded investigation](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-SLICE.md):
+change the contact observation strategy after repeated failure. Audit native
+animation timing and correlate rule-event versus post-animation measurements;
+the current one-frame clock difference is a hypothesis, not proof of stale
+pose. Do not rerun16f unchanged, extend waits, weaken0.25m or distort reach.
+Full source/exact-artifact gates precede any new guarded affected batch.
+32 roots stay hidden; Sprint17/full Phase2B NOT QUALIFIED. Phase2C deferred.
 The previous e993 attempt's stale descriptive lease label is preserved in its
 archive. Attempt2 correctly names commands/contact and remains immutable.
 
