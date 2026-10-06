@@ -74,7 +74,19 @@ try {
     }
     $matched = @(Assert-KmgReferenceBundleMatchesInstall `
         -ReferenceBundleDir $bundle -KingmakerInstallDir $install)
-    Assert-True ($matched.Count -eq 13) 'all-explicit-references-match'
+    Assert-True ($matched.Count -eq 14) 'all-explicit-references-match'
+    $physicsBundle = Join-Path $bundle 'Managed\UnityEngine.PhysicsModule.dll'
+    $physicsBytes = [IO.File]::ReadAllBytes($physicsBundle)
+    [IO.File]::AppendAllText($physicsBundle, 'mismatch')
+    Assert-Throws {
+        Assert-KmgReferenceBundleMatchesInstall -ReferenceBundleDir $bundle -KingmakerInstallDir $install
+    } 'mismatched-physics-reference-fails'
+    [IO.File]::WriteAllBytes($physicsBundle, $physicsBytes)
+    Remove-Item -LiteralPath $physicsBundle
+    Assert-Throws {
+        Assert-KmgReferenceBundleMatchesInstall -ReferenceBundleDir $bundle -KingmakerInstallDir $install
+    } 'missing-physics-reference-fails'
+    [IO.File]::WriteAllBytes($physicsBundle, $physicsBytes)
     [IO.File]::AppendAllText(
         (Join-Path $bundle 'Managed\Assembly-CSharp.dll'),
         'mismatch')
@@ -103,4 +115,4 @@ Assert-True ($inspector.Contains('$contractPassed = (')) `
 if ($failures.Count -ne 0) {
     throw "Contract-provenance tests failed: $($failures -join ', ')"
 }
-Write-Host 'Contract-provenance tests passed: 15'
+Write-Host 'Contract-provenance tests passed: 17'

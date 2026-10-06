@@ -14,6 +14,21 @@ $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'RuntimeHarness.Common.ps1')
 . (Join-Path $PSScriptRoot 'ReferenceProvenance.Common.ps1')
 
+# The plan is descriptive only. Do not require any machine-local reference,
+# installed game or compiler just to enumerate it. The real path below still
+# verifies every reference before validation/build/package work can start.
+$script:KmgBuildLocalPlan = @(
+    'repository-wrapper'
+    'complete-domain-suite'
+    'exact-reference-release-build'
+    'package-assembly'
+    'strict-package-validation'
+)
+if ($PlanOnly) {
+    $script:KmgBuildLocalPlan
+    return
+}
+
 $root = Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
 $info = Get-KmgModInfo -RepositoryRoot $root
 if ($info.Version -ne '0.0.141') { throw "Build-Local supports only active version 0.0.141, observed $($info.Version)." }
@@ -50,24 +65,6 @@ if (-not $csc) { throw 'Roslyn csc.dll was not found beneath the installed dotne
 $net47 = 'C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7'
 if (-not (Test-Path -LiteralPath (Join-Path $net47 'mscorlib.dll') -PathType Leaf)) {
     throw ".NET Framework 4.7 reference assemblies are missing: $net47"
-}
-
-# The ordered pipeline, named once so -PlanOnly and the running script cannot
-# disagree about what it contains. Each expensive operation appears exactly
-# once: this script is the whole qualification pipeline for one commit, and
-# nothing above it may run any of these a second time.
-$script:KmgBuildLocalPlan = @(
-    'repository-wrapper'
-    'complete-domain-suite'
-    'exact-reference-release-build'
-    'package-assembly'
-    'strict-package-validation'
-)
-if ($PlanOnly) {
-    # On the success stream, not the host, so a caller can capture and count it.
-    Write-Verbose 'Build-Local plan (no operation performed).'
-    $script:KmgBuildLocalPlan
-    return
 }
 
 & (Join-Path $PSScriptRoot 'validate-repository.ps1')

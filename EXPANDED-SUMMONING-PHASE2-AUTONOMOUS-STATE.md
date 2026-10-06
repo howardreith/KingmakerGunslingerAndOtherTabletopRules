@@ -36,9 +36,11 @@ no merge, release, tag, version bump, force push or permanent deployment.
   **`7b76dba2c9681b1702bed854a521b241b27a1250`**.
   Second failed body-research candidate:
   **`2045c302b071281c5dff71c883612d55218c7643`**.
-  Latest exact body-research candidate/current verified remote:
+  Latest exact body-research candidate:
   **`6bee8d5716bba1340adc3c629c88d15a1a1d8f25`**.
-  This containing reader/evidence checkpoint is its normal descendant; Sprint 17
+  Reader/evidence checkpoint/current verified remote before this extension:
+  **`3093a603e353365d3b33d64b309dd88781747be2`**.
+  This containing measured-floor checkpoint is its normal descendant; Sprint 17
   gameplay and visuals are still NOT QUALIFIED.
   Unexpected active-branch motion remains a stop; archive motion is informational.
 - Exclusive ignored receipt: `artifacts/laptop-source-owner-20261005.json`;
@@ -151,9 +153,14 @@ no merge, release, tag, version bump, force push or permanent deployment.
   No final visual/gameplay qualification: actor-relative low points are about
   -0.108m for snakes and +0.035..+0.312m for Salamander, not floor distances.
   Supporting frames show a questionable coil/body join and occluded hybrid tail.
-- Exact next action: push reader/evidence checkpoint; inspect native floor/pose
-  seam and extend current bone/view/floor measurements, then correct/review
-  original geometry. Use the tested reader in the next stable exact-head gate
+- Measured-floor extension is source only: native mask ray plus read-only native
+  movement projection, current skin/view/snap transforms, unknown-hit rejection,
+  negative clearance retained. Research expands to 23; 224 focused/17 reference
+  provenance checks and incremental compile PASS. PhysicsModule is a verified
+  non-copying private build reference; old bundle unchanged. No asset/gameplay edit.
+- Exact next action: freeze/push measured-floor research checkpoint; complete
+  exact-head gate with the fresh private bundle and isolated preflight. Capture
+  current pose/floor, then correct/review original geometry. Use the tested reader
   and complete affected fresh-Steam batch/restoration. Prove coil/ground/jaw,
   multi-renderer
   fallback/lifecycle. Continue separate Salamander manufactured-spear/tail seam and printed

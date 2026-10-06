@@ -52,5 +52,19 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             return clipPresence == null ? (int?)null : clipPresence.Count(value => value);
         }
+
+        // A navigation/actor origin is not a measured floor. Keep negative
+        // clearance (penetration) as evidence; never clamp it into a PASS.
+        internal static float? MeasuredGroundClearance(float vertexY, bool hit,
+            float floorY, float normalY, bool ownedCollider)
+        {
+            if (!hit || ownedCollider || !Finite(vertexY) || !Finite(floorY) ||
+                !Finite(normalY) || normalY < .2f || normalY > 1f) return null;
+            float clearance = vertexY - floorY;
+            return Finite(clearance) ? (float?)clearance : null;
+        }
+
+        internal static bool Finite(float value)
+        { return !float.IsNaN(value) && !float.IsInfinity(value); }
     }
 }

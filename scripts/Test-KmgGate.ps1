@@ -91,6 +91,15 @@ foreach ($step in @('repository-wrapper', 'complete-domain-suite',
 }
 Assert ($plan.Count -eq 5) 'plan-contains-exactly-the-five-operations'
 
+$missingInput = Join-Path ([IO.Path]::GetTempPath()) ('kmg-no-reference-input-' + [Guid]::NewGuid().ToString('N'))
+$portablePlan = @(& (Join-Path $PSScriptRoot 'Build-Local.ps1') -PlanOnly `
+    -ReferenceBundleDir $missingInput -KingmakerInstallDir $missingInput -MSBuildPath $missingInput)
+Assert (($portablePlan -join ',') -ceq ($plan -join ',')) 'plan-needs-no-game-references-or-compiler'
+Assert (Throws {
+    & (Join-Path $PSScriptRoot 'Build-Local.ps1') -ReferenceBundleDir $missingInput -KingmakerInstallDir $missingInput
+}) 'real-build-still-rejects-missing-reference-input-before-any-gate'
+Assert (-not (Test-Path -LiteralPath $missingInput)) 'plan-and-rejected-build-create-no-input-fixture'
+
 # The duplication the amendment named: Build-Local validates the repository
 # itself and must therefore tell test-domain.ps1 not to do it again.
 $buildLocal = Get-Content -LiteralPath (Join-Path $PSScriptRoot 'Build-Local.ps1') -Raw

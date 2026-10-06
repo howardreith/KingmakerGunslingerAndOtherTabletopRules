@@ -136,12 +136,46 @@ Lease Completed/recoveryRequired=false; no game/shared lock/staging.
 No save write or save-file access. All raw artifacts/three frames stay private;
 curated exact hashes and separate runtime/batch outcomes are in the evidence JSON.
 
-Next: push this coherent reader/evidence checkpoint, inspect the bounded native
-floor/pose seam, extend original-body measurements and correct/review the
-original geometry. Do not blindly rerun unchanged models just to repair a
-driver verdict. Freeze the next stable research candidate, run the complete
-exact-head gate and isolated preflight, use the tested reader, then the complete
-affected fresh-Steam smoke/body batch and exact leased restoration.
+## Measured-floor/current-pose extension (source only)
+
+The native IL audit identifies the static `UnitMovementAgentBase.Move` overload
+as a read-only projection: primary downward ray starts 2m above the point,
+length 100m, mask `0x200101`; a following sphere query can lift the result.
+The guarded fixture now records that native projection separately from actual
+ray hit/normal/collider and clearance at the actor and lowest original vertex.
+Missing hits, owned colliders, invalid/downward normals and nonfinite values
+remain unknown; negative clearance stays negative. No actor/nav height is
+substituted. No native position, snap bounds, late-update or collider is written.
+
+Native `SnapToTerrain` independently adjusts its child using donor bounds.
+Its bounds, flags and current transforms are now read, not overridden. Every
+idle/movement sample also contains complete row-major current skin-to-world
+matrices for private original-geometry replay. No native mesh/texture/clip data
+is exported or redistributed. Three completeness checks expand research to
+23 assertions, without accepting contact or waiving any negative measurement.
+
+The ray query needs UnityEngine.PhysicsModule as a non-copying build reference.
+Reference export, exact-install provenance, MSBuild and offline compiler lists
+agree. A fresh ignored private bundle preserves the old bundle unchanged;
+the module's installed SHA is
+`724ac786e5dceae9d24521b6dcfb3c595de7529b4a7096e70fd6871809ad2ac7`.
+Missing/mismatched physics inputs fail the provenance tests (17 checks PASS).
+The repository wrapper exposed an unrelated coupling in its descriptive
+`Build-Local -PlanOnly` test: it tried to validate the older default reference
+bundle before returning a plan. Plan-only now returns its same five steps
+without machine dependencies; behavior tests also prove a **real** build still
+rejects absent references before doing work. The original wrapper failure is
+not claimed as PASS. The new exact gate explicitly names the new private bundle.
+224 focused tests and incremental exact-reference compile PASS. No gameplay,
+asset or production attachment changes. Full exact-head prelaunch and runtime
+remain pending for this extension.
+
+Next: freeze this measured-floor research candidate, run the complete exact-head
+gate and isolated preflight using the fresh private bundle, use the tested JSON
+reader, then complete affected fresh-Steam smoke/body batch and exact leased
+restoration. This is a new observation strategy, not an unchanged retry for a
+green driver verdict. Use captured poses/floor to correct and review the original
+geometry afterward.
 
 After the evidence review, continue the separate manufactured-spear/tail seam,
 printed profiles/signatures, full visual lifecycle/contact/crowd and persistence
