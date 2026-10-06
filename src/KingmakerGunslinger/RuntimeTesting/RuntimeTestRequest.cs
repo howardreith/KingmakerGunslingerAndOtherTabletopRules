@@ -247,6 +247,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return "aerial-observer-foundation-exit-required";
             if (request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutDisposableWeatherFixture && !request.ExitAfterCompletion)
                 return "whiteout-disposable-exit-required";
+            if (request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedWhiteoutFoundation && !request.ExitAfterCompletion)
+                return "whiteout-foundation-exit-required";
             bool workingSmoke = request.Scenario ==
                 RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation ||
@@ -303,6 +305,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleUi ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleTerrain ||
                 request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedRaceTraitFoundations ||
+                request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedWhiteoutFoundation ||
                 request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutDisposableWeatherFixture ||
                 request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedAerialObserverFoundation ||
                 request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutWeather ||

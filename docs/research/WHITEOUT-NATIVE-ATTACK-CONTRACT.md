@@ -88,3 +88,62 @@ state was altered. Gate A failed exact scene-reference restoration, so the
 mission stopped before production implementation and two-process attack
 qualification. See [native weather blocker](WHITEOUT-NATIVE-WEATHER-CONTRACT.md)
 and the [handoff](../../CODEX-WHITEOUT-UNPUBLISHED-FOUNDATION-HANDOFF-2026-10-05.md).
+
+
+## Disposable-process continuation checkpoint — 2026-10-06
+
+The preceding inspection-only result remains historical. The owner revised the
+cross-area fixture boundary to a disposable no-save process, and the separate
+weather-only continuation checkpoint passed 15/15 assertions. That qualification
+preceded construction of the attack adapter.
+
+The current unpublished foundation adds only the exact 149-byte method postfix.
+Its Prepare gate pins native MVID `07fa1e4d-8618-41b3-9b8d-faa17d3b26f7`, declaring
+type, private instance zero-parameter boolean signature, required exact native
+fields/properties, weather/map contracts and the unchanged Seeking resolver.
+An unavailable contract skips the patch and makes the provider inactive. Every
+postfix invocation retains its original boolean, checks only the exact target's
+facts, revalidates current weather/map/indoor state, and preserves native false.
+It may change native true to false only for the exact provider and d100 1–10.
+No attack, damage, AC, range, threat, concealment classification or global RNG
+contract was changed.
+
+`WhiteoutWeatherProvider` owns one per-fact state and implements native
+`IWeatherChangeHandler` and `ISceneHandler`; native fact lifecycle manages its
+subscriptions. Provider blueprint identity is by exact reference, including its
+component's backlink. Equal names or copied random GUIDs do not qualify.
+`ConditionalWeakTable<RuleAttackRoll, WhiteoutNativeStageDecision>` values contain
+only Whiteout booleans/rolls, never native concealment results or unit references.
+Replays revalidate applicability, preserve a current native false and consume
+at most one extra roll, including a throwing/invalid RNG attempt. Errors keep
+the native result. Production rolls use `RulebookEvent.Dice.D100.Value`.
+Forced diagnostics require the closed foundation request, completed no-write
+working-save guard, current thread and exact registered rule; one queued roll
+cannot be borrowed by another rule with the same actor/target/weapon tuple.
+Cleanup removes every exact request-owned cache key and clears forced state.
+
+The first engineering run failed only its ray control: a friendly native target
+took AutoHit and did not call the stage. The failure was retained, auto-exited,
+restored weather and the 254-file live snapshot, and completed its lease.
+The fixture now uses an unregistered random-identity request-owned faction clone
+with the actual native Neutral flag. No registered faction or preexisting unit
+was changed. This causes a genuine native RangedTouch attack to reach the stage;
+it does not patch or bypass native automatic-hit logic.
+
+The corrected engineering candidate passed **65/65** assertions in a fresh Steam
+process, run `20261006T0449041404911Z-848e461d76554d54a1bfa0b2510cd692`.
+Real melee, natural, bow, firearm and canonical native RayWeapon/RangedTouch
+rules reached the seam. Native Partial 20% failure used zero Whiteout rolls;
+Partial success then Whiteout 10 missed, while 11 continued. Exact Last Word
+Seeking and native IgnoreConcealment bypassed; a foreign equal-name/copied-GUID
+Seeking marker did not. Exact-rule replay used one roll, native unforced d100
+was observed, another exact rule could not consume a queued diagnostic roll,
+and unrelated/unmarked/foreign-provider targets retained native behavior.
+
+This was a dirty-source engineering candidate embedded at the preceding weather
+checkpoint, not the final clean-artifact two-process qualification. Its exact
+artifact and failed/corrected run evidence will be recorded in the continuation
+handoff; the two required clean-source runs and smoke remain the next gate.
+No nonattack save/damage path, automatic-hit/miss branch or unproven maneuver
+coverage is claimed. No provider is registered, localized, icon-assigned or
+ordinarily acquired. WhiteoutPublished: false.
