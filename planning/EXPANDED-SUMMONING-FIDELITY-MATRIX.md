@@ -2,25 +2,26 @@
 
 ## Sprint 17 research, October 6 UTC — NOT QUALIFIED
 
-Exact c55b4f08 all prelaunch PASS (219 focused/2021 full), smoke 11/11,
-pose/weapon metadata 13/13, four captures, exact restoration. Failed b289 retained.
-[Research evidence](EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md).
-No Viper/Constrictor registration, new visuals or gameplay qualification yet.
-Native Water Elemental provenance is confirmed without an Eidolon dependency:
-seven skins, 43-bone body with spine/head/jaw but no continuous tail. Purple
-Worm's two-skin, continuous body chain supports a second original prototype;
-neither donor has snake motion/contact qualification. The existing Lizardfolk donor
-has a 39-bone body, armor skin and static club/shield meshes that must not
-survive Salamander's new owned visual/weapon seam. A separate native two-hand
-view has identical 39/19-bone body/armor bind frames, but grip/contact is
-unqualified. Water's actions are slams; worm locomotion exposes idle only.
-Fourteen private authoring tests and 74 new panels do not waive credible
-motion, ground support, jaw or spear/tail contacts. Identity/placements stay.
-Current source adds a supporting coil, six reproduced original mesh/paint
-files and exact-owned two-skin attachment. 222 focused tests PASS; no automatic
-production attachment and no native-motion/lifecycle/weapon qualification.
-Next request-local original-view acceptance, printed profiles/signatures and full hidden
-candidate. Prior S16 and accepted limitations remain unchanged.
+Latest exact21eecc67: all prelaunch PASS (228 focused/2030 full), smoke11
+PASS/body32 of34 FAIL, exactly restored08:55:18UTC. Both real snake bites
+have issued native animation-contact events and measured gap0. Viper movement
+did not run; Salamander's queued attack ended unstarted. Their precise causes
+were not recorded. Native two-hand spear attachment/adoption/rollback/owned
+cleanup and borrowed-native survival pass; no spear/tail grip/contact acceptance.
+Hybrid contact-window floor reaches-8.83cm and remains an open original-pose
+finding. [Seven exact attempts](EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-REVIEW.md).
+
+Six outward-winding original files use the native Purple Worm body chain and
+the separate Lizardfolk hybrid. Native Water Elemental provenance was resolved
+without an optional Eidolon dependency, but its body lacks the continuous tail.
+No new snakes registered or production visual attachment enabled; existing
+Salamander identity/placements unchanged. Final printed profiles/signatures,
+land skills, full pose/lifecycle/contact/crowd, persistence and publication open.
+Current fixture repair scopes RTWP before movement, isolates fresh target/owned
+group per cell while retaining native control/BAB, records command/condition/
+damage provenance and requires actual spear AND tail.229 focused/2031 registered,
+incremental exact compile/repository PASS only; full new exact runtime pending.
+Prior S16 and accepted limitations remain unchanged.
 
 ## Current Sprint 16 disposition, October 6 UTC — COMPLETE AND PUBLISHED
 

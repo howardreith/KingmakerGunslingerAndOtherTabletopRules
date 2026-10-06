@@ -1,5 +1,32 @@
 # Expanded Summoning Phase 2 journal
 
+## October 6,08:55 UTC -- exact21ee contact research FAIL, restored; observation repair
+
+All prelaunch PASS:228 focused/2030 full86.8s, full gate180.5s,491 preflight,
+81 orchestration/17 provenance, persistence11/3/19,crowd5/7,318-member strict
+package. Smoke11 PASS/body32 of34 FAIL. Viper travel/velocity0; Salamander
+CanStart/queued true but command finished without starting. No command-result,
+condition/pause/mode/damage-source trace proves an exact cause. Do not invent
+one or call this a production diagnosis. Both native snake bites are issued/
+non-opportunity/animation-contact true, measured gap0. Native spear adoption,
+rollback/owned destruction/borrowed survival and all reference/environment
+restoration pass. Hybrid contact-window original support reaches-8.83cm;
+final visuals remain open. Supporting art only is not mechanical diagnosis.
+Actual0845286601577Z snapshot restored08:55:18.2580581UTC;136/.117/tree,
+lease Completed/recoveryRequired=false; no game/shared lock/staging/save write.
+
+Changed strategy: scope RTWP before movement and create a fresh target only
+for each contact cell. Native UnitGroup inspection confirms an owned separate
+group/per-unit attack-faction relation can isolate a private target without
+changing the actor's native controllable faction or any original party/AI.
+Fail closed unless only the owned pair are enemies. Record actual command
+result/conditions/pause/mode/current turn and all damage-source identities;
+retain native BAB/iteratives, require issued spear AND exact tail, measure
+palm-to-shaft axis as well as sparse native vertices. Terminal rejection
+ends observation, not longer waits.229 focused/2031 registered, incremental
+exact compile/repository PASS. Repair has NOT run; next exact candidate gate.
+All seven attempts retained. S16 complete, S17 NOT QUALIFIED, no DATA import.
+
 ## October 6 -- bounded native spear and attack research candidate
 
 Normal descendant of7f503bb0; no DATA import or published blueprint changes.

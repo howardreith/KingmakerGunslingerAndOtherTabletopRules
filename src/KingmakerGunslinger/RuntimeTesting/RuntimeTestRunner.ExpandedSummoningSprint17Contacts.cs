@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Kingmaker;
 using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Root;
 using Kingmaker.Controllers.Combat;
 using Kingmaker.Controllers.Units;
 using Kingmaker.EntitySystem.Entities;
@@ -15,6 +16,7 @@ using Kingmaker.UI.SettingsUI;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Commands;
+using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.Utility;
 using Kingmaker.Visual.Animation.Kingmaker;
 using KingmakerGunslinger.Summoning;
@@ -30,6 +32,57 @@ namespace KingmakerGunslinger.RuntimeTesting
         private TimeSpan _serpentineClock;
         private UnitEntityData[] _serpentineAwake, _serpentineSelected;
         private UnitEntityData _serpentineGroup;
+        private readonly List<UnityEngine.Object> _serpentineContactPrototypes = new List<UnityEngine.Object>();
+
+        private UnitEntityData CreateSprint17ContactTarget(ExpandedSummoningCorrectionFixture fixture, Vector3 point)
+        {
+            // One fresh, inert, request-local faction and actor per contact
+            // cell. No faction attacks the party, and no private faction is
+            // used to satisfy the owner's native controllability predicate.
+            var faction = UnityEngine.Object.Instantiate(BlueprintRoot.Instance.DefaultPlayerCharacter.Faction);
+            _serpentineContactPrototypes.Add(faction);
+            faction.name = "KMG_Runtime_Sprint17_ContactNeutral";
+            faction.Peaceful = faction.AlwaysEnemy = faction.Neutral = faction.IsDirectlyControllable = false;
+            faction.Dummy = null; faction.AttackFactions = new BlueprintFaction[0];
+            var prototype = UnityEngine.Object.Instantiate(BlueprintRoot.Instance.DefaultPlayerCharacter);
+            _serpentineContactPrototypes.Add(prototype);
+            prototype.name = "KMG_Runtime_Sprint17_ContactTarget";
+            prototype.IsCheater = true; prototype.Faction = faction;
+            var target = Game.Instance.EntityCreator.SpawnUnit(prototype, point, Quaternion.identity, fixture.Scene);
+            if (target == null) throw new InvalidOperationException("Native contact target creation failed.");
+            fixture.Created.Add(target);
+            Game.Instance.EntityCreator.Tick();
+            SetExpandedSummoningBrainActive(target, false);
+            target.Descriptor.Stats.HitPoints.BaseValue = 100000;
+            target.Descriptor.State.AddCondition(UnitCondition.ImmuneToCombatManeuvers, null);
+            PlaceExpandedSummoningUnit(target, point);
+            return target;
+        }
+
+        private static JObject Sprint17NativeCommandState(UnitEntityData owner, UnitEntityData target, UnitCommand command)
+        {
+            var agent = owner.View.MovementAgent as Kingmaker.View.UnitMovementAgent;
+            var turn = Game.Instance.TurnBasedCombatController.CurrentTurn;
+            return new JObject { ["frame"] = Time.frameCount, ["paused"] = Game.Instance.IsPaused,
+                ["turnBasedSetting"] = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue,
+                ["inTurnBasedCombat"] = TurnBased.Controllers.CombatController.IsInTurnBasedCombat(),
+                ["currentTurnOwner"] = turn == null || turn.Unit == null ? null : turn.Unit.UniqueId,
+                ["gameTimeSeconds"] = Game.Instance.Player.GameTime.TotalSeconds,
+                ["canStart"] = command.CanStart, ["started"] = command.IsStarted, ["finished"] = command.IsFinished,
+                ["acted"] = command.IsActed, ["result"] = command.Result.ToString(),
+                ["queued"] = owner.Commands.Contains(command), ["inCombat"] = owner.IsInCombat,
+                ["velocity"] = agent == null ? JValue.CreateNull() : (JToken)SurveyVector(agent.Velocity),
+                ["position"] = SurveyVector(owner.Position), ["ownerControl"] = Sprint16ControlObservation(owner),
+                ["conditions"] = new JArray(Enum.GetValues(typeof(UnitCondition)).Cast<UnitCondition>()
+                    .Where(value => owner.Descriptor.State.HasCondition(value)).Select(value => value.ToString())),
+                ["target"] = target == null ? JValue.CreateNull() : (JToken)new JObject {
+                    ["id"] = target.UniqueId, ["position"] = SurveyVector(target.Position),
+                    ["destroyed"] = target.Destroyed, ["dead"] = target.Descriptor.State.IsDead,
+                    ["conscious"] = target.Descriptor.State.IsConscious, ["hpDamage"] = target.Descriptor.Damage,
+                    ["ownerEnemy"] = owner.IsEnemy(target), ["targetEnemy"] = target.IsEnemy(owner),
+                    ["conditions"] = new JArray(Enum.GetValues(typeof(UnitCondition)).Cast<UnitCondition>()
+                        .Where(value => target.Descriptor.State.HasCondition(value)).Select(value => value.ToString())) } };
+        }
 
         private void CaptureSprint17BodyEnvironment()
         {
@@ -121,23 +174,44 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 var action = owner.View.AnimationManager.GetAction(kind);
                 if (action == null) continue;
+                var special = action as Kingmaker.Visual.Animation.Kingmaker.Actions.UnitAnimationActionSpecialAttack;
                 var clips = action.Clips == null ? null : action.Clips.Where(value => value != null).ToArray();
                 actions.Add(new JObject { ["kind"] = kind.ToString(), ["actionClass"] = action.GetType().FullName,
+                    ["declaredType"] = special == null ? null : special.AttackType.ToString(),
                     ["clips"] = clips == null ? JValue.CreateNull() : (JToken)new JArray(clips.Select(clip =>
                         new JObject { ["name"] = clip.name, ["duration"] = clip.length })) });
             }
             row["nativeSpecialAttackCensus"] = actions;
-            var target = fixture.Hostile;
-            ResetExpandedSummoningHostile(fixture);
-            target.Descriptor.State.AddCondition(UnitCondition.ImmuneToCombatManeuvers, null);
             owner.Descriptor.Stats.HitPoints.BaseValue = 100000;
-            owner.Descriptor.Stats.BaseAttackBonus.BaseValue = 100;
-            row["contactFixtureInputs"] = "owned donor-only actor: BAB100/HP100000; owned target maneuver-immune; brain off; real RTWP full-attack command; no forced hit/animation/contact";
+            // Preserve native BAB/iterative count, especially the spear.
+            owner.Descriptor.Stats.AdditionalAttackBonus.BaseValue = 100;
+            row["contactFixtureInputs"] = "owned donor-only actor: additional attack bonus100/HP100000, native BAB/iteratives retained; fresh isolated owned target maneuver-immune; brain off; real RTWP full-attack command; no forced hit/animation/contact";
             var directions = new List<int>();
             string placement;
             Vector3 targetPoint = ExpandedSummoningOpenPoint(owner.Position, 1.5f, directions, out placement);
-            PlaceExpandedSummoningUnit(target, targetPoint);
+            var target = CreateSprint17ContactTarget(fixture, targetPoint);
             row["attackTargetPlacement"] = placement;
+            string originalGroup = owner.GroupId;
+            BlueprintFaction[] originalAttackFactions = owner.AttackFactions.ToArray();
+            // Native group relations cache per-unit attack factions. Isolate
+            // ONLY this owned actor's group before adding ONLY this target's
+            // private faction. The real controllable faction stays native.
+            owner.GroupId = "KMG_Runtime_Sprint17_" + owner.UniqueId;
+            owner.AttackFactions.Match(new[] { target.Faction });
+            var isolation = new JObject { ["ownerGroupIsParty"] = owner.Group.IsPlayerParty,
+                ["targetGroupIsParty"] = target.Group.IsPlayerParty, ["ownerControl"] = Sprint16ControlObservation(owner),
+                ["ownerEnemy"] = owner.IsEnemy(target), ["targetEnemy"] = target.IsEnemy(owner),
+                ["unrelatedEnemyCount"] = fixture.UnitsBefore.OfType<UnitEntityData>()
+                    .Count(value => value.IsEnemy(target) || target.IsEnemy(value)),
+                ["targetNativeFactionReference"] = fixture.Blueprints.OfType<BlueprintFaction>()
+                    .Any(value => ReferenceEquals(value, target.Faction)) };
+            row["contactIsolation"] = isolation;
+            bool isolated = !(bool)isolation["ownerGroupIsParty"] && !(bool)isolation["targetGroupIsParty"] &&
+                (bool)isolation["ownerEnemy"] && (bool)isolation["targetEnemy"] &&
+                (int)isolation["unrelatedEnemyCount"] == 0 && owner.IsDirectlyControllable;
+            _serpentineBodyAssertions.Add(Assertion("sprint17-owned-contact-isolation-" + key,
+                "only the two owned groups are enemies; native owner control; no original unit is hostile to the target",
+                isolation.ToString(), isolated, "No native faction/party/group/AI mutation; no save write."));
             owner.Memory.Add(target); target.Memory.Add(owner);
             foreach (UnitEntityData unit in new[] { owner, target })
                 if (!Game.Instance.State.AwakeUnits.Contains(unit)) Game.Instance.State.AwakeUnits.Add(unit);
@@ -163,9 +237,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             EventBus.Subscribe(observer);
             try
             {
+                if (!isolated) throw new InvalidOperationException("Request-local contact isolation failed closed.");
                 // Let the owned hostile's native appearance settle too.
                 for (int frame = 0; frame < 90; frame++) yield return 0;
                 attack.Init(owner);
+                row["attackBefore"] = Sprint17NativeCommandState(owner, target, attack);
                 row["attackCanStart"] = attack.CanStart;
                 owner.Commands.Run(attack);
                 row["attackQueued"] = owner.Commands.Contains(attack);
@@ -176,20 +252,36 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     yield return 0;
                     if (frames % 10 == 0 && poses.Count < 160)
-                        poses.Add(Sprint17OriginalBodySample(owner, attachment.Body));
+                    {
+                        var sample = Sprint17OriginalBodySample(owner, attachment.Body);
+                        sample["command"] = Sprint17NativeCommandState(owner, target, attack);
+                        poses.Add(sample);
+                    }
                     bool primary = contacts.OfType<JObject>().Any(value => (string)value["category"] == required);
                     bool secondary = key != "salamander" ||
                         contacts.OfType<JObject>().Any(value => (string)value["category"] != "Spear");
                     if (primary && secondary && attack.IsFinished) break;
+                    if (attack.IsFinished && !attack.IsStarted) break;
                 }
+                row["attackAfter"] = Sprint17NativeCommandState(owner, target, attack);
                 row["attackFrames"] = frames;
                 row["attackStarted"] = attack.IsStarted; row["attackFinished"] = attack.IsFinished;
                 row["attackRows"] = observer.Attacks.Count; row["damageRows"] = observer.Damage.Count;
-                bool complete = contacts.OfType<JObject>().Any(value => (string)value["category"] == required &&
-                    (bool?)value["issuedCommandExecuting"] == true && (bool?)value["opportunity"] == false &&
-                    (bool?)value["nativeAnimationContact"] == true) &&
+                row["damageProvenance"] = new JArray(observer.Damage.Select(value => new JObject {
+                    ["ownerInitiated"] = ReferenceEquals(value.Initiator, owner),
+                    ["initiator"] = value.Initiator == null ? null : value.Initiator.UniqueId,
+                    ["target"] = value.Target == null ? null : value.Target.UniqueId }));
+                Func<JObject, bool> measuredIssued = value => SerpentineRigSurveyPolicy.IsMeasuredIssuedContact(
+                    (bool?)value["ownedPair"] == true, (bool?)value["issuedCommandExecuting"] == true,
+                    (bool?)value["opportunity"] != false, (bool?)value["nativeAnimationContact"] == true,
+                    (int?)value["vertices"] ?? 0, (float?)value["nearestGapMeters"] ?? float.NaN);
+                bool complete = contacts.OfType<JObject>().Any(value =>
+                    (string)value["category"] == required && measuredIssued(value)) &&
                     contacts.OfType<JObject>().All(value => (bool?)value["finite"] == true) &&
-                    poses.Count >= 3 && poses.OfType<JObject>().All(value => (bool)value["poseFinite"]) && attack.IsStarted;
+                    poses.Count >= 3 && poses.OfType<JObject>().All(value => (bool)value["poseFinite"]) && attack.IsStarted &&
+                    observer.Damage.All(value => ReferenceEquals(value.Initiator, owner)) &&
+                    (key != "salamander" || contacts.OfType<JObject>().Any(value =>
+                        (bool?)value["exactHybridTail"] == true && measuredIssued(value)));
                 _serpentineBodyAssertions.Add(Assertion("sprint17-native-attack-research-" + key,
                     "actual issued native primary attack with finite exact current-pose measurements",
                     "contacts=" + contacts.Count + ";poses=" + poses.Count + ";started=" + attack.IsStarted,
@@ -217,6 +309,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 InterruptExpandedSummoningFixtureCommands(owner);
                 owner.CombatState.LeaveCombat(); target.CombatState.LeaveCombat();
                 target.Descriptor.State.RemoveConditionAll(UnitCondition.ImmuneToCombatManeuvers);
+                owner.AttackFactions.Match(originalAttackFactions);
+                owner.GroupId = originalGroup;
+                target.Destroy(); Game.Instance.EntityDestroyer.Tick();
                 Game.Instance.Player.UpdateIsInCombat();
             }
         }
@@ -226,6 +321,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             var result = new JObject { ["frame"] = Time.frameCount, ["category"] = rule.Weapon.Blueprint.Category.ToString(),
                 ["weapon"] = rule.Weapon.Blueprint.AssetGuid, ["opportunity"] = rule.IsAttackOfOpportunity,
+                ["ownedPair"] = ReferenceEquals(rule.Initiator, owner) && ReferenceEquals(rule.Target, target),
+                ["exactHybridTail"] = rule.Weapon.Blueprint.name == "KMG_Summoning_Special_Salamander_Tail",
                 ["nativeAnimationContact"] = owner.Commands.Raw.OfType<UnitAttack>().Any(value =>
                     value.Animation != null && value.Animation.IsActed), ["finite"] = false };
             var targetMesh = target.View.GetComponentsInChildren<SkinnedMeshRenderer>(true)
@@ -240,7 +337,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (string side in new[] { "R", "L" })
                 {
                     Transform palm = attachment.Body.bones.Single(value => value.name == side + "_Palm");
-                    result[side + "PalmToSpearMeters"] = points.Min(point => Vector3.Distance(point, palm.position));
+                    Bounds spearBounds = filter.sharedMesh.bounds;
+                    Vector3 a = filter.transform.TransformPoint(spearBounds.center - Vector3.up * spearBounds.extents.y);
+                    Vector3 b = filter.transform.TransformPoint(spearBounds.center + Vector3.up * spearBounds.extents.y);
+                    Vector3 axis = b - a;
+                    Vector3 onAxis = a + axis * Mathf.Clamp01(Vector3.Dot(palm.position - a, axis) / axis.sqrMagnitude);
+                    result[side + "PalmToSpearAxisMeters"] = Vector3.Distance(onAxis, palm.position);
+                    result[side + "PalmToNearestSpearVertexMeters"] = points.Min(point => Vector3.Distance(point, palm.position));
                 }
                 result["poseMethod"] = "native spear vertex transformed by its existing weapon renderer";
             }
