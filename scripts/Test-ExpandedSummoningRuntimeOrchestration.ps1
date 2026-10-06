@@ -68,6 +68,89 @@ foreach ($invalidBodyJson in @('null', '[]', '{}', '[',
     Assert-True $rejected 'malformed, missing, wrapped, duplicate, foreign or reordered body evidence fails closed'
 }
 
+$snakeRows = @()
+$snakeAssertions = @()
+foreach ($key in @('viper', 'constrictor-snake')) {
+    foreach ($fault in @($true, $false)) {
+        $snakeRows += [pscustomobject]@{ key=$key; scope='production hidden-snake body binding'
+            faultInjected=$fault; gameplayQualified=$false; intact=$true }
+        $case = if ($fault) { 'rollback' } else { 'normal' }
+        foreach ($kind in @('binding', 'scale', 'once', 'destroy')) {
+            $snakeAssertions += [pscustomobject]@{
+                name=('sprint17-production-' + $kind + '-' + $key + '-' + $case); status='PASS' }
+        }
+    }
+}
+foreach ($key in @('viper', 'constrictor-snake')) {
+    foreach ($kind in @('scores', 'defenses', 'land-skills', 'one-bite', 'base',
+        'strength-plus4', 'strength-seven', 'native-animal-growth', 'modifiers-restored')) {
+        $snakeRows += [pscustomobject]@{ key=$key; check=($key + '-' + $kind); passed=$true }
+        $snakeAssertions += [pscustomobject]@{
+            name=('sprint17-snake-profile-' + $key + '-' + $kind); status='PASS' }
+    }
+}
+foreach ($name in @('sprint17-production-native-worm-negative-control',
+    'sprint17-body-environment-restored', 'sprint17-body-fixture-cleanup', 'loaded-mod-version')) {
+    $snakeAssertions += [pscustomobject]@{ name=$name; status='PASS' }
+}
+$snakeJson = ConvertTo-Json -InputObject $snakeRows -Depth 6
+$collectedRows = @(ConvertFrom-KmgSnakeProfileSliceEvidence -Json $snakeJson -Assertions $snakeAssertions)
+Assert-Equal 22 $collectedRows.Count 'Windows PowerShell collects22 real snake rows, not one nested array'
+Assert-Equal 18 @($collectedRows | Where-Object { $_.PSObject.Properties['check'] }).Count 'all18 profile observations survive collection'
+Assert-Equal 'viper,viper,constrictor-snake,constrictor-snake' ($collectedRows[0..3].key -join ',') 'all four normal/rollback rows retain exact scope'
+foreach ($badJson in @('null', '{}', '[]', '[', ('[' + $snakeJson + ']'),
+    (ConvertTo-Json -InputObject $snakeRows[0..20] -Depth 6),
+    (ConvertTo-Json -InputObject ($snakeRows + $snakeRows[0]) -Depth 6))) {
+    $rejected = $false
+    try { $null = ConvertFrom-KmgSnakeProfileSliceEvidence -Json $badJson -Assertions $snakeAssertions }
+    catch { $rejected = $true }
+    Assert-True $rejected 'malformed, nested, missing or extra snake rows fail closed'
+}
+foreach ($mutate in @(
+    { param($rows) $rows[0].key='salamander' },
+    { param($rows) $rows[1].key='Viper' },
+    { param($rows) $rows[0].scope='donor research' },
+    { param($rows) $rows[0].faultInjected='true' },
+    { param($rows) $rows[0].faultInjected=$false },
+    { param($rows) $rows[0].gameplayQualified=$true },
+    { param($rows) $rows[0].intact=$false },
+    { param($rows) $rows[0].intact='true' },
+    { param($rows) $rows[4].check=$rows[5].check },
+    { param($rows) $rows[4].check='foreign-scores' },
+    { param($rows) $rows[4].key='constrictor-snake' },
+    { param($rows) $rows[4].passed=$false },
+    { param($rows) $rows[4].passed='true' },
+    { param($rows) $rows[4].PSObject.Properties.Remove('passed') },
+    { param($rows) $rows[4]=$null }
+)) {
+    $changedRows = $snakeJson | ConvertFrom-Json
+    & $mutate $changedRows
+    $rejected = $false
+    try { $null = ConvertFrom-KmgSnakeProfileSliceEvidence -Json (ConvertTo-Json -InputObject $changedRows -Depth 6) -Assertions $snakeAssertions }
+    catch { $rejected = $true }
+    Assert-True $rejected 'wrong keys, duplicate checks, invalid bools and failed observations cannot pass'
+}
+$assertionsJson = ConvertTo-Json -InputObject $snakeAssertions
+foreach ($mutate in @(
+    { param($rows) $rows[0].name=$rows[1].name },
+    { param($rows) $rows[0].name='foreign-assertion' },
+    { param($rows) $rows[0].status='FAIL' },
+    { param($rows) $rows[0].PSObject.Properties.Remove('status') }
+)) {
+    $changedAssertions = $assertionsJson | ConvertFrom-Json
+    & $mutate $changedAssertions
+    $rejected = $false
+    try { $null = ConvertFrom-KmgSnakeProfileSliceEvidence -Json $snakeJson -Assertions $changedAssertions }
+    catch { $rejected = $true }
+    Assert-True $rejected '38 native assertions must be exact, unique and explicitly passed'
+}
+foreach ($badAssertions in @(@(), $snakeAssertions[0..36], ($snakeAssertions + $snakeAssertions[0]))) {
+    $rejected = $false
+    try { $null = ConvertFrom-KmgSnakeProfileSliceEvidence -Json $snakeJson -Assertions $badAssertions }
+    catch { $rejected = $true }
+    Assert-True $rejected 'empty, partial or extra native assertion sets fail closed'
+}
+
 Assert-True (Test-KmgBatchCandidateUnavailable -FirstScenario $true -HasEvidence $false -HasDeployment $false -LauncherOutcome 'Unclean') `
     'a failed pre-launch candidate stops repeated full gates'
 foreach ($case in @(
