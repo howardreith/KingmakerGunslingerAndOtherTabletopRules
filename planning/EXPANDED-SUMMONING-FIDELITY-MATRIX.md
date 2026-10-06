@@ -10,7 +10,8 @@ are implemented; original icons pass agent small-size/grayscale inspection.
 (83.8s), repository/static/icon/manifest, clean exact Release and strict320-member
 package;177.8s total. The later [view hook](EXPANDED-SUMMONING-SPRINT17-SNAKE-VIEW-INTEGRATION.md)
 adds exact two-identity automatic body binding and17 unexecuted guarded checks;
-247 focused/2049 full86.4s and dirty source build/strict package PASS184.1s.
+247 focused/2049 full86.4s and dirty source build/strict package PASS184.1s;
+committed c1ece8d7 subsequently PASS179.2s with2049 tests85.1s and strict320.
 No new runtime evidence. Original-body production qualification, actual final profiles,
 poison/constrict cadence,commands,UI,lifecycle,persistence and routes remain
 unqualified. Salamander's existing unit,placements and painting are unchanged;

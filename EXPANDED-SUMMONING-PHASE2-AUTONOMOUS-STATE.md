@@ -19,8 +19,8 @@ deployment, force push or prohibited substitute subsystems.
   2026-10-05T19:29:25.9127956Z; holder PID15084/start2026-10-05T20:34:17.3075720Z.
   Session-scoped; refresh heartbeat and release only on actual session ending.
   All safety refs, bundles and failed artifacts are retained.
-- This view-integration checkpoint descends from pushed evidence
-  `dfe12b8ec971e99b721585204b49a51b3aed6f15`; no concurrent remote motion.
+- Exact view source `c1ece8d736403108e27027afed91202149808edb` is pushed;
+  this evidence-only checkpoint descends from it; no concurrent remote motion.
   Unexpected active-branch motion remains a stop; DATA motion informational.
 - [Snake source review](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SOURCE-REVIEW.md):
   exact79cf complete source gate PASS:2048 unfiltered tests (83.8s), repository/
@@ -35,7 +35,9 @@ deployment, force push or prohibited substitute subsystems.
   written, NOT RUN.247 focused/2049 full86.4s, repository, clean exact-reference
   Release and strict320-member package PASS184.1s on dirty source. Initial
   fixture variable-shadow compile failure retained; corrected locally.
-  Committed exact artifact gate next; no dirty package may be deployed.
+  Committed c1ece8d7 gate subsequently PASS179.2s:2049 full85.1s, repository,
+  clean exact Release and strict320-member package. Exact hashes and archive
+  recorded; no dirty package may be deployed.
 - 73 identities append to the unchanged2836-entry prefix. Current surface:
   97 units,1008 registered /976 published /32 withheld placements,29 wrappers,
   1005 visible choices. Viper and Constrictor Snake remain wholly hidden.
@@ -55,11 +57,14 @@ Salamander identity/placements/art remain unchanged; its separate spear/tail
 implementation is unresolved. No Lizardfolk spear relabeling, blind human
 bind deduplication or contact waiver is accepted.
 
-Next: freeze/push the view checkpoint and run its committed source gate;
-complete closed snake mechanics fixtures and qualify the exact production views;
+Next: complete closed snake mechanics fixtures and qualify the exact production views;
 continue the bounded Salamander-specific native spear/tail implementation.
 Then one stable Sprint17 hidden batch, publication gate, full Phase2B closure.
 Do not repeat the closed donor metadata census as a substitute for playback.
+One hidden Unity2018 editor probe confirmed its current invalid license; it
+self-exited, no editor/child remains, and no activation was attempted. Do not
+retry that route without external license-state change. This is not a blocker
+to independent snakes, nor an accepted Salamander visual omission.
 
 Last guarded runtime remains exacta90494e1, RESEARCH ONLY smoke11/metadata16
 PASS. Human1776-slot/177-transform palette has17 disagreeing weapon-storage
