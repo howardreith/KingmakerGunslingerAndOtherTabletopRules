@@ -3,6 +3,54 @@ Set-StrictMode -Version Latest
 
 $script:KmgRuntimeEvidenceRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-evidence'
 $script:KmgRuntimeScenarioMetadata = [ordered]@{
+    'observe-unpublished-whiteout-foundation' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
+    'observe-whiteout-disposable-weather-fixture' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
+    'observe-unpublished-aerial-observer-foundation' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
+    'observe-published-elemental-character-traits' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
+    'observe-unpublished-race-trait-foundations' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
+    'observe-whiteout-weather-catalog' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'observe-model-d-vendors' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    'observe-firearm-descriptions' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
     'mod-load-smoke' = [pscustomobject]@{
         RequiresSaveName = $false; PermittedSaveName = $null
         RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
@@ -834,6 +882,12 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
     }
     'disposable-magic-circle-ui' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
+    'observe-whiteout-weather' = [pscustomobject]@{
         RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
         RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
         TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
@@ -1880,6 +1934,21 @@ function Assert-KmgRuntimeScenarioPreflight {
     if ($Scenario -cin @('disposable-magic-circle-profile', 'disposable-magic-circle-terrain') -and -not $ExitAfterCompletion) {
         throw 'The native Magic Circle profile fixture requires automatic exit.'
     }
+    if ($Scenario -ceq 'observe-whiteout-disposable-weather-fixture' -and -not $ExitAfterCompletion) {
+        throw 'Disposable Whiteout weather fixture requires automatic exit.'
+    }
+    if ($Scenario -ceq 'observe-unpublished-whiteout-foundation' -and -not $ExitAfterCompletion) {
+        throw 'Unpublished Whiteout foundation requires automatic exit.'
+    }
+    if ($Scenario -ceq 'observe-whiteout-weather' -and -not $ExitAfterCompletion) {
+        throw 'Whiteout read-only observation requires automatic exit.'
+    }
+    if ($Scenario -cin @('observe-unpublished-race-trait-foundations','observe-published-elemental-character-traits') -and -not $ExitAfterCompletion) {
+        throw 'Unpublished race trait foundations require automatic exit.'
+    }
+    if ($Scenario -ceq 'observe-unpublished-aerial-observer-foundation' -and -not $ExitAfterCompletion) {
+        throw 'Unpublished Aerial Observer foundation requires automatic exit.'
+    }
     $metadata = Get-KmgRuntimeScenarioMetadata -Scenario $Scenario
     $qualifiedElementalRaces114 =
         $PermitQualifiedElementalRaces114 -and
@@ -1896,9 +1965,10 @@ function Assert-KmgRuntimeScenarioPreflight {
         $Parameters.Count -ne 1 -or $Parameters.saveName -cne 'KMG_AUTOMATION_WORKING')) {
         throw 'Public 0.0.117 authority permits only its exact disposable persistence producer, without another producer authority.'
     }
-    if ($ExpectedVersion -cne '0.0.141' -and
+    $activeVersion = (Get-KmgModInfo -RepositoryRoot (Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot)).Version
+    if ($ExpectedVersion -cne $activeVersion -and
         -not $qualifiedElementalRaces114 -and -not $qualifiedElementalRaces117) {
-        throw 'ExpectedVersion must be exactly the active version 0.0.141.'
+        throw "ExpectedVersion must be exactly the active version $activeVersion."
     }
     if ($TimeoutSeconds -lt 5 -or $TimeoutSeconds -gt 1800) {
         throw 'TimeoutSeconds must be from 5 through 1800.'

@@ -196,8 +196,8 @@ namespace KingmakerGunslinger.Blueprints
         {
             string localizationStem = "KMG.Item." + spec.DisplayName.Replace(" ", string.Empty);
             string descriptionText = spec.Definition.IsScatter
-                ? "Uses black powder and lead balls. It can fire a lead ball or use Scatter Shot to fire pellets in a 15-foot cone. It can misfire and must be reloaded."
-                : "Uses black powder and lead balls. It can misfire and must be reloaded.";
+                ? "This firearm fires lead balls driven by black powder, or pellets in a 15-foot cone with Scatter Shot. It can misfire, and it must be reloaded to fire again."
+                : "This firearm fires lead balls driven by black powder. It can misfire, and it must be reloaded to fire again.";
             descriptionText += " " + FirearmPenetrationPresentation.Describe(
                 spec.Definition);
             var name = LocalizationService.Create(localizationStem + ".Name", spec.DisplayName);

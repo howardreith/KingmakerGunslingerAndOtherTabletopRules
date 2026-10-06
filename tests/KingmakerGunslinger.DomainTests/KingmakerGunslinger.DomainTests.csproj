@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.props" Condition="Exists('$(MSBuildToolsPath)\Microsoft.Common.props')" />
   <Import Project="..\..\GamePath.props" Condition="Exists('..\..\GamePath.props')" />
@@ -1068,4 +1068,30 @@
   </ItemGroup>
 
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Compile Include="FieryGlareFoundationTests.cs" />
+    <Compile Include="StoicDignityFoundationTests.cs" />
+    <Compile Include="AerialObserverFoundationTests.cs" />
+    <Compile Include="WhiteoutPolicyTests.cs" />
+    <Compile Include="WhiteoutNativeContractTests.cs" />
+    <Compile Include="WhiteoutNativeFoundationTests.cs" />
+    <Compile Include="WhiteoutContinuationTests.cs" />
+    <Compile Include="ElementalCharacterTraitReadinessTests.cs" />
+    <Compile Include="ModelDVendorTests.cs" />
+    <Compile Include="FirearmItemDescriptionTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\\WhiteoutPolicy.cs"><Link>ElementalRaces\WhiteoutPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\\StoicDignityPolicy.cs"><Link>ElementalRaces\StoicDignityPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\\AerialObserverPolicy.cs"><Link>ElementalRaces\AerialObserverPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\\WhiteoutFoundationPolicy.cs"><Link>ElementalRaces\WhiteoutFoundationPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\\ElementalCharacterTraitCatalog.cs"><Link>ElementalRaces\ElementalCharacterTraitCatalog.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\\ElementalCharacterTraitAssetGate.cs"><Link>ElementalRaces\ElementalCharacterTraitAssetGate.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\\ElementalCharacterTraitPublicationTransaction.cs"><Link>ElementalRaces\ElementalCharacterTraitPublicationTransaction.cs</Link></Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmEnchantmentItemText.cs"><Link>Firearms\FirearmEnchantmentItemText.cs</Link></Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ElementalCharacterTraitCanonicalTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\CharacterTraitCanonicalAdmission.cs"><Link>ElementalRaces\CharacterTraitCanonicalAdmission.cs</Link></Compile>
+  </ItemGroup>
 </Project>

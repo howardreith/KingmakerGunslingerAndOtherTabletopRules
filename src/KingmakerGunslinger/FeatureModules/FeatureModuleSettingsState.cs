@@ -20,6 +20,7 @@ namespace KingmakerGunslinger.FeatureModules
             Recovered = recovered;
         }
 
+        internal event Action ElementalCharacterTraitsChanged;
         internal FeatureModuleConfiguration Active { get; private set; }
         internal FeatureModuleConfiguration Pending { get; private set; }
         internal string Path { get; private set; }
@@ -32,9 +33,13 @@ namespace KingmakerGunslinger.FeatureModules
             bool easternWeapons, bool brownFurTransmuter, bool urbanBarbarian,
             bool bodyguardFeats, bool protectionFromAlignmentControlImmunity,
             bool elementalRaces, bool teleportationSpells, bool magicCircleSpells = true)
-        { Pending = new FeatureModuleConfiguration(gunslinger, acadamaeGraduate,
-            shieldOther, expandedSummoning, elvenBranchedSpears, easternWeapons,
-            brownFurTransmuter, urbanBarbarian, bodyguardFeats,
-            protectionFromAlignmentControlImmunity, elementalRaces, teleportationSpells, magicCircleSpells); }
+        {
+            bool traitsChanged=Pending.ElementalRaces!=elementalRaces;
+            Pending = new FeatureModuleConfiguration(gunslinger, acadamaeGraduate,
+                shieldOther, expandedSummoning, elvenBranchedSpears, easternWeapons,
+                brownFurTransmuter, urbanBarbarian, bodyguardFeats,
+                protectionFromAlignmentControlImmunity, elementalRaces, teleportationSpells, magicCircleSpells);
+            if(traitsChanged) ElementalCharacterTraitsChanged?.Invoke();
+        }
     }
 }

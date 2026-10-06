@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -80,7 +80,7 @@ namespace KingmakerGunslinger.DomainTests
                     "Milestone at " + index);
             }
             Assertions.Equal(240, entries.Count(value => ((string)value["symbol"]).StartsWith(
-                "KMG.ElementalRaces.", StringComparison.Ordinal) && (string)value["status"] == "active"),
+                "KMG.ElementalRaces.", StringComparison.Ordinal) && !((string)value["symbol"]).StartsWith("KMG.ElementalRaces.CharacterTraits.",StringComparison.Ordinal) && (string)value["status"] == "active"),
                 "The pinned elemental race inventory is unchanged.");
         }
 

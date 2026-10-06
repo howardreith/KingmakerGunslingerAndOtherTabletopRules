@@ -1543,4 +1543,37 @@
   </Target>
 
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Compile Include="Firearms\FirearmEnchantmentItemText.cs" />
+    <Compile Include="Blueprints\OlegFirearmVendorBlueprints.cs" />
+    <Compile Include="ElementalRaces\UnpublishedRaceTraitFoundationFactory.cs" />
+    <Compile Include="ElementalRaces\StoicDignityPolicy.cs" />
+    <Compile Include="ElementalRaces\StoicDignityMechanics.cs" />
+    <Compile Include="ElementalRaces\AerialObserverPolicy.cs" />
+    <Compile Include="ElementalRaces\AerialObserverMechanics.cs" />
+    <Compile Include="ElementalRaces\UnpublishedAerialObserverFoundationFactory.cs" />
+    <Compile Include="ElementalRaces\WhiteoutPolicy.cs" />
+    <Compile Include="ElementalRaces\WhiteoutFoundationPolicy.cs" />
+    <Compile Include="ElementalRaces\WhiteoutNativeMechanics.cs" />
+    <Compile Include="ElementalRaces\DormantElementalCharacterTraitFactory.cs" />
+    <Compile Include="ElementalRaces\ElementalCharacterTraitCatalog.cs" />
+    <Compile Include="ElementalRaces\ElementalCharacterTraitAssetGate.cs" />
+    <Compile Include="ElementalRaces\ElementalCharacterTraitPublicationTransaction.cs" />
+    <Compile Include="ElementalRaces\ElementalCharacterTraitOwnedGrant.cs" />
+    <Compile Include="RuntimeTesting\WhiteoutGuardedDiagnostics.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmDescriptions.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ModelDVendors.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.WhiteoutWeather.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.WhiteoutCatalog.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.PublishedElementalCharacterTraits.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.UnpublishedRaceTraitFoundations.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.UnpublishedAerialObserverFoundation.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.UnpublishedWhiteoutFoundation.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.WhiteoutAttackFixture.cs" />
+  </ItemGroup>
+  <ItemGroup><Compile Include="ElementalRaces\ElementalCharacterTraitNativeGraph.cs" /></ItemGroup>
+  <ItemGroup><Compile Include="ElementalRaces\ElementalCharacterTraitPublicationCoordinator.cs" /></ItemGroup>
+  <ItemGroup>
+    <Compile Include="ElementalRaces\CharacterTraitCanonicalAdmission.cs" />
+  </ItemGroup>
 </Project>

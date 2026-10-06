@@ -24,6 +24,7 @@ namespace KingmakerGunslinger.Blueprints
             internal string Symbol { get; private set; }
             internal string Key { get; private set; }
             internal Type BlueprintType { get; private set; }
+            internal bool IsCharacterTrait => Symbol.StartsWith("KMG.ElementalRaces.CharacterTraits.", StringComparison.Ordinal);
             internal bool IsMagicCircle => Symbol.StartsWith("KMG.Spells.MagicCircle.", StringComparison.Ordinal);
             internal bool IsStrategic => Symbol.StartsWith("KMG.Spells.", StringComparison.Ordinal) && !IsMagicCircle;
 
@@ -40,6 +41,11 @@ namespace KingmakerGunslinger.Blueprints
         }
 
         private static readonly Binding[] Entries = {
+            new Binding("KMG.ElementalRaces.CharacterTraits.FieryGlare.Feature", "fiery-glare", typeof(BlueprintFeature)),
+            new Binding("KMG.ElementalRaces.CharacterTraits.FieryGlare.Toggle", "fiery-glare", typeof(BlueprintActivatableAbility)),
+            new Binding("KMG.ElementalRaces.CharacterTraits.StoicDignity.Feature", "stoic-dignity", typeof(BlueprintFeature)),
+            new Binding("KMG.ElementalRaces.CharacterTraits.AerialObserver.Feature", "aerial-observer", typeof(BlueprintFeature)),
+            new Binding("KMG.ElementalRaces.CharacterTraits.Whiteout.Feature", "whiteout", typeof(BlueprintFeature)),
             new Binding("KMG.ElementalRaces.Ifrit.Race", "general-ifrit", typeof(BlueprintRace)),
             new Binding("KMG.ElementalRaces.Ifrit.FireResistance", "fire-resistance", typeof(BlueprintFeature)),
             new Binding("KMG.ElementalRaces.Ifrit.FireAffinity", "fire-affinity", typeof(BlueprintFeature)),
@@ -215,7 +221,7 @@ namespace KingmakerGunslinger.Blueprints
             if (library == null || manifest == null) throw new ArgumentNullException("library/manifest");
             // Preserve the existing independent Teleportation registration failure
             // boundary. An OFF module still registers its save-hydration identities.
-            var targets = Entries.Where(value => (!value.IsStrategic || strategicIdentitiesRegistered) &&
+            var targets = Entries.Where(value => (!value.IsCharacterTrait || KingmakerGunslinger.ElementalRaces.ElementalCharacterTraitPublicationCoordinator.GraphRegistered) && (!value.IsStrategic || strategicIdentitiesRegistered) &&
                     (!value.IsMagicCircle || KingmakerGunslinger.Bootstrap.BlueprintBootstrap.MagicCircles != null))
                 .Select(value => new { Blueprint = value.Resolve(library, manifest),
                     Icon = ProjectAssetIcons.RequireIcon(value.Key) }).ToArray();

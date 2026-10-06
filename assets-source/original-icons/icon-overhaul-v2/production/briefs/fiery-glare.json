@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "key": "fiery-glare",
+  "draft": false,
+  "publicationStatus": "original asset technically reviewed; owner aesthetics NOT_RECORDED",
+  "behavior": "Native success-only take-10 adaptation for Intimidate, optional off-by-default free toggle; combat-compatible.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/DormantElementalCharacterTraitFactory.cs",
+    "src/KingmakerGunslinger/ElementalRaces/ElementalCharacterTraitCatalog.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/fiery-glare.png",
+  "sourceSha256": "a3ed28c9a92940f60cee501ecd429e7e4d7c5bd7d8f6f209124985d6863005e3",
+  "tool": "built-in image_gen.imagegen",
+  "referenceImages": [],
+  "prompt": "Use case: stylized-concept.\nAsset type: one original hand-painted fantasy CRPG character-trait icon, in a cohesive four-icon painted-magical family.\nOutput exactly ONE standalone square image, 1024x1024 pixels or larger, full-bleed opaque dark painted background. Never make a collage, panels, contact sheet, sprite sheet, mockup, border, or frame.\nStyle: rich hand-painted fantasy materials, broad deliberate brushwork, sculpted light and shadow, crisp focal silhouette with softer peripheral edges. Controlled dramatic elemental lighting; restrained secondary details; neither photorealistic nor a 3D render. The entire icon is a compact symbolic composition, not a portrait scene or landscape. Use the same medium, contrast discipline, edge treatment and detail density as a coherent four-image art family.\nComposition: one dominant subject filling most of the central square, every essential form fully inside the canvas with a safe dark perimeter; important shapes must not be cut off. Strong immediate recognition at 128x128, 48x48, and especially 32x32. Keep the primary silhouette legible in grayscale; do not rely on color alone. Reduce tiny clutter and concentrate value contrast on the dominant subject.\nOriginality: invent a fresh composition. No copying, tracing, remixing, close imitation of any existing icon, recognizable real person, established fictional character, or copyrighted logo.\nAbsolute exclusions: no text, letters, numbers, runes, logos, monograms, caption, signature, watermark, decorative border, UI overlays or state marks. No vector/flat graphics, anime, cartoons, pixel art, generic placeholders, or modern props.\nPrimary subject: a single large ember-lit eye and severe brow, with an iris formed of controlled living flame. The almond-shaped eye is the unmistakable dominant silhouette, completely contained in the square. A focused intimidating gaze conveys command and supernatural confidence: deliberate and composed, never screaming, enraged, friendly, startled, or monstrous. Show only the local eye, eyelids and brow, not a complete face or portrait. Amber and molten orange illuminate the flame-shaped iris against restrained crimson and deep red-black shadows. A narrow hot edge at the lids and brow suggests Ifrit elemental heat. A few dim sparks and subtle heat shimmer may recede into the dark background, without competing with the eye.\nThe icon must communicate an Ifrit whose gaze itself intimidates. Keep distinct from a generic flame emblem, fireball, fire-vision spell, inner-flame spell, explosion or fiery wings. Prioritize the eye and commanding expression over decorative flame.",
+  "visualStatus": "awaiting-owner-production-review",
+  "subjectAndSilhouette": "An ember-lit eye with a flame iris and an unmistakably intimidating gaze; Ifrit warmth, focused amber light, restrained red-black ground.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "ifrit-traits",
+  "confusedWith": [
+    "firesight",
+    "inner-flame"
+  ],
+  "uiSurfaces": [
+    "action bar / tooltip",
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No text, letters, numbers, monogram, procedural substitute, placeholder or donor art.",
+    "No claim of owner art or UI approval.",
+    "Keep the exact trait subject and elemental race identity."
+  ],
+  "generationLineage": [
+    {
+      "stage": "initial",
+      "tool": "built-in image_gen",
+      "prompt": "Use case: stylized-concept.\nAsset type: one original hand-painted fantasy CRPG character-trait icon, in a cohesive four-icon painted-magical family.\nOutput exactly ONE standalone square image, 1024x1024 pixels or larger, full-bleed opaque dark painted background. Never make a collage, panels, contact sheet, sprite sheet, mockup, border, or frame.\nStyle: rich hand-painted fantasy materials, broad deliberate brushwork, sculpted light and shadow, crisp focal silhouette with softer peripheral edges. Controlled dramatic elemental lighting; restrained secondary details; neither photorealistic nor a 3D render. The entire icon is a compact symbolic composition, not a portrait scene or landscape. Use the same medium, contrast discipline, edge treatment and detail density as a coherent four-image art family.\nComposition: one dominant subject filling most of the central square, every essential form fully inside the canvas with a safe dark perimeter; important shapes must not be cut off. Strong immediate recognition at 128x128, 48x48, and especially 32x32. Keep the primary silhouette legible in grayscale; do not rely on color alone. Reduce tiny clutter and concentrate value contrast on the dominant subject.\nOriginality: invent a fresh composition. No copying, tracing, remixing, close imitation of any existing icon, recognizable real person, established fictional character, or copyrighted logo.\nAbsolute exclusions: no text, letters, numbers, runes, logos, monograms, caption, signature, watermark, decorative border, UI overlays or state marks. No vector/flat graphics, anime, cartoons, pixel art, generic placeholders, or modern props.\nPrimary subject: a single large ember-lit eye and severe brow, with an iris formed of controlled living flame. The almond-shaped eye is the unmistakable dominant silhouette, completely contained in the square. A focused intimidating gaze conveys command and supernatural confidence: deliberate and composed, never screaming, enraged, friendly, startled, or monstrous. Show only the local eye, eyelids and brow, not a complete face or portrait. Amber and molten orange illuminate the flame-shaped iris against restrained crimson and deep red-black shadows. A narrow hot edge at the lids and brow suggests Ifrit elemental heat. A few dim sparks and subtle heat shimmer may recede into the dark background, without competing with the eye.\nThe icon must communicate an Ifrit whose gaze itself intimidates. Keep distinct from a generic flame emblem, fireball, fire-vision spell, inner-flame spell, explosion or fiery wings. Prioritize the eye and commanding expression over decorative flame.",
+      "input": null,
+      "outputSha256": "a3ed28c9a92940f60cee501ecd429e7e4d7c5bd7d8f6f209124985d6863005e3"
+    }
+  ],
+  "objectiveVisualReview": "PASS",
+  "ownerAestheticApproval": "NOT_RECORDED"
+}

@@ -515,6 +515,10 @@ def validate(root: Path) -> None:
     # Keep the accepted Phase 1 metadata at 251, but validate the current
     # package count with the Phase 2 bird, vermin and icon additions.
     package_count = SPRINT3["packageFileCountWithSoundBank"] + 31
+    # Only the current whole-package count grows by the four DATA trait PNGs.
+    # No summoning count or historical record changes.
+    if json.loads((root / "Info.json").read_text(encoding="utf-8"))["Version"] == "0.0.142":
+        package_count += 4
     for script in ("Build-Local.ps1", "package.ps1"):
         require_tokens(root / "scripts" / script,
             "{ %d } else { %d }" % (package_count, package_count - 2),

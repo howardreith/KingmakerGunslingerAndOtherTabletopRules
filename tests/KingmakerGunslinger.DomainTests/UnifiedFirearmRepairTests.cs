@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using KingmakerGunslinger.Firearms;
 
@@ -122,7 +122,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(capitalOffered.Contains("gunsmithingSupplies.GunsmithKit"),
                 "Capital vendor stock lost the reusable Gunsmith's Kit.");
             AssertOwnedRetainsKits(Slice(capital,
-                "Concat(new BlueprintItem[] {", "}).Distinct()"),
+                "Concat(new BlueprintItem[] {", ".Distinct().ToArray()"),
                 "capital");
 
             string bokken = Read("src/KingmakerGunslinger/Blueprints",
@@ -133,8 +133,8 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(bokkenOffered.Contains("repairKit") ||
                 bokkenOffered.Contains("OverhaulKit"),
                 "Bokken vendor stock still offers a retired consumable kit.");
-            Assertions.True(bokkenOffered.Contains("supplies.GunsmithKit"),
-                "Bokken vendor stock lost the reusable Gunsmith's Kit.");
+            Assertions.False(bokkenOffered.Contains("supplies.GunsmithKit"),
+                "Model D reserves the reusable kit for the capital smith.");
             AssertOwnedRetainsKits(Slice(bokken,
                 "BlueprintItem[] owned =", "BlueprintItem[] stocked ="),
                 "Bokken");
@@ -154,7 +154,7 @@ namespace KingmakerGunslinger.DomainTests
                 "BTSL");
 
             string oleg = Read("src/KingmakerGunslinger/Blueprints",
-                "OlegFirearmSupplyCleanupBlueprints.cs");
+                "OlegFirearmVendorBlueprints.cs");
             AssertOwnedRetainsKits(Slice(oleg,
                 "internal static BlueprintItem[] Owned(", "        }"),
                 "Oleg cleanup");

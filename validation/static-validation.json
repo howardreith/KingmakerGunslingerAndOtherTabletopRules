@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.141-expanded-summoning-phase2a",
+  "milestone": "0.0.142-elemental-race-traits-and-content",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.141",
+  "version": "0.0.142",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2079,5 +2079,24 @@
     "runtimeEvidence": "20260930T1626175528422Z-disposable-expanded-summoning",
     "ownerVisualReview": "NOT_PERFORMED_NONBLOCKING",
     "ownerReleaseInstruction": "2026-09-30: consolidate at a reasonable near-term stopping point, commit, and cut a release."
+  },
+  "dataContentTraits142": {
+    "candidateOnly": true,
+    "deterministicTestCount": 2252,
+    "humanMerchantAcceptance": "PENDING",
+    "humanTooltipAcceptance": "PENDING",
+    "nativeRuntimeQualified": false,
+    "originalTraitIconCount": 4,
+    "ownerAestheticApproval": "NOT_RECORDED",
+    "packageMemberCount": 286,
+    "persistenceQualified": false,
+    "readinessSource": "38691cff652d1ed38314984c9ad74549639f3802",
+    "registeredManifestEntryCount": 2660,
+    "releaseBase": "97f0a966b3219ce0122626a492529b509e1db880",
+    "releaseInformationalVersion": "0.0.142-elemental-race-traits-and-content",
+    "releaseVersion": "0.0.142",
+    "stableTraitIdentityCount": 11,
+    "visibleTraitCount": 4,
+    "compatibilityRuntimeQualificationPending": true
   }
 }
