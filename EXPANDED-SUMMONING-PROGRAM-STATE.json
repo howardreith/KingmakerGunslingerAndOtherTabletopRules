@@ -29,7 +29,7 @@
       16
     ],
     "currentSprint": 17,
-    "currentSubItem": "S16 COMPLETE AND PUBLISHED; S17 NOT QUALIFIED. Last exact66900038 all prelaunch PASS, smoke11/body46 of47 FAIL; measured forward spear miss0.594228m. Original support5.0001mm/two-palm grip0/tail0.16654m/snake bites0 and cleanup PASS; exact actual snapshot restored10:40:47UTC, ten attempts retained. Native IL now proves IsActed can occur with no ActiveAnimation: read-only exact-issued-command clip/style/variant/time/state plus attached hand-action settings metadata added; missing clip fails closed.232 focused/2034 registered and incremental exact compile PASS. No native playback, bone, target or rule changes. Next freeze/push exact diagnostic, full prelaunch and same47-assertion guarded smoke/body batch; actual clip evidence before any pose correction. Full S17 profiles/signatures/icons/lifecycle/hidden/publication and Phase2B closure remain.976+29=1005 visible; ZERO DATA ports; Phase2C authorized but deferred.",
+    "currentSubItem": "S16 COMPLETE AND PUBLISHED; S17 NOT QUALIFIED. Exact09087d0f all prelaunch PASS:232 focused/2034 full83.3s,gate180.5s,491 preflight/81 orchestration/17 provenance,persistence11/3/19,crowd5/7,strict318 members. Smoke11/body44 of47 FAIL. Cause proven: spear PiercingTwoHanded absent from native slashing/axe main-hand action; no active animation at event5787, IsActed0.12s is fallback. Three dependent playback/contact/grip assertions fail; zero shaft distances do not prove actual-attack grip. Prior interpretation withdrawn, all11 exact attempts retained. All other checks PASS; actual1112148857824Z snapshot restored11:20:06UTC, no game/lease/lock/staging/save write. Next single existing shortspear carrier9f7a7364b76d65d43b72086aedce68ae/prefabc664715ff7165984285f66acc764b4b3 style/bind audit; only compatible instance-local main-hand action adoption, no bone twist/style relabel/global rewrite/waiver. Full S17 profiles/signatures/lifecycle/hidden/publication and Phase2B closure remain.976+29=1005; ZERO DATA ports; Phase2C authorized but deferred.",
     "sprint17PrivatePrototypes": {
       "status": "Six original files staged for bounded body acceptance; not automatically attached or runtime qualified",
       "source": "assets-source/original-models/sprint17-serpents/SOURCE.md",
@@ -62,8 +62,8 @@
     "sprint16LaptopCorrectionReview": "planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-FIXTURE-REPAIR.md",
     "dataSalvageAudit": "planning/EXPANDED-SUMMONING-PHASE2B-DATA-SALVAGE-AUDIT.md",
     "lastGuardedRuntimePass": "Exact7ebb34eb RESEARCH ONLY: smoke11/11; 20261006T0955234248989Z-disposable-expanded-summoning-serpentine-bodies40/40; complete driver PASS. S16 complete; S17 final visual/gameplay NOT QUALIFIED.",
-    "lastGuardedRuntimeResult": "Exact66900038 smoke11 PASS/body46 of47 FAIL; original hybrid forward spear contact remains open. Ground support/exact two-palm grip/tail and snake contacts PASS. Ten attempts retained, no production hook or new registration.",
-    "lastGuardedRestoration": "20261006T1032557994699Z actual snapshot restored2026-10-06T10:40:47.0701589Z; journalA3EA13FC4F385C2992F9BCE50B42374821EFAD45DE50118ADAD0DBEF175113BE; exact restoration VERIFIED, no game/lease/lock/staging/save write",
+    "lastGuardedRuntimeResult": "Exact09087d0f smoke11 PASS/body44 of47 FAIL; missing PiercingTwoHanded native clip demonstrated, IsActed-only fallback is not playback. Three dependent assertions fail, all other body/cleanup checks pass. Eleven exact attempts retained; no new production hook/registration.",
+    "lastGuardedRestoration": "20261006T1112148857824Z actual snapshot restored2026-10-06T11:20:06.3390196Z; journalB10ED8A40739015EC306E04665552768D625659128AA1D744A4A1F87008A7092; exact restoration VERIFIED, no game/lease/lock/staging/save write",
     "activePullRequest": 26,
     "archivedSalvagePullRequest": 27,
     "giantWaspPublished": true,
