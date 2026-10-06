@@ -12,11 +12,11 @@ namespace KingmakerGunslinger.DomainTests
     /// Sprint 16 registers the Dire Crocodile and gives the Crocodile the
     /// signature behaviour it has never had.
     ///
-    /// <para>These tests cover the registration only. The Dire Crocodile had
+    /// <para>These tests cover registration, mechanics and publication. The Dire Crocodile had
     /// no identities at all before this sprint - it existed in the ideal-roster
     /// plan and nowhere else - so the first thing to establish is that it is
     /// now a real creature with its printed stat block, that every one of its
-    /// placements is withheld, and that the Crocodile beside it was not
+    /// six placements publishes without reallocating it, and that the Crocodile beside it was not
     /// disturbed, because the sprint's order requires that creature's accepted
     /// identity and placements be preserved exactly.</para>
     /// </summary>
@@ -297,10 +297,10 @@ namespace KingmakerGunslinger.DomainTests
         }
 
         /// <summary>
-        /// A tier-7 creature in both families registers six placements, and
-        /// none of them is published.
+        /// The qualified hidden candidate publishes exactly its six preserved
+        /// tier-7 placements, without changing any previously published root.
         /// </summary>
-        internal static void TheDireCrocodileIsRegisteredAndWithheld()
+        internal static void TheDireCrocodilePublishesItsSixPreservedPlacements()
         {
             SummonVariantSpec[] all = ExpandedSummoningCatalog
                 .GenerateVariants(SummonFamily.Monster).Concat(
@@ -312,10 +312,14 @@ namespace KingmakerGunslinger.DomainTests
                 throw new InvalidOperationException(
                     "The Dire Crocodile registers " + mine.Length +
                     " placements, not 6: parents 7, 8 and 9 in each family.");
-            if (mine.Any(SummonVisibilityCatalog.IsPublished))
+            if (mine.Any(value => !SummonVisibilityCatalog.IsPublished(value)))
                 throw new InvalidOperationException(
-                    "No Dire Crocodile placement may publish before it " +
-                    "qualifies.");
+                    "Every qualified Dire Crocodile placement must publish.");
+            Assertions.Equal(970, all.Count(value =>
+                    value.Creature.Key != DireKey && SummonVisibilityCatalog.IsPublished(value)),
+                "Dire publication must preserve all 970 previously published roots.");
+            Assertions.Equal(976, all.Count(SummonVisibilityCatalog.IsPublished),
+                "Only Dire's six roots may change the publication surface.");
             // Its own tier is a single creature, the next is 1d3, the rest
             // 1d4+1 - the same quantity rule every creature follows.
             foreach (SummonFamily family in new[] { SummonFamily.Monster,
@@ -336,12 +340,10 @@ namespace KingmakerGunslinger.DomainTests
                         family + " quantity mapping for the Dire Crocodile " +
                         "is wrong.");
             }
-            // Registering a creature never moves the published surface, which
-            // is the whole reason it is withheld by name rather than left out
-            // of the roster.
-            if (SummonVisibilityCatalog.SuppressedLogicalPlacementCount != 6)
+            // No registered creature remains withheld after this publication.
+            if (SummonVisibilityCatalog.SuppressedLogicalPlacementCount != 0)
                 throw new InvalidOperationException(
-                    "Exactly the Dire Crocodile's six placements are withheld.");
+                    "Sprint 16 publication must leave no withheld placements.");
             if (SummonVisibilityCatalog.RegisteredLogicalPlacementCount -
                     SummonVisibilityCatalog.SuppressedLogicalPlacementCount !=
                     SummonVisibilityCatalog.PublishedLogicalPlacementCount)

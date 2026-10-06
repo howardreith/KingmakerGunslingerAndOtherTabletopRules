@@ -1467,7 +1467,7 @@
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
         "key": "crocodilian-sprint"
       },
-      "technicalStatus": "source candidate; live binding/native UI NOT QUALIFIED",
+      "technicalStatus": "exact e3aeae63 hidden candidate live binding/native UI PASS; publication gate pending",
       "visualReview": {
         "status": "HumanReview: NOT_PERFORMED_NONBLOCKING",
         "reviewedExportSha256": null,
@@ -1490,7 +1490,7 @@
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
         "key": "crocodilian-death-roll"
       },
-      "technicalStatus": "source candidate; live binding/native UI NOT QUALIFIED",
+      "technicalStatus": "exact e3aeae63 hidden candidate live binding/native UI PASS; publication gate pending",
       "visualReview": {
         "status": "HumanReview: NOT_PERFORMED_NONBLOCKING",
         "reviewedExportSha256": null,
@@ -1513,7 +1513,7 @@
         "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
         "key": "dire-crocodile-swallowed"
       },
-      "technicalStatus": "source candidate; live binding/native UI NOT QUALIFIED",
+      "technicalStatus": "exact e3aeae63 hidden candidate live binding/native UI PASS; publication gate pending",
       "visualReview": {
         "status": "HumanReview: NOT_PERFORMED_NONBLOCKING",
         "reviewedExportSha256": null,
@@ -13010,7 +13010,7 @@
     "paintedConsumerCount": 160,
     "additionalEmblemConcepts": ["crocodilian-sprint", "crocodilian-death-roll", "dire-crocodile-swallowed"],
     "additionalEmblemConsumerCount": 9,
-    "crocodilianStatus": "Sprint 16 source candidate; no live icon/native UI qualification or owner visual approval",
+    "crocodilianStatus": "Exact e3aeae63 complete hidden PASS: nine exact live bindings and native action/status/trait UI; publication gate pending; HumanReview NOT_PERFORMED_NONBLOCKING",
     "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
     "technicalStatus": "qualified-paired-census-and-working-save-smoke",
     "magicCircleStatus": "follow-up candidate; native verification pending; archived PR19 evidence applies only to its exact prior artifact"

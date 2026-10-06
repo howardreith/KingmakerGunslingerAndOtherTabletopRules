@@ -1,6 +1,24 @@
 # Sprint 16 crocodilian icon review
 
-## Status: source/offline checks only; runtime NOT QUALIFIED
+## Current status: hidden live binding/native UI PASS; publication pending
+
+Exact `e3aeae630d51d27c45694fb9e92e9093048b1af9` passed the complete hidden
+six-stage batch and exact restoration. Nine Sprite bindings, native action
+widgets and status/trait/sheet rows pass; sheet/tabs/selection/group/clock/pause
+restore exactly. Action-row evidence is native widget construction, not an
+ordinary action-menu navigation claim. See the
+[hidden review](EXPANDED-SUMMONING-SPRINT16-LAPTOP-HIDDEN-PASS-REVIEW.md)
+and its exact icon-binding/final-review hashes.
+
+The containing publication candidate exposes Dire's six preserved root icons
+without reauthoring, remapping or changing any image/assignment bytes.
+Both creature portraits, all fourteen Crocodile roots, three emblems/nine
+visible consumers and five hidden internal carriers keep the dispositions
+below. All twenty public root paths still require publication qualification;
+whole-roster module-disabled consumer coverage belongs to Phase 2B closure.
+Catalog technical status records only the evidence actually obtained.
+
+## Original source/offline authoring record
 
 `HumanReview: NOT_PERFORMED_NONBLOCKING`.
 
