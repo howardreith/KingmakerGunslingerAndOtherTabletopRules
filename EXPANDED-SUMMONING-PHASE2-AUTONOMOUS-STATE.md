@@ -1,6 +1,6 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-06 13:33 UTC — laptop sole owner; Sprints14–16 COMPLETE
+## CURRENT STATE, 2026-10-06 14:14 UTC — laptop sole owner; Sprints14–16 COMPLETE
 
 This section governs over historical mission/ownership statements below.
 HOWARD-LAPTOP / `codex/expanded-summoning-phase2b-sprints14-17` / draft PR #26
@@ -19,51 +19,42 @@ deployment, force push or prohibited substitute subsystems.
   2026-10-05T19:29:25.9127956Z; holder PID15084/start2026-10-05T20:34:17.3075720Z.
   Session-scoped, not perpetual. Refresh heartbeat; release only on actual
   session ending. All safety refs, bundles and failed artifacts retained.
-- Last pushed/exact runtime candidate `291059aa1ae56518a74d041e3fe004969f69e5bf`.
+- Last pushed/exact runtime candidate `a90494e19c0099f228002958c2b2bf114e732c1f`.
   The containing evidence checkpoint records RESEARCH ONLY PASS, not Sprint 17 qualification.
   Unexpected active-branch motion is a stop; frozen DATA motion informational.
 
 ### Qualified versus NOT QUALIFIED; next exact work
 
-Containing source-only follow-up: one exact human prefab's duplicate bind
-palette is now measured without adoption. Focused238/238,2040 registered,
-static and incremental exact compile PASS; full exact prelaunch and smoke11/
-survey16 are next. No new runtime or body/gameplay qualification.
+[Current bind-palette review](planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-BIND-REVIEW.md)
+and [exact artifact/restoration](planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-BIND-EVIDENCE.json).
 
-[Current spear-carrier review](planning/EXPANDED-SUMMONING-SPRINT17-SPEAR-CARRIER-AUDIT.md)
-and [exact artifact/restoration](planning/EXPANDED-SUMMONING-SPRINT17-SPEAR-CARRIER-EVIDENCE.json).
-
-Exact 291059aa: 237 focused / 2039 unfiltered tests (88.3s), complete gate
-183.2s; 491 preflight / 81 orchestration / 17 provenance, persistence 11/3/19,
+Exact a90494e1: 238 focused / 2040 unfiltered tests (83.0s), complete gate
+178s; 491 preflight / 81 orchestration / 17 provenance, persistence 11/3/19,
 crowd 5/7, clean exact Release / strict 318-member package PASS. Fresh Steam
-smoke 11/11 and metadata survey 15/15 PASS. RESEARCH ONLY; Sprint 17 remains
+smoke 11/11 and metadata survey 16/16 PASS. RESEARCH ONLY; Sprint 17 remains
 NOT QUALIFIED.
 
-All three archived spear/longspear prefabs reference the native human
-MyAnimationSet (24 actions), with PiercingTwoHanded clips
-Human_2H_spear_attack_01 / _02 (1.46666718 / 1.40000057 seconds).
-Command-act events are at 0.620427966 / 0.734528542 seconds. Native references
-and actor membership are unchanged. This is metadata, not actual playback,
-grip, contact or a safe Salamander binding. No action adopted or NPC spawned.
+The exact human Guard Captain prefab has1776 bind-palette entries for177
+Transform references. All are finite/invertible, but17 weapon-storage
+transforms have disagreeing duplicate matrices (maximum2.880282, tolerance
+0.00001). Blind first-slot deduplication is rejected. Torso/hand entries agree;
+that is not a qualified body binding or actual native spear/tail playback.
+No human-based Salamander was constructed; no action or NPC facts adopted.
+Native references/actor membership unchanged; raw native frames stay private.
+The prior three-spear and eleven-Lizardfolk metadata files reproduce exactly.
+Cape bones are not a tail. Body570 remains33/35 FAIL; all12 attempts retained.
 
-Each prefab has 177 unique bone paths but a combined duplicate bone palette
-(2252 / 1776 / 2507 entries) and a zero-bone cape renderer. Cape bones do not
-prove an articulated tail. These human clips cannot simply replace the
-incompatible 39-bone Lizardfolk action. The latest body570 gate remains 33/35
-FAIL before hybrid attachment; all 12 body attempts and prior censuses remain.
-
-Actual snapshot 1326496740021Z restored at 13:33:27.2332485 UTC:
-136 files / Info 0.0.117 / exact tree. Journal
-97A08A2FD8C08DB595ED36637633F9156F5567724068489DAD7C4FF2AF6FF207;
-spear census 3AF2CBC78820708586547C36952FF76BF9921823EDEA78ED7BA1243F4DAC2687.
+Actual snapshot1407190713978Z restored14:14:02.7035876UTC:
+136 files / Info0.0.117 / exact tree. Journal
+AE954F51929981B232F2DAF48FB1B717D26739D06E50E11CC368A6694F4B2D03;
+bind metadata EB0D5EAAF4BEC8BF68506D42F299DED5D3D86CB676FF72E53F15D0CFBCE9BFD2.
 Lease Completed/recoveryRequired=false/released; no game/lock/staging/save write.
 
-Next: bounded exact human-prefab binding/native spear-handling proof on a
-request-local project-owned Salamander prototype; no native NPC facts/loot,
-human-to-Lizardfolk clip transplant or assumed cape/tail compatibility.
-Keep independent snake work moving if a bounded hybrid seam is unavailable.
-Sprints 14–16 complete; 976+29=1005 visible choices; ZERO DATA ports.
-Phase 2C remains authorized but deferred until Phase 2B owner acceptance.
+Next: independent printed snake profiles and a bounded Salamander-specific
+spear/tail implementation review. Do not repeat the closed donor census or
+assume compatibility, silently relabel an attack, or waive contact/playback.
+Sprints14–16 complete; 976+29=1005 visible choices; ZERO DATA ports.
+Phase2C remains authorized but deferred until Phase2B owner acceptance.
 
 [Latest native-action review](planning/EXPANDED-SUMMONING-SPRINT17-NATIVE-ACTION-REVIEW.md)
 and [exact census evidence](planning/EXPANDED-SUMMONING-SPRINT17-NATIVE-ACTION-EVIDENCE.json).
@@ -72,10 +63,10 @@ and [exact census evidence](planning/EXPANDED-SUMMONING-SPRINT17-NATIVE-ACTION-E
 exact155ada89 smoke11/main211, all14 Crocodile+6 Dire public roots;
 hidden e3 retains crowd20/prepare9/cleanup9/absence5. No reopening.
 
-Exact 2910 source fingerprint c8ec8837252eb62129d028a01f2b587f8dbf651675239b06fecd2a9d8da2a321;
-DLL 3aec6d01dc6bbd4fd64ece49c2f08f06077cff72b9b581b8cbe5d7d8df063d6b;
-MVID 91d17a0f-a7d4-49e2-99c3-ab6d526bbb0c;
-ZIP 4471ea5d845188808d219b6132fb94b9fae497543fec40279b3e5fb987125d1c.
+Exact a904 source fingerprint a837489c83949d488c6074bcdb3bc2a965b7161bad2efaa832b186e92fdf6e96;
+DLL e1d88bdb9b0ad8761ce8bb0a23439ccc41b0c1c12e2a4b3a289ff7b0f6c4e213;
+MVID 1122936c-de1e-473b-8eaa-3f1be5bf5e8d;
+ZIP 4b4a14c83dc79f3cfde68204125d9ad5372bb442eed48399cc77e6398d401cf4.
 
 Then printed profiles/signatures/icons, full S17 hidden/publication and
 exhaustive Phase2B closure. Explicit14-reference bundle:
