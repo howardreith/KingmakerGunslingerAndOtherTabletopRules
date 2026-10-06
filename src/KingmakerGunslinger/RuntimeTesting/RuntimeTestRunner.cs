@@ -686,6 +686,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !IsTeleportationCoexistenceFixture &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationPersistence &&
                     _request.Scenario != FcbPersistenceIdentity.Scenario &&
+                    _request.Scenario != ElementalCharacterTraitSaveContract.Scenario &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity &&
                     _request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveFavoredClassVisualCensus &&
                     _request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveFavoredClassLifecycle &&
@@ -2045,6 +2046,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     IsTeleportationCoexistenceFixture ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationPersistence ||
                     _request.Scenario == FcbPersistenceIdentity.Scenario ||
+                    _request.Scenario == ElementalCharacterTraitSaveContract.Scenario ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity ||
                     _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveFavoredClassVisualCensus ||
                     _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveFavoredClassLifecycle ||
@@ -2169,6 +2171,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     IsTeleportationCoexistenceFixture ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationPersistence ||
                     _request.Scenario == FcbPersistenceIdentity.Scenario ||
+                    _request.Scenario == ElementalCharacterTraitSaveContract.Scenario ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity ||
                     _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveFavoredClassVisualCensus ||
                     _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveFavoredClassLifecycle ||
@@ -2254,6 +2257,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _teleportPersistencePlan = new TeleportPersistencePlan(_request);
                 if (_request.Scenario == FcbPersistenceIdentity.Scenario)
                     _fcbPersistencePlan = new FcbPersistencePlan(_request);
+                if (_request.Scenario == ElementalCharacterTraitSaveContract.Scenario)
+                    _traitSavePlan = new ElementalCharacterTraitSavePlan(_request);
                 _workingSaveSmoke = new WorkingSaveSmokeScenario(
                     _context, _elapsed, _request.RunId, _trace.Record,
                     _request.Scenario ==
@@ -2266,6 +2271,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction,
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction,
+                    _traitSavePlan != null ? _traitSavePlan.Identity :
                     _teleportPersistencePlan != null ? _teleportPersistencePlan.Identity :
                     _fcbPersistencePlan != null ? _fcbPersistencePlan.Identity :
                     _request.Scenario == RuntimeTestScenarioCatalog
@@ -2293,7 +2299,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ? WorkingSaveSmokeIdentity
                                     .InHarmsWayHumanRepro
                             : null,
-                    pauseOnLoadCompletion: _request.Scenario ==
+                    pauseOnLoadCompletion: _request.Scenario == ElementalCharacterTraitSaveContract.Scenario || _request.Scenario ==
                         RuntimeTestScenarioCatalog.WorkingSaveFavoredClassVisualCensus ||
                         _request.Scenario ==
                         RuntimeTestScenarioCatalog.WorkingSaveFavoredClassLifecycle ||
@@ -2305,6 +2311,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalDeferredMarkers);
                 _workingStartupStage = "hooks-install-start";
                 WriteLifecycleStage(_workingStartupStage);
+                if (_traitSavePlan != null) _workingSaveSmoke.RestrictToTransactionOwnedWrites();
                 _workingSaveSmoke.Install();
                 StartTeleportationLoadDiagnostics();
                 _workingStartupStage = "hooks-install-complete";
@@ -2644,6 +2651,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             if (_workingSaveSmoke.Complete)
             {
+                if (_traitSavePlan != null) { PollElementalTraitSave(); return; }
                 if (IsMidgameWorkingScenario()) { PollWorkingMidgameFirearms(); }
                 else
                 if (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation ||
@@ -5986,6 +5994,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 IsTeleportationCoexistenceFixture ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationPersistence ||
                     _request.Scenario == FcbPersistenceIdentity.Scenario ||
+                    _request.Scenario == ElementalCharacterTraitSaveContract.Scenario ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity ||
                     _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveFavoredClassVisualCensus ||
                     _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveFavoredClassLifecycle ||
@@ -35132,6 +35141,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     result.Diagnostics.Add("firearm input cleanup failed: " + cleanup);
                 }
             }
+            StopElementalTraitSave(result);
             StopTeleportPersistence(result);
             StopTeleportationInteraction(result);
             StopTeleportationSpellbookUi(result);

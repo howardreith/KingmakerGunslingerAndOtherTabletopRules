@@ -1,4 +1,5 @@
 Set-StrictMode -Version Latest
+. (Join-Path $PSScriptRoot 'ElementalCharacterTraitPersistence.Common.ps1')
 . (Join-Path $PSScriptRoot 'MagicCirclePreparation.Common.ps1')
 
 $script:KmgRuntimeEvidenceRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-evidence'
@@ -760,6 +761,12 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
         TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
         UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
+    'elemental-character-traits-owned-save' = [pscustomobject]@{
+        RequiresSaveName=$true;PermittedSaveName='transaction-owned trait input'
+        RequiresManualInteraction=$false;ReadinessBehavior='autonomous-working-save'
+        TimeoutCategory='working-save';UsesCatalogTimeout=$true
+        UsesSelectionTimeouts=$true;UsesWorkingStageTimeouts=$true
     }
     'disposable-teleportation-persistence' = [pscustomobject]@{
         RequiresSaveName = $true; PermittedSaveName = 'transaction-owned persistence input'
@@ -1987,6 +1994,12 @@ function Assert-KmgRuntimeScenarioPreflight {
     if ($metadata.RequiresSaveName) {
         $creatorRegression = $Scenario -cin @('working-save-elemental-character-creation-regression', 'working-save-elemental-native-respec', 'working-save-elemental-nereid-creation', 'working-save-elemental-nereid-respec')
         $visualLifecycle = $Scenario -ceq 'working-save-creator-visual-lifecycle'
+        $traitSave = $Scenario -ceq 'elemental-character-traits-owned-save'
+        if ($traitSave) {
+            if (-not $ExitAfterCompletion -or $Parameters.Count -ne 3 -or
+                $Parameters.phase -isnot [string] -or $Parameters.planPath -isnot [string]) { throw 'Closed automatic trait save plan required.' }
+            [void](Assert-ElementalTraitSavePlan $Parameters.planPath $Parameters.phase $Parameters.saveName $ExpectedVersion)
+        }
         $persistence = $Scenario -ceq 'disposable-teleportation-persistence'
         $circleBound = $Scenario -cin @('working-save-magic-circle-verify','working-save-magic-circle-scene','working-save-magic-circle-cleanup')
         if ($circleBound) {
@@ -2055,11 +2068,11 @@ function Assert-KmgRuntimeScenarioPreflight {
             $Parameters.ContainsKey('flightCreature')
         $crowdReview = $Scenario -ceq 'working-save-expanded-summoning-creature-review' -and
             $Parameters.ContainsKey('quantity')
-        $requiredParameterCount = if ($circleBound) { 2 } elseif ($persistence -or $fcbPersistence) { 3 } elseif ($Scenario -ceq 'working-save-elemental-nereid-respec') { 5 } elseif ($nativeActionCase) { 5 } elseif ($creatorRegression -or $visualLifecycle -or (Test-KmgCompletionSceneScope $Scenario $Parameters)) { 4 } elseif ((Test-KmgTreacherousEffectScope $Scenario $Parameters) -or $crowdReview) { 3 } elseif ($Scenario -ceq 'working-save-expanded-summoning-creature-review' -or $flightActivation) { 2 } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers' -or (Test-KmgNereidPersistenceScope $Scenario $Parameters)) { 2 } else { 1 }
+        $requiredParameterCount = if ($circleBound) { 2 } elseif ($persistence -or $fcbPersistence -or $traitSave) { 3 } elseif ($Scenario -ceq 'working-save-elemental-nereid-respec') { 5 } elseif ($nativeActionCase) { 5 } elseif ($creatorRegression -or $visualLifecycle -or (Test-KmgCompletionSceneScope $Scenario $Parameters)) { 4 } elseif ((Test-KmgTreacherousEffectScope $Scenario $Parameters) -or $crowdReview) { 3 } elseif ($Scenario -ceq 'working-save-expanded-summoning-creature-review' -or $flightActivation) { 2 } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers' -or (Test-KmgNereidPersistenceScope $Scenario $Parameters)) { 2 } else { 1 }
         if ($Parameters.Count -ne $requiredParameterCount -or
             -not $Parameters.ContainsKey('saveName') -or
             $Parameters.saveName -isnot [string] -or
-            (-not $persistence -and -not $fcbPersistence -and $Parameters.saveName -cne $metadata.PermittedSaveName)) {
+            (-not $persistence -and -not $fcbPersistence -and -not $traitSave -and $Parameters.saveName -cne $metadata.PermittedSaveName)) {
             throw "$Scenario requires its exact working save and allowlisted parameters."
         }
         if ($Scenario -ceq 'working-save-expanded-summoning-creature-review' -and
@@ -2349,6 +2362,8 @@ function New-KmgRuntimeRequest {
             if (Test-KmgTreacherousEffectScope $Scenario $Parameters) { $scopeArgs.qualificationEffect = 'TreacherousEarth' }
             if (Test-KmgCompletionSceneScope $Scenario $Parameters) { $scopeArgs.qualificationOperation = 'scene-roundtrip' }
             $scopeArgs
+        } elseif ($Scenario -ceq 'elemental-character-traits-owned-save') {
+            [ordered]@{saveName=[string]$Parameters.saveName;phase=[string]$Parameters.phase;planPath=[string]$Parameters.planPath}
         } elseif ($Scenario -ceq 'disposable-teleportation-persistence') {
             [ordered]@{ saveName = [string]$Parameters.saveName; phase = [string]$Parameters.phase; planPath = [string]$Parameters.planPath }
         } elseif ($Scenario -ceq 'disposable-word-of-recall-favored-class-persistence') {
