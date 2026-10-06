@@ -8,7 +8,10 @@ skills/HP, native feats, owned Viper poison and scoped Constrictor grab/damage
 are implemented; original icons pass agent small-size/grayscale inspection.
 250 focused checks PASS. Exact79cf2bf1 complete source gate PASS:2048 full tests
 (83.8s), repository/static/icon/manifest, clean exact Release and strict320-member
-package;177.8s total. No new runtime evidence. Original-body production attachment, actual final profiles,
+package;177.8s total. The later [view hook](EXPANDED-SUMMONING-SPRINT17-SNAKE-VIEW-INTEGRATION.md)
+adds exact two-identity automatic body binding and17 unexecuted guarded checks;
+247 focused/2049 full86.4s and dirty source build/strict package PASS184.1s.
+No new runtime evidence. Original-body production qualification, actual final profiles,
 poison/constrict cadence,commands,UI,lifecycle,persistence and routes remain
 unqualified. Salamander's existing unit,placements and painting are unchanged;
 its separate native spear/tail solution remains unresolved. Surface1008

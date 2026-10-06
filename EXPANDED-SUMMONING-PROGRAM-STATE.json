@@ -29,7 +29,7 @@
       16
     ],
     "currentSprint": 17,
-    "currentSubItem": "Sprint 17 hidden snake exact source79cf2bf1 gate PASS:2048 unfiltered tests83.8s, complete repository validation, clean exact Release, deterministic/strict320-member package;177.8s total. NOT gameplay qualified. Viper/Constrictor remain hidden:1008 registered/976 published/32 withheld+29 wrappers=1005 visible. Next production original-body attachment and mechanics fixtures, then bounded Salamander native spear/tail solution and complete Sprint17/Phase2B gates. No new runtime transaction or DATA port. Phase2C authorized but deferred.",
+    "currentSubItem": "Sprint17 exact two-identity production snake view binding implemented, not runtime qualified. One0.20 view scale and17 guarded binding/rollback/once/destruction/native-Worm checks; no generic animation or visibility change.247 focused/2049 full86.4s, complete repository/clean exact-reference Release/strict320-member package PASS184.1s on dirty source. Freeze/push and run committed artifact gate, then closed mechanics fixtures and bounded Salamander spear/tail implementation.32 snake roots remain hidden, visible1005 unchanged. No new runtime or DATA port; Phase2C authorized but deferred.",
     "sprint17SnakeSource": {
       "status": "SOURCE CHECKPOINT; NOT QUALIFIED",
       "review": "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SOURCE-REVIEW.md",
@@ -55,8 +55,22 @@
       "humanReview": "NOT_PERFORMED_NONBLOCKING",
       "newRuntimeTransaction": false
     },
+    "sprint17SnakeViewIntegration": {
+      "status": "SOURCE CHECKPOINT; NOT QUALIFIED",
+      "review": "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-VIEW-INTEGRATION.md",
+      "sourceBase": "dfe12b8ec971e99b721585204b49a51b3aed6f15",
+      "originalBodyProductionHookImplemented": true,
+      "runtimeQualified": false,
+      "implementedRuntimeAssertions": 17,
+      "focusedTests": 247,
+      "fullUnfilteredTests": 2049,
+      "fullDomainSeconds": 86.4,
+      "sourceGateSeconds": 184.1,
+      "exactCommittedGate": "NEXT; dirty source diagnostics passed but may not be deployed",
+      "newRuntimeTransaction": false
+    },
     "sprint17PrivatePrototypes": {
-      "status": "Six original files staged for bounded body acceptance; not automatically attached or runtime qualified",
+      "status": "Six original files staged; exact two-snake production hook now implemented but not runtime qualified; Salamander remains research-only",
       "source": "assets-source/original-models/sprint17-serpents/SOURCE.md",
       "blenderBehaviorTests": 20,
       "capturedPoseReplayTests": 10,
@@ -513,7 +527,7 @@
       "detail": "Supplied by the owner and read. The Pteranodon passage confirms the shipped profile rather than changing it: ten-foot reach valued for attacks of opportunity, and a single main bite on which everything stacks (2d6 plus modifiers). The guide also positions multiple Pteranodons as the best single-target aerial attacker at their tier. This informs Sprint 2's acceptance emphasis on correct bite impact timing and location at Large reach; it changes no accepted statistic."
     }
   ],
-  "nextConcreteAction": "Connect original snake views and closed mechanical fixtures; resolve Salamander native spear/tail seam without blind bind deduplication or animation relabeling. Exact79cf source/package gate PASS; Sprint17 remains NOT QUALIFIED. Complete its hidden/publication gates and full Phase2B closure, then stop for owner review. Phase2C authorized but deferred; no merge, release, version bump, permanent deployment or Sprints18-22 here.",
+  "nextConcreteAction": "Freeze/push snake view integration; run committed exact source/artifact gate; complete snake mechanics fixtures and bounded Salamander-specific spear/tail seam. No blind human bind deduplication or animation relabeling. Sprint17 remains NOT QUALIFIED. Complete hidden/publication gates and full Phase2B closure, then stop for owner review. Phase2C authorized but deferred; no release/version bump/merge/permanent deployment or Sprints18-22.",
   "deploymentReconciliation": {
     "finding": "The first runs left this mission's 0.0.136 branch build installed over the pre-run 0.0.117 installation. The mission required restoration and did not authorize a permanent installation; a shared version string does not make a branch artifact an accepted release.",
     "ownershipVerified": "The live DLL hash matched this mission's exact build byte for byte, so the tree was unambiguously mission-owned.",

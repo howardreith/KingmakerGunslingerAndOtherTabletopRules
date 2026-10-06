@@ -11,6 +11,46 @@ namespace KingmakerGunslinger.DomainTests
     internal static class SerpentineRulesTests
     {
         internal const int AppendedLedgerIdentities = 73;
+        internal static void ProductionBodyHookRequiresExactHiddenSnakeIdentity()
+        {
+            JArray entries = (JArray)JObject.Parse(File.ReadAllText(Path.Combine(
+                Environment.CurrentDirectory, "blueprints", "blueprints.json")))["entries"];
+            foreach (string key in new[] { "viper", "constrictor-snake" })
+            {
+                string token = key == "viper" ? "Viper" : "ConstrictorSnake";
+                string guid = (string)entries.Single(e =>
+                    (string)e["symbol"] == "KMG.Summoning.Unit." + token)["guid"];
+                string name = "KMG_Summoning_Unit_" + token, found;
+                Assertions.True(SerpentineVisualPolicy.TryProductionSnake(true, guid, name,
+                    SerpentineVisualPolicy.WormPrefab, out found) && found == key,
+                    "The append-only identity resolves its own original body.");
+                Assertions.False(SerpentineVisualPolicy.TryProductionSnake(false, guid, name,
+                    SerpentineVisualPolicy.WormPrefab, out found), "Module-disabled has no attachment.");
+                foreach (string bad in new[] { null, "", "foreign", guid.ToUpperInvariant(),
+                    "bf2216f48b3f4d24c9c502007649340d", "f8fb103168d74b4c93182437e5d2b4e4" })
+                    Assertions.False(SerpentineVisualPolicy.TryProductionSnake(true, bad, name,
+                        SerpentineVisualPolicy.WormPrefab, out found), "Name alone cannot capture a donor/hybrid.");
+                foreach (string bad in new[] { null, "", name.ToLowerInvariant(),
+                    "KMG_Summoning_Unit_PurpleWorm", "KMG_Summoning_Unit_Salamander" })
+                    Assertions.False(SerpentineVisualPolicy.TryProductionSnake(true, guid, bad,
+                        SerpentineVisualPolicy.WormPrefab, out found), "Exact KMG identity/name pair required.");
+                foreach (string bad in new[] { null, "", SerpentineVisualPolicy.ClubShieldPrefab,
+                    SerpentineVisualPolicy.TwoHandPrefab, SerpentineVisualPolicy.WormPrefab.ToUpperInvariant() })
+                    Assertions.False(SerpentineVisualPolicy.TryProductionSnake(true, guid, name, bad, out found),
+                        "Reject an unreviewed replacement prefab, even on our identity.");
+                Assertions.True(found == null, "Rejected dispatch must not leak the prior key.");
+                float multiplier;
+                Assertions.False(SummonViewScaleCatalog.TryGetMultiplier(name, out multiplier),
+                    "The owned hook applies scale once; the shared hook must not multiply it again.");
+                Assertions.Equal("Medium", ExpandedSummoningNaturalProfiles.For(key).Size,
+                    "Visual binding does not change mechanical size.");
+            }
+            Assertions.Equal(.2f, SerpentineVisualPolicy.SnakeViewMultiplier,
+                "Same view-only scale as the measured native snake bite research, pending production proof.");
+            Assertions.Equal(17, SummonViewScaleCatalog.All.Count,
+                "All prior production view steps remain unchanged.");
+        }
+
         internal static void LedgerAppendPreservesEveryHistoricalEntry()
         {
             JArray entries = (JArray)JObject.Parse(File.ReadAllText(Path.Combine(

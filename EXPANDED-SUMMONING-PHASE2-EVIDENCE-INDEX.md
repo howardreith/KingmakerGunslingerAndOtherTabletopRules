@@ -1,5 +1,11 @@
 # Expanded Summoning Phase 2 evidence index
 
+[Current snake view integration, NOT QUALIFIED](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-VIEW-INTEGRATION.md):
+two exact hidden identities automatically bind original bodies, with one view
+scale and native-owned rollback.17 guarded assertions written, NOT RUN.
+247 focused/2049 full86.4s, repository, clean exact-reference Release and strict
+320-member package PASS184.1s on dirty source; committed artifact gate next.
+
 [Current hidden snake source checkpoint, NOT QUALIFIED](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SOURCE-REVIEW.md):
 250 focused / 2048 unfiltered tests PASS; repository/static/manifest/icon and
 dirty-tree exact-reference compile PASS. 73 append-only IDs,32 hidden roots;
