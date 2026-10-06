@@ -3,8 +3,11 @@
 [Sprint 17 private prototypes and extended research scope](planning/EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md):
 four Blender behavior checks, 40 offline panels; nothing packaged. Fixed native
 Purple Worm comparison added because the water rig has no continuous tail
-chain. Extension focused 219 / preflight 486 / incremental build PASS;
-new exact artifact and guarded research batch pending. NOT runtime qualified.
+chain. Exact b2893abe full prelaunch PASS, smoke 11/11; survey **FAIL 8/9**
+on a null native action clip collection. Donor/view checks and exact cleanup
+PASS; actual snapshot exactly restored. Narrow null/empty metadata repair is
+focused-tested; new exact artifact/batch pending. NOT runtime qualified.
+[Failed attempt hashes](planning/EXPANDED-SUMMONING-SPRINT17-FALLBACK-RESEARCH-EVIDENCE.json).
 
 [Sprint 17 native-rig research PASS](planning/EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md):
 exact f507 full prelaunch PASS (219 focused/2021 full/486 preflight), fresh

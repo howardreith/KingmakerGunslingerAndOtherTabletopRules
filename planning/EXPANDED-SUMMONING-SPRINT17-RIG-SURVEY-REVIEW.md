@@ -17,9 +17,29 @@ arbitrary request keys. The source-only extension also records renderer/view
 scale and material shader names/queue/slot flags plus native animation action
 types/counts, never native art data or animation curves. It does not alter
 Purple Worm gameplay. Exact cross-donor substitution rejections are tested.
-219 focused tests and incremental Release compile PASS; 486 preflight PASS.
-The extended exact-artifact gate and fresh Steam smoke/survey batch are NEXT;
-the earlier eight-assertion PASS below does not qualify this extension.
+Exact b2893abe passes 219 focused / 2021 full (82.7 seconds), 486 exact-head
+preflight, 68 orchestration, persistence/crowd requests, repository/static/
+icon/manifest, clean exact Release and strict 312-member package. Fresh Steam
+smoke passes 11/11. The extended survey **FAILS, 8/9**, before writing any
+metadata: a present native animation action returns a **null Clips collection**,
+and the new diagnostic called LINQ Count on it. Six exact donor/view checks
+pass; fixture cleanup restores 955 original unit references, three party
+references and exact area membership. This is a **fixture observation defect**,
+not a production mechanics failure or an accepted omission.
+
+Actual leased snapshot `20261006T0222526525316Z` is exactly restored at
+`2026-10-06T02:29:30.3453602Z`: 136 files / Info 0.0.117 / tree
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+Lease Completed/recoveryRequired=false; no game/shared lock/staging; no save
+write. [Exact failed artifact, request and restoration hashes](EXPANDED-SUMMONING-SPRINT17-FALLBACK-RESEARCH-EVIDENCE.json).
+
+The narrow correction preserves null as **no exposed enumeration**, distinct
+from an exposed empty list or a list containing null entries. It does not
+pretend missing metadata means zero native animation capability. Null, empty,
+all-null and mixed regression cases pass through the same counting policy;
+219 focused / incremental Release PASS. Next freeze/push that correction and
+rerun the complete exact-artifact gate plus fresh Steam smoke/survey batch.
+The earlier f507 eight-assertion PASS does not qualify this extension.
 
 ## Previous exact two-target research, f507278b
 
@@ -151,6 +171,14 @@ the Medium venomous snake, not the Tiny familiar. Bite damage remains 1d4-1.
 Land skill rows needing implementation/live breakdown include Viper
 Perception/Stealth/Acrobatics +9 and Constrictor +12/+11/+15 respectively.
 Aquatic/climbing-only consumers remain outside the land-use scope.
+
+The [universal Grab rule](https://aonprd.com/UMR.aspx?ItemName=Grab) permits
+same-size or smaller prey. The existing project's delta-zero policy is correct
+for Constrictor Snake and Salamander; do not introduce a one-category-smaller
+restriction. [Constrict](https://aonprd.com/UMR.aspx?ItemName=Constrict) is
+additional damage on a successful grapple check, including the establishing
+check, and uses the creature's printed damage. These are verified source rules,
+not new balance adaptations.
 
 Salamander retains its existing identity/placements and requires a separate
 hybrid/weapon seam: manufactured spear, secondary tail, differing reach and

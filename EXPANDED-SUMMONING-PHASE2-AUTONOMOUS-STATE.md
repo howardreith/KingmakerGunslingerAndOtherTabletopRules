@@ -19,10 +19,12 @@ no merge, release, tag, version bump, force push or permanent deployment.
   **`b27b6aea04d4e1e2b151339fca36407ba45bb8a9`**.
   Exact research artifact/fetched remote before its evidence checkpoint:
   **`f507278bbebe5894130dc6ec51978580bc2c43d0`**.
-  Pushed research-evidence checkpoint/current fetched remote:
+  Pushed first research-evidence checkpoint:
   **`e5e79fe9c428f0db7b7205fcc481cb3c4a868e3d`**.
-  This containing source-only prototype/research-extension checkpoint is its
-  normal descendant; it is NOT runtime qualified.
+  Latest pushed exact research candidate/current fetched remote:
+  **`b2893abefc89079af49c22d3b028865ed2189f95`** (survey FAILED).
+  This containing fixture-repair checkpoint is its normal descendant and is
+  NOT runtime qualified.
   Unexpected active-branch motion remains a stop; archive motion is informational.
 - Exclusive ignored receipt: `artifacts/laptop-source-owner-20261005.json`;
   session `01a10bcd-8582-7551-826f-0f128807eb99`, owner PID 31796/start
@@ -45,13 +47,13 @@ no merge, release, tag, version bump, force push or permanent deployment.
   11/11 smoke, 209/209 main, 20/20 crowd, 9/9 prepare, 9/9 cleanup, 5/5 absence.
   No mechanics, visual, asset or serialized-state delta since that pass;
   only Dire suppression and guarded fixture changes, with full main rerun.
-- Latest actual snapshot `20261006T0139078842255Z` restored exactly;
-  closed `2026-10-06T01:45:45.9953210Z`: 136 files / Info 0.0.117 /
+- Latest actual snapshot `20261006T0222526525316Z` restored exactly;
+  closed `2026-10-06T02:29:30.3453602Z`: 136 files / Info 0.0.117 /
   `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
   Lease Completed/recoveryRequired=false; no game/shared lock/staging.
   Prior native working-save cleanup/absence clean; publication and research did not write
   saves. No save-file or protected-baseline access. Journal SHA
-  `A496BD70391A429A309578EA6616293862DD439A8F54366402E9BF65D91CC663`.
+  `21AF43CDCB9F77C50F452CAB35F3A8DBF37AF265981EFC39B7C44A404F1E29FE`.
 - Publication DLL SHA `8c76fcbed3eb73ffb6ca6c6121e610f96a2b36a82fa8f3c6c55edae66da885d9`;
   MVID `ed8fe210-31e2-4016-870e-8623d3a55fa2`; ZIP
   `eb930278836f0c3953decef589c7214b69c1d1a2fc69f625af56bdc4af254ac2`.
@@ -76,8 +78,12 @@ no merge, release, tag, version bump, force push or permanent deployment.
   checks PASS, 40 offline panels, no packaged assets. Water has no continuous
   tail chain; coil motion, jaw contact and shader remain unproved. Added fixed
   native Purple Worm comparison plus material/action metadata to research only.
-  219 focused / incremental compile / 486 preflight PASS for the extension.
-- Exact next action: freeze/push the extended research source, run the complete
+  Exact b2893abe: full prelaunch PASS, smoke 11/11; extended survey **FAIL 8/9**.
+  Diagnostic Count assumed a nonnull native action Clips collection. All six
+  donor/view checks and exact fixture cleanup PASS, zero metadata files written.
+  Narrow null-versus-empty metadata correction/regressions: 219 focused and
+  incremental Release PASS. No production creature changes or waived assertion.
+- Exact next action: freeze/push the null-clip research correction, run the complete
   exact artifact gate, then guarded fresh Steam smoke and three-target survey
   with exact restoration. Select/refine the donor from that evidence, retain
   separate Salamander hybrid/weapon seam, then profiles/signatures. Research PASS
