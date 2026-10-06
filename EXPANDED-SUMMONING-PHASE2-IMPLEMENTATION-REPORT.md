@@ -32,7 +32,14 @@ Latest actual leased snapshot restored at `2026-10-06T00:59:25.6235093Z`:
 No game/lease/shared lock/staging. No publication save write or save-file
 access; prior authorized native cleanup/absence remains clean.
 HumanReview: NOT_PERFORMED_NONBLOCKING. Accepted engine limitations/adaptation
-unchanged. Sprint 17 may now begin; Phase 2B itself is not yet closed.
+unchanged. Sprint 17 research is underway; Phase 2B itself is not yet closed.
+
+Sprint 17's [bounded native-rig survey](planning/EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md)
+uses the native Medium Water Elemental source of the proposed serpentine
+view, not the optional Eidolon blueprint from the earlier mixed-library
+census. Salamander's existing Lizardfolk view is measured separately.
+Research code passes 219 focused tests and 486 request-preflight checks;
+exact-head full gate/runtime are pending. No new gameplay or qualification.
 
 ## Historical first hidden candidate, October 5
 

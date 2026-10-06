@@ -165,11 +165,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-expanded-summoning-rules";
         internal const string DisposableExpandedSummoningCrocodilians =
             "disposable-expanded-summoning-crocodilians";
+        internal const string DisposableExpandedSummoningSerpentineSurvey =
+            "disposable-expanded-summoning-serpentine-survey";
 
         internal static bool IsExpandedSummoningRulesScenario(string scenario)
         {
             return scenario == DisposableExpandedSummoningRules ||
-                scenario == DisposableExpandedSummoningCrocodilians;
+                scenario == DisposableExpandedSummoningCrocodilians ||
+                scenario == DisposableExpandedSummoningSerpentineSurvey;
         }
         /// <summary>
         /// Correction order (2026-09-25): repeated cast-and-dispose cycles of
@@ -690,6 +693,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableExpandedSummoningVisualContracts,
                 DisposableExpandedSummoningRules,
                 DisposableExpandedSummoningCrocodilians,
+                DisposableExpandedSummoningSerpentineSurvey,
                 DisposableExpandedSummoningVisualLifecycle,
                 WorkingSaveExpandedSummoningPrepare,
                 WorkingSaveExpandedSummoningVerifyCleanup,

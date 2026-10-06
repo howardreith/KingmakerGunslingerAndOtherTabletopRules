@@ -1,5 +1,9 @@
 # Expanded Summoning Phase 2 evidence index
 
+[Sprint 17 native-rig research checkpoint](planning/EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md):
+219 focused / 486 request-preflight PASS; exact-head full gate and guarded
+metadata survey pending. Sprint 17 NOT QUALIFIED; no new creature/publication.
+
 [Sprint 16 COMPLETE AND PUBLISHED](planning/EXPANDED-SUMMONING-SPRINT16-PUBLICATION-PASS-REVIEW.md):
 exact 155ada89 all prelaunch gates PASS, smoke 11/11, main **211/211**, all
 20 public roots, both missed-bite regressions, exact restoration. 976 generated
