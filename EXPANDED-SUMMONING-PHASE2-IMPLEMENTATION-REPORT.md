@@ -38,6 +38,11 @@ Sprint 17's [bounded native-rig survey](planning/EXPANDED-SUMMONING-SPRINT17-RIG
 uses the native Medium Water Elemental source of the proposed serpentine
 view, not the optional Eidolon blueprint from the earlier mixed-library
 census. Salamander's existing Lizardfolk view is measured separately.
+The subsequent private snake prototypes pass four Blender checks and generate
+40 offline panels, but water has no continuous tail chain. A fixed native
+Purple Worm comparison and material/action metadata extension is source-only
+checked (219 focused, 486 preflight, incremental build); its exact artifact and
+guarded batch are next. No prototype asset or new summon is shipped.
 Exact f507 passes all prelaunch gates (219 focused/2021 full/486 preflight),
 fresh Steam smoke 11/11 and metadata survey 8/8. Both native source/view pairs
 are confirmed. Water has seven skins and a 43-bone body; Salamander has a
