@@ -82,6 +82,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Vector3 scale = unit.View.transform.localScale;
                     UnityEngine.Object[] resources = new UnityEngine.Object[0];
                     Mesh borrowedSpear = null;
+                    UnityEngine.Object[] borrowedAnimations = new UnityEngine.Object[0];
                     var row = new JObject { ["key"] = key, ["sourceCreature"] = donorKey,
                         ["scope"] = "request-local body/native attack/contact research; not printed profile or final visual qualification",
                         ["prefab"] = nativeBlueprint.Prefab.AssetId };
@@ -141,6 +142,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         var originalSkins = unit.View.GetComponentsInChildren<SkinnedMeshRenderer>(true)
                             .Select(value => new { Renderer = value, Mesh = value.sharedMesh,
                                 Bones = value.bones, Root = value.rootBone, Quality = value.quality }).ToArray();
+                        var originalAnimationSet = unit.View.AnimationManager.AnimationSet;
                         var originalStatics = unit.View.GetComponentsInChildren<MeshFilter>(true)
                             .Select(value => new { Filter = value, Mesh = value.sharedMesh,
                                 Renderer = value.GetComponent<MeshRenderer>(),
@@ -148,12 +150,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 Position = value.transform.localPosition, Rotation = value.transform.localRotation,
                                 Scale = value.transform.localScale }).ToArray();
                         UnityEngine.Object[] rollbackResources = new UnityEngine.Object[0];
+                        UnityEngine.Object[] rollbackBorrowedAnimations = new UnityEngine.Object[0];
                         string outcome;
                         bool failedAttach;
                         try
                         {
                             SerpentineVisualAttachment.PostSwapFaultForTest = () => {
                                 rollbackResources = unit.View.GetComponent<SerpentineVisualAttachment>().CaptureOwnedResources();
+                                rollbackBorrowedAnimations = unit.View.GetComponent<SerpentineVisualAttachment>().CaptureBorrowedAnimationResources();
                                 throw new InvalidOperationException("owned-body rollback drill");
                             };
                             failedAttach = !SerpentineVisualAttachment.TryAttach(unit.View, key, _context, out outcome,
@@ -165,6 +169,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             "injected post-swap fault restores every native skin/bone/root/static mesh and destroys exact owned resources",
                             outcome + ";captured=" + rollbackResources.Length,
                             failedAttach && rollbackResources.Length >= 5 &&
+                                ReferenceEquals(unit.View.AnimationManager.AnimationSet, originalAnimationSet) &&
+                                rollbackBorrowedAnimations.All(value => value != null) &&
                                 originalSkins.All(value => value.Renderer.sharedMesh == value.Mesh &&
                                     value.Renderer.bones.SequenceEqual(value.Bones) && value.Renderer.rootBone == value.Root &&
                                     value.Renderer.quality == value.Quality) &&
@@ -181,11 +187,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                         var attachment = unit.View.GetComponent<SerpentineVisualAttachment>();
                         resources = attachment.CaptureOwnedResources();
                         borrowedSpear = attachment.NativeSpearMesh;
+                        borrowedAnimations = attachment.CaptureBorrowedAnimationResources();
                         if (key == "salamander" && resources.Any(value => ReferenceEquals(value, borrowedSpear)))
                             throw new InvalidOperationException("Borrowed native spear cannot enter owned-resource cleanup.");
                         row["attachment"] = outcome;
                         if (key == "salamander")
                         {
+                            row["nativePiercingBinding"] = attachment.NativeSpearAnimationObservation;
+                            _serpentineBodyAssertions.Add(Assertion("sprint17-native-piercing-action-binding",
+                                "one exact compatible native piercing hand action; all other actions and native assets unchanged",
+                                attachment.NativeSpearAnimationObservation, attachment.NativeSpearAnimationBound &&
+                                    borrowedAnimations.Length >= 4 && !resources.Any(value => borrowedAnimations.Contains(value)),
+                                "Owned set container only; no style relabel, native clip edit, forced animation or new skeleton."));
                             int support = Array.IndexOf(attachment.DriverNames, SerpentineVisualPolicy.HybridSupport);
                             if (support < 0 || attachment.Body.bones[support] != attachment.Body.transform ||
                                 attachment.Body.quality != SkinQuality.Bone4 ||
@@ -313,8 +326,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "native unit destruction releases every exact project-owned resource",
                         "captured=" + resources.Length + ";remaining=" + resources.Count(value => value != null),
                         resources.Length >= 5 && resources.All(value => value == null) &&
-                            (key != "salamander" || borrowedSpear != null),
-                        "Borrowed native spear remains alive; no direct view disposal, native resource destruction or global name sweep."));
+                            (key != "salamander" || borrowedSpear != null && borrowedAnimations.Length >= 4 &&
+                                borrowedAnimations.All(value => value != null)),
+                        "Borrowed native spear/sets/actions/clips remain alive; owned animation container dies; no direct disposal or global sweep."));
                 }
             }
             finally

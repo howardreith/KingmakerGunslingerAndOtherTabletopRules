@@ -19,9 +19,11 @@ deployment, force push or prohibited substitute subsystems.
   2026-10-05T19:29:25.9127956Z; holder PID15084/start2026-10-05T20:34:17.3075720Z.
   Session-scoped, not perpetual. Refresh heartbeat; release only on actual
   session ending. All safety refs, bundles and failed artifacts retained.
-- Last verified pushed exact runtime candidate:
+- Last verified pushed evidence checkpoint:
+  `3eb23d06e0459ac929971a33439ac2230d63cc1f`; last runtime candidate
   `09087d0f45103ed8ba94084ac059f253b97f6a10`.
-  This containing evidence checkpoint is its normal descendant.
+  This containing bounded native-piercing adapter is a normal descendant,
+  source-only NOT QUALIFIED; exact-head complete prelaunch/runtime next.
   Unexpected active-branch motion is a stop; frozen DATA motion informational.
 
 ### Qualified versus NOT QUALIFIED
@@ -57,8 +59,16 @@ prefabc664715ff7165984285f66acc764b4b3. Check its exact style and native bind
 compatibility before any instance-only main-hand action adoption. Preserve
 all other actions, original native references and exact cleanup. No native
 asset edit, style relabel, global animation/limb rewrite or contact waiver.
-Freeze only a demonstrated bounded correction with focused checks, then
-new exact full prelaunch and complete affected batch. All gates retained.
+The containing source implements that single conditional carrier adoption:
+exact donor identity, actual nonempty native piercing variants, all39 relative
+bone paths/binds within1e-5, no explicit transitions, and a private action-list
+container replacing exactly one main-hand reference. Other actions, shared
+native sets/actions/clips, bones, weapon rules and original meshes unchanged.
+234 focused/2036 registered tests and incremental exact compile PASS.
+No live compatibility claim. Rollback/native destruction assertions now
+include exact original-set restoration/private-container release/borrowed
+native survival. One new binding assertion makes48 total; all47 prior checks
+retained. Freeze/push, full exact prelaunch, then guarded smoke/body batch.
 
 Then printed profiles/signatures/icons, full S17 hidden/publication and
 exhaustive Phase2B closure. Use the explicit14-reference bundle
