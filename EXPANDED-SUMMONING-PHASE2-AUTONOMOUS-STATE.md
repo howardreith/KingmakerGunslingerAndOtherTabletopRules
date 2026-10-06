@@ -19,9 +19,9 @@ deployment, force push or prohibited substitute subsystems.
   2026-10-05T19:29:25.9127956Z; holder PID15084/start2026-10-05T20:34:17.3075720Z.
   Session-scoped, not perpetual. Refresh heartbeat; release only on actual
   session ending. All safety refs, bundles and failed artifacts retained.
-- Last pushed/current verified remote:
-  `ac7e0fcf487b4c7be575f51ed92a35eceee680a4`; latest exact runtime candidate7ebb34eb.
-  This containing original-art/mount correction is its normal descendant.
+- Last pushed/current verified remote and exact runtime candidate:
+  `66900038d04ee8f5c64bcbaecc96fa61ae348f68`.
+  This containing evidence checkpoint is its normal descendant.
   Unexpected active-branch motion is a stop; frozen DATA motion informational.
 
 ### Qualified versus NOT QUALIFIED
@@ -31,59 +31,49 @@ deployment, force push or prohibited substitute subsystems.
   Hidden e3aeae63 retains crowd20,prepare9,cleanup9,absence5. No reopening.
 - Surface unchanged:976 published generated,0 withheld,29 wrappers,1005 visible.
   No snakes registered; existing Salamander production/identity/placements unchanged.
-- Sprint17 **NOT QUALIFIED**, latest bounded research **PASS**. Exact7ebb34eb:
-  230 focused/2032 full83.2s, full gate179.4s,491 preflight/81 orchestration/
-  17 provenance, persistence11/3/19,crowd5/7, clean exact Release and strict
-  318-member package PASS. Fresh Steam smoke11/11 and body40/40, driver PASS.
-- All three move; both issued native snake bites measure gap0. The exact hybrid
-  spear AND exact project tail now have retained native contact events.
-  Copied request-local faction isolates only the owned pair after settlement
-  and all56 command pose samples; native controllers and original party unchanged.
-- Hybrid visuals remain open: left palm-to-shaft0.638m, conservative spear
-  end-gap0.375m (includes0.03135m uncertainty), tail gap0.1619m, distal tail
-  minimum-0.112885m below measured floor. No threshold or grip failure waived.
-  Native unreadable mesh is never modified/read; no bogus surface vertices.
-- Every rollback/material/reference/owned destruction/borrowed-native survival,
-  unit/party/area and environment-restoration assertion passes. No save writing.
+- Sprint17 **NOT QUALIFIED**. Exact66900038:231 focused/2033 full86.3s,
+  gate180.2s,491 preflight/81 orchestration/17 provenance, persistence11/3/19,
+  crowd5/7, clean exact Release/strict318-member package PASS.
+  Fresh Steam smoke11/11 PASS; body **46/47 FAIL**, driver NOT-QUALIFIED.
+- All three move; both native snake bite gaps0, exact hybrid tail gap0.16654m.
+  Sustained owned-pair isolation, all resource/reference/rollback/native
+  destruction/environment/census checks PASS. No save writing.
+- Original v9 distal coil now has live sampled attack AND exact-event support
+  at5.0001mm. Both palms lie exactly on the existing spear shaft at native
+  contact frame5833. Those corrections pass their new positive assertions.
+- Sole failure: native spear forward-end gap0.562879m plus0.031350m
+  conservative uncertainty =0.594228m. Two-hand grip does NOT prove spear
+  contact. This is an original hybrid visual/pose defect, not fixture,
+  environment or restoration failure. No threshold waived.
 
-### Current correction and next exact gate
+### Next exact work
 
-Private replay now accepts both closed capture schemas and includes measured
-attack poses.10 replay tests reject undeclared, incomplete and invalid frames.
-Original hybrid v9 raises only the distal cross section by at most14cm;
-weights/UVs/native drivers/upper body unchanged.9 hybrid tests and independent
-byte reproduction PASS; meshBD790DF1E258FA6190EF48A2E68F0BEB5EAEBA6D035D51EEB3AAEFC5CBB9A60B.
-Every a096/7ebb captured hybrid pose clears the floor;7ebb replay support
-4.9999..5.0005mm.24 new panels, representative attack clay/textured inspected.
+Do one bounded audit of the existing native manufactured-attack action:
+actual selected weapon style/clip and available native settings, plus the
+captured exact-event hand/body frame. View forward already points at target;
+the two palms point the spear across it. Do not guess from an adjacent frame.
+Preserve v9 support and the proved two-palm mount; no unchanged-candidate retry.
+Select only the smallest owned-view/native-existing seam, with offline pose
+proof and fresh exact qualification. No native asset edit, global limb/
+animation rewrite, target teleport, reach inflation or contact waiver.
 
-The closed owned spear mount now aligns the existing renderer between native
-palms with rear grip10% from the butt, never scales or modifies native assets,
-bones, clips, target/reach or rules. It settles after native WeaponSnap and
-at the real rule boundary; original transforms/resources still restore.
-This is SOURCE ONLY, NOT live grip/contact proof.231 focused/2033 registered,
-incremental exact-reference compile PASS. No production hook/registration.
-
-Next commit/policy-push, freeze exact head, full prelaunch and one immutable
-smoke/body47 batch. Added assertions require measured attack support, actual
-primary/tail contact and two-palms within1cm at the exact native attack frame.
-Use the explicit14-reference bundle
+Then printed profiles/signatures/icons, full S17 hidden/publication and
+exhaustive Phase2B closure. Use the explicit14-reference bundle
 `artifacts/private-references-ground-20261006/KingmakerGunslinger-private-build-references`.
-Never rerun7ebb unchanged to claim those visual defects resolved.
-Then printed profiles/signatures/icons, S17 hidden/publication and exhaustive
-Phase2B closure. Lease BEFORE each installation observation/snapshot/deployment;
-restore each actual snapshot exactly. No source-only gameplay qualification.
+Lease BEFORE installation observation/snapshot/deployment; restore each
+actual snapshot exactly. No source-only gameplay qualification.
 
 ### Restored machine
 
-Actual snapshot `20261006T0951581493121Z` restored
-`2026-10-06T09:59:49.8837081Z`:136 files/Info0.0.117/
+Actual snapshot `20261006T1032557994699Z` restored
+`2026-10-06T10:40:47.0701589Z`:136 files/Info0.0.117/
 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
 Lease Completed/recoveryRequired=false/released; no game/shared lock/staging.
 No save-file/protected-baseline access or native save write. Journal
-`586B5588B3679D0BB7792DAA995F19F52F7B5DFEB3305074E0728A3762371234`.
+`A3EA13FC4F385C2992F9BCE50B42374821EFAD45DE50118ADAD0DBEF175113BE`.
 
 [Current research review](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-REVIEW.md)
-and [all nine exact artifacts/results/restorations](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-EVIDENCE.json).
+and [all ten exact artifacts/results/restorations](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-EVIDENCE.json).
 [S16 publication authority](planning/EXPANDED-SUMMONING-SPRINT16-PUBLICATION-PASS-REVIEW.md).
 Accepted unchanged: PASSIVE_CREATURE_SENSES_UNMODELED;
 ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD;
