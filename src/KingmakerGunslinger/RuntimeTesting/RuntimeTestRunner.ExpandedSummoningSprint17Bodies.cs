@@ -63,6 +63,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 Game.Instance.IsPaused = false;
                 foreach (int step in ReviewSprint17ProductionSnakeViews(fixture)) yield return step;
+                if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSnakeProfiles)
+                {
+                    foreach (int step in ReviewSprint17SnakeProfiles(fixture)) yield return step;
+                    yield break; // No Salamander/donor research or arbitrary keys in this request.
+                }
                 foreach (string key in SerpentineVisualPolicy.Keys)
                 {
                     string donorKey = SerpentineVisualPolicy.IsSnake(key) ? "purple-worm" : "salamander";

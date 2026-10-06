@@ -177,6 +177,7 @@ $expected = @(
     'disposable-expanded-summoning-crocodilians',
     'disposable-expanded-summoning-serpentine-survey',
     'disposable-expanded-summoning-serpentine-bodies',
+    'disposable-expanded-summoning-snake-profiles',
     'disposable-expanded-summoning-rules',
     'disposable-expanded-summoning-visual-lifecycle',
     'disposable-expanded-summoning-projected-menu',
@@ -406,6 +407,21 @@ foreach ($invalidBodyParameters in @(@{}, @{saveName='KMG_AUTOMATION_BASELINE'},
     @{saveName='KMG_AUTOMATION_WORKING'; qualificationCreatures='viper'})) {
     Assert-Throws { New-KmgRuntimeRequest @serpentineBodyArguments -Parameters $invalidBodyParameters } `
         'serpentine-body-review-rejects-unscoped-input'
+}
+$snakeProfileArguments = $serpentineArguments.Clone()
+$snakeProfileArguments.Scenario = 'disposable-expanded-summoning-snake-profiles'
+$snakeProfileArguments.EvidenceDirectory = Join-Path $script:KmgRuntimeEvidenceRoot 'snake-profile-preflight-test'
+$snakeProfileMetadata = Get-KmgRuntimeScenarioMetadata $snakeProfileArguments.Scenario
+$snakeProfileRequest = New-KmgRuntimeRequest @snakeProfileArguments -Parameters @{saveName='KMG_AUTOMATION_WORKING'}
+Assert-True ($snakeProfileMetadata.RequiresSaveName -and $snakeProfileMetadata.UsesWorkingStageTimeouts -and
+    $snakeProfileMetadata.PermittedSaveName -ceq 'KMG_AUTOMATION_WORKING' -and
+    $snakeProfileRequest.scenario -ceq $snakeProfileArguments.Scenario -and
+    $snakeProfileRequest.exitAfterCompletion) 'snake-profile-review-uses-exact-working-save-guard'
+foreach ($invalidSnakeProfileParameters in @(@{}, @{saveName='KMG_AUTOMATION_BASELINE'},
+    @{saveName='KMG_AUTOMATION_WORKING'; prefab='arbitrary'},
+    @{saveName='KMG_AUTOMATION_WORKING'; qualificationCreatures='salamander'})) {
+    Assert-Throws { New-KmgRuntimeRequest @snakeProfileArguments -Parameters $invalidSnakeProfileParameters } `
+        'snake-profile-review-rejects-unscoped-input'
 }
 Assert-True (-not $midgameDisposable.RequiresSaveName -and
     -not $midgameDisposable.RequiresManualInteraction) `

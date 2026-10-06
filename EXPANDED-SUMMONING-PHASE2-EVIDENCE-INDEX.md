@@ -1,5 +1,11 @@
 # Expanded Summoning Phase 2 evidence index
 
+[Current closed snake profile/body slice, NOT RUN](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-PROFILE-SLICE.md):
+248 focused/2050 unfiltered83.0s, repository/clean exact-reference Release/
+strict320-member package PASS179.5s as dirty diagnostics;496 preflight PASS.
+One fixed working-save request,17 view+18 actual profile assertions plus
+cleanup/version. No Salamander replay and no full Sprint17 acceptance claim.
+
 [Current snake view integration, NOT QUALIFIED](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-VIEW-INTEGRATION.md):
 two exact hidden identities automatically bind original bodies, with one view
 scale and native-owned rollback.17 guarded assertions written, NOT RUN.
