@@ -1,14 +1,15 @@
 # Expanded Summoning Phase 2 evidence index
 
-[Latest Sprint17 exact21eecc67 native-contact research FAIL](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-REVIEW.md):
-228 focused/2030 full86.8s/full gate180.5s, all prelaunch PASS; smoke11/body32
-of34, complete batch NOT-QUALIFIED. Viper did not move; Salamander queued
-attack finished without starting. Native snake bites gap0; spear adoption/
-rollback/resource/environment cleanup PASS. Hybrid contact-window floor
-reaches-8.83cm; final visuals open. Exact actual0845286601577Z snapshot restored
-08:55:18UTC; no game/lease/staging/save write. New isolated-target/command
-observation repair229 focused/2031 registered, incremental compile/repository
-PASS only. [Seven preserved attempts](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-EVIDENCE.json).
+[Latest Sprint17 exacta09648b0 native-contact research FAIL](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-REVIEW.md):
+229 focused/2031 full84.1s/gate177.6s, all prelaunch PASS; smoke11/body36
+of37, complete batch NOT-QUALIFIED. All movements pass. Hybrid command starts;
+retained contact is exact tail, not spear. Native spear is unreadable and its
+vertex measurement failed; initial enemy isolation is transient under native
+player-group validation. Tail gap26.7cm/support-6.94cm remain open. All resource/
+environment cleanup PASS. Actual0920583696673Z snapshot restored09:29:17UTC;
+no game/lease/staging/save write. Conservative bounds/event-error recording
+and copied request-local faction repair230 focused/2032 registered, incremental
+compile/repository PASS only. [Eight attempts preserved](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-EVIDENCE.json).
 
 [Historical7f S17-only authored winding correction](assets-source/original-models/sprint17-serpents/SOURCE.md):
 snake v4/hybrid v8 independently byte-reproduced; only triangle indices and

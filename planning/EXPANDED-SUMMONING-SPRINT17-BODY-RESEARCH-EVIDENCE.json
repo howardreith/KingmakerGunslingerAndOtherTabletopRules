@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "status": "Sprint17 NOT QUALIFIED; seven exact research attempts preserved. Latest21eecc67 smoke11 PASS/body32 of34 FAIL, exact restoration PASS. Isolated-command observation repair source-checked only.",
+  "status": "Sprint17 NOT QUALIFIED; eight exact research attempts preserved. Latesta09648b0 smoke11 PASS/body36 of37 FAIL, exact restoration PASS. Unreadable native spear measurement and transient enemy isolation require fixture correction; no final visual/gameplay qualification.",
   "scope": "Closed original-body/native command-contact/resource research only; no gameplay/publication qualification",
   "attempts": [
     {
@@ -1309,6 +1309,167 @@
         "cleanup": "Every exact rollback, original-resource restoration, owned-resource destruction, borrowed spear survival, unit/party/area census and mode/clock/pause/selection/group/awake snapshot assertion PASS.",
         "art": "Native snake bite and hybrid idle frames inspected as supporting ART ONLY: outward surfaces render solid; spear present. Hybrid tail occluded. These do not diagnose command failure or prove grip. Final shape/contact/lifecycle remain open.",
         "next": "Scope RTWP before initial movement; no target until contact cell; fresh isolated request-local faction/target and owned group per cell; preserve native controllable faction and BAB. Record actual command result, pause/mode/conditions, damage provenance and action declared type; require real spear AND tail. No unchanged retry or longer waits.",
+        "noNativeGeometryExport": true
+      }
+    },
+    {
+      "candidate": "a09648b01486f4f3da556df7efacc6ac189c5bb7",
+      "sourceFingerprint": "3940799ab62ab11280f935bf8d97d454f717f8d9f7160c7a296d42c9bd698d58",
+      "dllSha256": "0d2db90b2f898b6d49dd29950a37f40ee205a554491316aa362f8e7b3dd25eff",
+      "dllMvid": "bfb06ed6-57a0-425a-95c9-84de8683448f",
+      "packageSha256": "5bd692dfa49fad3c6249055495e69eae49505262ed9740a3df2ca35365b4a16e",
+      "packageMembers": 318,
+      "version": "0.0.141",
+      "prelaunch": {
+        "focused": 229,
+        "full": 2031,
+        "fullSeconds": 84.1,
+        "completeGateSeconds": 177.6,
+        "runtimePreflight": 491,
+        "orchestration": 81,
+        "provenance": 17,
+        "persistenceWiring": 11,
+        "persistenceScopes": 3,
+        "persistenceRejections": 19,
+        "crowdRoundTrips": 5,
+        "crowdRejections": 7,
+        "exactBuildAndStrictPackage": "PASS"
+      },
+      "runs": [
+        {
+          "scenario": "working-save-smoke",
+          "startedAtUtc": "2026-10-06T09:21:22.9905981Z",
+          "parameters": {},
+          "launcherOutcome": "Clean",
+          "exitCode": 0,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T0921239139712Z-working-save-smoke",
+          "requestId": "20261006T0921239452690Z-2705105957824369a42048a39e2854f0",
+          "requestSha256": "de0d6ed43baf23054d9fb843d7c560a474c97b6d7cb21871d3f094a20a4291fd",
+          "resultSha256": "2d3825acf154c3f59a26070988247beabb0f2981fc74a99bcacd5247ec814849",
+          "assertions": 11,
+          "passed": 11,
+          "failed": [],
+          "orchestrationSha256": "f1628d8b33ffca0ee22ab260e7afc8600132ccff121c0ef7935099ec82447f33",
+          "processId": 28592,
+          "processStartedUtc": "2026-10-06T09:21:25.0254177Z",
+          "scenarioStatus": "PASS",
+          "outcome": "PASS",
+          "completedAtUtc": "2026-10-06T09:24:14.7009565Z"
+        },
+        {
+          "scenario": "disposable-expanded-summoning-serpentine-bodies",
+          "startedAtUtc": "2026-10-06T09:24:21.2657203Z",
+          "parameters": {},
+          "launcherOutcome": "Unclean",
+          "exitCode": 1,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T0924220519160Z-disposable-expanded-summoning-serpentine-bodies",
+          "requestId": "20261006T0924220519160Z-777ffb9fc38749529ff595dbddfd053a",
+          "requestSha256": "dd242e3e733d778096bc591ab1cb2cc77d95a465287f9d2b8544a38d93350807",
+          "resultSha256": "309d63ce29547ea3a5012a569bab895cf88077e22b1429119ad0ffcd97c283b4",
+          "assertions": 37,
+          "passed": 36,
+          "failed": [
+            {
+              "name": "sprint17-native-attack-research-salamander",
+              "status": "FAIL"
+            }
+          ],
+          "orchestrationSha256": "0b7999f979a502ad11e0a75bf743aa0adad3e2bed637dd1de56800e300f12ea4",
+          "processId": 12220,
+          "processStartedUtc": "2026-10-06T09:24:23.0015267Z",
+          "scenarioStatus": "FAIL",
+          "outcome": "FAIL",
+          "completedAtUtc": "2026-10-06T09:29:14.8718662Z"
+        }
+      ],
+      "restoration": {
+        "status": "VERIFIED",
+        "snapshot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20261006T0920583696673Z",
+        "before": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "after": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "completedAtUtc": "2026-10-06T09:29:17.3815135Z",
+        "lease": "C:\\Dev\\KingmakerGunslingerLab\\compatibility-state\\runtime-20261006T092057Z-0a7b35b564b54195a8a0c181e1bc39c8\\runtime-lease.json",
+        "leaseStatus": "Completed",
+        "recoveryRequired": false,
+        "leaseReleased": true,
+        "gameProcessesRemaining": [],
+        "saveWrite": false
+      },
+      "journalSha256": "A827D78C9B50C488B2C8DDA4F22B7CED3FC0E62B7BB25307339EA5DDDF6E1AEE",
+      "bodyCaptureSha256": "F9DCD49041DD4215BE26CE30A293A16BE6361234413A097778F7FD2040AF0C01",
+      "driverSha256": "64AEFCA1D27E2275028242C7C51A13250C56A063740AA26454F9C7B5656CEA43",
+      "status": "NOT-QUALIFIED; smoke11 PASS/body36 of37 FAIL; restoration VERIFIED",
+      "findings": {
+        "movement": [
+          {
+            "key": "viper",
+            "travel": 2.46448326,
+            "maxVelocity": 3.04798961
+          },
+          {
+            "key": "constrictor-snake",
+            "travel": 2.453666,
+            "maxVelocity": 3.04798937
+          },
+          {
+            "key": "salamander",
+            "travel": 2.45200682,
+            "maxVelocity": 3.04798913
+          }
+        ],
+        "snakeBiteGapsMeters": {
+          "viper": 0.034277916,
+          "constrictorSnake": 0.03347206
+        },
+        "hybrid": {
+          "commandStarted": true,
+          "commandResult": "Success",
+          "attackRows": 2,
+          "damageRows": 4,
+          "retainedContact": "exact project tail 93e097b8d3db42d3a37656502899e1a9; not spear",
+          "tailMeasuredVertices": 499,
+          "tailGapMeters": 0.2666912,
+          "attackWindowFloorRange": [
+            -0.06939936,
+            0.00500011444
+          ],
+          "spearOwnershipAndNativeSurvival": "PASS",
+          "grip": "NOT MEASURED"
+        },
+        "failureClassification": [
+          {
+            "class": "fixture",
+            "finding": "Native WP_SpearArmy is not CPU-readable. Vertex access returned no usable points and the measurement did not survive the callback. Do not infer that spear command execution was absent.",
+            "evidence": {
+              "log": "output_log.txt",
+              "sha256": "345AC8671DF1F7AEC93B2E07EFDF483D370FFAE980DC6CB456BE975B75A77FDF",
+              "line": 5037,
+              "excerpt": "Not allowed to access vertices on mesh 'WP_SpearArmy' (isReadable is false; Read/Write must be enabled in import settings)"
+            }
+          },
+          {
+            "class": "fixture",
+            "finding": "All three initial pair-isolation assertions PASS, but attackBefore/After show mutual enemy=false. Initial isolation did not persist. Native UnitValidationController.ValidateUnit repairs PlayerFaction actors to the player group; group-isolation claim is withdrawn pending post-settlement proof.",
+            "nativeIlSha256": "2AA7DC0BF64D791FE5DD75F9C7A2C3224B3BFBC0B21AB233FD81E461EE5FE50B"
+          },
+          {
+            "class": "original visual",
+            "finding": "Tail contact gap26.7cm and hybrid attack floor minimum-6.94cm remain open; research finite-geometry PASS does not qualify shape/contact."
+          }
+        ],
+        "cleanup": "Every rollback, native resource restoration, project-owned destruction, borrowed mesh survival, environment and unit/party/area restoration assertion PASS; exact installation restored. No save writing or save filesystem access.",
+        "art": "Native tail-contact frame inspected as ART ONLY: original hybrid visible with spear, bending body and partly occluded tail. No mechanical inference or final visual acceptance.",
+        "next": "Preserve every event/error; use explicit conservative native spear end-centre/bounds metadata instead of unreadable vertices. Give only the disposable owner a request-local copy of its native controllable faction, not PlayerFaction identity; require isolated enemies after settlement and throughout command. Native controllers untouched. New exact-head complete batch required.",
         "noNativeGeometryExport": true
       }
     }

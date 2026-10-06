@@ -36,19 +36,20 @@ unchanged. Sprint 17 research is underway; Phase 2B itself is not yet closed.
 
 ### Current Sprint17 research result — NOT QUALIFIED
 
-Exact21eecc67 passes all prelaunch gates (228 focused/2030 full86.8s,
-full gate180.5s,491 preflight/81 orchestration/17 provenance, strict318-member
-package), then smoke11 PASS/body32 of34 FAIL. Viper movement was zero;
-Salamander's queued attack finished without starting. Exact cause is not
-recorded; no production diagnosis is invented. Both snakes produce actual
-issued native bite events with measured gap0. Native spear adoption/rollback,
-owned cleanup/borrowed survival and exact environment/census restoration pass.
-Hybrid contact-window support reaches-8.83cm and remains open.
-Actual0845286601577Z snapshot restored08:55:18UTC,136/.117/exact tree;
-no game/lease/staging/save write. Source correction scopes RTWP before movement,
-creates a fresh isolated target only per contact cell, retains native owner
-control/BAB, adds command/condition/damage provenance and requires spear AND
-tail.229 focused/2031 registered, incremental compile/repository PASS only.
+Exacta09648b0 passes all prelaunch (229 focused/2031 full84.1s, gate177.6s,
+491 preflight/81 orchestration/17 provenance, strict318-member package), then
+smoke11 PASS/body36 of37 FAIL. Three movements pass. Hybrid command starts,
+two rolls/four owner damage events, only exact tail contact retained. Native
+spear is unreadable; the vertex diagnostic loses its row. Initial isolation
+does not survive native player-group validation. Tail gap26.7cm and attack
+support-6.94cm remain open original-visual defects, not waived by research.
+All resource/environment/census cleanup PASS; actual0920583696673Z snapshot
+restored09:29:17UTC,136/.117/tree, no game/lease/staging/save write.
+Current source preserves event failures, uses explicit conservative native
+bounds metadata instead of unreadable vertices, and isolates only the owned
+actor on a request-local copy of its native controllable faction. Check enemy
+isolation after settlement and throughout the command; no native validation
+bypass.230 focused/2032 registered, incremental compile/repository PASS only.
 No production attachment, new registration or Sprint17 qualification.
 [Exact current review](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-REVIEW.md).
 
