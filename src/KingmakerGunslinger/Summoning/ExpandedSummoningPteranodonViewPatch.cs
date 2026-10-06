@@ -566,7 +566,7 @@ namespace KingmakerGunslinger.Summoning
         private const string FogOfWarAffectedKeyword = "FOG_OF_WAR_AFFECTED";
         private const string FogOfWarDissolveKeyword = "FOG_OF_WAR_DISSOLVE_ON";
 
-        private static string DressMaterial(Material material, Texture2D albedo)
+        internal static string DressMaterial(Material material, Texture2D albedo)
         {
             material.SetTexture(MainTexture, albedo);
             material.SetTextureScale(MainTexture, Vector2.one);
@@ -734,7 +734,7 @@ namespace KingmakerGunslinger.Summoning
         /// to intact and the view's material controller re-reading its
         /// renderers, so the game's own fades and tints include it.
         /// </summary>
-        private static string AdoptByMaterialController(UnitEntityView view,
+        internal static string AdoptByMaterialController(UnitEntityView view,
             SkinnedMeshRenderer donor, Material material)
         {
             string dissolve = "<none>";

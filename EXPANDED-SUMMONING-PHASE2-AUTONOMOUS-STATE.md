@@ -27,9 +27,11 @@ no merge, release, tag, version bump, force push or permanent deployment.
   Research evidence pushed at **`6dee947dbdf35419348a0c68555291a1e5f55bec`**.
   Private original prototypes:
   **`fc1e880e2ee2eeb1fbd259cf226418de3f04eb32`**.
-  Latest exact research artifact/current fetched remote:
+  Latest exact research artifact:
   **`c55b4f084cfabeafa83be839c47683330e78eb76`** (13/13 research PASS).
-  This containing evidence checkpoint is its normal descendant; Sprint 17
+  Research evidence/current fetched remote before this source checkpoint:
+  **`4940ca7749c9dcae13e24e0f77b8ad36b2e6a9c0`**.
+  This containing owned-body source checkpoint is its normal descendant; Sprint 17
   gameplay and visuals are still NOT QUALIFIED.
   Unexpected active-branch motion remains a stop; archive motion is informational.
 - Exclusive ignored receipt: `artifacts/laptop-source-owner-20261005.json`;
@@ -71,8 +73,8 @@ no merge, release, tag, version bump, force push or permanent deployment.
 - Sprint 17 **NOT QUALIFIED**: guarded research-only survey passed for the
   native Medium Water Elemental view and existing Salamander/Lizardfolk view.
   Archived inventory identifies the same serpentine prefab on the native
-  elemental, without using the optional Eidolon blueprint. No new creature,
-  asset, identity, publication, mechanic or save state changed.
+  elemental, without using the optional Eidolon blueprint. That research
+  changed no creature, asset, identity, publication, mechanic or save state.
   Exact f507: 219 focused / 2021 full, 486 preflight, 68 orchestration,
   persistence/crowd requests, repository/static/icon/manifest, clean exact
   Release and strict deterministic 312-member package PASS. Fresh Steam smoke
@@ -92,8 +94,8 @@ no merge, release, tag, version bump, force push or permanent deployment.
   Purple Worm has a continuous body chain and two standard-material skins;
   water body has a standard material but five auxiliary particle skins.
   No production creature changes or waived assertion. Failed b289 retained.
-- Private original continuous-chain snakes and separate Salamander hybrid body
-  now authored: 14 Blender behavior tests PASS (4 water/4 worm/6 hybrid),
+- Earlier private original continuous-chain snakes and separate Salamander hybrid body
+  authored at fc1e880e: 14 Blender behavior tests PASS (4 water/4 worm/6 hybrid),
   74 new framed panels. Offline defects repaired with framing, connectivity and
   dorsal-paint regressions. No packaged assets or production code changed;
   Salamander body has no weapon and does not qualify weapon handling.
@@ -106,9 +108,18 @@ no merge, release, tag, version bump, force push or permanent deployment.
   two-hand donor's 39/19-bone bind frames match exactly, not yet grip/contact
   proof. Water exposes slam actions; worm locomotion exposes idle only and
   its sampled body is reared. Credible snake movement remains an open gate.
-- Exact next action: bounded exact-owned original-view integration and live
-  donor acceptance (motion, supporting coil/ground/jaw, multi-renderer fallback/
-  lifecycle), separate Salamander manufactured-spear/tail seam, and printed
+- Current source slice: original snake supporting coils (five worm authoring
+  tests, 48 corrected native-up stress panels), six byte-reproduced original
+  asset files, closed two-skin attachment with rollback/owned-resource teardown.
+  No automatic production attachment, new registration or gameplay change.
+  222 focused, 2024 full (83.0s), complete repository/static/icon/manifest,
+  clean exact-reference Release and strict 318-member package PASS (180.7s).
+  This is a working-tree source gate, not an immutable runtime candidate;
+  freeze/rebuild after the request-local acceptance fixture is connected.
+- Exact next action: connect the request-local body acceptance scenario, then
+  freeze/push and run its complete exact artifact gate and guarded fresh-Steam
+  review/restoration. Prove motion, supporting coil/ground/jaw, multi-renderer
+  fallback/lifecycle. Continue separate Salamander manufactured-spear/tail seam and printed
   profiles/signatures. Research PASS
   is not gameplay/visual qualification. Preserve Salamander identity and
   placements. One hidden candidate/batched review/publication gate, then full

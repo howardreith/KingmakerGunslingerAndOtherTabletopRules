@@ -61,9 +61,13 @@ def render(args, shading, pose):
         raise SystemExit("unsupported synthetic pose")
     # Display both measured frames with +Z up/-Y forward. These are private
     # review transforms, never exported mesh transforms or native animation.
-    if worm or hybrid:
+    if hybrid:
         armature.rotation_euler.z = math.pi
     else:
+        # Worm bind-chain +Y rises vertically in its native view, just like
+        # water's +Y. +Z is its jaw-up axis, not the ground normal. Keep the
+        # supporting coil horizontal; this remains a bind-pose stress review,
+        # not a reconstruction of native motion from the sampled positions.
         armature.rotation_euler.x = math.pi / 2
     apply_shading(creature, shading)
     bpy.context.view_layer.update()
