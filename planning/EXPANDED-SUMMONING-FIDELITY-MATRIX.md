@@ -2,14 +2,15 @@
 
 ## Sprint 17 research, October 6 UTC — NOT QUALIFIED
 
-Latest exact21eecc67: all prelaunch PASS (228 focused/2030 full), smoke11
-PASS/body32 of34 FAIL, exactly restored08:55:18UTC. Both real snake bites
-have issued native animation-contact events and measured gap0. Viper movement
-did not run; Salamander's queued attack ended unstarted. Their precise causes
-were not recorded. Native two-hand spear attachment/adoption/rollback/owned
-cleanup and borrowed-native survival pass; no spear/tail grip/contact acceptance.
-Hybrid contact-window floor reaches-8.83cm and remains an open original-pose
-finding. [Seven exact attempts](EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-REVIEW.md).
+Latest exact66900038: all prelaunch PASS (231 focused/2033 full), smoke11
+PASS/body46 of47 FAIL, exactly restored10:40:47UTC. All three native movements,
+both snake bite contacts(gap0), exact hybrid tail(gap0.166540m), native resource
+adoption/rollback/destruction and sustained owned-pair isolation PASS.
+Original v9 hybrid support PASSES at5.0001mm through sampled attacks and
+exact event poses; both unchanged palms lie on the shaft at native spear
+event5833. Forward spear contact remains FAIL at0.594228m conservative gap.
+Grip is not contact. No threshold waived; no fixture/environment/restoration
+failure. [Ten exact attempts](EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-REVIEW.md).
 
 Six outward-winding original files use the native Purple Worm body chain and
 the separate Lizardfolk hybrid. Native Water Elemental provenance was resolved
@@ -17,10 +18,12 @@ without an optional Eidolon dependency, but its body lacks the continuous tail.
 No new snakes registered or production visual attachment enabled; existing
 Salamander identity/placements unchanged. Final printed profiles/signatures,
 land skills, full pose/lifecycle/contact/crowd, persistence and publication open.
-Current fixture repair scopes RTWP before movement, isolates fresh target/owned
-group per cell while retaining native control/BAB, records command/condition/
-damage provenance and requires actual spear AND tail.229 focused/2031 registered,
-incremental exact compile/repository PASS only; full new exact runtime pending.
+The fixture scopes RTWP, isolates each owned pair while retaining native
+control/BAB, and records actual same-event poses. The remaining spear miss
+is an original hybrid visual/pose defect: view faces target, palm axis points
+across it. Next bounded existing manufactured-attack style/clip/settings
+audit and exact-pose offline proof before the smallest owned correction.
+No native-asset edit, global limb/animation rewrite or reach inflation.
 Prior S16 and accepted limitations remain unchanged.
 
 ## Current Sprint 16 disposition, October 6 UTC — COMPLETE AND PUBLISHED

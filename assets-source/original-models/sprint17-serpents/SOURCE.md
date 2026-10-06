@@ -1,20 +1,20 @@
 # Sprint 17 original serpentine and hybrid bodies
 
-## Current original-art disposition, exact7ebb research, October 6 UTC
+## Current original-art disposition, exact66900038 research, October 6 UTC
 
-Original winding and idle/movement support have bounded live research evidence;
-final visuals remain NOT QUALIFIED. Exact7ebb smoke11/body40 and complete
-driver PASS, exact actual restoration09:59:49UTC. Snake native bite gaps0;
-separate hybrid records actual spear/tail events and owned resource cleanup.
-Hybrid left hand remains0.638m off the spear axis; conservative spear gap0.375m,
-tail gap0.162m, distal original coil floor minimum-0.112885m. These are NOT
-accepted final visuals. Current v9 source corrects only original distal-tail
-geometry, with a separate bounded owned two-palm mount. New exact runtime
-proof remains mandatory. No native geometry/animation export or native-bone rewrite.
+Final visuals remain NOT QUALIFIED. Exact66900038 smoke11 PASS/body46 of47 FAIL;
+exact actual restoration10:40:47UTC. Snake bite gaps0; hybrid tail0.166540m.
+Original v9 attack/exact-event support PASSES at5.0001mm, and the two-palm
+instance spear mount PASSES zero shaft distance at the actual native event.
+Sole failure: forward spear end0.594228m conservative miss. Correct grip
+does not establish contact. All resources/reference/native destruction PASS.
+Next bounded existing manufactured-attack style/clip/pose audit and exact-event
+offline review; no unchanged retry, native-asset edit, global animation/limb
+rewrite, reach inflation or contact waiver.
 All earlier prototypes/evidence remain preserved; headings below are historical.
 HumanReview: NOT_PERFORMED_NONBLOCKING.
 
-### Current v9 correction -- source/offline only
+### Current v9 correction -- bounded ground/grip PASS, spear contact FAIL
 
 Mesh `bd790df1e258fa6190ef48a2e68f0beb5eaeba6d035d51eeb3aaefc5cbb9a60b`
 is independently byte-reproduced.2592 vertices/5072 triangles/28 drivers remain.
@@ -37,8 +37,8 @@ the borrowed unreadable mesh and the existing renderer. Rear grip is10% from
 the butt; both palms must fit the unscaled shaft with tip clearance. No
 hand/arm bone, animation, native controller, target or combat-reach edit.
 Native destruction/rollback must reprove the exact captured transforms and
-resources. Next47-assertion research batch requires actual contact and grip,
-not merely complete metadata. Final visuals/gameplay remain NOT QUALIFIED.
+resources. Exact66900038 passes46/47; spear contact remains failed under the
+unchanged positive threshold. Final visuals/gameplay remain NOT QUALIFIED.
 
 ## Authored winding correction -- historical source checkpoint
 

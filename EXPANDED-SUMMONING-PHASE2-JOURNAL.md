@@ -1,5 +1,30 @@
 # Expanded Summoning Phase 2 journal
 
+## October 6,10:40 UTC -- exact66900038 body46/47 FAIL, restored
+
+All prelaunch PASS:231 focused/2033 full86.3s/gate180.2s,491 preflight,
+81 orchestration/17 provenance, persistence11/3/19,crowd5/7,exact clean
+Release/strict318-member package. Fresh Steam smoke11 PASS/body46 of47 FAIL.
+Original v9 ground support PASSES at5.0001mm through sampled attacks and exact
+event frames. Two unchanged native palms PASSES zero shaft distance at5833;
+tail gap0.166540m and both snake bites0 also pass. All environment, isolation,
+native destruction, material/mesh/transform rollback and resource checks pass.
+
+Sole failure: forward spear contact0.594228m (raw0.562879 + uncertainty0.031350).
+The native contact-time palm axis points across the target despite correct
+view facing. This is an original visual/pose defect, not fixture/environment/
+restoration. No threshold change, native vertex read or false contact claim.
+Exact-event body poses now retained; adjacent-frame inference was insufficient.
+Supporting native spear art reviewed, partially wall-occluded; structured
+geometry is the mechanical evidence. Next bounded native manufactured-attack
+style/clip/settings audit and exact-pose offline proof, then smallest owned
+correction; no blind retry, native asset edit, global limb/animation subsystem.
+
+Actual1032557994699Z snapshot restored10:40:47.0701589UTC:136/.117/exact tree;
+lease Completed/recoveryRequired=false/released; no game/lock/staging/save write.
+JournalA3EA13FC4F385C2992F9BCE50B42374821EFAD45DE50118ADAD0DBEF175113BE.
+All ten exact attempts preserved. Sprints14–16 complete; S17 NOT QUALIFIED.
+
 ## October 6 -- original distal-coil and two-palm spear correction, source only
 
 Exact7ebb source evidence preserved/pushed asac7e0fcf; PR26 updated. No new
