@@ -5,12 +5,12 @@ Laptop PR26 only; Sprints14–16 complete;976+29=1005 visible; ZERO DATA ports.
 
 ## Current twelfth exact batch — proposed native carrier rejected
 
-The containing source changes observation strategy, not production behavior:
-11 fixed archived Lizardfolk prefabs added to the existing metadata survey,
-with serialized styles/clip metadata and renderer/bone counts/paths only.
-No NPC/animation activation or action adoption.235 focused/2037 registered and
-incremental compile PASS; full exact prelaunch and14-assertion survey pending.
-The48-assertion body qualification remains unchanged and still failed.
+Separate exactf6a0a20b metadata survey failed13/14 after4 of11 prefab rows;
+its action-list shape guard rejected the fifth before recording that shape.
+The containing read-only structural-reader correction passes236 focused/
+2038 registered and incremental compile; full exact prelaunch/rerun next.
+[Separate census evidence](EXPANDED-SUMMONING-SPRINT17-NATIVE-ACTION-REVIEW.md).
+No action adopted. The48-assertion body gate is unchanged and still failed.
 
 Exact570a14cd passes all prelaunch:234 focused/2036 full84.6s, gate181.3s,
 491 preflight/81 orchestration/17 provenance, persistence11/3/19,crowd5/7,

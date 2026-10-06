@@ -653,6 +653,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint17-acted-fallback-is-not-playback", ExpandedSummoningSprint17Tests.NativeActedFallbackCannotProveClipPlayback),
             Case("expanded-summoning.sprint17-exact-native-piercing-carrier", ExpandedSummoningSprint17Tests.NativePiercingActionRequiresExactCarrierAndRig),
             Case("expanded-summoning.sprint17-closed-manufactured-action-census", ExpandedSummoningSprint17Tests.ManufacturedActionCensusIsClosedAndDefensive),
+            Case("expanded-summoning.sprint17-action-metadata-structural-preservation", ExpandedSummoningSprint17Tests.ActionMetadataPreservesMissingEmptyAndNullSlots),
             Case("expanded-summoning.sprint17-one-native-action-copy", ExpandedSummoningSprint17Tests.NativeSpearActionCopyPreservesAllOtherReferences),
             Case("expanded-summoning.sprint17-native-spear-bounds-uncertainty", ExpandedSummoningSprint17Tests.NativeSpearBoundsRetainConservativeUncertainty),
             Case("expanded-summoning.sprint17-two-palm-spear-mount", ExpandedSummoningSprint17Tests.TwoPalmSpearMountFitsExistingShaftWithoutRescaling),
