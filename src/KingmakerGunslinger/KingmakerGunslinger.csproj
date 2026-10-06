@@ -1567,4 +1567,10 @@
     <Compile Include="ElementalRaces\UnpublishedRaceTraitFoundationFactory.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.UnpublishedRaceTraitFoundations.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ElementalRaces\AerialObserverPolicy.cs" />
+    <Compile Include="ElementalRaces\AerialObserverMechanics.cs" />
+    <Compile Include="ElementalRaces\UnpublishedAerialObserverFoundationFactory.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.UnpublishedAerialObserverFoundation.cs" />
+  </ItemGroup>
 </Project>
