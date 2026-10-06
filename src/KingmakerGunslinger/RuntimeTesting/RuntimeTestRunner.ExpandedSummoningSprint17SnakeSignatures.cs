@@ -190,15 +190,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var state = DescribeSprint17Venom(poison);
                     after = stats.Constitution.Damage;
                     target.Descriptor.Buffs.Tick();
-                    bool expectedPresence = exposure < 6;
                     cadence &= delta >= 1 && delta <= 2 && (int)state["ticks"] == exposure &&
-                        target.Descriptor.HasFact(venom) == expectedPresence && stats.Constitution.Damage == after;
+                        target.Descriptor.HasFact(venom) && stats.Constitution.Damage == after;
                     exposures.Add(new JObject { ["exposure"] = exposure, ["damage"] = delta,
                         ["native"] = state, ["presentAfter"] = target.Descriptor.HasFact(venom),
                         ["duplicateTickDamage"] = stats.Constitution.Damage - after });
                 }
-                CheckSprint17Signature("viper-six-exposures", cadence && !target.Descriptor.HasFact(venom),
-                    new JObject { ["exposures"] = exposures }, "one initial and five later 1d2 Con exposures; no early/duplicate tick; native expiry");
+                // Exact native OnNewRound tests Ticks <= m_TicksPassed at
+                // entry; exposure six increments to six and the NEXT due
+                // boundary removes the buff without a seventh save/damage.
+                // Observe that boundary instead of changing the native fact.
+                before = stats.Constitution.Damage;
+                DueSprint17OwnedBuff(target, poison);
+                var exhausted = DescribeSprint17Venom(poison);
+                int expiryDamage = stats.Constitution.Damage - before;
+                target.Descriptor.Buffs.Tick();
+                CheckSprint17Signature("viper-six-exposures", cadence && exposures.Count == 6 &&
+                    !target.Descriptor.HasFact(venom) && (int)exhausted["ticks"] == 6 &&
+                    expiryDamage == 0 && stats.Constitution.Damage == before,
+                    new JObject { ["exposures"] = exposures, ["exhaustedBoundary"] = exhausted,
+                        ["presentAfterExhaustion"] = target.Descriptor.HasFact(venom),
+                        ["seventhExposureDamage"] = expiryDamage,
+                        ["duplicateExpiryDamage"] = stats.Constitution.Damage - before },
+                    "exactly six 1d2 Con exposures; next native due boundary removes without seventh/duplicate damage");
 
                 poison = DeliverSprint17Venom(owner, target, venom, out initialAttack);
                 stats.SaveFortitude.BaseValue = 100;
@@ -354,17 +368,30 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .Invoke(new Kingmaker.Controllers.Units.UnitLifeController(), new object[] { dying });
                     Buff hold = owner.Descriptor.Buffs.GetBuff(grab.HoldBuff);
                     if (hold != null) hold.TickMechanics();
+                    bool initiatorBeforeNativeTick = owner.Get<UnitPartGrappleInitiator>() != null;
+                    // ReleaseLink intentionally leaves the initiator part to
+                    // this native controller (avoiding buff-removal re-entry).
+                    // Settle the exact owned actors before trying a second
+                    // terminal case in this otherwise synchronous rule slice.
+                    var grappleController = new Kingmaker.Controllers.Units.UnitGrappleController();
+                    MethodInfo grappleTick = typeof(Kingmaker.Controllers.Units.UnitGrappleController)
+                        .GetMethod("TickOnUnit", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                    grappleTick.Invoke(grappleController, new object[] { victim });
+                    grappleTick.Invoke(grappleController, new object[] { owner });
                     bool free = SummonHoldComponent.HeldTarget(owner) == null &&
                         SummonGrappleLinks.EstablishingWeapon(owner, victim) == null &&
-                        victim.Get<UnitPartGrappleTarget>() == null && !victim.Descriptor.HasFact(grab.GrappledBuff);
+                        victim.Get<UnitPartGrappleTarget>() == null && !victim.Descriptor.HasFact(grab.GrappledBuff) &&
+                        owner.Get<UnitPartGrappleInitiator>() == null && !owner.Descriptor.HasFact(grab.HoldBuff);
                     CheckSprint17Signature(killOwner ? "constrict-owner-death" : "constrict-lethal-prey",
                         established && dying.Descriptor.State.IsDead && free && initialDamage == 1 &&
                         observer.Damage.Count == 1 && observer.Checks.Count == 1,
                         new JObject { ["established"] = established, ["dead"] = dying.Descriptor.State.IsDead,
                             ["ownerDeathFixtureInjury"] = killOwner, ["free"] = free,
+                            ["initiatorBeforeNativeTick"] = initiatorBeforeNativeTick,
+                            ["initiatorAfterNativeTick"] = owner.Get<UnitPartGrappleInitiator>() != null,
                             ["damage"] = new JArray(observer.Damage.Select(Sprint16DamageEvent)),
                             ["checks"] = observer.Checks.Count },
-                        "native death settlement then production hold cleanup; no maintain on dead owner or prey");
+                        "native death, production hold and native grapple-controller cleanup; no maintain on dead owner or prey");
                     if (!killOwner)
                     {
                         observer.Clear();

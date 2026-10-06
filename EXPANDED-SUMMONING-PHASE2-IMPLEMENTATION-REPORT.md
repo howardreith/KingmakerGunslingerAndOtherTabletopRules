@@ -7,13 +7,15 @@ owner-designated development line. PR #27 is frozen salvage-only; no DATA
 source imported. Phase 2C is authorized but deferred until Phase 2B owner
 acceptance; this mission stops after Sprint 17 and full Phase 2B closure.
 
-[New snake signature fixture](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-SLICE.md)
-is source-only, NOT RUN / NOT QUALIFIED. It adds24 seeded native rule assertions
-to the38-check profile/body regression; real command/AI/contact proof remains
-separate. Precommit2051 full84.5s/complete gate183.9s/strict320,502 preflight,
-142 collector/orchestration and all ancillary checks PASS. No gameplay source,
-publication, DATA import or new limitation. Full exact-head gate is next.
-The last closed runtime transaction remains:
+[Latest signature attempt](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-ATTEMPT1-EVIDENCE.json):
+exactaebf complete2051-test/strict320/prelaunch PASS, smoke11/11,
+signature60/62 FAIL. All62 executed. Two fixture/native scheduling boundaries
+are corrected in source, NOT RUN: poison's exhausted callback and native
+grapple-controller initiator cleanup before the second terminal case.
+Production unchanged; no requirement waived. Actual snapshot restored
+18:38:54UTC; no game/shared lock/staging/save write.
+[Repair and next exact gate](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-SLICE.md).
+The earlier qualified profile/body transaction remains:
 
 Exact `22be90c0c768acc710b9dfef2a6d42d1cb917a04` passes the complete
 bounded smoke/profile transaction: fresh Steam640820 **11/11 smoke,38/38 snake
