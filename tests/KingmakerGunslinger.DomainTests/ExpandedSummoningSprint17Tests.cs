@@ -8,6 +8,26 @@ namespace KingmakerGunslinger.DomainTests
     {
         internal static void RigSurveyUsesOnlyExactNativeSources()
         {
+            Assertions.True(SerpentineRigSurveyPolicy.MatchesHybridWeaponSource(
+                SerpentineRigSurveyPolicy.HybridWeaponBlueprint, SerpentineRigSurveyPolicy.HybridWeaponPrefab,
+                SerpentineRigSurveyPolicy.HybridPrimaryWeapon, false),
+                "Only the archived native greatclub/no-offhand pair is a detached comparison.");
+            foreach (string invalid in new[] { null, "", "foreign",
+                SerpentineRigSurveyPolicy.NativeBlueprint("salamander") })
+            {
+                Assertions.False(SerpentineRigSurveyPolicy.MatchesHybridWeaponSource(invalid,
+                    SerpentineRigSurveyPolicy.HybridWeaponPrefab, SerpentineRigSurveyPolicy.HybridPrimaryWeapon, false),
+                    "No different native or project blueprint is accepted.");
+                Assertions.False(SerpentineRigSurveyPolicy.MatchesHybridWeaponSource(
+                    SerpentineRigSurveyPolicy.HybridWeaponBlueprint, invalid,
+                    SerpentineRigSurveyPolicy.HybridPrimaryWeapon, false), "No arbitrary prefab is loaded.");
+                Assertions.False(SerpentineRigSurveyPolicy.MatchesHybridWeaponSource(
+                    SerpentineRigSurveyPolicy.HybridWeaponBlueprint, SerpentineRigSurveyPolicy.HybridWeaponPrefab,
+                    invalid, false), "The observed manufactured weapon is pinned too.");
+            }
+            Assertions.False(SerpentineRigSurveyPolicy.MatchesHybridWeaponSource(
+                SerpentineRigSurveyPolicy.HybridWeaponBlueprint, SerpentineRigSurveyPolicy.HybridWeaponPrefab,
+                SerpentineRigSurveyPolicy.HybridPrimaryWeapon, true), "A shield/offhand donor cannot substitute.");
             Assertions.False(SerpentineRigSurveyPolicy.CountPresentClips(null).HasValue,
                 "A native action without a clip enumeration stays unknown, not an exception or invented zero.");
             Assertions.Equal((int?)0, SerpentineRigSurveyPolicy.CountPresentClips(new bool[0]),

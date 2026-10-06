@@ -1,5 +1,11 @@
 # Expanded Summoning Phase 2 evidence index
 
+[Sprint 17 pose/weapon research extension — NOT RUN](planning/EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md):
+single attached bone-position samples, action clip names/durations, and one
+fixed read-only native greatclub prefab. No new actor or production change.
+219 focused/incremental compile PASS; exact gate and 13-assertion/four-capture
+guarded batch next. The earlier a173 PASS qualifies only its earlier scope.
+
 [Sprint 17 private original authoring checkpoint](assets-source/original-models/sprint17-serpents/SOURCE.md):
 continuous-chain Viper/Constrictor and separate Salamander hybrid body;
 14 Blender behavior checks PASS, 74 new framed offline panels. No weapon
