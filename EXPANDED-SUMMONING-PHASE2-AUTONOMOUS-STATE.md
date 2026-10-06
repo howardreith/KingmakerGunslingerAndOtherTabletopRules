@@ -1,6 +1,6 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-06 — laptop sole owner; Sprint17 signature FAIL61/62, restored; full Sprint17 NOT QUALIFIED
+## CURRENT STATE, 2026-10-06 — laptop sole owner; bounded snake rules62/62 PASS, restored; full Sprint17 NOT QUALIFIED
 
 This section governs over historical mission/ownership statements below.
 HOWARD-LAPTOP / `codex/expanded-summoning-phase2b-sprints14-17` / draft PR26
@@ -18,8 +18,9 @@ deployment, force push or prohibited substitute subsystems.
   session01a10bcd-8582-7551-826f-0f128807eb99; ownerPID31796/start
   2026-10-05T19:29:25.9127956Z; holderPID15084/start2026-10-05T20:34:17.3075720Z.
   Session-scoped; refresh heartbeat and release only on actual session ending.
-- Last exact runtime candidate `dc1208d2572d254f6cf3c1506f19503215e76808`,
-  clean/pushed for the failed batch. New phase-aware observation correction NOT RUN.
+- Last exact runtime candidate `130bf7a2de4cbd636df921f36e7f6afefe8523ca`,
+  clean/pushed for the bounded PASS batch. This following evidence checkpoint
+  does not transfer qualification to an untested artifact.
   Owner/holder identities unchanged; no competing source/runtime process.
   This checkpoint is a normal descendant. Unexpected active-branch
   motion remains a stop; DATA motion informational. All old artifacts retained.
@@ -30,20 +31,30 @@ Sprints14–16 COMPLETE/PUBLISHED. S16 exact155ada89 publication smoke11/main211
 passed all14 Crocodile+6 Dire roots after hiddene3 main209,crowd20,prepare9,
 cleanup9,absence5. No historical qualification reopened.
 
-Latest signature batch on exactdc12: complete2051-test/strict320/prelaunch
-PASS; smoke11/11, signature61/62 FAIL (all62 executed). [Exact evidence and
-failure classification](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-ATTEMPT3-EVIDENCE.json).
-All Constrictor checks pass. Six live damage events and clean removal are
-observed; only five saves are buff-owned. Native OnFactActivate consumes the
-injury action's preceding save instead of making a second one. The fixture
-incorrectly required six buff saves. New observer separately correlates the
-exact in-flight wounding bite's injury save and five subsequent venom saves.
-All62 requirements retained; production unchanged. Repair source PASS:
-251 focused,2053 full86.8s,complete repository/static/icon/manifest/clean
-14-reference Release/strict320 package183.6s,142 orchestration. New exact runtime next.
-Actual snapshot1923327993552Z restored19:30:35UTC:136/.117/exact tree;
-lease Completed/recovery=false/released,
-no game/shared lock/staging/save write.
+Exact `130bf7a2de4cbd636df921f36e7f6afefe8523ca` passes the complete
+bounded rules batch: fresh Steam640820 smoke **11/11**, profile/body/signature
+**62/62**, strict collector **46/46 metadata rows**, batch PASS.
+[Exact artifact, results and restoration](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-PASS-EVIDENCE.json).
+
+Prelaunch PASS:251 focused,2053 unfiltered83.4s, complete repository/static/icon/
+manifest, clean14-reference Release and deterministic strict320 package179.8s;
+502 standalone preflight,142 orchestration,17 provenance,persistence11/3/19,
+crowd5/7. All38 inherited profile/body and24 signature checks pass.
+
+Runtime proves one exact wounding-bite injury save plus five venom-owned saves,
+six native1d2 Constitution exposures, live counter6, native removal and no
+seventh/duplicate damage. Each raw roll resolved to2; actual damage was1 each
+in this environment. Reduction factors were not recorded, so none is inferred.
+The initial save had a Reason at dispatch, but was not venom-buff-owned:
+this corrects the prior partial offline inference of a reason-less dispatch.
+All13 Constrictor rule checks pass. No production behavior change or waiver;
+all three failed signature attempts and their artifacts remain unchanged.
+
+Actual snapshot1951101231925Z restored19:58:09.8692950UTC:136 files,
+Info0.0.117,tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
+Lease Completed/recovery=false/released; no game/shared lock/staging/save write.
+This qualifies seeded native RULES, not real commands/AI/contact or full Sprint17.
+32 snake roots stay hidden; no publication. HumanReview: NOT_PERFORMED_NONBLOCKING.
 
 Earlier qualified profile/body boundary (not the latest attempted transaction):
 
@@ -72,7 +83,7 @@ Strength/native-size dice, automatic original bodies, normal/rollback scale,
 idempotence/native owned-resource teardown and native-Worm isolation PASS.
 Fallback/normal intact settlement63–64 frames without visibility forcing.
 
-Sprint17 NOT QUALIFIED: signatures/real commands/AI, movement/contact/full
+Sprint17 NOT QUALIFIED: real commands/AI, movement/contact/full
 lifecycle/crowds/UI/routes/persistence and Salamander remain open.
 Surface97 units;1008 registered/976 published/32 withheld placements;
 29 wrappers;1005 visible. Viper18,Constrictor14 remain hidden.
@@ -84,14 +95,12 @@ external state change. Independent snakes proceed; no phase-wide blocker.
 
 ### Exact next action
 
-Phase-aware event fixture repair full source gate PASS; commit/push NOT QUALIFIED, freeze
-a new exact-head artifact, run all prelaunch checks and rerun the
-complete affected smoke/signature batch. No repeat of the failing artifact.
+Record/push the bounded exact130bf7a2 PASS evidence checkpoint, then implement
+closed actual RTWP/turn-based manual/AI snake commands and measured jaw contacts.
+Keep the qualified38-check and62-check requests unchanged. Use existing native
+request-local command, combat and turn-controller seams; no global rewrite
+or dirty diagnostic deployment.
 [Scope and honest exclusions](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-SLICE.md).
-The passing closed38-check request is unchanged. Native poison/constrict rules
-are now instrumented; actual RTWP/turn-based manual/AI commands and measured jaw
-contacts still need implementation. Use existing native request-local seams;
-no global rewrite and no dirty diagnostic deployment.
 Then targeted persistence/crowds/UI/routes and bounded Salamander-specific
 implementation. Stable full Sprint17 hidden gate, publication, Phase2B closure;
 STOP for owner review. Phase2C authorized but deferred, no Sprints18–22 here.
