@@ -1576,4 +1576,9 @@
   <ItemGroup>
     <Compile Include="ElementalRaces\CharacterTraitCanonicalAdmission.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="RuntimeTesting\ElementalCharacterTraitSaveContract.cs" />
+    <Compile Include="RuntimeTesting\ElementalCharacterTraitSavePlan.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ElementalCharacterTraitSave.cs" />
+  </ItemGroup>
 </Project>

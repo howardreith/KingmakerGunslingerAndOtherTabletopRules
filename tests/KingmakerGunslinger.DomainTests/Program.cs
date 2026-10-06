@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -25,6 +25,34 @@ namespace KingmakerGunslinger.DomainTests
     {
         private static readonly TestCase[] Cases =
         {
+            Case("trait-save.WorkingLoadOnly", ElementalCharacterTraitSaveTests.WorkingLoadOnly),
+            Case("trait-save.BaselineRejected", ElementalCharacterTraitSaveTests.BaselineRejected),
+            Case("trait-save.UniqueDescriptor", ElementalCharacterTraitSaveTests.UniqueDescriptor),
+            Case("trait-save.NativeFileContract", ElementalCharacterTraitSaveTests.NativeFileContract),
+            Case("trait-save.OnlyOwnedDelta", ElementalCharacterTraitSaveTests.OnlyOwnedDelta),
+            Case("trait-save.WorkingHashExact", ElementalCharacterTraitSaveTests.WorkingHashExact),
+            Case("trait-save.ForeignHashExact", ElementalCharacterTraitSaveTests.ForeignHashExact),
+            Case("trait-save.ForeignRemovalRejected", ElementalCharacterTraitSaveTests.ForeignRemovalRejected),
+            Case("trait-save.OwnedOverwrite", ElementalCharacterTraitSaveTests.OwnedOverwrite),
+            Case("trait-save.OwnedDeletionExact", ElementalCharacterTraitSaveTests.OwnedDeletionExact),
+            Case("trait-save.AutosaveRejected", ElementalCharacterTraitSaveTests.AutosaveRejected),
+            Case("trait-save.QuicksaveRejected", ElementalCharacterTraitSaveTests.QuicksaveRejected),
+            Case("trait-save.CollisionRejected", ElementalCharacterTraitSaveTests.CollisionRejected),
+            Case("trait-save.WrongRunRejected", ElementalCharacterTraitSaveTests.WrongRunRejected),
+            Case("trait-save.WrongLeaseRejected", ElementalCharacterTraitSaveTests.WrongLeaseRejected),
+            Case("trait-save.StaleLeaseRejected", ElementalCharacterTraitSaveTests.StaleLeaseRejected),
+            Case("trait-save.NonownedDeleteRejected", ElementalCharacterTraitSaveTests.NonownedDeleteRejected),
+            Case("trait-save.StageOrder", ElementalCharacterTraitSaveTests.StageOrder),
+            Case("trait-save.FreshProcess", ElementalCharacterTraitSaveTests.FreshProcess),
+            Case("trait-save.QualifiedArtifactRequired", ElementalCharacterTraitSaveTests.QualifiedArtifactRequired),
+            Case("trait-save.VerifyAbsentNoWrite", ElementalCharacterTraitSaveTests.VerifyAbsentNoWrite),
+            Case("trait-save.StableWitness", ElementalCharacterTraitSaveTests.StableWitness),
+            Case("trait-save.TransientRejected", ElementalCharacterTraitSaveTests.TransientRejected),
+            Case("trait-save.VisibleRemovalLifecycle", ElementalCharacterTraitSaveTests.VisibleRemovalLifecycle),
+            Case("trait-save.NoRawSaveWorkflow", ElementalCharacterTraitSaveTests.NoRawSaveWorkflow),
+            Case("trait-save.NoSummoningDependency", ElementalCharacterTraitSaveTests.NoSummoningDependency),
+            Case("trait-save.SeedCannotBeOwned", ElementalCharacterTraitSaveTests.SeedCannotBeOwned),
+            Case("trait-save.UnknownPhaseRejected", ElementalCharacterTraitSaveTests.UnknownPhaseRejected),
             Case("elemental-character-trait-canonical.FirstInitialization", ElementalCharacterTraitCanonicalTests.FirstInitialization),
             Case("elemental-character-trait-canonical.CompleteCanonicalGraph", ElementalCharacterTraitCanonicalTests.CompleteCanonicalGraph),
             Case("elemental-character-trait-canonical.RepeatedInitialization", ElementalCharacterTraitCanonicalTests.RepeatedInitialization),

@@ -5,6 +5,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 {
     internal static class RuntimeTestScenarioCatalog
     {
+        internal const string ElementalCharacterTraitsOwnedSave = "elemental-character-traits-owned-save";
         internal const string ObservePublishedElementalCharacterTraits = "observe-published-elemental-character-traits";
         internal const string ObserveUnpublishedRaceTraitFoundations = "observe-unpublished-race-trait-foundations";
         internal const string ObserveUnpublishedWhiteoutFoundation = "observe-unpublished-whiteout-foundation";
@@ -632,6 +633,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static readonly HashSet<string> Allowed =
             new HashSet<string>(StringComparer.Ordinal)
             {
+                ElementalCharacterTraitsOwnedSave,
                 ObservePublishedElementalCharacterTraits,
                 ObserveUnpublishedRaceTraitFoundations,
                 ObserveUnpublishedWhiteoutFoundation,
