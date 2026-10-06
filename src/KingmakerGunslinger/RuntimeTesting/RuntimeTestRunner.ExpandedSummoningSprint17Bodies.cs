@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Kingmaker;
+using Kingmaker.Blueprints;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Enums;
+using Kingmaker.PubSubSystem;
 using Kingmaker.UnitLogic.Commands;
+using Kingmaker.UnitLogic.Parts;
 using Kingmaker.View;
 using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json;
@@ -59,8 +62,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (string key in SerpentineVisualPolicy.Keys)
                 {
                     string donorKey = SerpentineVisualPolicy.IsSnake(key) ? "purple-worm" : "salamander";
-                    UnitEntityData unit = CastExpandedSummoningVariant(fixture.Blueprints, fixture.Caster,
-                        ExpandedSummoningOwnTierVariant(donorKey, SummonMultiplicity.One), null, fixture.Evidence).Single();
+                    // Use the whole qualified manual-summon seam, including
+                    // its native rule input. Faction/Master alone cannot make
+                    // an AI-only UnitPartSummonedMonster controllable.
+                    var control = new Sprint16ManualSummonControl {
+                        Caster = fixture.Caster,
+                        Blueprint = fixture.Blueprints.OfType<BlueprintUnit>().Single(value =>
+                            value.name == "KMG_Summoning_Unit_" +
+                                (SerpentineVisualPolicy.IsSnake(key) ? "PurpleWorm" : "Salamander")) };
+                    UnitEntityData unit;
+                    EventBus.Subscribe(control);
+                    try { unit = CastExpandedSummoningVariant(fixture.Blueprints, fixture.Caster,
+                        ExpandedSummoningOwnTierVariant(donorKey, SummonMultiplicity.One), null, fixture.Evidence).Single(); }
+                    finally { EventBus.Unsubscribe(control); }
                     fixture.Created.Add(unit);
                     if (fixture.UnitsBefore.Any(value => ReferenceEquals(value, unit)))
                         throw new InvalidOperationException("Body review must own every mutated actor.");
@@ -77,6 +91,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _serpentineBodyRows.Add(row);
                     try
                     {
+                        var summonPart = unit.Get<UnitPartSummonedMonster>();
+                        row["controlBefore"] = Sprint16ControlObservation(unit);
+                        row["manualSummonRules"] = control.Matched;
+                        if (control.Matched != 1 || summonPart == null || !summonPart.IsDirectlyControllable)
+                            throw new InvalidOperationException("Owned manual-summon rule mismatch: " + row.ToString(Formatting.None));
                         // Only the disposable visual carriers become Medium.
                         // Their donor stats/attacks are NOT claimed as the new
                         // profiles, and no attack command is issued here.
@@ -101,14 +120,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 throw new InvalidOperationException("No native controllable faction for owned movement fixture.");
                             unit.Descriptor.SwitchFactions(main.Faction, false);
                         }
-                        if (!unit.IsDirectlyControllable) throw new InvalidOperationException("Native manual-control predicate refused the owned fixture.");
+                        row["controlAfterSetup"] = Sprint16ControlObservation(unit);
 
                         // Let appearance/fader settle naturally. No appearance
                         // buff removal, renderer enabling or visibility write.
                         for (int settle = 0; settle < 60; settle++) yield return 0;
                         int frames = 60;
-                        while (++frames <= 600 && !Sprint17BodyIntact(unit.View, SerpentineVisualPolicy.BodyRenderer(key)))
+                        while (++frames <= 600 && (!Sprint17BodyIntact(unit.View, SerpentineVisualPolicy.BodyRenderer(key)) ||
+                            !unit.IsDirectlyControllable))
                             yield return 0;
+                        row["controlAfterNativeSettlement"] = Sprint16ControlObservation(unit);
+                        _serpentineBodyAssertions.Add(Assertion("sprint17-native-control-" + key,
+                            "one scoped manual summon rule plus settled native control predicate",
+                            row["controlAfterNativeSettlement"].ToString(Formatting.None), unit.IsDirectlyControllable,
+                            "Native summon-part input; no control-predicate patch, player/party mutation or appearance removal."));
+                        if (!unit.IsDirectlyControllable)
+                            throw new InvalidOperationException("Native manual-control predicate refused the owned fixture: " + row.ToString(Formatting.None));
                         _serpentineBodyAssertions.Add(Assertion("sprint17-native-appearance-" + key,
                             "native visible/intact frame before attachment", "frames=" + frames,
                             Sprint17BodyIntact(unit.View, SerpentineVisualPolicy.BodyRenderer(key)),

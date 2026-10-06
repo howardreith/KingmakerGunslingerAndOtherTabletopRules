@@ -1,11 +1,13 @@
 # Expanded Summoning Phase 2 evidence index
 
 [Sprint 17 closed body-research fixture](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-REVIEW.md):
-exact 7b76 prelaunch PASS (223 focused/2025 full/491 preflight), smoke 11/11;
-body probe 2/3 FAIL before attachment, due to a cross-scenario caster-field
-dependency in the fixture floor helper. Exact native cleanup and installation
-restoration PASS at 05:05:58 UTC. Explicit-anchor repair retains all floor/sight
-rules and requires a new exact-head batch. [Failure and hashes](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-EVIDENCE.json).
+exact 7b76 and 2045 prelaunch PASS (223 focused/2025 full/491 preflight), smoke
+11/11 each; body 2/3 FAIL before attachment on two distinct fixture omissions.
+2045 repairs the floor anchor (8/8 native clearance), then exposes the omitted
+native manual-summon rule input. Current repair reuses the qualified one-cast
+handler and adds full predicate observations/three named control assertions
+(20 total). Latest exact restoration 05:23:35 UTC; no game/lease/staging.
+[Both failures and hashes](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-EVIDENCE.json).
 No printed-profile/weapon/contact or new-publication acceptance is inferred.
 
 [Sprint 17 owned-body source slice](assets-source/original-models/sprint17-serpents/SOURCE.md):
