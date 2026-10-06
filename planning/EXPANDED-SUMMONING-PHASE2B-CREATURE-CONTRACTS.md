@@ -251,27 +251,22 @@ Swallow whole has a qualified project carrier from the Purple Worm.
 
 ## Sprint 17
 
-Current bounded evidence (October 6): exact66900038 passes all prelaunch,
-smoke11/11 and46 of47 research assertions, exactly restored. The original
-snakes on the native Purple Worm's continuous chain move and make real issued
-bite contacts with zero measured gap, and clear the measured floor. This is
-not printed-profile, persistence or complete visual/gameplay qualification.
-The earlier native Water Elemental prototype is preserved, not selected.
+Current bounded evidence (October 6): exact09087d0f all prelaunch PASS;
+smoke11/body44 of47 FAIL, exact snapshot restored11:20:06UTC. S17 NOT QUALIFIED.
+Both original snakes play native bite clips with gap0; no printed mechanics
+or new registration. The earlier Water Elemental prototype remains archived.
 No optional Eidolon dependency or native geometry/animation export.
 
-Salamander remains a separate original humanoid/coil on the measured native
-two-hand Lizardfolk frame (39/19 native body/armor binds). Its original v9
-coil clears sampled attack and exact-event floor poses; the instance-only
-native spear mount places both unchanged palms on the shaft at the actual
-attack event. Tail contact passes the bounded gate. Forward spear contact
-fails with a0.594228m conservative gap; grip is not a contact waiver.
-Next bounded existing manufactured-attack style/clip/settings and exact-pose
-audit before a smallest owned correction and fresh exact qualification.
-No production hook or new registration exists.231 focused/2033 full pass.
-All10 research artifacts/failures/restorations remain preserved.
+The original hybrid v9 supports at5.0001mm. Native spear event5787 has zero
+palm-to-shaft distance but NO active animation: PiercingTwoHanded is absent
+from its slashing/axe-only main-hand action. IsActed at0.12s is fallback, not
+actual-attack grip/playback proof. Gap0.5922998m. Tail uses native Bite_Attack,
+gap0.164152145m; no final tail-action claim. Next bounded existing shortspear
+carrier action/bind audit and instance-only adoption only if compatible.
+No bone twist, style relabel, native asset edit or threshold waiver.
+232 focused/2034 full; all11 attempts preserved. No production hook or
+identity/placement change. The Medium Viper contract below still governs.
 [Current research/disposition](EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-REVIEW.md).
-The Medium Viper contract below governs over the older S16 note's Tiny/Small
-prototype assumption. No printed mechanics are changed by donor selection.
 
 ### Viper (Venomous Snake) - CR 1, N Medium animal
 

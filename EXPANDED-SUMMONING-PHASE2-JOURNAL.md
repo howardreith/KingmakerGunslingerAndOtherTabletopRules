@@ -1,5 +1,28 @@
 # Expanded Summoning Phase 2 journal
 
+## October 6,11:20 UTC -- exact09087d0f exposes missing piercing animation
+
+All prelaunch PASS:232 focused/2034 full83.3s/gate180.5s,491 preflight,
+81 orchestration/17 provenance,persistence11/3/19,crowd5/7,strict318 members.
+Fresh Steam smoke11/body44 of47 FAIL. Three dependent assertions fail:
+native attack playback, contact and actual-attack two-palm grip. The spear
+requests PiercingTwoHanded; native Lizardfolk_2H_Slashing main-hand action
+offers only SlashingTwoHanded/AxeTwoHanded. Exact frame5787 has NO active
+clip; IsActed at0.12s is native missing-clip fallback. Gap0.5922998m persists.
+Prior669 zero-palm distances remain numeric evidence, but withdraw their
+interpretation as a played native attack. Stronger observation found a real
+original-view integration defect, not an environment/restoration failure.
+All other checks PASS. Tail uses native Bite_Attack, gap0.164152145m;
+research measurement, not final tail-action qualification. No bone twist,
+style relabel or assertion waiver. Archived census points to one bounded
+native shortspear carrier for a piercing-action compatibility check next.
+
+Actual1112148857824Z snapshot restored11:20:06.3390196UTC:136/.117/exact tree.
+JournalB10ED8A40739015EC306E04665552768D625659128AA1D744A4A1F87008A7092;
+capture804225C6943055C85B18676A0E9CBB610AD08DC93F6FFB543537D5E42313BBF9.
+Lease Completed/recoveryRequired=false/released; no game/lock/staging/save
+write. Eleven attempts retained. Sprints14–16 complete; S17 NOT QUALIFIED.
+
 ## October 6 -- native clip/style observation, source-only checkpoint
 
 The native hand-attack OnUpdate marks IsActed after .1s if ActiveAnimation
