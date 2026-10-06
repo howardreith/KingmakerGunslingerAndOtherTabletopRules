@@ -62,6 +62,53 @@ namespace KingmakerGunslinger.DomainTests
                     "No early success or extended settlement bound.");
         }
 
+        internal static void BiteAnimationDistanceIsOwnedVisualOnly()
+        {
+            string[] clips = { "BiteAttack01_Short_3.5m", "BiteAttack01_Long_8m",
+                "BiteAttack02_Short_3.5m", "BiteAttack02_Long_8m" };
+            Assertions.True(SerpentineVisualPolicy.IsNativeSnakeBiteAction("Purple_Worm_AnimationSet_Bite 1", clips),
+                "Exact preserved native census, in original entry/variant order.");
+            foreach (var invalid in new[] { null, new string[0], clips.Take(3), clips.Reverse(), clips.Concat(clips) })
+                Assertions.False(SerpentineVisualPolicy.IsNativeSnakeBiteAction("Purple_Worm_AnimationSet_Bite 1", invalid),
+                    "Missing, reordered or replacement actions are not normalized.");
+            Assertions.False(SerpentineVisualPolicy.IsNativeSnakeBiteAction("foreign", clips), "No action transplant.");
+            foreach (string[] identity in new[] {
+                new[] { "d8be82543ab64dc988c33e9f13608bad", "KMG_Summoning_Unit_Viper" },
+                new[] { "f1a2eadf588e4c3b9fb670724d706364", "KMG_Summoning_Unit_ConstrictorSnake" } })
+            {
+                foreach (float distance in new[] { 0f, .7f, 1.6f, 1.7096f, 5f })
+                {
+                    float corrected;
+                    Assertions.True(SerpentineVisualPolicy.TrySnakeBiteAnimationDistance(true,
+                        identity[0], identity[1], SerpentineVisualPolicy.WormPrefab, true, true,
+                        distance, out corrected), "Only exact original-body Bite is projected.");
+                    Assertions.Equal(distance / .2f, corrected, "Native clip-space distance matches authored view scale.");
+                    foreach (int missing in new[] { 0, 1, 2 })
+                    {
+                        Assertions.False(SerpentineVisualPolicy.TrySnakeBiteAnimationDistance(missing != 0,
+                            identity[0], identity[1], SerpentineVisualPolicy.WormPrefab, missing != 1, missing != 2,
+                            distance, out corrected), "Disabled/fallback/non-bite remains native.");
+                        Assertions.Equal(distance, corrected, "Rejection preserves input exactly.");
+                    }
+                }
+                foreach (float invalid in new[] { -1f, float.NaN, float.PositiveInfinity, float.MaxValue })
+                {
+                    float corrected;
+                    Assertions.False(SerpentineVisualPolicy.TrySnakeBiteAnimationDistance(true,
+                        identity[0], identity[1], SerpentineVisualPolicy.WormPrefab, true, true,
+                        invalid, out corrected), "Malformed or overflowing distance is not projected.");
+                }
+            }
+            foreach (string guid in new[] { "bf2216f48b3f4d24c9c502007649340d", "f8fb103168d74b4c93182437e5d2b4e4", "foreign" })
+            {
+                float corrected;
+                Assertions.False(SerpentineVisualPolicy.TrySnakeBiteAnimationDistance(true, guid,
+                    "KMG_Summoning_Unit_Viper", SerpentineVisualPolicy.WormPrefab, true, true, 1.7f, out corrected),
+                    "Native Worm, Salamander and unrelated identities never match.");
+                Assertions.Equal(1.7f, corrected, "Foreign visual distance is unchanged.");
+            }
+        }
+
         internal static void CommandRequestAndMatrixAreClosed()
         {
             string scenario = RuntimeTestScenarioCatalog.DisposableExpandedSummoningSnakeCommands;

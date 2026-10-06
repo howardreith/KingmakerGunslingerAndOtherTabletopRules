@@ -55,6 +55,8 @@ namespace KingmakerGunslinger.Summoning
         internal string Outcome { get; private set; }
         internal SkinnedMeshRenderer Body { get; private set; }
         internal string[] DriverNames { get; private set; }
+        internal bool OriginalBodyLive { get { return _swapped && !_released &&
+            Body != null && _body != null && ReferenceEquals(Body.sharedMesh, _body); } }
         internal MeshFilter SpearFilter { get; private set; }
         internal Mesh NativeSpearMesh { get; private set; }
         internal string SpearMountStatus { get; private set; }
