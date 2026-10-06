@@ -1,6 +1,10 @@
 # Sprint 17 hidden snake source checkpoint
 
 Status: **NOT QUALIFIED**. Source work only; no gameplay acceptance or publication.
+Latest disposition: exact7ab77c32 prelaunch gate rejected on stale107-icon
+packaging guards, after2048 tests (84.9s) and exact Release passed. Both guards
+now require109; direct packaging and strict320-member validation PASS.
+The corrected committed complete gate remains next; no runtime was launched.
 Branch `codex/expanded-summoning-phase2b-sprints14-17`, draft PR26; parent
 `aa5289cb980f064f682aee7c98e0da3f725c063f`. DATA contributes no source.
 
@@ -96,3 +100,19 @@ No blind human-bind deduplication, slashing-to-piercing relabeling or contact
 waiver. Then the complete Sprint17 candidate/publication and Phase2B closure.
 Phase2C authorized but deferred until Phase2B owner acceptance.
 HumanReview: NOT_PERFORMED_NONBLOCKING.
+
+## Preserved prelaunch rejection and bounded packaging correction
+
+Exact7ab source/binary was built, but no accepted runtime artifact was emitted.
+The DLL and complete build/log are retained under
+`artifacts/sprint17-snake-prelaunch-rejected-7ab77c32/`:
+DLL `4D7FD1C0296701EF41314FE1AB7A8E8566B012DE947D346B00FBCA71E7ED661F`;
+gate log `A34BE7A7B05907BB1EB4051A8E92B77D26ABDCC3C761479BFAC65D288748A2E3`.
+Failure class: stale build/package-validation cardinality, not gameplay or
+environment. No repeated runtime assertion, waiver, deployment or save work.
+Only the two107-to109 guard values change. The current source manifest and
+consumer tests already require109, and the exact package still checks every
+member/hash, rejects extras, and requires320 members with the soundbank.
+The direct corrected-validator diagnostic ZIP is retained alongside the
+rejected build; it is not a qualified gameplay candidate. Focused source
+and complete exact-head gates must run on the correcting commit.

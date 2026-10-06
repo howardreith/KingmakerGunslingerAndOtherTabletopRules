@@ -4,7 +4,9 @@
 250 focused / 2048 unfiltered tests PASS; repository/static/manifest/icon and
 dirty-tree exact-reference compile PASS. 73 append-only IDs,32 hidden roots;
 1008 registered /976 published +29 wrappers =1005 visible. No new runtime.
-Committed exact build/package and all Sprint17 gameplay gates remain pending.
+Exact7ab passed2048 tests/Release, then rejected before runtime on stale107-icon
+package guards. Both guards corrected to109; direct strict320-member diagnostic
+PASS. Corrected committed gate and all Sprint17 gameplay gates remain pending.
 
 [Last guarded a90494e1 bind census, RESEARCH ONLY 16/16 PASS](planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-BIND-REVIEW.md):
 
