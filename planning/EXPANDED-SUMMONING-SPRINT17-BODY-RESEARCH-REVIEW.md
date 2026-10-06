@@ -71,6 +71,27 @@ Next: bounded coil shape/winding investigation, actual snake attack and hybrid
 spear/tail seam, complete visual/contact/lifecycle, then printed profiles and
 Sprint17 hidden/publication gates. S16 and existing production remain unchanged.
 
+## New winding/weapon-metadata extension -- source only, NOT RUN
+
+Current8d original-vertex replay produces closed coils. Captured skin matrices
+have positive determinants on every sampled driver, not a reflected native
+bone. Neither that calculation nor the art image establishes a shader defect.
+The next bounded probe renders the exact owned original mesh with its original
+triangle order, then reversed order, restoring indices in finally. Normals,
+material references, native geometry, visibility/culling, bones and gameplay
+stay unchanged. Three exact restoration assertions expand research to29.
+Images are art comparison only, never a substitute for mechanical evidence.
+
+Read-only declared material floats/keywords/queue and the existing Salamander
+primary-spear prefab/component/bounds/WeaponSnap anchors accompany the capture.
+No equip, prefab instantiation, weapon animation claim or proprietary native
+mesh/texture/clip export. The installed public field is WeaponSnap.SnapTo.
+226 focused behavior checks and exact-reference incremental compile PASS;
+full unfiltered/exact artifact and guarded runtime are NOT RUN for this extension.
+Existing original payloads, production profiles and publication remain unchanged.
+Next exact-head full prelaunch with the fresh14-reference bundle, smoke/body29,
+exact leased restoration, then evidence-backed winding/material and weapon work.
+
 ## Fourth exact batch: measurements PASS, geometry defects confirmed
 
 Exact f31 passes 224 focused / 2026 complete tests (84.3s), complete repository
