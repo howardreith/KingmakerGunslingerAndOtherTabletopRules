@@ -183,6 +183,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     .All(value => value.sharedMesh != null && value.sharedMesh.vertexCount == 0),
                             "Body-only hybrid: no claim that missing club/shield constitutes a spear."));
 
+                        row["idleSample"] = Sprint17OriginalBodySample(unit, attachment.Body);
+
                         Vector3 origin = unit.Position, destination = Sprint17BodyMoveDestination(origin);
                         var move = new UnitMoveTo(destination, .3f);
                         move.Init(unit);
@@ -214,6 +216,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                             "travel=" + travel + ";velocity=" + speed + ";samples=" + samples.Count,
                             travel >= 1f && speed > .05f && finite,
                             "Weighted world vertices recorded separately from actor movement; not attack/contact acceptance."));
+                        var measured = new[] { (JObject)row["idleSample"] }.Concat(samples.Cast<JObject>()).ToArray();
+                        _serpentineBodyAssertions.Add(Assertion("sprint17-measured-floor-and-pose-" + key,
+                            "each idle/movement sample has a measured native-mask floor and finite complete current skin transforms",
+                            "samples=" + measured.Length + ";minimumClearance=" + measured.Min(value =>
+                                (float?)value["lowestVertexFloor"]["clearance"]),
+                            measured.Length >= 4 && measured.All(value => (bool)value["poseFinite"] &&
+                                value["actorFloor"]["clearance"].Type == JTokenType.Float &&
+                                value["lowestVertexFloor"]["clearance"].Type == JTokenType.Float &&
+                                ((JArray)value["skinTransforms"]).Count == SerpentineVisualPolicy.Bones(key).Length),
+                            "Research completeness only: negative clearance and visible gaps are retained, not waived."));
                         row["supportingFrame"] = CaptureSprint17OriginalBodyFrame(unit, attachment.Body, key);
                     }
                     finally
@@ -272,13 +284,63 @@ namespace KingmakerGunslinger.RuntimeTesting
             Vector3[] points = Sprint17OriginalWorldVertices(body);
             bool finite = points.All(point => !float.IsNaN(point.x + point.y + point.z) &&
                 !float.IsInfinity(point.x + point.y + point.z));
-            return new JObject { ["frame"] = Time.frameCount, ["finite"] = finite,
+            int lowest = Enumerable.Range(0, points.Length).OrderBy(index => points[index].y).First();
+            Matrix4x4[] bind = body.sharedMesh.bindposes;
+            Transform[] bones = body.bones;
+            Matrix4x4[] skin = bones.Select((bone, index) => bone.localToWorldMatrix * bind[index]).ToArray();
+            bool poseFinite = skin.All(matrix => Enumerable.Range(0, 16)
+                .All(index => SerpentineRigSurveyPolicy.Finite(matrix[index / 4, index % 4])));
+            var transforms = new JArray(bones.Select((bone, index) => new JObject {
+                ["name"] = bone.name, ["worldPosition"] = SurveyVector(bone.position),
+                ["skinToWorldRowMajor"] = Sprint17SurveyMatrix(skin[index]) }));
+            return new JObject { ["frame"] = Time.frameCount, ["finite"] = finite, ["poseFinite"] = poseFinite,
                 ["actorPosition"] = SurveyVector(unit.Position), ["vertices"] = points.Length,
                 ["lowestAboveActor"] = points.Min(point => point.y) - unit.Position.y,
                 ["height"] = points.Max(point => point.y) - points.Min(point => point.y),
+                ["lowestVertexIndex"] = lowest, ["lowestWorldPosition"] = SurveyVector(points[lowest]),
+                ["actorFloor"] = Sprint17MeasuredFloor(unit, unit.Position),
+                ["lowestVertexFloor"] = Sprint17MeasuredFloor(unit, points[lowest]),
+                // This static native overload only returns a projected point;
+                // it does not assign a Transform or move the actor.
+                ["nativeMovementProjection"] = SurveyVector(UnitMovementAgentBase.Move(unit.Position, Vector3.zero, 0)),
+                ["viewLocalToWorldRowMajor"] = Sprint17SurveyMatrix(unit.View.transform.localToWorldMatrix),
+                ["rendererLocalToWorldRowMajor"] = Sprint17SurveyMatrix(body.transform.localToWorldMatrix),
+                ["skinTransforms"] = transforms,
+                ["nativeTerrainSnaps"] = new JArray(unit.View.GetComponentsInChildren<Kingmaker.Visual.SnapToTerrain>(true)
+                    .Select(snap => new JObject { ["name"] = snap.name,
+                        ["parent"] = snap.transform.parent == null ? null : snap.transform.parent.name,
+                        ["enabled"] = snap.enabled, ["active"] = snap.gameObject.activeInHierarchy,
+                        ["boundsCenter"] = SurveyVector(snap.Bounds.center), ["boundsSize"] = SurveyVector(snap.Bounds.size),
+                        ["upShift"] = snap.UpShift, ["noRotationSnap"] = snap.NoRotationSnap,
+                        ["fixParentRotation"] = snap.FixParentRotation,
+                        ["localPosition"] = SurveyVector(snap.transform.localPosition),
+                        ["localToWorldRowMajor"] = Sprint17SurveyMatrix(snap.transform.localToWorldMatrix) })),
                 ["headViewPosition"] = SurveyVector(unit.View.transform.InverseTransformPoint(
                     body.bones.Single(bone => bone.name == "Head").position)),
                 ["worldPoseMethod"] = "sum(weight * bone.localToWorld * bindpose * originalVertex)" };
+        }
+
+        private static JArray Sprint17SurveyMatrix(Matrix4x4 matrix)
+        { return new JArray(Enumerable.Range(0, 16).Select(index => matrix[index / 4, index % 4]).ToArray()); }
+
+        private static JObject Sprint17MeasuredFloor(UnitEntityData unit, Vector3 point)
+        {
+            // Exact primary ray of native UnitMovementAgentBase.Move: two
+            // metres up, one hundred down, mask 0x200101. Read-only; expose
+            // misses/own-collider hits rather than substituting a nav height.
+            RaycastHit hit;
+            bool found = Physics.Raycast(point + Vector3.up * 2f, Vector3.down, out hit, 100f, 0x200101);
+            bool owned = found && hit.collider != null && hit.collider.transform.IsChildOf(unit.View.transform);
+            float? clearance = SerpentineRigSurveyPolicy.MeasuredGroundClearance(point.y, found,
+                found ? hit.point.y : float.NaN, found ? hit.normal.y : float.NaN, owned);
+            return new JObject { ["queryPoint"] = SurveyVector(point), ["rayHit"] = found,
+                ["layerMask"] = "0x200101", ["startHeight"] = 2f, ["distance"] = 100f,
+                ["queryTriggers"] = Physics.queriesHitTriggers,
+                ["collider"] = found && hit.collider != null ? hit.collider.name : null,
+                ["colliderLayer"] = found && hit.collider != null ? (int?)hit.collider.gameObject.layer : null,
+                ["ownedCollider"] = owned, ["hitPoint"] = found ? SurveyVector(hit.point) : null,
+                ["normal"] = found ? SurveyVector(hit.normal) : null,
+                ["clearance"] = clearance.HasValue ? new JValue(clearance.Value) : JValue.CreateNull() };
         }
 
         private static Vector3[] Sprint17OriginalWorldVertices(SkinnedMeshRenderer body)

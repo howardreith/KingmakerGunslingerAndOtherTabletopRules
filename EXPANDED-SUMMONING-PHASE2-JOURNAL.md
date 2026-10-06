@@ -1,5 +1,23 @@
 # Expanded Summoning Phase 2 journal
 
+## October 6 -- bounded native-floor/current-pose observation, source only
+
+Verified remote3093a603, same live source-owner identities, clean intake, no
+game/runtime lock/staging. Native IL audit found a read-only static movement
+projection and exact primary ray (2m up/100m down/mask0x200101). Body research
+now records actual hit/normal/owned-collider classification and signed floor
+clearance at actor/lowest original vertex, plus current skin/view/SnapToTerrain
+matrices and snap bounds. No native snap/position/collider write. Unknown stays
+unknown and negative stays negative. Three new completeness assertions bring
+research to23 without claiming floor/contact acceptance. 224 focused PASS;
+incremental compile required adding the exact native PhysicsModule reference.
+Fresh ignored private reference bundle created/verified; old bundle preserved.
+17 provenance checks PASS including missing/mismatched PhysicsModule rejection.
+No native assembly is packaged. No production or original asset changed.
+Next immutable exact-head full gate, isolated preflight, tested JSON reader,
+complete fresh-Steam smoke/body batch and exact leased restoration; then use
+measured poses to repair original geometry. S17 NOT QUALIFIED.
+
 ## October 6, 05:41 UTC -- game research20/20, driver ERROR, exactly restored
 
 Exact6bee prelaunch PASS:223 focused/2025 full85.9s, complete gate181.8s,

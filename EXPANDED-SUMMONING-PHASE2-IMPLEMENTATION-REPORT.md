@@ -57,6 +57,14 @@ Supporting art and actor-relative heights leave coil/ground/pose quality open;
 neither measures actual floor clearance. Next bounded current-transform/native
 floor measurements and original-geometry review; no final Sprint 17 qualification.
 
+The next source extension now measures native-mask floor hits independently of
+actor/nav origins and records full current skin/view/snap transforms. It does
+not modify snapping or actor placement. Negative/missing measurements remain
+negative/unknown. Research nominally expands to 23 checks; 224 focused and 17
+exact-reference provenance checks pass, plus incremental compile. PhysicsModule
+is referenced privately/non-copying and checked against the installed runtime.
+Full exact-head prelaunch/runtime remains next; original assets are unchanged.
+
 Sprint 17's [bounded native-rig survey](planning/EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md)
 uses the native Medium Water Elemental source of the proposed serpentine
 view, not the optional Eidolon blueprint from the earlier mixed-library

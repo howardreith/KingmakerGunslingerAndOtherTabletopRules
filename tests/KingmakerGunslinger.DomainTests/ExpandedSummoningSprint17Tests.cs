@@ -10,6 +10,32 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class ExpandedSummoningSprint17Tests
     {
+        internal static void GroundResearchRequiresMeasuredSurfaceAndRetainsPenetration()
+        {
+            Assertions.Equal((float?)(-.125f), SerpentineRigSurveyPolicy.MeasuredGroundClearance(
+                -6.125f, true, -6f, 1f, false), "Penetration is not clamped or compared to an actor/nav origin.");
+            Assertions.Equal((float?).375f, SerpentineRigSurveyPolicy.MeasuredGroundClearance(
+                17.375f, true, 17f, 1f, false), "A positive gap remains a gap, not automatic ground contact.");
+            Assertions.Equal((float?)(-.125f), SerpentineRigSurveyPolicy.MeasuredGroundClearance(
+                13.875f, true, 14f, .2f, false), "World translation does not change measured clearance.");
+            Assertions.Equal((float?)null, SerpentineRigSurveyPolicy.MeasuredGroundClearance(
+                0, false, 0, 1, false), "A missed ray is unknown, never zero clearance.");
+            Assertions.Equal((float?)null, SerpentineRigSurveyPolicy.MeasuredGroundClearance(
+                0, true, 0, 1, true), "The owned actor's collider cannot stand in for terrain.");
+            foreach (float normal in new[] { -.2f, 0, .199f, 1.1f, float.NaN, float.PositiveInfinity })
+                Assertions.Equal((float?)null, SerpentineRigSurveyPolicy.MeasuredGroundClearance(
+                    0, true, 0, normal, false), "Only a finite upward-facing measured surface is usable.");
+            foreach (float bad in new[] { float.NaN, float.PositiveInfinity, float.NegativeInfinity })
+            {
+                Assertions.Equal((float?)null, SerpentineRigSurveyPolicy.MeasuredGroundClearance(
+                    bad, true, 0, 1, false), "Nonfinite original geometry cannot produce ground evidence.");
+                Assertions.Equal((float?)null, SerpentineRigSurveyPolicy.MeasuredGroundClearance(
+                    0, true, bad, 1, false), "Nonfinite hit geometry cannot produce ground evidence.");
+            }
+            Assertions.Equal((float?)null, SerpentineRigSurveyPolicy.MeasuredGroundClearance(
+                float.MaxValue, true, -float.MaxValue, 1, false), "Overflow is unknown, not a usable measurement.");
+        }
+
         internal static void BodyResearchIsClosedAndUsesWorkingSaveGuard()
         {
             string scenario = RuntimeTestScenarioCatalog.DisposableExpandedSummoningSerpentineBodies;
