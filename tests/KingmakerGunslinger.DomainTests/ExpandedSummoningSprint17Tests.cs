@@ -10,6 +10,31 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class ExpandedSummoningSprint17Tests
     {
+        internal static void OriginalTriangleDiagnosticIsExactReversibleAndInputPreserving()
+        {
+            int[] source = { 0, 1, 2, 0, 2, 3 };
+            int[] result = SerpentineRigSurveyPolicy.ReverseOriginalTriangleOrder(source, 4);
+            Assertions.True(source.SequenceEqual(new[] { 0, 1, 2, 0, 2, 3 }), "Caller-owned original indices never mutate.");
+            Assertions.True(result.SequenceEqual(new[] { 0, 2, 1, 0, 3, 2 }), "Exactly the second/third slots swap per triangle.");
+            Assertions.True(SerpentineRigSurveyPolicy.ReverseOriginalTriangleOrder(result, 4).SequenceEqual(source),
+                "Two swaps restore original order exactly, not an approximate mesh rewrite.");
+            foreach (int[] invalid in new[] { null, new int[0], new[] { 0, 1 }, new[] { -1, 1, 2 },
+                new[] { 0, 1, 4 }, new[] { 0, 0, 1 }, new[] { 0, 1, 0 }, new[] { 0, 1, 1 } })
+            {
+                bool rejected = false;
+                try { SerpentineRigSurveyPolicy.ReverseOriginalTriangleOrder(invalid, 4); }
+                catch (ArgumentException) { rejected = true; }
+                Assertions.True(rejected, "Incomplete, out-of-range and degenerate lists fail closed.");
+            }
+            foreach (int count in new[] { -1, 0, 1, 2 })
+            {
+                bool rejected = false;
+                try { SerpentineRigSurveyPolicy.ReverseOriginalTriangleOrder(new[] { 0, 1, 2 }, count); }
+                catch (ArgumentException) { rejected = true; }
+                Assertions.True(rejected, "A body must have at least three addressable vertices.");
+            }
+        }
+
         internal static void GroundResearchRequiresMeasuredSurfaceAndRetainsPenetration()
         {
             Assertions.Equal((float?)(-.125f), SerpentineRigSurveyPolicy.MeasuredGroundClearance(
