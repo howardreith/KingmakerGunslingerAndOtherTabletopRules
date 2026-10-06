@@ -83,7 +83,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         unit.Descriptor.State.Size = Size.Medium;
                         if (SerpentineVisualPolicy.IsSnake(key)) unit.View.transform.localScale = Vector3.one * .2f;
                         string floorEvidence;
-                        Vector3 floor = FindExpandedSummoningUngulateArtPoint(out floorEvidence);
+                        Vector3 floor = FindExpandedSummoningArtPoint(fixture.Caster, out floorEvidence);
                         PlaceExpandedSummoningUnit(unit, floor);
                         if (!Game.Instance.State.AwakeUnits.Contains(unit)) Game.Instance.State.AwakeUnits.Add(unit);
                         row["floorSurvey"] = floorEvidence;

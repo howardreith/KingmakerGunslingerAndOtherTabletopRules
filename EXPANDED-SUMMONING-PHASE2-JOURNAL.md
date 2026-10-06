@@ -1,5 +1,20 @@
 # Expanded Summoning Phase 2 journal
 
+## October 6, 05:05 UTC -- body research fixture failure, restored
+
+Exact 7b76dba2 passed 223 focused/2025 full (92.4s), complete repository/static/
+icon/manifest, clean exact Release and strict 318-member package (187.8s),
+491 preflight/68 orchestration and persistence/crowd request checks. Fresh
+Steam smoke 11/11; body probe 2/3 FAIL before attachment. Classified FIXTURE:
+FindExpandedSummoningUngulateArtPoint used _creatureReviewCaster, which belongs
+to a different scenario, instead of this fixture's caster. Cleanup/version
+passed, but no body or motion proof was produced. Preserved the exact failed
+package, driver, evidence and restoration. Actual snapshot restored 136 files,
+Info 0.0.117, expected tree; lease Completed, no game/shared lock/staging.
+Narrow repair supplies an explicit caller-owned anchor to the unchanged native
+path/sight/clearance algorithm. Focused 223 PASS; new frozen full gate and
+complete affected smoke/body batch next. No waived assertion or DATA import.
+
 ## October 6 -- closed original-body fixture, NOT QUALIFIED
 
 Verified active remote a35993fc with no concurrent Expanded Summoning owner or
