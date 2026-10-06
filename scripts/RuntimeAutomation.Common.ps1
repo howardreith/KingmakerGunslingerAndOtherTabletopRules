@@ -3,6 +3,12 @@ Set-StrictMode -Version Latest
 
 $script:KmgRuntimeEvidenceRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-evidence'
 $script:KmgRuntimeScenarioMetadata = [ordered]@{
+    'observe-unpublished-aerial-observer-foundation' = [pscustomobject]@{
+        RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
+        RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
+        TimeoutCategory = 'working-save'; UsesCatalogTimeout = $true
+        UsesSelectionTimeouts = $true; UsesWorkingStageTimeouts = $true
+    }
     'observe-unpublished-race-trait-foundations' = [pscustomobject]@{
         RequiresSaveName = $true; PermittedSaveName = 'KMG_AUTOMATION_WORKING'
         RequiresManualInteraction = $false; ReadinessBehavior = 'autonomous-working-save'
@@ -1915,6 +1921,9 @@ function Assert-KmgRuntimeScenarioPreflight {
     }
     if ($Scenario -ceq 'observe-unpublished-race-trait-foundations' -and -not $ExitAfterCompletion) {
         throw 'Unpublished race trait foundations require automatic exit.'
+    }
+    if ($Scenario -ceq 'observe-unpublished-aerial-observer-foundation' -and -not $ExitAfterCompletion) {
+        throw 'Unpublished Aerial Observer foundation requires automatic exit.'
     }
     $metadata = Get-KmgRuntimeScenarioMetadata -Scenario $Scenario
     $qualifiedElementalRaces114 =
