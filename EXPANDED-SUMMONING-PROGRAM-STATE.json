@@ -29,7 +29,7 @@
       16
     ],
     "currentSprint": 17,
-    "currentSubItem": "Sprint 17 snake source checkpoint: 250 focused / 2048 unfiltered tests (82.1s), repository/static/manifest/icon checks and dirty-tree exact-reference Release compile PASS. Not a gameplay qualification. Viper and Constrictor Snake add 73 append-only identities and 32 withheld roots; 1008 registered / 976 published + 29 wrappers = 1005 visible. Original icons reviewed; production body attachment, native mechanics/UI/persistence/routes and Salamander's separate spear/tail seam remain open. No runtime transaction or DATA port. Committed exact build/package gate next, then complete Sprint 17 and Phase 2B closure; Phase 2C authorized but deferred.",
+    "currentSubItem": "Sprint 17 snake source checkpoint: 250 focused / 2048 unfiltered tests (82.1s), repository/static/manifest/icon checks and dirty-tree exact-reference Release compile PASS. Not a gameplay qualification. Viper and Constrictor Snake add 73 append-only identities and 32 withheld roots; 1008 registered / 976 published + 29 wrappers = 1005 visible. Original icons reviewed; production body attachment, native mechanics/UI/persistence/routes and Salamander's separate spear/tail seam remain open. No runtime transaction or DATA port. Committed exact build/package gate next, then complete Sprint 17 and Phase 2B closure; Phase 2C authorized but deferred. Exact7ab committed gate passed2048 tests/Release but rejected stale107-icon package guard. Both guards now109; direct strict320-member diagnostic PASS. Rejected build/log preserved; corrected committed gate NEXT.",
     "sprint17SnakeSource": {
       "status": "SOURCE CHECKPOINT; NOT QUALIFIED",
       "review": "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SOURCE-REVIEW.md",
@@ -45,7 +45,7 @@
       "originalSnakeBodyProductionAttached": false,
       "runtimeQualified": false,
       "publicationAuthorized": false,
-      "exactHeadPackageGate": "NEXT",
+      "exactHeadPackageGate": "7ab77c32 rejected before runtime: stale107-icon build/package guards. Corrected109 guards pass direct320-member strict package; new committed complete gate NEXT.",
       "humanReview": "NOT_PERFORMED_NONBLOCKING",
       "newRuntimeTransaction": false
     },
