@@ -1,0 +1,69 @@
+using System;
+using System.Runtime.CompilerServices;
+using Harmony12;
+using Kingmaker.View;
+using KingmakerGunslinger.Bootstrap;
+using UnityEngine;
+
+namespace KingmakerGunslinger.Summoning
+{
+    /// <summary>Only the two hidden KMG snakes. Research proved this native
+    /// binding at .2 view scale; production lifecycle/contacts still require
+    /// the exact guarded candidate. Neither native Worm nor Salamander matches.
+    /// Reuses the instance-owned swap/rollback, not the other rig families.</summary>
+    [HarmonyPatch(typeof(UnitEntityView), "OnDataAttached")]
+    internal static class ExpandedSummoningSerpentineViewPatch
+    {
+        private sealed class Attempt { internal string Outcome; }
+        private static readonly ConditionalWeakTable<UnitEntityView, Attempt> Applied =
+            new ConditionalWeakTable<UnitEntityView, Attempt>();
+
+        internal static string DescribeView(UnitEntityView view)
+        {
+            Attempt attempt;
+            return view != null && Applied.TryGetValue(view, out attempt)
+                ? attempt.Outcome : "not-attempted";
+        }
+
+        internal static void Postfix(UnitEntityView __instance)
+        {
+            ModContext context;
+            if (__instance == null || __instance.EntityData == null ||
+                __instance.EntityData.Blueprint == null || !ModContext.TryGet(out context) ||
+                context.FeatureModules == null || context.FeatureModules.Active == null) return;
+            var unit = __instance.EntityData.Blueprint;
+            string key;
+            if (!SerpentineVisualPolicy.TryProductionSnake(context.FeatureModules.Active.ExpandedSummoning,
+                unit.AssetGuid, unit.name, unit.Prefab == null ? null : unit.Prefab.AssetId, out key)) return;
+            lock (Applied)
+            {
+                Attempt existing;
+                if (Applied.TryGetValue(__instance, out existing)) return;
+                var attempt = new Attempt { Outcome = "donor-visual:attachment-started" };
+                Applied.Add(__instance, attempt);
+                try
+                {
+                    // One view-only step, once per native view. Do not change
+                    // size, reach, collision, movement, animation or bones.
+                    Vector3 scale = __instance.transform.localScale;
+                    if (!PositiveFinite(scale.x) || !PositiveFinite(scale.y) || !PositiveFinite(scale.z))
+                        throw new InvalidOperationException("Invalid original snake view scale.");
+                    __instance.transform.localScale = scale * SerpentineVisualPolicy.SnakeViewMultiplier;
+                    string outcome;
+                    SerpentineVisualAttachment.TryAttach(__instance, key, context, out outcome);
+                    attempt.Outcome = outcome;
+                }
+                catch (Exception error)
+                {
+                    // TryAttach owns rollback and cleanup; never retry or
+                    // multiply the scale again on a second native callback.
+                    attempt.Outcome = "donor-visual:attachment-exception:" + error.GetType().Name + ":" + error.Message;
+                    Debug.LogException(error);
+                }
+            }
+        }
+
+        private static bool PositiveFinite(float value)
+        { return value > 0 && !float.IsNaN(value) && !float.IsInfinity(value); }
+    }
+}
