@@ -1,0 +1,227 @@
+{
+  "schemaVersion": 1,
+  "mission": "DATA content 0.0.142 integration intake",
+  "CodexObjectiveVisualReview": "FAIL",
+  "OwnerAestheticApproval": "NOT_RECORDED",
+  "TraitsPublished": false,
+  "partialPublication": false,
+  "reviewArtifact": "artifacts/mission/icon-review/contact-sheet.png",
+  "reviewKind": "offline art inspection, not native UI or gameplay evidence",
+  "downsampling": "Windows System.Drawing GDI+; HighQualityBicubic; HighQuality pixel/compositing; TileFlipXY; ARGB32 SourceCopy; full source rectangle",
+  "scope": "Sources copied byte-for-byte for ignored review only; no canonical art, assignment, registration or localization mutation.",
+  "icons": [
+    {
+      "slug": "fiery-glare",
+      "selectedArtifact": "C:/Dev/KingmakerGunslingerLab/worktrees/elemental-race-traits-publication-readiness-2026-10-06/artifacts/icon-generation/elemental-character-traits-2026-10-06/fiery-glare.png",
+      "sourceSha256": "a3ed28c9a92940f60cee501ecd429e7e4d7c5bd7d8f6f209124985d6863005e3",
+      "sourceSize": [
+        1254,
+        1254
+      ],
+      "sourceFormat": "8-bit opaque RGB PNG",
+      "reviewExport128Sha256": "0ff889c3321e0d30b82e9d8c2fc5b80f81f134b48c636f6fc231826fccf993f5",
+      "reviewExportFormat": "128x128 8-bit noninterlaced RGBA PNG",
+      "generationTool": "built-in image_gen",
+      "artFamily": "painted-magical",
+      "exportProfile": "project-painted-128",
+      "initialPrompt": "Use case: stylized-concept.\nAsset type: one original hand-painted fantasy CRPG character-trait icon, in a cohesive four-icon painted-magical family.\nOutput exactly ONE standalone square image, 1024x1024 pixels or larger, full-bleed opaque dark painted background. Never make a collage, panels, contact sheet, sprite sheet, mockup, border, or frame.\nStyle: rich hand-painted fantasy materials, broad deliberate brushwork, sculpted light and shadow, crisp focal silhouette with softer peripheral edges. Controlled dramatic elemental lighting; restrained secondary details; neither photorealistic nor a 3D render. The entire icon is a compact symbolic composition, not a portrait scene or landscape. Use the same medium, contrast discipline, edge treatment and detail density as a coherent four-image art family.\nComposition: one dominant subject filling most of the central square, every essential form fully inside the canvas with a safe dark perimeter; important shapes must not be cut off. Strong immediate recognition at 128x128, 48x48, and especially 32x32. Keep the primary silhouette legible in grayscale; do not rely on color alone. Reduce tiny clutter and concentrate value contrast on the dominant subject.\nOriginality: invent a fresh composition. No copying, tracing, remixing, close imitation of any existing icon, recognizable real person, established fictional character, or copyrighted logo.\nAbsolute exclusions: no text, letters, numbers, runes, logos, monograms, caption, signature, watermark, decorative border, UI overlays or state marks. No vector/flat graphics, anime, cartoons, pixel art, generic placeholders, or modern props.\nPrimary subject: a single large ember-lit eye and severe brow, with an iris formed of controlled living flame. The almond-shaped eye is the unmistakable dominant silhouette, completely contained in the square. A focused intimidating gaze conveys command and supernatural confidence: deliberate and composed, never screaming, enraged, friendly, startled, or monstrous. Show only the local eye, eyelids and brow, not a complete face or portrait. Amber and molten orange illuminate the flame-shaped iris against restrained crimson and deep red-black shadows. A narrow hot edge at the lids and brow suggests Ifrit elemental heat. A few dim sparks and subtle heat shimmer may recede into the dark background, without competing with the eye.\nThe icon must communicate an Ifrit whose gaze itself intimidates. Keep distinct from a generic flame emblem, fireball, fire-vision spell, inner-flame spell, explosion or fiery wings. Prioritize the eye and commanding expression over decorative flame.",
+      "refinementPrompt": null,
+      "refinementInputSha256": null,
+      "selectedRefinedVersion": false,
+      "CodexObjectiveVisualReview": "PASS",
+      "reason": "The contained eye and flame iris remain legible at 128, 48 and 32 pixels; severe gaze, no text/frame or generic fireball.",
+      "OwnerAestheticApproval": "NOT_RECORDED",
+      "approvedHash": null,
+      "canonicalIntake": "NOT_PERFORMED",
+      "registeredIconConsumers": 0,
+      "cropApplied": false,
+      "generativeEditDuringIntegration": false,
+      "plannedConsumers": [
+        "Fiery Glare feature",
+        "Fiery Glare activatable toggle"
+      ],
+      "hiddenIndependentIcons": false,
+      "edgeDiagnostics": [
+        {
+          "side": "top",
+          "brightEdgePixels": 0,
+          "nonOpaqueEdgePixels": 0
+        },
+        {
+          "side": "right",
+          "brightEdgePixels": 0,
+          "nonOpaqueEdgePixels": 0
+        },
+        {
+          "side": "bottom",
+          "brightEdgePixels": 0,
+          "nonOpaqueEdgePixels": 0
+        },
+        {
+          "side": "left",
+          "brightEdgePixels": 0,
+          "nonOpaqueEdgePixels": 0
+        }
+      ]
+    },
+    {
+      "slug": "stoic-dignity",
+      "selectedArtifact": "C:/Dev/KingmakerGunslingerLab/worktrees/elemental-race-traits-publication-readiness-2026-10-06/artifacts/icon-generation/elemental-character-traits-2026-10-06/stoic-dignity.png",
+      "sourceSha256": "f821992b390be1cc214a137f54c4122c2d460c542805023359a79bcb66849ac3",
+      "sourceSize": [
+        1254,
+        1254
+      ],
+      "sourceFormat": "8-bit opaque RGB PNG",
+      "reviewExport128Sha256": "e1f619d17470cff018799db9b1c6554cf11e6b0626723360603f332ce7fb6f51",
+      "reviewExportFormat": "128x128 8-bit noninterlaced RGBA PNG",
+      "generationTool": "built-in image_gen",
+      "artFamily": "painted-magical",
+      "exportProfile": "project-painted-128",
+      "initialPrompt": "Use case: stylized-concept.\nAsset type: one original hand-painted fantasy CRPG character-trait icon, in a cohesive four-icon painted-magical family.\nOutput exactly ONE standalone square image, 1024x1024 pixels or larger, full-bleed opaque dark painted background. Never make a collage, panels, contact sheet, sprite sheet, mockup, border, or frame.\nStyle: rich hand-painted fantasy materials, broad deliberate brushwork, sculpted light and shadow, crisp focal silhouette with softer peripheral edges. Controlled dramatic elemental lighting; restrained secondary details; neither photorealistic nor a 3D render. The entire icon is a compact symbolic composition, not a portrait scene or landscape. Use the same medium, contrast discipline, edge treatment and detail density as a coherent four-image art family.\nComposition: one dominant subject filling most of the central square, every essential form fully inside the canvas with a safe dark perimeter; important shapes must not be cut off. Strong immediate recognition at 128x128, 48x48, and especially 32x32. Keep the primary silhouette legible in grayscale; do not rely on color alone. Reduce tiny clutter and concentrate value contrast on the dominant subject.\nOriginality: invent a fresh composition. No copying, tracing, remixing, close imitation of any existing icon, recognizable real person, established fictional character, or copyrighted logo.\nAbsolute exclusions: no text, letters, numbers, runes, logos, monograms, caption, signature, watermark, decorative border, UI overlays or state marks. No vector/flat graphics, anime, cartoons, pixel art, generic placeholders, or modern props.\nPrimary subject: a single calm dignified stone face or carved mask, complete and contained in the square, with a simple frontal or three-quarter silhouette. Its expression is composed, honorable, unmoved, quietly authoritative. Broad carved planes and mineral texture suggest Oread ancestry. Warm earth, bronze, muted ochre and restrained golden light against a deep dark painted ground. A soft measured protective radiance or rim light around the face conveys inner composure fortifying the bearer and nearby allies; keep it subtle and non-geometric, never a shield or solid barrier. A few mineral glints or restrained dust are secondary.\nThis icon communicates dignity so steady that it fortifies the mind. Make the face read immediately at 32 pixels through broad brow, cheek and jaw planes. Avoid angry rock monsters, emotional or laughing faces, generic shields, full-body statues, meditation cliches, generic earth-wisdom/stone-skin/breath-control compositions, and photoreal portraits.",
+      "refinementPrompt": null,
+      "refinementInputSha256": null,
+      "selectedRefinedVersion": false,
+      "CodexObjectiveVisualReview": "PASS",
+      "reason": "The calm carved face remains the dominant readable subject at 128, 48 and 32 pixels; radiance is secondary, no shield or angry monster.",
+      "OwnerAestheticApproval": "NOT_RECORDED",
+      "approvedHash": null,
+      "canonicalIntake": "NOT_PERFORMED",
+      "registeredIconConsumers": 0,
+      "cropApplied": false,
+      "generativeEditDuringIntegration": false,
+      "plannedConsumers": [
+        "Stoic Dignity feature"
+      ],
+      "hiddenIndependentIcons": false,
+      "edgeDiagnostics": [
+        {
+          "side": "top",
+          "brightEdgePixels": 0,
+          "nonOpaqueEdgePixels": 0
+        },
+        {
+          "side": "right",
+          "brightEdgePixels": 0,
+          "nonOpaqueEdgePixels": 0
+        },
+        {
+          "side": "bottom",
+          "brightEdgePixels": 0,
+          "nonOpaqueEdgePixels": 0
+        },
+        {
+          "side": "left",
+          "brightEdgePixels": 0,
+          "nonOpaqueEdgePixels": 0
+        }
+      ]
+    },
+    {
+      "slug": "aerial-observer",
+      "selectedArtifact": "C:/Dev/KingmakerGunslingerLab/worktrees/elemental-race-traits-publication-readiness-2026-10-06/artifacts/icon-generation/elemental-character-traits-2026-10-06/aerial-observer.png",
+      "sourceSha256": "77d3196f92d4d11fee14d13d3b32de5063c8bf27b99fa6ca0295e02bd87b920e",
+      "sourceSize": [
+        1254,
+        1254
+      ],
+      "sourceFormat": "8-bit opaque RGB PNG",
+      "reviewExport128Sha256": "462408b925f912e2a1063ac9e8a0ff25b33c68b80fcccb1fa85d05f706fc117f",
+      "reviewExportFormat": "128x128 8-bit noninterlaced RGBA PNG",
+      "generationTool": "built-in image_gen",
+      "artFamily": "painted-magical",
+      "exportProfile": "project-painted-128",
+      "initialPrompt": "Use case: stylized-concept.\nAsset type: one original hand-painted fantasy CRPG character-trait icon, in a cohesive four-icon painted-magical family.\nOutput exactly ONE standalone square image, 1024x1024 pixels or larger, full-bleed opaque dark painted background. Never make a collage, panels, contact sheet, sprite sheet, mockup, border, or frame.\nStyle: rich hand-painted fantasy materials, broad deliberate brushwork, sculpted light and shadow, crisp focal silhouette with softer peripheral edges. Controlled dramatic elemental lighting; restrained secondary details; neither photorealistic nor a 3D render. The entire icon is a compact symbolic composition, not a portrait scene or landscape. Use the same medium, contrast discipline, edge treatment and detail density as a coherent four-image art family.\nComposition: one dominant subject filling most of the central square, every essential form fully inside the canvas with a safe dark perimeter; important shapes must not be cut off. Strong immediate recognition at 128x128, 48x48, and especially 32x32. Keep the primary silhouette legible in grayscale; do not rely on color alone. Reduce tiny clutter and concentrate value contrast on the dominant subject.\nOriginality: invent a fresh composition. No copying, tracing, remixing, close imitation of any existing icon, recognizable real person, established fictional character, or copyrighted logo.\nAbsolute exclusions: no text, letters, numbers, runes, logos, monograms, caption, signature, watermark, decorative border, UI overlays or state marks. No vector/flat graphics, anime, cartoons, pixel art, generic placeholders, or modern props.\nPrimary subject: a single keen observing eye or focused gaze surveying downward from wind-borne height. Make a broad clearly legible eye the focal subject, with a watchful expression rather than intimidation. Controlled pale ribbons of air frame it without crossing or hiding the eye. A restrained curved distant cloud line and receding atmosphere below the gaze imply high perspective; these are clean secondary shapes, not a landscape panorama. Pale teal, cool blue and silver-white highlights against deep blue-gray painted shadow. Gentle stationary wind curves convey vigilance, distance and awareness, not speed. Keep the eye and all essential wind forms inside the square.\nThis icon communicates height granting exceptional perception. Differentiate its airy observant silhouette from a hot severe fire eye. Avoid wings as the subject, birds/eagles, binoculars/spyglasses, a generic flying figure, speed streaks, a Wings of Air activation emblem, generic cloud-gazing, and a scene portrait.",
+      "refinementPrompt": "Use case: precise-object-edit. Refine this one original square Aerial Observer CRPG trait icon. Preserve the cool pale-teal, blue and silver-white palette, hand-painted fantasy brushwork, watchful eye identity and opaque dark blue-gray background. Change only the composition and detail hierarchy to work at 32 pixels: enlarge and reposition the single keen eye into the central dominant focal subject, with its entire almond silhouette and iris clearly readable. The eye should occupy about three quarters of the canvas width. Reduce the broad lower landscape/cloud panorama to ONE narrow curved cloud-horizon band and a little atmospheric depth, occupying at most the lower fifth of the image. Remove the sprawling cloud landscape. Frame the eye with just two restrained controlled wind ribbons that remain secondary and never cover the iris. Every important eye and wind shape must fit fully inside a safely dark perimeter; no cropped eye, lid or elemental tips. Convey vigilance and perception from wind-borne height, not speed, generic flight power or cloud-gazing. Keep rich painted materials and strong grayscale focal contrast, minimal tiny detail, no wings/bird/modern props. This is a compact fantasy game ICON, not a portrait or landscape. Output one square image at least 1024x1024. No text, runes, letters, numbers, logos, monograms, border, frame, UI, signature or watermark.",
+      "refinementInputSha256": "b390f96ce3faf74830464f308e1e94639dc27906d39109581df3f1bd8d3f31fd",
+      "selectedRefinedVersion": true,
+      "CodexObjectiveVisualReview": "PASS",
+      "reason": "The selected refined eye dominates; restrained wind and narrow cloud line remain secondary at 128, 48 and 32 pixels. No sprawling landscape or speed symbol.",
+      "OwnerAestheticApproval": "NOT_RECORDED",
+      "approvedHash": null,
+      "canonicalIntake": "NOT_PERFORMED",
+      "registeredIconConsumers": 0,
+      "cropApplied": false,
+      "generativeEditDuringIntegration": false,
+      "plannedConsumers": [
+        "Aerial Observer feature"
+      ],
+      "hiddenIndependentIcons": false,
+      "edgeDiagnostics": [
+        {
+          "side": "top",
+          "brightEdgePixels": 0,
+          "nonOpaqueEdgePixels": 0
+        },
+        {
+          "side": "right",
+          "brightEdgePixels": 0,
+          "nonOpaqueEdgePixels": 0
+        },
+        {
+          "side": "bottom",
+          "brightEdgePixels": 0,
+          "nonOpaqueEdgePixels": 0
+        },
+        {
+          "side": "left",
+          "brightEdgePixels": 0,
+          "nonOpaqueEdgePixels": 0
+        }
+      ]
+    },
+    {
+      "slug": "whiteout",
+      "selectedArtifact": "C:/Dev/KingmakerGunslingerLab/worktrees/elemental-race-traits-publication-readiness-2026-10-06/artifacts/icon-generation/elemental-character-traits-2026-10-06/whiteout.png",
+      "sourceSha256": "488e9932c914613d2be736712dbe2b351e0d5e6ef090fe67f1e6cc731713349e",
+      "sourceSize": [
+        1254,
+        1254
+      ],
+      "sourceFormat": "8-bit opaque RGB PNG",
+      "reviewExport128Sha256": "53e0a9c98c3b56e65235cebd6d3b4b8b4a81641602994fe65026d2c3cde30cbf",
+      "reviewExportFormat": "128x128 8-bit noninterlaced RGBA PNG",
+      "generationTool": "built-in image_gen",
+      "artFamily": "painted-magical",
+      "exportProfile": "project-painted-128",
+      "initialPrompt": "Use case: stylized-concept.\nAsset type: one original hand-painted fantasy CRPG character-trait icon, in a cohesive four-icon painted-magical family.\nOutput exactly ONE standalone square image, 1024x1024 pixels or larger, full-bleed opaque dark painted background. Never make a collage, panels, contact sheet, sprite sheet, mockup, border, or frame.\nStyle: rich hand-painted fantasy materials, broad deliberate brushwork, sculpted light and shadow, crisp focal silhouette with softer peripheral edges. Controlled dramatic elemental lighting; restrained secondary details; neither photorealistic nor a 3D render. The entire icon is a compact symbolic composition, not a portrait scene or landscape. Use the same medium, contrast discipline, edge treatment and detail density as a coherent four-image art family.\nComposition: one dominant subject filling most of the central square, every essential form fully inside the canvas with a safe dark perimeter; important shapes must not be cut off. Strong immediate recognition at 128x128, 48x48, and especially 32x32. Keep the primary silhouette legible in grayscale; do not rely on color alone. Reduce tiny clutter and concentrate value contrast on the dominant subject.\nOriginality: invent a fresh composition. No copying, tracing, remixing, close imitation of any existing icon, recognizable real person, established fictional character, or copyrighted logo.\nAbsolute exclusions: no text, letters, numbers, runes, logos, monograms, caption, signature, watermark, decorative border, UI overlays or state marks. No vector/flat graphics, anime, cartoons, pixel art, generic placeholders, or modern props.\nPrimary subject: a compact unmistakable Undine presence, a contained upper-body silhouette with an identifiable eye/gaze and cool water-toned facial planes, sheltering within driving natural rain and snow. It must remain recognizable, not vanish into the weather. Cold blue, cyan, slate, silver and restrained sea-green against a dark full-bleed storm ground. Strong readable diagonal rain strokes and a few broad snow streaks create a sparse layered precipitation veil. One incoming arrow or blade silhouette, its essential outline and tip contained inside the square, becomes partially obscured and visually interrupted by rain and snow before finding the Undine. The attack is secondary but still readable at 32 pixels. Show defensive uncertainty and a strike losing its target, not physical ricochet, armor impact, invulnerability, a force field, or a solid barrier.\nThis icon communicates rain and snow making attacks less likely to find an Undine. No magical fog, mist cloud, waterfall, opaque ice wall, snowflake emblem, generic cold-spell emblem, or blizzard landscape. Keep weather forceful but contrast controlled, with subject and attack distinctly separated from the dark background.",
+      "refinementPrompt": "Use case: precise-object-edit. Refine this one original Whiteout CRPG trait icon. Keep its cold blue/cyan/slate/silver/sea-green palette, natural diagonal rain and snow, original Undine identity, hand-painted fantasy materials, and opaque dark storm background. Change the composition and detail hierarchy from a cropped portrait into a compact symbolic game icon legible at 32 pixels: show ONE small contained Undine upper-body/profile silhouette, roughly two thirds of the square height, with its entire head and shoulders inside generous dark breathing room and one keen eye as the facial focal point. Simplify fine face/hair/hand detail; remove the prominent expressive hand gesture. Remove the thick swirling water ribbons around the body: they look like a magical barrier or waterfall. Instead use a sparse veil of broad diagonal NATURAL rain strokes and a few snow streaks that obscure the incoming strike without hiding the Undine. Show ONE incoming arrow, fully contained from arrowhead to fletching inside the square; no cropped shaft or feathers. Its clean silhouette should become partially lost behind the natural rain and snow, visibly missing its protected subject, never bouncing off armor or striking an ice wall. Keep the arrow secondary but immediately readable, separated in value from the protected subject. Keep all essential figure, arrow and weather forms safely inside the edges. Controlled contrast, quieter peripheral weather, broad deliberate brushwork, strong simple silhouettes. Communicate precipitation making the Undine harder to hit, not invulnerability, magical fog, spellcasting, a solid barrier or a blizzard landscape. Output one square image at least 1024x1024. No text, letters, numbers, runes, logos, monograms, border, frame, UI, signature or watermark.",
+      "refinementInputSha256": "702b0f30faaa9f5a4bab17c48fc83b6babbf4856888a26a108f479ba279ded3b",
+      "selectedRefinedVersion": true,
+      "CodexObjectiveVisualReview": "FAIL",
+      "reason": "At 32 pixels the high-frequency precipitation overwhelms the protected figure and the incoming arrow is not recognizable as an attack. Grayscale 32 confirms loss of the required subject/attack hierarchy. The readable larger portrait does not satisfy the mandatory game-icon scale contract.",
+      "OwnerAestheticApproval": "NOT_RECORDED",
+      "approvedHash": null,
+      "canonicalIntake": "NOT_PERFORMED",
+      "registeredIconConsumers": 0,
+      "cropApplied": false,
+      "generativeEditDuringIntegration": false,
+      "plannedConsumers": [
+        "Whiteout feature"
+      ],
+      "hiddenIndependentIcons": false,
+      "edgeDiagnostics": [
+        {
+          "side": "top",
+          "brightEdgePixels": 0,
+          "nonOpaqueEdgePixels": 0
+        },
+        {
+          "side": "right",
+          "brightEdgePixels": 0,
+          "nonOpaqueEdgePixels": 0
+        },
+        {
+          "side": "bottom",
+          "brightEdgePixels": 0,
+          "nonOpaqueEdgePixels": 0
+        },
+        {
+          "side": "left",
+          "brightEdgePixels": 0,
+          "nonOpaqueEdgePixels": 0
+        }
+      ]
+    }
+  ]
+}
