@@ -26,7 +26,7 @@ join the [complete hidden e3 qualification](planning/EXPANDED-SUMMONING-SPRINT16
 No mechanics, visual, asset or serialized-state code changed after hidden e3;
 only the publication switch and guarded fixture did. No unrelated-root replay.
 
-Latest actual leased snapshot restored at `2026-10-06T00:59:25.6235093Z`:
+Sprint 16 publication's actual leased snapshot restored at `2026-10-06T00:59:25.6235093Z`:
 136 files / Info 0.0.117 /
 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
 No game/lease/shared lock/staging. No publication save write or save-file
@@ -40,9 +40,12 @@ view, not the optional Eidolon blueprint from the earlier mixed-library
 census. Salamander's existing Lizardfolk view is measured separately.
 The subsequent private snake prototypes pass four Blender checks and generate
 40 offline panels, but water has no continuous tail chain. A fixed native
-Purple Worm comparison and material/action metadata extension is source-only
-checked (219 focused, 486 preflight, incremental build); its exact artifact and
-guarded batch are next. No prototype asset or new summon is shipped.
+Purple Worm comparison and material/action extension at exact b2893abe passed
+all prelaunch gates and smoke 11/11, but survey FAILED 8/9 on a null native
+action Clips collection. Six donor/view checks and exact cleanup passed.
+Actual snapshot restored exactly at 02:29:30 UTC, lease Completed, no game,
+lock or staging. Null-versus-empty diagnostic repair is focused-tested; a new
+exact artifact/batch remains mandatory. No prototype asset or new summon ships.
 Exact f507 passes all prelaunch gates (219 focused/2021 full/486 preflight),
 fresh Steam smoke 11/11 and metadata survey 8/8. Both native source/view pairs
 are confirmed. Water has seven skins and a 43-bone body; Salamander has a

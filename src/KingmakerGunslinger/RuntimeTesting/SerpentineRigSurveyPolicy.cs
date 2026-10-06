@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace KingmakerGunslinger.RuntimeTesting
 {
@@ -27,6 +29,14 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             return Array.IndexOf(Keys, key) >= 0 &&
                 blueprint == NativeBlueprint(key) && prefab == Prefab(key);
+        }
+
+        // A native action may select animation indirectly and expose no clip
+        // enumeration at all. Preserve that distinction from an empty list;
+        // research metadata must neither throw nor infer absent behavior.
+        internal static int? CountPresentClips(IEnumerable<bool> clipPresence)
+        {
+            return clipPresence == null ? (int?)null : clipPresence.Count(value => value);
         }
     }
 }

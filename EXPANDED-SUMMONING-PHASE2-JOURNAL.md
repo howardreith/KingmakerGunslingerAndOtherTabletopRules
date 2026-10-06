@@ -1,5 +1,19 @@
 # Expanded Summoning Phase 2 journal
 
+## October 6, 02:29 UTC — research observation failure, exact restoration
+
+Exact b2893abe full prelaunch PASS (219 focused/2021 full/486 preflight),
+smoke 11/11. Three-target survey FAIL 8/9: native action exposes null Clips;
+the new diagnostic's Count call throws. Six donor/view checks and original
+955-unit/three-party/area-reference cleanup PASS. No metadata capture completed,
+no save write. Actual snapshot 20261006T0222526525316Z restored exactly at
+02:29:30 UTC: 136 files/.117/original fingerprint, lease Completed, zero game,
+shared lock or staging. Failure is FIXTURE, not production or restoration.
+Narrow correction records missing enumeration as null, separately from empty;
+four counting regressions join the existing policy test. Focused 219 and
+incremental Release PASS. New exact gate and full research batch next.
+[Preserved evidence](planning/EXPANDED-SUMMONING-SPRINT17-FALLBACK-RESEARCH-EVIDENCE.json).
+
 ## October 6, 02:15 UTC — private prototypes and bounded fallback comparison
 
 Pushed e5e79fe9 remains the fetched laptop head; no DATA import or remote race.

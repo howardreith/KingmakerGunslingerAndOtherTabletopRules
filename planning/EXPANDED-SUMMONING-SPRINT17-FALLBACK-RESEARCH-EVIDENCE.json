@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "scope": "Sprint 17 research only; not gameplay or visual qualification",
+  "attempts": [
+    {
+      "candidate": "b2893abefc89079af49c22d3b028865ed2189f95",
+      "status": "FAIL; research fixture exception; exact restoration PASS",
+      "sourceFingerprint": "c4f89f6b403b09809a4ddf3c783d0be2acec295deeb241303cb6c519cfaaeef7",
+      "dllSha256": "3a09715081efd149a40d7518bc2950e770d0813a63ba011cee53f06b3f41d1a6",
+      "dllMvid": "d5d805ed-57d1-4c3f-b481-555cde4d99aa",
+      "zipSha256": "fb0b2c96f9a477a22f519631135b9470167da25d52b807ae010b358fd0dcd06a",
+      "packageMembers": 312,
+      "version": "0.0.141",
+      "prelaunch": {
+        "focused": 219,
+        "full": 2021,
+        "fullSeconds": 82.7,
+        "preflight": 486,
+        "orchestration": 68,
+        "persistenceWiring": 11,
+        "crowdRoundTrips": 5,
+        "exactGateSeconds": 178.9,
+        "repositoryStaticIconManifest": "PASS",
+        "exactBuildStrictPackage": "PASS"
+      },
+      "batchId": "20261006T0222518662089Z",
+      "archive": "artifacts/laptop-runtime-20261006T0222518662089Z",
+      "batchSha256": "21af43cdcb9f77c50f452cab35f3a8dbf37af265981efc39b7c44a404f1e29fe",
+      "driverSha256": "58fddd5457e14e51f5ed43f4763aeacb34c95a34b82558bb53f53c0f48781cdd",
+      "runs": [
+        {
+          "scenario": "working-save-smoke",
+          "status": "PASS",
+          "assertions": 11,
+          "passed": 11,
+          "requestId": "20261006T0223186459182Z-63282e7cb8c540c2826ec3b9a328c440",
+          "requestSha256": "f4ebc2311ce931fd68a17f5e906ffacd62d7eef59f935431cff211ed185f555a",
+          "resultSha256": "dcc978bb2b7ef74fcd4a31cadd529bb41100c3c5f7e05a5064ad58295377aaa5",
+          "orchestrationSha256": "eda78967f80722ffd76aa4c0dfa121a8845cdb27faa733f4ee694d8a8d008dc4",
+          "evidenceDirectory": "20261006T0223186146220Z-working-save-smoke",
+          "processId": 9728,
+          "processStartedUtc": "2026-10-06T02:23:19.7186228Z"
+        },
+        {
+          "scenario": "disposable-expanded-summoning-serpentine-survey",
+          "status": "FAIL",
+          "assertions": 9,
+          "passed": 8,
+          "requestId": "20261006T0226188110751Z-43f6c9641a18458b85918a1824fb4652",
+          "requestSha256": "64406711be2599e44b380fefc56f9ac33f5adca3f89538e50ba77edf47b02723",
+          "resultSha256": "970e1eaee089d9dfea71fff2ffb20c83cf9faa21ccb28db645db89bc8e911c25",
+          "orchestrationSha256": "94c67eb8e8f1ffe3c33bc56a0010d77fa247623fb006d73aa2e9cc5fb04cacbf",
+          "evidenceDirectory": "20261006T0226188110751Z-disposable-expanded-summoning-serpentine-survey",
+          "processId": 32156,
+          "processStartedUtc": "2026-10-06T02:26:20.2367719Z"
+        }
+      ],
+      "failure": {
+        "classification": "FIXTURE",
+        "assertion": "sprint17-rig-survey-exception",
+        "observed": "ArgumentNullException:Value cannot be null.  / Parameter name: source;at=System.Linq.Enumerable.Count[TSource] (System.Collections.Generic.IEnumerable`1[T] source, System.Func`2[T,TResult] predicate) [0x0000d] < KingmakerGunslinger.RuntimeTesting.RuntimeTestRunner.CaptureSprint17RigMetadata (Kingmaker.EntitySystem.Entities.UnitEntityData unit, System.String key) [0x007ef] < KingmakerGunslinger.RuntimeTesting.RuntimeTestRunner.PollSprint17RigSurvey () [0x002b8]",
+        "donorViewChecks": "6/6 PASS",
+        "metadataFiles": 0,
+        "cleanup": "PASS: 955 original unit references, 3 party references and exact area membership",
+        "correction": "Distinguish missing clip enumeration from an empty enumeration; retain null metadata, not fabricated zero. Add null/empty/mixed regression cases."
+      },
+      "restoration": {
+        "snapshot": "20261006T0222526525316Z",
+        "completedAtUtc": "2026-10-06T02:29:30.3453602Z",
+        "fileCount": 136,
+        "version": "0.0.117",
+        "treeSha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+        "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff",
+        "leaseId": "runtime-20261006T022252Z-98290c216355408f8c64826d7f6642a1",
+        "leaseStatus": "Completed",
+        "recoveryRequired": false,
+        "leaseReleased": true,
+        "gameProcesses": 0,
+        "stagingRemaining": false,
+        "saveWrite": false
+      },
+      "humanReview": "NOT_PERFORMED_NONBLOCKING"
+    }
+  ]
+}
