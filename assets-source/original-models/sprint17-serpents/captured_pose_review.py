@@ -13,6 +13,7 @@ from pathlib import Path
 import struct
 
 KEYS = ("viper", "constrictor-snake", "salamander")
+HYBRID_SUPPORT = "KMG_SalamanderSupport"
 
 
 def capture_rows(path):
@@ -30,7 +31,9 @@ def capture_rows(path):
         for sample in samples:
             transforms = sample["skinTransforms"]
             names = [t["name"] for t in transforms]
-            if len(names) != (27 if row["key"] == "salamander" else 16) or len(set(names)) != len(names):
+            expected = (28 if HYBRID_SUPPORT in names else 27) if row["key"] == "salamander" else 16
+            if len(names) != expected or len(set(names)) != len(names) or (
+                    row["key"] != "salamander" and HYBRID_SUPPORT in names):
                 raise ValueError("incomplete or ambiguous current frame")
             for transform in transforms:
                 matrix = transform["skinToWorldRowMajor"]
@@ -73,8 +76,31 @@ def transform_point(matrix, point):
                  for row in range(3))
 
 
-def replay(vertices, weights, sample):
+def replay(vertices, weights, sample, hybrid_support=False):
     frames = {row["name"]: row["skinToWorldRowMajor"] for row in sample["skinTransforms"]}
+    if len(frames) != len(sample["skinTransforms"]):
+        raise ValueError("ambiguous captured driver")
+    if hybrid_support:
+        # Explicit private prototype only. A future runtime attachment must
+        # prove binding this one original support driver to the existing body
+        # renderer frame with the authored half-turn about local +Z. The
+        # renderer faces opposite the native body's forward bind direction;
+        # identity produced a stretched belly in the preserved v5 panels.
+        if "Torso_Lower" not in frames or "Hips_Joints" in frames:
+            raise ValueError("original support driver is restricted to the hybrid")
+        renderer = sample["rendererLocalToWorldRowMajor"]
+        if len(renderer) != 16:
+            raise ValueError("invalid renderer support frame")
+        expected_support = [value * (-1 if index % 4 in (0, 1) else 1)
+                            for index, value in enumerate(renderer)]
+        if HYBRID_SUPPORT in frames and (len(frames[HYBRID_SUPPORT]) != 16 or
+                any(not math.isfinite(v) or abs(v - expected) > 1e-5
+                    for v, expected in zip(frames[HYBRID_SUPPORT], expected_support))):
+            raise ValueError("captured support differs from its explicit renderer-frame binding")
+        frames[HYBRID_SUPPORT] = expected_support
+    if any(len(matrix) != 16 or not all(math.isfinite(v) for v in matrix)
+           for matrix in frames.values()):
+        raise ValueError("invalid captured driver matrix")
     if len(vertices) != len(weights):
         raise ValueError("unweighted original vertex")
     result = []
@@ -132,7 +158,10 @@ def main():
         mesh = decode_mesh(path)
         samples = []
         for sample in [row["idleSample"]] + row["movementSamples"]:
-            points = replay(mesh["vertices"], mesh["weights"], sample)
+            support = HYBRID_SUPPORT in mesh["payload"]["bones"]
+            if support and row["key"] != "salamander":
+                raise ValueError("support driver on non-hybrid original mesh")
+            points = replay(mesh["vertices"], mesh["weights"], sample, support)
             floor = sample["lowestVertexFloor"]["hitPoint"][1]
             samples.append(dict(frame=sample["frame"], minimumClearance=min(p[1] for p in points) - floor,
                                 capturedMinimumClearance=sample["lowestVertexFloor"]["clearance"],
