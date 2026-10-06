@@ -1,75 +1,52 @@
 # Sprint 17 closed production-snake native command slice
 
-Status: exact16f6494e smoke11/profile-body-rules62 PASS, commands43/51 FAIL.
-Laptop PR26 only. Sprints14–16 complete; full Sprint17 NOT QUALIFIED.
-32 snake roots withheld;976 published+29 wrappers=1005 visible. ZERO DATA ports.
+Status: exact474be538 smoke11/profile62 PASS,commands43/51 FAIL; NOT QUALIFIED.
+Laptop PR26 only; DATA salvage-only/ZERO PORTS.32 roots withheld.
 
-## Latest exact evidence and failure disposition
+## Latest evidence and next bounded work
 
-[Attempt3 evidence](EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-ATTEMPT3-EVIDENCE.json)
-pins source16f6494e, DLL496fddcf, MVID8a781c0d, ZIPfcbee447,320 members.
-Exact prelaunch:258 focused,2060 full86.1s,complete180.7s,508 preflight,
-168 orchestration,17 provenance,persistence11/3/19,crowd5/7,clean14-reference
-Release/strict package PASS. Fresh Steam smoke11/11 and profile/body/rules62/62
-with46 metadata rows PASS. Command batch executes all8 cells/51 assertions:
-43 PASS, only8 contact FAIL. Source PASS does not qualify gameplay.
+[Latest snake command attempt](EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-ATTEMPT4-EVIDENCE.json):
+exact474be538 prelaunch PASS:259 focused,2061 full84.8s,complete182.2s,
+508 preflight,168 orchestration,clean14-reference Release,strict320.
+Fresh-Steam smoke11/11 and profile/body/rules62/62 PASS (46 metadata rows).
+Commands43/51 FAIL: only8 contact assertions; every setup/approach/real bite/
+signature/native-AI/cleanup check passes across all8 cells and both modes.
+All8 rule-event gaps0.37891674-0.426136971m are horizontal only (Y=Z=0).
 
-Every native setup, approach, real bite, signature and native cleanup passes,
-manual/AI in RTWP/turn-based. Each AI preserves its original source action
-reference, issues1 native command and1 attack, with0 manual commands.
-Constrictors apply1 initial constrict then2 later-round bundles with the
-weapon-attack count unchanged. No direct-rule substitute produces these bites.
+The paired observer disproves a timing-only remedy: all4 Viper same-frame/
+same-command/handle/animation/clip pairs remain0.380765915-0.426655769m away
+(maximum gap change1.253mm). Constrictor commands have ended by frame end;
+those transition-out samples correctly reject correlation and cannot qualify
+contact. All51 assertions/0.25m threshold unchanged; observer cleanup PASS.
+No pose/animation/reach/clock/actor correction or later-peak acceptance.
 
-Footprint repair regression passes: native Worm3m unchanged; exact snake
-normal/rollback radius0.6m/body scale0.2; repeated view callbacks do not
-accumulate. Actual approach terms are owner0.6m + target0.5m + live bite2ft
-=1.7096m. Weapon range, native minimum/live-size rules and animation unchanged.
-All8 jaw gaps0.376383781–0.415125847m still fail the unchanged0.25m threshold.
+Actual snapshot2214490404756Z restored2026-10-06T22:27:03.4374771Z:
+136/.117/exact tree;lease Completed/recovery=false/released;no game/shared
+lock/this-worktree staging/save write. All failed artifacts retained.
 
-Actual snapshot2138515276616Z restored2026-10-06T21:50:56.1249217Z:
-136 files,Info0.0.117,tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
-Lease Completed/recovery=false/released;no game/shared runtime lock/this-worktree
-staging/save write. No environment/restoration failure. Unrelated September14
-root-worktree extraction remains untouched.
+[Next bounded work](EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-SLICE.md):
+replay exact original vertices through the captured rule/end-frame matrices,
+review head/neck contact alignment and author only evidence-supported original
+geometry. No unchanged runtime retry, reach change or tolerance waiver.
+Source/full/exact-artifact gates precede a new guarded affected batch.
+32 roots hidden; Sprint17/full Phase2B NOT QUALIFIED. Phase2C deferred.
 
-## Changed observation strategy before the next candidate
+## Paired diagnostic disposition
 
-After repeated contact failure, do not rerun16f unchanged or merely increase
-waits. Audit native animation timing; correlate the real rule callback with
-same-command post-animation contact and record closest world points/gap
-vectors. The current callback's playable time trails the handle by about40ms;
-that is an UNCONFIRMED timing hypothesis, not proof that geometry is correct.
-Do not qualify an unrelated later animation peak, force a pose, weaken0.25m,
-or change reach/footprint merely to obtain PASS.
+Unity2018.4's [end-of-frame yield](https://docs.unity3d.com/2018.4/Documentation/ScriptReference/WaitForEndOfFrame.html)
+provides the post-render observation seam; actual frame and object identities
+were measured rather than inferred from that ordering. The observer writes no
+pose, clock, camera, renderer, attack, damage or movement state. Its component
+and coroutines are retired with each owned disposable unit.
 
-The previous [Attempt2](EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-ATTEMPT2-EVIDENCE.json)
-31/51 FAIL is preserved: manual gaps2.708–2.736m and AI action-list loss.
-Its source repairs were qualified in16f only to the partial boundary above.
-All earlier candidates and failed assertions remain immutable.
-The next change needs focused/full source gates, a committed/pushed exact
-artifact, standalone preflight and the complete affected guarded batch with
-actual-snapshot restoration. No publication until every mandatory gate passes.
+Private native audit confirms separate handle/playable clocks. The live paired
+measurements resolve that hypothesis: Viper changes at most1.253mm and remains
+short; Constrictor has already finished/interrupted its bite command when the
+grab establishes, so its end-frame transition-out pose is not contact evidence.
+Keep the at-rule assertion. No arbitrary later peak can satisfy it.
+Earlier Attempts1–3 and all artifacts/failed assertions remain unchanged.
 
 ## Closed command contract
-
-Current source-only follow-up (runtime NOT RUN): request-local owned-view
-end-of-frame observer records one paired sample for each exact bite callback.
-It records frame/command/handle/animation/clip correlation and closest original
-and target-bound world points. Only the same rule frame is correlated; later
-animation peaks are rejected. The existing rule-event contact assertion and
-0.25m threshold remain unchanged. Observer coroutines/component are destroyed
-with the disposable owner; no pose/animation/clock/camera/renderer writes.
-259 focused/2061 full85.6s PASS;complete180.8s,clean14-reference Release,
-deterministic strict320 package PASS. No deployment; runtime NOT RUN.
-
-The bounded observer uses Unity2018.4's documented
-[end-of-frame yield](https://docs.unity3d.com/2018.4/Documentation/ScriptReference/WaitForEndOfFrame.html),
-after animation/rendering. That API ordering does not prove this fixture's
-correlation: exact frame and object identities are measured at runtime.
-Private native audit: AnimationManager updates animation metadata then action
-handles; handles increment their own clock,while PlayableInfo reads native
-playable time. Neither read-only audit nor a40ms offset qualifies geometry.
-
 
 The request disposable-expanded-summoning-snake-commands accepts only the
 authorized KMG_AUTOMATION_WORKING load, no save write or arbitrary selector.

@@ -18,10 +18,10 @@ deployment, force push or prohibited substitute subsystems.
   session01a10bcd-8582-7551-826f-0f128807eb99; ownerPID31796/start
   2026-10-05T19:29:25.9127956Z; holderPID15084/start2026-10-05T20:34:17.3075720Z.
   Session-scoped; refresh heartbeat and release only on actual session ending.
-- Last exact runtime candidate `16f6494e10af58376457515152dcb7fa288a4eca`,
+- Last exact runtime candidate `474be538bf9b1ce89a700ed7fbe61eb0d9e8f528`,
   clean/pushed for smoke11/profile-body-rules62 PASS and commands43/51 FAIL.
-  This normal descendant adds only paired contact diagnostics; no production
-  behavior change. The existing contact assertion remains unchanged.
+  Paired contact diagnostics completed; timing-only remedy rejected.
+  This evidence-only descendant has no production behavior change.
   Earlier exact130bf7a2 bounded rules PASS remains unchanged; no qualification
   transfers to an untested artifact.
   Owner/holder identities unchanged; no competing source/runtime process.
@@ -30,38 +30,31 @@ deployment, force push or prohibited substitute subsystems.
 
 ### Latest transaction and exact next gate
 
-[Latest snake command attempt](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-ATTEMPT3-EVIDENCE.json):
-exact16f6494e prelaunch PASS:258 focused,2060 full86.1s,complete180.7s,
+[Latest snake command attempt](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-ATTEMPT4-EVIDENCE.json):
+exact474be538 prelaunch PASS:259 focused,2061 full84.8s,complete182.2s,
 508 preflight,168 orchestration,clean14-reference Release,strict320.
 Fresh-Steam smoke11/11 and profile/body/rules62/62 PASS (46 metadata rows).
-Commands43/51 FAIL across all8 cells: only the8 contact assertions fail.
-Every native setup, approach, bite, signature and cleanup passes, both modes,
-manual and AI. AI preserves original actions; no manual AI command.
-Owned snake footprint0.6m, target0.5m, live bite2ft, approach sum1.7096m;
-normal/rollback/once-only/native-Worm regression passes.
-Weighted jaw gaps0.376383781-0.415125847m still exceed0.25m. NOT QUALIFIED.
+Commands43/51 FAIL: only8 contact assertions; every setup/approach/real bite/
+signature/native-AI/cleanup check passes across all8 cells and both modes.
+All8 rule-event gaps0.37891674-0.426136971m are horizontal only (Y=Z=0).
 
-Actual snapshot2138515276616Z restored2026-10-06T21:50:56.1249217Z:
+The paired observer disproves a timing-only remedy: all4 Viper same-frame/
+same-command/handle/animation/clip pairs remain0.380765915-0.426655769m away
+(maximum gap change1.253mm). Constrictor commands have ended by frame end;
+those transition-out samples correctly reject correlation and cannot qualify
+contact. All51 assertions/0.25m threshold unchanged; observer cleanup PASS.
+No pose/animation/reach/clock/actor correction or later-peak acceptance.
+
+Actual snapshot2214490404756Z restored2026-10-06T22:27:03.4374771Z:
 136/.117/exact tree;lease Completed/recovery=false/released;no game/shared
-lock/this-worktree staging/save write. All failed candidates remain immutable.
+lock/this-worktree staging/save write. All failed artifacts retained.
 
-[Next bounded investigation](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-SLICE.md):
-change the contact observation strategy after repeated failure. Audit native
-animation timing and correlate rule-event versus post-animation measurements;
-the current one-frame clock difference is a hypothesis, not proof of stale
-pose. Do not rerun16f unchanged, extend waits, weaken0.25m or distort reach.
-Full source/exact-artifact gates precede any new guarded affected batch.
-32 roots stay hidden; Sprint17/full Phase2B NOT QUALIFIED. Phase2C deferred.
-
-Current source-only follow-up (runtime NOT RUN): request-local owned-view
-end-of-frame observer records one paired sample for each exact bite callback.
-It records frame/command/handle/animation/clip correlation and closest original
-and target-bound world points. Only the same rule frame is correlated; later
-animation peaks are rejected. The existing rule-event contact assertion and
-0.25m threshold remain unchanged. Observer coroutines/component are destroyed
-with the disposable owner; no pose/animation/clock/camera/renderer writes.
-259 focused/2061 full85.6s PASS;complete180.8s,clean14-reference Release,
-deterministic strict320 package PASS. No deployment; runtime NOT RUN.
+[Next bounded work](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-SLICE.md):
+replay exact original vertices through the captured rule/end-frame matrices,
+review head/neck contact alignment and author only evidence-supported original
+geometry. No unchanged runtime retry, reach change or tolerance waiver.
+Source/full/exact-artifact gates precede a new guarded affected batch.
+32 roots hidden; Sprint17/full Phase2B NOT QUALIFIED. Phase2C deferred.
 
 ### Qualified versus NOT QUALIFIED
 
