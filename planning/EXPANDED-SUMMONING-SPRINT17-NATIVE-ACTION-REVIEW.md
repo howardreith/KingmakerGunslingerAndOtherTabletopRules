@@ -1,32 +1,34 @@
 # Sprint 17 native manufactured-action census
 
-Exactf6a0a20b:235 focused/2037 unfiltered87.1s, complete gate186.5s,
-491 preflight/81 orchestration/17 provenance,persistence11/3/19,crowd5/7,
-clean exact Release/strict318-member package PASS. Fresh Steam smoke11 PASS;
-metadata survey13 of14 FAIL. Its original13 rig/cleanup/version checks pass.
-The new diagnostic captured4 of11 fixed prefab rows, then rejected the fifth
-action list before recording its shape. Exact empty/null/oversized cause is
-UNKNOWN; this is an observation defect, not proof all carriers are unsuitable.
+Exact 8022fee2: 236 focused / 2038 unfiltered tests (81.8s), complete gate
+178.4s; 491 isolated preflight / 81 orchestration / 17 provenance,
+persistence 11/3/19, crowd 5/7, clean exact Release / strict 318-member package
+PASS. Fresh Steam smoke 11/11 and native-action metadata survey 14/14 PASS.
+This is RESEARCH ONLY; Sprint 17 remains NOT QUALIFIED.
 
-Observed native styles: King has PiercingOneHanded on a41-bone body/26-bone
-armor; Standard and Rogue have SlashingOneHanded on39/19; Barbarian has only
-SlashingTwoHanded/AxeTwoHanded on39/19. All four native-reference checks pass.
-The other seven rows remain unknown. No action adopted, native asset changed,
-NPC instantiated or new body/contact/gameplay qualification.
+All 11 native Lizardfolk prefabs were captured with unchanged native references
+and actor membership. None provides a PiercingTwoHanded main-hand action.
+The fifth FreeHands set has 14 slots, with null slots 3,5,8: this confirms the
+earlier reader defect without retroactively qualifying failed f6a0a20b.
+No NPC instantiated, action adopted, native asset changed or new body/contact
+qualification. The latest body gate remains 570a14cd: 33/35 FAIL before hybrid
+attachment; all 12 body attempts and the failed partial census are preserved.
 
-Actual1232150916257Z snapshot restored12:38:50.3928089UTC,136/.117/exact tree.
-Journal8A0408F46C5A5874FD04878E51C3D0EA37CE6F11599779938586BD581753E491;
-census945B6095036D5AF52D56FF48F087AFF56A8D140DF28166AB3362B9AC2AE189A0.
+Actual snapshot 1255443757094Z restored at 13:02:18.5290194 UTC:
+136 files / Info 0.0.117 / exact tree. Journal
+D85CB9DF2C4FAABED2C7DD0D4DF8D6AF6C8B52CE09712AA0287594240A9A8A89;
+census F99D1E5841DA05C04ADEA19233526A81A70FD2D3075A6B74B1EBB0EB947D2A0A.
 Lease Completed/recoveryRequired=false/released; no game/lock/staging/save write.
 
-The containing reader correction preserves absent enumeration, empty lists,
-null slots and duplicate references as different metadata; exact identities,
-128-slot cap, native-reference and adoption guards remain.236 focused/2038
-registered and incremental exact compile PASS. Full exact-head prelaunch and
-complete corrected smoke/14-assertion survey next. No compatibility claim.
-Sprints14–16 complete; Sprint17 NOT QUALIFIED. Latest body570 remains33/35
-FAIL before hybrid attachment; all12 body attempts preserved.976+29=1005,
-ZERO DATA ports, Phase2C authorized but deferred.
+First preflight failed because this session changed its heartbeat during the
+artifact fingerprint; failure log retained. Isolated rerun passed all 491.
+Preflight must run without concurrent heartbeat or artifact-writing work.
+
+Next: evaluate a bounded actual spear/longspear donor from the archived native
+inventory; equipped weapon alone does not prove animation compatibility.
+No retry of known rejected Lizardfolk carriers or weakening of contact gates.
+Sprints 14–16 complete; 976+29=1005 visible choices; ZERO DATA ports.
+Phase 2C remains authorized but deferred until Phase 2B owner acceptance.
 
 [Exact artifact, requests, results and restoration](EXPANDED-SUMMONING-SPRINT17-NATIVE-ACTION-EVIDENCE.json).
 HumanReview: NOT_PERFORMED_NONBLOCKING. No failed assertion waived.

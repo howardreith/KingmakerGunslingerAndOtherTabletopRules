@@ -251,11 +251,11 @@ Swallow whole has a qualified project carrier from the Purple Worm.
 
 ## Sprint 17
 
-Latest separate native-action censusf6a0a20b: smoke11/metadata13 of14 FAIL,
-4 of11 rows recorded; fifth list shape rejected by observation code before
-capture. Its exact empty/null/oversized cause remains unknown. Exact restored
-12:38:50UTC; no carrier adoption. Structural-reader correction/source236 of
-2038 and incremental compile PASS, full exact prelaunch/survey next.
+Latest separate native-action census8022fee2: smoke11/metadata14 PASS with
+all exact prelaunch gates (236 focused/2038 full). All11 Lizardfolk prefabs
+lack PiercingTwoHanded; FreeHands has14 slots with null3,5,8. Earlier failed
+reader attempt preserved. Exact restored13:02:18UTC; no carrier adoption.
+Next bounded actual spear/longspear donor audit; no style/contact substitution.
 [Census disposition](EXPANDED-SUMMONING-SPRINT17-NATIVE-ACTION-REVIEW.md).
 
 Current bounded evidence (October 6): exact570a14cd all prelaunch PASS;
