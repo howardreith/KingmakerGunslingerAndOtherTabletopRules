@@ -34,10 +34,20 @@ It adds only the two private snake keys, original-instance ownership and
 native cleanup checks. Their fourth frame is post-move; no legacy synthetic
 MainHand attack probe. Direct14/crowd18 are unexecuted source expectations.
 
-Next: remaining snake lifecycle/crowds/UI/private routes/persistence and
-bounded separate Salamander implementation; complete hidden/publication
-Sprint17 gates,then fullPhase2B closure and STOP for owner review.
-32 roots hidden; Sprint17/full Phase2B NOT QUALIFIED. Phase2C deferred.
+[Closed snake persistence fixture](EXPANDED-SUMMONING-SPRINT17-SNAKE-PERSISTENCE-SLICE.md)
+is SOURCE PASS, NOT RUN: 264 focused; 2066 full tests (85.7s);
+complete repository/build/strict320 gate (180.1s). Six exact JSON request
+round trips, three historical defaults and 56 rejection cases PASS.
+Four receipt-owned summons only: Viper, Constrictor and two Wolf targets.
+Venom must retain its source/counters; the hold must reset cleanly.
+No new runtime transaction or save write. Gameplay/publication unchanged.
+
+Next: freeze an exact candidate for the closed snake crowd/persistence batch,
+then finish native hit/death/fade/lifecycle and UI/private routes. This bounded
+save-fixture gate does not qualify the whole sprint. Separate Salamander
+implementation, Sprint17 hidden/publication gates and fullPhase2B closure
+remain mandatory. STOP for owner review afterward; Phase2C deferred.
+32 roots hidden; Sprint17/full Phase2B NOT QUALIFIED.
 
 Exact `130bf7a2de4cbd636df921f36e7f6afefe8523ca` passes the complete
 bounded rules batch: fresh Steam640820 smoke **11/11**, profile/body/signature

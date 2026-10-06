@@ -404,14 +404,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool sceneRoundtrip = IsCompletionSceneScope(request);
                 bool creatureReview = request.Scenario ==
                     RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningCreatureReview;
-                bool crocodilianPersistence = (request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningPrepare ||
+                bool targetedSummonPersistence = (request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningPrepare ||
                     request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyCleanup ||
                     request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyAbsent) &&
                     request.Parameters?["persistenceScope"] != null;
-                if (crocodilianPersistence && (!request.ExitAfterCompletion ||
+                if (targetedSummonPersistence && (!request.ExitAfterCompletion ||
                     request.Parameters["persistenceScope"].Type != JTokenType.String ||
-                    (string)request.Parameters["persistenceScope"] != "crocodilians"))
-                    return "crocodilian-persistence-scope-invalid";
+                    ((string)request.Parameters["persistenceScope"] != "crocodilians" &&
+                     (string)request.Parameters["persistenceScope"] != SerpentinePersistenceReviewPolicy.Scope)))
+                    return "summoning-persistence-scope-invalid";
                 // The ordinary native-control case joins the two same-turn
                 // cases here: it is the unquickened Full-Round route, and a
                 // creature too far up the ladder to be quickened has nowhere
@@ -447,7 +448,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (circleBound && (!request.ExitAfterCompletion || request.Parameters?["preparationBinding"]?.Type != JTokenType.String ||
                     !MagicCirclePreparationBinding.Valid((string)request.Parameters["preparationBinding"], request.ExpectedModVersion)))
                     return "magic-circle-preparation-binding-required";
-                if (request.Parameters == null || request.Parameters.Count != (circleBound ? 2 : persistence || fcbPersistence ? 3 : nativeActionCase ? 5 : request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveNereidRespec ? 5 : creatorRegression || sceneRoundtrip || visualLifecycle ? 4 : treacherousEffect || crowdReview ? 3 : nereidPersistence || deferredMarkers || crocodilianPersistence || creatureReview || flightActivation ? 2 : 1) ||
+                if (request.Parameters == null || request.Parameters.Count != (circleBound ? 2 : persistence || fcbPersistence ? 3 : nativeActionCase ? 5 : request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveNereidRespec ? 5 : creatorRegression || sceneRoundtrip || visualLifecycle ? 4 : treacherousEffect || crowdReview ? 3 : nereidPersistence || deferredMarkers || targetedSummonPersistence || creatureReview || flightActivation ? 2 : 1) ||
                     request.Parameters.Property("saveName") == null ||
                     request.Parameters["saveName"].Type != JTokenType.String)
                     return "save-name-required";

@@ -3837,6 +3837,11 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private void StartExpandedSummoningPersistence()
         {
+            if (Sprint17PersistenceScope)
+            {
+                StartSprint17Persistence();
+                return;
+            }
             if (Sprint16PersistenceScope)
             {
                 StartSprint16Persistence();
@@ -4913,6 +4918,11 @@ namespace KingmakerGunslinger.RuntimeTesting
         private void CompleteExpandedSummoningPersistence(string status,
             string warning)
         {
+            if (Sprint17PersistenceScope)
+            {
+                CompleteSprint17Persistence(status, warning);
+                return;
+            }
             if (Sprint16PersistenceScope)
             {
                 CompleteSprint16Persistence(status, warning);

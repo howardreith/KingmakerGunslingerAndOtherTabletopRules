@@ -12,6 +12,72 @@ namespace KingmakerGunslinger.DomainTests
     internal static class SerpentineRulesTests
     {
         internal const int AppendedLedgerIdentities = 73;
+        internal static void PersistenceReceiptRequiresExactOwnedIdentity()
+        {
+            foreach (string role in SerpentinePersistenceReviewPolicy.Roles)
+            {
+                string[] valid = { SerpentinePersistenceReviewPolicy.ReceiptScope, role,
+                    "owned-unit", "owned-unit", "working-caster", "working-caster", "registered-guid", "registered-guid" };
+                Func<string[], bool> owns = values => SerpentinePersistenceReviewPolicy.Owns(
+                    values[0], values[1], values[2], values[3], values[4], values[5], values[6], values[7]);
+                Assertions.True(owns(valid), "Exact receipt, role, live unit, native caster and registered blueprint agree.");
+                // Test actual serialized receipt-field round trip independently
+                // from native UnitPart reconstruction, which requires runtime.
+                var json = new JObject { ["scope"] = valid[0], ["role"] = role,
+                    ["unit"] = valid[2], ["caster"] = valid[4] };
+                var roundtrip = JObject.Parse(json.ToString());
+                Assertions.True(SerpentinePersistenceReviewPolicy.Owns((string)roundtrip["scope"],
+                    (string)roundtrip["role"], (string)roundtrip["unit"], valid[3],
+                    (string)roundtrip["caster"], valid[5], valid[6], valid[7]), "Marker values survive JSON exactly.");
+                for (int field = 0; field < valid.Length; field++)
+                foreach (string invalid in new[] { null, "", " ", "foreign", valid[field].ToUpperInvariant() })
+                {
+                    var changed = (string[])valid.Clone(); changed[field] = invalid;
+                    Assertions.False(owns(changed), "An ambiguous or foreign receipt field cannot authorize deletion.");
+                }
+            }
+        }
+
+        internal static void PersistenceFixtureHasOnlyFourClosedRoles()
+        {
+            var roles = SerpentinePersistenceReviewPolicy.Roles;
+            Assertions.Equal(4, roles.Length, "Two snakes and two independently marked targets.");
+            Assertions.Equal(4, roles.Distinct().Count(), "No ambiguous role identity.");
+            Assertions.Equal("snakes", SerpentinePersistenceReviewPolicy.Scope, "One closed persistence request value.");
+            foreach (string role in roles)
+            {
+                string key = SerpentinePersistenceReviewPolicy.CreatureKey(role);
+                var creature = ExpandedSummoningCatalog.All.Single(value => value.Key == key);
+                Assertions.True(creature.NaturesAllyTier.HasValue, "Every fixture uses a real native single-summon route.");
+                Assertions.Equal(role.EndsWith("-target", StringComparison.Ordinal) ? "wolf" : role, key,
+                    "Targets never alias a party member, native hostile or arbitrary creature.");
+            }
+            foreach (string invalid in new[] { null, "", "Viper", "salamander", "wolf", "crocodile", "foreign" })
+                Assertions.True(SerpentinePersistenceReviewPolicy.CreatureKey(invalid) == null,
+                    "Only explicit role tokens authorize a fixture identity.");
+            roles[0] = "foreign";
+            Assertions.Equal("viper", SerpentinePersistenceReviewPolicy.Roles[0], "Caller cannot mutate the closed role list.");
+        }
+
+        internal static void PersistenceVenomCannotResetOrDuplicateCounters()
+        {
+            for (int tick = 1; tick < 6; tick++)
+            {
+                Assertions.True(SerpentinePersistenceReviewPolicy.PreservedVenom(1, 13, tick, 0, 13, tick, 0),
+                    "A single still-active native poison retains exact counters and DC.");
+                Assertions.False(SerpentinePersistenceReviewPolicy.PreservedVenom(1, 13, tick, 0, 13, tick + 1, 0),
+                    "A reset, skipped or repeated exposure is not persistence.");
+                Assertions.False(SerpentinePersistenceReviewPolicy.PreservedVenom(1, 13, tick, 0, 12, tick, 0),
+                    "A changed stored DC fails.");
+            }
+            foreach (int count in new[] { -1, 0, 2 })
+                Assertions.False(SerpentinePersistenceReviewPolicy.PreservedVenom(count, 13, 1, 0, 13, 1, 0), "Exactly one application.");
+            foreach (int tick in new[] { -1, 0, 6, 7 })
+                Assertions.False(SerpentinePersistenceReviewPolicy.PreservedVenom(1, 13, tick, 0, 13, tick, 0), "Prepared poison is active.");
+            Assertions.False(SerpentinePersistenceReviewPolicy.PreservedVenom(1, 14, 1, 0, 14, 1, 0), "Printed Viper DC, not self-consistent wrong data.");
+            Assertions.False(SerpentinePersistenceReviewPolicy.PreservedVenom(1, 13, 1, 1, 13, 1, 1), "One successful save must already cure this venom.");
+        }
+
         internal static void CrowdResourcesAreExactInstanceOwned()
         {
             foreach (string key in new[] { "viper", "constrictor-snake" })
