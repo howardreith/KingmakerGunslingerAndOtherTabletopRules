@@ -674,6 +674,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableMagicCircleEvil &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableMagicCircleUi &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableMagicCircleTerrain &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.ObservePublishedElementalCharacterTraits &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.ObserveUnpublishedRaceTraitFoundations &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.ObserveUnpublishedWhiteoutFoundation &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.ObserveWhiteoutDisposableWeatherFixture &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.ObserveUnpublishedAerialObserverFoundation &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.ObserveWhiteoutWeather &&
                     !RuntimeTestScenarioCatalog.IsMagicCirclePersistence(_request.Scenario) &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap &&
@@ -805,6 +811,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _request.Scenario))
                 {
                     RunSummonSameTurnCompatibility();
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutWeatherCatalog)
+                {
+                    if (!BlueprintBootstrap.IsInitialized || ResourcesLibrary.Preloading) return;
+                    Complete(RunWhiteoutWeatherCatalogObservation());
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.ObserveModelDVendors)
+                {
+                    if (!BlueprintBootstrap.IsInitialized || ResourcesLibrary.Preloading) return;
+                    Complete(RunModelDVendorObservation());
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.ObserveFirearmDescriptions)
+                {
+                    if (!BlueprintBootstrap.IsInitialized || ResourcesLibrary.Preloading) return;
+                    Complete(RunFirearmDescriptionObservation());
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.ModLoadSmoke)
@@ -2009,6 +2033,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleEvil ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleUi ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleTerrain ||
+                _request.Scenario == RuntimeTestScenarioCatalog.ObservePublishedElementalCharacterTraits ||
+                _request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedRaceTraitFoundations ||
+                _request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedWhiteoutFoundation ||
+                _request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutDisposableWeatherFixture ||
+                _request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedAerialObserverFoundation ||
+                _request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutWeather ||
                     RuntimeTestScenarioCatalog.IsMagicCirclePersistence(_request.Scenario) ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
                     _request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap ||
@@ -2127,6 +2157,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleEvil ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleUi ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleTerrain ||
+                _request.Scenario == RuntimeTestScenarioCatalog.ObservePublishedElementalCharacterTraits ||
+                _request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedRaceTraitFoundations ||
+                _request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedWhiteoutFoundation ||
+                _request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutDisposableWeatherFixture ||
+                _request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedAerialObserverFoundation ||
+                _request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutWeather ||
                     RuntimeTestScenarioCatalog.IsMagicCirclePersistence(_request.Scenario) ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
                     _request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap ||
@@ -2784,6 +2820,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 else if (RuntimeTestScenarioCatalog.IsMagicCirclePersistence(_request.Scenario))
                 { PollMagicCirclePersistence(); }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedAerialObserverFoundation)
+                {
+                    var loading = Kingmaker.EntitySystem.Persistence.LoadingProcess.Instance;
+                    if (loading.IsLoadingInProcess || loading.IsLoadingScreenActive || loading.IsManualLoadingScreenActive) return;
+                    Complete(RunUnpublishedAerialObserverFoundation());
+                }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog.ObservePublishedElementalCharacterTraits)
+                {
+                    var loading = Kingmaker.EntitySystem.Persistence.LoadingProcess.Instance;
+                    if (loading.IsLoadingInProcess || loading.IsLoadingScreenActive || loading.IsManualLoadingScreenActive) return;
+                    Complete(RunPublishedElementalCharacterTraits());
+                }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedRaceTraitFoundations)
+                {
+                    var loading = Kingmaker.EntitySystem.Persistence.LoadingProcess.Instance;
+                    if (loading.IsLoadingInProcess || loading.IsLoadingScreenActive || loading.IsManualLoadingScreenActive) return;
+                    Complete(RunUnpublishedRaceTraitFoundations());
+                }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedWhiteoutFoundation ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutDisposableWeatherFixture)
+                { PollWhiteoutDisposableFixture(); }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutWeather)
+                { PollWhiteoutWeather(); }
                 else if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleUi ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleTerrain)
                 { PollMagicCircleUi(); }
@@ -5915,6 +5974,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleEvil ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleUi ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleTerrain ||
+                _request.Scenario == RuntimeTestScenarioCatalog.ObservePublishedElementalCharacterTraits ||
+                _request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedRaceTraitFoundations ||
+                _request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedWhiteoutFoundation ||
+                _request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutDisposableWeatherFixture ||
+                _request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedAerialObserverFoundation ||
+                _request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutWeather ||
                     RuntimeTestScenarioCatalog.IsMagicCirclePersistence(_request.Scenario) ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
                 _request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap ||
@@ -11228,23 +11293,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                         !capitalEntries.Any(value => value.Contains("<null>")),
                     "SmithVendorTable LootItemsPackFixed fields"),
                 Assertion("gunslinger-capital-vendor-publication",
-                    "ten exact early/+1/supply entries including Paper, one Blunderbuss, and zero retired maintenance kits",
-                    observed, projectEntries == 10 && invalidProjectCounts == 0 &&
-                        blunderbussEntries == 1 && capitalRetiredKitRows == 0,
-                    "registered early and +1 firearms, ammunition, and the reusable Gunsmith's Kit"),
-                Assertion("oleg-firearm-supplies-absent",
-                    "exact Oleg table contains zero project-owned firearm-supply rows",
+                    "seven exact +1/supply entries including Paper, no mundane Blunderbuss, and zero retired maintenance kits",
+                    observed, projectEntries == 7 && invalidProjectCounts == 0 &&
+                        blunderbussEntries == 0 && capitalRetiredKitRows == 0,
+                    "registered +1 firearms, ammunition, and the reusable Gunsmith's Kit"),
+                Assertion("oleg-firearm-supplies-model-d",
+                    "exact Oleg table contains powder and ball supply rows; no retired kits",
                     observed, olegTable != null && string.Equals(olegTable.name,
-                        OlegFirearmSupplyCleanupBlueprints.ExpectedTableName,
+                        OlegFirearmVendorBlueprints.ExpectedTableName,
                         StringComparison.Ordinal) && olegRepairRows == 0 &&
-                        olegOverhaulRows == 0 && olegOwnedSupplyRows == 0,
+                        olegOverhaulRows == 0 && olegOwnedSupplyRows == 2,
                     "exact BlueprintSharedVendorTable and project-owned item references"),
                 Assertion("oleg-vendor-owners",
                     "OTP_Oleg and OTP_Oleg_FirstVisit are the two exact direct table owners",
                     observed, olegOwnerContracts,
                     "read-only direct blueprint reference index and exact owner GUIDs"),
                 Assertion("bokken-firearm-supply-stock",
-                    "exact Bokken unit-loot table contains the four stocked firearm-supply rows and zero retired kit rows",
+                    "exact Bokken unit-loot table contains the three stocked firearm-supply rows and zero retired kit rows",
                     observed, bokkenTable != null && string.Equals(bokkenTable.name,
                         BokkenFirearmSupplyVendorBlueprints.ExpectedTableName,
                         StringComparison.Ordinal) && bokkenPowderRows == 1 &&
@@ -11255,8 +11320,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         bokkenPaperRows == 1 && bokkenPaperCount ==
                             BokkenFirearmSupplyVendorBlueprints.AmmunitionCount &&
                         bokkenRepairRows == 0 && bokkenOverhaulRows == 0 &&
-                        bokkenGunsmithRows == 1 && bokkenGunsmithCount ==
-                            BokkenFirearmSupplyVendorBlueprints.GunsmithKitCount,
+                        bokkenGunsmithRows == 0,
                     "exact BlueprintUnitLoot and project-owned item references"),
                 Assertion("bokken-vendor-owners",
                     "OTP_Bokken and OTP_Bokken_ZeroState are the two exact direct loot-table owners",
@@ -35072,6 +35136,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             StopTeleportationInteraction(result);
             StopTeleportationSpellbookUi(result);
             StopMagicCircleUi(result);
+            StopWhiteoutWeather(result);
+            StopWhiteoutDisposableFixture(result);
             StopTeleportationLoadDiagnostics(result);
             if (_saveLoadObservation != null && result.SaveLoadObservation == null)
                 result.SaveLoadObservation = _saveLoadObservation.Stop();

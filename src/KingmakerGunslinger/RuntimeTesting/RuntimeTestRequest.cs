@@ -239,6 +239,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             if ((request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleProfile ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleTerrain) && !request.ExitAfterCompletion)
                 return "magic-circle-profile-exit-required";
+            if (request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutWeather && !request.ExitAfterCompletion)
+                return "whiteout-observation-exit-required";
+            if ((request.Scenario == RuntimeTestScenarioCatalog.ObservePublishedElementalCharacterTraits ||
+                request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedRaceTraitFoundations || request.Scenario == RuntimeTestScenarioCatalog.ObservePublishedElementalCharacterTraits) && !request.ExitAfterCompletion)
+                return "race-trait-foundation-exit-required";
+            if (request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedAerialObserverFoundation && !request.ExitAfterCompletion)
+                return "aerial-observer-foundation-exit-required";
+            if (request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutDisposableWeatherFixture && !request.ExitAfterCompletion)
+                return "whiteout-disposable-exit-required";
+            if (request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedWhiteoutFoundation && !request.ExitAfterCompletion)
+                return "whiteout-foundation-exit-required";
             bool workingSmoke = request.Scenario ==
                 RuntimeTestScenarioCatalog.WorkingSaveSmoke ||
                 request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation ||
@@ -294,6 +305,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleEvil ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleUi ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleTerrain ||
+                request.Scenario == RuntimeTestScenarioCatalog.ObservePublishedElementalCharacterTraits ||
+                request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedRaceTraitFoundations ||
+                request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedWhiteoutFoundation ||
+                request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutDisposableWeatherFixture ||
+                request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedAerialObserverFoundation ||
+                request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutWeather ||
                 RuntimeTestScenarioCatalog.IsMagicCirclePersistence(request.Scenario) ||
                 request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
                 request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap ||

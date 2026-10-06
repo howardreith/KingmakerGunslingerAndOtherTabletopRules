@@ -1,3 +1,96 @@
+# Executed DATA transplant continuation — 2026-10-06
+
+This execution record supersedes the historical intake-only disposition below.
+The readiness branch was not merged or cherry-picked. Thirty-five authorized
+DATA source slices were copied from the recorded authority, then their shared
+hooks were reconciled against the exact released v0.0.141 API. The table records
+the original source hashes, not a claim that adapted runtime fixtures remain
+byte-identical. Full native compilation proves that no later Summoning symbol
+is needed. Specialized runtime evidence from the source branches is provenance;
+the new release candidate still requires its own runtime qualification.
+
+## Dependency and reconciliation ledger
+
+| Dependency/surface | Classification | Resolution |
+| --- | --- | --- |
+| BlueprintBootstrap, BlueprintManifest, ProjectAssetIcons | EXISTING-0.0.141-EQUIVALENT | Use released native registration/icon APIs; append only DATA registration and consumer guards. |
+| FavoredClassTraitResolver, HelpfulPublicationTransaction, FavoredClassLevelUpHarness | EXISTING-0.0.141-EQUIVALENT | Use exact supported host/racial_traits and released native preview-selection APIs. |
+| RuleSkillCheck, RuleSavingThrow, AddAreaEffect, Wings of Air, SeekingExactItemResolver | EXISTING-0.0.141-EQUIVALENT | Reuse qualified DATA contracts against installed native references; no Summoning dependency. |
+| Whiteout diagnostics and request-local weather/attack fixtures | GENERIC-SAFE-INFRASTRUCTURE | Port only DATA request/thread/attack-scoped diagnostics and exact no-save one-way loader. |
+| Canonical admission/native registration/localization coordinator | GENERIC-SAFE-INFRASTRUCTURE | New DATA-only stable graph adapter; register 11 nodes atomically, publish four features conditionally. |
+| Elemental module setting notification | GENERIC-SAFE-INFRASTRUCTURE | Add instance event and exact owned-fact reconciliation; no unit registry/sweep. |
+| Runtime catalog/request/PowerShell preflight | GENERIC-SAFE-INFRASTRUCTURE | Append DATA closed scenarios; preserve inherited entries. Existing released catalog names restored to metadata only where omitted. |
+| Domain-test registrations/current package inventory | GENERIC-SAFE-INFRASTRUCTURE | Append 282 DATA tests and 12 canonical-admission tests; derive 2,252 total and 286 package members from released baseline plus DATA. |
+| Lunge policy/IL helper dependency in historical fixture tests | UNNECESSARY-TEST-DEPENDENCY | Do not port Lunge. Use the trait test's own native contract helper. |
+| Any post-release Summoning dependency | POST-RELEASE-SUMMONING-ONLY | None admitted. The forbidden production tree audit protects 351 released files. |
+| Working-save backup/restoration | BLOCKER | Existing generic writers do not supply the required backup/restore transaction for KMG_AUTOMATION_WORKING; no writer is invoked. |
+
+Shared inherited validator/test edits are limited to current version, complete
+registry trailing-entry offsets and whole-package counts. All historical
+Summoning feature/model/publication counts and records remain unchanged.
+The current root icon catalog tracks the 11 newly appended trait identities;
+its registry hash is recomputed from the actual current registry. Its delegated
+Summoning manifest pin remains the exact released authorized hash.
+
+## Exact original source authority receipts
+
+| Ported slice | Source authority | Original source SHA-256 |
+| --- | --- | --- |
+| src/KingmakerGunslinger/Acquisition/ProgressionWeaponCatalog.cs | 38691cff652d1ed38314984c9ad74549639f3802 | 85bd983b14fa3048e7a53e87ff07f9bd0343f4d9c49f0c3e8412d708941ad411 |
+| src/KingmakerGunslinger/Acquisition/VendorCatalogPublication.cs | 38691cff652d1ed38314984c9ad74549639f3802 | 13306041c08fa29da489f7d54c28206890e68dcd119f1c709f7ff5d1f579ec22 |
+| src/KingmakerGunslinger/Blueprints/MagicFirearmBlueprints.cs | 38691cff652d1ed38314984c9ad74549639f3802 | ab7ddafea87e3959999221de716fcca61b5cd2ddc8e93c6699efcc3bc78a5478 |
+| src/KingmakerGunslinger/Blueprints/ProductionFirearmBlueprints.cs | 38691cff652d1ed38314984c9ad74549639f3802 | 9e530097a64a0f9f7eb430336465f91c6e660bcf52b4d92b150ce2b049dc3ffd |
+| src/KingmakerGunslinger/Firearms/FirearmEnchantmentItemText.cs | 38691cff652d1ed38314984c9ad74549639f3802 | b61ebd99111e775126fe76720e6986fd54cd75bc136870b9857fc60f73e0d8eb |
+| src/KingmakerGunslinger/Firearms/FirearmPenetrationPresentation.cs | 38691cff652d1ed38314984c9ad74549639f3802 | 76adbe977f54c18d8619adf17992229d28d5233e5d2b75784acd91bd72dafc00 |
+| src/KingmakerGunslinger/Firearms/MidgameFirearmCatalog.cs | 38691cff652d1ed38314984c9ad74549639f3802 | 14367b3c85e034e6a2f8df30ba5872c6ad7ef2f643ce2233546a0499a9495cc0 |
+| src/KingmakerGunslinger/Blueprints/BokkenFirearmSupplyVendorBlueprints.cs | 38691cff652d1ed38314984c9ad74549639f3802 | ed7d123aba8472d239d4bb9954e767de053da045d6bd9e789d8096619778d3f0 |
+| src/KingmakerGunslinger/Blueprints/CapitalVendorBlueprints.cs | 38691cff652d1ed38314984c9ad74549639f3802 | 7d11d5d1f1e328ca25f2b3d5686608743d9059371fd77f9b3b8263853ad3bbca |
+| src/KingmakerGunslinger/Blueprints/EasternWeaponCampaignBlueprints.cs | 38691cff652d1ed38314984c9ad74549639f3802 | ed570be85b47fc4bb31b889ee8f60d85e22aa5d1328a604d964293707df32ad3 |
+| src/KingmakerGunslinger/Blueprints/ElvenBranchedSpearCampaignBlueprints.cs | 38691cff652d1ed38314984c9ad74549639f3802 | 2204510d5e79c3f77bcdc29c5b3d43f104f619dc900c8316a5dc53578902affa |
+| src/KingmakerGunslinger/Blueprints/OlegFirearmVendorBlueprints.cs | 38691cff652d1ed38314984c9ad74549639f3802 | 323ad339c5e7821e0fdac49af9f16633c8f58cb9d243c0579fc802b04bad75b8 |
+| src/KingmakerGunslinger/ElementalRaces/UnpublishedRaceTraitFoundationFactory.cs | 38691cff652d1ed38314984c9ad74549639f3802 | 2b21afdae3fd05dca93a9d628a7bafd824f37f9fc95acf31a4c16c8c13925116 |
+| src/KingmakerGunslinger/ElementalRaces/StoicDignityPolicy.cs | 38691cff652d1ed38314984c9ad74549639f3802 | c0f3eeab2da36aba19f9aedffc06507072b386fb0ab246e81193a940e07f7314 |
+| src/KingmakerGunslinger/ElementalRaces/StoicDignityMechanics.cs | 38691cff652d1ed38314984c9ad74549639f3802 | d31f4c62cefc8c8a190b5b6c8c971ca2cedb2c1d1d24f7272ddb62884dcd1a52 |
+| src/KingmakerGunslinger/ElementalRaces/AerialObserverPolicy.cs | 38691cff652d1ed38314984c9ad74549639f3802 | aff9202c7445253ee6b4c7e8b37f0af181792c708cb3d1b4906404d7fc372d80 |
+| src/KingmakerGunslinger/ElementalRaces/AerialObserverMechanics.cs | 38691cff652d1ed38314984c9ad74549639f3802 | b3d575dd205bab0c610c8420efd204bc88d3cd4346b515418653e199440c721b |
+| src/KingmakerGunslinger/ElementalRaces/UnpublishedAerialObserverFoundationFactory.cs | 38691cff652d1ed38314984c9ad74549639f3802 | 99e9db79a84eac4cae62dd96b3805249f971dcb7adf1c78735a9b9861fbb7121 |
+| src/KingmakerGunslinger/ElementalRaces/WhiteoutPolicy.cs | 38691cff652d1ed38314984c9ad74549639f3802 | 7f3104e2808d162fed8b963bee095aa8097252c2d59180edf9230c710d9badc3 |
+| src/KingmakerGunslinger/ElementalRaces/WhiteoutFoundationPolicy.cs | 38691cff652d1ed38314984c9ad74549639f3802 | 6d545bf65a07f0b857515a040504b6756358724ecb59d73d37a69694a26add43 |
+| src/KingmakerGunslinger/ElementalRaces/WhiteoutNativeMechanics.cs | 38691cff652d1ed38314984c9ad74549639f3802 | 86056713010a546f01ccd857cf3cc6562fad801a321060d337f7cbb8bed3214c |
+| src/KingmakerGunslinger/ElementalRaces/DormantElementalCharacterTraitFactory.cs | 38691cff652d1ed38314984c9ad74549639f3802 | c9cd8aebcdef91a26100cf0c3f224811189b621a1b4443e23ee315f6152d5fbf |
+| src/KingmakerGunslinger/ElementalRaces/ElementalCharacterTraitCatalog.cs | 38691cff652d1ed38314984c9ad74549639f3802 | 416ffefbfb02b2ef129f906861bdbbe80082eab9cf2a252262b723bd2268ad90 |
+| src/KingmakerGunslinger/ElementalRaces/ElementalCharacterTraitAssetGate.cs | 38691cff652d1ed38314984c9ad74549639f3802 | 2f7ae19b555ecad45e2863a5fa47843de5df73ae6b30d716dd6f8367f113afb7 |
+| src/KingmakerGunslinger/ElementalRaces/ElementalCharacterTraitPublicationTransaction.cs | 38691cff652d1ed38314984c9ad74549639f3802 | 6187e23dbf464379d5d897104bc3c301492a25691b6d640450abaf367d4c62a9 |
+| src/KingmakerGunslinger/ElementalRaces/ElementalCharacterTraitOwnedGrant.cs | 38691cff652d1ed38314984c9ad74549639f3802 | 5f7cf37a3b01b7b4ab93ce5d0a456c423e65bd9e1b4fe286005a9396476cc2ec |
+| src/KingmakerGunslinger/RuntimeTesting/WhiteoutGuardedDiagnostics.cs | 38691cff652d1ed38314984c9ad74549639f3802 | c1a125629ae287753d496a0956848573a622b7333d352ad8787de82d512485f7 |
+| src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.FirearmDescriptions.cs | 38691cff652d1ed38314984c9ad74549639f3802 | 28e8e3eda90b94d3714ee5daf0f89aa8ac8635eb22e33e75987c9127b3422194 |
+| src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ModelDVendors.cs | 38691cff652d1ed38314984c9ad74549639f3802 | a534c66a1fcc74e702fe8b0a5f69e5b1c367a4ffc11dbdd039f95847a1156926 |
+| src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.WhiteoutWeather.cs | 38691cff652d1ed38314984c9ad74549639f3802 | 06d16b70f0c033a9dca648aad68b2429c2618decb8aa38c002c878cc7a766b70 |
+| src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.WhiteoutCatalog.cs | 38691cff652d1ed38314984c9ad74549639f3802 | dcc0b5cd0f8c99e4ea63ad71e788333b89f2aa32dfe8fa1ab4c160c82b260ddc |
+| src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.UnpublishedRaceTraitFoundations.cs | 38691cff652d1ed38314984c9ad74549639f3802 | e7ecb4356964fd70053bc9d3b969b260d6beabb5698ac5fd9c14caee5e30f259 |
+| src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.UnpublishedAerialObserverFoundation.cs | 38691cff652d1ed38314984c9ad74549639f3802 | aa2e05d9fa9f166b39e7bc019de442416eedd4076b4379a55bfb435824ce3abc |
+| src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.UnpublishedWhiteoutFoundation.cs | 38691cff652d1ed38314984c9ad74549639f3802 | af2ae31dea395ec32cdb48499b29411b3a0431410fa4d26788997b476001e2ff |
+| src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.WhiteoutAttackFixture.cs | 38691cff652d1ed38314984c9ad74549639f3802 | e985ac2dac45837569733766a3faa09dcd168824d429b2bfab47a250f6d59c43 |
+
+## New DATA implementation
+
+- CharacterTraitCanonicalAdmission and ElementalCharacterTraitNativeGraph:
+  complete-or-absent admission, exact canonical reference validation, reversible
+  library/localization registration and rejection of partial/foreign graphs.
+- ElementalCharacterTraitPublicationCoordinator: late all-four publication,
+  acquisition-only withdrawal with stable identities retained, exact host and
+  module setting callbacks.
+- ElementalCharacterTraitOwnedGrant: serialized exact owned fact, holder context
+  for buffs, immediate module reconciliation and exact fact removal.
+- PublishedElementalCharacterTraits runtime fixture: native race prerequisites,
+  preview-only character selection, duplicates, sprites/localization, module
+  transitions, foreign preservation and cleanup. Not save/respec qualification.
+- Four original icon intakes, provenance and five visible consumers; no icon on
+  any of the six hidden nodes.
+- Version 0.0.142 metadata, final copy and release/manual review documents.
+
+## Historical manifest — preserved
+
 # DATA 0.0.142 transplant manifest
 
 Status: inventory completed; production transplant NOT STARTED because the released

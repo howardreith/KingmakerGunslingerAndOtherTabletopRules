@@ -5,6 +5,15 @@ namespace KingmakerGunslinger.RuntimeTesting
 {
     internal static class RuntimeTestScenarioCatalog
     {
+        internal const string ObservePublishedElementalCharacterTraits = "observe-published-elemental-character-traits";
+        internal const string ObserveUnpublishedRaceTraitFoundations = "observe-unpublished-race-trait-foundations";
+        internal const string ObserveUnpublishedWhiteoutFoundation = "observe-unpublished-whiteout-foundation";
+        internal const string ObserveWhiteoutDisposableWeatherFixture = "observe-whiteout-disposable-weather-fixture";
+        internal const string ObserveUnpublishedAerialObserverFoundation = "observe-unpublished-aerial-observer-foundation";
+        internal const string ObserveWhiteoutWeatherCatalog = "observe-whiteout-weather-catalog";
+        internal const string ObserveWhiteoutWeather = "observe-whiteout-weather";
+        internal const string ObserveModelDVendors = "observe-model-d-vendors";
+        internal const string ObserveFirearmDescriptions = "observe-firearm-descriptions";
         internal const string ModLoadSmoke = "mod-load-smoke";
         internal const string DisposableMagicCircleProfile = "disposable-magic-circle-profile";
         internal const string DisposableMagicCircleUi = "disposable-magic-circle-ui";
@@ -623,6 +632,15 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static readonly HashSet<string> Allowed =
             new HashSet<string>(StringComparer.Ordinal)
             {
+                ObservePublishedElementalCharacterTraits,
+                ObserveUnpublishedRaceTraitFoundations,
+                ObserveUnpublishedWhiteoutFoundation,
+                ObserveWhiteoutDisposableWeatherFixture,
+                ObserveUnpublishedAerialObserverFoundation,
+                ObserveWhiteoutWeatherCatalog,
+                ObserveWhiteoutWeather,
+                ObserveModelDVendors,
+            ObserveFirearmDescriptions,
                 ModLoadSmoke,
                 ObserveWordOfRecallFavoredClass,
                 DisposableWordOfRecallFavoredClassPersistence,

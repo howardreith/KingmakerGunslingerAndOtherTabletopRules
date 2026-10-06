@@ -20,7 +20,6 @@ namespace KingmakerGunslinger.Blueprints
             "57f84fdde3cc2994284fb3acc4a3cb97";
         internal const string ZeroStateOwnerName = "OTP_Bokken_ZeroState";
         internal const int AmmunitionCount = 100;
-        internal const int GunsmithKitCount = 1;
 
         internal static BokkenVendorPublication Publish(
             LibraryScriptableObject library,
@@ -59,8 +58,7 @@ namespace KingmakerGunslinger.Blueprints
             {
                 ammunition.BlackPowder,
                 ammunition.LeadBall,
-                ammunition.PaperCartridge,
-                supplies.GunsmithKit
+                ammunition.PaperCartridge
             };
             BlueprintItem[] items = publish ? stocked :
                 Array.Empty<BlueprintItem>();
@@ -68,44 +66,28 @@ namespace KingmakerGunslinger.Blueprints
             {
                 AmmunitionCount,
                 AmmunitionCount,
-                AmmunitionCount,
-                GunsmithKitCount
+                AmmunitionCount
             } : Array.Empty<int>();
             BlueprintComponent[] existing = table.ComponentsArray ??
                 Array.Empty<BlueprintComponent>();
-            bool obsolete = existing.OfType<LootItemsPackFixed>().Any(component =>
-                owned.Contains(CapitalVendorBlueprints.ReadItem(component)) &&
-                !items.Contains(CapitalVendorBlueprints.ReadItem(component)));
-            bool exactCounts = items.Select((item, index) => existing
-                .OfType<LootItemsPackFixed>().Where(component => ReferenceEquals(
-                    CapitalVendorBlueprints.ReadItem(component), item)).ToArray())
-                .Select((found, index) => found.Length == 1 &&
-                    CapitalVendorBlueprints.ReadCount(found[0]) == counts[index])
-                .All(value => value);
-            if (!obsolete && exactCounts)
+            VendorCatalogPublication<BlueprintComponent> transaction =
+                VendorCatalogPublication<BlueprintComponent>.NormalizeOwned(existing,
+                    owned, items, counts,
+                    row => CapitalVendorBlueprints.ReadItem(row as LootItemsPackFixed),
+                    row => CapitalVendorBlueprints.ReadCount((LootItemsPackFixed)row),
+                    (item, count) =>
+                    {
+                        var entry = CapitalVendorBlueprints.CreateFixedEntry(item, count);
+                        entry.name = "$KMG_BokkenFirearmSupply_" + item.name;
+                        return entry;
+                    });
+            if (!transaction.Changed)
             {
                 var unchanged = BokkenVendorPublication.Unchanged(table,
                     existing, owned, items, counts);
                 unchanged.Validate();
                 return unchanged;
             }
-
-            BlueprintComponent[] retained = existing.Where(component =>
-            {
-                var fixedEntry = component as LootItemsPackFixed;
-                return fixedEntry == null || !owned.Contains(
-                    CapitalVendorBlueprints.ReadItem(fixedEntry));
-            }).ToArray();
-            BlueprintComponent[] additions = items.Select((item, index) =>
-            {
-                LootItemsPackFixed entry = CapitalVendorBlueprints.CreateFixedEntry(
-                    item, counts[index]);
-                entry.name = "$KMG_BokkenFirearmSupply_" + item.name;
-                return (BlueprintComponent)entry;
-            }).ToArray();
-            VendorCatalogPublication<BlueprintComponent> transaction =
-                VendorCatalogPublication<BlueprintComponent>.Create(retained,
-                    additions);
             table.ComponentsArray = transaction.Published;
             var publication = new BokkenVendorPublication(table, transaction,
                 owned, items, counts, true, existing);
@@ -114,10 +96,9 @@ namespace KingmakerGunslinger.Blueprints
                 publication.Validate();
                 logger.Info("acquisition", "bokken-firearm-supplies.published",
                     string.Format(CultureInfo.InvariantCulture,
-                        "Normalized {0} exact firearm-supply rows on {1} ({2}); enabled={3}; ammunition={4}; gunsmith={5}.",
+                        "Normalized {0} exact firearm-supply rows on {1} ({2}); enabled={3}; ammunition={4}.",
                         items.Length, table.name, TableGuid, publish,
-                        publish ? AmmunitionCount : 0,
-                        publish ? GunsmithKitCount : 0));
+                        publish ? AmmunitionCount : 0));
                 return publication;
             }
             catch
