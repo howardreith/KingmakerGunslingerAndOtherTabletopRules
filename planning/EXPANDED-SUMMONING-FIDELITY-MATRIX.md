@@ -2,11 +2,13 @@
 
 ## Current boundary: snake profiles PASS, signatures61/62 FAIL; full Sprint17 NOT QUALIFIED
 
-[Latest signature evidence](EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-ATTEMPT2-EVIDENCE.json):
-exactccba smoke11,signature61/62 FAIL, restored19:04UTC. All Constrictor rules
-pass. Poison removal/no seventh damage is observed; remaining failure inspects
-the disposed component array. New live-event strategy retains all62 checks
-and changes no production behavior; NOT RUN. No new adaptation.
+[Latest signature evidence](EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-ATTEMPT3-EVIDENCE.json):
+exactdc12 smoke11,signature61/62 FAIL, restored19:30UTC. All Constrictor rules
+pass. Six damage events and removal/no replay pass. The fixture missed the
+separate injury-action save and incorrectly required six buff saves instead
+of one injury plus five later saves. Phase-aware observer251 focused/2053 full,
+clean Release/strict320 source PASS; exact runtime next. All62 requirements,
+no production change or new adaptation.
 Seeded rule delivery is not real command/AI/contact
 or full lifecycle proof. Earlier qualified profile/body slice:
 

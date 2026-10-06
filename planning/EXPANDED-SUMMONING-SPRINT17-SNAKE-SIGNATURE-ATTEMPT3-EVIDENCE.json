@@ -1,0 +1,316 @@
+{
+  "schemaVersion": 1,
+  "classification": "FAILED BOUNDED SIGNATURE SLICE; SPRINT17 NOT QUALIFIED",
+  "authority": "Laptop sole owner; PR26 active, PR27 salvage-only; zero DATA ports",
+  "candidate": {
+    "commit": "dc1208d2572d254f6cf3c1506f19503215e76808",
+    "branch": "codex/expanded-summoning-phase2b-sprints14-17",
+    "version": "0.0.141",
+    "sourceStateSha256": "82f7caca02d7c38a992efdefc2cad3900c3bf4c87c99eef431ebfe33a4165ce7",
+    "dllSha256": "2091785a945423094d8b0371a87dd71ee3c4962741b48a4bf984ccd9486703dd",
+    "dllMvid": "16b34ee8-e5e3-4bbc-83eb-05a59a232881",
+    "zipSha256": "26ba8eed46eef6834d182f174462580c52bb61ae9bb05934cfc96e9f40d920e7",
+    "packageMembers": 320,
+    "archive": "artifacts/sprint17-snake-signatures-source-pass-dc1208d2",
+    "manifestSha256": "1ab422f32aecdfcdaa9a2bb9f1afaec09e92189549b7b9474ebb37e8d931d6fb"
+  },
+  "prelaunch": {
+    "status": "PASS",
+    "focused": 249,
+    "fullUnfiltered": 2051,
+    "fullDomainSeconds": 85.5,
+    "completeGateSeconds": 181.7,
+    "repositoryStaticIconManifest": true,
+    "cleanExactReferences": 14,
+    "strictDeterministicPackage": true,
+    "standalonePreflight": 502,
+    "orchestration": 142,
+    "provenance": 17,
+    "persistence": [
+      11,
+      3,
+      19
+    ],
+    "crowd": [
+      5,
+      7
+    ],
+    "gateLog": "artifacts/sprint17-signatures-exact-dc1208d2-gate.log",
+    "gateLogSha256": "8f470380f154e925205746c37c3dc8c44226d30291b3585022d4c07a053a7981",
+    "preflightLogSha256": "5fa471b7e685a0750e0fd513750baeebf126c5aa446eb5a848dab2eaaf030d1b"
+  },
+  "transaction": {
+    "batch": "artifacts/laptop-runtime-20261006T1923320882446Z",
+    "journalSha256": "1eb580adf3aa09f447ae9a1c7c1cf27ad1400f88a5b49e5e27e332e5380e1ab4",
+    "driver": "artifacts/Invoke-LaptopSprint17-SnakeSignatures-Attempt3.ps1",
+    "driverSha256": "8022b276f6fcf3aed4e5cd24ae6e340cc07f20072e42931dca8c91924cb6dd1a",
+    "status": "NOT-QUALIFIED",
+    "startedAtUtc": "2026-10-06T19:23:32.1417491Z",
+    "completedAtUtc": "2026-10-06T19:30:35.0087296Z",
+    "scenarioOrder": [
+      "working-save-smoke",
+      "disposable-expanded-summoning-snake-signatures"
+    ],
+    "runs": [
+      {
+        "scenario": "working-save-smoke",
+        "startedAtUtc": "2026-10-06T19:23:57.5923822Z",
+        "parameters": {},
+        "launcherOutcome": "Clean",
+        "exitCode": 0,
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T1923585152858Z-working-save-smoke",
+        "requestId": "20261006T1923585457508Z-303c9ec327a7432184f9f2da22d43b31",
+        "requestSha256": "f90ac1fcc50598c24544878db101c1ae4362a467333d50ba5d4f6f0dd231966a",
+        "resultSha256": "068d98a9163b8ad10e1d5bd4ec5785183b10be7349747d3b6b66248ee090d332",
+        "assertions": 11,
+        "passed": 11,
+        "failed": [],
+        "orchestrationSha256": "dbd8472391373006e4a64e19e50418024016d5faf7d39e88b06078c8e9b65354",
+        "processId": 33604,
+        "processStartedUtc": "2026-10-06T19:23:59.6240630Z",
+        "scenarioStatus": "PASS",
+        "outcome": "PASS",
+        "completedAtUtc": "2026-10-06T19:26:53.5347482Z"
+      },
+      {
+        "scenario": "disposable-expanded-summoning-snake-signatures",
+        "startedAtUtc": "2026-10-06T19:26:58.9740641Z",
+        "parameters": {},
+        "launcherOutcome": "Unclean",
+        "exitCode": 1,
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T1926597590409Z-disposable-expanded-summoning-snake-signatures",
+        "requestId": "20261006T1926597590409Z-93262b95491e473cbf44a8019d42b1f3",
+        "requestSha256": "21a32f8b0945e05e287d52162231a09f5379ec393b4620719bffba5dfe74e5fd",
+        "resultSha256": "91925d5c8e58cfea7c339acad92d9ed8ec4b5300d681a8dca00b9413687906cb",
+        "assertions": 62,
+        "passed": 61,
+        "failed": [
+          {
+            "name": "sprint17-snake-signature-viper-six-exposures",
+            "status": "FAIL"
+          }
+        ],
+        "orchestrationSha256": "e0eb231c23e16b497ad485fea937d7d55513ffe35917068b050ff9fe7eab672f",
+        "processId": 31644,
+        "processStartedUtc": "2026-10-06T19:27:01.1136918Z",
+        "scenarioStatus": "FAIL",
+        "outcome": "FAIL",
+        "completedAtUtc": "2026-10-06T19:30:32.4666811Z"
+      }
+    ]
+  },
+  "observations": {
+    "signatureAssertions": 62,
+    "passed": 61,
+    "profileBodyRegressionPassed": 38,
+    "signaturePassed": 23,
+    "signatureRequired": 24,
+    "metadataRows": 46,
+    "metadataSha256": "c12ef529146dc700ea8d8f7099d2dcd3545050c07bd9b14a2b2f0fb532867f07",
+    "failures": [
+      {
+        "name": "sprint17-snake-signature-viper-six-exposures",
+        "status": "FAIL",
+        "expected": "exactly six 1d2 Con exposures; next native due boundary removes without seventh/duplicate damage",
+        "observed": {
+          "exposures": [
+            {
+              "exposure": 1,
+              "damage": 1,
+              "native": {
+                "present": true,
+                "dc": 13,
+                "ticks": 1,
+                "saves": 0,
+                "round": 0
+              }
+            },
+            {
+              "exposure": 2,
+              "damage": 1,
+              "native": {
+                "present": true,
+                "dc": 13,
+                "ticks": 2,
+                "saves": 0,
+                "round": 1
+              },
+              "presentAfter": true,
+              "duplicateTickDamage": 0
+            },
+            {
+              "exposure": 3,
+              "damage": 1,
+              "native": {
+                "present": true,
+                "dc": 13,
+                "ticks": 3,
+                "saves": 0,
+                "round": 2
+              },
+              "presentAfter": true,
+              "duplicateTickDamage": 0
+            },
+            {
+              "exposure": 4,
+              "damage": 1,
+              "native": {
+                "present": true,
+                "dc": 13,
+                "ticks": 4,
+                "saves": 0,
+                "round": 3
+              },
+              "presentAfter": true,
+              "duplicateTickDamage": 0
+            },
+            {
+              "exposure": 5,
+              "damage": 1,
+              "native": {
+                "present": true,
+                "dc": 13,
+                "ticks": 5,
+                "saves": 0,
+                "round": 4
+              },
+              "presentAfter": true,
+              "duplicateTickDamage": 0
+            },
+            {
+              "exposure": 6,
+              "damage": 1,
+              "native": {
+                "present": true,
+                "dc": 13,
+                "ticks": 6,
+                "saves": 0,
+                "round": 5
+              },
+              "presentAfter": true,
+              "duplicateTickDamage": 0
+            }
+          ],
+          "lastLiveState": {
+            "present": true,
+            "dc": 13,
+            "ticks": 6,
+            "saves": 0,
+            "round": 5
+          },
+          "nativeStatDamageEvents": [
+            {
+              "damage": 1,
+              "nativeDice": "0",
+              "nativeBonus": 2,
+              "sourceFact": "e9dc4d37ca1d4e9db7b7abe3266a4c4e",
+              "sourceUnit": "c1eff957-606c-403d-b1f0-5139a694a402",
+              "target": "9ef196f1-4af6-4156-8e45-a595ac43b58c"
+            },
+            {
+              "damage": 1,
+              "nativeDice": "0",
+              "nativeBonus": 2,
+              "sourceFact": "e9dc4d37ca1d4e9db7b7abe3266a4c4e",
+              "sourceUnit": "c1eff957-606c-403d-b1f0-5139a694a402",
+              "target": "9ef196f1-4af6-4156-8e45-a595ac43b58c"
+            },
+            {
+              "damage": 1,
+              "nativeDice": "0",
+              "nativeBonus": 2,
+              "sourceFact": "e9dc4d37ca1d4e9db7b7abe3266a4c4e",
+              "sourceUnit": "c1eff957-606c-403d-b1f0-5139a694a402",
+              "target": "9ef196f1-4af6-4156-8e45-a595ac43b58c"
+            },
+            {
+              "damage": 1,
+              "nativeDice": "0",
+              "nativeBonus": 2,
+              "sourceFact": "e9dc4d37ca1d4e9db7b7abe3266a4c4e",
+              "sourceUnit": "c1eff957-606c-403d-b1f0-5139a694a402",
+              "target": "9ef196f1-4af6-4156-8e45-a595ac43b58c"
+            },
+            {
+              "damage": 1,
+              "nativeDice": "0",
+              "nativeBonus": 2,
+              "sourceFact": "e9dc4d37ca1d4e9db7b7abe3266a4c4e",
+              "sourceUnit": "c1eff957-606c-403d-b1f0-5139a694a402",
+              "target": "9ef196f1-4af6-4156-8e45-a595ac43b58c"
+            },
+            {
+              "damage": 1,
+              "nativeDice": "0",
+              "nativeBonus": 2,
+              "sourceFact": "e9dc4d37ca1d4e9db7b7abe3266a4c4e",
+              "sourceUnit": "c1eff957-606c-403d-b1f0-5139a694a402",
+              "target": "9ef196f1-4af6-4156-8e45-a595ac43b58c"
+            }
+          ],
+          "nativeSavingThrows": 5,
+          "presentAfterExhaustion": false,
+          "seventhExposureDamage": 0,
+          "duplicateExpiryDamage": 0,
+          "signature": "viper-six-exposures",
+          "passed": false
+        }
+      }
+    ],
+    "nativeDamageEvents": 6,
+    "nativeBuffSaveEvents": 5,
+    "initialInjurySave": "Not captured by the buff-only observer; no retrospective PASS claim",
+    "constrictorAll13Passed": true
+  },
+  "nativeAudit": {
+    "assemblySha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb",
+    "log": "artifacts/sprint17-native-poison-phases-audit.log",
+    "logSha256": "26dce5ebb45d8ccf4238a2e1b803c619229464b990b2435486f89980781de8d0",
+    "findings": [
+      "ContextActionSavingThrow.RunAction triggers the initial injury save before applying poison; its RuleSavingThrow constructor and MechanicsContext.TriggerRule do not set Reason.",
+      "BuffPoisonStatDamage.OnFactActivate deals exposure one and increments m_TicksPassed without making a second save.",
+      "OnNewRound supplies five subsequent buff-owned saves/damage events; the next exhausted callback removes without save or damage."
+    ]
+  },
+  "failureClassification": [
+    {
+      "assertion": "sprint17-snake-signature-viper-six-exposures",
+      "kind": "FIXTURE",
+      "evidence": "The live observer captured six native damage events but only five buff-owned saves. It incorrectly required the initial injury-action save to be buff-owned too; its null-unsafe fact lookup could not observe that reason-less event. Native last-live counter6, buff absence and zero seventh/duplicate damage all passed.",
+      "correction": "Keep live event observation but separate one positively correlated initial injury save from five buff-owned later saves. Pin the initial event to the exact in-flight wounding bite; null-guard native Reason; retain all six exposures and no-replay/removal checks. Add behavior tests for the split and reject duplicate initial or later events.",
+      "sameAssertionFailureCount": 3,
+      "correctedRuntime": "NOT RUN"
+    }
+  ],
+  "restoration": {
+    "status": "VERIFIED",
+    "snapshot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20261006T1923327993552Z",
+    "before": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "after": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "completedAtUtc": "2026-10-06T19:30:35.0087296Z",
+    "lease": "C:\\Dev\\KingmakerGunslingerLab\\compatibility-state\\runtime-20261006T192332Z-b1fd939c588248f09f9ccfe6cc9359d1\\runtime-lease.json",
+    "leaseStatus": "Completed",
+    "recoveryRequired": false,
+    "leaseReleased": true,
+    "gameProcesses": 0,
+    "sharedLock": false,
+    "staging": false,
+    "nativeSaveWrite": false,
+    "manualSaveFileAccess": false,
+    "protectedBaselineLoadedOrWritten": false
+  },
+  "next": "Source-check and push the phase-aware observer as NOT QUALIFIED, freeze a new exact artifact and run the complete affected smoke/signature batch. No replay of dc1208d2.",
+  "fullSprintQualified": false,
+  "publication": false,
+  "humanReview": "NOT_PERFORMED_NONBLOCKING"
+}

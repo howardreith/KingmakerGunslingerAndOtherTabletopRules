@@ -658,6 +658,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint17-snake-production-body-identity", SerpentineRulesTests.ProductionBodyHookRequiresExactHiddenSnakeIdentity),
             Case("expanded-summoning.sprint17-snake-closed-profile-request", SerpentineRulesTests.ProfileRequestIsClosedWorkingSaveSlice),
             Case("expanded-summoning.sprint17-snake-closed-signature-request", SerpentineRulesTests.SignatureRequestIsClosedWorkingSaveSlice),
+            Case("expanded-summoning.sprint17-poison-native-save-phases", SerpentineRulesTests.NativePoisonSavePhasesRemainDistinct),
+            Case("expanded-summoning.sprint17-poison-exhaustion-no-replay", SerpentineRulesTests.NativePoisonExhaustionRequiresRemovalWithoutReplay),
             Case("expanded-summoning.sprint17-snake-exact-land-ranks", SerpentineRulesTests.ExactRanksPreserveNativeContributions),
             Case("expanded-summoning.sprint17-snake-ranks-fail-closed", SerpentineRulesTests.RankAllocationRejectsDonorOrRepeatRanks),
             Case("expanded-summoning.sprint17-snake-live-modifiers", SerpentineRulesTests.PoisonAndDamageUseLiveModifiers),

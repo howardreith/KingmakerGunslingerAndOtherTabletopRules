@@ -7,15 +7,16 @@ owner-designated development line. PR #27 is frozen salvage-only; no DATA
 source imported. Phase 2C is authorized but deferred until Phase 2B owner
 acceptance; this mission stops after Sprint 17 and full Phase 2B closure.
 
-[Latest signature attempt](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-ATTEMPT2-EVIDENCE.json):
-exactccba complete2051-test/strict320/prelaunch PASS, smoke11/11,
-signature61/62 FAIL. All62 executed; all13 Constrictor checks pass. Poison
-removed without seventh/duplicate damage, but the fixture inspected a disposed
-component afterward. New read-only native event-counting strategy is written,
-NOT RUN; no production change, extra wait or waived requirement. Actual
-snapshot restored19:04:19UTC; no game/shared lock/staging/save write.
-Repair source gate PASS:249 focused,2051 full83.0s, complete178.8s,
-clean14-reference Release/strict320 and142 orchestration; runtime still required.
+[Latest signature attempt](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-ATTEMPT3-EVIDENCE.json):
+exactdc12 complete2051-test/strict320/prelaunch PASS, smoke11/11,
+signature61/62 FAIL. All62 executed; all13 Constrictor checks pass. Six poison
+damage events, final removal and no replay passed. The observer wrongly expected
+six buff saves: native activation uses the preceding injury-action save; only
+the five later saves are buff-owned. New phase-aware read-only observer retains
+six total saves/exposures, correlates the injury save to the exact wounding bite
+and null-guards native Reason.251 focused/2053 full86.8s,complete183.6s,
+clean14-reference Release/strict320 and142 orchestration PASS. Exact runtime next.
+Production unchanged. Actual snapshot restored19:30:35UTC; no game/lock/staging/write.
 [Repair and next exact gate](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-SLICE.md).
 The earlier qualified profile/body transaction remains:
 

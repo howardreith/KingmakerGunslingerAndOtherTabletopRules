@@ -33,13 +33,15 @@ namespace KingmakerGunslinger.RuntimeTesting
         private sealed class Sprint17PoisonExposureObserver :
             IGlobalRulebookHandler<RuleDealStatDamage>, IGlobalRulebookHandler<RuleSavingThrow>
         {
-            internal UnitEntityData Target;
+            internal UnitEntityData Owner, Target;
             internal BlueprintBuff Venom;
+            internal RuleAttackWithWeapon InjuryAttack;
             internal readonly JArray Damage = new JArray();
-            internal int Saves;
+            internal readonly JArray InjurySaves = new JArray(), BuffSaves = new JArray();
             private bool IsOwned(RuleReason reason)
             {
-                return reason.Fact != null && ReferenceEquals(reason.Fact.Blueprint, Venom);
+                return reason != null && reason.Fact != null &&
+                    ReferenceEquals(reason.Fact.Blueprint, Venom) && ReferenceEquals(reason.Caster, Owner);
             }
             public void OnEventAboutToTrigger(RuleDealStatDamage evt) { }
             public void OnEventDidTrigger(RuleDealStatDamage evt)
@@ -54,9 +56,31 @@ namespace KingmakerGunslinger.RuntimeTesting
             public void OnEventAboutToTrigger(RuleSavingThrow evt) { }
             public void OnEventDidTrigger(RuleSavingThrow evt)
             {
-                if (ReferenceEquals(evt.Initiator, Target) && IsOwned(evt.Reason)) Saves++;
+                if (!ReferenceEquals(evt.Initiator, Target) || evt.Type != SavingThrowType.Fortitude) return;
+                var row = new JObject { ["dc"] = evt.DifficultyClass, ["passed"] = evt.IsPassed,
+                    ["reasonPresent"] = evt.Reason != null, ["target"] = Target.UniqueId };
+                if (IsOwned(evt.Reason))
+                {
+                    row["sourceFact"] = evt.Reason.Fact.Blueprint.AssetGuid;
+                    row["sourceUnit"] = evt.Reason.Caster.UniqueId;
+                    BuffSaves.Add(row);
+                    return;
+                }
+                // ContextActionSavingThrow leaves Reason null. Correlate its
+                // initial injury gate to the exact synchronous owned bite,
+                // not to an assumed buff fact or any unrelated target save.
+                var context = Rulebook.CurrentContext;
+                var attack = context == null ? null : context.LastEvent<RuleAttackWithWeapon>();
+                if (InjuryAttack == null || !ReferenceEquals(attack, InjuryAttack) ||
+                    !ReferenceEquals(attack.Initiator, Owner) || !ReferenceEquals(attack.Target, Target) ||
+                    !ReferenceEquals(attack.Weapon, SummonLimbs.PrimaryWeapon(Owner)) ||
+                    attack.AttackRoll == null || !attack.AttackRoll.IsHit ||
+                    attack.MeleeDamage == null || attack.MeleeDamage.Damage <= 0) return;
+                row["sourceUnit"] = Owner.UniqueId; row["weapon"] = attack.Weapon.Blueprint.AssetGuid;
+                row["exactInFlightWoundingBite"] = true;
+                InjurySaves.Add(row);
             }
-            internal void Clear() { Damage.Clear(); Saves = 0; }
+            internal void Clear() { Damage.Clear(); InjurySaves.Clear(); BuffSaves.Clear(); InjuryAttack = null; }
         }
 
         // Rule delivery, not command/AI qualification. Only newly summoned
@@ -103,12 +127,14 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private static Buff DeliverSprint17Venom(UnitEntityData owner, UnitEntityData target,
-            BlueprintBuff venom, out RuleAttackWithWeapon attack)
+            BlueprintBuff venom, out RuleAttackWithWeapon attack, Sprint17PoisonExposureObserver observer = null)
         {
             ClearSprint14Venom(target, venom);
             UnityEngine.Random.InitState(FindNativeD20Seed(20));
-            attack = Rulebook.Trigger(new RuleAttackWithWeapon(owner, target,
-                SummonLimbs.PrimaryWeapon(owner), 0));
+            attack = new RuleAttackWithWeapon(owner, target, SummonLimbs.PrimaryWeapon(owner), 0);
+            if (observer != null) observer.InjuryAttack = attack;
+            try { Rulebook.Trigger(attack); }
+            finally { if (observer != null) observer.InjuryAttack = null; }
             return target.Descriptor.Buffs.GetBuff(venom);
         }
 
@@ -145,7 +171,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var venom = fixture.Blueprints.OfType<BlueprintBuff>().Single(value =>
                 value.name == "KMG_Summoning_Natural_Viper_Venom");
             var nativePoison = venom.ComponentsArray.OfType<BuffPoisonStatDamage>().Single();
-            var exposureObserver = new Sprint17PoisonExposureObserver { Target = target, Venom = venom };
+            var exposureObserver = new Sprint17PoisonExposureObserver { Owner = owner, Target = target, Venom = venom };
             UnityEngine.Random.State random = UnityEngine.Random.state;
             EventBus.Subscribe(exposureObserver);
             try
@@ -209,14 +235,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RuleAttackWithWeapon initialAttack;
                 exposureObserver.Clear();
                 int before = stats.Constitution.Damage;
-                Buff poison = DeliverSprint17Venom(owner, target, venom, out initialAttack);
+                Buff poison = DeliverSprint17Venom(owner, target, venom, out initialAttack, exposureObserver);
                 var initial = DescribeSprint17Venom(poison);
                 int initialDamage = stats.Constitution.Damage - before;
                 int after = stats.Constitution.Damage;
                 target.Descriptor.Buffs.Tick();
                 bool cadence = poison != null && initialDamage >= 1 && initialDamage <= 2 &&
                     (int)initial["ticks"] == 1 && stats.Constitution.Damage == after &&
-                    exposureObserver.Damage.Count == 1 && exposureObserver.Saves == 1;
+                    SerpentinePoisonReviewPolicy.ExactExposureCounts(1, exposureObserver.Damage.Count,
+                        exposureObserver.InjurySaves.Count, exposureObserver.BuffSaves.Count);
                 var exposures = new JArray { new JObject { ["exposure"] = 1, ["damage"] = initialDamage, ["native"] = initial } };
                 for (int exposure = 2; exposure <= 6 && poison != null; exposure++)
                 {
@@ -228,7 +255,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     target.Descriptor.Buffs.Tick();
                     cadence &= delta >= 1 && delta <= 2 && (int)state["ticks"] == exposure &&
                         target.Descriptor.HasFact(venom) && stats.Constitution.Damage == after &&
-                        exposureObserver.Damage.Count == exposure && exposureObserver.Saves == exposure;
+                        SerpentinePoisonReviewPolicy.ExactExposureCounts(exposure, exposureObserver.Damage.Count,
+                            exposureObserver.InjurySaves.Count, exposureObserver.BuffSaves.Count);
                     exposures.Add(new JObject { ["exposure"] = exposure, ["damage"] = delta,
                         ["native"] = state, ["presentAfter"] = target.Descriptor.HasFact(venom),
                         ["duplicateTickDamage"] = stats.Constitution.Damage - after });
@@ -247,12 +275,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 target.Descriptor.Buffs.Tick();
                 CheckSprint17Signature("viper-six-exposures", cadence && exposures.Count == 6 &&
                     !target.Descriptor.HasFact(venom) && (int)beforeExhaustion["ticks"] == 6 &&
-                    expiryDamage == 0 && stats.Constitution.Damage == before &&
-                    exposureObserver.Damage.Count == 6 && exposureObserver.Saves == 6 &&
-                    exposureObserver.Damage.All(value => (int)value["damage"] >= 1 && (int)value["damage"] <= 2),
+                    SerpentinePoisonReviewPolicy.ExactExhaustion(exposureObserver.Damage.Count,
+                        exposureObserver.InjurySaves.Count, exposureObserver.BuffSaves.Count,
+                        target.Descriptor.HasFact(venom), expiryDamage, stats.Constitution.Damage - before) &&
+                    exposureObserver.Damage.All(value => (int)value["damage"] >= 1 && (int)value["damage"] <= 2 &&
+                        (int)value["nativeBonus"] >= 1 && (int)value["nativeBonus"] <= 2) &&
+                    exposureObserver.InjurySaves.Concat(exposureObserver.BuffSaves).All(value =>
+                        (int)value["dc"] == 13 && !(bool)value["passed"]),
                     new JObject { ["exposures"] = exposures, ["lastLiveState"] = beforeExhaustion,
                         ["nativeStatDamageEvents"] = exposureObserver.Damage.DeepClone(),
-                        ["nativeSavingThrows"] = exposureObserver.Saves,
+                        ["nativeInjurySaves"] = exposureObserver.InjurySaves.DeepClone(),
+                        ["nativeBuffSaves"] = exposureObserver.BuffSaves.DeepClone(),
                         ["presentAfterExhaustion"] = target.Descriptor.HasFact(venom),
                         ["seventhExposureDamage"] = expiryDamage,
                         ["duplicateExpiryDamage"] = stats.Constitution.Damage - before },
