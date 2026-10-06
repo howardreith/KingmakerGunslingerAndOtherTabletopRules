@@ -2,6 +2,16 @@
 
 ## Current October 6 UTC laptop result — Sprint 16 COMPLETE AND PUBLISHED
 
+[Closed snake command slice](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-SLICE.md)
+is now implemented but NOT RUN: eight production-identity manual/AI RTWP/TB
+cells,51 mandatory assertions,8 ordered evidence rows.255 focused,508 request
+preflight and168 orchestration PASS. Complete source gate181.7s PASS:
+2057 unfiltered84.7s,repository/static/icon/manifest,clean14-reference Release,
+deterministic strict320 package;17 provenance,persistence11/3/19,crowd5/7 PASS.
+Production behavior and the passing38/62 requests are unchanged;32 routes
+stay hidden. Next freeze a committed exact artifact and run smoke/commands
+under the lease-first actual-snapshot protocol. No full Sprint17 claim.
+
 PR #26 / `codex/expanded-summoning-phase2b-sprints14-17` remains the sole
 owner-designated development line. PR #27 is frozen salvage-only; no DATA
 source imported. Phase 2C is authorized but deferred until Phase 2B owner

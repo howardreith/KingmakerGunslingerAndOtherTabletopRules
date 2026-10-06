@@ -12,6 +12,67 @@ namespace KingmakerGunslinger.DomainTests
     internal static class SerpentineRulesTests
     {
         internal const int AppendedLedgerIdentities = 73;
+        internal static void CommandRequestAndMatrixAreClosed()
+        {
+            string scenario = RuntimeTestScenarioCatalog.DisposableExpandedSummoningSnakeCommands;
+            Assertions.Equal("disposable-expanded-summoning-snake-commands", scenario, "One closed command request.");
+            Assertions.True(RuntimeTestScenarioCatalog.IsAllowed(scenario) &&
+                RuntimeTestScenarioCatalog.IsExpandedSummoningRulesScenario(scenario), "Working-save guards inherited.");
+            foreach (string invalid in new[] { scenario.ToUpperInvariant(), scenario + "-arbitrary",
+                "working-save-expanded-summoning-snake-commands" })
+                Assertions.False(RuntimeTestScenarioCatalog.IsAllowed(invalid), "No scope/write alias.");
+            var cells = SerpentineCommandReviewPolicy.Cells();
+            Assertions.Equal(8, cells.Length, "Both creatures, modes and drivers.");
+            Assertions.Equal("viper-rtwp-manual,viper-rtwp-ai,viper-turn-based-manual,viper-turn-based-ai," +
+                "constrictor-snake-rtwp-manual,constrictor-snake-rtwp-ai,constrictor-snake-turn-based-manual,constrictor-snake-turn-based-ai",
+                string.Join(",", cells.Select(value => string.Join("-", value))), "Closed ordered matrix.");
+            cells[0][0] = "foreign";
+            Assertions.Equal("viper", SerpentineCommandReviewPolicy.Cells()[0][0], "No mutable global matrix.");
+        }
+
+        internal static void CommandRetryNeverDrivesAiOrReplaysHeldAttack()
+        {
+            for (int attempt = 0; attempt < 4; attempt++)
+                Assertions.True(SerpentineCommandReviewPolicy.CanIssueManual(true, true, attempt,
+                    false, false, false, true), "Bounded completed real-command retries.");
+            for (int mask = 0; mask < 64; mask++)
+            {
+                bool manual = (mask & 1) != 0, ready = (mask & 2) != 0, pending = (mask & 4) != 0;
+                bool signature = (mask & 8) != 0, held = (mask & 16) != 0, alive = (mask & 32) != 0;
+                Assertions.Equal(manual && ready && !pending && !signature && !held && alive,
+                    SerpentineCommandReviewPolicy.CanIssueManual(manual, ready, 1, pending, signature, held, alive),
+                    "Every readiness/control/relationship gate is mandatory.");
+            }
+            foreach (int invalid in new[] { -1, 4, 99 })
+                Assertions.False(SerpentineCommandReviewPolicy.CanIssueManual(true, true, invalid,
+                    false, false, false, true), "Attempt bound is closed.");
+        }
+
+        internal static void CommandContactRequiresPlayedClipAndActualGap()
+        {
+            Assertions.True(SerpentineCommandReviewPolicy.Contact(true, true, false, true, 50, .25f), "Exact threshold.");
+            foreach (float gap in new[] { -.01f, .251f, float.NaN, float.PositiveInfinity })
+                Assertions.False(SerpentineCommandReviewPolicy.Contact(true, true, false, true, 50, gap),
+                    "No distant/nonfinite contact waiver.");
+            Assertions.False(SerpentineCommandReviewPolicy.Contact(false, true, false, true, 50, 0), "Exact actors.");
+            Assertions.False(SerpentineCommandReviewPolicy.Contact(true, false, false, true, 50, 0), "Actual command.");
+            Assertions.False(SerpentineCommandReviewPolicy.Contact(true, true, true, true, 50, 0), "No incidental AoO.");
+            Assertions.False(SerpentineCommandReviewPolicy.Contact(true, true, false, false, 50, 0), "No fallback IsActed.");
+            Assertions.False(SerpentineCommandReviewPolicy.Contact(true, true, false, true, 0, 0), "Actual original points.");
+        }
+
+        internal static void CommandMaintainRequiresLaterRoundWithoutSecondAttack()
+        {
+            Assertions.True(SerpentineCommandReviewPolicy.LaterMaintain(1, 1, 2, 1, 1), "One initial, two later bundles.");
+            foreach (int initial in new[] { 0, 2 })
+                Assertions.False(SerpentineCommandReviewPolicy.LaterMaintain(initial, 1, 2, 1, 1), "Exact initial constrict.");
+            foreach (int later in new[] { 0, 1, 3, 4 })
+                Assertions.False(SerpentineCommandReviewPolicy.LaterMaintain(1, 1, later, 1, 1), "Exact later bite+constrict.");
+            Assertions.False(SerpentineCommandReviewPolicy.LaterMaintain(1, 0, 2, 1, 1), "Not application frame.");
+            Assertions.False(SerpentineCommandReviewPolicy.LaterMaintain(1, 1, 2, 0, 0), "Actual establishing attack.");
+            Assertions.False(SerpentineCommandReviewPolicy.LaterMaintain(1, 1, 2, 1, 2), "No second attack credited as maintain.");
+        }
+
         internal static void NativePoisonSavePhasesRemainDistinct()
         {
             for (int exposure = 1; exposure <= 6; exposure++)

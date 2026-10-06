@@ -2,6 +2,16 @@
 
 ## Current boundary: bounded snake rules62/62 PASS; full Sprint17 NOT QUALIFIED
 
+[Closed snake command slice](EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-SLICE.md)
+is now implemented but NOT RUN: eight production-identity manual/AI RTWP/TB
+cells,51 mandatory assertions,8 ordered evidence rows.255 focused,508 request
+preflight and168 orchestration PASS. Complete source gate181.7s PASS:
+2057 unfiltered84.7s,repository/static/icon/manifest,clean14-reference Release,
+deterministic strict320 package;17 provenance,persistence11/3/19,crowd5/7 PASS.
+Production behavior and the passing38/62 requests are unchanged;32 routes
+stay hidden. Next freeze a committed exact artifact and run smoke/commands
+under the lease-first actual-snapshot protocol. No full Sprint17 claim.
+
 Exact `130bf7a2de4cbd636df921f36e7f6afefe8523ca` passes the complete
 bounded rules batch: fresh Steam640820 smoke **11/11**, profile/body/signature
 **62/62**, strict collector **46/46 metadata rows**, batch PASS.
