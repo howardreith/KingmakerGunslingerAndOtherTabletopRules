@@ -243,7 +243,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 if (!ReferenceEquals(rule.Target, target) || contacts.Count >= 12) return;
                 JObject contact;
-                try { contact = Sprint17MeasuredAttackContact(owner, target, attachment, rule); }
+                try
+                {
+                    contact = Sprint17MeasuredAttackContact(owner, target, attachment, rule);
+                    contact["bodyPose"] = Sprint17OriginalBodySample(owner, attachment.Body);
+                }
                 catch (Exception error)
                 {
                     // Keep the actual event even if its measurement fails.
@@ -320,8 +324,39 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "actual issued native primary attack with finite exact current-pose measurements",
                     "contacts=" + contacts.Count + ";poses=" + poses.Count + ";started=" + attack.IsStarted,
                     complete, "Research completeness only. Measured gaps and grip failures remain unqualified, never waived."));
+                JObject[] attackPoses = poses.OfType<JObject>().Concat(contacts.OfType<JObject>()
+                    .Select(value => value["bodyPose"] as JObject).Where(value => value != null)).ToArray();
+                _serpentineBodyAssertions.Add(Assertion("sprint17-attack-ground-support-" + key,
+                    "all actual sampled attack poses keep original support within -2..15mm of the measured floor",
+                    "samples=" + attackPoses.Length + ";minimum=" + attackPoses.Min(value =>
+                        (float?)value["lowestVertexFloor"]["clearance"]),
+                    poses.Count >= 3 && attackPoses.All(value => {
+                        float? clearance = (float?)value["lowestVertexFloor"]["clearance"];
+                        return (bool?)value["poseFinite"] == true && clearance.HasValue &&
+                            clearance.Value >= -.002f && clearance.Value <= .015f;
+                    }), "No floor clamp, per-frame mesh deformation, native rig change or unsampled-pose claim."));
+                bool closeContact = contacts.OfType<JObject>().Any(value =>
+                    (string)value["category"] == required && measuredIssued(value) &&
+                    (float?)value["nearestGapMeters"] <= .25f) &&
+                    (key != "salamander" || contacts.OfType<JObject>().Any(value =>
+                        (bool?)value["exactHybridTail"] == true && measuredIssued(value) &&
+                        (float?)value["nearestGapMeters"] <= .25f));
+                _serpentineBodyAssertions.Add(Assertion("sprint17-issued-attack-contact-" + key,
+                    "issued native primary and required hybrid tail each measure within quarter metre",
+                    "contact=" + closeContact, closeContact,
+                    "Original weighted vertices; spear includes the full conservative native-bounds uncertainty."));
                 if (key == "salamander")
                 {
+                    bool twoPalm = contacts.OfType<JObject>().Any(value =>
+                        (string)value["category"] == "Spear" && measuredIssued(value) &&
+                        (string)value["spearMountStatus"] == "two-native-palms:instance-weapon-only" &&
+                        (int?)value["spearMountFrame"] == (int?)value["frame"] &&
+                        (float?)value["RPalmToSpearAxisMeters"] <= .01f &&
+                        (float?)value["LPalmToSpearAxisMeters"] <= .01f);
+                    _serpentineBodyAssertions.Add(Assertion("sprint17-spear-two-palm-contact-grip",
+                        "both unchanged native palms lie within one centimetre of the existing shaft at the exact attack frame",
+                        "twoPalm=" + twoPalm, twoPalm,
+                        "Read-only independent world measurement; fixture never applies a mount, animation or rule."));
                     var renderer = attachment.SpearFilter.GetComponent<MeshRenderer>();
                     var materialController = owner.View.GetComponentInChildren<Kingmaker.Visual.MaterialEffects.StandardMaterialController>(true);
                     var driven = ExpandedSummoningPteranodonViewPatch.ControllerMaterials(materialController);
@@ -390,6 +425,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     filter.transform.TransformVector(new Vector3(x * spearBounds.extents.x, 0,
                         z * spearBounds.extents.z)).magnitude)).Max();
                 result["nativeMeshReadable"] = filter.sharedMesh.isReadable;
+                result["spearMountStatus"] = attachment.SpearMountStatus;
+                result["spearMountFrame"] = attachment.SpearMountFrame;
                 result["nativeBoundsSize"] = SurveyVector(spearBounds.size);
                 result["transverseUncertaintyMeters"] = transverseRadius;
                 result["shaftEndCentres"] = new JArray(SurveyVector(a), SurveyVector(b));
@@ -399,7 +436,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Vector3 onAxis = a + axis * Mathf.Clamp01(Vector3.Dot(palm.position - a, axis) / axis.sqrMagnitude);
                     result[side + "PalmToSpearAxisMeters"] = Vector3.Distance(onAxis, palm.position);
                 }
-                result["poseMethod"] = "native bounds Y end centres transformed by existing weapon renderer; gap includes transverse uncertainty; NOT surface vertices";
+                result["contactEnd"] = "forward positive-Y bound only";
+                result["poseMethod"] = "native bounds Y end centres; contact uses forward positive-Y end only; gap includes transverse uncertainty; NOT surface vertices";
             }
             else
             {
@@ -431,7 +469,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             result["actorPosition"] = SurveyVector(owner.Position); result["targetPosition"] = SurveyVector(target.Position);
             if (finite)
             {
-                float gap = points.Min(value => Vector3.Distance(value, bounds.ClosestPoint(value)));
+                float gap = rule.Weapon.Blueprint.Category == WeaponCategory.Spear
+                    ? Vector3.Distance(points[1], bounds.ClosestPoint(points[1]))
+                    : points.Min(value => Vector3.Distance(value, bounds.ClosestPoint(value)));
                 if (rule.Weapon.Blueprint.Category == WeaponCategory.Spear)
                 {
                     result["endCentreGapMeters"] = gap;

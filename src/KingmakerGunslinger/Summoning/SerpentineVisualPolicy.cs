@@ -28,6 +28,19 @@ namespace KingmakerGunslinger.Summoning
                 pivot == "WeaponPivot" && target == "R_Palm";
         }
 
+        /// <summary>Two existing palms must fit inside the unscaled shaft.
+        /// The rear hand is ten percent from the butt; the forward hand has
+        /// at least ten percent tip clearance. No target/reach input.</summary>
+        internal static bool TrySpearRearGrip(float shaftLength, float handSpacing, out float fromButt)
+        {
+            fromButt = 0;
+            if (float.IsNaN(shaftLength) || float.IsInfinity(shaftLength) || shaftLength <= 0 ||
+                float.IsNaN(handSpacing) || float.IsInfinity(handSpacing) ||
+                handSpacing < shaftLength * .04f || handSpacing > shaftLength * .8f) return false;
+            fromButt = shaftLength * .1f;
+            return fromButt > 0 && !float.IsInfinity(fromButt);
+        }
+
         internal static string[] Bones(string key)
         {
             if (IsSnake(key))

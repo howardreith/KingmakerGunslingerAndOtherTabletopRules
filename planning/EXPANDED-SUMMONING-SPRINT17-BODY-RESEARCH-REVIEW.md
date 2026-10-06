@@ -39,10 +39,24 @@ CaptureB9DF8B3E2C07B2B3AD778DCAB43C16EB11C7538CA5DA1040E246D6F182B5C810.
 Lease Completed/recoveryRequired=false/released; no game/lock/staging/save write.
 [All exact requests/results/processes/hashes](EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-EVIDENCE.json).
 
-Next: extend closed private replay to the attack capture; correct only original
-distal-coil support and owned spear mounting. Preserve native bones, mesh,
-clips, gameplay/actor collision and every prior failed artifact. A new exact
-artifact and complete affected batch must prove the corrections.
+Current source correction: closed private replay includes actual attack poses;
+hybrid v9 raises only the original distal cross section at most14cm, preserving
+every UV/weight/driver/upper-body coordinate. Independently reproduced mesh
+BD790DF1E258FA6190EF48A2E68F0BEB5EAEBA6D035D51EEB3AAEFC5CBB9A60B;
+all a096/7ebb sampled poses clear the floor (7ebb4.9999..5.0005mm).
+10 replay/9 hybrid/4 winding checks,231 focused/2033 registered and incremental
+exact compile PASS.24 new original-pose panels; representative attack clay/
+texture reviewed as ART ONLY.
+
+Only the existing instance weapon renderer aligns between the two native
+palms (rear grip10% from butt). No native mesh/scale/bone/clip/controller,
+target, reach or rule edit. A same-frame rule-boundary update avoids measuring
+the previous rendered pose; fixture never forces mounting/animation.
+Live grip/contact, unsampled ground and lifecycle remain NOT QUALIFIED.
+Next new exact committed/pushed candidate, full prelaunch, immutable smoke/
+body47 batch. New assertions require attack support, primary/tail contacts
+and both palms within1cm of the shaft at the native event. Restore actual
+leased snapshot, preserving all nine earlier attempts.
 
 Historicala096 smoke11/body36 of37 FAIL (unreadable spear query and transient
 player-faction isolation) and21ee smoke11/body32 of34 FAIL (movement/rejection)

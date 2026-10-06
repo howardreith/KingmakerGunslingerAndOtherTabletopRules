@@ -10,6 +10,36 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class ExpandedSummoningSprint17Tests
     {
+        internal static void TwoPalmSpearMountFitsExistingShaftWithoutRescaling()
+        {
+            foreach (float length in new[] { .88533658f, 1.77067316f, 3.54134632f })
+                foreach (float fraction in new[] { .04f, .2f, .5f, .8f })
+                {
+                    float rear;
+                    Assertions.True(SerpentineVisualPolicy.TrySpearRearGrip(length, length * fraction, out rear),
+                        "The existing shaft admits its two palms at any uniform view scale.");
+                    Assertions.True(Math.Abs(rear / length - .1f) < .000001f,
+                        "Rear grip is ten percent from the butt, not the old center mount.");
+                    Assertions.True(rear + length * fraction <= length * .900001f,
+                        "Both grips lie inside the unscaled shaft, retaining tip clearance.");
+                }
+            foreach (float bad in new[] { -1f, 0, float.NaN, float.PositiveInfinity, float.NegativeInfinity })
+            {
+                float rear;
+                Assertions.False(SerpentineVisualPolicy.TrySpearRearGrip(bad, .5f, out rear),
+                    "Invalid shaft dimensions cannot invent a mount.");
+                Assertions.Equal(0f, rear, "No usable partial mount on rejection.");
+                Assertions.False(SerpentineVisualPolicy.TrySpearRearGrip(1.77f, bad, out rear),
+                    "Coincident/nonfinite palms fail closed.");
+            }
+            foreach (float spacing in new[] { .039f, .801f, 1f, 2f })
+            {
+                float rear;
+                Assertions.False(SerpentineVisualPolicy.TrySpearRearGrip(1, spacing, out rear),
+                    "No arbitrary extension or degenerate orientation to force a two-hand fit.");
+            }
+        }
+
         internal static void NativeSpearBoundsRetainConservativeUncertainty()
         {
             Assertions.Equal((float?).25f, SerpentineRigSurveyPolicy.ConservativeSpearEndGap(.125f, .125f),
@@ -141,7 +171,7 @@ namespace KingmakerGunslinger.DomainTests
             string[] hashes = {
                 "754d82bbdd4a030b0bddb150202bc6ec9bf2d149754741e9d2900a1286463d8e",
                 "f7811906bbc1e257536371d2d8192e04d412e26bd2864aa55ae56e68c7e0356f",
-                "eb189795bc717e71fc874136f386286bc2fb20fa00c24f83a50d2d89557f9a29" };
+                "bd790df1e258fa6190ef48a2e68f0beb5eaeba6d035d51eeb3aaefc5cbb9a60b" };
             int keyIndex = 0;
             foreach (string key in SerpentineVisualPolicy.Keys)
             {

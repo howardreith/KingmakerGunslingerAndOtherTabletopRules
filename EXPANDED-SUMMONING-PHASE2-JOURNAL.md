@@ -1,5 +1,28 @@
 # Expanded Summoning Phase 2 journal
 
+## October 6 -- original distal-coil and two-palm spear correction, source only
+
+Exact7ebb source evidence preserved/pushed asac7e0fcf; PR26 updated. No new
+runtime launch at this checkpoint. The closed replay now includes attack
+poses and supports same-event body samples, with10 behavior/rejection checks.
+Hybrid v9 raises only authored distal cross sections at most14cm; weights,
+UVs, native drivers and upper body unchanged. Independent staged/private
+export hashes matchBD790DF1E258FA6190EF48A2E68F0BEB5EAEBA6D035D51EEB3AAEFC5CBB9A60B.
+All a096/7ebb poses clear the measured floor offline;7ebb4.9999..5.0005mm.
+9 hybrid/4 winding tests PASS.24 original-pose panels include sampled attack
+extremes; representative texture/clay inspected as supporting ART ONLY.
+
+Only the exact owned instance weapon renderer mounts between unchanged palms,
+rear grip10% from butt and bounded unscaled hand spacing. Native WeaponSnap,
+bones/clips/mesh/scale/controller, target, collision/reach and authoritative
+rules unchanged. Same-frame rule-boundary sync does not roll/resolve an attack.
+New runtime assertions require attack support, actual forward-end conservative
+spear contact, native bite/tail contact and both palms within1cm of the shaft.
+231 focused/2033 registered, incremental compile and repository wrapper PASS.
+Initial focused test correctly rejected the old pinned mesh hash; corrected
+only after independent byte reproduction. Full exact prelaunch and47-assertion
+guarded smoke/body batch remain next. NOT QUALIFIED; all earlier failures kept.
+
 ## October 6,09:59 UTC -- exact7ebb research40/40 PASS; final visual defects retained
 
 230 focused/2032 full83.2s/gate179.4s,491 preflight/81 orchestration/17

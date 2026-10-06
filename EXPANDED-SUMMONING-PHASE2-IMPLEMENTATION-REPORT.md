@@ -48,9 +48,15 @@ spear gap0.37510m, tail gap0.16190m, distal coil floor minimum-0.112885m.
 Research completeness does not waive these findings. Native unreadable mesh
 remains untouched; explicit bounds metadata never masquerades as vertices.
 Actual0951581493121Z snapshot restored09:59:49UTC,136/.117/tree;
-no game/lease/lock/staging/save write. Next original distal-coil correction,
-bounded two-palm weapon mounting and captured attack-pose replay, then new
-exact-artifact proof. No production hook/new registration or S17 qualification.
+no game/lease/lock/staging/save write. Current source corrects original distal
+coil geometry and the instance-only two-palm mount. The v9 original export is
+independently byte-reproduced; all a096/7ebb sampled attack/idle/movement poses
+clear the floor offline.10 replay/9 hybrid/4 winding checks,231 focused/
+2033 registered, incremental compile PASS;24 original-pose panels reviewed
+selectively as ART ONLY. Exact event poses are now retained too. The47-assertion
+batch must prove attack-floor support, forward spear/tail/bite contact and
+both palms within1cm at the actual event. Full exact prelaunch/runtime remains
+next; no production hook/new registration or S17 qualification.
 [Exact current review](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-REVIEW.md).
 
 ### Historical research sequence — current result above governs
