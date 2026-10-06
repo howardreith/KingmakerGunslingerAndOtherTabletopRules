@@ -22,6 +22,8 @@ for family in ("pteranodon", "sprint13-creatures"):
     sys.path.insert(0, str(HERE.parents[1] / family))
 import generate_pteranodon as shared
 from generate_sprint13_creatures import ellipsoid, tube
+sys.path.insert(0, str(HERE.parent))
+from serpentine_export import finish_original_winding
 
 KINDS = ("viper", "constrictor-snake")
 BODY_BONES = ("LowerTorso", "SpineA_M", "Spine1_M", "SpineB_M",
@@ -277,6 +279,8 @@ def write_prototype(args, rig_data, rig, rig_hash, builder, allowed_bones,
     obj.modifiers.new(name="NativeRigPreview", type="ARMATURE").object = armature
     obj.parent = armature
     shared.attach_preview_material(obj, mesh, args.albedo)
+    for material in mesh.materials:
+        material.use_backface_culling = True
     for polygon in mesh.polygons:
         polygon.use_smooth = True
     report = dict(schemaVersion=1, creature=args.kind, donorFamily=donor_family,
@@ -295,6 +299,7 @@ def write_prototype(args, rig_data, rig, rig_hash, builder, allowed_bones,
     payload = json.loads(Path(args.mesh_data).read_text(encoding="utf-8"))
     payload.update(space=space,
                    visibleLegs=0, jawSeparated=True)
+    payload = finish_original_winding(payload, args.kind)
     Path(args.mesh_data).write_text(json.dumps(payload, indent=1) + "\n", encoding="utf-8", newline="\n")
     bpy.ops.wm.save_as_mainfile(filepath=str(Path(args.blend_out).resolve()))
     print("[snake-prototype] " + json.dumps(report, sort_keys=True))

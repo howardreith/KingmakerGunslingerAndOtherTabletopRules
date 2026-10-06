@@ -1,5 +1,12 @@
 # Expanded Summoning Phase 2 evidence index
 
+[S17-only authored winding correction](assets-source/original-models/sprint17-serpents/SOURCE.md):
+snake v4/hybrid v8 independently byte-reproduced; only triangle indices and
+convention marker change.29 authoring/replay,227 focused/2029 registered,
+incremental compile and repository wrapper PASS;24 backface-aware pose panels.
+No new exact runtime, production attachment or publication. Next bounded native
+spear and actual bite/tail/spear command/contact diagnostic.
+
 [Sprint17 exact32b2f26e winding/weapon metadata research PASS](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-REVIEW.md):
 226 focused/2028 full83.7s; full exact gate179.1s;491 preflight/81 orchestration/
 17 provenance, persistence11/3/19,crowd5/7,strict318-member package. Fresh Steam

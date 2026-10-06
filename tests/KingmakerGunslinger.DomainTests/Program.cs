@@ -644,6 +644,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint17-measured-ground-evidence", ExpandedSummoningSprint17Tests.GroundResearchRequiresMeasuredSurfaceAndRetainsPenetration),
             Case("expanded-summoning.sprint17-original-body-drivers", ExpandedSummoningSprint17Tests.OriginalBodyBindingRejectsUnreviewedDrivers),
             Case("expanded-summoning.sprint17-original-body-payloads", ExpandedSummoningSprint17Tests.OriginalBodyPayloadsAreCompleteAndRedistributionSafe),
+            Case("expanded-summoning.sprint17-original-outward-geometry", ExpandedSummoningSprint17Tests.OriginalBodyWindingHasOutwardGeometryAndFailsClosedOnOldAssets),
             Case("expanded-summoning.sprint17-exact-two-skin-binding", ExpandedSummoningSprint17Tests.MultiRendererBodySwapRequiresExactDonorSet),
             Case("expanded-summoning.sprint17-hybrid-support-native-slot-mapping", ExpandedSummoningSprint17Tests.HybridSupportMappingPreservesEveryNativeSlotAndRejectsUnknowns),
             Case("expanded-summoning.sprint17-original-triangle-order-diagnostic", ExpandedSummoningSprint17Tests.OriginalTriangleDiagnosticIsExactReversibleAndInputPreserving),
