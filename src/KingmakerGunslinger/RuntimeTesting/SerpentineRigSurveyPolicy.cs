@@ -59,6 +59,26 @@ namespace KingmakerGunslinger.RuntimeTesting
         { return !hasOffhand && SpearPrefabSources.Any(row => row[0] == blueprint &&
             row[1] == prefab && row[2] == weapon && row[3] == category); }
 
+        internal const string HumanSpearBlueprint = "86dc43534645e234eb35431131e3b669";
+        internal const string HumanSpearPrefab = "ced3729f4b4abab4da4ef63d8489f857";
+        internal const string HumanSpearBody = "Renderer_Character_Diffuse_Cutout";
+
+        // Missing/nonfinite matrix data stays unknown. A finite disagreement
+        // is retained numerically, never clamped into compatibility.
+        internal static float? MatrixDifference(float[] first, float[] other)
+        {
+            if (first == null || other == null || first.Length != 16 || other.Length != 16) return null;
+            float maximum = 0;
+            for (int i = 0; i < 16; i++)
+            {
+                if (!Finite(first[i]) || !Finite(other[i])) return null;
+                float difference = Math.Abs(first[i] - other[i]);
+                if (!Finite(difference)) return null;
+                maximum = Math.Max(maximum, difference);
+            }
+            return maximum;
+        }
+
         // A read-only census preserves absent enumeration, explicit empty
         // list, null slots and duplicates. None implies usable playback.
         // Bound before materializing an arbitrary enumeration.

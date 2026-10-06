@@ -25,6 +25,11 @@ deployment, force push or prohibited substitute subsystems.
 
 ### Qualified versus NOT QUALIFIED; next exact work
 
+Containing source-only follow-up: one exact human prefab's duplicate bind
+palette is now measured without adoption. Focused238/238,2040 registered,
+static and incremental exact compile PASS; full exact prelaunch and smoke11/
+survey16 are next. No new runtime or body/gameplay qualification.
+
 [Current spear-carrier review](planning/EXPANDED-SUMMONING-SPRINT17-SPEAR-CARRIER-AUDIT.md)
 and [exact artifact/restoration](planning/EXPANDED-SUMMONING-SPRINT17-SPEAR-CARRIER-EVIDENCE.json).
 

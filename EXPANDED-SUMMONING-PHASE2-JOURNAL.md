@@ -1,5 +1,14 @@
 # Expanded Summoning Phase 2 journal
 
+## October 6 — exact human bind-palette diagnostic, source only
+
+Containing source-only follow-up: one exact human prefab's duplicate bind
+palette is now measured without adoption. Focused238/238,2040 registered,
+static and incremental exact compile PASS; full exact prelaunch and smoke11/
+survey16 are next. No new runtime or body/gameplay qualification.
+
+[Scope and preserved fixture failure](planning/EXPANDED-SUMMONING-SPRINT17-SPEAR-CARRIER-AUDIT.md).
+
 ## October 6, 13:33 UTC — native spear metadata PASS, exact restoration
 
 Exact 291059aa: 237 focused / 2039 unfiltered tests (88.3s), complete gate

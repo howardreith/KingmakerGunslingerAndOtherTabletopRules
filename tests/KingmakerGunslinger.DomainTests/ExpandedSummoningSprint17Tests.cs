@@ -10,6 +10,46 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class ExpandedSummoningSprint17Tests
     {
+        internal static void BindMatrixObservationKeepsDisagreementAndMissingData()
+        {
+            // Binary-exact cells keep the assertion about preservation, not
+            // incidental decimal-to-float rounding in test construction.
+            float[] first = Enumerable.Range(0, 16).Select(index => index / 8f).ToArray();
+            var retained = (float[])first.Clone();
+            Assertions.Equal((float?)0, SerpentineRigSurveyPolicy.MatrixDifference(first, retained),
+                "Equal complete matrices have measured zero, not inferred agreement.");
+            foreach (int index in Enumerable.Range(0, 16))
+            {
+                var changed = (float[])first.Clone(); changed[index] += .25f;
+                Assertions.Equal((float?).25f, SerpentineRigSurveyPolicy.MatrixDifference(first, changed),
+                    "Every differing cell survives as a nonzero observation.");
+                Assertions.Equal((float?).25f, SerpentineRigSurveyPolicy.MatrixDifference(changed, first),
+                    "Difference is symmetric; a negative change cannot disappear.");
+                foreach (float invalid in new[] { float.NaN, float.PositiveInfinity, float.NegativeInfinity })
+                {
+                    changed[index] = invalid;
+                    Assertions.False(SerpentineRigSurveyPolicy.MatrixDifference(first, changed).HasValue,
+                        "Nonfinite input is unknown, never compatibility.");
+                    Assertions.False(SerpentineRigSurveyPolicy.MatrixDifference(changed, first).HasValue,
+                        "Both matrix inputs are checked.");
+                }
+            }
+            foreach (float[] bad in new[] { null, new float[0], new float[15], new float[17] })
+            {
+                Assertions.False(SerpentineRigSurveyPolicy.MatrixDifference(first, bad).HasValue,
+                    "Only complete 4x4 observations are meaningful.");
+                Assertions.False(SerpentineRigSurveyPolicy.MatrixDifference(bad, first).HasValue,
+                    "A missing baseline is not an all-zero matrix.");
+            }
+            Assertions.False(SerpentineRigSurveyPolicy.MatrixDifference(
+                Enumerable.Repeat(float.MaxValue, 16).ToArray(), Enumerable.Repeat(-float.MaxValue, 16).ToArray()).HasValue,
+                "Overflow is rejected even when both input cells are finite.");
+            Assertions.True(first.SequenceEqual(retained), "The metadata comparison never changes either native observation.");
+            var selected = SerpentineRigSurveyPolicy.SpearPrefabSources.Single(row => row[0] == SerpentineRigSurveyPolicy.HumanSpearBlueprint);
+            Assertions.Equal(selected[1], SerpentineRigSurveyPolicy.HumanSpearPrefab,
+                "Detailed binding research stays on one already observed spear prefab.");
+        }
+
         internal static void SpearCensusPinsArchivedEquipmentWithoutAdoption()
         {
             var sources = SerpentineRigSurveyPolicy.SpearPrefabSources;
