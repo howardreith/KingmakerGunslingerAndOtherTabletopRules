@@ -1181,6 +1181,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint17SnakeSignatures.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint17SnakeCommands.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint17Contacts.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint17Crowd.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint16Persistence.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint16Ui.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint16Lifecycle.cs" />

@@ -27,6 +27,13 @@ Actual snapshot2258281699283Z restored2026-10-06T23:11:14.0412304Z:
 Lease Completed/recovery=false/released;no game/shared runtime lock/this-
 worktree staging/save write. This is bounded slice qualification only.
 
+[Closed snake crowd extension](EXPANDED-SUMMONING-SPRINT17-SNAKE-CROWD-SLICE.md)
+is SOURCE PASS,NOT RUN:261 focused,2063 full87.6s,complete183.9s,
+clean14-reference Release/strict320;8 request round trips/11 rejections.
+It adds only the two private snake keys, original-instance ownership and
+native cleanup checks. Their fourth frame is post-move; no legacy synthetic
+MainHand attack probe. Direct14/crowd18 are unexecuted source expectations.
+
 Next: remaining snake lifecycle/crowds/UI/private routes/persistence and
 bounded separate Salamander implementation; complete hidden/publication
 Sprint17 gates,then fullPhase2B closure and STOP for owner review.

@@ -12,6 +12,45 @@ namespace KingmakerGunslinger.DomainTests
     internal static class SerpentineRulesTests
     {
         internal const int AppendedLedgerIdentities = 73;
+        internal static void CrowdResourcesAreExactInstanceOwned()
+        {
+            foreach (string key in new[] { "viper", "constrictor-snake" })
+            {
+                foreach (int instance in new[] { 1, -12, 123, int.MaxValue, int.MinValue })
+                {
+                    string mesh = "KMG_" + key + "_Original_" + instance.ToString(
+                        System.Globalization.CultureInfo.InvariantCulture);
+                    foreach (string resource in new[] { mesh, mesh + "_Albedo",
+                        mesh + "_SuppressedGeometry", mesh + " (Instance)", mesh + "_Spear (Instance)" })
+                        Assertions.True(SerpentineVisualPolicy.IsSnakeInstanceResource(key, mesh, resource),
+                            "Exact owned mesh, texture, auxiliary mesh and instance-cloned materials are counted.");
+                    foreach (string foreign in new[] { null, "", "Purple_Worm", mesh + "0",
+                        mesh + "Foreign", mesh.ToUpperInvariant(), "KMG_salamander_Original_123" })
+                        Assertions.False(SerpentineVisualPolicy.IsSnakeInstanceResource(key, mesh, foreign),
+                            "Neither another instance with a shared numeric prefix nor native/foreign resources count.");
+                }
+                foreach (string invalid in new[] { "", "12 ", "+12", "012", "-0", "1.0", "foreign" })
+                    Assertions.False(SerpentineVisualPolicy.IsSnakeInstanceResource(key,
+                        "KMG_" + key + "_Original_" + invalid, "KMG_" + key + "_Original_" + invalid),
+                        "Noncanonical instance names reject, including missing IDs.");
+                // Both review quantities are real private catalog routes. The
+                // review extension does not publish these or invent new roots.
+                var creature = ExpandedSummoningCatalog.All.Single(value => value.Key == key);
+                foreach (var quantity in new[] { SummonMultiplicity.One, SummonMultiplicity.OneD4PlusOne })
+                {
+                    int tier = creature.NaturesAllyTier.Value + (quantity == SummonMultiplicity.One ? 0 : 2);
+                    var route = ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly)
+                        .Single(value => value.Creature.Key == key && value.ParentTier == tier &&
+                            value.Multiplicity == quantity);
+                    Assertions.False(SummonVisibilityCatalog.IsPublished(route),
+                        "Original/crowd review never changes suppression.");
+                }
+            }
+            foreach (string key in new[] { null, "Viper", "salamander", "purple-worm", "foreign" })
+                Assertions.False(SerpentineVisualPolicy.IsSnakeInstanceResource(key,
+                    "KMG_viper_Original_12", "KMG_viper_Original_12"), "Only the two closed snake identities.");
+        }
+
         internal static void AppearanceSuspensionPreservesNativeAiActions()
         {
             foreach (bool manual in new[] { false, true })
