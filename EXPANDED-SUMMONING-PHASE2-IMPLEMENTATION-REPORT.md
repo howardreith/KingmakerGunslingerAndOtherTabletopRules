@@ -57,8 +57,14 @@ are confirmed. Water has seven skins and a 43-bone body; Salamander has a
 39-bone body plus armor and stale club/shield visuals requiring the separate
 weapon seam. Exact actual snapshot 20261006T0139078842255Z restored at
 01:45:45 UTC, same 136-file/0.0.117 tree, no process/lock/staging or save write.
-No new gameplay/visual qualification: compare an original Purple Worm-chain
-snake prototype, then separate Salamander hybrid/weapon work and profiles.
+No new gameplay/visual qualification. Private original continuous-chain snakes
+and a separate Salamander hybrid body now pass 14 Blender behavior checks;
+74 new framed panels cover clay/silhouette/textured/unlit and synthetic stress
+poses. Offline clipping, detached fingers, waist seam and dorsal-paint issues
+were corrected with regressions. No asset is packaged. Salamander's body does
+not include or qualify a weapon. Next bounded native motion/contact and
+owned-view lifecycle proof, separate spear/tail seam, then profiles/signatures.
+[Source/private hashes](assets-source/original-models/sprint17-serpents/SOURCE.md).
 
 ## Historical first hidden candidate, October 5
 
