@@ -14,6 +14,9 @@ namespace KingmakerGunslinger.Summoning
         internal const string HybridSupport = "KMG_SalamanderSupport";
         internal const string OutwardWinding = "authored-outward-sprint17";
         internal const string ProjectSpear = "99394d453c6f425f84d4b92f7a8deea0";
+        internal const string PiercingDonorBlueprint = "9f7a7364b76d65d43b72086aedce68ae";
+        internal const string PiercingDonorPrefab = "c664715ff7165984285f66acc764b4b3";
+        internal const string PiercingDonorWeapon = "926d02c8af0352b46874791d4de9764f";
         internal static string[] Keys { get { return new[] { "viper", "constrictor-snake", "salamander" }; } }
         internal static bool IsSnake(string key) { return key == "viper" || key == "constrictor-snake"; }
 
@@ -26,6 +29,26 @@ namespace KingmakerGunslinger.Summoning
             return key == "salamander" && prefab == TwoHandPrefab && weapon == ProjectSpear &&
                 category == "Spear" && model == "TH_SpearArmy" && mesh == "WP_SpearArmy" &&
                 pivot == "WeaponPivot" && target == "R_Palm";
+        }
+
+        internal static bool PermitsNativePiercingAction(string key, string ownerPrefab, string weapon,
+            string donorBlueprint, string donorPrefab, string donorWeapon, bool donorOffhand,
+            bool piercingSupported, bool exactRig)
+        { return key == "salamander" && ownerPrefab == TwoHandPrefab && weapon == ProjectSpear &&
+            donorBlueprint == PiercingDonorBlueprint && donorPrefab == PiercingDonorPrefab &&
+            donorWeapon == PiercingDonorWeapon && !donorOffhand && piercingSupported && exactRig; }
+
+        // Copy exactly one reference, never mutate a shared native list or
+        // discard another action. The adapter separately pins source identity.
+        internal static T[] CopyWithOneNativeSpearAction<T>(T[] source, T original, T replacement) where T : class
+        {
+            if (source == null || source.Length == 0 || source.Length > 128 ||
+                original == null || replacement == null || ReferenceEquals(original, replacement) ||
+                source.Any(value => value == null) || source.Count(value => ReferenceEquals(value, original)) != 1)
+                throw new ArgumentException("One exact original hand action and a distinct replacement are required.");
+            T[] result = (T[])source.Clone();
+            result[Array.FindIndex(source, value => ReferenceEquals(value, original))] = replacement;
+            return result;
         }
 
         /// <summary>Two existing palms must fit inside the unscaled shaft.

@@ -151,6 +151,7 @@
     <Compile Include="Summoning\CrocodilianVisualPolicy.cs" />
     <Compile Include="Summoning\SerpentineVisualPolicy.cs" />
     <Compile Include="Summoning\SerpentineVisualAttachment.cs" />
+    <Compile Include="Summoning\SerpentineNativeSpearAnimation.cs" />
     <Compile Include="RuntimeTesting\CrocodilianCommandReviewPolicy.cs" />
     <Compile Include="RuntimeTesting\SerpentineRigSurveyPolicy.cs" />
     <Compile Include="RuntimeTesting\CrocodilianLifecycleReviewPolicy.cs" />
