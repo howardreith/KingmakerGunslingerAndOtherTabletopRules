@@ -29,7 +29,14 @@
       16
     ],
     "currentSprint": 17,
-    "currentSubItem": "Sprint 16 COMPLETE AND PUBLISHED at exact 155ada89. S17 NOT QUALIFIED. Exact corrected a173da3a research all prelaunch PASS, smoke 11/11, three-target survey 11/11. Failed b289 retained. Actual snapshot restored at 02:45:49 UTC; no game/lock/staging/save write. Next original snake prototype on measured Purple Worm continuous body chain; compare water prototype, keep separate Salamander hybrid/weapon seam, then profiles. No production asset/registration changes. 976 generated + 29 wrappers = 1005 visible. DATA audit complete; zero imports.",
+    "currentSubItem": "Sprint 16 COMPLETE AND PUBLISHED at exact 155ada89. S17 NOT QUALIFIED. Research a173 full prelaunch/smoke 11/11/survey 11/11 PASS, evidence pushed 6dee947d. Original continuous-chain snakes and separate Salamander hybrid body now private: 14 Blender tests and 74 new framed panels. No shipped asset/production/registration changes; weapon handling not implemented by the hybrid body. Next bounded native motion/ground/contact and owned-view lifecycle proof, actual Salamander spear/tail seam, then profiles/signatures. Actual snapshot restored 02:45:49 UTC; no new launch/save write. 976 + 29 = 1005 visible. DATA audit complete; zero imports.",
+    "sprint17PrivatePrototypes": {
+      "status": "AUTHORING ONLY; NOT PACKAGED OR RUNTIME QUALIFIED",
+      "source": "assets-source/original-models/sprint17-serpents/SOURCE.md",
+      "blenderBehaviorTests": 14,
+      "newReviewPanels": 74,
+      "salamanderWeaponImplemented": false
+    },
     "sprint17TechnicalQualified": false,
     "sprint17ResearchReview": "planning/EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md",
     "sprint17Research": {

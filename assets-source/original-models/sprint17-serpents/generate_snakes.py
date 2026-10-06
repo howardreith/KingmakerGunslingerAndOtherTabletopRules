@@ -105,7 +105,7 @@ def catmull(a, b, c, d, t):
 
 
 def sweep(bm, weights, uvs, points, widths, heights, names, region="body",
-          steps=4, sides=14):
+          steps=4, sides=14, up=UP, forward=FORWARD, uv_dorsal_at=None):
     """Continuous closed original skin, smoothly blended between named drivers."""
     if not len(points) == len(widths) == len(heights) == len(names):
         raise ValueError("inconsistent sweep rows")
@@ -126,15 +126,16 @@ def sweep(bm, weights, uvs, points, widths, heights, names, region="body",
     # Starting at the coil would accumulate arbitrary roll through the S-neck
     # and turn the triangular head onto its edge.
     laterals, prior_side = {}, SIDE
+    handedness = 1 if forward.cross(SIDE).dot(up) > 0 else -1
     for index in reversed(range(len(samples))):
         tangent = (samples[min(index + 1, len(samples) - 1)][0] -
                    samples[max(index - 1, 0)][0]).normalized()
         lateral = prior_side - tangent * prior_side.dot(tangent)
         if lateral.length < .01:
-            lateral = tangent.cross(UP if abs(tangent.dot(UP)) < .9 else FORWARD)
+            lateral = tangent.cross(up if abs(tangent.dot(up)) < .9 else forward)
         lateral.normalize()
         prior_side = lateral
-        laterals[index] = (lateral, tangent.cross(lateral).normalized())
+        laterals[index] = (lateral, tangent.cross(lateral).normalized() * handedness)
     rings = []
     for index, (centre, width, height, influences) in enumerate(samples):
         lateral, vertical = laterals[index]
@@ -144,8 +145,19 @@ def sweep(bm, weights, uvs, points, widths, heights, names, region="body",
             vertex = bm.verts.new(centre + lateral * math.cos(angle) * width +
                                   vertical * math.sin(angle) * height)
             weights[vertex] = influences
-            uvs[vertex] = shared.region_uv(region, index / (len(samples) - 1),
-                                           shared.fold(angle))
+            across = shared.fold(angle)
+            if uv_dorsal_at is not None:
+                # An upright hybrid changes which side is dorsal between tail
+                # and chest. Paint orientation need not inherit transported
+                # section roll (which can otherwise put belly scales on top).
+                dorsal = Vector(uv_dorsal_at(centre))
+                tangent = lateral.cross(vertical).normalized()
+                dorsal -= tangent * dorsal.dot(tangent)
+                if dorsal.length < 1e-7:
+                    raise ValueError("dorsal paint direction parallel to skin")
+                radial = lateral * math.cos(angle) + vertical * math.sin(angle)
+                across = max(0, min(1, .5 + .5 * radial.dot(dorsal.normalized())))
+            uvs[vertex] = shared.region_uv(region, index / (len(samples) - 1), across)
             ring.append(vertex)
         if rings:
             for side in range(sides):
@@ -226,14 +238,10 @@ def build_body(bm, weights, uvs, rig, kind):
             remap_beak_uv(uvs, set(uvs) - first, .57, .94)
 
 
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--kind", required=True, choices=KINDS)
-    for name in ("capture", "albedo", "mesh-data", "report", "blend-out"):
-        parser.add_argument("--" + name, required=True)
-    args = parser.parse_args(sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else [])
+def write_prototype(args, rig_data, rig, rig_hash, builder, allowed_bones,
+                    donor_family, space, anatomy=None):
+    """Export original geometry only; private armatures never enter the package."""
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    rig_data, rig, rig_hash = measured_rig(args.capture)
     armature = shared.build_armature(rig_data)
     armature.name = args.kind + "NativeRigPreview"
     mesh = bpy.data.meshes.new(args.kind + "OriginalMesh")
@@ -241,7 +249,7 @@ def main():
     bpy.context.collection.objects.link(obj)
     bm = bmesh.new()
     weights, uvs = {}, {}
-    build_body(bm, weights, uvs, rig, args.kind)
+    builder(bm, weights, uvs, rig, args.kind)
     bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
     bm.normal_update()
     bm.to_mesh(mesh)
@@ -259,36 +267,53 @@ def main():
         if total <= 0 or len(entries) > 2:
             raise SystemExit("invalid influence row")
         for name, value in entries:
-            if name not in BODY_BONES:
-                raise SystemExit("arm or effect branch cannot carry snake geometry")
+            if name not in allowed_bones:
+                raise SystemExit("unapproved branch cannot carry snake geometry")
             if name not in groups:
                 groups[name] = obj.vertex_groups.new(name=name)
             groups[name].add([index], value / total, "REPLACE")
-    if set(groups) != set(BODY_BONES):
+    if set(groups) != set(allowed_bones):
         raise SystemExit("incomplete torso/head/jaw influence set")
     obj.modifiers.new(name="NativeRigPreview", type="ARMATURE").object = armature
     obj.parent = armature
     shared.attach_preview_material(obj, mesh, args.albedo)
     for polygon in mesh.polygons:
         polygon.use_smooth = True
-    report = dict(schemaVersion=1, creature=args.kind, donorFamily="native-water-elemental",
-                  rigSha256=rig_hash, rigBoneCount=43, vertices=len(mesh.vertices),
+    report = dict(schemaVersion=1, creature=args.kind, donorFamily=donor_family,
+                  rigSha256=rig_hash, rigBoneCount=len(rig_data["bones"]), vertices=len(mesh.vertices),
                   polygons=len(mesh.polygons), boneGroups=len(groups),
                   maxInfluencesPerVertex=max(map(len, indexed.values())),
                   visibleLegs=0, jawSeparated=True, runtimeQualified=False,
                   extent={axis: [min(getattr(v.co, axis) for v in mesh.vertices),
                                  max(getattr(v.co, axis) for v in mesh.vertices)]
                           for axis in ("x", "y", "z")}, albedo=shared.albedo_manifest(args.albedo))
+    report.update(anatomy or {})
     for path in (args.report, args.mesh_data, args.blend_out):
         Path(path).parent.mkdir(parents=True, exist_ok=True)
     Path(args.report).write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     shared.write_mesh_data(args.mesh_data, obj, mesh, indexed, uv_indexed, report, args.albedo)
     payload = json.loads(Path(args.mesh_data).read_text(encoding="utf-8"))
-    payload.update(space="donor renderer local; +X right, +Y up, +Z forward",
+    payload.update(space=space,
                    visibleLegs=0, jawSeparated=True)
     Path(args.mesh_data).write_text(json.dumps(payload, indent=1) + "\n", encoding="utf-8", newline="\n")
     bpy.ops.wm.save_as_mainfile(filepath=str(Path(args.blend_out).resolve()))
     print("[snake-prototype] " + json.dumps(report, sort_keys=True))
+
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--kind", required=True, choices=KINDS)
+    for name in ("capture", "albedo", "mesh-data", "report", "blend-out"):
+        parser.add_argument("--" + name, required=True)
+    return parser.parse_args(sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else [])
+
+
+def main():
+    args = parse_args()
+    rig_data, rig, rig_hash = measured_rig(args.capture)
+    write_prototype(args, rig_data, rig, rig_hash, build_body, BODY_BONES,
+                    "native-water-elemental",
+                    "donor renderer local; +X right, +Y up, +Z forward")
 
 
 if __name__ == "__main__":

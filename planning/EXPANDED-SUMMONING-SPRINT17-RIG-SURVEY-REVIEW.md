@@ -44,10 +44,16 @@ hashes and request identities](EXPANDED-SUMMONING-SPRINT17-FALLBACK-RESEARCH-EVI
   vertices, UVs, texture pixels, animation curves or proprietary assets were
   exported or redistributed.
 
-Next: original Purple Worm-chain snake prototype and comparison against the
-preserved water prototype, then the bounded Salamander hybrid/weapon seam,
-printed profiles/signatures, offline pose review and one stable hidden
-qualification candidate. Donor measurements are research PASS only.
+Private original Purple Worm-chain snakes and a separate Salamander hybrid
+body are now authored. [Source, offline findings and exact private hashes](../assets-source/original-models/sprint17-serpents/SOURCE.md).
+Four water, four continuous-chain and six hybrid authoring tests PASS; 74 new
+framed review panels. Offline review corrected clipping/lighting, detached
+fingers, the waist seam and dorsal/belly texture orientation. No prototype
+enters the package and Salamander's weapon is not implemented by this body.
+Next: bounded live donor motion/ground/jaw acceptance and actual Salamander
+spear/tail seam, then printed profiles/signatures and one stable hidden
+qualification candidate. Donor measurements and offline tests are not gameplay
+or visual lifecycle qualification.
 
 ## Preserved private prototypes and failed b2893abe research
 

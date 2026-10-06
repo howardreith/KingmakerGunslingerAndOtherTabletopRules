@@ -24,7 +24,8 @@ no merge, release, tag, version bump, force push or permanent deployment.
   Failed extended research candidate **`b2893abefc89079af49c22d3b028865ed2189f95`**
   is preserved. Latest pushed exact research candidate/current fetched remote:
   **`a173da3a396b3c7f1bddef3bee92c476150d8639`** (research PASS).
-  This containing evidence checkpoint is its normal descendant; Sprint 17
+  Research evidence pushed at **`6dee947dbdf35419348a0c68555291a1e5f55bec`**.
+  This containing private-prototype checkpoint is its normal descendant; Sprint 17
   gameplay and visuals are still NOT QUALIFIED.
   Unexpected active-branch motion remains a stop; archive motion is informational.
 - Exclusive ignored receipt: `artifacts/laptop-source-owner-20261005.json`;
@@ -87,9 +88,15 @@ no merge, release, tag, version bump, force push or permanent deployment.
   Purple Worm has a continuous body chain and two standard-material skins;
   water body has a standard material but five auxiliary particle skins.
   No production creature changes or waived assertion. Failed b289 retained.
-- Exact next action: original snake prototype on the measured Purple Worm
-  continuous body chain, compare against preserved water prototype; retain
-  separate Salamander hybrid/weapon seam, then profiles/signatures. Research PASS
+- Private original continuous-chain snakes and separate Salamander hybrid body
+  now authored: 14 Blender behavior tests PASS (4 water/4 worm/6 hybrid),
+  74 new framed panels. Offline defects repaired with framing, connectivity and
+  dorsal-paint regressions. No packaged assets or production code changed;
+  Salamander body has no weapon and does not qualify weapon handling.
+  [Authoring source/private hashes](assets-source/original-models/sprint17-serpents/SOURCE.md).
+- Exact next action: bounded live original-view donor acceptance (motion,
+  ground/jaw, multi-renderer fallback/lifecycle) and separate Salamander
+  manufactured-spear/tail seam, then profiles/signatures. Research PASS
   is not gameplay/visual qualification. Preserve Salamander identity and
   placements. One hidden candidate/batched review/publication gate, then full
   Phase 2B closure; no Phase 2C start under this mission.
