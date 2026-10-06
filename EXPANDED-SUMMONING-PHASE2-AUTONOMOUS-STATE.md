@@ -20,8 +20,8 @@ deployment, force push or prohibited substitute subsystems.
   Session-scoped, not perpetual. Refresh heartbeat; release only on actual
   session ending. All safety refs, bundles and failed artifacts retained.
 - Last pushed/current verified remote and latest exact runtime candidate:
-  `21eecc676e367feeed9e73c37c1997c6368e3326`.
-  This containing isolated-contact correction is its normal descendant.
+  `a09648b01486f4f3da556df7efacc6ac189c5bb7`.
+  This containing conservative-measurement/fixture correction is its normal descendant.
   Unexpected active-branch motion is a stop; frozen DATA motion informational.
 
 ### Qualified versus NOT QUALIFIED
@@ -31,60 +31,60 @@ deployment, force push or prohibited substitute subsystems.
   Hidden e3aeae63 retains crowd20,prepare9,cleanup9,absence5. No reopening.
 - Surface unchanged:976 published generated,0 withheld,29 wrappers,1005 visible.
   No snakes registered; existing Salamander production/identity/placements unchanged.
-- Sprint17 **NOT QUALIFIED**. Exact21eecc67 passes228 focused/2030 full86.8s,
-  full gate180.5s,491 preflight/81 orchestration/17 provenance, persistence11/3/19,
-  crowd5/7, clean exact Release/strict318-member package. Steam smoke11/11;
-  body **FAIL32/34**, complete batch NOT-QUALIFIED. Viper movement0m/0velocity;
-  Salamander command queued/CanStart=true but finished without starting.
-  Exact rejection/scheduling cause was not recorded and is NOT asserted.
-- Positive research only: both native snake bites resolve from the issued
-  command with animation-contact true and weighted-world gap0. Corrected
-  outward original surfaces render solid in supporting art. Two-hand hybrid
-  borrows the actual spear; native material adoption, rollback, owned-resource
-  destruction and borrowed-native survival pass. No spear/tail contact or
-  two-hand grip proof. Hybrid contact-window floor reaches -8.83cm; remains
-  an open original-support/pose finding, not final visual acceptance.
-- Every unit/party/area census and mode/pause/clock/selection/group/awake
-  restoration assertion passes; no save-writing API. No environment or
-  installation-restoration failure. All earlier attempts remain preserved.
+- Sprint17 **NOT QUALIFIED**. Ex a09648b0:229 focused/2031 full84.1s,
+  full gate177.6s,491 preflight/81 orchestration/17 provenance, persistence11/3/19,
+  crowd5/7, clean exact Release/strict318-member package PASS. Steam smoke11/11;
+  body **FAIL36/37**, complete batch NOT-QUALIFIED. All three move >2.45m.
+- Both snake bites have current-pose measurements (gaps3.43cm/3.35cm).
+  Salamander starts/completes its command: two attack rolls, one retained
+  exact tail contact (26.7cm gap), four owner-only damage events. The retained
+  contact is NOT spear. Native WP_SpearArmy is unreadable; its vertex query
+  lost the spear measurement. No claim that the weapon never attacked.
+- Initial pair-isolation checks pass, but enemy=false after settlement.
+  Native UnitValidationController repairs PlayerFaction actors into the party
+  group. Initial isolation was transient, not sustained proof.
+- Native spear/material adoption, rollback, owned destruction/borrowed survival
+  and all environment/unit/party/area restoration pass. Hybrid attack support
+  minimum-6.94cm (prior-8.83cm) and tail gap remain open original-visual findings.
+  Research completeness never accepts those gaps. No gameplay qualification.
 
 ### Source correction and next exact gate
 
-The closed research fixture now scopes RTWP before first movement and creates
-a fresh target only at each contact cell. A private nonattacking target faction
-plus ONLY the owned actor's separate native group/per-unit enemy relation
-must prove zero unrelated enemies. The actor retains the qualified native
-controllable faction. No native faction, original party/AI or shared blueprint
-is edited. Native BAB/iteratives are preserved; only a disclosed additional
-attack bonus and HP are fixture inputs. Record command result, pause/mode,
-conditions, current turn, damage provenance and declared action type.
-Require actual issued spear AND exact project tail contacts. Stop observing
-a terminal rejected command; do not just extend waits. Add tested measured/
-owned/issued-event predicate; poor measured gaps remain evidence, not acceptance.
-229 focused/2031 registered, incremental exact-reference compile and repository
-wrapper PASS. This repair has NOT run in game.
+Preserve the observed native attack event even if measurement throws. Do not
+read or alter unreadable native spear vertices: record explicit shaft/end-centre
+bounds metadata, two-palm axis distance and conservative transverse uncertainty.
+A bounding estimate is NOT a measured surface vertex. Keep poor gaps as evidence.
+
+Only the disposable contact actor receives a request-local copy of its native
+controllable faction; it no longer has PlayerFaction identity. No native
+faction, party/AI, shared blueprint or native controller is edited. The copied
+faction is destroyed after its owned actor; exact original faction/group/
+attack-faction state is restored first. Require zero unrelated enemies after
+native settlement and throughout the actual issued command. No repeated
+group override. Preserve native BAB and natural attack behavior. End observation
+when the command finishes, not after an idle timeout.230 focused/2032 registered,
+incremental exact-reference compile PASS; full exact-head gates/runtime pending.
 
 Next: commit/policy-push this coherent NOT QUALIFIED checkpoint; freeze its
 exact head; full prelaunch with explicit14-reference bundle
-`artifacts/private-references-ground-20261006/KingmakerGunslinger-private-build-references`
-(the older default lacks PhysicsModule). Update the ignored exact driver to37
-assertions and axis-based palm measurements, validate, then run fresh Steam
-smoke/body with one immutable package. Acquire lease BEFORE installation
-observation/snapshot/deployment and restore the actual snapshot. Then finish
-original pose/contact/lifecycle, printed profiles/signatures, S17 hidden/
-publication and exhaustive Phase2B closure. No unchanged-candidate rerun.
+`artifacts/private-references-ground-20261006/KingmakerGunslinger-private-build-references`.
+Update/validate the ignored exact driver to40 assertions and explicit conservative
+spear measurements, then fresh Steam smoke/body with one immutable package.
+Lease BEFORE installation observation/snapshot/deployment; exact actual restore.
+Then original pose/contact/lifecycle, printed profiles/signatures, S17 hidden/
+publication and exhaustive Phase2B closure. No unchanged-candidate retry.
 
 ### Restored machine
 
-Actual snapshot `20261006T0845286601577Z` restored
-`2026-10-06T08:55:18.2580581Z`:136 files/Info0.0.117/
+Actual snapshot `20261006T0920583696673Z` restored
+`2026-10-06T09:29:17.3815135Z`:136 files/Info0.0.117/
 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
 Lease Completed/recoveryRequired=false/released; no game/shared lock/staging.
 No save-file/protected-baseline access or native save write. Journal
-`BFAC8218216BFAC3743310834F9FF3B34DAFC183152DA193285439301261F14D`.
+`A827D78C9B50C488B2C8DDA4F22B7CED3FC0E62B7BB25307339EA5DDDF6E1AEE`.
 
 [Current research review](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-REVIEW.md)
-and [all seven exact artifacts/results/restorations](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-EVIDENCE.json).
+and [all eight exact artifacts/results/restorations](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-EVIDENCE.json).
 [S16 publication authority](planning/EXPANDED-SUMMONING-SPRINT16-PUBLICATION-PASS-REVIEW.md).
 Accepted unchanged: PASSIVE_CREATURE_SENSES_UNMODELED;
 ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD;

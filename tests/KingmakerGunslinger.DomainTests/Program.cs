@@ -650,6 +650,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint17-original-triangle-order-diagnostic", ExpandedSummoningSprint17Tests.OriginalTriangleDiagnosticIsExactReversibleAndInputPreserving),
             Case("expanded-summoning.sprint17-native-spear-research-identity", ExpandedSummoningSprint17Tests.NativeSpearResearchRejectsEveryChangedIdentity),
             Case("expanded-summoning.sprint17-issued-contact-research", ExpandedSummoningSprint17Tests.ContactResearchRequiresIssuedOwnedMeasuredEvents),
+            Case("expanded-summoning.sprint17-native-spear-bounds-uncertainty", ExpandedSummoningSprint17Tests.NativeSpearBoundsRetainConservativeUncertainty),
             Case("expanded-summoning.crocodilian-death-roll-damage", ExpandedSummoningCrocodilianRulesTests.DeathRollDamageIsDerivedAndNotTheBite),
             Case("expanded-summoning.crocodilian-death-roll-live-strength", ExpandedSummoningCrocodilianRulesTests.DeathRollFollowsLiveStrength),
             Case("expanded-summoning.crocodilian-death-roll-base-bite", ExpandedSummoningCrocodilianRulesTests.DeathRollAdjustsOnlyTheCapturedBaseBite),

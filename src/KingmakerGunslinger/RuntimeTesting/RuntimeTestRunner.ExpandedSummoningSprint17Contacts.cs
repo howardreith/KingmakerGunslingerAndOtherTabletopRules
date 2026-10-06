@@ -71,12 +71,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["canStart"] = command.CanStart, ["started"] = command.IsStarted, ["finished"] = command.IsFinished,
                 ["acted"] = command.IsActed, ["result"] = command.Result.ToString(),
                 ["queued"] = owner.Commands.Contains(command), ["inCombat"] = owner.IsInCombat,
+                ["ownerGroup"] = owner.GroupId, ["ownerGroupIsParty"] = owner.Group.IsPlayerParty,
+                ["ownerIsPlayerFaction"] = owner.IsPlayerFaction,
                 ["velocity"] = agent == null ? JValue.CreateNull() : (JToken)SurveyVector(agent.Velocity),
                 ["position"] = SurveyVector(owner.Position), ["ownerControl"] = Sprint16ControlObservation(owner),
                 ["conditions"] = new JArray(Enum.GetValues(typeof(UnitCondition)).Cast<UnitCondition>()
                     .Where(value => owner.Descriptor.State.HasCondition(value)).Select(value => value.ToString())),
                 ["target"] = target == null ? JValue.CreateNull() : (JToken)new JObject {
                     ["id"] = target.UniqueId, ["position"] = SurveyVector(target.Position),
+                    ["group"] = target.GroupId, ["groupIsParty"] = target.Group.IsPlayerParty,
                     ["destroyed"] = target.Destroyed, ["dead"] = target.Descriptor.State.IsDead,
                     ["conscious"] = target.Descriptor.State.IsConscious, ["hpDamage"] = target.Descriptor.Damage,
                     ["ownerEnemy"] = owner.IsEnemy(target), ["targetEnemy"] = target.IsEnemy(owner),
@@ -192,10 +195,22 @@ namespace KingmakerGunslinger.RuntimeTesting
             var target = CreateSprint17ContactTarget(fixture, targetPoint);
             row["attackTargetPlacement"] = placement;
             string originalGroup = owner.GroupId;
+            BlueprintFaction originalFaction = owner.Faction;
             BlueprintFaction[] originalAttackFactions = owner.AttackFactions.ToArray();
-            // Native group relations cache per-unit attack factions. Isolate
-            // ONLY this owned actor's group before adding ONLY this target's
-            // private faction. The real controllable faction stays native.
+            // Native UnitValidationController repairs a PlayerFaction actor's
+            // separate group back into the party group. A request-local copy
+            // preserves the native controllability flag but not player-faction
+            // identity. No native faction or party actor is mutated, and no
+            // controller is bypassed. This is a visual research fixture only.
+            if (!originalFaction.IsDirectlyControllable)
+                throw new InvalidOperationException("Contact actor lacks its native controllable faction input.");
+            var contactFaction = UnityEngine.Object.Instantiate(originalFaction);
+            _serpentineContactPrototypes.Add(contactFaction);
+            contactFaction.name = "KMG_Runtime_Sprint17_ContactOwner";
+            contactFaction.Peaceful = contactFaction.AlwaysEnemy = contactFaction.Neutral = false;
+            contactFaction.Dummy = null;
+            contactFaction.AttackFactions = new[] { target.Faction };
+            owner.Descriptor.SwitchFactions(contactFaction, true);
             owner.GroupId = "KMG_Runtime_Sprint17_" + owner.UniqueId;
             owner.AttackFactions.Match(new[] { target.Faction });
             var isolation = new JObject { ["ownerGroupIsParty"] = owner.Group.IsPlayerParty,
@@ -208,9 +223,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             row["contactIsolation"] = isolation;
             bool isolated = !(bool)isolation["ownerGroupIsParty"] && !(bool)isolation["targetGroupIsParty"] &&
                 (bool)isolation["ownerEnemy"] && (bool)isolation["targetEnemy"] &&
-                (int)isolation["unrelatedEnemyCount"] == 0 && owner.IsDirectlyControllable;
+                (int)isolation["unrelatedEnemyCount"] == 0 && owner.IsDirectlyControllable && !owner.IsPlayerFaction;
             _serpentineBodyAssertions.Add(Assertion("sprint17-owned-contact-isolation-" + key,
-                "only the two owned groups are enemies; native owner control; no original unit is hostile to the target",
+                "only the two owned groups are enemies; native control predicate; private faction not player identity",
                 isolation.ToString(), isolated, "No native faction/party/group/AI mutation; no save write."));
             owner.Memory.Add(target); target.Memory.Add(owner);
             foreach (UnitEntityData unit in new[] { owner, target })
@@ -227,7 +242,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             observer.ObserveWeaponContact = rule =>
             {
                 if (!ReferenceEquals(rule.Target, target) || contacts.Count >= 12) return;
-                JObject contact = Sprint17MeasuredAttackContact(owner, target, attachment, rule);
+                JObject contact;
+                try { contact = Sprint17MeasuredAttackContact(owner, target, attachment, rule); }
+                catch (Exception error)
+                {
+                    // Keep the actual event even if its measurement fails.
+                    // EventBus must not swallow the row and hide the cause.
+                    contact = new JObject { ["category"] = rule.Weapon.Blueprint.Category.ToString(),
+                        ["weapon"] = rule.Weapon.Blueprint.AssetGuid, ["finite"] = false,
+                        ["measurementFailure"] = error.GetType().Name + ":" + error.Message };
+                }
                 contact["issuedCommandExecuting"] = attack.IsStarted && !attack.IsFinished;
                 contacts.Add(contact);
                 if (contacts.Count <= 3)
@@ -240,6 +264,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!isolated) throw new InvalidOperationException("Request-local contact isolation failed closed.");
                 // Let the owned hostile's native appearance settle too.
                 for (int frame = 0; frame < 90; frame++) yield return 0;
+                bool stableIsolation = Sprint17ContactPairIsolated(fixture, owner, target);
+                row["contactIsolationAfterSettlement"] = stableIsolation;
+                if (!stableIsolation) throw new InvalidOperationException("Contact isolation changed during native settlement.");
                 attack.Init(owner);
                 row["attackBefore"] = Sprint17NativeCommandState(owner, target, attack);
                 row["attackCanStart"] = attack.CanStart;
@@ -255,13 +282,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     {
                         var sample = Sprint17OriginalBodySample(owner, attachment.Body);
                         sample["command"] = Sprint17NativeCommandState(owner, target, attack);
+                        bool pair = Sprint17ContactPairIsolated(fixture, owner, target);
+                        stableIsolation &= pair;
+                        sample["contactPairIsolated"] = pair;
                         poses.Add(sample);
                     }
-                    bool primary = contacts.OfType<JObject>().Any(value => (string)value["category"] == required);
-                    bool secondary = key != "salamander" ||
-                        contacts.OfType<JObject>().Any(value => (string)value["category"] != "Spear");
-                    if (primary && secondary && attack.IsFinished) break;
-                    if (attack.IsFinished && !attack.IsStarted) break;
+                    if (attack.IsFinished) break; // A terminal command cannot create another contact.
                 }
                 row["attackAfter"] = Sprint17NativeCommandState(owner, target, attack);
                 row["attackFrames"] = frames;
@@ -271,10 +297,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["ownerInitiated"] = ReferenceEquals(value.Initiator, owner),
                     ["initiator"] = value.Initiator == null ? null : value.Initiator.UniqueId,
                     ["target"] = value.Target == null ? null : value.Target.UniqueId }));
+                row["weaponEvents"] = new JArray(observer.Attacks.Select(value => new JObject {
+                    ["category"] = value.Weapon == null ? null : value.Weapon.Blueprint.Category.ToString(),
+                    ["weapon"] = value.Weapon == null ? null : value.Weapon.Blueprint.AssetGuid }));
+                stableIsolation &= Sprint17ContactPairIsolated(fixture, owner, target);
+                _serpentineBodyAssertions.Add(Assertion("sprint17-contact-isolation-retained-" + key,
+                    "isolated owned enemy pair survives settlement and every command observation",
+                    "retained=" + stableIsolation, stableIsolation,
+                    "No repeated group override, native validation bypass or unrelated enemy."));
                 Func<JObject, bool> measuredIssued = value => SerpentineRigSurveyPolicy.IsMeasuredIssuedContact(
                     (bool?)value["ownedPair"] == true, (bool?)value["issuedCommandExecuting"] == true,
                     (bool?)value["opportunity"] != false, (bool?)value["nativeAnimationContact"] == true,
-                    (int?)value["vertices"] ?? 0, (float?)value["nearestGapMeters"] ?? float.NaN);
+                    (int?)value["measuredPoints"] ?? 0, (float?)value["nearestGapMeters"] ?? float.NaN);
                 bool complete = contacts.OfType<JObject>().Any(value =>
                     (string)value["category"] == required && measuredIssued(value)) &&
                     contacts.OfType<JObject>().All(value => (bool?)value["finite"] == true) &&
@@ -309,11 +343,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 InterruptExpandedSummoningFixtureCommands(owner);
                 owner.CombatState.LeaveCombat(); target.CombatState.LeaveCombat();
                 target.Descriptor.State.RemoveConditionAll(UnitCondition.ImmuneToCombatManeuvers);
+                owner.Descriptor.SwitchFactions(originalFaction, false);
                 owner.AttackFactions.Match(originalAttackFactions);
                 owner.GroupId = originalGroup;
                 target.Destroy(); Game.Instance.EntityDestroyer.Tick();
                 Game.Instance.Player.UpdateIsInCombat();
             }
+        }
+
+        private static bool Sprint17ContactPairIsolated(ExpandedSummoningCorrectionFixture fixture,
+            UnitEntityData owner, UnitEntityData target)
+        {
+            return !owner.IsPlayerFaction && !owner.Group.IsPlayerParty && !target.Group.IsPlayerParty &&
+                owner.IsDirectlyControllable && owner.IsEnemy(target) && target.IsEnemy(owner) &&
+                !fixture.UnitsBefore.OfType<UnitEntityData>().Any(value => value.IsEnemy(target) ||
+                    target.IsEnemy(value) || value.IsEnemy(owner) || owner.IsEnemy(value));
         }
 
         private static JObject Sprint17MeasuredAttackContact(UnitEntityData owner, UnitEntityData target,
@@ -330,22 +374,32 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .OrderByDescending(value => value.bones.Length).FirstOrDefault();
             if (targetMesh == null) { result["failure"] = "no native target renderer"; return result; }
             Vector3[] points;
+            float transverseRadius = 0;
             if (rule.Weapon.Blueprint.Category == WeaponCategory.Spear)
             {
                 MeshFilter filter = attachment.SpearFilter;
-                points = filter.sharedMesh.vertices.Select(value => filter.transform.TransformPoint(value)).ToArray();
+                Bounds spearBounds = filter.sharedMesh.bounds;
+                Vector3 a = filter.transform.TransformPoint(spearBounds.center - Vector3.up * spearBounds.extents.y);
+                Vector3 b = filter.transform.TransformPoint(spearBounds.center + Vector3.up * spearBounds.extents.y);
+                Vector3 axis = b - a;
+                if (axis.sqrMagnitude <= 0 || spearBounds.extents.y <= spearBounds.extents.x ||
+                    spearBounds.extents.y <= spearBounds.extents.z)
+                    throw new InvalidOperationException("Native spear no longer has the surveyed nonzero Y shaft.");
+                points = new[] { a, b };
+                transverseRadius = new[] { -1, 1 }.SelectMany(x => new[] { -1, 1 }.Select(z =>
+                    filter.transform.TransformVector(new Vector3(x * spearBounds.extents.x, 0,
+                        z * spearBounds.extents.z)).magnitude)).Max();
+                result["nativeMeshReadable"] = filter.sharedMesh.isReadable;
+                result["nativeBoundsSize"] = SurveyVector(spearBounds.size);
+                result["transverseUncertaintyMeters"] = transverseRadius;
+                result["shaftEndCentres"] = new JArray(SurveyVector(a), SurveyVector(b));
                 foreach (string side in new[] { "R", "L" })
                 {
                     Transform palm = attachment.Body.bones.Single(value => value.name == side + "_Palm");
-                    Bounds spearBounds = filter.sharedMesh.bounds;
-                    Vector3 a = filter.transform.TransformPoint(spearBounds.center - Vector3.up * spearBounds.extents.y);
-                    Vector3 b = filter.transform.TransformPoint(spearBounds.center + Vector3.up * spearBounds.extents.y);
-                    Vector3 axis = b - a;
                     Vector3 onAxis = a + axis * Mathf.Clamp01(Vector3.Dot(palm.position - a, axis) / axis.sqrMagnitude);
                     result[side + "PalmToSpearAxisMeters"] = Vector3.Distance(onAxis, palm.position);
-                    result[side + "PalmToNearestSpearVertexMeters"] = points.Min(point => Vector3.Distance(point, palm.position));
                 }
-                result["poseMethod"] = "native spear vertex transformed by its existing weapon renderer";
+                result["poseMethod"] = "native bounds Y end centres transformed by existing weapon renderer; gap includes transverse uncertainty; NOT surface vertices";
             }
             else
             {
@@ -366,17 +420,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // The worm's retained donor sting is not a printed snake
                 // attack or a tail binding. Preserve it as an unmeasured row.
                 if (points.Length == 0) { result["notApplicable"] = "unprinted donor attack"; result["finite"] = true; return result; }
+                result["vertices"] = points.Length;
                 result["poseMethod"] = "sum(weight * bone.localToWorld * bindpose * originalVertex)";
             }
             Bounds bounds = targetMesh.bounds;
             bool finite = points.Length > 0 && points.All(value => SerpentineRigSurveyPolicy.Finite(value.x) &&
                 SerpentineRigSurveyPolicy.Finite(value.y) && SerpentineRigSurveyPolicy.Finite(value.z));
-            result["finite"] = finite; result["vertices"] = points.Length;
+            result["finite"] = finite; result["measuredPoints"] = points.Length;
             result["targetBoundsCenter"] = SurveyVector(bounds.center); result["targetBoundsSize"] = SurveyVector(bounds.size);
             result["actorPosition"] = SurveyVector(owner.Position); result["targetPosition"] = SurveyVector(target.Position);
             if (finite)
             {
                 float gap = points.Min(value => Vector3.Distance(value, bounds.ClosestPoint(value)));
+                if (rule.Weapon.Blueprint.Category == WeaponCategory.Spear)
+                {
+                    result["endCentreGapMeters"] = gap;
+                    float? upper = SerpentineRigSurveyPolicy.ConservativeSpearEndGap(gap, transverseRadius);
+                    if (!upper.HasValue) throw new InvalidOperationException("Nonfinite conservative spear bound.");
+                    gap = upper.Value;
+                }
                 result["nearestGapMeters"] = gap; result["withinQuarterMetre"] = gap <= .25f;
             }
             return result;
