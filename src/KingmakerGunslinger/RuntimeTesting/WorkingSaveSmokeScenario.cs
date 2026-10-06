@@ -156,6 +156,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private object _workingDescriptor;
         private GuardedReadOnlySave _readOnlySave;
         private GuardedDisposableSaveLease _disposableSave;
+        private bool _closedDisposableWrites;
         private SaveCatalogDescriptorEvidence _workingEvidence;
         private int _buttonCandidates;
         private int _buttonInvocations;
@@ -398,6 +399,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             Add("exact-working-save-write-armed", null, null,
                 "one SaveRoutine invocation; exact captured SaveInfo reference only");
         }
+        internal void RestrictToTransactionOwnedWrites() { _closedDisposableWrites = true; }
+        internal Kingmaker.EntitySystem.Persistence.SaveInfo ExactLoadedDescriptor
+        { get { if(!Complete || !_descriptorCorrelated) throw new InvalidOperationException("Exact completed load required.");
+                return (Kingmaker.EntitySystem.Persistence.SaveInfo)_workingDescriptor; } }
         internal void ArmDisposableSave(GuardedDisposableSaveLease lease)
         {
             RequireGameThread();
@@ -406,7 +411,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             _disposableSave = lease;
             var method = ExactPatchableMethod(typeof(Kingmaker.EntitySystem.Persistence.SaveManager), "PrepareSave",
                 new[] { typeof(Kingmaker.EntitySystem.Persistence.SaveInfo) }, typeof(void));
-            Patch(method, typeof(WorkingSaveSmokeScenario).GetMethod("Prefix", BindingFlags.NonPublic | BindingFlags.Static),
+            if (!_patched.Contains(method)) Patch(method, typeof(WorkingSaveSmokeScenario).GetMethod("Prefix", BindingFlags.NonPublic | BindingFlags.Static),
                 typeof(WorkingSaveSmokeScenario).GetMethod("DisposablePreparedPostfix", BindingFlags.NonPublic | BindingFlags.Static));
         }
         private static void DisposablePreparedPostfix(Kingmaker.EntitySystem.Persistence.SaveInfo save)
@@ -472,6 +477,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     InstallExactSaveWriteSentinels(assembly, prefix);
                 else
                     InstallLegacySaveWriteSentinels(assembly, prefix);
+                if (_closedDisposableWrites)
+                    Patch(ExactPatchableMethod(typeof(Kingmaker.EntitySystem.Persistence.SaveManager),"PrepareSave",
+                        new[] {typeof(Kingmaker.EntitySystem.Persistence.SaveInfo)},typeof(void)),prefix,
+                        typeof(WorkingSaveSmokeScenario).GetMethod("DisposablePreparedPostfix",BindingFlags.NonPublic|BindingFlags.Static));
                 _active = this;
                 Transition("main-menu-readiness",
                     "contracts installed; no action invoked");
@@ -1483,9 +1492,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             WorkingSaveSmokeScenario active = _active;
             if (active == null) return true;
-            if (active._disposableSave != null && GuardedDisposableSaveLease.IsWrite(__originalMethod))
+            if ((active._closedDisposableWrites || active._disposableSave != null) && GuardedDisposableSaveLease.IsWrite(__originalMethod))
             {
-                bool allowed = active._disposableSave.Enter(__originalMethod, __args);
+                bool allowed = active._disposableSave != null && active._disposableSave.Enter(__originalMethod, __args);
                 if (!allowed) active._writeObserved = true;
                 active.Add(allowed ? "owned-disposable-save-write" : "rejected-disposable-save-write", __originalMethod, __args,
                     "allowed=" + allowed + ";exactTransactionOnly=true");
