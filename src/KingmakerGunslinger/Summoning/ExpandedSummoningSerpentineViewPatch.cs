@@ -1,8 +1,11 @@
 using System;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Harmony12;
 using Kingmaker.View;
+using Kingmaker.Visual.Animation.Kingmaker;
+using Kingmaker.Visual.Animation.Kingmaker.Actions;
 using KingmakerGunslinger.Bootstrap;
 using UnityEngine;
 
@@ -75,5 +78,37 @@ namespace KingmakerGunslinger.Summoning
 
         private static bool PositiveFinite(float value)
         { return value > 0 && !float.IsNaN(value) && !float.IsInfinity(value); }
+    }
+
+    // The native special-attack selector consumes world distance without
+    // view-scale compensation. Normalize only an exact owned snake's Bite
+    // getter result to its donor clip space; never mutate the stored handle,
+    // shared action/ranges/clip, rig, command, weapon or actor position.
+    [HarmonyPatch(typeof(UnitAnimationActionHandle), "get_AttackTargetDistance")]
+    internal static class SerpentineBiteAnimationDistancePatch
+    {
+        private static void Postfix(UnitAnimationActionHandle __instance, ref float __result)
+        {
+            var action = __instance == null ? null : __instance.Action as UnitAnimationActionSpecialAttack;
+            if (action == null || action.AttackType != UnitAnimationSpecialAttackType.Bite ||
+                __instance.Manager == null) return;
+            var view = __instance.Manager.GetComponentInParent<UnitEntityView>();
+            if (view == null || view.EntityData == null || view.EntityData.Blueprint == null) return;
+            ModContext context;
+            if (!ModContext.TryGet(out context) || context.FeatureModules == null ||
+                context.FeatureModules.Active == null) return;
+            var unit = view.EntityData.Blueprint;
+            var attachment = view.GetComponent<SerpentineVisualAttachment>();
+            float corrected;
+            if (SerpentineVisualPolicy.TrySnakeBiteAnimationDistance(
+                context.FeatureModules.Active.ExpandedSummoning, unit.AssetGuid, unit.name,
+                unit.Prefab == null ? null : unit.Prefab.AssetId,
+                attachment != null && attachment.OriginalBodyLive, true, __result, out corrected) &&
+                ReferenceEquals(view.AnimationManager, __instance.Manager) &&
+                ReferenceEquals(view.AnimationManager.GetAction(UnitAnimationSpecialAttackType.Bite), action) &&
+                SerpentineVisualPolicy.IsNativeSnakeBiteAction(action.name, action.Clips == null ? null :
+                    action.Clips.Select(clip => clip == null ? null : clip.name)))
+                __result = corrected;
+        }
     }
 }
