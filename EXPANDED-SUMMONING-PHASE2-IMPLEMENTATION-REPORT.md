@@ -38,8 +38,13 @@ Sprint 17's [bounded native-rig survey](planning/EXPANDED-SUMMONING-SPRINT17-RIG
 uses the native Medium Water Elemental source of the proposed serpentine
 view, not the optional Eidolon blueprint from the earlier mixed-library
 census. Salamander's existing Lizardfolk view is measured separately.
-Research code passes 219 focused tests and 486 request-preflight checks;
-exact-head full gate/runtime are pending. No new gameplay or qualification.
+Exact f507 passes all prelaunch gates (219 focused/2021 full/486 preflight),
+fresh Steam smoke 11/11 and metadata survey 8/8. Both native source/view pairs
+are confirmed. Water has seven skins and a 43-bone body; Salamander has a
+39-bone body plus armor and stale club/shield visuals requiring the separate
+weapon seam. Exact actual snapshot 20261006T0139078842255Z restored at
+01:45:45 UTC, same 136-file/0.0.117 tree, no process/lock/staging or save write.
+No new gameplay/visual qualification: original binding prototype is next.
 
 ## Historical first hidden candidate, October 5
 

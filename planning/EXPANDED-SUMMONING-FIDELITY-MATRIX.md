@@ -1,5 +1,17 @@
 # Expanded Summoning fidelity matrix
 
+## Sprint 17 research, October 6 UTC — NOT QUALIFIED
+
+Exact f507 all prelaunch PASS (219 focused/2021 full), smoke 11/11, native
+rig metadata 8/8, exact restoration. [Research evidence](EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md).
+No Viper/Constrictor registration, new visuals or gameplay qualification yet.
+Native Water Elemental provenance is confirmed without an Eidolon dependency:
+seven skins, 43-bone body with spine/head/jaw. The existing Lizardfolk donor
+has a 39-bone body, armor skin and static club/shield meshes that must not
+survive Salamander's new owned visual/weapon seam. Identity/placements stay.
+Next bounded original prototype, printed profiles/signatures and full hidden
+candidate. Prior S16 and accepted limitations remain unchanged.
+
 ## Current Sprint 16 disposition, October 6 UTC — COMPLETE AND PUBLISHED
 
 Exact laptop publication `155ada89869c6937b4a801e1fc384dbe38d36f3b` passed
