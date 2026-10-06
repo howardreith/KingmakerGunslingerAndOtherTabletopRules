@@ -43,6 +43,81 @@ function ConvertFrom-KmgSerpentineBodyReviewJson {
     return $rows
 }
 
+function ConvertFrom-KmgSnakeProfileSliceEvidence {
+    param(
+        [Parameter(Mandatory = $true)][AllowEmptyString()][string]$Json,
+        [Parameter(Mandatory = $true)][AllowEmptyCollection()][object[]]$Assertions
+    )
+    # This is the closed two-snake slice, not the three-creature donor survey
+    # or full Sprint17 qualification. Keep the native assertion verdict and
+    # metadata identity/completeness as separate requirements.
+    $keys = @('viper', 'constrictor-snake')
+    $kinds = @('scores', 'defenses', 'land-skills', 'one-bite', 'base',
+        'strength-plus4', 'strength-seven', 'native-animal-growth', 'modifiers-restored')
+    $expectedNames = @()
+    $expectedChecks = @()
+    foreach ($key in $keys) {
+        foreach ($case in @('rollback', 'normal')) {
+            foreach ($kind in @('binding', 'scale', 'once', 'destroy')) {
+                $expectedNames += 'sprint17-production-' + $kind + '-' + $key + '-' + $case
+            }
+        }
+        foreach ($kind in $kinds) {
+            $expectedChecks += $key + '-' + $kind
+            $expectedNames += 'sprint17-snake-profile-' + $key + '-' + $kind
+        }
+    }
+    $expectedNames += @('sprint17-production-native-worm-negative-control',
+        'sprint17-body-environment-restored', 'sprint17-body-fixture-cleanup', 'loaded-mod-version')
+    if ($Assertions.Count -ne 38) { throw 'The closed snake slice requires all38 native assertions.' }
+    $actualNames = @()
+    foreach ($assertion in $Assertions) {
+        if ($null -eq $assertion -or $assertion -is [System.Array] -or
+            $null -eq $assertion.PSObject.Properties['name'] -or
+            $null -eq $assertion.PSObject.Properties['status'] -or
+            $assertion.name -isnot [string] -or $assertion.status -isnot [string] -or $assertion.status -cne 'PASS') {
+            throw 'Every native snake-slice assertion must explicitly pass.'
+        }
+        $actualNames += $assertion.name
+    }
+    if ((($actualNames | Sort-Object) -join ',') -cne (($expectedNames | Sort-Object) -join ',')) {
+        throw 'Missing, duplicate or foreign native snake-slice assertions.'
+    }
+
+    # Direct assignment is intentional: @($Json | ConvertFrom-Json) nests a
+    # top-level JSON array in Windows PowerShell5 and hid all22 real rows.
+    $rows = $Json | ConvertFrom-Json -ErrorAction Stop
+    if ($rows -isnot [System.Array] -or $rows.Count -ne 22) {
+        throw 'The closed snake slice requires four body and eighteen profile rows.'
+    }
+    for ($index = 0; $index -lt $rows.Count; $index++) {
+        $row = $rows[$index]
+        if ($null -eq $row -or $row -is [System.Array]) { throw 'Invalid nested or null snake evidence row.' }
+        if ($index -lt 4) {
+            $key = $keys[[int][Math]::Floor($index / 2)]
+            if ($null -eq $row.PSObject.Properties['key'] -or $row.key -isnot [string] -or $row.key -cne $key -or
+                $null -eq $row.PSObject.Properties['scope'] -or $row.scope -isnot [string] -or $row.scope -cne 'production hidden-snake body binding' -or
+                $null -eq $row.PSObject.Properties['faultInjected'] -or $row.faultInjected -isnot [bool] -or
+                $row.faultInjected -ne ($index % 2 -eq 0) -or
+                $null -eq $row.PSObject.Properties['gameplayQualified'] -or $row.gameplayQualified -isnot [bool] -or
+                $row.gameplayQualified -or
+                $null -eq $row.PSObject.Properties['intact'] -or $row.intact -isnot [bool] -or -not $row.intact) {
+                throw 'Body metadata differs from the exact two-snake normal/rollback scope.'
+            }
+        }
+        else {
+            $check = $expectedChecks[$index - 4]
+            $key = $keys[[int][Math]::Floor(($index - 4) / $kinds.Count)]
+            if ($null -eq $row.PSObject.Properties['check'] -or $row.check -isnot [string] -or $row.check -cne $check -or
+                $null -eq $row.PSObject.Properties['passed'] -or $row.passed -isnot [bool] -or -not $row.passed -or
+                ($null -ne $row.PSObject.Properties['key'] -and ($row.key -isnot [string] -or $row.key -cne $key))) {
+                throw 'Missing, failed, mistyped or out-of-scope snake profile observation.'
+            }
+        }
+    }
+    return $rows
+}
+
 function Test-KmgBatchCandidateUnavailable {
     param([bool]$FirstScenario, [bool]$HasEvidence, [bool]$HasDeployment,
           [ValidateSet('Clean', 'Unclean')][string]$LauncherOutcome)
