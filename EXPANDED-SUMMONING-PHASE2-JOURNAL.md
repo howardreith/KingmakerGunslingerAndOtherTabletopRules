@@ -1,5 +1,28 @@
 # Expanded Summoning Phase 2 journal
 
+## October 6, 06:24 UTC -- measured-floor batch PASS; geometry defects retained
+
+Exactf31c0e3d:224 focused/2026 full84.3s, full gate179.3s,491 isolated
+preflight/81 orchestration/17 provenance, request checks, exact build and strict
+318-member package PASS. Fresh Steam smoke11/11/body23/23; complete driver PASS
+with the repaired reader. Actual136/.117 snapshot0617038921947Z restored exactly
+06:24:18.5391362UTC; lease Completed/recoveryRequired=false/released, no game,
+shared lock/staging or save-writing API. All prior failed artifacts preserved.
+Native measured floor confirms both original snake coils penetrate about10.8cm,
+and hybrid lowest point floats3.4..30.9cm. Those visual defects stay NOT QUALIFIED.
+Snake Hips tilt is stable across26 poses; SnapToTerrain is on suppressed stones
+only. Hybrid torso bobs, while renderer bind frame remains floor-stable.
+
+Private original-pose replay matches live minimum heights to sub-micrometre
+arithmetic tolerance. Snake v3 authors the support plane against measured root
+orientation; a small skin allowance corrects interpolation undershoot. No native
+rig/snap/animation/movement/actor changes. Both meshes byte-reproduced,26 poses
+clear by about2–3mm,21 authoring/replay tests PASS,36 private panels generated
+and representative views reviewed. Not staged or new runtime qualification.
+Hybrid support/weapon still open. Next bounded support-weight seam on its stable
+renderer frame, preserving native tail/upper-body drivers, then stable integration
+and full exact-head qualification. S16 complete; S17 NOT QUALIFIED.
+
 ## October 6 -- bounded native-floor/current-pose observation, source only
 
 Verified remote3093a603, same live source-owner identities, clean intake, no
