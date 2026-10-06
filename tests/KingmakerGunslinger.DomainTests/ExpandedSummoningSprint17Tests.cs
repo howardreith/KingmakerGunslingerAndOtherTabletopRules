@@ -10,6 +10,23 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class ExpandedSummoningSprint17Tests
     {
+        internal static void NativeSpearResearchRejectsEveryChangedIdentity()
+        {
+            string[] exact = { "salamander", SerpentineVisualPolicy.TwoHandPrefab,
+                SerpentineVisualPolicy.ProjectSpear, "Spear", "TH_SpearArmy", "WP_SpearArmy", "WeaponPivot", "R_Palm" };
+            Func<string[], bool> permits = row => SerpentineVisualPolicy.PermitsNativeSpearResearch(
+                row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7]);
+            Assertions.True(permits(exact), "Only the measured project spear and exact two-hand palm seam may attach.");
+            for (int index = 0; index < exact.Length; index++)
+                foreach (string replacement in new[] { null, "", "foreign", exact[index].ToUpperInvariant(),
+                    SerpentineVisualPolicy.ClubShieldPrefab, "Greatclub", "ShieldPivot", "L_Palm", "viper" })
+                {
+                    if (replacement == exact[index]) continue;
+                    string[] changed = (string[])exact.Clone(); changed[index] = replacement;
+                    Assertions.False(permits(changed), "A single substituted identity fails closed; no other weapon, view or anchor.");
+                }
+        }
+
         internal static void OriginalTriangleDiagnosticIsExactReversibleAndInputPreserving()
         {
             int[] source = { 0, 1, 2, 0, 2, 3 };

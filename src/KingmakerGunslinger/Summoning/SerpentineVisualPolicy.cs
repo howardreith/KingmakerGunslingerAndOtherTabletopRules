@@ -13,11 +13,20 @@ namespace KingmakerGunslinger.Summoning
         internal const string TwoHandPrefab = "31cb7e484faf8734fa2c0ef1936b1806";
         internal const string HybridSupport = "KMG_SalamanderSupport";
         internal const string OutwardWinding = "authored-outward-sprint17";
+        internal const string ProjectSpear = "99394d453c6f425f84d4b92f7a8deea0";
         internal static string[] Keys { get { return new[] { "viper", "constrictor-snake", "salamander" }; } }
         internal static bool IsSnake(string key) { return key == "viper" || key == "constrictor-snake"; }
 
         internal static bool PermitsOriginalWinding(string key, string marker)
         { return Keys.Contains(key, StringComparer.Ordinal) && marker == OutwardWinding; }
+
+        internal static bool PermitsNativeSpearResearch(string key, string prefab, string weapon,
+            string category, string model, string mesh, string pivot, string target)
+        {
+            return key == "salamander" && prefab == TwoHandPrefab && weapon == ProjectSpear &&
+                category == "Spear" && model == "TH_SpearArmy" && mesh == "WP_SpearArmy" &&
+                pivot == "WeaponPivot" && target == "R_Palm";
+        }
 
         internal static string[] Bones(string key)
         {
