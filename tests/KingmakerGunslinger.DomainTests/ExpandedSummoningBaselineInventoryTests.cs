@@ -35,18 +35,18 @@ namespace KingmakerGunslinger.DomainTests
             // six of its placements on that side.
             //
             // With nothing withheld, each side's visible count is now its own
-            // registered count plus its share of the native wrappers - 487 and
-            // 17 on the Monster side, 483 and 12 on the other.
-            Assertions.Equal(504, ExpandedSummoningBaselineInventory
+            // registered count plus its share of the native wrappers - 490 and
+            // 17 on the Monster side, 486 and 12 on the other.
+            Assertions.Equal(507, ExpandedSummoningBaselineInventory
                 .VisibleChoices(SummonFamily.Monster),
                 "Baseline SM visible choice count changed.");
-            Assertions.Equal(495, ExpandedSummoningBaselineInventory
+            Assertions.Equal(498, ExpandedSummoningBaselineInventory
                 .VisibleChoices(SummonFamily.NaturesAlly),
                 "Baseline SNA visible choice count changed.");
         }
 
         /// <summary>
-        /// The 999 visible choices (693 at Sprint 0) must decompose
+        /// The 1005 visible choices (693 at Sprint 0) must decompose
         /// exactly, so a sprint cannot quietly move a choice between the
         /// generated and native pools.
         /// </summary>
@@ -54,11 +54,11 @@ namespace KingmakerGunslinger.DomainTests
         {
             int generated = SummonVisibilityCatalog.PublishedLogicalPlacementCount;
             int wrappers = SummonNativeExpansionCatalog.All.Count;
-            Assertions.Equal(970, generated, "Published generated placements changed.");
+            Assertions.Equal(976, generated, "Published generated placements changed.");
             Assertions.Equal(29, wrappers, "Native wrapper count changed.");
-            Assertions.Equal(999, generated + wrappers,
+            Assertions.Equal(1005, generated + wrappers,
                 "The combined visible choice total changed.");
-            Assertions.Equal(999,
+            Assertions.Equal(1005,
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.Monster) +
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.NaturesAlly),
                 "Per-parent census disagrees with the catalog totals.");
@@ -107,9 +107,9 @@ namespace KingmakerGunslinger.DomainTests
             // of its own qualification, which is allowed and is how both
             // Sprint 12 and Sprint 13 ran, but it has to be deliberate rather
             // than a leftover - which is what this pin is for.
-            Assertions.Equal(1,
+            Assertions.Equal(0,
                 ExpandedSummoningBaselineInventory.RegisteredButHiddenCreatures.Count,
-                "The registered-but-hidden creature set changed: it is Sprint 16's Dire Crocodile, registered ahead of its own qualification.");
+                "Sprint 16 publication leaves no registered-but-hidden creature.");
             Assertions.True(ExpandedSummoningBaselineInventory.ProxyVisualCreatures
                 .Contains("pteranodon<Roc"),
                 "Pteranodon must still be recorded as a Roc-policy visual proxy.");
@@ -160,7 +160,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(first.StartsWith(
                 "{\n  \"schema\": \"" + ExpandedSummoningBaselineInventory.BaselineSchema + "\""),
                 "The census must declare its schema first so evidence stays comparable.");
-            Assertions.True(first.Contains("\"totalVisibleChoices\": 999"),
+            Assertions.True(first.Contains("\"totalVisibleChoices\": 1005"),
                 "The emitted census lost the frozen visible-choice total.");
         }
 

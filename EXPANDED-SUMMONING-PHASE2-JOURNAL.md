@@ -1,5 +1,21 @@
 # Expanded Summoning Phase 2 journal
 
+## October 5 — Sprint 16 publication candidate, NOT YET QUALIFIED
+
+Hidden-pass evidence pushed at 1393b669. Remove only Dire Crocodile suppression;
+no mechanic, AI, rig, asset, identity or version change. Candidate source now
+has 976 generated + 29 wrappers = 1005 visible choices, zero withheld.
+Behavior tests pin the six-root delta and all 970 preserved published roots.
+Current generated roster records refreshed; ideal-roster generator now reuses
+the authoritative visibility parser instead of an obsolete initializer pattern.
+Its stale Sprint 10 status cannot overwrite the accepted record; S11-16
+statuses now follow the current Phase 2 evidence. No new qualification claims.
+Next full exact-head Sprint gate and all twenty public roots, then exact restore.
+Focused 218/218 and repository validation PASS after updating the stale
+105-published-creature fixture and inherited suppression-count pin. The
+generator's newly created Python cache was archived under ignored artifacts;
+bytecode generation is now disabled before its shared-parser import.
+
 ## October 5, 23:49 UTC — complete laptop hidden candidate PASS, restored
 
 Exact e3aeae63 passed 218 focused / 2020 full and every prelaunch gate,

@@ -14,9 +14,10 @@ No merge, release, tag, version bump, force push or permanent deployment.
 
 - Active worktree:
   `C:/Dev/KingmakerGunslingerLab/repo/KingmakerGunslinger/.worktrees/expanded-summoning-phase2b-laptop-20261005`.
-  Latest tested source and fetched remote:
-  `e3aeae630d51d27c45694fb9e92e9093048b1af9`; containing evidence checkpoint
-  is its normal descendant. Unexpected active-branch motion remains a stop;
+  Qualified hidden source: `e3aeae630d51d27c45694fb9e92e9093048b1af9`.
+  Evidence checkpoint pushed at `1393b669078044d0bdabe2251594c2b28e4a04a7`;
+  containing publication candidate is its normal descendant.
+  Unexpected active-branch motion remains a stop;
   archived branch motion is informational only.
 - Exclusive receipt: ignored `artifacts/laptop-source-owner-20261005.json`;
   session `01a10bcd-8582-7551-826f-0f128807eb99`, owner PID 31796/start
@@ -44,14 +45,16 @@ No merge, release, tag, version bump, force push or permanent deployment.
   MVID `ff5b805f-162b-4c77-a655-0318fe195caa`; ZIP
   `fe6a8c62b0f50f908157810e0d8c963ddb9c5c4ac4c6334ad5258ec7da92c29e`.
   Immutable 312-member package retained, unchanged version 0.0.141.
-- Next: push this evidence checkpoint, remove only Dire suppression and
-  regenerate controlled artifacts. Freeze a new publication candidate, run
+- Only Dire suppression is removed in the containing publication candidate.
+  Identity/damage/AI/visual/version code is unchanged. Generated roster and
+  count tests follow the exact six-root delta; no DATA source imported.
+- Next: freeze/push the publication candidate, run
   its full Sprint gate and all 6 Dire + 14 Crocodile public routes, then
   restore exactly and close Sprint 16. Sprint 17 must wait for that gate.
-- Sprints 14-15 complete; 976 registered / 970 published / 6 Dire withheld /
-  29 wrappers / 999 visible choices. Publish Dire only after every required
-  Sprint 16 exact-artifact gate passes, then qualify its 6 roots and the 14
-  changed Crocodile roots. Sprint 17 has not started and must wait.
+- Sprints 14-15 complete. Hidden qualified artifact: 970 published + 29 wrappers
+  = 999 visible, 6 Dire withheld. Publication candidate source: 976 registered /
+  976 published / 0 withheld / 29 wrappers / 1005 visible choices.
+  These new public paths are NOT YET QUALIFIED. Sprint 17 has not started.
 - Accepted unchanged: `PASSIVE_CREATURE_SENSES_UNMODELED`,
   `ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD`,
   `SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED`,

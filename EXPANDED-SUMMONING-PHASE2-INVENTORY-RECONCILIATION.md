@@ -1,5 +1,16 @@
 # Expanded Summoning publication-inventory reconciliation
 
+## Current Sprint 16 publication candidate, 2026-10-05
+
+Complete hidden qualification is recorded at exact e3aeae63 and pushed in
+1393b669. Only Dire Crocodile suppression is removed in this candidate.
+The catalog-derived source equation becomes **976 generated + 29 retained
+native wrappers = 1005 visible choices**, with zero withheld placements.
+The 95 unit identities and all 970 previously published roots are unchanged.
+Public-route qualification is pending for all six Dire and fourteen Crocodile
+roots on the new exact artifact. This is not a release or Sprint 16 closeout.
+The sections below retain historical equations/evidence; they are not current.
+
 ## Sprint 15 closeout, 2026-10-03: COMPLETE AND PUBLISHED
 
 The Giant Ant (Drone) and the Giant Stag Beetle are published. The visible

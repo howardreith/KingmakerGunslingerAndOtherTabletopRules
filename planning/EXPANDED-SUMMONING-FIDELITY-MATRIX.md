@@ -16,9 +16,10 @@ hold cleanup. Final review 81/81 and exact mode/pause/clock/awake restoration
 pass. Actual installation and fresh clean working-save absence verified.
 No assertion waived. New publication artifact must prove all twenty public roots.
 
-Crocodile identity and fourteen published roots are unchanged. All six Dire
-roots remain withheld: 976 registered / 970 published / 29 native wrappers /
-999 visible choices. Land skills remain Crocodile +8/+5 and Dire +14/+0 with
+Crocodile identity and fourteen published roots are unchanged. The containing
+publication candidate exposes only six Dire roots: 976 registered/published /
+29 native wrappers / 1005 visible choices, versus hidden artifact 970 + 29 =
+999. New public-route qualification is pending. Land skills remain Crocodile +8/+5 and Dire +14/+0 with
 zero Mobility ranks. Run is an explicit evidence-backed engine omission, not
 a silent substitution; aquatic skills/Hold Breath are outside land-use scope.
 The deterministic original models, four packaged assets and qualified rig
