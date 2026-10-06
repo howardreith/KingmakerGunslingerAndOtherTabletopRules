@@ -1,5 +1,10 @@
 # Sprint 17 native manufactured-action census
 
+Subsequent separate [291059aa spear-carrier audit](EXPANDED-SUMMONING-SPRINT17-SPEAR-CARRIER-AUDIT.md)
+passed smoke11/survey15; three native human-action sources expose actual spear
+clip metadata, not a compatible Lizardfolk binding. The closed eleven-prefab
+Lizardfolk findings below remain unchanged.
+
 Exact 8022fee2: 236 focused / 2038 unfiltered tests (81.8s), complete gate
 178.4s; 491 isolated preflight / 81 orchestration / 17 provenance,
 persistence 11/3/19, crowd 5/7, clean exact Release / strict 318-member package
