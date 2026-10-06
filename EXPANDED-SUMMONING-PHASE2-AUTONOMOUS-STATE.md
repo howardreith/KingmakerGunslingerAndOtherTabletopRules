@@ -44,7 +44,9 @@ no merge, release, tag, version bump, force push or permanent deployment.
   **`f31c0e3d85a83129e92b8918b66e9697fc3e4969`** (research batch PASS).
   Pushed private-authoring/evidence checkpoint before this support integration:
   **`864b3fd1b5629be812330b18c21b735d828a20be`**.
-  This containing support-integration candidate is its normal descendant;
+  Exact support-research candidate/current verified remote:
+  **`8d3081c34cfee82239fdc908df0b561975131d24`** (complete research batch PASS).
+  This containing evidence checkpoint is its normal descendant;
   Sprint 17 gameplay and visuals are still NOT QUALIFIED.
   Unexpected active-branch motion remains a stop; archive motion is informational.
 - Exclusive ignored receipt: `artifacts/laptop-source-owner-20261005.json`;
@@ -68,13 +70,13 @@ no merge, release, tag, version bump, force push or permanent deployment.
   11/11 smoke, 209/209 main, 20/20 crowd, 9/9 prepare, 9/9 cleanup, 5/5 absence.
   No mechanics, visual, asset or serialized-state delta since that pass;
   only Dire suppression and guarded fixture changes, with full main rerun.
-- Latest actual snapshot `20261006T0617038921947Z` restored exactly;
-  closed `2026-10-06T06:24:18.5391362Z`: 136 files / Info 0.0.117 /
+- Latest actual snapshot `20261006T0714257255801Z` restored exactly;
+  closed `2026-10-06T07:21:34.2656814Z`: 136 files / Info 0.0.117 /
   `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
   Lease Completed/recoveryRequired=false; no game/shared lock/staging.
   Prior native working-save cleanup/absence clean; publication and research did not write
   saves. No save-file or protected-baseline access. Journal SHA
-  `97357EA07776B7FACD1427826280F10DE858773F16CA75AD2D11E959A5427150`.
+  `763DD4F79FE9B0FE45C9FBC2372C4A2E6DBE852BF913AE76FA6DCF68D5E9C746`.
 - Publication DLL SHA `8c76fcbed3eb73ffb6ca6c6121e610f96a2b36a82fa8f3c6c55edae66da885d9`;
   MVID `ed8fe210-31e2-4016-870e-8623d3a55fa2`; ZIP
   `eb930278836f0c3953decef589c7214b69c1d1a2fc69f625af56bdc4af254ac2`.
@@ -174,11 +176,17 @@ no merge, release, tag, version bump, force push or permanent deployment.
   native joint or transform. Native drivers/bindposes stay exact; renderer-only
   four-weight quality restores on rollback. Identity-frame and hard-transition
   prototypes failed visual review and are preserved, not accepted.
-- Exact next action: freeze this support candidate, complete exact-head full
-  prelaunch with the fresh14-reference bundle, then fresh-Steam smoke/body26
-  research and exact leased restoration. Three new actual-floor assertions
-  require -2..15mm support in every sampled idle/movement pose. No source-only
-  PASS or supporting image qualifies final visuals. Continue separate Salamander
+- Exact8d3081c3 complete research batch PASS:225 focused/2027 full83.0s,
+  complete gate177.7s,491 preflight/81 orchestration/17 provenance, request
+  checks, strict318-member package. Fresh Steam smoke11/11/body26/26. All39
+  native poses now support at2.91mm/1.85mm/5.00mm; rollback and all five exact
+  owned resources per body clean. No save-writing API, exact restoration above.
+  Supporting native frames still show suspicious open/folded snake coil surfaces;
+  hybrid tail partly occluded. Final shape/contacts are NOT accepted by floor PASS.
+- Exact next action: inspect current-pose original coil topology/winding and
+  rendered skin without visibility forcing, then native attack/spear/contact
+  and full lifecycle proof. Do not relaunch an unchanged candidate to address
+  an art finding. Continue separate Salamander
   manufactured-spear/tail seam and printed
   profiles/signatures. Research PASS
   is not gameplay/visual qualification. Preserve Salamander identity and

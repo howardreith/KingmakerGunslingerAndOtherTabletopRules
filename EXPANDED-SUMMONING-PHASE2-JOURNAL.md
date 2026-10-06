@@ -1,5 +1,32 @@
 # Expanded Summoning Phase 2 journal
 
+## October 6,07:21 UTC -- original ground-support batch PASS, restored
+
+Exact8d3081c3 passes225 focused/2027 full83.0s, complete exact gate177.7s,
+491 isolated preflight/81 orchestration/17 provenance and all persistence/crowd
+request checks. Fresh Steam640820 smoke11/11, body26/26, complete driver PASS.
+All39 native sampled poses now support above measured floor: Viper2.91mm,
+Constrictor1.85mm, Salamander5.00mm. Hybrid support maps exactly to the existing
+_lizardman001 renderer; native quality rollback passes. All three injected
+rollback and native destruction paths release all five exact owned resources.
+Original reference census restored; no save-writing API observed. New native
+capture independently replays the original payload/alias matrices successfully.
+
+Actual snapshot0714257255801Z restored07:21:34.2656814UTC:136 files/Info0.0.117/
+216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
+Lease Completed/recoveryRequired=false/released; no game/shared lock/staging.
+Raw package/sidecar/driver/results/capture retained; curated exact hashes in
+the body-research evidence JSON (five attempts, every old failure preserved).
+
+This qualifies the bounded binding/movement/sampled-ground/resource slice,
+NOT Sprint17 gameplay or final visuals. Supporting native images show open/
+ribbon-like or folded snake coil surfaces; hybrid tail is partly occluded and
+has no spear. Source topology is closed/manifold, so compare current-pose
+deformation/winding and rendered mesh before accepting final shape. Images are
+art findings only, not mechanical evidence. Next bounded shape/attack/spear/
+contact/lifecycle work, printed profiles/signatures, then hidden/publication
+gates. S16 complete; no DATA import; Phase2C authorized but deferred.
+
 ## October 6 -- original ground-support integration, NOT QUALIFIED
 
 Verified active remote864b3fd1 and live exclusive laptop owner identities; no
