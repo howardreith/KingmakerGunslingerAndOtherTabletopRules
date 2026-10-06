@@ -1,5 +1,41 @@
 # Expanded Summoning Phase 2 journal
 
+## October 6, 13:33 UTC — native spear metadata PASS, exact restoration
+
+Exact 291059aa: 237 focused / 2039 unfiltered tests (88.3s), complete gate
+183.2s; 491 preflight / 81 orchestration / 17 provenance, persistence 11/3/19,
+crowd 5/7, clean exact Release / strict 318-member package PASS. Fresh Steam
+smoke 11/11 and metadata survey 15/15 PASS. RESEARCH ONLY; Sprint 17 remains
+NOT QUALIFIED.
+
+All three archived spear/longspear prefabs reference the native human
+MyAnimationSet (24 actions), with PiercingTwoHanded clips
+Human_2H_spear_attack_01 / _02 (1.46666718 / 1.40000057 seconds).
+Command-act events are at 0.620427966 / 0.734528542 seconds. Native references
+and actor membership are unchanged. This is metadata, not actual playback,
+grip, contact or a safe Salamander binding. No action adopted or NPC spawned.
+
+Each prefab has 177 unique bone paths but a combined duplicate bone palette
+(2252 / 1776 / 2507 entries) and a zero-bone cape renderer. Cape bones do not
+prove an articulated tail. These human clips cannot simply replace the
+incompatible 39-bone Lizardfolk action. The latest body570 gate remains 33/35
+FAIL before hybrid attachment; all 12 body attempts and prior censuses remain.
+
+Actual snapshot 1326496740021Z restored at 13:33:27.2332485 UTC:
+136 files / Info 0.0.117 / exact tree. Journal
+97A08A2FD8C08DB595ED36637633F9156F5567724068489DAD7C4FF2AF6FF207;
+spear census 3AF2CBC78820708586547C36952FF76BF9921823EDEA78ED7BA1243F4DAC2687.
+Lease Completed/recoveryRequired=false/released; no game/lock/staging/save write.
+
+Next: bounded exact human-prefab binding/native spear-handling proof on a
+request-local project-owned Salamander prototype; no native NPC facts/loot,
+human-to-Lizardfolk clip transplant or assumed cape/tail compatibility.
+Keep independent snake work moving if a bounded hybrid seam is unavailable.
+Sprints 14–16 complete; 976+29=1005 visible choices; ZERO DATA ports.
+Phase 2C remains authorized but deferred until Phase 2B owner acceptance.
+
+[Exact artifacts and restoration](planning/EXPANDED-SUMMONING-SPRINT17-SPEAR-CARRIER-EVIDENCE.json).
+
 ## October 6 — bounded native spear metadata extension, source only
 
 The containing source-only diagnostic extends the closed survey with three
