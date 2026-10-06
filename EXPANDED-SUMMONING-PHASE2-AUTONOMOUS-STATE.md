@@ -1,6 +1,6 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-06 — laptop sole owner; Sprint17 signature FAIL60/62, restored; full Sprint17 NOT QUALIFIED
+## CURRENT STATE, 2026-10-06 — laptop sole owner; Sprint17 signature FAIL61/62, restored; full Sprint17 NOT QUALIFIED
 
 This section governs over historical mission/ownership statements below.
 HOWARD-LAPTOP / `codex/expanded-summoning-phase2b-sprints14-17` / draft PR26
@@ -18,8 +18,8 @@ deployment, force push or prohibited substitute subsystems.
   session01a10bcd-8582-7551-826f-0f128807eb99; ownerPID31796/start
   2026-10-05T19:29:25.9127956Z; holderPID15084/start2026-10-05T20:34:17.3075720Z.
   Session-scoped; refresh heartbeat and release only on actual session ending.
-- Last exact runtime candidate `aebf4701f8632ae485d0a769420a3ea3428d8cab`,
-  clean/pushed for the failed batch. Fixture-boundary correction is NOT RUN.
+- Last exact runtime candidate `ccba3bacce36f9ec88509b21893b43a8aa5a4f7e`,
+  clean/pushed for the failed batch. New event-observation correction NOT RUN.
   Owner/holder identities unchanged; no competing source/runtime process.
   This checkpoint is a normal descendant. Unexpected active-branch
   motion remains a stop; DATA motion informational. All old artifacts retained.
@@ -30,13 +30,18 @@ Sprints14–16 COMPLETE/PUBLISHED. S16 exact155ada89 publication smoke11/main211
 passed all14 Crocodile+6 Dire roots after hiddene3 main209,crowd20,prepare9,
 cleanup9,absence5. No historical qualification reopened.
 
-Latest signature batch on exactaebf: complete2051-test/strict320/prelaunch
-PASS; smoke11/11, signature60/62 FAIL (all62 executed). [Exact evidence and
-failure classification](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-ATTEMPT1-EVIDENCE.json).
-Native poison's exhausted callback and native grapple-controller settlement
-were omitted by the fixture. Repair retains all62 requirements, adds no
-production change and remains unrun. Actual snapshot1831551306710Z restored
-18:38:54UTC:136/.117/exact tree; lease Completed/recovery=false/released,
+Latest signature batch on exactccba: complete2051-test/strict320/prelaunch
+PASS; smoke11/11, signature61/62 FAIL (all62 executed). [Exact evidence and
+failure classification](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-ATTEMPT2-EVIDENCE.json).
+All Constrictor checks pass. Poison removed correctly without seventh damage,
+but the fixture inspected its already-disposed component counter. After two
+failures of that assertion, change to live native event counting plus final
+buff absence. Retain all62 requirements; no production change or extra wait.
+Event-observation repair source gate PASS:249 focused,2051 unfiltered83.0s,
+complete repository/static/icon/manifest/clean14-reference Release/strict320
+package178.8s and142 orchestration checks. New exact-head runtime NOT RUN.
+Actual snapshot1857178703604Z restored19:04:19UTC:136/.117/exact tree;
+lease Completed/recovery=false/released,
 no game/shared lock/staging/save write.
 
 Earlier qualified profile/body boundary (not the latest attempted transaction):
@@ -78,10 +83,9 @@ external state change. Independent snakes proceed; no phase-wide blocker.
 
 ### Exact next action
 
-Fixture-only repair source PASS:249 focused/2051 full85.1s, complete
-repository/clean14-reference Release/deterministic strict320 gate181.3s,
-142 orchestration. Commit/push NOT QUALIFIED, freeze a new exact-head artifact,
-run all exact prelaunch checks and rerun the
+Event-observation fixture repair focused249 PASS; complete full source,
+clean14-reference Release/strict package, commit/push NOT QUALIFIED, freeze
+a new exact-head artifact, run all prelaunch checks and rerun the
 complete affected smoke/signature batch. No repeat of the failing artifact.
 [Scope and honest exclusions](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-SLICE.md).
 The passing closed38-check request is unchanged. Native poison/constrict rules
