@@ -20,11 +20,22 @@ deployment, force push or prohibited substitute subsystems.
   Session-scoped, not perpetual. Refresh the owned heartbeat during work;
   release only on an actual session ending. All safety refs/bundles retained.
 - Last pushed evidence/current verified remote:
-  `8f8f84947ff1474257c0151d3e13ee984c9db392`.
-  This containing winding-correction source commit is its normal descendant.
+  `7f503bb0b43acc966d22bd517f12a91ac0e5da04`.
+  This containing bounded native-attack research candidate is its normal descendant.
   Unexpected active-branch motion is a stop; frozen DATA motion informational.
 - Latest exact runtime artifact: `32b2f26e04d6b36471d39586b64731429afd8cbc`.
   Fresh Steam smoke11/11 and body29/29; complete research batch PASS.
+
+Current source extends only the closed research fixture: a request-local
+Salamander clone uses the audited native two-hand view, existing native spear
+mesh/weapon renderer and instance-owned materials; production is unchanged.
+Actual RTWP commands measure native bite/spear/tail events, current weighted
+world contacts and two-palm grip. All special-attack types are enumerated.
+Environment snapshots and borrowed-native/project-owned resource lifetimes
+are checked. Focused228/2030 registered and incremental exact-reference
+compile PASS; this candidate has NOT run in game. Next: commit/push, full
+exact-head prelaunch, smoke/body research with one immutable package, restore
+the actual snapshot. Bad contact/grip/shape measurements remain unqualified.
 
 ### Qualified versus open
 

@@ -39,7 +39,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if (++_serpentineBodyLoadingFrames < ExpandedSummoningLoadingGateFrames) return;
                         throw new InvalidOperationException("Native loading did not settle: " + loading);
                     }
+                    CaptureSprint17BodyEnvironment();
                     _serpentineBodyFixture = BeginExpandedSummoningCorrectionFixture("KMG_Runtime_Sprint17_BodyCaster");
+                    CreateExpandedSummoningCorrectionHostile(_serpentineBodyFixture);
                     _serpentineBodySteps = ReviewSprint17Bodies(_serpentineBodyFixture).GetEnumerator();
                 }
                 if (_serpentineBodySteps.MoveNext()) return;
@@ -65,17 +67,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // Use the whole qualified manual-summon seam, including
                     // its native rule input. Faction/Master alone cannot make
                     // an AI-only UnitPartSummonedMonster controllable.
-                    var control = new Sprint16ManualSummonControl {
-                        Caster = fixture.Caster,
-                        Blueprint = fixture.Blueprints.OfType<BlueprintUnit>().Single(value =>
-                            value.name == "KMG_Summoning_Unit_" +
-                                (SerpentineVisualPolicy.IsSnake(key) ? "PurpleWorm" : "Salamander")) };
-                    UnitEntityData unit;
-                    EventBus.Subscribe(control);
-                    try { unit = CastExpandedSummoningVariant(fixture.Blueprints, fixture.Caster,
-                        ExpandedSummoningOwnTierVariant(donorKey, SummonMultiplicity.One), null, fixture.Evidence).Single(); }
-                    finally { EventBus.Unsubscribe(control); }
-                    fixture.Created.Add(unit);
+                    Sprint16ManualSummonControl control;
+                    UnitEntityData unit = SummonSprint17BodyCarrier(fixture, key, out control);
+                    if (!fixture.Created.Contains(unit)) fixture.Created.Add(unit);
                     if (fixture.UnitsBefore.Any(value => ReferenceEquals(value, unit)))
                         throw new InvalidOperationException("Body review must own every mutated actor.");
                     SetExpandedSummoningBrainActive(unit, false);
@@ -86,8 +80,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var size = unit.Descriptor.State.Size;
                     Vector3 scale = unit.View.transform.localScale;
                     UnityEngine.Object[] resources = new UnityEngine.Object[0];
+                    Mesh borrowedSpear = null;
                     var row = new JObject { ["key"] = key, ["sourceCreature"] = donorKey,
-                        ["scope"] = "original body binding/movement/lifetime only; not printed profile or attack/contact qualification" };
+                        ["scope"] = "request-local body/native attack/contact research; not printed profile or final visual qualification",
+                        ["prefab"] = nativeBlueprint.Prefab.AssetId };
                     _serpentineBodyRows.Add(row);
                     try
                     {
@@ -98,7 +94,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             throw new InvalidOperationException("Owned manual-summon rule mismatch: " + row.ToString(Formatting.None));
                         // Only the disposable visual carriers become Medium.
                         // Their donor stats/attacks are NOT claimed as the new
-                        // profiles, and no attack command is issued here.
+                        // profiles. Native attacks below expose their actual
+                        // contact measurements without claiming new profiles.
                         unit.Descriptor.State.Size = Size.Medium;
                         if (SerpentineVisualPolicy.IsSnake(key)) unit.View.transform.localScale = Vector3.one * .2f;
                         string floorEvidence;
@@ -144,7 +141,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                             .Select(value => new { Renderer = value, Mesh = value.sharedMesh,
                                 Bones = value.bones, Root = value.rootBone, Quality = value.quality }).ToArray();
                         var originalStatics = unit.View.GetComponentsInChildren<MeshFilter>(true)
-                            .Select(value => new { Filter = value, Mesh = value.sharedMesh }).ToArray();
+                            .Select(value => new { Filter = value, Mesh = value.sharedMesh,
+                                Renderer = value.GetComponent<MeshRenderer>(),
+                                Materials = value.GetComponent<MeshRenderer>().sharedMaterials,
+                                Position = value.transform.localPosition, Rotation = value.transform.localRotation,
+                                Scale = value.transform.localScale }).ToArray();
                         UnityEngine.Object[] rollbackResources = new UnityEngine.Object[0];
                         string outcome;
                         bool failedAttach;
@@ -154,7 +155,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 rollbackResources = unit.View.GetComponent<SerpentineVisualAttachment>().CaptureOwnedResources();
                                 throw new InvalidOperationException("owned-body rollback drill");
                             };
-                            failedAttach = !SerpentineVisualAttachment.TryAttach(unit.View, key, _context, out outcome);
+                            failedAttach = !SerpentineVisualAttachment.TryAttach(unit.View, key, _context, out outcome,
+                                nativeSpearResearch: key == "salamander");
                         }
                         finally { SerpentineVisualAttachment.PostSwapFaultForTest = null; }
                         yield return 0; yield return 0;
@@ -165,13 +167,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 originalSkins.All(value => value.Renderer.sharedMesh == value.Mesh &&
                                     value.Renderer.bones.SequenceEqual(value.Bones) && value.Renderer.rootBone == value.Root &&
                                     value.Renderer.quality == value.Quality) &&
-                                originalStatics.All(value => value.Filter.sharedMesh == value.Mesh) &&
+                                originalStatics.All(value => value.Filter.sharedMesh == value.Mesh &&
+                                    value.Renderer.sharedMaterials.SequenceEqual(value.Materials) &&
+                                    value.Filter.transform.localPosition == value.Position &&
+                                    value.Filter.transform.localRotation == value.Rotation &&
+                                    value.Filter.transform.localScale == value.Scale) &&
                                 rollbackResources.All(value => value == null),
                             "Exact object references, not a name-only resource count."));
-                        if (!SerpentineVisualAttachment.TryAttach(unit.View, key, _context, out outcome))
+                        if (!SerpentineVisualAttachment.TryAttach(unit.View, key, _context, out outcome,
+                            nativeSpearResearch: key == "salamander"))
                             throw new InvalidOperationException("Original body attachment failed: " + outcome);
                         var attachment = unit.View.GetComponent<SerpentineVisualAttachment>();
                         resources = attachment.CaptureOwnedResources();
+                        borrowedSpear = attachment.NativeSpearMesh;
+                        if (key == "salamander" && resources.Any(value => ReferenceEquals(value, borrowedSpear)))
+                            throw new InvalidOperationException("Borrowed native spear cannot enter owned-resource cleanup.");
                         row["attachment"] = outcome;
                         if (key == "salamander")
                         {
@@ -189,8 +199,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 unit.View.GetComponentsInChildren<SkinnedMeshRenderer>(true).Where(value => value != attachment.Body)
                                     .All(value => value.sharedMesh != null && value.sharedMesh.vertexCount == 0) &&
                                 unit.View.GetComponentsInChildren<MeshFilter>(true)
-                                    .All(value => value.sharedMesh != null && value.sharedMesh.vertexCount == 0),
-                            "Body-only hybrid: no claim that missing club/shield constitutes a spear."));
+                                    .All(value => value == attachment.SpearFilter
+                                        ? ReferenceEquals(value.sharedMesh, attachment.NativeSpearMesh)
+                                        : value.sharedMesh != null && value.sharedMesh.vertexCount == 0),
+                            "Exact native spear reference is the only optional nonempty static; no grip/contact claim from attachment."));
 
                         row["idleSample"] = Sprint17OriginalBodySample(unit, attachment.Body);
 
@@ -268,13 +280,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ReferenceEquals(originalMaterial, attachment.Body.sharedMaterial),
                             "No native geometry, shader/culling, visibility, camera, bone, gameplay or save change. Not visual acceptance."));
                         if (key == "salamander") row["nativeSpearResearch"] = Sprint17NativeSpearResearch(unit);
+                        foreach (int step in ReviewSprint17NativeAttacks(fixture, unit, attachment, key, row))
+                            yield return step;
                     }
                     finally
                     {
                         SerpentineVisualAttachment.PostSwapFaultForTest = null;
                         if (unit != null && !unit.Destroyed)
                         {
-                            unit.Commands.InterruptMove();
+                            InterruptExpandedSummoningFixtureCommands(unit);
+                            unit.CombatState.LeaveCombat();
+                            fixture.Hostile.CombatState.LeaveCombat();
+                            Game.Instance.Player.UpdateIsInCombat();
                             unit.Descriptor.Master = master;
                             unit.Descriptor.SwitchFactions(faction, false);
                             unit.AttackFactions.Match(attackFactions);
@@ -288,8 +305,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _serpentineBodyAssertions.Add(Assertion("sprint17-body-owned-resource-cleanup-" + key,
                         "native unit destruction releases every exact project-owned resource",
                         "captured=" + resources.Length + ";remaining=" + resources.Count(value => value != null),
-                        resources.Length >= 5 && resources.All(value => value == null),
-                        "No direct view disposal, native resource destruction or global name sweep."));
+                        resources.Length >= 5 && resources.All(value => value == null) &&
+                            (key != "salamander" || borrowedSpear != null),
+                        "Borrowed native spear remains alive; no direct view disposal, native resource destruction or global name sweep."));
                 }
             }
             finally
@@ -483,6 +501,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool cleaned = false;
             try { EndExpandedSummoningCorrectionFixture(fixture, out cleaned); }
             catch (Exception error) { _serpentineBodyAssertions.Add(Assertion("sprint17-body-cleanup-error", "native cleanup", error.Message, false, "owned-only")); }
+            finally
+            {
+                if (_serpentineBodyPrototype != null) UnityEngine.Object.Destroy(_serpentineBodyPrototype);
+                _serpentineBodyPrototype = null;
+                RestoreSprint17BodyEnvironment();
+            }
             _serpentineBodyAssertions.Add(Assertion("sprint17-body-fixture-cleanup", "exact original unit/party/area references",
                 "cleaned=" + cleaned, cleaned, "No save write or unrelated-unit cleanup."));
         }

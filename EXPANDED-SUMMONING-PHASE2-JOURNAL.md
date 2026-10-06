@@ -1,5 +1,20 @@
 # Expanded Summoning Phase 2 journal
 
+## October 6 -- bounded native spear and attack research candidate
+
+Normal descendant of7f503bb0; no DATA import or published blueprint changes.
+The closed fixture clones only existing Salamander's unit/view reference for
+the audited two-hand rig. Its existing native weapon renderer borrows the
+exact project spear mesh; instance material clones are owned and exact
+static mesh/material/transform state is restored. Native special-attack types
+are enumerated exhaustively. Actual RTWP full attacks record weighted-world
+jaw/tail and native spear/two-palm distances, not forced poses or invented
+contact acceptance. Poor gaps remain findings. Full environment/reference
+and borrowed-native/project-owned destruction checks are mandatory.
+228 focused/2030 registered, incremental exact-reference compile/repository
+wrapper PASS. Full exact-head prelaunch/runtime pending; Sprint17 NOT
+QUALIFIED. Latest machine authority remains32b exact07:59:27 restoration.
+
 ## October 6 -- S17-only outward export correction, source checkpoint
 
 The32b comparison is now applied in the S17 exporter only. Shared exporter,

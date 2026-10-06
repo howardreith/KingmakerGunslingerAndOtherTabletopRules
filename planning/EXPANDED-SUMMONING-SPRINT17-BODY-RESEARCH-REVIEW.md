@@ -17,16 +17,34 @@ normals/UV/weights/paint remain byte-identical; shared exporter unchanged.
 29 authoring/replay and227 focused/2029 registered checks, incremental compile
 and repository wrapper PASS.24 backface-aware current-pose panels generated,
 representative views inspected. No new exact runtime for these staged files.
-Next bounded native spear attachment and real bite/spear/tail command/contact
-diagnostics, then one new exact artifact. Final art and gameplay remain open.
+The next source candidate adds bounded native spear attachment and real
+bite/spear/tail command/contact diagnostics, not production behavior.
+Focused228/2030 registered and incremental exact-reference compile PASS.
+Full exact-head prelaunch and runtime remain pending. Final art and gameplay
+remain open.
 
 
 `disposable-expanded-summoning-serpentine-bodies` requires the existing guarded
 native `KMG_AUTOMATION_WORKING` load, with no save write or save-file access.
 It owns three disposable carriers: existing Purple Worm for the two snake
-bodies, existing Salamander for the separate hybrid. These retain donor
+bodies, a request-local clone of existing Salamander with only the audited
+two-hand prefab changed for the separate hybrid. These retain donor
 profiles, so this is not printed-stat, attack, grapple or weapon qualification.
 No production attachment hook or new registration is enabled.
+
+The optional hybrid spear seam accepts only the measured project Spear,
+TH_SpearArmy/WP_SpearArmy, two-hand prefab and WeaponPivot/R_Palm tuple.
+It borrows the native mesh/paint without exporting or destroying them,
+reuses the existing native renderer/snap and owns only material clones.
+Rollback restores every original static mesh/material/local transform;
+destruction checks project resources dead and borrowed spear alive.
+Real queued RTWP full attacks on an owned maneuver-immune target record
+weighted-world jaw/tail surfaces, native spear geometry, two-palm grip and
+actual native animation-contact events. Donor BAB100/HP100000 are explicit
+fixture inputs, not printed profiles. No forced hit or animation, bone pose,
+visibility override or claim that a poor gap is accepted. All special-attack
+types are enumerated rather than only the first generic SpecialAttack action.
+Mode/pause/clock/awake/selection/group snapshots restore after native cleanup.
 
 The fixture waits at least 60 native frames and then for an intact native
 appearance, without removing appearance buffs or changing renderer visibility.
