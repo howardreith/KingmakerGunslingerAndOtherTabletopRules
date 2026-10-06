@@ -90,6 +90,12 @@ try {
         'assets\sprint16-crocodilians\crocodile-albedo.png',
         'assets\sprint16-crocodilians\dire-crocodile-mesh.json',
         'assets\sprint16-crocodilians\dire-crocodile-albedo.png',
+        'assets\sprint17-serpents\viper-mesh.json',
+        'assets\sprint17-serpents\viper-albedo.png',
+        'assets\sprint17-serpents\constrictor-snake-mesh.json',
+        'assets\sprint17-serpents\constrictor-snake-albedo.png',
+        'assets\sprint17-serpents\salamander-mesh.json',
+        'assets\sprint17-serpents\salamander-albedo.png',
         'blueprints\blueprints.json',
         'blueprints\blueprints.schema.json'
     )

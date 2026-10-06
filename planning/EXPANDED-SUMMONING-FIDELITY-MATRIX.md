@@ -16,7 +16,10 @@ view has identical 39/19-bone body/armor bind frames, but grip/contact is
 unqualified. Water's actions are slams; worm locomotion exposes idle only.
 Fourteen private authoring tests and 74 new panels do not waive credible
 motion, ground support, jaw or spear/tail contacts. Identity/placements stay.
-Next bounded original-view integration, printed profiles/signatures and full hidden
+Current source adds a supporting coil, six reproduced original mesh/paint
+files and exact-owned two-skin attachment. 222 focused tests PASS; no automatic
+production attachment and no native-motion/lifecycle/weapon qualification.
+Next request-local original-view acceptance, printed profiles/signatures and full hidden
 candidate. Prior S16 and accepted limitations remain unchanged.
 
 ## Current Sprint 16 disposition, October 6 UTC — COMPLETE AND PUBLISHED

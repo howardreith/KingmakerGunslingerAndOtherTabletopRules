@@ -546,8 +546,8 @@ def validate(root: Path) -> None:
     # Stirge action icon.
     # Keep the accepted Phase 1 metadata at 251, but validate the current
     # package count with the Phase 2 bird, vermin, quadruped and icon
-    # additions.
-    package_count = SPRINT3["packageFileCountWithSoundBank"] + 61
+    # additions, including the six original Sprint 17 body/painting files.
+    package_count = SPRINT3["packageFileCountWithSoundBank"] + 67
     for script in ("Build-Local.ps1", "package.ps1"):
         require_tokens(root / "scripts" / script,
             "{ %d } else { %d }" % (package_count, package_count - 2),

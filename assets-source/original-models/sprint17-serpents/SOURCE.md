@@ -1,6 +1,46 @@
-# Private Sprint 17 original serpentine and hybrid prototypes
+# Sprint 17 original serpentine and hybrid bodies
 
-## Current private comparison, October 6 UTC
+## Current owned-body integration, October 6 UTC
+
+**NOT RUNTIME QUALIFIED; NOT ATTACHED TO PRODUCTION SUMMONS.** Six original
+mesh/paint files are now staged in `assets/sprint17-serpents` for the bounded
+guarded donor-acceptance slice. No snake is registered and existing Salamander,
+Purple Worm and Water Elemental production views are unchanged. The separate
+hybrid still has no spear implementation; body binding is not weapon proof.
+
+The snake v2 adds one continuous original supporting coil on `Hips_Joints`,
+then follows the existing continuous chain. It has no new bone/animation
+driver. Five worm authoring tests pass, including connected support/body,
+finite normalized weights and the bind-frame ground envelope. Native motion,
+ground support, contact, appearance locks and lifecycle remain open gates.
+The native bind chain rises along +Y; +Z is the upper-jaw axis. Corrected
+`review-native-up` has 48 panels. Earlier horizontal-frame previews remain
+preserved and are not native-ground evidence. All poses remain synthetic.
+
+The instance-local attachment admits only the two audited skins and exact
+static weapon set. It substitutes empty owned geometry for stones/armor/club/
+shield, never toggles renderer visibility, and restores saved references on
+failure/destruction. Its cleanup is implemented but **not live qualified**.
+No automatic production hook is installed. Three new domain tests cover the
+actual payload/schema/paint pairs, exact driver sets and donor rejection.
+
+| Staged body | Mesh SHA-256 | Vertices |
+| --- | --- | --- |
+| Viper v2 | `bd0d6f7ff16ac47886e621628f8f91391e684e8f299e128af1e88c7e75ce751f` | 3116 |
+| Constrictor v2 | `1c521c1bca191a73942a9886706de6415255f18caf787a7f411267283a14df02` | 3242 |
+| Salamander v3 | `80de7840d183666c7e7553c41d96d5bc3f532f4ab2556f62147f867a26371fb6` | 2592 |
+
+Albedo hashes and measured-capture provenance remain those in the table below.
+Independent exports directly to `assets/` match the private outputs byte for
+byte. The package inventory grows by exactly six (318/316 with/without the
+soundbank). No native geometry, bind transforms, texture pixels or animation
+curves are distributed. Private `.blend`, reports and captures never enter
+the package. All 15 authoring checks pass (4 water, 5 worm, 6 hybrid), as do
+222 focused/2024 full domain tests, the repository wrapper, clean exact-reference
+Release and strict 318-member package. This working-tree source gate is not an
+immutable runtime candidate. HumanReview: NOT_PERFORMED_NONBLOCKING.
+
+## Preserved private comparison, October 6 UTC (fc1e880e)
 
 **NOT RUNTIME QUALIFIED; NOT PACKAGED.** The corrected a173da3a research
 capture supports a second snake prototype on the native Purple Worm's
@@ -78,7 +118,8 @@ For Salamander, use `paint_salamander_albedo.py`, `generate_salamander.py` and
 `test_salamander_prototype.py`, its own capture, and omit `--kind` (identity
 is fixed). `render_snake_review.py --suite` selects the family from the private
 armature; hybrid adds synthetic tail and arm poses. Always use
-`--python-exit-code 1` and keep outputs outside shipping `assets/`.
+`--python-exit-code 1`. Keep blends/reports/captures private; only the six
+audited original mesh/paint exports above now enter `assets/`.
 
 Next required: bounded live donor motion/ground/jaw acceptance, exact-owned
 multi-renderer fallback/lifecycle, and Salamander's actual spear carrier and

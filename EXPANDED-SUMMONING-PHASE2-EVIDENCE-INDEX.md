@@ -1,5 +1,13 @@
 # Expanded Summoning Phase 2 evidence index
 
+[Sprint 17 owned-body source slice](assets-source/original-models/sprint17-serpents/SOURCE.md):
+five supporting-coil authoring tests, 48 corrected native-up stress panels,
+six byte-reproduced original asset files staged for guarded acceptance. Closed
+two-skin attachment/rollback is source only: no automatic production hook,
+new summon, gameplay or runtime qualification. 222 focused/2024 full tests,
+repository wrapper, clean exact-reference Release and strict 318-member package
+PASS; working-tree source gate only. No live transaction since c55 restoration.
+
 [Sprint 17 exact c55 pose/weapon research PASS](planning/EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md):
 single attached bone-position samples, action clip names/durations, and one
 fixed read-only native greatclub prefab. No new actor or production change.

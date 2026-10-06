@@ -233,6 +233,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ExpandedSummoningNaturalProfiles.cs"><Link>Summoning\ExpandedSummoningNaturalProfiles.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\Sprint14BonePolicy.cs"><Link>Summoning\Sprint14BonePolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\CrocodilianVisualPolicy.cs"><Link>Summoning\CrocodilianVisualPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SerpentineVisualPolicy.cs"><Link>Summoning\SerpentineVisualPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\CrocodilianCommandReviewPolicy.cs"><Link>RuntimeTesting\CrocodilianCommandReviewPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\SerpentineRigSurveyPolicy.cs"><Link>RuntimeTesting\SerpentineRigSurveyPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\CrocodilianLifecycleReviewPolicy.cs"><Link>RuntimeTesting\CrocodilianLifecycleReviewPolicy.cs</Link></Compile>
