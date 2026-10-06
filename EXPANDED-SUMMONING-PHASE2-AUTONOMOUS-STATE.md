@@ -19,7 +19,10 @@ no merge, release, tag, version bump, force push or permanent deployment.
   **`b27b6aea04d4e1e2b151339fca36407ba45bb8a9`**.
   Exact research artifact/fetched remote before its evidence checkpoint:
   **`f507278bbebe5894130dc6ec51978580bc2c43d0`**.
-  The containing research-evidence checkpoint is its normal descendant.
+  Pushed research-evidence checkpoint/current fetched remote:
+  **`e5e79fe9c428f0db7b7205fcc481cb3c4a868e3d`**.
+  This containing source-only prototype/research-extension checkpoint is its
+  normal descendant; it is NOT runtime qualified.
   Unexpected active-branch motion remains a stop; archive motion is informational.
 - Exclusive ignored receipt: `artifacts/laptop-source-owner-20261005.json`;
   session `01a10bcd-8582-7551-826f-0f128807eb99`, owner PID 31796/start
@@ -69,9 +72,15 @@ no merge, release, tag, version bump, force push or permanent deployment.
   skins, 43-bone body with spine/head/jaw. Lizardfolk: 39-bone body plus armor
   skin and stale native club/shield meshes; spear visual handling remains open.
   [Scope, findings and exact hashes](planning/EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md).
-- Exact next action: bounded original Viper/Constrictor visual prototypes on
-  the measured native water rig and separate Salamander hybrid/weapon seam,
-  then exact profiles/signatures and stable hidden candidate. Research PASS
+- Private original Viper/Constrictor water-rig prototypes: four Blender behavior
+  checks PASS, 40 offline panels, no packaged assets. Water has no continuous
+  tail chain; coil motion, jaw contact and shader remain unproved. Added fixed
+  native Purple Worm comparison plus material/action metadata to research only.
+  219 focused / incremental compile / 486 preflight PASS for the extension.
+- Exact next action: freeze/push the extended research source, run the complete
+  exact artifact gate, then guarded fresh Steam smoke and three-target survey
+  with exact restoration. Select/refine the donor from that evidence, retain
+  separate Salamander hybrid/weapon seam, then profiles/signatures. Research PASS
   is not gameplay/visual qualification. Preserve Salamander identity and
   placements. One hidden candidate/batched review/publication gate, then full
   Phase 2B closure; no Phase 2C start under this mission.

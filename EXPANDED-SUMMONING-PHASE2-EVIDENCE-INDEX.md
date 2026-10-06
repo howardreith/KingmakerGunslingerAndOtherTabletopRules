@@ -1,5 +1,11 @@
 # Expanded Summoning Phase 2 evidence index
 
+[Sprint 17 private prototypes and extended research scope](planning/EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md):
+four Blender behavior checks, 40 offline panels; nothing packaged. Fixed native
+Purple Worm comparison added because the water rig has no continuous tail
+chain. Extension focused 219 / preflight 486 / incremental build PASS;
+new exact artifact and guarded research batch pending. NOT runtime qualified.
+
 [Sprint 17 native-rig research PASS](planning/EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md):
 exact f507 full prelaunch PASS (219 focused/2021 full/486 preflight), fresh
 Steam smoke 11/11, metadata survey 8/8, exact restoration. Water rig has seven
