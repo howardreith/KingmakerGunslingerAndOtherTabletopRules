@@ -41,6 +41,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 opportunity, nativeClip, points, gap) && gap <= .25f;
         }
 
+        internal static bool SameRenderedAttack(int ruleFrame, int renderedFrame,
+            bool sameCommand, bool sameHandle, bool sameAnimation, bool sameClip)
+        {
+            // A later animation peak is never evidence for this rule event.
+            return ruleFrame >= 0 && renderedFrame == ruleFrame && sameCommand &&
+                sameHandle && sameAnimation && sameClip;
+        }
+
         internal static bool LaterMaintain(int initialRiders, int heldRound,
             int laterRiders, int attacksAtEstablishment, int currentAttacks)
         {
