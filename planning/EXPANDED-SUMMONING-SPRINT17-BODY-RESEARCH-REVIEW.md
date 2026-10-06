@@ -1,66 +1,60 @@
 # Sprint 17 bounded original-body research
 
 Status: Sprint17 NOT QUALIFIED. Latest exact
-`7ebb34eb0124a732c1f8a034b84f01dbd381aa6c`:
-**smoke11/11 and body40/40 PASS; complete research driver PASS**.
-Exact actual snapshot restored09:59:49UTC. All nine attempts preserved.
-Sprints14–16 complete;976 generated+29 wrappers=1005 visible, no withheld.
-Laptop PR26 only, ZERO DATA imports. No production hook or new registration.
+`66900038d04ee8f5c64bcbaecc96fa61ae348f68`:
+**smoke11/11 PASS, body46/47 FAIL; complete driver NOT-QUALIFIED**.
+Actual snapshot restored10:40:47UTC. All ten attempts preserved.
+Sprints14–16 complete;976 generated+29 wrappers=1005 visible,0 withheld.
+Laptop PR26 only, ZERO DATA imports. No production hook/new registration.
 
-## Latest ninth exact batch — research completeness, NOT final acceptance
+## Latest tenth exact batch — one original hybrid contact defect
 
-All prelaunch PASS:230 focused/2032 full83.2s, full gate179.4s,
+All prelaunch PASS:231 focused/2033 full86.3s, gate180.2s,
 491 preflight/81 orchestration/17 provenance, persistence11/3/19,crowd5/7,
 clean exact Release/strict318-member package. Two fresh Steam640820 processes.
-Every movement, initial/post-settlement/throughout-command isolation, native
-primary attack, exact tail event, rollback/material/reference/owned destruction,
-borrowed-native survival and environment/census restoration assertion PASS.
+All movement, sustained owned isolation, rollback/material/reference/native
+destruction/borrowed survival and environment/census restoration checks PASS.
 
-| Current-pose evidence | Meaning and remaining work |
+| Current-pose evidence | Disposition |
 | --- | --- |
-| Both snake bite gaps0; support2.91mm/1.85mm | Credible native issued bite/movement research. Donor profiles retained, not new printed-stat qualification. |
-| Hybrid spear event99394d45; right palm axis distance<1micrometre, left0.638m | The native right-hand mount is not a two-hand grip. Correct bounded owned weapon mounting; no native rig/controller rewrite. |
-| Native spear mesh unreadable; two end-centres plus0.03135m transverse uncertainty; conservative gap0.37510m | A labeled conservative metadata estimate, NOT surface vertices and NOT accepted contact. Do not alter native readability. |
-| Exact tail93e097b8 gap0.16190m; attack support-0.112885m..0.005m | Distal original coil penetrates the floor in actual poses. Correct authored tail3 geometry and replay all captured attack/idle/move poses. |
-| Three owned enemy pairs stay isolated in all56 command pose samples | Private copied controllable faction avoids native PlayerFaction group repair. No repeated group override or unrelated-unit mutation. |
+| Snake native issued bite gaps0; support2.91/1.85mm | Research PASS; donor profiles retained, not printed-profile qualification. |
+| Original v9 hybrid attack and exact-event support5.0001mm | Distal rest-shape correction PASSES sampled live floor gate. Unsampled/slope/death still open. |
+| Exact spear event5833, both native palms0m from shaft | Instance-only two-palm mounting PASSES actual native-event grip. No bone, mesh, scale or native controller edit. |
+| Forward spear end0.562879m from target bounds, plus0.031350m uncertainty =0.594228m | FAIL: sole assertion `sprint17-issued-attack-contact-salamander`. No claim of contact from successful grip. |
+| Exact tail event5923 gap0.166540m | Measured original vertices PASS bounded quarter-metre contact gate. |
+|56 command poses plus6 exact contact poses, owned pairs isolated | Native faction/controller/party unchanged; no foreign damage. |
 
-Spear/tail events are non-opportunity, issued-command and native-animation
-contact true; no forced attack or pose. Supporting spear frame reviewed as
-ART ONLY: original hybrid and spear visible, detached left hand, partly
-occluded coil. Mechanical findings derive from structured data, not the image.
-No final shape, slope/death/fade, grip, gameplay or publication qualification.
+Classification: original hybrid weapon visual/pose defect. No fixture,
+environment or restoration failure. ExitCode1 follows the structured FAIL.
+The view already faces the target; at the native contact instant the palm
+axis points across it. Adjacent-frame prediction was insufficient, which is
+why the new same-event pose is retained. No threshold waived or reinterpretation
+of a shaft/butt touch as a forward spear contact.
 
-DLL822c1739a29d42c59e0e3304902bcc28e6b01af0f142d590c7eddd6933bddf9c;
-MVID1e2298ff-47ae-4c10-be84-78f75f102872;
-ZIPcc157eb434c0e25b1d34feccd42508bd9c5cb6bc57f74dd1a0136cec3589a81b.
-Actual0951581493121Z snapshot restored09:59:49.8837081UTC:136/.117/exact tree.
-Journal586B5588B3679D0BB7792DAA995F19F52F7B5DFEB3305074E0728A3762371234.
-CaptureB9DF8B3E2C07B2B3AD778DCAB43C16EB11C7538CA5DA1040E246D6F182B5C810.
+Native spear frame inspected as supporting ART ONLY: original hybrid and
+palms visible, spear/tail partly occluded by the native wall. Mechanical
+failure derives from structured current-frame data, never screenshots.
+
+DLL15c6c3cb3c7a2b95bf185e22bec20fa0ee92f75ed40542c16ab93f9d0c22571f;
+MVID45fda816-6671-46e5-8d9a-175f9c1eaaf3;
+ZIPe9de08e51dd316326a2b26b7b5d93e1727166d04fb42f62622a032f29f66b062.
+Actual1032557994699Z snapshot restored10:40:47.0701589UTC:136/.117/exact tree.
+JournalA3EA13FC4F385C2992F9BCE50B42374821EFAD45DE50118ADAD0DBEF175113BE.
+Capture614DE8080D72E61B4CB47F9A62683329BA8046797B1522D18BA61A7A071EFC63.
 Lease Completed/recoveryRequired=false/released; no game/lock/staging/save write.
 [All exact requests/results/processes/hashes](EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-EVIDENCE.json).
 
-Current source correction: closed private replay includes actual attack poses;
-hybrid v9 raises only the original distal cross section at most14cm, preserving
-every UV/weight/driver/upper-body coordinate. Independently reproduced mesh
-BD790DF1E258FA6190EF48A2E68F0BEB5EAEBA6D035D51EEB3AAEFC5CBB9A60B;
-all a096/7ebb sampled poses clear the floor (7ebb4.9999..5.0005mm).
-10 replay/9 hybrid/4 winding checks,231 focused/2033 registered and incremental
-exact compile PASS.24 new original-pose panels; representative attack clay/
-texture reviewed as ART ONLY.
+Next: bounded existing manufactured-attack style/clip/settings audit and
+offline exact-event pose replay before selecting the smallest owned correction.
+Preserve the proved v9 support and two-palm mounting; do not blindly rerun,
+change target/reach, edit native assets, build a global limb/animation framework
+or waive contact. Full profiles/signatures/lifecycle/hidden/publication remain.
 
-Only the existing instance weapon renderer aligns between the two native
-palms (rear grip10% from butt). No native mesh/scale/bone/clip/controller,
-target, reach or rule edit. A same-frame rule-boundary update avoids measuring
-the previous rendered pose; fixture never forces mounting/animation.
-Live grip/contact, unsampled ground and lifecycle remain NOT QUALIFIED.
-Next new exact committed/pushed candidate, full prelaunch, immutable smoke/
-body47 batch. New assertions require attack support, primary/tail contacts
-and both palms within1cm of the shaft at the native event. Restore actual
-leased snapshot, preserving all nine earlier attempts.
-
-Historicala096 smoke11/body36 of37 FAIL (unreadable spear query and transient
-player-faction isolation) and21ee smoke11/body32 of34 FAIL (movement/rejection)
-remain preserved, not retroactively upgraded.
+Hybrid v9 meshBD790DF1E258FA6190EF48A2E68F0BEB5EAEBA6D035D51EEB3AAEFC5CBB9A60B
+is independently byte-reproduced.393 original vertices rise at most14cm;
+all weights/UVs/triangles/native drivers unchanged.10 replay/9 hybrid/4 winding
+tests PASS.24 new original-pose panels reviewed selectively as ART ONLY.
+Historical7ebb research40 PASS and all earlier failures remain unchanged.
 
 ## Closed research scope
 

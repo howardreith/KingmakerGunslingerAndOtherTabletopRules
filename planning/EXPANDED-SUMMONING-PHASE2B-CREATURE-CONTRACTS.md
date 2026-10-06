@@ -251,24 +251,25 @@ Swallow whole has a qualified project carrier from the Purple Worm.
 
 ## Sprint 17
 
-Current native-rig evidence (October 6): exact c55b4f08 research passed smoke
-11/11 and pose/weapon metadata 13/13, with exact restoration. Purple Worm
-has two skins and a continuous body/head chain, suitable for an original
-prototype comparison, not yet qualified snake locomotion or contacts. The
-earlier proposed serpentine
-prefab is native Medium Water Elemental, not dependent on the optional Eidolon
-unit named in the historical mixed-library census below. Its seven skins
-include a 43-bone body with spine/head/jaw, but no continuous tail chain.
-Salamander remains separate:
-39-bone Lizardfolk body, armor skin, and stale native club/shield visuals.
-Its native two-hand alternative has identical 39/19-bone bind frames, not yet
-qualified grip or spear contact. Water exposes slam clips, worm's locomotion
-list only idle. Original body files are now staged with a closed two-skin
-attachment and supporting-coil geometry; no automatic production hook or new
-registration exists. 222 focused tests pass. Credible native
-movement and actual jaw/weapon/tail contact remain mandatory; no waiver.
-These measurements support a bounded original prototype, not completed art
-or gameplay. [Exact research and disposition](EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md).
+Current bounded evidence (October 6): exact66900038 passes all prelaunch,
+smoke11/11 and46 of47 research assertions, exactly restored. The original
+snakes on the native Purple Worm's continuous chain move and make real issued
+bite contacts with zero measured gap, and clear the measured floor. This is
+not printed-profile, persistence or complete visual/gameplay qualification.
+The earlier native Water Elemental prototype is preserved, not selected.
+No optional Eidolon dependency or native geometry/animation export.
+
+Salamander remains a separate original humanoid/coil on the measured native
+two-hand Lizardfolk frame (39/19 native body/armor binds). Its original v9
+coil clears sampled attack and exact-event floor poses; the instance-only
+native spear mount places both unchanged palms on the shaft at the actual
+attack event. Tail contact passes the bounded gate. Forward spear contact
+fails with a0.594228m conservative gap; grip is not a contact waiver.
+Next bounded existing manufactured-attack style/clip/settings and exact-pose
+audit before a smallest owned correction and fresh exact qualification.
+No production hook or new registration exists.231 focused/2033 full pass.
+All10 research artifacts/failures/restorations remain preserved.
+[Current research/disposition](EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-REVIEW.md).
 The Medium Viper contract below governs over the older S16 note's Tiny/Small
 prototype assumption. No printed mechanics are changed by donor selection.
 
