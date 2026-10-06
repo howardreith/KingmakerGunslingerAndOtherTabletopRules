@@ -132,3 +132,35 @@ The native private instance method
 No attack patch was installed, so no two-process combat qualification is claimed.
 See the mission handoff for exact assembly identities, failed attempts, final
 integrated reruns and restoration records.
+
+
+## 2026-10-05 native-foundation mission — superseding disposition
+
+**BLOCKED-WITH-EVIDENCE / BLOCKED-WEATHER-FIXTURE. WhiteoutPublished: false.**
+The owner now explicitly freezes **ADAPTED — OUTDOORS ONLY**: exact native
+Rain/Snow and ActualWeather Light+ qualify only at an observed outdoor point.
+This supersedes the older undecided indoor interpretation above; historical
+catalog observations remain historical rather than loaded-scene proof.
+
+A synchronous request-local mutation of the existing native visual weather
+carrier, followed by `WeatherController.OnUpdateWeatherSystem(true)`, produced
+actual Rain/Light and Snow/Light at the mansion and Oleg. Indoor policy remained
+inactive, outdoor policy became active, repeated notification was idempotent,
+and both weather scopes restored captured values/references/listeners without
+changing the saved schedule or campaign time. This is new native weather
+evidence, not a Whiteout attack or complete fixture qualification.
+
+The overall fixture failed its stricter exact original unit/fact-reference
+restoration check. The native cross-area loader disposed and rehydrated 127
+preexisting non-party unit objects, added three objects, and emptied original
+buff collections on eight disposed objects. Equal IDs on replacement units do
+not restore original references. Every process exited automatically with zero
+save writes, and its exact leased live-mod snapshot was restored. The rejected
+weather writer and scenario registration were removed from final source.
+
+[The native weather contract](WHITEOUT-NATIVE-WEATHER-CONTRACT.md) records the
+exact setter/event route, thresholds, subscriber safety and scene-lifecycle
+blocker. [The attack contract](WHITEOUT-NATIVE-ATTACK-CONTRACT.md) records an
+inspected exact narrow boolean seam; it remains unpatched and has no Whiteout
+combat qualification. The pure policy/state/replay foundation is unchanged.
+No marker, provider, icon, localization, acquisition or production binding exists.

@@ -1086,4 +1086,7 @@
     <Compile Include="AerialObserverFoundationTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\AerialObserverPolicy.cs"><Link>ElementalRaces\AerialObserverPolicy.cs</Link></Compile>
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="WhiteoutNativeContractTests.cs" />
+  </ItemGroup>
 </Project>
