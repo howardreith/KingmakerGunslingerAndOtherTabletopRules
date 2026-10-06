@@ -158,6 +158,32 @@ class HybridTests(unittest.TestCase):
             bm.free()
         self.assertEqual(results[0], results[1])
 
+    def test_distal_curl_preserves_every_weight_uv_upper_body_and_horizontal_coordinate(self):
+        _, rig, _ = model.measured_rig(CAPTURE)
+        bm, weights, uvs = bmesh.new(), {}, {}
+        model.build_body(bm, weights, uvs, rig, "salamander")
+        model.author_ground_support(weights)
+        original = {v: (tuple(v.co), list(weights[v]), uvs[v]) for v in bm.verts}
+        model.author_distal_clearance(weights)
+        lifted = 0
+        for vertex, influences in weights.items():
+            before = original[vertex]
+            self.assertEqual(before[1], influences)
+            self.assertEqual(before[2], uvs[vertex])
+            self.assertEqual(before[0][:2], tuple(vertex.co)[:2])
+            distal = sum(weight for name, weight in influences if name == "tail3")
+            if distal == 0:
+                self.assertEqual(before[0], tuple(vertex.co), "all non-distal geometry untouched")
+            else:
+                delta = vertex.co.z - before[0][2]
+                self.assertGreater(delta, 0)
+                self.assertLessEqual(delta, .1400001)
+                lifted += 1
+        self.assertGreater(lifted, 100)
+        self.assertTrue(all(edge.is_manifold for edge in bm.edges))
+        self.assertTrue(all(face.calc_area() > 1e-10 for face in bm.faces))
+        bm.free()
+
     def test_supported_original_body_clears_all_measured_floor_poses(self):
         _, rig, _ = model.measured_rig(CAPTURE)
         bm, weights, uvs = bmesh.new(), {}, {}
@@ -165,13 +191,14 @@ class HybridTests(unittest.TestCase):
         row = model.observed.capture_rows(BODY_REVIEW)[2]
         vertices = [tuple(v.co) for v in bm.verts]
         influences = [weights[v] for v in bm.verts]
-        samples = [row["idleSample"]] + row["movementSamples"]
+        samples = model.observed.pose_samples(row)
         self.assertGreaterEqual(len(samples), 4)
-        for sample in samples:
+        for phase, sample in samples:
             points = model.observed.replay(vertices, influences, sample, hybrid_support=True)
             floor = sample["lowestVertexFloor"]["hitPoint"][1]
             clearance = min(p[1] for p in points) - floor
-            self.assertGreaterEqual(clearance, -.00001, "no original vertex below measured floor")
+            self.assertGreaterEqual(clearance, -.00001,
+                                    "no original vertex below measured floor: " + phase + str(sample["frame"]))
             self.assertLess(clearance, .006, "authored support remains within 6mm, not the former 31cm float")
         bm.free()
 

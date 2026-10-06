@@ -13,9 +13,13 @@ spear gap0.37510m, tail gap0.16190m, distal coil floor minimum-0.112885m.
 Research completeness does not waive these findings. Native unreadable mesh
 remains untouched; explicit bounds metadata never masquerades as vertices.
 Actual0951581493121Z snapshot restored09:59:49UTC,136/.117/tree;
-no game/lease/lock/staging/save write. Next original distal-coil correction,
-bounded two-palm weapon mounting and captured attack-pose replay, then new
-exact-artifact proof. No production hook/new registration or S17 qualification.
+no game/lease/lock/staging/save write. Current source corrects original distal
+coil geometry and the instance-only two-palm mount. v9 export independently
+byte-reproduced; all a096/7ebb sampled poses clear the floor offline.10 replay/
+9 hybrid/4 winding checks,231 focused/2033 registered and incremental compile
+PASS;24 original-pose panels with representative attack art inspected.
+Next full exact prelaunch and47-assertion smoke/body batch; no production
+hook/new registration or S17 qualification.
 [Nine preserved attempts and exact hashes](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-EVIDENCE.json).
 
 [Historical7f S17-only authored winding correction](assets-source/original-models/sprint17-serpents/SOURCE.md):

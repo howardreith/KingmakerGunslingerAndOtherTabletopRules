@@ -14,35 +14,73 @@ import struct
 
 KEYS = ("viper", "constrictor-snake", "salamander")
 HYBRID_SUPPORT = "KMG_SalamanderSupport"
+BODY_SCOPE = "original body binding/movement/lifetime only; not printed profile or attack/contact qualification"
+CONTACT_SCOPE = "request-local body/native attack/contact research; not printed profile or final visual qualification"
 
 
 def capture_rows(path):
     rows = json.loads(Path(path).read_text(encoding="utf-8"))
+    return validate_capture(rows)
+
+
+def pose_samples(row):
+    """Retain phase identity; no synthetic poses or inferred contact frames."""
+    return ([("idle", row["idleSample"])] +
+            [("movement", sample) for sample in row["movementSamples"]] +
+            [("attack", sample) for sample in row.get("attackPoseSamples", [])] +
+            [("contact", contact["bodyPose"]) for contact in row.get("nativeAttackContacts", [])
+             if "bodyPose" in contact])
+
+
+def validate_capture(rows):
     if not isinstance(rows, list) or [r.get("key") for r in rows] != list(KEYS):
         raise ValueError("not the closed three-body capture")
     for row in rows:
         if row.get("sourceCreature") != ("salamander" if row["key"] == "salamander" else "purple-worm"):
             raise ValueError("wrong original-body source")
-        if not row.get("scope", "").startswith("original body binding/movement/lifetime only"):
+        if row.get("scope") not in (BODY_SCOPE, CONTACT_SCOPE):
             raise ValueError("not original-body research")
-        samples = [row["idleSample"]] + row["movementSamples"]
-        if not 4 <= len(samples) <= 81:
+        if not isinstance(row["movementSamples"], list) or not 3 <= len(row["movementSamples"]) <= 80:
             raise ValueError("incomplete or unbounded pose capture")
-        for sample in samples:
+        attacks = row.get("attackPoseSamples", [])
+        if (not isinstance(attacks, list) or (attacks and not 3 <= len(attacks) <= 160) or
+                (attacks and row["scope"] != CONTACT_SCOPE)):
+            raise ValueError("incomplete, unbounded or undeclared attack capture")
+        contacts = row.get("nativeAttackContacts", [])
+        if (not isinstance(contacts, list) or len(contacts) > 12 or
+                (contacts and row["scope"] != CONTACT_SCOPE)):
+            raise ValueError("unbounded or undeclared native contact capture")
+        for contact in contacts:
+            if "bodyPose" in contact and contact["bodyPose"]["frame"] != contact["frame"]:
+                raise ValueError("contact pose belongs to a different frame")
+        original_names = None
+        for phase, sample in pose_samples(row):
+            if (not isinstance(sample["frame"], int) or sample["frame"] < 0 or
+                    not sample.get("finite") or not sample.get("poseFinite")):
+                raise ValueError("invalid measured frame")
             transforms = sample["skinTransforms"]
             names = [t["name"] for t in transforms]
             expected = (28 if HYBRID_SUPPORT in names else 27) if row["key"] == "salamander" else 16
             if len(names) != expected or len(set(names)) != len(names) or (
                     row["key"] != "salamander" and HYBRID_SUPPORT in names):
                 raise ValueError("incomplete or ambiguous current frame")
+            if original_names is not None and set(names) != original_names:
+                raise ValueError("driver identity changed between captured frames")
+            original_names = set(names)
             for transform in transforms:
                 matrix = transform["skinToWorldRowMajor"]
                 if len(matrix) != 16 or not all(math.isfinite(v) for v in matrix):
                     raise ValueError("invalid current matrix")
+            renderer = sample["rendererLocalToWorldRowMajor"]
+            if len(renderer) != 16 or not all(math.isfinite(v) for v in renderer):
+                raise ValueError("invalid current renderer frame")
             for field in ("actorFloor", "lowestVertexFloor"):
                 floor = sample[field]
                 if (not floor["rayHit"] or floor["ownedCollider"] or
                         floor["layerMask"] != "0x200101" or floor["clearance"] is None or
+                        not math.isfinite(floor["clearance"]) or
+                        len(floor["hitPoint"]) != 3 or len(floor["normal"]) != 3 or
+                        not all(math.isfinite(v) for v in floor["hitPoint"] + floor["normal"]) or
                         abs(floor["normal"][1] - 1) > 1e-6):
                     raise ValueError("replay needs the measured flat floor, not an actor/nav origin")
     return rows
@@ -157,13 +195,13 @@ def main():
         path = Path(args.mesh_directory) / (row["key"] + "-mesh.json")
         mesh = decode_mesh(path)
         samples = []
-        for sample in [row["idleSample"]] + row["movementSamples"]:
+        for phase, sample in pose_samples(row):
             support = HYBRID_SUPPORT in mesh["payload"]["bones"]
             if support and row["key"] != "salamander":
                 raise ValueError("support driver on non-hybrid original mesh")
             points = replay(mesh["vertices"], mesh["weights"], sample, support)
             floor = sample["lowestVertexFloor"]["hitPoint"][1]
-            samples.append(dict(frame=sample["frame"], minimumClearance=min(p[1] for p in points) - floor,
+            samples.append(dict(phase=phase, frame=sample["frame"], minimumClearance=min(p[1] for p in points) - floor,
                                 capturedMinimumClearance=sample["lowestVertexFloor"]["clearance"],
                                 belowFloorVertices=sum(p[1] < floor - 1e-4 for p in points)))
         report["bodies"].append(dict(key=row["key"], meshSha256=hashlib.sha256(path.read_bytes()).hexdigest(),

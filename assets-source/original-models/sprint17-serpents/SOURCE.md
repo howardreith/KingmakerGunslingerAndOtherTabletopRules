@@ -8,11 +8,37 @@ driver PASS, exact actual restoration09:59:49UTC. Snake native bite gaps0;
 separate hybrid records actual spear/tail events and owned resource cleanup.
 Hybrid left hand remains0.638m off the spear axis; conservative spear gap0.375m,
 tail gap0.162m, distal original coil floor minimum-0.112885m. These are NOT
-accepted final visuals. Next correct only original distal-tail geometry and
-owned two-palm mounting, with full captured attack-pose replay and new exact
-runtime proof. No native geometry/animation export or native-bone rewrite.
+accepted final visuals. Current v9 source corrects only original distal-tail
+geometry, with a separate bounded owned two-palm mount. New exact runtime
+proof remains mandatory. No native geometry/animation export or native-bone rewrite.
 All earlier prototypes/evidence remain preserved; headings below are historical.
 HumanReview: NOT_PERFORMED_NONBLOCKING.
+
+### Current v9 correction -- source/offline only
+
+Mesh `bd790df1e258fa6190ef48a2e68f0beb5eaeba6d035d51eeb3aaefc5cbb9a60b`
+is independently byte-reproduced.2592 vertices/5072 triangles/28 drivers remain.
+The original distal cross section rises at most14cm with a smooth tail3-weight
+taper. Every weight, UV, native binding, upper-body and horizontal coordinate
+is unchanged; normals regenerate from the original corrected geometry.
+Paint and both snake payloads are unchanged. No captured transforms ship.
+
+Closed private replay now includes actual attack captures and validates their
+scope, count, finite matrices, stable driver identity and measured flat floor.
+10 replay/9 hybrid/4 winding checks PASS. Every a096 and7ebb sampled hybrid
+pose clears the floor. Exact7ebb replay support4.9999..5.0005mm, versus former
+minimum-112.885mm/120 penetrated vertices. This is NOT a new live result.
+Private `salamander-prototype-v9/review-7ebb` contains24 clay/textured panels,
+including first/lowest/last attack poses; representative lowest-attack
+three-quarter texture and side clay inspected as ART ONLY.
+
+The instance-only spear mount uses the existing two native palm transforms,
+the borrowed unreadable mesh and the existing renderer. Rear grip is10% from
+the butt; both palms must fit the unscaled shaft with tip clearance. No
+hand/arm bone, animation, native controller, target or combat-reach edit.
+Native destruction/rollback must reprove the exact captured transforms and
+resources. Next47-assertion research batch requires actual contact and grip,
+not merely complete metadata. Final visuals/gameplay remain NOT QUALIFIED.
 
 ## Authored winding correction -- historical source checkpoint
 
