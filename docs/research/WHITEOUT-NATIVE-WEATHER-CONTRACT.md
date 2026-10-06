@@ -185,3 +185,21 @@ live snapshot restored byte-for-byte and the lease Completed.
 
 The continuation handoff will record final clean-source attack qualification.
 No attack adapter or Whiteout provider exists at this weather-only checkpoint.
+
+
+## Final disposable-process foundation qualification - 2026-10-06
+
+Current continuation outcome: **WEATHER-FIXTURE-QUALIFIED** and **QUALIFIED
+UNPUBLISHED FOUNDATION**. The historical scene-reference blocker above remains
+accurate under its original mission; the owner accepted native scene replacement
+inside the one-way no-save process only. Two complete fresh-process runs at clean
+commit `db3725d7eb665731c3b8c238217cd39f2d0a65b8` passed 65/65 each, followed by
+working-save smoke 11/11 on the same exact artifact. Actual indoor Rain/Snow Light
+kept the real provider inactive; outdoors both activated it. Each complete run
+restored both weather scopes, removed all owned facts/actors/listeners/forces,
+recorded eight mutations and ten exact native notifications, and auto-exited.
+The shared acquired 254-file live snapshot was restored byte-for-byte and the
+lease Completed. No scene-reference restoration after unloading is claimed; no
+save-writing API was observed. See the [continuation handoff](../../CODEX-WHITEOUT-DISPOSABLE-PROCESS-CONTINUATION-HANDOFF-2026-10-05.md)
+for exact artifact hashes, PIDs, evidence and publication-negative ledger.
+WhiteoutPublished: false.
