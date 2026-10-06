@@ -36,6 +36,39 @@ Phase 2C remains authorized but deferred until Phase 2B owner acceptance.
 
 [Exact artifact, request, result and restoration hashes](EXPANDED-SUMMONING-SPRINT17-SPEAR-CARRIER-EVIDENCE.json).
 
+## Detailed human bind-palette follow-up — source only
+
+The containing source checkpoint adds private bind metadata for only the
+already observed Guard Captain prefab `ced3729f4b4abab4da4ef63d8489f857`.
+It groups the combined renderer's palette by actual Transform reference and
+records every contributing slot, finite/invertible status, first bind frame,
+and maximum duplicate-matrix difference. It never deduplicates by name,
+changes a native asset, creates a campaign NPC or adopts a rig.
+
+The sixteenth survey assertion requires the observed 1776-slot / 177-transform
+structure and complete finite, invertible measurement. Agreement is a separate
+recorded finding at tolerance 0.00001, not silently made true or interpreted
+as contact/animation proof. Disagreement must prevent use as an authoring bind.
+Raw coordinates remain private evidence; no native geometry or curve export.
+
+Focused 238/238, 2040 registered, static validator and incremental exact
+compile PASS. The first focused test used decimal-derived floats with an
+incorrect exact-equality expectation; its failure log is retained. Binary-exact
+test inputs corrected the fixture only. Product comparison was unchanged.
+Next: commit/push exact source, full prelaunch, then fresh-Steam smoke11 and
+complete survey16 with the existing lease-first restoration protocol.
+
+A bounded offline alternative audit found the historical Unity2018 editor
+activation failure in
+`docs/EXPANDED-SUMMONING-PTERANODON-CUSTOM-ASSET-BUILD.md` and its archived log.
+Both installed executable versions are2018.4.10.10503941; no editor launch,
+activation attempt, credential access or installation was performed.
+Unity's [2018.4 SetCurve documentation](https://docs.unity3d.com/2018.4/Documentation/ScriptReference/AnimationClip.SetCurve.html)
+limits runtime curve authoring to legacy clips; non-legacy authoring is
+editor-only. No runtime flag workaround or animation-system replacement is
+being attempted. The native-human binding route remains under investigation;
+this historical toolchain issue is not a new phase-wide blocker.
+
 ## Source scope
 
 The closed 8022fee2 census proves that none of the eleven recorded Lizardfolk

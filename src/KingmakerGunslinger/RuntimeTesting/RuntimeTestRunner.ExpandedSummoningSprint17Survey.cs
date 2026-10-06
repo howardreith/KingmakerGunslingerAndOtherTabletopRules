@@ -263,6 +263,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 for (Transform next = bone; next != null && next != prefab.transform; next = next.parent)
                                     names.Add(next.name);
                                 names.Reverse(); return (JToken)new JValue(string.Join("/", names.ToArray())); })) }));
+                    if (actualSpearSources && native.AssetGuid == SerpentineRigSurveyPolicy.HumanSpearBlueprint)
+                        CaptureSprint17HumanBindPalette(native, prefab, skins);
                     bool unchanged = prefab.GetComponentsInChildren<UnitAnimationManager>(true).SequenceEqual(managers) &&
                         (manager == null || ReferenceEquals(manager.AnimationSet, set)) &&
                         (set == null || (actions == null ? set.Actions == null : set.Actions != null && set.Actions.SequenceEqual(actions))) &&
@@ -282,6 +284,94 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Negative/missing style is a finding, not compatibility, adopted playback, grip or contact proof."));
             }
             finally { File.WriteAllText(path, document.ToString(Formatting.Indented)); }
+        }
+
+        private void CaptureSprint17HumanBindPalette(BlueprintUnit native, UnitEntityView prefab,
+            SkinnedMeshRenderer[] skins)
+        {
+            if (native.AssetGuid != SerpentineRigSurveyPolicy.HumanSpearBlueprint ||
+                native.Prefab.AssetId != SerpentineRigSurveyPolicy.HumanSpearPrefab)
+                throw new InvalidOperationException("Unreviewed human bind-palette source.");
+            var body = skins.Single(value => value.name == SerpentineRigSurveyPolicy.HumanSpearBody);
+            Transform[] bones = body.bones;
+            Matrix4x4[] binds = body.sharedMesh.bindposes;
+            if (bones.Length == 0 || bones.Length > 4096 || bones.Length != binds.Length ||
+                bones.Any(value => value == null || !value.IsChildOf(prefab.transform)))
+                throw new InvalidOperationException("Incomplete or foreign human bind palette.");
+            var rows = new JArray();
+            bool finite = true;
+            bool invertible = true;
+            float maximum = 0;
+            foreach (var group in bones.Select((bone, index) => new { Bone = bone, Index = index }).GroupBy(value => value.Bone))
+            {
+                int first = group.First().Index;
+                float[] baseline = Enumerable.Range(0, 16).Select(cell => binds[first][cell]).ToArray();
+                float? delta = 0;
+                foreach (var slot in group)
+                {
+                    float? difference = SerpentineRigSurveyPolicy.MatrixDifference(baseline,
+                        Enumerable.Range(0, 16).Select(cell => binds[slot.Index][cell]).ToArray());
+                    if (!difference.HasValue) { delta = null; break; }
+                    delta = Math.Max(delta.Value, difference.Value);
+                }
+                finite &= delta.HasValue;
+                float determinant = binds[first].determinant;
+                bool usableInverse = SerpentineRigSurveyPolicy.Finite(determinant) && Math.Abs(determinant) > 1e-12f;
+                invertible &= usableInverse;
+                if (delta.HasValue) maximum = Math.Max(maximum, delta.Value);
+                Transform bone = group.Key;
+                var path = new List<string>();
+                for (Transform next = bone; next != null && next != prefab.transform; next = next.parent) path.Add(next.name);
+                path.Reverse();
+                var row = new JObject { ["name"] = bone.name, ["path"] = string.Join("/", path.ToArray()),
+                    ["parent"] = bone.parent == null ? null : bone.parent.name,
+                    ["firstPaletteSlot"] = first, ["paletteSlots"] = new JArray(group.Select(value => value.Index)),
+                    ["finite"] = delta.HasValue, ["invertible"] = usableInverse,
+                    ["maximumBindDifference"] = delta.HasValue ? new JValue(delta.Value) : JValue.CreateNull() };
+                if (delta.HasValue && usableInverse)
+                {
+                    // Private rig metadata, as in the existing survey. No
+                    // native geometry, texture or animation curve export.
+                    // A disagreeing duplicate is explicitly NOT a safe bind.
+                    Matrix4x4 inverse = binds[first].inverse;
+                    Quaternion rotation = Quaternion.LookRotation(inverse.GetColumn(2), inverse.GetColumn(1));
+                    Vector3 position = inverse.MultiplyPoint3x4(Vector3.zero);
+                    Vector3 sampled = prefab.transform.InverseTransformPoint(bone.position);
+                    bool frameFinite = new[] { position.x, position.y, position.z, rotation.x, rotation.y,
+                        rotation.z, rotation.w, sampled.x, sampled.y, sampled.z }.All(SerpentineRigSurveyPolicy.Finite);
+                    row["derivedFrameFinite"] = frameFinite;
+                    finite &= frameFinite;
+                    if (frameFinite)
+                    {
+                        row["firstBindPosition"] = SurveyVector(position);
+                        row["firstBindRotation"] = new JArray(rotation.x, rotation.y, rotation.z, rotation.w);
+                        row["sampledViewPosition"] = SurveyVector(sampled);
+                    }
+                }
+                rows.Add(row);
+            }
+            var document = new JObject {
+                ["scope"] = "one exact detached human prefab; private bind metadata only; no actor, binding or animation adoption",
+                ["space"] = "native combined renderer-local bind frame; no native geometry, texture or animation curves",
+                ["blueprint"] = native.AssetGuid, ["prefab"] = native.Prefab.AssetId,
+                ["bodyRenderer"] = body.name, ["rootBone"] = body.rootBone == null ? null : body.rootBone.name,
+                ["paletteCount"] = bones.Length, ["uniqueTransformCount"] = rows.Count,
+                ["allFinite"] = finite, ["allInvertible"] = invertible,
+                ["maximumDuplicateBindDifference"] = finite ? new JValue(maximum) : JValue.CreateNull(),
+                ["duplicateBindTolerance"] = .00001f, ["allDuplicateBindsAgree"] = finite && maximum <= .00001f,
+                ["rendererToViewPosition"] = SurveyVector(prefab.transform.InverseTransformPoint(body.transform.position)),
+                ["rendererLossyScale"] = SurveyVector(body.transform.lossyScale),
+                ["viewLossyScale"] = SurveyVector(prefab.transform.lossyScale),
+                ["components"] = new JArray(prefab.GetComponentsInChildren<Component>(true).Where(value => value != null)
+                    .Select(value => value.GetType().FullName).Distinct().OrderBy(value => value, StringComparer.Ordinal)),
+                ["bones"] = rows };
+            string file = "sprint17-human-bind-palette.json";
+            File.WriteAllText(Path.Combine(_request.EvidenceDirectory, file), document.ToString(Formatting.Indented));
+            _sprint17SurveyAssertions.Add(Assertion("sprint17-native-human-bind-palette",
+                "exact observed1776-slot/177-transform source; all duplicate differences measured, not waived",
+                "file=" + file + ";slots=" + bones.Length + ";unique=" + rows.Count + ";finite=" + finite + ";maxDelta=" + maximum,
+                bones.Length == 1776 && rows.Count == 177 && finite && invertible,
+                "Structural research completeness only. Duplicate disagreement remains evidence against binding; no pose/contact qualification."));
         }
 
         private static JObject CaptureSprint17ViewMetadata(UnitEntityView view, string key,
