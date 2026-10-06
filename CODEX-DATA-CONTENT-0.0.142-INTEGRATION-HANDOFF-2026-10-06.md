@@ -1,0 +1,288 @@
+# DATA content 0.0.142 integration handoff — 2026-10-06
+
+Disposition: BLOCKED-OBJECTIVE-WHITEOUT-ICON-AND-INHERITED-RELEASE-CATALOG.
+The independent preflight, offline art-review packet, provenance checks and
+transplant inventory are complete. Production transplantation, icon intake,
+trait registration/publication and release qualification have not begun.
+
+TraitsPublished: false
+MasterMerged: false
+TagCreated: false
+ReleasePublished: false
+
+## Exact topology and ownership
+
+| Surface | Exact state |
+| --- | --- |
+| Repository | howardreith/KingmakerGunslingerAndOtherTabletopRules |
+| Origin | https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules.git |
+| Master | 2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a |
+| v0.0.141 annotated tag object | 95b7d80d5a474a573e9478d2c951614f86b00a71 |
+| v0.0.141 peeled commit / exact isolated base | 97f0a966b3219ce0122626a492529b509e1db880 |
+| Released commit subject | Release Expanded Summoning Phase 2A checkpoint |
+| Read-only readiness tip | 38691cff652d1ed38314984c9ad74549639f3802 |
+| Readiness qualified source parent | 05237b10f0a2311c0118e1866bb0fc7a1a447de0 |
+| DATA provenance boundary | 5482db429bd3c4009a031aa733a3091edfa5fe5e |
+| New branch | codex/data-content-traits-0.0.142-integration-2026-10-06 |
+| New worktree | C:/Dev/KingmakerGunslingerLab/worktrees/data-content-traits-0.0.142-integration-2026-10-06 |
+| Final evidence HEAD | The documentation-only commit containing this record; its exact local/remote SHA is emitted by the guarded push and recorded in the final closure receipt and task response |
+| Final clean/remote evidence | artifacts/mission/final-closure.json, finalized after the evidence commit and wrapper push |
+
+All three remote checkpoints matched the mission's exact values before and
+after the narrow fetch. The tag, master and readiness refs were not rewritten.
+The new branch was created directly at the peeled released commit.
+No merge, rebase, reset, cherry-pick, force push, tag or release occurred.
+
+Before creation: readiness was clean; all required selected files existed;
+no unfinished merge/rebase/cherry-pick/revert/bisect/sequencer was present.
+Only the root agent was active. No other owner used this integration path.
+No active Kingmaker process, runtime lease, deployment/staging transaction,
+compatibility lock or competing runtime/source helper was found.
+
+Required topology proof:
+
+- merge-base(origin/master, readiness) = 2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a.
+- rev-list count origin/master..readiness = 172.
+- Full changed-path list retained in artifacts/mission/master-to-readiness-paths.txt.
+- Readiness is not merged or cherry-picked wholesale.
+- This branch has only new intake/research documentation relative to the release
+  base; no post-release Summoning production or asset bytes are imported.
+- Every forbidden tree is checked byte-identical against 97f0a966....
+
+## Blocker 1: objective Whiteout icon defect
+
+CodexObjectiveVisualReview: FAIL
+OwnerAestheticApproval: NOT_RECORDED
+
+The selected refined Whiteout source is verified by its recorded source hash and
+initial/refinement lineage. At 32 pixels, dense high-frequency precipitation
+overwhelms the protected figure and the incoming arrow loses its recognizable
+attack shape. The grayscale 32px preview confirms the missing subject/attack
+hierarchy. A readable portrait at 128px does not meet the required 32px contract.
+
+This is the mission's objective asset hard stop. Crop-free ordinary downsampling
+did not resolve it. No crop, sharpening, generative edit, substitute, regenerated
+image, donor, placeholder, waiver or claimed owner approval was introduced.
+No partial-four trait publication occurred.
+
+Three other sources pass the objective review; that does not constitute owner
+aesthetic approval. Canonical production intake is deferred with the blocked
+all-four release slice. All review PNGs remain ignored and sources remain exact.
+
+Review packet:
+C:/Dev/KingmakerGunslingerLab/worktrees/data-content-traits-0.0.142-integration-2026-10-06/artifacts/mission/icon-review/
+
+It contains all four originals, 128/48/32 previews, grayscale 32px previews,
+contact-sheet.png, exact generation-prompts.json and edge/alpha diagnostics.
+The original RGB sources are opaque; crop-free exports are independently checked
+128x128, 8-bit, noninterlaced RGBA PNGs. Bright/alpha edge counts are diagnostics,
+not an automatic claim that a semantic subject fits or is readable.
+
+Curated report:
+reports/elemental-character-traits/ICON-INTAKE-OBJECTIVE-REVIEW-2026-10-06.json.
+It records all exact prompts, refinements, source/export hashes and objective
+findings. No PNG is installed, protected or mapped into a production consumer.
+
+| Concept | Selected source SHA-256 | Review 128px export SHA-256 | Objective result |
+| --- | --- | --- | --- |
+| fiery-glare | a3ed28c9a92940f60cee501ecd429e7e4d7c5bd7d8f6f209124985d6863005e3 | 0ff889c3321e0d30b82e9d8c2fc5b80f81f134b48c636f6fc231826fccf993f5 | PASS |
+| stoic-dignity | f821992b390be1cc214a137f54c4122c2d460c542805023359a79bcb66849ac3 | e1f619d17470cff018799db9b1c6554cf11e6b0626723360603f332ce7fb6f51 | PASS |
+| aerial-observer | 77d3196f92d4d11fee14d13d3b32de5063c8bf27b99fa6ca0295e02bd87b920e | 462408b925f912e2a1063ac9e8a0ff25b33c68b80fcccb1fa85d05f706fc117f | PASS |
+| whiteout | 488e9932c914613d2be736712dbe2b351e0d5e6ef090fe67f1e6cc731713349e | 53e0a9c98c3b56e65235cebd6d3b4b8b4a81641602994fe65026d2c3cde30cbf | FAIL |
+
+All four source hashes are distinct; all four review-export hashes are distinct.
+Original dimensions: 1254x1254, 8-bit RGB PNG.
+Tool: built-in image_gen in the preceding authorized art-generation session.
+No image model was called by this integration mission.
+Reference images were inspected for family only; none was supplied to initial
+generation. Aerial Observer and Whiteout selected files are the refined versions;
+their initial inputs and exact prompt lineage were verified from the selected
+artifact directory, without using temporary exec-* sources.
+
+Planned source/export/runtime paths remain:
+assets-source/original-icons/icon-overhaul-v2/production/sources/<slug>.png,
+assets-source/original-icons/icon-overhaul-v2/production/exports/<slug>.png,
+assets/game/icons/<slug>.png. None was created in this integration tree.
+No active catalog/provenance/protected-assignment entry was changed.
+No approved source/export hash exists for these new images.
+
+Future intended consumers: Fiery feature and activatable share fiery-glare;
+Stoic, Aerial and Whiteout features each use their own concept. Hidden provider,
+activation/recipient buffs and area get no independent icon. Current touched
+production consumers: zero.
+
+## Blocker 2: exact released base fails its inherited catalog gate
+
+The canonical complete test-domain command was run before production changes.
+It stopped in repository validation before compiling/running domain tests:
+
+FAIL: Hash mismatch: assets-source/original-icons/expanded-summoning/icon-manifest.json
+FAIL: Hash mismatch: blueprints/blueprints.json
+
+Both files and the catalog remain byte-identical to the exact released tag.
+The failure therefore precedes and is independent of any DATA transplant.
+
+| Authority path | Catalog expected SHA-256 | Actual released SHA-256 |
+| --- | --- | --- |
+| assets-source/original-icons/expanded-summoning/icon-manifest.json | f8f1a2e6dba3d420067befb2d5ea3cc4c40bc1c776a351debf61253467f712e6 | 40754cb1ce93473befaf10be1c4d0fce1296ef73c218d83c6a493f014d0c734d |
+| blueprints/blueprints.json | c3bedfa7fb8b9cab7f39ff775e73de4339c3870b662660008e2f67ec4246e87c | 63b9102ca821029d1e440cc68be118d3ef06de9f9036428ee13b5c9e2d3ba356 |
+
+The root icon validator rejects these exact frozen authority pins.
+No hash was changed to make validation pass, no validator was weakened, and no
+later Summoning manifest or registration was imported. Repairing that unrelated
+frozen authority is outside the immutable Summoning baseline boundary. The
+independent firearm/vendor production slice cannot obtain its required
+repository/test/build/package qualification on this unqualified base.
+A qualified-base correction or explicit owner boundary decision is required
+before production engineering resumes; no alternative SHA was substituted.
+
+The failed canonical command/log are retained. No repeated blind attempt,
+test-only bypass, inherited Summoning repair or false PASS was used.
+
+## Transplant inventory
+
+docs/integration/DATA-0.0.142-TRANSPLANT-MANIFEST.md inventories all 21 commits
+in the exact DATA provenance range and every changed path, with the required
+PORT, PORT-WITH-MANUAL-RECONCILIATION, DOCUMENTATION-ONLY,
+TEST/RUNTIME-EVIDENCE-ONLY, DROP-PHASE2A-DEPENDENCY, DROP-EXPANDED-SUMMONING
+and SUPERSEDED rules. Classifications are proposed dispositions.
+
+No production/test/runtime source has been ported, no generic dependency
+introduced, and no new mechanic implemented. A future per-file dependency audit
+is specified but not falsely claimed complete. Shared registrations would be
+reconciled against the release-base versions; no later Phase 2A count pin or
+shared file may be copied wholesale. No branch is collapsed or deleted.
+
+## Trait ledger
+
+The 11 frozen planned identities remain unchanged in the read-only source plan.
+They are not added to this release branch's live manifest:
+
+| Planned symbol suffix | Frozen GUID | Current integration status |
+| --- | --- | --- |
+| FieryGlare.Feature | ca5d4d43d35548679ed6b533f055cb20 | NOT PORTED / NOT REGISTERED |
+| FieryGlare.Toggle | 15549c6f936f4000a7c476f5d50d2585 | NOT PORTED / NOT REGISTERED |
+| FieryGlare.ActivationBuff | 7883b258441e4e179b07cacbdc5416ac | NOT PORTED / NOT REGISTERED |
+| StoicDignity.Feature | 51faa3c273df41738553c18c088ef565 | NOT PORTED / NOT REGISTERED |
+| StoicDignity.ProviderBuff | 46e6b683b15a4811886730027994e58d | NOT PORTED / NOT REGISTERED |
+| StoicDignity.Area | b3f85f9663b44129b222ae69bb3e8cd3 | NOT PORTED / NOT REGISTERED |
+| StoicDignity.RecipientBuff | 461f898838864ff0b50ab355efa0c644 | NOT PORTED / NOT REGISTERED |
+| AerialObserver.Feature | 4064cbe37690440a8650ea5689354a65 | NOT PORTED / NOT REGISTERED |
+| AerialObserver.ProviderBuff | 12f9760b84264e178af8a5251d559242 | NOT PORTED / NOT REGISTERED |
+| Whiteout.Feature | 7aa5dc9716e4437daa8e00506f6ddd83 | NOT PORTED / NOT REGISTERED |
+| Whiteout.ProviderBuff | 901f9f54462846149cf7fb24ec04a5a5 | NOT PORTED / NOT REGISTERED |
+
+No visible localization, icon assignment, selector entry, race/feat grant,
+player acquisition, saved trait identity, module coordinator or new Harmony
+patch was added. Correct race prerequisites, resolve-or-create native graph,
+all-four rollback, settings notifications, respec/player persistence and
+mechanical runtime matrices remain unimplemented/unqualified on this base.
+Prior mechanics/artifacts remain preserved read-only provenance.
+
+FieryGlarePublished: false
+StoicDignityPublished: false
+AerialObserverPublished: false
+WhiteoutPublished: false
+
+## Content ledger
+
+Firearm-description and Model D work remain qualified only on their historical
+DATA branch/artifact. They were not transplanted or requalified here.
+Nodachi remains an existing complete Heirloom option, with no new claim or change.
+The intended Model D rows and existing-stock limitation remain frozen; this
+mission changes no merchant stock or existing-save inventory.
+Regional, BTSL, Better Vendors, named-loot and Skeletal Salesman paths remain
+exactly the released base bytes. No firearm balance/mechanics or vendor redesign.
+
+HumanTooltipAcceptance: PENDING
+HumanMerchantAcceptance: PENDING
+OwnerAestheticApproval: NOT_RECORDED
+
+docs/DATA-0.0.142-MANUAL-ACCEPTANCE.md lists all future icon/toggle/tooltip/
+selection/firearm/merchant owner rows. No human result is inferred.
+
+## Validation and runtime ledger
+
+| Check | Actual result |
+| --- | --- |
+| Origin/master/tag/source/ancestry/clean ownership | PASS |
+| Canonical baseline repository/domain command | FAIL inherited catalog hashes; domain execution not reached |
+| Documentation closeout repository validation | FAIL same two untouched inherited catalog hashes |
+| Evidence audit / helper syntax / tracked-file scope | PASS; no production source changed |
+| Original source copy/hash/dimensions | PASS 4/4 |
+| Selected refinement input hashes / final hash lineage | PASS 2/2 refined sources |
+| Distinct original and preview-export hashes | PASS 4 and 4 |
+| Crop-free GDI+ downsampling and 128 RGBA PNG contract | PASS 4/4 |
+| Objective composition review | PASS 3; FAIL Whiteout |
+| Owner aesthetic/native UI review | NOT RECORDED / NOT PERFORMED |
+| Manifest/catalog/protected-assignment production intake | NOT PERFORMED |
+| Domain baseline/final executed count | NOT AVAILABLE: canonical gate stopped before domain execution |
+| New focused domain tests / source | None |
+| Release build/package/deterministic/strict gate | NOT RUN: prerequisites blocked |
+| New DLL SHA/MVID/ZIP/source fingerprint/package count | None: no candidate built |
+| Preflight/game/content/Whiteout/persistence/smoke runs | None: no game launch |
+| Save writes / raw-save operations | 0 / 0 |
+| Live installation / save transaction | Untouched; no snapshot/deployment/lease/backup/restoration needed |
+| Git diff/staged/scope/secret/private/binary/path/ancestry audits | PASS evidence-only scope; staged/remote closure receipt finalized after commit |
+| Forbidden Summoning trees | Byte-identical to released base |
+
+Exact canonical failed commands:
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/test-domain.ps1 -Configuration Release -Clean
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/validate-repository.ps1
+
+Ignored evidence:
+artifacts/mission/baseline-domain.log,
+artifacts/mission/documentation-validation.log,
+artifacts/mission/evidence-audit.json,
+artifacts/mission/intake-evidence.json,
+artifacts/mission/transplant-inventory.json,
+artifacts/mission/master-to-readiness-paths.txt,
+artifacts/mission/release-to-readiness-paths.txt,
+artifacts/mission/icon-review/,
+artifacts/mission/final-closure.json.
+
+Review downsampling uses the existing production export path's exact GDI+ settings:
+HighQualityBicubic, HighQuality pixel/compositing, TileFlipXY, ARGB32 SourceCopy,
+full source rectangle. No image model, crop, sharpening or chroma removal.
+Curated evidence assertions additionally verify selected source hashes against
+generated-sources.json, edit input hashes against refinement-inputs.json and
+PNG IHDR 128x128 / bit depth 8 / color type 6 / interlace 0.
+
+Meaningful failures: the pristine base's two catalog-pin mismatches and the
+Whiteout 32px objective defect above. No production fix was attempted outside
+scope. An intake-script quoting error was corrected before writing its evidence;
+it changed no production byte. Windows newline translation in two new evidence files was normalized to UTF-8 LF before their successful audit.
+
+All Summoning branches/worktrees/PRs/source/assets/scenarios/publication remain
+untouched. Only read-only released authority comparison was needed to diagnose
+the inherited gate. No Lunge, Earthsense, other trait/backlog, branch integration
+of readiness, Phase 2B, release/tag/merge or save migration work began.
+
+## PR and release ledger
+
+PR number/state: NOT CREATED.
+No technically qualified coherent 0.0.142 candidate exists, so the condition for
+opening the release draft PR has not been met. This evidence branch is not a
+release candidate. Version metadata remains 0.0.141; no release-note feature
+claim, tag or GitHub release was created.
+
+Intended future PR: base master; this isolated branch;
+Release 0.0.142: Elemental race traits and content polish.
+Human visual/tooltip/merchant gates remain pending. Persistence is NOT ATTEMPTED;
+the writable-fixture contract was not borrowed from any Summoning scenario.
+
+MasterMerged: false
+TagCreated: false
+ReleasePublished: false
+
+## Required owner unblock
+
+1. Provide a new authorized Whiteout art revision that meets the required 32px
+   subject/attack reading, or explicitly revise that objective asset contract.
+   This mission forbids generating, editing or substituting the selected source.
+2. Supply a qualified released-base catalog correction or explicitly authorize
+   the narrow unrelated frozen-authority reconciliation. No post-release
+   Summoning behavior/assets may be imported.
+
+The finite mission is stopped at these evidenced blockers; the read-only DATA
+sources and all production surfaces are preserved.
