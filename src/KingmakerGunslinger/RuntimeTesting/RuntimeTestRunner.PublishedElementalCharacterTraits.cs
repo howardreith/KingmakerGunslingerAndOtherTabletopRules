@@ -37,16 +37,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                 throw new InvalidOperationException("All-four publication unavailable: "+ElementalCharacterTraitPublicationCoordinator.Failure);
             var target=host.Contract.RaceTraits;var graph=ElementalCharacterTraitPublicationCoordinator.Graph;
             var hostMain=host.Contract.Assembly.GetType("ZFavoredClass.Main",false,false);
-            var traitSettings=hostMain?.GetField("settings",BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.Static)?.GetValue(null);
+            var settingsField=hostMain?.GetField("settings",BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.Static);
+            var traitSettings=settingsField?.GetValue(null);
             var traitsProperty=traitSettings?.GetType().GetProperty("enable_traits",BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.Instance);
-            if(traitsProperty==null || traitsProperty.PropertyType!=typeof(bool) || !traitsProperty.CanRead ||
-                !traitsProperty.CanWrite || traitsProperty.GetIndexParameters().Length!=0)
-                throw new InvalidOperationException("Exact reversible host traits-setting contract unavailable.");
+            var traitsBacking=traitSettings?.GetType().GetField("<enable_traits>k__BackingField",BindingFlags.NonPublic|BindingFlags.Instance);
+            if(traitSettings==null || traitSettings.GetType().FullName!="ZFavoredClass.Main+Settings" ||
+                settingsField.IsInitOnly || settingsField.FieldType!=traitSettings.GetType() ||
+                traitsProperty==null || traitsProperty.PropertyType!=typeof(bool) || !traitsProperty.CanRead ||
+                traitsProperty.CanWrite || traitsProperty.GetIndexParameters().Length!=0 ||
+                traitsBacking==null || traitsBacking.FieldType!=typeof(bool) || !traitsBacking.IsInitOnly)
+                throw new InvalidOperationException("Exact immutable native host settings contract unavailable.");
             bool originalTraits=(bool)traitsProperty.GetValue(traitSettings,null);
+            // The supported host reads immutable settings once in its constructor.
+            // No live GUI setter exists. Model the loaded OFF state with a private
+            // request-local shallow copy; never mutate the original object/file.
+            var memberwise=typeof(object).GetMethod("MemberwiseClone",BindingFlags.Instance|BindingFlags.NonPublic);
+            var disabledSettings=memberwise.Invoke(traitSettings,null);
+            traitsBacking.SetValue(disabledSettings,false);
+            if((bool)traitsProperty.GetValue(disabledSettings,null) ||
+                (bool)traitsProperty.GetValue(traitSettings,null)!=originalTraits)
+                throw new InvalidOperationException("Request-local native settings copy failed exact admission.");
             Action<bool> traits=enabled=>{
-                traitsProperty.SetValue(traitSettings,enabled,null);
-                if(!ElementalCharacterTraitPublicationCoordinator.Reconcile("qualification-exact-host-setting-"+enabled))
-                    throw new InvalidOperationException("Native traits-setting reconciliation failed.");
+                var live=settingsField.GetValue(null);
+                if(!ReferenceEquals(live,traitSettings) && !ReferenceEquals(live,disabledSettings))
+                    throw new InvalidOperationException("Foreign host settings replacement during owned fixture.");
+                settingsField.SetValue(null,enabled?traitSettings:disabledSettings);
+                if(!ElementalCharacterTraitPublicationCoordinator.Reconcile("qualification-exact-loaded-host-setting-"+enabled))
+                    throw new InvalidOperationException("Native loaded traits-setting reconciliation failed.");
             };
             var initialEntries=target.AllFeatures.ToArray();
             var foreign=initialEntries.Where(f=>!graph.Features.Contains(f)).ToArray();
@@ -121,7 +138,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     features.Select(f=>f.SelectComponents<ElementalCharacterTraitOwnedGrant>().Single().OwnedFact).SequenceEqual(originalGrants) &&
                     originalToggle.IsOn && !foreignFact.IsDisposed &&
                     ElementalCharacterTraitCatalog.Nodes().All(n=>ReferenceEquals(graph.Resolve(n.Symbol),library.BlueprintsByAssetId[n.Guid])),
-                    "exact native enable_traits property and reconciliation callback; no GUI/save callback; existing mechanics and stable IDs remain");
+                    "exact immutable native getter on request-local OFF settings copy; no original object/file mutation or GUI/save callback; existing mechanics remain");
                 traits(true);
                 TraitCheck(checks,"published-traits-on-canonical-reuse",ElementalCharacterTraitPublicationCoordinator.Published &&
                     target.AllFeatures.SequenceEqual(initialEntries) &&
@@ -164,11 +181,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             TraitCheck(checks,"published-fixture-cleanup",units.SequenceEqual(game.State.Units.All) &&
                 areas.SequenceEqual(game.State.AreaEffects.All) && party.SequenceEqual(game.Player.Party) &&
                 beforeFacts.All(p=>p.Key.Buffs.Enumerable.SequenceEqual(p.Value)) && clock==game.Player.GameTime &&
-                initialEntries.SequenceEqual(target.AllFeatures) && (bool)traitsProperty.GetValue(traitSettings,null)==originalTraits &&
+                initialEntries.SequenceEqual(target.AllFeatures) && ReferenceEquals(settingsField.GetValue(null),traitSettings) &&
+                (bool)traitsProperty.GetValue(traitSettings,null)==originalTraits &&
                 !_workingSaveSmoke.WriteObserved,
                 "exact preexisting scene/party/facts/time/selection; no save writes; request-local preview and actors removed");
             if(failure!=null) TraitCheck(checks,"published-native-execution",false,failure);
             var result=CreateResult(failure==null && checks.All(c=>c.Status=="PASS")?"PASS":"FAIL",checks,failure);
+            result.Diagnostics.Add("FavoredClassEnableTraits=IMMUTABLE_LOADED_SETTING; OFF control=request-local MemberwiseClone with exact getter/backing-field contract; original settings object and file untouched; no live host GUI transition claimed.");
             result.WorkingSaveSmoke=_workingSaveSmoke.Stop();return result;
         }
     }
