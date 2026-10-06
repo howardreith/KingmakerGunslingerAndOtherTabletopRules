@@ -71,9 +71,20 @@ namespace KingmakerGunslinger.RuntimeTesting
         // gap is usable evidence; an incidental event or missing measurement
         // is not. Final visual gates separately require actual contact.
         internal static bool IsMeasuredIssuedContact(bool ownedPair, bool executing,
-            bool opportunity, bool nativeContact, int vertices, float gap)
+            bool opportunity, bool nativeContact, int measuredPoints, float gap)
         { return ownedPair && executing && !opportunity && nativeContact &&
-            vertices > 0 && Finite(gap) && gap >= 0; }
+            measuredPoints > 0 && Finite(gap) && gap >= 0; }
+
+        // An unreadable native spear may expose bounds, not vertices. The
+        // end-centre estimate must include the full transverse uncertainty;
+        // never present a bounding-box corner as a measured surface vertex.
+        internal static float? ConservativeSpearEndGap(float endCentreGap, float transverseRadius)
+        {
+            if (!Finite(endCentreGap) || !Finite(transverseRadius) ||
+                endCentreGap < 0 || transverseRadius < 0) return null;
+            float upper = endCentreGap + transverseRadius;
+            return Finite(upper) ? (float?)upper : null;
+        }
 
         // A request-local ORIGINAL-mesh art diagnostic, never native geometry
         // or a renderer visibility/culling override. Preserve input ownership.

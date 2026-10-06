@@ -10,6 +10,25 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class ExpandedSummoningSprint17Tests
     {
+        internal static void NativeSpearBoundsRetainConservativeUncertainty()
+        {
+            Assertions.Equal((float?).25f, SerpentineRigSurveyPolicy.ConservativeSpearEndGap(.125f, .125f),
+                "The complete transverse uncertainty is added, never subtracted to pass contact.");
+            Assertions.Equal((float?)0, SerpentineRigSurveyPolicy.ConservativeSpearEndGap(0, 0),
+                "An exact zero is not confused with an unknown measurement.");
+            Assertions.Equal((float?)4.5f, SerpentineRigSurveyPolicy.ConservativeSpearEndGap(4, .5f),
+                "Research retains a large miss for diagnosis; it does not clamp to the acceptance limit.");
+            foreach (float invalid in new[] { -.01f, float.NaN, float.PositiveInfinity, float.NegativeInfinity })
+            {
+                Assertions.False(SerpentineRigSurveyPolicy.ConservativeSpearEndGap(invalid, .1f).HasValue,
+                    "Missing, negative or nonfinite end-centre evidence is rejected.");
+                Assertions.False(SerpentineRigSurveyPolicy.ConservativeSpearEndGap(.1f, invalid).HasValue,
+                    "Missing, negative or nonfinite uncertainty is rejected.");
+            }
+            Assertions.False(SerpentineRigSurveyPolicy.ConservativeSpearEndGap(float.MaxValue, float.MaxValue).HasValue,
+                "Overflow cannot become apparently valid geometry.");
+        }
+
         internal static void ContactResearchRequiresIssuedOwnedMeasuredEvents()
         {
             foreach (float gap in new[] { 0f, .25f, 8f })
