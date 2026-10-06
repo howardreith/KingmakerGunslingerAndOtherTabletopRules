@@ -1,0 +1,1372 @@
+{
+  "schemaVersion": 1,
+  "classification": "FAILED COMMAND SLICE43/51; TIMING HYPOTHESIS REJECTED AS REMEDY; ORIGINAL GEOMETRY CONTACT REMAINS SHORT; FULL SPRINT17 NOT QUALIFIED",
+  "authority": "Laptop sole owner; PR26 active; DATA PR27 salvage-only, zero ports",
+  "candidate": {
+    "commit": "474be538bf9b1ce89a700ed7fbe61eb0d9e8f528",
+    "branch": "codex/expanded-summoning-phase2b-sprints14-17",
+    "version": "0.0.141",
+    "sourceStateSha256": "2d45a0d7ea830c7cc746c52751ab15fd817f1e36f8697957492f1b195aab6e74",
+    "dllSha256": "d11fd25cd3ddbad9d1443f9e700d4486df87e34f4a65ed3d44d5443f88b271c8",
+    "dllMvid": "658b7c90-4e4f-4e04-81fd-d4de469f3bfd",
+    "zipSha256": "8f9e01b85dd43bba21dd6da6bd8d8df5e6542c707bb0c11990910ded3588bb19",
+    "packageMembers": 320,
+    "archive": "artifacts/sprint17-snake-commands-source-pass-474be538"
+  },
+  "prelaunch": {
+    "status": "PASS",
+    "focused": 259,
+    "domain": 2061,
+    "domainSeconds": 84.8,
+    "gateSeconds": 182.2,
+    "packageMembers": 320,
+    "cleanExactReferences": 14,
+    "strictPackage": true,
+    "standalonePreflight": 508,
+    "orchestration": 168,
+    "provenance": 17,
+    "persistence": [
+      11,
+      3,
+      19
+    ],
+    "crowd": [
+      5,
+      7
+    ]
+  },
+  "transaction": {
+    "batch": "artifacts/laptop-runtime-20261006T2214483190663Z",
+    "driver": "artifacts/Invoke-LaptopSprint17-SnakeCommands-Attempt4.ps1",
+    "status": "NOT-QUALIFIED",
+    "startedAtUtc": "2026-10-06T22:14:48.3658919Z",
+    "completedAtUtc": "2026-10-06T22:27:03.4374771Z",
+    "scenarioOrder": [
+      "working-save-smoke",
+      "disposable-expanded-summoning-snake-signatures",
+      "disposable-expanded-summoning-snake-commands"
+    ],
+    "runs": [
+      {
+        "scenario": "working-save-smoke",
+        "startedAtUtc": "2026-10-06T22:15:14.9241874Z",
+        "parameters": {},
+        "launcherOutcome": "Clean",
+        "exitCode": 0,
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T2215159664571Z-working-save-smoke",
+        "requestId": "20261006T2215159820403Z-84d93b9d0ced4095ac6f1f7e35f97ebb",
+        "requestSha256": "677f50a1a9527acd7485cb83c592279240bd513c5494413de6e1d5d7ca075cff",
+        "resultSha256": "a1a1c1c7bb4b819a502c4cf1d4ab477fff9f10f09f5ed14b9886860def0399ad",
+        "assertions": 11,
+        "passed": 11,
+        "failed": [],
+        "orchestrationSha256": "9fd37015b2462a8e90587b851ddc8c23fd68491cda0f61c55427d663ccd25d34",
+        "processId": 14564,
+        "processStartedUtc": "2026-10-06T22:15:17.0407492Z",
+        "scenarioStatus": "PASS",
+        "outcome": "PASS",
+        "completedAtUtc": "2026-10-06T22:18:09.0263815Z"
+      },
+      {
+        "scenario": "disposable-expanded-summoning-snake-signatures",
+        "startedAtUtc": "2026-10-06T22:18:15.0495352Z",
+        "parameters": {},
+        "launcherOutcome": "Clean",
+        "exitCode": 0,
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T2218158472048Z-disposable-expanded-summoning-snake-signatures",
+        "requestId": "20261006T2218158597209Z-6f8808ea5eb847a7820deb03ce38de03",
+        "requestSha256": "506eda5e9aaeec50ec8a5eefe201cb93ebdddfcfaa3d2c9a944196a6b1247591",
+        "metadataRows": 46,
+        "signatureMetadataSha256": "01918fe60fdc610d0eef8a2589f8d1b9ad41cb2104e3f4c5243072283fa19327",
+        "qualificationScope": "62-assertion profile/body/signature regression ONLY; full Sprint17 remains unqualified",
+        "resultSha256": "8a10c0199a937d0504fa4b497df6b1ebdb1e4d2e86252668bfe686562c3e46ef",
+        "assertions": 62,
+        "passed": 62,
+        "failed": [],
+        "orchestrationSha256": "efac9a9391c525b9d8749770ad06db956358d89e36e2e684cd5a7609d8bdc461",
+        "processId": 28856,
+        "processStartedUtc": "2026-10-06T22:18:16.8367905Z",
+        "scenarioStatus": "PASS",
+        "outcome": "PASS",
+        "completedAtUtc": "2026-10-06T22:21:46.4949732Z"
+      },
+      {
+        "scenario": "disposable-expanded-summoning-snake-commands",
+        "startedAtUtc": "2026-10-06T22:21:46.8742124Z",
+        "parameters": {},
+        "launcherOutcome": "Unclean",
+        "exitCode": 1,
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T2221475821871Z-disposable-expanded-summoning-snake-commands",
+        "requestId": "20261006T2221475821871Z-d08c758e0beb4f1fb193ef5b683a9112",
+        "requestSha256": "24496ed6899672670cf625617b4b78e3acf1d70fe54f5e2e8ace0d0f643d7daa",
+        "resultSha256": "d6e26a3fd75bf54b21dafc9e9c4c60e63f0a7f469545b659ff04393571916388",
+        "assertions": 51,
+        "passed": 43,
+        "failed": [
+          {
+            "name": "sprint17-snake-command-viper-rtwp-manual-contact",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-snake-command-viper-rtwp-ai-contact",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-snake-command-viper-turn-based-manual-contact",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-snake-command-viper-turn-based-ai-contact",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-snake-command-constrictor-snake-rtwp-manual-contact",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-snake-command-constrictor-snake-rtwp-ai-contact",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-snake-command-constrictor-snake-turn-based-manual-contact",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-snake-command-constrictor-snake-turn-based-ai-contact",
+            "status": "FAIL"
+          }
+        ],
+        "orchestrationSha256": "1395dc2db52b5a95c061dff83b42e46111ebac93168b3eaf8475904c70e7c841",
+        "processId": 26960,
+        "processStartedUtc": "2026-10-06T22:21:48.5683992Z",
+        "scenarioStatus": "FAIL",
+        "outcome": "FAIL",
+        "completedAtUtc": "2026-10-06T22:26:59.0409508Z"
+      }
+    ],
+    "snapshot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20261006T2214490404756Z",
+    "liveBefore": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "liveAfterRestore": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "restoration": "VERIFIED",
+    "lease": "C:\\Dev\\KingmakerGunslingerLab\\compatibility-state\\runtime-20261006T221448Z-6abc35a3442f4c5a9f50d5fa3c20011b\\runtime-lease.json",
+    "leaseStatus": "Completed",
+    "recoveryRequired": false,
+    "leaseReleased": true,
+    "kingmakerProcesses": [],
+    "sharedRuntimeLock": false,
+    "worktreeStaging": false,
+    "saveWrite": false
+  },
+  "cells": [
+    {
+      "cell": "viper-rtwp-manual",
+      "checks": {
+        "native-setup": true,
+        "approach": true,
+        "attack": true,
+        "signature": true,
+        "contact": false,
+        "cleanup": true
+      },
+      "frames": 106,
+      "travel": 3.330139,
+      "manual": 1,
+      "native": 1,
+      "attacks": 1,
+      "signature": true,
+      "nativeAiActionsPreserved": true,
+      "contacts": [
+        {
+          "ruleFrame": 4404,
+          "ruleGap": 0.384709358,
+          "rulePoint": [
+            12.9546366,
+            -5.73350859,
+            -9.351649
+          ],
+          "ruleTarget": [
+            13.3393459,
+            -5.73350859,
+            -9.351649
+          ],
+          "ruleVector": [
+            0.384709358,
+            0,
+            0
+          ],
+          "ruleAnimation": {
+            "frame": 4404,
+            "handlePresent": true,
+            "observedActedClip": true,
+            "handleStarted": true,
+            "handleActed": true,
+            "handleTime": 1.11287928,
+            "weaponStyle": "None",
+            "variant": 1,
+            "actionClass": "Kingmaker.Visual.Animation.Kingmaker.Actions.UnitAnimationActionSpecialAttack",
+            "actionName": "Purple_Worm_AnimationSet_Bite 1",
+            "activeAnimationPresent": true,
+            "activeClass": "Kingmaker.Visual.Animation.PlayableInfo",
+            "activeState": "Playing",
+            "activeTime": 1.0728792,
+            "activeWeight": 1,
+            "activeSpeed": 1,
+            "clip": {
+              "name": "BiteAttack01_Short_3.5m",
+              "durationSeconds": 2.4,
+              "events": []
+            }
+          },
+          "geometry": {
+            "ownerCorpulence": 0.6,
+            "targetCorpulence": 0.5,
+            "centerDistance": 1.67020321,
+            "ownerSize": "Medium",
+            "ownerViewScale": [
+              0.2,
+              0.2,
+              0.2
+            ],
+            "biteRangeFeet": 2,
+            "nativeApproachSumMetres": 1.7096
+          },
+          "rendered": {
+            "frame": 4404,
+            "nearestGapMeters": 0.3855381,
+            "nearestOriginalPoint": [
+              12.9538631,
+              -5.73280573,
+              -9.351418
+            ],
+            "nearestTargetBoundsPoint": [
+              13.3394012,
+              -5.73280573,
+              -9.351418
+            ],
+            "targetMinusOriginalPoint": [
+              0.3855381,
+              0,
+              0
+            ],
+            "correlated": true,
+            "sameCommand": true,
+            "sameHandle": true,
+            "sameAnimation": true,
+            "sameClip": true,
+            "ruleFrame": 4404,
+            "observedFrame": 4404,
+            "measurementFailure": null,
+            "issuedAnimation": {
+              "frame": 4404,
+              "handlePresent": true,
+              "observedActedClip": true,
+              "handleStarted": true,
+              "handleActed": true,
+              "handleTime": 1.15287924,
+              "weaponStyle": "None",
+              "variant": 1,
+              "actionClass": "Kingmaker.Visual.Animation.Kingmaker.Actions.UnitAnimationActionSpecialAttack",
+              "actionName": "Purple_Worm_AnimationSet_Bite 1",
+              "activeAnimationPresent": true,
+              "activeClass": "Kingmaker.Visual.Animation.PlayableInfo",
+              "activeState": "Playing",
+              "activeTime": 1.11287916,
+              "activeWeight": 1,
+              "activeSpeed": 1,
+              "clip": {
+                "name": "BiteAttack01_Short_3.5m",
+                "durationSeconds": 2.4,
+                "events": []
+              }
+            },
+            "geometry": {
+              "ownerCorpulence": 0.6,
+              "targetCorpulence": 0.5,
+              "centerDistance": 1.67020321,
+              "ownerSize": "Medium",
+              "ownerViewScale": [
+                0.2,
+                0.2,
+                0.2
+              ],
+              "biteRangeFeet": 2,
+              "nativeApproachSumMetres": 1.7096
+            }
+          }
+        }
+      ]
+    },
+    {
+      "cell": "viper-rtwp-ai",
+      "checks": {
+        "native-setup": true,
+        "approach": true,
+        "attack": true,
+        "signature": true,
+        "contact": false,
+        "cleanup": true
+      },
+      "frames": 105,
+      "travel": 3.29276,
+      "manual": 0,
+      "native": 1,
+      "attacks": 1,
+      "signature": true,
+      "nativeAiActionsPreserved": true,
+      "contacts": [
+        {
+          "ruleFrame": 4574,
+          "ruleGap": 0.426136971,
+          "rulePoint": [
+            12.9180231,
+            -5.733272,
+            -9.368043
+          ],
+          "ruleTarget": [
+            13.34416,
+            -5.733272,
+            -9.368043
+          ],
+          "ruleVector": [
+            0.426136971,
+            0,
+            0
+          ],
+          "ruleAnimation": {
+            "frame": 4574,
+            "handlePresent": true,
+            "observedActedClip": true,
+            "handleStarted": true,
+            "handleActed": true,
+            "handleTime": 1.11863375,
+            "weaponStyle": "None",
+            "variant": 0,
+            "actionClass": "Kingmaker.Visual.Animation.Kingmaker.Actions.UnitAnimationActionSpecialAttack",
+            "actionName": "Purple_Worm_AnimationSet_Bite 1",
+            "activeAnimationPresent": true,
+            "activeClass": "Kingmaker.Visual.Animation.PlayableInfo",
+            "activeState": "Playing",
+            "activeTime": 1.07863367,
+            "activeWeight": 1,
+            "activeSpeed": 1,
+            "clip": {
+              "name": "BiteAttack01_Short_3.5m",
+              "durationSeconds": 2.4,
+              "events": []
+            }
+          },
+          "geometry": {
+            "ownerCorpulence": 0.6,
+            "targetCorpulence": 0.5,
+            "centerDistance": 1.7072401,
+            "ownerSize": "Medium",
+            "ownerViewScale": [
+              0.2,
+              0.2,
+              0.2
+            ],
+            "biteRangeFeet": 2,
+            "nativeApproachSumMetres": 1.7096
+          },
+          "rendered": {
+            "frame": 4574,
+            "nearestGapMeters": 0.426655769,
+            "nearestOriginalPoint": [
+              12.9170008,
+              -5.73300076,
+              -9.367629
+            ],
+            "nearestTargetBoundsPoint": [
+              13.3436565,
+              -5.73300076,
+              -9.367629
+            ],
+            "targetMinusOriginalPoint": [
+              0.426655769,
+              0,
+              0
+            ],
+            "correlated": true,
+            "sameCommand": true,
+            "sameHandle": true,
+            "sameAnimation": true,
+            "sameClip": true,
+            "ruleFrame": 4574,
+            "observedFrame": 4574,
+            "measurementFailure": null,
+            "issuedAnimation": {
+              "frame": 4574,
+              "handlePresent": true,
+              "observedActedClip": true,
+              "handleStarted": true,
+              "handleActed": true,
+              "handleTime": 1.15863371,
+              "weaponStyle": "None",
+              "variant": 0,
+              "actionClass": "Kingmaker.Visual.Animation.Kingmaker.Actions.UnitAnimationActionSpecialAttack",
+              "actionName": "Purple_Worm_AnimationSet_Bite 1",
+              "activeAnimationPresent": true,
+              "activeClass": "Kingmaker.Visual.Animation.PlayableInfo",
+              "activeState": "Playing",
+              "activeTime": 1.11863363,
+              "activeWeight": 1,
+              "activeSpeed": 1,
+              "clip": {
+                "name": "BiteAttack01_Short_3.5m",
+                "durationSeconds": 2.4,
+                "events": []
+              }
+            },
+            "geometry": {
+              "ownerCorpulence": 0.6,
+              "targetCorpulence": 0.5,
+              "centerDistance": 1.7072401,
+              "ownerSize": "Medium",
+              "ownerViewScale": [
+                0.2,
+                0.2,
+                0.2
+              ],
+              "biteRangeFeet": 2,
+              "nativeApproachSumMetres": 1.7096
+            }
+          }
+        }
+      ]
+    },
+    {
+      "cell": "viper-turn-based-manual",
+      "checks": {
+        "native-setup": true,
+        "approach": true,
+        "attack": true,
+        "signature": true,
+        "contact": false,
+        "cleanup": true
+      },
+      "frames": 195,
+      "travel": 3.29322886,
+      "manual": 1,
+      "native": 1,
+      "attacks": 1,
+      "signature": true,
+      "nativeAiActionsPreserved": true,
+      "contacts": [
+        {
+          "ruleFrame": 4834,
+          "ruleGap": 0.41986084,
+          "rulePoint": [
+            12.9182253,
+            -5.733751,
+            -9.360042
+          ],
+          "ruleTarget": [
+            13.3380861,
+            -5.733751,
+            -9.360042
+          ],
+          "ruleVector": [
+            0.41986084,
+            0,
+            0
+          ],
+          "ruleAnimation": {
+            "frame": 4834,
+            "handlePresent": true,
+            "observedActedClip": true,
+            "handleStarted": true,
+            "handleActed": true,
+            "handleTime": 1.108225,
+            "weaponStyle": "None",
+            "variant": 0,
+            "actionClass": "Kingmaker.Visual.Animation.Kingmaker.Actions.UnitAnimationActionSpecialAttack",
+            "actionName": "Purple_Worm_AnimationSet_Bite 1",
+            "activeAnimationPresent": true,
+            "activeClass": "Kingmaker.Visual.Animation.PlayableInfo",
+            "activeState": "Playing",
+            "activeTime": 1.068225,
+            "activeWeight": 1,
+            "activeSpeed": 1,
+            "clip": {
+              "name": "BiteAttack01_Short_3.5m",
+              "durationSeconds": 2.4,
+              "events": []
+            }
+          },
+          "geometry": {
+            "ownerCorpulence": 0.6,
+            "targetCorpulence": 0.5,
+            "centerDistance": 1.70685172,
+            "ownerSize": "Medium",
+            "ownerViewScale": [
+              0.2,
+              0.2,
+              0.2
+            ],
+            "biteRangeFeet": 2,
+            "nativeApproachSumMetres": 1.7096
+          },
+          "rendered": {
+            "frame": 4834,
+            "nearestGapMeters": 0.420403481,
+            "nearestOriginalPoint": [
+              12.9175367,
+              -5.73270369,
+              -9.35987949
+            ],
+            "nearestTargetBoundsPoint": [
+              13.33794,
+              -5.73270369,
+              -9.35987949
+            ],
+            "targetMinusOriginalPoint": [
+              0.420403481,
+              0,
+              0
+            ],
+            "correlated": true,
+            "sameCommand": true,
+            "sameHandle": true,
+            "sameAnimation": true,
+            "sameClip": true,
+            "ruleFrame": 4834,
+            "observedFrame": 4834,
+            "measurementFailure": null,
+            "issuedAnimation": {
+              "frame": 4834,
+              "handlePresent": true,
+              "observedActedClip": true,
+              "handleStarted": true,
+              "handleActed": true,
+              "handleTime": 1.148225,
+              "weaponStyle": "None",
+              "variant": 0,
+              "actionClass": "Kingmaker.Visual.Animation.Kingmaker.Actions.UnitAnimationActionSpecialAttack",
+              "actionName": "Purple_Worm_AnimationSet_Bite 1",
+              "activeAnimationPresent": true,
+              "activeClass": "Kingmaker.Visual.Animation.PlayableInfo",
+              "activeState": "Playing",
+              "activeTime": 1.108225,
+              "activeWeight": 1,
+              "activeSpeed": 1,
+              "clip": {
+                "name": "BiteAttack01_Short_3.5m",
+                "durationSeconds": 2.4,
+                "events": []
+              }
+            },
+            "geometry": {
+              "ownerCorpulence": 0.6,
+              "targetCorpulence": 0.5,
+              "centerDistance": 1.70685172,
+              "ownerSize": "Medium",
+              "ownerViewScale": [
+                0.2,
+                0.2,
+                0.2
+              ],
+              "biteRangeFeet": 2,
+              "nativeApproachSumMetres": 1.7096
+            }
+          }
+        }
+      ]
+    },
+    {
+      "cell": "viper-turn-based-ai",
+      "checks": {
+        "native-setup": true,
+        "approach": true,
+        "attack": true,
+        "signature": true,
+        "contact": false,
+        "cleanup": true
+      },
+      "frames": 230,
+      "travel": 3.33248138,
+      "manual": 0,
+      "native": 1,
+      "attacks": 1,
+      "signature": true,
+      "nativeAiActionsPreserved": true,
+      "contacts": [
+        {
+          "ruleFrame": 5129,
+          "ruleGap": 0.379513741,
+          "rulePoint": [
+            12.9575176,
+            -5.73354149,
+            -9.362897
+          ],
+          "ruleTarget": [
+            13.3370314,
+            -5.73354149,
+            -9.362897
+          ],
+          "ruleVector": [
+            0.379513741,
+            0,
+            0
+          ],
+          "ruleAnimation": {
+            "frame": 5129,
+            "handlePresent": true,
+            "observedActedClip": true,
+            "handleStarted": true,
+            "handleActed": true,
+            "handleTime": 1.11218572,
+            "weaponStyle": "None",
+            "variant": 1,
+            "actionClass": "Kingmaker.Visual.Animation.Kingmaker.Actions.UnitAnimationActionSpecialAttack",
+            "actionName": "Purple_Worm_AnimationSet_Bite 1",
+            "activeAnimationPresent": true,
+            "activeClass": "Kingmaker.Visual.Animation.PlayableInfo",
+            "activeState": "Playing",
+            "activeTime": 1.07218564,
+            "activeWeight": 1,
+            "activeSpeed": 1,
+            "clip": {
+              "name": "BiteAttack01_Short_3.5m",
+              "durationSeconds": 2.4,
+              "events": []
+            }
+          },
+          "geometry": {
+            "ownerCorpulence": 0.6,
+            "targetCorpulence": 0.5,
+            "centerDistance": 1.66755307,
+            "ownerSize": "Medium",
+            "ownerViewScale": [
+              0.2,
+              0.2,
+              0.2
+            ],
+            "biteRangeFeet": 2,
+            "nativeApproachSumMetres": 1.7096
+          },
+          "rendered": {
+            "frame": 5129,
+            "nearestGapMeters": 0.380765915,
+            "nearestOriginalPoint": [
+              12.9567614,
+              -5.73278666,
+              -9.362689
+            ],
+            "nearestTargetBoundsPoint": [
+              13.3375273,
+              -5.73278666,
+              -9.362689
+            ],
+            "targetMinusOriginalPoint": [
+              0.380765915,
+              0,
+              0
+            ],
+            "correlated": true,
+            "sameCommand": true,
+            "sameHandle": true,
+            "sameAnimation": true,
+            "sameClip": true,
+            "ruleFrame": 5129,
+            "observedFrame": 5129,
+            "measurementFailure": null,
+            "issuedAnimation": {
+              "frame": 5129,
+              "handlePresent": true,
+              "observedActedClip": true,
+              "handleStarted": true,
+              "handleActed": true,
+              "handleTime": 1.15218568,
+              "weaponStyle": "None",
+              "variant": 1,
+              "actionClass": "Kingmaker.Visual.Animation.Kingmaker.Actions.UnitAnimationActionSpecialAttack",
+              "actionName": "Purple_Worm_AnimationSet_Bite 1",
+              "activeAnimationPresent": true,
+              "activeClass": "Kingmaker.Visual.Animation.PlayableInfo",
+              "activeState": "Playing",
+              "activeTime": 1.11218572,
+              "activeWeight": 1,
+              "activeSpeed": 1,
+              "clip": {
+                "name": "BiteAttack01_Short_3.5m",
+                "durationSeconds": 2.4,
+                "events": []
+              }
+            },
+            "geometry": {
+              "ownerCorpulence": 0.6,
+              "targetCorpulence": 0.5,
+              "centerDistance": 1.66755307,
+              "ownerSize": "Medium",
+              "ownerViewScale": [
+                0.2,
+                0.2,
+                0.2
+              ],
+              "biteRangeFeet": 2,
+              "nativeApproachSumMetres": 1.7096
+            }
+          }
+        }
+      ]
+    },
+    {
+      "cell": "constrictor-snake-rtwp-manual",
+      "checks": {
+        "native-setup": true,
+        "approach": true,
+        "attack": true,
+        "signature": true,
+        "contact": false,
+        "cleanup": true
+      },
+      "frames": 296,
+      "travel": 3.30468369,
+      "manual": 1,
+      "native": 1,
+      "attacks": 1,
+      "signature": true,
+      "nativeAiActionsPreserved": true,
+      "contacts": [
+        {
+          "ruleFrame": 5339,
+          "ruleGap": 0.404694557,
+          "rulePoint": [
+            12.929904,
+            -5.732516,
+            -9.367548
+          ],
+          "ruleTarget": [
+            13.3345985,
+            -5.732516,
+            -9.367548
+          ],
+          "ruleVector": [
+            0.404694557,
+            0,
+            0
+          ],
+          "ruleAnimation": {
+            "frame": 5339,
+            "handlePresent": true,
+            "observedActedClip": true,
+            "handleStarted": true,
+            "handleActed": true,
+            "handleTime": 1.1193794,
+            "weaponStyle": "None",
+            "variant": 1,
+            "actionClass": "Kingmaker.Visual.Animation.Kingmaker.Actions.UnitAnimationActionSpecialAttack",
+            "actionName": "Purple_Worm_AnimationSet_Bite 1",
+            "activeAnimationPresent": true,
+            "activeClass": "Kingmaker.Visual.Animation.PlayableInfo",
+            "activeState": "Playing",
+            "activeTime": 1.07937932,
+            "activeWeight": 1,
+            "activeSpeed": 1,
+            "clip": {
+              "name": "BiteAttack01_Short_3.5m",
+              "durationSeconds": 2.4,
+              "events": []
+            }
+          },
+          "geometry": {
+            "ownerCorpulence": 0.6,
+            "targetCorpulence": 0.5,
+            "centerDistance": 1.69531631,
+            "ownerSize": "Medium",
+            "ownerViewScale": [
+              0.2,
+              0.2,
+              0.2
+            ],
+            "biteRangeFeet": 2,
+            "nativeApproachSumMetres": 1.7096
+          },
+          "rendered": {
+            "frame": 5339,
+            "nearestGapMeters": 0.4625864,
+            "nearestOriginalPoint": [
+              12.8724451,
+              -5.58751535,
+              -9.51083
+            ],
+            "nearestTargetBoundsPoint": [
+              13.3350315,
+              -5.58751535,
+              -9.51083
+            ],
+            "targetMinusOriginalPoint": [
+              0.4625864,
+              0,
+              0
+            ],
+            "correlated": false,
+            "sameCommand": false,
+            "sameHandle": true,
+            "sameAnimation": true,
+            "sameClip": true,
+            "ruleFrame": 5339,
+            "observedFrame": 5339,
+            "measurementFailure": null,
+            "issuedAnimation": {
+              "frame": 5339,
+              "handlePresent": true,
+              "observedActedClip": true,
+              "handleStarted": true,
+              "handleActed": true,
+              "handleTime": 1.15937936,
+              "weaponStyle": "None",
+              "variant": 1,
+              "actionClass": "Kingmaker.Visual.Animation.Kingmaker.Actions.UnitAnimationActionSpecialAttack",
+              "actionName": "Purple_Worm_AnimationSet_Bite 1",
+              "activeAnimationPresent": true,
+              "activeClass": "Kingmaker.Visual.Animation.PlayableInfo",
+              "activeState": "TransitioningOut",
+              "activeTime": 1.11937928,
+              "activeWeight": 0.840000153,
+              "activeSpeed": 1,
+              "clip": {
+                "name": "BiteAttack01_Short_3.5m",
+                "durationSeconds": 2.4,
+                "events": []
+              }
+            },
+            "geometry": {
+              "ownerCorpulence": 0.6,
+              "targetCorpulence": 0.5,
+              "centerDistance": 1.69531631,
+              "ownerSize": "Medium",
+              "ownerViewScale": [
+                0.2,
+                0.2,
+                0.2
+              ],
+              "biteRangeFeet": 2,
+              "nativeApproachSumMetres": 1.7096
+            }
+          }
+        }
+      ]
+    },
+    {
+      "cell": "constrictor-snake-rtwp-ai",
+      "checks": {
+        "native-setup": true,
+        "approach": true,
+        "attack": true,
+        "signature": true,
+        "contact": false,
+        "cleanup": true
+      },
+      "frames": 254,
+      "travel": 3.299961,
+      "manual": 0,
+      "native": 1,
+      "attacks": 1,
+      "signature": true,
+      "nativeAiActionsPreserved": true,
+      "contacts": [
+        {
+          "ruleFrame": 5659,
+          "ruleGap": 0.413756371,
+          "rulePoint": [
+            12.9251919,
+            -5.732495,
+            -9.367543
+          ],
+          "ruleTarget": [
+            13.3389482,
+            -5.732495,
+            -9.367543
+          ],
+          "ruleVector": [
+            0.413756371,
+            0,
+            0
+          ],
+          "ruleAnimation": {
+            "frame": 5659,
+            "handlePresent": true,
+            "observedActedClip": true,
+            "handleStarted": true,
+            "handleActed": true,
+            "handleTime": 1.12,
+            "weaponStyle": "None",
+            "variant": 1,
+            "actionClass": "Kingmaker.Visual.Animation.Kingmaker.Actions.UnitAnimationActionSpecialAttack",
+            "actionName": "Purple_Worm_AnimationSet_Bite 1",
+            "activeAnimationPresent": true,
+            "activeClass": "Kingmaker.Visual.Animation.PlayableInfo",
+            "activeState": "Playing",
+            "activeTime": 1.07999992,
+            "activeWeight": 1,
+            "activeSpeed": 1,
+            "clip": {
+              "name": "BiteAttack01_Short_3.5m",
+              "durationSeconds": 2.4,
+              "events": []
+            }
+          },
+          "geometry": {
+            "ownerCorpulence": 0.6,
+            "targetCorpulence": 0.5,
+            "centerDistance": 1.70003891,
+            "ownerSize": "Medium",
+            "ownerViewScale": [
+              0.2,
+              0.2,
+              0.2
+            ],
+            "biteRangeFeet": 2,
+            "nativeApproachSumMetres": 1.7096
+          },
+          "rendered": {
+            "frame": 5659,
+            "nearestGapMeters": 0.477879524,
+            "nearestOriginalPoint": [
+              12.8607025,
+              -5.64974833,
+              -9.49183
+            ],
+            "nearestTargetBoundsPoint": [
+              13.338582,
+              -5.64974833,
+              -9.49183
+            ],
+            "targetMinusOriginalPoint": [
+              0.477879524,
+              0,
+              0
+            ],
+            "correlated": false,
+            "sameCommand": false,
+            "sameHandle": true,
+            "sameAnimation": true,
+            "sameClip": true,
+            "ruleFrame": 5659,
+            "observedFrame": 5659,
+            "measurementFailure": null,
+            "issuedAnimation": {
+              "frame": 5659,
+              "handlePresent": true,
+              "observedActedClip": true,
+              "handleStarted": true,
+              "handleActed": true,
+              "handleTime": 1.16,
+              "weaponStyle": "None",
+              "variant": 1,
+              "actionClass": "Kingmaker.Visual.Animation.Kingmaker.Actions.UnitAnimationActionSpecialAttack",
+              "actionName": "Purple_Worm_AnimationSet_Bite 1",
+              "activeAnimationPresent": true,
+              "activeClass": "Kingmaker.Visual.Animation.PlayableInfo",
+              "activeState": "TransitioningOut",
+              "activeTime": 1.12,
+              "activeWeight": 0.840000153,
+              "activeSpeed": 1,
+              "clip": {
+                "name": "BiteAttack01_Short_3.5m",
+                "durationSeconds": 2.4,
+                "events": []
+              }
+            },
+            "geometry": {
+              "ownerCorpulence": 0.6,
+              "targetCorpulence": 0.5,
+              "centerDistance": 1.70003891,
+              "ownerSize": "Medium",
+              "ownerViewScale": [
+                0.2,
+                0.2,
+                0.2
+              ],
+              "biteRangeFeet": 2,
+              "nativeApproachSumMetres": 1.7096
+            }
+          }
+        }
+      ]
+    },
+    {
+      "cell": "constrictor-snake-turn-based-manual",
+      "checks": {
+        "native-setup": true,
+        "approach": true,
+        "attack": true,
+        "signature": true,
+        "contact": false,
+        "cleanup": true
+      },
+      "frames": 273,
+      "travel": 3.33248138,
+      "manual": 1,
+      "native": 1,
+      "attacks": 1,
+      "signature": true,
+      "nativeAiActionsPreserved": true,
+      "contacts": [
+        {
+          "ruleFrame": 6023,
+          "ruleGap": 0.382164,
+          "rulePoint": [
+            12.95753,
+            -5.732495,
+            -9.362328
+          ],
+          "ruleTarget": [
+            13.339694,
+            -5.732495,
+            -9.362328
+          ],
+          "ruleVector": [
+            0.382164,
+            0,
+            0
+          ],
+          "ruleAnimation": {
+            "frame": 6023,
+            "handlePresent": true,
+            "observedActedClip": true,
+            "handleStarted": true,
+            "handleActed": true,
+            "handleTime": 1.12,
+            "weaponStyle": "None",
+            "variant": 0,
+            "actionClass": "Kingmaker.Visual.Animation.Kingmaker.Actions.UnitAnimationActionSpecialAttack",
+            "actionName": "Purple_Worm_AnimationSet_Bite 1",
+            "activeAnimationPresent": true,
+            "activeClass": "Kingmaker.Visual.Animation.PlayableInfo",
+            "activeState": "Playing",
+            "activeTime": 1.07999992,
+            "activeWeight": 1,
+            "activeSpeed": 1,
+            "clip": {
+              "name": "BiteAttack01_Short_3.5m",
+              "durationSeconds": 2.4,
+              "events": []
+            }
+          },
+          "geometry": {
+            "ownerCorpulence": 0.6,
+            "targetCorpulence": 0.5,
+            "centerDistance": 1.66755307,
+            "ownerSize": "Medium",
+            "ownerViewScale": [
+              0.2,
+              0.2,
+              0.2
+            ],
+            "biteRangeFeet": 2,
+            "nativeApproachSumMetres": 1.7096
+          },
+          "rendered": {
+            "frame": 6023,
+            "nearestGapMeters": 0.4432068,
+            "nearestOriginalPoint": [
+              12.8960209,
+              -5.58455324,
+              -9.513683
+            ],
+            "nearestTargetBoundsPoint": [
+              13.3392277,
+              -5.58455324,
+              -9.513683
+            ],
+            "targetMinusOriginalPoint": [
+              0.4432068,
+              0,
+              0
+            ],
+            "correlated": false,
+            "sameCommand": false,
+            "sameHandle": true,
+            "sameAnimation": true,
+            "sameClip": true,
+            "ruleFrame": 6023,
+            "observedFrame": 6023,
+            "measurementFailure": null,
+            "issuedAnimation": {
+              "frame": 6023,
+              "handlePresent": true,
+              "observedActedClip": true,
+              "handleStarted": true,
+              "handleActed": true,
+              "handleTime": 1.16,
+              "weaponStyle": "None",
+              "variant": 0,
+              "actionClass": "Kingmaker.Visual.Animation.Kingmaker.Actions.UnitAnimationActionSpecialAttack",
+              "actionName": "Purple_Worm_AnimationSet_Bite 1",
+              "activeAnimationPresent": true,
+              "activeClass": "Kingmaker.Visual.Animation.PlayableInfo",
+              "activeState": "TransitioningOut",
+              "activeTime": 1.12,
+              "activeWeight": 0.840000153,
+              "activeSpeed": 1,
+              "clip": {
+                "name": "BiteAttack01_Short_3.5m",
+                "durationSeconds": 2.4,
+                "events": []
+              }
+            },
+            "geometry": {
+              "ownerCorpulence": 0.6,
+              "targetCorpulence": 0.5,
+              "centerDistance": 1.66755307,
+              "ownerSize": "Medium",
+              "ownerViewScale": [
+                0.2,
+                0.2,
+                0.2
+              ],
+              "biteRangeFeet": 2,
+              "nativeApproachSumMetres": 1.7096
+            }
+          }
+        }
+      ]
+    },
+    {
+      "cell": "constrictor-snake-turn-based-ai",
+      "checks": {
+        "native-setup": true,
+        "approach": true,
+        "attack": true,
+        "signature": true,
+        "contact": false,
+        "cleanup": true
+      },
+      "frames": 345,
+      "travel": 3.33248138,
+      "manual": 0,
+      "native": 1,
+      "attacks": 1,
+      "signature": true,
+      "nativeAiActionsPreserved": true,
+      "contacts": [
+        {
+          "ruleFrame": 6323,
+          "ruleGap": 0.37891674,
+          "rulePoint": [
+            12.95747,
+            -5.732822,
+            -9.362413
+          ],
+          "ruleTarget": [
+            13.3363867,
+            -5.732822,
+            -9.362413
+          ],
+          "ruleVector": [
+            0.37891674,
+            0,
+            0
+          ],
+          "ruleAnimation": {
+            "frame": 6323,
+            "handlePresent": true,
+            "observedActedClip": true,
+            "handleStarted": true,
+            "handleActed": true,
+            "handleTime": 1.111927,
+            "weaponStyle": "None",
+            "variant": 1,
+            "actionClass": "Kingmaker.Visual.Animation.Kingmaker.Actions.UnitAnimationActionSpecialAttack",
+            "actionName": "Purple_Worm_AnimationSet_Bite 1",
+            "activeAnimationPresent": true,
+            "activeClass": "Kingmaker.Visual.Animation.PlayableInfo",
+            "activeState": "Playing",
+            "activeTime": 1.07192683,
+            "activeWeight": 1,
+            "activeSpeed": 1,
+            "clip": {
+              "name": "BiteAttack01_Short_3.5m",
+              "durationSeconds": 2.4,
+              "events": []
+            }
+          },
+          "geometry": {
+            "ownerCorpulence": 0.6,
+            "targetCorpulence": 0.5,
+            "centerDistance": 1.66755307,
+            "ownerSize": "Medium",
+            "ownerViewScale": [
+              0.2,
+              0.2,
+              0.2
+            ],
+            "biteRangeFeet": 2,
+            "nativeApproachSumMetres": 1.7096
+          },
+          "rendered": {
+            "frame": 6323,
+            "nearestGapMeters": 0.426575661,
+            "nearestOriginalPoint": [
+              12.9093342,
+              -5.62647629,
+              -9.49436
+            ],
+            "nearestTargetBoundsPoint": [
+              13.33591,
+              -5.62647629,
+              -9.49436
+            ],
+            "targetMinusOriginalPoint": [
+              0.426575661,
+              0,
+              0
+            ],
+            "correlated": false,
+            "sameCommand": false,
+            "sameHandle": true,
+            "sameAnimation": true,
+            "sameClip": true,
+            "ruleFrame": 6323,
+            "observedFrame": 6323,
+            "measurementFailure": null,
+            "issuedAnimation": {
+              "frame": 6323,
+              "handlePresent": true,
+              "observedActedClip": true,
+              "handleStarted": true,
+              "handleActed": true,
+              "handleTime": 1.151927,
+              "weaponStyle": "None",
+              "variant": 1,
+              "actionClass": "Kingmaker.Visual.Animation.Kingmaker.Actions.UnitAnimationActionSpecialAttack",
+              "actionName": "Purple_Worm_AnimationSet_Bite 1",
+              "activeAnimationPresent": true,
+              "activeClass": "Kingmaker.Visual.Animation.PlayableInfo",
+              "activeState": "TransitioningOut",
+              "activeTime": 1.11192691,
+              "activeWeight": 0.840000153,
+              "activeSpeed": 1,
+              "clip": {
+                "name": "BiteAttack01_Short_3.5m",
+                "durationSeconds": 2.4,
+                "events": []
+              }
+            },
+            "geometry": {
+              "ownerCorpulence": 0.6,
+              "targetCorpulence": 0.5,
+              "centerDistance": 1.66755307,
+              "ownerSize": "Medium",
+              "ownerViewScale": [
+                0.2,
+                0.2,
+                0.2
+              ],
+              "biteRangeFeet": 2,
+              "nativeApproachSumMetres": 1.7096
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "failureDisposition": [
+    {
+      "assertion": "sprint17-snake-command-viper-rtwp-manual-contact",
+      "classification": "PRODUCTION ORIGINAL-GEOMETRY CONTACT",
+      "cause": "All8 rule-event gaps0.37891674..0.426136971m are solely horizontal. Same-frame Viper gaps0.380765915..0.426655769m do not improve. Constrictor end-frame samples are uncorrelated because the command has ended; they remain diagnostic only and cannot substitute for contact.",
+      "next": "Use exact original-mesh/current-pose replay to review bounded head/neck geometry and native contact alignment. Do not change mechanical reach, actor position, animation or0.25m tolerance merely to pass."
+    },
+    {
+      "assertion": "sprint17-snake-command-viper-rtwp-ai-contact",
+      "classification": "PRODUCTION ORIGINAL-GEOMETRY CONTACT",
+      "cause": "All8 rule-event gaps0.37891674..0.426136971m are solely horizontal. Same-frame Viper gaps0.380765915..0.426655769m do not improve. Constrictor end-frame samples are uncorrelated because the command has ended; they remain diagnostic only and cannot substitute for contact.",
+      "next": "Use exact original-mesh/current-pose replay to review bounded head/neck geometry and native contact alignment. Do not change mechanical reach, actor position, animation or0.25m tolerance merely to pass."
+    },
+    {
+      "assertion": "sprint17-snake-command-viper-turn-based-manual-contact",
+      "classification": "PRODUCTION ORIGINAL-GEOMETRY CONTACT",
+      "cause": "All8 rule-event gaps0.37891674..0.426136971m are solely horizontal. Same-frame Viper gaps0.380765915..0.426655769m do not improve. Constrictor end-frame samples are uncorrelated because the command has ended; they remain diagnostic only and cannot substitute for contact.",
+      "next": "Use exact original-mesh/current-pose replay to review bounded head/neck geometry and native contact alignment. Do not change mechanical reach, actor position, animation or0.25m tolerance merely to pass."
+    },
+    {
+      "assertion": "sprint17-snake-command-viper-turn-based-ai-contact",
+      "classification": "PRODUCTION ORIGINAL-GEOMETRY CONTACT",
+      "cause": "All8 rule-event gaps0.37891674..0.426136971m are solely horizontal. Same-frame Viper gaps0.380765915..0.426655769m do not improve. Constrictor end-frame samples are uncorrelated because the command has ended; they remain diagnostic only and cannot substitute for contact.",
+      "next": "Use exact original-mesh/current-pose replay to review bounded head/neck geometry and native contact alignment. Do not change mechanical reach, actor position, animation or0.25m tolerance merely to pass."
+    },
+    {
+      "assertion": "sprint17-snake-command-constrictor-snake-rtwp-manual-contact",
+      "classification": "PRODUCTION ORIGINAL-GEOMETRY CONTACT",
+      "cause": "All8 rule-event gaps0.37891674..0.426136971m are solely horizontal. Same-frame Viper gaps0.380765915..0.426655769m do not improve. Constrictor end-frame samples are uncorrelated because the command has ended; they remain diagnostic only and cannot substitute for contact.",
+      "next": "Use exact original-mesh/current-pose replay to review bounded head/neck geometry and native contact alignment. Do not change mechanical reach, actor position, animation or0.25m tolerance merely to pass."
+    },
+    {
+      "assertion": "sprint17-snake-command-constrictor-snake-rtwp-ai-contact",
+      "classification": "PRODUCTION ORIGINAL-GEOMETRY CONTACT",
+      "cause": "All8 rule-event gaps0.37891674..0.426136971m are solely horizontal. Same-frame Viper gaps0.380765915..0.426655769m do not improve. Constrictor end-frame samples are uncorrelated because the command has ended; they remain diagnostic only and cannot substitute for contact.",
+      "next": "Use exact original-mesh/current-pose replay to review bounded head/neck geometry and native contact alignment. Do not change mechanical reach, actor position, animation or0.25m tolerance merely to pass."
+    },
+    {
+      "assertion": "sprint17-snake-command-constrictor-snake-turn-based-manual-contact",
+      "classification": "PRODUCTION ORIGINAL-GEOMETRY CONTACT",
+      "cause": "All8 rule-event gaps0.37891674..0.426136971m are solely horizontal. Same-frame Viper gaps0.380765915..0.426655769m do not improve. Constrictor end-frame samples are uncorrelated because the command has ended; they remain diagnostic only and cannot substitute for contact.",
+      "next": "Use exact original-mesh/current-pose replay to review bounded head/neck geometry and native contact alignment. Do not change mechanical reach, actor position, animation or0.25m tolerance merely to pass."
+    },
+    {
+      "assertion": "sprint17-snake-command-constrictor-snake-turn-based-ai-contact",
+      "classification": "PRODUCTION ORIGINAL-GEOMETRY CONTACT",
+      "cause": "All8 rule-event gaps0.37891674..0.426136971m are solely horizontal. Same-frame Viper gaps0.380765915..0.426655769m do not improve. Constrictor end-frame samples are uncorrelated because the command has ended; they remain diagnostic only and cannot substitute for contact.",
+      "next": "Use exact original-mesh/current-pose replay to review bounded head/neck geometry and native contact alignment. Do not change mechanical reach, actor position, animation or0.25m tolerance merely to pass."
+    }
+  ],
+  "timingConclusion": {
+    "hypothesis": "The at-rule pose is a frame behind and a later same-frame render may satisfy contact.",
+    "result": "Not supported as a remedy. All4 Viper pairs retain exact frame/command/handle/animation/clip but remain distant; all4 Constrictor end-frame samples correctly reject command correlation and show transition-out weight0.840000153.",
+    "ruleGapAxis": "All8 gap vectors are positive worldX only;Y=Z=0.",
+    "viperMaximumAbsoluteGapChangeMetres": 0.0012521739999999948,
+    "assertions": "All51 unchanged; no second-frame/later-peak acceptance or threshold waiver. Observer destroyed in every cleanup cell."
+  },
+  "nativeAudit": {
+    "assemblySha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb",
+    "privateLog": "artifacts/sprint17-native-animation-timing-audit-2.log",
+    "finding": "Handle clock increments independently; playable reads its engine time. Offline ordering alone does not establish world contact."
+  },
+  "hashes": [
+    {
+      "path": "artifacts/laptop-runtime-20261006T2214483190663Z/batch.json",
+      "sha256": "b7830c7d541850ae864e3c68c95b349d5f83db7fb27c7a4ee27fd405f94327aa"
+    },
+    {
+      "path": "artifacts/Invoke-LaptopSprint17-SnakeCommands-Attempt4.ps1",
+      "sha256": "b8266645ac918e4ca8571e0e81443ef896f07fef6df9714191cfda81bd2de197"
+    },
+    {
+      "path": "artifacts/sprint17-commands-exact-474be538-gate.log",
+      "sha256": "359004b7e0ad4095b98bf516fd6413ad92944ec7b79301453ce8a1d875923318"
+    },
+    {
+      "path": "artifacts/sprint17-commands-exact-474be538-preflight.log",
+      "sha256": "34af6c9f3c7703a443d282389820efaa2dc891caeb25cbc48e32397061a4f806"
+    },
+    {
+      "path": "artifacts/sprint17-snake-commands-source-pass-474be538/KingmakerGunslinger-0.0.141-local-runtime.zip.build-local.json",
+      "sha256": "bc4cb5b1df7b6c108c2e1e6f23898bff40b96b2a75b6fb93f8249c782933eb5d"
+    },
+    {
+      "path": "artifacts/sprint17-native-animation-timing-audit-2.log",
+      "sha256": "4a39a5b02d539c59c4db80ae77ff0376f87d3e3bff1c0b072040a420f9ecd7f1"
+    },
+    {
+      "path": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261006T2221475821871Z-disposable-expanded-summoning-snake-commands/sprint17-original-body-review.json",
+      "sha256": "48316aeeb04a3de672d958b9ae6fa54e57d649928d71a0135ddad4997bff2576"
+    }
+  ],
+  "next": "Preserve exact failed artifact/restoration; bounded original-geometry replay/authoring review before new source gates and a new exact-head guarded batch. No unchanged rerun.",
+  "fullSprintQualified": false,
+  "publicationAuthorized": false,
+  "humanReview": "NOT_PERFORMED_NONBLOCKING"
+}
