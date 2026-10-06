@@ -1,10 +1,12 @@
 # Expanded Summoning Phase 2 evidence index
 
-[Sprint 17 pose/weapon research extension — NOT RUN](planning/EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md):
+[Sprint 17 exact c55 pose/weapon research PASS](planning/EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md):
 single attached bone-position samples, action clip names/durations, and one
 fixed read-only native greatclub prefab. No new actor or production change.
-219 focused/incremental compile PASS; exact gate and 13-assertion/four-capture
-guarded batch next. The earlier a173 PASS qualifies only its earlier scope.
+complete prelaunch PASS (219 focused/2021 full), smoke 11/11, survey 13/13,
+four captures and exact restoration. Lizardfolk two-hand bind frames match
+39/19 exactly. Water exposes slams; worm locomotion exposes idle only.
+No snake motion or spear-contact qualification is inferred. [Exact hashes](planning/EXPANDED-SUMMONING-SPRINT17-FALLBACK-RESEARCH-EVIDENCE.json).
 
 [Sprint 17 private original authoring checkpoint](assets-source/original-models/sprint17-serpents/SOURCE.md):
 continuous-chain Viper/Constrictor and separate Salamander hybrid body;
