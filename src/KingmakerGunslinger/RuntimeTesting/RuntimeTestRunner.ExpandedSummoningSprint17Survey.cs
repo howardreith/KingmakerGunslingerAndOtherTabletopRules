@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker.View;
 using Kingmaker.Visual.Animation.Kingmaker;
 using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json;
@@ -95,6 +97,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ";settlementFrames=" + (Time.frameCount - _sprint17SurveySpawnFrame),
                         true, "No visibility forcing or appearance-buff removal. Research, not visual/AI qualification."));
                 }
+                CaptureSprint17HybridWeaponPrefab();
             }
             catch (Exception exception)
             {
@@ -134,18 +137,64 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             if (unit == null || unit.Destroyed || !unit.IsInState || unit.View == null)
                 throw new InvalidOperationException("No live native survey view for " + key);
-            SkinnedMeshRenderer[] skins = unit.View.GetComponentsInChildren<SkinnedMeshRenderer>(true)
+            JObject document = CaptureSprint17ViewMetadata(unit.View, key,
+                SerpentineRigSurveyPolicy.NativeBlueprint(key), unit.Blueprint.AssetGuid,
+                unit.Blueprint.name, unit.Blueprint.Prefab.AssetId, true);
+            document["unitWorldPosition"] = SurveyVector(unit.Position);
+            document["viewWorldPosition"] = SurveyVector(unit.View.transform.position);
+            return document;
+        }
+
+        private void CaptureSprint17HybridWeaponPrefab()
+        {
+            BlueprintUnit native = _sprint17SurveyFixture.Blueprints.OfType<BlueprintUnit>()
+                .Single(value => value.AssetGuid == SerpentineRigSurveyPolicy.HybridWeaponBlueprint);
+            BlueprintItemWeapon weapon = native.Body == null ? null : native.Body.PrimaryHand as BlueprintItemWeapon;
+            string prefabId = native.Prefab == null ? null : native.Prefab.AssetId;
+            bool exact = SerpentineRigSurveyPolicy.MatchesHybridWeaponSource(native.AssetGuid,
+                prefabId, weapon == null ? null : weapon.AssetGuid,
+                native.Body == null || native.Body.SecondaryHand != null);
+            _sprint17SurveyAssertions.Add(Assertion("sprint17-native-hybrid-weapon-source",
+                "exact archived greatclub/no-offhand native source and prefab",
+                native.name + ";prefab=" + prefabId + ";weapon=" + (weapon == null ? "missing" : weapon.AssetGuid),
+                exact, "read-only donor metadata; no native campaign NPC spawned"));
+            if (!exact) throw new InvalidOperationException("Hybrid weapon source differs from archived census.");
+
+            // Load and inspect the shared prefab read-only. Do not instantiate,
+            // activate, attach data, drive an action or mutate any native asset.
+            // Existing summon-view observation uses this exact UnitViewLink API.
+            UnitEntityView prefab = native.Prefab.Load(false);
+            if (prefab == null) throw new InvalidOperationException("No native hybrid weapon prefab.");
+            JObject document = CaptureSprint17ViewMetadata(prefab, SerpentineRigSurveyPolicy.HybridWeaponKey,
+                native.AssetGuid, null, native.name, prefabId, false);
+            document["nativePrimaryWeapon"] = weapon.AssetGuid;
+            document["nativePrimaryWeaponName"] = weapon.name;
+            document["nativePrimaryWeaponCategory"] = weapon.Category.ToString();
+            string fileName = "sprint17-" + SerpentineRigSurveyPolicy.HybridWeaponKey + "-rig-survey.json";
+            File.WriteAllText(Path.Combine(_request.EvidenceDirectory, fileName), document.ToString(Formatting.Indented));
+            _sprint17SurveyAssertions.Add(Assertion("sprint17-hybrid-weapon-prefab-metadata",
+                "complete bind frames and static weapon anchors from an unmodified detached prefab",
+                "file=" + fileName + ";skins=" + ((JArray)document["skinnedRenderers"]).Count,
+                true, "not attached animation, two-hand grip, spear contact or gameplay qualification"));
+        }
+
+        private static JObject CaptureSprint17ViewMetadata(UnitEntityView view, string key,
+            string nativeBlueprint, string projectBlueprint, string blueprintName, string prefabId, bool attached)
+        {
+            SkinnedMeshRenderer[] skins = view.GetComponentsInChildren<SkinnedMeshRenderer>(true)
                 .Where(value => value != null && value.sharedMesh != null).ToArray();
             if (skins.Length == 0) throw new InvalidOperationException("No skinned native rig for " + key);
             var document = new JObject {
                 ["scope"] = "Sprint 17 research only; no gameplay, AI, intact-frame or contact qualification",
                 ["space"] = "renderer-local bind frame; no native vertices, indices, UVs, textures or animation curves",
-                ["key"] = key, ["nativeBlueprint"] = SerpentineRigSurveyPolicy.NativeBlueprint(key),
-                ["projectBlueprint"] = unit.Blueprint.AssetGuid, ["blueprintName"] = unit.Blueprint.name,
-                ["prefab"] = unit.Blueprint.Prefab.AssetId, ["view"] = unit.View.name,
-                ["viewScale"] = SurveyVector(unit.View.transform.localScale),
-                ["viewActive"] = unit.View.gameObject.activeInHierarchy,
-                ["components"] = new JArray(unit.View.GetComponentsInChildren<Component>(true)
+                ["sourceMode"] = attached ? "attached disposable summon; current-frame pose only" :
+                    "detached native prefab; read-only, never instantiated or activated",
+                ["key"] = key, ["nativeBlueprint"] = nativeBlueprint,
+                ["projectBlueprint"] = projectBlueprint, ["blueprintName"] = blueprintName,
+                ["prefab"] = prefabId, ["view"] = view.name,
+                ["viewScale"] = SurveyVector(view.transform.localScale),
+                ["viewActive"] = view.gameObject.activeInHierarchy,
+                ["components"] = new JArray(view.GetComponentsInChildren<Component>(true)
                     .Where(value => value != null).Select(value => value.GetType().FullName)
                     .Distinct().OrderBy(value => value, StringComparer.Ordinal).ToArray())
             };
@@ -162,11 +211,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["active"] = skin.gameObject.activeInHierarchy,
                     ["localBoundsCenter"] = SurveyVector(skin.localBounds.center),
                     ["localBoundsSize"] = SurveyVector(skin.localBounds.size),
-                    ["rendererToViewPosition"] = SurveyVector(unit.View.transform.InverseTransformPoint(skin.transform.position)),
+                    ["rendererToViewPosition"] = SurveyVector(view.transform.InverseTransformPoint(skin.transform.position)),
                     ["rendererToViewScale"] = SurveyVector(new Vector3(
-                        skin.transform.lossyScale.x / unit.View.transform.lossyScale.x,
-                        skin.transform.lossyScale.y / unit.View.transform.lossyScale.y,
-                        skin.transform.lossyScale.z / unit.View.transform.lossyScale.z)),
+                        skin.transform.lossyScale.x / view.transform.lossyScale.x,
+                        skin.transform.lossyScale.y / view.transform.lossyScale.y,
+                        skin.transform.lossyScale.z / view.transform.lossyScale.z)),
                     ["rootBone"] = skin.rootBone == null ? null : skin.rootBone.name,
                     ["boneCount"] = bones.Length, ["bindPoseCount"] = poses.Length
                 };
@@ -178,6 +227,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     frames.Add(new JObject {
                         ["index"] = index, ["name"] = bones[index].name,
                         ["parent"] = bones[index].parent == null ? null : bones[index].parent.name,
+                        ["sampledViewPosition"] = SurveyVector(view.transform.InverseTransformPoint(bones[index].position)),
                         ["bindPosition"] = SurveyVector(bind.MultiplyPoint3x4(Vector3.zero)),
                         ["bindRotation"] = new JArray(rotation.x, rotation.y, rotation.z, rotation.w)
                     });
@@ -195,15 +245,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                 entries.Add(entry);
             }
             document["skinnedRenderers"] = entries;
-            document["renderers"] = new JArray(unit.View.GetComponentsInChildren<Renderer>(true)
+            document["renderers"] = new JArray(view.GetComponentsInChildren<Renderer>(true)
                 .Where(value => value != null).Select(value => new JObject {
                     ["name"] = value.name, ["type"] = value.GetType().FullName,
                     ["enabled"] = value.enabled, ["active"] = value.gameObject.activeInHierarchy
                 }));
+            document["staticMeshAnchors"] = new JArray(view.GetComponentsInChildren<MeshRenderer>(true)
+                .Where(value => value != null).Select(value => {
+                    MeshFilter filter = value.GetComponent<MeshFilter>();
+                    return new JObject {
+                        ["name"] = value.name,
+                        ["parent"] = value.transform.parent == null ? null : value.transform.parent.name,
+                        ["viewPosition"] = SurveyVector(view.transform.InverseTransformPoint(value.transform.position)),
+                        ["meshName"] = filter == null || filter.sharedMesh == null ? null : filter.sharedMesh.name,
+                        ["enabled"] = value.enabled, ["active"] = value.gameObject.activeInHierarchy
+                    };
+                }));
             // Some native views use Owlcat's custom animation manager rather
             // than a Unity controller. An empty clip-name list is a finding,
             // not permission to load or export animation assets.
-            document["unityControllerClipNames"] = new JArray(unit.View
+            document["unityControllerClipNames"] = new JArray(view
                 .GetComponentsInChildren<Animator>(true).Where(value => value != null &&
                     value.runtimeAnimatorController != null)
                 .SelectMany(value => value.runtimeAnimatorController.animationClips)
@@ -211,18 +272,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["name"] = value.name, ["durationSeconds"] = value.length
                 }));
             var actions = new JArray();
-            if (unit.View.AnimationManager != null)
+            // A detached prefab does not prove attach-time action binding.
+            // Do not invoke its animation manager just to fill this array.
+            if (attached && view.AnimationManager != null)
                 foreach (UnitAnimationType type in Enum.GetValues(typeof(UnitAnimationType)))
                 {
-                    var action = unit.View.AnimationManager.GetAction(type);
+                    var action = view.AnimationManager.GetAction(type);
                     if (action == null) continue;
-                    var clips = action.Clips;
+                    var enumeration = action.Clips;
+                    var clips = enumeration == null ? null : enumeration.ToArray();
                     int? clipCount = SerpentineRigSurveyPolicy.CountPresentClips(
                         clips == null ? null : clips.Select(value => value != null));
                     actions.Add(new JObject {
                         ["type"] = type.ToString(), ["actionClass"] = action.GetType().FullName,
                         ["clipEnumerationPresent"] = clips != null,
-                        ["clipCount"] = clipCount.HasValue ? new JValue(clipCount.Value) : JValue.CreateNull()
+                        ["clipCount"] = clipCount.HasValue ? new JValue(clipCount.Value) : JValue.CreateNull(),
+                        ["clips"] = clips == null ? JValue.CreateNull() : (JToken)new JArray(
+                            clips.Where(value => value != null).Select(value => new JObject {
+                                ["name"] = value.name, ["durationSeconds"] = value.length
+                            }))
                     });
                 }
             document["nativeAnimationActions"] = actions;
