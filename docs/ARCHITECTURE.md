@@ -1,4 +1,4 @@
-﻿# Current architecture
+# Current architecture
 
 ## Retained public Brown-Fur direct-cast contract
 
@@ -908,3 +908,7 @@ lifecycle are qualified.
 
 The host contract and its limits are in
 [FAVORED-CLASS-COMPATIBILITY.md](FAVORED-CLASS-COMPATIBILITY.md).
+
+## DATA 0.0.142 candidate
+
+The eleven stable elemental character-trait identities append after the exact released 0.0.141 ledger. The current registry has 2660 stable IDs: 2658 active and 2 reserved. All released Summoning entries remain unchanged. A late, all-four Favored Class publication coordinator registers save-resolvable identities even when acquisition is unavailable; settings withdrawal removes only owned selection entries. Provider reconciliation removes exact owned facts on Elemental Races OFF and rebuilds one provider on ON. Native runtime and persistence qualification remain pending.

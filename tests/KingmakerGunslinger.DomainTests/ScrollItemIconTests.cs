@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 
@@ -94,7 +94,7 @@ namespace KingmakerGunslinger.DomainTests
                     "Scroll consumer is not dedicated original art: " + symbol);
             }
             foreach (string token in new[] {
-                "\"paintedConceptCount\": 100", "\"paintedConsumerCount\": 160",
+                "\"paintedConceptCount\": 104", "\"paintedConsumerCount\": 165",
                 "scroll-of-teleport", "scroll-of-greater-teleport",
                 "scroll-of-word-of-recall" })
                 Assertions.True(catalog.Contains(token),
@@ -117,7 +117,7 @@ namespace KingmakerGunslinger.DomainTests
             // time; 241/239 once Expanded Summoning Phase 1 Sprint 3 added
             // four creature icons on top).
             string package = File.ReadAllText(Path.Combine(root, "scripts", "package.ps1"));
-            Assertions.True(package.Contains("{ 282 } else { 280 }"),
+            Assertions.True(package.Contains("{ 286 } else { 284 }"),
                 "Package file count does not include the scroll icons and flying visuals.");
             // The runtime identity check must verify the composed item icon,
             // not the retired spell-matches-item equality.

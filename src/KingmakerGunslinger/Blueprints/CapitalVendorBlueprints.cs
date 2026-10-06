@@ -28,6 +28,8 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintItem repairKit,
             GunsmithingSupplyBlueprintSet gunsmithingSupplies,
             bool publishGunslinger,
+            EasternWeaponBlueprintSet easternWeapons,
+            ElvenBranchedSpearBlueprintSet elvenBranchedSpears,
             BlueprintItem cordOfStubbornResolve,
             ModLogger logger)
         {
@@ -46,11 +48,10 @@ namespace KingmakerGunslinger.Blueprints
             if (!string.Equals(table.name, ExpectedTableName, StringComparison.Ordinal))
                 throw new InvalidOperationException("Capital merchant GUID/name mismatch: " +
                     table.name + ":" + TableGuid);
+            if (easternWeapons == null || elvenBranchedSpears == null)
+                throw new ArgumentNullException("regional weapon identities");
             BlueprintItem[] gunslingerItems =
             {
-                firearms.Pistol.Item,
-                firearms.Musket.Item,
-                firearms.Blunderbuss.Item,
                 magicFirearms.Require(MagicFirearmBlueprints.PistolPlus1Symbol).Item,
                 magicFirearms.Require(MagicFirearmBlueprints.MusketPlus1Symbol).Item,
                 magicFirearms.Require(MagicFirearmBlueprints.BlunderbussPlus1Symbol).Item,
@@ -65,8 +66,7 @@ namespace KingmakerGunslinger.Blueprints
             // earlier version.
             int[] gunslingerCounts =
             {
-                WeaponCount, WeaponCount, WeaponCount, WeaponCount, WeaponCount,
-                WeaponCount,
+                WeaponCount, WeaponCount, WeaponCount,
                 AmmunitionCount, AmmunitionCount, AmmunitionCount,
                 WeaponCount
             };
@@ -81,39 +81,36 @@ namespace KingmakerGunslinger.Blueprints
                         ammunition.PaperCartridge, repairKit,
                         gunsmithingSupplies.OverhaulKit,
                         gunsmithingSupplies.GunsmithKit,
-                        cordOfStubbornResolve }).Distinct().ToArray();
+                        cordOfStubbornResolve })
+                .Concat(easternWeapons.Entries.Select(value => (BlueprintItem)value.Item))
+                .Concat(elvenBranchedSpears.Entries.Select(value => (BlueprintItem)value.Item))
+                .Distinct().ToArray();
             BlueprintComponent[] existing = table.ComponentsArray ??
                 Array.Empty<BlueprintComponent>();
-            int[] matches = items.Select(item => existing.OfType<LootItemsPackFixed>()
-                .Count(component => ReferenceEquals(ReadItem(component), item))).ToArray();
-            bool obsolete = existing.OfType<LootItemsPackFixed>().Any(component =>
-                owned.Contains(ReadItem(component)) && !items.Contains(ReadItem(component)));
-            bool exactCounts = items.Select((item, index) => existing
-                .OfType<LootItemsPackFixed>().Where(component =>
-                    ReferenceEquals(ReadItem(component), item)).ToArray())
-                .Select((found, index) => found.Length == 1 &&
-                    ReadCount(found[0]) == counts[index]).All(value => value);
-            if (!obsolete && exactCounts)
-                return CapitalVendorPublication.Unchanged(table, existing, items, counts);
-
-            BlueprintComponent[] retained = existing.Where(component =>
-            {
-                LootItemsPackFixed fixedEntry = component as LootItemsPackFixed;
-                return fixedEntry == null || !owned.Contains(ReadItem(fixedEntry));
-            }).ToArray();
-            BlueprintComponent[] additions = items.Select((item, index) =>
-                CreateFixedEntry(item, counts[index])).Cast<BlueprintComponent>().ToArray();
             VendorCatalogPublication<BlueprintComponent> transaction =
-                VendorCatalogPublication<BlueprintComponent>.Create(retained, additions);
+                VendorCatalogPublication<BlueprintComponent>.NormalizeOwned(existing,
+                    owned, items, counts, row => ReadItem(row as LootItemsPackFixed),
+                    row => ReadCount((LootItemsPackFixed)row),
+                    (item, count) => CreateFixedEntry(item, count));
+            if (!transaction.Changed)
+                return CapitalVendorPublication.Unchanged(table, existing, items, counts);
             table.ComponentsArray = transaction.Published;
             var publication = new CapitalVendorPublication(
                 table, transaction, items, counts, true, existing);
-            publication.Validate();
-            logger.Info("acquisition", "capital-vendor.published",
-                string.Format(CultureInfo.InvariantCulture,
-                    "Normalized {0} module-aware project entries on {1} ({2}); gunslinger={3}; modern and named firearms excluded.",
-                    items.Length, table.name, TableGuid, publishGunslinger));
-            return publication;
+            try
+            {
+                publication.Validate();
+                logger.Info("acquisition", "capital-vendor.published",
+                    string.Format(CultureInfo.InvariantCulture,
+                        "Normalized {0} Model D entries on {1} ({2}); gunslinger={3}; mundane, modern, named and regional weapons excluded.",
+                        items.Length, table.name, TableGuid, publishGunslinger));
+                return publication;
+            }
+            catch
+            {
+                table.ComponentsArray = existing;
+                throw;
+            }
         }
 
         internal static BlueprintItem ReadItem(LootItemsPackFixed component)

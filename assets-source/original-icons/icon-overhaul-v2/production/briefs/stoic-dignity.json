@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "key": "stoic-dignity",
+  "draft": false,
+  "publicationStatus": "original asset technically reviewed; owner aesthetics NOT_RECORDED",
+  "behavior": "Conscious holder +1 Trait against new mind-affecting effects, other allies within 10 feet +1 Morale; exact same-effect/source-lineage suppression, no cleanse or immunity.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/DormantElementalCharacterTraitFactory.cs",
+    "src/KingmakerGunslinger/ElementalRaces/ElementalCharacterTraitCatalog.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/stoic-dignity.png",
+  "sourceSha256": "f821992b390be1cc214a137f54c4122c2d460c542805023359a79bcb66849ac3",
+  "tool": "built-in image_gen.imagegen",
+  "referenceImages": [],
+  "prompt": "Use case: stylized-concept.\nAsset type: one original hand-painted fantasy CRPG character-trait icon, in a cohesive four-icon painted-magical family.\nOutput exactly ONE standalone square image, 1024x1024 pixels or larger, full-bleed opaque dark painted background. Never make a collage, panels, contact sheet, sprite sheet, mockup, border, or frame.\nStyle: rich hand-painted fantasy materials, broad deliberate brushwork, sculpted light and shadow, crisp focal silhouette with softer peripheral edges. Controlled dramatic elemental lighting; restrained secondary details; neither photorealistic nor a 3D render. The entire icon is a compact symbolic composition, not a portrait scene or landscape. Use the same medium, contrast discipline, edge treatment and detail density as a coherent four-image art family.\nComposition: one dominant subject filling most of the central square, every essential form fully inside the canvas with a safe dark perimeter; important shapes must not be cut off. Strong immediate recognition at 128x128, 48x48, and especially 32x32. Keep the primary silhouette legible in grayscale; do not rely on color alone. Reduce tiny clutter and concentrate value contrast on the dominant subject.\nOriginality: invent a fresh composition. No copying, tracing, remixing, close imitation of any existing icon, recognizable real person, established fictional character, or copyrighted logo.\nAbsolute exclusions: no text, letters, numbers, runes, logos, monograms, caption, signature, watermark, decorative border, UI overlays or state marks. No vector/flat graphics, anime, cartoons, pixel art, generic placeholders, or modern props.\nPrimary subject: a single calm dignified stone face or carved mask, complete and contained in the square, with a simple frontal or three-quarter silhouette. Its expression is composed, honorable, unmoved, quietly authoritative. Broad carved planes and mineral texture suggest Oread ancestry. Warm earth, bronze, muted ochre and restrained golden light against a deep dark painted ground. A soft measured protective radiance or rim light around the face conveys inner composure fortifying the bearer and nearby allies; keep it subtle and non-geometric, never a shield or solid barrier. A few mineral glints or restrained dust are secondary.\nThis icon communicates dignity so steady that it fortifies the mind. Make the face read immediately at 32 pixels through broad brow, cheek and jaw planes. Avoid angry rock monsters, emotional or laughing faces, generic shields, full-body statues, meditation cliches, generic earth-wisdom/stone-skin/breath-control compositions, and photoreal portraits.",
+  "visualStatus": "awaiting-owner-production-review",
+  "subjectAndSilhouette": "A calm, dignified stone face or mask with subtle protective radiance; Oread earth, carved planes, warm mineral highlights and controlled light.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "oread-traits",
+  "confusedWith": [
+    "earth-insight",
+    "inner-breath"
+  ],
+  "uiSurfaces": [
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No text, letters, numbers, monogram, procedural substitute, placeholder or donor art.",
+    "No claim of owner art or UI approval.",
+    "Keep the exact trait subject and elemental race identity."
+  ],
+  "generationLineage": [
+    {
+      "stage": "initial",
+      "tool": "built-in image_gen",
+      "prompt": "Use case: stylized-concept.\nAsset type: one original hand-painted fantasy CRPG character-trait icon, in a cohesive four-icon painted-magical family.\nOutput exactly ONE standalone square image, 1024x1024 pixels or larger, full-bleed opaque dark painted background. Never make a collage, panels, contact sheet, sprite sheet, mockup, border, or frame.\nStyle: rich hand-painted fantasy materials, broad deliberate brushwork, sculpted light and shadow, crisp focal silhouette with softer peripheral edges. Controlled dramatic elemental lighting; restrained secondary details; neither photorealistic nor a 3D render. The entire icon is a compact symbolic composition, not a portrait scene or landscape. Use the same medium, contrast discipline, edge treatment and detail density as a coherent four-image art family.\nComposition: one dominant subject filling most of the central square, every essential form fully inside the canvas with a safe dark perimeter; important shapes must not be cut off. Strong immediate recognition at 128x128, 48x48, and especially 32x32. Keep the primary silhouette legible in grayscale; do not rely on color alone. Reduce tiny clutter and concentrate value contrast on the dominant subject.\nOriginality: invent a fresh composition. No copying, tracing, remixing, close imitation of any existing icon, recognizable real person, established fictional character, or copyrighted logo.\nAbsolute exclusions: no text, letters, numbers, runes, logos, monograms, caption, signature, watermark, decorative border, UI overlays or state marks. No vector/flat graphics, anime, cartoons, pixel art, generic placeholders, or modern props.\nPrimary subject: a single calm dignified stone face or carved mask, complete and contained in the square, with a simple frontal or three-quarter silhouette. Its expression is composed, honorable, unmoved, quietly authoritative. Broad carved planes and mineral texture suggest Oread ancestry. Warm earth, bronze, muted ochre and restrained golden light against a deep dark painted ground. A soft measured protective radiance or rim light around the face conveys inner composure fortifying the bearer and nearby allies; keep it subtle and non-geometric, never a shield or solid barrier. A few mineral glints or restrained dust are secondary.\nThis icon communicates dignity so steady that it fortifies the mind. Make the face read immediately at 32 pixels through broad brow, cheek and jaw planes. Avoid angry rock monsters, emotional or laughing faces, generic shields, full-body statues, meditation cliches, generic earth-wisdom/stone-skin/breath-control compositions, and photoreal portraits.",
+      "input": null,
+      "outputSha256": "f821992b390be1cc214a137f54c4122c2d460c542805023359a79bcb66849ac3"
+    }
+  ],
+  "objectiveVisualReview": "PASS",
+  "ownerAestheticApproval": "NOT_RECORDED"
+}

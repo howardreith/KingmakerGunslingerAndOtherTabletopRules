@@ -40,12 +40,12 @@ namespace KingmakerGunslinger.DomainTests
         {
             string reliable = MidgameFirearmCatalog.Roadwarden.Description;
             string seeking = MidgameFirearmCatalog.DeadReckoning.Description;
-            Assertions.True(reliable.Contains("misfire value by 1 after other increases") &&
+            Assertions.True(reliable.Contains("misfire value is 1 lower than it would otherwise be") &&
                 reliable.Contains("minimum of 0") && reliable.Contains("natural 1 still misses"),
                 "Reliable text retains its actual limit.");
-            Assertions.True(seeking.Contains("ignores concealment miss chances") &&
-                seeking.Contains("does not reveal unseen creatures") &&
-                seeking.Contains("could not otherwise target") && seeking.Contains("other defenses"),
+            Assertions.True(seeking.Contains("ignore the miss chance from concealment") &&
+                seeking.Contains("could not otherwise target") &&
+                seeking.Contains("other defenses still apply"),
                 "Seeking text limits both revelation and targeting.");
             Assertions.False(seeking.Contains("Reliable"), "No free Reliable on the pistol.");
             foreach (MidgameFirearmSpec item in MidgameFirearmCatalog.Entries)

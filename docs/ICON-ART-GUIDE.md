@@ -331,3 +331,7 @@ the complete catalog/protection/package gates still apply afterward.
 
 Every follow-up consumer is recorded in the canonical catalog. New spell and
 scroll pixels await owner review, independently of technical/native checks.
+
+## Four elemental character-trait release candidates (2026-10-06)
+
+The owner explicitly authorized technical publication qualification after Codex objective source and 32px/grayscale review in the 0.0.142 continuation mission. For these four new originals, technicalReview pins the exact source/export hashes and curated evidence. visualReview and approvedHash remain unapproved/null until owner review; technical admission is not aesthetic approval. The all-four intake requires real prompts, lineage, square originals, exact RGBA exports, independent hashes, five exact visible consumers and protected runtime pixels. Existing approvals and every other icon contract remain unchanged. No fallback or waiver exists.

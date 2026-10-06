@@ -1,0 +1,171 @@
+{
+  "schemaVersion": 1,
+  "CodexObjectiveVisualReview": "PASS",
+  "OwnerAestheticApproval": "NOT_RECORDED",
+  "OwnerAuthorizedTechnicalAdmission": "2026-10-06 continuation; final human contact-sheet review remains required",
+  "historicalRejectedWhiteoutReview": "reports/elemental-character-traits/ICON-INTAKE-OBJECTIVE-REVIEW-2026-10-06.json",
+  "WhiteoutAttemptsUsed": 3,
+  "selectedWhiteoutAttempt": 3,
+  "cropApplied": false,
+  "fallbackArt": false,
+  "icons": [
+    {
+      "concept": "fiery-glare",
+      "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/fiery-glare.png",
+      "sourceSha256": "a3ed28c9a92940f60cee501ecd429e7e4d7c5bd7d8f6f209124985d6863005e3",
+      "sourceSize": [
+        1254,
+        1254
+      ],
+      "export": "assets-source/original-icons/icon-overhaul-v2/production/exports/fiery-glare.png",
+      "exportSha256": "0ff889c3321e0d30b82e9d8c2fc5b80f81f134b48c636f6fc231826fccf993f5",
+      "exportSize": [
+        128,
+        128
+      ],
+      "runtime": "assets/game/icons/fiery-glare.png",
+      "CodexObjectiveVisualReview": "PASS",
+      "OwnerAestheticApproval": "NOT_RECORDED",
+      "approvedHash": null,
+      "reviewGroup": "ifrit-traits",
+      "profile": "project-painted-128",
+      "generationLineage": [
+        {
+          "stage": "initial",
+          "tool": "built-in image_gen",
+          "prompt": "Use case: stylized-concept.\nAsset type: one original hand-painted fantasy CRPG character-trait icon, in a cohesive four-icon painted-magical family.\nOutput exactly ONE standalone square image, 1024x1024 pixels or larger, full-bleed opaque dark painted background. Never make a collage, panels, contact sheet, sprite sheet, mockup, border, or frame.\nStyle: rich hand-painted fantasy materials, broad deliberate brushwork, sculpted light and shadow, crisp focal silhouette with softer peripheral edges. Controlled dramatic elemental lighting; restrained secondary details; neither photorealistic nor a 3D render. The entire icon is a compact symbolic composition, not a portrait scene or landscape. Use the same medium, contrast discipline, edge treatment and detail density as a coherent four-image art family.\nComposition: one dominant subject filling most of the central square, every essential form fully inside the canvas with a safe dark perimeter; important shapes must not be cut off. Strong immediate recognition at 128x128, 48x48, and especially 32x32. Keep the primary silhouette legible in grayscale; do not rely on color alone. Reduce tiny clutter and concentrate value contrast on the dominant subject.\nOriginality: invent a fresh composition. No copying, tracing, remixing, close imitation of any existing icon, recognizable real person, established fictional character, or copyrighted logo.\nAbsolute exclusions: no text, letters, numbers, runes, logos, monograms, caption, signature, watermark, decorative border, UI overlays or state marks. No vector/flat graphics, anime, cartoons, pixel art, generic placeholders, or modern props.\nPrimary subject: a single large ember-lit eye and severe brow, with an iris formed of controlled living flame. The almond-shaped eye is the unmistakable dominant silhouette, completely contained in the square. A focused intimidating gaze conveys command and supernatural confidence: deliberate and composed, never screaming, enraged, friendly, startled, or monstrous. Show only the local eye, eyelids and brow, not a complete face or portrait. Amber and molten orange illuminate the flame-shaped iris against restrained crimson and deep red-black shadows. A narrow hot edge at the lids and brow suggests Ifrit elemental heat. A few dim sparks and subtle heat shimmer may recede into the dark background, without competing with the eye.\nThe icon must communicate an Ifrit whose gaze itself intimidates. Keep distinct from a generic flame emblem, fireball, fire-vision spell, inner-flame spell, explosion or fiery wings. Prioritize the eye and commanding expression over decorative flame.",
+          "input": null,
+          "outputSha256": "a3ed28c9a92940f60cee501ecd429e7e4d7c5bd7d8f6f209124985d6863005e3"
+        }
+      ]
+    },
+    {
+      "concept": "stoic-dignity",
+      "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/stoic-dignity.png",
+      "sourceSha256": "f821992b390be1cc214a137f54c4122c2d460c542805023359a79bcb66849ac3",
+      "sourceSize": [
+        1254,
+        1254
+      ],
+      "export": "assets-source/original-icons/icon-overhaul-v2/production/exports/stoic-dignity.png",
+      "exportSha256": "e1f619d17470cff018799db9b1c6554cf11e6b0626723360603f332ce7fb6f51",
+      "exportSize": [
+        128,
+        128
+      ],
+      "runtime": "assets/game/icons/stoic-dignity.png",
+      "CodexObjectiveVisualReview": "PASS",
+      "OwnerAestheticApproval": "NOT_RECORDED",
+      "approvedHash": null,
+      "reviewGroup": "oread-traits",
+      "profile": "project-painted-128",
+      "generationLineage": [
+        {
+          "stage": "initial",
+          "tool": "built-in image_gen",
+          "prompt": "Use case: stylized-concept.\nAsset type: one original hand-painted fantasy CRPG character-trait icon, in a cohesive four-icon painted-magical family.\nOutput exactly ONE standalone square image, 1024x1024 pixels or larger, full-bleed opaque dark painted background. Never make a collage, panels, contact sheet, sprite sheet, mockup, border, or frame.\nStyle: rich hand-painted fantasy materials, broad deliberate brushwork, sculpted light and shadow, crisp focal silhouette with softer peripheral edges. Controlled dramatic elemental lighting; restrained secondary details; neither photorealistic nor a 3D render. The entire icon is a compact symbolic composition, not a portrait scene or landscape. Use the same medium, contrast discipline, edge treatment and detail density as a coherent four-image art family.\nComposition: one dominant subject filling most of the central square, every essential form fully inside the canvas with a safe dark perimeter; important shapes must not be cut off. Strong immediate recognition at 128x128, 48x48, and especially 32x32. Keep the primary silhouette legible in grayscale; do not rely on color alone. Reduce tiny clutter and concentrate value contrast on the dominant subject.\nOriginality: invent a fresh composition. No copying, tracing, remixing, close imitation of any existing icon, recognizable real person, established fictional character, or copyrighted logo.\nAbsolute exclusions: no text, letters, numbers, runes, logos, monograms, caption, signature, watermark, decorative border, UI overlays or state marks. No vector/flat graphics, anime, cartoons, pixel art, generic placeholders, or modern props.\nPrimary subject: a single calm dignified stone face or carved mask, complete and contained in the square, with a simple frontal or three-quarter silhouette. Its expression is composed, honorable, unmoved, quietly authoritative. Broad carved planes and mineral texture suggest Oread ancestry. Warm earth, bronze, muted ochre and restrained golden light against a deep dark painted ground. A soft measured protective radiance or rim light around the face conveys inner composure fortifying the bearer and nearby allies; keep it subtle and non-geometric, never a shield or solid barrier. A few mineral glints or restrained dust are secondary.\nThis icon communicates dignity so steady that it fortifies the mind. Make the face read immediately at 32 pixels through broad brow, cheek and jaw planes. Avoid angry rock monsters, emotional or laughing faces, generic shields, full-body statues, meditation cliches, generic earth-wisdom/stone-skin/breath-control compositions, and photoreal portraits.",
+          "input": null,
+          "outputSha256": "f821992b390be1cc214a137f54c4122c2d460c542805023359a79bcb66849ac3"
+        }
+      ]
+    },
+    {
+      "concept": "aerial-observer",
+      "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/aerial-observer.png",
+      "sourceSha256": "77d3196f92d4d11fee14d13d3b32de5063c8bf27b99fa6ca0295e02bd87b920e",
+      "sourceSize": [
+        1254,
+        1254
+      ],
+      "export": "assets-source/original-icons/icon-overhaul-v2/production/exports/aerial-observer.png",
+      "exportSha256": "462408b925f912e2a1063ac9e8a0ff25b33c68b80fcccb1fa85d05f706fc117f",
+      "exportSize": [
+        128,
+        128
+      ],
+      "runtime": "assets/game/icons/aerial-observer.png",
+      "CodexObjectiveVisualReview": "PASS",
+      "OwnerAestheticApproval": "NOT_RECORDED",
+      "approvedHash": null,
+      "reviewGroup": "sylph-traits",
+      "profile": "project-painted-128",
+      "generationLineage": [
+        {
+          "stage": "initial",
+          "tool": "built-in image_gen",
+          "prompt": "Use case: stylized-concept.\nAsset type: one original hand-painted fantasy CRPG character-trait icon, in a cohesive four-icon painted-magical family.\nOutput exactly ONE standalone square image, 1024x1024 pixels or larger, full-bleed opaque dark painted background. Never make a collage, panels, contact sheet, sprite sheet, mockup, border, or frame.\nStyle: rich hand-painted fantasy materials, broad deliberate brushwork, sculpted light and shadow, crisp focal silhouette with softer peripheral edges. Controlled dramatic elemental lighting; restrained secondary details; neither photorealistic nor a 3D render. The entire icon is a compact symbolic composition, not a portrait scene or landscape. Use the same medium, contrast discipline, edge treatment and detail density as a coherent four-image art family.\nComposition: one dominant subject filling most of the central square, every essential form fully inside the canvas with a safe dark perimeter; important shapes must not be cut off. Strong immediate recognition at 128x128, 48x48, and especially 32x32. Keep the primary silhouette legible in grayscale; do not rely on color alone. Reduce tiny clutter and concentrate value contrast on the dominant subject.\nOriginality: invent a fresh composition. No copying, tracing, remixing, close imitation of any existing icon, recognizable real person, established fictional character, or copyrighted logo.\nAbsolute exclusions: no text, letters, numbers, runes, logos, monograms, caption, signature, watermark, decorative border, UI overlays or state marks. No vector/flat graphics, anime, cartoons, pixel art, generic placeholders, or modern props.\nPrimary subject: a single keen observing eye or focused gaze surveying downward from wind-borne height. Make a broad clearly legible eye the focal subject, with a watchful expression rather than intimidation. Controlled pale ribbons of air frame it without crossing or hiding the eye. A restrained curved distant cloud line and receding atmosphere below the gaze imply high perspective; these are clean secondary shapes, not a landscape panorama. Pale teal, cool blue and silver-white highlights against deep blue-gray painted shadow. Gentle stationary wind curves convey vigilance, distance and awareness, not speed. Keep the eye and all essential wind forms inside the square.\nThis icon communicates height granting exceptional perception. Differentiate its airy observant silhouette from a hot severe fire eye. Avoid wings as the subject, birds/eagles, binoculars/spyglasses, a generic flying figure, speed streaks, a Wings of Air activation emblem, generic cloud-gazing, and a scene portrait.",
+          "input": null,
+          "outputSha256": "b390f96ce3faf74830464f308e1e94639dc27906d39109581df3f1bd8d3f31fd"
+        },
+        {
+          "stage": "original-refinement",
+          "tool": "built-in image_gen",
+          "prompt": "Use case: precise-object-edit. Refine this one original square Aerial Observer CRPG trait icon. Preserve the cool pale-teal, blue and silver-white palette, hand-painted fantasy brushwork, watchful eye identity and opaque dark blue-gray background. Change only the composition and detail hierarchy to work at 32 pixels: enlarge and reposition the single keen eye into the central dominant focal subject, with its entire almond silhouette and iris clearly readable. The eye should occupy about three quarters of the canvas width. Reduce the broad lower landscape/cloud panorama to ONE narrow curved cloud-horizon band and a little atmospheric depth, occupying at most the lower fifth of the image. Remove the sprawling cloud landscape. Frame the eye with just two restrained controlled wind ribbons that remain secondary and never cover the iris. Every important eye and wind shape must fit fully inside a safely dark perimeter; no cropped eye, lid or elemental tips. Convey vigilance and perception from wind-borne height, not speed, generic flight power or cloud-gazing. Keep rich painted materials and strong grayscale focal contrast, minimal tiny detail, no wings/bird/modern props. This is a compact fantasy game ICON, not a portrait or landscape. Output one square image at least 1024x1024. No text, runes, letters, numbers, logos, monograms, border, frame, UI, signature or watermark.",
+          "inputSha256": "b390f96ce3faf74830464f308e1e94639dc27906d39109581df3f1bd8d3f31fd",
+          "outputSha256": "77d3196f92d4d11fee14d13d3b32de5063c8bf27b99fa6ca0295e02bd87b920e"
+        }
+      ]
+    },
+    {
+      "concept": "whiteout",
+      "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/whiteout.png",
+      "sourceSha256": "86bce8afb3482f2d317809153f228dcbb76da351283b46553c186ed317f076dc",
+      "sourceSize": [
+        1254,
+        1254
+      ],
+      "export": "assets-source/original-icons/icon-overhaul-v2/production/exports/whiteout.png",
+      "exportSha256": "3afdb75457b431530356e26ce32c005d2e8dbb8634474e20814b6cfa6d1e9f6b",
+      "exportSize": [
+        128,
+        128
+      ],
+      "runtime": "assets/game/icons/whiteout.png",
+      "CodexObjectiveVisualReview": "PASS",
+      "OwnerAestheticApproval": "NOT_RECORDED",
+      "approvedHash": null,
+      "reviewGroup": "undine-traits",
+      "profile": "project-painted-128",
+      "generationLineage": [
+        {
+          "stage": "initial",
+          "tool": "built-in image_gen",
+          "prompt": "Use case: stylized-concept.\nAsset type: one original hand-painted fantasy CRPG character-trait icon, in a cohesive four-icon painted-magical family.\nOutput exactly ONE standalone square image, 1024x1024 pixels or larger, full-bleed opaque dark painted background. Never make a collage, panels, contact sheet, sprite sheet, mockup, border, or frame.\nStyle: rich hand-painted fantasy materials, broad deliberate brushwork, sculpted light and shadow, crisp focal silhouette with softer peripheral edges. Controlled dramatic elemental lighting; restrained secondary details; neither photorealistic nor a 3D render. The entire icon is a compact symbolic composition, not a portrait scene or landscape. Use the same medium, contrast discipline, edge treatment and detail density as a coherent four-image art family.\nComposition: one dominant subject filling most of the central square, every essential form fully inside the canvas with a safe dark perimeter; important shapes must not be cut off. Strong immediate recognition at 128x128, 48x48, and especially 32x32. Keep the primary silhouette legible in grayscale; do not rely on color alone. Reduce tiny clutter and concentrate value contrast on the dominant subject.\nOriginality: invent a fresh composition. No copying, tracing, remixing, close imitation of any existing icon, recognizable real person, established fictional character, or copyrighted logo.\nAbsolute exclusions: no text, letters, numbers, runes, logos, monograms, caption, signature, watermark, decorative border, UI overlays or state marks. No vector/flat graphics, anime, cartoons, pixel art, generic placeholders, or modern props.\nPrimary subject: a compact unmistakable Undine presence, a contained upper-body silhouette with an identifiable eye/gaze and cool water-toned facial planes, sheltering within driving natural rain and snow. It must remain recognizable, not vanish into the weather. Cold blue, cyan, slate, silver and restrained sea-green against a dark full-bleed storm ground. Strong readable diagonal rain strokes and a few broad snow streaks create a sparse layered precipitation veil. One incoming arrow or blade silhouette, its essential outline and tip contained inside the square, becomes partially obscured and visually interrupted by rain and snow before finding the Undine. The attack is secondary but still readable at 32 pixels. Show defensive uncertainty and a strike losing its target, not physical ricochet, armor impact, invulnerability, a force field, or a solid barrier.\nThis icon communicates rain and snow making attacks less likely to find an Undine. No magical fog, mist cloud, waterfall, opaque ice wall, snowflake emblem, generic cold-spell emblem, or blizzard landscape. Keep weather forceful but contrast controlled, with subject and attack distinctly separated from the dark background.",
+          "input": null,
+          "outputSha256": "702b0f30faaa9f5a4bab17c48fc83b6babbf4856888a26a108f479ba279ded3b"
+        },
+        {
+          "stage": "original-refinement",
+          "tool": "built-in image_gen",
+          "prompt": "Use case: precise-object-edit. Refine this one original Whiteout CRPG trait icon. Keep its cold blue/cyan/slate/silver/sea-green palette, natural diagonal rain and snow, original Undine identity, hand-painted fantasy materials, and opaque dark storm background. Change the composition and detail hierarchy from a cropped portrait into a compact symbolic game icon legible at 32 pixels: show ONE small contained Undine upper-body/profile silhouette, roughly two thirds of the square height, with its entire head and shoulders inside generous dark breathing room and one keen eye as the facial focal point. Simplify fine face/hair/hand detail; remove the prominent expressive hand gesture. Remove the thick swirling water ribbons around the body: they look like a magical barrier or waterfall. Instead use a sparse veil of broad diagonal NATURAL rain strokes and a few snow streaks that obscure the incoming strike without hiding the Undine. Show ONE incoming arrow, fully contained from arrowhead to fletching inside the square; no cropped shaft or feathers. Its clean silhouette should become partially lost behind the natural rain and snow, visibly missing its protected subject, never bouncing off armor or striking an ice wall. Keep the arrow secondary but immediately readable, separated in value from the protected subject. Keep all essential figure, arrow and weather forms safely inside the edges. Controlled contrast, quieter peripheral weather, broad deliberate brushwork, strong simple silhouettes. Communicate precipitation making the Undine harder to hit, not invulnerability, magical fog, spellcasting, a solid barrier or a blizzard landscape. Output one square image at least 1024x1024. No text, letters, numbers, runes, logos, monograms, border, frame, UI, signature or watermark.",
+          "inputSha256": "702b0f30faaa9f5a4bab17c48fc83b6babbf4856888a26a108f479ba279ded3b",
+          "outputSha256": "488e9932c914613d2be736712dbe2b351e0d5e6ef090fe67f1e6cc731713349e"
+        },
+        {
+          "stage": "continuation-attempt-1",
+          "tool": "built-in image_gen.imagegen",
+          "prompt": "Use case: precise-object-edit.\nAsset type: ONE original hand-painted fantasy CRPG Whiteout character-trait icon. Make one square opaque image, at least 1024x1024, composed to remain unmistakable at 32x32.\nInput image role: the attached rejected Whiteout source is a reference for the original Undine identity, cold water/frost palette and painted-magical family ONLY. Materially simplify and redesign its composition. Do not preserve the noisy weather, tiny droplets, water-ribbon hair or tiny arrow.\nSubject: one large compact aquatic Undine head-and-shoulders/profile silhouette, occupying roughly 55–70% of the image. A composed alert face and one clear eye, broad teal/slate facial planes, simple dark flowing hair and a subtle fin-like ear establish an aquatic person. All head and shoulder contours fully contained, with a safe dark perimeter. No hands.\nAttack: ONE large immediately recognizable incoming arrow, entirely inside the square from its substantial triangular arrowhead to its clean shaft and simple fletching. Give the arrowhead a broad bold shape, large enough to remain identifiable in a 32-pixel reduction. Place the whole arrow across the lower-right foreground aiming toward but passing below the protected head, with clear dark negative space separating the face/profile and arrow. Preserve one coherent arrow silhouette: a clean shaft and strong arrowhead, not a dart, blade, spear, beam or abstract line. The shot is partly obscured by precipitation, not striking armor or ricocheting.\nValue design: strong GRAYSCALE separation between the readable Undine subject, readable incoming arrow and dark storm ground. Broad silver arrow planes against a dark gap; clearly modeled mid-light aquatic face against dark blue-black. Weather is visibly lower contrast than both subject and arrow. Avoid a field of bright white rain.\nWeather: ONLY approximately FIVE broad diagonal rain bands and at most TWO broad snow streaks. Let a broad lower-contrast precipitation stroke partially veil one short section of the shaft while leaving its arrowhead and fletching clear. Absolutely NO tiny precipitation speckles, droplets, glitter or particle texture around the face or arrow. Natural driving rain and snow make the aim uncertain. No cloud-like fog.\nStyle: high-quality hand-painted fantasy CRPG art in the project's painted-magical family, broad deliberate brushwork, rich but restrained painted materials, controlled dramatic lighting and soft dark peripheral edges. Full-bleed opaque dark painted background; no transparency. This is a compact symbolic ICON, not a sprawling storm scene or photoreal portrait.\nConstraints: original composition, recognizable aquatic subject + incoming arrow + sparse rain/snow at 32px and in grayscale. No text, pseudo-runes, letters, numbers, logos, monograms, border, frame, watermark, signature or UI-state marks. No hand gesture, water ribbons, fog, force field, ice wall, waterfall, snowflake emblem, ricochet or armor impact. No tiny decorative clutter. No cropped eye, head, arrowhead, shaft or fletching. Do not use the rain as a solid barrier. Do not copy or imitate an existing game icon.\nBefore finishing, mentally reduce the composition to 32x32: if the arrowhead and aquatic profile are not both instantly recognizable, simplify further. Output exactly one image.",
+          "inputSha256": "488e9932c914613d2be736712dbe2b351e0d5e6ef090fe67f1e6cc731713349e",
+          "outputSha256": "3fb676d422eaa4d933bea0008b8ae213b23c01dcb87ebc786c31936683a42bfd",
+          "objectiveDisposition": "FAIL-OBJECTIVE-ARROW-CONTAINMENT"
+        },
+        {
+          "stage": "continuation-attempt-2",
+          "tool": "built-in image_gen.imagegen",
+          "prompt": "Use case: precise-object-edit.\nEdit the provided first Whiteout candidate into ONE finished original square painted-magical CRPG trait icon, at least 1024x1024, opaque full-bleed dark background.\nKeep: the strong broad aquatic Undine face, fin-like ear, teal/slate/silver palette, broad painterly materials, clearly recognizable large silver triangular arrowhead, and very sparse lower-contrast diagonal rain/snow. Preserve the recognizable face + arrow separation in grayscale and at 32 pixels.\nCorrect the observed defect: the existing arrow shaft leaves the right edge. Repaint/recompose the ENTIRE ARROW inside the image, including its nock and fletching. It must terminate clearly before the right edge. Do not merely crop the existing picture.\nComposition: all important shapes have a dark safety margin. The head, hair outline and shoulders occupy the central-left roughly 60% of the square, fully inside the frame with about a tenth of the canvas of dark breathing room around them. Simplify the outer hair into broad quiet clumps; no long water ribbons trailing off the edge.\nArrow: a single bold silver arrow across the lower foreground, pointing lower-left and passing below the head without contact. Its triangular head and clean shaft are unmistakable at 32px. Its entire silhouette fits between approximately 30% and 88% of canvas width. Put the rear NOCK and feather tips around 85% canvas width, leaving visible uninterrupted dark space to their right. Show the actual end of the shaft. No part of the arrow touches or exits any edge. Large clear arrowhead, coherent shaft, simple contained fletching. A short central shaft segment may be veiled by a lower-contrast broad rain band, but both ends remain clear.\nWeather: approximately FIVE broad diagonal rain bands and at most TWO broad snow streaks; no tiny speckles, drops, glitter or particle noise on the face or arrow. Weather stays lower contrast than subject and attack. Natural precipitation obscures the aim; no physical deflection, ricochet, armor strike or shield.\n32px test: aquatic head/profile + fully contained arrow + sparse precipitation must all be distinct, including in grayscale. Subject and arrow are highest-contrast forms against a deep dark painted ground. Paint broad forms with restrained detail.\nNo text, pseudo-runes, letters, numbers, logo, monogram, border, frame, watermark, signature or UI marks. No hands, water ribbons, magical fog, mist cloud, force field, ice wall, waterfall, snowflake emblem or landscape. No clipped head, hair silhouette, arrowhead, shaft, feathers or nock. Output one standalone square image.",
+          "inputSha256": "3fb676d422eaa4d933bea0008b8ae213b23c01dcb87ebc786c31936683a42bfd",
+          "outputSha256": "bc932e38ccfaaaa7971eeaf7f813cc1bbf3ddac8fbc0f47142521a3c4a7c0509",
+          "objectiveDisposition": "FAIL-OBJECTIVE-SUBJECT-CONTAINMENT"
+        },
+        {
+          "stage": "continuation-attempt-3",
+          "tool": "built-in image_gen.imagegen",
+          "prompt": "Use case: precise-object-edit.\nEdit the supplied Whiteout candidate into one finished original square painted-magical fantasy CRPG icon, 1024x1024 or larger, opaque full-bleed very dark background. This is the final deliberate containment correction.\nPRESERVE the readable silver arrow, broad blue aquatic face, fin-like ear, cool teal/slate palette, restrained natural rain, painterly technique and grayscale face/arrow contrast.\nRECOMPOSE THE SUBJECT, not a crop: replace ALL long flowing hair with a compact, close-fitting dark navy swept-back crest or very short hair. NO strand, ribbon, shoulder or contour may reach the edge. Show ONE isolated compact Undine head and short neck in three-quarter profile in the upper-left/central field, with a clear fin-like ear and one large readable eye. The head occupies roughly 55-60% of image width and most of its upper 60%; its entire outline fits within x=15% to x=72%, y=12% to y=70%. Leave uninterrupted dark painted negative space around the complete head, crest, ear and neck. No long trailing hair, no full torso. Strong broad light-blue cheek and brow planes, calm alert expression. Aquatic identity must remain obvious at 32px.\nKeep ONE COMPLETE ARROW below the head, with no contact. Fit its entire silhouette including triangular arrowhead, coherent shaft, fletching and nock within x=25% to x=88%, y=65% to y=88%. The arrow points lower-left and travels past the subject. Keep the large silver triangular head and simple rear feathers. Both ends must be visibly terminated with dark space beyond them. No clipped arrow.\nUse approximately FOUR or FIVE broad low-contrast diagonal rain bands and ONE or TWO broad snow streaks, with no tiny precipitation speckles or particle noise. One broad darkened rain band crosses part of the arrow shaft so the incoming aim is uncertain, but both arrow ends remain readable. Weather is quieter than face and arrow. Natural precipitation, no magical barrier, fog or ricochet.\nAt 32 pixels and grayscale, the picture must read instantly as a compact AQUATIC HEAD + a separate COMPLETE INCOMING ARROW + sparse diagonal precipitation. Prioritize those three shapes above detail. Do not make a generic blue human portrait: the contained fin-shaped ear and aquatic facial material are important.\nALL subject and arrow contours stay well inside the square. Background alone touches the edges; this is not a decorative border or frame. Full-bleed dark painted ground, restrained dramatic lighting, hand-painted broad strokes.\nNo text, pseudo-runes, letters, numbers, logos, monograms, decorative frame, watermark, signature or UI marks. No hands, water ribbons, long hair, mist, force field, ice wall, waterfall, ricochet, armor impact, landscape or snowflake emblem. Output one separate square image.",
+          "inputSha256": "bc932e38ccfaaaa7971eeaf7f813cc1bbf3ddac8fbc0f47142521a3c4a7c0509",
+          "outputSha256": "86bce8afb3482f2d317809153f228dcbb76da351283b46553c186ed317f076dc",
+          "objectiveDisposition": "PASS-OBJECTIVE-SMALL-SIZE-AND-CONTAINMENT"
+        }
+      ]
+    }
+  ]
+}
