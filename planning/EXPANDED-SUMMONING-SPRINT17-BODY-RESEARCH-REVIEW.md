@@ -1,8 +1,8 @@
 # Sprint 17 bounded original-body research
 
-Status: NOT QUALIFIED. Failed exact research candidate
-`7b76dba2c9681b1702bed854a521b241b27a1250` is preserved. This containing
-fixture repair is its normal descendant. Laptop PR #26 only; no DATA
+Status: NOT QUALIFIED. Failed exact research candidates 7b76dba2 and
+`2045c302b071281c5dff71c883612d55218c7643` are preserved. This containing
+native-control fixture repair is their normal descendant. Laptop PR #26 only; no DATA
 imports. Sprint 16 remains complete. Published surface is unchanged:
 976 generated + 29 wrappers = 1005 visible.
 
@@ -63,17 +63,44 @@ No save write or save-file access. [Exact failed evidence/hashes](EXPANDED-SUMMO
 
 ## Repair checks and exact next gate
 
-223 focused domain tests PASS after the anchor repair. The existing behavior
+The exact 2045c302 anchor repair passed every prelaunch gate (223 focused/2025
+full, 82.5s; complete gate 178.2s; 491 preflight/68 orchestration; request
+checks), then smoke 11/11. Floor survey now passes: 41 candidates, 8/8
+clearance, 6.01m party spacing. Body research again failed 2/3 **before
+attachment**, this time at the native manual-control predicate. Native cleanup
+and loaded version passed. No mesh, movement or resource-lifetime acceptance.
+
+Source/native-predicate audit found the body fixture copied only the qualified
+faction/Master setup, omitting `Sprint16ManualSummonControl`'s scoped native
+RuleSummonUnit input. Outside the capital, the native predicate also requires
+the summon part to be controllable. The failed attempt did not capture all
+predicate terms; no other term is assumed passing. The repair reuses the
+unchanged qualified handler for one exact-caster/exact-blueprint synchronous
+summon, unsubscribes in finally, and requires one match plus the native part.
+It now records the complete native control observation before setup, afterward
+and after normal appearance settlement. Three named native-control assertions
+expand the complete research gate to **20**. No predicate override, global
+handler, party mutation, appearance-buff removal or relaxed acceptance.
+
+Actual snapshot `20261006T0517055890005Z` restored at
+`2026-10-06T05:23:35.9200899Z`: the same exact 136-file / Info 0.0.117 tree.
+Lease Completed/recoveryRequired=false; no game, shared lock or staging.
+All attempts remain in the evidence JSON. The separate preflight overlap
+failure is also retained: a driver heartbeat refresh collided with preflight's
+artifact no-write census. Running preflight **alone**, after all artifact
+writers (including driver validation/heartbeat), passed 491/491 unchanged.
+
+223 focused domain tests PASS after the native-control repair. The existing behavior
 test covers the closed scenario and guard routing; the actual guarded floor
 and cleanup assertions are the repair's runtime regression. Request checks
 require the exact working save and reject caller-selected assets/creatures.
 This is an engineering checkpoint, not source or runtime
 qualification of the complete sprint.
 
-Next: freeze/push this coherent NOT QUALIFIED repair, then run the complete
+Next: freeze/push this coherent NOT QUALIFIED native-control repair, then run the complete
 unfiltered exact-head Sprint gate, request/preflight/orchestration checks and
 strict deterministic 318-member package validation. One immutable package,
-fresh Steam App ID 640820 processes: smoke then bounded body research. Acquire
+fresh Steam App ID 640820 processes: smoke then all 20 bounded body assertions. Acquire
 the shared runtime lease before observing or snapshotting the live install;
 restore that actual snapshot and prove no game/lease/staging remains.
 

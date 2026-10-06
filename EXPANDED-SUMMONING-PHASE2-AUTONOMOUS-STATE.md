@@ -32,9 +32,11 @@ no merge, release, tag, version bump, force push or permanent deployment.
   Research evidence pushed at **`4940ca7749c9dcae13e24e0f77b8ad36b2e6a9c0`**.
   Owned-body source:
   **`a35993fc8b4000466f68f2a7bd98c579021b1f23`**.
-  Failed body-research candidate/current verified remote:
+  First failed body-research candidate:
   **`7b76dba2c9681b1702bed854a521b241b27a1250`**.
-  This containing explicit-anchor repair is its normal descendant; Sprint 17
+  Second failed body-research candidate/current verified remote:
+  **`2045c302b071281c5dff71c883612d55218c7643`**.
+  This containing native-control fixture repair is its normal descendant; Sprint 17
   gameplay and visuals are still NOT QUALIFIED.
   Unexpected active-branch motion remains a stop; archive motion is informational.
 - Exclusive ignored receipt: `artifacts/laptop-source-owner-20261005.json`;
@@ -58,13 +60,13 @@ no merge, release, tag, version bump, force push or permanent deployment.
   11/11 smoke, 209/209 main, 20/20 crowd, 9/9 prepare, 9/9 cleanup, 5/5 absence.
   No mechanics, visual, asset or serialized-state delta since that pass;
   only Dire suppression and guarded fixture changes, with full main rerun.
-- Latest actual snapshot `20261006T0459298092419Z` restored exactly;
-  closed `2026-10-06T05:05:58.0857173Z`: 136 files / Info 0.0.117 /
+- Latest actual snapshot `20261006T0517055890005Z` restored exactly;
+  closed `2026-10-06T05:23:35.9200899Z`: 136 files / Info 0.0.117 /
   `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
   Lease Completed/recoveryRequired=false; no game/shared lock/staging.
   Prior native working-save cleanup/absence clean; publication and research did not write
   saves. No save-file or protected-baseline access. Journal SHA
-  `0DE347D13A48860D8809B776A35B9F7E4F48E5C55D9286ABA69085DD2668F5C5`.
+  `1A269A0F4F78421CB9E4E1BF3DED55C7B12DBDD4C667060AE2550E3B71C51D00`.
 - Publication DLL SHA `8c76fcbed3eb73ffb6ca6c6121e610f96a2b36a82fa8f3c6c55edae66da885d9`;
   MVID `ed8fe210-31e2-4016-870e-8623d3a55fa2`; ZIP
   `eb930278836f0c3953decef589c7214b69c1d1a2fc69f625af56bdc4af254ac2`.
@@ -127,10 +129,18 @@ no merge, release, tag, version bump, force push or permanent deployment.
   68 orchestration, strict 318-member package. Smoke 11/11; body probe 2/3
   failed before attachment because its floor helper read another scenario's
   uninitialized caster field. Exact fixture cleanup PASS. No body proof.
-  Explicit fixture-anchor repair retains all native floor/sight checks;
-  223 focused PASS after repair. NOT QUALIFIED; no assertions relaxed.
+  Exact 2045 anchor-repair prelaunch also PASS (223 focused/2025 full,
+  491 isolated preflight/68 orchestration, 318 members), smoke 11/11.
+  Native floor 8/8 clearance; body again 2/3 FAIL before attachment, now at
+  native control. The fixture omitted the qualified scoped manual summon-rule
+  input. Current repair reuses that exact one-cast handler, verifies the native
+  part and records full predicate terms before/after/native settlement.
+  Three explicit control assertions expand the body gate to 20.
+  223 focused PASS after repair; NOT QUALIFIED, no assertions relaxed.
+  Run preflight alone: the separate heartbeat/no-write-census collision is
+  preserved and passed unchanged when the checks were serialized.
   [Scope and gate](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-REVIEW.md).
-- Exact next action: freeze/push the anchor repair, run the complete exact artifact
+- Exact next action: freeze/push the native-control repair, run the complete exact artifact
   gate and guarded fresh-Steam smoke/body review with exact restoration.
   Inspect motion, supporting coil/ground/jaw, multi-renderer
   fallback/lifecycle. Continue separate Salamander manufactured-spear/tail seam and printed

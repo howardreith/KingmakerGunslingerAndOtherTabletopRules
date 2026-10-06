@@ -106,6 +106,111 @@
       "driverSha256": "94E712C35DD5FAB425D18ECEB32D349B6BE8E591FD982B81CBEFD538C3D4E0F7",
       "buildSidecarSha256": "706450C18F59449D29A8CE272D4ADC4A7EBD65A6870CD032DB1E7CD63AAB4923",
       "repair": "Explicit fixture-owned anchor parameter to the existing native path/sight floor survey; its clearance, connectivity and visibility rules unchanged. No production or wait/acceptance change. New exact-head gate and complete affected smoke/body batch required."
+    },
+    {
+      "candidate": "2045c302b071281c5dff71c883612d55218c7643",
+      "sourceFingerprint": "7f1bfdc17d3bc8c14021b43b7f0478a3850a9abe1ed33fbf282543d2c0f36c26",
+      "dllSha256": "dbb82d2416d40f5c887c489a4a69bde3b113a0d832ec7cedf9494aef79246975",
+      "dllMvid": "c07fcc33-77e9-4d8f-a80c-d685da710100",
+      "packageSha256": "c3003ea55d0e0c24f5e71256c3d3f72b3a50389f757b139aa97c7825a184f1ef",
+      "packageMembers": 318,
+      "version": "0.0.141",
+      "prelaunch": {
+        "focused": 223,
+        "full": 2025,
+        "fullSeconds": 82.5,
+        "completeGateSeconds": 178.2,
+        "runtimePreflight": 491,
+        "orchestration": 68,
+        "persistenceWiring": 11,
+        "persistenceScopes": 3,
+        "persistenceRejections": 19,
+        "crowdRoundTrips": 5,
+        "crowdRejections": 7,
+        "exactBuildAndStrictPackage": "PASS",
+        "preservedPreflightFailure": "Driver ValidateOnly refreshed the source ownership heartbeat during the unsupported-request no-write fingerprint interval. Only the heartbeat timestamp changed. Serialized isolated preflight then passed 491/491; no source/assertion change and no game launch during the failed check."
+      },
+      "runs": [
+        {
+          "scenario": "working-save-smoke",
+          "startedAtUtc": "2026-10-06T05:17:31.3919513Z",
+          "parameters": {},
+          "launcherOutcome": "Clean",
+          "exitCode": 0,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T0517322832751Z-working-save-smoke",
+          "requestId": "20261006T0517322989112Z-6486c8a0788d489caf7d5fe504950372",
+          "requestSha256": "da7686e05ef3f8b027af0c605da1e43a0789ad5b336c15f5339cb1fb1f1c0c24",
+          "resultSha256": "3fd0c9e2c2fc56c3663f109bc33b7e7ef6efaffa5618999b9252ae3c3c398922",
+          "assertions": 11,
+          "passed": 11,
+          "failed": [],
+          "orchestrationSha256": "6cd28c7fe676ef35e1322fa5031395cd18805ca4b3f689a3d9160d26e105f97e",
+          "processId": 1244,
+          "processStartedUtc": "2026-10-06T05:17:33.2760084Z",
+          "scenarioStatus": "PASS",
+          "outcome": "PASS",
+          "completedAtUtc": "2026-10-06T05:20:23.7175555Z"
+        },
+        {
+          "scenario": "disposable-expanded-summoning-serpentine-bodies",
+          "startedAtUtc": "2026-10-06T05:20:30.2910512Z",
+          "parameters": {},
+          "launcherOutcome": "Unclean",
+          "exitCode": 1,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T0520311084055Z-disposable-expanded-summoning-serpentine-bodies",
+          "requestId": "20261006T0520311084055Z-7d8f3efc60f149e3a12c6527a50fee8c",
+          "requestSha256": "28e9388909caf38a5ccb17f03a09e43f5460e9da655fd8e6d244df79a5077d42",
+          "resultSha256": "8caa5f611e7f7a584f9c3505be7f5e8659419bcf0e4f989e6a5df5357abd5720",
+          "assertions": 3,
+          "passed": 2,
+          "failed": [
+            {
+              "name": "sprint17-body-exception",
+              "status": "FAIL"
+            }
+          ],
+          "orchestrationSha256": "1a9162f0a779fca672749631ae0a4783ea7111c7fb42df8cfd64bc27e8bf5515",
+          "processId": 34584,
+          "processStartedUtc": "2026-10-06T05:20:32.1548081Z",
+          "scenarioStatus": "FAIL",
+          "outcome": "FAIL",
+          "completedAtUtc": "2026-10-06T05:23:33.3546637Z"
+        }
+      ],
+      "classification": "FIXTURE",
+      "cause": "Explicit fixture anchor works: native floor survey finds 41 candidates, 8/8 clearance and 6.01m party spacing. The new body fixture reused the qualified Master/faction adaptation but omitted the scoped RuleSummonUnit.IsDirectlyControllable input that creates the native manual summon part. Its immediate native control check failed before attachment. Prior attempt did not record full predicate terms, so remaining terms are not inferred as passing.",
+      "bodyAssertions": "2/3; native manual-control exception FAIL, exact original-unit/party/area cleanup PASS, version PASS",
+      "bodyMetadataSha256": "2621CEC9F9AD68772CD61B209A8209BBFF4AF07933A690ED3DC0773F4498F90D",
+      "saveWrite": false,
+      "saveFilesystemAccess": false,
+      "restoration": {
+        "status": "VERIFIED",
+        "snapshot": "20261006T0517055890005Z",
+        "completedAtUtc": "2026-10-06T05:23:35.9200899Z",
+        "before": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "after": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "leaseId": "runtime-20261006T051705Z-3b81692e1d044718a5eef5315a115dd3",
+        "leaseStatus": "Completed",
+        "recoveryRequired": false,
+        "leaseReleased": true,
+        "gameProcessesRemaining": 0,
+        "stagingRemaining": false
+      },
+      "archive": "laptop-runtime-20261006T0517047907784Z",
+      "batchSha256": "1A269A0F4F78421CB9E4E1BF3DED55C7B12DBDD4C667060AE2550E3B71C51D00",
+      "driverSha256": "0F494A30054BBF45F8E6F5DBA826DDBF4322A2D8469A5E0585A4D1B213E444DB",
+      "buildSidecarSha256": "BD4397D66A2E4A345B02BE3F40BF6BB308D16D963C7C914442414B9D20AF1A66",
+      "repair": "Reuse the unchanged qualified Sprint16ManualSummonControl handler, subscribe only for one synchronous exact-caster/exact-blueprint cast, verify one rule and native part, unsubscribe in finally. Record all native predicate terms before setup, after setup and after native appearance settlement. Do not override IsDirectlyControllable or remove appearance buffs. Three new named native-control assertions make the nominal complete body gate 20. New immutable artifact and complete affected batch still required."
     }
   ]
 }
