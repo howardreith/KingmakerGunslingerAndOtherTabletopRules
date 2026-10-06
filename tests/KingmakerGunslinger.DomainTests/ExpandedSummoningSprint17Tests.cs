@@ -10,6 +10,41 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class ExpandedSummoningSprint17Tests
     {
+        internal static void ManufacturedActionCensusIsClosedAndDefensive()
+        {
+            var sources = SerpentineRigSurveyPolicy.ManufacturedPrefabSources;
+            Assertions.Equal(11, sources.Length, "One representative per archived native Lizardfolk prefab.");
+            Assertions.Equal(11, sources.Select(row => row[0]).Distinct().Count(), "No duplicate native owner.");
+            Assertions.Equal(11, sources.Select(row => row[1]).Distinct().Count(), "No repeated prefab observation.");
+            foreach (var source in sources)
+            {
+                Assertions.Equal(2, source.Length, "Exact blueprint/view pair, no request-supplied path.");
+                Assertions.True(SerpentineRigSurveyPolicy.MatchesManufacturedPrefab(source[0], source[1]),
+                    "Each archived pair is observable without inferring any action compatibility.");
+                foreach (string bad in new[] { null, "", "foreign", source[0].ToUpperInvariant() })
+                    Assertions.False(SerpentineRigSurveyPolicy.MatchesManufacturedPrefab(bad, source[1]),
+                        "Unknown, missing or differently cased blueprint is refused.");
+                foreach (string bad in new[] { null, "", "foreign", source[1].ToUpperInvariant() })
+                    Assertions.False(SerpentineRigSurveyPolicy.MatchesManufacturedPrefab(source[0], bad),
+                        "Unknown, missing or differently cased prefab is refused.");
+                foreach (var other in sources.Where(row => row[0] != source[0]))
+                    Assertions.False(SerpentineRigSurveyPolicy.MatchesManufacturedPrefab(source[0], other[1]),
+                        "Other allowed donors cannot substitute views.");
+            }
+            Assertions.True(SerpentineRigSurveyPolicy.MatchesManufacturedPrefab(
+                SerpentineVisualPolicy.PiercingDonorBlueprint, SerpentineVisualPolicy.PiercingDonorPrefab),
+                "Rejected shortspear is retained as a negative observation, not silently replaced.");
+            Assertions.True(SerpentineRigSurveyPolicy.MatchesManufacturedPrefab(
+                SerpentineRigSurveyPolicy.HybridWeaponBlueprint, SerpentineRigSurveyPolicy.HybridWeaponPrefab),
+                "Existing two-hand slashing carrier remains an explicit comparison.");
+            string blueprint = sources[0][0], prefab = sources[0][1];
+            sources[0][0] = "changed"; sources[1] = new[] { "foreign", "foreign" };
+            Assertions.True(SerpentineRigSurveyPolicy.MatchesManufacturedPrefab(blueprint, prefab),
+                "Mutating a returned nested array cannot broaden or corrupt the closed target set.");
+            Assertions.False(SerpentineRigSurveyPolicy.MatchesManufacturedPrefab("changed", prefab),
+                "No mutable shared authority escapes.");
+        }
+
         internal static void NativePiercingActionRequiresExactCarrierAndRig()
         {
             string[] exact = { "salamander", SerpentineVisualPolicy.TwoHandPrefab, SerpentineVisualPolicy.ProjectSpear,
