@@ -1,48 +1,50 @@
 # Expanded Summoning fidelity matrix
 
-## Current Sprint 16 disposition, October 6 UTC
+## Current Sprint 16 disposition, October 6 UTC — COMPLETE AND PUBLISHED
 
-Sprint 16's **hidden candidate is internally QUALIFIED; publication pending**.
-Exact laptop `e3aeae630d51d27c45694fb9e92e9093048b1af9` passed all prelaunch
-gates (218 focused / 2020 full), then 11/11 smoke, **209/209 main PASS**, 20/20 crowd,
-9/9 prepare, 9/9 cleanup and 5/5 absence.
-[Exact review](EXPANDED-SUMMONING-SPRINT16-LAPTOP-HIDDEN-PASS-REVIEW.md).
+Exact laptop publication `155ada89869c6937b4a801e1fc384dbe38d36f3b` passed
+all prelaunch gates (218 focused / 2020 full), smoke 11/11, main **211/211**,
+all six Dire + fourteen Crocodile public parent routes, and exact restoration.
+[Publication review](EXPANDED-SUMMONING-SPRINT16-PUBLICATION-PASS-REVIEW.md).
+Qualified surface: **976 generated + 29 native wrappers = 1005 choices**,
+zero withheld. Existing Crocodile identity and fourteen roots unchanged.
 
-The complete combat matrix passes 55/55, including all four repaired Dire
-tail contacts. Mechanics 37/37, speed 19/19, icons 9/9, all twenty routes,
-UI/fallback/resource controls pass. Crocodile active-source-death proves three
-native post-death prey updates after one bounded owned-death resume, then exact
-hold cleanup. Final review 81/81 and exact mode/pause/clock/awake restoration
-pass. Actual installation and fresh clean working-save absence verified.
-No assertion waived. Later publication 3d13108e passed all twenty public
-roots but FAILED main 207/209 (missed-bite fixture never retried; no hold/
-Death Roll contact). Actual installation restored exactly. The containing
-fixture-only retry/negative-input correction needs a new exact artifact and
-complete publication gate; Sprint 16 remains incomplete.
-[Publication evidence](EXPANDED-SUMMONING-SPRINT16-LAPTOP-PUBLICATION-RETRY-REVIEW.md).
+Hidden e3aeae63's complete six-stage PASS remains the crowd/persistence record:
+209/209 main, 20/20 crowd, 9/9 prepare, 9/9 cleanup and 5/5 fresh absence.
+No mechanics, visuals, assets or serialized state changed afterward; publication
+only removes Dire suppression and strengthens the guarded missed-bite fixture.
+Publication mechanics 37/37, speed 19/19, icons 9/9, combat **57/57**, final
+review **81/81** pass. Both modes recover from a disclosed first-bite miss with
+bounded issued commands and unforced native hits/maintains/riders. No assertion
+waived. The failed 3d publication and its restoration remain preserved.
 
-Crocodile identity and fourteen published roots are unchanged. The containing
-publication candidate exposes only six Dire roots: 976 registered/published /
-29 native wrappers / 1005 visible choices, versus hidden artifact 970 + 29 =
-999. New public-route qualification is pending. Land skills remain Crocodile +8/+5 and Dire +14/+0 with
-zero Mobility ranks. Run is an explicit evidence-backed engine omission, not
-a silent substitution; aquatic skills/Hold Breath are outside land-use scope.
-The deterministic original models, four packaged assets and qualified rig
-binding are now technically qualified, including live jaw/tail contact. No visible identity
-or icon was reauthored in this laptop checkpoint.
+Live-bite damage, physical base-component selection, supplemental damage,
+weapon/DR attribution, no attack-only rider replay, prone/dead/replay handling,
+real one-rider maintain, Dire-specific swallowed graph/cadence/native escape,
+all cleanup and accepted load reset pass. Original models, exact shared-root
+binding, weighted-world jaw/tail contact, native lifecycle/resource destruction,
+rollback/fallback and native Monitor Lizard control are technically qualified.
+Native action/status/trait/sheet consumers pass; widget proof is not a claim
+of ordinary menu navigation. Transition evidence is bounded disposable-unit
+safeguard coverage, not a campaign-party transition.
 
-`OwnerAcceptedAdaptation: SWALLOW_ELIGIBLE_TARGET_ELSE_DEATH_ROLL`
-remains the deterministic AI/RTWP adaptation, not exact tabletop choice.
+Crocodile land skills +8 Perception/+5 Stealth; Dire +14/+0; zero Mobility ranks.
+Run is the explicit evidence-backed native-engine omission. Aquatic Swim,
+water-only Stealth and Hold Breath are outside land-use scope.
+Sprint is the documented +20 UntypedStackable adaptation, not a base-speed
+rewrite: 20→40→20, Haste/Slow/native caps and full cooldown remain qualified.
+
+`OwnerAcceptedAdaptation: SWALLOW_ELIGIBLE_TARGET_ELSE_DEATH_ROLL` remains
+deterministic RTWP/AI policy, not exact tabletop choice.
 `OwnerAcceptedEngineLimitation: SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED`
-remains activated by the recorded native census; no interior target/AC/HP/
-cut-free carrier is claimed. Purple Worm shares that engine-wide limitation
-without reopening its qualified mechanics. Preserve
-`PASSIVE_CREATURE_SENSES_UNMODELED` and
+is confirmed by live census; no interior target/AC/HP/cut-free carrier is
+claimed. Purple Worm shares the limitation without reopening its mechanics.
+Preserve `PASSIVE_CREATURE_SENSES_UNMODELED` and
 `ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD`.
 `HumanReview: NOT_PERFORMED_NONBLOCKING`.
 
 Historical sections below describe earlier checkpoints, not current counts,
-qualification or branch authority.
+qualification or branch authority. Sprint 17 and full Phase 2B closure remain.
 
 ## Sprint 15 closeout, 2026-10-03: COMPLETE AND PUBLISHED
 

@@ -25,9 +25,11 @@ alone.
 | 17 | Constrictor Snake | `constrictor-snake` | 3 | 3 | Snake |
 | 17 | Salamander | `salamander` | 5 | - | Outsider |
 
-Two of the ten already exist in the shipped catalog as **visual proxies**:
-`crocodile` is published wearing the Monitor Lizard, and `salamander` wearing
-the Lizardfolk. Sprints 16 and 17 therefore replace a proxy on an identity that
+At the frozen contract baseline, two of the ten existed as **visual proxies**:
+`crocodile` wore the Monitor Lizard, and `salamander` the Lizardfolk.
+Sprint 16 is now complete/published on exact 155ada89 with both original
+crocodilian models and all twenty public roots qualified; the printed
+contract below is unchanged. Sprint 17 remains next. Sprints 16 and 17 replace a proxy on an identity that
 already ships, which means their placements and GUIDs must be preserved exactly
 and the work is art and mechanics rather than registration.
 
