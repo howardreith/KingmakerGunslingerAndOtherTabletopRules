@@ -1,12 +1,13 @@
 # Expanded Summoning fidelity matrix
 
-## Current boundary: snake profiles PASS, signatures60/62 FAIL; full Sprint17 NOT QUALIFIED
+## Current boundary: snake profiles PASS, signatures61/62 FAIL; full Sprint17 NOT QUALIFIED
 
-[Latest signature evidence](EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-ATTEMPT1-EVIDENCE.json):
-exactaebf smoke11,signature60/62 FAIL, restored18:38UTC. The native exhausted
-poison callback and grapple-controller settlement were missing fixture
-observations. Repair retains all62 checks and changes no production behavior;
-NOT RUN. No new adaptation. Seeded rule delivery is not real command/AI/contact
+[Latest signature evidence](EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-ATTEMPT2-EVIDENCE.json):
+exactccba smoke11,signature61/62 FAIL, restored19:04UTC. All Constrictor rules
+pass. Poison removal/no seventh damage is observed; remaining failure inspects
+the disposed component array. New live-event strategy retains all62 checks
+and changes no production behavior; NOT RUN. No new adaptation.
+Seeded rule delivery is not real command/AI/contact
 or full lifecycle proof. Earlier qualified profile/body slice:
 
 Exact `22be90c0c768acc710b9dfef2a6d42d1cb917a04` passes the complete

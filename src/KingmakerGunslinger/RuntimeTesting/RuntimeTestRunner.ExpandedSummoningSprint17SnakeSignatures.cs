@@ -27,6 +27,38 @@ namespace KingmakerGunslinger.RuntimeTesting
 {
     internal sealed partial class RuntimeTestRunner
     {
+        // Observe live native events before buff disposal can discard its
+        // component array. This observer never mutates a rule and ignores
+        // every target/fact other than the exact owned poison fixture.
+        private sealed class Sprint17PoisonExposureObserver :
+            IGlobalRulebookHandler<RuleDealStatDamage>, IGlobalRulebookHandler<RuleSavingThrow>
+        {
+            internal UnitEntityData Target;
+            internal BlueprintBuff Venom;
+            internal readonly JArray Damage = new JArray();
+            internal int Saves;
+            private bool IsOwned(RuleReason reason)
+            {
+                return reason.Fact != null && ReferenceEquals(reason.Fact.Blueprint, Venom);
+            }
+            public void OnEventAboutToTrigger(RuleDealStatDamage evt) { }
+            public void OnEventDidTrigger(RuleDealStatDamage evt)
+            {
+                if (!ReferenceEquals(evt.Target, Target) ||
+                    !ReferenceEquals(evt.Stat, Target.Descriptor.Stats.Constitution) || !IsOwned(evt.Reason)) return;
+                Damage.Add(new JObject { ["damage"] = evt.Damage, ["nativeDice"] = evt.Dices.ToString(),
+                    ["nativeBonus"] = evt.Bonus, ["sourceFact"] = evt.Reason.Fact.Blueprint.AssetGuid,
+                    ["sourceUnit"] = evt.Reason.Caster == null ? null : evt.Reason.Caster.UniqueId,
+                    ["target"] = Target.UniqueId });
+            }
+            public void OnEventAboutToTrigger(RuleSavingThrow evt) { }
+            public void OnEventDidTrigger(RuleSavingThrow evt)
+            {
+                if (ReferenceEquals(evt.Initiator, Target) && IsOwned(evt.Reason)) Saves++;
+            }
+            internal void Clear() { Damage.Clear(); Saves = 0; }
+        }
+
         // Rule delivery, not command/AI qualification. Only newly summoned
         // owned actors are adjusted. Every native result is read back; the
         // seeded rule cases disclose their setup and never fabricate a PASS.
@@ -113,7 +145,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             var venom = fixture.Blueprints.OfType<BlueprintBuff>().Single(value =>
                 value.name == "KMG_Summoning_Natural_Viper_Venom");
             var nativePoison = venom.ComponentsArray.OfType<BuffPoisonStatDamage>().Single();
+            var exposureObserver = new Sprint17PoisonExposureObserver { Target = target, Venom = venom };
             UnityEngine.Random.State random = UnityEngine.Random.state;
+            EventBus.Subscribe(exposureObserver);
             try
             {
                 stats.SaveFortitude.BaseValue = -100;
@@ -173,6 +207,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
 
                 RuleAttackWithWeapon initialAttack;
+                exposureObserver.Clear();
                 int before = stats.Constitution.Damage;
                 Buff poison = DeliverSprint17Venom(owner, target, venom, out initialAttack);
                 var initial = DescribeSprint17Venom(poison);
@@ -180,7 +215,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int after = stats.Constitution.Damage;
                 target.Descriptor.Buffs.Tick();
                 bool cadence = poison != null && initialDamage >= 1 && initialDamage <= 2 &&
-                    (int)initial["ticks"] == 1 && stats.Constitution.Damage == after;
+                    (int)initial["ticks"] == 1 && stats.Constitution.Damage == after &&
+                    exposureObserver.Damage.Count == 1 && exposureObserver.Saves == 1;
                 var exposures = new JArray { new JObject { ["exposure"] = 1, ["damage"] = initialDamage, ["native"] = initial } };
                 for (int exposure = 2; exposure <= 6 && poison != null; exposure++)
                 {
@@ -191,7 +227,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     after = stats.Constitution.Damage;
                     target.Descriptor.Buffs.Tick();
                     cadence &= delta >= 1 && delta <= 2 && (int)state["ticks"] == exposure &&
-                        target.Descriptor.HasFact(venom) && stats.Constitution.Damage == after;
+                        target.Descriptor.HasFact(venom) && stats.Constitution.Damage == after &&
+                        exposureObserver.Damage.Count == exposure && exposureObserver.Saves == exposure;
                     exposures.Add(new JObject { ["exposure"] = exposure, ["damage"] = delta,
                         ["native"] = state, ["presentAfter"] = target.Descriptor.HasFact(venom),
                         ["duplicateTickDamage"] = stats.Constitution.Damage - after });
@@ -200,15 +237,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // entry; exposure six increments to six and the NEXT due
                 // boundary removes the buff without a seventh save/damage.
                 // Observe that boundary instead of changing the native fact.
+                // Snapshot its final live state BEFORE removal. Native removal
+                // disposes the component array; inspecting it afterward cannot
+                // prove or disprove an exposure (attempt2 returned ticks=-1).
+                var beforeExhaustion = DescribeSprint17Venom(poison);
                 before = stats.Constitution.Damage;
                 DueSprint17OwnedBuff(target, poison);
-                var exhausted = DescribeSprint17Venom(poison);
                 int expiryDamage = stats.Constitution.Damage - before;
                 target.Descriptor.Buffs.Tick();
                 CheckSprint17Signature("viper-six-exposures", cadence && exposures.Count == 6 &&
-                    !target.Descriptor.HasFact(venom) && (int)exhausted["ticks"] == 6 &&
-                    expiryDamage == 0 && stats.Constitution.Damage == before,
-                    new JObject { ["exposures"] = exposures, ["exhaustedBoundary"] = exhausted,
+                    !target.Descriptor.HasFact(venom) && (int)beforeExhaustion["ticks"] == 6 &&
+                    expiryDamage == 0 && stats.Constitution.Damage == before &&
+                    exposureObserver.Damage.Count == 6 && exposureObserver.Saves == 6 &&
+                    exposureObserver.Damage.All(value => (int)value["damage"] >= 1 && (int)value["damage"] <= 2),
+                    new JObject { ["exposures"] = exposures, ["lastLiveState"] = beforeExhaustion,
+                        ["nativeStatDamageEvents"] = exposureObserver.Damage.DeepClone(),
+                        ["nativeSavingThrows"] = exposureObserver.Saves,
                         ["presentAfterExhaustion"] = target.Descriptor.HasFact(venom),
                         ["seventhExposureDamage"] = expiryDamage,
                         ["duplicateExpiryDamage"] = stats.Constitution.Damage - before },
@@ -242,6 +286,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
+                EventBus.Unsubscribe(exposureObserver);
                 ClearSprint14Venom(target, venom);
                 stats.SaveFortitude.BaseValue = fort; stats.Constitution.BaseValue = con;
                 stats.Constitution.Damage = conDamage; target.Descriptor.Damage = hpDamage;

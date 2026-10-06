@@ -1,5 +1,21 @@
 # Expanded Summoning Phase 2 journal
 
+## October6,19:04UTC — signature61/62 FAIL; change to live event observation
+
+Exactccba full2051 tests84.0s/complete gate180.7s/strict320/all prelaunch PASS;
+Steam smoke11/11,signature61/62. Constrictor13/13 now pass. Poison had six
+exposures and correct exhausted removal with zero seventh/duplicate damage;
+the fixture then read a disposed component and got ticks=-1.
+[Exact Attempt2 evidence](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-ATTEMPT2-EVIDENCE.json).
+Second failure of this assertion: change observation strategy, not waits.
+Read-only exact target/venom RuleDealStatDamage and RuleSavingThrow event counts
+plus final buff absence replace the invalid post-disposal counter lookup.
+Repair source gate PASS:249 focused,2051 full83.0s, complete178.8s,
+repository/static/icon/manifest/clean14-reference Release/strict320 and142
+orchestration. New exact artifact/runtime next. Production and
+all62 acceptance identities unchanged. Actual snapshot1857178703604Z restored
+19:04:19UTC136/.117/exact tree; no game/lease/staging/save write.
+
 ## October6,18:38UTC — signature60/62 FAIL; exact restoration, fixture repair
 
 Exactaebf source/prelaunch PASS:2051 full84.2s,complete gate181.9s,strict320,

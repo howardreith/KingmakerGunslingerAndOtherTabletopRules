@@ -1,11 +1,41 @@
 # Sprint 17 closed snake signature rules slice
 
-Status: exact aebf4701 runtime FAIL60/62; fixture-boundary repair NOT RUN.
-Laptop PR26 only; failed candidate aebf4701f8632ae485d0a769420a3ea3428d8cab.
+Status: exact ccba3bac runtime FAIL61/62; event-observation repair NOT RUN.
+Laptop PR26 only; failed candidate ccba3bacce36f9ec88509b21893b43a8aa5a4f7e.
 Sprints14–16 complete.32 snake roots remain withheld;1005 visible choices.
 No DATA ports, version change, publication or new adaptation.
 
-## Latest runtime and classified repair
+## Latest runtime and changed observation strategy
+
+[Exact Attempt2 evidence](EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-ATTEMPT2-EVIDENCE.json).
+Exactccba full2051 tests84.0s/complete gate180.7s/strict320 and all prelaunch
+PASS. Steam smoke11/11, signature61/62 FAIL; all62 ran. All13 Constrictor
+assertions now pass, including an actually established holder's death and
+native controller cleanup.
+
+The remaining failure is the same cadence assertion's post-disposal inspection.
+Six native exposures passed; the exhausted callback removed poison with no
+seventh or duplicate damage. Removal discards the component array, so reading
+its old counter afterward returned-1. This is not a production poison failure,
+but the recorded result remains FAIL.
+
+After two failures of that assertion, observation strategy changes: capture
+the last LIVE counter, and observe RuleDealStatDamage/RuleSavingThrow events
+while they occur. The observer is read-only, filtered to the exact owned target
+and venom fact, and unsubscribed in finally. Require six1d2 stat-damage events
+and six native saves, no further event/damage at exhaustion or replay, and
+actual victim-buff absence. No disposed component inspection, increased wait,
+production mutation or waived requirement.
+
+Actual snapshot1857178703604Z restored19:04:19.5799121UTC:136/.117/exact tree;
+lease Completed/recovery=false/released, no game/shared lock/staging/save write.
+Event-observer repair source gate PASS:249 focused,2051 unfiltered83.0s;
+complete repository/static/icon/manifest, clean14-reference Release and
+deterministic strict320 package178.8s;142 orchestration checks.
+Log: `artifacts/sprint17-signatures-event-observer-dirty-gate.log`.
+Commit/push NOT QUALIFIED, then a new exact-head complete affected batch.
+
+## Attempt1 retained and first boundary repair
 
 [Exact failed artifact/results/restoration](EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-ATTEMPT1-EVIDENCE.json).
 Complete source/prelaunch PASS:249 focused/2051 full84.2s, complete gate181.9s,
