@@ -29,6 +29,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .Select(value => new { Renderer = value, Name = value.name, Mesh = value.sharedMesh }).ToArray();
             var nativeAnimationSet = control.View.AnimationManager.AnimationSet;
             Vector3 nativeScale = control.View.transform.localScale;
+            float nativeCorpulence = control.Corpulence;
             var nativeSkills = control.Blueprint.Skills;
             var skillFields = typeof(BlueprintUnit.UnitSkills).GetFields(
                 System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public);
@@ -105,6 +106,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         row["outcome"] = outcome; row["frames"] = frames; row["faultReached"] = reached;
                         row["viewScale"] = SurveyVector(view.transform.localScale);
                         row["nativeScale"] = SurveyVector(nativeScale);
+                        row["nativeControlCorpulence"] = nativeCorpulence;
+                        row["corpulence"] = unit.Corpulence;
                         row["mechanicalSize"] = unit.Descriptor.State.Size.ToString();
                         bool intact = Sprint17BodyIntact(view, SerpentineVisualPolicy.BodyRenderer(key));
                         bool original = attachment != null && attachment.Body != null &&
@@ -122,22 +125,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                             row.ToString(Formatting.None), intact && bound,
                             "No fixture attachment or renderer/appearance-lock override."));
                         _serpentineBodyAssertions.Add(Assertion("sprint17-production-scale-" + suffix,
-                            "one .2 native-view step, Medium rules size, unchanged native animation set",
+                            "one .2 body/base-footprint step, native .5m floor, Medium rules size, unchanged native animation set",
                             row.ToString(Formatting.None),
                             (view.transform.localScale - nativeScale * SerpentineVisualPolicy.SnakeViewMultiplier).sqrMagnitude < .00000001f &&
+                                Math.Abs(unit.Corpulence - Math.Max(.5f,
+                                    SerpentineVisualPolicy.ScaleSnakeBaseCorpulence(nativeCorpulence))) < .00001f &&
                                 unit.Descriptor.State.Size == Kingmaker.Enums.Size.Medium &&
                                 ReferenceEquals(view.AnimationManager.AnimationSet, nativeAnimationSet),
-                            "Visual scale is not size, reach, collision or clip mutation."));
+                            "Exact snake instance only; weapon reach, native size multiplier and clips unchanged."));
                         if (attachment != null) owned = attachment.CaptureOwnedResources();
                         var meshes = view.GetComponentsInChildren<SkinnedMeshRenderer>(true).Select(value => value.sharedMesh).ToArray();
                         Vector3 scale = view.transform.localScale;
+                        float corpulence = unit.Corpulence;
                         // Re-enter only our callback, not native OnDataAttached:
                         // the original native initialization must not replay.
                         ExpandedSummoningSerpentineViewPatch.Postfix(view);
                         _serpentineBodyAssertions.Add(Assertion("sprint17-production-once-" + suffix,
-                            "repeat callback preserves exact scale, component, meshes and prior outcome",
+                            "repeat callback preserves exact body/footprint scale, component, meshes and prior outcome",
                             ExpandedSummoningSerpentineViewPatch.DescribeView(view),
-                            view.transform.localScale == scale &&
+                            view.transform.localScale == scale && unit.Corpulence == corpulence &&
                                 ReferenceEquals(view.GetComponent<SerpentineVisualAttachment>(), attachment) &&
                                 meshes.SequenceEqual(view.GetComponentsInChildren<SkinnedMeshRenderer>(true).Select(value => value.sharedMesh)) &&
                                 ExpandedSummoningSerpentineViewPatch.DescribeView(view) == outcome,
@@ -166,6 +172,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ExpandedSummoningSerpentineViewPatch.DescribeView(control.View) == "not-attempted" &&
                         control.View.GetComponent<SerpentineVisualAttachment>() == null &&
                         control.View.transform.localScale == nativeScale &&
+                        control.Corpulence == nativeCorpulence &&
                         donor.All(value => value.Mesh != null && value.Renderer.sharedMesh == value.Mesh) &&
                         ReferenceEquals(control.Blueprint.Skills, nativeSkills) &&
                         nativeSkillSeeds.SequenceEqual(skillFields.Select(value => (int)value.GetValue(nativeSkills))) &&

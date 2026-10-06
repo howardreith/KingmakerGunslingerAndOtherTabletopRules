@@ -1,23 +1,27 @@
 # Expanded Summoning Phase 2 evidence index
 
-[Latest snake command attempt](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-ATTEMPT1-EVIDENCE.json):
-exacte993e8a7 prelaunch PASS (2057 tests85.7s,complete183.2s,strict320);
-smoke11/11 PASS, command FAIL before the first cell:3/4 teardown/version/
-environment assertions passed; required51-cell assertion set not reached.
-Original Viper view did not settle at the fixture's offset spawn. Precise
-attachment/renderer/dissolve state was not recorded, so no production cause
-is asserted. Actual snapshot2038147898163Z restored20:45:10.6429821UTC:
+[Latest snake command attempt](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-ATTEMPT2-EVIDENCE.json):
+exact17aefc2a prelaunch PASS (2058 tests86.3s,complete180.9s,strict320);
+fresh-Steam smoke11/11 PASS, command31/51 FAIL across all8 cells.
+Native appearance settles63-64 frames; all setup/cleanup checks pass.
+Manual RTWP/TB bites apply exact venom and initial/later Constrictor riders,
+but measured jaw gaps2.708-2.736m fail contact. All four AI cells issue zero
+commands because the fixture emptied their source action lists.
+Actual snapshot2106059589634Z restored21:17:33.2486583UTC:
 136/.117/exact tree;lease Completed/recovery=false/released;no game/shared
-lock/this-worktree staging/save write. All artifacts retained.
+lock/this-worktree staging/save write. All prior candidates retained.
 
-[Changed fixture strategy](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-SLICE.md):
-keep snake at the qualified art anchor; move only the inert target. Capture
-visibility/attachment/control before failure. Same60..600-frame bounds and
-all51 requirements; no production/renderer/appearance mutation or waiver.
-Repair source PASS:256 focused,2058 unfiltered84.9s,complete179.8s,
-repository/static/icon/manifest,clean14-reference Release/deterministic strict320.
-New exact artifact/runtime next; repair NOT RUN.
-32 roots remain hidden; earlier exact130bf7a2 rules62/62 PASS is unchanged.
+[Bounded repairs](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-SLICE.md):
+preserve native AI actions and defer only the appearance-phase scheduler;
+scale only each exact snake instance's base footprint with its existing .2
+body scale. Native radius minimum, live rules-size scaling, weapon reach and
+animation remain unchanged. Read-only native audit confirms transform scale
+does not affect Corpulence; next runtime records each approach-distance term.
+No contact threshold or assertion waiver.258 focused/2060 full83.8s PASS;
+complete178.8s/clean14-reference Release/strict320 PASS. Repairs NOT RUN.
+Next exact batch: smoke11, profile/body/rules62
+regression and commands51, all required, with actual-snapshot restoration.
+32 roots stay hidden; earlier130 rules PASS remains exact-artifact history.
 
 Exact `130bf7a2de4cbd636df921f36e7f6afefe8523ca` passes the complete
 bounded rules batch: fresh Steam640820 smoke **11/11**, profile/body/signature

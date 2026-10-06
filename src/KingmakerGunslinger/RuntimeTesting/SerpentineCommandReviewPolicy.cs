@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 
 namespace KingmakerGunslinger.RuntimeTesting
@@ -5,6 +6,12 @@ namespace KingmakerGunslinger.RuntimeTesting
     // Request-local evidence/retry policy. Never changes production commands.
     internal static class SerpentineCommandReviewPolicy
     {
+        internal static void SuspendAppearanceDriver(bool manual, Action disableManualBrain, Action deferNativeAi)
+        {
+            if (manual) disableManualBrain();
+            else deferNativeAi(); // Never clear the AI's source action list.
+        }
+
         internal static string[][] Cells()
         {
             return (from key in new[] { "viper", "constrictor-snake" }

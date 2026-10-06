@@ -80,7 +80,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _serpentineBodyRows.Add(row);
                 try
                 {
-                    SetExpandedSummoningBrainActive(owner, false);
+                    var nativeBrainActions = owner.Brain.Actions.ToArray();
+                    row["brainActionsAtCreation"] = nativeBrainActions.Length;
+                    SerpentineCommandReviewPolicy.SuspendAppearanceDriver(manual,
+                        () => SetExpandedSummoningBrainActive(owner, false),
+                        () => owner.CombatState.AIData.NextCommandTime = float.MaxValue);
                     row["controlBefore"] = Sprint16ControlObservation(owner);
                     if (manual)
                     {
@@ -154,6 +158,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         {
                             contact = Sprint17MeasuredAttackContact(owner, target, attachment, rule, command);
                             contact["pose"] = Sprint17OriginalBodySample(owner, attachment.Body);
+                            contact["geometry"] = Sprint17CommandGeometry(owner, target);
+                            contact["approachRadius"] = command == null ? JValue.CreateNull() : (JToken)command.ApproachRadius;
                         }
                         catch (Exception error)
                         { contact = new JObject { ["measurementFailure"] = error.ToString(), ["finite"] = false }; }
@@ -177,6 +183,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     EventBus.Subscribe(observer); subscribed = true;
                     SetExpandedSummoningBrainActive(owner, !manual);
                     if (!manual) { owner.Brain.RestoreAvailableActions(); owner.CombatState.AIData.NextCommandTime = float.MaxValue; }
+                    bool aiActionsPreserved = manual || nativeBrainActions.Length > 0 &&
+                        owner.Brain.Actions.SequenceEqual(nativeBrainActions);
+                    row["brainActionsBeforeCommands"] = owner.Brain.Actions.Count;
+                    row["brainAvailableBeforeCommands"] = owner.Brain.AvailableActions.Count;
+                    row["nativeAiActionsPreserved"] = aiActionsPreserved;
+                    row["geometryBeforeCommands"] = Sprint17CommandGeometry(owner, target);
                     SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = turnBased;
                     Game.Instance.TurnBasedCombatController.Activate();
                     owner.JoinCombat(); target.JoinCombat(); Game.Instance.Player.UpdateIsInCombat();
@@ -246,7 +258,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["commands"] = new JArray(owner.Commands.Raw.Where(value => value != null)
                             .Select(value => Sprint17NativeCommandState(owner, target, value))) };
                     CheckSprint17Command(row, "native-setup", readyEver && owner.Blueprint == blueprint &&
-                        (manual ? owner.IsDirectlyControllable && control.Matched == 1 : issued.Count == 0),
+                        (manual ? owner.IsDirectlyControllable && control.Matched == 1 :
+                            issued.Count == 0 && aiActionsPreserved && owner.Brain.Actions.SequenceEqual(nativeBrainActions)),
                         "production identity, native combat mode and appropriate control/AI input");
                     CheckSprint17Command(row, "approach", travel >= .25f && poses.Count > 0 &&
                         poses.OfType<JObject>().All(value => (bool)value["finite"] && (bool)value["poseFinite"]),
@@ -308,6 +321,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 row["passed"] = ((JObject)row["checks"]).Properties().Count() == 6 &&
                     ((JObject)row["checks"]).Properties().All(value => (bool)value.Value);
             }
+        }
+
+        private static JObject Sprint17CommandGeometry(UnitEntityData owner, UnitEntityData target)
+        {
+            var bite = SummonLimbs.PrimaryWeapon(owner);
+            return new JObject { ["ownerCorpulence"] = owner.Corpulence, ["targetCorpulence"] = target.Corpulence,
+                ["centerDistance"] = Vector3.Distance(owner.Position, target.Position),
+                ["ownerSize"] = owner.Descriptor.State.Size.ToString(),
+                ["ownerViewScale"] = SurveyVector(owner.View.transform.localScale),
+                ["biteRangeFeet"] = bite == null ? JValue.CreateNull() : (JToken)bite.AttackRange.Value,
+                ["nativeApproachSumMetres"] = bite == null ? JValue.CreateNull() :
+                    (JToken)(owner.Corpulence + target.Corpulence + bite.AttackRange.Meters) };
         }
 
         private static JObject Sprint17CommandAppearanceSample(UnitEntityData owner, string key, int frame)
