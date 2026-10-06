@@ -12,6 +12,40 @@ namespace KingmakerGunslinger.DomainTests
     internal static class SerpentineRulesTests
     {
         internal const int AppendedLedgerIdentities = 73;
+        internal static void AppearanceSuspensionPreservesNativeAiActions()
+        {
+            foreach (bool manual in new[] { false, true })
+            {
+                object first = new object(), second = new object();
+                var actions = new System.Collections.Generic.List<object> { first, second };
+                int stops = 0, deferrals = 0;
+                SerpentineCommandReviewPolicy.SuspendAppearanceDriver(manual,
+                    () => { stops++; actions.Clear(); }, () => { deferrals++; });
+                Assertions.Equal(manual ? 1 : 0, stops, "Only manual setup empties actions.");
+                Assertions.Equal(manual ? 0 : 1, deferrals, "AI setup defers its native scheduler.");
+                Assertions.True(manual ? actions.Count == 0 :
+                    actions.SequenceEqual(new[] { first, second }), "AI source actions remain the same references.");
+            }
+        }
+
+        internal static void SnakeFootprintUsesBodyScaleWithoutChangingNativeFloor()
+        {
+            foreach (float radius in new[] { .25f, .5f, 1f, 3f, 5f, 10f })
+            {
+                float adjusted = SerpentineVisualPolicy.ScaleSnakeBaseCorpulence(radius);
+                Assertions.Equal(radius * .2f, adjusted, "Only the serialized base radius is scaled.");
+                foreach (float nativeSizeMultiplier in new[] { .66f, 1f, 1f / .66f })
+                    Assertions.Equal(Math.Max(.5f, radius * .2f * nativeSizeMultiplier),
+                        Math.Max(.5f, adjusted * nativeSizeMultiplier),
+                        "Native getter retains its minimum and later rules-size multiplier.");
+            }
+            foreach (float invalid in new[] { float.NaN, float.PositiveInfinity, float.NegativeInfinity,
+                -1f, 0f, float.Epsilon })
+                Assertions.Throws<ArgumentOutOfRangeException>(
+                    () => SerpentineVisualPolicy.ScaleSnakeBaseCorpulence(invalid),
+                    "Malformed/underflowed footprints fail closed.");
+        }
+
         internal static void CommandSetupRequiresIntactOriginalAndNativeControl()
         {
             for (int mask = 0; mask < 32; mask++)
