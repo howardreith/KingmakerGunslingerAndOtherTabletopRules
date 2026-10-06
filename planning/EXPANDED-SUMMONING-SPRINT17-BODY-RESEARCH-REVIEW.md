@@ -1,7 +1,7 @@
 # Sprint 17 bounded original-body research
 
-Status: Sprint 17 NOT QUALIFIED. Exact `8d3081c34cfee82239fdc908df0b561975131d24`
-corrected-support research batch **PASS: smoke11/11, body26/26**, exactly restored.
+Status: Sprint 17 NOT QUALIFIED. Exact `32b2f26e04d6b36471d39586b64731429afd8cbc`
+reversible-winding research batch **PASS: smoke11/11, body29/29**, exactly restored.
 Prior f31 measured penetration/float; 8d corrects sampled floor support but does
 not accept final shape/attack/lifecycle. Earlier 7b76/2045 fixture failures and
 6bee driver ERROR remain preserved. This containing evidence checkpoint
@@ -71,7 +71,33 @@ Next: bounded coil shape/winding investigation, actual snake attack and hybrid
 spear/tail seam, complete visual/contact/lifecycle, then printed profiles and
 Sprint17 hidden/publication gates. S16 and existing production remain unchanged.
 
-## New winding/weapon-metadata extension -- source only, NOT RUN
+## Sixth exact batch -- winding/material/weapon metadata research PASS
+
+Exact32b full prelaunch passes226 focused/2028 full83.7s, full gate179.1s,
+491 preflight/81 orchestration/17 provenance, persistence11/3/19,crowd5/7,
+clean exact build and strict318-member package. Fresh Steam smoke11/body29,
+complete batch PASS. Every exact winding restoration/ground/rollback/resource/
+reference assertion passes. Actual0752138198384Z snapshot restored07:59:27UTC,
+136/.117/exact tree; lease Completed/recoveryRequired=false, no game/lock/staging.
+No save-writing API, save-file access or proprietary geometry export.
+
+All six native supporting images inspected as ART ONLY. Reversed original
+triangle order makes both snake coils and the hybrid surface solid. Vertices,
+normals, material references, native rig and visibility/culling did not change;
+indices restored exactly. The original order exposed apparent inner surfaces.
+Next correct only the S17 authored exporter and make offline reviews backface
+aware. Do not change qualified families' shared exporter or shader/culling state.
+
+PF/StandardDynamic material states remain native: snake queue2450/hybrid2000,
+ZWrite1,SrcBlend1,DstBlend0,Dissolve0, no declared Cull/CullMode. The existing
+project Spear99394d453c6f425f84d4b92f7a8deea0 resolves TH_SpearArmy/WP_SpearArmy,
+about1.7707m along local Y; WeaponPivot follows R_Palm. Bounds/anchors do not
+qualify equipped view, two-hand grip or contact. Those require actual commands.
+The earlier generic animation survey returned only the first SpecialAttack;
+enumerate special-attack types explicitly before concluding Bite/Tail absent.
+Original staged payloads and production unchanged by this diagnostic run.
+
+## Historical winding/weapon-metadata extension before exact32b run
 
 Current8d original-vertex replay produces closed coils. Captured skin matrices
 have positive determinants on every sampled driver, not a reflected native

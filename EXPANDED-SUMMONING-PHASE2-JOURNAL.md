@@ -1,6 +1,28 @@
 # Expanded Summoning Phase 2 journal
 
-## October 6 -- owned triangle-order and spear metadata diagnostic, NOT RUN
+## October 6,07:59 UTC -- exact32b winding research PASS, restored
+
+Exact32b2f26e passes226 focused/2028 full83.7s, complete gate179.1s,
+491 preflight/81 orchestration/17 provenance and all persistence/crowd request
+checks. Fresh Steam smoke11/11/body29/29, complete driver PASS. All three
+triangle-order comparisons restore exact indices, normals and material identity;
+sampled support/rollback/owned destruction/reference cleanup still pass.
+All six native frames inspected as ART ONLY: reversed triangle order makes
+snake coils and hybrid surface solid. This supports a local S17 authored export
+correction. No global exporter, shader/culling, visibility or native rig change.
+The existing project Spear resolves TH_SpearArmy, longitudinal Y,1.7707m;
+WeaponPivot follows R_Palm. No equip or two-hand/contact proof. Generic animation
+survey took only the first SpecialAttack and cannot exclude Bite/Tail actions.
+
+Actual0752138198384Z snapshot restored2026-10-06T07:59:27.6045620Z:
+136 files/Info0.0.117/tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
+Lease Completed/recoveryRequired=false/released; no game/shared lock/staging.
+No save file access/write. Journal27AFD367DDA5E61485AC3BB8D34C53BB4AE85AE76785F5ED872E43C05A1A46A5.
+Six exact attempts preserved. S16 stays complete, S17 NOT QUALIFIED. Next local
+winding correction/tests/backface-aware review, bounded spear and actual attack
+diagnostics, then full profiles/signatures/hidden/publication and Phase2B closure.
+
+## Historical October 6 source checkpoint -- diagnostic before its exact run
 
 The8d current-pose original replay renders a closed coil, unlike supporting
 native frames; all captured bone determinants are positive. That rules out a
