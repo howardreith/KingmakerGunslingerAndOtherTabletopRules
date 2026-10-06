@@ -121,7 +121,8 @@ namespace KingmakerGunslinger.Summoning
             JObject payload = JObject.Parse(json);
             if (!SerpentineVisualPolicy.PermitsBones(key, payload["bones"] == null ? null :
                 payload["bones"].Values<string>()) || (int?)payload["visibleLegs"] != 0 ||
-                (bool?)payload["jawSeparated"] != true)
+                (bool?)payload["jawSeparated"] != true ||
+                !SerpentineVisualPolicy.PermitsOriginalWinding(key, (string)payload["triangleWinding"]))
                 throw new InvalidDataException("original anatomy/driver contract");
             string[] names;
             PteranodonAssetRuntime.AlbedoRequirement requirement;

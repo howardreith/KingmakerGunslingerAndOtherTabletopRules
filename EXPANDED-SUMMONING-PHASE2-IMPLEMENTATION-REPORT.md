@@ -99,6 +99,15 @@ not enumerate all Bite/Tail actions; extend that bounded diagnostic too.
 Actual0752138198384Z snapshot restored07:59:27UTC;136/.117/exact tree, no game/
 lease/staging/save write. Original assets/production unchanged; S17 NOT QUALIFIED.
 
+Subsequent authored correction stages snake v4/hybrid v8. The S17-only export
+finalizer changes exactly triangles/marker, preserving original coordinates,
+normals/UV/weights/paint and every qualified family's exporter.29 authoring/
+replay,227 focused/2029 registered, incremental compile/repository wrapper PASS;
+24 backface-aware pose panels and representative art inspection. Attachment
+fails closed on old/missing winding markers. This corrected source has not run
+as a new exact artifact; native spear and command/contact diagnostics come next.
+
+
 Sprint 17's [bounded native-rig survey](planning/EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md)
 uses the native Medium Water Elemental source of the proposed serpentine
 view, not the optional Eidolon blueprint from the earlier mixed-library
