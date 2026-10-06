@@ -29,7 +29,7 @@
       16
     ],
     "currentSprint": 17,
-    "currentSubItem": "Sprint 16 COMPLETE AND PUBLISHED at exact 155ada89. S17 NOT QUALIFIED. Private snake prototypes: four Blender checks, 40 panels, nothing packaged. Exact b2893abe fallback research all prelaunch PASS and smoke 11/11, survey FAIL 8/9 on null native action Clips enumeration; all donor/view checks and fixture cleanup PASS. Exact actual snapshot restored at 02:29:30 UTC; no game/lock/staging/save write. Null-versus-empty diagnostic correction now focused-tested; next freeze new exact artifact and rerun full research gate/batch. 976 generated + 29 wrappers = 1005 visible. DATA audit complete; zero imports.",
+    "currentSubItem": "Sprint 16 COMPLETE AND PUBLISHED at exact 155ada89. S17 NOT QUALIFIED. Exact corrected a173da3a research all prelaunch PASS, smoke 11/11, three-target survey 11/11. Failed b289 retained. Actual snapshot restored at 02:45:49 UTC; no game/lock/staging/save write. Next original snake prototype on measured Purple Worm continuous body chain; compare water prototype, keep separate Salamander hybrid/weapon seam, then profiles. No production asset/registration changes. 976 generated + 29 wrappers = 1005 visible. DATA audit complete; zero imports.",
     "sprint17TechnicalQualified": false,
     "sprint17ResearchReview": "planning/EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md",
     "sprint17Research": {
@@ -40,15 +40,17 @@
       "saveWrite": false
     },
     "sprint17FallbackResearch": {
-      "candidate": "b2893abefc89079af49c22d3b028865ed2189f95",
-      "status": "FAIL; null native clip enumeration in research fixture; exact restoration PASS",
+      "candidate": "a173da3a396b3c7f1bddef3bee92c476150d8639",
+      "status": "RESEARCH ONLY PASS; smoke 11/11; three-target metadata 11/11; exact restoration PASS",
       "evidence": "planning/EXPANDED-SUMMONING-SPRINT17-FALLBACK-RESEARCH-EVIDENCE.json",
-      "correction": "Preserve missing versus empty clip enumeration; regressions PASS, new exact artifact and batch pending"
+      "correction": "Missing versus empty clip enumeration distinguished and exact-artifact tested; b289 fixture failure preserved",
+      "restoration": "VERIFIED actual snapshot 20261006T0239169703799Z; lease Completed; no game, runtime lock or staging",
+      "saveWrite": false
     },
     "sprint16LaptopCorrectionReview": "planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-FIXTURE-REPAIR.md",
     "dataSalvageAudit": "planning/EXPANDED-SUMMONING-PHASE2B-DATA-SALVAGE-AUDIT.md",
-    "lastGuardedRuntimePass": "Exact f507 research ONLY: smoke 11/11, 20261006T0142363709333Z-disposable-expanded-summoning-serpentine-survey 8/8. S16 publication 155ada89 remains complete; S17 gameplay/visuals NOT QUALIFIED.",
-    "lastGuardedRestoration": "20261006T0222526525316Z actual snapshot restored 2026-10-06T02:29:30.3453602Z; journal 21AF43CDCB9F77C50F452CAB35F3A8DBF37AF265981EFC39B7C44A404F1E29FE",
+    "lastGuardedRuntimePass": "Exact a173 research ONLY: smoke 11/11, 20261006T0242403834515Z-disposable-expanded-summoning-serpentine-survey 11/11. S16 publication 155ada89 remains complete; S17 gameplay/visuals NOT QUALIFIED.",
+    "lastGuardedRestoration": "20261006T0239169703799Z actual snapshot restored 2026-10-06T02:45:49.8363590Z; journal 4D1413AE11DB29A8E6C1C2E43F3553E87060CAA47914F6A80CF586B879C62265",
     "activePullRequest": 26,
     "archivedSalvagePullRequest": 27,
     "giantWaspPublished": true,
