@@ -29,7 +29,7 @@
       16
     ],
     "currentSprint": 17,
-    "currentSubItem": "S16 COMPLETE/PUBLISHED; S17 NOT QUALIFIED. Exactf6a0a20b complete prelaunch PASS (235 focused/2037 full87.1s/gate186.5s,491 preflight/81 orchestration/17 provenance,persistence11/3/19,crowd5/7,strict318). Fresh Steam smoke11/metadata13 of14 FAIL; only4 of11 rows captured. Fixture combined guard rejected fifth action list before recording its shape; exact empty/null/oversized cause UNKNOWN. Read-only correction preserves missing enumeration, empty/null/duplicate slots with128 cap and exact reference/identity/adoption guards unchanged;236 focused/2038 registered and incremental compile PASS, next full exact prelaunch and corrected smoke/survey. Actual1232150916257Z snapshot restored12:38:50UTC, no game/lease/lock/staging/save write. Body570 still33/35 FAIL; no carrier adopted, new production hook or registration. Full S17/Phase2B closure remain;976+29=1005;ZERO DATA ports;Phase2C authorized but deferred.",
+    "currentSubItem": "S16 COMPLETE/PUBLISHED; S17 NOT QUALIFIED. Exact8022fee2 complete prelaunch PASS:236 focused/2038 full81.8s/gate178.4s; isolated491 preflight/81 orchestration/17 provenance/persistence11/3/19/crowd5/7/strict318. Fresh Steam smoke11/metadata14 PASS, all11 Lizardfolk prefabs captured; none supports PiercingTwoHanded. FreeHands14 slots has null3,5,8; f6 failure preserved. Initial preflight heartbeat-write interference retained, isolated rerun PASS. Actual1255443757094Z snapshot restored13:02:18UTC; no game/lease/lock/staging/save write. Research only: no action adopted; body570 still33/35 FAIL; all12 body attempts retained. Next bounded actual spear/longspear donor audit, then exact body/gameplay qualification.976+29=1005;ZERO DATA ports;Phase2C authorized but deferred.",
     "sprint17PrivatePrototypes": {
       "status": "Six original files staged for bounded body acceptance; not automatically attached or runtime qualified",
       "source": "assets-source/original-models/sprint17-serpents/SOURCE.md",
@@ -61,9 +61,9 @@
     },
     "sprint16LaptopCorrectionReview": "planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-FIXTURE-REPAIR.md",
     "dataSalvageAudit": "planning/EXPANDED-SUMMONING-PHASE2B-DATA-SALVAGE-AUDIT.md",
-    "lastGuardedRuntimePass": "Exact7ebb34eb RESEARCH ONLY: smoke11/11; 20261006T0955234248989Z-disposable-expanded-summoning-serpentine-bodies40/40; complete driver PASS. S16 complete; S17 final visual/gameplay NOT QUALIFIED.",
-    "lastGuardedRuntimeResult": "Exactf6a0a20b smoke11/11 PASS; native-action metadata survey13/14 FAIL;4 of11 rows preserved, fifth structural action-list observation rejected before shape recorded; no carrier conclusion for remaining7. Original13 survey/cleanup/version checks PASS. Body570 remains failed and all12 body attempts preserved.",
-    "lastGuardedRestoration": "20261006T1232150916257Z actual snapshot restored2026-10-06T12:38:50.3928089Z; journal8A0408F46C5A5874FD04878E51C3D0EA37CE6F11599779938586BD581753E491; exact restoration VERIFIED, no game/lease/lock/staging/save write",
+    "lastGuardedRuntimePass": "Exact8022fee2 RESEARCH ONLY PASS: fresh Steam smoke11/11 and20261006T1259072936468Z-disposable-expanded-summoning-serpentine-survey14/14; complete driver PASS. All11 Lizardfolk prefab rows; no PiercingTwoHanded carrier or action adoption. S17 NOT QUALIFIED.",
+    "lastGuardedRuntimeResult": "Exact8022fee2 smoke11/11 and native-action metadata14/14 PASS. All11 native prefab rows; no two-handed piercing action. FreeHands14 slots includes null3,5,8, confirming f6 observation defect. No native actor instantiated or production action adopted. Latest body570 remains33/35 FAIL and all12 attempts preserved.",
+    "lastGuardedRestoration": "20261006T1255443757094Z actual snapshot restored2026-10-06T13:02:18.5290194Z; journalD85CB9DF2C4FAABED2C7DD0D4DF8D6AF6C8B52CE09712AA0287594240A9A8A89; exact restoration VERIFIED, no game/lease/lock/staging/save write",
     "activePullRequest": 26,
     "archivedSalvagePullRequest": 27,
     "giantWaspPublished": true,
