@@ -1,5 +1,22 @@
 # Expanded Summoning Phase 2 journal
 
+## October 6, 02:45 UTC — corrected three-target research 11/11, restored
+
+Exact a173da3a full prelaunch PASS: 219 focused, 2021 unfiltered (84.5s),
+486 preflight, 68 orchestration, all request tests, repository/static/icon/
+manifest, clean exact Release, strict deterministic 312-member package.
+Fresh Steam smoke 11/11 and extended survey 11/11. Three complete private
+captures: water seven skins/no continuous tail; Purple Worm two skins with
+continuous body chain; Salamander separate body/armor and stale club/shield.
+Absent native clip enumeration is recorded as null, not invented zero.
+Cleanup restores 955 original unit references, three party references and
+area membership. Actual snapshot 20261006T0239169703799Z restored exactly at
+02:45:49 UTC, 136 files/.117/original fingerprint. Lease Completed; no game,
+shared lock, staging, save write or protected-baseline access. Prior b289 FAIL
+retained. S17 gameplay/visuals NOT QUALIFIED; S14-16 complete. Next original
+continuous-chain snake prototype and separate Salamander hybrid/weapon seam.
+[Exact hashes](planning/EXPANDED-SUMMONING-SPRINT17-FALLBACK-RESEARCH-EVIDENCE.json).
+
 ## October 6, 02:29 UTC — research observation failure, exact restoration
 
 Exact b2893abe full prelaunch PASS (219 focused/2021 full/486 preflight),

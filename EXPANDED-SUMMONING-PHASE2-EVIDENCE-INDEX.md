@@ -1,12 +1,20 @@
 # Expanded Summoning Phase 2 evidence index
 
-[Sprint 17 private prototypes and extended research scope](planning/EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md):
+[Sprint 17 corrected three-target research PASS](planning/EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md):
+exact a173da3a full prelaunch PASS (219 focused/2021 full/486 preflight), fresh
+Steam smoke **11/11**, survey **11/11**, exact restoration. Native Purple Worm
+has a continuous body chain/two standard-material skins; water's body material
+is standard but its lower coil has no continuous chain. Salamander remains a
+separate hybrid/weapon seam. No new creature/assets ship; gameplay/visuals NOT
+QUALIFIED. [Both attempts' hashes](planning/EXPANDED-SUMMONING-SPRINT17-FALLBACK-RESEARCH-EVIDENCE.json).
+
+[Sprint 17 private prototypes and preserved failed extended research](planning/EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md):
 four Blender behavior checks, 40 offline panels; nothing packaged. Fixed native
 Purple Worm comparison added because the water rig has no continuous tail
 chain. Exact b2893abe full prelaunch PASS, smoke 11/11; survey **FAIL 8/9**
 on a null native action clip collection. Donor/view checks and exact cleanup
-PASS; actual snapshot exactly restored. Narrow null/empty metadata repair is
-focused-tested; new exact artifact/batch pending. NOT runtime qualified.
+PASS; actual snapshot exactly restored. The null/empty diagnostic repair passes
+the new exact a173 gate/batch above; b289 remains a failed historical attempt.
 [Failed attempt hashes](planning/EXPANDED-SUMMONING-SPRINT17-FALLBACK-RESEARCH-EVIDENCE.json).
 
 [Sprint 17 native-rig research PASS](planning/EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md):
