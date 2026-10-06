@@ -1,12 +1,18 @@
 # Expanded Summoning Phase 2 evidence index
 
-[Current closed snake profile/body slice, NOT RUN](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-PROFILE-SLICE.md):
-248 focused/2050 unfiltered83.0s, repository/clean exact-reference Release/
-strict320-member package PASS179.5s as dirty diagnostics;496 preflight PASS.
-One fixed working-save request,17 view+18 actual profile assertions plus
-cleanup/version. No Salamander replay and no full Sprint17 acceptance claim.
+[Current snake profile/body slice, FAIL31/38](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-PROFILE-SLICE.md)
+and [exact artifact/results/restoration](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-PROFILE-ATTEMPT1-EVIDENCE.json):
+2dd48884 complete source2050 tests83.7s/strict320 package180.9s PASS;
+all prelaunch PASS. Fresh Steam smoke11/11, bounded slice31/38 FAIL.
+Four production HP/rank failures, two null-target probe failures, one
+unresolved fallback-visibility failure. Live bite modifiers/dice PASS.
+Actual136-file/0.0.117 snapshot restored16:38:05UTC; no game/lease/lock/
+staging/save write. Corrected source248 focused/2050 full103.3s, complete
+repository/build/strict320 package PASS206.1s as dirty diagnostics; new exact gates NEXT.
+No waiver/publication/Sprint17 qualification. Entries below are historical
+source/research checkpoints, not the current runtime status.
 
-[Current snake view integration, NOT QUALIFIED](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-VIEW-INTEGRATION.md):
+[Historical snake view integration, NOT QUALIFIED](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-VIEW-INTEGRATION.md):
 two exact hidden identities automatically bind original bodies, with one view
 scale and native-owned rollback.17 guarded assertions written, NOT RUN.
 247 focused/2049 full86.4s, repository, clean exact-reference Release and strict
@@ -16,7 +22,7 @@ Exact source/DLL/MVID/ZIP/manifest/log hashes and archive recorded in review.
 One existing-Unity2018 batch probe confirmed invalid license and self-exited;
 no activation or game launch, and no phase-wide blocker claim.
 
-[Current hidden snake source checkpoint, NOT QUALIFIED](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SOURCE-REVIEW.md):
+[Historical hidden snake source checkpoint, NOT QUALIFIED](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SOURCE-REVIEW.md):
 250 focused / 2048 unfiltered tests PASS; repository/static/manifest/icon and
 dirty-tree exact-reference compile PASS. 73 append-only IDs,32 hidden roots;
 1008 registered /976 published +29 wrappers =1005 visible. No new runtime.
@@ -27,7 +33,7 @@ PASS. Corrected committed79cf2bf1 gate subsequently PASS:2048 unfiltered tests
 and strict standalone package;177.8s total. Exact source/DLL/MVID/ZIP/log hashes
 and preserved archive are in the review. All Sprint17 gameplay gates remain open.
 
-[Last guarded a90494e1 bind census, RESEARCH ONLY 16/16 PASS](planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-BIND-REVIEW.md):
+[Prior guarded a90494e1 bind census, RESEARCH ONLY 16/16 PASS](planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-BIND-REVIEW.md):
 
 Exact a90494e1: 238 focused / 2040 unfiltered tests (83.0s), complete gate
 178s; 491 preflight / 81 orchestration / 17 provenance, persistence 11/3/19,
