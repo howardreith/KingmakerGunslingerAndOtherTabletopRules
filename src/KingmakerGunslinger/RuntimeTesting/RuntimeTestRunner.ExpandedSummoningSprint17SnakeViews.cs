@@ -29,6 +29,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .Select(value => new { Renderer = value, Name = value.name, Mesh = value.sharedMesh }).ToArray();
             var nativeAnimationSet = control.View.AnimationManager.AnimationSet;
             Vector3 nativeScale = control.View.transform.localScale;
+            var nativeSkills = control.Blueprint.Skills;
+            var skillFields = typeof(BlueprintUnit.UnitSkills).GetFields(
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public);
+            int[] nativeSkillSeeds = skillFields.Select(value => (int)value.GetValue(nativeSkills)).ToArray();
             try
             {
                 foreach (string key in new[] { "viper", "constrictor-snake" })
@@ -39,7 +43,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     UnityEngine.Object[] owned = new UnityEngine.Object[0];
                     string suffix = key + (fault ? "-rollback" : "-normal");
                     var row = new JObject { ["key"] = key, ["scope"] = "production hidden-snake body binding",
-                        ["faultInjected"] = fault, ["gameplayQualified"] = false };
+                        ["faultInjected"] = fault, ["gameplayQualified"] = false,
+                        ["nativeDonorPerceptionSeed"] = nativeSkills.Perception };
                     _serpentineBodyRows.Add(row);
                     try
                     {
@@ -72,12 +77,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                         finally { SerpentineVisualAttachment.PostSwapFaultForTest = null; }
                         SetExpandedSummoningBrainActive(unit, false);
                         if (!Game.Instance.State.AwakeUnits.Contains(unit)) Game.Instance.State.AwakeUnits.Add(unit);
+                        // One restored donor remained non-intact at its random
+                        // native placement in 2dd. Narrow observation to the
+                        // qualified art-point fixture, without enabling a skin,
+                        // clearing appearance buffs or changing its fader.
+                        row["nativeSpawnPosition"] = SurveyVector(unit.Position);
+                        string floorEvidence;
+                        Vector3 floor = FindExpandedSummoningArtPoint(fixture.Caster, out floorEvidence);
+                        PlaceExpandedSummoningUnit(unit, floor);
+                        row["floorSurvey"] = floorEvidence;
+                        var visibility = new JArray();
+                        row["visibilitySamples"] = visibility;
+                        visibility.Add(Sprint17SnakeVisibilitySample(unit, key, 0));
                         int frames = 0;
                         while (++frames <= 600)
                         {
                             yield return 0;
+                            if (frames == 30 || frames == 60 || frames == 600)
+                                visibility.Add(Sprint17SnakeVisibilitySample(unit, key, frames));
                             if (frames >= 30 && Sprint17BodyIntact(unit.View, SerpentineVisualPolicy.BodyRenderer(key))) break;
                         }
+                        visibility.Add(Sprint17SnakeVisibilitySample(unit, key, frames));
                         var view = unit.View;
                         var attachment = view.GetComponent<SerpentineVisualAttachment>();
                         string outcome = ExpandedSummoningSerpentineViewPatch.DescribeView(view);
@@ -147,6 +167,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         control.View.GetComponent<SerpentineVisualAttachment>() == null &&
                         control.View.transform.localScale == nativeScale &&
                         donor.All(value => value.Mesh != null && value.Renderer.sharedMesh == value.Mesh) &&
+                        ReferenceEquals(control.Blueprint.Skills, nativeSkills) &&
+                        nativeSkillSeeds.SequenceEqual(skillFields.Select(value => (int)value.GetValue(nativeSkills))) &&
                         ReferenceEquals(control.View.AnimationManager.AnimationSet, nativeAnimationSet),
                     "Exact native blueprint, not a KMG proxy; borrowed resources remain live."));
             }
@@ -155,6 +177,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SerpentineVisualAttachment.PostSwapFaultForTest = null;
                 if (!control.Destroyed) { control.Destroy(); Game.Instance.EntityDestroyer.Tick(); }
             }
+        }
+
+        private static JObject Sprint17SnakeVisibilitySample(UnitEntityData unit, string key, int frame)
+        {
+            var body = unit.View.GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                .SingleOrDefault(value => value.name == SerpentineVisualPolicy.BodyRenderer(key));
+            return new JObject { ["frame"] = frame, ["position"] = SurveyVector(unit.Position),
+                ["control"] = Sprint16ControlObservation(unit), ["bodyFound"] = body != null,
+                ["enabled"] = body != null && body.enabled,
+                ["active"] = body != null && body.gameObject.activeInHierarchy,
+                ["mesh"] = body == null || body.sharedMesh == null ? null : body.sharedMesh.name,
+                ["materials"] = body == null ? new JArray() : new JArray(body.sharedMaterials.Select(material =>
+                    material == null ? new JObject { ["missing"] = true } : new JObject {
+                        ["name"] = material.name,
+                        ["dissolve"] = material.HasProperty("_Dissolve") ? (JToken)material.GetFloat("_Dissolve") : JValue.CreateNull() })) };
         }
     }
 }
