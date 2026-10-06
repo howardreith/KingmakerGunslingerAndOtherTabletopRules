@@ -127,11 +127,16 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private static JArray Sprint17NativeHandAttackCensus(UnitEntityData owner)
+        { return Sprint17NativeHandAttackCensus(kind => owner.View.AnimationManager.GetAction(kind)); }
+
+        // The detached census supplies exact serialized actions directly; it
+        // never initializes/plays a prefab manager just to inspect settings.
+        private static JArray Sprint17NativeHandAttackCensus(Func<UnitAnimationType, UnitAnimationAction> resolve)
         {
             var rows = new JArray();
             foreach (UnitAnimationType kind in new[] { UnitAnimationType.MainHandAttack, UnitAnimationType.OffHandAttack })
             {
-                var action = owner.View.AnimationManager.GetAction(kind);
+                var action = resolve(kind);
                 var row = new JObject { ["kind"] = kind.ToString(),
                     ["actionClass"] = action == null ? null : action.GetType().FullName,
                     ["actionName"] = action == null ? null : action.name };
