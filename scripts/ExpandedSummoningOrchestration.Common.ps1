@@ -21,6 +21,28 @@ branch without a runtime lease, a deployment, or a launch.
 
 Set-StrictMode -Version Latest
 
+function ConvertFrom-KmgSerpentineBodyReviewJson {
+    param([Parameter(Mandatory = $true)][AllowEmptyString()][string]$Json)
+    # Windows PowerShell emits a parsed top-level JSON array as one pipeline
+    # object. Do not wrap ConvertFrom-Json directly in @(...), which produces
+    # a misleading one-row outer array. Assignment retains its real array;
+    # the function then emits the validated individual rows to its caller.
+    $rows = $Json | ConvertFrom-Json -ErrorAction Stop
+    $keys = @('viper', 'constrictor-snake', 'salamander')
+    if ($rows -isnot [System.Array] -or $rows.Count -ne $keys.Count) {
+        throw 'Body research must contain exactly three top-level rows.'
+    }
+    for ($index = 0; $index -lt $keys.Count; $index++) {
+        $row = $rows[$index]
+        if ($null -eq $row -or $row -is [System.Array] -or
+            $null -eq $row.PSObject.Properties['key'] -or
+            $row.key -isnot [string] -or $row.key -cne $keys[$index]) {
+            throw 'Body research keys differ from the exact ordered scope.'
+        }
+    }
+    return $rows
+}
+
 function Test-KmgBatchCandidateUnavailable {
     param([bool]$FirstScenario, [bool]$HasEvidence, [bool]$HasDeployment,
           [ValidateSet('Clean', 'Unclean')][string]$LauncherOutcome)
