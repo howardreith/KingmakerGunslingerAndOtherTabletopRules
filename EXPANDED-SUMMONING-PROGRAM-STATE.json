@@ -29,13 +29,20 @@
       16
     ],
     "currentSprint": 17,
-    "currentSubItem": "Sprint 16 COMPLETE AND PUBLISHED at exact 155ada89; closing evidence b27b6aea pushed. Sprint 17 NOT QUALIFIED: research-only native water-elemental/Lizardfolk rig survey, no creature/gameplay/publication changes; 219 focused and 486 preflight PASS, exact-head full gate and guarded survey pending. 976 generated + 29 wrappers = 1005 visible. DATA audit complete; zero imports.",
+    "currentSubItem": "Sprint 16 COMPLETE AND PUBLISHED at exact 155ada89; closing evidence b27b6aea pushed. Sprint 17 NOT QUALIFIED: exact f507 research all prelaunch PASS (219 focused/2021 full/486 preflight), smoke 11/11, native rig metadata 8/8 and exact restoration. Seven-skin water rig/43-bone body; Lizardfolk 39-bone body with armor skin and stale club/shield visuals. Next bounded original mesh/weapon prototype, profiles/signatures and hidden candidate. 976 generated + 29 wrappers = 1005 visible. DATA audit complete; zero imports.",
     "sprint17TechnicalQualified": false,
     "sprint17ResearchReview": "planning/EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md",
+    "sprint17Research": {
+      "candidate": "f507278bbebe5894130dc6ec51978580bc2c43d0",
+      "status": "RESEARCH ONLY PASS; smoke 11/11; metadata 8/8; Sprint 17 gameplay/visuals NOT QUALIFIED",
+      "evidence": "planning/EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-EVIDENCE.json",
+      "restoration": "VERIFIED actual snapshot 20261006T0139078842255Z; lease Completed; no game, runtime lock or staging",
+      "saveWrite": false
+    },
     "sprint16LaptopCorrectionReview": "planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-FIXTURE-REPAIR.md",
     "dataSalvageAudit": "planning/EXPANDED-SUMMONING-PHASE2B-DATA-SALVAGE-AUDIT.md",
-    "lastGuardedRuntimePass": "Exact 155ada89 publication PASS: smoke 11/11; 20261006T0046338051934Z-disposable-expanded-summoning-crocodilians 211/211 including all 20 public roots. Hidden e3 complete crowd/native cleanup/fresh absence remains qualified.",
-    "lastGuardedRestoration": "20261006T0043094214625Z actual snapshot restored 2026-10-06T00:59:25.6235093Z; journal 6928D7494A6953A7965127846D04797589E0E349F929BF8B225B92F8E5E190EF",
+    "lastGuardedRuntimePass": "Exact f507 research ONLY: smoke 11/11, 20261006T0142363709333Z-disposable-expanded-summoning-serpentine-survey 8/8. S16 publication 155ada89 remains complete; S17 gameplay/visuals NOT QUALIFIED.",
+    "lastGuardedRestoration": "20261006T0139078842255Z actual snapshot restored 2026-10-06T01:45:45.9953210Z; journal A496BD70391A429A309578EA6616293862DD439A8F54366402E9BF65D91CC663",
     "activePullRequest": 26,
     "archivedSalvagePullRequest": 27,
     "giantWaspPublished": true,
