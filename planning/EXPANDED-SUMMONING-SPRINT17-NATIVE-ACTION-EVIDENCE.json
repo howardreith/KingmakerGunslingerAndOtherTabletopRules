@@ -1,0 +1,165 @@
+{
+  "schemaVersion": 1,
+  "status": "NOT QUALIFIED; exact f6a0a20b smoke11/11 PASS, metadata survey13/14 FAIL; four of eleven new rows captured; exact restoration VERIFIED",
+  "scope": "Closed detached native manufactured-action metadata only; no action adoption, gameplay or visual qualification",
+  "attempts": [
+    {
+      "candidate": "f6a0a20b5fe57a6e4f8c7fe76feabceb80204016",
+      "sourceFingerprint": "f3b0eb496080fade83d465c786d26fe94a0a6e7079ab68cf835a21dee9e0e091",
+      "dllSha256": "ede2ebe5d9d090e6df73fc201eed4b7c75b1e133f3263344045b79b16641965c",
+      "dllMvid": "1acc7c4a-0351-4fe7-bd92-b5cd183c3aa2",
+      "packageSha256": "a2beea4c0d6fcd22792fefb5a4cbee8d15a8b119259d6bc8fa5a2d67fd90763d",
+      "packageMembers": 318,
+      "version": "0.0.141",
+      "prelaunch": {
+        "focused": 235,
+        "full": 2037,
+        "fullSeconds": 87.1,
+        "completeGateSeconds": 186.5,
+        "runtimePreflight": 491,
+        "orchestration": 81,
+        "provenance": 17,
+        "persistenceWiring": 11,
+        "persistenceScopes": 3,
+        "persistenceRejections": 19,
+        "crowdRoundTrips": 5,
+        "crowdRejections": 7,
+        "exactBuildAndStrictPackage": "PASS"
+      },
+      "runs": [
+        {
+          "scenario": "working-save-smoke",
+          "startedAtUtc": "2026-10-06T12:32:39.3201821Z",
+          "parameters": {},
+          "launcherOutcome": "Clean",
+          "exitCode": 0,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T1232402065899Z-working-save-smoke",
+          "requestId": "20261006T1232402222201Z-7da495af4d93449d82a3d6b361dc1a52",
+          "requestSha256": "4422f420c6cc285d76fc06f0c03d4a3ccb86dbe98d1d9e267d37aaf78b456745",
+          "resultSha256": "8c90b7d0513bd071583e745a7a2a7931a02b8a961105d3e66fd75c508aeb8d90",
+          "assertions": 11,
+          "passed": 11,
+          "failed": [],
+          "orchestrationSha256": "c3d0af7aed3f08b95090b10a7d9362773a9cd212282ddf24a66266c37807f4ba",
+          "processId": 33696,
+          "processStartedUtc": "2026-10-06T12:32:41.2945656Z",
+          "scenarioStatus": "PASS",
+          "outcome": "PASS",
+          "completedAtUtc": "2026-10-06T12:35:31.5947236Z"
+        },
+        {
+          "scenario": "disposable-expanded-summoning-serpentine-survey",
+          "startedAtUtc": "2026-10-06T12:35:37.5598729Z",
+          "parameters": {},
+          "launcherOutcome": "Unclean",
+          "exitCode": 1,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T1235383515395Z-disposable-expanded-summoning-serpentine-survey",
+          "requestId": "20261006T1235383671580Z-570e3897707a49569fbeceff1d5adf27",
+          "requestSha256": "18c0c1ccac894d6a7a005087665c23c837971c60d07c86fcc137eb98da157b12",
+          "resultSha256": "4f5d3ace57b2d8354ebbdc9d5c10e14f45ee1cf255217d43cff625abdf844ffe",
+          "assertions": 14,
+          "passed": 13,
+          "failed": [
+            {
+              "name": "sprint17-rig-survey-exception",
+              "status": "FAIL"
+            }
+          ],
+          "orchestrationSha256": "42524d4162fc90b279726875f10246108154339100de7fe11b563025002882fd",
+          "processId": 31584,
+          "processStartedUtc": "2026-10-06T12:35:39.3403080Z",
+          "scenarioStatus": "FAIL",
+          "outcome": "FAIL",
+          "completedAtUtc": "2026-10-06T12:38:47.6654463Z"
+        }
+      ],
+      "restoration": {
+        "status": "VERIFIED",
+        "snapshot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20261006T1232150916257Z",
+        "before": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "after": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "completedAtUtc": "2026-10-06T12:38:50.3928089Z",
+        "lease": "C:\\Dev\\KingmakerGunslingerLab\\compatibility-state\\runtime-20261006T123214Z-e33e479e591b44b2b45b64ad11e506fc\\runtime-lease.json",
+        "leaseStatus": "Completed",
+        "recoveryRequired": false,
+        "leaseReleased": true,
+        "gameProcessesRemaining": [],
+        "sharedLock": false,
+        "staging": false,
+        "saveWrite": false
+      },
+      "journalSha256": "8A0408F46C5A5874FD04878E51C3D0EA37CE6F11599779938586BD581753E491",
+      "driverSha256": "5579DBC701A0A6538A9DDB6A3B7AF9E2016EF2B311C8AE96238D57B14B1AD589",
+      "nativeActionMetadataSha256": "945B6095036D5AF52D56FF48F087AFF56A8D140DF28166AB3362B9AC2AE189A0",
+      "findings": {
+        "classification": "FIXTURE OBSERVATION DEFECT; no production, environment or restoration failure demonstrated",
+        "failure": "Native action-list census is incomplete or unbounded",
+        "cause": "Reader rejected zero-length, oversized or null-containing action lists using a combined guard before recording the fifth row. Exact structure is NOT established. Four prior rows were preserved in finally. Do not invent an empty/null diagnosis or claim all eleven inspected.",
+        "stoppedBeforeRecordedRow": {
+          "blueprint": "a8cbd4cdb0feaf64eab1452257c3c971",
+          "prefab": "d6db6ba3b2c459a48ba0730beef0bac8",
+          "name": "CityGatesHub_LizardfolkRattler"
+        },
+        "observations": [
+          {
+            "blueprint": "9f7a7364b76d65d43b72086aedce68ae",
+            "prefab": "c664715ff7165984285f66acc764b4b3",
+            "set": "Lizardfolk_RH_Spear_Shield_AnimationSet",
+            "mainStyles": [
+              "PiercingOneHanded"
+            ],
+            "bodyBones": 41,
+            "armorBones": 26,
+            "nativeReferencesUnchanged": true
+          },
+          {
+            "blueprint": "e8276e28b2234a745900fed80670bfdb",
+            "prefab": "9b1744531a4428e44aa9837ca984513a",
+            "set": "Lizardfolk_RH_Slashing_Shield_AnimationSet",
+            "mainStyles": [
+              "SlashingOneHanded"
+            ],
+            "bodyBones": 39,
+            "armorBones": 19,
+            "nativeReferencesUnchanged": true
+          },
+          {
+            "blueprint": "f080877221934ea40b29e1d9fa71bc1c",
+            "prefab": "31cb7e484faf8734fa2c0ef1936b1806",
+            "set": "Lizardfolk_2H_Slashing_AnimationSet",
+            "mainStyles": [
+              "SlashingTwoHanded",
+              "AxeTwoHanded"
+            ],
+            "bodyBones": 39,
+            "armorBones": 19,
+            "nativeReferencesUnchanged": true
+          },
+          {
+            "blueprint": "f27f96f4bcc432c478615f2e9013ec2e",
+            "prefab": "cf7994611698da2428a07515d718e252",
+            "set": "Lizardfolk_RH_Slashing_Shield_AnimationSet",
+            "mainStyles": [
+              "SlashingOneHanded"
+            ],
+            "bodyBones": 39,
+            "armorBones": 19,
+            "nativeReferencesUnchanged": true
+          }
+        ],
+        "passed": "All thirteen previous rig-survey checks, including exact owned native destruction/unit/party/area restoration and version. No save write. None of the four observed main-hand actions has PiercingTwoHanded; seven remaining rows are unknown.",
+        "next": "Preserve null enumeration, explicit empty list, null slots and duplicates as distinct bounded metadata; keep128 cap, exact references/identities and actual action-adoption guards. Rebuild a new exact head and rerun the complete affected smoke/survey batch. No blind retry or compatibility claim."
+      }
+    }
+  ]
+}

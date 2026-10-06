@@ -210,22 +210,32 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var manager = managers[0];
                     var set = manager.AnimationSet;
                     if (set == null) throw new InvalidOperationException("Missing native action set: " + native.name);
-                    var actions = set.Actions.ToArray();
-                    if (actions.Length == 0 || actions.Length > 128 || actions.Any(value => value == null))
-                        throw new InvalidOperationException("Native action-list census is incomplete or unbounded.");
+                    var nativeActions = set.Actions;
+                    // Preserve the structural observation before interpreting
+                    // it. A null/empty/partially-null native list is a finding,
+                    // never proof of compatibility or permission to adopt it.
+                    var row = new JObject { ["blueprint"] = native.AssetGuid, ["name"] = native.name,
+                        ["prefab"] = source[1], ["set"] = set.name,
+                        ["actionEnumerationPresent"] = nativeActions != null };
+                    rows.Add(row);
+                    var actions = SerpentineRigSurveyPolicy.SnapshotMetadataSlots(nativeActions);
                     var skins = prefab.GetComponentsInChildren<SkinnedMeshRenderer>(true);
                     var skinReferences = skins.Select(value => new { Skin = value, Mesh = value.sharedMesh,
                         Bones = value.bones, Materials = value.sharedMaterials }).ToArray();
-                    var row = new JObject { ["blueprint"] = native.AssetGuid, ["name"] = native.name,
-                        ["prefab"] = source[1], ["set"] = set.name,
-                        ["humanFallback"] = ReferenceEquals(set, BlueprintRoot.Instance.HumanAnimationSet),
-                        ["actionCount"] = actions.Length, ["transitionCount"] = set.Transitions.Count(),
-                        ["hands"] = Sprint17NativeHandAttackCensus(kind => actions.OfType<UnitAnimationAction>()
-                            .SingleOrDefault(value => value.Type == kind)),
-                        ["actions"] = new JArray(actions.Select(value => new JObject {
+                    row["humanFallback"] = ReferenceEquals(set, BlueprintRoot.Instance.HumanAnimationSet);
+                    row["actionCount"] = actions == null ? JValue.CreateNull() : new JValue(actions.Length);
+                    row["nullActionSlots"] = actions == null ? (JToken)JValue.CreateNull() : new JArray(
+                        actions.Select((value, index) => new { Value = value, Index = index })
+                            .Where(value => value.Value == null).Select(value => value.Index));
+                    row["transitionCount"] = set.Transitions.Count();
+                    row["hands"] = actions == null ? (JToken)JValue.CreateNull() :
+                        Sprint17NativeHandAttackCensus(kind => actions.OfType<UnitAnimationAction>()
+                            .Where(value => value != null).SingleOrDefault(value => value.Type == kind));
+                    row["actions"] = actions == null ? (JToken)JValue.CreateNull() : new JArray(actions.Select(value =>
+                        value == null ? (JToken)JValue.CreateNull() : new JObject {
                             ["name"] = value.name, ["class"] = value.GetType().FullName,
-                            ["kind"] = value is UnitAnimationAction ? ((UnitAnimationAction)value).Type.ToString() : null })),
-                        ["skins"] = new JArray(skins.Select(value => new JObject {
+                            ["kind"] = value is UnitAnimationAction ? ((UnitAnimationAction)value).Type.ToString() : null }));
+                    row["skins"] = new JArray(skins.Select(value => new JObject {
                             ["name"] = value.name, ["mesh"] = value.sharedMesh == null ? null : value.sharedMesh.name,
                             ["bones"] = value.bones.Length,
                             ["binds"] = value.sharedMesh == null ? -1 : value.sharedMesh.bindposes.Length,
@@ -234,12 +244,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 var names = new List<string>();
                                 for (Transform next = bone; next != null && next != prefab.transform; next = next.parent)
                                     names.Add(next.name);
-                                names.Reverse(); return (JToken)new JValue(string.Join("/", names.ToArray())); })) })) };
-                    bool unchanged = ReferenceEquals(manager.AnimationSet, set) && set.Actions.SequenceEqual(actions) &&
+                                names.Reverse(); return (JToken)new JValue(string.Join("/", names.ToArray())); })) }));
+                    bool unchanged = ReferenceEquals(manager.AnimationSet, set) &&
+                        (actions == null ? set.Actions == null : set.Actions != null && set.Actions.SequenceEqual(actions)) &&
                         skinReferences.All(value => ReferenceEquals(value.Skin.sharedMesh, value.Mesh) &&
                             value.Skin.bones.SequenceEqual(value.Bones) && value.Skin.sharedMaterials.SequenceEqual(value.Materials));
                     row["nativeReferencesUnchanged"] = unchanged;
-                    rows.Add(row);
                     if (!unchanged) throw new InvalidOperationException("Read-only prefab reference census changed: " + native.name);
                 }
                 bool noActors = Game.Instance.State.Units.SequenceEqual(unitsBefore) &&

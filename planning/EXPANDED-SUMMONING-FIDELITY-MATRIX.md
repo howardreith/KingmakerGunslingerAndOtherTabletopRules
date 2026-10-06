@@ -2,37 +2,37 @@
 
 ## Sprint 17 research, October 6 UTC — NOT QUALIFIED
 
-Exact570a14cd passes all prelaunch:234 focused/2036 full84.6s, gate181.3s,
-491 preflight/81 orchestration/17 provenance, persistence11/3/19,crowd5/7,
-clean exact Release/strict318-member package. Fresh Steam smoke11 PASS/body
-33 of35 FAIL before Salamander attachment; the complete48-assertion gate was
-NOT reached. The fixed native shortspear donor has
-Lizardfolk_RH_Spear_Shield_AnimationSet/MainHandAttack, no PiercingTwoHanded
-variant and no matching39-bone body. The guard rejects it before any owned
-action-set substitution. The rollback drill's captured=0 is a dependent
-precondition failure, not evidence of failed restoration. No gate waived.
+Exactf6a0a20b:235 focused/2037 unfiltered87.1s, complete gate186.5s,
+491 preflight/81 orchestration/17 provenance,persistence11/3/19,crowd5/7,
+clean exact Release/strict318-member package PASS. Fresh Steam smoke11 PASS;
+metadata survey13 of14 FAIL. Its original13 rig/cleanup/version checks pass.
+The new diagnostic captured4 of11 fixed prefab rows, then rejected the fifth
+action list before recording its shape. Exact empty/null/oversized cause is
+UNKNOWN; this is an observation defect, not proof all carriers are unsuitable.
 
-All28 snake body/movement/floor/contact/isolation/rollback/resource checks
-PASS, plus Salamander native control/appearance, environment restoration,
-fixture cleanup and version. Native bite gaps0 at frames4726/5289. No new
-hybrid movement/contact claim. Original meshes/paints and production unchanged.
+Observed native styles: King has PiercingOneHanded on a41-bone body/26-bone
+armor; Standard and Rogue have SlashingOneHanded on39/19; Barbarian has only
+SlashingTwoHanded/AxeTwoHanded on39/19. All four native-reference checks pass.
+The other seven rows remain unknown. No action adopted, native asset changed,
+NPC instantiated or new body/contact/gameplay qualification.
 
-Next: change observation strategy to bounded read-only native action/style/
-renderer metadata before another carrier choice. Do not retry the rejected
-donor, map a one-handed/slashing clip to a two-handed spear, twist bones to
-conceal missing playback, mutate native assets or waive contact. Exact09087
-missing-clip evidence and all twelve immutable attempts remain preserved.
-
-Actual1204024052635Z snapshot restored12:11:30.6828777UTC,136/.117/exact tree.
-Journal008A868413EA81BC9845B2200C24C5B1579368CBCC8041BD453E5ABC2C2B1E55;
-captureA36FD0AF1232174494428D8CA61A0D689CAC743CE9E900FCCC6DFE6B355864E4.
+Actual1232150916257Z snapshot restored12:38:50.3928089UTC,136/.117/exact tree.
+Journal8A0408F46C5A5874FD04878E51C3D0EA37CE6F11599779938586BD581753E491;
+census945B6095036D5AF52D56FF48F087AFF56A8D140DF28166AB3362B9AC2AE189A0.
 Lease Completed/recoveryRequired=false/released; no game/lock/staging/save write.
-No production hook/new registration;976+29=1005 visible, Sprints14–16 unchanged.
 
-Six original files remain on the Purple Worm chain/separate Lizardfolk hybrid.
-Printed profiles/signatures/skills/lifecycle/crowd/persistence/publication remain
-open. HumanReview: NOT_PERFORMED_NONBLOCKING; accepted limitations unchanged.
-[Twelve exact attempts](EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-REVIEW.md).
+The containing reader correction preserves absent enumeration, empty lists,
+null slots and duplicate references as different metadata; exact identities,
+128-slot cap, native-reference and adoption guards remain.236 focused/2038
+registered and incremental exact compile PASS. Full exact-head prelaunch and
+complete corrected smoke/14-assertion survey next. No compatibility claim.
+Sprints14–16 complete; Sprint17 NOT QUALIFIED. Latest body570 remains33/35
+FAIL before hybrid attachment; all12 body attempts preserved.976+29=1005,
+ZERO DATA ports, Phase2C authorized but deferred.
+
+[Current action census](EXPANDED-SUMMONING-SPRINT17-NATIVE-ACTION-REVIEW.md).
+Printed profiles/signatures/lifecycle/crowd/persistence/publication remain open.
+HumanReview: NOT_PERFORMED_NONBLOCKING; accepted limitations unchanged.
 
 ## Current Sprint 16 disposition, October 6 UTC — COMPLETE AND PUBLISHED
 

@@ -251,6 +251,13 @@ Swallow whole has a qualified project carrier from the Purple Worm.
 
 ## Sprint 17
 
+Latest separate native-action censusf6a0a20b: smoke11/metadata13 of14 FAIL,
+4 of11 rows recorded; fifth list shape rejected by observation code before
+capture. Its exact empty/null/oversized cause remains unknown. Exact restored
+12:38:50UTC; no carrier adoption. Structural-reader correction/source236 of
+2038 and incremental compile PASS, full exact prelaunch/survey next.
+[Census disposition](EXPANDED-SUMMONING-SPRINT17-NATIVE-ACTION-REVIEW.md).
+
 Current bounded evidence (October 6): exact570a14cd all prelaunch PASS;
 smoke11/body33 of35 FAIL, exact snapshot restored12:11:30UTC. S17 NOT QUALIFIED.
 Both original snakes play native bite clips with gap0; no printed mechanics
