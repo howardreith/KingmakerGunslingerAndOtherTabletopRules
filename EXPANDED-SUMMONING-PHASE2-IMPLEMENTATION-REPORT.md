@@ -1,6 +1,6 @@
 # Expanded Summoning Phase 2 implementation report
 
-## Current October 5 laptop result — Sprint 16 hidden PASS; publication pending
+## Current October 6 UTC laptop result — hidden PASS; publication FAIL/restored
 
 PR #26 / `codex/expanded-summoning-phase2b-sprints14-17` is the sole
 owner-designated development line. PR #27 is frozen salvage-only; no source
@@ -19,17 +19,22 @@ No assertion waived, no DATA imports, no altered production rule to pass a
 fixture. Hidden qualification includes live-bite damage, one-rider/cadence,
 Sprint interactions, both modes, original views, UI, targeted routes and
 persistence. [Exact evidence](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-HIDDEN-PASS-REVIEW.md).
-Publication still requires a new exact artifact with only Dire suppression
-removed and all twenty roots proved through their public parents.
+Publication source 3d13108e passed every prelaunch gate, smoke 11/11 and all
+twenty public roots, but its full main scenario FAILED 207/209. A missed
+issued bite emitted no grapple check, so the fixture never retried; hold and
+Death Roll contact therefore failed. This does not close Sprint 16.
+[Failure and bounded retry correction](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-PUBLICATION-RETRY-REVIEW.md).
 
-Actual leased snapshot restored at 23:49:30 UTC: 136 files / Info 0.0.117 /
+Latest actual leased snapshot restored at October 6 00:24:45 UTC: 136 files / Info 0.0.117 /
 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
 Lease completed, no game/lock/staging; fresh save absence clean. DATA audit
 complete/read-only, zero ports. Hidden-pass evidence pushed at 1393b669.
 The containing publication candidate removes only Dire suppression: 976
 published generated + 29 wrappers = 1005 visible, none withheld in source.
-All six new public roots and fourteen Crocodile roots still require the
-publication artifact gate. Sprint 17 waits.
+The containing fixture-only correction adds completed-miss retry, fresh-turn
+handling and explicit negative-input evidence; no production change, timeout
+increase or weakened assertion. New exact full prelaunch/publication gate
+must pass all 211 assertions and twenty public routes. Sprint 17 waits.
 
 ## Historical first hidden candidate, October 5
 

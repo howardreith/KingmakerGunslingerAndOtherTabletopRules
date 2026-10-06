@@ -59,6 +59,45 @@ namespace KingmakerGunslinger.DomainTests
             }
             Assertions.False(CrocodilianCommandReviewPolicy.CanFinish(true, false, false, true, 5000),
                 "An incidental bite/rider cannot finish the manual-swallow drill, regardless of elapsed frames.");
+
+            foreach (int attempts in new[] { -1, 0, 1, 2, 3, 4, 5 })
+                Assertions.Equal(attempts >= 1 && attempts <= 3,
+                    CrocodilianCommandReviewPolicy.CanRetryHeldAttack(
+                        true, true, attempts, true, true, false, false, false),
+                    "A completed issued miss needs no grapple check, but still has a four-command cap.");
+            // Independently exercise every prerequisite: incidental/AoO attacks,
+            // a live command or an already-established result never get retried.
+            for (int missing = 0; missing < 7; missing++)
+                Assertions.False(CrocodilianCommandReviewPolicy.CanRetryHeldAttack(
+                    missing != 0, missing != 1, 1, missing != 2, missing != 3,
+                    missing == 4, missing == 5, missing == 6),
+                    "Only a ready manual held-target drill with a live target and no pending command/result retries.");
+
+            foreach (bool spent in new[] { false, true })
+            foreach (bool held in new[] { false, true })
+            foreach (bool rider in new[] { false, true })
+            foreach (bool pending in new[] { false, true })
+            foreach (bool canEnd in new[] { false, true })
+                Assertions.Equal((spent || held) && !rider && !pending && canEnd,
+                    CrocodilianCommandReviewPolicy.ShouldAdvanceHeldTurn(spent, held, rider, pending, canEnd),
+                    "A fresh retry turn stays open; only a spent attack or existing hold can advance an idle native turn.");
+
+            Assertions.True(CrocodilianCommandReviewPolicy.InjectFirstBiteMiss(
+                "crocodile", "manual-hold", 1, false, true, true, true),
+                "The exact owned first issued bite is the disclosed negative control.");
+            foreach (string creature in new[] { "dire-crocodile", "Crocodile", "", null })
+                Assertions.False(CrocodilianCommandReviewPolicy.InjectFirstBiteMiss(
+                    creature, "manual-hold", 1, false, true, true, true), "No unrelated creature is changed.");
+            foreach (string driver in new[] { "ai-fresh", "manual", "manual-swallow", "Manual-Hold", "", null })
+                Assertions.False(CrocodilianCommandReviewPolicy.InjectFirstBiteMiss(
+                    "crocodile", driver, 1, false, true, true, true), "No AI or other drill is changed.");
+            foreach (int attempts in new[] { -1, 0, 2, 3, 4 })
+                Assertions.False(CrocodilianCommandReviewPolicy.InjectFirstBiteMiss(
+                    "crocodile", "manual-hold", attempts, false, true, true, true), "Only the first command is eligible.");
+            for (int missing = 0; missing < 4; missing++)
+                Assertions.False(CrocodilianCommandReviewPolicy.InjectFirstBiteMiss(
+                    "crocodile", "manual-hold", 1, missing == 0, missing != 1, missing != 2, missing != 3),
+                    "The negative input is once-only, exact-owned-pair, bite-only and issued-command-only.");
         }
 
         internal static void CrocodilianIconConsumerGraphIsComplete()
