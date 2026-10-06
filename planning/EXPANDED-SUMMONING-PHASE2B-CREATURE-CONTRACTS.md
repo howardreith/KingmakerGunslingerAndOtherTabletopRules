@@ -29,7 +29,8 @@ At the frozen contract baseline, two of the ten existed as **visual proxies**:
 `crocodile` wore the Monitor Lizard, and `salamander` the Lizardfolk.
 Sprint 16 is now complete/published on exact 155ada89 with both original
 crocodilian models and all twenty public roots qualified; the printed
-contract below is unchanged. Sprint 17 remains next. Sprints 16 and 17 replace a proxy on an identity that
+contract below is unchanged. Sprint 17 research is underway, NOT QUALIFIED.
+Sprints 16 and 17 replace a proxy on an identity that
 already ships, which means their placements and GUIDs must be preserved exactly
 and the work is art and mechanics rather than registration.
 
@@ -249,6 +250,17 @@ Focus (Perception, Stealth). SQ hold breath.
 Swallow whole has a qualified project carrier from the Purple Worm.
 
 ## Sprint 17
+
+Current native-rig evidence (October 6): exact f507 research passed smoke
+11/11 and metadata 8/8, with exact restoration. The proposed serpentine
+prefab is native Medium Water Elemental, not dependent on the optional Eidolon
+unit named in the historical mixed-library census below. Its seven skins
+include a 43-bone body with spine/head/jaw. Salamander remains separate:
+39-bone Lizardfolk body, armor skin, and stale native club/shield visuals.
+These measurements support a bounded original prototype, not completed art
+or gameplay. [Exact research and disposition](EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md).
+The Medium Viper contract below governs over the older S16 note's Tiny/Small
+prototype assumption. No printed mechanics are changed by donor selection.
 
 ### Viper (Venomous Snake) - CR 1, N Medium animal
 

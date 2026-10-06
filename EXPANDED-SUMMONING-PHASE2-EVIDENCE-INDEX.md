@@ -1,8 +1,11 @@
 # Expanded Summoning Phase 2 evidence index
 
-[Sprint 17 native-rig research checkpoint](planning/EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md):
-219 focused / 486 request-preflight PASS; exact-head full gate and guarded
-metadata survey pending. Sprint 17 NOT QUALIFIED; no new creature/publication.
+[Sprint 17 native-rig research PASS](planning/EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md):
+exact f507 full prelaunch PASS (219 focused/2021 full/486 preflight), fresh
+Steam smoke 11/11, metadata survey 8/8, exact restoration. Water rig has seven
+skins/43-bone body; Lizardfolk has two skins/39-bone body plus stale club/shield.
+Sprint 17 gameplay/visuals NOT QUALIFIED; no new creature/publication.
+[Exact hashes](planning/EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-EVIDENCE.json).
 
 [Sprint 16 COMPLETE AND PUBLISHED](planning/EXPANDED-SUMMONING-SPRINT16-PUBLICATION-PASS-REVIEW.md):
 exact 155ada89 all prelaunch gates PASS, smoke 11/11, main **211/211**, all

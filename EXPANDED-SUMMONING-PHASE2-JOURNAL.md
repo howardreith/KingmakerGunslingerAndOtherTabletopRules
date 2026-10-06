@@ -1,5 +1,21 @@
 # Expanded Summoning Phase 2 journal
 
+## October 6, 01:45 UTC — native-rig research 8/8, restored
+
+Exact f507278b passes the complete prelaunch gate: 219 focused/2021 full,
+486 preflight, 68 orchestration, persistence/crowd requests, repository/static/
+icon/manifest, clean exact Release, deterministic strict 312-member package.
+Fresh Steam smoke 11/11 and survey 8/8. Actual snapshot restored exactly:
+136 files / Info 0.0.117 / original tree, lease Completed, no game/lock/staging.
+No save write. [Exact evidence and findings](planning/EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md).
+
+Seven native Water Elemental skins include a 43-bone torso/head/jaw frame.
+The Lizardfolk body has 39 bones plus armor and static club/shield meshes;
+Salamander's spear blueprint alone does not prove its visual weapon handling.
+Original mesh/binding prototypes and signatures remain open. S17 NOT QUALIFIED;
+S14-16 stay complete. Medium Viper contract corrects the older Tiny/Small
+prototype premise. No DATA import or Phase 2C start.
+
 ## October 6, 01:33 UTC — Sprint 17 research scaffold, NOT QUALIFIED
 
 S16 closure evidence b27b6aea pushed. Added a fixed two-target native-rig

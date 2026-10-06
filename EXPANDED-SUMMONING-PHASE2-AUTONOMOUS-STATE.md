@@ -17,7 +17,9 @@ no merge, release, tag, version bump, force push or permanent deployment.
   **`155ada89869c6937b4a801e1fc384dbe38d36f3b`**.
   Pushed closure-evidence checkpoint/fetched remote before Sprint 17 research:
   **`b27b6aea04d4e1e2b151339fca36407ba45bb8a9`**.
-  The containing Sprint 17 research checkpoint is its normal descendant.
+  Exact research artifact/fetched remote before its evidence checkpoint:
+  **`f507278bbebe5894130dc6ec51978580bc2c43d0`**.
+  The containing research-evidence checkpoint is its normal descendant.
   Unexpected active-branch motion remains a stop; archive motion is informational.
 - Exclusive ignored receipt: `artifacts/laptop-source-owner-20261005.json`;
   session `01a10bcd-8582-7551-826f-0f128807eb99`, owner PID 31796/start
@@ -40,13 +42,13 @@ no merge, release, tag, version bump, force push or permanent deployment.
   11/11 smoke, 209/209 main, 20/20 crowd, 9/9 prepare, 9/9 cleanup, 5/5 absence.
   No mechanics, visual, asset or serialized-state delta since that pass;
   only Dire suppression and guarded fixture changes, with full main rerun.
-- Latest actual snapshot `20261006T0043094214625Z` restored exactly;
-  closed `2026-10-06T00:59:25.6235093Z`: 136 files / Info 0.0.117 /
+- Latest actual snapshot `20261006T0139078842255Z` restored exactly;
+  closed `2026-10-06T01:45:45.9953210Z`: 136 files / Info 0.0.117 /
   `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
   Lease Completed/recoveryRequired=false; no game/shared lock/staging.
-  Prior native working-save cleanup/absence clean; publication did not write
+  Prior native working-save cleanup/absence clean; publication and research did not write
   saves. No save-file or protected-baseline access. Journal SHA
-  `6928D7494A6953A7965127846D04797589E0E349F929BF8B225B92F8E5E190EF`.
+  `A496BD70391A429A309578EA6616293862DD439A8F54366402E9BF65D91CC663`.
 - Publication DLL SHA `8c76fcbed3eb73ffb6ca6c6121e610f96a2b36a82fa8f3c6c55edae66da885d9`;
   MVID `ed8fe210-31e2-4016-870e-8623d3a55fa2`; ZIP
   `eb930278836f0c3953decef589c7214b69c1d1a2fc69f625af56bdc4af254ac2`.
@@ -55,18 +57,22 @@ no merge, release, tag, version bump, force push or permanent deployment.
 - Qualified surface: **976 registered/published generated / 0 withheld /
   29 native wrappers / 1005 visible choices**. Fourteen Crocodile roots and
   accepted identity preserved; six Dire roots now public and qualified.
-- Sprint 17 **NOT QUALIFIED**: guarded research-only survey added for the
+- Sprint 17 **NOT QUALIFIED**: guarded research-only survey passed for the
   native Medium Water Elemental view and existing Salamander/Lizardfolk view.
   Archived inventory identifies the same serpentine prefab on the native
   elemental, without using the optional Eidolon blueprint. No new creature,
   asset, identity, publication, mechanic or save state changed.
-  Focused 219/219, incremental Release compile, 486 preflight, 68 orchestration
-  and persistence/crowd request tests PASS. Exact-head full gate and runtime
-  survey remain pending; [scope and intake](planning/EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md).
-- Exact next action: freeze/build this research checkpoint, run fresh Steam
-  working-save smoke plus the bounded serpentine survey, restore its actual
-  leased snapshot, then author Viper/Constrictor and the separate Salamander
-  hybrid/weapon seam from measured evidence. Preserve Salamander identity and
+  Exact f507: 219 focused / 2021 full, 486 preflight, 68 orchestration,
+  persistence/crowd requests, repository/static/icon/manifest, clean exact
+  Release and strict deterministic 312-member package PASS. Fresh Steam smoke
+  **11/11**, metadata survey **8/8**, exact restoration. Water body: seven
+  skins, 43-bone body with spine/head/jaw. Lizardfolk: 39-bone body plus armor
+  skin and stale native club/shield meshes; spear visual handling remains open.
+  [Scope, findings and exact hashes](planning/EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md).
+- Exact next action: bounded original Viper/Constrictor visual prototypes on
+  the measured native water rig and separate Salamander hybrid/weapon seam,
+  then exact profiles/signatures and stable hidden candidate. Research PASS
+  is not gameplay/visual qualification. Preserve Salamander identity and
   placements. One hidden candidate/batched review/publication gate, then full
   Phase 2B closure; no Phase 2C start under this mission.
 - Accepted unchanged: `PASSIVE_CREATURE_SENSES_UNMODELED`,
