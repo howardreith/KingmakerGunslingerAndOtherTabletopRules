@@ -36,11 +36,13 @@ no merge, release, tag, version bump, force push or permanent deployment.
   **`7b76dba2c9681b1702bed854a521b241b27a1250`**.
   Second failed body-research candidate:
   **`2045c302b071281c5dff71c883612d55218c7643`**.
-  Latest exact body-research candidate:
+  Prior exact body-research candidate (game PASS, batch ERROR):
   **`6bee8d5716bba1340adc3c629c88d15a1a1d8f25`**.
   Reader/evidence checkpoint/current verified remote before this extension:
   **`3093a603e353365d3b33d64b309dd88781747be2`**.
-  This containing measured-floor checkpoint is its normal descendant; Sprint 17
+  Latest exact research candidate/current verified remote before this checkpoint:
+  **`f31c0e3d85a83129e92b8918b66e9697fc3e4969`** (research batch PASS).
+  This containing private-authoring/evidence checkpoint is its normal descendant; Sprint 17
   gameplay and visuals are still NOT QUALIFIED.
   Unexpected active-branch motion remains a stop; archive motion is informational.
 - Exclusive ignored receipt: `artifacts/laptop-source-owner-20261005.json`;
@@ -64,13 +66,13 @@ no merge, release, tag, version bump, force push or permanent deployment.
   11/11 smoke, 209/209 main, 20/20 crowd, 9/9 prepare, 9/9 cleanup, 5/5 absence.
   No mechanics, visual, asset or serialized-state delta since that pass;
   only Dire suppression and guarded fixture changes, with full main rerun.
-- Latest actual snapshot `20261006T0534456803703Z` restored exactly;
-  closed `2026-10-06T05:41:55.0949538Z`: 136 files / Info 0.0.117 /
+- Latest actual snapshot `20261006T0617038921947Z` restored exactly;
+  closed `2026-10-06T06:24:18.5391362Z`: 136 files / Info 0.0.117 /
   `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
   Lease Completed/recoveryRequired=false; no game/shared lock/staging.
   Prior native working-save cleanup/absence clean; publication and research did not write
   saves. No save-file or protected-baseline access. Journal SHA
-  `BF2BA6666134C8F2DC661B03F698D5845BD52834E6E5CCB35C3E09FDF3EE4D00`.
+  `97357EA07776B7FACD1427826280F10DE858773F16CA75AD2D11E959A5427150`.
 - Publication DLL SHA `8c76fcbed3eb73ffb6ca6c6121e610f96a2b36a82fa8f3c6c55edae66da885d9`;
   MVID `ed8fe210-31e2-4016-870e-8623d3a55fa2`; ZIP
   `eb930278836f0c3953decef589c7214b69c1d1a2fc69f625af56bdc4af254ac2`.
@@ -153,17 +155,24 @@ no merge, release, tag, version bump, force push or permanent deployment.
   No final visual/gameplay qualification: actor-relative low points are about
   -0.108m for snakes and +0.035..+0.312m for Salamander, not floor distances.
   Supporting frames show a questionable coil/body join and occluded hybrid tail.
-- Measured-floor extension is source only: native mask ray plus read-only native
-  movement projection, current skin/view/snap transforms, unknown-hit rejection,
-  negative clearance retained. Research expands to 23; 224 focused/17 reference
-  provenance checks and incremental compile PASS. PhysicsModule is a verified
-  non-copying private build reference; old bundle unchanged. No asset/gameplay edit.
-- Exact next action: freeze/push measured-floor research checkpoint; complete
-  exact-head gate with the fresh private bundle and isolated preflight. Capture
-  current pose/floor, then correct/review original geometry. Use the tested reader
-  and complete affected fresh-Steam batch/restoration. Prove coil/ground/jaw,
-  multi-renderer
-  fallback/lifecycle. Continue separate Salamander manufactured-spear/tail seam and printed
+- Exact f31 measured-floor batch **PASS**:224 focused/2026 full84.3s, wrapper/
+  clean exact Release/strict318-member package179.3s,491 isolated preflight,
+  81 orchestration,17 provenance and persistence/crowd requests. Fresh Steam
+  smoke11/11/body23/23; exact rollback/resources/census and tested reader PASS.
+  Actual floor proves about10.8cm snake penetration and3.4..30.9cm hybrid float.
+  These are geometry defects, not accepted visual results. No save write.
+  PhysicsModule is an exact verified private non-copying reference; old bundle
+  unchanged. Use `-ReferenceBundleDir artifacts/private-references-ground-20261006/KingmakerGunslinger-private-build-references`
+  for subsequent gates (the older default bundle has only13 references).
+- Private snake v3 corrects only authored coil geometry against the stable
+  captured root plane. All26 replayed poses clear measured floor by about2–3mm;
+  byte-reproduced exports,21 authoring/replay tests,36 private panels. Not staged
+  or runtime-qualified. No native rig/snap/animation/actor change. Hybrid remains
+  unchanged/unqualified; its torso bobs but renderer bind frame is ground-stable.
+- Exact next action: bounded hybrid original support-weight/weapon seam, then
+  stable body integration and full exact-head body/contact/lifecycle gate using
+  the tested reader. No blind retry or visual waiver. Continue separate Salamander
+  manufactured-spear/tail seam and printed
   profiles/signatures. Research PASS
   is not gameplay/visual qualification. Preserve Salamander identity and
   placements. One hidden candidate/batched review/publication gate, then full

@@ -1,15 +1,16 @@
 # Expanded Summoning Phase 2 evidence index
 
 [Sprint 17 closed body-research fixture](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-REVIEW.md):
-exact 6bee prelaunch PASS (223 focused/2025 full/491 preflight), smoke11/11,
-game body research20/20: three original attachments, all-renderer rollback,
-native movement, exact five-resource destruction and final census. Driver
-batch remains ERROR on PowerShell's top-level-array wrapping, now reproduced
-and repaired by the pure reader (81 orchestration tests PASS). Earlier two
-fixture failures remain failed. Geometry/ground/contacts are not accepted;
-actor-relative height samples and private art frames identify further review.
-Latest exact restoration 05:41:55 UTC; no game/lease/staging.
-[All attempts and hashes](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-EVIDENCE.json).
+exact f31 prelaunch PASS (224 focused/2026 full/491 preflight/81 orchestration/
+17 provenance), smoke11/11/body23/23, complete batch PASS and exact restoration
+06:24:18 UTC; no game/lease/staging/save write. Actual floor/current matrices
+measure about10.8cm snake penetration and3.4..30.9cm hybrid float: visual defects
+remain NOT QUALIFIED. Prior6bee game20/20 with driver ERROR and both earlier
+fixture failures remain preserved. Private snake v3 authoring/replay corrects
+the observed coil plane (26 poses about2–3mm clearance),21 checks/36 panels,
+byte-reproduced original exports; **not staged or runtime-qualified**. Hybrid
+support and spear handling remain open.
+[All four attempts and hashes](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-EVIDENCE.json).
 No printed-profile/weapon/contact or new-publication acceptance is inferred.
 
 [Sprint 17 owned-body source slice](assets-source/original-models/sprint17-serpents/SOURCE.md):

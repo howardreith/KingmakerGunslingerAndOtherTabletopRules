@@ -300,11 +300,13 @@ def write_prototype(args, rig_data, rig, rig_hash, builder, allowed_bones,
     print("[snake-prototype] " + json.dumps(report, sort_keys=True))
 
 
-def parse_args():
+def parse_args(include_body_review=False):
     parser = argparse.ArgumentParser()
     parser.add_argument("--kind", required=True, choices=KINDS)
     for name in ("capture", "albedo", "mesh-data", "report", "blend-out"):
         parser.add_argument("--" + name, required=True)
+    if include_body_review:
+        parser.add_argument("--body-review", required=True)
     return parser.parse_args(sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else [])
 
 

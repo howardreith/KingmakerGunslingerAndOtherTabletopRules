@@ -15,6 +15,7 @@ from mathutils import Vector
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import generate_snakes as common
+import captured_pose_review as observed
 
 KINDS = common.KINDS
 BODY_CHAIN = ("Hips_Joints",) + tuple("Body0" + str(i) for i in range(2, 15)) + ("Head",)
@@ -22,7 +23,7 @@ BODY_BONES = BODY_CHAIN + ("Jaw_Down",)
 SIDE, UP, FORWARD = Vector((1, 0, 0)), Vector((0, 0, 1)), Vector((0, 1, 0))
 
 
-def supporting_coil(radius):
+def supporting_coil(radius, support_frame=None):
     """Original ground-plane tail, continuous with the first body segment.
 
     The native bind chain rises along +Y; +Z is the upper-jaw direction,
@@ -42,14 +43,21 @@ def supporting_coil(radius):
     points.extend((Vector((.18, radius + .08, .30)),
                    Vector((0, radius + .18, .08))))
     widths.extend((radius, radius))
+    if support_frame is not None:
+        side, up, forward = (Vector(axis) for axis in support_frame)
+        # Catmull interpolation dips slightly before the rising neck. A small
+        # authored skin allowance (about 3mm at the measured scale) keeps that
+        # curved surface above the floor without moving a rig/actor at runtime.
+        points = [side * point.x + up * (point.y + .01) + forward * point.z for point in points]
     return points, widths
 
 
-def body_dorsal_at(point):
+def body_dorsal_at(point, support_up=None):
     # Dorsal paint follows the top of the supporting coil, then the neck's
     # jaw-up axis. These directions only control original UVs, never the rig.
-    upright = max(0, min(1, (point.y - .60) / .80))
-    return FORWARD * (1 - upright) + UP * upright
+    ground_up = FORWARD if support_up is None else Vector(support_up)
+    upright = max(0, min(1, (point.dot(ground_up) - .60) / .80))
+    return ground_up * (1 - upright) + UP * upright
 
 
 def measured_rig(path):
@@ -104,13 +112,13 @@ def decode_rig(capture):
     return rig, {r["name"]: r for r in bones}
 
 
-def build_body(bm, weights, uvs, rig, kind):
+def build_body(bm, weights, uvs, rig, kind, support_frame=None):
     if kind not in KINDS:
         raise ValueError("unknown snake identity")
     viper = kind == "viper"
     at = lambda name: common.shared.head(rig, name)
     radius = .25 if viper else .47
-    points, widths = supporting_coil(radius)
+    points, widths = supporting_coil(radius, support_frame)
     heights = [width * .88 for width in widths]
     names = ["Hips_Joints"] * len(points)
     # Each portion follows its measured segment, unlike the water rig's rigid
@@ -135,7 +143,8 @@ def build_body(bm, weights, uvs, rig, kind):
         heights.append(height)
         names.append("Head")
     common.sweep(bm, weights, uvs, points, widths, heights, names,
-                 up=UP, forward=FORWARD, uv_dorsal_at=body_dorsal_at)
+                 up=UP, forward=FORWARD, uv_dorsal_at=lambda point:
+                 body_dorsal_at(point, None if support_frame is None else support_frame[1]))
     # Authored conventional lower jaw: no worm's radial side/upper petals.
     hinge = at("Jaw_Down")
     jaw_points = [hinge + UP * .16 - FORWARD * .16,
@@ -170,11 +179,15 @@ def build_body(bm, weights, uvs, rig, kind):
 
 
 def main():
-    args = common.parse_args()
+    args = common.parse_args(include_body_review=True)
     rig_data, rig, rig_hash = measured_rig(args.capture)
-    common.write_prototype(args, rig_data, rig, rig_hash, build_body, BODY_BONES,
+    frame = observed.snake_support_frame(observed.capture_rows(args.body_review))
+    builder = lambda bm, weights, uvs, bones, kind: build_body(bm, weights, uvs, bones, kind, frame)
+    common.write_prototype(args, rig_data, rig, rig_hash, builder, BODY_BONES,
                            "native-purple-worm",
-                           "donor renderer local; +X lateral, +Y longitudinal, +Z upper jaw")
+                           "donor renderer local; +X lateral, +Y longitudinal, +Z upper jaw",
+                           dict(groundPoseCaptureSha256=hashlib.sha256(Path(args.body_review).read_bytes()).hexdigest(),
+                                groundPoseScope="original coil plane only; observed idle/movement, not attack/death qualification"))
 
 
 if __name__ == "__main__":

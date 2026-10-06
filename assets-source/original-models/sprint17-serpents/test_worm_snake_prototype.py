@@ -18,9 +18,38 @@ import generate_worm_snakes as model
 import render_snake_review as review
 
 CAPTURE = None
+BODY_REVIEW = None
 
 
 class WormPrototypeTests(unittest.TestCase):
+    def test_authored_support_plane_tracks_every_measured_native_pose(self):
+        rows = model.observed.capture_rows(BODY_REVIEW)
+        frame = model.observed.snake_support_frame(rows)
+        _, rig, _ = model.measured_rig(CAPTURE)
+        for row in rows[:2]:
+            bm, weights, uvs = bmesh.new(), {}, {}
+            model.build_body(bm, weights, uvs, rig, row["key"], frame)
+            vertices = [tuple(vertex.co) for vertex in bm.verts]
+            influences = [weights[vertex] for vertex in bm.verts]
+            for sample in [row["idleSample"]] + row["movementSamples"]:
+                points = model.observed.replay(vertices, influences, sample)
+                floor = sample["lowestVertexFloor"]["hitPoint"][1]
+                clearance = min(point[1] for point in points) - floor
+                self.assertGreaterEqual(clearance, -.0001, "original vertices may not penetrate the captured floor plane")
+                self.assertLess(clearance, .012, "the repair must not just lift the whole coil into the air")
+            self.assertTrue(all(edge.is_manifold for edge in bm.edges))
+            self.assertTrue(all(math.isfinite(value) for vertex in bm.verts for value in vertex.co))
+            bm.free()
+
+    def test_pose_calibration_rejects_unstable_root_or_wrong_ground_offset(self):
+        rows = model.observed.capture_rows(BODY_REVIEW)
+        for defect in ("tilt", "height"):
+            changed = copy.deepcopy(rows)
+            root = next(t for t in changed[1]["movementSamples"][0]["skinTransforms"] if t["name"] == "Hips_Joints")
+            root["skinToWorldRowMajor"][4 if defect == "tilt" else 7] += .10
+            with self.assertRaises(ValueError):
+                model.observed.snake_support_frame(changed)
+
     def test_supporting_coil_is_continuous_and_above_ground_in_bind_frame(self):
         _, rig, _ = model.measured_rig(CAPTURE)
         for kind in model.KINDS:
@@ -138,8 +167,10 @@ class WormPrototypeTests(unittest.TestCase):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--capture", required=True)
+    parser.add_argument("--body-review", required=True)
     args = parser.parse_args(sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else [])
     CAPTURE = args.capture
+    BODY_REVIEW = args.body_review
     result = unittest.TextTestRunner(verbosity=2).run(unittest.defaultTestLoader.loadTestsFromTestCase(WormPrototypeTests))
     if not result.wasSuccessful():
         raise RuntimeError("continuous-chain snake prototype checks failed")

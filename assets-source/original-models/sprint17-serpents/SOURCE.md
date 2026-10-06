@@ -1,5 +1,47 @@
 # Sprint 17 original serpentine and hybrid bodies
 
+## Current measured-pose correction, October 6 UTC
+
+**PRIVATE PROTOTYPE v3; NOT STAGED OR RUNTIME QUALIFIED.** Exact f31c0e3d
+research passed smoke11/11/body23/23 and restored the machine exactly. Its
+measurements prove the staged v2 snakes penetrate the floor by about10.8cm,
+and the staged hybrid floats3.4..30.9cm during sampled movement. Binding,
+rollback and exact five-resource cleanup pass research; these findings do
+not qualify final visuals, contacts, full lifecycle or gameplay.
+
+`captured_pose_review.py` replays only original vertices with private current
+skin matrices. `render_captured_body.py` adds a measured flat diagnostic plane,
+never a native scene/mesh/texture. Replaying the original assets matches live
+lowest points within sub-micrometre arithmetic tolerance. The new coil plane
+compensates the stable measured Hips tilt in **authored geometry**, not native
+bones, snapping, animation, position or movement. Catmull interpolation's small
+dip is covered by a .01-renderer-unit skin allowance (roughly3mm measured).
+
+Private `artifacts/private-sprint17/worm-prototype-v3` and independent `-repeat`
+are byte-identical. Both use the existing bind capture plus
+`--body-review` from `20261006T0620265442742Z-disposable-expanded-summoning-serpentine-bodies`,
+capture SHA `81a4f31221b6c9c155e6a2801e46e210630f04a4bfa6e9123c635dc3bee5a0a0`.
+Only original mesh coordinates/UVs/weights are emitted; no captured matrices.
+
+| Private correction | Mesh SHA-256 | Replay clearance over13 poses |
+| --- | --- | --- |
+| Viper v3 | `866123e15e287c05b67b9d9509463559e4d55fce81f5bf9654ad9e98bac7cd29` | about2.91mm |
+| Constrictor v3 | `fa6799bde8dea193db04dbe4893b665d873b83697d72eba5a7633a2fc78b7411` | about1.85mm |
+
+Zero corrected snake vertices lie below the measured flat plane in all26
+captured poses. Four replay-arithmetic, seven worm, four water and six hybrid
+tests PASS. Thirty-six private captured-pose panels (idle/moving/settled clay,
+idle textured; three views per body) include the **unchanged** Salamander as
+a negative geometry review. Representative panels were inspected; no human
+approval or new native result is claimed. The staged six assets below remain
+unchanged, pending stable integration and another exact runtime gate.
+
+Hybrid support remains open. Its torso driver bobs upward while the native
+renderer bind frame stays ground-stable in all13 captures. Audit a bounded
+original support-weight seam there without modifying the native rig/animation;
+preserve the four existing tail and all upper-body/weapon drivers. Actual spear
+handling remains unimplemented. HumanReview: NOT_PERFORMED_NONBLOCKING.
+
 ## Current owned-body integration, October 6 UTC
 
 **NOT RUNTIME QUALIFIED; NOT ATTACHED TO PRODUCTION SUMMONS.** Six original
@@ -20,7 +62,8 @@ preserved and are not native-ground evidence. All poses remain synthetic.
 The instance-local attachment admits only the two audited skins and exact
 static weapon set. It substitutes empty owned geometry for stones/armor/club/
 shield, never toggles renderer visibility, and restores saved references on
-failure/destruction. Its cleanup is implemented but **not live qualified**.
+failure/destruction. Exact resource cleanup now passes the bounded f31 research;
+full death/fade/transition/persistence lifecycle remains **not qualified**.
 No automatic production hook is installed. Three new domain tests cover the
 actual payload/schema/paint pairs, exact driver sets and donor rejection.
 
@@ -112,7 +155,8 @@ Salamander capture SHA `bf6035021f916ccf650057fac964f47c9797072545138cf2546ec3d5
 | Salamander v3 mesh | `80de7840d183666c7e7553c41d96d5bc3f532f4ab2556f62147f867a26371fb6` |
 | Salamander albedo | `127e9fe76ad853be6dd7653a27ef9f526d7ffedbcbe9c942c244d2e15cb10aa0` |
 
-Reproduce the worm family with the commands below, substituting
+Reproduce the worm family with the commands below, adding the required
+`--body-review PRIVATE_CURRENT_BODY_CAPTURE` to its generator and tests, substituting
 `generate_worm_snakes.py`, `test_worm_snake_prototype.py` and the worm capture.
 For Salamander, use `paint_salamander_albedo.py`, `generate_salamander.py` and
 `test_salamander_prototype.py`, its own capture, and omit `--kind` (identity

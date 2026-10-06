@@ -57,13 +57,22 @@ Supporting art and actor-relative heights leave coil/ground/pose quality open;
 neither measures actual floor clearance. Next bounded current-transform/native
 floor measurements and original-geometry review; no final Sprint 17 qualification.
 
-The next source extension now measures native-mask floor hits independently of
-actor/nav origins and records full current skin/view/snap transforms. It does
-not modify snapping or actor placement. Negative/missing measurements remain
-negative/unknown. Research nominally expands to 23 checks; 224 focused and 17
-exact-reference provenance checks pass, plus incremental compile. PhysicsModule
-is referenced privately/non-copying and checked against the installed runtime.
-Full exact-head prelaunch/runtime remains next; original assets are unchanged.
+Exact f31c0e3d now passes the complete measured-floor batch:224 focused/2026 full,
+491 preflight/81 orchestration/17 provenance, clean exact build/strict318-member
+package, fresh Steam smoke11/11/body23/23 and complete driver PASS. Thirteen
+poses/body prove actual floor penetration about10.8cm on both snakes and
+floating3.4..30.9cm on the hybrid. These geometry defects remain unqualified.
+Native snapping/actor placement is unchanged. Actual snapshot0617038921947Z
+restored06:24:18 UTC, exact136/.117/tree; no game/lease/staging/save write.
+
+Private original snake v3 geometry compensates the measured stable root-plane
+tilt; all26 captured poses replay with roughly2–3mm floor clearance, versus
+the original negative measurements reproduced independently. Both exports
+are byte-reproducible,21 authoring/replay checks PASS,36 private diagnostic
+panels. Not staged or runtime-qualified; hybrid unchanged. Its stable renderer
+bind frame may support a bounded original support-weight seam while leaving
+native torso/tail/weapon animation intact. Audit/implement/prove that next,
+then printed profiles and full Sprint17 qualification/publication. No DATA import.
 
 Sprint 17's [bounded native-rig survey](planning/EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md)
 uses the native Medium Water Elemental source of the proposed serpentine
