@@ -321,12 +321,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     MotionReviewMoveFrames;
                 bool crocodilian = _motionReviewSubjectName == "KMG_Summoning_Unit_Crocodile" ||
                     _motionReviewSubjectName == "KMG_Summoning_Unit_DireCrocodile";
+                bool snake = _motionReviewSubjectName == "KMG_Summoning_Unit_Viper" ||
+                    _motionReviewSubjectName == "KMG_Summoning_Unit_ConstrictorSnake";
                 bool captureFrame = _motionReviewFrame == moveFrames || _motionReviewFrame == moveFrames * 2 ||
                     _motionReviewFrame >= (_motionReviewDoorwayRoute ? moveFrames * 2 + 6 : MotionReviewAttackFrame);
                 // A surveyed doorway route can cross a native fog fade between
                 // captures. Wait for that native transition, without overriding
                 // visibility/materials or relaxing the intact-frame assertion.
-                if (crocodilian && captureFrame && _motionReviewCaptureFadeWaited < MotionReviewFadeBudget &&
+                if ((crocodilian || snake) && captureFrame && _motionReviewCaptureFadeWaited < MotionReviewFadeBudget &&
                     (!EntityFadedIn(unit) || DissolveAmount(unit) > MotionReviewIntactDissolve))
                 {
                     _motionReviewCaptureFadeWaited++;
@@ -341,16 +343,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     Capture(unit, stage, "moving-b");
                     unit.Commands.InterruptMove();
-                    UnitAnimationManager manager = unit.View == null ? null :
-                        unit.View.AnimationManager;
-                    _motionReviewAttack = manager == null ? null :
-                        manager.CreateHandle(UnitAnimationType.MainHandAttack, false);
-                    if (_motionReviewAttack != null) manager.Execute(_motionReviewAttack);
+                    // The new snake crowd rows observe movement/settlement.
+                    // Their actual Bite proof belongs to the command matrix;
+                    // do not create this historical MainHand presentation probe.
+                    if (!snake)
+                    {
+                        UnitAnimationManager manager = unit.View == null ? null :
+                            unit.View.AnimationManager;
+                        _motionReviewAttack = manager == null ? null :
+                            manager.CreateHandle(UnitAnimationType.MainHandAttack, false);
+                        if (_motionReviewAttack != null) manager.Execute(_motionReviewAttack);
+                    }
                 }
                 else if (_motionReviewFrame >= (_motionReviewDoorwayRoute ?
                     moveFrames * 2 + 6 : MotionReviewAttackFrame))
                 {
-                    Capture(unit, stage, "attack");
+                    Capture(unit, stage, snake ? "post-move" : "attack");
                     if (_motionReviewAttack != null)
                     {
                         _motionReviewAttack.IsActed = true;
@@ -536,7 +544,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // The Sprint 16 ground assertions require the same real
                 // awake/unpaused native movement measurement as these rigs.
                 name == "KMG_Summoning_Unit_Crocodile" ||
-                name == "KMG_Summoning_Unit_DireCrocodile";
+                name == "KMG_Summoning_Unit_DireCrocodile" ||
+                // The two exact original snakes use this same native
+                // awake/unpaused movement and appearance-settlement scope.
+                name == "KMG_Summoning_Unit_Viper" ||
+                name == "KMG_Summoning_Unit_ConstrictorSnake";
         }
 
         private Vector3 PrepareSprint9FlightMovement(UnitEntityData unit)

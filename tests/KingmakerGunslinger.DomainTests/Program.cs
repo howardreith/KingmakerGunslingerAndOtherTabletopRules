@@ -667,6 +667,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint17-command-contact-policy", SerpentineRulesTests.CommandContactRequiresPlayedClipAndActualGap),
             Case("expanded-summoning.sprint17-command-rendered-contact-correlation", SerpentineRulesTests.RenderedContactRequiresExactEventFrameAndIdentities),
             Case("expanded-summoning.sprint17-bite-animation-distance-scope", SerpentineRulesTests.BiteAnimationDistanceIsOwnedVisualOnly),
+            Case("expanded-summoning.sprint17-crowd-instance-resources", SerpentineRulesTests.CrowdResourcesAreExactInstanceOwned),
             Case("expanded-summoning.sprint17-command-maintain-policy", SerpentineRulesTests.CommandMaintainRequiresLaterRoundWithoutSecondAttack),
             Case("expanded-summoning.sprint17-poison-exhaustion-no-replay", SerpentineRulesTests.NativePoisonExhaustionRequiresRemovalWithoutReplay),
             Case("expanded-summoning.sprint17-snake-exact-land-ranks", SerpentineRulesTests.ExactRanksPreserveNativeContributions),

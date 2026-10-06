@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace KingmakerGunslinger.Summoning
@@ -19,6 +20,23 @@ namespace KingmakerGunslinger.Summoning
         internal const string PiercingDonorWeapon = "926d02c8af0352b46874791d4de9764f";
         internal static string[] Keys { get { return new[] { "viper", "constrictor-snake", "salamander" }; } }
         internal static bool IsSnake(string key) { return key == "viper" || key == "constrictor-snake"; }
+
+        // Exact instance-delimited names for the guarded crowd's read-only
+        // resource census. A neighbouring instance or native asset must not
+        // be counted as this fixture's resource.
+        internal static bool IsSnakeInstanceResource(string key, string meshName, string resourceName)
+        {
+            if (!IsSnake(key) || string.IsNullOrEmpty(meshName) || string.IsNullOrEmpty(resourceName))
+                return false;
+            string stem = "KMG_" + key + "_Original_";
+            int instance;
+            if (!meshName.StartsWith(stem, StringComparison.Ordinal) ||
+                !int.TryParse(meshName.Substring(stem.Length), NumberStyles.AllowLeadingSign,
+                    CultureInfo.InvariantCulture, out instance) ||
+                meshName != stem + instance.ToString(CultureInfo.InvariantCulture)) return false;
+            return resourceName == meshName || resourceName.StartsWith(meshName + "_", StringComparison.Ordinal) ||
+                resourceName.StartsWith(meshName + " (", StringComparison.Ordinal);
+        }
 
         // The production hook is narrower than the three-key research helper.
         // Match immutable identity, name AND prefab; never bind native worms,

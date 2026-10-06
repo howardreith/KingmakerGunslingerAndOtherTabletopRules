@@ -148,10 +148,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool suppressedSprint16Candidate =
                     CrocodilianVisualPolicy.Keys.Contains(key) &&
                     !SummonVisibilityCatalog.IsPublished(variant);
+                bool suppressedSprint17Snake =
+                    SerpentineVisualPolicy.IsSnake(key) &&
+                    !SummonVisibilityCatalog.IsPublished(variant);
                 if (!SummonVisibilityCatalog.IsPublished(variant) &&
                     !suppressedSprint13Candidate &&
                     !suppressedSprint14Candidate &&
-                    !suppressedSprint16Candidate)
+                    !suppressedSprint16Candidate &&
+                    !suppressedSprint17Snake)
                     throw new InvalidOperationException(
                         "A suppressed creature cannot be reviewed through a parent: " +
                         key + ".");
@@ -170,7 +174,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             return IsSprint11UngulateReviewKey(key) ||
                 IsSprint12QuadrupedReviewKey(key) ||
-                CrocodilianVisualPolicy.Keys.Contains(key);
+                CrocodilianVisualPolicy.Keys.Contains(key) ||
+                SerpentineVisualPolicy.IsSnake(key);
         }
 
         private static bool IsSprint11UngulateReviewKey(string key)
@@ -800,7 +805,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         : "<not applicable>";
                     _creatureReviewAssertions.Add(Assertion(
                         "expanded-summoning-creature-review-" + key,
-                        "idle, moving-a, moving-b and attack captures in frame, lit, intact, rendering wherever the game reports the unit visible and rendering at least once" +
+                        (SerpentineVisualPolicy.IsSnake(key) ? "idle, moving-a, moving-b and post-move" :
+                            "idle, moving-a, moving-b and attack") +
+                            " captures in frame, lit, intact, rendering wherever the game reports the unit visible and rendering at least once" +
                             (variantRegistered ? "; registered visual variant applied at attach and retained on the view at capture" : ""),
                         MotionReviewSummary + ";visualVariant=" + variantOutcome +
                             ";materialsAtCapture=" + string.Join("|", materialsNow.ToArray()) +
@@ -843,6 +850,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 "request-local camera pose restored; image is supporting art evidence, not mechanical proof"));
                         }
                     }
+                    if (SerpentineVisualPolicy.IsSnake(key))
+                        RecordSprint17SnakeCrowdOriginals(key);
                     if (key == "eagle" || key == "dire-bat" ||
                         key == "giant-wasp" || key == "stirge")
                     {
@@ -859,7 +868,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             MotionReviewDoorwayValid,
                             "named native area landmark, same-area endpoints, native UnitMoveTo and cross-frame position samples"));
                     }
-                    if (IsSprint12QuadrupedReviewKey(key) || CrocodilianVisualPolicy.Keys.Contains(key))
+                    if (IsSprint12QuadrupedReviewKey(key) || CrocodilianVisualPolicy.Keys.Contains(key) ||
+                        SerpentineVisualPolicy.IsSnake(key))
                     {
                         _creatureReviewAssertions.Add(Assertion(
                             "expanded-summoning-ground-travel-" + key,
@@ -962,6 +972,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "expanded-summoning-creature-review-cleanup-" + key, "0",
                         live.ToString(), live == 0,
                         "reviewed summon dismissed and destroyed before the next cast"));
+                    if (SerpentineVisualPolicy.IsSnake(key))
+                        RecordSprint17SnakeCrowdDestruction(key);
                     if (IsOriginalReviewKey(key))
                     {
                         string visualName = OriginalReviewVisualName(key);

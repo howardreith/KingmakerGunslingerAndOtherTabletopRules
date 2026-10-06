@@ -1,6 +1,6 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-06 — laptop sole owner; snake commands51/rules62 PASS; full Sprint17 NOT QUALIFIED
+## CURRENT STATE, 2026-10-06 — laptop sole owner; snake commands51/rules62 PASS; crowd extension SOURCE PASS/NOT RUN; Sprint17 NOT QUALIFIED
 
 This section governs over historical mission/ownership statements below.
 HOWARD-LAPTOP / `codex/expanded-summoning-phase2b-sprints14-17` / draft PR26
@@ -21,7 +21,8 @@ deployment, force push or prohibited substitute subsystems.
 - Last exact runtime candidate `983828bfa9b1aff2d79fab3eb8a2954ec28e4a2f`,
   clean/pushed for smoke11/profile-body-rules62/commands51 PASS.
   All8 at-rule contacts gap0 with genuine native long Bite playback.
-  This evidence-only descendant changes no production behavior.
+  Current descendant adds only the closed snake direct/crowd fixture;
+  runtime NOT RUN. Ordinary gameplay, assets and publication are unchanged.
   Prior474 timing-only hypothesis was rejected; its43/51 failure is retained.
   Earlier exact130bf7a2 bounded rules PASS remains unchanged; no qualification
   transfers to an untested artifact.
@@ -55,6 +56,13 @@ Actual snapshot2258281699283Z restored2026-10-06T23:11:14.0412304Z:
 136 files/Info0.0.117/tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
 Lease Completed/recovery=false/released;no game/shared runtime lock/this-
 worktree staging/save write. This is bounded slice qualification only.
+
+[Closed snake crowd extension](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-CROWD-SLICE.md)
+is SOURCE PASS,NOT RUN:261 focused,2063 full87.6s,complete183.9s,
+clean14-reference Release/strict320;8 request round trips/11 rejections.
+It adds only the two private snake keys, original-instance ownership and
+native cleanup checks. Their fourth frame is post-move; no legacy synthetic
+MainHand attack probe. Direct14/crowd18 are unexecuted source expectations.
 
 Next: remaining snake lifecycle/crowds/UI/private routes/persistence and
 bounded separate Salamander implementation; complete hidden/publication
