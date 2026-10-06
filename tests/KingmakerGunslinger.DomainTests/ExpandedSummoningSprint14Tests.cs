@@ -977,6 +977,9 @@ namespace KingmakerGunslinger.DomainTests
                 .Where(value => !printsNoSkillRanks.Contains(value.Key,
                     StringComparer.Ordinal) &&
                     !crocodilians.Contains(value.Key, StringComparer.Ordinal) &&
+                    // Newly registered Sprint 17 snakes have their own exact
+                    // rank allocations; they were not part of this baseline.
+                    !SerpentineRulesPolicy.IsSnake(value.Key) &&
                     !value.Skills.SequenceEqual(expectedDefault))
                 .Select(value => value.Key).ToArray();
             if (movedCreatures.Length != 0)

@@ -575,6 +575,20 @@
       "displayName": "Giant Stag Beetle",
       "subjectPrompt": "A giant stag beetle three-quarter from slightly above, a heavy broad-shouldered beetle in glossy dark brown, hard elytra meeting along a deep suture over a wide abdomen, thick short legs braced wide, and enormous antler-like mandibles branching forward from the head and held open, which are the silhouette's defining feature; cool slate radial backdrop so the mandibles read against it, visibly massive and ground-bound rather than the small glowing fire beetle.",
       "generator": "blender-procedural"
+    },
+    {
+      "key": "viper",
+      "displayName": "Viper",
+      "subjectPrompt": "Use case: stylized-concept. Asset type: original square fantasy CRPG painted summon-choice icon, intended to downsample to 128x128. Primary request: a single natural venomous viper, not a cobra or monster hybrid. Lean olive-bronze scaled body coiled low, narrow S-raised neck and distinctive triangular head aimed in three-quarter view toward the viewer, mouth slightly open with exactly two prominent natural upper venom fangs. The head and neck should dominate the readable silhouette, with one clean continuous tapering body and tail. Closed-form believable snake anatomy, no limbs, no hood, no horns, no rattle. Grounded woodland-earth setting, subdued smoky dark olive and umber background with warm gold rim light. Rich hand-painted fantasy realism with broad highlights, dark edges, textured scales and a strong small-icon silhouette, consistent with the project's existing warm painted creature portraits. Full-bleed square painting with all important anatomy safely within the central 85 percent; restrained background detail. No frame, border, lettering, numbers, badges, magic aura, green venom cloud, weapon, prey or additional snakes. Output one high-resolution source painting; not a contact sheet, not a 3D mesh or UI screenshot. Opaque background.",
+      "generator": "built-in-imagegen",
+      "compositionBriefSource": "assets-source/original-icons/expanded-summoning/PHASE2-SPRINT17-SOURCES.md"
+    },
+    {
+      "key": "constrictor-snake",
+      "displayName": "Constrictor Snake",
+      "subjectPrompt": "Use case: stylized-concept. Asset type: original square fantasy CRPG painted summon-choice icon, intended to downsample to 128x128. Primary request: a single muscular constrictor snake, a heavy earth-brown python-like animal with broad dark saddle markings over warm tan scales. The compact grounded mass of two thick overlapping coils dominates the silhouette, with a proportionately modest blunt head held alert above the central coil, closed mouth and natural small eyes; one coherent continuous body tapering into one visible tail. Visually distinguish this heavy squeezing coil from a thin upright striking venomous viper: no long venom fangs, no wide gaping mouth, no hood, no limbs, no rattle. Subdued dark forest-earth backdrop, rich umber and muted moss tones, warm gold rim light separating the coils. Rich hand-painted fantasy realism with readable broad highlights and restrained scale texture, consistent with the project's warm painted creature portraits. Full-bleed square composition, the entire important snake silhouette within the central 85 percent. No frame, border, lettering, numbers, badges, magic effects, captive prey, weapon, extra head or additional snakes. Output one high-resolution source painting, not a grid, not a 3D mesh or UI screenshot. Opaque background.",
+      "generator": "built-in-imagegen",
+      "compositionBriefSource": "assets-source/original-icons/expanded-summoning/PHASE2-SPRINT17-SOURCES.md"
     }
   ]
 }

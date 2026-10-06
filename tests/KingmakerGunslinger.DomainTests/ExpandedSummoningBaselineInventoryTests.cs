@@ -13,16 +13,16 @@ namespace KingmakerGunslinger.DomainTests
     {
         internal static void ShippedSurfaceMatchesFrozenBaseline()
         {
-            Assertions.Equal(95, ExpandedSummoningBaselineInventory.UniqueCreatures,
+            Assertions.Equal(97, ExpandedSummoningBaselineInventory.UniqueCreatures,
                 "Baseline unique creature count changed.");
-            Assertions.Equal(86, ExpandedSummoningBaselineInventory.RosterEntries(
+            Assertions.Equal(88, ExpandedSummoningBaselineInventory.RosterEntries(
                 SummonFamily.Monster), "Baseline SM roster count changed.");
-            Assertions.Equal(84, ExpandedSummoningBaselineInventory.RosterEntries(
+            Assertions.Equal(86, ExpandedSummoningBaselineInventory.RosterEntries(
                 SummonFamily.NaturesAlly), "Baseline SNA roster count changed.");
-            Assertions.Equal(490, ExpandedSummoningBaselineInventory
+            Assertions.Equal(506, ExpandedSummoningBaselineInventory
                 .RegisteredPlacements(SummonFamily.Monster),
                 "Baseline SM registered placements changed.");
-            Assertions.Equal(486, ExpandedSummoningBaselineInventory
+            Assertions.Equal(502, ExpandedSummoningBaselineInventory
                 .RegisteredPlacements(SummonFamily.NaturesAlly),
                 "Baseline SNA registered placements changed.");
             // The Shadow Mastiff is a Summon Monster creature, so its four
@@ -34,9 +34,8 @@ namespace KingmakerGunslinger.DomainTests
             // Giant Stag Beetle is a Nature's Ally creature alone and puts all
             // six of its placements on that side.
             //
-            // With nothing withheld, each side's visible count is now its own
-            // registered count plus its share of the native wrappers - 490 and
-            // 17 on the Monster side, 486 and 12 on the other.
+            // Sprint 17 adds sixteen hidden placements per family. Published
+            // generated counts remain 490/486, plus 17/12 native wrappers.
             Assertions.Equal(507, ExpandedSummoningBaselineInventory
                 .VisibleChoices(SummonFamily.Monster),
                 "Baseline SM visible choice count changed.");
@@ -107,9 +106,9 @@ namespace KingmakerGunslinger.DomainTests
             // of its own qualification, which is allowed and is how both
             // Sprint 12 and Sprint 13 ran, but it has to be deliberate rather
             // than a leftover - which is what this pin is for.
-            Assertions.Equal(0,
+            Assertions.Equal(2,
                 ExpandedSummoningBaselineInventory.RegisteredButHiddenCreatures.Count,
-                "Sprint 16 publication leaves no registered-but-hidden creature.");
+                "Only the two new Sprint 17 snakes are registered ahead of qualification.");
             Assertions.True(ExpandedSummoningBaselineInventory.ProxyVisualCreatures
                 .Contains("pteranodon<Roc"),
                 "Pteranodon must still be recorded as a Roc-policy visual proxy.");
@@ -122,7 +121,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(ExpandedSummoningBaselineInventory.ProxyVisualCreatures
                 .Contains("dire-tiger<Smilodon"),
                 "Smilodon displays under its own name and is not a proxy.");
-            Assertions.Equal(33,
+            Assertions.Equal(35,
                 ExpandedSummoningBaselineInventory.ProxyVisualCreatures.Count,
                 "The frozen borrowed-body proxy count changed. A creature counts here while it rides another creature's rig, which is why all five Sprint 14 and 15 insects are counted although they ship original meshes, and why Sprint 16's Dire Crocodile joins them on the Monitor Lizard.");
         }

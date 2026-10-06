@@ -20,9 +20,9 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class ExpandedSummoningIdentityCatalog
     {
-        internal const int UnitCount = 95;
-        internal const int LogicalAbilityCount = 976;
-        internal const int TemplatedPlacementCount = 271;
+        internal const int UnitCount = 97;
+        internal const int LogicalAbilityCount = 1008;
+        internal const int TemplatedPlacementCount = 287;
         internal const int TemplateExecutionAbilityCount = TemplatedPlacementCount * 2;
         internal const int TemplateBuffCount = 8;
         // Sprint 14 adds eight: the soldier's sting, its poison and venom,
@@ -37,7 +37,8 @@ namespace KingmakerGunslinger.Summoning
         // routine. It also owns two combat traits, ten Sprint/brain/state
         // identities, a Dire swallowed buff, and one shared native engagement
         // consideration. No native donor identity is repurposed.
-        internal const int SpecialIdentityCount = 193;
+        // Sprint 17 adds seven creature-owned snake facts/types/states.
+        internal const int SpecialIdentityCount = 200;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -291,6 +292,13 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.DireCrocodile.Swallowed", "BlueprintBuff"));
             result.Add(new SummoningIdentitySpec(CrocodilianRulesPolicy.SprintNotEngagedSymbol,
                 "IsEngagedConsideration"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Viper.UnitType", "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.ConstrictorSnake.UnitType", "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Viper.CombatProfile", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.ConstrictorSnake.CombatProfile", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Viper.Poison", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Viper.Venom", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.ConstrictorSnake.CombatTraits", "BlueprintBuff"));
             Validate(result);
             return result.AsReadOnly();
         }

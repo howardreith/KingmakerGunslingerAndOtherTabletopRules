@@ -201,6 +201,7 @@
     <Compile Include="ExpandedSummoningCrocodilianRulesTests.cs" />
     <Compile Include="ExpandedSummoningSprint16Tests.cs" />
     <Compile Include="ExpandedSummoningSprint17Tests.cs" />
+    <Compile Include="SerpentineRulesTests.cs" />
     <Compile Include="ExpandedSummoningCorrectionTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonFamily.cs"><Link>Summoning\SummonFamily.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonMultiplicity.cs"><Link>Summoning\SummonMultiplicity.cs</Link></Compile>
@@ -247,6 +248,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonShadowMastiffPolicy.cs"><Link>Summoning\SummonShadowMastiffPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\UngulateRulesPolicy.cs"><Link>Summoning\UngulateRulesPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\CrocodilianRulesPolicy.cs"><Link>Summoning\CrocodilianRulesPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SerpentineRulesPolicy.cs"><Link>Summoning\SerpentineRulesPolicy.cs</Link></Compile>
     <Compile Include="ArchetypeFoundationTests.cs" />
     <Compile Include="RapidReloadPrerequisiteTests.cs" />
     <Compile Include="RapidReloadGateEvidenceTests.cs" />

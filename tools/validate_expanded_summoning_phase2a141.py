@@ -26,7 +26,7 @@ VERSION = "0.0.141"
 INFORMATIONAL_VERSION = "0.0.141-expanded-summoning-phase2a"
 PACKAGE = "KingmakerGunslinger-0.0.141-local-runtime.zip"
 PACKAGE_SUFFIX = "expanded-summoning-phase2a"
-DETERMINISTIC_TEST_COUNT = 2040
+DETERMINISTIC_TEST_COUNT = 2048
 STATIC_KEY = "expandedSummoningPhase2A141"
 
 
@@ -42,8 +42,8 @@ def validate(root: Path) -> None:
     # Domain tests derive these counts independently from the catalog. This
     # static guard keeps metadata and publication suppression synchronized.
     require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs",
-        "RegisteredLogicalPlacementCount = 976",
-        "SuppressedLogicalPlacementCount = 0",
+        "RegisteredLogicalPlacementCount = 1008",
+        "SuppressedLogicalPlacementCount = 32",
         "RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount")
     visibility = (root / "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs").read_text(encoding="utf-8")
     for key in ('"dire-rat"', '"dog"', '"hyena"', '"goblin-dog"',
@@ -102,8 +102,8 @@ def validate(root: Path) -> None:
         "publicReleaseAuthorized": False,
         "candidateOnly": True,
         "deterministicTestCount": DETERMINISTIC_TEST_COUNT,
-        "registeredGeneratedPlacements": 976,
-        "suppressedGeneratedPlacements": 0,
+        "registeredGeneratedPlacements": 1008,
+        "suppressedGeneratedPlacements": 32,
         "publishedGeneratedPlacements": 976,
         "retainedNativeWrappers": 29,
         "visibleChoiceTotal": 1005,

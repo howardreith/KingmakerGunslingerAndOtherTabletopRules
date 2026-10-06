@@ -150,6 +150,8 @@
     <Compile Include="Summoning\Sprint14BonePolicy.cs" />
     <Compile Include="Summoning\CrocodilianVisualPolicy.cs" />
     <Compile Include="Summoning\SerpentineVisualPolicy.cs" />
+    <Compile Include="Summoning\SerpentineRulesPolicy.cs" />
+    <Compile Include="Summoning\SerpentineCombatComponents.cs" />
     <Compile Include="Summoning\SerpentineVisualAttachment.cs" />
     <Compile Include="Summoning\SerpentineNativeSpearAnimation.cs" />
     <Compile Include="RuntimeTesting\CrocodilianCommandReviewPolicy.cs" />
@@ -181,6 +183,7 @@
     <Compile Include="Blueprints\ExpandedSummoningAlignmentModeBlueprints.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.cs" />
     <Compile Include="Blueprints\ExpandedSummoningNaturalBuilder.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningNaturalBuilder.Serpentine.cs" />
     <Compile Include="Blueprints\ExpandedSummoningTemplateBuilder.cs" />
     <Compile Include="Blueprints\ExpandedSummoningAbilityBuilder.cs" />
     <Compile Include="Blueprints\ExpandedSummoningPublication.cs" />

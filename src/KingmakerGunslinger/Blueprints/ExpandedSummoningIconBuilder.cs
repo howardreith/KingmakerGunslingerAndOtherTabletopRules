@@ -25,7 +25,8 @@ namespace KingmakerGunslinger.Blueprints
             foreach (SummonVariantSpec variant in ExpandedSummoningCatalog
                 .GenerateVariants(family))
             {
-                if (!SummonVisibilityCatalog.IsPublished(variant)) continue;
+                // Hidden registration still owns its icon for private exact
+                // qualification routes; this does not publish a menu choice.
                 Sprite icon = ExpandedSummoningProjectIcons.Require(
                     variant.Creature.Key);
                 string symbol = ExpandedSummoningIdentityCatalog.AbilitySymbol(
@@ -52,6 +53,15 @@ namespace KingmakerGunslinger.Blueprints
                     "Published Giant Wasp unit type is missing.");
             ((BlueprintUnitType)waspType).Image =
                 ExpandedSummoningProjectIcons.Require("giant-wasp");
+            foreach (string key in new[] { "viper", "constrictor-snake" })
+            {
+                string token = key == "viper" ? "Viper" : "ConstrictorSnake";
+                BlueprintScriptableObject value;
+                if (!bySymbol.TryGetValue("KMG.Summoning.Natural." + token + ".UnitType", out value) ||
+                    !(value is BlueprintUnitType))
+                    throw new InvalidOperationException("Registered snake unit type is missing.");
+                ((BlueprintUnitType)value).Image = ExpandedSummoningProjectIcons.Require(key);
+            }
             // The Cyclops's own summon icon marks its Flash of Insight on the
             // action bar; the ability has no separate art of its own.
             Set(bySymbol, "KMG.Summoning.Special.Cyclops.FlashOfInsight",

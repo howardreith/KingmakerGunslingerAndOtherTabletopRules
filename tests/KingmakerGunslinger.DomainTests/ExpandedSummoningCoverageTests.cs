@@ -69,14 +69,14 @@ namespace KingmakerGunslinger.DomainTests
         /// </summary>
         internal static void RepresentationIsTheUnionOfBothCatalogs()
         {
-            Assertions.Equal(95, ExpandedSummoningCatalog.All.Count,
+            Assertions.Equal(97, ExpandedSummoningCatalog.All.Count,
                 "Project-owned identities must be preserved.");
-            Assertions.Equal(106,
+            Assertions.Equal(108,
                 ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count,
-                "Represented creatures must be 95 project-owned plus 11 native wrappers.");
+                "Represented creatures must be 97 project-owned plus 11 native wrappers.");
             Assertions.Equal(106,
                 ExpandedSummoningCoveragePolicy.PublishedSomewhere.Count,
-                "Every represented creature publishes after Dire Crocodile's hidden qualification.");
+                "Only the two new snakes are withheld; all prior creatures stay published.");
             Assertions.True(ExpandedSummoningCoveragePolicy.PublishedSomewhere
                 .Contains("stirge"),
                 "The requalified Stirge must count as published coverage.");
@@ -87,8 +87,8 @@ namespace KingmakerGunslinger.DomainTests
             int notRepresented = ExpandedSummoningIdealRosterCatalog.All.Count(
                 value => ExpandedSummoningCoveragePolicy.Provenance(value.Key) ==
                     SummonUnitProvenance.None);
-            Assertions.Equal(39, notRepresented,
-                "39 ideal-roster creatures are not represented in the summon roster yet; the message used to say 46 and had drifted from the number beside it.");
+            Assertions.Equal(37, notRepresented,
+                "37 ideal-roster creatures remain unregistered after the two hidden snakes.");
             Assertions.Equal(145,
                 ExpandedSummoningCoveragePolicy.RepresentedCreatures.Count + notRepresented,
                 "Represented plus unrepresented must account for the whole roster.");

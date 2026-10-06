@@ -39,12 +39,13 @@ namespace KingmakerGunslinger.Summoning
         // Dire Crocodile is the only key removed by the Sprint 16 publication.
         // Interior AC/HP remains the accepted engine limitation, not a blocker.
         private static readonly HashSet<string> SuppressedCreatureKeys =
-            new HashSet<string>(StringComparer.Ordinal);
+            new HashSet<string>(new[] { "viper", "constrictor-snake" },
+                StringComparer.Ordinal);
 
-        internal const int RegisteredLogicalPlacementCount = 976;
-        // All six Dire placements join the 970 previously published roots.
-        // Per-creature and whole-catalog behavior tests pin the exact delta.
-        internal const int SuppressedLogicalPlacementCount = 0;
+        internal const int RegisteredLogicalPlacementCount = 1008;
+        // Sprint 17 allocates identities without publishing: Viper has 18
+        // placements and Constrictor Snake 14. The qualified 976 stay visible.
+        internal const int SuppressedLogicalPlacementCount = 32;
         internal const int PublishedLogicalPlacementCount =
             RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount;
 

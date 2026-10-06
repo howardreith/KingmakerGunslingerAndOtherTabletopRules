@@ -204,8 +204,8 @@ def parsed_creatures():
             "ally": None if ally == "null" else int(ally),
             "visual": visual or name,
         })
-    if len(values) != 95:
-        raise SystemExit(f"Expected 95 parsed creatures; observed {len(values)}")
+    if len(values) != 97:
+        raise SystemExit(f"Expected 97 parsed creatures; observed {len(values)}")
     return values
 
 
@@ -450,8 +450,15 @@ def planned():
         ("KMG.Summoning.Special.DireCrocodile.SprintCooldown", "BlueprintBuff"),
         ("KMG.Summoning.Special.DireCrocodile.Swallowed", "BlueprintBuff"),
         ("KMG.Summoning.Special.Crocodilian.SprintNotEngaged", "IsEngagedConsideration"),
+        ("KMG.Summoning.Natural.Viper.UnitType", "BlueprintUnitType"),
+        ("KMG.Summoning.Natural.ConstrictorSnake.UnitType", "BlueprintUnitType"),
+        ("KMG.Summoning.Natural.Viper.CombatProfile", "BlueprintFeature"),
+        ("KMG.Summoning.Natural.ConstrictorSnake.CombatProfile", "BlueprintFeature"),
+        ("KMG.Summoning.Natural.Viper.Poison", "BlueprintFeature"),
+        ("KMG.Summoning.Natural.Viper.Venom", "BlueprintBuff"),
+        ("KMG.Summoning.Special.ConstrictorSnake.CombatTraits", "BlueprintBuff"),
     ))
-    if len(rows) != 1848 or len({symbol for symbol, _ in rows}) != 1848:
+    if len(rows) != 1921 or len({symbol for symbol, _ in rows}) != 1921:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 
@@ -466,12 +473,15 @@ def generated_roster(manifest):
     creatures = parsed_creatures()
     if len(donors) != len(creatures) or set(donors) != {value["key"] for value in creatures}:
         raise SystemExit("Roster generation requires one exact donor per creature")
+    registered = sum(10-c[field] for c in creatures for field in ("monster", "ally") if c[field] is not None)
+    hidden = suppressed_keys()
+    withheld_count = sum(10-c[field] for c in creatures for field in ("monster", "ally") if c[field] is not None and c["key"] in hidden)
     lines = [
         "# Expanded Summoning roster and identity ledger",
         "",
         "Generated deterministically by `tools/expanded_summoning_manifest.py`; do not edit by hand.",
         "",
-        "Registered totals: 86 Summon Monster entries / 490 placements; 84 Summon Nature's Ally entries / 486 placements; 95 unique units; 976 registered/published placements and 0 withheld. Sprint 16 passed exact e3aeae63 hidden qualification and 155ada89 publication, including all six Dire and fourteen Crocodile public roots. Sprints 9-16 are qualified and published. With 29 retained wrappers there are 1005 visible choices. Owner visual review remains pending. The Frost Giant remains a retained native unit under Summon Monster VIII-IX and Summon Nature's Ally VII-IX wrappers.",
+        f"Registered totals: {sum(c['monster'] is not None for c in creatures)} Summon Monster entries / {sum(10-c['monster'] for c in creatures if c['monster'] is not None)} placements; {sum(c['ally'] is not None for c in creatures)} Summon Nature's Ally entries / {sum(10-c['ally'] for c in creatures if c['ally'] is not None)} placements; {len(creatures)} unique units; {registered} registered, {registered-withheld_count} published and {withheld_count} withheld placements. Sprints 9-16 are qualified and published; Sprint 17's Viper and Constrictor Snake are hidden and NOT QUALIFIED. With {len(NATIVE_EXPANDED_OPTIONS)} retained wrappers there are {registered-withheld_count+len(NATIVE_EXPANDED_OPTIONS)} visible choices. Owner visual review remains pending. The Frost Giant remains a retained native unit under Summon Monster VIII-IX and Summon Nature's Ally VII-IX wrappers.",
         "",
         "Phase 1 baseline qualification source: `5205805eab3fe0115d6888c53bce73c80474d1b7`. Structural run `20260812T1327062696968Z-bd09acfba08942df8f7c42e5c70252f4`; native cast run `20260812T1330147883834Z-ec8896f1d65b43e0913a6bea7cba4405`; visual run `20260812T1151394827201Z-add45a04f5de44c1a39e3251f7ff0778`; enabled/disabled persistence runs `20260812T1155220523013Z-6d2a18f9b33344d08d3127ffce7e5cb6` through `20260812T1208449380302Z-65c9b7056d97483fb48a4a9b76c22ea6`; all eight required compatibility transactions passed and restored their profiles. Phase 2 Sprint 10 and 11 mechanics, visual, quantity and lifecycle evidence is indexed in `EXPANDED-SUMMONING-PHASE2-EVIDENCE-INDEX.md`.",
         "",
@@ -602,7 +612,7 @@ def main():
     if args.activate:
         planned_symbols = {symbol for symbol, _ in plan}
         for entry in manifest["entries"]:
-            if entry["symbol"] in planned_symbols:
+            if entry["symbol"] in planned_symbols and entry["status"] != "active":
                 entry["status"] = "active"
                 entry["notes"] = "Registered in every feature-module state; live parent publication remains independently gated."
         write_lf(MANIFEST, json.dumps(manifest, indent=2, ensure_ascii=False) + "\n")

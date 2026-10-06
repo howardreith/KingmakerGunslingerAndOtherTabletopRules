@@ -21,9 +21,9 @@ namespace KingmakerGunslinger.DomainTests
             JArray rows = (JArray)manifest["icons"];
             Assertions.Equal(1, (int)manifest["schemaVersion"],
                 "Icon manifest schema changed.");
-            Assertions.Equal(107, (int)manifest["count"],
+            Assertions.Equal(109, (int)manifest["count"],
                 "Icon manifest count changed.");
-            Assertions.Equal(107, rows.Count,
+            Assertions.Equal(109, rows.Count,
                 "Icon manifest row count changed.");
             string[] catalogKeys = SummonIconCatalog.All.Select(value =>
                 value.Key).OrderBy(value => value, StringComparer.Ordinal).ToArray();
@@ -131,7 +131,7 @@ namespace KingmakerGunslinger.DomainTests
                 "Runtime project must include every manifest-backed icon path.");
             Assertions.True(package.Contains("expanded-summoning") &&
                 package.Contains("summonIconDestination") &&
-                package.Contains("expectedPackageFileCount = if ($hasFirearmSoundBank) { 318 } else { 316 }"),
+                package.Contains("expectedPackageFileCount = if ($hasFirearmSoundBank) { 320 } else { 318 }"),
                 "Standalone package must stage the exact runtime icon tree.");
         }
 
