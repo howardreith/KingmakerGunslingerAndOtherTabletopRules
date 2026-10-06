@@ -551,9 +551,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             result["actorPosition"] = SurveyVector(owner.Position); result["targetPosition"] = SurveyVector(target.Position);
             if (finite)
             {
-                float gap = rule.Weapon.Blueprint.Category == WeaponCategory.Spear
-                    ? Vector3.Distance(points[1], bounds.ClosestPoint(points[1]))
-                    : points.Min(value => Vector3.Distance(value, bounds.ClosestPoint(value)));
+                Vector3 nearest = rule.Weapon.Blueprint.Category == WeaponCategory.Spear
+                    ? points[1] : points.OrderBy(value =>
+                        Vector3.Distance(value, bounds.ClosestPoint(value))).First();
+                Vector3 targetPoint = bounds.ClosestPoint(nearest);
+                float gap = Vector3.Distance(nearest, targetPoint);
+                result["nearestOriginalPoint"] = SurveyVector(nearest);
+                result["nearestTargetBoundsPoint"] = SurveyVector(targetPoint);
+                result["targetMinusOriginalPoint"] = SurveyVector(targetPoint - nearest);
                 if (rule.Weapon.Blueprint.Category == WeaponCategory.Spear)
                 {
                     result["endCentreGapMeters"] = gap;
