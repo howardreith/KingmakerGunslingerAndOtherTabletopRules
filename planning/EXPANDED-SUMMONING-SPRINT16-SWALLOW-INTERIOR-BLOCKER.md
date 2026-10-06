@@ -24,7 +24,10 @@ deactivation actions. The complete exact e3aeae63 hidden candidate now passes
 its initial bite, three later-round single 3d6+13 bundles, native escape,
 source/prey death, spit-out, dismissal, expiry, transition and reload cleanup.
 See `EXPANDED-SUMMONING-SPRINT16-LAPTOP-HIDDEN-PASS-REVIEW.md`.
-Publication still needs its own exact-artifact player-path gate.
+Exact 155ada89 now passes the complete publication gate (211/211) and all
+twenty public roots. Sprint 16 is internally complete and published; see
+`EXPANDED-SUMMONING-SPRINT16-PUBLICATION-PASS-REVIEW.md`. Interior AC/HP
+remains unmodeled under the accepted limitation, not a newly working feature.
 The historical rewrite/blocked wording below is superseded.
 
 ## Historical audit and pre-decision disposition (superseded)

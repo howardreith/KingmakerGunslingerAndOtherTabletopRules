@@ -1,6 +1,6 @@
 # Sprint 16 crocodilian icon review
 
-## Current status: hidden live binding/native UI PASS; publication pending
+## Current status: hidden and publication live binding/native UI PASS
 
 Exact `e3aeae630d51d27c45694fb9e92e9093048b1af9` passed the complete hidden
 six-stage batch and exact restoration. Nine Sprite bindings, native action
@@ -10,11 +10,13 @@ ordinary action-menu navigation claim. See the
 [hidden review](EXPANDED-SUMMONING-SPRINT16-LAPTOP-HIDDEN-PASS-REVIEW.md)
 and its exact icon-binding/final-review hashes.
 
-The containing publication candidate exposes Dire's six preserved root icons
+Exact 155ada89 passes the full publication gate (211/211) and all twenty
+public roots, with exact restoration. [Publication evidence](EXPANDED-SUMMONING-SPRINT16-PUBLICATION-PASS-REVIEW.md).
+The publication exposes Dire's six preserved root icons
 without reauthoring, remapping or changing any image/assignment bytes.
 Both creature portraits, all fourteen Crocodile roots, three emblems/nine
 visible consumers and five hidden internal carriers keep the dispositions
-below. All twenty public root paths still require publication qualification;
+below. All twenty public root paths are qualified;
 whole-roster module-disabled consumer coverage belongs to Phase 2B closure.
 Catalog technical status records only the evidence actually obtained.
 
@@ -76,7 +78,7 @@ an attackable interior, cutting-free action, Purple Worm acid or Flytrap engulf.
 Crocodile's unit and fourteen root families retain their protected existing
 portrait. Dire's unit/six root families and execution variants retain the
 existing distinct source/export owned by the delegated summoning manifest; its
-six roots remain withheld. The two Dire natural weapons are mechanics-only.
+six roots are now published and qualified. The two Dire natural weapons are mechanics-only.
 Shared hold/held, Purple Worm and Flytrap identities and sprites are unchanged.
 No unrelated native creature or global action presentation is remapped.
 
