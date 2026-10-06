@@ -12,6 +12,22 @@ namespace KingmakerGunslinger.DomainTests
     internal static class SerpentineRulesTests
     {
         internal const int AppendedLedgerIdentities = 73;
+        internal static void CommandSetupRequiresIntactOriginalAndNativeControl()
+        {
+            for (int mask = 0; mask < 32; mask++)
+            {
+                bool original = (mask & 1) != 0, intact = (mask & 2) != 0, canAct = (mask & 4) != 0;
+                bool manual = (mask & 8) != 0, controllable = (mask & 16) != 0;
+                bool expected = original && intact && canAct && (!manual || controllable);
+                foreach (int frame in new[] { 60, 64, 600 })
+                    Assertions.Equal(expected, SerpentineCommandReviewPolicy.ReadyToStart(original,
+                        intact, canAct, manual, controllable, frame), "Every body/control prerequisite is mandatory.");
+            }
+            foreach (int frame in new[] { -1, 0, 30, 59, 601, int.MaxValue })
+                Assertions.False(SerpentineCommandReviewPolicy.ReadyToStart(true, true, true, true, true, frame),
+                    "No early success or extended settlement bound.");
+        }
+
         internal static void CommandRequestAndMatrixAreClosed()
         {
             string scenario = RuntimeTestScenarioCatalog.DisposableExpandedSummoningSnakeCommands;
