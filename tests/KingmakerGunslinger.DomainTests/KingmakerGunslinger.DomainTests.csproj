@@ -1081,4 +1081,9 @@
     <Compile Include="StoicDignityFoundationTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\StoicDignityPolicy.cs"><Link>ElementalRaces\StoicDignityPolicy.cs</Link></Compile>
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="LungeEngineContractTests.cs" />
+    <Compile Include="AerialObserverFoundationTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\AerialObserverPolicy.cs"><Link>ElementalRaces\AerialObserverPolicy.cs</Link></Compile>
+  </ItemGroup>
 </Project>
