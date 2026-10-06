@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "key": "whiteout",
+  "draft": true,
+  "publicationStatus": "dormant; no icon authored or admitted",
+  "behavior": "Outdoors actual Rain/Snow Light+; independent 10% after native concealment/miss-chance success; concealment bypass applies; no magical fog or waterfall spray.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/DormantElementalCharacterTraitFactory.cs",
+    "src/KingmakerGunslinger/ElementalRaces/ElementalCharacterTraitCatalog.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/whiteout.png",
+  "sourceSha256": null,
+  "tool": null,
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/elemental-strike.png",
+      "role": "approved painted-magical style reference; original composition required"
+    }
+  ],
+  "prompt": "Original square painted fantasy CRPG character-trait icon. An Undine silhouette or eye sheltered within driving rain and snow as precipitation obscures an incoming strike; water and frost, readable diagonal precipitation, no magical fog. Strong subject silhouette, important tips inside the square, controlled lighting, rich painted materials, full-bleed dark ground. Readable at 32/48/128 pixels. No text, letters, numbers, monogram, watermark, frame or UI-state marks. No donor or existing-icon copy. This is a production brief only; no generation or approval has occurred.",
+  "visualStatus": "not-authored",
+  "subjectAndSilhouette": "An Undine silhouette or eye sheltered within driving rain and snow as precipitation obscures an incoming strike; water and frost, readable diagonal precipitation, no magical fog.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "undine-traits",
+  "confusedWith": [
+    "hydraulic-maneuver",
+    "cloud-gazer"
+  ],
+  "uiSurfaces": [
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No text, letters, numbers, monogram, procedural substitute, placeholder or donor art.",
+    "No claim of owner art or UI approval.",
+    "No magical fog or waterfall interpretation."
+  ]
+}

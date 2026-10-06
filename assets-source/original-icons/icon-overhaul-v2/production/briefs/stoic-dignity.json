@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "key": "stoic-dignity",
+  "draft": true,
+  "publicationStatus": "dormant; no icon authored or admitted",
+  "behavior": "Conscious holder +1 Trait against new mind-affecting effects, other allies within 10 feet +1 Morale; exact same-effect/source-lineage suppression, no cleanse or immunity.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/DormantElementalCharacterTraitFactory.cs",
+    "src/KingmakerGunslinger/ElementalRaces/ElementalCharacterTraitCatalog.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/stoic-dignity.png",
+  "sourceSha256": null,
+  "tool": null,
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/elemental-strike.png",
+      "role": "approved painted-magical style reference; original composition required"
+    }
+  ],
+  "prompt": "Original square painted fantasy CRPG character-trait icon. A calm, dignified stone face or mask with subtle protective radiance; Oread earth, carved planes, warm mineral highlights and controlled light. Strong subject silhouette, important tips inside the square, controlled lighting, rich painted materials, full-bleed dark ground. Readable at 32/48/128 pixels. No text, letters, numbers, monogram, watermark, frame or UI-state marks. No donor or existing-icon copy. This is a production brief only; no generation or approval has occurred.",
+  "visualStatus": "not-authored",
+  "subjectAndSilhouette": "A calm, dignified stone face or mask with subtle protective radiance; Oread earth, carved planes, warm mineral highlights and controlled light.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "oread-traits",
+  "confusedWith": [
+    "earth-insight",
+    "inner-breath"
+  ],
+  "uiSurfaces": [
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No text, letters, numbers, monogram, procedural substitute, placeholder or donor art.",
+    "No claim of owner art or UI approval.",
+    "Keep the exact trait subject and elemental race identity."
+  ]
+}

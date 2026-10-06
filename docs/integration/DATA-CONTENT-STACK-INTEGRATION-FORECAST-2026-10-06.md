@@ -34,3 +34,28 @@ Frozen DATA base: `fc352c24fcbcc5f6e1c3be7b8c72bd9c21720300`. Latest specialized
 8. Leave tooltip/merchant/icon/UI acceptance pending until Howie reports observations. Release qualification is separate.
 
 No integration, Expanded Summoning review, PR action, save migration, publication, art or release is authorized or performed by this forecast.
+
+## Readiness-branch additions
+
+The 2026-10-06 branch appends five new ElementalRaces compile entries and three
+pure domain links plus one test file. Program.cs adds 75 cases at the end of the
+existing array. Only the two current shared deterministic count pins change
+from 2,188 to 2,263. Existing registrations, inherited counts, assets, manifest
+identities and runtime scenarios are preserved exactly.
+
+Future authorized integration must preserve the dormant
+ElementalCharacterTraitCatalog, AssetGate, PublicationTransaction, OwnedGrant
+and DormantElementalCharacterTraitFactory together, the four art brief drafts,
+the copy/identity/readiness contracts and their focused tests. It must not
+connect bootstrap or register proposed graph IDs until all original icons pass
+intake. Original-art/catalog integration will add five visible consumers
+(four features plus Fiery toggle), not hidden-provider art. The current package
+inventory remains 289 files and version 0.0.141; future combined counts must be
+derived rather than copied.
+
+The exact host race prerequisite belongs to supported Favored Class, not
+Assembly-CSharp. The new dormant owned-buff grant supplies an explicit holder
+context for Stoic's area; its player/respec/load path still needs publication
+runtime qualification. No foundation handler or specialized runtime scenario
+was changed. These are predicted future conflict/qualification surfaces,
+not authorization to inspect, merge or modify the laptop's development line.

@@ -1584,4 +1584,11 @@
   <ItemGroup>
     <Compile Include="RuntimeTesting\RuntimeTestRunner.WhiteoutAttackFixture.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ElementalRaces\DormantElementalCharacterTraitFactory.cs" />
+    <Compile Include="ElementalRaces\ElementalCharacterTraitOwnedGrant.cs" />
+    <Compile Include="ElementalRaces\ElementalCharacterTraitCatalog.cs" />
+    <Compile Include="ElementalRaces\ElementalCharacterTraitAssetGate.cs" />
+    <Compile Include="ElementalRaces\ElementalCharacterTraitPublicationTransaction.cs" />
+  </ItemGroup>
 </Project>

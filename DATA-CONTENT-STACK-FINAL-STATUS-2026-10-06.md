@@ -13,10 +13,10 @@ The exact ref and clean source worktree were verified before creating `codex/ele
 | Nodachi Heirloom Weapon | COMPLETE before Z; verified, no duplicate implementation | Existing `431bef614` lineage; content suite at `c092a060a5c01f963e5954d6e6f1882bd16b6114` | Existing conditional Equipment Trait publication | None in this finite stack |
 | Firearm descriptions | COMPLETE, technically qualified | `c092a060a5c01f963e5954d6e6f1882bd16b6114` | Existing items; normalized prose | Human tooltip appearance |
 | Model D vendors | COMPLETE, technically qualified | `c092a060a5c01f963e5954d6e6f1882bd16b6114` | Existing merchant-table paths | Human merchant presentation and existing-stock acceptance |
-| Fiery Glare | MECHANICS QUALIFIED; ADAPTED success-only take-10 | `2c5bbcaf428b3e0ac017ba5eb5a7969674bcf56e` | Unpublished; fixture-only transient graph | Dormant publication readiness, original icon and later player qualification |
-| Stoic Dignity | MECHANICS QUALIFIED; exact same-effect/source-lineage suppression | `2c5bbcaf428b3e0ac017ba5eb5a7969674bcf56e` | Unpublished; fixture-only transient graph | Dormant publication readiness, original icon and later player qualification |
-| Aerial Observer | MECHANICS QUALIFIED; ADAPTED exact Wings of Air effect | `a0992df35a28d0049ad25b3f746f0d465ed5426a` | Unpublished; fixture-only transient provider | Dormant publication readiness, original icon and later player qualification |
-| Whiteout | MECHANICS QUALIFIED; ADAPTED outdoors-only native Rain/Snow Light+ | `db3725d7eb665731c3b8c238217cd39f2d0a65b8` | Unpublished; dormant exact patch and transient provider | Dormant publication readiness, original icon and later player qualification |
+| Fiery Glare | MECHANICS QUALIFIED; ADAPTED success-only take-10 | `2c5bbcaf428b3e0ac017ba5eb5a7969674bcf56e` | Unpublished; fixture-only transient graph | Dormant stable graph/copy/publication plan complete in the 2026-10-06 readiness branch; original icon and later player qualification |
+| Stoic Dignity | MECHANICS QUALIFIED; exact same-effect/source-lineage suppression | `2c5bbcaf428b3e0ac017ba5eb5a7969674bcf56e` | Unpublished; fixture-only transient graph | Dormant stable graph/copy/publication plan complete in the 2026-10-06 readiness branch; original icon and later player qualification |
+| Aerial Observer | MECHANICS QUALIFIED; ADAPTED exact Wings of Air effect | `a0992df35a28d0049ad25b3f746f0d465ed5426a` | Unpublished; fixture-only transient provider | Dormant stable graph/copy/publication plan complete in the 2026-10-06 readiness branch; original icon and later player qualification |
+| Whiteout | MECHANICS QUALIFIED; ADAPTED outdoors-only native Rain/Snow Light+ | `db3725d7eb665731c3b8c238217cd39f2d0a65b8` | Unpublished; dormant exact patch and transient provider | Dormant stable graph/copy/publication plan complete in the 2026-10-06 readiness branch; original icon and later player qualification |
 | Earthsense | OMITTED — NO FAITHFUL ENGINE CARRIER | Corrected finding `f1155cb158188a1264f8b53ac41a64f514fe099a` | None | No substitute or new subsystem |
 | Lunge | BLOCKED — no faithful frozen RTwP turn/attack-attempt seam | [engine contract](docs/research/LUNGE-ENGINE-CONTRACT.md), closed in `87e42d2252192d66a9aeab56b86b9d4d81b62c69` | None; no production reach/AC patch | No implementation or adaptation |
 | Human tooltip acceptance | NOT PERFORMED | [manual matrix](docs/RARE-FIREARMS-MANUAL-ACCEPTANCE.md#content-followup-acceptance---2026-10-05) | No owner approval inferred | Howie's rendered Pistol, Blunderbuss and Last Word review |
@@ -74,3 +74,25 @@ Remote existence/tips were checked read only on 2026-10-06. Preserve every branc
 The original Z handoff is absent from this cumulative tree; it was read as the historical Git object at `1b7bfa06…:Z-WEEKEND-GUNSLINGER-HANDOFF-2026-10-03.md`, without changing its branch/worktree. Corrected later contracts supersede its obsolete exactness/icon-only implementation claims.
 
 Preserve the new readiness branch too. Its final commit, asset disposition and validation belong in `CODEX-ELEMENTAL-RACE-TRAIT-PUBLICATION-READINESS-HANDOFF-2026-10-06.md` and the post-push receipt. No integration/release/version change occurred. Expanded Summoning belongs exclusively to the laptop and was not investigated or changed here.
+
+## Publication-readiness closeout — 2026-10-06
+
+The four mechanics remain unchanged and unpublished. The new dedicated
+readiness branch adds 11 planned stable identities, gated dormant native graphs,
+exact race/self-duplicate prerequisites, staged final copy, an all-four
+publication transaction plan, persistence/respec ownership contracts and four
+original-art brief drafts. The live manifest, icon catalog/assignments,
+localization, settings and selectors remain unchanged. No trait can be acquired.
+
+[The readiness contract](docs/design/ELEMENTAL-CHARACTER-RACE-TRAIT-PUBLICATION-READINESS-2026-10-06.md)
+and [mission handoff](CODEX-ELEMENTAL-RACE-TRAIT-PUBLICATION-READINESS-HANDOFF-2026-10-06.md)
+record its separate qualification. The real asset gate finds all four originals
+missing. The 75 new deterministic tests bring the registered domain total from
+2,188 to 2,263; prior specialized game records do not qualify the new readiness
+DLL. Final disposition is BLOCKED-ONLY-ON-ORIGINAL-ICONS, TraitsPublished: false.
+No owner tooltip, merchant, icon or UI acceptance was inferred.
+
+Next work is limited to four original icons, owner approval and the asset-qualified
+player-publication pass. Earthsense and Lunge findings remain closed as recorded;
+no implementation was reopened. Integration/release and the laptop's line remain
+outside this mission.
