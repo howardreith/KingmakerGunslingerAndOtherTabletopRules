@@ -1,36 +1,34 @@
 # Expanded Summoning Phase 2 evidence index
 
-[Latest09087d0f body44/47 FAIL, missing native piercing clip](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-REVIEW.md):
-Exact09087d0f passes all prelaunch:232 focused/2034 full83.3s, gate180.5s,
+[Latest570a14cd body33/35 FAIL, fixed piercing carrier rejected](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-REVIEW.md):
+Exact570a14cd passes all prelaunch:234 focused/2036 full84.6s, gate181.3s,
 491 preflight/81 orchestration/17 provenance, persistence11/3/19,crowd5/7,
 clean exact Release/strict318-member package. Fresh Steam smoke11 PASS/body
-44 of47 FAIL. Three dependent failures expose one original-view integration
-defect: the spear requests PiercingTwoHanded but the native main-hand action
-supports only SlashingTwoHanded/AxeTwoHanded. Exact event5787 has no active
-animation; IsActed is native fallback at0.12s. Conservative gap0.5922998m.
-Zero shaft distances are numeric grip evidence, NOT actual-attack grip proof.
-The prior acted-only playback/grip interpretation is withdrawn, not re-marked
-qualified. All eleven immutable attempts/numbers/restorations remain.
+33 of35 FAIL before Salamander attachment; the complete48-assertion gate was
+NOT reached. The fixed native shortspear donor has
+Lizardfolk_RH_Spear_Shield_AnimationSet/MainHandAttack, no PiercingTwoHanded
+variant and no matching39-bone body. The guard rejects it before any owned
+action-set substitution. The rollback drill's captured=0 is a dependent
+precondition failure, not evidence of failed restoration. No gate waived.
 
-Native snake bites play BiteAttack01_Short_3.5m, gap0. Hybrid tail uses
-Bite_Attack, gap0.164152145m: research measurement, not final tail-action
-qualification. Original v9 support5.0001mm, all movement/isolation/resources/
-rollback/native destruction/environment checks PASS. No threshold waived.
+All28 snake body/movement/floor/contact/isolation/rollback/resource checks
+PASS, plus Salamander native control/appearance, environment restoration,
+fixture cleanup and version. Native bite gaps0 at frames4726/5289. No new
+hybrid movement/contact claim. Original meshes/paints and production unchanged.
 
-Next: single bounded existing shortspear carrier from the archived donor
-census, CR10_LizardfolkKing9f7a7364b76d65d43b72086aedce68ae/
-prefabc664715ff7165984285f66acc764b4b3. Require actual piercing style and exact
-rig/bind compatibility before instance-only main-hand adoption, preserving
-other actions and native references. No bone twist to conceal no animation,
-style relabel, native asset mutation, global animation framework or waiver.
+Next: change observation strategy to bounded read-only native action/style/
+renderer metadata before another carrier choice. Do not retry the rejected
+donor, map a one-handed/slashing clip to a two-handed spear, twist bones to
+conceal missing playback, mutate native assets or waive contact. Exact09087
+missing-clip evidence and all twelve immutable attempts remain preserved.
 
-Actual1112148857824Z snapshot restored11:20:06.3390196UTC,136/.117/exact tree.
-JournalB10ED8A40739015EC306E04665552768D625659128AA1D744A4A1F87008A7092;
-capture804225C6943055C85B18676A0E9CBB610AD08DC93F6FFB543537D5E42313BBF9.
+Actual1204024052635Z snapshot restored12:11:30.6828777UTC,136/.117/exact tree.
+Journal008A868413EA81BC9845B2200C24C5B1579368CBCC8041BD453E5ABC2C2B1E55;
+captureA36FD0AF1232174494428D8CA61A0D689CAC743CE9E900FCCC6DFE6B355864E4.
 Lease Completed/recoveryRequired=false/released; no game/lock/staging/save write.
 No production hook/new registration;976+29=1005 visible, Sprints14–16 unchanged.
 
-[Eleven preserved attempts and exact hashes](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-EVIDENCE.json).
+[Twelve preserved attempts and exact hashes](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-EVIDENCE.json).
 
 [Historical7f S17-only authored winding correction](assets-source/original-models/sprint17-serpents/SOURCE.md):
 snake v4/hybrid v8 independently byte-reproduced; only triangle indices and

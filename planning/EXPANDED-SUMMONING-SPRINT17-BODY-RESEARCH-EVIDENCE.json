@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "status": "Sprint17 NOT QUALIFIED; eleven exact research attempts preserved. Latest09087d0f smoke11 PASS/body44 of47 FAIL; exact restoration PASS. Native missing PiercingTwoHanded clip demonstrated; acted-only fallback is not playback or actual-attack grip qualification.",
+  "status": "Sprint17 NOT QUALIFIED; twelve exact research attempts preserved. Latest570a14cd smoke11 PASS/body33 of35 FAIL before Salamander attachment: fixed native donor lacks PiercingTwoHanded support and matching39-bone body. Exact restoration PASS; no native-action adoption qualified.",
   "scope": "Closed original-body/native command-contact/resource research only; no gameplay/publication qualification",
   "attempts": [
     {
@@ -2579,6 +2579,131 @@
         "resolved": "Stronger exact-command read-only observations separate missing-clip fallback from real native playback. Snake bites play BiteAttack01_Short_3.5m, gap0. Hybrid tail uses native Bite_Attack, gap0.164152145m; that is a research measurement, not final tail-action qualification. All original support, movement, isolation, rollback/native destruction/resources/environment checks pass.",
         "next": "Use archived native LizardfolkKing shortspear carrier9f7a7364b76d65d43b72086aedce68ae/prefabc664715ff7165984285f66acc764b4b3 as the single bounded existing piercing-action candidate. Verify its style/rig bindings before instance-only adoption; no style relabel, native asset mutation, bone twist, reach inflation, global animation framework or threshold waiver.",
         "priorClaims": "Prior669 exact-event shaft grip measurements remain numeric evidence, but acted-only did not establish a real attack clip; withdraw that interpretation without changing the archived failure."
+      }
+    },
+    {
+      "candidate": "570a14cd48d9008058e524f732b79c9701c1076c",
+      "sourceFingerprint": "2c0f74048b524ed0563cf311cf817e4b29e9001a477216a90e10cc68bbabc94e",
+      "dllSha256": "e1d283e4a7e7609c24cba3044936a5e6210d682fdcf90d7da907dfde7d5f6a29",
+      "dllMvid": "8f77bf87-282f-456a-9eb4-79c391f73341",
+      "packageSha256": "a0db47e8b5dd18a267537020b09c3d8ca34d62296972674d3457336bec3372c9",
+      "packageMembers": 318,
+      "version": "0.0.141",
+      "prelaunch": {
+        "focused": 234,
+        "full": 2036,
+        "fullSeconds": 84.6,
+        "completeGateSeconds": 181.3,
+        "runtimePreflight": 491,
+        "orchestration": 81,
+        "provenance": 17,
+        "persistenceWiring": 11,
+        "persistenceScopes": 3,
+        "persistenceRejections": 19,
+        "crowdRoundTrips": 5,
+        "crowdRejections": 7,
+        "exactBuildAndStrictPackage": "PASS"
+      },
+      "runs": [
+        {
+          "scenario": "working-save-smoke",
+          "startedAtUtc": "2026-10-06T12:04:27.8422475Z",
+          "parameters": {},
+          "launcherOutcome": "Clean",
+          "exitCode": 0,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T1204287624103Z-working-save-smoke",
+          "requestId": "20261006T1204287937520Z-d1e7e3aeed1a45a98045920bd6119b0d",
+          "requestSha256": "38c6050104bf81677360c8542832a234a43e8d1133880cbc93fb8d33c108765f",
+          "resultSha256": "c91b12a5c8f1af050d1b73757fd79391bac17fddba236049c3351b13d1971ac7",
+          "assertions": 11,
+          "passed": 11,
+          "failed": [],
+          "orchestrationSha256": "737cdbbcff1d12035a040c64168618862d5b281567b859855d7e30ff75644f55",
+          "processId": 31152,
+          "processStartedUtc": "2026-10-06T12:04:29.8615038Z",
+          "scenarioStatus": "PASS",
+          "outcome": "PASS",
+          "completedAtUtc": "2026-10-06T12:07:21.7024449Z"
+        },
+        {
+          "scenario": "disposable-expanded-summoning-serpentine-bodies",
+          "startedAtUtc": "2026-10-06T12:07:27.7428204Z",
+          "parameters": {},
+          "launcherOutcome": "Unclean",
+          "exitCode": 1,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T1207285117966Z-disposable-expanded-summoning-serpentine-bodies",
+          "requestId": "20261006T1207285117966Z-32e6e018ad124423ba758e7c086a517a",
+          "requestSha256": "a540de5159dca92b10e8c2921b59028941541e8144b06f109c82fb1c05ac55ab",
+          "resultSha256": "5b9e2cbb1e9526c0328f614868b5b1300a7c48374e9f206c0b634b986b9cf388",
+          "assertions": 35,
+          "passed": 33,
+          "failed": [
+            {
+              "name": "sprint17-body-rollback-salamander",
+              "status": "FAIL"
+            },
+            {
+              "name": "sprint17-body-exception",
+              "status": "FAIL"
+            }
+          ],
+          "orchestrationSha256": "4c9dfe3b5a0f935d447beb487ed8f70f44cd67e9cb22bef6960633f3bfbda0cd",
+          "processId": 27144,
+          "processStartedUtc": "2026-10-06T12:07:30.1463464Z",
+          "scenarioStatus": "FAIL",
+          "outcome": "FAIL",
+          "completedAtUtc": "2026-10-06T12:11:28.1949976Z"
+        }
+      ],
+      "restoration": {
+        "status": "VERIFIED",
+        "snapshot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20261006T1204024052635Z",
+        "before": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "after": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "completedAtUtc": "2026-10-06T12:11:30.6828777Z",
+        "lease": "C:\\Dev\\KingmakerGunslingerLab\\compatibility-state\\runtime-20261006T120401Z-9dea3160291f4441960c01fb995722a9\\runtime-lease.json",
+        "leaseStatus": "Completed",
+        "recoveryRequired": false,
+        "leaseReleased": true,
+        "gameProcessesRemaining": [],
+        "sharedLock": false,
+        "staging": false,
+        "saveWrite": false
+      },
+      "journalSha256": "008A868413EA81BC9845B2200C24C5B1579368CBCC8041BD453E5ABC2C2B1E55",
+      "bodyCaptureSha256": "A36FD0AF1232174494428D8CA61A0D689CAC743CE9E900FCCC6DFE6B355864E4",
+      "driverSha256": "32F71409369B8D1DA8878FF1C9F1A0BE03CD32FA1A46EC98E6FBADFB53479216",
+      "status": "NOT QUALIFIED; smoke11/11 PASS; body33/35 FAIL before Salamander attachment; exact restoration VERIFIED; 48-assertion complete gate not reached",
+      "findings": {
+        "classification": "RESEARCH CARRIER INCOMPATIBILITY; pre-attachment guard rejects the fixed donor. Dependent rollback assertion fails because the post-swap drill was never reached, not because restoration leaked.",
+        "donor": "9f7a7364b76d65d43b72086aedce68ae/prefabc664715ff7165984285f66acc764b4b3",
+        "nativeSet": "Lizardfolk_RH_Spear_Shield_AnimationSet",
+        "nativeAction": "Lizardfolk_RH_Spear_Shield_AnimationSet_MainHandAttack",
+        "piercingTwoHandedSupported": false,
+        "matching39BoneBodies": 0,
+        "ownedResourcesCapturedAtPostSwap": 0,
+        "failures": [
+          {
+            "assertion": "sprint17-body-rollback-salamander",
+            "cause": "Adapter rejected before PostSwapFaultForTest; captured=0; no qualifying rollback drill."
+          },
+          {
+            "assertion": "sprint17-body-exception",
+            "cause": "Same exact style/rig guard rejection on attachment; no owned animation-set substitution or final hybrid contact measurement."
+          }
+        ],
+        "passed": "All 28 snake body/movement/floor/contact/isolation/rollback/resource assertions, two Salamander native-control/appearance checks, environment restoration, fixture cleanup and version:33 total. Viper/constrictor real native bite gaps0 at frames4726/5289; donor sting remains unprinted research data only.",
+        "next": "Do not retry this donor or relabel its one-handed action. Change observation strategy to bounded read-only native action/style/renderer metadata before any further carrier choice. Preserve existing identity, actual two-handed spear rules, original assets and complete contact gates. No production hook or DATA import."
       }
     }
   ]

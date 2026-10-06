@@ -1,6 +1,15 @@
 # Sprint 17 original serpentine and hybrid bodies
 
-## Current original-art disposition, exact09087d0f research, October 6 UTC
+## Current original-art disposition, exact570a14cd research, October 6 UTC
+
+Final visuals NOT QUALIFIED. Full prelaunch PASS; smoke11/body33 of35 FAIL
+before hybrid attachment. The candidate native shortspear action lacks
+PiercingTwoHanded support and its prefab has no matching39-bone body. Guard
+rejected; no new hybrid pose/contact proof. Original meshes/paints unchanged;
+snake contacts/support/resources PASS. Exact restoration12:11:30UTC.
+Bounded read-only native metadata audit next; no style relabel or contact waiver.
+
+### Historical exact09087d0f original-art disposition
 
 Final visuals NOT QUALIFIED: smoke11/body44 of47 FAIL, exact restoration
 11:20:06UTC. The missing PiercingTwoHanded clip is now demonstrated: only
