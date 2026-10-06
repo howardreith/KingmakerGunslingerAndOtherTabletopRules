@@ -29,7 +29,9 @@
       16
     ],
     "currentSprint": 17,
-    "currentSubItem": "Sprint 16 COMPLETE AND PUBLISHED: exact 155ada89 all prelaunch PASS, smoke 11/11, full main 211/211, all 20 public roots, both missed-bite regressions, exact restoration. 976 generated + 29 wrappers = 1005 visible. Next Sprint 17 bounded serpentine donor/rig proof and separate Salamander weapon seam; not yet implemented. DATA audit complete; zero imports.",
+    "currentSubItem": "Sprint 16 COMPLETE AND PUBLISHED at exact 155ada89; closing evidence b27b6aea pushed. Sprint 17 NOT QUALIFIED: research-only native water-elemental/Lizardfolk rig survey, no creature/gameplay/publication changes; 219 focused and 486 preflight PASS, exact-head full gate and guarded survey pending. 976 generated + 29 wrappers = 1005 visible. DATA audit complete; zero imports.",
+    "sprint17TechnicalQualified": false,
+    "sprint17ResearchReview": "planning/EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md",
     "sprint16LaptopCorrectionReview": "planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-FIXTURE-REPAIR.md",
     "dataSalvageAudit": "planning/EXPANDED-SUMMONING-PHASE2B-DATA-SALVAGE-AUDIT.md",
     "lastGuardedRuntimePass": "Exact 155ada89 publication PASS: smoke 11/11; 20261006T0046338051934Z-disposable-expanded-summoning-crocodilians 211/211 including all 20 public roots. Hidden e3 complete crowd/native cleanup/fresh absence remains qualified.",
