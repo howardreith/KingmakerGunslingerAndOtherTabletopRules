@@ -34,6 +34,12 @@ access; prior authorized native cleanup/absence remains clean.
 HumanReview: NOT_PERFORMED_NONBLOCKING. Accepted engine limitations/adaptation
 unchanged. Sprint 17 research is underway; Phase 2B itself is not yet closed.
 
+The current [closed body-research fixture](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-REVIEW.md)
+descends from a35993fc, reuses the laptop-owned native control seam and has
+223 focused tests/incremental Release PASS. No automatic production attachment
+or gameplay changes. Complete exact-head gate and fresh-Steam research remain
+pending; movement/finite geometry is not locomotion/contact qualification.
+
 Sprint 17's [bounded native-rig survey](planning/EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md)
 uses the native Medium Water Elemental source of the proposed serpentine
 view, not the optional Eidolon blueprint from the earlier mixed-library
