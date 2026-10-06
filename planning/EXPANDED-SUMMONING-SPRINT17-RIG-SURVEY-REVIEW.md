@@ -59,6 +59,16 @@ Steam App ID 640820 smoke/survey processes and restore that actual snapshot.
 - Exact-head repository/full suite/clean build/strict package: PENDING.
 - Guarded metadata survey: NOT RUN.
 
+The first frozen source `dc3aff789dbe747a49c5727c41b88deb810d0451` stopped
+in repository validation: the pinned development test count still said 2020
+after adding the one new policy test (actual 2021). No build artifact or game
+launch occurred. The narrow follow-up updates both the validator and current
+development metadata to 2021, preserving the immutable public-release count.
+The exact gate must run on that new committed source, not reuse this failed
+attempt. Machine-local log: `artifacts/sprint17-dc3aff78-exact-gate.log`.
+The complete repository wrapper passes after the pin correction; log
+`artifacts/sprint17-count-repair-validation.log`. Full exact gate remains next.
+
 ## Primary-rule intake
 
 The [Venomous Snake](https://aonprd.com/MonsterDisplay.aspx?ItemName=Venomous%20Snake),

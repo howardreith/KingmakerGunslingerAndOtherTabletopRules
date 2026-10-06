@@ -1,5 +1,17 @@
 # Expanded Summoning Phase 2 journal
 
+## October 6, 01:33 UTC — Sprint 17 research scaffold, NOT QUALIFIED
+
+S16 closure evidence b27b6aea pushed. Added a fixed two-target native-rig
+survey at dc3aff78: native Medium Water Elemental and Salamander's Lizardfolk
+view, no optional Eidolon dependency or new creature/asset/gameplay change.
+219 focused, incremental compile, 486 preflight, 68 orchestration and
+persistence/crowd request checks PASS. The first exact gate stopped before
+build/runtime because pinned development test count still read 2020; actual
+2021. Follow-up changes only the two current-count pins and this evidence.
+Fresh exact gate still mandatory. No deployment/game/save write; original
+S16 restoration remains intact. No DATA imports. [Survey scope](planning/EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md).
+
 ## October 6, 00:59 UTC — Sprint 16 COMPLETE AND PUBLISHED, restored
 
 Exact 155ada89 passed all prelaunch gates (218 focused / 2020 full), smoke
