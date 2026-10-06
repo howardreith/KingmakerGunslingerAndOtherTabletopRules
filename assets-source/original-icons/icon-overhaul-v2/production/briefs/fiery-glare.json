@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "key": "fiery-glare",
+  "draft": true,
+  "publicationStatus": "dormant; no icon authored or admitted",
+  "behavior": "Native success-only take-10 adaptation for Intimidate, optional off-by-default free toggle; combat-compatible.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/DormantElementalCharacterTraitFactory.cs",
+    "src/KingmakerGunslinger/ElementalRaces/ElementalCharacterTraitCatalog.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/fiery-glare.png",
+  "sourceSha256": null,
+  "tool": null,
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/elemental-strike.png",
+      "role": "approved painted-magical style reference; original composition required"
+    }
+  ],
+  "prompt": "Original square painted fantasy CRPG character-trait icon. An ember-lit eye with a flame iris and an unmistakably intimidating gaze; Ifrit warmth, focused amber light, restrained red-black ground. Strong subject silhouette, important tips inside the square, controlled lighting, rich painted materials, full-bleed dark ground. Readable at 32/48/128 pixels. No text, letters, numbers, monogram, watermark, frame or UI-state marks. No donor or existing-icon copy. This is a production brief only; no generation or approval has occurred.",
+  "visualStatus": "not-authored",
+  "subjectAndSilhouette": "An ember-lit eye with a flame iris and an unmistakably intimidating gaze; Ifrit warmth, focused amber light, restrained red-black ground.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "ifrit-traits",
+  "confusedWith": [
+    "firesight",
+    "inner-flame"
+  ],
+  "uiSurfaces": [
+    "action bar / tooltip",
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No text, letters, numbers, monogram, procedural substitute, placeholder or donor art.",
+    "No claim of owner art or UI approval.",
+    "Keep the exact trait subject and elemental race identity."
+  ]
+}

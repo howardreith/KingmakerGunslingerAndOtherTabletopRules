@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "key": "aerial-observer",
+  "draft": true,
+  "publicationStatus": "dormant; no icon authored or admitted",
+  "behavior": "+2 Trait Perception only while exact KMG Wings of Air is active; no generic flight or altitude behavior.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/DormantElementalCharacterTraitFactory.cs",
+    "src/KingmakerGunslinger/ElementalRaces/ElementalCharacterTraitCatalog.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/aerial-observer.png",
+  "sourceSha256": null,
+  "tool": null,
+  "referenceImages": [
+    {
+      "path": "assets-source/original-icons/icon-overhaul-v2/pilot/sources/elemental-strike.png",
+      "role": "approved painted-magical style reference; original composition required"
+    }
+  ],
+  "prompt": "Original square painted fantasy CRPG character-trait icon. A keen eye surveying from wind-borne height, framed by controlled currents and a cloud line; Sylph air and pale teal highlights. Perception while aloft, not flight speed. Strong subject silhouette, important tips inside the square, controlled lighting, rich painted materials, full-bleed dark ground. Readable at 32/48/128 pixels. No text, letters, numbers, monogram, watermark, frame or UI-state marks. No donor or existing-icon copy. This is a production brief only; no generation or approval has occurred.",
+  "visualStatus": "not-authored",
+  "subjectAndSilhouette": "A keen eye surveying from wind-borne height, framed by controlled currents and a cloud line; Sylph air and pale teal highlights. Perception while aloft, not flight speed.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "sylph-traits",
+  "confusedWith": [
+    "wings-of-air",
+    "cloud-gazer"
+  ],
+  "uiSurfaces": [
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No text, letters, numbers, monogram, procedural substitute, placeholder or donor art.",
+    "No claim of owner art or UI approval.",
+    "No generic flight-speed, visual-wings or altitude promise."
+  ]
+}
