@@ -11,6 +11,16 @@ imports. Sprint 16 remains complete. Published surface is unchanged:
 
 ## Closed research scope
 
+The containing source checkpoint now stages snake v4/hybrid v8 with corrected
+S17-only outward triangles and a fail-closed marker. All original coordinates,
+normals/UV/weights/paint remain byte-identical; shared exporter unchanged.
+29 authoring/replay and227 focused/2029 registered checks, incremental compile
+and repository wrapper PASS.24 backface-aware current-pose panels generated,
+representative views inspected. No new exact runtime for these staged files.
+Next bounded native spear attachment and real bite/spear/tail command/contact
+diagnostics, then one new exact artifact. Final art and gameplay remain open.
+
+
 `disposable-expanded-summoning-serpentine-bodies` requires the existing guarded
 native `KMG_AUTOMATION_WORKING` load, with no save write or save-file access.
 It owns three disposable carriers: existing Purple Worm for the two snake

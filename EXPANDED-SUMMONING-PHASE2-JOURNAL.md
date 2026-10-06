@@ -1,5 +1,18 @@
 # Expanded Summoning Phase 2 journal
 
+## October 6 -- S17-only outward export correction, source checkpoint
+
+The32b comparison is now applied in the S17 exporter only. Shared exporter,
+native rig, shader/culling/visibility, vertices/normals/UV/weights/paint and
+production remain unchanged. Only original triangle indices plus the explicit
+winding marker differ; old/missing markers fail before attachment. Snake v4/
+hybrid v8 independently regenerate byte-for-byte.29 authoring/replay tests,
+227 focused/2029 registered, exact-reference incremental compile and repository
+wrapper PASS.24 backface-aware current-pose panels generated and representative
+textured/moving-clay views inspected. No final art, human or gameplay acceptance.
+Next bounded native spear and actual attack/contact diagnostics before a new
+exact artifact; latest machine authority remains32b07:59:27 exact restoration.
+
 ## October 6,07:59 UTC -- exact32b winding research PASS, restored
 
 Exact32b2f26e passes226 focused/2028 full83.7s, complete gate179.1s,

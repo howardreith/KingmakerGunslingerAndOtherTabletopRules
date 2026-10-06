@@ -19,9 +19,9 @@ deployment, force push or prohibited substitute subsystems.
  2026-10-05T19:29:25.9127956Z; holder PID15084/start2026-10-05T20:34:17.3075720Z.
   Session-scoped, not perpetual. Refresh the owned heartbeat during work;
   release only on an actual session ending. All safety refs/bundles retained.
-- Last pushed exact diagnostic/current verified remote:
-  `32b2f26e04d6b36471d39586b64731429afd8cbc`.
-  This containing evidence commit is its normal descendant.
+- Last pushed evidence/current verified remote:
+  `8f8f84947ff1474257c0151d3e13ee984c9db392`.
+  This containing winding-correction source commit is its normal descendant.
   Unexpected active-branch motion is a stop; frozen DATA motion informational.
 - Latest exact runtime artifact: `32b2f26e04d6b36471d39586b64731429afd8cbc`.
   Fresh Steam smoke11/11 and body29/29; complete research batch PASS.
@@ -42,8 +42,8 @@ deployment, force push or prohibited substitute subsystems.
   Steam smoke11/11/body29/29, complete batch PASS. All39 native poses support
   at2.91mm/1.85mm/5.00mm; native movement, quality/reference rollback and all
   five exact resources per body clean. No save-writing API observed.
-- Snake v3/hybrid v7 original payloads are staged for closed research only,
-  not automatic production attachment.25 authoring/replay checks PASS;
+- Snake v4/hybrid v8 outward-winding payloads are staged for closed research
+  only, not automatic production attachment.29 authoring/replay checks PASS;
   byte-reproduced exports. Hybrid adds one original renderer-frame support
   with authored half-turn, preserving exact native bind slots; renderer-only
   Bone4 restores on release. No new native joint/transform/animation.
@@ -58,7 +58,11 @@ deployment, force push or prohibited substitute subsystems.
   grip or contact is proved. Hybrid tail partly occluded. The generic animation
   survey returned only the first SpecialAttack; it does NOT rule out Bite/Tail
   actions. Enumerate the actual special-attack types and prove real commands.
-  Staged assets/production unchanged by this reversible research run.
+  The subsequent S17-only export correction changes exactly triangle order
+  and its fail-closed marker; vertices/normals/UV/weights/paint unchanged.
+  227 focused/2029 registered, incremental compile and repository wrapper PASS;
+  24 backface-aware offline panels, representative views reviewed. No new
+  exact runtime for these corrected files. Shared exporter/production unchanged.
 
 ### Machine restoration and exact next action
 
@@ -69,8 +73,7 @@ Lease Completed/recoveryRequired=false/released; no game/shared lock/staging.
 No save-file/protected-baseline access or save write. Journal
 `27AFD367DDA5E61485AC3BB8D34C53BB4AE85AE76785F5ED872E43C05A1A46A5`.
 
-Next: S17-only original winding correction, behavior tests and backface-aware
-offline review; bounded native spear attachment and actual bite/tail/spear
+Next: bounded native spear attachment and actual bite/tail/spear
 command/contact diagnostics. Freeze a new candidate; full exact prelaunch using
 `-ReferenceBundleDir artifacts/private-references-ground-20261006/KingmakerGunslinger-private-build-references`
 (the older default bundle lacks PhysicsModule), then fresh-Steam guarded research

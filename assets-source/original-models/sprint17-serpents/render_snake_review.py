@@ -11,7 +11,7 @@ from mathutils import Vector
 
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "sprint14-insects"))
-from render_sprint14_review import apply_shading, look_at, rotate_bone
+from render_sprint14_review import apply_shading as shared_shading, look_at, rotate_bone
 
 SIDE, UP, FORWARD = Vector((1, 0, 0)), Vector((0, 0, 1)), Vector((0, -1, 0))
 VIEWS = {"three-quarter": SIDE + FORWARD + UP * .65,
@@ -19,6 +19,15 @@ VIEWS = {"three-quarter": SIDE + FORWARD + UP * .65,
          "party-camera": SIDE * .8 + FORWARD * .95 + UP * 1.4,
          "jaw-closeup": SIDE * 1.6 + FORWARD * .45 + UP * .30,
          "head-top": UP + FORWARD * .001}
+
+
+def apply_shading(creature, shading):
+    # S17-only review guard: two-sided preview materials masked the original
+    # export's inside-out winding. Never change another family's renderer.
+    shared_shading(creature, shading)
+    for material in creature.data.materials:
+        if material is not None:
+            material.use_backface_culling = True
 
 
 def framing(points, camera):
