@@ -2,6 +2,55 @@
 
 ## Current disposition, 2026-10-06 UTC
 
+Exact corrected research **a173da3a396b3c7f1bddef3bee92c476150d8639**
+passes the complete prelaunch gate: 219 focused, 2021 unfiltered (84.5 seconds),
+486 preflight, 68 orchestration, persistence/crowd request tests, full repository/
+static/icon/manifest, clean exact Release and deterministic strict 312-member
+package. Fresh Steam smoke **11/11** and three-target survey **11/11** PASS.
+No production creature, registration, asset, icon or gameplay change.
+Sprint 17 remains NOT QUALIFIED; Sprints 14-16 remain complete and published.
+
+Actual snapshot `20261006T0239169703799Z` restored exactly at
+`2026-10-06T02:45:49.8363590Z`: 136 files / Info 0.0.117 / tree
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+Lease Completed/recoveryRequired=false; no game/shared lock/staging or save
+write. Owned-only native cleanup restores 955 original unit references,
+three party references and exact area membership. [Both attempts' exact
+hashes and request identities](EXPANDED-SUMMONING-SPRINT17-FALLBACK-RESEARCH-EVIDENCE.json).
+
+## Corrected three-target research findings
+
+- Water Elemental: seven skins at renderer/view scale 0.06. Body and
+  bubblegum stripe use `PF/StandardDynamic`; five other water skins use
+  `PF/Particles`. The body has spine/head/jaw but no long continuous tail
+  chain. The original lower-coil prototype is rigid. This is a motion risk,
+  not evidence that the body's shader is intrinsically unusable.
+- Purple Worm: two skins, `Purple_Worm` and `Purple_Worm_Stones`, each with
+  40 complete bones, renderer/view scale approximately one. Both use
+  `PF/StandardDynamic`. `Hips_Joints` through `Body02` ... `Body014` to `Head`
+  form a continuous chain. Upper/lower/left/right jaw branches are separate.
+  Original snake geometry can be compared on that chain while omitting the
+  radial side petals, horn and stone geometry. Stones must be suppressed only
+  on exact new snake identities; native Purple Worm remains unchanged.
+  This is **bind metadata**, not live ground, locomotion or jaw-contact proof.
+- Salamander: the existing Lizardfolk body has 39 bones and an additional
+  19-bone armor skin. Native static club/shield meshes remain a genuine visual
+  defect. A separate original hybrid/weapon seam is mandatory; its identity
+  and placements remain fixed. No spear-contact qualification is inferred
+  from a manufactured-weapon animation action being present.
+- Native action metadata now distinguishes a missing clip enumeration from
+  an exposed empty collection. Prone/CastSpell expose missing enumerations
+  on these views. Null does not mean no animation capability. No native
+  vertices, UVs, texture pixels, animation curves or proprietary assets were
+  exported or redistributed.
+
+Next: original Purple Worm-chain snake prototype and comparison against the
+preserved water prototype, then the bounded Salamander hybrid/weapon seam,
+printed profiles/signatures, offline pose review and one stable hidden
+qualification candidate. Donor measurements are research PASS only.
+
+## Preserved private prototypes and failed b2893abe research
+
 Sprint 17 remains NOT QUALIFIED. After pushed evidence e5e79fe9, two private
 original snake prototypes pass four Blender behavior checks and have 40
 offline review panels. [Source, hashes and remaining problems](../assets-source/original-models/sprint17-serpents/SOURCE.md).
@@ -37,9 +86,9 @@ The narrow correction preserves null as **no exposed enumeration**, distinct
 from an exposed empty list or a list containing null entries. It does not
 pretend missing metadata means zero native animation capability. Null, empty,
 all-null and mixed regression cases pass through the same counting policy;
-219 focused / incremental Release PASS. Next freeze/push that correction and
-rerun the complete exact-artifact gate plus fresh Steam smoke/survey batch.
-The earlier f507 eight-assertion PASS does not qualify this extension.
+219 focused / incremental Release PASS. Its exact a173da3a complete gate and
+new smoke/survey batch subsequently pass as recorded above. The failed b289
+attempt remains failed, not retroactively qualified.
 
 ## Previous exact two-target research, f507278b
 

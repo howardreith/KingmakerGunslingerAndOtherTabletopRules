@@ -80,6 +80,102 @@
         "saveWrite": false
       },
       "humanReview": "NOT_PERFORMED_NONBLOCKING"
+    },
+    {
+      "candidate": "a173da3a396b3c7f1bddef3bee92c476150d8639",
+      "status": "RESEARCH ONLY PASS; exact restoration PASS; Sprint 17 gameplay and visuals NOT QUALIFIED",
+      "sourceFingerprint": "9910eb984aada126b56e21578b20adcc6391ee9a3aaf3ca4b2119d944db38646",
+      "dllSha256": "9f17bf571bb5e27519a45c7d2cdce20ce05af56c9eb4cf1043419c9a6db7a50f",
+      "dllMvid": "1577f2d6-b519-4932-949a-b5af367ae6ef",
+      "zipSha256": "460596297c1a01e68b6aeaddc3fda5a02eae377a612af0656bba15be9e0441e1",
+      "packageMembers": 312,
+      "version": "0.0.141",
+      "prelaunch": {
+        "focused": 219,
+        "full": 2021,
+        "fullSeconds": 84.5,
+        "preflight": 486,
+        "orchestration": 68,
+        "persistenceWiring": 11,
+        "persistenceScopes": 3,
+        "persistenceRejections": 19,
+        "crowdRoundTrips": 5,
+        "crowdRejections": 7,
+        "exactGateSeconds": 181.2,
+        "repositoryStaticIconManifest": "PASS",
+        "exactBuildStrictPackage": "PASS"
+      },
+      "batchId": "20261006T0239161304096Z",
+      "archive": "artifacts/laptop-runtime-20261006T0239161304096Z",
+      "batchSha256": "4d1413ae11db29a8e6c1c2e43f3553e87060caa47914f6a80cf586b879c62265",
+      "sidecarSha256": "d792f0323d012640129a347a5ad3babf97e262e700061fcaa1446532f4dcde49",
+      "driverSha256": "dff765573f3a7dd68a428d9e053f927ec1cea135087bf77b173802008d16f245",
+      "runs": [
+        {
+          "scenario": "working-save-smoke",
+          "status": "PASS",
+          "assertions": 11,
+          "passed": 11,
+          "requestId": "20261006T0239424324404Z-cd77ef6938ed4dedb70e8992f9d51542",
+          "requestSha256": "b0f5fc0fa5a8dafd71450d1ef5c4f93062e9a9920b5173aa6c13a590cfca16d7",
+          "resultSha256": "0251897d7664e4b627edd7af74708d68abc51a81b771668bc9a6a60347342219",
+          "orchestrationSha256": "4d77b362d23514d6eb033bb956e6ce7736b78087ad45ce2cdb0caf5370a3660f",
+          "evidenceDirectory": "20261006T0239424038322Z-working-save-smoke",
+          "processId": 29408,
+          "processStartedUtc": "2026-10-06T02:39:43.4718700Z"
+        },
+        {
+          "scenario": "disposable-expanded-summoning-serpentine-survey",
+          "status": "PASS",
+          "assertions": 11,
+          "passed": 11,
+          "requestId": "20261006T0242403834515Z-22ea537c6a14440ea9edc309b8fbf92a",
+          "requestSha256": "a490470231fe0eca9e8108fd432bd0f9e821f7f154020f58713720947c995dfe",
+          "resultSha256": "acdff6439bc41d40ca565a637e584683c161da07421d9646e1d5648347ed3574",
+          "orchestrationSha256": "339faa6ea37a2a874c40140f8f8ea2950152c3ffe5d25384d0f7a1b2b9b3a5d1",
+          "evidenceDirectory": "20261006T0242403834515Z-disposable-expanded-summoning-serpentine-survey",
+          "processId": 31580,
+          "processStartedUtc": "2026-10-06T02:42:41.4576660Z",
+          "researchMetadata": [
+            {
+              "key": "medium-water-elemental",
+              "sha256": "ec37e70920ac551602a671829ea12a5b6f42fc38779ea7799bf29143668b67e1",
+              "renderers": 7,
+              "scope": "Sprint 17 research only; no gameplay, AI, intact-frame or contact qualification"
+            },
+            {
+              "key": "salamander",
+              "sha256": "bf6035021f916ccf650057fac964f47c9797072545138cf2546ec3d59ad0384b",
+              "renderers": 2,
+              "scope": "Sprint 17 research only; no gameplay, AI, intact-frame or contact qualification"
+            },
+            {
+              "key": "purple-worm",
+              "sha256": "f44405a3d8b2fa314832fe14e7f1f778aa1f8d7c98d350fa35b4f7515e80f22c",
+              "renderers": 2,
+              "scope": "Sprint 17 research only; no gameplay, AI, intact-frame or contact qualification"
+            }
+          ]
+        }
+      ],
+      "cleanup": "PASS: 955 original unit references, 3 party references and exact area membership",
+      "restoration": {
+        "snapshot": "20261006T0239169703799Z",
+        "completedAtUtc": "2026-10-06T02:45:49.8363590Z",
+        "fileCount": 136,
+        "version": "0.0.117",
+        "treeSha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+        "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff",
+        "leaseId": "runtime-20261006T023916Z-d14eeb20c2414a20b927430a5ad1dec2",
+        "leaseStatus": "Completed",
+        "recoveryRequired": false,
+        "leaseReleased": true,
+        "gameProcesses": 0,
+        "runtimeLockRemaining": false,
+        "stagingRemaining": false,
+        "saveWrite": false
+      },
+      "humanReview": "NOT_PERFORMED_NONBLOCKING"
     }
   ]
 }
