@@ -238,6 +238,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\CrocodilianCommandReviewPolicy.cs"><Link>RuntimeTesting\CrocodilianCommandReviewPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\SerpentineRigSurveyPolicy.cs"><Link>RuntimeTesting\SerpentineRigSurveyPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\SerpentinePoisonReviewPolicy.cs"><Link>RuntimeTesting\SerpentinePoisonReviewPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\SerpentineCommandReviewPolicy.cs"><Link>RuntimeTesting\SerpentineCommandReviewPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\RuntimeTestScenarioCatalog.cs"><Link>RuntimeTesting\RuntimeTestScenarioCatalog.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\CrocodilianLifecycleReviewPolicy.cs"><Link>RuntimeTesting\CrocodilianLifecycleReviewPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonInjuryPoisonPolicy.cs"><Link>Summoning\SummonInjuryPoisonPolicy.cs</Link></Compile>

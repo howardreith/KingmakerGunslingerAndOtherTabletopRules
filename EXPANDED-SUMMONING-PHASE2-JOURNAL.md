@@ -1,5 +1,21 @@
 # Expanded Summoning Phase 2 journal
 
+## October6,20:26UTC — closed production-snake command fixture, NOT RUN
+
+[Closed snake command slice](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-SLICE.md)
+is now implemented but NOT RUN: eight production-identity manual/AI RTWP/TB
+cells,51 mandatory assertions,8 ordered evidence rows.255 focused,508 request
+preflight and168 orchestration PASS. Complete source gate181.7s PASS:
+2057 unfiltered84.7s,repository/static/icon/manifest,clean14-reference Release,
+deterministic strict320 package;17 provenance,persistence11/3/19,crowd5/7 PASS.
+Production behavior and the passing38/62 requests are unchanged;32 routes
+stay hidden. Next freeze a committed exact artifact and run smoke/commands
+under the lease-first actual-snapshot protocol. No full Sprint17 claim.
+The first full gate passed2057 tests84.3s/repository validation but rejected
+a cleanup-observation API call at compile. Native GetBuff replaces it;
+failed diagnostic/gate logs retained. No runtime, save operation or deployment.
+Exact130bf7a2 remains the qualified bounded rules artifact; no publication.
+
 ## October6,19:58UTC — bounded snake rules62/62 PASS, exact restoration
 
 Exact `130bf7a2de4cbd636df921f36e7f6afefe8523ca` passes the complete

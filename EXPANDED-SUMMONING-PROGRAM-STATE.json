@@ -29,7 +29,24 @@
       16
     ],
     "currentSprint": 17,
-    "currentSubItem": "Sprint17 NOT QUALIFIED. Exact130bf7a2 bounded snake rules batch PASS: smoke11/11,profile/body/signatures62/62,strict collector46 metadata rows; complete2053-test/strict320/prelaunch PASS; exact snapshot restored19:58:09UTC. One injury plus five venom-owned saves,six damage events,native removal/no replay; all13 Constrictor checks PASS. Actual commands/AI/contacts,persistence/crowds/UI/routes and Salamander open.32 roots hidden,1005 visible; Phase2C deferred.",
+    "currentSubItem": "Sprint17 NOT QUALIFIED. Closed eight-cell production-snake manual/AI RTWP/TB commands/contact fixture implemented, NOT RUN;51 required assertions/8 rows.255 focused/508 preflight/168 orchestration PASS; corrected complete source gate PASS181.7s with2057 tests84.7s/clean14-reference Release/strict320. Exact130bf7a2 bounded rules62/62 PASS/restored remains unchanged. Next commit/push, exact-head prelaunch and smoke/commands batch. Lifecycle/persistence/crowds/UI/routes and Salamander open.32 roots hidden,1005 visible; Phase2C deferred.",
+    "sprint17SnakeCommandSlice": {
+      "status": "IMPLEMENTED; RUNTIME NOT RUN; FULL SPRINT17 NOT QUALIFIED",
+      "review": "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-SLICE.md",
+      "sourceBase": "fc2b3414ca58bcf882cf391440fb7b0315f24ee6",
+      "scenario": "disposable-expanded-summoning-snake-commands",
+      "cells": 8,
+      "requiredAssertions": 51,
+      "requiredMetadataRows": 8,
+      "focusedTests": 255,
+      "fullUnfilteredTests": 2057,
+      "orchestrationChecks": 168,
+      "standalonePreflightChecks": 508,
+      "completeSourceGate": "PASS181.7s:2057 full84.7s,complete repository/static/icon/manifest,clean14-reference Release,deterministic strict320 package;17 provenance,persistence11/3/19,crowd5/7. Earlier compile rejections retained.",
+      "runtimeQualified": false,
+      "fullSprintQualified": false,
+      "publicationAuthorized": false
+    },
     "sprint17SnakeSignatureSlice": {
       "status": "BOUNDED PROFILE/BODY/SIGNATURE RULES PASS; FULL SPRINT17 NOT QUALIFIED",
       "review": "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-SLICE.md",

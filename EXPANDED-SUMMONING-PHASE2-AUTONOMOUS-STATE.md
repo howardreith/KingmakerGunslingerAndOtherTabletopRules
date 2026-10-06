@@ -1,6 +1,6 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-06 — laptop sole owner; bounded snake rules62/62 PASS, restored; full Sprint17 NOT QUALIFIED
+## CURRENT STATE, 2026-10-06 — laptop sole owner; rules62/62 PASS; commands implemented NOT RUN; full Sprint17 NOT QUALIFIED
 
 This section governs over historical mission/ownership statements below.
 HOWARD-LAPTOP / `codex/expanded-summoning-phase2b-sprints14-17` / draft PR26
@@ -19,8 +19,9 @@ deployment, force push or prohibited substitute subsystems.
   2026-10-05T19:29:25.9127956Z; holderPID15084/start2026-10-05T20:34:17.3075720Z.
   Session-scoped; refresh heartbeat and release only on actual session ending.
 - Last exact runtime candidate `130bf7a2de4cbd636df921f36e7f6afefe8523ca`,
-  clean/pushed for the bounded PASS batch. This following evidence checkpoint
-  does not transfer qualification to an untested artifact.
+  clean/pushed for the bounded PASS batch. Evidence checkpoint
+  `fc2b3414ca58bcf882cf391440fb7b0315f24ee6` pushed; new command source is its
+  normal descendant. Neither checkpoint transfers qualification to an untested artifact.
   Owner/holder identities unchanged; no competing source/runtime process.
   This checkpoint is a normal descendant. Unexpected active-branch
   motion remains a stop; DATA motion informational. All old artifacts retained.
@@ -95,11 +96,14 @@ external state change. Independent snakes proceed; no phase-wide blocker.
 
 ### Exact next action
 
-Record/push the bounded exact130bf7a2 PASS evidence checkpoint, then implement
-closed actual RTWP/turn-based manual/AI snake commands and measured jaw contacts.
-Keep the qualified38-check and62-check requests unchanged. Use existing native
-request-local command, combat and turn-controller seams; no global rewrite
-or dirty diagnostic deployment.
+The closed eight-cell native command/contact fixture is implemented, NOT RUN.
+255 focused/508 request preflight/168 orchestration PASS; complete source gate
+181.7s PASS:2057 unfiltered84.7s,repository/static/icon/manifest,clean14-reference
+Release,strict320 package;all ancillary checks PASS. Commit/push NOT QUALIFIED,
+freeze a new exact-head candidate and
+repeat all prelaunch gates, then guarded smoke/command51 batch. Keep the
+qualified38/62 requests unchanged; no global rewrite or dirty deployment.
+[Command scope](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-SLICE.md).
 [Scope and honest exclusions](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-SLICE.md).
 Then targeted persistence/crowds/UI/routes and bounded Salamander-specific
 implementation. Stable full Sprint17 hidden gate, publication, Phase2B closure;
