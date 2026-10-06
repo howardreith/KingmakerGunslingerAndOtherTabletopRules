@@ -29,44 +29,46 @@
       16
     ],
     "currentSprint": 17,
-    "currentSubItem": "Sprint17 NOT QUALIFIED. Native Bite-distance correction SOURCE PASS260 focused/2062 full90.0s/complete188.7s/clean14-reference Release/strict320; runtime NOT RUN. Last exact474 smoke11/profile62 PASS,commands43/51 FAIL; timing-only remedy disproven. Native clip-distance input lacks0.2 view compensation; bounded exact-original snake getter projection awaits live proof. Snapshot2214490404756Z restored22:27:03UTC.32 roots hidden;Phase2C deferred.",
+    "currentSubItem": "Sprint17 NOT QUALIFIED. Exact983828bf bounded snake batch PASS:smoke11/profile-body-rules62/commands51; all8 real command contacts gap0 on native long Bite with correct0.2 visual-distance projection, unchanged2ft reach and0.25m threshold. Actual snapshot2258281699283Z restored23:11:14UTC. Next remaining snake lifecycle/crowds/UI/private routes/persistence and separate Salamander.32 roots hidden;Phase2C deferred.",
     "sprint17SnakeCommandSlice": {
       "pairedContactObserver": "RUNTIME DIAGNOSTIC COMPLETE; same-frame Viper gap does not improve; Constrictor commands ended and correlation rejected. Existing51 assertions unchanged; no waiver.",
-      "status": "SOURCE PASS; BOUNDED BITE DISTANCE CORRECTION NOT RUN; LAST43/51 FAIL",
+      "status": "BOUNDED NATIVE COMMAND/CONTACT SLICE PASS51/51; FULL SPRINT17 NOT QUALIFIED",
       "review": "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-SLICE.md",
       "sourceBase": "24924453c9b792d48b1030fe1e875963e0aa1e4c",
       "scenario": "disposable-expanded-summoning-snake-commands",
       "cells": 8,
       "requiredAssertions": 51,
       "requiredMetadataRows": 8,
-      "focusedTests": 259,
-      "fullUnfilteredTests": 2061,
+      "focusedTests": 260,
+      "fullUnfilteredTests": 2062,
       "orchestrationChecks": 168,
       "standalonePreflightChecks": 508,
-      "completeSourceGate": "Exact474 PASS:259 focused,2061 full84.8s,complete182.2s,508 preflight,168 orchestration,17 provenance,persistence11/3/19,crowd5/7,clean14-reference Release,strict320",
-      "runtimeQualified": false,
+      "completeSourceGate": "Exact983 PASS260 focused,2062 full85.9s,complete184.7s,508 preflight,168 orchestration,17 provenance,persistence11/3/19,crowd5/7,clean14-reference Release,strict320",
+      "runtimeQualified": true,
       "fullSprintQualified": false,
       "publicationAuthorized": false,
-      "sourceCandidate": "474be538bf9b1ce89a700ed7fbe61eb0d9e8f528",
-      "evidence": "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-ATTEMPT4-EVIDENCE.json",
+      "sourceCandidate": "983828bfa9b1aff2d79fab3eb8a2954ec28e4a2f",
+      "evidence": "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-PASS-EVIDENCE.json",
       "runtimeAssertionsExecuted": 51,
-      "runtimePassed": 43,
+      "runtimePassed": 51,
       "completedCells": 8,
       "repairFocusedTests": 260,
       "repairFullUnfilteredTests": 2062,
-      "repairSourceGate": "Precommit PASS260 focused,2062 unfiltered90.0s,complete188.7s,repository/static/icon/manifest,clean14-reference Release,strict320; exact-head rebuild/prelaunch next",
-      "repairRuntime": "NOT RUN; last exact474 remains43/51 FAIL. No qualification transfer.",
-      "nextExactBatch": [
+      "repairSourceGate": "Exact983 PASS260 focused,2062 full85.9s,complete184.7s,508 preflight,168 orchestration,17 provenance,persistence11/3/19,crowd5/7,clean14-reference Release,strict320",
+      "repairRuntime": "PASS51/51 with8 rows; smoke11/11 and profile/body/rules62/62 with46 rows. All8 at-rule contacts gap0 on actual native Long_8m Bite; no threshold or reach change.",
+      "lastExactBatch": [
         "working-save-smoke",
         "disposable-expanded-summoning-snake-signatures",
         "disposable-expanded-summoning-snake-commands"
       ],
-      "nextAction": "Push source checkpoint; exact-head build/all prelaunch; fresh Steam smoke/62-rule/51-command batch. Observe actual selected clip/projected distance and unchanged at-rule0.25m contact gate; exact restore.",
+      "nextAction": "Remaining snake lifecycle/crowds/UI/private routes/persistence and bounded separate Salamander; complete Sprint17 hidden/publication gates,fullPhase2B closure and owner review.",
       "biteAnimationDistanceRepair": {
         "review": "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-BITE-DISTANCE-REVIEW.md",
         "scope": "Exact original-body Viper/Constrictor Bite getter only; world distance /0.2; no stored distance, shared animation, mesh or combat reach mutation",
-        "runtimeQualified": false
-      }
+        "runtimeQualified": true,
+        "scopeLimit": "Eight exact manual/AI RTWP/TB cells at measured world1.664..1.703m; observed native long variant01, not every size/distance/variant."
+      },
+      "boundedSliceQualified": true
     },
     "sprint17SnakeSignatureSlice": {
       "status": "BOUNDED PROFILE/BODY/SIGNATURE RULES PASS; FULL SPRINT17 NOT QUALIFIED",
@@ -212,9 +214,9 @@
     },
     "sprint16LaptopCorrectionReview": "planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-FIXTURE-REPAIR.md",
     "dataSalvageAudit": "planning/EXPANDED-SUMMONING-PHASE2B-DATA-SALVAGE-AUDIT.md",
-    "lastGuardedRuntimePass": "Exact474be538 profile/body/rules62/62 regression PASS with46 rows plus smoke11/11; only bounded slice. Command batch43/51 FAIL; no fullSprint17 qualification.",
-    "lastGuardedRuntimeResult": "Exact474be538 smoke11/profile62 PASS; commands43/51 FAIL. All8 rule-event gaps0.37891674..0.426136971m horizontal. Four exact Viper end-frame pairs remain distant; Constrictor command-ended pairs correctly uncorrelated. All setup/approach/attack/signature/AI/cleanup pass; no changed assertion.",
-    "lastGuardedRestoration": "20261006T2214490404756Z actual snapshot restored2026-10-06T22:27:03.4374771Z;136files/Info0.0.117/exacttree VERIFIED;lease Completed/recoveryRequired=false/released;no game/shared runtime lock/this-worktree staging/save write. Unrelated September14 root extraction untouched.",
+    "lastGuardedRuntimePass": "Exact983828bf smoke11/11,profile/body/rules62/62(46rows),native commands/contact51/51(8rows). Bounded slices only; fullSprint17 NOT QUALIFIED.",
+    "lastGuardedRuntimeResult": "PASS:all8 real command contacts gap0 at-rule using native long Bite clip, distance projection8.321414..8.514899 versus world1.6642828..1.70297992. All setup/approach/attack/signature/AI/cleanup pass; no assertion or combat reach change.",
+    "lastGuardedRestoration": "Actual snapshot20261006T2258281699283Z restored2026-10-06T23:11:14.0412304Z;136files/Info0.0.117/exacttree VERIFIED;lease Completed/recoveryRequired=false/released;no game/shared runtime lock/this-worktree staging/save write. Unrelated September14 root extraction untouched.",
     "activePullRequest": 26,
     "archivedSalvagePullRequest": 27,
     "giantWaspPublished": true,
@@ -627,7 +629,7 @@
       "detail": "Supplied by the owner and read. The Pteranodon passage confirms the shipped profile rather than changing it: ten-foot reach valued for attacks of opportunity, and a single main bite on which everything stacks (2d6 plus modifiers). The guide also positions multiple Pteranodons as the best single-target aerial attacker at their tier. This informs Sprint 2's acceptance emphasis on correct bite impact timing and location at Large reach; it changes no accepted statistic."
     }
   ],
-  "nextConcreteAction": "Push source checkpoint; exact-head build/all prelaunch; fresh Steam smoke/62-rule/51-command batch. Observe actual selected clip/projected distance and unchanged at-rule0.25m contact gate; exact restore. Then remaining Sprint17 lifecycle/crowds/UI/routes/persistence and bounded separate Salamander seam; hidden/publication/fullPhase2B closure and STOP for owner review. Phase2C authorized but deferred.",
+  "nextConcreteAction": "Remaining snake lifecycle/crowds/UI/private routes/persistence and bounded separate Salamander; complete Sprint17 hidden/publication gates,fullPhase2B closure and owner review. Phase2C authorized but deferred; stop after Phase2B owner-review handoff.",
   "deploymentReconciliation": {
     "finding": "The first runs left this mission's 0.0.136 branch build installed over the pre-run 0.0.117 installation. The mission required restoration and did not authorize a permanent installation; a shared version string does not make a branch artifact an accepted release.",
     "ownershipVerified": "The live DLL hash matched this mission's exact build byte for byte, so the tree was unambiguously mission-owned.",
