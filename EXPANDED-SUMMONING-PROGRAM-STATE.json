@@ -29,9 +29,9 @@
       16
     ],
     "currentSprint": 17,
-    "currentSubItem": "Sprint17 NOT QUALIFIED. Closed eight-cell production-snake manual/AI RTWP/TB commands/contact fixture implemented, NOT RUN;51 required assertions/8 rows.255 focused/508 preflight/168 orchestration PASS; corrected complete source gate PASS181.7s with2057 tests84.7s/clean14-reference Release/strict320. Exact130bf7a2 bounded rules62/62 PASS/restored remains unchanged. Next commit/push, exact-head prelaunch and smoke/commands batch. Lifecycle/persistence/crowds/UI/routes and Salamander open.32 roots hidden,1005 visible; Phase2C deferred.",
+    "currentSubItem": "Sprint17 NOT QUALIFIED. Exacte993 command batch: smoke11 PASS, command startup FAIL before first cell (3/4 assertions,required51 not reached); restored20:45:10UTC. Viper intact-frame state not reached at offset placement; precise cause unobserved. Fixture repair anchors owner at qualified art point, observes attachment/control/pause and keeps native time running under unchanged600-frame cap;256 focused/2058 full84.9s/complete179.8s/clean14-reference Release/strict320 PASS,new exact gate next. Production unchanged. Earlier130 rules62 PASS unchanged;32 roots hidden. Phase2C deferred.",
     "sprint17SnakeCommandSlice": {
-      "status": "IMPLEMENTED; RUNTIME NOT RUN; FULL SPRINT17 NOT QUALIFIED",
+      "status": "RUNTIME FAIL BEFORE FIRST CELL; ANCHOR/OBSERVATION REPAIR NOT RUN",
       "review": "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-SLICE.md",
       "sourceBase": "fc2b3414ca58bcf882cf391440fb7b0315f24ee6",
       "scenario": "disposable-expanded-summoning-snake-commands",
@@ -45,7 +45,16 @@
       "completeSourceGate": "PASS181.7s:2057 full84.7s,complete repository/static/icon/manifest,clean14-reference Release,deterministic strict320 package;17 provenance,persistence11/3/19,crowd5/7. Earlier compile rejections retained.",
       "runtimeQualified": false,
       "fullSprintQualified": false,
-      "publicationAuthorized": false
+      "publicationAuthorized": false,
+      "sourceCandidate": "e993e8a719f83be3ea9c23c0d0ae0c06c142ad06",
+      "evidence": "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-ATTEMPT1-EVIDENCE.json",
+      "runtimeAssertionsExecuted": 4,
+      "runtimePassed": 3,
+      "completedCells": 0,
+      "repairFocusedTests": 256,
+      "repairFullUnfilteredTests": 2058,
+      "repairSourceGate": "PASS256 focused,2058 full84.9s,complete179.8s,repository/static/icon/manifest,clean14-reference Release,deterministic strict320 package;168 orchestration included",
+      "repairRuntime": "NOT RUN"
     },
     "sprint17SnakeSignatureSlice": {
       "status": "BOUNDED PROFILE/BODY/SIGNATURE RULES PASS; FULL SPRINT17 NOT QUALIFIED",
@@ -192,8 +201,8 @@
     "sprint16LaptopCorrectionReview": "planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-FIXTURE-REPAIR.md",
     "dataSalvageAudit": "planning/EXPANDED-SUMMONING-PHASE2B-DATA-SALVAGE-AUDIT.md",
     "lastGuardedRuntimePass": "Exact130bf7a2 bounded profile/body/signature rules batch PASS: fresh Steam640820 smoke11/11,closed snake62/62 and46 metadata rows; strict collector/restoration PASS. Seeded native rules, not real commands/AI or full Sprint17 qualification.",
-    "lastGuardedRuntimeResult": "Exact130bf7a2 bounded profile/body/signature rules batch PASS: fresh Steam640820 smoke11/11,closed snake62/62 and46 metadata rows; strict collector/restoration PASS. Seeded native rules, not real commands/AI or full Sprint17 qualification.",
-    "lastGuardedRestoration": "20261006T1951101231925Z actual snapshot restored2026-10-06T19:58:09.8692950Z; journal9b6932f1769ab13074935327d6eeb2e67024c4040db7edfae94cbb84f8aeb1a2;136 files/Info0.0.117/exact tree VERIFIED; lease Completed/recoveryRequired=false/released;no game/shared lock/staging/save write.",
+    "lastGuardedRuntimeResult": "Exacte993e8a7 command startup FAIL before first cell: smoke11/11 PASS,command3/4 assertions;required51 not reached. Viper original view not intact at offset placement; no detailed renderer/attachment/pause record, no demonstrated production cause. All cleanup/environment/version checks and exact restoration PASS.",
+    "lastGuardedRestoration": "20261006T2038147898163Z actual snapshot restored2026-10-06T20:45:10.6429821Z;136 files/Info0.0.117/exact tree VERIFIED;lease Completed/recoveryRequired=false/released;no game/shared runtime lock/this-worktree staging/save write. Unrelated September14 root0.0.129 extraction untouched.",
     "activePullRequest": 26,
     "archivedSalvagePullRequest": 27,
     "giantWaspPublished": true,

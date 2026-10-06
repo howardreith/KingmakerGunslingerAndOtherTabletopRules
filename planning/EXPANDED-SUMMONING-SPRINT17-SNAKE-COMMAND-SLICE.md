@@ -1,12 +1,53 @@
 # Sprint 17 closed production-snake native command slice
 
-Status: source-qualified checkpoint; runtime NOT RUN.
+Status: exacte993e8a7 command startup FAIL; changed anchor/observation NOT RUN.
 Laptop PR26 only. Sprints14–16 complete; full Sprint17 NOT QUALIFIED.
 Qualified seeded rules remain exact130bf7a2 (smoke11/11, rules62/62,
 collector46 rows, exact restoration). This is a separate next gate, not a
 reinterpretation of that pass.32 snake roots remain hidden;1005 visible.
 
 ## Closed scope and requirements
+
+### Attempt1 and changed observation strategy
+
+[Latest snake command attempt](EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-ATTEMPT1-EVIDENCE.json):
+exacte993e8a7 prelaunch PASS (2057 tests85.7s,complete183.2s,strict320);
+smoke11/11 PASS, command FAIL before the first cell:3/4 teardown/version/
+environment assertions passed; required51-cell assertion set not reached.
+Original Viper view did not settle at the fixture's offset spawn. Precise
+attachment/renderer/dissolve state was not recorded, so no production cause
+is asserted. Actual snapshot2038147898163Z restored20:45:10.6429821UTC:
+136/.117/exact tree;lease Completed/recovery=false/released;no game/shared
+lock/this-worktree staging/save write. All artifacts retained.
+
+[Changed fixture strategy](EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-SLICE.md):
+keep snake at the qualified art anchor; move only the inert target. Capture
+visibility/attachment/control before failure. Same60..600-frame bounds and
+all51 requirements; no production/renderer/appearance mutation or waiver.
+Repair source PASS:256 focused,2058 unfiltered84.9s,complete179.8s,
+repository/static/icon/manifest,clean14-reference Release/deterministic strict320.
+New exact artifact/runtime next; repair NOT RUN.
+32 roots remain hidden; earlier exact130bf7a2 rules62/62 PASS is unchanged.
+This does not prove a production view defect: no attachment outcome or
+renderer/dissolve snapshot was recorded by the early failing path. The
+known qualified view fixture already anchors the snake itself at the art
+point. Command setup now uses that same anchor and moves only the target,
+records frames0/30/60/600/final plus native attachment/control, and requires
+original mesh, intact state, CanAct and manual controllability before commands.
+A behavior test rejects every missing prerequisite and early/extended bounds.
+No source or runtime assertion is waived. The next driver also corrects its
+descriptive lease purpose; the original driver and lease remain immutable.
+The command fixture also creates an enemy before appearance settlement,
+unlike the qualified isolated view slice. A native combat auto-pause could
+freeze fader time; Attempt1 did not record pause, so this is an inference,
+not a confirmed cause. Settlement now uses the command phase's existing
+unpause behavior and records native pause clear count plus game-time/pause
+samples. No auto-pause setting, renderer or animation state is changed;
+the outer guard restores the original pause state.
+Repair source log: `artifacts/sprint17-commands-anchor-repair-dirty-gate.log`.
+No repaired runtime has occurred; preserve the failed e993 artifact unchanged.
+
+### Fixed contract (unchanged)
 
 `disposable-expanded-summoning-snake-commands` accepts only the authorized
 `KMG_AUTOMATION_WORKING` load. No save write, creature/prefab selector or

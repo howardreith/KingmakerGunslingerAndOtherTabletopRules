@@ -1,5 +1,29 @@
 # Expanded Summoning Phase 2 journal
 
+## October6,20:45UTC — command startup FAIL; exact restoration; narrower observation
+
+[Latest snake command attempt](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-ATTEMPT1-EVIDENCE.json):
+exacte993e8a7 prelaunch PASS (2057 tests85.7s,complete183.2s,strict320);
+smoke11/11 PASS, command FAIL before the first cell:3/4 teardown/version/
+environment assertions passed; required51-cell assertion set not reached.
+Original Viper view did not settle at the fixture's offset spawn. Precise
+attachment/renderer/dissolve state was not recorded, so no production cause
+is asserted. Actual snapshot2038147898163Z restored20:45:10.6429821UTC:
+136/.117/exact tree;lease Completed/recovery=false/released;no game/shared
+lock/this-worktree staging/save write. All artifacts retained.
+
+[Changed fixture strategy](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-SLICE.md):
+keep snake at the qualified art anchor; move only the inert target. Capture
+visibility/attachment/control before failure. Same60..600-frame bounds and
+all51 requirements; no production/renderer/appearance mutation or waiver.
+Repair source PASS:256 focused,2058 unfiltered84.9s,complete179.8s,
+repository/static/icon/manifest,clean14-reference Release/deterministic strict320.
+New exact artifact/runtime next; repair NOT RUN.
+32 roots remain hidden; earlier exact130bf7a2 rules62/62 PASS is unchanged.
+The archived lease has stale descriptive poison/constrict purpose text;
+actual request IDs, scenarios and savePolicy identify the authorized closed
+command batch. Correct only the next driver's label; preserve this record.
+
 ## October6,20:26UTC — closed production-snake command fixture, NOT RUN
 
 [Closed snake command slice](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-SLICE.md)
