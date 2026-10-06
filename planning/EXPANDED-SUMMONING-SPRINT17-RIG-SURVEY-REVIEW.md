@@ -2,6 +2,27 @@
 
 ## Current disposition, 2026-10-06 UTC
 
+Sprint 17 remains NOT QUALIFIED. After pushed evidence e5e79fe9, two private
+original snake prototypes pass four Blender behavior checks and have 40
+offline review panels. [Source, hashes and remaining problems](../assets-source/original-models/sprint17-serpents/SOURCE.md).
+No prototype enters the package. The water frame has no continuous tail chain;
+the lower coil is rigid, so a native Purple Worm fallback comparison is
+necessary before choosing a production donor. Its exact recorded native pair
+is `bf2216f48b3f4d24c9c502007649340d` /
+`130f0866af3249a4e817ec7e6e9ecd89`, from the October 2 native-donor audit
+`20261002T1440160968919Z-observe-expanded-summoning-native-donors`.
+
+The fixed research allowlist now contains those three existing summons, not
+arbitrary request keys. The source-only extension also records renderer/view
+scale and material shader names/queue/slot flags plus native animation action
+types/counts, never native art data or animation curves. It does not alter
+Purple Worm gameplay. Exact cross-donor substitution rejections are tested.
+219 focused tests and incremental Release compile PASS; 486 preflight PASS.
+The extended exact-artifact gate and fresh Steam smoke/survey batch are NEXT;
+the earlier eight-assertion PASS below does not qualify this extension.
+
+## Previous exact two-target research, f507278b
+
 RESEARCH PASS ONLY; Sprint 17 NOT QUALIFIED. Exact research candidate
 `f507278bbebe5894130dc6ec51978580bc2c43d0` passed all prelaunch gates and
 fresh Steam smoke **11/11**, metadata survey **8/8**. Actual leased snapshot

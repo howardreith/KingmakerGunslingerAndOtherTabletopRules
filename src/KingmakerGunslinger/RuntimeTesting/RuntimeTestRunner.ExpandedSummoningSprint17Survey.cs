@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Kingmaker.Blueprints;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker.Visual.Animation.Kingmaker;
 using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -161,6 +162,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["active"] = skin.gameObject.activeInHierarchy,
                     ["localBoundsCenter"] = SurveyVector(skin.localBounds.center),
                     ["localBoundsSize"] = SurveyVector(skin.localBounds.size),
+                    ["rendererToViewPosition"] = SurveyVector(unit.View.transform.InverseTransformPoint(skin.transform.position)),
+                    ["rendererToViewScale"] = SurveyVector(new Vector3(
+                        skin.transform.lossyScale.x / unit.View.transform.lossyScale.x,
+                        skin.transform.lossyScale.y / unit.View.transform.lossyScale.y,
+                        skin.transform.lossyScale.z / unit.View.transform.lossyScale.z)),
                     ["rootBone"] = skin.rootBone == null ? null : skin.rootBone.name,
                     ["boneCount"] = bones.Length, ["bindPoseCount"] = poses.Length
                 };
@@ -177,6 +183,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     });
                 }
                 entry["bones"] = frames;
+                // Names/flags only. No proprietary material, texture pixels,
+                // shader source, native mesh or animation data is exported.
+                entry["materials"] = new JArray(skin.sharedMaterials.Select(material =>
+                    material == null ? JValue.CreateNull() : (JToken)new JObject {
+                        ["name"] = material.name,
+                        ["shader"] = material.shader == null ? null : material.shader.name,
+                        ["renderQueue"] = material.renderQueue,
+                        ["hasMainTextureSlot"] = material.HasProperty("_MainTex")
+                    }));
                 entries.Add(entry);
             }
             document["skinnedRenderers"] = entries;
@@ -195,6 +210,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .Where(value => value != null).Distinct().Select(value => new JObject {
                     ["name"] = value.name, ["durationSeconds"] = value.length
                 }));
+            var actions = new JArray();
+            if (unit.View.AnimationManager != null)
+                foreach (UnitAnimationType type in Enum.GetValues(typeof(UnitAnimationType)))
+                {
+                    var action = unit.View.AnimationManager.GetAction(type);
+                    if (action == null) continue;
+                    actions.Add(new JObject {
+                        ["type"] = type.ToString(), ["actionClass"] = action.GetType().FullName,
+                        ["clipCount"] = action.Clips.Count(value => value != null)
+                    });
+                }
+            document["nativeAnimationActions"] = actions;
             return document;
         }
 

@@ -1,5 +1,18 @@
 # Expanded Summoning Phase 2 journal
 
+## October 6, 02:15 UTC — private prototypes and bounded fallback comparison
+
+Pushed e5e79fe9 remains the fetched laptop head; no DATA import or remote race.
+Two original snake prototypes produce 40 offline panels and pass four Blender
+behavior checks. First clay pass exposed head roll; v2 corrects it. No assets
+are packaged. Water's rigid lower coil, native shader and bite/locomotion are
+still unproved, so the fixed research survey adds the recorded native Purple
+Worm pair plus material/view-scale/native-action metadata. No production
+creature change, no save access, no new launch yet. Focused 219/219,
+incremental Release and preflight 486 PASS. Next freeze exact research source,
+complete its gates, smoke/survey under lease and restore. S17 NOT QUALIFIED;
+S14-16 remain complete. [Findings](planning/EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md).
+
 ## October 6, 01:45 UTC — native-rig research 8/8, restored
 
 Exact f507278b passes the complete prelaunch gate: 219 focused/2021 full,
