@@ -145,3 +145,43 @@ not a complete scene-restoration PASS.
 No production weather adapter, attack patch, marker, icon or acquisition path
 was installed. The four evidence identifiers and exact artifact identities are
 recorded in the [mission handoff](../../CODEX-WHITEOUT-UNPUBLISHED-FOUNDATION-HANDOFF-2026-10-05.md).
+
+
+## Disposable-process continuation — 2026-10-05 owner decision
+
+The original failure and rejected reference-restoration requirement above remain
+historical evidence. The owner explicitly accepted native non-party scene
+replacement only inside an automatically exiting, guarded, disposable no-save
+process. No claim is made that disposed mansion NPC/fact references were restored.
+
+NonPartySceneReferenceRestorationRequired: false
+DisposableNoSaveProcessIsolation: true
+WhiteoutPublished: false
+
+The reconstructed `observe-whiteout-disposable-weather-fixture` follows exactly
+one native mansion → Oleg transition, with `AutoSaveMode.None`. It never returns
+to the mansion, retains no prior-scene NPC/fact references, and uses the exact
+existing visual carrier/controller/threshold/event/indoor contracts above. Each
+site restores its three visual fields, two controller fields, saved weather
+values/references, ordered native listeners and existing same-area buff references
+inside its synchronous finally scope, before that scene is left or the process
+exits. The owned weather probe is removed before transition and after Oleg.
+
+Gate A: **WEATHER-FIXTURE-QUALIFIED**, 15/15 PASS. Native Rain/Light, repeated
+Rain, Snow/Light, Clear and original-state restoration deliver five exact native
+weather events per site. Mansion remains policy-inactive; the real Oleg map/part
+is outdoors and policy-active under Rain/Snow. Party/character/inventory identities
+and counts, money, GameTime and saved weather schedule remain unchanged before
+transition and before exit. No player state or quest/kingdom state is deliberately
+changed. Zero save-writing API calls, no raw save operation, automatic exit.
+
+Run `20261006T0402483970988Z-50487eef976d485bacab33716fce964f`, PID 39268.
+This is an engineering artifact embedded at exact base `5c59150a…` with its dirty
+source fingerprint; it qualifies the revised weather gate, not Whiteout combat
+or a clean-source final foundation. All 2,148 domain checks, repository/static/
+icon gates, exact Release build, deterministic package and strict standalone
+package validation passed; runtime preflight passed 492 checks. The exact leased
+live snapshot restored byte-for-byte and the lease Completed.
+
+The continuation handoff will record final clean-source attack qualification.
+No attack adapter or Whiteout provider exists at this weather-only checkpoint.

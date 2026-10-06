@@ -1089,4 +1089,7 @@
   <ItemGroup>
     <Compile Include="WhiteoutNativeContractTests.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="WhiteoutContinuationTests.cs" />
+  </ItemGroup>
 </Project>

@@ -1573,4 +1573,7 @@
     <Compile Include="ElementalRaces\UnpublishedAerialObserverFoundationFactory.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.UnpublishedAerialObserverFoundation.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.UnpublishedWhiteoutFoundation.cs" />
+  </ItemGroup>
 </Project>
