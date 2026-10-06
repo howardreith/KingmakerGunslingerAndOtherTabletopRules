@@ -1,5 +1,19 @@
 # Expanded Summoning Phase 2 journal
 
+## October6,17:47UTC — exact22be bounded snake slice PASS, restored
+
+Complete source/prelaunch PASS:2050 tests87.2s, complete gate181.8s,strict320;
+496 requests,113 orchestration and all ancillary checks. Fresh Steam smoke11/11,
+snake profile/body38/38 and22 metadata rows PASS, including collector. All four
+normal/rollback bodies intact63–64 frames. Exact live profiles/dice/skills and
+native-Worm isolation PASS; no loosened criteria or hidden fixture adjustment.
+[Exact artifact/results/restoration](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-PROFILE-PASS-EVIDENCE.json).
+Snapshot1740460863584Z restored17:47:43UTC:136/.117/exact tree; lease Completed,
+recovery=false, no game/lock/staging/save write. Source/remote stayed22be90c0.
+Prior failures unchanged. Full Sprint17 remains NOT QUALIFIED;32 roots hidden.
+Next poison/constrict/real commands/AI/contacts, then persistence/crowds/UI/routes
+and separate bounded Salamander implementation. No DATA ports.
+
 ## October6,17:16UTC — exacte1 native snake38/38 PASS; collector ERROR, restored
 
 Smoke11/11 and all38 profile/body assertions PASS on exacte1ba198e after full
