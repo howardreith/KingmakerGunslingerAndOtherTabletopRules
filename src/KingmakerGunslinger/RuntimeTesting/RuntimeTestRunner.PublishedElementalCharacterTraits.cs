@@ -10,6 +10,7 @@ using Kingmaker.EntitySystem.Entities;
 using Kingmaker.UnitLogic.Class.LevelUp;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic;
+using Kingmaker.UnitLogic.ActivatableAbilities;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.ElementalRaces;
 using KingmakerGunslinger.FeatureModules;
@@ -35,6 +36,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             if(!host.IsCompatible || !host.Contract.TraitsEnabled || !ElementalCharacterTraitPublicationCoordinator.Published)
                 throw new InvalidOperationException("All-four publication unavailable: "+ElementalCharacterTraitPublicationCoordinator.Failure);
             var target=host.Contract.RaceTraits;var graph=ElementalCharacterTraitPublicationCoordinator.Graph;
+            var hostMain=host.Contract.Assembly.GetType("ZFavoredClass.Main",false,false);
+            var traitSettings=hostMain?.GetField("settings",BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.Static)?.GetValue(null);
+            var traitsProperty=traitSettings?.GetType().GetProperty("enable_traits",BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.Instance);
+            if(traitsProperty==null || traitsProperty.PropertyType!=typeof(bool) || !traitsProperty.CanRead ||
+                !traitsProperty.CanWrite || traitsProperty.GetIndexParameters().Length!=0)
+                throw new InvalidOperationException("Exact reversible host traits-setting contract unavailable.");
+            bool originalTraits=(bool)traitsProperty.GetValue(traitSettings,null);
+            Action<bool> traits=enabled=>{
+                traitsProperty.SetValue(traitSettings,enabled,null);
+                if(!ElementalCharacterTraitPublicationCoordinator.Reconcile("qualification-exact-host-setting-"+enabled))
+                    throw new InvalidOperationException("Native traits-setting reconciliation failed.");
+            };
             var initialEntries=target.AllFeatures.ToArray();
             var foreign=initialEntries.Where(f=>!graph.Features.Contains(f)).ToArray();
             var actors=new List<UnitEntityData>();var prototypes=new List<BlueprintUnit>();
@@ -97,17 +110,37 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var originalGrants=features.Select(f=>f.SelectComponents<ElementalCharacterTraitOwnedGrant>().Single().OwnedFact).ToArray();
                 var aerial=(BlueprintBuff)graph.Resolve(definitions[2].GrantedNode.Symbol);
                 var foreignFact=AerialBuff(owner,aerial);
+                var originalToggle=(ActivatableAbility)originalGrants[0];
+                var fieryBuff=(BlueprintBuff)graph.Resolve(definitions[0].Node(CharacterTraitNodeKind.ActivationBuff).Symbol);
+                originalToggle.IsOn=true;
+                TraitCheck(checks,"published-active-toggle-control",owner.Buffs.Enumerable.Count(b=>ReferenceEquals(b.Blueprint,fieryBuff))==1,
+                    "published toggle owns one exact activation buff before any settings change");
+                traits(false);
+                TraitCheck(checks,"published-traits-off-acquisition-only",!ElementalCharacterTraitPublicationCoordinator.Published &&
+                    target.AllFeatures.SequenceEqual(foreign) &&
+                    features.Select(f=>f.SelectComponents<ElementalCharacterTraitOwnedGrant>().Single().OwnedFact).SequenceEqual(originalGrants) &&
+                    originalToggle.IsOn && !foreignFact.IsDisposed &&
+                    ElementalCharacterTraitCatalog.Nodes().All(n=>ReferenceEquals(graph.Resolve(n.Symbol),library.BlueprintsByAssetId[n.Guid])),
+                    "exact native enable_traits property and reconciliation callback; no GUI/save callback; existing mechanics and stable IDs remain");
+                traits(true);
+                TraitCheck(checks,"published-traits-on-canonical-reuse",ElementalCharacterTraitPublicationCoordinator.Published &&
+                    target.AllFeatures.SequenceEqual(initialEntries) &&
+                    features.Select(f=>f.SelectComponents<ElementalCharacterTraitOwnedGrant>().Single().OwnedFact).SequenceEqual(originalGrants),
+                    "all-four acquisition restored with exact original canonical graph and grants");
                 module(false);
                 TraitCheck(checks,"published-module-off-immediate",!ElementalCharacterTraitPublicationCoordinator.Published &&
                     features.All(f=>f.SelectComponents<ElementalCharacterTraitOwnedGrant>().Single().OwnedFact==null) &&
                     originalGrants.All(f=>f.IsDisposed) && !foreignFact.IsDisposed &&
+                    !owner.Buffs.Enumerable.Any(b=>ReferenceEquals(b.Blueprint,fieryBuff)) &&
                     foreign.SequenceEqual(target.AllFeatures) && definitions.All(d=>library.BlueprintsByAssetId.ContainsKey(d.Feature.Guid)),
                     "exact notification withdraws only owned acquisition/providers; stable IDs and foreign grant remain");
                 module(true);
                 TraitCheck(checks,"published-module-on-one",ElementalCharacterTraitPublicationCoordinator.Published &&
                     features.All(f=>f.SelectComponents<ElementalCharacterTraitOwnedGrant>().Single().OwnedFact!=null) &&
-                    target.AllFeatures.SequenceEqual(initialEntries) && !foreignFact.IsDisposed,
-                    "one rebuilt owned grant per feature; canonical graph reused and foreign facts preserved");
+                    target.AllFeatures.SequenceEqual(initialEntries) && !foreignFact.IsDisposed &&
+                    !((ActivatableAbility)features[0].SelectComponents<ElementalCharacterTraitOwnedGrant>().Single().OwnedFact).IsOn &&
+                    !owner.Buffs.Enumerable.Any(b=>ReferenceEquals(b.Blueprint,fieryBuff)),
+                    "one rebuilt owned grant per feature; Fiery begins off again; canonical graph reused and foreign facts preserved");
                 ElementalCharacterTraitPublicationCoordinator.Reconcile("qualification-repeated-initialization");
                 TraitCheck(checks,"published-repeated-initialization",target.AllFeatures.SequenceEqual(initialEntries) &&
                     features.All(f=>f.SelectComponents<ElementalCharacterTraitOwnedGrant>().Count()==1),
@@ -120,7 +153,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             catch(Exception error){failure=error.ToString();}
             finally
             {
-                module(initial.ElementalRaces);
+                try { traits(originalTraits); } catch(Exception cleanup) { failure=(failure??String.Empty)+"\nHost setting restoration: "+cleanup; }
+                try { module(initial.ElementalRaces); } catch(Exception cleanup) { failure=(failure??String.Empty)+"\nModule restoration: "+cleanup; }
                 foreach(var actor in actors) if(actor!=null && !actor.Destroyed) actor.Destroy();
                 game.EntityDestroyer.Tick();game.EntityDestroyer.Tick();
                 foreach(var prototype in prototypes) UnityEngine.Object.Destroy(prototype);
@@ -130,7 +164,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             TraitCheck(checks,"published-fixture-cleanup",units.SequenceEqual(game.State.Units.All) &&
                 areas.SequenceEqual(game.State.AreaEffects.All) && party.SequenceEqual(game.Player.Party) &&
                 beforeFacts.All(p=>p.Key.Buffs.Enumerable.SequenceEqual(p.Value)) && clock==game.Player.GameTime &&
-                initialEntries.SequenceEqual(target.AllFeatures) && !_workingSaveSmoke.WriteObserved,
+                initialEntries.SequenceEqual(target.AllFeatures) && (bool)traitsProperty.GetValue(traitSettings,null)==originalTraits &&
+                !_workingSaveSmoke.WriteObserved,
                 "exact preexisting scene/party/facts/time/selection; no save writes; request-local preview and actors removed");
             if(failure!=null) TraitCheck(checks,"published-native-execution",false,failure);
             var result=CreateResult(failure==null && checks.All(c=>c.Status=="PASS")?"PASS":"FAIL",checks,failure);
