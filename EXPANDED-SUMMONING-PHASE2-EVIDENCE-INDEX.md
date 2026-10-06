@@ -1,13 +1,15 @@
 # Expanded Summoning Phase 2 evidence index
 
 [Sprint 17 closed body-research fixture](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-REVIEW.md):
-exact 7b76 and 2045 prelaunch PASS (223 focused/2025 full/491 preflight), smoke
-11/11 each; body 2/3 FAIL before attachment on two distinct fixture omissions.
-2045 repairs the floor anchor (8/8 native clearance), then exposes the omitted
-native manual-summon rule input. Current repair reuses the qualified one-cast
-handler and adds full predicate observations/three named control assertions
-(20 total). Latest exact restoration 05:23:35 UTC; no game/lease/staging.
-[Both failures and hashes](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-EVIDENCE.json).
+exact 6bee prelaunch PASS (223 focused/2025 full/491 preflight), smoke11/11,
+game body research20/20: three original attachments, all-renderer rollback,
+native movement, exact five-resource destruction and final census. Driver
+batch remains ERROR on PowerShell's top-level-array wrapping, now reproduced
+and repaired by the pure reader (81 orchestration tests PASS). Earlier two
+fixture failures remain failed. Geometry/ground/contacts are not accepted;
+actor-relative height samples and private art frames identify further review.
+Latest exact restoration 05:41:55 UTC; no game/lease/staging.
+[All attempts and hashes](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-EVIDENCE.json).
 No printed-profile/weapon/contact or new-publication acceptance is inferred.
 
 [Sprint 17 owned-body source slice](assets-source/original-models/sprint17-serpents/SOURCE.md):

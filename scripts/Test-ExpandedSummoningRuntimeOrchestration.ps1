@@ -51,6 +51,23 @@ function Assert-Equal {
     $script:Passed++
 }
 
+$bodyJson = '[{"key":"viper"},{"key":"constrictor-snake"},{"key":"salamander"}]'
+$bodyRows = @(ConvertFrom-KmgSerpentineBodyReviewJson -Json $bodyJson)
+Assert-Equal 3 $bodyRows.Count 'top-level research JSON emits three rows, never one wrapped array'
+Assert-Equal 'viper,constrictor-snake,salamander' ($bodyRows.key -join ',') 'body research preserves the closed order'
+foreach ($invalidBodyJson in @('null', '[]', '{}', '[',
+    '[{"key":"viper"}]', ('[' + $bodyJson + ']'),
+    '[{"key":"viper"},{"key":"viper"},{"key":"salamander"}]',
+    '[{"key":"Viper"},{"key":"constrictor-snake"},{"key":"salamander"}]',
+    '[{"key":"salamander"},{"key":"constrictor-snake"},{"key":"viper"}]',
+    '[{"key":"viper"},{"key":"constrictor-snake"},{"key":"foreign"}]',
+    '[{"key":"viper"},{"key":"constrictor-snake"},{}]')) {
+    $rejected = $false
+    try { $null = ConvertFrom-KmgSerpentineBodyReviewJson -Json $invalidBodyJson }
+    catch { $rejected = $true }
+    Assert-True $rejected 'malformed, missing, wrapped, duplicate, foreign or reordered body evidence fails closed'
+}
+
 Assert-True (Test-KmgBatchCandidateUnavailable -FirstScenario $true -HasEvidence $false -HasDeployment $false -LauncherOutcome 'Unclean') `
     'a failed pre-launch candidate stops repeated full gates'
 foreach ($case in @(

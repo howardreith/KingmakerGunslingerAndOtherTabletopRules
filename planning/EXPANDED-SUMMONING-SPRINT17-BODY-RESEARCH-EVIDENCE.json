@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "status": "RESEARCH FAILED; Sprint 17 NOT QUALIFIED",
+  "status": "Sprint 17 NOT QUALIFIED; two fixture FAIL attempts, then game research 20/20 PASS with driver ERROR",
   "scope": "Original body binding, native movement and owned resource lifetime only; no gameplay/publication qualification",
   "attempts": [
     {
@@ -211,6 +211,294 @@
       "driverSha256": "0F494A30054BBF45F8E6F5DBA826DDBF4322A2D8469A5E0585A4D1B213E444DB",
       "buildSidecarSha256": "BD4397D66A2E4A345B02BE3F40BF6BB308D16D963C7C914442414B9D20AF1A66",
       "repair": "Reuse the unchanged qualified Sprint16ManualSummonControl handler, subscribe only for one synchronous exact-caster/exact-blueprint cast, verify one rule and native part, unsubscribe in finally. Record all native predicate terms before setup, after setup and after native appearance settlement. Do not override IsDirectlyControllable or remove appearance buffs. Three new named native-control assertions make the nominal complete body gate 20. New immutable artifact and complete affected batch still required."
+    },
+    {
+      "candidate": "6bee8d5716bba1340adc3c629c88d15a1a1d8f25",
+      "sourceFingerprint": "a8c2ff2d2cc1b1186c362b5c7340eb88249f910a051959819f73ea4aab5c6b78",
+      "dllSha256": "e329f4ce7955940d42cafd39439a5bcdcc33ba6c7d8dd8b866c0b19533a50cbb",
+      "dllMvid": "0d2d081b-ddea-4e97-bd75-30b9e730a25c",
+      "packageSha256": "0ea7bd7f34f19d72f45ef8a43c723bfaf1d436f8066d537b94bbb39119656a03",
+      "packageMembers": 318,
+      "version": "0.0.141",
+      "prelaunch": {
+        "focused": 223,
+        "full": 2025,
+        "fullSeconds": 85.9,
+        "completeGateSeconds": 181.8,
+        "runtimePreflight": 491,
+        "orchestration": 68,
+        "persistenceWiring": 11,
+        "persistenceScopes": 3,
+        "persistenceRejections": 19,
+        "crowdRoundTrips": 5,
+        "crowdRejections": 7,
+        "exactBuildAndStrictPackage": "PASS"
+      },
+      "recordedBatchRuns": [
+        {
+          "scenario": "working-save-smoke",
+          "startedAtUtc": "2026-10-06T05:35:10.6052958Z",
+          "parameters": {},
+          "launcherOutcome": "Clean",
+          "exitCode": 0,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T0535115248572Z-working-save-smoke",
+          "requestId": "20261006T0535115405422Z-885f48d644684d18a56a836fc66b8469",
+          "requestSha256": "7015ab2779d459972869aebc1272104e807c000ccb59147b5275f11879a9dfb8",
+          "resultSha256": "77b74477e85d0750ff3e217ee57ed68af2a4fbf5739ae7e2928880bcde87479c",
+          "assertions": 11,
+          "passed": 11,
+          "failed": [],
+          "orchestrationSha256": "b192f00cf22c7b304d9d35b617ef5e3dacda83334b2c2dbadd4095cdc94d8901",
+          "processId": 33120,
+          "processStartedUtc": "2026-10-06T05:35:12.6917255Z",
+          "scenarioStatus": "PASS",
+          "outcome": "PASS",
+          "completedAtUtc": "2026-10-06T05:38:03.5200008Z"
+        }
+      ],
+      "bodyRuntime": {
+        "scenario": "disposable-expanded-summoning-serpentine-bodies",
+        "requestId": "20261006T0538097630063Z-c801abe6c7f945978983a4ac1b1fabd1",
+        "requestSha256": "AF0DAB3AAB4A21A4FBBA89FBE41BFF52698B061EB8A8E13A0AE5902FF4A629E3",
+        "resultSha256": "4597BFF0A9BC6A991AB1FCDE63978F0DC78DDFBF22BADB0015F932979E460EC6",
+        "orchestrationSha256": "A2A566AF3FBF064624294C0BED416744B8A31B60F9DE9D32707C406C91B3E16D",
+        "process": {
+          "kingmakerProcessId": 34260,
+          "kingmakerStartedAtUtc": "2026-10-06T05:38:11.1738806Z",
+          "steamAppId": 640820,
+          "preLaunchKingmakerProcesses": []
+        },
+        "status": "PASS",
+        "assertions": [
+          {
+            "name": "sprint17-native-control-viper",
+            "status": "PASS"
+          },
+          {
+            "name": "sprint17-native-appearance-viper",
+            "status": "PASS"
+          },
+          {
+            "name": "sprint17-body-rollback-viper",
+            "status": "PASS"
+          },
+          {
+            "name": "sprint17-body-intact-viper",
+            "status": "PASS"
+          },
+          {
+            "name": "sprint17-native-body-movement-viper",
+            "status": "PASS"
+          },
+          {
+            "name": "sprint17-body-owned-resource-cleanup-viper",
+            "status": "PASS"
+          },
+          {
+            "name": "sprint17-native-control-constrictor-snake",
+            "status": "PASS"
+          },
+          {
+            "name": "sprint17-native-appearance-constrictor-snake",
+            "status": "PASS"
+          },
+          {
+            "name": "sprint17-body-rollback-constrictor-snake",
+            "status": "PASS"
+          },
+          {
+            "name": "sprint17-body-intact-constrictor-snake",
+            "status": "PASS"
+          },
+          {
+            "name": "sprint17-native-body-movement-constrictor-snake",
+            "status": "PASS"
+          },
+          {
+            "name": "sprint17-body-owned-resource-cleanup-constrictor-snake",
+            "status": "PASS"
+          },
+          {
+            "name": "sprint17-native-control-salamander",
+            "status": "PASS"
+          },
+          {
+            "name": "sprint17-native-appearance-salamander",
+            "status": "PASS"
+          },
+          {
+            "name": "sprint17-body-rollback-salamander",
+            "status": "PASS"
+          },
+          {
+            "name": "sprint17-body-intact-salamander",
+            "status": "PASS"
+          },
+          {
+            "name": "sprint17-native-body-movement-salamander",
+            "status": "PASS"
+          },
+          {
+            "name": "sprint17-body-owned-resource-cleanup-salamander",
+            "status": "PASS"
+          },
+          {
+            "name": "sprint17-body-fixture-cleanup",
+            "status": "PASS"
+          },
+          {
+            "name": "loaded-mod-version",
+            "status": "PASS"
+          }
+        ],
+        "rows": [
+          {
+            "key": "viper",
+            "travel": 2.463896,
+            "maxVelocity": 3.04798913,
+            "samples": 12,
+            "lowestAboveActorMin": -0.107900143,
+            "lowestAboveActorMax": -0.107900143,
+            "firstActor": [
+              9.484149,
+              -6.00000238,
+              -9.130402
+            ],
+            "lastActor": [
+              11.41473,
+              -6.00000238,
+              -9.333154
+            ],
+            "firstHead": [
+              1.82728851,
+              4.179959,
+              1.239594
+            ],
+            "lastHead": [
+              1.76965272,
+              4.07271576,
+              1.10584533
+            ],
+            "scope": "original body binding/movement/lifetime only; not printed profile or attack/contact qualification",
+            "settledNativeControl": true,
+            "controllableSummonPart": true,
+            "capital": false
+          },
+          {
+            "key": "constrictor-snake",
+            "travel": 2.46156645,
+            "maxVelocity": 3.04798937,
+            "samples": 12,
+            "lowestAboveActorMin": -0.1087389,
+            "lowestAboveActorMax": -0.1087389,
+            "firstActor": [
+              9.484383,
+              -6.00000238,
+              -9.130432
+            ],
+            "lastActor": [
+              11.4124,
+              -6.00000238,
+              -9.332906
+            ],
+            "firstHead": [
+              1.82728636,
+              4.17996,
+              1.239594
+            ],
+            "lastHead": [
+              1.45251727,
+              4.60361242,
+              0.837490857
+            ],
+            "scope": "original body binding/movement/lifetime only; not printed profile or attack/contact qualification",
+            "settledNativeControl": true,
+            "controllableSummonPart": true,
+            "capital": false
+          },
+          {
+            "key": "salamander",
+            "travel": 2.46140337,
+            "maxVelocity": 3.04798913,
+            "samples": 12,
+            "lowestAboveActorMin": 0.03477955,
+            "lowestAboveActorMax": 0.3121853,
+            "firstActor": [
+              9.477695,
+              -6.00000238,
+              -9.1299305
+            ],
+            "lastActor": [
+              11.4122372,
+              -6.00000238,
+              -9.33289051
+            ],
+            "firstHead": [
+              -0.013397105,
+              1.90102148,
+              0.440805733
+            ],
+            "lastHead": [
+              0.0490519255,
+              1.78821659,
+              0.28022483
+            ],
+            "scope": "original body binding/movement/lifetime only; not printed profile or attack/contact qualification",
+            "settledNativeControl": true,
+            "controllableSummonPart": true,
+            "capital": false
+          }
+        ],
+        "metadataSha256": "9888966C6B1CD4A3B4933134D217E044B005AB37193EF46006111FC4042797F6",
+        "supportingArtOnly": [
+          {
+            "file": "sprint17-constrictor-snake-owned-body.png",
+            "sha256": "2CC8299547C56A129A317088D26A1D973ED56839D631654A4A31DA18E3DD5D48"
+          },
+          {
+            "file": "sprint17-salamander-owned-body.png",
+            "sha256": "7D9AA0ABB9AF105F00D2EF1396EB5F3A07515F77B188755F55CF89072D26DA9B"
+          },
+          {
+            "file": "sprint17-viper-owned-body.png",
+            "sha256": "F336B01FE62179D9F69245B0D09879357EEF93EAADA6A176FB703B1270127E98"
+          }
+        ]
+      },
+      "batchStatus": "ERROR",
+      "classification": "ORCHESTRATION",
+      "cause": "Windows PowerShell @(Get-Content -Raw | ConvertFrom-Json) wraps the real three-row JSON array as one outer item. Runtime result is genuinely PASS 20/20; driver throws before appending that run and remains ERROR. Independent read confirms three exact keys. Do not rewrite the original batch or claim overall visual/sprint qualification.",
+      "researchFindings": "Original mesh attachment, all-renderer rollback, native movement and exact five-resource cleanup pass for all three actors. Each records 12 weighted-world samples and about 2.46m travel. Snake lowest points are about -0.108m relative to actor; Salamander varies +0.035 to +0.312m. These are actor-relative, not floor-distance measurements. Supporting frames show questionable snake coil/body junction and partially occluded hybrid tail. Ground support, credible locomotion, final anatomy, full lifecycle, weapon/contact and printed profiles remain unqualified.",
+      "saveWrite": false,
+      "saveFilesystemAccess": false,
+      "restoration": {
+        "status": "VERIFIED",
+        "snapshot": "20261006T0534456803703Z",
+        "completedAtUtc": "2026-10-06T05:41:55.0949538Z",
+        "before": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "after": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "leaseId": "runtime-20261006T053445Z-deaea86406024ce2b039209b12e4a1f9",
+        "leaseStatus": "Completed",
+        "recoveryRequired": false,
+        "leaseReleased": true,
+        "gameProcessesRemaining": 0,
+        "stagingRemaining": false
+      },
+      "archive": "laptop-runtime-20261006T0534445936645Z",
+      "batchSha256": "BF2BA6666134C8F2DC661B03F698D5845BD52834E6E5CCB35C3E09FDF3EE4D00",
+      "driverSha256": "C58C4E1DFC879625597E84BDA5C5D68AB01A1FF051E72666A9B9FD978F8F800B",
+      "buildSidecarSha256": "971EEBB92F786AC6EDC568D1914F3377F57E39462074C18ECCF5B410781ABA14",
+      "repair": "Pure ConvertFrom-KmgSerpentineBodyReviewJson assigns before enumerating and validates the exact ordered three-key scope. Orchestration suite expands to 81 passing assertions, including malformed/missing/nested/duplicate/foreign/reordered cases, and reads the actual capture as three rows. Future driver must use this helper. Keep ERROR archived; next bounded evidence should measure current bone transforms and native floor separately before original geometry revision/full qualification."
     }
   ]
 }

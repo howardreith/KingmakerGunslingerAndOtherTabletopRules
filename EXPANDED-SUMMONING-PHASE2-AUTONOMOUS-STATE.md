@@ -34,9 +34,11 @@ no merge, release, tag, version bump, force push or permanent deployment.
   **`a35993fc8b4000466f68f2a7bd98c579021b1f23`**.
   First failed body-research candidate:
   **`7b76dba2c9681b1702bed854a521b241b27a1250`**.
-  Second failed body-research candidate/current verified remote:
+  Second failed body-research candidate:
   **`2045c302b071281c5dff71c883612d55218c7643`**.
-  This containing native-control fixture repair is its normal descendant; Sprint 17
+  Latest exact body-research candidate/current verified remote:
+  **`6bee8d5716bba1340adc3c629c88d15a1a1d8f25`**.
+  This containing reader/evidence checkpoint is its normal descendant; Sprint 17
   gameplay and visuals are still NOT QUALIFIED.
   Unexpected active-branch motion remains a stop; archive motion is informational.
 - Exclusive ignored receipt: `artifacts/laptop-source-owner-20261005.json`;
@@ -60,13 +62,13 @@ no merge, release, tag, version bump, force push or permanent deployment.
   11/11 smoke, 209/209 main, 20/20 crowd, 9/9 prepare, 9/9 cleanup, 5/5 absence.
   No mechanics, visual, asset or serialized-state delta since that pass;
   only Dire suppression and guarded fixture changes, with full main rerun.
-- Latest actual snapshot `20261006T0517055890005Z` restored exactly;
-  closed `2026-10-06T05:23:35.9200899Z`: 136 files / Info 0.0.117 /
+- Latest actual snapshot `20261006T0534456803703Z` restored exactly;
+  closed `2026-10-06T05:41:55.0949538Z`: 136 files / Info 0.0.117 /
   `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
   Lease Completed/recoveryRequired=false; no game/shared lock/staging.
   Prior native working-save cleanup/absence clean; publication and research did not write
   saves. No save-file or protected-baseline access. Journal SHA
-  `1A269A0F4F78421CB9E4E1BF3DED55C7B12DBDD4C667060AE2550E3B71C51D00`.
+  `BF2BA6666134C8F2DC661B03F698D5845BD52834E6E5CCB35C3E09FDF3EE4D00`.
 - Publication DLL SHA `8c76fcbed3eb73ffb6ca6c6121e610f96a2b36a82fa8f3c6c55edae66da885d9`;
   MVID `ed8fe210-31e2-4016-870e-8623d3a55fa2`; ZIP
   `eb930278836f0c3953decef589c7214b69c1d1a2fc69f625af56bdc4af254ac2`.
@@ -140,9 +142,20 @@ no merge, release, tag, version bump, force push or permanent deployment.
   Run preflight alone: the separate heartbeat/no-write-census collision is
   preserved and passed unchanged when the checks were serialized.
   [Scope and gate](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-REVIEW.md).
-- Exact next action: freeze/push the native-control repair, run the complete exact artifact
-  gate and guarded fresh-Steam smoke/body review with exact restoration.
-  Inspect motion, supporting coil/ground/jaw, multi-renderer
+- Exact 6bee prelaunch PASS (223 focused/2025 full, 491 preflight,
+  68 orchestration, 318 members), smoke 11/11 and **game body research 20/20**.
+  All three attachments, rollback, native movement and exact five-resource
+  cleanup pass. Driver batch remains **ERROR**: PowerShell wrapped the parsed
+  three-row array as one item. Independent actual-data read confirms three
+  rows; pure reader repair + 81 orchestration tests PASS. Do not relabel ERROR.
+  No final visual/gameplay qualification: actor-relative low points are about
+  -0.108m for snakes and +0.035..+0.312m for Salamander, not floor distances.
+  Supporting frames show a questionable coil/body join and occluded hybrid tail.
+- Exact next action: push reader/evidence checkpoint; inspect native floor/pose
+  seam and extend current bone/view/floor measurements, then correct/review
+  original geometry. Use the tested reader in the next stable exact-head gate
+  and complete affected fresh-Steam batch/restoration. Prove coil/ground/jaw,
+  multi-renderer
   fallback/lifecycle. Continue separate Salamander manufactured-spear/tail seam and printed
   profiles/signatures. Research PASS
   is not gameplay/visual qualification. Preserve Salamander identity and
