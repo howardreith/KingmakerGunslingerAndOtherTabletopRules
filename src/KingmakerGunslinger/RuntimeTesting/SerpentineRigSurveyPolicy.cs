@@ -39,6 +39,17 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal static bool MatchesManufacturedPrefab(string blueprint, string prefab)
         { return ManufacturedPrefabSources.Any(row => row[0] == blueprint && row[1] == prefab); }
 
+        // A read-only census preserves absent enumeration, explicit empty
+        // list, null slots and duplicates. None implies usable playback.
+        // Bound before materializing an arbitrary enumeration.
+        internal static T[] SnapshotMetadataSlots<T>(IEnumerable<T> source) where T : class
+        {
+            if (source == null) return null;
+            T[] slots = source.Take(129).ToArray();
+            if (slots.Length > 128) throw new ArgumentException("Native action metadata exceeds128 slots.");
+            return slots;
+        }
+
         internal static bool MatchesHybridWeaponSource(string blueprint, string prefab,
             string primaryWeapon, bool hasOffhand)
         {

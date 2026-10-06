@@ -10,6 +10,26 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class ExpandedSummoningSprint17Tests
     {
+        internal static void ActionMetadataPreservesMissingEmptyAndNullSlots()
+        {
+            Assertions.True(SerpentineRigSurveyPolicy.SnapshotMetadataSlots<object>(null) == null,
+                "Absent enumeration stays unknown, not invented empty.");
+            var empty = SerpentineRigSurveyPolicy.SnapshotMetadataSlots(new object[0]);
+            Assertions.True(empty != null && empty.Length == 0, "An observed empty list stays explicitly empty.");
+            var action = new object(); var input = new[] { null, action, null, action };
+            var copy = SerpentineRigSurveyPolicy.SnapshotMetadataSlots(input);
+            Assertions.False(ReferenceEquals(copy, input), "Capture cannot mutate the native source list.");
+            Assertions.True(copy.SequenceEqual(input), "Retain exact slots, nulls and duplicate references.");
+            copy[1] = null;
+            Assertions.True(ReferenceEquals(input[1], action), "Snapshot edits leave original references intact.");
+            Assertions.Equal(128, SerpentineRigSurveyPolicy.SnapshotMetadataSlots(new object[128]).Length,
+                "A complete bounded all-null observation is valid metadata, not usable action proof.");
+            bool refused = false;
+            try { SerpentineRigSurveyPolicy.SnapshotMetadataSlots(new object[129]); }
+            catch (ArgumentException) { refused = true; }
+            Assertions.True(refused, "An oversized census remains rejected, not silently truncated.");
+        }
+
         internal static void ManufacturedActionCensusIsClosedAndDefensive()
         {
             var sources = SerpentineRigSurveyPolicy.ManufacturedPrefabSources;
