@@ -2,10 +2,12 @@
 
 ## Current disposition, 2026-10-06 UTC
 
-RESEARCH SOURCE CHECKPOINT; Sprint 17 NOT QUALIFIED. The containing commit
-descends normally from pushed Sprint 16 closure evidence
-`b27b6aea04d4e1e2b151339fca36407ba45bb8a9`. PR #26/laptop remains the sole
-active line. No DATA source imported. Sprints 14-16 remain complete.
+RESEARCH PASS ONLY; Sprint 17 NOT QUALIFIED. Exact research candidate
+`f507278bbebe5894130dc6ec51978580bc2c43d0` passed all prelaunch gates and
+fresh Steam smoke **11/11**, metadata survey **8/8**. Actual leased snapshot
+restored exactly. [Artifact/request/result/restoration hashes](EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-EVIDENCE.json).
+It descends normally from Sprint 16 closure evidence b27b6aea. PR #26/laptop
+remains the sole active line. No DATA source imported. Sprints 14-16 remain complete.
 
 Only guarded research code, its fixed policy/schema tests and current-state
 documentation change. No new summon, identity, asset, icon, mechanic or save
@@ -56,8 +58,12 @@ Steam App ID 640820 smoke/survey processes and restore that actual snapshot.
 - Orchestration: **68** assertions PASS.
 - Persistence: 11 wiring checks, 3 exact scopes, 19 rejection cases PASS.
 - Crowd: 5 exact request round trips, 7 rejection cases PASS.
-- Exact-head repository/full suite/clean build/strict package: PENDING.
-- Guarded metadata survey: NOT RUN.
+- Exact-head repository/static/icon/manifest and full suite: **2021/2021**,
+  unfiltered, 90.2 seconds.
+- Clean exact-reference Release and strict deterministic package: PASS,
+  312 members, version unchanged at 0.0.141.
+- Guarded metadata survey: **8/8 PASS**, smoke **11/11 PASS**, two fresh
+  Steam App ID 640820 processes, one immutable package.
 
 The first frozen source `dc3aff789dbe747a49c5727c41b88deb810d0451` stopped
 in repository validation: the pinned development test count still said 2020
@@ -67,7 +73,52 @@ development metadata to 2021, preserving the immutable public-release count.
 The exact gate must run on that new committed source, not reuse this failed
 attempt. Machine-local log: `artifacts/sprint17-dc3aff78-exact-gate.log`.
 The complete repository wrapper passes after the pin correction; log
-`artifacts/sprint17-count-repair-validation.log`. Full exact gate remains next.
+`artifacts/sprint17-count-repair-validation.log`. New exact f507 full gate
+passes; log `artifacts/sprint17-f507278b-exact-gate.log`.
+
+## Live findings and exact restoration
+
+Run `20261006T0142363709333Z-disposable-expanded-summoning-serpentine-survey`
+confirms both native blueprint/view pairs and their existing public summons.
+At 60 native frames:
+
+- Water Elemental: **seven** skins. `body` has 43 complete bones rooted at
+  `LowerTorso`, including a spine chain, neck/head and `Jaw_M`, plus arms and
+  water-spiral branches. Six further skins carry the water surface/effects.
+  This is not a ready-made snake, nor a single-renderer swap. The bounded
+  prototype must use the torso/head/jaw without arm geometry, suppress every
+  exact-owned water skin atomically and retain native fallback/cleanup.
+- Lizardfolk: `_lizardman001` has **39** bones rooted at `Torso_Lower`, with
+  manufactured-weapon arm/hand chains, jaw and four tail joints. A second
+  `_ammunition04` skin has 19 bones. The prefab still shows native
+  `WP_ShieldLightDamaged` and `lizardman_club` meshes despite the existing
+  Salamander spear blueprint. Those are an explicit S17 visual defect to
+  replace through the separate owned humanoid/weapon seam, not evidence of
+  correct spear handling.
+- No Unity controller clip list was exposed; the views carry Owlcat's native
+  `UnitAnimationManager`. No animation curves/assets were exported.
+- Owned-only destruction restored all **955** original unit references, all
+  **3** party references and every original area membership. No save write.
+
+The earlier S16 pre-candidate note's Purple Worm recommendation and Tiny/Small
+Viper premise were hypotheses, not qualified contracts. Viper is **Medium**;
+this measured native water-body/jaw chain is the first bounded snake prototype
+candidate. It still needs an offline and live visual slice; the research PASS
+does not accept a compromised shape or authorize a global animation rewrite.
+Salamander remains a separate seam and keeps its existing identity/placements.
+
+Lease `runtime-20261006T013907Z-c7cd7841df2344e3999cf79923710591` was acquired
+before live observation. Actual snapshot `20261006T0139078842255Z` restored
+at `2026-10-06T01:45:45.9953210Z`: **136 files**, Info **0.0.117**, tree
+`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+Lease Completed/recoveryRequired=false; zero game processes, no shared runtime
+lock or staging. Immutable ZIP/sidecar/driver/extraction and raw private frames
+remain in `artifacts/laptop-runtime-20261006T0139071137036Z` and the named
+evidence directory. Prior native working-save cleanup remains unmodified.
+
+Next: bounded original mesh/binding prototype, exact profile/signature work,
+offline pose review and one stable hidden Sprint 17 qualification candidate.
+No new creature is registered or published by this checkpoint.
 
 ## Primary-rule intake
 
