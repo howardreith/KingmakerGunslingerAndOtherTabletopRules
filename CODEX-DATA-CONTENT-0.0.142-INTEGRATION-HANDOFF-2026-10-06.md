@@ -1,3 +1,281 @@
+# DATA 0.0.142 continuation closure — 2026-10-06
+
+Disposition: BLOCKED-PERSISTENCE-FIXTURE
+MergeReadyTechnical: false
+TraitsRegistered: true
+TraitsConditionallyPublished: true
+MasterMerged: false
+TagCreated: false
+ReleasePublished: false
+OwnerAestheticApproval: NOT_RECORDED
+HumanTooltipAcceptance: PENDING
+HumanMerchantAcceptance: PENDING
+
+The safe release integration, four icon intakes and native publication/mechanics
+qualification are complete. The mission's merge-ready terminal state is not
+achieved: the mandatory working-save backup/restoration fixture is unavailable.
+PR [#28](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/28)
+is OPEN and DRAFT. GitHub reports MERGEABLE/CLEAN; that describes Git topology,
+not technical readiness. No persistence writer or raw-save workaround was used.
+
+## Exact topology and qualification boundary
+
+- Repository/origin: howardreith/KingmakerGunslingerAndOtherTabletopRules,
+  https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules.git.
+- Continuation intake local/remote HEAD: 13ddbb17d083d9cc112aacd69f0f07f648b75cc7;
+  its direct parent remains exact released base 97f0a966b3219ce0122626a492529b509e1db880.
+- Master remains 2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a.
+- Annotated v0.0.141 object remains 95b7d80d5a474a573e9478d2c951614f86b00a71;
+  peel remains 97f0a966b3219ce0122626a492529b509e1db880.
+- Read-only readiness source remains 38691cff652d1ed38314984c9ad74549639f3802.
+- Branch: codex/data-content-traits-0.0.142-integration-2026-10-06.
+- Worktree: C:/Dev/KingmakerGunslingerLab/worktrees/data-content-traits-0.0.142-integration-2026-10-06.
+- Exact clean qualified source/build commit: 64870d327b513077f0032a0ee1d544301378a5d4.
+  The final evidence tip contains documentation only and is not rebuilt.
+  Exact final local/remote tip, clean status and PR head are emitted after the
+  wrapper push in artifacts/mission/final-closure.json and the task response.
+- No merge, rebase, reset, force push, tag or release. No master, readiness,
+  prior DATA or laptop branch movement was caused by this mission.
+
+## Catalog repair and clean transplant
+
+Commit 6670f8d03b99b2c7e78dfeb6d958962a09fbdce5 repaired exactly the two stale
+authority pins after proving released bytes and semantics. Released registry
+SHA-256 was 63b9102ca821029d1e440cc68be118d3ef06de9f9036428ee13b5c9e2d3ba356;
+delegated icon-manifest SHA-256 remains
+40754cb1ce93473befaf10be1c4d0fce1296ef73c218d83c6a493f014d0c734d.
+RuntimeBehaviorChanged: false, SummoningContentChanged: false and
+AuthorityMetadataCorrected: true describe that repair only. The later authorized
+11-node DATA append preserves all 2,649 released registry entries exactly;
+the current root registry pin tracks those actual current bytes.
+
+The readiness branch was never merged or cherry-picked wholesale.
+[Transplant manifest](docs/integration/DATA-0.0.142-TRANSPLANT-MANIFEST.md) retains
+all 21 original commit classifications, 35 source authority/hash receipts and
+each generic dependency/reconciliation. Compilation, native runs and forbidden
+tree audits prove the DATA slices use released APIs without post-release
+Summoning code. All 351 protected production/evidence/asset files are unchanged.
+Shared inherited test/validator edits only update current whole-package counts
+for four icons and trailing registry offsets for 11 nodes; historical release
+qualification, publication/model counts and claims remain untouched.
+No forbidden development ref/worktree/PR or runtime scenario was used.
+
+Continuation checkpoints (all pushed through the required wrapper):
+
+- 6670f8d03b99b2c7e78dfeb6d958962a09fbdce5 — qualified catalog metadata repair.
+- ffb3d2e40c28690fc25eb40388200c01bd5dda58 — content, original art and native publication candidate.
+- 314a11775b0141fa616689cf09dcadcd27263892 — expanded publication settings/toggle controls;
+  its immutable-setting runtime assumption failed and is retained as evidence.
+- 64870d327b513077f0032a0ee1d544301378a5d4 — exact native immutable-setting contract repair and final qualified source.
+- Final documentation-only closeout — this record, release/manual status and curated evidence.
+
+## Original art ledger
+
+All four sources are original opaque 1254×1254 PNGs. Canonical exports are
+crop-free 128×128, 8-bit noninterlaced RGBA using the approved painted-magical /
+project-painted-128 path. Each runtime asset equals its export byte-for-byte.
+All source hashes are distinct; all export hashes are distinct.
+
+| Concept | Source SHA-256 | Export/runtime SHA-256 |
+| --- | --- | --- |
+| fiery-glare | a3ed28c9a92940f60cee501ecd429e7e4d7c5bd7d8f6f209124985d6863005e3 | 0ff889c3321e0d30b82e9d8c2fc5b80f81f134b48c636f6fc231826fccf993f5 |
+| stoic-dignity | f821992b390be1cc214a137f54c4122c2d460c542805023359a79bcb66849ac3 | e1f619d17470cff018799db9b1c6554cf11e6b0626723360603f332ce7fb6f51 |
+| aerial-observer | 77d3196f92d4d11fee14d13d3b32de5063c8bf27b99fa6ca0295e02bd87b920e | 462408b925f912e2a1063ac9e8a0ff25b33c68b80fcccb1fa85d05f706fc117f |
+| whiteout | 86bce8afb3482f2d317809153f228dcbb76da351283b46553c186ed317f076dc | 3afdb75457b431530356e26ce32c005d2e8dbb8634474e20814b6cfa6d1e9f6b |
+
+Paths for each slug: assets-source/original-icons/icon-overhaul-v2/production/
+sources, exports and briefs; runtime assets/game/icons/<slug>.png.
+The exact initial/refinement prompts, tool image_gen.imagegen, input reference
+roles and refinement lineage are in the four real-provenance briefs (draft=false),
+production manifest and objective review report. Technical protected hashes do
+not record owner aesthetic approval.
+
+The three initially passing icons were not regenerated or edited. Whiteout used
+exactly three deliberate attempts: attempt 1 clipped the arrow; attempt 2 clipped
+hair; attempt 3 passed subject/contained-arrow/precipitation and grayscale 32px
+readability. Every rejected source and verdict is retained as history in production
+revisions and ignored review evidence; no rejected source is packaged.
+
+CodexObjectiveVisualReview: PASS
+OwnerAestheticApproval: NOT_RECORDED
+
+Review packet: artifacts/mission/icon-review-qualified/contact-sheet.png.
+Selected Whiteout: whiteout-128.png, whiteout-32.png, whiteout-32-gray.png there.
+The packet also has sources, 128/48/32 and grayscale previews for all concepts.
+[Manual checklist](docs/DATA-0.0.142-MANUAL-ACCEPTANCE.md) retains only actual human
+results; every human row remains NOT PERFORMED.
+
+## Stable production identities and native publication
+
+All nodes below are manifest-owned, stable and registered. Symbol prefix is
+KMG.ElementalRaces.CharacterTraits. Four features are the only selection entries.
+The Fiery feature and toggle share its icon; the other features use their own
+concept. Six hidden nodes have no independent icon or visible localization.
+
+| Symbol suffix | Frozen GUID | Exact type | Presentation |
+| --- | --- | --- | --- |
+| FieryGlare.Feature | ca5d4d43d35548679ed6b533f055cb20 | BlueprintFeature | visible |
+| FieryGlare.Toggle | 15549c6f936f4000a7c476f5d50d2585 | BlueprintActivatableAbility | visible |
+| FieryGlare.ActivationBuff | 7883b258441e4e179b07cacbdc5416ac | BlueprintBuff | hidden |
+| StoicDignity.Feature | 51faa3c273df41738553c18c088ef565 | BlueprintFeature | visible |
+| StoicDignity.ProviderBuff | 46e6b683b15a4811886730027994e58d | BlueprintBuff | hidden |
+| StoicDignity.Area | b3f85f9663b44129b222ae69bb3e8cd3 | BlueprintAbilityAreaEffect | hidden |
+| StoicDignity.RecipientBuff | 461f898838864ff0b50ab355efa0c644 | BlueprintBuff | hidden |
+| AerialObserver.Feature | 4064cbe37690440a8650ea5689354a65 | BlueprintFeature | visible |
+| AerialObserver.ProviderBuff | 12f9760b84264e178af8a5251d559242 | BlueprintBuff | hidden |
+| Whiteout.Feature | 7aa5dc9716e4437daa8e00506f6ddd83 | BlueprintFeature | visible |
+| Whiteout.ProviderBuff | 901f9f54462846149cf7fb24ec04a5a5 | BlueprintBuff | hidden |
+
+The canonical adapter resolves all 11 matching type/component/reference nodes
+or creates and registers the complete detached graph. Partial, foreign same-GUID,
+wrong-type and altered component graphs fail closed. Repeated initialization
+reuses exact canonical references. Registered identities are not disposed by
+detached ownership and remain resolvable while acquisition is disabled.
+
+Native registration preflights all identities and eight localized Name/Description
+keys, revalidates before commit, registers the graph before selection mutation
+and rolls back owned state in reverse order. Selection rollback runs first;
+incomplete selection rollback retains resolutions rather than dangling references.
+Foreign identities, localized values, selection entries and owned facts are
+not swept or overwritten.
+
+Target: Favored Class racial_traits / RacialTrait,
+331ed3c4a988415785f71a37b826d0f1. Each feature uses the exact supported host
+PrerequisiteRace bound to the canonical Ifrit/Oread/Sylph/Undine object,
+native PrerequisiteNoFeature(self), GroupType.All. All four publish atomically
+only when the supported host, enable_traits and Elemental Races module admit them.
+No alternate-trait/feat/automatic-race/custom selection publication occurs.
+
+Provider lifecycle uses holder-created MechanicsContext and the exact serialized
+owned Fact reference. The Elemental module instance event immediately removes
+and rebuilds one owned provider; foreign same-blueprint grants are preserved.
+The active Fiery toggle buff is removed on module-off and re-enables initially off.
+Feature removal cleans the recorded owned fact. Actual saved-character respec
+and provider/toggle save reconstruction remain unqualified.
+
+The installed Favored Class enable_traits property is an immutable startup-loaded
+setting, not a live GUI toggle. Its exact native contract and source/DLL/MVID
+are in [the setting contract](docs/research/FAVORED-CLASS-TRAIT-SETTING-CONTRACT-2026-10-06.md).
+The paused fixture exercised the native getter with a request-local settings
+copy and restored the original object; no host constructor, GUI/save callback or
+configuration file was invoked. Module notification is a real instance-event
+path. Host-absent/incompatible and partial-graph policies have deterministic
+coverage; the native runs use the exact supported installed host.
+
+## Mechanics and content
+
+- Fiery Glare: exact Take10ForSuccess(CheckIntimidate), optional free/no-resource
+  toggle initially off, 10 only when it succeeds, normal-roll path otherwise,
+  combat/dialogue-compatible and unrelated skills untouched.
+- Stoic Dignity: conscious holder +1 Trait, other allies within 10 feet +1 Morale,
+  no own morale aura, exact effect/source-lineage suppression, ambiguous identity
+  grants, unrelated effects remain unrelated, replay once and native stacking.
+  No cleanse, immunity or duration mutation.
+- Aerial Observer: +2 Trait Perception only during exact KMG Wings of Air
+  e116e1e0a17a4aceb001000000000019. Visual/foreign flight excluded.
+- Whiteout: outdoor real-map position plus actual Rain/Snow Light+, independent
+  10% after successful native miss handling, native failures preserved, exact
+  Seeking/IgnoreConcealment bypass, one roll per attack and 28% with native 20%.
+  No fog/waterfall/nonattack coverage invented. One-way disposable mansion→Oleg,
+  exact per-area weather/controller/listener restoration and request cleanup.
+  Native non-party scene replacement is accepted; no reference-restoration claim.
+- Pistol, Blunderbuss and Last Word descriptions resolve with normalized ordinary
+  prose and shared Reliable/Seeking text. Human rendered-text review is pending.
+- Model D native rows: Oleg three mundane firearms ×1 plus powder/ball ×50;
+  capital three +1 firearms ×1, powder/ball/cartridge ×200 and kit ×1;
+  Bokken powder/ball/cartridge ×100. Capital generic Eastern weapons/spear
+  removal and retained regional/BTSL/Better Vendors/named-loot/Salesman paths pass.
+  Existing serialized merchant inventory is not rewritten. Human screens pending.
+- Nodachi was already complete. Earthsense and Lunge remain omitted/blocked;
+  neither is implemented here. No other backlog work began.
+
+## Exact artifact and validation
+
+Version: 0.0.142
+InformationalVersion: 0.0.142-elemental-race-traits-and-content
+QualifiedSource: 64870d327b513077f0032a0ee1d544301378a5d4
+DLL SHA-256: df420ccceb33014009017e2324cd82f9de6c02e86350bbf9d62181ba7b6c8312
+MVID: a9a2febb-55b5-42c6-91b5-b36153477671
+ZIP SHA-256: 776f027a950a793d98a5295ceb1bf8d2914d50346194af7a2d6b8981fc5b3b7c
+Source fingerprint: b919a867a2f27df003de4c5dfc2b2ddcb22a0fbfb7c4cdbfeb41616fdbe34562
+Package members: 286
+
+Release ZIP: artifacts/packages/KingmakerGunslinger-0.0.142-elemental-race-traits-and-content.zip.
+The local-runtime ZIP and independent final reproduction have that same hash.
+No placeholder or rejected art is packaged.
+
+Baseline 1,958 tests; final 2,252/2,252. Focused DATA 294/294.
+Catalog corruption 26/26; trait-intake corruption 12/12; request/preflight 500/500.
+Repository/static/icon/protected assignments/manifest, changed PowerShell parser
+and Python syntax, clean exact-reference Release build, deterministic packaging
+and strict standalone validation pass. Full commands and exact native assertions
+are in reports/elemental-character-traits/DATA-0.0.142-QUALIFICATION-2026-10-06.json.
+The build log is artifacts/mission/qualified-source-build.log; final preflight
+ran alone through the normal-user helper. The pre-build static candidate ledger
+is retained; it is not a full persistence/release qualification claim.
+
+Eight independent fresh Steam App ID 640820 processes used this exact clean
+source/DLL/ZIP/MVID. Total 291 native assertions:
+
+| Scenario | PID | Assertions | Result | Evidence ID |
+| --- | --- | --- | --- | --- |
+| observe-published-elemental-character-traits | 36756 | 38 | PASS | 20261006T1941084970994Z-observe-published-elemental-character-traits |
+| observe-firearm-descriptions | 38900 | 8 | PASS | 20261006T1944393540098Z-observe-firearm-descriptions |
+| observe-model-d-vendors | 36592 | 26 | PASS | 20261006T1945523684024Z-observe-model-d-vendors |
+| observe-unpublished-race-trait-foundations | 7440 | 49 | PASS | 20261006T1947054388631Z-observe-unpublished-race-trait-foundations |
+| observe-unpublished-aerial-observer-foundation | 34580 | 29 | PASS | 20261006T1948320104374Z-observe-unpublished-aerial-observer-foundation |
+| observe-unpublished-whiteout-foundation | 36764 | 65 | PASS | 20261006T1950003988228Z-observe-unpublished-whiteout-foundation |
+| observe-unpublished-whiteout-foundation | 36880 | 65 | PASS | 20261006T1951355353889Z-observe-unpublished-whiteout-foundation |
+| working-save-smoke | 38100 | 11 | PASS | 20261006T1953099835826Z-working-save-smoke |
+
+The historical scenario names containing unpublished are retained for request
+compatibility; the current fixture grants published stable features and follows
+their real owned-provider graphs. Prior branch and earlier-candidate runtime runs
+are provenance only. Whiteout's two consecutive 65-assertion runs meet exact-artifact
+repetition, and final smoke follows them. Selection is native preview-only;
+sprite/localization resolution is technical evidence, not human UI approval.
+
+Every run acquired its lease before capturing the actual live tree, temporarily
+deployed, auto-exited and restored the exact files and directory set. All eight
+before snapshots match, digest 6ab46591e2046b036d2052db757b6a75db186055936ca1d075ce4445456db58d.
+The curated report records backup/deployment identities and completed leases.
+Zero save-writing API observations on guarded working loads; the description
+and vendor observers require no save. No raw-save operation or baseline access.
+No request-owned game/helper/lease/lock/deployment remains after closure.
+
+Failures are retained and repaired by changed theories, not weaker assertions:
+missing ignored reference/IL inputs; current package/version/count metadata;
+no-save argument/optional receipt fields; native initonly Favored Class setting;
+a generated proprietary SDK resource moved to ignored evidence before push;
+elevated preflight rejected and rerouted to the verified normal-user broker.
+Earlier native/wrapper failures restored their live transactions and leases.
+Private native IL, full inventories, helper transcripts and proprietary files
+remain ignored; only curated project evidence is committed.
+
+## Remaining engineering gate and PR disposition
+
+[Persistence assessment](docs/integration/DATA-0.0.142-PERSISTENCE-FIXTURE-ASSESSMENT.md)
+proves the existing independent generic writer snapshots only FeatureModules.json.
+Its exact-descriptor guard can write the working save but cannot back up/restore
+its original bytes. The generic disposable-save lease supports a new transaction
+save, not replacement/restoration of the existing working save. No independent
+qualified transaction supplies this mission's complete contract.
+
+Persistence prepare/verify/cleanup/verify-absent: NOT RUN.
+SaveWriteAttempted: false
+RawSaveOperationAttempted: false
+PersistenceDisposition: BLOCKED-PERSISTENCE-FIXTURE
+
+PR #28 targets master from this branch, title
+Release 0.0.142: Elemental race traits and content polish.
+It remains DRAFT until the safe transaction and saved-character qualification
+exist. Merging would carry the already tagged v0.0.141 checkpoint missing from
+master; no later Summoning line is included. The branch is pushed and clean at
+closure. A new persistence fixture or explicit owner decision is needed before
+ready-for-review status. Human art/tooltip/merchant acceptance is also pending.
+
+## Historical checkpoints — preserved below
+
 # DATA 0.0.142 release continuation — current qualification checkpoint
 
 ContinuationStartingHead: 13ddbb17d083d9cc112aacd69f0f07f648b75cc7
