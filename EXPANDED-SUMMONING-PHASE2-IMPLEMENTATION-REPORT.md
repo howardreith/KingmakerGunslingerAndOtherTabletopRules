@@ -34,23 +34,23 @@ access; prior authorized native cleanup/absence remains clean.
 HumanReview: NOT_PERFORMED_NONBLOCKING. Accepted engine limitations/adaptation
 unchanged. Sprint 17 research is underway; Phase 2B itself is not yet closed.
 
-### Current Sprint17 research result — NOT QUALIFIED
+### Current Sprint17 research result — research PASS; final visuals/gameplay NOT QUALIFIED
 
-Exacta09648b0 passes all prelaunch (229 focused/2031 full84.1s, gate177.6s,
-491 preflight/81 orchestration/17 provenance, strict318-member package), then
-smoke11 PASS/body36 of37 FAIL. Three movements pass. Hybrid command starts,
-two rolls/four owner damage events, only exact tail contact retained. Native
-spear is unreadable; the vertex diagnostic loses its row. Initial isolation
-does not survive native player-group validation. Tail gap26.7cm and attack
-support-6.94cm remain open original-visual defects, not waived by research.
-All resource/environment/census cleanup PASS; actual0920583696673Z snapshot
-restored09:29:17UTC,136/.117/tree, no game/lease/staging/save write.
-Current source preserves event failures, uses explicit conservative native
-bounds metadata instead of unreadable vertices, and isolates only the owned
-actor on a request-local copy of its native controllable faction. Check enemy
-isolation after settlement and throughout the command; no native validation
-bypass.230 focused/2032 registered, incremental compile/repository PASS only.
-No production attachment, new registration or Sprint17 qualification.
+Exact7ebb34eb passes all prelaunch:230 focused/2032 full83.2s, gate179.4s,
+491 preflight/81 orchestration/17 provenance, persistence11/3/19,crowd5/7,
+clean exact Release/strict318-member package. Fresh Steam smoke11/body40 and
+complete research driver PASS. Three movements, both issued snake bites gap0,
+actual spear/exact tail events and sustained owned-pair isolation in all56
+command pose samples pass. All rollback/material/reference/owned destruction/
+borrowed-native survival/environment/census restoration checks PASS.
+Hybrid final visuals remain open: left palm0.638m from shaft, conservative
+spear gap0.37510m, tail gap0.16190m, distal coil floor minimum-0.112885m.
+Research completeness does not waive these findings. Native unreadable mesh
+remains untouched; explicit bounds metadata never masquerades as vertices.
+Actual0951581493121Z snapshot restored09:59:49UTC,136/.117/tree;
+no game/lease/lock/staging/save write. Next original distal-coil correction,
+bounded two-palm weapon mounting and captured attack-pose replay, then new
+exact-artifact proof. No production hook/new registration or S17 qualification.
 [Exact current review](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-REVIEW.md).
 
 ### Historical research sequence — current result above governs

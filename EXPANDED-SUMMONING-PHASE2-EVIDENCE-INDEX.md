@@ -1,15 +1,22 @@
 # Expanded Summoning Phase 2 evidence index
 
-[Latest Sprint17 exacta09648b0 native-contact research FAIL](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-REVIEW.md):
-229 focused/2031 full84.1s/gate177.6s, all prelaunch PASS; smoke11/body36
-of37, complete batch NOT-QUALIFIED. All movements pass. Hybrid command starts;
-retained contact is exact tail, not spear. Native spear is unreadable and its
-vertex measurement failed; initial enemy isolation is transient under native
-player-group validation. Tail gap26.7cm/support-6.94cm remain open. All resource/
-environment cleanup PASS. Actual0920583696673Z snapshot restored09:29:17UTC;
-no game/lease/staging/save write. Conservative bounds/event-error recording
-and copied request-local faction repair230 focused/2032 registered, incremental
-compile/repository PASS only. [Eight attempts preserved](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-EVIDENCE.json).
+[Latest7ebb34eb research PASS, Sprint17 NOT QUALIFIED](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-REVIEW.md):
+Exact7ebb34eb passes all prelaunch:230 focused/2032 full83.2s, gate179.4s,
+491 preflight/81 orchestration/17 provenance, persistence11/3/19,crowd5/7,
+clean exact Release/strict318-member package. Fresh Steam smoke11/body40 and
+complete research driver PASS. Three movements, both issued snake bites gap0,
+actual spear/exact tail events and sustained owned-pair isolation in all56
+command pose samples pass. All rollback/material/reference/owned destruction/
+borrowed-native survival/environment/census restoration checks PASS.
+Hybrid final visuals remain open: left palm0.638m from shaft, conservative
+spear gap0.37510m, tail gap0.16190m, distal coil floor minimum-0.112885m.
+Research completeness does not waive these findings. Native unreadable mesh
+remains untouched; explicit bounds metadata never masquerades as vertices.
+Actual0951581493121Z snapshot restored09:59:49UTC,136/.117/tree;
+no game/lease/lock/staging/save write. Next original distal-coil correction,
+bounded two-palm weapon mounting and captured attack-pose replay, then new
+exact-artifact proof. No production hook/new registration or S17 qualification.
+[Nine preserved attempts and exact hashes](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-EVIDENCE.json).
 
 [Historical7f S17-only authored winding correction](assets-source/original-models/sprint17-serpents/SOURCE.md):
 snake v4/hybrid v8 independently byte-reproduced; only triangle indices and
