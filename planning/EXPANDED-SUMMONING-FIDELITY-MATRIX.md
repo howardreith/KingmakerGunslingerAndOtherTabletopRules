@@ -1,6 +1,6 @@
 # Expanded Summoning fidelity matrix
 
-## Current Sprint 16 disposition, October 5
+## Current Sprint 16 disposition, October 6 UTC
 
 Sprint 16's **hidden candidate is internally QUALIFIED; publication pending**.
 Exact laptop `e3aeae630d51d27c45694fb9e92e9093048b1af9` passed all prelaunch
@@ -14,7 +14,12 @@ UI/fallback/resource controls pass. Crocodile active-source-death proves three
 native post-death prey updates after one bounded owned-death resume, then exact
 hold cleanup. Final review 81/81 and exact mode/pause/clock/awake restoration
 pass. Actual installation and fresh clean working-save absence verified.
-No assertion waived. New publication artifact must prove all twenty public roots.
+No assertion waived. Later publication 3d13108e passed all twenty public
+roots but FAILED main 207/209 (missed-bite fixture never retried; no hold/
+Death Roll contact). Actual installation restored exactly. The containing
+fixture-only retry/negative-input correction needs a new exact artifact and
+complete publication gate; Sprint 16 remains incomplete.
+[Publication evidence](EXPANDED-SUMMONING-SPRINT16-LAPTOP-PUBLICATION-RETRY-REVIEW.md).
 
 Crocodile identity and fourteen published roots are unchanged. The containing
 publication candidate exposes only six Dire roots: 976 registered/published /

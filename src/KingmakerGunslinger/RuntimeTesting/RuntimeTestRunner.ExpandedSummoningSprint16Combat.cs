@@ -97,6 +97,11 @@ namespace KingmakerGunslinger.RuntimeTesting
         private readonly JArray _crocCombatContacts = new JArray();
         private readonly JArray _crocCombatAttackOrigins = new JArray();
         private readonly List<UnitAttack> _crocCombatIssuedAttacks = new List<UnitAttack>();
+        private TurnController _crocCombatLastAttackTurn;
+        private RuleAttackRoll _crocCombatInjectedMiss;
+        private bool _crocCombatInjectedMissWasIssued;
+        private int _crocCombatChecksAfterInjectedMiss;
+        private readonly JArray _crocCombatRetryRows = new JArray();
         private UnitEntityData[] _crocCombatSelectionBefore;
         private UnitEntityData _crocCombatGroupBefore;
 
@@ -180,25 +185,34 @@ namespace KingmakerGunslinger.RuntimeTesting
                             UnitCondition.ImmuneToCombatManeuvers);
                     var attack = new UnitAttack(_crocCombatFixture.Hostile) { ForceFullAttack = true };
                     _crocCombatIssuedAttacks.Add(attack);
+                    _crocCombatLastAttackTurn = Game.Instance.TurnBasedCombatController.CurrentTurn;
                     _crocCombatOwner.Commands.Run(attack);
                     _crocCombatManualAttackQueued = true;
                     _crocCombatManualAttackAttempts++;
                 }
                 string heldDriver = Sprint16CombatCells[_crocCombatCell][2];
-                if (manual && ready && (heldDriver == "manual-hold" || heldDriver == "manual-swallow") &&
-                    _crocCombatManualAttackQueued && _crocCombatManualAttackAttempts < 4 &&
-                    _crocCombatObserver.Checks.Count > 0 &&
-                    SummonHoldComponent.HeldTarget(_crocCombatOwner) == null &&
-                    _crocCombatFixture.Hostile.Get<UnitPartSwallowed>() == null &&
-                    !_crocCombatOwner.Commands.Raw.Any(value => value != null && !value.IsFinished))
+                if (CrocodilianCommandReviewPolicy.CanRetryHeldAttack(
+                    manual && (heldDriver == "manual-hold" || heldDriver == "manual-swallow"),
+                    ready, _crocCombatManualAttackAttempts, Sprint16IssuedAttackObserved(),
+                    _crocCombatFixture.Hostile.IsInGame && !_crocCombatFixture.Hostile.Descriptor.State.IsDead,
+                    SummonHoldComponent.HeldTarget(_crocCombatOwner) != null ||
+                        _crocCombatFixture.Hostile.Get<UnitPartSwallowed>() != null,
+                    _crocCombatObserver.Damage.Any(value => ReferenceEquals(value.Initiator,
+                        _crocCombatOwner) && value.AttackRoll == null),
+                    _crocCombatOwner.Commands.Raw.Any(value => value != null && !value.IsFinished)))
                 {
-                    // A native natural-1/escape can legitimately refuse a hold.
-                    // Retry a bounded real command; never force a rule roll,
-                    // a hit, an animation contact, a grapple or a rider.
+                    // A missed bite emits no maneuver. Retry the completed real
+                    // command within the existing four-attempt/60-second bounds.
+                    // Positive hits, maneuvers, contacts and riders stay native.
                     var retry = new UnitAttack(_crocCombatFixture.Hostile) { ForceFullAttack = true };
                     _crocCombatIssuedAttacks.Add(retry);
+                    _crocCombatLastAttackTurn = Game.Instance.TurnBasedCombatController.CurrentTurn;
                     _crocCombatOwner.Commands.Run(retry);
                     _crocCombatManualAttackAttempts++;
+                    _crocCombatRetryRows.Add(new JObject {
+                        ["attempt"] = _crocCombatManualAttackAttempts, ["frame"] = _crocCombatFrame,
+                        ["maneuversBeforeRetry"] = _crocCombatObserver.Checks.Count,
+                        ["turnBased"] = CombatController.IsInTurnBasedCombat() });
                 }
                 bool twoWeapons = _crocCombatObserver.Attacks.Where(value => value.Weapon != null)
                     .Select(value => value.Weapon.Blueprint.AssetGuid).Distinct().Count() >= 2;
@@ -326,6 +340,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             _crocCombatSharedCooldown = false;
             _crocCombatManualAttackQueued = false;
             _crocCombatManualAttackAttempts = 0;
+            _crocCombatLastAttackTurn = null;
+            _crocCombatInjectedMiss = null;
+            _crocCombatInjectedMissWasIssued = false;
+            _crocCombatChecksAfterInjectedMiss = -1;
+            _crocCombatRetryRows.Clear();
             _crocCombatRejectedCast = null;
             _crocCombatCooldown = null;
             _crocCombatContacts.Clear();
@@ -335,8 +354,27 @@ namespace KingmakerGunslinger.RuntimeTesting
             _crocCombatPrepared.Clear();
             _crocCombatStartUtc = DateTime.UtcNow;
             _crocCombatObserver = new Sprint16RuleObserver { Owner = _crocCombatOwner, Target = hostile };
+            _crocCombatObserver.BeforeAttackRollForFixture = rule =>
+            {
+                if (!CrocodilianCommandReviewPolicy.InjectFirstBiteMiss(cell[0], cell[2],
+                    _crocCombatManualAttackAttempts, _crocCombatInjectedMiss != null,
+                    ReferenceEquals(rule.Initiator, _crocCombatOwner) && ReferenceEquals(rule.Target, hostile),
+                    rule.Weapon != null && rule.Weapon.Blueprint.Category == WeaponCategory.Bite,
+                    _crocCombatIssuedAttacks.Any(value => value.IsStarted && !value.IsFinished))) return;
+                // Explicit request-local negative input, not qualification of
+                // an altered positive attack. Only the first manual-hold bite.
+                rule.AutoMiss = true;
+                _crocCombatInjectedMiss = rule;
+            };
             _crocCombatObserver.ObserveWeaponContact = rule =>
             {
+                if (ReferenceEquals(rule.AttackRoll, _crocCombatInjectedMiss) && _crocCombatInjectedMiss != null)
+                {
+                    _crocCombatInjectedMissWasIssued = !rule.IsAttackOfOpportunity &&
+                        _crocCombatIssuedAttacks.Any(value => value.IsStarted && !value.IsFinished);
+                    _crocCombatChecksAfterInjectedMiss = _crocCombatObserver.Checks.Count(value =>
+                        ReferenceEquals(value.Initiator, _crocCombatOwner));
+                }
                 _crocCombatAttackOrigins.Add(new JObject {
                     ["frame"] = _crocCombatFrame, ["weapon"] = rule.Weapon.Blueprint.name,
                     ["opportunity"] = rule.IsAttackOfOpportunity,
@@ -407,8 +445,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // an idle turn. End only this fixture owner's finished turn so
                 // later native rounds can maintain; never invoke maintain here.
                 if (needsMaintain && _crocCombatManualAttackQueued && _crocCombatFirstAttack >= 0 &&
-                    !_crocCombatObserver.Damage.Any(value => ReferenceEquals(value.Initiator,
-                        _crocCombatOwner) && value.AttackRoll == null) && turn.CanEndTurnAndNoActing())
+                    CrocodilianCommandReviewPolicy.ShouldAdvanceHeldTurn(
+                        ReferenceEquals(turn, _crocCombatLastAttackTurn),
+                        SummonHoldComponent.HeldTarget(_crocCombatOwner) != null ||
+                            _crocCombatFixture.Hostile.Get<UnitPartSwallowed>() != null,
+                        _crocCombatObserver.Damage.Any(value => ReferenceEquals(value.Initiator,
+                            _crocCombatOwner) && value.AttackRoll == null),
+                        _crocCombatOwner.Commands.Raw.Any(value => value != null && !value.IsFinished),
+                        turn.CanEndTurnAndNoActing()))
                 {
                     turn.ForceToEnd(true);
                     typeof(TurnController).GetMethod("End", BindingFlags.Public |
@@ -481,6 +525,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["weapon"] = value.Weapon == null ? null : value.Weapon.Blueprint.name,
                 ["weaponGuid"] = value.Weapon == null ? null : value.Weapon.Blueprint.AssetGuid,
                 ["hit"] = value.IsHit, ["bonus"] = value.AttackBonus,
+                ["roll"] = value.Roll.Value,
+                ["targetAC"] = value.TargetAC, ["result"] = value.Result.ToString(),
+                ["autoMiss"] = value.AutoMiss, ["autoHit"] = value.AutoHit,
                 ["logged"] = !value.SuspendCombatLog, ["critical"] = value.IsCriticalConfirmed
             }));
             var sprint = Sprint16Sprint(_crocCombatFixture.Blueprints, cell[0]);
@@ -534,6 +581,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["rejectedCommandActed"] = _crocCombatRejectedCast != null && _crocCombatRejectedCast.IsActed,
                     ["directlyControllable"] = _crocCombatOwner.IsDirectlyControllable,
                     ["manualNativeAttackAttempts"] = _crocCombatManualAttackAttempts,
+                    ["retries"] = new JArray(_crocCombatRetryRows),
+                    ["injectedFirstBiteMiss"] = _crocCombatInjectedMiss != null,
                     ["issuedAttackObserved"] = Sprint16IssuedAttackObserved(),
                     ["attackOrigins"] = new JArray(_crocCombatAttackOrigins),
                     ["nativeManualControlRules"] = _crocCombatControlRules,
@@ -565,6 +614,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["animationContactForced"] = false
                 }, heldCell ? "native bite establishes hold; native later-round maintain resolves exactly the selected rider" :
                     "one real Sprint; bite and secondary tail commands; AI moves/attacks through the shared cooldown without spam");
+            if (cell[0] == "crocodile" && cell[2] == "manual-hold")
+                Sprint16Check(_crocodilianAssertions, _crocCombatRows,
+                    string.Join("-", cell) + "-miss-retry",
+                    _crocCombatInjectedMiss != null && !_crocCombatInjectedMiss.IsHit &&
+                        _crocCombatInjectedMissWasIssued && _crocCombatChecksAfterInjectedMiss == 0 &&
+                        _crocCombatManualAttackAttempts >= 2 && _crocCombatManualAttackAttempts <= 4 &&
+                        _crocCombatRetryRows.Count > 0 && _crocCombatObserver.Attacks.Any(value =>
+                            value.IsHit && !value.AutoHit && !value.AutoMiss && value.Weapon != null &&
+                            value.Weapon.Blueprint.Category == WeaponCategory.Bite) && rider && relationship,
+                    new JObject { ["negativeMissInjected"] = _crocCombatInjectedMiss != null,
+                        ["issuedNonOpportunityAttack"] = _crocCombatInjectedMissWasIssued,
+                        ["maneuversAfterMiss"] = _crocCombatChecksAfterInjectedMiss,
+                        ["attempts"] = _crocCombatManualAttackAttempts, ["retries"] = new JArray(_crocCombatRetryRows),
+                        ["nativeRider"] = rider, ["relationship"] = relationship },
+                    "one disclosed first-bite miss causes zero maneuvers; a bounded real retry hits without positive overrides and later maintains");
             foreach (string contact in (heldCell ? new[] { "bite", cell[2] == "manual-swallow" ?
                     "swallow-initial-bite" : "death-roll" } : new[] { "bite", "tail" }))
             {

@@ -1,5 +1,24 @@
 # Expanded Summoning Phase 2 journal
 
+## October 6, 00:24 UTC — publication 207/209, restored; missed-bite retry
+
+Exact 3d13108e passed 218 focused / 2020 full and every prelaunch gate.
+Smoke 11/11; main 207/209 FAIL. All twenty public paths passed; the Crocodile
+RTWP issued bite missed, emitted no grapple check and never satisfied the
+old retry prerequisite. No hold or Death Roll contact resulted. No new
+production failure observed; no natural-1 cause claimed without die evidence.
+Exact snapshot restored, no game/runtime lock/staging, no save write; fetched
+active remote still 3d13108e. Hidden e3 qualification remains separate.
+
+Containing fixture-only repair permits completed issued-miss retry within
+the original four-command/60-second limits, preserves fresh retry turns,
+and adds a disclosed exact-owned first-bite negative input in both modes.
+Two added assertions require zero maneuvers after the miss and a later
+unforced hit/hold/native rider. All original assertions retained; 211 next.
+Behavior tests pin the scope/caps; new exact full gates/runtime still required.
+No DATA port, production change, version bump or Sprint 17 start.
+[Exact evidence and repair](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-PUBLICATION-RETRY-REVIEW.md).
+
 ## October 5 — Sprint 16 publication candidate, NOT YET QUALIFIED
 
 Hidden-pass evidence pushed at 1393b669. Remove only Dire Crocodile suppression;
