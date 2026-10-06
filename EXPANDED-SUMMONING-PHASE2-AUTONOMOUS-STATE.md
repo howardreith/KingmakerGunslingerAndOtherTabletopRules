@@ -19,13 +19,16 @@ deployment, force push or prohibited substitute subsystems.
   2026-10-05T19:29:25.9127956Z; holder PID15084/start2026-10-05T20:34:17.3075720Z.
   Session-scoped; refresh heartbeat and release only on actual session ending.
   All safety refs, bundles and failed artifacts are retained.
-- This containing source checkpoint descends from pushed
-  `aa5289cb980f064f682aee7c98e0da3f725c063f`; remote unchanged before commit.
+- This packaging-correction checkpoint descends from pushed snake source
+  `7ab77c321004bfea0c260aedff43a22af1fca0c5`; no concurrent remote motion.
   Unexpected active-branch motion remains a stop; DATA motion informational.
 - [Snake source review](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SOURCE-REVIEW.md):
   250 focused / 2048 unfiltered tests (82.1s), repository validation and
-  exact-reference Release compile PASS. Compile was a dirty-tree diagnostic,
-  not an exact-head gameplay candidate. Committed artifact gate is next.
+  exact-reference Release compile PASS. Exact7ab gate also passed2048 tests
+  (84.9s) and Release, but failed prelaunch on a stale107-icon build guard.
+  Both build/package guards now expect109; direct320-member packaging/strict
+  validation PASS. This is a validator correction, not a gameplay PASS.
+  The rejected exact build/log are preserved; corrected committed gate next.
 - 73 identities append to the unchanged2836-entry prefix. Current surface:
   97 units,1008 registered /976 published /32 withheld placements,29 wrappers,
   1005 visible choices. Viper and Constrictor Snake remain wholly hidden.

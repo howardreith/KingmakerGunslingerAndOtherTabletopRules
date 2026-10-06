@@ -1,5 +1,16 @@
 # Expanded Summoning Phase 2 journal
 
+## October 6, 15:25 UTC — exact7ab source PASS; package guard correction
+
+The committed7ab gate passed2048 tests (84.9s) and exact Release, then stopped
+before deployment at the old107-icon build guard. The standalone package guard
+had the same stale count. Both now require109; direct build-output,320-member
+package and strict package diagnostics PASS. No mechanical/source behavior
+changed. Rejected build/log and corrected-validator diagnostic ZIP retained
+under `artifacts/sprint17-snake-prelaunch-rejected-7ab77c32/`.
+No runtime, lease, installation observation or save action occurred. Sprint17
+remains NOT QUALIFIED. Next is the correcting commit's complete exact gate.
+
 ## October 6 — hidden Medium snakes and original icons; source checks PASS only
 
 [Source checkpoint review](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SOURCE-REVIEW.md).
