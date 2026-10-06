@@ -24,6 +24,17 @@ namespace KingmakerGunslinger.Summoning
         // Match immutable identity, name AND prefab; never bind native worms,
         // the existing Salamander or request-local visual research carriers.
         internal const float SnakeViewMultiplier = .20f;
+        internal static float ScaleSnakeBaseCorpulence(float nativeRadius)
+        {
+            if (nativeRadius <= 0 || float.IsNaN(nativeRadius) || float.IsInfinity(nativeRadius))
+                throw new ArgumentOutOfRangeException("nativeRadius");
+            float scaled = nativeRadius * SnakeViewMultiplier;
+            if (scaled <= 0) throw new ArgumentOutOfRangeException("nativeRadius");
+            // Scale the donor's base footprint with the original body. The
+            // native getter still owns its .5m floor and live size multiplier.
+            return scaled;
+        }
+
         internal static bool TryProductionSnake(bool moduleEnabled, string guid,
             string blueprintName, string prefab, out string key)
         {

@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using Harmony12;
 using Kingmaker.View;
@@ -17,6 +18,8 @@ namespace KingmakerGunslinger.Summoning
         private sealed class Attempt { internal string Outcome; }
         private static readonly ConditionalWeakTable<UnitEntityView, Attempt> Applied =
             new ConditionalWeakTable<UnitEntityView, Attempt>();
+        private static readonly FieldInfo BaseCorpulence = typeof(UnitEntityView).GetField(
+            "m_Corpulence", BindingFlags.Instance | BindingFlags.NonPublic);
 
         internal static string DescribeView(UnitEntityView view)
         {
@@ -43,11 +46,18 @@ namespace KingmakerGunslinger.Summoning
                 Applied.Add(__instance, attempt);
                 try
                 {
-                    // One view-only step, once per native view. Do not change
-                    // size, reach, collision, movement, animation or bones.
+                    // Native Corpulence ignores transform scale: it uses its
+                    // serialized base radius and live rules-size multiplier.
+                    // Scale only this exact snake instance's base radius with
+                    // its body, once. No getter/global movement/weapon rewrite.
                     Vector3 scale = __instance.transform.localScale;
                     if (!PositiveFinite(scale.x) || !PositiveFinite(scale.y) || !PositiveFinite(scale.z))
                         throw new InvalidOperationException("Invalid original snake view scale.");
+                    if (BaseCorpulence == null || BaseCorpulence.FieldType != typeof(float))
+                        throw new MissingFieldException("UnitEntityView.m_Corpulence");
+                    float radius = SerpentineVisualPolicy.ScaleSnakeBaseCorpulence(
+                        (float)BaseCorpulence.GetValue(__instance));
+                    BaseCorpulence.SetValue(__instance, radius);
                     __instance.transform.localScale = scale * SerpentineVisualPolicy.SnakeViewMultiplier;
                     string outcome;
                     SerpentineVisualAttachment.TryAttach(__instance, key, context, out outcome);
