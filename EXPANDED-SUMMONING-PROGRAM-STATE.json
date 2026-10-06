@@ -28,11 +28,11 @@
       15
     ],
     "currentSprint": 16,
-    "currentSubItem": "Sprint 16 hidden candidate QUALIFIED on exact e3aeae63; evidence pushed at 1393b669. Containing publication candidate removes only Dire suppression: 976 generated + 29 wrappers = 1005 visible. New exact-head full Sprint gate/all 20 public roots pending before Sprint 16 completion or Sprint 17. DATA audit complete; zero imports.",
+    "currentSubItem": "Sprint 16 hidden e3aeae63 QUALIFIED. Publication 3d13108e NOT QUALIFIED: prelaunch PASS, smoke 11/11, main 207/209; all 20 public routes pass but missed-bite fixture never retried. Exact restoration verified. Containing fixture-only correction adds bounded missed-bite retry and negative-input checks; new exact full gates/211-assertion batch next. Sprint 17 waits. DATA audit complete; zero imports.",
     "sprint16LaptopCorrectionReview": "planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-FIXTURE-REPAIR.md",
     "dataSalvageAudit": "planning/EXPANDED-SUMMONING-PHASE2B-DATA-SALVAGE-AUDIT.md",
     "lastGuardedRuntimePass": "Exact e3aeae63 complete six-stage hidden PASS; final 20261005T2346334238023Z-working-save-expanded-summoning-verify-absent 5/5. Publication gate pending.",
-    "lastGuardedRestoration": "20261005T2316265780723Z actual snapshot restored 2026-10-05T23:49:30.9580629Z; journal 1FE92F008D9D5A587B6A6B7D5EE9F1DDBFBE536E341EF6FD57FAFA584484A688",
+    "lastGuardedRestoration": "20261006T0009119881581Z actual snapshot restored 2026-10-06T00:24:45.7342342Z; journal 7A4109860C9EA7F445C0A5AC1D129BAA16758B92B2FF80E5BAD999791AC8AD5A",
     "activePullRequest": 26,
     "archivedSalvagePullRequest": 27,
     "giantWaspPublished": true,
@@ -70,7 +70,16 @@
     "crocodilianRiderDecision": "OwnerAcceptedAdaptation: SWALLOW_ELIGIBLE_TARGET_ELSE_DEATH_ROLL; bounded command-seam audit found no safe choice carrier. Real maintain path passes complete exact e3aeae63 hidden candidate; publication gate pending.",
     "sprint16TechnicalQualified": false,
     "sprint16HiddenTechnicalQualified": true,
-    "sprint16PublicationStatus": "NOT YET QUALIFIED; six Dire roots exposed in source candidate only; full exact-artifact/public-path gate pending",
+    "sprint16PublicationStatus": "NOT QUALIFIED; 3d13108e main 207/209 failed despite all 20 public roots passing; exact restored; corrected fixture needs new exact artifact/full batch",
+    "sprint16LaptopPublicationRetry": {
+      "candidate": "3d13108ea941af4e736ca30e6d9cc78a67796d63",
+      "status": "NOT QUALIFIED; smoke 11/11, main 207/209; 20 public routes PASS",
+      "review": "planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-PUBLICATION-RETRY-REVIEW.md",
+      "evidence": "planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-PUBLICATION-RETRY-EVIDENCE.json",
+      "restoration": "VERIFIED actual 136-file / Info 0.0.117 snapshot; lease Completed; no game, compatibility lock or staging",
+      "saveWrite": false,
+      "salvageImported": false
+    },
     "sprint16LaptopHiddenPass": {
       "candidate": "e3aeae630d51d27c45694fb9e92e9093048b1af9",
       "status": "PASS; complete exact prelaunch and six-stage batch; publication pending",

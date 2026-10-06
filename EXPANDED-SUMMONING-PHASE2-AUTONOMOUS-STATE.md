@@ -1,6 +1,6 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-05 (laptop sole owner; Sprint 16 hidden PASS, publication pending)
+## CURRENT STATE, 2026-10-06 UTC (laptop sole owner; hidden PASS, publication FAIL/restored)
 
 This section governs over all historical mission/ownership statements below.
 The latest owner directive designates HOWARD-LAPTOP and
@@ -16,7 +16,8 @@ No merge, release, tag, version bump, force push or permanent deployment.
   `C:/Dev/KingmakerGunslingerLab/repo/KingmakerGunslinger/.worktrees/expanded-summoning-phase2b-laptop-20261005`.
   Qualified hidden source: `e3aeae630d51d27c45694fb9e92e9093048b1af9`.
   Evidence checkpoint pushed at `1393b669078044d0bdabe2251594c2b28e4a04a7`;
-  containing publication candidate is its normal descendant.
+  Failed publication head/remote: `3d13108ea941af4e736ca30e6d9cc78a67796d63`.
+  The containing fixture-repair checkpoint is its normal descendant.
   Unexpected active-branch motion remains a stop;
   archived branch motion is informational only.
 - Exclusive receipt: ignored `artifacts/laptop-source-owner-20261005.json`;
@@ -36,20 +37,29 @@ No merge, release, tag, version bump, force push or permanent deployment.
   Native hold cleanup and exact pause/clock/mode/awake restoration pass.
   [Exact hidden qualification](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-HIDDEN-PASS-REVIEW.md)
   and curated JSON retain every artifact/request/result/restoration hash.
-- Actual leased snapshot `20261005T2316265780723Z` restored exactly;
-  closed `2026-10-05T23:49:30.9580629Z`: 136 files / Info 0.0.117 /
+- Latest publication batch: prelaunch PASS; smoke 11/11, main **207/209 FAIL**.
+  All 20 public paths pass, but one missed-bite/no-retry fixture failure also
+  prevents Death Roll contact. No qualification waiver. Containing repair
+  adds bounded retry plus a disclosed first-miss negative control in both
+  modes; no positive rule override, production change or increased deadline.
+  [Failure and correction](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-PUBLICATION-RETRY-REVIEW.md).
+- Actual latest snapshot `20261006T0009119881581Z` restored exactly;
+  closed `2026-10-06T00:24:45.7342342Z`: 136 files / Info 0.0.117 /
   `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
   Lease Completed/recoveryRequired=false; no game/compatibility lock/staging.
-  Native cleanup saved; fresh absence zero owned state. No save-file access.
-- Candidate DLL SHA `c9029e26c745daea5e9eb369e23f6595a69636fe1629620fd456e71039b4d4d4`;
+  Prior hidden native cleanup/absence clean; publication did not write saves.
+  No save-file access. Journal SHA
+  `7A4109860C9EA7F445C0A5AC1D129BAA16758B92B2FF80E5BAD999791AC8AD5A`.
+- Qualified hidden DLL SHA `c9029e26c745daea5e9eb369e23f6595a69636fe1629620fd456e71039b4d4d4`;
   MVID `ff5b805f-162b-4c77-a655-0318fe195caa`; ZIP
   `fe6a8c62b0f50f908157810e0d8c963ddb9c5c4ac4c6334ad5258ec7da92c29e`.
   Immutable 312-member package retained, unchanged version 0.0.141.
 - Only Dire suppression is removed in the containing publication candidate.
   Identity/damage/AI/visual/version code is unchanged. Generated roster and
   count tests follow the exact six-root delta; no DATA source imported.
-- Next: freeze/push the publication candidate, run
-  its full Sprint gate and all 6 Dire + 14 Crocodile public routes, then
+- Next: freeze/push the corrected publication candidate, run all exact
+  prelaunch gates and complete affected smoke/main batch (211 assertions,
+  including all 6 Dire + 14 Crocodile public routes), then
   restore exactly and close Sprint 16. Sprint 17 must wait for that gate.
 - Sprints 14-15 complete. Hidden qualified artifact: 970 published + 29 wrappers
   = 999 visible, 6 Dire withheld. Publication candidate source: 976 registered /

@@ -1,12 +1,19 @@
 # Expanded Summoning Phase 2 evidence index
 
+[Latest publication attempt and missed-bite fixture repair](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-PUBLICATION-RETRY-REVIEW.md):
+exact 3d13108e prelaunch PASS, smoke 11/11, main **207/209 FAIL** despite all
+20 public roots passing. Publication NOT QUALIFIED. Exact actual snapshot
+restored; no save write/game/lock/staging. Bounded fixture-only correction
+requires a new exact artifact and complete affected batch.
+[Exact hashes](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-PUBLICATION-RETRY-EVIDENCE.json).
+
 [Current exact e3 laptop hidden qualification](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-HIDDEN-PASS-REVIEW.md):
 **HIDDEN PASS**, all exact-head prelaunch gates and six fresh Steam processes:
 11/11 smoke, 209/209 main, 20/20 crowd, 9/9 prepare, 9/9 cleanup, 5/5 absence.
 Actual snapshot restored exactly; no game/lock/staging; working save clean.
 [Exact hashes](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-HIDDEN-PASS-EVIDENCE.json).
-The containing publication candidate exposes only the six Dire roots after
-that hidden pass; all twenty public Crocodile/Dire routes still need its gate.
+The later publication candidate exposes only the six Dire roots after that
+hidden pass; the failed complete publication gate above remains mandatory.
 
 [Historical exact 197 laptop batch and bounded pause correction](planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-NATIVE-UPDATE-BATCH-REVIEW.md):
 **NOT QUALIFIED**, main 208/209; all 55 combat assertions and five other stages
