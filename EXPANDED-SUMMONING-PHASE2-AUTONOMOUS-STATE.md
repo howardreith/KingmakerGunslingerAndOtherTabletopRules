@@ -1,80 +1,67 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-06 14:14 UTC — laptop sole owner; Sprints14–16 COMPLETE
+## CURRENT STATE, 2026-10-06 — laptop sole owner; Sprint 17 hidden snake source checkpoint
 
 This section governs over historical mission/ownership statements below.
 HOWARD-LAPTOP / `codex/expanded-summoning-phase2b-sprints14-17` / draft PR #26
 is the sole owner-designated development line. DATA branch/PR #27 is frozen
-salvage-only. Read-only audit5da53f84 classified29 files; ZERO PORTS.
+salvage-only; read-only audit5da53f84 classified29 files; ZERO PORTS.
 Finish Sprint17 and full Phase2B closure, then STOP for owner review.
 Phase2C authorized=true, sprints9–21; start deferred until Phase2B owner
 acceptance. No Sprints18–22 here; no merge/release/tag/version bump/permanent
 deployment, force push or prohibited substitute subsystems.
 
-### Ownership and immutable boundary
+### Ownership and source boundary
 
 - Worktree: `C:/Dev/KingmakerGunslingerLab/repo/KingmakerGunslinger/.worktrees/expanded-summoning-phase2b-laptop-20261005`.
 - Exclusive ignored receipt `artifacts/laptop-source-owner-20261005.json`;
   session01a10bcd-8582-7551-826f-0f128807eb99; owner PID31796/start
   2026-10-05T19:29:25.9127956Z; holder PID15084/start2026-10-05T20:34:17.3075720Z.
-  Session-scoped, not perpetual. Refresh heartbeat; release only on actual
-  session ending. All safety refs, bundles and failed artifacts retained.
-- Last pushed/exact runtime candidate `a90494e19c0099f228002958c2b2bf114e732c1f`.
-  The containing evidence checkpoint records RESEARCH ONLY PASS, not Sprint 17 qualification.
-  Unexpected active-branch motion is a stop; frozen DATA motion informational.
+  Session-scoped; refresh heartbeat and release only on actual session ending.
+  All safety refs, bundles and failed artifacts are retained.
+- This containing source checkpoint descends from pushed
+  `aa5289cb980f064f682aee7c98e0da3f725c063f`; remote unchanged before commit.
+  Unexpected active-branch motion remains a stop; DATA motion informational.
+- [Snake source review](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SOURCE-REVIEW.md):
+  250 focused / 2048 unfiltered tests (82.1s), repository validation and
+  exact-reference Release compile PASS. Compile was a dirty-tree diagnostic,
+  not an exact-head gameplay candidate. Committed artifact gate is next.
+- 73 identities append to the unchanged2836-entry prefix. Current surface:
+  97 units,1008 registered /976 published /32 withheld placements,29 wrappers,
+  1005 visible choices. Viper and Constrictor Snake remain wholly hidden.
 
 ### Qualified versus NOT QUALIFIED; next exact work
 
-[Current bind-palette review](planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-BIND-REVIEW.md)
-and [exact artifact/restoration](planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-BIND-EVIDENCE.json).
+Sprints14–16 COMPLETE/PUBLISHED. S16 exact155ada89 publication smoke11/main211
+passed all14 Crocodile+6 Dire roots after hidden e3aeae63 passed main209,
+crowd20,prepare9,cleanup9,absence5. No historical qualification is reopened.
 
-Exact a90494e1: 238 focused / 2040 unfiltered tests (83.0s), complete gate
-178s; 491 preflight / 81 orchestration / 17 provenance, persistence 11/3/19,
-crowd 5/7, clean exact Release / strict 318-member package PASS. Fresh Steam
-smoke 11/11 and metadata survey 16/16 PASS. RESEARCH ONLY; Sprint 17 remains
-NOT QUALIFIED.
+Sprint17 NOT QUALIFIED. Medium snake profiles, exact land ranks/HP, owned
+Viper poison, bounded live Constrictor damage and original icons now exist.
+Original-body production attachment, complete real commands/signatures,
+UI, lifecycle/crowding/persistence and publication gates remain open.
+Salamander identity/placements/art remain unchanged; its separate spear/tail
+implementation is unresolved. No Lizardfolk spear relabeling, blind human
+bind deduplication or contact waiver is accepted.
 
-The exact human Guard Captain prefab has1776 bind-palette entries for177
-Transform references. All are finite/invertible, but17 weapon-storage
-transforms have disagreeing duplicate matrices (maximum2.880282, tolerance
-0.00001). Blind first-slot deduplication is rejected. Torso/hand entries agree;
-that is not a qualified body binding or actual native spear/tail playback.
-No human-based Salamander was constructed; no action or NPC facts adopted.
-Native references/actor membership unchanged; raw native frames stay private.
-The prior three-spear and eleven-Lizardfolk metadata files reproduce exactly.
-Cape bones are not a tail. Body570 remains33/35 FAIL; all12 attempts retained.
+Next: run the committed source checkpoint's complete exact build/package
+gate; connect the two original snake views and closed mechanics fixtures;
+continue the bounded Salamander-specific native spear/tail implementation.
+Then one stable Sprint17 hidden batch, publication gate, full Phase2B closure.
+Do not repeat the closed donor metadata census as a substitute for playback.
 
-Actual snapshot1407190713978Z restored14:14:02.7035876UTC:
-136 files / Info0.0.117 / exact tree. Journal
-AE954F51929981B232F2DAF48FB1B717D26739D06E50E11CC368A6694F4B2D03;
-bind metadata EB0D5EAAF4BEC8BF68506D42F299DED5D3D86CB676FF72E53F15D0CFBCE9BFD2.
-Lease Completed/recoveryRequired=false/released; no game/lock/staging/save write.
+Last guarded runtime remains exacta90494e1, RESEARCH ONLY smoke11/metadata16
+PASS. Human1776-slot/177-transform palette has17 disagreeing weapon-storage
+duplicates; blind first-slot binding rejected. Body570 remains33/35 FAIL;
+all12 body attempts and every metadata result are retained.
+[Exact a904 artifact/restoration](planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-BIND-EVIDENCE.json).
+Actual snapshot1407190713978Z restored14:14:02.7035876UTC,136 files/Info0.0.117/
+tree `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+Lease Completed/recoveryRequired=false/released; no new runtime transaction,
+game, shared lock, staging or save access in this source work.
+Lease BEFORE installation observation/snapshot/deployment; restore each
+actual snapshot. Never access the protected save or modify save files.
 
-Next: independent printed snake profiles and a bounded Salamander-specific
-spear/tail implementation review. Do not repeat the closed donor census or
-assume compatibility, silently relabel an attack, or waive contact/playback.
-Sprints14–16 complete; 976+29=1005 visible choices; ZERO DATA ports.
-Phase2C remains authorized but deferred until Phase2B owner acceptance.
-
-[Latest native-action review](planning/EXPANDED-SUMMONING-SPRINT17-NATIVE-ACTION-REVIEW.md)
-and [exact census evidence](planning/EXPANDED-SUMMONING-SPRINT17-NATIVE-ACTION-EVIDENCE.json).
-[All twelve body attempts](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-EVIDENCE.json).
-[S16 publication authority](planning/EXPANDED-SUMMONING-SPRINT16-PUBLICATION-PASS-REVIEW.md):
-exact155ada89 smoke11/main211, all14 Crocodile+6 Dire public roots;
-hidden e3 retains crowd20/prepare9/cleanup9/absence5. No reopening.
-
-Exact a904 source fingerprint a837489c83949d488c6074bcdb3bc2a965b7161bad2efaa832b186e92fdf6e96;
-DLL e1d88bdb9b0ad8761ce8bb0a23439ccc41b0c1c12e2a4b3a289ff7b0f6c4e213;
-MVID 1122936c-de1e-473b-8eaa-3f1be5bf5e8d;
-ZIP 4b4a14c83dc79f3cfde68204125d9ad5372bb442eed48399cc77e6398d401cf4.
-
-Then printed profiles/signatures/icons, full S17 hidden/publication and
-exhaustive Phase2B closure. Explicit14-reference bundle:
-`artifacts/private-references-ground-20261006/KingmakerGunslinger-private-build-references`.
-Lease BEFORE installation observation/snapshot/deployment; restore each actual
-snapshot exactly. Last restored tree
-`216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
-No source-only gameplay qualification or protected save-file access.
 Accepted unchanged: PASSIVE_CREATURE_SENSES_UNMODELED;
 ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD;
 SWALLOW_WHOLE_INTERIOR_AC_HP_UNMODELED;

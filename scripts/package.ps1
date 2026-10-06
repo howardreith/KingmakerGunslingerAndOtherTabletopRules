@@ -178,7 +178,7 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
 # Sprint 17 adds six original body/painting files for the bounded donor
 # acceptance slice. They do not register/publish either new snake or switch
 # the existing Salamander's production view.
-$expectedPackageFileCount = if ($hasFirearmSoundBank) { 318 } else { 316 }
+$expectedPackageFileCount = if ($hasFirearmSoundBank) { 320 } else { 318 }
 & $python (Join-Path $repositoryRoot 'tools\create_deterministic_package.py') `
     --source $modDirectory --output $packagePath `
     --expected-file-count $expectedPackageFileCount

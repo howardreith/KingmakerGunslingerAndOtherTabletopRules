@@ -1,6 +1,6 @@
 {
     "schemaVersion":  1,
-    "count":  107,
+    "count":  109,
     "icons":  [
                   {
                       "key":  "air-mephit",
@@ -960,6 +960,24 @@
                       "key":  "giant-stag-beetle",
                       "file":  "giant-stag-beetle.png",
                       "sha256":  "4e8ff343aefdd5f8ed85830193fe6c4df10dfc2baf91b2087e1726a8d1cf896c",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "viper",
+                      "file":  "viper.png",
+                      "sha256":  "4598e78c8e00fe01631732f2502c2b85fde5a272c574bf814ec35dde44be2a15",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "constrictor-snake",
+                      "file":  "constrictor-snake.png",
+                      "sha256":  "e139ba806f0d0aaedc75a8127fbed0d11a82730c06f2d2d710a569f8326e6bcf",
                       "width":  128,
                       "height":  128,
                       "format":  "RGBA PNG",

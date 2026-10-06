@@ -916,13 +916,15 @@ creature asks for its own, so without them all three would have been classified
 as the Giant Spider they borrow.
 The resulting append-only ledger contains 2772 stable IDs: 2770 active and 2 reserved.
 
-Sprint 15 and the withheld Sprint 16 registration extend that ledger to
-2836 stable IDs: 2834 active and 2 reserved. The final addition is one native
-IsEngagedConsideration owned only by the crocodilian Sprint AI actions; it
-has no independent player-facing icon. The current source registers 95
-creatures and 976 generated placements, publishes 970, and withholds only the
-six Dire Crocodile placements. These are identity/publication counts, not a
-claim that the unfinished Sprint 16 mechanics or visuals are runtime qualified.
+Sprints 15-16 extended that ledger to 2836 entries and are now qualified and
+published. Sprint 17 appends 73 snake identities without changing that prefix:
+2909 stable IDs: 2907 active and 2 reserved. The new entries are two units,
+32 logical placements, 32 SM template children and seven owned profile/type/
+poison/grab carriers. The current source registers 97 creatures and 1008
+generated placements, publishes 976, and withholds all 32 Viper/Constrictor
+Snake placements. Snake mechanics and actual UI/visual use are NOT QUALIFIED.
+Salamander retains its existing identity and placements; its Sprint 17 hybrid
+weapon/tail seam is still open. No version bump or release is authorized.
 
 - **Pure policy** (`FavoredClass/`): `FavoredClassRankPolicy` (the host's
   full/partial alternation, N = fullRank + partialRank, with KMG-owned ceilings

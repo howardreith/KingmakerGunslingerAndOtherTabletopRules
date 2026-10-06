@@ -127,7 +127,7 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Values.Length != 47 || Values.Select(value => value.Key)
+            if (Values.Length != 49 || Values.Select(value => value.Key)
                     .Distinct(StringComparer.Ordinal).Count() != Values.Length)
                 throw new InvalidOperationException(
                     "The natural reconstruction catalog is incomplete or duplicated.");
@@ -169,6 +169,20 @@ namespace KingmakerGunslinger.Summoning
         private static NaturalSummonProfile[] Build()
         {
             return new[] {
+                PK("viper", "Viper", "Animal", 2, "Medium",
+                    8, 13, 14, 1, 13, 2, 20, 3, "Bite1d4",
+                    Array.Empty<string>(),
+                    A("TripImmune", "ImprovedInitiative", "WeaponFinesse"),
+                    A("Perception", "Stealth"),
+                    "Sprint 17 frozen contract: Medium Viper, not a Tiny or Small substitute. Hidden pending complete runtime qualification. Creature-owned injury poison: Fortitude DC 13 at baseline, 1d2 Constitution damage for six exposures, one save cures; the DC follows live Constitution.",
+                    "Exact land ranks and racial bonuses retain native attribute, feat and class-skill contributions. Swim/climb movement and water-only consumers are omitted under land-use scope. Scent and low-light vision remain PASSIVE_CREATURE_SENSES_UNMODELED without substitute senses."),
+                PK("constrictor-snake", "Constrictor Snake", "Animal", 3,
+                    "Medium", 17, 17, 12, 1, 12, 2, 20, 2, "Bite1d4",
+                    Array.Empty<string>(),
+                    A("TripImmune", "SkillFocusPerception", "Toughness"),
+                    A("Mobility", "Perception", "Stealth"),
+                    "Hidden pending Sprint 17 runtime qualification. Bite-only grab against a foe of its own size or smaller; constrict 1d4+4 at baseline uses live Strength and size on the shared session-scoped hold lifecycle.",
+                    "Exact land ranks and racial bonuses retain native attribute, feat and class-skill contributions. Swim/climb movement and aquatic skills are omitted rather than substituted. Scent and low-light vision remain PASSIVE_CREATURE_SENSES_UNMODELED. Active holds reset cleanly on reload under ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD."),
                 P("dire-rat", "Dire Rat", "Animal", 1, "Small",
                     10, 17, 13, 2, 13, 4, 40, 0, "Bite1d4",
                     Array.Empty<string>(),

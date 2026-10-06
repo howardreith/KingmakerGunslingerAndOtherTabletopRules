@@ -636,6 +636,9 @@ namespace KingmakerGunslinger.Summoning
         public int ConstrictDiceCount;
         public DiceType ConstrictDiceType;
         public int ConstrictBonus;
+        // Only the new Constrictor Snake opts into live printed constrict.
+        // A reference, not a name match, confines it to its registered owner.
+        public BlueprintUnit ConstrictProfileOwner;
         /// <summary>
         /// Set for a crocodilian. A death roll is a maintain-time rider like
         /// constrict, but it is not a second attack. These fields retain the
@@ -746,6 +749,11 @@ namespace KingmakerGunslinger.Summoning
             UnitEntityData owner = Owner == null ? null : Owner.Unit;
             if (owner == null || target == null || target.Descriptor == null)
                 return false;
+            if (ConstrictProfileOwner != null &&
+                (!ReferenceEquals(owner.Blueprint, ConstrictProfileOwner) ||
+                 !CrocodilianRulesPolicy.CanMaintainLiveTarget(owner.Destroyed,
+                    owner.Descriptor.State.IsConscious, target.Destroyed,
+                    target.Descriptor.State.IsDead))) return false;
             bool sizeAllowed = ExpandedSummoningSpecialProfiles.IsGrabSizeAllowed(
                 (int)target.Descriptor.State.Size, (int)owner.Descriptor.State.Size,
                 MaxTargetSizeDelta);
@@ -808,12 +816,27 @@ namespace KingmakerGunslinger.Summoning
             MechanicsContext context)
         {
             if (ConstrictDiceCount <= 0 || owner == null || target == null) return;
-            var damage = new PhysicalDamage(new DiceFormula(ConstrictDiceCount,
-                ConstrictDiceType), PhysicalDamageForm.Bludgeoning);
-            damage.AddBonus(ConstrictBonus);
+            DiceFormula dice = new DiceFormula(ConstrictDiceCount, ConstrictDiceType);
+            int bonus = ConstrictBonus;
+            if (ConstrictProfileOwner != null)
+            {
+                if (!ReferenceEquals(owner.Blueprint, ConstrictProfileOwner) ||
+                    target.Destroyed || target.Descriptor.State.IsDead) return;
+                ItemEntityWeapon bite = SummonLimbs.PrimaryWeapon(owner);
+                if (bite == null || bite.Blueprint == null) return;
+                dice = WeaponDamageScaleTable.Scale(dice, owner.Descriptor.State.Size,
+                    Size.Medium, bite.Blueprint);
+                bonus = SerpentineRulesPolicy.SingleNaturalDamageBonus(
+                    owner.Descriptor.Stats.Strength.Bonus);
+            }
+            var damage = new PhysicalDamage(dice, PhysicalDamageForm.Bludgeoning);
+            damage.AddBonus(bonus);
             var rule = new RuleDealDamage(owner, target, damage);
             if (context != null) context.TriggerRule(rule);
             else Rulebook.Trigger(rule);
+            if (ConstrictProfileOwner != null &&
+                (target.Destroyed || target.Descriptor.State.IsDead))
+                SummonHoldComponent.ReleaseLink(owner, target, this, true);
         }
 
         /// <summary>
@@ -1373,17 +1396,23 @@ namespace KingmakerGunslinger.Summoning
             Buff heldState, ref int lastRiderRound)
         {
             bool crocodilian = grab != null && grab.HasDeathRoll;
-            bool targetOwned = !crocodilian ||
+            bool snake = grab != null && grab.ConstrictProfileOwner != null &&
+                ReferenceEquals(owner.Blueprint, grab.ConstrictProfileOwner);
+            bool guardedRider = crocodilian || snake;
+            bool targetOwned = !guardedRider ||
                 ReferenceEquals(HeldTarget(owner), target);
             if (!targetOwned) return "refused:no-exact-held-target";
-            if (crocodilian && !CrocodilianRulesPolicy.CanMaintainLiveTarget(
+            if (guardedRider && !CrocodilianRulesPolicy.CanMaintainLiveTarget(
                     owner.Destroyed, owner.Descriptor.State.IsConscious,
                     target.Destroyed, target.Descriptor.State.IsDead))
             {
                 ReleaseLink(owner, target, grab, true);
-                return "released:invalid-crocodilian-owner-or-target";
+                return snake ? "released:invalid-snake-owner-or-target" :
+                    "released:invalid-crocodilian-owner-or-target";
             }
             int roundsHeld = RoundsHeld(heldState);
+            if (snake && roundsHeld <= 0)
+                return "snake-maintain:waiting-for-later-round";
             // Capture the choice entirely from pre-roll state. Claim the
             // round before the maneuver, so re-entry or replay cannot roll
             // another check (and release a hold on that second result).
@@ -1395,10 +1424,11 @@ namespace KingmakerGunslinger.Summoning
                     grab != null && grab.SwallowedBuff != null,
                     grab != null && grab.IsSwallowSizeAllowed(owner, target),
                     grab != null && grab.SwallowedBuff != null);
-            if (crocodilian && roundsHeld > 0 &&
+            if (guardedRider && roundsHeld > 0 &&
                     !CrocodilianRulesPolicy.TryClaimMaintainRound(roundsHeld,
                         ref lastRiderRound))
-                return "crocodilian-maintain:already-resolved-this-round;round=" +
+                return (snake ? "snake-maintain:" : "crocodilian-maintain:") +
+                    "already-resolved-this-round;round=" +
                     roundsHeld;
             var maneuver = new RuleCombatManeuver(owner, target, CombatManeuver.Grapple);
             if (context != null) context.TriggerRule(maneuver);
@@ -1428,6 +1458,11 @@ namespace KingmakerGunslinger.Summoning
                 weapon = grab == null ? SummonLimbs.PrimaryWeapon(owner) :
                     grab.FirstGrabWeapon(owner);
             int damage = SummonGrappleDamage.DealWeaponDamage(owner, target, weapon, context);
+            if (snake && (target.Destroyed || target.Descriptor.State.IsDead))
+            {
+                ReleaseLink(owner, target, grab, true);
+                return "maintained:" + damage + ";targetDied=True;heldKept=False";
+            }
             if (grab != null) grab.DealConstrict(owner, target, context);
             string rake = grab == null ? string.Empty :
                 SummonRakeExecution.RakeOnMaintain(owner, target, grab, context);

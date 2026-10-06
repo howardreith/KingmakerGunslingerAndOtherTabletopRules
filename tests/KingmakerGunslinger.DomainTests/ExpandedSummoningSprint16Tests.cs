@@ -379,10 +379,11 @@ namespace KingmakerGunslinger.DomainTests
                         family + " quantity mapping for the Dire Crocodile " +
                         "is wrong.");
             }
-            // No registered creature remains withheld after this publication.
-            if (SummonVisibilityCatalog.SuppressedLogicalPlacementCount != 0)
-                throw new InvalidOperationException(
-                    "Sprint 16 publication must leave no withheld placements.");
+            // Later hidden registration cannot undo a qualified publication.
+            Assertions.Equal(0, all.Count(value =>
+                !SerpentineRulesPolicy.IsSnake(value.Creature.Key) &&
+                !SummonVisibilityCatalog.IsPublished(value)),
+                "No creature qualified through Sprint 16 may become withheld.");
             if (SummonVisibilityCatalog.RegisteredLogicalPlacementCount -
                     SummonVisibilityCatalog.SuppressedLogicalPlacementCount !=
                     SummonVisibilityCatalog.PublishedLogicalPlacementCount)
