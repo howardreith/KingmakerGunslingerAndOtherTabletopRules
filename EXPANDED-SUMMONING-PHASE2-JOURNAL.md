@@ -1,5 +1,32 @@
 # Expanded Summoning Phase 2 journal
 
+## October 6,09:29 UTC -- exacta096 research FAIL, restored; bounded diagnostic correction
+
+All prelaunch PASS:229 focused/2031 full84.1s/gate177.6s,491 preflight,
+81 orchestration/17 provenance, persistence11/3/19,crowd5/7,318-member package.
+Smoke11 PASS/body36 of37 FAIL. Three movements pass; snake bite gaps3.43/3.35cm.
+Hybrid command starts/succeeds, two rolls/four owner damage events; only exact
+tail contact retained. Native output_log5037 proves WP_SpearArmy isUnreadable;
+vertex access cannot support a contact measurement. The retained row is tail,
+NOT spear. Tail gap26.7cm and support-6.94cm stay open. Initial isolation passes
+but enemy=false after settlement; native UnitValidationController repairs
+PlayerFaction actors to the party group. The preceding claim of lasting group
+isolation with unchanged player-faction identity is superseded by this evidence.
+
+Narrow repair: preserve every event/error; use labeled native shaft/bounds
+end-centres plus conservative transverse uncertainty, never fake vertices or
+alter mesh readability. Only the owned disposable actor gets a copied native
+controllable faction (not player identity), restored before native destruction.
+Require isolated enemies after settlement and throughout the issued command;
+no repeated group override or native-controller patch.230 focused/2032
+registered, incremental compile/repository PASS; next exact candidate pending.
+
+Exact0920583696673Z snapshot restored09:29:17.3815135UTC,136/.117/tree,
+journalA827D78C9B50C488B2C8DDA4F22B7CED3FC0E62B7BB25307339EA5DDDF6E1AEE.
+Lease Completed/recoveryRequired=false/released; no game/lock/staging/save write.
+All resource/borrowed-native/environment/census restoration checks PASS.
+Eight attempts retained. S16 complete, S17 NOT QUALIFIED; ZERO DATA imports.
+
 ## October 6,08:55 UTC -- exact21ee contact research FAIL, restored; observation repair
 
 All prelaunch PASS:228 focused/2030 full86.8s, full gate180.5s,491 preflight,
