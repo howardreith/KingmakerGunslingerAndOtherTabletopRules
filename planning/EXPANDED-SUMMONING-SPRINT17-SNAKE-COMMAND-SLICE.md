@@ -52,6 +52,25 @@ actual-snapshot restoration. No publication until every mandatory gate passes.
 
 ## Closed command contract
 
+Current source-only follow-up (runtime NOT RUN): request-local owned-view
+end-of-frame observer records one paired sample for each exact bite callback.
+It records frame/command/handle/animation/clip correlation and closest original
+and target-bound world points. Only the same rule frame is correlated; later
+animation peaks are rejected. The existing rule-event contact assertion and
+0.25m threshold remain unchanged. Observer coroutines/component are destroyed
+with the disposable owner; no pose/animation/clock/camera/renderer writes.
+259 focused/2061 full85.6s PASS;complete180.8s,clean14-reference Release,
+deterministic strict320 package PASS. No deployment; runtime NOT RUN.
+
+The bounded observer uses Unity2018.4's documented
+[end-of-frame yield](https://docs.unity3d.com/2018.4/Documentation/ScriptReference/WaitForEndOfFrame.html),
+after animation/rendering. That API ordering does not prove this fixture's
+correlation: exact frame and object identities are measured at runtime.
+Private native audit: AnimationManager updates animation metadata then action
+handles; handles increment their own clock,while PlayableInfo reads native
+playable time. Neither read-only audit nor a40ms offset qualifies geometry.
+
+
 The request disposable-expanded-summoning-snake-commands accepts only the
 authorized KMG_AUTOMATION_WORKING load, no save write or arbitrary selector.
 Eight cells: Viper/Constrictor × RTWP/turn-based × manual/AI. Each requires

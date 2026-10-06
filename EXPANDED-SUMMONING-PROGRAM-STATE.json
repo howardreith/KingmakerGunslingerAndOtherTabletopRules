@@ -31,6 +31,7 @@
     "currentSprint": 17,
     "currentSubItem": "Sprint17 NOT QUALIFIED. Exact16f smoke11/profile-body-rules62 PASS,commands43/51 FAIL across8 cells; only8 contact checks fail0.376..0.415m. All native setup/approach/attack/signature/AI/cleanup pass. Snapshot2138515276616Z restored21:50:56UTC exactly. Change contact observation strategy; no unchanged retry or tolerance waiver.32 roots hidden;Phase2C deferred.",
     "sprint17SnakeCommandSlice": {
+      "pairedContactObserver": "SOURCE PASS/RUNTIME NOT RUN; same-frame exact command/handle/animation/clip diagnostics and closest points; existing rule-event contact assertion unchanged;259 focused/2061 full85.6s/complete180.8s/clean14-reference Release/strict320 PASS",
       "status": "RUNTIME43/51 FAIL; ONLY CONTACT; PROFILE/BODY/RULES62/62 REGRESSION PASS",
       "review": "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-SLICE.md",
       "sourceBase": "16f6494e10af58376457515152dcb7fa288a4eca",

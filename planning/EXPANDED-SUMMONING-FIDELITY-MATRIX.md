@@ -25,6 +25,16 @@ pose. Do not rerun16f unchanged, extend waits, weaken0.25m or distort reach.
 Full source/exact-artifact gates precede any new guarded affected batch.
 32 roots stay hidden; Sprint17/full Phase2B NOT QUALIFIED. Phase2C deferred.
 
+Current source-only follow-up (runtime NOT RUN): request-local owned-view
+end-of-frame observer records one paired sample for each exact bite callback.
+It records frame/command/handle/animation/clip correlation and closest original
+and target-bound world points. Only the same rule frame is correlated; later
+animation peaks are rejected. The existing rule-event contact assertion and
+0.25m threshold remain unchanged. Observer coroutines/component are destroyed
+with the disposable owner; no pose/animation/clock/camera/renderer writes.
+259 focused/2061 full85.6s PASS;complete180.8s,clean14-reference Release,
+deterministic strict320 package PASS. No deployment; runtime NOT RUN.
+
 Exact `130bf7a2de4cbd636df921f36e7f6afefe8523ca` passes the complete
 bounded rules batch: fresh Steam640820 smoke **11/11**, profile/body/signature
 **62/62**, strict collector **46/46 metadata rows**, batch PASS.
