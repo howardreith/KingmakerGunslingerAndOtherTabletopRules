@@ -1,10 +1,10 @@
 # Sprint17 bounded native Bite-distance review
 
-Status: SOURCE PASS; runtime NOT RUN. Full Sprint17 NOT QUALIFIED.
-Source parent24924453; last exact runtime474be538 remains43/51 FAIL.
+Status: exact983828bf BOUNDED COMMAND/CONTACT51/51 PASS; full Sprint17 NOT QUALIFIED.
+Source parent24924453; earlier exact474be538 remains43/51 FAIL in its archive.
 Laptop PR26 only; DATA archive-only/ZERO PORTS.32 roots hidden.
 
-## Evidence and cause under test
+## Preserved failure and native audit
 
 The8 at-rule original-vertex contacts miss by0.37891674-0.426136971m.
 A separate replay of original vertices, native bindposes, bone matrices and
@@ -31,9 +31,9 @@ Private exact-reference IL audit:
 
 The serialized numeric BlendRanges values have not been recorded;3.5/8 above
 are native clip names, not a claim that those exact float values were measured.
-The candidate tests the scale mismatch with the existing native selector.
-Actual selected clip, event/contact and ordinary command behavior remain
-mandatory runtime evidence. It does not inject an attack event.
+The candidate corrects the scale mismatch through the existing native selector.
+Actual selected clip, event/contact and ordinary command behavior passed in
+all8 cells. It does not inject an attack event.
 
 ## Bounded correction
 
@@ -55,21 +55,28 @@ Behavior-first tests cover both exact identities, representative distances,
 disabled/fallback/non-bite inputs, native/foreign identities, malformed input,
 overflow and missing/reordered/replaced clip sets.
 
-## Source gates and next exact batch
+## Source gates and exact runtime result
 
 260 focused PASS. Complete unfiltered2062 PASS90.0s; repository/static/icon/
 manifest, clean14-reference Release and strict320-member package PASS188.7s.
 Log: artifacts/sprint17-bite-animation-distance-dirty-gate.log.
 This is a precommit source gate, not an immutable runtime candidate.
 
-Freeze/push the coherent source checkpoint; rebuild at exact clean HEAD,
-complete508 request preflight,168 orchestration,provenance,persistence/crowd
-tests, archive exact DLL/MVID/ZIP/fingerprint, then run fresh Steam640820:
-working-save-smoke; snake-signatures62; snake-commands51.
-Lease precedes observation/snapshot; restore the actual installation exactly.
-No save write, baseline access, repeated unchanged candidate, threshold waiver
-or publication. Full lifecycle/crowds/UI/routes/persistence and Salamander
-remain open after this slice.
+Exact983828bfa9b1aff2d79fab3eb8a2954ec28e4a2f passed260 focused,
+2062 full85.9s,complete184.7s,508 preflight,168 orchestration,17 provenance,
+persistence11/3/19,crowd5/7,clean14-reference Release and strict320 package.
+Fresh Steam640820: smoke11/11,profile/body/rules62/62,commands51/51 PASS.
+All8 at-rule jaw gaps are0m with actual native BiteAttack01_Long_8m playback,
+weight1,projected distance8.321414-8.514899 and world1.6642828-1.70297992m.
+View0.2,corpulence0.6/0.5,bite2ft and native approach sum1.7096 are unchanged.
+No assertion, threshold, mesh, actor position, stored distance or shared
+clip/range mutation. Other distances/size states/variant02 are not inferred.
+
+Actual snapshot2258281699283Z restored23:11:14.0412304UTC;136/.117/exact
+fingerprint;lease Completed/recovery=false/released;no game/shared lock/
+this-worktree staging/save write. No baseline access or publication.
+[Exact evidence and artifact identities](EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-PASS-EVIDENCE.json).
+Full lifecycle/crowds/UI/routes/persistence and Salamander remain open.
 
 ## Private evidence identities
 
