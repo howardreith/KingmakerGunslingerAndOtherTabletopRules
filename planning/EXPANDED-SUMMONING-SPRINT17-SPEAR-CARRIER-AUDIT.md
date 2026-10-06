@@ -36,7 +36,11 @@ Phase 2C remains authorized but deferred until Phase 2B owner acceptance.
 
 [Exact artifact, request, result and restoration hashes](EXPANDED-SUMMONING-SPRINT17-SPEAR-CARRIER-EVIDENCE.json).
 
-## Detailed human bind-palette follow-up — source only
+## Detailed human bind-palette follow-up — exact a904 diagnostic PASS
+
+The follow-up is now closed: smoke11/survey16 PASS, but17 duplicate
+weapon-storage bind groups disagree. No rig was adopted. See the
+[current review](EXPANDED-SUMMONING-SPRINT17-HUMAN-BIND-REVIEW.md).
 
 The containing source checkpoint adds private bind metadata for only the
 already observed Guard Captain prefab `ced3729f4b4abab4da4ef63d8489f857`.
@@ -55,8 +59,8 @@ Focused 238/238, 2040 registered, static validator and incremental exact
 compile PASS. The first focused test used decimal-derived floats with an
 incorrect exact-equality expectation; its failure log is retained. Binary-exact
 test inputs corrected the fixture only. Product comparison was unchanged.
-Next: commit/push exact source, full prelaunch, then fresh-Steam smoke11 and
-complete survey16 with the existing lease-first restoration protocol.
+Exact a904 then passed all2040 tests, complete178s gate and full prelaunch;
+fresh-Steam smoke11/survey16 PASS, actual snapshot restored14:14:02UTC.
 
 A bounded offline alternative audit found the historical Unity2018 editor
 activation failure in

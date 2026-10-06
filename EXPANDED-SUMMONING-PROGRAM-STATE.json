@@ -29,7 +29,7 @@
       16
     ],
     "currentSprint": 17,
-    "currentSubItem": "S16 COMPLETE/PUBLISHED; S17 NOT QUALIFIED. Exact291059aa complete prelaunch PASS:237 focused/2039 full88.3s/gate183.2s;491 preflight/81 orchestration/17 provenance/persistence11/3/19/crowd5/7/strict318. Fresh Steam smoke11/metadata15 PASS. Three archived spear-bearing prefabs reference native HumanAnimationSet with two PiercingTwoHanded clips;177 unique bone paths plus duplicate combined palettes/cape renderer. No playback, compatible hybrid binding or tail qualification; no action adopted. Actual1326496740021Z snapshot restored13:33:27UTC, no game/lease/lock/staging/save write. Body570 remains33/35 FAIL; all12 attempts preserved. Next bounded project-owned human-prefab binding/weapon proof; continue independent snake work if no safe hybrid seam.976+29=1005;ZERO DATA ports;Phase2C authorized but deferred.",
+    "currentSubItem": "S16 COMPLETE/PUBLISHED; S17 NOT QUALIFIED. Exacta90494e1 complete prelaunch PASS:238 focused/2040 full83.0s/gate178s;491 preflight/81 orchestration/17 provenance/persistence11/3/19/crowd5/7/strict318. Fresh Steam smoke11/metadata16 PASS. Human prefab1776 palette entries/177 transforms;17 weapon-storage duplicate binds disagree, maximum2.880282. Blind first-slot binding rejected; no human-based Salamander, tail or actual spear playback qualified. Actual1407190713978Z snapshot restored14:14:02UTC; no game/lease/lock/staging/save write. Body570 remains33/35 FAIL; all12 attempts preserved. Next independent printed snakes plus bounded Salamander-specific spear/tail review.976+29=1005;ZERO DATA ports;Phase2C authorized but deferred.",
     "sprint17PrivatePrototypes": {
       "status": "Six original files staged for bounded body acceptance; not automatically attached or runtime qualified",
       "source": "assets-source/original-models/sprint17-serpents/SOURCE.md",
@@ -41,6 +41,18 @@
       "supportingCoilNativeUpPanels": 48,
       "stagedOriginalAssetFiles": 6,
       "salamanderWeaponImplemented": false
+    },
+    "sprint17HumanBindResearch": {
+      "candidate": "a90494e19c0099f228002958c2b2bf114e732c1f",
+      "status": "RESEARCH ONLY PASS; smoke11/survey16; NOT body or gameplay qualification",
+      "evidence": "planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-BIND-EVIDENCE.json",
+      "review": "planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-BIND-REVIEW.md",
+      "paletteEntries": 1776,
+      "uniqueTransforms": 177,
+      "disagreeingDuplicateGroups": 17,
+      "maximumDuplicateDifference": 2.880282,
+      "allDuplicateBindsAgree": false,
+      "saveWrite": false
     },
     "sprint17TechnicalQualified": false,
     "sprint17ResearchReview": "planning/EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md",
@@ -61,9 +73,9 @@
     },
     "sprint16LaptopCorrectionReview": "planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-FIXTURE-REPAIR.md",
     "dataSalvageAudit": "planning/EXPANDED-SUMMONING-PHASE2B-DATA-SALVAGE-AUDIT.md",
-    "lastGuardedRuntimePass": "Exact291059aa RESEARCH ONLY PASS: fresh Steam smoke11/11 and20261006T1330139092770Z-disposable-expanded-summoning-serpentine-survey15/15; complete driver PASS. Three native human spear-action metadata sources, no action adopted. S17 NOT QUALIFIED.",
-    "lastGuardedRuntimeResult": "Exact291059aa smoke11/11 and metadata15/15 PASS. Native human main-hand PiercingTwoHanded clips exist for all3 archived spear-bearing prefabs. Their177 unique paths/duplicate palettes differ from the39-bone Lizardfolk hybrid. No compatible binding, tail or playback claim. Latest body570 remains33/35 FAIL; all12 attempts retained.",
-    "lastGuardedRestoration": "20261006T1326496740021Z actual snapshot restored2026-10-06T13:33:27.2332485Z; journal97A08A2FD8C08DB595ED36637633F9156F5567724068489DAD7C4FF2AF6FF207; exact restoration VERIFIED, no game/lease/lock/staging/save write",
+    "lastGuardedRuntimePass": "Exacta90494e1 RESEARCH ONLY PASS: fresh Steam smoke11/11 and20261006T1410474320785Z-disposable-expanded-summoning-serpentine-survey16/16; complete driver PASS. Finite/invertible metadata complete, duplicate disagreement retained, no action adopted. S17 NOT QUALIFIED.",
+    "lastGuardedRuntimeResult": "Exacta90494e1 smoke11/11 and metadata16/16 PASS.17 of177 human Transform groups disagree across duplicate palette entries, so blindly selecting first binds is rejected. Torso/hand groups agree; no playback, tail or whole-body qualification. Latest body570 remains33/35 FAIL; all12 attempts retained.",
+    "lastGuardedRestoration": "20261006T1407190713978Z actual snapshot restored2026-10-06T14:14:02.7035876Z; journalAE954F51929981B232F2DAF48FB1B717D26739D06E50E11CC368A6694F4B2D03; exact restoration VERIFIED, no game/lease/lock/staging/save write",
     "activePullRequest": 26,
     "archivedSalvagePullRequest": 27,
     "giantWaspPublished": true,
