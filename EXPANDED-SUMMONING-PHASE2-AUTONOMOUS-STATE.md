@@ -19,9 +19,9 @@ deployment, force push or prohibited substitute subsystems.
   2026-10-05T19:29:25.9127956Z; holder PID15084/start2026-10-05T20:34:17.3075720Z.
   Session-scoped, not perpetual. Refresh heartbeat; release only on actual
   session ending. All safety refs, bundles and failed artifacts retained.
-- Last pushed/current verified remote and latest exact runtime candidate:
-  `7ebb34eb0124a732c1f8a034b84f01dbd381aa6c`.
-  This containing research-evidence checkpoint is its normal descendant.
+- Last pushed/current verified remote:
+  `ac7e0fcf487b4c7be575f51ed92a35eceee680a4`; latest exact runtime candidate7ebb34eb.
+  This containing original-art/mount correction is its normal descendant.
   Unexpected active-branch motion is a stop; frozen DATA motion informational.
 
 ### Qualified versus NOT QUALIFIED
@@ -46,20 +46,27 @@ deployment, force push or prohibited substitute subsystems.
 - Every rollback/material/reference/owned destruction/borrowed-native survival,
   unit/party/area and environment-restoration assertion passes. No save writing.
 
-### Next exact work
+### Current correction and next exact gate
 
-Use the captured actual poses to correct the ORIGINAL distal coil support.
-The lowest offending sampled vertex is on tail3, not an unknown renderer or
-a native floor problem. Review a bounded owned two-palm spear mounting seam;
-native mesh/bones/clips/controllers remain untouched. Current evidence proves
-right-hand snap only, NOT a working two-hand grip or spear contact.
-No production attachment or new registrations yet.
+Private replay now accepts both closed capture schemas and includes measured
+attack poses.10 replay tests reject undeclared, incomplete and invalid frames.
+Original hybrid v9 raises only the distal cross section by at most14cm;
+weights/UVs/native drivers/upper body unchanged.9 hybrid tests and independent
+byte reproduction PASS; meshBD790DF1E258FA6190EF48A2E68F0BEB5EAEBA6D035D51EEB3AAEFC5CBB9A60B.
+Every a096/7ebb captured hybrid pose clears the floor;7ebb replay support
+4.9999..5.0005mm.24 new panels, representative attack clay/textured inspected.
 
-Extend private original-vertex replay to the new closed contact capture and
-its attack poses; preserve all earlier captures/failures. Test and visually
-review only the original corrections, reproduce/export deterministically,
-then freeze a new exact artifact for complete affected runtime proof. Use the
-explicit14-reference bundle
+The closed owned spear mount now aligns the existing renderer between native
+palms with rear grip10% from the butt, never scales or modifies native assets,
+bones, clips, target/reach or rules. It settles after native WeaponSnap and
+at the real rule boundary; original transforms/resources still restore.
+This is SOURCE ONLY, NOT live grip/contact proof.231 focused/2033 registered,
+incremental exact-reference compile PASS. No production hook/registration.
+
+Next commit/policy-push, freeze exact head, full prelaunch and one immutable
+smoke/body47 batch. Added assertions require measured attack support, actual
+primary/tail contact and two-palms within1cm at the exact native attack frame.
+Use the explicit14-reference bundle
 `artifacts/private-references-ground-20261006/KingmakerGunslinger-private-build-references`.
 Never rerun7ebb unchanged to claim those visual defects resolved.
 Then printed profiles/signatures/icons, S17 hidden/publication and exhaustive

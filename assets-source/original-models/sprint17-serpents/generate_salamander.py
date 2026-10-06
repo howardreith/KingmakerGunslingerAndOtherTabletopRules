@@ -159,6 +159,7 @@ def build_body(bm, weights, uvs, rig, kind, supported=False):
 
     if supported:
         author_ground_support(weights)
+        author_distal_clearance(weights)
 
 
 def smoothstep(value):
@@ -197,6 +198,20 @@ def author_ground_support(weights):
                            if weight * (1 - support) > 1e-7]
         if support > 1e-7:
             weights[vertex].append((observed.HYBRID_SUPPORT, support))
+
+
+def author_distal_clearance(weights):
+    """Lift only the original distal cross section in its authored rest shape.
+
+    Exact7ebb captured attack poses require 0.123654m to clear the measured
+    floor by 5mm. This 0.14m rest-shape curl also clears the earlier a096
+    poses. It is NOT a per-frame clamp, new support driver or rig edit.
+    Taper through the existing tail2/tail3 blend; preserve every weight/UV.
+    Unsampled native poses remain a live gate.
+    """
+    for vertex, influences in weights.items():
+        distal = sum(weight for name, weight in influences if name == "tail3")
+        vertex.co.z += .14 * smoothstep(distal * 8)
 
 
 def main():

@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using Harmony12;
 using Kingmaker.View;
+using Kingmaker.RuleSystem;
+using Kingmaker.RuleSystem.Rules;
 using Kingmaker.Visual.MaterialEffects;
 using KingmakerGunslinger.Assets;
 using KingmakerGunslinger.Bootstrap;
@@ -17,6 +19,7 @@ namespace KingmakerGunslinger.Summoning
     /// slice must prove movement, ground, contacts, fades and cleanup first.
     /// Existing Purple Worm, Water Elemental and Salamander are unchanged.
     /// The optional spear seam is closed two-hand research only.</summary>
+    [DefaultExecutionOrder(10010)]
     internal sealed class SerpentineVisualAttachment : MonoBehaviour
     {
         private sealed class SkinState
@@ -44,6 +47,8 @@ namespace KingmakerGunslinger.Summoning
         private Texture2D _albedo;
         private Material _material;
         private Material _spearMaterial;
+        private Transform _spearRightPalm, _spearLeftPalm;
+        private Quaternion _nativeSpearRotation;
         private string _ownedName;
         private bool _swapped, _released;
         internal string Outcome { get; private set; }
@@ -51,6 +56,8 @@ namespace KingmakerGunslinger.Summoning
         internal string[] DriverNames { get; private set; }
         internal MeshFilter SpearFilter { get; private set; }
         internal Mesh NativeSpearMesh { get; private set; }
+        internal string SpearMountStatus { get; private set; }
+        internal int SpearMountFrame { get; private set; }
         internal static Action PostSwapFaultForTest { get; set; }
 
         internal UnityEngine.Object[] CaptureOwnedResources()
@@ -227,6 +234,67 @@ namespace KingmakerGunslinger.Summoning
             slot.Filter.transform.localRotation = model.transform.localRotation;
             slot.Filter.transform.localScale = model.transform.localScale;
             SpearFilter = slot.Filter;
+            _nativeSpearRotation = model.transform.localRotation;
+            _spearRightPalm = Body.bones.Single(value => value.name == "R_Palm");
+            _spearLeftPalm = Body.bones.Single(value => value.name == "L_Palm");
+            SynchronizeSpearMount();
+        }
+
+        /// <summary>Orient only this instance's existing weapon renderer
+        /// between its two native palms. No bone/clip/controller, scale,
+        /// actor collision, reach, target position or rule input is changed.
+        /// Called after native WeaponSnap, and at the actual rule boundary
+        /// so same-frame contact does not measure the previous render pose.</summary>
+        internal void SynchronizeSpearMount()
+        {
+            if (_released || !_swapped || SpearFilter == null || NativeSpearMesh == null) return;
+            Transform weapon = SpearFilter.transform;
+            var primary = _view == null || _view.EntityData == null ? null :
+                _view.EntityData.Body.PrimaryHand.MaybeWeapon;
+            SpearMountFrame = Time.frameCount;
+            SpearMountStatus = "native-right-palm-fallback";
+            weapon.localPosition = Vector3.zero;
+            weapon.localRotation = _nativeSpearRotation;
+            if (primary == null || primary.Blueprint.AssetGuid != SerpentineVisualPolicy.ProjectSpear ||
+                _view.EntityData.Blueprint.Prefab.AssetId != SerpentineVisualPolicy.TwoHandPrefab ||
+                SpearFilter.sharedMesh != NativeSpearMesh || _spearRightPalm == null || _spearLeftPalm == null ||
+                !_spearRightPalm.IsChildOf(_view.transform) || !_spearLeftPalm.IsChildOf(_view.transform)) return;
+            Bounds bounds = NativeSpearMesh.bounds;
+            Vector3 scale = weapon.lossyScale;
+            // Reject a changed/nonuniform mount instead of stretching a spear
+            // to fit its hands. The captured native mesh is not readable.
+            if (!Finite(scale) || scale.x <= 0 || scale.y <= 0 || scale.z <= 0 ||
+                Mathf.Abs(scale.x - scale.y) > .0001f || Mathf.Abs(scale.z - scale.y) > .0001f ||
+                bounds.extents.y <= bounds.extents.x || bounds.extents.y <= bounds.extents.z) return;
+            Vector3 right = _spearRightPalm.position, left = _spearLeftPalm.position;
+            if (!Finite(right) || !Finite(left)) return;
+            float spacing = Vector3.Distance(right, left), rear;
+            float length = bounds.size.y * scale.y;
+            if (!SerpentineVisualPolicy.TrySpearRearGrip(length, spacing, out rear)) return;
+            Vector3 axis = (left - right) / spacing;
+            Quaternion native = weapon.rotation;
+            weapon.rotation = Quaternion.FromToRotation(native * Vector3.up, axis) * native;
+            Vector3 localGrip = bounds.center + Vector3.up * (-bounds.extents.y + rear / scale.y);
+            weapon.position += right - weapon.TransformPoint(localGrip);
+            SpearMountStatus = "two-native-palms:instance-weapon-only";
+        }
+
+        private static bool Finite(Vector3 value)
+        {
+            return !float.IsNaN(value.x) && !float.IsInfinity(value.x) &&
+                !float.IsNaN(value.y) && !float.IsInfinity(value.y) &&
+                !float.IsNaN(value.z) && !float.IsInfinity(value.z);
+        }
+
+        private void LateUpdate()
+        {
+            try { SynchronizeSpearMount(); }
+            catch (Exception error)
+            {
+                SpearMountStatus = "failed:" + error.GetType().Name;
+                enabled = false;
+                Debug.LogException(error);
+            }
         }
 
         /// <summary>Called before native view destruction, or after a failed
@@ -296,6 +364,22 @@ namespace KingmakerGunslinger.Summoning
 
         private void OnDestroy()
         { try { Release(); } catch (Exception) { /* Native teardown must finish. */ } }
+    }
+
+    [HarmonyPatch(typeof(RuleAttackWithWeapon), "OnTrigger", new[] { typeof(RulebookEventContext) })]
+    internal static class SerpentineSpearMountContactPatch
+    {
+        private static void Prefix(RuleAttackWithWeapon __instance)
+        {
+            if (__instance == null || __instance.Weapon == null ||
+                __instance.Weapon.Blueprint.AssetGuid != SerpentineVisualPolicy.ProjectSpear ||
+                __instance.Initiator == null || __instance.Initiator.View == null) return;
+            var owned = __instance.Initiator.View.GetComponent<SerpentineVisualAttachment>();
+            if (owned == null || !owned.enabled) return;
+            try { owned.SynchronizeSpearMount(); }
+            catch (Exception error) { owned.enabled = false; Debug.LogException(error); }
+            // Never suppress or replay the authoritative attack.
+        }
     }
 
     [HarmonyPatch(typeof(UnitEntityView), "OnDestroy")]
