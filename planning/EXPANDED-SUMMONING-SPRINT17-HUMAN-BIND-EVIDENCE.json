@@ -1,0 +1,460 @@
+{
+  "schemaVersion": 1,
+  "status": "RESEARCH ONLY PASS; Sprint17 NOT QUALIFIED",
+  "candidate": "a90494e19c0099f228002958c2b2bf114e732c1f",
+  "sourceFingerprint": "a837489c83949d488c6074bcdb3bc2a965b7161bad2efaa832b186e92fdf6e96",
+  "dllSha256": "e1d88bdb9b0ad8761ce8bb0a23439ccc41b0c1c12e2a4b3a289ff7b0f6c4e213",
+  "dllMvid": "1122936c-de1e-473b-8eaa-3f1be5bf5e8d",
+  "packageSha256": "4b4a14c83dc79f3cfde68204125d9ad5372bb442eed48399cc77e6398d401cf4",
+  "packageMembers": 318,
+  "version": "0.0.141",
+  "prelaunch": {
+    "focused": 238,
+    "full": 2040,
+    "fullSeconds": 83,
+    "completeGateSeconds": 178,
+    "runtimePreflight": 491,
+    "orchestration": 81,
+    "provenance": 17,
+    "persistenceWiring": 11,
+    "persistenceScopes": 3,
+    "persistenceRejections": 19,
+    "crowdRoundTrips": 5,
+    "crowdRejections": 7,
+    "exactBuildAndStrictPackage": "PASS"
+  },
+  "runs": [
+    {
+      "scenario": "working-save-smoke",
+      "startedAtUtc": "2026-10-06T14:07:44.4422816Z",
+      "parameters": {},
+      "launcherOutcome": "Clean",
+      "exitCode": 0,
+      "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T1407453514992Z-working-save-smoke",
+      "requestId": "20261006T1407453734986Z-3b69ae73b797430598d7cfe6a2b64fa1",
+      "requestSha256": "207777593cd46658048e3f718aadfc7ab3159bc0ed955b90339cb4000158edf4",
+      "resultSha256": "65b31d2193554e6e69217ed8112777d97ca4f46a77eb0d5c09dffb74e79b8e5d",
+      "assertions": 11,
+      "passed": 11,
+      "failed": [],
+      "orchestrationSha256": "dbd3710ba9d9174b747fc67c404f438eea3eb8f5fe9ed311a49fb4c1c4775c9a",
+      "processId": 20048,
+      "processStartedUtc": "2026-10-06T14:07:46.4516996Z",
+      "scenarioStatus": "PASS",
+      "outcome": "PASS",
+      "completedAtUtc": "2026-10-06T14:10:40.6578846Z"
+    },
+    {
+      "scenario": "disposable-expanded-summoning-serpentine-survey",
+      "startedAtUtc": "2026-10-06T14:10:46.6664960Z",
+      "parameters": {},
+      "launcherOutcome": "Clean",
+      "exitCode": 0,
+      "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T1410474320785Z-disposable-expanded-summoning-serpentine-survey",
+      "requestId": "20261006T1410474476856Z-5935239c063848b78e79dde4bd41efdb",
+      "requestSha256": "9dd2cfac020be73ef8f25cd6208137e90f08a3930571a65687e74815b9eec742",
+      "humanBindMetadataSha256": "eb0d5eaaf4bec8bf68506d42f299ded5d3d86cb676ff72e53f15d0cfbce9bfd2",
+      "spearActionMetadataSha256": "3af2cbc78820708586547c36952ff76bf9921823edea78ed7ba1243f4dac2687",
+      "nativeActionMetadataSha256": "78cc5048992c070e8d31d394bea587b40e5dd4e5b39986be58dbb8e96cbaedd8",
+      "researchMetadata": [
+        {
+          "key": "medium-water-elemental",
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T1410474320785Z-disposable-expanded-summoning-serpentine-survey\\sprint17-medium-water-elemental-rig-survey.json",
+          "sha256": "8a76ae99ecafbfa7d25effed906f59b0283c5c17fd87ff1defbc418e23b23113",
+          "renderers": 7,
+          "scope": "Sprint 17 research only; no gameplay, AI, intact-frame or contact qualification"
+        },
+        {
+          "key": "salamander",
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T1410474320785Z-disposable-expanded-summoning-serpentine-survey\\sprint17-salamander-rig-survey.json",
+          "sha256": "ccb071fa35fb63becdae99be520a26527aff16f3567014b3ac8f13a7d9056d4a",
+          "renderers": 2,
+          "scope": "Sprint 17 research only; no gameplay, AI, intact-frame or contact qualification"
+        },
+        {
+          "key": "purple-worm",
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T1410474320785Z-disposable-expanded-summoning-serpentine-survey\\sprint17-purple-worm-rig-survey.json",
+          "sha256": "821c3f0003906d6d37fa6db1d0c6599576a84d4dff594de27aa00745b78029be",
+          "renderers": 2,
+          "scope": "Sprint 17 research only; no gameplay, AI, intact-frame or contact qualification"
+        },
+        {
+          "key": "lizardfolk-greatclub",
+          "path": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T1410474320785Z-disposable-expanded-summoning-serpentine-survey\\sprint17-lizardfolk-greatclub-rig-survey.json",
+          "sha256": "e5aa40a67c81146024e66b5ac8dd82029cf29dc2d711649335d76058f32d7d45",
+          "renderers": 2,
+          "scope": "Sprint 17 research only; no gameplay, AI, intact-frame or contact qualification"
+        }
+      ],
+      "resultSha256": "7afc67507f81d5a4ff8e28d2bc1d1e748274a04f91426cdd2d8c461c336d6d76",
+      "assertions": 16,
+      "passed": 16,
+      "failed": [],
+      "orchestrationSha256": "3e2875ebaf8c9561499009be94ad56908ba1a9efe5e8a04093efa63c7cca9cbe",
+      "processId": 34124,
+      "processStartedUtc": "2026-10-06T14:10:48.5900728Z",
+      "scenarioStatus": "PASS",
+      "outcome": "PASS",
+      "completedAtUtc": "2026-10-06T14:14:00.1377795Z"
+    }
+  ],
+  "restoration": {
+    "status": "VERIFIED",
+    "snapshot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20261006T1407190713978Z",
+    "before": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "after": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "completedAtUtc": "2026-10-06T14:14:02.7035876Z",
+    "lease": "C:\\Dev\\KingmakerGunslingerLab\\compatibility-state\\runtime-20261006T140718Z-8fd6e6dc967545439b173a556ebd16fd\\runtime-lease.json",
+    "leaseStatus": "Completed",
+    "recoveryRequired": false,
+    "leaseReleased": true,
+    "gameProcessesRemaining": [],
+    "stagingAbsent": true,
+    "saveWritingApiObserved": false,
+    "protectedSaveAccess": false
+  },
+  "journal": {
+    "path": "C:/Dev/KingmakerGunslingerLab/repo/KingmakerGunslinger/.worktrees/expanded-summoning-phase2b-laptop-20261005/artifacts/laptop-runtime-20261006T1407183466663Z/batch.json",
+    "sha256": "ae954f51929981b232f2daf48fb1b717d26739d06e50e11cc368a6694f4b2d03",
+    "driverSha256": "c81308e163f33ff1405f7c18f97db7112067cb32a0a75f5b8c31ebe02465a766"
+  },
+  "findings": {
+    "nativeBlueprint": "86dc43534645e234eb35431131e3b669",
+    "prefab": "ced3729f4b4abab4da4ef63d8489f857",
+    "bodyRenderer": "Renderer_Character_Diffuse_Cutout",
+    "paletteCount": 1776,
+    "uniqueTransformCount": 177,
+    "allFinite": true,
+    "allInvertible": true,
+    "duplicateBindTolerance": 0.00001,
+    "maximumDuplicateBindDifference": 2.880282,
+    "allDuplicateBindsAgree": false,
+    "disagreeingTransformCount": 17,
+    "disagreeingTransforms": [
+      {
+        "name": "L_back_weapon_slot_10",
+        "firstPaletteSlot": 101,
+        "paletteSlots": [
+          101,
+          277,
+          420,
+          578,
+          721,
+          879,
+          1035,
+          1209,
+          1383,
+          1557,
+          1733
+        ],
+        "maximumBindDifference": 2.587993
+      },
+      {
+        "name": "L_back_weapon_slot_10_ADJ",
+        "firstPaletteSlot": 102,
+        "paletteSlots": [
+          102,
+          278,
+          421,
+          579,
+          722,
+          880,
+          1036,
+          1210,
+          1384,
+          1558,
+          1734
+        ],
+        "maximumBindDifference": 2.587993
+      },
+      {
+        "name": "L_back_weapon_slot_07",
+        "firstPaletteSlot": 104,
+        "paletteSlots": [
+          104,
+          271,
+          414,
+          572,
+          715,
+          873,
+          1038,
+          1212,
+          1386,
+          1560,
+          1727
+        ],
+        "maximumBindDifference": 2.76515174
+      },
+      {
+        "name": "C_back_weapon_slot_08",
+        "firstPaletteSlot": 107,
+        "paletteSlots": [
+          107,
+          273,
+          416,
+          574,
+          717,
+          875,
+          1041,
+          1215,
+          1389,
+          1563,
+          1729
+        ],
+        "maximumBindDifference": 2.880282
+      },
+      {
+        "name": "C_back_weapon_slot_08_ADJ",
+        "firstPaletteSlot": 108,
+        "paletteSlots": [
+          108,
+          274,
+          417,
+          575,
+          718,
+          876,
+          1042,
+          1216,
+          1390,
+          1564,
+          1730
+        ],
+        "maximumBindDifference": 2.880282
+      },
+      {
+        "name": "C_back_weapon_slot_11",
+        "firstPaletteSlot": 117,
+        "paletteSlots": [
+          117,
+          282,
+          425,
+          583,
+          726,
+          884,
+          1051,
+          1225,
+          1399,
+          1573,
+          1738
+        ],
+        "maximumBindDifference": 2.19000483
+      },
+      {
+        "name": "C_back_weapon_slot_11_ADJ",
+        "firstPaletteSlot": 118,
+        "paletteSlots": [
+          118,
+          283,
+          426,
+          584,
+          727,
+          885,
+          1052,
+          1226,
+          1400,
+          1574,
+          1739
+        ],
+        "maximumBindDifference": 2.19000483
+      },
+      {
+        "name": "R_front_weapon_slot_01",
+        "firstPaletteSlot": 144,
+        "paletteSlots": [
+          144,
+          314,
+          457,
+          615,
+          758,
+          916,
+          1078,
+          1252,
+          1426,
+          1600,
+          1770
+        ],
+        "maximumBindDifference": 1.27342474
+      },
+      {
+        "name": "R_front_weapon_slot_01_ADJ",
+        "firstPaletteSlot": 145,
+        "paletteSlots": [
+          145,
+          315,
+          458,
+          616,
+          759,
+          917,
+          1079,
+          1253,
+          1427,
+          1601,
+          1771
+        ],
+        "maximumBindDifference": 1.27342474
+      },
+      {
+        "name": "R_front_weapon_slot_02",
+        "firstPaletteSlot": 147,
+        "paletteSlots": [
+          147,
+          312,
+          455,
+          613,
+          756,
+          914,
+          1081,
+          1255,
+          1429,
+          1603,
+          1768
+        ],
+        "maximumBindDifference": 1.58263588
+      },
+      {
+        "name": "R_front_weapon_slot_02_ADJ",
+        "firstPaletteSlot": 148,
+        "paletteSlots": [
+          148,
+          313,
+          456,
+          614,
+          757,
+          915,
+          1082,
+          1256,
+          1430,
+          1604,
+          1769
+        ],
+        "maximumBindDifference": 1.58263588
+      },
+      {
+        "name": "C_front_weapon_slot_03",
+        "firstPaletteSlot": 150,
+        "paletteSlots": [
+          150,
+          310,
+          453,
+          611,
+          754,
+          912,
+          1084,
+          1258,
+          1432,
+          1606,
+          1766
+        ],
+        "maximumBindDifference": 2.07604074
+      },
+      {
+        "name": "C_front_weapon_slot_03_ADJ",
+        "firstPaletteSlot": 151,
+        "paletteSlots": [
+          151,
+          311,
+          454,
+          612,
+          755,
+          913,
+          1085,
+          1259,
+          1433,
+          1607,
+          1767
+        ],
+        "maximumBindDifference": 2.07604074
+      },
+      {
+        "name": "L_front_weapon_slot_04",
+        "firstPaletteSlot": 153,
+        "paletteSlots": [
+          153,
+          308,
+          451,
+          609,
+          752,
+          910,
+          1087,
+          1261,
+          1435,
+          1609,
+          1764
+        ],
+        "maximumBindDifference": 2.00915217
+      },
+      {
+        "name": "L_front_weapon_slot_04_ADJ",
+        "firstPaletteSlot": 154,
+        "paletteSlots": [
+          154,
+          309,
+          452,
+          610,
+          753,
+          911,
+          1088,
+          1262,
+          1436,
+          1610,
+          1765
+        ],
+        "maximumBindDifference": 2.00915217
+      },
+      {
+        "name": "L_front_weapon_slot_05",
+        "firstPaletteSlot": 156,
+        "paletteSlots": [
+          156,
+          306,
+          449,
+          607,
+          750,
+          908,
+          1090,
+          1264,
+          1438,
+          1612,
+          1762
+        ],
+        "maximumBindDifference": 1.74713612
+      },
+      {
+        "name": "L_front_weapon_slot_05_ADJ",
+        "firstPaletteSlot": 157,
+        "paletteSlots": [
+          157,
+          307,
+          450,
+          608,
+          751,
+          909,
+          1091,
+          1265,
+          1439,
+          1613,
+          1763
+        ],
+        "maximumBindDifference": 1.74713612
+      }
+    ],
+    "rawNativeTransformsCommitted": false,
+    "nativeReferencesUnchanged": true,
+    "actorMembershipUnchanged": true
+  },
+  "interpretation": "All177 unique transforms were measured across all1776 palette slots.17 weapon-storage transforms disagree; blind first-slot deduplication of the entire palette is rejected. Pelvis/spine/neck/head/arm/hand entries agree, but an explicit selected subset would still require exact binding and native equipment/lifecycle proof. Cape bones do not qualify a tail. No human-based Salamander was constructed or action adopted.",
+  "priorEvidence": "planning/EXPANDED-SUMMONING-SPRINT17-SPEAR-CARRIER-EVIDENCE.json",
+  "bodyGateUnchanged": "Latest570a14cd33/35 FAIL; all12 body attempts retained.",
+  "next": "Proceed with independent printed snake profiles while resolving a bounded Salamander-specific spear/tail seam. No human-to-Lizardfolk clip transplant, native asset edit, broad hybrid/animation framework, assertion waiver or Phase2C work."
+}
+
