@@ -5,7 +5,7 @@ using System.Linq;
 namespace KingmakerGunslinger.Summoning
 {
     /// <summary>
-    /// Publication-only exclusions. Sprints 9-14 are qualified and published.
+    /// Publication-only exclusions. Sprints 9-15 are qualified and published.
     ///
     /// <para>The two Giant Ant castes published on 2026-10-03 under
     /// <c>OwnerAcceptedEngineLimitation: PASSIVE_CREATURE_SENSES_UNMODELED</c>.
@@ -17,10 +17,10 @@ namespace KingmakerGunslinger.Summoning
     /// substitute sense, no vision-range override, and no record anywhere
     /// claims the omitted traits work.</para>
     ///
-    /// <para>What remains here is Sprint 15's pair, registered ahead of their
-    /// own qualification the way every sprint before them did. The Drone
-    /// carries the same unmodelled senses and is no longer held for them; it
-    /// waits only on its own gates.</para>
+    /// <para>Sprint 16's complete hidden candidate e3aeae63 passed all six
+    /// guarded stages and exact restoration. The publication candidate removes
+    /// only Dire Crocodile; its six public routes and the fourteen preserved
+    /// Crocodile routes must pass the exact publication artifact gate.</para>
     ///
     /// <para>Suppression is by name here rather than by omission from the
     /// catalog, so a held creature's identities are allocated once and are
@@ -29,30 +29,22 @@ namespace KingmakerGunslinger.Summoning
     /// </summary>
     internal static class SummonVisibilityCatalog
     {
-        // Removing a key here is what publishes a creature, and that may only
-        // happen once its own gates have passed on the head that publishes it.
+        // Removing a key creates a publication candidate after hidden gates
+        // pass. Completion additionally requires the exact public-route gate.
         // The Fire Beetle's key came out on 2026-10-03 after the batched
         // Sprint 14 qualification, and the two Giant Ant castes' keys came out
         // the same day once the owner accepted the passive-sense limitation
         // that was the only thing holding them.
         //
-        // What is left is Sprint 15's pair, waiting on their own gates and on
-        // nothing else.
-        // Sprint 16's Dire Crocodile, registered ahead of its own
-        // qualification and withheld until its guarded review passes, which is
-        // how every sprint in this phase has worked.
+        // Dire Crocodile is the only key removed by the Sprint 16 publication.
+        // Interior AC/HP remains the accepted engine limitation, not a blocker.
         private static readonly HashSet<string> SuppressedCreatureKeys =
-            new HashSet<string>(new[] { "dire-crocodile" },
-                StringComparer.Ordinal);
+            new HashSet<string>(StringComparer.Ordinal);
 
         internal const int RegisteredLogicalPlacementCount = 976;
-        // Sprint 16's Dire Crocodile: 6 placements, three parent tiers in
-        // each family for a tier-7 creature, registered ahead of its own
-        // qualification. Everything of Sprints 9-15 is published. A creature
-        // held for any reason subtracts exactly its own placements, which the
-        // per-sprint domain suites assert per creature so this arithmetic
-        // cannot drift.
-        internal const int SuppressedLogicalPlacementCount = 6;
+        // All six Dire placements join the 970 previously published roots.
+        // Per-creature and whole-catalog behavior tests pin the exact delta.
+        internal const int SuppressedLogicalPlacementCount = 0;
         internal const int PublishedLogicalPlacementCount =
             RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount;
 

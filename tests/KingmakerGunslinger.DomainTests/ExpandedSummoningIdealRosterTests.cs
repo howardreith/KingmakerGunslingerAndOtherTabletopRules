@@ -192,8 +192,9 @@ namespace KingmakerGunslinger.DomainTests
             // 933 choices visible after the Sprint 13 publication, 951 once
             // Sprint 14 published the Fire Beetle, 981 when the two ant castes
             // followed it under the accepted passive-sense limitation, and 999
-            // with Sprint 15's Drone and Giant Stag Beetle.
-            Assertions.Equal(999,
+            // with Sprint 15's Drone and Giant Stag Beetle; 1005 when Sprint 16
+            // publishes Dire Crocodile's six preserved placements.
+            Assertions.Equal(1005,
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.Monster) +
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.NaturesAlly),
                 "The plan must not change the shipped visible choice count.");

@@ -25,7 +25,11 @@ removed and all twenty roots proved through their public parents.
 Actual leased snapshot restored at 23:49:30 UTC: 136 files / Info 0.0.117 /
 `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
 Lease completed, no game/lock/staging; fresh save absence clean. DATA audit
-complete/read-only, zero ports. Six Dire roots remain withheld; Sprint 17 waits.
+complete/read-only, zero ports. Hidden-pass evidence pushed at 1393b669.
+The containing publication candidate removes only Dire suppression: 976
+published generated + 29 wrappers = 1005 visible, none withheld in source.
+All six new public roots and fourteen Crocodile roots still require the
+publication artifact gate. Sprint 17 waits.
 
 ## Historical first hidden candidate, October 5
 

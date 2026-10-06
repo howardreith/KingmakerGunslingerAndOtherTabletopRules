@@ -635,7 +635,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint16-original-assets", ExpandedSummoningSprint16Tests.CrocodilianOriginalAssetsAreComplete),
             Case("expanded-summoning.sprint16-icon-consumers", ExpandedSummoningSprint16Tests.CrocodilianIconConsumerGraphIsComplete),
             Case("expanded-summoning.sprint16-view-scale", ExpandedSummoningSprint16Tests.CrocodilianScaleChangesOnlyTheDireIdentity),
-            Case("expanded-summoning.sprint16-dire-crocodile-registered", ExpandedSummoningSprint16Tests.TheDireCrocodileIsRegisteredAndWithheld),
+            Case("expanded-summoning.sprint16-dire-crocodile-published", ExpandedSummoningSprint16Tests.TheDireCrocodilePublishesItsSixPreservedPlacements),
             Case("expanded-summoning.sprint16-dire-crocodile-stat-block", ExpandedSummoningSprint16Tests.TheDireCrocodileMatchesItsPrintedStatBlock),
             Case("expanded-summoning.sprint16-crocodile-preserved", ExpandedSummoningSprint16Tests.TheCrocodilesIdentityAndPlacementsArePreserved),
             Case("expanded-summoning.sprint16-ledger-identities", ExpandedSummoningSprint16Tests.TheLedgerCarriesTheNewIdentities),
