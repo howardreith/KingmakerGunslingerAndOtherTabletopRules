@@ -2170,6 +2170,12 @@ namespace KingmakerGunslinger.DomainTests
             Case("whiteout-native-contract.CrossAreaStashDisposesOriginals", WhiteoutNativeContractTests.CrossAreaStashDisposesOriginals),
             Case("whiteout-native-contract.ReloadDeserializesReplacementObjects", WhiteoutNativeContractTests.ReloadDeserializesReplacementObjects),
             Case("whiteout-native-contract.OriginalFactCollectionsAreDisposed", WhiteoutNativeContractTests.OriginalFactCollectionsAreDisposed),
+            Case("whiteout-continuation.DisposableSceneReplacement", WhiteoutContinuationTests.DisposableSceneReplacement),
+            Case("whiteout-continuation.SameAreaExactRestoration", WhiteoutContinuationTests.SameAreaExactRestoration),
+            Case("whiteout-continuation.ExitAndNoSaveMandatory", WhiteoutContinuationTests.ExitAndNoSaveMandatory),
+            Case("whiteout-continuation.OneWayNoOriginReturn", WhiteoutContinuationTests.OneWayNoOriginReturn),
+            Case("whiteout-continuation.DisposedReferencesNeverReused", WhiteoutContinuationTests.DisposedReferencesNeverReused),
+            Case("whiteout-continuation.PersistentStateControls", WhiteoutContinuationTests.PersistentStateControls),
         };
 
         /// <summary>
