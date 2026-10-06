@@ -29,7 +29,7 @@
       16
     ],
     "currentSprint": 17,
-    "currentSubItem": "S16 COMPLETE AND PUBLISHED; S17 NOT QUALIFIED. Last exact c55 research smoke 11/11 and survey 13/13 restored. Owned-body source pushed a35993fc; current closed body-research fixture has 223 focused tests and incremental Release PASS. All-renderer rollback, exact resource references, real owned movement and outer-timeout cleanup; no automatic production hook, new registration or save change. Next freeze/push, complete unfiltered exact-head gate and guarded smoke/body research with exact restoration (318 members). Native movement samples do not qualify credible locomotion or contacts. Separate Salamander spear/tail and printed profiles remain open. 976 + 29 = 1005 visible; zero DATA imports.",
+    "currentSubItem": "S16 COMPLETE AND PUBLISHED; S17 NOT QUALIFIED. Exact body-research 7b76 prelaunch PASS (223 focused/2025 full/491 preflight/68 orchestration/318 members), smoke 11/11, body 2/3 FAIL before attachment: fixture floor helper used a different scenario's uninitialized caster. Cleanup and exact restoration PASS at 05:05:58 UTC. Explicit fixture-anchor repair retains native floor/sight rules, 223 focused PASS, no relaxed assertions. Next commit/push repair, complete new exact-head gate and fresh-Steam affected smoke/body batch. No automatic production hook, new registration, save change or DATA import. Separate Salamander spear/tail and printed profiles remain open. 976 + 29 = 1005 visible.",
     "sprint17PrivatePrototypes": {
       "status": "Six original files staged for bounded body acceptance; not automatically attached or runtime qualified",
       "source": "assets-source/original-models/sprint17-serpents/SOURCE.md",

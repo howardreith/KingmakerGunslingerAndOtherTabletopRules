@@ -35,10 +35,13 @@ HumanReview: NOT_PERFORMED_NONBLOCKING. Accepted engine limitations/adaptation
 unchanged. Sprint 17 research is underway; Phase 2B itself is not yet closed.
 
 The current [closed body-research fixture](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-REVIEW.md)
-descends from a35993fc, reuses the laptop-owned native control seam and has
-223 focused tests/incremental Release PASS. No automatic production attachment
-or gameplay changes. Complete exact-head gate and fresh-Steam research remain
-pending; movement/finite geometry is not locomotion/contact qualification.
+descends from a35993fc and reuses the laptop-owned native control seam.
+Exact 7b76 passed every prelaunch gate (223 focused/2025 full), smoke 11/11,
+then failed body research 2/3 before attachment on a fixture-only implicit
+caster dependency. Native cleanup and exact installation restoration passed
+at 05:05:58 UTC. The explicit-anchor repair retains native floor/sight rules
+and needs a new exact-head batch. No automatic production attachment or
+gameplay changes; no body, weapon, locomotion or contact qualification.
 
 Sprint 17's [bounded native-rig survey](planning/EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md)
 uses the native Medium Water Elemental source of the proposed serpentine

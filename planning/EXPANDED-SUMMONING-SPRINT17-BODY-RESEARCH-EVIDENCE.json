@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "status": "RESEARCH FAILED; Sprint 17 NOT QUALIFIED",
+  "scope": "Original body binding, native movement and owned resource lifetime only; no gameplay/publication qualification",
+  "attempts": [
+    {
+      "candidate": "7b76dba2c9681b1702bed854a521b241b27a1250",
+      "sourceFingerprint": "a61a1c2545258fd4ca8a2467f53ca937818f52d2ccc014eb5296e5ed402a1c31",
+      "dllSha256": "ae4128244a0d2df1c5063f0b6daa3b2e9c7a072a37c9128b4d3eff0d010db028",
+      "dllMvid": "f5863b2b-2e75-410b-b441-7d150d1ffe01",
+      "packageSha256": "42bbb610cf6cd43baa5bea593a1fa4c13b005e787460879fd1f28f6267717ea0",
+      "packageMembers": 318,
+      "version": "0.0.141",
+      "prelaunch": {
+        "focused": 223,
+        "full": 2025,
+        "fullSeconds": 92.4,
+        "completeGateSeconds": 187.8,
+        "runtimePreflight": 491,
+        "orchestration": 68,
+        "persistenceWiring": 11,
+        "persistenceScopes": 3,
+        "persistenceRejections": 19,
+        "crowdRoundTrips": 5,
+        "crowdRejections": 7,
+        "exactBuildAndStrictPackage": "PASS"
+      },
+      "runs": [
+        {
+          "scenario": "working-save-smoke",
+          "startedAtUtc": "2026-10-06T04:59:54.9607635Z",
+          "parameters": {},
+          "launcherOutcome": "Clean",
+          "exitCode": 0,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T0459558654026Z-working-save-smoke",
+          "requestId": "20261006T0459558876262Z-114566a901134d93b9300b07e86abf7f",
+          "requestSha256": "daa9e37ac2be1065769abf8498c9b9cd1676e5df10c7bffff17cade3355f39e2",
+          "resultSha256": "59afe9cc3225c7a93d595aa79bef04b941f925bc083cac2e85573b6d0adeedfb",
+          "assertions": 11,
+          "passed": 11,
+          "failed": [],
+          "orchestrationSha256": "23a949cc9f0d84939e555197fe8ccc36729b75dbbff8fd7a798ff19c0f7ae7dd",
+          "processId": 14764,
+          "processStartedUtc": "2026-10-06T04:59:56.8736190Z",
+          "scenarioStatus": "PASS",
+          "outcome": "PASS",
+          "completedAtUtc": "2026-10-06T05:02:46.7583101Z"
+        },
+        {
+          "scenario": "disposable-expanded-summoning-serpentine-bodies",
+          "startedAtUtc": "2026-10-06T05:02:52.7010049Z",
+          "parameters": {},
+          "launcherOutcome": "Unclean",
+          "exitCode": 1,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T0502534871629Z-disposable-expanded-summoning-serpentine-bodies",
+          "requestId": "20261006T0502534871629Z-20ca85e3b8d844f4911d6a33f89b76da",
+          "requestSha256": "d7478a160ec4a8682bf1cf7cfa68b02287de59fe22902f72a3439b4e55a23878",
+          "resultSha256": "69a618093b48ae6d1362699bf44befb866d585ecdec5fc7551e446d23b032992",
+          "assertions": 3,
+          "passed": 2,
+          "failed": [
+            {
+              "name": "sprint17-body-exception",
+              "status": "FAIL"
+            }
+          ],
+          "orchestrationSha256": "6e90310697d3d6758614bad5fa35c763dbee0e3f39761c13b74420b23305f224",
+          "processId": 30680,
+          "processStartedUtc": "2026-10-06T05:02:54.7763535Z",
+          "scenarioStatus": "FAIL",
+          "outcome": "FAIL",
+          "completedAtUtc": "2026-10-06T05:05:55.1305843Z"
+        }
+      ],
+      "classification": "FIXTURE",
+      "cause": "FindExpandedSummoningUngulateArtPoint requires _creatureReviewCaster; the independent body fixture never initializes that separate scenario's field. Failure precedes attachment. Not evidence of missing native floor/sight or of a production body defect.",
+      "bodyAssertions": "2/3; exception FAIL, exact original-unit/party/area cleanup PASS, version PASS",
+      "bodyMetadataSha256": "09A6E4A1B38075ACDB6226CDD8E5C5F9CBA1EF798A3FF8D897EB7800782701A8",
+      "saveWrite": false,
+      "saveFilesystemAccess": false,
+      "restoration": {
+        "status": "VERIFIED",
+        "snapshot": "20261006T0459298092419Z",
+        "completedAtUtc": "2026-10-06T05:05:58.0857173Z",
+        "before": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "after": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "leaseId": "runtime-20261006T045929Z-306095f8f8cf42fe840cb1919a748dbe",
+        "leaseStatus": "Completed",
+        "recoveryRequired": false,
+        "leaseReleased": true,
+        "gameProcessesRemaining": 0,
+        "stagingRemaining": false
+      },
+      "archive": "laptop-runtime-20261006T0459289903281Z",
+      "batchSha256": "0DE347D13A48860D8809B776A35B9F7E4F48E5C55D9286ABA69085DD2668F5C5",
+      "driverSha256": "94E712C35DD5FAB425D18ECEB32D349B6BE8E591FD982B81CBEFD538C3D4E0F7",
+      "buildSidecarSha256": "706450C18F59449D29A8CE272D4ADC4A7EBD65A6870CD032DB1E7CD63AAB4923",
+      "repair": "Explicit fixture-owned anchor parameter to the existing native path/sight floor survey; its clearance, connectivity and visibility rules unchanged. No production or wait/acceptance change. New exact-head gate and complete affected smoke/body batch required."
+    }
+  ]
+}
