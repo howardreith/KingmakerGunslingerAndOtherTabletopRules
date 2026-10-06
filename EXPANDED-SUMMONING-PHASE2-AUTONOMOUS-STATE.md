@@ -25,6 +25,12 @@ deployment, force push or prohibited substitute subsystems.
 
 ### Qualified versus NOT QUALIFIED; next exact work
 
+The containing source-only diagnostic extends the closed survey with three
+exact archived spear/longspear prefab/weapon pairs, without spawning NPCs or
+adopting actions. Focused 237/237 PASS, 2039 registered; full exact prelaunch
+and fresh-Steam smoke11/survey15 are next. No new body/gameplay qualification.
+See [bounded spear audit](planning/EXPANDED-SUMMONING-SPRINT17-SPEAR-CARRIER-AUDIT.md).
+
 Exact 8022fee2: 236 focused / 2038 unfiltered tests (81.8s), complete gate
 178.4s; 491 isolated preflight / 81 orchestration / 17 provenance,
 persistence 11/3/19, crowd 5/7, clean exact Release / strict 318-member package

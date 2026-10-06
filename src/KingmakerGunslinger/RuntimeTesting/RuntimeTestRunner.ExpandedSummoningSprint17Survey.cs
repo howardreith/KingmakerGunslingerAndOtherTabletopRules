@@ -100,7 +100,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         true, "No visibility forcing or appearance-buff removal. Research, not visual/AI qualification."));
                 }
                 CaptureSprint17HybridWeaponPrefab();
-                CaptureSprint17ManufacturedActionPrefabs();
+                CaptureSprint17ManufacturedActionPrefabs(false);
+                CaptureSprint17ManufacturedActionPrefabs(true);
             }
             catch (Exception exception)
             {
@@ -181,53 +182,70 @@ namespace KingmakerGunslinger.RuntimeTesting
                 true, "not attached animation, two-hand grip, spear contact or gameplay qualification"));
         }
 
-        private void CaptureSprint17ManufacturedActionPrefabs()
+        private void CaptureSprint17ManufacturedActionPrefabs(bool actualSpearSources)
         {
             var unitsBefore = Game.Instance.State.Units.ToArray();
             var ownedBefore = _sprint17SurveyFixture.Created.ToArray();
             var rows = new JArray();
-            string path = Path.Combine(_request.EvidenceDirectory, "sprint17-native-manufactured-actions.json");
+            string[][] sources = actualSpearSources ? SerpentineRigSurveyPolicy.SpearPrefabSources :
+                SerpentineRigSurveyPolicy.ManufacturedPrefabSources;
+            string path = Path.Combine(_request.EvidenceDirectory, actualSpearSources ?
+                "sprint17-native-spear-actions.json" : "sprint17-native-manufactured-actions.json");
             var document = new JObject {
-                ["scope"] = "eleven fixed archived Lizardfolk prefabs; detached read-only metadata; no adoption or gameplay qualification",
+                ["scope"] = actualSpearSources ? "three fixed archived spear/longspear prefabs; detached read-only metadata; no adoption or gameplay qualification" :
+                    "eleven fixed archived Lizardfolk prefabs; detached read-only metadata; no adoption or gameplay qualification",
                 ["nativeData"] = "names, types, counts, paths, durations and event times only; no vertices, bind matrices, textures or curves",
                 ["rows"] = rows };
             // Preserve completed rows even if a later native source cannot be
             // observed. Such an incomplete census remains a failed scenario.
             try
             {
-                foreach (string[] source in SerpentineRigSurveyPolicy.ManufacturedPrefabSources)
+                foreach (string[] source in sources)
                 {
                     BlueprintUnit native = _sprint17SurveyFixture.Blueprints.OfType<BlueprintUnit>()
                         .Single(value => value.AssetGuid == source[0]);
-                    if (native.Prefab == null || !SerpentineRigSurveyPolicy.MatchesManufacturedPrefab(
-                        native.AssetGuid, native.Prefab.AssetId) || native.Prefab.AssetId != source[1])
+                    var weapon = native.Body == null ? null : native.Body.PrimaryHand as BlueprintItemWeapon;
+                    string prefabId = native.Prefab == null ? null : native.Prefab.AssetId;
+                    bool exact = actualSpearSources ? SerpentineRigSurveyPolicy.MatchesSpearPrefab(
+                        native.AssetGuid, prefabId, weapon == null ? null : weapon.AssetGuid,
+                        weapon == null ? null : weapon.Category.ToString(), native.Body == null || native.Body.SecondaryHand != null) :
+                        SerpentineRigSurveyPolicy.MatchesManufacturedPrefab(native.AssetGuid, prefabId);
+                    if (!exact || prefabId != source[1])
                         throw new InvalidOperationException("Manufactured-action source differs from archived identity.");
                     UnitEntityView prefab = native.Prefab.Load(false);
                     if (prefab == null) throw new InvalidOperationException("Native manufactured-action prefab missing.");
+                    var row = new JObject { ["blueprint"] = native.AssetGuid, ["name"] = native.name,
+                        ["prefab"] = source[1], ["primaryWeapon"] = weapon == null ? null : weapon.AssetGuid,
+                        ["primaryCategory"] = weapon == null ? null : weapon.Category.ToString() };
+                    rows.Add(row);
                     var managers = prefab.GetComponentsInChildren<UnitAnimationManager>(true);
-                    if (managers.Length != 1 || managers[0].GetComponent<Animator>() == null)
+                    row["managerCount"] = managers.Length;
+                    // A detached character prefab may defer its manager or
+                    // action set until attach. Preserve that as unknown; do
+                    // not initialize it or infer a usable human fallback.
+                    if (managers.Length > 1 || (!actualSpearSources && managers.Length != 1) ||
+                        (managers.Length == 1 && managers[0].GetComponent<Animator>() == null))
                         throw new InvalidOperationException("Expected one native Animator manager: " + native.name);
-                    var manager = managers[0];
-                    var set = manager.AnimationSet;
-                    if (set == null) throw new InvalidOperationException("Missing native action set: " + native.name);
-                    var nativeActions = set.Actions;
+                    var manager = managers.SingleOrDefault();
+                    var set = manager == null ? null : manager.AnimationSet;
+                    if (!actualSpearSources && set == null)
+                        throw new InvalidOperationException("Missing native action set: " + native.name);
+                    var nativeActions = set == null ? null : set.Actions;
                     // Preserve the structural observation before interpreting
                     // it. A null/empty/partially-null native list is a finding,
                     // never proof of compatibility or permission to adopt it.
-                    var row = new JObject { ["blueprint"] = native.AssetGuid, ["name"] = native.name,
-                        ["prefab"] = source[1], ["set"] = set.name,
-                        ["actionEnumerationPresent"] = nativeActions != null };
-                    rows.Add(row);
+                    row["set"] = set == null ? null : set.name;
+                    row["actionEnumerationPresent"] = nativeActions != null;
                     var actions = SerpentineRigSurveyPolicy.SnapshotMetadataSlots(nativeActions);
                     var skins = prefab.GetComponentsInChildren<SkinnedMeshRenderer>(true);
                     var skinReferences = skins.Select(value => new { Skin = value, Mesh = value.sharedMesh,
                         Bones = value.bones, Materials = value.sharedMaterials }).ToArray();
-                    row["humanFallback"] = ReferenceEquals(set, BlueprintRoot.Instance.HumanAnimationSet);
+                    row["humanFallback"] = set != null && ReferenceEquals(set, BlueprintRoot.Instance.HumanAnimationSet);
                     row["actionCount"] = actions == null ? JValue.CreateNull() : new JValue(actions.Length);
                     row["nullActionSlots"] = actions == null ? (JToken)JValue.CreateNull() : new JArray(
                         actions.Select((value, index) => new { Value = value, Index = index })
                             .Where(value => value.Value == null).Select(value => value.Index));
-                    row["transitionCount"] = set.Transitions.Count();
+                    row["transitionCount"] = set == null ? JValue.CreateNull() : new JValue(set.Transitions.Count());
                     row["hands"] = actions == null ? (JToken)JValue.CreateNull() :
                         Sprint17NativeHandAttackCensus(kind => actions.OfType<UnitAnimationAction>()
                             .Where(value => value != null).SingleOrDefault(value => value.Type == kind));
@@ -245,8 +263,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 for (Transform next = bone; next != null && next != prefab.transform; next = next.parent)
                                     names.Add(next.name);
                                 names.Reverse(); return (JToken)new JValue(string.Join("/", names.ToArray())); })) }));
-                    bool unchanged = ReferenceEquals(manager.AnimationSet, set) &&
-                        (actions == null ? set.Actions == null : set.Actions != null && set.Actions.SequenceEqual(actions)) &&
+                    bool unchanged = prefab.GetComponentsInChildren<UnitAnimationManager>(true).SequenceEqual(managers) &&
+                        (manager == null || ReferenceEquals(manager.AnimationSet, set)) &&
+                        (set == null || (actions == null ? set.Actions == null : set.Actions != null && set.Actions.SequenceEqual(actions))) &&
                         skinReferences.All(value => ReferenceEquals(value.Skin.sharedMesh, value.Mesh) &&
                             value.Skin.bones.SequenceEqual(value.Bones) && value.Skin.sharedMaterials.SequenceEqual(value.Materials));
                     row["nativeReferencesUnchanged"] = unchanged;
@@ -255,9 +274,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool noActors = Game.Instance.State.Units.SequenceEqual(unitsBefore) &&
                     _sprint17SurveyFixture.Created.SequenceEqual(ownedBefore);
                 document["actorReferencesUnchanged"] = noActors;
-                _sprint17SurveyAssertions.Add(Assertion("sprint17-native-manufactured-action-census",
-                    "eleven exact detached prefab/action/skin censuses; native references and actor membership unchanged",
-                    "rows=" + rows.Count + ";noActors=" + noActors, rows.Count == 11 && noActors,
+                _sprint17SurveyAssertions.Add(Assertion(actualSpearSources ? "sprint17-native-spear-action-census" :
+                    "sprint17-native-manufactured-action-census",
+                    "all fixed detached prefab/action/skin censuses; native references and actor membership unchanged",
+                    "rows=" + rows.Count + ";expected=" + sources.Length + ";noActors=" + noActors,
+                    rows.Count == sources.Length && noActors,
                     "Negative/missing style is a finding, not compatibility, adopted playback, grip or contact proof."));
             }
             finally { File.WriteAllText(path, document.ToString(Formatting.Indented)); }
