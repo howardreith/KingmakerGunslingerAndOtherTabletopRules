@@ -2091,7 +2091,7 @@
     "phase2CStartDeferredUntilPhase2BOwnerAcceptance": true,
     "currentMissionLastSprint": 17,
     "activeSprint": 17,
-    "deterministicTestCount": 2038,
+    "deterministicTestCount": 2039,
     "tranche2AClosed": true,
     "publicReleaseAuthorized": false,
     "candidateOnly": true,

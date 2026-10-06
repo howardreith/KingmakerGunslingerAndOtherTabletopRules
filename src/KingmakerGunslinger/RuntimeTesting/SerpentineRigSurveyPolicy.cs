@@ -39,6 +39,26 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal static bool MatchesManufacturedPrefab(string blueprint, string prefab)
         { return ManufacturedPrefabSources.Any(row => row[0] == blueprint && row[1] == prefab); }
 
+        // The same archived census contains three distinct actual spear or
+        // longspear prefabs. Equipment is evidence for what to inspect, NOT
+        // evidence of usable animation. No campaign NPC is instantiated.
+        internal static string[][] SpearPrefabSources
+        {
+            get { return new[] {
+                new[] { "8421b6137d7765947958973526b5249b", "520c43197dcb8c848a632675c7aa3f27",
+                    "928723c8d5238cb409b16e4d077a03d0", "Spear" },
+                new[] { "86dc43534645e234eb35431131e3b669", "ced3729f4b4abab4da4ef63d8489f857",
+                    "f28f6031c2908d84d945865a80f67177", "Longspear" },
+                new[] { "063e8f0e64d9b8d41a6a60bf5f13145c", "6e8f58e9489bcb747beb203f72e807a2",
+                    "9f1545b033149e6429cc9c29354fd9f1", "Longspear" }
+            }; }
+        }
+
+        internal static bool MatchesSpearPrefab(string blueprint, string prefab,
+            string weapon, string category, bool hasOffhand)
+        { return !hasOffhand && SpearPrefabSources.Any(row => row[0] == blueprint &&
+            row[1] == prefab && row[2] == weapon && row[3] == category); }
+
         // A read-only census preserves absent enumeration, explicit empty
         // list, null slots and duplicates. None implies usable playback.
         // Bound before materializing an arbitrary enumeration.
