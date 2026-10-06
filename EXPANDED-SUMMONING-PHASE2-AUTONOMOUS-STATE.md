@@ -1,6 +1,6 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-06 — laptop sole owner; Sprint 17 hidden snake view integration
+## CURRENT STATE, 2026-10-06 — laptop sole owner; Sprint 17 closed snake profile/body slice
 
 This section governs over historical mission/ownership statements below.
 HOWARD-LAPTOP / `codex/expanded-summoning-phase2b-sprints14-17` / draft PR #26
@@ -19,8 +19,8 @@ deployment, force push or prohibited substitute subsystems.
   2026-10-05T19:29:25.9127956Z; holder PID15084/start2026-10-05T20:34:17.3075720Z.
   Session-scoped; refresh heartbeat and release only on actual session ending.
   All safety refs, bundles and failed artifacts are retained.
-- Exact view source `c1ece8d736403108e27027afed91202149808edb` is pushed;
-  this evidence-only checkpoint descends from it; no concurrent remote motion.
+- This closed-profile source checkpoint descends from pushed evidence
+  `a554858f41283e3ae60fcdfa2eb81de0f27f3eb3`; no concurrent remote motion.
   Unexpected active-branch motion remains a stop; DATA motion informational.
 - [Snake source review](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SOURCE-REVIEW.md):
   exact79cf complete source gate PASS:2048 unfiltered tests (83.8s), repository/
@@ -41,6 +41,11 @@ deployment, force push or prohibited substitute subsystems.
 - 73 identities append to the unchanged2836-entry prefix. Current surface:
   97 units,1008 registered /976 published /32 withheld placements,29 wrappers,
   1005 visible choices. Viper and Constrictor Snake remain wholly hidden.
+- [New closed profile/body slice](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-PROFILE-SLICE.md):
+  exact working-save-only request,17 automatic-view+18 native profile checks;
+  no Salamander/metadata replay.248 focused/2050 full83.0s, complete repository,
+  clean exact-reference Release/strict320-member package PASS179.5s on dirty
+  source;496 standalone request preflight PASS. Committed gate NEXT. NOT RUN.
 
 ### Qualified versus NOT QUALIFIED; next exact work
 
@@ -57,7 +62,11 @@ Salamander identity/placements/art remain unchanged; its separate spear/tail
 implementation is unresolved. No Lizardfolk spear relabeling, blind human
 bind deduplication or contact waiver is accepted.
 
-Next: complete closed snake mechanics fixtures and qualify the exact production views;
+Next: freeze/push the closed profile slice; exact committed source/artifact and
+prelaunch gates, then fresh Steam smoke plus snake-profile request under one
+lease-first actual snapshot/deployment/restoration. This is a bounded profile/
+body check, NOT the full Sprint17 hidden gate. Then complete real mechanics/
+commands/persistence/crowds/routes and qualify the exact production views;
 continue the bounded Salamander-specific native spear/tail implementation.
 Then one stable Sprint17 hidden batch, publication gate, full Phase2B closure.
 Do not repeat the closed donor metadata census as a substitute for playback.
