@@ -7,18 +7,32 @@ owner-designated development line. PR #27 is frozen salvage-only; no DATA
 source imported. Phase 2C is authorized but deferred until Phase 2B owner
 acceptance; this mission stops after Sprint 17 and full Phase 2B closure.
 
-[Latest signature attempt](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-ATTEMPT3-EVIDENCE.json):
-exactdc12 complete2051-test/strict320/prelaunch PASS, smoke11/11,
-signature61/62 FAIL. All62 executed; all13 Constrictor checks pass. Six poison
-damage events, final removal and no replay passed. The observer wrongly expected
-six buff saves: native activation uses the preceding injury-action save; only
-the five later saves are buff-owned. New phase-aware read-only observer retains
-six total saves/exposures, correlates the injury save to the exact wounding bite
-and null-guards native Reason.251 focused/2053 full86.8s,complete183.6s,
-clean14-reference Release/strict320 and142 orchestration PASS. Exact runtime next.
-Production unchanged. Actual snapshot restored19:30:35UTC; no game/lock/staging/write.
-[Repair and next exact gate](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-SLICE.md).
-The earlier qualified profile/body transaction remains:
+Exact `130bf7a2de4cbd636df921f36e7f6afefe8523ca` passes the complete
+bounded rules batch: fresh Steam640820 smoke **11/11**, profile/body/signature
+**62/62**, strict collector **46/46 metadata rows**, batch PASS.
+[Exact artifact, results and restoration](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-PASS-EVIDENCE.json).
+
+Prelaunch PASS:251 focused,2053 unfiltered83.4s, complete repository/static/icon/
+manifest, clean14-reference Release and deterministic strict320 package179.8s;
+502 standalone preflight,142 orchestration,17 provenance,persistence11/3/19,
+crowd5/7. All38 inherited profile/body and24 signature checks pass.
+
+Runtime proves one exact wounding-bite injury save plus five venom-owned saves,
+six native1d2 Constitution exposures, live counter6, native removal and no
+seventh/duplicate damage. Each raw roll resolved to2; actual damage was1 each
+in this environment. Reduction factors were not recorded, so none is inferred.
+The initial save had a Reason at dispatch, but was not venom-buff-owned:
+this corrects the prior partial offline inference of a reason-less dispatch.
+All13 Constrictor rule checks pass. No production behavior change or waiver;
+all three failed signature attempts and their artifacts remain unchanged.
+
+Actual snapshot1951101231925Z restored19:58:09.8692950UTC:136 files,
+Info0.0.117,tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
+Lease Completed/recovery=false/released; no game/shared lock/staging/save write.
+This qualifies seeded native RULES, not real commands/AI/contact or full Sprint17.
+32 snake roots stay hidden; no publication. HumanReview: NOT_PERFORMED_NONBLOCKING.
+
+Earlier qualified profile/body boundary:
 
 Exact `22be90c0c768acc710b9dfef2a6d42d1cb917a04` passes the complete
 bounded smoke/profile transaction: fresh Steam640820 **11/11 smoke,38/38 snake
@@ -40,10 +54,10 @@ No native save write or save-file/protected-baseline access. Journal
 20d596aa3745b648a897cf93b14bbb839cb69ebebb129b1e186a10634400df36.
 The prior2dd31/38 FAIL and e1 native38/38/collectorERROR remain unchanged.
 
-The bounded profile/body slice passes; signatures/commands/AI/contacts/crowds/UI/
-persistence/routes and Salamander remain unqualified.32 snake roots stay hidden.
-Next extend the native request-local snake mechanics/command matrix without
-changing the passing closed38-check request. Historical checkpoints follow.
+The bounded profile/body and signature rules slices pass. Commands/AI/contacts/
+crowds/UI/persistence/routes and Salamander remain unqualified;32 roots hidden.
+Next extend the native request-local real command matrix without changing the
+passing closed38-check and62-check requests. Historical checkpoints follow.
 
 Sprint17 exact hidden-snake source `79cf2bf14b0b3ebd25e619ff34373caad93d1448`
 passes2048 unfiltered tests (83.8s), complete repository validation, clean exact

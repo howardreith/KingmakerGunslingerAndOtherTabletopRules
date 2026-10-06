@@ -1,5 +1,38 @@
 # Expanded Summoning Phase 2 journal
 
+## October6,19:58UTC — bounded snake rules62/62 PASS, exact restoration
+
+Exact `130bf7a2de4cbd636df921f36e7f6afefe8523ca` passes the complete
+bounded rules batch: fresh Steam640820 smoke **11/11**, profile/body/signature
+**62/62**, strict collector **46/46 metadata rows**, batch PASS.
+[Exact artifact, results and restoration](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-PASS-EVIDENCE.json).
+
+Prelaunch PASS:251 focused,2053 unfiltered83.4s, complete repository/static/icon/
+manifest, clean14-reference Release and deterministic strict320 package179.8s;
+502 standalone preflight,142 orchestration,17 provenance,persistence11/3/19,
+crowd5/7. All38 inherited profile/body and24 signature checks pass.
+
+Runtime proves one exact wounding-bite injury save plus five venom-owned saves,
+six native1d2 Constitution exposures, live counter6, native removal and no
+seventh/duplicate damage. Each raw roll resolved to2; actual damage was1 each
+in this environment. Reduction factors were not recorded, so none is inferred.
+The initial save had a Reason at dispatch, but was not venom-buff-owned:
+this corrects the prior partial offline inference of a reason-less dispatch.
+All13 Constrictor rule checks pass. No production behavior change or waiver;
+all three failed signature attempts and their artifacts remain unchanged.
+
+Actual snapshot1951101231925Z restored19:58:09.8692950UTC:136 files,
+Info0.0.117,tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
+Lease Completed/recovery=false/released; no game/shared lock/staging/save write.
+This qualifies seeded native RULES, not real commands/AI/contact or full Sprint17.
+32 snake roots stay hidden; no publication. HumanReview: NOT_PERFORMED_NONBLOCKING.
+
+Next: native manual/AI RTWP/turn-based commands and weighted-world contacts,
+then lifecycle/persistence/crowds/UI/routes, separate Salamander and full Sprint17.
+Sprints14–16 stay complete. Phase2C authorized but deferred; no DATA imports.
+The historical19:30 entry's reason-less inference is corrected by the live
+Reason=true observation above; failed results are not retroactively changed.
+
 ## October6,19:30UTC — signature61/62 FAIL; distinguish native save phases
 
 Exactdc1208d2 complete2051 tests85.5s/gate181.7s/strict320 and all prelaunch

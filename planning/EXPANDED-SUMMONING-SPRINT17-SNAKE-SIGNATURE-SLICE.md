@@ -1,41 +1,71 @@
 # Sprint 17 closed snake signature rules slice
 
-Status: exact dc1208d2 runtime FAIL61/62; phase-aware observer NOT RUN.
-Laptop PR26 only; failed candidate dc1208d2572d254f6cf3c1506f19503215e76808.
-Sprints14–16 complete.32 snake roots remain withheld;1005 visible choices.
-No DATA ports, version change, publication or new adaptation.
+Status: exact130bf7a2 bounded rules PASS; full Sprint17 NOT QUALIFIED.
+Laptop PR26 only; Sprints14–16 complete.32 snake roots remain withheld;
+1005 visible choices. No DATA ports, version change, publication or new adaptation.
 
-## Latest runtime and separate native save phases
+## Latest runtime: native save phases PASS
+
+Exact `130bf7a2de4cbd636df921f36e7f6afefe8523ca` passes the complete
+bounded rules batch: fresh Steam640820 smoke **11/11**, profile/body/signature
+**62/62**, strict collector **46/46 metadata rows**, batch PASS.
+[Exact artifact, results and restoration](EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-PASS-EVIDENCE.json).
+
+Prelaunch PASS:251 focused,2053 unfiltered83.4s, complete repository/static/icon/
+manifest, clean14-reference Release and deterministic strict320 package179.8s;
+502 standalone preflight,142 orchestration,17 provenance,persistence11/3/19,
+crowd5/7. All38 inherited profile/body and24 signature checks pass.
+
+Runtime proves one exact wounding-bite injury save plus five venom-owned saves,
+six native1d2 Constitution exposures, live counter6, native removal and no
+seventh/duplicate damage. Each raw roll resolved to2; actual damage was1 each
+in this environment. Reduction factors were not recorded, so none is inferred.
+The initial save had a Reason at dispatch, but was not venom-buff-owned:
+this corrects the prior partial offline inference of a reason-less dispatch.
+All13 Constrictor rule checks pass. No production behavior change or waiver;
+all three failed signature attempts and their artifacts remain unchanged.
+
+Actual snapshot1951101231925Z restored19:58:09.8692950UTC:136 files,
+Info0.0.117,tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
+Lease Completed/recovery=false/released; no game/shared lock/staging/save write.
+This qualifies seeded native RULES, not real commands/AI/contact or full Sprint17.
+32 snake roots stay hidden; no publication. HumanReview: NOT_PERFORMED_NONBLOCKING.
+
+DLL f2302a3da764396c0182052597037894462863a1c05aa6243b266288621ccbf4;
+MVID b9585919-f475-4802-92d5-48e45405aee9;
+ZIP 7fd70468173fe426212cbd6a0ef1bc33aa3eaf3fb8a8cc9ef25779bd3a43f0ec.
+Immutable archive `artifacts/sprint17-snake-signatures-source-pass-130bf7a2`.
+The evidence checkpoint only corrects a comment and records the completed gate;
+it does not claim a different binary was tested.
+Its source check also PASS:2053 unfiltered86.6s, complete repository/static/icon/
+manifest, clean14-reference Release and strict320 package184.2s. Log
+`artifacts/sprint17-signatures-pass-evidence-gate.log`; no deployment.
+
+## Attempt3 retained: distinguish native save ownership, not null Reason
 
 [Exact Attempt3 evidence](EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-ATTEMPT3-EVIDENCE.json).
 Exactdc12 full2051 tests85.5s/complete181.7s/strict320/all prelaunch PASS;
 smoke11/11,signature61/62 FAIL. Six damage events, live ticks6 and removal with
 zero seventh/duplicate damage passed. Five saves were buff-owned, not six.
-All38 profile/body and13 Constrictor checks pass; result remains FAIL.
+All38 profile/body and13 Constrictor checks passed; that result remains FAIL.
 
-Native audit explains the initial boundary: ContextActionSavingThrow executes
-the injury gate before applying poison; RuleSavingThrow/RulebookEvent constructors
-and MechanicsContext.TriggerRule leave its Reason null. BuffPoisonStatDamage
-OnFactActivate deals exposure1 and increments ticks without a second save.
-OnNewRound makes the five later buff-owned saves/damage events.
-Private audit log SHA26dce5ebb45d8ccf4238a2e1b803c619229464b990b2435486f89980781de8d0.
+The offline audit showed OnFactActivate uses the preceding injury gate instead
+of another save; OnNewRound makes five later venom-owned saves. Constructors
+and the inspected action did not explicitly set Reason, but that did not prove
+Reason was null at final dispatch. The later live130 observation corrects that
+partial inference. Audit log26dce5ebb45d8ccf4238a2e1b803c619229464b990b2435486f89980781de8d0
+and all failed evidence remain preserved.
 
-The new observer null-guards Reason and captures the initial Fortitude save
-only while the exact synchronous owned wounding bite is in Rulebook.CurrentContext.
-It records that save separately from five exact venom/owner saves; all must be
-DC13 and failed for this seeded cadence cell. Six native damage events and
-their actual1..2 damage/pre-difficulty1..2 bonus remain mandatory, plus live
-counter6, final absence and zero exhaustion/replay events. No production fix,
-extra wait or waiver. Two behavior tests cover each phase and reject duplicates.
-251 focused,2053 unfiltered86.8s,complete repository/static/icon/manifest,
-clean14-reference Release/deterministic strict320 package183.6s,142 orchestration
-PASS. Initial source gate rejected stale2051 development metadata; updated only
-that count to2053; immutable1992 published record unchanged. Logs
-`artifacts/sprint17-signatures-native-phases-dirty-gate-2.log` and preceding
-failed metadata log retained. New exact artifact next; repair runtime NOT RUN.
+The phase-aware observer correlates the initial save to the exact in-flight
+wounding bite and later saves to the exact venom/owner, without changing events.
+Two behavior tests reject missing/duplicate phases and replay. Precommit251
+focused/2053 full86.8s/complete183.6s/clean14-reference Release/strict320 and142
+orchestration passed. Stale development2051 count corrected to2053; immutable
+published1992 evidence unchanged. Exact130 then passed the batch above.
 
-Actual snapshot1923327993552Z restored19:30:35.0087296UTC:136/.117/exact tree;
-lease Completed/recovery=false/released, no game/lock/staging/save write.
+Attempt3 actual snapshot1923327993552Z restored19:30:35.0087296UTC:
+136/.117/exact tree; lease Completed/recovery=false/released,
+no game/lock/staging/save write.
 
 ## Attempt2 retained: changed from disposed counters to live events
 
