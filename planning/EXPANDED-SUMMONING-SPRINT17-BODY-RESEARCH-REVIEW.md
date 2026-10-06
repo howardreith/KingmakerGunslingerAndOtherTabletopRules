@@ -1,13 +1,50 @@
 # Sprint 17 bounded original-body research
 
-Status: Sprint 17 NOT QUALIFIED. Exact `32b2f26e04d6b36471d39586b64731429afd8cbc`
-reversible-winding research batch **PASS: smoke11/11, body29/29**, exactly restored.
+Status: Sprint 17 NOT QUALIFIED. Latest exact `21eecc676e367feeed9e73c37c1997c6368e3326`:
+**smoke11/11 PASS, body32/34 FAIL**, exactly restored08:55:18UTC.
+Prior32b reversible-winding research passed smoke11/body29.
 Prior f31 measured penetration/float; 8d corrects sampled floor support but does
 not accept final shape/attack/lifecycle. Earlier 7b76/2045 fixture failures and
 6bee driver ERROR remain preserved. This containing evidence checkpoint
 is their normal descendant. Laptop PR #26 only; no DATA
 imports. Sprint 16 remains complete. Published surface is unchanged:
 976 generated + 29 wrappers = 1005 visible.
+
+## Latest seventh exact batch and failure disposition
+
+Exact21eecc67 prelaunch:228 focused/2030 full86.8s, full gate180.5s,
+491 preflight/81 orchestration/17 provenance, persistence11/3/19,crowd5/7,
+clean exact build/strict318-member package PASS. Smoke11 PASS/body32 of34 FAIL.
+
+| Observation | Classification and action |
+| --- | --- |
+| Viper movement0m/0velocity; native control/intact/support pass | Fixture scheduling context missing; exact cause unproved. Scope RTWP before movement, remove the pre-movement hostile, record native command result and pause/mode/condition state. |
+| Salamander CanStart/queued true, finished without starting,0 contacts | Fixture rejection/isolation context missing; exact cause unproved. Fresh isolated target/owned group per cell; preserve native control/BAB and trace command result/conditions/damage sources. Do not merely increase wait. |
+| Hybrid contact-window support reaches-8.83cm | Original-support/pose finding; final art NOT accepted. Preserve current native pose/floor measurements for offline review after credible attack execution. |
+
+Both actual native snake bites have issued-command provenance, non-opportunity
+and native animation-contact flags, measured weighted-world gap0. Spear borrowed
+mesh/material adoption, all rollback/restoration/owned destruction/borrowed
+survival and every environment/reference cleanup assertion pass. Supporting
+snake bite/hybrid idle images inspected as ART ONLY: surfaces solid and spear
+present, tail occluded; no grip or mechanical cause inferred from those images.
+
+DLL12027238046d3be358c5588d7f801fdc3ceafa23c62c81fbf69cb21071da5b22;
+MVIDa708a140-3805-4123-983f-1c14f062931e;
+ZIP06c728ceedb7df58b47c2d2cd798338e582ae08ec83675ffc88b71786eeec620.
+Actual0845286601577Z snapshot restored08:55:18.2580581UTC,136/.117/exact tree.
+JournalBFAC8218216BFAC3743310834F9FF3B34DAFC183152DA193285439301261F14D.
+Lease Completed/recoveryRequired=false; no game/lock/staging/save write.
+[Exact requests/results/processes/hashes and all seven attempts](EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-EVIDENCE.json).
+
+The source repair tests measured/owned/issued contact eligibility, requires
+spear AND exact project tail, discloses native action declared types and
+measures both palm-to-shaft axis and nearest sparse vertex. It fails closed
+unless the private fresh target is an enemy of only the owned actor's isolated
+native group. The real controllable faction, original party/AI, native faction
+definitions and shared blueprints are unchanged.229 focused/2031 registered,
+incremental exact compile/repository PASS only. Next new exact head and37
+assertions; old34/32 result remains failed.
 
 ## Closed research scope
 
@@ -16,12 +53,11 @@ S17-only outward triangles and a fail-closed marker. All original coordinates,
 normals/UV/weights/paint remain byte-identical; shared exporter unchanged.
 29 authoring/replay and227 focused/2029 registered checks, incremental compile
 and repository wrapper PASS.24 backface-aware current-pose panels generated,
-representative views inspected. No new exact runtime for these staged files.
-The next source candidate adds bounded native spear attachment and real
-bite/spear/tail command/contact diagnostics, not production behavior.
-Focused228/2030 registered and incremental exact-reference compile PASS.
-Full exact-head prelaunch and runtime remain pending. Final art and gameplay
-remain open.
+representative views inspected. Exact21eecc67 now exercises these files and
+the native spear/attack prototype; it fails two fixture observations described
+below. Source correction passes229 focused/2031 registered, incremental exact
+compile and repository validation. New exact-head full gate/runtime pending.
+Final art and gameplay remain open.
 
 
 `disposable-expanded-summoning-serpentine-bodies` requires the existing guarded
@@ -40,7 +76,8 @@ Rollback restores every original static mesh/material/local transform;
 destruction checks project resources dead and borrowed spear alive.
 Real queued RTWP full attacks on an owned maneuver-immune target record
 weighted-world jaw/tail surfaces, native spear geometry, two-palm grip and
-actual native animation-contact events. Donor BAB100/HP100000 are explicit
+actual native animation-contact events. The corrected fixture retains native
+BAB/iteratives and uses additional attack bonus100/HP100000 as explicit
 fixture inputs, not printed profiles. No forced hit or animation, bone pose,
 visibility override or claim that a poor gap is accepted. All special-attack
 types are enumerated rather than only the first generic SpecialAttack action.

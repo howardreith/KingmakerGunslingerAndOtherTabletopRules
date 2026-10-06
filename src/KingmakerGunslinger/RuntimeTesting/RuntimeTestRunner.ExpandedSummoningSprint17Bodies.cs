@@ -40,8 +40,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         throw new InvalidOperationException("Native loading did not settle: " + loading);
                     }
                     CaptureSprint17BodyEnvironment();
+                    Kingmaker.UI.SettingsUI.SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
+                    Game.Instance.TurnBasedCombatController.Activate();
                     _serpentineBodyFixture = BeginExpandedSummoningCorrectionFixture("KMG_Runtime_Sprint17_BodyCaster");
-                    CreateExpandedSummoningCorrectionHostile(_serpentineBodyFixture);
                     _serpentineBodySteps = ReviewSprint17Bodies(_serpentineBodyFixture).GetEnumerator();
                 }
                 if (_serpentineBodySteps.MoveNext()) return;
@@ -210,6 +211,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         var move = new UnitMoveTo(destination, .3f);
                         move.Init(unit);
                         if (!move.CanStart) throw new InvalidOperationException("Native original-body move cannot start.");
+                        row["movementBefore"] = Sprint17NativeCommandState(unit, null, move);
                         unit.Commands.Run(move);
                         if (!unit.Commands.Contains(move)) throw new InvalidOperationException("Native move was not queued.");
                         var samples = new JArray();
@@ -224,9 +226,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                             var agent = unit.View.MovementAgent as UnitMovementAgent;
                             if (agent != null) speed = Math.Max(speed, agent.Velocity.magnitude);
                             if (sampleFrame % 10 == 0 && samples.Count < 80)
-                                samples.Add(Sprint17OriginalBodySample(unit, attachment.Body));
+                            {
+                                var sample = Sprint17OriginalBodySample(unit, attachment.Body);
+                                sample["command"] = Sprint17NativeCommandState(unit, null, move);
+                                samples.Add(sample);
+                            }
                             if (sampleFrame >= 120 && Vector3.Distance(destination, unit.Position) <= .65f) break;
+                            if (move.IsFinished && travel < 1f) break;
                         }
+                        row["movementAfter"] = Sprint17NativeCommandState(unit, null, move);
                         unit.Commands.InterruptMove();
                         row["movementSamples"] = samples;
                         row["travel"] = travel; row["maxVelocity"] = speed;
@@ -290,7 +298,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                         {
                             InterruptExpandedSummoningFixtureCommands(unit);
                             unit.CombatState.LeaveCombat();
-                            fixture.Hostile.CombatState.LeaveCombat();
                             Game.Instance.Player.UpdateIsInCombat();
                             unit.Descriptor.Master = master;
                             unit.Descriptor.SwitchFactions(faction, false);
@@ -505,6 +512,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 if (_serpentineBodyPrototype != null) UnityEngine.Object.Destroy(_serpentineBodyPrototype);
                 _serpentineBodyPrototype = null;
+                foreach (UnityEngine.Object prototype in _serpentineContactPrototypes)
+                    if (prototype != null) UnityEngine.Object.Destroy(prototype);
+                _serpentineContactPrototypes.Clear();
                 RestoreSprint17BodyEnvironment();
             }
             _serpentineBodyAssertions.Add(Assertion("sprint17-body-fixture-cleanup", "exact original unit/party/area references",

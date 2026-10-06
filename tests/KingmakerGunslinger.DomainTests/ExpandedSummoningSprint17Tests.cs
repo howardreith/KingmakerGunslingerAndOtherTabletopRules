@@ -10,6 +10,27 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class ExpandedSummoningSprint17Tests
     {
+        internal static void ContactResearchRequiresIssuedOwnedMeasuredEvents()
+        {
+            foreach (float gap in new[] { 0f, .25f, 8f })
+                Assertions.True(SerpentineRigSurveyPolicy.IsMeasuredIssuedContact(true, true, false, true, 7, gap),
+                    "Research retains a measured miss instead of pretending only good contact exists.");
+            Assertions.False(SerpentineRigSurveyPolicy.IsMeasuredIssuedContact(false, true, false, true, 7, 0),
+                "An unrelated actor or target cannot satisfy the requested command.");
+            Assertions.False(SerpentineRigSurveyPolicy.IsMeasuredIssuedContact(true, false, false, true, 7, 0),
+                "A queued, rejected or incidental event is not an executing issued attack.");
+            Assertions.False(SerpentineRigSurveyPolicy.IsMeasuredIssuedContact(true, true, true, true, 7, 0),
+                "An opportunity attack cannot satisfy the manual command.");
+            Assertions.False(SerpentineRigSurveyPolicy.IsMeasuredIssuedContact(true, true, false, false, 7, 0),
+                "The native animation contact boundary must be observed.");
+            foreach (int count in new[] { -1, 0 })
+                Assertions.False(SerpentineRigSurveyPolicy.IsMeasuredIssuedContact(true, true, false, true, count, 0),
+                    "An unmeasured donor attack is not a required contact.");
+            foreach (float gap in new[] { -.1f, float.NaN, float.PositiveInfinity, float.NegativeInfinity })
+                Assertions.False(SerpentineRigSurveyPolicy.IsMeasuredIssuedContact(true, true, false, true, 7, gap),
+                    "Unknown or invalid geometry cannot satisfy research.");
+        }
+
         internal static void NativeSpearResearchRejectsEveryChangedIdentity()
         {
             string[] exact = { "salamander", SerpentineVisualPolicy.TwoHandPrefab,

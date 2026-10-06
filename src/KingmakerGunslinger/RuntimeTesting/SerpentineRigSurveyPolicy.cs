@@ -67,6 +67,14 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal static bool Finite(float value)
         { return !float.IsNaN(value) && !float.IsInfinity(value); }
 
+        // Research completeness is not contact acceptance. A large measured
+        // gap is usable evidence; an incidental event or missing measurement
+        // is not. Final visual gates separately require actual contact.
+        internal static bool IsMeasuredIssuedContact(bool ownedPair, bool executing,
+            bool opportunity, bool nativeContact, int vertices, float gap)
+        { return ownedPair && executing && !opportunity && nativeContact &&
+            vertices > 0 && Finite(gap) && gap >= 0; }
+
         // A request-local ORIGINAL-mesh art diagnostic, never native geometry
         // or a renderer visibility/culling override. Preserve input ownership.
         internal static int[] ReverseOriginalTriangleOrder(int[] triangles, int vertexCount)

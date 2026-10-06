@@ -1,6 +1,16 @@
 # Expanded Summoning Phase 2 evidence index
 
-[S17-only authored winding correction](assets-source/original-models/sprint17-serpents/SOURCE.md):
+[Latest Sprint17 exact21eecc67 native-contact research FAIL](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-REVIEW.md):
+228 focused/2030 full86.8s/full gate180.5s, all prelaunch PASS; smoke11/body32
+of34, complete batch NOT-QUALIFIED. Viper did not move; Salamander queued
+attack finished without starting. Native snake bites gap0; spear adoption/
+rollback/resource/environment cleanup PASS. Hybrid contact-window floor
+reaches-8.83cm; final visuals open. Exact actual0845286601577Z snapshot restored
+08:55:18UTC; no game/lease/staging/save write. New isolated-target/command
+observation repair229 focused/2031 registered, incremental compile/repository
+PASS only. [Seven preserved attempts](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-EVIDENCE.json).
+
+[Historical7f S17-only authored winding correction](assets-source/original-models/sprint17-serpents/SOURCE.md):
 snake v4/hybrid v8 independently byte-reproduced; only triangle indices and
 convention marker change.29 authoring/replay,227 focused/2029 registered,
 incremental compile and repository wrapper PASS;24 backface-aware pose panels.
