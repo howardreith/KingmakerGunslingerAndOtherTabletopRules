@@ -118,6 +118,58 @@ function ConvertFrom-KmgSnakeProfileSliceEvidence {
     return $rows
 }
 
+function ConvertFrom-KmgSnakeSignatureSliceEvidence {
+    param(
+        [Parameter(Mandatory = $true)][AllowEmptyString()][string]$Json,
+        [Parameter(Mandatory = $true)][AllowEmptyCollection()][object[]]$Assertions
+    )
+    # Separate closed request. Never weaken the previously qualified38-check
+    # profile collector to accept a partial signature or full gameplay claim.
+    $signatures = @('viper-contract', 'viper-wounds', 'viper-misses', 'viper-zero-damage',
+        'viper-non-bite', 'viper-live-dc-0', 'viper-live-dc-4', 'viper-live-dc--6',
+        'viper-six-exposures', 'viper-native-cure', 'viper-source-destruction',
+        'constrict-grab-rejections', 'constrict-bite-delivery', 'constrict-no-application-frame-maintain',
+        'constrict-later-maintain-once', 'constrict-strength-0', 'constrict-strength-4',
+        'constrict-strength--10', 'constrict-native-growth', 'constrict-modifiers-restored',
+        'constrict-lethal-prey', 'constrict-dead-prey-rejected', 'constrict-destroyed-prey-rejected',
+        'constrict-owner-death')
+    if ($Assertions.Count -ne 62) { throw 'The signature rules slice requires all62 native assertions.' }
+    $baseAssertions = @()
+    $actualNames = @()
+    foreach ($assertion in $Assertions) {
+        if ($null -eq $assertion -or $assertion -is [System.Array] -or
+            $null -eq $assertion.PSObject.Properties['name'] -or
+            $null -eq $assertion.PSObject.Properties['status'] -or
+            $assertion.name -isnot [string] -or $assertion.status -isnot [string] -or
+            $assertion.status -cne 'PASS') {
+            throw 'Every native signature-slice assertion must explicitly pass.'
+        }
+        if ($assertion.name.StartsWith('sprint17-snake-signature-', [StringComparison]::Ordinal)) {
+            $actualNames += $assertion.name.Substring('sprint17-snake-signature-'.Length)
+        }
+        else { $baseAssertions += $assertion }
+    }
+    if ((($actualNames | Sort-Object) -join ',') -cne (($signatures | Sort-Object) -join ',')) {
+        throw 'Missing, duplicate or foreign native signature assertions.'
+    }
+    $rows = $Json | ConvertFrom-Json -ErrorAction Stop
+    if ($rows -isnot [System.Array] -or $rows.Count -ne 46) {
+        throw 'The signature slice requires22 profile/body and24 signature observations.'
+    }
+    $null = ConvertFrom-KmgSnakeProfileSliceEvidence -Assertions $baseAssertions -Json (
+        ConvertTo-Json -InputObject $rows[0..21] -Depth 100)
+    for ($index = 0; $index -lt $signatures.Count; $index++) {
+        $row = $rows[$index + 22]
+        if ($null -eq $row -or $row -is [System.Array] -or
+            $null -eq $row.PSObject.Properties['signature'] -or $row.signature -isnot [string] -or
+            $row.signature -cne $signatures[$index] -or
+            $null -eq $row.PSObject.Properties['passed'] -or $row.passed -isnot [bool] -or -not $row.passed) {
+            throw 'Missing, failed, mistyped or out-of-scope snake signature observation.'
+        }
+    }
+    return $rows
+}
+
 function Test-KmgBatchCandidateUnavailable {
     param([bool]$FirstScenario, [bool]$HasEvidence, [bool]$HasDeployment,
           [ValidateSet('Clean', 'Unclean')][string]$LauncherOutcome)

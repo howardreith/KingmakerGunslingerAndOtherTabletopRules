@@ -178,6 +178,7 @@ $expected = @(
     'disposable-expanded-summoning-serpentine-survey',
     'disposable-expanded-summoning-serpentine-bodies',
     'disposable-expanded-summoning-snake-profiles',
+    'disposable-expanded-summoning-snake-signatures',
     'disposable-expanded-summoning-rules',
     'disposable-expanded-summoning-visual-lifecycle',
     'disposable-expanded-summoning-projected-menu',
@@ -422,6 +423,23 @@ foreach ($invalidSnakeProfileParameters in @(@{}, @{saveName='KMG_AUTOMATION_BAS
     @{saveName='KMG_AUTOMATION_WORKING'; qualificationCreatures='salamander'})) {
     Assert-Throws { New-KmgRuntimeRequest @snakeProfileArguments -Parameters $invalidSnakeProfileParameters } `
         'snake-profile-review-rejects-unscoped-input'
+}
+$snakeSignatureArguments = $snakeProfileArguments.Clone()
+$snakeSignatureArguments.Scenario = 'disposable-expanded-summoning-snake-signatures'
+$snakeSignatureArguments.EvidenceDirectory = Join-Path $script:KmgRuntimeEvidenceRoot 'snake-signature-preflight-test'
+$snakeSignatureMetadata = Get-KmgRuntimeScenarioMetadata $snakeSignatureArguments.Scenario
+$snakeSignatureRequest = New-KmgRuntimeRequest @snakeSignatureArguments -Parameters @{saveName='KMG_AUTOMATION_WORKING'}
+Assert-True ($snakeSignatureMetadata.RequiresSaveName -and $snakeSignatureMetadata.UsesWorkingStageTimeouts -and
+    $snakeSignatureMetadata.PermittedSaveName -ceq 'KMG_AUTOMATION_WORKING' -and
+    -not $snakeSignatureMetadata.RequiresManualInteraction -and
+    $snakeSignatureRequest.scenario -ceq $snakeSignatureArguments.Scenario -and
+    $snakeSignatureRequest.exitAfterCompletion) 'snake-signature-review-remains-native-working-save-only'
+foreach ($invalidSignatureParameters in @(@{}, @{saveName='KMG_AUTOMATION_BASELINE'},
+    @{saveName='KMG_AUTOMATION_WORKING'; creature='salamander'},
+    @{saveName='KMG_AUTOMATION_WORKING'; prefab='arbitrary'},
+    @{saveName='KMG_AUTOMATION_WORKING'; saveWrite='true'})) {
+    Assert-Throws { New-KmgRuntimeRequest @snakeSignatureArguments -Parameters $invalidSignatureParameters } `
+        'snake-signature-review-rejects-extra-scope-and-save-write'
 }
 Assert-True (-not $midgameDisposable.RequiresSaveName -and
     -not $midgameDisposable.RequiresManualInteraction) `

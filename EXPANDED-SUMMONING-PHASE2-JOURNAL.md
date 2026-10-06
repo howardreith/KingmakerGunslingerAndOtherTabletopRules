@@ -1,5 +1,18 @@
 # Expanded Summoning Phase 2 journal
 
+## October6 — snake signature rules fixture, source-only
+
+Parent e368c91c; new closed working-save request adds24 poison/constrict
+assertions and a strict46-row/62-verdict collector.142 orchestration checks
+PASS;249 focused/2051 full85.1s PASS. Initial build caught omitted project
+entry; focused compile caught missing enum import. Source corrections and
+all failed logs retained; no runtime transaction or publication.
+[Scope/next gate](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-SLICE.md).
+Corrected dirty source gate PASS183.9s:2051 full84.5s,clean exact Release,
+strict320;502 preflight and all ancillary checks PASS. Commit/push NOT
+QUALIFIED, exact-head gates and
+immutable smoke/signature batch next. Last restoration remains17:47UTC.
+
 ## October6,17:47UTC — exact22be bounded snake slice PASS, restored
 
 Complete source/prelaunch PASS:2050 tests87.2s, complete gate181.8s,strict320;

@@ -29,7 +29,23 @@
       16
     ],
     "currentSprint": 17,
-    "currentSubItem": "Sprint17 NOT QUALIFIED. Exact22be90c0 full source/prelaunch PASS; complete bounded batch smoke11/11, snake profile/body38/38,22 metadata rows PASS. Actual snapshot restored17:47:43UTC, no game/lease/staging/save write. Next native snake poison/constrict and real RTWP/turn-based command/AI/contact matrix, then persistence/crowds/UI/routes and separate Salamander.32 roots hidden,1005 visible; Phase2C deferred.",
+    "currentSubItem": "Sprint17 NOT QUALIFIED. New closed62-check snake signature rules fixture source-only, NOT RUN. Precommit2051 full84.5s/complete gate183.9s/strict320,502 preflight,142 orchestration and ancillary checks PASS. Commit/push and exact-head gate, then lease-first smoke/signature batch. Exact22be90c0 profile/body38/38 remains last bounded PASS, restored17:47:43UTC. Real commands/AI/contacts, persistence/crowds/UI/routes and separate Salamander remain open.32 roots hidden,1005 visible; Phase2C deferred.",
+    "sprint17SnakeSignatureSlice": {
+      "status": "PRECOMMIT SOURCE GATES PASS; NOT RUN / NOT QUALIFIED",
+      "review": "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-SLICE.md",
+      "scenario": "disposable-expanded-summoning-snake-signatures",
+      "sourceBase": "e368c91cee51fdd6953eaf97f138bbae50182078",
+      "requiredAssertions": 62,
+      "requiredMetadataRows": 46,
+      "orchestrationChecks": 142,
+      "standalonePreflightChecks": 502,
+      "fullUnfilteredTests": 2051,
+      "precommitGateSeconds": 183.9,
+      "precommitFullTestSeconds": 84.5,
+      "fullSprintQualified": false,
+      "publicationAuthorized": false,
+      "realCommandProof": false
+    },
     "sprint17SnakeProfileSlice": {
       "status": "BOUNDED SLICE PASS; full Sprint17 NOT QUALIFIED",
       "review": "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-PROFILE-SLICE.md",

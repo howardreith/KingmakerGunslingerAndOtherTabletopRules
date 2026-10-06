@@ -12,6 +12,23 @@ namespace KingmakerGunslinger.DomainTests
     internal static class SerpentineRulesTests
     {
         internal const int AppendedLedgerIdentities = 73;
+        internal static void SignatureRequestIsClosedWorkingSaveSlice()
+        {
+            string scenario = RuntimeTestScenarioCatalog.DisposableExpandedSummoningSnakeSignatures;
+            Assertions.Equal("disposable-expanded-summoning-snake-signatures", scenario, "Closed native rules slice.");
+            Assertions.True(RuntimeTestScenarioCatalog.IsAllowed(scenario) &&
+                RuntimeTestScenarioCatalog.IsExpandedSummoningRulesScenario(scenario),
+                "The new request retains native working-save guards.");
+            foreach (string invalid in new[] { scenario.ToUpperInvariant(), scenario + "-arbitrary",
+                "working-save-expanded-summoning-snake-signatures" })
+                Assertions.False(RuntimeTestScenarioCatalog.IsAllowed(invalid) ||
+                    RuntimeTestScenarioCatalog.IsExpandedSummoningRulesScenario(invalid),
+                    "No write-enabled alias or alternate asset selector.");
+            Assertions.True(RuntimeTestScenarioCatalog.IsAllowed(
+                RuntimeTestScenarioCatalog.DisposableExpandedSummoningSnakeProfiles),
+                "The qualified closed38-check request remains independently available.");
+        }
+
         internal static void ProfileRequestIsClosedWorkingSaveSlice()
         {
             string scenario = RuntimeTestScenarioCatalog.DisposableExpandedSummoningSnakeProfiles;
