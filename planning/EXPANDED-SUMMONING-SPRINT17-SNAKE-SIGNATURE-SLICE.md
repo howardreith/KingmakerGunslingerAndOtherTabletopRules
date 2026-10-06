@@ -1,9 +1,39 @@
 # Sprint 17 closed snake signature rules slice
 
-Status: precommit source gates PASS; runtime NOT RUN / NOT QUALIFIED.
-Laptop PR26 only, parent e368c91cee51fdd6953eaf97f138bbae50182078.
+Status: exact aebf4701 runtime FAIL60/62; fixture-boundary repair NOT RUN.
+Laptop PR26 only; failed candidate aebf4701f8632ae485d0a769420a3ea3428d8cab.
 Sprints14–16 complete.32 snake roots remain withheld;1005 visible choices.
 No DATA ports, version change, publication or new adaptation.
+
+## Latest runtime and classified repair
+
+[Exact failed artifact/results/restoration](EXPANDED-SUMMONING-SPRINT17-SNAKE-SIGNATURE-ATTEMPT1-EVIDENCE.json).
+Complete source/prelaunch PASS:249 focused/2051 full84.2s, complete gate181.9s,
+clean14-reference Release/strict320,502 preflight,142 orchestration and all
+ancillary tests. Fresh Steam smoke11/11; signature60/62, all62 executed.
+All38 inherited profile/body and22/24 signature assertions passed.
+
+Both failures are fixture scheduling assumptions supported by the exact
+native assembly audit, not demonstrated production defects. Native poison
+increments its sixth exposure before removing at the next exhausted callback.
+The repaired assertion still requires exactly six1d2 events and now explicitly
+proves no seventh/duplicate damage and removal at that native boundary.
+The owner-death case never established its second grapple: the preceding
+synchronous lethal-prey case had not allowed UnitGrappleController to clear
+the initiator part. The repair invokes that native per-unit callback only for
+the two owned actors, records before/after initiator state, and strengthens
+cleanup to require both parts and both buffs absent. It does not directly
+remove the part or change production. All62 acceptance identities remain.
+
+Snapshot1831551306710Z restored18:38:54.4691641UTC:136 files,Info0.0.117,
+tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
+Lease Completed/recovery=false/released; no game/shared lock/staging/save write.
+Failed package, results, driver, extraction and audit remain preserved.
+Repair source gate PASS:249 focused;2051 full85.1s; complete repository/static/
+icon/manifest, clean14-reference Release/deterministic strict320 package181.3s;
+142 orchestration. Log `artifacts/sprint17-signatures-boundary-repair-dirty-gate.log`.
+Commit/push NOT QUALIFIED, then all exact-head prelaunch checks and the complete
+affected smoke/signature batch. Dirty diagnostic package must not be deployed.
 
 ## Closed scope
 
@@ -62,7 +92,7 @@ provenance17, persistence11/3/19, crowd5/7 PASS. Logs
 `artifacts/sprint17-signatures-precommit-preflight.log` and ancillary logs
 remain machine-local. Dirty diagnostic packages are not runtime candidates.
 
-Next: commit/push this NOT QUALIFIED checkpoint, then repeat exact-head gates
+Historical initial next action: commit/push this NOT QUALIFIED checkpoint, then repeat exact-head gates
 and preserve immutable hashes. Run
 fresh Steam640820 smoke and this closed request under one lease acquired before
 installation observation/snapshot/deployment. Restore the actual snapshot;
