@@ -1,6 +1,20 @@
 # Sprint 17 original serpentine and hybrid bodies
 
-## Current authored winding correction -- source checked, NOT RUNTIME QUALIFIED
+## Current original-art disposition, exact7ebb research, October 6 UTC
+
+Original winding and idle/movement support have bounded live research evidence;
+final visuals remain NOT QUALIFIED. Exact7ebb smoke11/body40 and complete
+driver PASS, exact actual restoration09:59:49UTC. Snake native bite gaps0;
+separate hybrid records actual spear/tail events and owned resource cleanup.
+Hybrid left hand remains0.638m off the spear axis; conservative spear gap0.375m,
+tail gap0.162m, distal original coil floor minimum-0.112885m. These are NOT
+accepted final visuals. Next correct only original distal-tail geometry and
+owned two-palm mounting, with full captured attack-pose replay and new exact
+runtime proof. No native geometry/animation export or native-bone rewrite.
+All earlier prototypes/evidence remain preserved; headings below are historical.
+HumanReview: NOT_PERFORMED_NONBLOCKING.
+
+## Authored winding correction -- historical source checkpoint
 
 The exact32b reversible native comparison supports a correction only in this
 S17 family's exporter. `serpentine_export.py` reverses each triangle once and

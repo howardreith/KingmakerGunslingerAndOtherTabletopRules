@@ -1,5 +1,28 @@
 # Expanded Summoning Phase 2 journal
 
+## October 6,09:59 UTC -- exact7ebb research40/40 PASS; final visual defects retained
+
+230 focused/2032 full83.2s/gate179.4s,491 preflight/81 orchestration/17
+provenance, persistence11/3/19,crowd5/7,clean exact Release/strict318-member
+package PASS. Fresh Steam smoke11/body40, complete research driver PASS.
+Copied owned faction preserves isolated enemies after settlement and all56
+command pose samples. Both snake bite gaps0; exact spear and tail events
+retained without reading native unreadable vertices. Every owned/reference/
+environment/census restoration check PASS. Actual0951581493121Z snapshot
+restored09:59:49.8837081UTC,136/.117/tree; lease Completed, no game/lock/staging
+or save write. Journal586B5588B3679D0BB7792DAA995F19F52F7B5DFEB3305074E0728A3762371234.
+
+Remaining measured ORIGINAL visuals: left palm0.638m from spear axis,
+conservative spear gap0.37510m, tail gap0.16190m, distal coil floor minimum
+-0.112885m. The earlier minimum vertices201/214 are pure tail3. Research PASS
+is diagnostic completeness, not final grip/contact/shape acceptance. Native
+spear frame inspected as supporting ART ONLY, not mechanical evidence.
+Next private actual-attack replay, original distal-tail sculpt and bounded
+owned two-palm mounting; no native bones/mesh/controller edits. Then a new
+exact artifact and complete affected batch. No hidden/gameplay/publication
+qualification, production hook or new snake registration yet.
+All nine attempts preserved. S14–16 complete; Phase2B still open.
+
 ## October 6,09:29 UTC -- exacta096 research FAIL, restored; bounded diagnostic correction
 
 All prelaunch PASS:229 focused/2031 full84.1s/gate177.6s,491 preflight,

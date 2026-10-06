@@ -29,7 +29,7 @@
       16
     ],
     "currentSprint": 17,
-    "currentSubItem": "S16 COMPLETE AND PUBLISHED; S17 NOT QUALIFIED. Latest exacta09648b01486f4f3da556df7efacc6ac189c5bb7:229 focused/2031 full84.1s, gate177.6s, all prelaunch PASS, strict318-member package. Steam smoke11 PASS/body36 of37 FAIL; exact0920583696673Z snapshot restored09:29:17UTC. Three movements pass; snake bite gaps3.43/3.35cm; actual hybrid tail gap26.7cm and support-6.94cm remain open. Native spear isUnreadable: vertex measurement lost its event; enemy isolation passed initially but did not persist after native player-group validation. Current correction preserves failed event rows, uses labeled conservative spear bounds metadata and a disposable copied controllable faction with post-settlement/throughout-command enemy isolation.230 focused/2032 registered, incremental compile/repository PASS; no runtime qualification. Next new exact head, full14-reference prelaunch and40-assertion smoke/body batch, exact restoration. Then S17 profiles/signatures/full hidden/publication and Phase2B closure.976+29=1005 visible; no DATA port; Phase2C authorized but deferred.",
+    "currentSubItem": "S16 COMPLETE AND PUBLISHED; S17 NOT QUALIFIED. Exact7ebb34eb0124a732c1f8a034b84f01dbd381aa6c passes230 focused/2032 full83.2s, gate179.4s, all prelaunch/strict318-member package. Fresh Steam smoke11/body40 and complete RESEARCH driver PASS. Both snake bite gaps0; owned enemy isolation persists after settlement and all56 command poses. Native spear and exact tail events retained, all rollback/resources/environment/census checks PASS. Final hybrid visuals remain open: left palm0.638m from shaft, conservative spear gap0.3751m, tail gap0.1619m and distal coil floor minimum-0.112885m. No visual threshold waived. Actual0951581493121Z snapshot restored09:59:49UTC, no game/lease/lock/staging/save write. Next extend private replay to closed actual attack captures, correct authored distal-coil geometry and bounded owned two-palm weapon mounting, then new exact artifact/affected batch. Printed profiles/signatures/icons/full S17 hidden/publication and Phase2B closure remain.976+29=1005 visible; ZERO DATA ports; Phase2C authorized but deferred.",
     "sprint17PrivatePrototypes": {
       "status": "Six original files staged for bounded body acceptance; not automatically attached or runtime qualified",
       "source": "assets-source/original-models/sprint17-serpents/SOURCE.md",
@@ -61,9 +61,9 @@
     },
     "sprint16LaptopCorrectionReview": "planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-FIXTURE-REPAIR.md",
     "dataSalvageAudit": "planning/EXPANDED-SUMMONING-PHASE2B-DATA-SALVAGE-AUDIT.md",
-    "lastGuardedRuntimePass": "Exact32b2f26e research ONLY: smoke11/11; 20261006T0755404990129Z-disposable-expanded-summoning-serpentine-bodies29/29; complete batch PASS. S16 complete; S17 final visual/gameplay NOT QUALIFIED.",
-    "lastGuardedRuntimeResult": "Exacta09648b0 smoke11 PASS/body36 of37 FAIL; complete batch NOT-QUALIFIED. Unreadable spear diagnostic and transient player-faction isolation corrected in source only. All eight attempts retained.",
-    "lastGuardedRestoration": "20261006T0920583696673Z actual snapshot restored2026-10-06T09:29:17.3815135Z; journalA827D78C9B50C488B2C8DDA4F22B7CED3FC0E62B7BB25307339EA5DDDF6E1AEE; exact restoration VERIFIED, no game/lease/staging/save write",
+    "lastGuardedRuntimePass": "Exact7ebb34eb RESEARCH ONLY: smoke11/11; 20261006T0955234248989Z-disposable-expanded-summoning-serpentine-bodies40/40; complete driver PASS. S16 complete; S17 final visual/gameplay NOT QUALIFIED.",
+    "lastGuardedRuntimeResult": "Exact7ebb34eb smoke11/body40 and complete research driver PASS; final hybrid grip/contact/ground defects explicitly open. Nine attempts retained; no new production hook or registration.",
+    "lastGuardedRestoration": "20261006T0951581493121Z actual snapshot restored2026-10-06T09:59:49.8837081Z; journal586B5588B3679D0BB7792DAA995F19F52F7B5DFEB3305074E0728A3762371234; restoration VERIFIED, no game/lease/lock/staging/save write",
     "activePullRequest": 26,
     "archivedSalvagePullRequest": 27,
     "giantWaspPublished": true,

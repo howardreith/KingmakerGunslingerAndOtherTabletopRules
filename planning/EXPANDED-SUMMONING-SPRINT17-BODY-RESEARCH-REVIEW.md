@@ -1,47 +1,52 @@
 # Sprint 17 bounded original-body research
 
 Status: Sprint17 NOT QUALIFIED. Latest exact
-`a09648b01486f4f3da556df7efacc6ac189c5bb7`:
-**smoke11/11 PASS, body36/37 FAIL**, exactly restored09:29:17UTC.
-All eight attempts preserved. Sprints14–16 complete;976 generated+29 wrappers
-=1005 visible. Laptop PR26 only, ZERO DATA imports. No new snake registration
-or production Salamander/view modification.
+`7ebb34eb0124a732c1f8a034b84f01dbd381aa6c`:
+**smoke11/11 and body40/40 PASS; complete research driver PASS**.
+Exact actual snapshot restored09:59:49UTC. All nine attempts preserved.
+Sprints14–16 complete;976 generated+29 wrappers=1005 visible, no withheld.
+Laptop PR26 only, ZERO DATA imports. No production hook or new registration.
 
-## Latest eighth exact batch and failure disposition
+## Latest ninth exact batch — research completeness, NOT final acceptance
 
-All prelaunch PASS:229 focused/2031 full84.1s, full gate177.6s,
+All prelaunch PASS:230 focused/2032 full83.2s, full gate179.4s,
 491 preflight/81 orchestration/17 provenance, persistence11/3/19,crowd5/7,
-clean exact Release/strict318-member package. Complete batch NOT-QUALIFIED.
+clean exact Release/strict318-member package. Two fresh Steam640820 processes.
+Every movement, initial/post-settlement/throughout-command isolation, native
+primary attack, exact tail event, rollback/material/reference/owned destruction,
+borrowed-native survival and environment/census restoration assertion PASS.
 
-| Observation | Classification and correction |
+| Current-pose evidence | Meaning and remaining work |
 | --- | --- |
-| All three move >2.45m; snake bite gaps3.43/3.35cm | Research movement/current-pose evidence, not final anatomy or gameplay. |
-| Hybrid command starts/succeeds; two rolls but only tail contact retained | Fixture: native spear vertex access is denied (isReadable=false, exact output_log5037). Retain every event/error; use explicitly labeled native bounds/end-centre metadata and conservative transverse uncertainty, never call them vertices. |
-| Initial isolated enemies become enemy=false after settlement | Fixture: native UnitValidationController repairs PlayerFaction group identity. Copy only the disposable actor's native faction into request-local ownership, preserving the native control flag; no native definition/controller mutation. Require isolation after settlement and throughout the command. |
-| Exact tail gap26.7cm; attack support minimum-6.94cm | Original visual still open. Prior-8.83cm remains preserved. No contact threshold waiver or final visual PASS. |
+| Both snake bite gaps0; support2.91mm/1.85mm | Credible native issued bite/movement research. Donor profiles retained, not new printed-stat qualification. |
+| Hybrid spear event99394d45; right palm axis distance<1micrometre, left0.638m | The native right-hand mount is not a two-hand grip. Correct bounded owned weapon mounting; no native rig/controller rewrite. |
+| Native spear mesh unreadable; two end-centres plus0.03135m transverse uncertainty; conservative gap0.37510m | A labeled conservative metadata estimate, NOT surface vertices and NOT accepted contact. Do not alter native readability. |
+| Exact tail93e097b8 gap0.16190m; attack support-0.112885m..0.005m | Distal original coil penetrates the floor in actual poses. Correct authored tail3 geometry and replay all captured attack/idle/move poses. |
+| Three owned enemy pairs stay isolated in all56 command pose samples | Private copied controllable faction avoids native PlayerFaction group repair. No repeated group override or unrelated-unit mutation. |
 
-All rollback/material adoption/native reference restoration/project-owned
-destruction/borrowed-native survival/environment and unit/party/area cleanup
-assertions pass. Supporting native tail-contact frame viewed as ART ONLY:
-original hybrid with spear and partly occluded tail; no mechanical inference.
+Spear/tail events are non-opportunity, issued-command and native-animation
+contact true; no forced attack or pose. Supporting spear frame reviewed as
+ART ONLY: original hybrid and spear visible, detached left hand, partly
+occluded coil. Mechanical findings derive from structured data, not the image.
+No final shape, slope/death/fade, grip, gameplay or publication qualification.
 
-DLL0d2db90b2f898b6d49dd29950a37f40ee205a554491316aa362f8e7b3dd25eff;
-MVIDbfb06ed6-57a0-425a-95c9-84de8683448f;
-ZIP5bd692dfa49fad3c6249055495e69eae49505262ed9740a3df2ca35365b4a16e.
-Actual0920583696673Z snapshot restored09:29:17.3815135UTC:136/.117/exact tree.
-JournalA827D78C9B50C488B2C8DDA4F22B7CED3FC0E62B7BB25307339EA5DDDF6E1AEE.
+DLL822c1739a29d42c59e0e3304902bcc28e6b01af0f142d590c7eddd6933bddf9c;
+MVID1e2298ff-47ae-4c10-be84-78f75f102872;
+ZIPcc157eb434c0e25b1d34feccd42508bd9c5cb6bc57f74dd1a0136cec3589a81b.
+Actual0951581493121Z snapshot restored09:59:49.8837081UTC:136/.117/exact tree.
+Journal586B5588B3679D0BB7792DAA995F19F52F7B5DFEB3305074E0728A3762371234.
+CaptureB9DF8B3E2C07B2B3AD778DCAB43C16EB11C7538CA5DA1040E246D6F182B5C810.
 Lease Completed/recoveryRequired=false/released; no game/lock/staging/save write.
 [All exact requests/results/processes/hashes](EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-EVIDENCE.json).
 
-Current source: copied faction remains request-local, never a player-faction
-identity, and restores exact original faction/group before native destruction.
-The native control predicate and command path remain intact. Bounds observations
-retain unknown/poor contact instead of hiding it; exceptions become failed rows.
-230 focused/2032 registered, incremental exact compile PASS. Full exact-head
-prelaunch and new40-assertion runtime are pending; no source-only qualification.
+Next: extend closed private replay to the attack capture; correct only original
+distal-coil support and owned spear mounting. Preserve native bones, mesh,
+clips, gameplay/actor collision and every prior failed artifact. A new exact
+artifact and complete affected batch must prove the corrections.
 
-Historical21ee smoke11/body32 of34 FAIL (Viper movement0, hybrid unstarted)
-and earlier32b/8d research-only passes remain preserved, not upgraded.
+Historicala096 smoke11/body36 of37 FAIL (unreadable spear query and transient
+player-faction isolation) and21ee smoke11/body32 of34 FAIL (movement/rejection)
+remain preserved, not retroactively upgraded.
 
 ## Closed research scope
 
