@@ -176,6 +176,7 @@ $expected = @(
     'disposable-expanded-summoning-visual-contracts',
     'disposable-expanded-summoning-crocodilians',
     'disposable-expanded-summoning-serpentine-survey',
+    'disposable-expanded-summoning-serpentine-bodies',
     'disposable-expanded-summoning-rules',
     'disposable-expanded-summoning-visual-lifecycle',
     'disposable-expanded-summoning-projected-menu',
@@ -390,6 +391,21 @@ foreach ($invalidSerpentineParameters in @(@{}, @{saveName='KMG_AUTOMATION_BASEL
     @{saveName='KMG_AUTOMATION_WORKING'; qualificationCreatures='viper'})) {
     Assert-Throws { New-KmgRuntimeRequest @serpentineArguments -Parameters $invalidSerpentineParameters } `
         'serpentine-research-rejects-other-saves-or-unscoped-assets'
+}
+$serpentineBodyArguments = $serpentineArguments.Clone()
+$serpentineBodyArguments.Scenario = 'disposable-expanded-summoning-serpentine-bodies'
+$serpentineBodyArguments.EvidenceDirectory = Join-Path $script:KmgRuntimeEvidenceRoot 'serpentine-body-preflight-test'
+$serpentineBodyMetadata = Get-KmgRuntimeScenarioMetadata $serpentineBodyArguments.Scenario
+$serpentineBodyRequest = New-KmgRuntimeRequest @serpentineBodyArguments -Parameters @{saveName='KMG_AUTOMATION_WORKING'}
+Assert-True ($serpentineBodyMetadata.RequiresSaveName -and $serpentineBodyMetadata.UsesWorkingStageTimeouts -and
+    $serpentineBodyMetadata.PermittedSaveName -ceq 'KMG_AUTOMATION_WORKING' -and
+    $serpentineBodyRequest.scenario -ceq $serpentineBodyArguments.Scenario -and
+    $serpentineBodyRequest.exitAfterCompletion) 'serpentine-body-review-uses-exact-working-save-guard'
+foreach ($invalidBodyParameters in @(@{}, @{saveName='KMG_AUTOMATION_BASELINE'},
+    @{saveName='KMG_AUTOMATION_WORKING'; prefab='arbitrary'},
+    @{saveName='KMG_AUTOMATION_WORKING'; qualificationCreatures='viper'})) {
+    Assert-Throws { New-KmgRuntimeRequest @serpentineBodyArguments -Parameters $invalidBodyParameters } `
+        'serpentine-body-review-rejects-unscoped-input'
 }
 Assert-True (-not $midgameDisposable.RequiresSaveName -and
     -not $midgameDisposable.RequiresManualInteraction) `

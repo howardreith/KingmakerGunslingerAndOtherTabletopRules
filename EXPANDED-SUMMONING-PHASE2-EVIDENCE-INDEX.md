@@ -1,5 +1,11 @@
 # Expanded Summoning Phase 2 evidence index
 
+[Sprint 17 closed body-research fixture](planning/EXPANDED-SUMMONING-SPRINT17-BODY-RESEARCH-REVIEW.md):
+223 focused tests and incremental Release compile PASS; exact-head gate/runtime
+pending. All-renderer rollback, exact owned resource references, native motion
+samples and interruption cleanup. No printed-profile/weapon/contact acceptance
+or new publication is inferred. Latest actual restoration remains c55.
+
 [Sprint 17 owned-body source slice](assets-source/original-models/sprint17-serpents/SOURCE.md):
 five supporting-coil authoring tests, 48 corrected native-up stress panels,
 six byte-reproduced original asset files staged for guarded acceptance. Closed
