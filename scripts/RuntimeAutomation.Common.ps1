@@ -2047,8 +2047,9 @@ function Assert-KmgRuntimeScenarioPreflight {
             $Parameters.quantity -cne 'OneD4PlusOne' -or
             @(([string]$Parameters.creatures -split ',') | ForEach-Object { $_.Trim() } |
                 Where-Object { $_ -cnotin @('aurochs','bison','rhinoceros','woolly-rhinoceros',
-                    'dire-rat','dog','hyena','goblin-dog','crocodile','dire-crocodile') }).Count -ne 0)) {
-            throw 'The crowd review permits only 1d4+1 Sprint 11 ungulates, Sprint 12 quadrupeds or Sprint 16 crocodilians.'
+                    'dire-rat','dog','hyena','goblin-dog','crocodile','dire-crocodile',
+                    'viper','constrictor-snake') }).Count -ne 0)) {
+            throw 'The crowd review permits only 1d4+1 Sprint 11 ungulates, Sprint 12 quadrupeds, Sprint 16 crocodilians or the two Sprint 17 snakes.'
         }
         if ($flightActivation -and ($Parameters.flightCreature -isnot [string] -or
             [string]$Parameters.flightCreature -cnotin @('eagle', 'dire-bat', 'giant-wasp', 'stirge', 'dire-rat', 'wolverine', 'shadow-mastiff'))) {
