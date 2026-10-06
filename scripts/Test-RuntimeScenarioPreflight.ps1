@@ -42,6 +42,7 @@ Assert-True ($sourceStateFirst -cmatch '^[0-9a-f]{64}$' -and
 
 $expected = @(
     'observe-unpublished-race-trait-foundations',
+    'observe-unpublished-whiteout-foundation',
     'observe-whiteout-disposable-weather-fixture',
     'observe-unpublished-aerial-observer-foundation',
     'observe-whiteout-weather-catalog',
@@ -1488,6 +1489,15 @@ foreach ($case in @(
     @{ Parameters = @{ saveName = 'KMG_AUTOMATION_WORKING'; arbitrary = 'forbidden' }; Exit = $true; Label = 'closed-parameters' }
 )) {
     Assert-Throws { Assert-KmgRuntimeScenarioPreflight -Scenario 'observe-whiteout-disposable-weather-fixture' -ExpectedVersion $activeVersion -TimeoutSeconds 900 -ExitAfterCompletion:$case.Exit -Parameters $case.Parameters } ('whiteout-disposable-' + $case.Label)
+}
+
+foreach ($case in @(
+    @{ Parameters = @{}; Exit = $true; Label = 'missing-working-save' },
+    @{ Parameters = @{ saveName = 'WRONG_SAVE' }; Exit = $true; Label = 'wrong-working-save' },
+    @{ Parameters = @{ saveName = 'KMG_AUTOMATION_WORKING' }; Exit = $false; Label = 'automatic-exit-required' },
+    @{ Parameters = @{ saveName = 'KMG_AUTOMATION_WORKING'; arbitrary = 'forbidden' }; Exit = $true; Label = 'closed-parameters' }
+)) {
+    Assert-Throws { Assert-KmgRuntimeScenarioPreflight -Scenario 'observe-unpublished-whiteout-foundation' -ExpectedVersion $activeVersion -TimeoutSeconds 900 -ExitAfterCompletion:$case.Exit -Parameters $case.Parameters } ('whiteout-foundation-' + $case.Label)
 }
 
 if ($failures.Count -ne 0) {

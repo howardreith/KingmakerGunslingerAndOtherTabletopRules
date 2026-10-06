@@ -31,7 +31,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private WhiteoutDisposableFixture _whiteoutDisposableFixture;
         private void PollWhiteoutDisposableFixture()
         {
-            if (_request.Scenario != RuntimeTestScenarioCatalog.ObserveWhiteoutDisposableWeatherFixture ||
+            if ((_request.Scenario != RuntimeTestScenarioCatalog.ObserveWhiteoutDisposableWeatherFixture &&
+                _request.Scenario != RuntimeTestScenarioCatalog.ObserveUnpublishedWhiteoutFoundation) ||
                 !_request.ExitAfterCompletion || _workingSaveSmoke == null || !_workingSaveSmoke.Complete || _workingSaveSmoke.WriteObserved)
                 throw new InvalidOperationException("Exact no-write working-save readiness and automatic exit required.");
             if (LoadingProcess.Instance.IsLoadingInProcess || LoadingProcess.Instance.IsLoadingScreenActive) return;
@@ -39,16 +40,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             _whiteoutDisposableFixture.Tick();
             if (!_whiteoutDisposableFixture.ReadyForCompletion) return;
             var fixture = _whiteoutDisposableFixture;
-            var path = Path.Combine(_request.EvidenceDirectory, "whiteout-disposable-weather-fixture.json");
+            var path = Path.Combine(_request.EvidenceDirectory, _request.Scenario==RuntimeTestScenarioCatalog.ObserveUnpublishedWhiteoutFoundation ? "unpublished-whiteout-foundation.json" : "whiteout-disposable-weather-fixture.json");
             WriteTeleportationForensicJson(path, new {
-                schemaVersion=1, runId=_request.RunId, gate=fixture.Failure==null ? "WEATHER-FIXTURE-QUALIFIED" : "WEATHER-FIXTURE-FAILED",
+                schemaVersion=1, runId=_request.RunId, gate=fixture.Failure==null ?
+                    (_request.Scenario==RuntimeTestScenarioCatalog.ObserveUnpublishedWhiteoutFoundation ? "WHITEOUT-FOUNDATION-QUALIFIED" : "WEATHER-FIXTURE-QUALIFIED") : "WHITEOUT-FIXTURE-FAILED",
                 NonPartySceneReferenceRestorationRequired=false, DisposableNoSaveProcessIsolation=true,
                 samples=fixture.Samples, assertions=fixture.Assertions, events=fixture.Probe.Events,
                 mutationCount=fixture.MutationCount, saveWriteObserved=_workingSaveSmoke.WriteObserved,
-                error=fixture.Failure, WhiteoutPublished=false, attackAdapterInstalled=false });
+                error=fixture.Failure, WhiteoutPublished=false, attackAdapterInstalled=WhiteoutAttackStagePatch.ContractValid,
+                attackObservations=fixture.AttackObservations });
             var result=CreateResult(fixture.Failure==null && fixture.Assertions.All(a=>a.Status=="PASS") ? "PASS" : "FAIL", fixture.Assertions, fixture.Failure);
             result.EvidenceFiles.Add(path);
-            result.Diagnostics.Add("Weather gate only. One-way mansion to Oleg; non-party scene replacement accepted inside automatic-exiting no-save process. No reference restoration claim.");
+            result.Diagnostics.Add("One-way disposable no-save mansion to Oleg. Per-area weather and owned fixture cleanup required; no claim of prior NPC reference restoration.");
             Complete(result);
         }
 
@@ -80,6 +83,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             private readonly System.Diagnostics.Stopwatch _watch=System.Diagnostics.Stopwatch.StartNew();
             internal readonly List<RuntimeTestAssertion> Assertions=new List<RuntimeTestAssertion>();
             internal readonly List<object> Samples=new List<object>();
+            internal readonly List<WhiteoutAttackObservation> AttackObservations=new List<WhiteoutAttackObservation>();
             internal readonly WhiteoutFixtureProbe Probe=new WhiteoutFixtureProbe();
             internal string Failure;
             internal bool ReadyForCompletion;
@@ -163,10 +167,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int before = Probe.Changes;
                 var listenersBefore = WhiteoutListeners(typeof(IWeatherChangeHandler));
                 EventBus.Subscribe(Probe);
+                WhiteoutSiteFixture site=null;
                 try
                 {
-                using (var weather = new WhiteoutWeatherMutation(Samples))
+                if(_runner._request.Scenario==RuntimeTestScenarioCatalog.ObserveUnpublishedWhiteoutFoundation)
+                    site=new WhiteoutSiteFixture(_runner,anchor,Check,AttackObservations);
+                using (var weather = new WhiteoutWeatherMutation(Samples,site))
                 {
+                    site?.ClearControls();
                     weather.Set(WeatherType.Rain);
                     MutationCount++;
                     var actual = _game.Player.Weather.ActualWeather;
@@ -175,10 +183,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Check(phase+"-rain-light", "native Rain/Light; outdoors-only active="+!indoor,
                         "type="+WeatherSystemBehaviour.Instance.WeatherType+";actual="+actual+";indoor="+LocalMapArea.IsIndoor(anchor.Position)+";active="+active,
                         actual == InclemencyType.Light && WeatherSystemBehaviour.Instance.WeatherType == WeatherType.Rain && active == !indoor);
+                    site?.RainControls(indoor);
                     weather.Set(WeatherType.Rain); MutationCount++;
                     state.Reconcile(true, WhiteoutPrecipitation.Rain, (int)_game.Player.Weather.ActualWeather, indoor, true, true);
                     Check(phase+"-repeat-idempotent", "no duplicated transition", "transitions="+state.TransitionCount,
                         state.TransitionCount == (indoor ? 0 : 1));
+                    site?.RepeatedRain(indoor);
                     weather.Set(WeatherType.Snow); MutationCount++;
                     actual = _game.Player.Weather.ActualWeather;
                     active = WhiteoutPolicy.WeatherActive(true, WhiteoutPrecipitation.Snow, (int)actual, indoor);
@@ -186,13 +196,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Check(phase+"-snow-light", "native Snow/Light; outdoors-only active="+!indoor,
                         "type="+WeatherSystemBehaviour.Instance.WeatherType+";actual="+actual+";active="+active,
                         actual == InclemencyType.Light && WeatherSystemBehaviour.Instance.WeatherType == WeatherType.Snow && active == !indoor);
+                    site?.SnowControls(indoor);
                     weather.Set(WeatherType.Normal); MutationCount++;
                     state.Reconcile(true, WhiteoutPrecipitation.Normal, (int)_game.Player.Weather.ActualWeather, indoor, true, true);
                     Check(phase+"-clear", "Clear and inactive", _game.Player.Weather.ActualWeather+";active="+state.Active,
                         _game.Player.Weather.ActualWeather == InclemencyType.Clear && !state.Active);
+                    site?.ClearedControls();
                 }
+                site?.RestoredWeatherEvents();
                 }
-                finally { EventBus.Unsubscribe(Probe); }
+                finally { try { site?.Dispose(); } finally { EventBus.Unsubscribe(Probe); } }
                 Check(phase+"-listener-cleanup", "exact pre-site listeners", "restored="+WhiteoutListeners(typeof(IWeatherChangeHandler)).SequenceEqual(listenersBefore), WhiteoutListeners(typeof(IWeatherChangeHandler)).SequenceEqual(listenersBefore));
                 Check(phase+"-native-event-count", "exactly five native weather-change deliveries, including restoration", "deliveries="+(Probe.Changes-before), Probe.Changes-before == 5);
                 Samples.Add(new { phase, area = _game.CurrentlyLoadedArea.AssetGuid, part = map.AreaPart.AssetGuid, indoor,
@@ -224,7 +237,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             private readonly Dictionary<UnitEntityData,Buff[]> _buffs;
             private readonly List<object> _samples;
             private bool _disposed;
-            internal WhiteoutWeatherMutation(List<object> samples)
+            internal WhiteoutWeatherMutation(List<object> samples,WhiteoutSiteFixture site=null)
             {
                 _samples = samples; _visual = WeatherSystemBehaviour.Instance; _weather = Game.Instance.Player.Weather;
                 if (_visual == null || typeof(WeatherController).Module.ModuleVersionId != new Guid("07fa1e4d-8618-41b3-9b8d-faa17d3b26f7")) throw new InvalidOperationException("Exact installed native weather contract mismatch.");
@@ -245,7 +258,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }).ToArray() });
                 foreach (object listener in _listeners)
                 {
-                    if (listener is WhiteoutFixtureProbe || listener.GetType().FullName == "Kingmaker.Visual.Sound.SoundState") continue;
+                    if (listener is WhiteoutFixtureProbe || (site!=null && site.OwnsListener(listener)) || listener.GetType().FullName == "Kingmaker.Visual.Sound.SoundState") continue;
                     var party = listener as UnitPartPartyWeatherBuff;
                     if (party != null && typeof(UnitPartPartyWeatherBuff).GetField("m_LastBuff",BindingFlags.Instance|BindingFlags.NonPublic).GetValue(party)==null) continue;
                     var conditional = listener as AddBuffInBadWeather;
@@ -268,7 +281,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _overridden = typeof(WeatherController).GetField("m_Overridden",BindingFlags.Instance|BindingFlags.NonPublic);
                 if (_season == null || _season.FieldType != typeof(WeatherRoot.SeasonalData) || _overridden == null || _overridden.FieldType != typeof(bool)) throw new InvalidOperationException("Exact controller restoration fields absent.");
                 _seasonBefore = _season.GetValue(_controller); _overriddenBefore = _overridden.GetValue(_controller);
-                _units = Game.Instance.State.Units.All.ToArray(); _buffs = _units.ToDictionary(u=>u,u=>u.Buffs.Enumerable.ToArray());
+                _units = Game.Instance.State.Units.All.Where(u=>site==null || !site.Actors.Contains(u)).ToArray(); _buffs = _units.ToDictionary(u=>u,u=>u.Buffs.Enumerable.ToArray());
                 LightIntensity(WeatherType.Rain); LightIntensity(WeatherType.Snow);
                 _samples.Add(new { phase="before-mutation", type=_type.ToString(), rain=_rain, snow=_snow, actual=_actual.ToString(),
                     current=_current.ToString(), nextTicks=_next.Ticks, controllerOverridden=_overriddenBefore, handlers=_listeners.Select(l=>l.GetType().FullName).ToArray(),
