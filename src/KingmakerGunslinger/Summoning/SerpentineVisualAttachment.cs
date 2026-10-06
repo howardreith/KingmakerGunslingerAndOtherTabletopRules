@@ -49,6 +49,7 @@ namespace KingmakerGunslinger.Summoning
         private Material _spearMaterial;
         private Transform _spearRightPalm, _spearLeftPalm;
         private Quaternion _nativeSpearRotation;
+        private SerpentineNativeSpearAnimation _spearAnimation;
         private string _ownedName;
         private bool _swapped, _released;
         internal string Outcome { get; private set; }
@@ -58,6 +59,10 @@ namespace KingmakerGunslinger.Summoning
         internal Mesh NativeSpearMesh { get; private set; }
         internal string SpearMountStatus { get; private set; }
         internal int SpearMountFrame { get; private set; }
+        internal bool NativeSpearAnimationBound { get { return _spearAnimation != null && _spearAnimation.BoundAndNativeUnchanged; } }
+        internal string NativeSpearAnimationObservation { get { return _spearAnimation == null ? null : _spearAnimation.Observation; } }
+        internal UnityEngine.Object[] CaptureBorrowedAnimationResources()
+        { return _spearAnimation == null ? new UnityEngine.Object[0] : _spearAnimation.BorrowedResources(); }
         internal static Action PostSwapFaultForTest { get; set; }
 
         internal UnityEngine.Object[] CaptureOwnedResources()
@@ -65,6 +70,7 @@ namespace KingmakerGunslinger.Summoning
             var owned = new HashSet<UnityEngine.Object>();
             foreach (UnityEngine.Object value in new UnityEngine.Object[] { _body, _empty, _albedo, _material, _spearMaterial })
                 if (value != null) owned.Add(value);
+            if (_spearAnimation != null && _spearAnimation.OwnedSet != null) owned.Add(_spearAnimation.OwnedSet);
             if (Body != null)
                 foreach (Material material in Body.sharedMaterials)
                     if (IsOwned(material)) owned.Add(material);
@@ -179,6 +185,13 @@ namespace KingmakerGunslinger.Summoning
                     Scale = filter.transform.localScale };
             }).ToArray();
 
+            if (nativeSpearResearch)
+            {
+                // Check the original 39-bone native frame before its original
+                // body replacement. Failure restores the exact instance set.
+                _spearAnimation = new SerpentineNativeSpearAnimation(_view);
+                _spearAnimation.Bind(key, Body, _ownedName);
+            }
             _swapped = true;
             Body.sharedMesh = _body;
             Body.bones = bones;
@@ -302,6 +315,9 @@ namespace KingmakerGunslinger.Summoning
         internal void Release()
         {
             if (_released) return;
+            Exception animationFailure = null;
+            try { if (_spearAnimation != null) _spearAnimation.Release(); }
+            catch (Exception error) { animationFailure = error; }
             var materials = new HashSet<Material>();
             if (_material != null) materials.Add(_material);
             if (_spearMaterial != null) materials.Add(_spearMaterial);
@@ -344,6 +360,7 @@ namespace KingmakerGunslinger.Summoning
                 }
             }
             DestroyOwnedResources(materials);
+            if (animationFailure != null) throw new InvalidOperationException("Native spear action restoration failed.", animationFailure);
         }
 
         private void DestroyOwnedResources(IEnumerable<Material> materials)
@@ -354,7 +371,9 @@ namespace KingmakerGunslinger.Summoning
             if (_empty != null) UnityEngine.Object.DestroyImmediate(_empty);
             if (_albedo != null) UnityEngine.Object.DestroyImmediate(_albedo);
             _body = null; _empty = null; _material = null; _spearMaterial = null; _albedo = null;
-            _released = true;
+            // A failed native animation restoration keeps a retryable owner
+            // until native view teardown; never silently strand its container.
+            _released = _spearAnimation == null || _spearAnimation.OwnedSet == null;
         }
 
         private bool IsOwned(Material material)

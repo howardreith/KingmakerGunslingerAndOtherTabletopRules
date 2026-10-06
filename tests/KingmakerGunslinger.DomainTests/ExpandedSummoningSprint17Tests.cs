@@ -10,6 +10,52 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class ExpandedSummoningSprint17Tests
     {
+        internal static void NativePiercingActionRequiresExactCarrierAndRig()
+        {
+            string[] exact = { "salamander", SerpentineVisualPolicy.TwoHandPrefab, SerpentineVisualPolicy.ProjectSpear,
+                SerpentineVisualPolicy.PiercingDonorBlueprint, SerpentineVisualPolicy.PiercingDonorPrefab,
+                SerpentineVisualPolicy.PiercingDonorWeapon };
+            Func<string[], bool, bool, bool, bool> allowed = (row, offhand, piercing, rig) =>
+                SerpentineVisualPolicy.PermitsNativePiercingAction(row[0], row[1], row[2], row[3], row[4], row[5],
+                    offhand, piercing, rig);
+            Assertions.True(allowed(exact, false, true, true), "One fixed native carrier and compatible actual style/rig.");
+            for (int i = 0; i < exact.Length; i++)
+                foreach (string bad in new[] { null, "", "foreign", exact[i].ToUpperInvariant() })
+                {
+                    if (bad == exact[i]) continue;
+                    var changed = (string[])exact.Clone(); changed[i] = bad;
+                    Assertions.False(allowed(changed, false, true, true), "No other owner, weapon or donor may bind.");
+                }
+            Assertions.False(allowed(exact, true, true, true), "Donor offhand disagrees with archived provenance.");
+            Assertions.False(allowed(exact, false, false, true), "Missing native piercing cannot be relabeled from slashing.");
+            Assertions.False(allowed(exact, false, true, false), "Incompatible bone paths/binds cannot be forced to fit.");
+        }
+
+        internal static void NativeSpearActionCopyPreservesAllOtherReferences()
+        {
+            var idle = new object(); var hand = new object(); var hit = new object(); var replacement = new object();
+            var original = new[] { idle, hand, hit };
+            var copied = SerpentineVisualPolicy.CopyWithOneNativeSpearAction(original, hand, replacement);
+            Assertions.False(ReferenceEquals(original, copied), "Never share the mutable action array.");
+            Assertions.True(original.SequenceEqual(new[] { idle, hand, hit }), "Native source remains unchanged.");
+            Assertions.True(copied.SequenceEqual(new[] { idle, replacement, hit }), "Only the exact hand slot changes.");
+            foreach (object[] invalid in new[] { null, new object[0], new[] { idle, hit }, new[] { hand, hand },
+                new[] { hand, null }, new[] { hand }.Concat(Enumerable.Repeat(idle, 128)).ToArray() })
+            {
+                bool rejected = false;
+                try { SerpentineVisualPolicy.CopyWithOneNativeSpearAction(invalid, hand, replacement); }
+                catch (ArgumentException) { rejected = true; }
+                Assertions.True(rejected, "Missing, duplicate or incomplete action input fails closed.");
+            }
+            foreach (object bad in new[] { null, hand })
+            {
+                bool rejected = false;
+                try { SerpentineVisualPolicy.CopyWithOneNativeSpearAction(original, hand, bad); }
+                catch (ArgumentException) { rejected = true; }
+                Assertions.True(rejected, "A missing or unchanged hand is not a demonstrated replacement.");
+            }
+        }
+
         internal static void NativeActedFallbackCannotProveClipPlayback()
         {
             Assertions.True(SerpentineRigSurveyPolicy.IsObservedAttackClip(true, true, true,

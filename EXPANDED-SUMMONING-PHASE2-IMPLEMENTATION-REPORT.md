@@ -36,6 +36,14 @@ unchanged. Sprint 17 research is underway; Phase 2B itself is not yet closed.
 
 ### Current Sprint17 research result — NOT QUALIFIED; exact restoration PASS
 
+Source-only correction after3eb23d06 conditionally borrows the archived native
+shortspear main-hand action if its actual piercing variants and39 bone paths/
+binds match. Only a private action-list container is owned; all other actions
+and native assets remain unchanged. Explicit transitions fail closed.234
+focused/2036 registered and incremental compile PASS; no runtime qualification.
+New binding/rollback/native-survival checks produce48 body assertions without
+removing any previous gate. Complete exact-head prelaunch and batch are next.
+
 Exact09087d0f passes all prelaunch:232 focused/2034 full83.3s, gate180.5s,
 491 preflight/81 orchestration/17 provenance, persistence11/3/19,crowd5/7,
 clean exact Release/strict318-member package. Fresh Steam smoke11 PASS/body

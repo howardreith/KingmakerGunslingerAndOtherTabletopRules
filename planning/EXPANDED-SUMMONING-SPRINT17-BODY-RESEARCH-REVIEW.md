@@ -5,6 +5,16 @@ Laptop PR26 only; Sprints14–16 complete;976+29=1005 visible; ZERO DATA ports.
 
 ## Current eleventh exact batch — missing native piercing clip demonstrated
 
+The containing source-only correction conditionally adopts the single native
+shortspear carrier described below. It requires nonempty actual piercing
+variants and matching39 native bone paths/binds within1e-5, rejects explicit
+transition graphs, and copies only the owned action-list container with one
+main-hand reference replaced. Native assets/bones/other actions unchanged.
+234 focused/2036 registered and incremental compile PASS. Exact rollback/
+resource assertions include animation-container ownership and native survival;
+one binding assertion adds to all47 prior gates. No live compatibility/contact
+claim; new exact-head full prelaunch and48-assertion guarded batch next.
+
 Exact09087d0f passes all prelaunch:232 focused/2034 full83.3s, gate180.5s,
 491 preflight/81 orchestration/17 provenance, persistence11/3/19,crowd5/7,
 clean exact Release/strict318-member package. Fresh Steam smoke11 PASS/body
