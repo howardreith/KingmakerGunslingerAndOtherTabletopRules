@@ -7,6 +7,13 @@ owner-designated development line. PR #27 is frozen salvage-only; no DATA
 source imported. Phase 2C is authorized but deferred until Phase 2B owner
 acceptance; this mission stops after Sprint 17 and full Phase 2B closure.
 
+Sprint17 exact hidden-snake source `79cf2bf14b0b3ebd25e619ff34373caad93d1448`
+passes2048 unfiltered tests (83.8s), complete repository validation, clean exact
+Release and deterministic/strict320-member package (177.8s complete gate).
+[Exact artifact record](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-SOURCE-REVIEW.md).
+No runtime/deployment/save operation; Sprint17 remains NOT QUALIFIED.
+Production snake-body integration and actual mechanics fixtures are next.
+
 Exact publication `155ada89869c6937b4a801e1fc384dbe38d36f3b` passed every
 prelaunch gate (218 focused / 2020 full), then fresh Steam smoke **11/11**
 and full main **211/211**. All six Dire + fourteen Crocodile public roots pass;
