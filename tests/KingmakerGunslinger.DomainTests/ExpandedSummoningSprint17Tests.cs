@@ -10,6 +10,23 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class ExpandedSummoningSprint17Tests
     {
+        internal static void BodyResearchIsClosedAndUsesWorkingSaveGuard()
+        {
+            string scenario = RuntimeTestScenarioCatalog.DisposableExpandedSummoningSerpentineBodies;
+            Assertions.Equal("disposable-expanded-summoning-serpentine-bodies", scenario,
+                "One closed research request, not a general runtime asset loader.");
+            Assertions.True(RuntimeTestScenarioCatalog.IsAllowed(scenario) &&
+                RuntimeTestScenarioCatalog.IsExpandedSummoningRulesScenario(scenario),
+                "Body research traverses the existing exact working-save guard.");
+            foreach (string value in new[] { null, "", scenario.ToUpperInvariant(), scenario + "-arbitrary",
+                "working-save-expanded-summoning-serpentine-bodies" })
+                Assertions.False(RuntimeTestScenarioCatalog.IsAllowed(value) ||
+                    RuntimeTestScenarioCatalog.IsExpandedSummoningRulesScenario(value),
+                    "Unknown variants cannot widen the source, save or publication scope.");
+            Assertions.True(SerpentineVisualPolicy.Keys.SequenceEqual(new[] { "viper", "constrictor-snake", "salamander" }),
+                "Only the three original bodies run; caller parameters cannot substitute arbitrary keys.");
+        }
+
         internal static void OriginalBodyPayloadsAreCompleteAndRedistributionSafe()
         {
             string directory = Path.Combine(Environment.CurrentDirectory, "assets", "sprint17-serpents");

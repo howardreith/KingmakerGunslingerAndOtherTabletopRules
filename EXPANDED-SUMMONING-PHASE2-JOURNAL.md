@@ -1,5 +1,18 @@
 # Expanded Summoning Phase 2 journal
 
+## October 6 -- closed original-body fixture, NOT QUALIFIED
+
+Verified active remote a35993fc with no concurrent Expanded Summoning owner or
+game process. Added the exact-working-save body research scenario, request
+round-trip/rejection cases and closed-catalog behavior test (223 focused PASS).
+Incremental Release compile PASS. The fixture mutates only its three owned
+carriers, waits for native intact appearance, audits all swapped references on
+deliberate rollback and tracks exact resource destruction. Native movement and
+weighted-world samples are bounded research, not final profile/weapon/contact
+qualification. Outer completion now disposes its iterator before save sentinels
+close. No new live transaction; c55 remains the last exact restoration.
+Next immutable committed artifact gate and guarded smoke/body review.
+
 ## October 6 — bounded original-body integration, NOT QUALIFIED
 
 Research evidence 4940ca77 pushed and PR #26 updated; no DATA imports.
