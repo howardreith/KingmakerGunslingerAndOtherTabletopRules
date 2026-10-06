@@ -6,9 +6,9 @@
 Viper and Constrictor Snake are registered but wholly hidden. Exact land
 skills/HP, native feats, owned Viper poison and scoped Constrictor grab/damage
 are implemented; original icons pass agent small-size/grayscale inspection.
-250 focused /2048 full tests, repository/static/icon/manifest and dirty-tree
-exact-reference compile PASS; committed build/package remains next. No new
-runtime evidence. Original-body production attachment, actual final profiles,
+250 focused checks PASS. Exact79cf2bf1 complete source gate PASS:2048 full tests
+(83.8s), repository/static/icon/manifest, clean exact Release and strict320-member
+package;177.8s total. No new runtime evidence. Original-body production attachment, actual final profiles,
 poison/constrict cadence,commands,UI,lifecycle,persistence and routes remain
 unqualified. Salamander's existing unit,placements and painting are unchanged;
 its separate native spear/tail solution remains unresolved. Surface1008
