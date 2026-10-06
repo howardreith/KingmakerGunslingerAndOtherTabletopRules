@@ -36,6 +36,12 @@ unchanged. Sprint 17 research is underway; Phase 2B itself is not yet closed.
 
 ### Current Sprint17 research result — NOT QUALIFIED; exact restoration PASS
 
+Source-only after9641df7a: existing guarded survey extended with11 exact
+archived Lizardfolk prefab/action/style/skin metadata rows. No NPC spawn,
+animation activation/adoption or production change; exact native references
+and actor membership checked.235 focused/2037 registered and incremental
+compile PASS. Full exact prelaunch and14-assertion survey remain next.
+
 Exact570a14cd passes all prelaunch:234 focused/2036 full84.6s, gate181.3s,
 491 preflight/81 orchestration/17 provenance, persistence11/3/19,crowd5/7,
 clean exact Release/strict318-member package. Fresh Steam smoke11 PASS/body

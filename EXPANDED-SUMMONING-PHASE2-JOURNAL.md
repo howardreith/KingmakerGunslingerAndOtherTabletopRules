@@ -1,5 +1,21 @@
 # Expanded Summoning Phase 2 journal
 
+## October 6 -- read-only manufactured-action census, source only
+
+Failed570 evidence/restoration committed/pushed as9641df7a; PR26 current.
+The existing guarded serpentine survey now inspects one exact blueprint/view
+pair for each of the11 unique Lizardfolk prefabs in the October2 archive.
+No campaign NPC instantiated/activated; no detached manager initialization,
+action play/adoption, source view or production behavior change. Serialized
+main/offhand settings are read via the same metadata reader as actual commands;
+names/styles/clip durations/events and skin/bone counts/paths only, no curves,
+geometry or bind matrices exported. Native references and actor membership
+must remain unchanged; partial evidence is retained on exception. One new
+census assertion makes14, preserving the13 existing survey checks. Closed
+identity/cross-pair/defensive-copy test added:235 focused/2037 registered and
+incremental exact compile PASS. Complete exact prelaunch and fresh guarded
+smoke/survey next. The incompatible donor is not retried/adopted or waived.
+
 ## October 6,12:11 UTC -- exact570a14cd rejects the proposed native carrier
 
 Exact570a14cd passes all prelaunch:234 focused/2036 full84.6s, gate181.3s,

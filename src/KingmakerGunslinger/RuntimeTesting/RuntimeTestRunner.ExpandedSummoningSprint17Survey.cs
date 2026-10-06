@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Items.Weapons;
+using Kingmaker.Blueprints.Root;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.View;
 using Kingmaker.Visual.Animation.Kingmaker;
@@ -98,6 +100,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         true, "No visibility forcing or appearance-buff removal. Research, not visual/AI qualification."));
                 }
                 CaptureSprint17HybridWeaponPrefab();
+                CaptureSprint17ManufacturedActionPrefabs();
             }
             catch (Exception exception)
             {
@@ -176,6 +179,78 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "complete bind frames and static weapon anchors from an unmodified detached prefab",
                 "file=" + fileName + ";skins=" + ((JArray)document["skinnedRenderers"]).Count,
                 true, "not attached animation, two-hand grip, spear contact or gameplay qualification"));
+        }
+
+        private void CaptureSprint17ManufacturedActionPrefabs()
+        {
+            var unitsBefore = Game.Instance.State.Units.ToArray();
+            var ownedBefore = _sprint17SurveyFixture.Created.ToArray();
+            var rows = new JArray();
+            string path = Path.Combine(_request.EvidenceDirectory, "sprint17-native-manufactured-actions.json");
+            var document = new JObject {
+                ["scope"] = "eleven fixed archived Lizardfolk prefabs; detached read-only metadata; no adoption or gameplay qualification",
+                ["nativeData"] = "names, types, counts, paths, durations and event times only; no vertices, bind matrices, textures or curves",
+                ["rows"] = rows };
+            // Preserve completed rows even if a later native source cannot be
+            // observed. Such an incomplete census remains a failed scenario.
+            try
+            {
+                foreach (string[] source in SerpentineRigSurveyPolicy.ManufacturedPrefabSources)
+                {
+                    BlueprintUnit native = _sprint17SurveyFixture.Blueprints.OfType<BlueprintUnit>()
+                        .Single(value => value.AssetGuid == source[0]);
+                    if (native.Prefab == null || !SerpentineRigSurveyPolicy.MatchesManufacturedPrefab(
+                        native.AssetGuid, native.Prefab.AssetId) || native.Prefab.AssetId != source[1])
+                        throw new InvalidOperationException("Manufactured-action source differs from archived identity.");
+                    UnitEntityView prefab = native.Prefab.Load(false);
+                    if (prefab == null) throw new InvalidOperationException("Native manufactured-action prefab missing.");
+                    var managers = prefab.GetComponentsInChildren<UnitAnimationManager>(true);
+                    if (managers.Length != 1 || managers[0].GetComponent<Animator>() == null)
+                        throw new InvalidOperationException("Expected one native Animator manager: " + native.name);
+                    var manager = managers[0];
+                    var set = manager.AnimationSet;
+                    if (set == null) throw new InvalidOperationException("Missing native action set: " + native.name);
+                    var actions = set.Actions.ToArray();
+                    if (actions.Length == 0 || actions.Length > 128 || actions.Any(value => value == null))
+                        throw new InvalidOperationException("Native action-list census is incomplete or unbounded.");
+                    var skins = prefab.GetComponentsInChildren<SkinnedMeshRenderer>(true);
+                    var skinReferences = skins.Select(value => new { Skin = value, Mesh = value.sharedMesh,
+                        Bones = value.bones, Materials = value.sharedMaterials }).ToArray();
+                    var row = new JObject { ["blueprint"] = native.AssetGuid, ["name"] = native.name,
+                        ["prefab"] = source[1], ["set"] = set.name,
+                        ["humanFallback"] = ReferenceEquals(set, BlueprintRoot.Instance.HumanAnimationSet),
+                        ["actionCount"] = actions.Length, ["transitionCount"] = set.Transitions.Count(),
+                        ["hands"] = Sprint17NativeHandAttackCensus(kind => actions.OfType<UnitAnimationAction>()
+                            .SingleOrDefault(value => value.Type == kind)),
+                        ["actions"] = new JArray(actions.Select(value => new JObject {
+                            ["name"] = value.name, ["class"] = value.GetType().FullName,
+                            ["kind"] = value is UnitAnimationAction ? ((UnitAnimationAction)value).Type.ToString() : null })),
+                        ["skins"] = new JArray(skins.Select(value => new JObject {
+                            ["name"] = value.name, ["mesh"] = value.sharedMesh == null ? null : value.sharedMesh.name,
+                            ["bones"] = value.bones.Length,
+                            ["binds"] = value.sharedMesh == null ? -1 : value.sharedMesh.bindposes.Length,
+                            ["bonePaths"] = new JArray(value.bones.Select(bone => {
+                                if (bone == null) return (JToken)JValue.CreateNull();
+                                var names = new List<string>();
+                                for (Transform next = bone; next != null && next != prefab.transform; next = next.parent)
+                                    names.Add(next.name);
+                                names.Reverse(); return (JToken)new JValue(string.Join("/", names.ToArray())); })) })) };
+                    bool unchanged = ReferenceEquals(manager.AnimationSet, set) && set.Actions.SequenceEqual(actions) &&
+                        skinReferences.All(value => ReferenceEquals(value.Skin.sharedMesh, value.Mesh) &&
+                            value.Skin.bones.SequenceEqual(value.Bones) && value.Skin.sharedMaterials.SequenceEqual(value.Materials));
+                    row["nativeReferencesUnchanged"] = unchanged;
+                    rows.Add(row);
+                    if (!unchanged) throw new InvalidOperationException("Read-only prefab reference census changed: " + native.name);
+                }
+                bool noActors = Game.Instance.State.Units.SequenceEqual(unitsBefore) &&
+                    _sprint17SurveyFixture.Created.SequenceEqual(ownedBefore);
+                document["actorReferencesUnchanged"] = noActors;
+                _sprint17SurveyAssertions.Add(Assertion("sprint17-native-manufactured-action-census",
+                    "eleven exact detached prefab/action/skin censuses; native references and actor membership unchanged",
+                    "rows=" + rows.Count + ";noActors=" + noActors, rows.Count == 11 && noActors,
+                    "Negative/missing style is a finding, not compatibility, adopted playback, grip or contact proof."));
+            }
+            finally { File.WriteAllText(path, document.ToString(Formatting.Indented)); }
         }
 
         private static JObject CaptureSprint17ViewMetadata(UnitEntityView view, string key,

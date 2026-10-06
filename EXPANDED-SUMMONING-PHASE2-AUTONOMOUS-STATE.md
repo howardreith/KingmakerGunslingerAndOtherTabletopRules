@@ -19,8 +19,9 @@ deployment, force push or prohibited substitute subsystems.
   2026-10-05T19:29:25.9127956Z; holder PID15084/start2026-10-05T20:34:17.3075720Z.
   Session-scoped, not perpetual. Refresh heartbeat; release only on actual
   session ending. All safety refs, bundles and failed artifacts retained.
-- Last pushed exact candidate `570a14cd48d9008058e524f732b79c9701c1076c`.
-  The containing evidence-only checkpoint is its normal descendant.
+- Last pushed evidence checkpoint `9641df7aa521934f56afc2f4a9f5286e6aa18531`;
+  last exact runtime candidate `570a14cd48d9008058e524f732b79c9701c1076c`.
+  The containing read-only census correction is source-only NOT QUALIFIED.
   Unexpected active-branch motion is a stop; frozen DATA motion informational.
 
 ### Qualified versus NOT QUALIFIED
@@ -53,6 +54,15 @@ map one-handed/slashing clips to the two-handed spear, twist bones to hide a
 missing animation, edit native assets or build a global animation framework.
 Original meshes/paints and production are unchanged. Preserve all contact,
 ownership, reference and cleanup assertions.
+
+The containing source adds eleven fixed archived Lizardfolk prefab metadata
+rows to the existing guarded serpentine survey. It reads serialized action
+settings/styles, renderer/bone counts/paths, action names and clip durations/
+events; no native curves, geometry or bind matrices. No NPC is instantiated,
+no animation manager is initialized/played and no action is adopted. Exact
+native references and actor membership must remain unchanged.235 focused/
+2037 registered and incremental exact compile PASS; full exact prelaunch
+and14-assertion guarded survey remain next. The failed body gate is unchanged.
 
 Then printed profiles/signatures/icons, full S17 hidden/publication and
 exhaustive Phase2B closure. Use the explicit14-reference bundle
