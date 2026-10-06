@@ -140,6 +140,15 @@ if (Test-Path -LiteralPath $crocodilianSource -PathType Container) {
         Copy-Item -LiteralPath (Join-Path $crocodilianSource "$kind-albedo.png") -Destination $crocodilianDestination
     }
 }
+# Closed six-file original Sprint 17 body inventory. Fail closed on a
+# missing export; no private authoring outputs or broad folder copy.
+$serpentineSource = Join-Path $outputDirectory 'assets\sprint17-serpents'
+$serpentineDestination = Join-Path $modDirectory 'assets\sprint17-serpents'
+New-Item -ItemType Directory -Path $serpentineDestination -Force | Out-Null
+foreach ($kind in @('viper','constrictor-snake','salamander')) {
+    Copy-Item -LiteralPath (Join-Path $serpentineSource "$kind-mesh.json") -Destination $serpentineDestination
+    Copy-Item -LiteralPath (Join-Path $serpentineSource "$kind-albedo.png") -Destination $serpentineDestination
+}
 $soundBankSource=Join-Path $repositoryRoot 'assets\soundbanks'
 if(Test-Path -LiteralPath (Join-Path $soundBankSource 'KMG_Firearms.bnk') -PathType Leaf){
     $soundBankDestination=Join-Path $modDirectory 'assets\soundbanks'
@@ -166,7 +175,10 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
 # withheld creature still has to ship its visual - the loader resolves its
 # files from the creature key, so one missing from this staging would wear its
 # donor's body rather than fail.
-$expectedPackageFileCount = if ($hasFirearmSoundBank) { 312 } else { 310 }
+# Sprint 17 adds six original body/painting files for the bounded donor
+# acceptance slice. They do not register/publish either new snake or switch
+# the existing Salamander's production view.
+$expectedPackageFileCount = if ($hasFirearmSoundBank) { 318 } else { 316 }
 & $python (Join-Path $repositoryRoot 'tools\create_deterministic_package.py') `
     --source $modDirectory --output $packagePath `
     --expected-file-count $expectedPackageFileCount

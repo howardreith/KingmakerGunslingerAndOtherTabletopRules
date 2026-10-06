@@ -263,7 +263,9 @@ Salamander remains separate:
 39-bone Lizardfolk body, armor skin, and stale native club/shield visuals.
 Its native two-hand alternative has identical 39/19-bone bind frames, not yet
 qualified grip or spear contact. Water exposes slam clips, worm's locomotion
-list only idle. Original private prototypes are authored, but credible native
+list only idle. Original body files are now staged with a closed two-skin
+attachment and supporting-coil geometry; no automatic production hook or new
+registration exists. 222 focused tests pass. Credible native
 movement and actual jaw/weapon/tail contact remain mandatory; no waiver.
 These measurements support a bounded original prototype, not completed art
 or gameplay. [Exact research and disposition](EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md).

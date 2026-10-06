@@ -1,5 +1,26 @@
 # Expanded Summoning Phase 2 journal
 
+## October 6 — bounded original-body integration, NOT QUALIFIED
+
+Research evidence 4940ca77 pushed and PR #26 updated; no DATA imports.
+Original supporting coils now form a continuous surface with the native-chain
+upper bodies. Five authoring tests and independent byte-identical exports
+pass. A preview-only orientation error was corrected (+Y native chain is up,
+not horizontal); 48 native-up panels replace neither native motion proof nor
+the preserved earlier reviews. Six original mesh/paint files are staged,
+package count 318/316, no native assets/transforms/curves redistributed.
+Instance-owned attachment requires exact two-skin/static-equipment sets,
+uses the native renderer/material controller, and restores references and
+destroys only its resources. It has no automatic production hook and no live
+qualification yet. 222 focused/2024 full (83.0s), repository/static/icon/manifest,
+clean exact-reference Release and strict 318-member package PASS (180.7s).
+Earlier source gates exposed inherited count assertions and a missing explicit
+staging-copy step; these were repaired and the complete source gate rerun.
+Logs remain preserved. This working-tree package is not a runtime candidate.
+Next bounded request-local body acceptance, then
+exact committed artifact and fresh Steam review/restoration. Machine remains
+at c55's verified restoration; no runtime transaction or save write here.
+
 ## October 6, 03:41 UTC — exact pose/weapon research 13/13, restored
 
 Exact c55b4f08 full prelaunch PASS: 219 focused/2021 full (87.5s), 486

@@ -67,7 +67,13 @@ $requiredFiles = @(
     'assets\sprint16-crocodilians\crocodile-mesh.json',
     'assets\sprint16-crocodilians\crocodile-albedo.png',
     'assets\sprint16-crocodilians\dire-crocodile-mesh.json',
-    'assets\sprint16-crocodilians\dire-crocodile-albedo.png'
+    'assets\sprint16-crocodilians\dire-crocodile-albedo.png',
+    'assets\sprint17-serpents\viper-mesh.json',
+    'assets\sprint17-serpents\viper-albedo.png',
+    'assets\sprint17-serpents\constrictor-snake-mesh.json',
+    'assets\sprint17-serpents\constrictor-snake-albedo.png',
+    'assets\sprint17-serpents\salamander-mesh.json',
+    'assets\sprint17-serpents\salamander-albedo.png'
 )
 $requiredIcons = @('gunslinger-class','firearm-proficiency','gunsmithing','grit',
     'deeds','nimble','bonus-feat','gun-training','true-grit','rapid-reload',
@@ -160,6 +166,12 @@ $allowedRelativePaths = @{
     'assets\sprint16-crocodilians\crocodile-albedo.png' = $true
     'assets\sprint16-crocodilians\dire-crocodile-mesh.json' = $true
     'assets\sprint16-crocodilians\dire-crocodile-albedo.png' = $true
+    'assets\sprint17-serpents\viper-mesh.json' = $true
+    'assets\sprint17-serpents\viper-albedo.png' = $true
+    'assets\sprint17-serpents\constrictor-snake-mesh.json' = $true
+    'assets\sprint17-serpents\constrictor-snake-albedo.png' = $true
+    'assets\sprint17-serpents\salamander-mesh.json' = $true
+    'assets\sprint17-serpents\salamander-albedo.png' = $true
 }
 
 $unexpected = @()

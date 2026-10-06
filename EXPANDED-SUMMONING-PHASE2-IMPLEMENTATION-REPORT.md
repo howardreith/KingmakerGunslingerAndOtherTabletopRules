@@ -61,7 +61,7 @@ No new gameplay/visual qualification. Private original continuous-chain snakes
 and a separate Salamander hybrid body now pass 14 Blender behavior checks;
 74 new framed panels cover clay/silhouette/textured/unlit and synthetic stress
 poses. Offline clipping, detached fingers, waist seam and dorsal-paint issues
-were corrected with regressions. No asset is packaged. Salamander's body does
+were corrected with regressions. That checkpoint packaged no assets. Salamander's body does
 not include or qualify a weapon. Next bounded native motion/contact and
 owned-view lifecycle proof, separate spear/tail seam, then profiles/signatures.
 [Source/private hashes](assets-source/original-models/sprint17-serpents/SOURCE.md).
@@ -76,7 +76,17 @@ restored exactly at 03:41:08 UTC; no game/lock/staging/save write. Both
 Lizardfolk body/armor bind frames match exactly (39/19 bones). Water's special
 actions are slams; worm's locomotion list exposes only idle and the sampled
 body is reared. Credible snake motion and actual spear/tail contact remain
-mandatory, not inferred from metadata. No asset or production change.
+mandatory, not inferred from metadata. That research had no asset or production change.
+
+The subsequent owned-body source slice adds original supporting coils (five
+worm tests, 48 corrected native-up panels), six byte-reproduced original asset
+files and an exact two-skin attachment with rollback/resource ownership.
+222 focused/2024 full (83.0s), repository wrapper, clean exact-reference Release
+and strict 318-member package PASS (180.7s). This working-tree source gate is
+not an immutable runtime candidate. No automatic production attachment or new registration; live motion,
+ground/contact/fallback/lifecycle and Salamander's spear handling remain open.
+Only original mesh/paint enters the 318/316-member package inventory, never
+private bind frames, blends or native assets. This is NOT runtime qualification.
 
 ## Historical first hidden candidate, October 5
 

@@ -22,6 +22,36 @@ BODY_BONES = BODY_CHAIN + ("Jaw_Down",)
 SIDE, UP, FORWARD = Vector((1, 0, 0)), Vector((0, 0, 1)), Vector((0, 1, 0))
 
 
+def supporting_coil(radius):
+    """Original ground-plane tail, continuous with the first body segment.
+
+    The native bind chain rises along +Y; +Z is the upper-jaw direction,
+    not ground-up. This is geometry on Hips, not a new animation driver.
+    Native locomotion/ground support still require live measurement.
+    """
+    points, widths = [], []
+    for index in range(29):
+        t = index / 28
+        angle = -math.pi / 2 + t * math.pi * 2.6
+        extent = 1.85 * (1 - t) + .55 * t
+        width = radius * min(1, .06 + t * 3.2)
+        points.append(Vector((math.cos(angle) * extent, radius,
+                              math.sin(angle) * extent)))
+        widths.append(width)
+    # A curved inward continuation, not a separate torus or intersecting cap.
+    points.extend((Vector((.18, radius + .08, .30)),
+                   Vector((0, radius + .18, .08))))
+    widths.extend((radius, radius))
+    return points, widths
+
+
+def body_dorsal_at(point):
+    # Dorsal paint follows the top of the supporting coil, then the neck's
+    # jaw-up axis. These directions only control original UVs, never the rig.
+    upright = max(0, min(1, (point.y - .60) / .80))
+    return FORWARD * (1 - upright) + UP * upright
+
+
 def measured_rig(path):
     raw = Path(path).read_bytes()
     rig, by_name = decode_rig(json.loads(raw))
@@ -80,12 +110,14 @@ def build_body(bm, weights, uvs, rig, kind):
     viper = kind == "viper"
     at = lambda name: common.shared.head(rig, name)
     radius = .25 if viper else .47
-    points, widths, heights, names = [], [], [], []
+    points, widths = supporting_coil(radius)
+    heights = [width * .88 for width in widths]
+    names = ["Hips_Joints"] * len(points)
     # Each portion follows its measured segment, unlike the water rig's rigid
     # lower coil. The taper is original anatomy, not native vertices/UVs.
-    for i, name in enumerate(BODY_CHAIN):
+    for i, name in enumerate(BODY_CHAIN[1:], 1):
         t = i / (len(BODY_CHAIN) - 1)
-        width = radius * min(1, .05 + (t / .34) ** .85)
+        width = radius
         if t > .78:
             width *= 1 - (t - .78) * 1.7
         points.append(at(name))
@@ -103,7 +135,7 @@ def build_body(bm, weights, uvs, rig, kind):
         heights.append(height)
         names.append("Head")
     common.sweep(bm, weights, uvs, points, widths, heights, names,
-                 up=UP, forward=FORWARD)
+                 up=UP, forward=FORWARD, uv_dorsal_at=body_dorsal_at)
     # Authored conventional lower jaw: no worm's radial side/upper petals.
     hinge = at("Jaw_Down")
     jaw_points = [hinge + UP * .16 - FORWARD * .16,

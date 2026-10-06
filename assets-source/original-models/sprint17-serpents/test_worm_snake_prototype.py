@@ -21,6 +21,38 @@ CAPTURE = None
 
 
 class WormPrototypeTests(unittest.TestCase):
+    def test_supporting_coil_is_continuous_and_above_ground_in_bind_frame(self):
+        _, rig, _ = model.measured_rig(CAPTURE)
+        for kind in model.KINDS:
+            radius = .25 if kind == "viper" else .47
+            points, widths = model.supporting_coil(radius)
+            self.assertTrue(all(p.y >= radius - 1e-6 for p in points),
+                            "mathutils stores float32 coordinates")
+            self.assertGreater(max(p.x for p in points) - min(p.x for p in points), 2.5)
+            self.assertGreater(max(p.z for p in points) - min(p.z for p in points), 2.5)
+            self.assertLess(widths[0], radius * .1)
+            self.assertEqual(widths[-1], radius)
+            self.assertGreater(model.body_dorsal_at(points[0]).dot(model.FORWARD), .95)
+            bm, weights, uvs = bmesh.new(), {}, {}
+            model.build_body(bm, weights, uvs, rig, kind)
+            root = [v for v, row in weights.items() if row == [("Hips_Joints", 1)]]
+            self.assertGreater(len(root), 400)
+            self.assertGreaterEqual(min(v.co.y for v in root), -.025)
+            visited, pending = set(), [root[0]]
+            while pending:
+                vertex = pending.pop()
+                if vertex in visited:
+                    continue
+                visited.add(vertex)
+                pending.extend(edge.other_vert(vertex) for edge in vertex.link_edges)
+            self.assertTrue(all(v in visited for v, row in weights.items()
+                                if any(name in model.BODY_CHAIN[:-1] for name, _ in row)),
+                            "the supporting tail and upper body must be one surface")
+            self.assertTrue(any(v in visited for v, row in weights.items()
+                                if row == [("Head", 1)]),
+                            "the connected surface must reach the skull; eyes/teeth are separate")
+            bm.free()
+
     def test_review_framing_contains_long_narrow_silhouettes(self):
         camera = bpy.data.objects.new("FramingTest", bpy.data.cameras.new("FramingTest"))
         try:
