@@ -38,7 +38,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 UnitEntityData target = fixture.Hostile;
                 string floorDetail;
                 Vector3 floor = FindExpandedSummoningArtPoint(fixture.Caster, out floorDetail);
-                PlaceExpandedSummoningUnit(target, floor);
+                string placement;
+                PlaceExpandedSummoningUnit(target, ExpandedSummoningOpenPoint(floor, 5f,
+                    new List<int>(), out placement));
                 target.Descriptor.Stats.Constitution.BaseValue = 60;
                 target.Descriptor.Stats.SaveFortitude.BaseValue = -100;
                 target.Descriptor.State.Size = Size.Medium;
@@ -98,22 +100,45 @@ namespace KingmakerGunslinger.RuntimeTesting
                     owner.Descriptor.Stats.AdditionalAttackBonus.BaseValue = 100;
                     owner.Descriptor.Stats.AdditionalCMB.BaseValue = 100;
                     owner.Descriptor.Stats.HitPoints.BaseValue = 100000;
-                    string placement;
-                    PlaceExpandedSummoningUnit(owner, ExpandedSummoningOpenPoint(target.Position, 5f,
-                        new List<int>(), out placement));
-                    row["placement"] = placement;
+                    // The qualified intact-frame anchor belongs to the body
+                    // under review. Move only the inert target five metres
+                    // away; do not first move the snake to an unreviewed point.
+                    PlaceExpandedSummoningUnit(owner, floor);
+                    row["targetPlacement"] = placement;
+                    row["ownerAppearanceAnchor"] = SurveyVector(floor);
                     foreach (UnitEntityData unit in new[] { owner, target })
                         if (!Game.Instance.State.AwakeUnits.Contains(unit)) Game.Instance.State.AwakeUnits.Add(unit);
-                    int settle = 0;
-                    do { yield return 0; settle++; }
-                    while (settle < 60 || settle < 600 && (!owner.Descriptor.State.CanAct ||
-                        !Sprint17BodyIntact(owner.View, SerpentineVisualPolicy.BodyRenderer(key)) ||
-                        manual && !owner.IsDirectlyControllable));
-                    var attachment = owner.View.GetComponent<SerpentineVisualAttachment>();
-                    if (attachment == null || !Sprint17BodyIntact(owner.View, SerpentineVisualPolicy.BodyRenderer(key)))
-                        throw new InvalidOperationException("Production original body did not settle naturally.");
-                    resources = attachment.CaptureOwnedResources();
+                    var visibility = new JArray(); row["visibilitySamples"] = visibility;
+                    visibility.Add(Sprint17CommandAppearanceSample(owner, key, 0));
+                    int settle = 0, nativePausesCleared = 0;
+                    bool settled = false;
+                    while (++settle <= 600)
+                    {
+                        // Unlike the isolated profile review this fixture has
+                        // an enemy present. Keep native time running if combat
+                        // auto-pause fires, just as the command phase does.
+                        // The outer guard restores the original pause state.
+                        if (Game.Instance.IsPaused) { nativePausesCleared++; Game.Instance.IsPaused = false; }
+                        yield return 0;
+                        if (settle == 1 || settle == 30 || settle == 60 || settle == 600)
+                            visibility.Add(Sprint17CommandAppearanceSample(owner, key, settle));
+                        var current = owner.View.GetComponent<SerpentineVisualAttachment>();
+                        bool original = current != null && current.Body != null && current.Body.sharedMesh != null &&
+                            current.Body.sharedMesh.name.StartsWith("KMG_" + key + "_Original_", StringComparison.Ordinal);
+                        settled = SerpentineCommandReviewPolicy.ReadyToStart(original,
+                            Sprint17BodyIntact(owner.View, SerpentineVisualPolicy.BodyRenderer(key)),
+                            owner.Descriptor.State.CanAct, manual, owner.IsDirectlyControllable, settle);
+                        if (settled) break;
+                    }
+                    visibility.Add(Sprint17CommandAppearanceSample(owner, key, settle));
+                    row["appearanceNativePausesCleared"] = nativePausesCleared;
+                    row["attachmentOutcome"] = ExpandedSummoningSerpentineViewPatch.DescribeView(owner.View);
                     row["nativeSettlementFrames"] = settle;
+                    row["canActAfterSettlement"] = owner.Descriptor.State.CanAct;
+                    var attachment = owner.View.GetComponent<SerpentineVisualAttachment>();
+                    if (!settled)
+                        throw new InvalidOperationException("Production body/control did not settle: " + row.ToString(Formatting.None));
+                    resources = attachment.CaptureOwnedResources();
                     row["controlAfter"] = Sprint16ControlObservation(owner);
                     row["brain"] = owner.Blueprint.Brain == null ? null : owner.Blueprint.Brain.name;
                     owner.Memory.Add(target); target.Memory.Add(owner);
@@ -283,6 +308,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 row["passed"] = ((JObject)row["checks"]).Properties().Count() == 6 &&
                     ((JObject)row["checks"]).Properties().All(value => (bool)value.Value);
             }
+        }
+
+        private static JObject Sprint17CommandAppearanceSample(UnitEntityData owner, string key, int frame)
+        {
+            JObject sample = Sprint17SnakeVisibilitySample(owner, key, frame);
+            sample["paused"] = Game.Instance.IsPaused;
+            sample["gameTimeSeconds"] = Game.Instance.Player.GameTime.TotalSeconds;
+            sample["canAct"] = owner.Descriptor.State.CanAct;
+            sample["attachmentOutcome"] = ExpandedSummoningSerpentineViewPatch.DescribeView(owner.View);
+            return sample;
         }
 
         private void CheckSprint17Command(JObject row, string check, bool passed, string expected)
