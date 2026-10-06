@@ -25,6 +25,7 @@ namespace KingmakerGunslinger.Summoning
             internal Mesh Mesh;
             internal Transform[] Bones;
             internal Material[] Materials;
+            internal SkinQuality Quality;
         }
         private sealed class StaticState
         {
@@ -42,6 +43,7 @@ namespace KingmakerGunslinger.Summoning
         private bool _swapped, _released;
         internal string Outcome { get; private set; }
         internal SkinnedMeshRenderer Body { get; private set; }
+        internal string[] DriverNames { get; private set; }
         internal static Action PostSwapFaultForTest { get; set; }
 
         internal UnityEngine.Object[] CaptureOwnedResources()
@@ -130,21 +132,35 @@ namespace KingmakerGunslinger.Summoning
             _albedo = PteranodonAssetRuntime.LoadAlbedo(directory, requirement, out reason);
             if (_albedo == null) throw new InvalidDataException("albedo:" + reason);
             _albedo.name = _ownedName + "_Albedo";
-            Transform[] bones;
-            Matrix4x4[] bindposes;
-            if (!PteranodonAssetRuntime.TryResolveDonorBinding(Body, names, out bones, out bindposes, out reason))
-                throw new InvalidDataException(reason);
+            Transform[] nativeBones = Body.bones;
+            Matrix4x4[] nativeBind = Body.sharedMesh.bindposes;
+            int[] slots;
+            if (!SerpentineVisualPolicy.TryResolveDriverSlots(key, names,
+                nativeBones.Select(bone => bone.name).ToArray(), out slots))
+                throw new InvalidDataException("original driver mapping is not the closed measured set");
+            Transform[] bones = slots.Select(slot => slot < 0 ? Body.transform : nativeBones[slot]).ToArray();
+            // The original support frame has a half-turn around original +Z:
+            // native torso and renderer forward axes are opposite. This is a
+            // static authored bindpose, not a copied native transform or a
+            // per-frame ground/animation override. No Transform is created.
+            Matrix4x4 supportBind = Matrix4x4.Scale(new Vector3(-1, -1, 1));
+            Matrix4x4[] bindposes = slots.Select(slot => slot < 0 ? supportBind : nativeBind[slot]).ToArray();
+            DriverNames = names;
             _body.bindposes = bindposes;
             _material = new Material(donorMaterial) { name = _ownedName };
             string dressing = ExpandedSummoningPteranodonViewPatch.DressMaterial(_material, _albedo);
             _empty = new Mesh { name = _ownedName + "_SuppressedGeometry" };
             _skins = skins.Select(skin => new SkinState { Renderer = skin, Mesh = skin.sharedMesh,
-                Bones = skin.bones, Materials = skin.sharedMaterials }).ToArray();
+                Bones = skin.bones, Materials = skin.sharedMaterials, Quality = skin.quality }).ToArray();
             _statics = statics.Select(filter => new StaticState { Filter = filter, Mesh = filter.sharedMesh }).ToArray();
 
             _swapped = true;
             Body.sharedMesh = _body;
             Body.bones = bones;
+            // The hybrid's blended support adds a third influence to some
+            // original vertices. Preserve all three on this renderer only;
+            // restore its exact native quality on rollback/destruction.
+            if (key == "salamander") Body.quality = SkinQuality.Bone4;
             Body.sharedMaterials = new[] { _material };
             // Keep native renderer/component identity, activation and enabled
             // state. Native fader/occlusion/appearance locks can continue to
@@ -187,7 +203,7 @@ namespace KingmakerGunslinger.Summoning
                 foreach (SkinState row in _skins)
                     if (row.Renderer != null)
                     { row.Renderer.sharedMesh = row.Mesh; row.Renderer.bones = row.Bones;
-                      row.Renderer.sharedMaterials = row.Materials; }
+                      row.Renderer.sharedMaterials = row.Materials; row.Renderer.quality = row.Quality; }
                 foreach (StaticState row in _statics)
                     if (row.Filter != null) row.Filter.sharedMesh = row.Mesh;
                 _swapped = false;

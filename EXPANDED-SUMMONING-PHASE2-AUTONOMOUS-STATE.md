@@ -42,8 +42,10 @@ no merge, release, tag, version bump, force push or permanent deployment.
   **`3093a603e353365d3b33d64b309dd88781747be2`**.
   Latest exact research candidate/current verified remote before this checkpoint:
   **`f31c0e3d85a83129e92b8918b66e9697fc3e4969`** (research batch PASS).
-  This containing private-authoring/evidence checkpoint is its normal descendant; Sprint 17
-  gameplay and visuals are still NOT QUALIFIED.
+  Pushed private-authoring/evidence checkpoint before this support integration:
+  **`864b3fd1b5629be812330b18c21b735d828a20be`**.
+  This containing support-integration candidate is its normal descendant;
+  Sprint 17 gameplay and visuals are still NOT QUALIFIED.
   Unexpected active-branch motion remains a stop; archive motion is informational.
 - Exclusive ignored receipt: `artifacts/laptop-source-owner-20261005.json`;
   session `01a10bcd-8582-7551-826f-0f128807eb99`, owner PID 31796/start
@@ -164,14 +166,19 @@ no merge, release, tag, version bump, force push or permanent deployment.
   PhysicsModule is an exact verified private non-copying reference; old bundle
   unchanged. Use `-ReferenceBundleDir artifacts/private-references-ground-20261006/KingmakerGunslinger-private-build-references`
   for subsequent gates (the older default bundle has only13 references).
-- Private snake v3 corrects only authored coil geometry against the stable
-  captured root plane. All26 replayed poses clear measured floor by about2–3mm;
-  byte-reproduced exports,21 authoring/replay tests,36 private panels. Not staged
-  or runtime-qualified. No native rig/snap/animation/actor change. Hybrid remains
-  unchanged/unqualified; its torso bobs but renderer bind frame is ground-stable.
-- Exact next action: bounded hybrid original support-weight/weapon seam, then
-  stable body integration and full exact-head body/contact/lifecycle gate using
-  the tested reader. No blind retry or visual waiver. Continue separate Salamander
+- Snake v3 and hybrid v7 original support corrections are now staged for the
+  closed research fixture ONLY, not production. All39 captured poses replay
+  without penetration: snakes about2–3mm, hybrid5mm. Original exports reproduce
+  byte-for-byte;25 authoring/replay checks and225 focused tests PASS. Hybrid
+  has one original renderer-frame support with authored half-turn, no new
+  native joint or transform. Native drivers/bindposes stay exact; renderer-only
+  four-weight quality restores on rollback. Identity-frame and hard-transition
+  prototypes failed visual review and are preserved, not accepted.
+- Exact next action: freeze this support candidate, complete exact-head full
+  prelaunch with the fresh14-reference bundle, then fresh-Steam smoke/body26
+  research and exact leased restoration. Three new actual-floor assertions
+  require -2..15mm support in every sampled idle/movement pose. No source-only
+  PASS or supporting image qualifies final visuals. Continue separate Salamander
   manufactured-spear/tail seam and printed
   profiles/signatures. Research PASS
   is not gameplay/visual qualification. Preserve Salamander identity and

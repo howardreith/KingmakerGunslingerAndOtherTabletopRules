@@ -239,7 +239,7 @@ def build_body(bm, weights, uvs, rig, kind):
 
 
 def write_prototype(args, rig_data, rig, rig_hash, builder, allowed_bones,
-                    donor_family, space, anatomy=None):
+                    donor_family, space, anatomy=None, max_influences=2):
     """Export original geometry only; private armatures never enter the package."""
     bpy.ops.wm.read_factory_settings(use_empty=True)
     armature = shared.build_armature(rig_data)
@@ -264,7 +264,7 @@ def write_prototype(args, rig_data, rig, rig_hash, builder, allowed_bones,
     groups = {}
     for index, entries in indexed.items():
         total = sum(value for _, value in entries)
-        if total <= 0 or len(entries) > 2:
+        if total <= 0 or len(entries) > max_influences:
             raise SystemExit("invalid influence row")
         for name, value in entries:
             if name not in allowed_bones:

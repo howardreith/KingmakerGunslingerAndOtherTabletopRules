@@ -1,5 +1,29 @@
 # Expanded Summoning Phase 2 journal
 
+## October 6 -- original ground-support integration, NOT QUALIFIED
+
+Verified active remote864b3fd1 and live exclusive laptop owner identities; no
+runtime launched during authoring. Snake v3 and hybrid v7 exports are staged
+for the existing closed body-research fixture only. Hybrid prototype v5 first
+exposed a reversed renderer/body forward axis; identity support stretched the
+belly. Authored half-turn fixes that alignment. Full proximal cross-section
+support and a smooth native tail2/tail3-weight transition remove the thin
+underside skirt/hard crease. All failed private versions/panels are retained.
+The complete pure-tail3 distal coil, upper body/hands and paint remain exact.
+No native animation, rig, transform, actor, movement or snapping is changed.
+
+All39 captured poses replay above measured floor: snakes2–3mm, hybrid5mm.
+Three exports independently reproduce byte-for-byte.25 authoring/replay tests,
+225 focused domain and installed-v18 exact-reference incremental compile PASS.
+Earlier ad-hoc compiler path probes failed (missing2022 path, obsolete framework
+MSBuild); no product defect or successful qualification was inferred from them.
+The isolated original-body mapper preserves every native bind slot and adds
+only the named hybrid renderer-frame slot. Hybrid three-influence weights use
+renderer-local Bone4 quality, restored alongside native mesh/bones/materials.
+Three new native-floor assertions bring research to26. Full exact-head gate
+and runtime remain pending. No production hook/profile/placement/publication
+change; S16 complete, S17 NOT QUALIFIED. Spear/contact/lifecycle still open.
+
 ## October 6, 06:24 UTC -- measured-floor batch PASS; geometry defects retained
 
 Exactf31c0e3d:224 focused/2026 full84.3s, full gate179.3s,491 isolated

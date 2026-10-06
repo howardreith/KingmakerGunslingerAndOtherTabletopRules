@@ -12,6 +12,7 @@ from mathutils import Vector
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import generate_snakes as common
+import captured_pose_review as observed
 
 BODY_BONES = ("Torso_Lower", "Torso_Upper", "neck", "neck1", "Head", "jaw", "jaw1",
               "tail", "tail1", "tail2", "tail3") + tuple(
@@ -77,7 +78,7 @@ def decode_rig(capture):
     return rig, {r["name"]: r for r in bones}
 
 
-def build_body(bm, weights, uvs, rig, kind):
+def build_body(bm, weights, uvs, rig, kind, supported=False):
     if kind != "salamander":
         raise ValueError("not the hybrid identity")
     at = lambda name: common.shared.head(rig, name)
@@ -156,17 +157,68 @@ def build_body(bm, weights, uvs, rig, kind):
             common.tube(bm, weights, uvs, [base, base.lerp(tip, .6) + UP * .025, tip],
                         [.032, .025, .002], ["Head"] * 3, "membrane", 8)
 
+    if supported:
+        author_ground_support(weights)
+
+
+def smoothstep(value):
+    value = max(0, min(1, value))
+    return value * value * (3 - 2 * value)
+
+
+def author_ground_support(weights):
+    """A static original belly support patch, not native leg/rig manipulation.
+
+    Only the proximal lower body's original cross section is sculpted/weighted.
+    The distal tail and every upper-body/hand driver remain unchanged. The
+    renderer-frame driver is a proposed binding seam, NOT runtime-qualified.
+    """
+    lower = {"Torso_Lower", "tail", "tail1", "tail2", "tail3"}
+    for vertex, influences in list(weights.items()):
+        if not all(name in lower for name, _ in influences):
+            continue
+        # Full support under the central proximal coil, smoothly tapering out
+        # before the distal tail. This is original anatomy, not a floor ray or
+        # per-frame deformation of a native mesh.
+        along = smoothstep((vertex.co.y + 1.45) / .25) * smoothstep((-.55 - vertex.co.y) / .25)
+        cross_section = smoothstep((.95 - vertex.co.z) / .25)
+        # Fade through the tail2/tail3 joint by its existing weights. A hard
+        # exclusion of every mixed tail3 vertex makes a crease. Pure tail3
+        # vertices, including the return coil in this Y band, stay identical.
+        proximal = sum(weight for name, weight in influences if name != "tail3")
+        support = along * cross_section * proximal
+        if support <= 0:
+            continue
+        # Carry the whole proximal cross section, not just its underside.
+        # Pinning a thin underside alone stretches it into a skirt as the
+        # native torso bobs; the preserved v5 panels demonstrate that defect.
+        vertex.co.z = max(.005, vertex.co.z - .16 * support)
+        weights[vertex] = [(name, weight * (1 - support)) for name, weight in influences
+                           if weight * (1 - support) > 1e-7]
+        if support > 1e-7:
+            weights[vertex].append((observed.HYBRID_SUPPORT, support))
+
 
 def main():
     parser = argparse.ArgumentParser()
     for name in ("capture", "albedo", "mesh-data", "report", "blend-out"):
         parser.add_argument("--" + name, required=True)
+    parser.add_argument("--supported-prototype", action="store_true")
     args = parser.parse_args(sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else [])
     args.kind = "salamander"
     rig_data, rig, rig_hash = measured_rig(args.capture)
-    common.write_prototype(args, rig_data, rig, rig_hash, build_body, BODY_BONES,
+    allowed = BODY_BONES
+    if args.supported_prototype:
+        # Original offline preview frame, not a copied or new native joint.
+        # Only original coordinates and this project-owned name are exported.
+        rig_data["bones"].append(dict(name=observed.HYBRID_SUPPORT, parent="", index=39,
+                                      depth=0, head=[0, 0, 0], tail=[0, 0, .1]))
+        allowed += (observed.HYBRID_SUPPORT,)
+    builder = lambda bm, weights, uvs, bones, kind: build_body(bm, weights, uvs, bones, kind, args.supported_prototype)
+    common.write_prototype(args, rig_data, rig, rig_hash, builder, allowed,
         "native-lizardfolk-hybrid", "donor renderer local; +X lateral, +Y forward, +Z up",
-        dict(visibleArms=2, weaponIncluded=False, weaponHandlingQualified=False))
+        dict(visibleArms=2, weaponIncluded=False, weaponHandlingQualified=False,
+             rendererFrameSupportPrototype=args.supported_prototype), max_influences=3 if args.supported_prototype else 2)
 
 
 if __name__ == "__main__":
