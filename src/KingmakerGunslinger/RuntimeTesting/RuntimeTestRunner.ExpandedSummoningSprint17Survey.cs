@@ -216,9 +216,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     var action = unit.View.AnimationManager.GetAction(type);
                     if (action == null) continue;
+                    var clips = action.Clips;
+                    int? clipCount = SerpentineRigSurveyPolicy.CountPresentClips(
+                        clips == null ? null : clips.Select(value => value != null));
                     actions.Add(new JObject {
                         ["type"] = type.ToString(), ["actionClass"] = action.GetType().FullName,
-                        ["clipCount"] = action.Clips.Count(value => value != null)
+                        ["clipEnumerationPresent"] = clips != null,
+                        ["clipCount"] = clipCount.HasValue ? new JValue(clipCount.Value) : JValue.CreateNull()
                     });
                 }
             document["nativeAnimationActions"] = actions;
