@@ -8,6 +8,14 @@ namespace KingmakerGunslinger.DomainTests
     {
         internal static void RigSurveyUsesOnlyExactNativeSources()
         {
+            Assertions.False(SerpentineRigSurveyPolicy.CountPresentClips(null).HasValue,
+                "A native action without a clip enumeration stays unknown, not an exception or invented zero.");
+            Assertions.Equal((int?)0, SerpentineRigSurveyPolicy.CountPresentClips(new bool[0]),
+                "An exposed empty clip collection is an explicit zero.");
+            Assertions.Equal((int?)0, SerpentineRigSurveyPolicy.CountPresentClips(new[] { false, false }),
+                "Null entries do not count as clips.");
+            Assertions.Equal((int?)2, SerpentineRigSurveyPolicy.CountPresentClips(new[] { true, false, true }),
+                "Only live native clip entries are counted.");
             Assertions.True(SerpentineRigSurveyPolicy.Keys.SequenceEqual(
                 new[] { "medium-water-elemental", "salamander", "purple-worm" }),
                 "Only the three fixed pre-existing rig carriers are in the research scope; no new publication.");
