@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "status": "Sprint17 NOT QUALIFIED; eight exact research attempts preserved. Latesta09648b0 smoke11 PASS/body36 of37 FAIL, exact restoration PASS. Unreadable native spear measurement and transient enemy isolation require fixture correction; no final visual/gameplay qualification.",
+  "status": "Sprint17 NOT QUALIFIED; nine exact research attempts preserved. Latest7ebb34eb smoke11/body40 and complete driver PASS; exact restoration PASS. Research only: hybrid grip/contact and distal-tail penetration still require correction; no final visual/gameplay qualification.",
   "scope": "Closed original-body/native command-contact/resource research only; no gameplay/publication qualification",
   "attempts": [
     {
@@ -1470,6 +1470,341 @@
         "cleanup": "Every rollback, native resource restoration, project-owned destruction, borrowed mesh survival, environment and unit/party/area restoration assertion PASS; exact installation restored. No save writing or save filesystem access.",
         "art": "Native tail-contact frame inspected as ART ONLY: original hybrid visible with spear, bending body and partly occluded tail. No mechanical inference or final visual acceptance.",
         "next": "Preserve every event/error; use explicit conservative native spear end-centre/bounds metadata instead of unreadable vertices. Give only the disposable owner a request-local copy of its native controllable faction, not PlayerFaction identity; require isolated enemies after settlement and throughout command. Native controllers untouched. New exact-head complete batch required.",
+        "noNativeGeometryExport": true
+      }
+    },
+    {
+      "candidate": "7ebb34eb0124a732c1f8a034b84f01dbd381aa6c",
+      "sourceFingerprint": "5db8cd907dcf216d32a5546381e2217aa97875c42b5f6e55d3c760866e5837a1",
+      "dllSha256": "822c1739a29d42c59e0e3304902bcc28e6b01af0f142d590c7eddd6933bddf9c",
+      "dllMvid": "1e2298ff-47ae-4c10-be84-78f75f102872",
+      "packageSha256": "cc157eb434c0e25b1d34feccd42508bd9c5cb6bc57f74dd1a0136cec3589a81b",
+      "packageMembers": 318,
+      "version": "0.0.141",
+      "prelaunch": {
+        "focused": 230,
+        "full": 2032,
+        "fullSeconds": 83.2,
+        "completeGateSeconds": 179.4,
+        "runtimePreflight": 491,
+        "orchestration": 81,
+        "provenance": 17,
+        "persistenceWiring": 11,
+        "persistenceScopes": 3,
+        "persistenceRejections": 19,
+        "crowdRoundTrips": 5,
+        "crowdRejections": 7,
+        "exactBuildAndStrictPackage": "PASS"
+      },
+      "runs": [
+        {
+          "scenario": "working-save-smoke",
+          "startedAtUtc": "2026-10-06T09:52:22.9810815Z",
+          "parameters": {},
+          "launcherOutcome": "Clean",
+          "exitCode": 0,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T0952242569066Z-working-save-smoke",
+          "requestId": "20261006T0952242811293Z-b6ed231b15a64c708427b36a817e491d",
+          "requestSha256": "50c5a0b810a45d6b81354b7134785666d94843c066263b61a919c25b0a80b3a5",
+          "resultSha256": "4e293b1a910971cdde2f2f38fbe200f2487b15b73e8fbe6283ae11ca0813da9b",
+          "assertions": 11,
+          "passed": 11,
+          "failed": [],
+          "orchestrationSha256": "17891ab5204aaf4a0c273f88077f23c584992d5d0296d553f7664e97684d82ce",
+          "processId": 34460,
+          "processStartedUtc": "2026-10-06T09:52:25.3568052Z",
+          "scenarioStatus": "PASS",
+          "outcome": "PASS",
+          "completedAtUtc": "2026-10-06T09:55:16.6258171Z"
+        },
+        {
+          "scenario": "disposable-expanded-summoning-serpentine-bodies",
+          "startedAtUtc": "2026-10-06T09:55:22.6156960Z",
+          "parameters": {},
+          "launcherOutcome": "Clean",
+          "exitCode": 0,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261006T0955234248989Z-disposable-expanded-summoning-serpentine-bodies",
+          "requestId": "20261006T0955234339438Z-8d53adb13edb4b4dbf8c2d685986a451",
+          "requestSha256": "f9d485b56120a45c7df5a424705a451cfbdda355e5dc1d3bef65a8729770b72e",
+          "bodyReviewSha256": "b9df8b3e2c07b2b3ad778dcab43c16eb11c7538ca5da1040e246d6f182b5c810",
+          "resultSha256": "250ea57814438d1a3268721540a47ff48545cf6b9ef99f6bceb7470d89691866",
+          "assertions": 40,
+          "passed": 40,
+          "failed": [],
+          "orchestrationSha256": "76e38396169ff23acab77c803390ffc3d163c1e6c835dee3e05188ab07fcd479",
+          "processId": 33876,
+          "processStartedUtc": "2026-10-06T09:55:24.6850016Z",
+          "scenarioStatus": "PASS",
+          "outcome": "PASS",
+          "completedAtUtc": "2026-10-06T09:59:47.2981464Z"
+        }
+      ],
+      "restoration": {
+        "status": "VERIFIED",
+        "snapshot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20261006T0951581493121Z",
+        "before": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "after": {
+          "files": 136,
+          "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+          "version": "0.0.117",
+          "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+        },
+        "completedAtUtc": "2026-10-06T09:59:49.8837081Z",
+        "lease": "C:\\Dev\\KingmakerGunslingerLab\\compatibility-state\\runtime-20261006T095157Z-5ec4350d601f4c5c9ba997202ab9f77e\\runtime-lease.json",
+        "leaseStatus": "Completed",
+        "recoveryRequired": false,
+        "leaseReleased": true,
+        "gameProcessesRemaining": [],
+        "sharedLock": false,
+        "staging": false,
+        "saveWrite": false
+      },
+      "journalSha256": "586B5588B3679D0BB7792DAA995F19F52F7B5DFEB3305074E0728A3762371234",
+      "bodyCaptureSha256": "B9DF8B3E2C07B2B3AD778DCAB43C16EB11C7538CA5DA1040E246D6F182B5C810",
+      "driverSha256": "EA32A5EE8EB4E8EAA869B6337B634B51E476884763605A0959709FE9BE774627",
+      "status": "RESEARCH ONLY PASS; smoke11/11/body40/40; complete driver PASS; Sprint17 final visuals/gameplay NOT QUALIFIED",
+      "findings": {
+        "bodies": [
+          {
+            "key": "viper",
+            "travel": 2.46243048,
+            "velocity": 3.04798961,
+            "isolationAfterSettlement": true,
+            "isolatedSamples": 19,
+            "poseSamples": 19,
+            "contacts": [
+              {
+                "frame": 4676,
+                "category": "Bite",
+                "weapon": "7e4b9b41a9358264d9e3c69c183ca0a2",
+                "opportunity": false,
+                "ownedPair": true,
+                "exactHybridTail": false,
+                "nativeAnimationContact": true,
+                "finite": true,
+                "vertices": 693,
+                "poseMethod": "sum(weight * bone.localToWorld * bindpose * originalVertex)",
+                "measuredPoints": 693,
+                "targetBoundsCenter": [
+                  12.9531708,
+                  -5.19271231,
+                  -9.465727
+                ],
+                "targetBoundsSize": [
+                  1.28896117,
+                  1.93609285,
+                  1.54178345
+                ],
+                "actorPosition": [
+                  11.4132643,
+                  -6.00000238,
+                  -9.332996
+                ],
+                "targetPosition": [
+                  12.9132643,
+                  -6.00000238,
+                  -9.332996
+                ],
+                "nearestGapMeters": 0,
+                "withinQuarterMetre": true,
+                "issuedCommandExecuting": true,
+                "supportingFrame": "sprint17-viper-attack-1-owned-body.png;supporting-art-only;native-camera-untouched"
+              },
+              {
+                "frame": 4751,
+                "category": "OtherNaturalWeapons",
+                "weapon": "287cd06241fdaf8408410b226f744093",
+                "opportunity": false,
+                "ownedPair": true,
+                "exactHybridTail": false,
+                "nativeAnimationContact": true,
+                "finite": true,
+                "notApplicable": "unprinted donor attack",
+                "issuedCommandExecuting": true,
+                "supportingFrame": "sprint17-viper-attack-2-owned-body.png;supporting-art-only;native-camera-untouched"
+              }
+            ],
+            "floorMin": 0.00290822983,
+            "floorMax": 0.00290822983
+          },
+          {
+            "key": "constrictor-snake",
+            "travel": 2.45961,
+            "velocity": 3.04798865,
+            "isolationAfterSettlement": true,
+            "isolatedSamples": 20,
+            "poseSamples": 20,
+            "contacts": [
+              {
+                "frame": 5240,
+                "category": "Bite",
+                "weapon": "7e4b9b41a9358264d9e3c69c183ca0a2",
+                "opportunity": false,
+                "ownedPair": true,
+                "exactHybridTail": false,
+                "nativeAnimationContact": true,
+                "finite": true,
+                "vertices": 819,
+                "poseMethod": "sum(weight * bone.localToWorld * bindpose * originalVertex)",
+                "measuredPoints": 819,
+                "targetBoundsCenter": [
+                  12.9507637,
+                  -5.19077826,
+                  -9.46657
+                ],
+                "targetBoundsSize": [
+                  1.29284751,
+                  1.93201232,
+                  1.54635608
+                ],
+                "actorPosition": [
+                  11.4104433,
+                  -6.00000238,
+                  -9.332692
+                ],
+                "targetPosition": [
+                  12.9104433,
+                  -6.00000238,
+                  -9.332692
+                ],
+                "nearestGapMeters": 0,
+                "withinQuarterMetre": true,
+                "issuedCommandExecuting": true,
+                "supportingFrame": "sprint17-constrictor-snake-attack-1-owned-body.png;supporting-art-only;native-camera-untouched"
+              },
+              {
+                "frame": 5315,
+                "category": "OtherNaturalWeapons",
+                "weapon": "287cd06241fdaf8408410b226f744093",
+                "opportunity": false,
+                "ownedPair": true,
+                "exactHybridTail": false,
+                "nativeAnimationContact": true,
+                "finite": true,
+                "notApplicable": "unprinted donor attack",
+                "issuedCommandExecuting": true,
+                "supportingFrame": "sprint17-constrictor-snake-attack-2-owned-body.png;supporting-art-only;native-camera-untouched"
+              }
+            ],
+            "floorMin": 0.00184631348,
+            "floorMax": 0.00184631348
+          },
+          {
+            "key": "salamander",
+            "travel": 2.48243785,
+            "velocity": 3.04798937,
+            "isolationAfterSettlement": true,
+            "isolatedSamples": 17,
+            "poseSamples": 17,
+            "contacts": [
+              {
+                "frame": 5779,
+                "category": "Spear",
+                "weapon": "99394d453c6f425f84d4b92f7a8deea0",
+                "opportunity": false,
+                "ownedPair": true,
+                "exactHybridTail": false,
+                "nativeAnimationContact": true,
+                "finite": true,
+                "nativeMeshReadable": false,
+                "nativeBoundsSize": [
+                  0.04938568,
+                  1.77067316,
+                  0.03862965
+                ],
+                "transverseUncertaintyMeters": 0.03134963,
+                "shaftEndCentres": [
+                  [
+                    11.04331,
+                    -5.74105024,
+                    -9.444716
+                  ],
+                  [
+                    11.9759083,
+                    -4.355248,
+                    -10.0321646
+                  ]
+                ],
+                "RPalmToSpearAxisMeters": 4.76837158e-7,
+                "LPalmToSpearAxisMeters": 0.6380596,
+                "poseMethod": "native bounds Y end centres transformed by existing weapon renderer; gap includes transverse uncertainty; NOT surface vertices",
+                "measuredPoints": 2,
+                "targetBoundsCenter": [
+                  12.9675608,
+                  -5.191165,
+                  -9.468669
+                ],
+                "targetBoundsSize": [
+                  1.29580545,
+                  1.95254242,
+                  1.53242135
+                ],
+                "actorPosition": [
+                  11.4332743,
+                  -6.00000238,
+                  -9.335137
+                ],
+                "targetPosition": [
+                  12.9332743,
+                  -6.00000238,
+                  -9.335137
+                ],
+                "endCentreGapMeters": 0.34375,
+                "nearestGapMeters": 0.375099629,
+                "withinQuarterMetre": false,
+                "issuedCommandExecuting": true,
+                "supportingFrame": "sprint17-salamander-attack-1-owned-body.png;supporting-art-only;native-camera-untouched"
+              },
+              {
+                "frame": 5867,
+                "category": "OtherNaturalWeapons",
+                "weapon": "93e097b8d3db42d3a37656502899e1a9",
+                "opportunity": false,
+                "ownedPair": true,
+                "exactHybridTail": true,
+                "nativeAnimationContact": true,
+                "finite": true,
+                "vertices": 499,
+                "poseMethod": "sum(weight * bone.localToWorld * bindpose * originalVertex)",
+                "measuredPoints": 499,
+                "targetBoundsCenter": [
+                  12.966465,
+                  -5.19727039,
+                  -9.464818
+                ],
+                "targetBoundsSize": [
+                  1.28842723,
+                  1.95180249,
+                  1.52704775
+                ],
+                "actorPosition": [
+                  11.4332743,
+                  -6.00000238,
+                  -9.335137
+                ],
+                "targetPosition": [
+                  12.9332743,
+                  -6.00000238,
+                  -9.335137
+                ],
+                "nearestGapMeters": 0.161898613,
+                "withinQuarterMetre": true,
+                "issuedCommandExecuting": true,
+                "supportingFrame": "sprint17-salamander-attack-2-owned-body.png;supporting-art-only;native-camera-untouched"
+              }
+            ],
+            "floorMin": -0.112885,
+            "floorMax": 0.00500011444
+          }
+        ],
+        "requiredNext": "Correct original distal-tail penetration using captured poses; correct two-palm spear mounting without native mesh/bone/controller mutation. Left grip0.638m and conservative spear gap0.375m remain NOT QUALIFIED, not waived by research completeness.",
+        "art": "Native spear-contact supporting frame inspected as ART ONLY; original body/spear visible, left hand detached and coil partly occluded. Mechanical distances come from structured data, never screenshot inference.",
+        "allOwnershipCleanup": "PASS exact rollback, native references, owned-resource destruction, borrowed spear survival, unit/party/area and environment snapshots.",
         "noNativeGeometryExport": true
       }
     }
