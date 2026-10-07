@@ -50,21 +50,26 @@ All17 disagreeing native storage groups excluded; native upper bones unchanged.
 Fixed target-free1.4second tail sweep;29evaluated mesh poses finite/above authoring
 plane. Source gate280focused/2082unfiltered81.5s/complete178.2s/clean14/strict320 PASS.
 See `planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-TAIL-PROTOTYPE.md`.
-Request-local human/owned-tail binding is now implemented, with no production
-hook. The exact original mesh is packaged separately as salamander-human-mesh.json;
-all old assets and native spear handling remain unchanged. Corrected source gate
-PASS:290focused/2092unfiltered81.9s/complete179.0s/clean14/strict321, plus9
-Blender authoring tests. Source parent19949d30; no new runtime qualification.
-A prelaunch audit corrected exported sorted-palette versus authoring order and
-added all36-index round-trip assertions; the earlier undeployed package is retained.
-One closed disposable-serpentine-bodies request now exercises only this hybrid's
-native settlement, rollback, movement, full attack/contact and exact destruction.
-No runtime result, pause/interruption qualification or production adoption inferred.
+Exact bc7a7c9adfa893b6a916dc017c6a7139b2bb3ef6 human/owned-tail attempt
+is FAIL, not qualification: fresh Steam640820 smoke11/11; hybrid4/6
+(expected15). Native anatomy/settlement passed, but the unchanged combined
+human-set/absent-Tail guard rejected before any body/action resource was created.
+Rollback was not reached; no body, playback, contact or cleanup qualification.
+[Exact failed artifact/evidence/restoration](planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-BINDING-FAIL-EVIDENCE.json).
+Actual136files/Info0.0.117/tree216A9DC2...AF3 restored07:36:19.0667770UTC;
+no save writes, game, runtime lease or staging. All failed artifacts retained.
+Narrow read-only guard diagnostics now separate raw/effective action identities
+and three getter patch registries. The guard is NOT relaxed; no extra waits,
+native action execution, production hook or publication change.
+Diagnostic source gate PASS:291focused/2093full84.6s/complete183.0s/clean14/
+strict321. Runtime pending on the diagnostic; Sprint17 remains NOT QUALIFIED.
 
-Next: commit/push and rebuild one exact-head human/owned-tail research candidate;
-guarded smoke plus hybrid native-command review, then printed Salamander mechanics. No repeated donor census
-or global animation rewrite. Then ONE same-artifact Sprint17 hidden/publication
-gate and fullPhase2B closure. STOP owner review;Phase2C authorized but deferred.
+Next: qualify/push the narrow diagnostic checkpoint and rebuild its exact head;
+guarded smoke plus unchanged human guard review. Resolve the observed operand
+before binding/native-command/contact work, then printed Salamander mechanics.
+No repeated donor census or global animation rewrite. Then ONE same-artifact
+Sprint17 hidden/publication gate and fullPhase2B closure. STOP owner review;
+Phase2C authorized but deferred.
 HumanReview: NOT_PERFORMED_NONBLOCKING.
 ## Paired diagnostic disposition
 
