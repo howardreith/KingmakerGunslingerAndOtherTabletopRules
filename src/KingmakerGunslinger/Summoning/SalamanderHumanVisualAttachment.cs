@@ -19,8 +19,9 @@ using UnityEngine;
 
 namespace KingmakerGunslinger.Summoning
 {
-    // Request-local only. No production hook, native rig mutation, weapon
-    // remount, global animator/AI patch or arbitrary asset/driver input.
+    // Exact Salamander production view and its closed research prototype only.
+    // No native rig mutation, weapon remount, global animator/AI patch or
+    // arbitrary asset/driver input. Production qualification remains separate.
     internal sealed class SalamanderHumanVisualAttachment : MonoBehaviour
     {
         private sealed class Skin
@@ -65,7 +66,7 @@ namespace KingmakerGunslinger.Summoning
             outcome = "human-tail:not-permitted";
             var unit = view == null ? null : view.EntityData;
             var primary = unit == null ? null : unit.Body.PrimaryHand.MaybeWeapon;
-            if (unit == null || context == null || !SalamanderTailAnimationPolicy.PermitsPrototype(
+            if (unit == null || context == null || !SalamanderTailAnimationPolicy.PermitsBinding(
                 context.FeatureModules.Active.ExpandedSummoning, unit.Blueprint.AssetGuid, unit.Blueprint.name,
                 unit.Blueprint.Prefab.AssetId, primary == null ? null : primary.Blueprint.AssetGuid, true, true) ||
                 view.GetComponent<SalamanderHumanVisualAttachment>() != null) return false;

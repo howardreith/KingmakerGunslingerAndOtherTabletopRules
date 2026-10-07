@@ -29,6 +29,13 @@ namespace KingmakerGunslinger.Summoning
             return names != null && names.SequenceEqual(TailNames);
         }
 
+        internal static bool PermitsBinding(bool enabled, string guid, string name,
+            string prefab, string spear, bool ownedPlayer, bool ownedBones)
+        {
+            return ownedPlayer && ownedBones && (PermitsPrototype(enabled, guid, name, prefab, spear, true, true) ||
+                SalamanderProductionViewPolicy.Permits(enabled, guid, name, prefab, spear, false));
+        }
+
         internal static bool Finite(float value)
         { return !float.IsNaN(value) && !float.IsInfinity(value); }
     }
@@ -100,4 +107,3 @@ namespace KingmakerGunslinger.Summoning
         }
     }
 }
-

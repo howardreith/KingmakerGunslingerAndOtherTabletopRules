@@ -4,6 +4,7 @@ using System.Linq;
 using Kingmaker;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Facts;
+using Kingmaker.Designers.Mechanics.Buffs;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Enums;
@@ -13,6 +14,8 @@ using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.RuleSystem.Rules.Damage;
 using Kingmaker.UnitLogic;
+using Kingmaker.UnitLogic.Buffs;
+using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Summoning;
@@ -111,6 +114,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     finally { stats.Strength.RemoveModifier(modifier); }
                 }
                 ProbeSprint17SalamanderWeapons(unit, spear, tail, "restored", 16);
+                var enlarge = fixture.Blueprints.OfType<BlueprintBuff>().Single(b => b.name == "EnlargePersonBuff" &&
+                    b.ComponentsArray.OfType<ChangeUnitSize>().Any());
+                Buff enlarged = unit.Descriptor.AddBuff(enlarge, unit, TimeSpan.FromMinutes(1));
+                try { ProbeSprint17SalamanderWeapons(unit, spear, tail, "native-size", 18); }
+                finally { if (enlarged != null) enlarged.Remove(); }
+                ProbeSprint17SalamanderWeapons(unit, spear, tail, "size-restored", 16);
             }
             finally
             {
@@ -135,19 +144,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var physical = damage.OfType<PhysicalDamage>().SingleOrDefault();
                 var fire = damage.OfType<EnergyDamage>().SingleOrDefault();
                 int expectedBonus = strength <= 0 ? strength : primary ? strength * 3 / 2 : strength / 2;
+                bool enlarged = phase == "native-size";
                 CheckSprint17SalamanderProfile(phase + (primary ? "-spear" : "-tail"), damage.Length == 2 && physical != null && fire != null &&
-                    physical.Dice.Rolls == (primary ? 1 : 2) && physical.Dice.Dice == (primary ? DiceType.D8 : DiceType.D6) &&
+                    physical.Dice.Rolls == (enlarged ? (primary ? 2 : 3) : (primary ? 1 : 2)) &&
+                    physical.Dice.Dice == (primary && !enlarged ? DiceType.D8 : DiceType.D6) &&
                     physical.Bonus == expectedBonus && fire.EnergyType == DamageEnergyType.Fire && fire.Dice.Rolls == 1 &&
-                    fire.Dice.Dice == DiceType.D6 && fire.Bonus == 0 && unit.Stats.Strength.ModifiedValue == expectedStrength,
+                    fire.Dice.Dice == DiceType.D6 && fire.Bonus == 0 && unit.Stats.Strength.ModifiedValue == expectedStrength &&
+                    unit.Descriptor.State.Size == (enlarged ? Size.Large : Size.Medium),
                     new JObject { ["strength"] = unit.Stats.Strength.ModifiedValue, ["modifier"] = unit.Stats.Strength.Bonus,
                         ["damage"] = new JArray(damage.Select(Sprint16DamageLine)), ["weaponSize"] = stats.WeaponSize.ToString() },
-                    "live physical damage/Strength plus exactly one unmultiplied 1d6 fire packet; no attack/on-hit replay");
+                    "live physical damage/Strength/native size plus exactly one unmultiplied 1d6 fire packet; no attack/on-hit replay");
             }
         }
 
         private void CheckSprint17SalamanderProfile(string name, bool pass, JObject row, string expected)
         {
-            row = (JObject)row.DeepClone(); row["check"] = name; row["passed"] = pass;
+            row = (JObject)row.DeepClone(); row["key"] = "salamander"; row["check"] = name; row["passed"] = pass;
             _serpentineBodyRows.Add(row);
             _serpentineBodyAssertions.Add(Assertion("sprint17-salamander-profile-" + name, expected,
                 row.ToString(Formatting.None), pass, "Profile-only proof. Real commands, heat resistance/critical, constrict cadence, visuals and persistence are separate mandatory gates."));

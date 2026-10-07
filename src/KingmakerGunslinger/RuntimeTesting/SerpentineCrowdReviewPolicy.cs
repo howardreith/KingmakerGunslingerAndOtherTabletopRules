@@ -5,7 +5,7 @@ using KingmakerGunslinger.Summoning;
 
 namespace KingmakerGunslinger.RuntimeTesting
 {
-    // Closed snake quantity fixture only. Never repairs unrelated scheduler
+    // Closed Sprint 17 quantity fixture only. Never repairs unrelated scheduler
     // membership, and never turns a foreign-list change into a passing result.
     internal static class SerpentineCrowdReviewPolicy
     {
@@ -34,7 +34,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             T[] owned, Func<T, bool> validOwned, out string disposition) where T : class
         {
             disposition = "invalid-closed-scope";
-            if (!SerpentineVisualPolicy.IsSnake(key) || live == null || live.IsReadOnly ||
+            if (!(SerpentineVisualPolicy.IsSnake(key) || key == "salamander") || live == null || live.IsReadOnly ||
                 before == null || owned == null || owned.Length < 2 || owned.Length > 5 ||
                 validOwned == null || !UniqueReferences(before) || !UniqueReferences(live) ||
                 !UniqueReferences(owned) || owned.Any(value => !validOwned(value))) return false;

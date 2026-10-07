@@ -213,10 +213,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (!snake)
             {
                 if (key != "salamander" || _serpentineBodyPrototype != null ||
-                    published.Prefab.AssetId != SerpentineVisualPolicy.ClubShieldPrefab)
+                    published.Prefab.AssetId != SalamanderTailAnimationPolicy.Prefab)
                     throw new InvalidOperationException("Unreviewed hybrid prototype source.");
                 var twoHand = fixture.Blueprints.OfType<BlueprintUnit>().Single(value =>
-                    value.AssetGuid == (humanTailResearch ? "86dc43534645e234eb35431131e3b669" : "f080877221934ea40b29e1d9fa71bc1c"));
+                    value.AssetGuid == (humanTailResearch ? SalamanderProductionViewPolicy.DonorGuid : "f080877221934ea40b29e1d9fa71bc1c"));
                 if (twoHand.Prefab.AssetId != (humanTailResearch ? SalamanderTailAnimationPolicy.Prefab : SerpentineVisualPolicy.TwoHandPrefab))
                     throw new InvalidOperationException("Two-hand native view identity changed.");
                 prototype = _serpentineBodyPrototype = UnityEngine.Object.Instantiate(published);
@@ -250,7 +250,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 fixture.Created.Add(rule.SummonedUnit);
                 Game.Instance.EntityCreator.Tick();
                 if (!ReferenceEquals(rule.SummonedUnit.Blueprint, prototype) ||
-                    published.Prefab.AssetId != SerpentineVisualPolicy.ClubShieldPrefab)
+                    published.Prefab.AssetId != SalamanderTailAnimationPolicy.Prefab)
                     throw new InvalidOperationException("Prototype or published view identity changed.");
                 return rule.SummonedUnit;
             }

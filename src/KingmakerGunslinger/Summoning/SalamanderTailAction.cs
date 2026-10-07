@@ -12,11 +12,12 @@ using UnityEngine;
 namespace KingmakerGunslinger.Summoning
 {
     /// <summary>
-    /// Request-local Salamander-only original Tail action. NOT installed by a
-    /// production hook. The human Animator/spear clips are never edited.
+    /// Salamander-only original Tail action, on the exact production identity
+    /// or closed research prototype. Human Animator/spear clips are never edited.
     /// Native command time drives an owned legacy Animation component; this
     /// deliberately does not call the native null-clip/0.1-second fallback.
-    /// Live playback, pause, contact and cleanup are still unqualified.
+    /// Prototype playback/contact/cleanup passed exact6ae91. Production usage
+    /// must qualify independently on its complete exact-head candidate.
     /// </summary>
     internal sealed class SalamanderTailAction : UnitAnimationActionSpecialAttack
     {
@@ -57,7 +58,7 @@ namespace KingmakerGunslinger.Summoning
                 originalTailBones.All(bone => bone != null && bone.parent == player.transform) &&
                 originalTailBones.Distinct().Count() == 10 && player.transform.childCount == 10 &&
                 SalamanderTailAnimationPolicy.ExactTailNames(originalTailBones.Select(bone => bone.name).ToArray());
-            if (!SalamanderTailAnimationPolicy.PermitsPrototype(moduleEnabled,
+            if (!SalamanderTailAnimationPolicy.PermitsBinding(moduleEnabled,
                 unit == null ? null : unit.AssetGuid, unit == null ? null : unit.name,
                 unit == null || unit.Prefab == null ? null : unit.Prefab.AssetId,
                 weapon == null ? null : weapon.Blueprint.AssetGuid, ownedPlayer, ownedBones) ||
@@ -67,7 +68,7 @@ namespace KingmakerGunslinger.Summoning
                 Math.Abs(clip.length - SalamanderTailAnimationPolicy.Duration) > .00001f ||
                 player.GetClipCount() != 1 || !ReferenceEquals(player.GetClip(clip.name), clip) ||
                 Attacks == null || Attacks.FieldType != typeof(UnitAnimationActionSpecialAttack.Entry[]))
-                throw new InvalidOperationException("Only the closed owned Salamander prototype/legacy clip may bind.");
+                throw new InvalidOperationException("Only the exact owned Salamander view/legacy clip may bind.");
 
             var nativeBones = view.GetComponentsInChildren<SkinnedMeshRenderer>(true).SelectMany(skin => skin.bones);
             if (originalTailBones.Any(bone => nativeBones.Any(native => ReferenceEquals(native, bone))))

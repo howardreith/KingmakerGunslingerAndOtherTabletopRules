@@ -1,0 +1,352 @@
+{
+  "schemaVersion": 1,
+  "status": "COMPLETE HIDDEN DEVELOPMENT CANDIDATE; FULL EXACT-HEAD SOURCE GATE PENDING; SPRINT17 NOT RUNTIME QUALIFIED",
+  "authority": "HOWARD-LAPTOP / codex/expanded-summoning-phase2b-sprints14-17 / draft PR26 only. DATA PR27 salvage-only; ZERO PORTS.",
+  "sourceBase": "621f0c3b996f9adf6541dfc2c602a3d67d56c0c0",
+  "sourceBoundary": "One complete hidden integrated checkpoint to be committed on the named base, after focused tests/incremental compilation only. The committed clean HEAD is the candidate; full source/build/package and prelaunch gates run once afterward. No prior artifact qualification transfers.",
+  "source": null,
+  "gates": {
+    "focused": {
+      "passed": 315,
+      "registered": 2117,
+      "failed": 0,
+      "log": "artifacts/sprint17-integrated-candidate-focused.log"
+    },
+    "incrementalCompilation": {
+      "status": "PASS",
+      "referenceCount": 14,
+      "archive": "artifacts/sprint17-incremental-20261007T1851259081813Z",
+      "meaning": "Inner-loop compilation only; not the runtime artifact."
+    },
+    "unfilteredDomain": "PENDING EXACT COMMITTED HEAD",
+    "repositoryWrapper": "PENDING EXACT COMMITTED HEAD",
+    "cleanExactReferenceRelease": "PENDING EXACT COMMITTED HEAD",
+    "strictStandalonePackage": "PENDING EXACT COMMITTED HEAD",
+    "runtime": "NOT RUN"
+  },
+  "changes": [
+    "Borrow only the exact previously qualified native human prefab for the existing Salamander blueprint. No NPC facts, faction, race, inventory, loot, weapons or progression imported.",
+    "Exact GUID/name/prefab/spear and enabled-module guard excludes native humans, previous Lizardfolk donor, snakes, research clones and polymorphs from automatic production attachment.",
+    "One instance-scoped OnDataAttached attempt waits for two consecutive ready LateUpdate frames with the same native mesh, live spear, audited human palette/body/auxiliary material and exact native HumanAnimationSet. Bounded600observations; failure leaves native donor fallback. No visibility/outfit/Animator/appearance-lock writes.",
+    "Only the exact production Salamander and closed research prototype can bind the unchanged original human-body/ten-bone tail seam. Existing native24actions preserved; one owned Tail action. No asset, texture, pose, timing, event, native-clip or global animation change."
+  ],
+  "unchanged": {
+    "profileCheckpoint": "621f0c3b996f9adf6541dfc2c602a3d67d56c0c0",
+    "priorProfileEvidence": "planning/EXPANDED-SUMMONING-SPRINT17-SALAMANDER-PROFILE-SOURCE-EVIDENCE.json",
+    "priorPrototypeCandidate": "6ae91f266b203a98a0f297b24f3a70c785458502",
+    "originalModelSha256": "b5524a694cac0657aaf37ce995e3143f1e0a18e8aa98d799d7fe17ed901c0f19",
+    "salamanderRoots": 5,
+    "registered": 1008,
+    "published": 976,
+    "withheld": 32,
+    "nativeWrappers": 29,
+    "visibleChoices": 1005
+  },
+  "lastRuntime": {
+    "restoredAtUtc": "2026-10-07T15:14:52.5459355Z",
+    "files": 136,
+    "version": "0.0.117",
+    "treeSha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+    "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff",
+    "newLaunches": 0,
+    "newSaveWrites": 0,
+    "note": "Historical verified restoration, not a fresh unlocked installation observation. Next guarded transaction must acquire lease and snapshot actual installation."
+  },
+  "archive": "artifacts/sprint17-salamander-production-view-source-pass",
+  "hashes": [
+    {
+      "path": "scripts/RuntimeAutomation.Common.ps1",
+      "sha256": "745a7d5f1c24dc267605b9aec1e57f3d9f0fc25a7d791570ebf88e4d6c11e44d"
+    },
+    {
+      "path": "scripts/Test-ExpandedSummoningCrowdRequest.ps1",
+      "sha256": "e294c372efa0fa0ad13fd329936b01c638d163578912443f6f5539398b082c4a"
+    },
+    {
+      "path": "src/KingmakerGunslinger/Blueprints/ExpandedSummoningSpecialBuilder.cs",
+      "sha256": "26caa0e75a9b3692acd0390e2f475151860c180153113d04e717b67f2e3aea56"
+    },
+    {
+      "path": "src/KingmakerGunslinger/KingmakerGunslinger.csproj",
+      "sha256": "27432ae9c236eba44673f28df88628326502efde6cf457b5ef097cb84f8631ec"
+    },
+    {
+      "path": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningCreatureReview.cs",
+      "sha256": "63017f605830bac5731596a1ef646bd9f99dd5fca293bd05fddfe5491eb93761"
+    },
+    {
+      "path": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint17Bodies.cs",
+      "sha256": "8bdb3ca142713c66a2869b7928a9d96f60890f686bf3a0cee596ad374e71aaac"
+    },
+    {
+      "path": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint17Contacts.cs",
+      "sha256": "8cb9f805dddf80d20f82891a843658a529f176ea8d398f1b9a0ad17c2cac0fd1"
+    },
+    {
+      "path": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint17Crowd.cs",
+      "sha256": "33f94665a1cee9e7f8420778ed5fa773148051f5bb0e07cbc707442800dc5786"
+    },
+    {
+      "path": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint17HumanSalamander.cs",
+      "sha256": "e79abebca2d62687ace12e6b2dc62ff82a83c38f9a26761add98d98dcd27b76d"
+    },
+    {
+      "path": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint17Persistence.cs",
+      "sha256": "5b9b3d1780745ab889e40d649ffb51c1915b9e4e3ffcbb0d6eb49f9aa87102f7"
+    },
+    {
+      "path": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint17SalamanderCommands.cs",
+      "sha256": "38a11e7a75f25905dbb0abe0e4b97a7675acf7f2bc89b83db713e94425b9b79c"
+    },
+    {
+      "path": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint17SalamanderLifecycle.cs",
+      "sha256": "45353b9fe564638ea0f61365a7a78b7c1e9e7b0f541f2caab202b561f17e90c3"
+    },
+    {
+      "path": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint17SalamanderMechanics.cs",
+      "sha256": "fc64136a390890ab292fb79592a05dc4e0b502768a9d749c4f61d7c996765944"
+    },
+    {
+      "path": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint17SalamanderProfiles.cs",
+      "sha256": "e37b58ef7bc61b6f38807849fc81fc19c8d4ef963c348d954187e9fb13c51450"
+    },
+    {
+      "path": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint17SalamanderViews.cs",
+      "sha256": "a539b13f5d2c4659bbaac5d4c1b964e0f721c4420bd6f0a8a5f0f73efb1f4fe2"
+    },
+    {
+      "path": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint17SnakeFinal.cs",
+      "sha256": "7fc2a5fd1a6f681a4971b1665d474209f429ed2740429fff61cf2b38f295a635"
+    },
+    {
+      "path": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint17SnakeLifecycle.cs",
+      "sha256": "182233740e156669b710eaa1a0b6aba805c93fd5dfd9c894dc437a971b8562cc"
+    },
+    {
+      "path": "src/KingmakerGunslinger/RuntimeTesting/SerpentineCrowdReviewPolicy.cs",
+      "sha256": "05ea59125ae5b5aca41873015a9f1c77fc693aacd9efd9bd078f50ec87ba3cfd"
+    },
+    {
+      "path": "src/KingmakerGunslinger/RuntimeTesting/SerpentineFinalReviewPolicy.cs",
+      "sha256": "0779f9afacd2098d0cfe4510d4a5ed62e19b9133225165f191db31cd5d18db5e"
+    },
+    {
+      "path": "src/KingmakerGunslinger/RuntimeTesting/SerpentinePersistenceReviewPolicy.cs",
+      "sha256": "8553eceb32c872b525bd7f05954c657637f4f1d0f11693dd25b0475ee19267ef"
+    },
+    {
+      "path": "src/KingmakerGunslinger/Summoning/ExpandedSummoningSalamanderViewPatch.cs",
+      "sha256": "12fb31d54f73d108eacdd49b7dc764d639ee83cf5833e33ae50a75d880d12b99"
+    },
+    {
+      "path": "src/KingmakerGunslinger/Summoning/SalamanderHumanVisualAttachment.cs",
+      "sha256": "2df014c5cda082509024dda09b84ba364ba8259fab8db800f75c99f5db7dc854"
+    },
+    {
+      "path": "src/KingmakerGunslinger/Summoning/SalamanderProductionViewPolicy.cs",
+      "sha256": "51a22719c5b94619c7153a91dd14ade15082a068a26f32aa3b6dbbdc45c8b0a4"
+    },
+    {
+      "path": "src/KingmakerGunslinger/Summoning/SalamanderTailAction.cs",
+      "sha256": "6fade652e82f6b48e565330cc827baaaa9f890292f6f557b78bd08510cb7ca12"
+    },
+    {
+      "path": "src/KingmakerGunslinger/Summoning/SalamanderTailAnimationPolicy.cs",
+      "sha256": "faa758b0ae2f3dcf280e9e62472365d969fcd91741739c1b11385f14df8098e7"
+    },
+    {
+      "path": "tests/KingmakerGunslinger.DomainTests/KingmakerGunslinger.DomainTests.csproj",
+      "sha256": "350734e042588328cae6796da649761a1bac0a694a08dfa9e19467994c350b5f"
+    },
+    {
+      "path": "tests/KingmakerGunslinger.DomainTests/Program.cs",
+      "sha256": "6c782d2e445bb2de6ce2958dfc1adf2f8c4a31ed7df888852f3b2e3564255cb4"
+    },
+    {
+      "path": "tests/KingmakerGunslinger.DomainTests/SalamanderProductionViewTests.cs",
+      "sha256": "a01e7f50242f997c91ce0c5728ee331908db96682f0f5d501dc91188c5044e3d"
+    },
+    {
+      "path": "tests/KingmakerGunslinger.DomainTests/SerpentineRulesTests.cs",
+      "sha256": "fc368876746282c4ab0fbacda902e246bca0b7feb14b12789af4d56628a12e5f"
+    },
+    {
+      "path": "tools/validate_expanded_summoning_phase2a141.py",
+      "sha256": "38e92f77e06011c92932cd7b667ea93020b2f709bd2014ba0098acf7d593092c"
+    },
+    {
+      "path": "validation/static-validation.json",
+      "sha256": "f3c7d38761eaf1b9fac27d1109dcad5933dbff4ffbf47c8cf6ef016f151d993a"
+    }
+  ],
+  "openGates": [
+    "One full source/build/package and harness preflight gate on the complete committed/pushed hidden candidate.",
+    "One all-three same-artifact batch, then bounded product/fixture correction budgets only.",
+    "Independent publication when safely qualified; otherwise evidence-backed partial/blocker. Full Phase2B closure matrices once, then STOP owner review."
+  ],
+  "HumanReview": "NOT_PERFORMED_NONBLOCKING",
+  "interruptedSourceGate": {
+    "source": {
+      "schemaVersion": 1,
+      "generatedAtUtc": "2026-10-07T16:34:32.2412493Z",
+      "generator": "scripts/Build-Local.ps1",
+      "repositoryRoot": "C:\\Dev\\KingmakerGunslingerLab\\repo\\KingmakerGunslinger\\.worktrees\\expanded-summoning-phase2b-laptop-20261005",
+      "commit": "621f0c3b996f9adf6541dfc2c602a3d67d56c0c0",
+      "branch": "codex/expanded-summoning-phase2b-sprints14-17",
+      "sourceStateSha256": "d08799981d896da987c1fede081c96d10ad51032e96ab054b5bc46358af9c4cd",
+      "version": "0.0.141",
+      "packagePath": "C:\\Dev\\KingmakerGunslingerLab\\repo\\KingmakerGunslinger\\.worktrees\\expanded-summoning-phase2b-laptop-20261005\\artifacts\\local-runtime\\0.0.141\\KingmakerGunslinger-0.0.141-local-runtime.zip",
+      "packageSha256": "73c5748956dffe5b0f085aa45077fbacc15a934d0cb00c9089112dd06c909836",
+      "dllSha256": "0189a1875a144ba779f6c6c653db78865d6cf50be4c7701217c7e448d75617ee",
+      "dllMvid": "b90830b0-70e7-4e66-b7fc-2447c52e27b4",
+      "firearmManifestSha256": "bf57981ad5ec2cbf3149ecafc3ef737d87bc9035b14bccc7d254dca8f991c62e",
+      "firearmSoundBankSha256": "0e9f88c562f4f937a8941ace0f241bb31a7ed56b46fbca549c98f764392edf18",
+      "validated": true
+    },
+    "gates": {
+      "focused": {
+        "passed": 315,
+        "registered": 2117
+      },
+      "unfilteredDomain": {
+        "passed": 2117,
+        "failed": 0,
+        "seconds": 84.8
+      },
+      "repositoryWrapper": "PASS",
+      "cleanExactReferenceRelease": {
+        "status": "PASS",
+        "referenceCount": 14
+      },
+      "strictStandalonePackage": {
+        "status": "PASS",
+        "members": 321
+      },
+      "completeGateSeconds": 182.2,
+      "runtime": "NOT RUN",
+      "prelaunchHarnessSuites": "Full clean-head prelaunch protocol NOT RUN; repository wrapper includes its standard orchestration checks."
+    },
+    "archive": "artifacts/sprint17-salamander-production-view-source-pass",
+    "meaning": "Preserved completed source gate from before interruption; no rerun at resume. Its artifact is not the integrated runtime candidate.",
+    "hashes": [
+      {
+        "path": "src/KingmakerGunslinger/Blueprints/ExpandedSummoningSpecialBuilder.cs",
+        "sha256": "26caa0e75a9b3692acd0390e2f475151860c180153113d04e717b67f2e3aea56"
+      },
+      {
+        "path": "src/KingmakerGunslinger/KingmakerGunslinger.csproj",
+        "sha256": "8fb2e6859610500a66a0aa3c53182b18d6980e00d91889b573f8833433d9729a"
+      },
+      {
+        "path": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint17Contacts.cs",
+        "sha256": "8cb9f805dddf80d20f82891a843658a529f176ea8d398f1b9a0ad17c2cac0fd1"
+      },
+      {
+        "path": "src/KingmakerGunslinger/Summoning/ExpandedSummoningSalamanderViewPatch.cs",
+        "sha256": "378efecd43ace721c746777556625b47fc3e9a91a87d4ed27a621b2815721d6a"
+      },
+      {
+        "path": "src/KingmakerGunslinger/Summoning/SalamanderProductionViewPolicy.cs",
+        "sha256": "51a22719c5b94619c7153a91dd14ade15082a068a26f32aa3b6dbbdc45c8b0a4"
+      },
+      {
+        "path": "src/KingmakerGunslinger/Summoning/SalamanderHumanVisualAttachment.cs",
+        "sha256": "2df014c5cda082509024dda09b84ba364ba8259fab8db800f75c99f5db7dc854"
+      },
+      {
+        "path": "src/KingmakerGunslinger/Summoning/SalamanderTailAction.cs",
+        "sha256": "6fade652e82f6b48e565330cc827baaaa9f890292f6f557b78bd08510cb7ca12"
+      },
+      {
+        "path": "src/KingmakerGunslinger/Summoning/SalamanderTailAnimationPolicy.cs",
+        "sha256": "faa758b0ae2f3dcf280e9e62472365d969fcd91741739c1b11385f14df8098e7"
+      },
+      {
+        "path": "tests/KingmakerGunslinger.DomainTests/SalamanderProductionViewTests.cs",
+        "sha256": "a01e7f50242f997c91ce0c5728ee331908db96682f0f5d501dc91188c5044e3d"
+      },
+      {
+        "path": "tests/KingmakerGunslinger.DomainTests/KingmakerGunslinger.DomainTests.csproj",
+        "sha256": "350734e042588328cae6796da649761a1bac0a694a08dfa9e19467994c350b5f"
+      },
+      {
+        "path": "tests/KingmakerGunslinger.DomainTests/Program.cs",
+        "sha256": "da7a206814db4b0924bc922f26bd1ae80c5f03a2f787925ccdbda1e52afb80f0"
+      },
+      {
+        "path": "tools/validate_expanded_summoning_phase2a141.py",
+        "sha256": "38e92f77e06011c92932cd7b667ea93020b2f709bd2014ba0098acf7d593092c"
+      },
+      {
+        "path": "validation/static-validation.json",
+        "sha256": "f3c7d38761eaf1b9fac27d1109dcad5933dbff4ffbf47c8cf6ef016f151d993a"
+      },
+      {
+        "path": "artifacts/sprint17-salamander-production-view-source-focused.log",
+        "sha256": "c8c35e74fd38222b884703c1b172f8c6aab1dbf0b9aa02e8c6d3a7bd65462bca"
+      },
+      {
+        "path": "artifacts/sprint17-salamander-production-view-source-gate.log",
+        "sha256": "b48120e7bd3bd8901072b426d8a7256c9eb4ff2cfaec4e7f251ff7632bb22e56"
+      }
+    ]
+  },
+  "efficiencyAmendment": {
+    "baseline": "621f0c3b996f9adf6541dfc2c602a3d67d56c0c0",
+    "development": "One complete production view/mechanics/command/AI/UI/routes/crowd/persistence/cleanup pass; focused tests and incremental compilation only.",
+    "candidate": "One committed and pushed hidden candidate, then full source/build/package gate once on that exact head and one same-artifact guarded batch for all three creatures.",
+    "remainingRetries": {
+      "productCorrectionCandidates": 1,
+      "observationOnlyFixtureCorrections": 1
+    },
+    "usedRetries": {
+      "productCorrectionCandidates": 0,
+      "observationOnlyFixtureCorrections": 0
+    },
+    "scenarios": "Extend existing Sprint17 scenarios only where mandatory evidence is otherwise unavailable; no new scenario family.",
+    "nativeAnimation": "Missing donor animation is not a product failure. Preserve native set, actual combat events/damage, finite visible geometry and native cleanup.",
+    "publication": "Independently qualified creatures may publish if suppression safely isolates a blocker.",
+    "closure": "Exhaustive player paths, persistence and compatibility once at Phase2B closure; then STOP owner review. Phase2C authorized but deferred; do not start."
+  },
+  "currentOwner": {
+    "receipt": "artifacts/laptop-source-owner-20261005.json",
+    "ownerPid": 29828,
+    "ownerStartedUtc": "2026-10-07T16:37:01.6154316Z",
+    "keeperPid": 37216,
+    "keeperStartedUtc": "2026-10-07T18:13:59.9631236Z",
+    "sessionId": "2af10b72-de34-49d5-8d34-f3fe784a0bb7",
+    "priorReceipt": "artifacts/laptop-source-owner-20261005-released-20261007T163701Z.json",
+    "priorReleaseReason": "Owner process ended",
+    "fetchedRemote": "621f0c3b996f9adf6541dfc2c602a3d67d56c0c0",
+    "runtimeClearAtResume": true
+  },
+  "integratedChanges": [
+    "Preserved the interrupted production-view changes and completed gate without rerunning the full gate at resume.",
+    "Automatic production binding/rollback and native-human negative control, repeated callback/no retry, actual movement/full attack, paired native-following grip/tail contact and native resource destruction extend the existing snake-profiles request.",
+    "Exact Salamander printed profile, native type image, live positive/negative Strength and Enlarge dice/restore; real spear heat hit/miss/critical/native resistance, supplemental Flaming and duplicate same-event claim.",
+    "Actual tail-only grab, initial constrict, no application-frame duplicate, later maintain-once, live Strength/size constrict, dead/destroyed prey rejection and native owner/prey death cleanup extend the existing snake-signatures request.",
+    "Four actual Salamander manual/AI RTWP/turn-based cells extend the same command request. Raw summon preserves AI actions; quiet helper remains only for intentionally inert fixtures. No direct damage or forced animation in command cells.",
+    "Existing final review includes32 hidden snake routes and5 unchanged-identity published Salamander roots, native trait/status/icon widgets, exact sheet closure and isolated native wound/death/fade/despawn. Missing native animation is recorded, not invented.",
+    "Existing direct/quantity crowd request covers all three; exact owned scheduler restoration excludes foreign membership changes; instance-owned resource census includes Salamander and later material clones.",
+    "Same closed snakes persistence scope/receipt now has six roles: all three creatures and three separately marked targets. Stale exact owned fixtures retire natively; loaded Salamander hold resets safely, heat/profile/view persist, cleanup writes only through the authorized working-save routine, absence requires a fresh load.",
+    "Four new binding-policy domain cases and updated bounded crowd/six-role persistence behavior tests. No snake production mechanics, original assets, tail poses/clip, public visibility or version changes."
+  ],
+  "archiveMeaning": "Historical interrupted production-view-only source gate; retained, not integrated runtime artifact.",
+  "batch": {
+    "driver": "artifacts/Invoke-LaptopSprint17-IntegratedHiddenBatch.ps1",
+    "scenarioOrder": [
+      "working-save-smoke",
+      "disposable-expanded-summoning-snake-profiles",
+      "disposable-expanded-summoning-snake-signatures",
+      "disposable-expanded-summoning-snake-commands",
+      "disposable-expanded-summoning-snake-final-review",
+      "working-save-expanded-summoning-creature-review (all three, direct)",
+      "working-save-expanded-summoning-creature-review (all three, OneD4PlusOne)",
+      "working-save-expanded-summoning-prepare (snakes, six roles)",
+      "working-save-expanded-summoning-verify-cleanup (snakes, six roles)",
+      "working-save-expanded-summoning-verify-absent (snakes, six roles)"
+    ],
+    "artifactPolicy": "One immutable exact clean committed-head package,321 members; all mandatory assertions PASS. Fresh Steam640820 processes, runtime lease before actual baseline snapshot, exact restore. Only two expected native working-save writes (prepare/cleanup). Protected baseline never loaded/written.",
+    "status": "NOT STARTED"
+  }
+}
