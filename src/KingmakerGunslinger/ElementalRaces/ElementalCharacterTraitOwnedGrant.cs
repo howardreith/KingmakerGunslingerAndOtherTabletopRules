@@ -34,7 +34,10 @@ namespace KingmakerGunslinger.ElementalRaces
         }
         public override void OnFactActivate() { Subscribe(); Reconcile(); }
         public override void OnTurnOn() { Subscribe(); Reconcile(); }
-        public override void OnTurnOff() { Unsubscribe(); RemoveOwned(); }
+        // Native SaveRoutine temporarily turns units/facts OFF before serialization.
+        // Like native AddFacts, keep the serialized exact grant until real
+        // deactivation; recreating it here destroys an enabled toggle's state.
+        public override void OnTurnOff() { Unsubscribe(); }
         public override void OnFactDeactivate() { Unsubscribe(); RemoveOwned(); }
 
         private void Subscribe()

@@ -272,6 +272,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 !game.SaveManager.IsSaveAllowed() || game.SaveManager.CommitInProgress ||
                 Kingmaker.UI.SettingsUI.SettingsRoot.Instance.OnlyOneSave.CurrentValue)
                 throw new InvalidOperationException("Exactly one leased manual save required.");
+            var beforeOwned=overwrite?Array.Empty<Fact>():TraitFeatures(game.Player.MainCharacter.Value,true)
+                .Select(f=>f.SelectComponents<ElementalCharacterTraitOwnedGrant>().Single().OwnedFact).ToArray();
             var requested=overwrite?_workingSaveSmoke.ExactLoadedDescriptor:game.SaveManager.CreateNewSave(plan.OutputName);
             Action<SaveInfo> prepared=save=>
             {
@@ -293,7 +295,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             { if(watch.Elapsed.TotalSeconds>120) throw new InvalidOperationException("Owned native manual save did not complete.");yield return 0; }
             TraitSaveAssert(overwrite?"owned-removal-save":"owned-prepare-save",lease.RoutineCount==1&&!_workingSaveSmoke.WriteObserved,
                 new {lease.RoutineCount,lease.StashedAreaCount,name=lease.Saved.Name,file=lease.Saved.FileName});
-            if(!overwrite) TraitProviders(game.Player.MainCharacter.Value,TraitFeatures(game.Player.MainCharacter.Value,true),true,true);
+            if(!overwrite)
+            {
+                var features=TraitFeatures(game.Player.MainCharacter.Value,true);
+                TraitSaveAssert("native-save-retains-exact-owned-facts",features.Select((f,i)=>
+                    ReferenceEquals(f.SelectComponents<ElementalCharacterTraitOwnedGrant>().Single().OwnedFact,beforeOwned[i])).All(v=>v),
+                    new {sameReferences=features.Select((f,i)=>ReferenceEquals(f.SelectComponents<ElementalCharacterTraitOwnedGrant>().Single().OwnedFact,beforeOwned[i])).ToArray()});
+                TraitProviders(game.Player.MainCharacter.Value,features,true,true);
+            }
             else TraitFeatures(game.Player.MainCharacter.Value,false);
             var saved=lease.Saved;
             _traitSavedInfo=new JObject {["name"]=saved.Name,["file"]=saved.FileName,["path"]=saved.FolderName,
