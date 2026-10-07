@@ -1,0 +1,169 @@
+{
+  "schemaVersion": 1,
+  "classification": "FAIL: PATCH-PROVENANCE FIXTURE EXCEPTION; GUARD OPERAND STILL UNKNOWN; SPRINT17 NOT QUALIFIED",
+  "authority": "Laptop PR26 only; DATA salvage-only/ZERO PORTS; Phase2C authorized but deferred",
+  "candidate": {
+    "commit": "7590ce68319d747eea90f4a9224e4a628861b06a",
+    "branch": "codex/expanded-summoning-phase2b-sprints14-17",
+    "version": "0.0.141",
+    "sourceStateSha256": "25128717b1bad7618825c1b8a47061303c95520af3c88e6dee9ad9fec8febc95",
+    "dllSha256": "5019b150f423ec6ea8bfc3b5223f22cafdbab2bd920d508cf4b5fe9ae1cc0e55",
+    "dllMvid": "9ad212ee-1750-4940-a762-8ed81468522a",
+    "zipSha256": "f26dde3244f67f7a623e2d1709b9a30d7e28bb4d2cff850f7642a7206b53c6ad",
+    "packageMembers": 321,
+    "archive": "artifacts/sprint17-human-guard-exact-7590ce68"
+  },
+  "prelaunch": {
+    "status": "PASS",
+    "focused": 291,
+    "domain": 2093,
+    "domainSeconds": 81.5,
+    "gateSeconds": 175.9,
+    "cleanExactReferences": 14,
+    "strictPackage": true,
+    "preflight": 515,
+    "orchestration": 168,
+    "provenance": 17,
+    "persistence": {
+      "existing": 11,
+      "roundTrips": 6,
+      "defaults": 3,
+      "rejections": 56
+    },
+    "crowd": {
+      "roundTrips": 8,
+      "rejections": 11
+    },
+    "launcher": {
+      "accepted": 14,
+      "rejected": 13
+    }
+  },
+  "transaction": {
+    "batch": "artifacts/laptop-runtime-20261007T0809350442127Z",
+    "journalSha256": "68772c4f259f9b7cad137da6d86065ccb912e0bfc90aad32cf9bf06f37be2779",
+    "driver": "artifacts/Invoke-LaptopSprint17-HumanTail-Attempt2-Guard.ps1",
+    "driverSha256": "93cb6d2eba429e46f8ddf1662a02b3d7d658a74be5a749e4a5f5761254bcfba8",
+    "startedAtUtc": "2026-10-07T08:09:35.0976000Z",
+    "completedAtUtc": "2026-10-07T08:16:10.2330898Z",
+    "status": "NOT-QUALIFIED",
+    "lease": "C:\\Dev\\KingmakerGunslingerLab\\compatibility-state\\runtime-20261007T080935Z-e63942988f2e4bc88740f2691a40107e\\runtime-lease.json",
+    "snapshot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20261007T0809358594053Z",
+    "restoration": "VERIFIED",
+    "before": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "after": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "leaseStatus": "Completed",
+    "recoveryRequired": false,
+    "leaseReleased": true,
+    "gameProcesses": [],
+    "stagingRemaining": false,
+    "runs": [
+      {
+        "label": "smoke",
+        "scenario": "working-save-smoke",
+        "startedAtUtc": "2026-10-07T08:10:00.8342348Z",
+        "parameters": {},
+        "launcherOutcome": "Clean",
+        "exitCode": 0,
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0810018203590Z-working-save-smoke",
+        "requestId": "20261007T0810018360293Z-98a0c469d4b84eb79eebc3285ba881e4",
+        "requestSha256": "14fac1aebd08a58b0bec18c998c4ca0f77bedcd590037a03b018e034e344f7ed",
+        "expectedAssertions": 11,
+        "expectedNativeWrites": 0,
+        "nativeWrites": 0,
+        "nativeStashedAreas": 0,
+        "qualificationScope": "Bounded request-local human/owned-tail binding and native command/contact research ONLY. No production Salamander adoption or printed mechanics; no transfer of earlier snake evidence; full Sprint17 NOT QUALIFIED.",
+        "resultSha256": "94fc7df8683fabee96028884989ba46fafd5d7c2b6a13848d34eb4d3204c60ec",
+        "assertions": 11,
+        "passed": 11,
+        "failed": [],
+        "orchestrationSha256": "3c17a72f1e055f2efc03a3fdbab36b7b4d133bd407de1100d694fdfcbdde2f6b",
+        "processId": 30372,
+        "processStartedUtc": "2026-10-07T08:10:02.9787248Z",
+        "scenarioStatus": "PASS",
+        "outcome": "PASS",
+        "completedAtUtc": "2026-10-07T08:12:54.8532518Z"
+      },
+      {
+        "label": "human-tail",
+        "scenario": "disposable-expanded-summoning-serpentine-bodies",
+        "startedAtUtc": "2026-10-07T08:13:00.3826354Z",
+        "parameters": {},
+        "launcherOutcome": "Unclean",
+        "exitCode": 1,
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T0813011644976Z-disposable-expanded-summoning-serpentine-bodies",
+        "requestId": "20261007T0813011665357Z-e013b81c46974121bc175e8983084212",
+        "requestSha256": "072fd720289fa415c972f007aff98d599ecb0894fc50aef12531042614f89f36",
+        "expectedAssertions": 15,
+        "expectedNativeWrites": 0,
+        "nativeWrites": 0,
+        "nativeStashedAreas": 0,
+        "metadataSha256": "81ce2d31919c18d3498fe5ca167225d27bbdfbf57d01e715429e6c3a8ff3221d",
+        "metadataRows": 1,
+        "qualificationScope": "Bounded request-local human/owned-tail binding and native command/contact research ONLY. No production Salamander adoption or printed mechanics; no transfer of earlier snake evidence; full Sprint17 NOT QUALIFIED.",
+        "resultSha256": "a27ca85b53ff47b7e5e497aa9a749751168bb9acbe53dcd3a26977d90bf1e2c6",
+        "assertions": 5,
+        "passed": 4,
+        "failed": [
+          {
+            "name": "sprint17-body-exception",
+            "status": "FAIL"
+          }
+        ],
+        "orchestrationSha256": "0841453e91ea3bdb96d08a90ade5656465053c95eaf2b6bb2402f39989d4abd0",
+        "processId": 34356,
+        "processStartedUtc": "2026-10-07T08:13:02.3858815Z",
+        "scenarioStatus": "FAIL",
+        "outcome": "FAIL",
+        "completedAtUtc": "2026-10-07T08:16:07.6849326Z"
+      }
+    ]
+  },
+  "failure": {
+    "assertion": "sprint17-body-exception",
+    "category": "FIXTURE",
+    "type": "NullReferenceException",
+    "origin": "Harmony12.Converters.ToHarmony12(HarmonyLib.Patches) called by Harmony12.PatchProcessor.GetPatchInfo and HarmonyInstance.GetPatchInfo",
+    "observation": "Native settlement passed. The diagnostic called patch metadata before publishing its already-read core observations. A compatibility-converter exception discarded the entire boundary object and aborted before attachment. The exact target getter and both binding-guard operands remain unrecorded.",
+    "guardReached": false,
+    "attachmentAttempted": false,
+    "assertionsExecuted": 5,
+    "assertionsPassed": 4,
+    "assertionsExpected": 15
+  },
+  "recovery": {
+    "scope": "Diagnostic fixture only; original native guard and all gameplay assertions unchanged",
+    "existingPattern": "RuntimeTestRunner.TeleportationPublication and RuntimeTestRunner.TeleportationLoadDiagnostics use Harmony's patched-method registry before GetPatchInfo because the installed bridge cannot convert a null record.",
+    "change": "Record core native observations before provenance. Retain registry membership for only the three exact getters. Query metadata only for registered methods; registered-method errors continue to fail the scenario. No error is relabeled as absence or gameplay PASS.",
+    "newBehaviorTest": "Absent method never invokes bridge; registered method queried once and original metadata returned; registered failure propagates."
+  },
+  "observed": {
+    "nativeSettlementFrames": 60,
+    "environmentRestored": true,
+    "fixtureCleanup": true,
+    "nativeSaveWrites": 0,
+    "bodySwapped": false,
+    "tailActionInstalled": false,
+    "productionSalamanderChanged": false,
+    "publicationChanged": false
+  },
+  "qualification": {
+    "sprint17": false,
+    "guardDiagnostic": false,
+    "bodyBinding": false,
+    "tailPlayback": false,
+    "rollback": false,
+    "humanReview": "NOT_PERFORMED_NONBLOCKING"
+  },
+  "next": "Source-qualify and push the registry-bounded diagnostic repair, rebuild a new immutable head and run the same guarded smoke/research pair. Diagnose the binding guard from actual core metadata; no blind retry or waiver."
+}

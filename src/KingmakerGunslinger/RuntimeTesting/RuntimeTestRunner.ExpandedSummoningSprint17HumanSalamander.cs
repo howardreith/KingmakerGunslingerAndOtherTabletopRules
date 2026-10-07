@@ -69,7 +69,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // Read before any attachment/rollback. The first live attempt
                 // rejected one combined guard, so expose exact native vs
                 // effective lookup identities and patch provenance separately.
-                row["nativeActionSetBoundary"] = HumanSalamanderActionSetBoundary(owner);
+                HumanSalamanderActionSetBoundary(owner, row);
                 var nativeActions = originalSet.Actions.ToArray();
                 var skins = owner.View.GetComponentsInChildren<SkinnedMeshRenderer>(true).Select(s =>
                     new { Skin = s, Mesh = s.sharedMesh, Bones = s.bones, Quality = s.quality }).ToArray();
@@ -258,7 +258,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
-        private JObject HumanSalamanderActionSetBoundary(UnitEntityData owner)
+        private void HumanSalamanderActionSetBoundary(UnitEntityData owner, JObject row)
         {
             var manager = owner.View.AnimationManager;
             var set = manager.AnimationSet;
@@ -268,31 +268,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             var effective = manager.GetAction(UnitAnimationSpecialAttackType.Tail);
             var specials = actions.OfType<UnitAnimationActionSpecialAttack>().ToArray();
             var patches = new JArray();
-            var methods = new MethodBase[] {
-                typeof(UnitAnimationManager).GetMethod("GetAction", new[] { typeof(UnitAnimationSpecialAttackType) }),
-                typeof(AnimationManager).GetProperty("AnimationSet").GetGetMethod(),
-                typeof(UnitAnimationActionSpecialAttack).GetProperty("AttackType").GetGetMethod()
-            };
-            foreach (MethodBase method in methods)
-            {
-                if (method == null) throw new InvalidOperationException("Exact action-boundary method missing.");
-                Patches info = _context.Harmony.GetPatchInfo(method);
-                Func<IEnumerable<Patch>, JArray> describe = list => {
-                    Patch[] entries = list.ToArray();
-                    if (entries.Length > 64) throw new InvalidOperationException("Unbounded action-boundary patches.");
-                    return new JArray(entries.Select(p => new JObject {
-                        ["method"] = p.patch == null ? null : p.patch.ToString(),
-                        ["type"] = p.patch == null || p.patch.DeclaringType == null ? null : p.patch.DeclaringType.FullName,
-                        ["assembly"] = p.patch == null || p.patch.DeclaringType == null ? null :
-                            p.patch.DeclaringType.Assembly.GetName().Name }));
-                };
-                patches.Add(new JObject { ["target"] = method.DeclaringType.FullName + "." + method.Name,
-                    ["prefixes"] = info == null ? new JArray() : describe(info.Prefixes),
-                    ["postfixes"] = info == null ? new JArray() : describe(info.Postfixes),
-                    ["transpilers"] = info == null ? new JArray() : describe(info.Transpilers) });
-            }
-            return new JObject {
-                ["scope"] = "read-only exact live actor and three getter patch registries; no invocation of a patch or action",
+            // Retain the core native observations before consulting patch
+            // metadata; a provenance failure must not erase the guard facts.
+            var boundary = new JObject {
+                ["scope"] = "read-only exact live actor and three getter patch registries; no direct patch invocation or action execution",
                 ["manager"] = manager.name, ["set"] = set == null ? null : set.name,
                 ["setId"] = set == null ? (int?)null : set.GetInstanceID(),
                 ["rootSet"] = root == null ? null : root.name, ["rootSetId"] = root == null ? (int?)null : root.GetInstanceID(),
@@ -306,11 +285,43 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["rawSpecials"] = new JArray(specials.Select(a => new JObject {
                     ["name"] = a.name, ["type"] = a.AttackType.ToString(),
                     ["clips"] = new JArray((a.Clips ?? new AnimationClip[0]).Select(Sprint17ClipMetadata)) })),
-                ["getterPatches"] = patches,
-                ["unchangedAfterRead"] = ReferenceEquals(manager.AnimationSet, set) &&
-                    ReferenceEquals(BlueprintRoot.Instance.HumanAnimationSet, root) &&
-                    (set == null || set.Actions.SequenceEqual(actions))
+                ["getterPatches"] = patches, ["provenanceComplete"] = false
             };
+            row["nativeActionSetBoundary"] = boundary;
+            var methods = new MethodBase[] {
+                typeof(UnitAnimationManager).GetMethod("GetAction", new[] { typeof(UnitAnimationSpecialAttackType) }),
+                typeof(AnimationManager).GetProperty("AnimationSet").GetGetMethod(),
+                typeof(UnitAnimationActionSpecialAttack).GetProperty("AttackType").GetGetMethod()
+            };
+            // Same native registry boundary used by the qualified teleportation
+            // observer. Retain membership for only these three exact getters.
+            var registered = new HashSet<MethodBase>(_context.Harmony.GetPatchedMethods()
+                .Where(method => methods.Contains(method)));
+            foreach (MethodBase method in methods)
+            {
+                if (method == null) throw new InvalidOperationException("Exact action-boundary method missing.");
+                bool present = registered.Contains(method);
+                Patches info = SalamanderHumanBindingPolicy.ReadRegisteredPatchMetadata(present,
+                    () => _context.Harmony.GetPatchInfo(method));
+                Func<IEnumerable<Patch>, JArray> describe = list => {
+                    Patch[] entries = list.ToArray();
+                    if (entries.Length > 64) throw new InvalidOperationException("Unbounded action-boundary patches.");
+                    return new JArray(entries.Select(p => new JObject {
+                        ["method"] = p.patch == null ? null : p.patch.ToString(),
+                        ["type"] = p.patch == null || p.patch.DeclaringType == null ? null : p.patch.DeclaringType.FullName,
+                        ["assembly"] = p.patch == null || p.patch.DeclaringType == null ? null :
+                            p.patch.DeclaringType.Assembly.GetName().Name }));
+                };
+                patches.Add(new JObject { ["target"] = method.DeclaringType.FullName + "." + method.Name,
+                    ["registered"] = present, ["metadataQueried"] = present,
+                    ["prefixes"] = info == null ? new JArray() : describe(info.Prefixes),
+                    ["postfixes"] = info == null ? new JArray() : describe(info.Postfixes),
+                    ["transpilers"] = info == null ? new JArray() : describe(info.Transpilers) });
+            }
+            boundary["provenanceComplete"] = true;
+            boundary["unchangedAfterRead"] = ReferenceEquals(manager.AnimationSet, set) &&
+                ReferenceEquals(BlueprintRoot.Instance.HumanAnimationSet, root) &&
+                (set == null || set.Actions.SequenceEqual(actions));
         }
 
         private static JObject HumanSalamanderContact(UnitEntityData owner, UnitEntityData target,
