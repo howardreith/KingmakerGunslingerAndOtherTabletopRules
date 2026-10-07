@@ -2,49 +2,55 @@
 
 ## Current October 7 UTC laptop checkpoint — final-review failures classified; targeted repairs unqualified
 
-[Closed snake final-review attempt1](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-FINAL-ATTEMPT1-EVIDENCE.json)
-on exact95c4d532 FAIL: smoke11/11; review39/73,69 metadata rows, not the required81/78.
-All32 routes return correct quantity/identity/template/alignment/native icon,
-and all32 cleanup rows reclaim93 units/465 private resources. Their duration
-checks fail because this RTWP fixture incorrectly requires TB-only six-second
-grace. Native120-second CL20/context is exact; offline pinned IL confirms the
-mode branch. Existing historical TB predicate and production durations stay unchanged.
-One Constrictor native trait row lacks an icon (production presentation).
-Lifecycle stops before its first hit at an invalid fixture isolation precondition;
-hit/death/fade/despawn remain NOT REACHED. No environment/restoration failure.
+[Closed snake final-review attempt2](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-FINAL-ATTEMPT2-EVIDENCE.json)
+on exactd43b39aa FAIL: smoke11/11; review79/81,78metadata rows.
+All32 private routes/quantity/templates/alignment/RTWP durations/native icons
+and all32 cleanup rows PASS:100units/500resources,zero remaining.
+Both native status rows and sheet restoration PASS. Both original snakes
+pass intact/death/fade/despawn; DyingStart actually plays and all5owned
+resources per body are reclaimed. Only the2native-Hit-clip checks fail.
 
-Targeted repairs: exact paused-RTWP duration policy; existing original Constrictor
-portrait intentionally shared by its exact passive trait via established cache;
-request-local private enemy pair with zero foreign relations checked throughout
-the hit drill. No new pixels, gameplay/rules, native actor/faction mutation or
-assertion waiver.278 focused/2080 unfiltered PASS; full source/build/strict320 gate PASS177.2s.
-Both failed fixture and presentation evidence are preserved, not retroactively PASS.
-[Review](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-FINAL-REVIEW.md).
+The fixture required a clip absent from the unchanged native Worm rig.
+Archived exacta904 census has7actions/noHit; pinned GetAction IL has no
+fallback. The visual contract requires stability under real hit/damage,
+not a fabricated flinch. Both actual attacks wound (1/2damage), isolated,
+but no Hit clip plays. Failed records remain FAIL. Event-time facing was
+also not observed; the native Hit request requires a frontal dot>double0.3.
+No new engine-limitation decision, gameplay change or animation is introduced.
 
-Exact95c4 prelaunch was275 focused/2077 unfiltered84.6s; complete183.4s,
+Corrected fixture: fresh exact native Worm control confirms noHit and
+untouched action references; owned native facing settles before a real attack;
+event-time facing/result/damage and at least0.5native seconds of intact finite
+post-wound geometry are recorded. A present native Hit carrier still requires
+real clip/time/weight playback. Explicit absence is never described as a flinch.
+Death playback and every prior non-hit gate remain unchanged. Expected82
+assertions/79metadata rows includes the additional native-control check.
+[Detailed review](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-FINAL-REVIEW.md).
+
+Exactd43 prelaunch PASS:278focused/2080full81.0s;complete176.3s,
 clean14-reference Release/strict320;515preflight/168orchestration/17provenance,
-persistence11/6/3/56,crowd8/11,actual launcher14/13 PASS.
-DLL d00f5700…; MVID ec94261a-cdc1-4dd8-9c1f-2085c3a2630f;
-ZIP78acbbe9…; exact hashes/requests/restoration in linked evidence.
-ZERO save writes. Actual snapshot20261007T0419381436351Z restored
-2026-10-07T04:26:53.6730555Z:136files/Info0.0.117/
-tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
-Lease Completed/recovery=false/released; no game/shared runtime lock/worktree staging.
+persistence11/6/3/56,crowd8/11,actual launcher14/13.
+DLL69ab2206…; MVIDeaf35409-fb47-4d1b-b495-381562340fa0;
+ZIP9bef6422…; exact hashes and requests in linked evidence.
+Actual snapshot20261007T0454516688018Z restored2026-10-07T05:03:13.3593602Z:
+136files/Info0.0.117/tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
+Lease Completed/recovery=false/released; no game/shared lock/worktree staging.
+ZERO save writes; earlier a429 native cleanup-save/fresh absence0 preserved.
+Prior95c4 attempt1 and every earlier candidate/evidence remain retained.
 
-Earlier exacta429da50 native persistence PASS11/14/13/6 and cleanup-save/fresh
-absence remain qualified for that artifact:ZERO saved owned fixtures.
-[Persistence evidence](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-NATIVE-BOUNDARY-PASS-EVIDENCE.json).
-Earlier983828bf commands/rules andec9721f7 crowd remain artifact-bounded.
-Sprints14–16 COMPLETE/PUBLISHED; Sprint17 NOT QUALIFIED;32roots hidden.
+Carrier-aware correction:280focused/2082unfiltered82.8s PASS; complete180.2s
+repository/static/icon/manifest, clean14-reference Release/deterministic strict320 PASS.
+No source-only or partial runtime qualification. All32snake roots stay hidden.
+Earlier a429 persistence,983commands/rules andec972crowd remain artifact-bounded.
+Sprints14–16 COMPLETE/PUBLISHED; Sprint17 NOT QUALIFIED.
 97units;1008registered/976published;29wrappers;1005visible.
-Laptop PR26 only; DATA salvage-only/ZERO PORTS.
+Laptop PR26 sole active line; DATA salvage-only/ZERO PORTS.
 
-Next: commit/policy-push coherent source-PASS, runtime-NOT-QUALIFIED repair,
-repeat exact-head prelaunch, immutable smoke11/final-review81+78metadata batch,
-exact actual-snapshot restoration. Then separate Salamander, fullSprint17
-hidden/publication and Phase2B closure. STOP for owner review; Phase2C authorized
-but deferred. HumanReview: NOT_PERFORMED_NONBLOCKING.
-
+Next: commit/policy-push coherent correction; exact-head prelaunch/archive,
+fresh Steam640820 smoke11/final-review82+79metadata batch, actual snapshot
+restoration. Then separate Salamander, fullSprint17 hidden/publication and
+fullPhase2B closure. STOP for owner review; Phase2C authorized but deferred.
+HumanReview: NOT_PERFORMED_NONBLOCKING.
 PR #26 / `codex/expanded-summoning-phase2b-sprints14-17` remains the sole
 owner-designated development line. PR #27 is frozen salvage-only; no DATA
 source imported. Phase 2C is authorized but deferred until Phase 2B owner
