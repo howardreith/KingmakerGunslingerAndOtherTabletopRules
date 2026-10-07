@@ -25,6 +25,10 @@ namespace KingmakerGunslinger.DomainTests
     {
         private static readonly TestCase[] Cases =
         {
+            Case("trait-save.JsonLeaseTimestamp", ElementalCharacterTraitSaveTests.JsonLeaseTimestamp),
+            Case("trait-save.ProcessStartExactTicks", ElementalCharacterTraitSaveTests.ProcessStartExactTicks),
+            Case("trait-save.ParsedLeaseExpiry", ElementalCharacterTraitSaveTests.ParsedLeaseExpiry),
+            Case("trait-save.ExactExpiryBoundary", ElementalCharacterTraitSaveTests.ExactExpiryBoundary),
             Case("trait-save.WorkingLoadOnly", ElementalCharacterTraitSaveTests.WorkingLoadOnly),
             Case("trait-save.BaselineRejected", ElementalCharacterTraitSaveTests.BaselineRejected),
             Case("trait-save.UniqueDescriptor", ElementalCharacterTraitSaveTests.UniqueDescriptor),
