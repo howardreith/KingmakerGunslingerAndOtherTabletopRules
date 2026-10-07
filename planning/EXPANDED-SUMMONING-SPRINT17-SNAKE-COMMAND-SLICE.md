@@ -5,62 +5,48 @@ Laptop PR26 only; DATA salvage-only/ZERO PORTS.32 roots withheld.
 
 ## Latest evidence and next bounded work
 
-[Exact a5875a45 reset diagnostic](EXPANDED-SUMMONING-SPRINT17-SNAKE-RESET-DIAGNOSTIC-EVIDENCE.json)
-completed; gameplay remains NOT QUALIFIED. Candidate
-a5875a45305f14c8036b637d44e835532ac0f084: smoke11/11 and prepare13/13 PASS;
-cleanup10/12 FAIL; absence NOT RUN.
-[Measured failure and next investigation](EXPANDED-SUMMONING-SPRINT17-SNAKE-RESET-DIAGNOSTIC-RESULT.md).
+[Request-scoped native load-boundary trace](EXPANDED-SUMMONING-SPRINT17-SNAKE-LOAD-BOUNDARY-TRACE.md)
+is SOURCE PASS; runtime NOT RUN. Source parent
+15070179e84d799d476ce90a7b205d0e950ec52d. The observer records real
+scenes-loaded/load-complete/reset entry and exit, exact unit/input membership,
+per-unit hold/control state and relevant native errors. It neither invokes
+reset nor changes the existing predicate, time, parts, buffs, saves or units.
+Only the three accepted snake persistence requests arm its temporary hooks.
 
-The loaded Constrictor retains its native initiator part pointing to the
-already-free prey, permanent KMG_Summoning_Special_Grapple_Hold, CantAct and
-CantMove. Its project link count is0 and Grab is present. Viper, venom target
-and hold target have no corresponding parts/buffs/locks. Every appearance
-lock is false. This is concrete orphaned owner-side state, not a missing Grab
-or native appearance-lock explanation. Do not relax the reset predicate.
+271 focused / 2073 full (81.2s), repository/static/icon/manifest,
+clean 14-reference Release and strict 320-member package (176.5s) PASS.
+The earlier compile-list omission was corrected; failed source log retained.
+Dirty-source artifacts are not runtime candidates. All exact-head prelaunch
+gates and the complete affected native persistence protocol are NEXT.
 
-The source load safeguard removes the initiator and Hold buff for each KMG
-owner it selects, but its callback reads Game.Instance.State.Units.All.
-Persistence discovery also searches other state collections and party
-HoldingState.AllEntityData. Trace collection coverage and callback delivery/
-order before choosing the bounded production correction. No assumed root
-cause, blanket wait, fixture reset or grapple re-establishment.
+[Latest exact a587 failure](EXPANDED-SUMMONING-SPRINT17-SNAKE-RESET-DIAGNOSTIC-EVIDENCE.json)
+remains smoke 11/11 / prepare 13/13 PASS, cleanup 10/12 FAIL, absence NOT RUN.
+Constrictor retained its native initiator/Hold/CantAct/CantMove; prey was free,
+Grab present, project links zero, appearance locks absent. The next trace
+distinguishes actual callback timing/inputs/errors; no presumed root cause.
+[Failure review](EXPANDED-SUMMONING-SPRINT17-SNAKE-RESET-DIAGNOSTIC-RESULT.md).
 
-Native stale recovery PASS: prepare recognized the previous four marked
-summons and reclaimed all12owned resources without touching unrelated units.
-It then prepared/saved four new fixtures. Venom DC13/tick1/saves0/2Con damage
-and source survived fresh load, followed by one native exposure and cure.
-Cleanup removed four units/12resources in memory but refused its write after
-hold-reset failed. WORKING SAVE STILL HAS FOUR NEW MARKED FIXTURES.
-Only native ownership-checked retirement is allowed; no save-file access,
-surgery, protected-baseline load/write or absence claim.
+FOUR marked fixtures remain in KMG_AUTOMATION_WORKING after its one native
+prepare write and refused cleanup write. Existing native prepare proved safe
+receipt-owned stale retirement. No save-file access, manual reset, protected-
+baseline load/write or absence claim.
 
-Exact prelaunch PASS:270 focused,2072 full83.0s,complete178.3s,
-508preflight/168orchestration/17provenance,persistence11/6/3/56,
-crowd8/11,actual-launcher13/10,clean14-reference Release/strict320.
-Three fresh Steam640820 processes; one authorized prepare write, zero cleanup
-writes. The observation change preserved every original assertion operand.
-
-Actual snapshot20261007T0204316627378Z restored
-2026-10-07T02:14:37.9430184Z:136files/Info0.0.117/
-tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
+Actual snapshot 20261007T0204316627378Z restored at
+2026-10-07T02:14:37.9430184Z: 136 files / Info 0.0.117 /
+tree 216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
 Lease Completed/recovery=false/released; no game/shared runtime lock/worktree
-staging. Installation restored exactly; saved fixture cleanup outstanding.
-All failed evidence and immutable artifacts retained; September14 extraction
-untouched.
+staging. Installation restored exactly; working-save cleanup outstanding.
 
-Earlier exactec9721f7 direct14/crowd18 and owned-only awake restoration PASS
-remain bounded to that artifact; no crowd claim transfers to a587.
-[Exact983 command/contact PASS](EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-PASS-EVIDENCE.json)
-remains rules62/commands51,all8 native long-Bite at-rule gaps0m.
-Sprints14–16 COMPLETE/PUBLISHED;32 snake roots remain hidden.
+Earlier ec9721f7 direct 14 / crowd 18 and 983828bf rules 62 / commands 51 remain
+exact-artifact bounded. Sprints 14–16 COMPLETE/PUBLISHED; Sprint 17 NOT QUALIFIED.
+32 snake roots stay hidden. Laptop PR #26 only; DATA salvage-only / ZERO PORTS.
 
-Next: trace the real load safeguard against the measured owner orphan, using
-a bounded collection/callback census if needed; fix only the demonstrated
-miss, preserve strict assertions and run relevant shared-seam regressions.
-Then exact affected persistence protocol, lifecycle/UI/private32 routes,
-separate Salamander, fullSprint17 hidden/publication and fullPhase2B closure.
-STOP for owner review afterward; Phase2C authorized but deferred.
-HumanReview: NOT_PERFORMED_NONBLOCKING.
+Next: commit/policy-push, freeze a clean exact-head artifact, repeat all
+prelaunch gates and run smoke/prepare/cleanup/absence. Read the actual reset
+boundary before the bounded repair; no wait-only retry or fixture cleanup to
+manufacture a pass. Then lifecycle/UI/private 32 routes, separate Salamander,
+full Sprint 17 hidden/publication and Phase 2B closure. STOP for owner review.
+Phase 2C authorized but deferred. HumanReview: NOT_PERFORMED_NONBLOCKING.
 
 ## Paired diagnostic disposition
 
