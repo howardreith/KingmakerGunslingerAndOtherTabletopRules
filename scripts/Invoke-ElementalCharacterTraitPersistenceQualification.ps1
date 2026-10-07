@@ -43,7 +43,7 @@ try{
     $lease=[pscustomobject]@{Transaction=$tx;Descriptor=$descriptor;Path=(Join-Path $transaction 'save-lease.json');Stream=$saveStream;LockPath=$saveLock}
     $leaseState=[ordered]@{schemaVersion=1;transactionId=$tx;descriptor=$descriptor;phase=$currentPhase;status='Active';
         ownerPid=$PID;ownerStartedUtc=(Get-Process -Id $PID).StartTime.ToUniversalTime().ToString('o');
-        expiresUtc=[DateTime]::UtcNow.AddHours(2).ToString('o');ownedPath=$null;ownedSha256=$null}
+        expiresUtc=[DateTime]::UtcNow.AddHours(2).ToString('o');ownedPath=$null;ownedSha256=$null;stagingPath=$null;stagingSha256=$null}
     Write-ElementalTraitSaveJson $lease.Path $leaseState
     $runtime=Enter-KmgRuntimeLease -Purpose ('elemental-character-trait-save '+$tx)
     $receipt.runtimeLease=$runtime.Lease.RunId;$receipt.saveLease=$lease.Path
@@ -66,7 +66,7 @@ try{
         $state.phase=$phase;$state.expiresUtc=[DateTime]::UtcNow.AddHours(2).ToString('o')
         Write-ElementalTraitSaveJson $lease.Path $state
         [void](Assert-ElementalTraitSaveLease $lease $phase)
-        [void](Assert-KmgProtectedSaveCatalog -Catalog $catalog -OwnedPaths @($state.ownedPath|Where-Object {$null -ne $_}))
+        [void](Assert-KmgProtectedSaveCatalog -Catalog $catalog -OwnedPaths @($state.ownedPath,$state.stagingPath|Where-Object {$null -ne $_}))
         $planPath=Join-Path $transaction ($phase+'-plan.json')
         Write-ElementalTraitSaveJson $planPath ([ordered]@{schemaVersion=1;transactionId=$tx;phase=$phase;version=$ExpectedVersion;
             dllSha256=$manifest.dllSha256;input=$inputSave;expected=$expected;previousResultPath=$previous;leasePath=$lease.Path})
@@ -90,7 +90,7 @@ try{
                 $receipt.processAttempts+=@([ordered]@{phase=$phase;directory=$runDirectory;saveWrites=$stageWrites})
             }
             $state=Get-Content -LiteralPath $lease.Path -Raw|ConvertFrom-Json
-            [void](Assert-KmgProtectedSaveCatalog -Catalog $catalog -OwnedPaths @($state.ownedPath|Where-Object {$null -ne $_}))
+            [void](Assert-KmgProtectedSaveCatalog -Catalog $catalog -OwnedPaths @($state.ownedPath,$state.stagingPath|Where-Object {$null -ne $_}))
         }
         if($null -ne $runFailure){throw $runFailure}
         if($null -eq $runDirectory){throw 'Stage evidence is ambiguous.'}

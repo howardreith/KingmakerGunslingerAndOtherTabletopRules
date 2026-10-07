@@ -72,11 +72,11 @@ try{
     }
     $run=Join-Path $fixture 'native-run';[void][IO.Directory]::CreateDirectory($run)
     Write-ElementalTraitSaveJson (Join-Path $run 'runtime-request.json') ([ordered]@{runId='test-native-run';scenario='elemental-character-traits-owned-save';enabled=$true;parameters=@{phase='prepare'}})
-    $entry=[ordered]@{transactionId=$tx;phase='prepare';name=$name;path=$owned;existedBeforePreparation=$false;lifecycle='native-prepared-before-write';runId='test-native-run'}
+    $entry=[ordered]@{transactionId=$tx;phase='prepare';name=$name;path=$owned;existedBeforePreparation=$false;lifecycle='native-prepared-before-write';runId='test-native-run';nativePreparedPath=$owned;nativePreparedInitiallyAbsent=$true}
     Write-ElementalTraitSaveJson (Join-Path $run 'elemental-trait-owned-save.json') $entry
     Check ((Register-ElementalTraitOwnedSave $catalog $lease $run 'prepare') -ceq $owned) 'native-ownership-before-write'
-    foreach($bad in @('transactionId','phase','name','lifecycle','existedBeforePreparation','path','runId')){
-        $old=$entry[$bad];$entry[$bad]=if($bad -ceq 'path'){$foreign}elseif($bad -ceq 'existedBeforePreparation'){$true}else{'wrong'}
+    foreach($bad in @('transactionId','phase','name','lifecycle','existedBeforePreparation','path','runId','nativePreparedPath','nativePreparedInitiallyAbsent')){
+        $old=$entry[$bad];$entry[$bad]=if($bad -cin @('path','nativePreparedPath')){$foreign}elseif($bad -ceq 'existedBeforePreparation'){$true}elseif($bad -ceq 'nativePreparedInitiallyAbsent'){$false}else{'wrong'}
         Write-ElementalTraitSaveJson (Join-Path $run 'elemental-trait-owned-save.json') $entry
         Reject {Register-ElementalTraitOwnedSave $catalog $lease $run 'prepare'} ('reject-receipt-'+$bad)
         $entry[$bad]=$old
@@ -89,7 +89,21 @@ try{
     Check ((Assert-KmgProtectedSaveCatalog $catalog @($owned)).passed) 'only-owned-overwrite'
     Reject {Remove-ElementalTraitOwnedSave $catalog $lease 'prepare'} 'cleanup-rejects-unreceipted-hash'
     $state.ownedSha256=(Get-FileHash -LiteralPath $owned -Algorithm SHA256).Hash.ToLowerInvariant();Write-ElementalTraitSaveJson $lease.Path $state
-    Remove-ElementalTraitOwnedSave $catalog $lease 'prepare'
+    $state.phase='verify-remove';Write-ElementalTraitSaveJson $lease.Path $state
+    $staged=Join-Path $saveDir ('Manual_302_'+$name+'.zks')
+    $entry.phase='verify-remove';$entry.nativePreparedPath=$staged;$entry.existedBeforePreparation=$true
+    Write-ElementalTraitSaveJson (Join-Path $run 'runtime-request.json') ([ordered]@{runId='test-native-run';scenario='elemental-character-traits-owned-save';enabled=$true;parameters=@{phase='verify-remove'}})
+    Write-ElementalTraitSaveJson (Join-Path $run 'elemental-trait-owned-save.json') $entry
+    [IO.File]::WriteAllText($staged,'fake-native-overwrite-staging')
+    Check ((Register-ElementalTraitOwnedSave $catalog $lease $run 'verify-remove') -ceq $owned) 'native-overwrite-keeps-final-owned-path'
+    $state=Get-Content -LiteralPath $lease.Path -Raw|ConvertFrom-Json
+    Check ($state.stagingPath -ceq $staged) 'temporary-native-path-owned-by-same-lease'
+    Check ((Assert-KmgProtectedSaveCatalog $catalog @($owned,$staged)).passed) 'only-recorded-native-staging-admitted'
+    $state.stagingPath=$foreign;Write-ElementalTraitSaveJson $lease.Path $state
+    Reject {Remove-ElementalTraitOwnedSave $catalog $lease 'verify-remove'} 'temporary-cleanup-cannot-delete-foreign'
+    $state.stagingPath=$staged;Write-ElementalTraitSaveJson $lease.Path $state
+    Remove-ElementalTraitOwnedSave $catalog $lease 'verify-remove'
+    Check (-not(Test-Path -LiteralPath $staged)) 'native-owned-staging-cleaned-on-failure'
     Check (-not(Test-Path -LiteralPath $owned)) 'delete-only-exact-owned'
     Check ((Assert-KmgProtectedSaveCatalog $catalog).passed) 'exact-final-inventory'
     Check ((Get-FileHash -LiteralPath $seed -Algorithm SHA256).Hash.ToLowerInvariant() -ceq ($catalog.Files|Where-Object path -CEQ $seed).sha256) 'seed-final-hash'
