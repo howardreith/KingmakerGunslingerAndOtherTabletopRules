@@ -1,6 +1,6 @@
 # Sprint 17 Salamander original human/tail prototype
 
-Status: EXACT801 HUMAN REVIEW14/15 FAIL/RESTORED; Sprint17 NOT QUALIFIED. Production Salamander
+Status: EXACTd5bc DIAGNOSTIC READABILITY FAIL/RESTORED; full801 grip14/15 still open. Sprint17 NOT QUALIFIED. Production Salamander
 identity/placements/prefab unchanged; spear is now manufactured. A separate original
 human/tail mesh is packaged for guarded research only.
 Laptop PR26 only; DATA salvage-only, ZERO PORTS.
@@ -456,14 +456,40 @@ agreement check are added; all15 runtime checks and8cm/25cm limits remain.
 Two prelaunch test-count metadata rejections are preserved and synchronized
 to2098. No runtime for this diagnostic yet; exact clean-head gate next.
 
+## Exactd5bc diagnostic CPU-readability failure — no attack result
+
+Exactd5bc656519300da5753248a62e602da7f1aed525: smoke11/11 PASS; human
+diagnostic FAIL after5 assertions (4PASS), not the required15-check review.
+[Exact native-readability failure and restoration](EXPANDED-SUMMONING-SPRINT17-HUMAN-GRIP-READABILITY-EVIDENCE.json).
+All exact prelaunch PASS296/2098full82.8s/complete179.0s/clean14/strict321,
+515preflight/168orchestration/17provenance and all persistence/crowd/launcher gates.
+
+The native combined body reports2268vertices/1776palette slots, but its CPU
+vertex getter rejects access because isReadable=false (preserved game log).
+The new read-only control incorrectly assumed direct vertices were available;
+it fails before original attachment, rollback or attacks. Classification:
+FIXTURE_OBSERVATION, not a proved gameplay regression. No grip-control result.
+The last full review remains exact801 human14/15, with the0.085159m left
+grip failure against the unchanged0.08m limit. That failure is NOT resolved.
+
+Actual136/Info0.0.117/tree216A9DC2...AF3 restored12:19:30.7905394UTC;
+ZERO native save writes; fixture/environment cleanup PASS; no game,
+completed/released lease/recoveryfalse, no deployment staging.
+Four atomic stages, the native log and all earlier artifacts are preserved.
+Sprints14–16 COMPLETE; Sprint17 NOT QUALIFIED;32roots hidden;
+976published+29wrappers=1005visible. HumanReview: NOT_PERFORMED_NONBLOCKING.
+
 ## Next exact work
 
-Next: commit/push the source-qualified diagnostic, rebuild the exact clean head
-with every prelaunch/harness gate, then fresh Steam640820 smoke11 and ALL15
-human checks. Use the same-pose native/original timeline to classify the grip
-failure; do not waive8cm/25cm limits or retry for a favorable random clip.
-Acquire runtime lease before snapshot and restore that exact installation.
-Then printed Salamander mechanics, ONE same-artifact Sprint17 hidden/publication,
+Next: correct only the diagnostic's CPU-readability assumption. Investigate
+an owned non-rendering BakeMesh control of the exact borrowed mesh/live bones;
+verify weight metadata, same-frame transform convention and exact cleanup.
+Never alter native import settings, renderer, weapon or pose; no geometry export.
+[Unity2018.4 BakeMesh](https://docs.unity3d.com/2018.4/Documentation/ScriptReference/SkinnedMeshRenderer.BakeMesh.html)
+documents CPU/offscreen snapshots, not qualification of this proposed control.
+Then focused/full source gates, commit/push, exact clean-head prelaunch and
+fresh smoke11 plus ALL15 human checks. No8cm/25cm waiver or favorable-clip retry.
+After that: printed Salamander mechanics, same-artifact Sprint17 hidden/publication,
 fullPhase2B closure and STOP. Phase2C authorized but deferred.
 Preserve all native two-handed weapon handling and native references.
 HumanReview: NOT_PERFORMED_NONBLOCKING.
