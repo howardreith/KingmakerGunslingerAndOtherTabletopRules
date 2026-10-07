@@ -73,3 +73,13 @@ Run, unelevated and on a clean exact artifact:
 Native qualification is pending until the final integration handoff records
 fresh-process PASS evidence. Respec UI is not automated; this gate qualifies
 saved visible-feature removal through the exact native deactivation lifecycle.
+
+Native overwrite preserves the logical descriptor and final owned path. Exact
+SaveRoutine creates one fresh temporary SaveInfo, and SerializeAndSaveThread
+renames its ZipSaver to the original path after commit. Before the first write,
+the receipt binds this initially-absent native preparation to the same lease.
+Success requires that temporary path to be absent and the final path unchanged.
+Failure cleanup may delete only those two receipt-proven run-owned paths; every
+preexisting file remains protected. No external copy, rename or replacement is
+used. Native MVID 07fa1e4d-8618-41b3-9b8d-faa17d3b26f7, SaveRoutine MoveNext
+1800-byte and SerializeAndSaveThread 1190-byte contracts are required.

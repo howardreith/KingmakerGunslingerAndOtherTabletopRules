@@ -72,6 +72,21 @@ function Register-ElementalTraitOwnedSave($Catalog,$Lease,[string]$RunDirectory,
         @($Catalog.Files|Where-Object path -CEQ $path).Count -ne 0 -or
         $e.existedBeforePreparation -ne ($Phase -ceq 'verify-remove') -or
         ($null -ne $s.ownedPath -and $s.ownedPath -cne $path)){throw 'Foreign or ambiguous native save receipt.'}
+    $prepared=[IO.Path]::GetFullPath($e.nativePreparedPath)
+    if($e.nativePreparedInitiallyAbsent -ne $true -or [IO.Path]::GetDirectoryName($prepared) -cne $Catalog.Directory -or
+        [IO.Path]::GetFileName($prepared) -cnotmatch ('^Manual_[0-9]+_'+[regex]::Escape($Lease.Descriptor)+'\.zks$') -or
+        @($Catalog.Files|Where-Object path -CEQ $prepared).Count -ne 0 -or
+        ($Phase -ceq 'prepare' -and -not (Test-ElementalTraitOwnedPath $prepared $path)) -or
+        ($Phase -ceq 'verify-remove' -and (Test-ElementalTraitOwnedPath $prepared $path))){throw 'Native temporary descriptor is not the exact initially-absent owned preparation.'}
+    if($Phase -ceq 'verify-remove'){
+        $stageHash=$null
+        if(Test-Path -LiteralPath $prepared -PathType Leaf){
+            if((Get-Item -LiteralPath $prepared).Attributes -band [IO.FileAttributes]::ReparsePoint){throw 'Reparse native staging rejected.'}
+            $stageHash=(Get-FileHash -LiteralPath $prepared -Algorithm SHA256).Hash.ToLowerInvariant()
+        }
+        $s|Add-Member -NotePropertyName stagingPath -NotePropertyValue $prepared -Force
+        $s|Add-Member -NotePropertyName stagingSha256 -NotePropertyValue $stageHash -Force
+    }
     if(Test-Path -LiteralPath $path){
         if((Get-Item -LiteralPath $path).Attributes -band [IO.FileAttributes]::ReparsePoint){throw 'Reparse save rejected.'}
         $s.ownedSha256=(Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant()
@@ -81,15 +96,21 @@ function Register-ElementalTraitOwnedSave($Catalog,$Lease,[string]$RunDirectory,
 }
 function Remove-ElementalTraitOwnedSave($Catalog,$Lease,[string]$Phase) {
     $s=Assert-ElementalTraitSaveLease $Lease $Phase
-    if($null -eq $s.ownedPath){return}
-    $path=[IO.Path]::GetFullPath($s.ownedPath)
-    if([IO.Path]::GetDirectoryName($path) -cne $Catalog.Directory -or
-        [IO.Path]::GetFileName($path) -cnotmatch ('^Manual_[0-9]+_'+[regex]::Escape($Lease.Descriptor)+'\.zks$') -or
-        @($Catalog.Files|Where-Object path -CEQ $path).Count -ne 0){throw 'Cannot delete a preexisting/nonowned save.'}
-    if(Test-Path -LiteralPath $path -PathType Leaf){
-        if((Get-Item -LiteralPath $path).Attributes -band [IO.FileAttributes]::ReparsePoint -or
-            (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant() -cne $s.ownedSha256){throw 'Owned save changed outside exact receipt.'}
-        Remove-Item -LiteralPath $path
+    $targets=@()
+    if($s.PSObject.Properties['stagingPath'] -and $null -ne $s.stagingPath){
+        $targets+=@([pscustomobject]@{path=$s.stagingPath;hash=$s.stagingSha256})
     }
-    if(Test-Path -LiteralPath $path){throw 'Owned save deletion failed.'}
+    if($null -ne $s.ownedPath){$targets+=@([pscustomobject]@{path=$s.ownedPath;hash=$s.ownedSha256})}
+    foreach($target in $targets){
+        $path=[IO.Path]::GetFullPath($target.path)
+        if([IO.Path]::GetDirectoryName($path) -cne $Catalog.Directory -or
+            [IO.Path]::GetFileName($path) -cnotmatch ('^Manual_[0-9]+_'+[regex]::Escape($Lease.Descriptor)+'\.zks$') -or
+            @($Catalog.Files|Where-Object path -CEQ $path).Count -ne 0){throw 'Cannot delete a preexisting/nonowned save.'}
+        if(Test-Path -LiteralPath $path -PathType Leaf){
+            if((Get-Item -LiteralPath $path).Attributes -band [IO.FileAttributes]::ReparsePoint -or
+                (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant() -cne $target.hash){throw 'Owned save changed outside exact receipt.'}
+            Remove-Item -LiteralPath $path
+        }
+        if(Test-Path -LiteralPath $path){throw 'Owned save deletion failed.'}
+    }
 }

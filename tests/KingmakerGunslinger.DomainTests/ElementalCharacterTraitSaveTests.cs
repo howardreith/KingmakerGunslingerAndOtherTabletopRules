@@ -139,6 +139,21 @@ namespace KingmakerGunslinger.DomainTests
         internal static void SeedCannotBeOwned()
         { Reject(ElementalCharacterTraitSaveContract.MayDelete(Tx,ElementalCharacterTraitSaveContract.Seed,true,true),"Seed never owned.");
           Reject(ElementalCharacterTraitSaveContract.MatchesFile(Owned,"Manual_299_KMG_AUTOMATION_WORKING.zks"),"Native path must match lease descriptor."); }
+        internal static void NativeCloneAdmitted()
+        { Assertions.True(ElementalCharacterTraitSaveContract.MayPrepareNativeClone(1,true,true,true,true,true),"One exact fresh native clone can prepare the owned manual save."); }
+        internal static void NativeCloneReplayRejected()
+        { Reject(ElementalCharacterTraitSaveContract.MayPrepareNativeClone(1,false,true,true,true,true),"Prepare cannot replay."); }
+        internal static void NativeCloneNeedsRoutine()
+        { Reject(ElementalCharacterTraitSaveContract.MayPrepareNativeClone(0,true,true,true,true,true),"Cannot prepare outside the exact routine.");
+          Reject(ElementalCharacterTraitSaveContract.MayPrepareNativeClone(2,true,true,true,true,true),"Duplicate routine is rejected."); }
+        internal static void NativeCloneMustBeFresh()
+        { Reject(ElementalCharacterTraitSaveContract.MayPrepareNativeClone(1,true,false,true,true,true),"Loaded or already-saved descriptors cannot be prepared."); }
+        internal static void NativeCloneIdentityExact()
+        { Reject(ElementalCharacterTraitSaveContract.MayPrepareNativeClone(1,true,true,false,true,true),"Foreign name or nonmanual save is rejected."); }
+        internal static void NativeCloneSaverAbsent()
+        { Reject(ElementalCharacterTraitSaveContract.MayPrepareNativeClone(1,true,true,true,false,true),"Preexisting saver is rejected."); }
+        internal static void NativeCloneOriginalUntouched()
+        { Reject(ElementalCharacterTraitSaveContract.MayPrepareNativeClone(1,true,true,true,true,false),"Original leased file must still have its exact hash."); }
         internal static void UnknownPhaseRejected()
         { Reject(ElementalCharacterTraitSaveContract.ValidPhase("cleanup-summon"),"Closed phases.");
           Reject(ElementalCharacterTraitSaveContract.MayWrite(Tx,"other",Owned,true,true),"Unknown phase cannot write."); }
