@@ -30,6 +30,20 @@
     ],
     "currentSprint": 17,
     "currentSubItem": "Sprint17 NOT QUALIFIED. Exact2dace smoke11/11;human diagnostic4/5partial FAIL before attacks: native hand-surface selector rejected after weight/bind shape checks. Restored13:00:45UTC/ZERO writes. Last full801 remains14/15;0.085159m left-grip unresolved. Capture selection aggregates and isolate diagnostic failures while retaining failed qualification.32roots hidden;Phase2C deferred.",
+    "sprint17HumanWeightCensus": {
+      "sourceParent": "500dfcffab9f743b31c31a9aa8a07dfa271d487a",
+      "status": "SOURCE PASS; EXACT RUNTIME PENDING; SPRINT17 NOT QUALIFIED",
+      "focused": 298,
+      "domain": 2100,
+      "domainSeconds": 83.5,
+      "gateSeconds": 180.4,
+      "evidence": "planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-WEIGHT-CENSUS-SOURCE-EVIDENCE.json",
+      "runtimeExecuted": false,
+      "expectedRuntimeAssertions": 15,
+      "nativeMissingControlIsFailure": true,
+      "weightNormalization": false,
+      "productionOrArtChanged": false
+    },
     "sprint17HumanGripBakeCorrection": {
       "sourceParent": "5607001bb5c4bca9b93cb4745cb128371d3a86b8",
       "status": "EXACT2dace DIAGNOSTIC HAND-SELECTION FAIL/RESTORED; NOT QUALIFIED",
