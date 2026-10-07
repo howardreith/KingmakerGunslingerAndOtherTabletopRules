@@ -141,6 +141,25 @@ namespace KingmakerGunslinger.DomainTests
                     "Cape_Red_M(Clone)", "CP_Cape2Sided_M_Any", bones), "Changed native cape contract fails closed.");
         }
 
+        internal static void GripSurfaceUsesOnlyTheSelectedHandAndItsThreeFingers()
+        {
+            foreach (string side in new[] { "L", "R" })
+            {
+                string[] selected = SalamanderHumanBindingPolicy.Names.Where(name =>
+                    SalamanderHumanBindingPolicy.IsGripDriver(name, side)).ToArray();
+                string[] expected = new[] { side + "_Hand" }.Concat(Enumerable.Range(1, 3).SelectMany(digit =>
+                    new[] { side + "_Toe_" + digit + "_01", side + "_Toe_" + digit + "_02" })).ToArray();
+                Assertions.True(selected.OrderBy(n => n).SequenceEqual(expected.OrderBy(n => n)),
+                    "Only this exact anatomical hand/finger surface; no forearm, opposite hand or tail.");
+                foreach (string name in new[] { null, "", side + "_Toe_4_01", side + "_Toe_1_03",
+                    side + "_Hand_ADJ", side + "_ForeArm", "Weapons", "KMG_SalamanderTail09" })
+                    Assertions.False(SalamanderHumanBindingPolicy.IsGripDriver(name, side),
+                        "Never satisfy grip contact with another body region or an unreviewed driver.");
+            }
+            foreach (string side in new[] { null, "", "l", "Both" })
+                Assertions.False(SalamanderHumanBindingPolicy.IsGripDriver("L_Hand", side), "Exact side required.");
+        }
+
         internal static void OneTailAppendDoesNotReplaceOrMutateHumanActions()
         {
             object[] native = Enumerable.Range(0, 24).Select(_ => new object()).ToArray();

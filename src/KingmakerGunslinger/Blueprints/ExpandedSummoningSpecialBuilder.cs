@@ -443,7 +443,7 @@ namespace KingmakerGunslinger.Blueprints
                 SalamanderCombatTraitsSymbol);
             ConfigureSummonWeaponType(library, StandardSpearGuid,
                 "standard 1d8 spear", SalamanderSpearTypeSymbol,
-                salamanderSpearType);
+                salamanderSpearType, ExpandedSummoningSpecialProfiles.SalamanderSpearIsNatural);
             ConfigureSalamanderSpear(library, salamanderSpear,
                 salamanderSpearType);
             ConfigureSalamanderTail(library, salamanderTail);
@@ -3993,7 +3993,7 @@ namespace KingmakerGunslinger.Blueprints
 
         private static void ConfigureSummonWeaponType(
             LibraryScriptableObject library, string sourceWeaponGuid,
-            string sourceRole, string symbol, BlueprintWeaponType result)
+            string sourceRole, string symbol, BlueprintWeaponType result, bool isNatural = true)
         {
             BlueprintItemWeapon source = BlueprintLibraryLookup.RequireExact<
                 BlueprintItemWeapon>(library, sourceWeaponGuid, sourceRole);
@@ -4002,7 +4002,9 @@ namespace KingmakerGunslinger.Blueprints
             result.ComponentsArray = (source.Type.ComponentsArray ??
                 Array.Empty<BlueprintComponent>()).Select(
                     ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
-            SetField(result, "m_IsNatural", true);
+            // The Salamander's manufactured spear keeps ordinary BAB
+            // iteratives. Existing sleep-bow semantics are not changed here.
+            SetField(result, "m_IsNatural", isNatural);
             SetField(result, "m_Weight", 0f);
             SetField(result, "m_Enchantments", Array.Empty<
                 Kingmaker.Blueprints.Items.Ecnchantments.BlueprintWeaponEnchantment>());

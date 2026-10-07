@@ -238,6 +238,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             row["contacts"] = contacts; row["attackPoses"] = poses; row["targetPlacement"] = placement;
             var observer = new Sprint16RuleObserver { Owner = owner, Target = target };
             var attack = new UnitAttack(target) { ForceFullAttack = true };
+            var spearWeapon = owner.Body.PrimaryHand.MaybeWeapon;
+            row["nativeAttackProfile"] = new JObject {
+                ["baseAttackBonusBase"] = owner.Descriptor.Stats.BaseAttackBonus.BaseValue,
+                ["baseAttackBonusModified"] = owner.Descriptor.Stats.BaseAttackBonus.ModifiedValue,
+                ["spear"] = spearWeapon == null ? null : spearWeapon.Blueprint.AssetGuid,
+                ["spearType"] = spearWeapon == null ? null : spearWeapon.Blueprint.Type.AssetGuid,
+                ["spearIsNatural"] = spearWeapon == null ? (bool?)null : spearWeapon.Blueprint.IsNatural,
+                ["fixtureAdditionalAttackBonus"] = 100,
+                ["scope"] = "Unmodified native BAB/weapon semantics; accuracy/HP only are raised for this visual fixture." };
             var privateFaction = UnityEngine.Object.Instantiate(faction);
             _serpentineContactPrototypes.Add(privateFaction);
             privateFaction.name = "KMG_Runtime_Sprint17_HumanTailContact";
@@ -293,10 +302,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 yield return 0; // finish same-frame paired evidence, not arbitrary peak selection
                 row["attackAfter"] = Sprint17NativeCommandState(owner, target, attack);
+                row["nativePlannedAttackCount"] = attack.AllAttacks == null ? 0 : attack.AllAttacks.Count;
                 JObject[] rows = contacts.OfType<JObject>().ToArray();
                 JObject[] spear = rows.Where(c => (string)c["weapon"] == SalamanderTailAnimationPolicy.Spear).ToArray();
                 JObject[] tail = rows.Where(c => (bool?)c["tail"] == true).ToArray();
                 CheckHumanSalamander("native-full-attack", attack.IsStarted && attack.IsFinished && spear.Length == 2 &&
+                    (int)row["nativeAttackProfile"]["baseAttackBonusModified"] == 8 &&
+                    (bool?)row["nativeAttackProfile"]["spearIsNatural"] == false &&
                     tail.Length == 1 && rows.All(c => (bool?)c["executing"] == true && (bool?)c["finite"] == true &&
                         (bool?)c["opportunity"] == false && (bool?)c["ownedPair"] == true) &&
                     Sprint17ContactPairIsolated(fixture, owner, target),
@@ -310,9 +322,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     new JArray(tail), "exact owned clip actually moves original tail bones at its one authored event; no native null-clip fallback");
                 bool contactPass = spear.Length == 2 && tail.Length == 1 && rows.All(c =>
                     (float?)c["gapMeters"] <= .25f) && spear.All(c =>
-                    (float?)c["LHandGapMeters"] <= .08f && (float?)c["RHandGapMeters"] <= .08f);
+                    (float?)c["LGripSurfaceGapMeters"] <= .08f && (float?)c["RGripSurfaceGapMeters"] <= .08f);
                 CheckHumanSalamander("attack-contact", contactPass, contacts,
-                    "actual rule-frame spear tip and weighted striking tail within quarter metre; both native hands within8cm of shaft");
+                    "actual rule-frame spear tip and weighted striking tail within quarter metre; both weighted hand/finger surfaces within8cm of shaft");
                 CheckHumanSalamander("finite-attack-skin", poses.Count >= 3 && poses.OfType<JObject>().All(p =>
                     (bool)p["pose"]["finite"] && (bool)p["pose"]["poseFinite"]) && attachment.Live, poses.Count,
                     "original skin stays finite and native human actions remain unchanged throughout the real attack");
@@ -411,6 +423,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .Where(s => s.enabled && s.sharedMesh != null && s.sharedMesh.vertexCount >= 100)
                 .OrderByDescending(s => s.bones.Length).First();
             Bounds targetBounds = renderer.bounds;
+            row["targetBoundsCenter"] = SurveyVector(targetBounds.center);
+            row["targetBoundsSize"] = SurveyVector(targetBounds.size);
+            row["ownerPosition"] = SurveyVector(owner.Position);
+            row["bodyForward"] = SurveyVector(attachment.Body.transform.forward);
             Vector3[] points; float uncertainty = 0;
             if (spear)
             {
@@ -424,11 +440,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Vector3 axis = end - a;
                 if (axis.sqrMagnitude == 0 || b.extents.y <= b.extents.x || b.extents.y <= b.extents.z)
                     throw new InvalidOperationException("Native spear shaft bounds changed.");
+                Vector3[] skinPoints = Sprint17OriginalWorldVertices(attachment.Body);
+                BoneWeight[] handWeights = attachment.Body.sharedMesh.boneWeights;
+                row["gripMeasurement"] = "minimum actual weighted hand/finger surface to native shaft; wrist-origin gaps retained separately";
                 foreach (string side in new[] { "L", "R" })
                 {
                     var hand = attachment.Body.bones.Single(bone => bone.name == side + "_Hand");
                     row[side + "HandGapMeters"] = Vector3.Distance(hand.position,
                         a + axis * Mathf.Clamp01(Vector3.Dot(hand.position - a, axis) / axis.sqrMagnitude));
+                    var gripSlots = new HashSet<int>(Enumerable.Range(0, attachment.Body.bones.Length).Where(i =>
+                        SalamanderHumanBindingPolicy.IsGripDriver(attachment.Body.bones[i].name, side)));
+                    Vector3[] grip = skinPoints.Where((point, i) => {
+                        BoneWeight w = handWeights[i];
+                        float influence = (gripSlots.Contains(w.boneIndex0) ? w.weight0 : 0) +
+                            (gripSlots.Contains(w.boneIndex1) ? w.weight1 : 0) +
+                            (gripSlots.Contains(w.boneIndex2) ? w.weight2 : 0) +
+                            (gripSlots.Contains(w.boneIndex3) ? w.weight3 : 0);
+                        return influence >= .5f;
+                    }).ToArray();
+                    if (grip.Length < 8) throw new InvalidOperationException("Original hand surface not represented.");
+                    row[side + "GripSurfaceVertices"] = grip.Length;
+                    row[side + "GripSurfaceGapMeters"] = grip.Min(point => Vector3.Distance(point,
+                        a + axis * Mathf.Clamp01(Vector3.Dot(point - a, axis) / axis.sqrMagnitude)));
                 }
                 uncertainty = new[] { -1, 1 }.SelectMany(x => new[] { -1, 1 }.Select(z =>
                     filter.transform.TransformVector(new Vector3(x * b.extents.x, 0, z * b.extents.z)).magnitude)).Max();
@@ -467,7 +500,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool finite = points.Length > 0 && points.All(p => SalamanderTailAnimationPolicy.Finite(p.x) &&
                 SalamanderTailAnimationPolicy.Finite(p.y) && SalamanderTailAnimationPolicy.Finite(p.z));
             row["finite"] = finite; row["points"] = points.Length;
-            if (finite) row["gapMeters"] = points.Min(p => Vector3.Distance(p, targetBounds.ClosestPoint(p))) + uncertainty;
+            if (finite)
+            {
+                Vector3 nearest = points.OrderBy(p => Vector3.Distance(p, targetBounds.ClosestPoint(p))).First();
+                row["nearestStrikePoint"] = SurveyVector(nearest);
+                row["nearestTargetBoundPoint"] = SurveyVector(targetBounds.ClosestPoint(nearest));
+                row["gapMeters"] = Vector3.Distance(nearest, targetBounds.ClosestPoint(nearest)) + uncertainty;
+            }
             return row;
         }
     }

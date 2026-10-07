@@ -8,7 +8,7 @@ namespace KingmakerGunslinger.Summoning
     internal static class SalamanderHumanBindingPolicy
     {
         internal const string BodyName = "Renderer_Character_Diffuse_Cutout";
-        internal const string AssetHash = "2c4b76f0bbf0691ae0f9d9fc2340e77f958b999e27dda2628c82b26642c16670";
+        internal const string AssetHash = "b5524a694cac0657aaf37ce995e3143f1e0a18e8aa98d799d7fe17ed901c0f19";
         internal static bool IsReviewedAuxiliary(string renderer, string mesh, int bones)
         {
             return renderer == "Cape_Red_M(Clone)" && mesh == "CP_Cape2Sided_M_Any" && bones == 0;
@@ -24,6 +24,12 @@ namespace KingmakerGunslinger.Summoning
         internal static string[] Names
         { get { return NativeNames.Concat(SalamanderTailAnimationPolicy.TailNames)
             .OrderBy(name => name, StringComparer.Ordinal).ToArray(); } }
+
+        internal static bool IsGripDriver(string name, string side)
+        {
+            return (side == "L" || side == "R") && NativeNames.Contains(name, StringComparer.Ordinal) &&
+                (name == side + "_Hand" || name.StartsWith(side + "_Toe_", StringComparison.Ordinal));
+        }
 
         // The mesh exporter sorts names; anatomical order and skin palette
         // order are deliberately separate. Never assume an index range.

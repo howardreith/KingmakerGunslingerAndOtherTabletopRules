@@ -1,6 +1,6 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-07 — 487 human review12/15/restored; spear/contact open; Sprint17 NOT QUALIFIED
+## CURRENT STATE, 2026-10-07 — spear/contact source PASS; exact runtime pending; Sprint17 NOT QUALIFIED
 
 This section governs over historical mission/ownership statements below.
 HOWARD-LAPTOP / `codex/expanded-summoning-phase2b-sprints14-17` / draft PR26
@@ -77,40 +77,48 @@ not aggregate qualification of fb9 or a later wholeSprint17 candidate.
 Sprints14–16 COMPLETE/PUBLISHED;97units;1008registered/976published;
 32withheld;29wrappers;1005visible. Laptop PR26 only;DATA salvage-only/ZERO PORTS.
 
-Salamander private authoring now has26 checked native anatomical drivers plus10
+Historical initial Salamander authoring has26 checked native anatomical drivers plus10
 original tail drivers,2198original vertices,32offline panels and9authoring tests PASS.
 All17 disagreeing native storage groups excluded; native upper bones unchanged.
 Fixed target-free1.4second tail sweep;29evaluated mesh poses finite/above authoring
 plane. Source gate280focused/2082unfiltered81.5s/complete178.2s/clean14/strict320 PASS.
 See `planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-TAIL-PROTOTYPE.md`.
-Exact487309ff2e750b5b44f120929e802c977c01a0b6 completed without a native crash.
-All prelaunch PASS:293focused/2095full82.4s/complete175.7s/clean14/strict321,
-plus515preflight/168orchestration/17provenance and persistence/crowd/launcher gates.
-Smoke11/11; full human review12/15 FAIL, NOT QUALIFIED.
-[Exact result and restoration](planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-NULL-GEOMETRY-EVIDENCE.json).
-Rollback/body binding/post-native-frame rest/movement/original-tail playback/
-native-reference isolation/destruction/environment/fixture cleanup pass.
-Both rollback and destruction reclaim30 owned objects;158 borrowed objects
-survive.17 atomic stages are request-correlated, explicitly non-qualifying.
-The audited cape has null geometry, unchanged native bones/root/renderer flags.
-Actual136/Info0.0.117/tree216A9DC2...AF3 restored09:58:17.2992027UTC;
-ZERO audited save writes, no game/runtime lease/staging. Earlier crash retained.
-The real full attack produced ONE native spear hit plus ONE original tail hit,
-not two spear iteratives. ConfigureSummonWeaponType marks the spear natural;
-correct only Salamander's manufactured-weapon classification, not native clips.
-Spear target gap0.03135m passes; wrist-origin gaps0.10288/0.10368m and distal-tail
-gap0.46630m fail. Audit grip surfaces and the actual tail path separately; no
-threshold waiver. The tail follows unit heading; do not reparent it on that theory.
-Optional post-native-frame art shows the original body, not the earlier shredded
-frame; neither that image nor finite arithmetic qualifies full visual/contact work.
-Salamander's production prefab/profile/identity remain unchanged at this boundary.
+Salamander spear/contact corrections are SOURCE PASS, RUNTIME PENDING.
+Source parent1ef236cb0bfeadf08fd291f01be8edd50fb9c15a; same laptop branch/PR26.
+294focused/2096unfiltered83.4s; complete repository/static/icon/manifest,
+clean14-referenceRelease and deterministic strict321 package180.7s.
+[Correction scope and exact offline/source evidence](planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-CLOSE-CONTACT-SOURCE-EVIDENCE.json).
 
-Next: correct the demonstrated Salamander-only manufactured-spear classification;
-record live BAB/type/full attack. Audit native wrist versus weighted hand contact
-and the original distal-tail path before changing those measurements or geometry.
-Focused/full source gates, push, exact-head artifact and all15 guarded human checks
-must pass. Then printed Salamander mechanics, ONE same-artifact Sprint17 hidden/
-publication gate, fullPhase2B closure and STOP. Phase2C authorized but deferred.
+Pinned native attack-count code confirms manufactured weapons retain BAB
+iteratives. Only Salamander's spear is now non-natural; no fake extra attack,
+native clip change or Pixie bow change. The guarded fixture must prove live
+BAB8, manufactured spear, TWO spear events and ONE owned-tail event.
+
+Grip now measures actual weighted hand/finger surface, keeping the original
+wrist gaps in evidence. Exact7 drivers per side; no forearm/opposite hand.
+The8cm grip and25cm striking thresholds are unchanged. The original tail has
+a fixed close-melee S sweep; no target input, reach or damage mutation.
+Only originalTailSlap changed in the packaged mesh; geometry/paint/binds unchanged.
+New exportb5524a69...1c0f19 repeats identically three times.10 authoring tests,
+29evaluated mesh poses above ground/native bones unchanged,32offline panels.
+The first revised quaternion wind-up penetrated the ground; retained/rejected.
+Yaw/elevation authoring fixes that observed defect, not a runtime floor clamp.
+The first package gate rejected its stale old-export pin; archived, corrected,
+then the complete source gate passed. No failed gate is relabeled PASS.
+
+Latest runtime remains exact487: smoke11/11, human review12/15 FAIL, restored
+09:58:17.2992027UTC; ZERO save writes, no game/runtime lease/staging.
+[Preserved failed result](planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-NULL-GEOMETRY-EVIDENCE.json).
+No qualification transfers to the new artifact. Sprints14–16 complete/published;
+Sprint17 NOT QUALIFIED;32roots hidden;976published+29wrappers=1005visible.
+HumanReview: NOT_PERFORMED_NONBLOCKING.
+
+Next: freeze/push this corrected source; rebuild its exact clean head with all
+prelaunch/harness gates, then fresh Steam640820 smoke11 plus ALL15 human
+binding/rollback/movement/full-attack/contact/destruction checks. Snapshot only
+after acquiring the runtime lease; restore that exact installation afterward.
+Then printed Salamander mechanics, ONE same-artifact Sprint17 hidden/publication
+gate, fullPhase2B closure and STOP. Phase2C authorized but deferred.
 HumanReview: NOT_PERFORMED_NONBLOCKING.
 ### Qualified versus NOT QUALIFIED
 
