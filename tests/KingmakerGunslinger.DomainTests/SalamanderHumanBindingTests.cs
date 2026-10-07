@@ -250,6 +250,121 @@ namespace KingmakerGunslinger.DomainTests
                 "Native deformers are never added to the original mesh's driver contract.");
         }
 
+        private sealed class PairedGripFixture
+        {
+            internal readonly JArray Timeline = new JArray(), Events = new JArray();
+            internal readonly JObject[] Contacts = new JObject[2];
+            internal PairedGripFixture(string clip = "Human_2H_spear_attack_02")
+            {
+                for (int handle = 0; handle < 2; handle++)
+                {
+                    bool release = clip.EndsWith("02", StringComparison.Ordinal);
+                    Events.Add(new JObject { ["handleId"] = handle, ["clip"] = clip,
+                        ["eventInvoked"] = false, ["cacheProviderInvoked"] = false,
+                        ["events"] = new JArray(new JObject { ["time"] = release ? .734528542 : .620427966,
+                            ["method"] = "Kingmaker.Visual.Animation.AnimationClipEventsCache+<>c.<CreateEvent>b__3_12" }) });
+                    for (int frame = 0; frame < 6; frame++)
+                    {
+                        var sample = new JObject { ["frame"] = handle * 10 + frame, ["handleId"] = handle,
+                            ["available"] = true, ["clip"] = clip, ["acted"] = frame >= 2,
+                            ["state"] = release && frame >= 2 ? "TransitioningOut" : "Playing",
+                            ["clipTime"] = (release ? .66 : .55) + frame * .06,
+                            ["handleTime"] = (release ? .70 : .59) + frame * .06,
+                            ["nativeLeft"] = release && frame >= 2 ? .208161578 : .003,
+                            ["originalLeft"] = release && frame >= 2 ? .206292585 : .018,
+                            ["nativeRight"] = .008956633, ["originalRight"] = .0064166286 };
+                        foreach (string phase in new[] { "LateUpdate", "EndOfFrame" })
+                        { var row = (JObject)sample.DeepClone(); row["phase"] = phase; Timeline.Add(row); }
+                        if (frame == 2)
+                        {
+                            var rule = (JObject)sample.DeepClone(); rule["phase"] = "rule-event";
+                            var rendered = (JObject)sample.DeepClone(); rendered["phase"] = "end-of-rule-frame";
+                            Contacts[handle] = new JObject { ["samePoseGripControl"] = rule,
+                                ["endOfFrame"] = new JObject { ["sameFrameAndHandle"] = true, ["samePoseGripControl"] = rendered } };
+                        }
+                    }
+                }
+            }
+            internal string Review() { return RuntimeTesting.Sprint17GripEvidence.SpearGripRejection(Timeline, Events, Contacts); }
+        }
+
+        internal static void NativeGripFollowDistinguishesContactFromAuditedLeadRelease()
+        {
+            foreach (string clip in new[] { "Human_2H_spear_attack_01", "Human_2H_spear_attack_02" })
+            {
+                var row = new PairedGripFixture(clip);
+                string before = row.Timeline.ToString();
+                Assertions.Equal(null, row.Review(), "Native01 both-hand grip and native02 same-pose lead release preserve weapon handling.");
+                Assertions.Equal(before, row.Timeline.ToString(), "Validation never changes measurements or poses.");
+            }
+            var native02 = new PairedGripFixture();
+            Assertions.True((double)native02.Contacts[0]["samePoseGripControl"]["originalLeft"] > .08,
+                "Do not mislabel observed native-following release as both hands touching the shaft.");
+            var unreviewed = new PairedGripFixture("Human_2H_spear_attack_01");
+            unreviewed.Contacts[0]["samePoseGripControl"]["nativeLeft"] = .21;
+            unreviewed.Contacts[0]["samePoseGripControl"]["originalLeft"] = .20;
+            Assertions.Equal("unreviewed-rule-frame-release", unreviewed.Review(), "No general permission for any clip to release at its rule event.");
+        }
+
+        internal static void NativeGripFollowRejectsLostGripAndAnyDivergentFrame()
+        {
+            foreach (string key in new[] { "nativeRight", "originalRight" })
+            {
+                var row = new PairedGripFixture(); row.Timeline[7][key] = .081;
+                Assertions.Equal("weapon-hand-lost-grip", row.Review(), "An intact neighboring frame never hides a lost weapon hand.");
+            }
+            var lost = new PairedGripFixture(); lost.Timeline[0]["nativeLeft"] = .079; lost.Timeline[0]["originalLeft"] = .081;
+            Assertions.Equal("lead-hand-lost-native-grip", lost.Review(), "Even a2mm differential cannot excuse losing a grip native retains.");
+            var different = new PairedGripFixture(); different.Timeline[7]["originalLeft"] = .30;
+            Assertions.Equal("lead-hand-diverges-from-native", different.Review(), "Separation must follow the simultaneous native control within unchanged8cm.");
+            var rule = new PairedGripFixture(); rule.Contacts[0]["samePoseGripControl"]["originalRight"] = .081;
+            Assertions.Equal("weapon-hand-lost-grip", rule.Review(), "Actual mechanical frame remains mandatory even with an intact timeline.");
+            var rendered = new PairedGripFixture(); rendered.Contacts[0]["endOfFrame"]["samePoseGripControl"]["originalRight"] = .081;
+            Assertions.Equal("weapon-hand-lost-grip", rendered.Review(), "Same-frame rendered pose remains mandatory too.");
+        }
+
+        internal static void NativeGripFollowRejectsMissingReorderedOrFabricatedEvidence()
+        {
+            var missing = new PairedGripFixture(); missing.Timeline[7]["available"] = false;
+            Assertions.True(missing.Review() != null, "No missing native control can imply successful comparison.");
+            foreach (double invalid in new[] { double.NaN, double.PositiveInfinity, -.001 })
+            {
+                var row = new PairedGripFixture(); row.Timeline[7]["nativeLeft"] = invalid;
+                Assertions.Equal("non-finite-or-negative-sample", row.Review(), "Malformed distances cannot satisfy contact.");
+            }
+            var skipped = new PairedGripFixture(); skipped.Timeline.RemoveAt(3); skipped.Timeline.RemoveAt(2);
+            Assertions.Equal("missing-reordered-or-duplicate-frame", skipped.Review(), "Dropping a whole intervening frame cannot cherry-pick contact.");
+            var phase = new PairedGripFixture(); phase.Timeline[1]["phase"] = "LateUpdate";
+            Assertions.Equal("missing-reordered-or-duplicate-frame", phase.Review(), "Two LateUpdates cannot stand in for rendered EndOfFrame evidence.");
+            var reversed = new PairedGripFixture(); reversed.Timeline[8]["acted"] = false;
+            Assertions.Equal("missing-or-reversed-act-playback", reversed.Review(), "IsActed cannot revert inside one native attack handle.");
+            var rewound = new PairedGripFixture(); rewound.Timeline[8]["clipTime"] = .1;
+            Assertions.Equal("missing-or-reversed-act-playback", rewound.Review(), "Reordered playback cannot choose an earlier intact pose.");
+            var noGrip = new PairedGripFixture();
+            foreach (JObject sample in noGrip.Timeline) { sample["nativeLeft"] = .21; sample["originalLeft"] = .20; }
+            Assertions.Equal("missing-grip-or-act-transition", noGrip.Review(), "Following a permanently separated hand is not a two-hand attack.");
+            var unrelated = new PairedGripFixture(); unrelated.Contacts[0]["endOfFrame"]["sameFrameAndHandle"] = false;
+            Assertions.Equal("uncorrelated-rule-frame", unrelated.Review(), "A different rendered frame cannot replace the actual rule frame.");
+            Assertions.True(RuntimeTesting.Sprint17GripEvidence.SpearGripRejection(null, null, null) != null, "Missing entire review fails closed.");
+        }
+
+        internal static void NativeGripFollowPinsReadOnlyNativeActIdentity()
+        {
+            foreach (string field in new[] { "eventInvoked", "cacheProviderInvoked" })
+            {
+                var row = new PairedGripFixture(); row.Events[0][field] = true;
+                Assertions.Equal("unreviewed-native-event", row.Review(), "No invoked event/cache lookup is valid passive evidence.");
+            }
+            var time = new PairedGripFixture(); time.Events[0]["events"][0]["time"] = .60;
+            Assertions.Equal("changed-native-act-event", time.Review(), "Never move native02's act time back to a convenient grip pose.");
+            var method = new PairedGripFixture(); method.Events[0]["events"][0]["method"] = "SomeOtherEvent";
+            Assertions.Equal("changed-native-act-event", method.Review(), "A footstep or sound cannot replace IsActed.");
+            var early = new PairedGripFixture(); early.Contacts[0]["samePoseGripControl"]["clipTime"] = .70;
+            Assertions.Equal("uncorrelated-rule-frame", early.Review(), "No favorable pre-act frame may replace real rule contact.");
+            var unknown = new PairedGripFixture(); unknown.Contacts[0]["samePoseGripControl"]["clip"] = "Human_2H_spear_attack_03";
+            Assertions.Equal("unreviewed-native-event", unknown.Review(), "Exact two captured native clips only.");
+        }
+
         private sealed class CounterArrayConverter : JsonConverter
         {
             internal int Writes;
