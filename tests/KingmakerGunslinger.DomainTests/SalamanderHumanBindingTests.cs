@@ -160,6 +160,33 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.False(SalamanderHumanBindingPolicy.IsGripDriver("L_Hand", side), "Exact side required.");
         }
 
+        internal static void GripSurfaceInfluenceCombinesOnlyOneExactHand()
+        {
+            string[] names = { "L_Hand", "L_Toe_1_01", "R_Hand", "L_ForeArm" };
+            Assertions.True(SalamanderHumanBindingPolicy.IsGripSurfaceVertex("L", names, new[] { .3f, .2f, .1f, .4f }),
+                "Exactly half combined left-hand influence qualifies, including finger influence.");
+            Assertions.False(SalamanderHumanBindingPolicy.IsGripSurfaceVertex("L", names, new[] { .3f, .19f, .11f, .4f }),
+                "Neither forearm nor opposite hand can complete the half-weight requirement.");
+            Assertions.False(SalamanderHumanBindingPolicy.IsGripSurfaceVertex("R", names, new[] { .3f, .2f, .1f, .4f }),
+                "Sides remain independent on the same four weights.");
+            Assertions.True(SalamanderHumanBindingPolicy.IsGripSurfaceVertex("R", names, new[] { 0f, 0f, 1f, 0f }),
+                "Zero-weight slots do not change a fully right-hand vertex.");
+        }
+
+        internal static void MalformedGripSurfaceWeightsFailClosed()
+        {
+            string[] names = { "L_Hand", "L_Toe_1_01", "L_Toe_1_02", "L_Hand" };
+            foreach (float[] weights in new[] { null, new float[0], new[] { 1f }, new[] { .5f, 0f, 0f, 0f },
+                new[] { .5f, .5f, .5f, .5f }, new[] { 1.1f, -.1f, 0f, 0f },
+                new[] { float.NaN, 1f, 0f, 0f }, new[] { float.PositiveInfinity, 0f, 0f, 0f } })
+                Assertions.False(SalamanderHumanBindingPolicy.IsGripSurfaceVertex("L", names, weights),
+                    "Malformed, non-finite, negative or unnormalized skinning is not contact evidence.");
+            foreach (string[] invalid in new[] { null, new string[0], new[] { "L_Hand" },
+                new[] { "Weapons", "L_ForeArm", "R_Hand", "KMG_SalamanderTail09" } })
+                Assertions.False(SalamanderHumanBindingPolicy.IsGripSurfaceVertex("L", invalid, new[] { 1f, 0f, 0f, 0f }),
+                    "Missing or foreign anatomical palettes cannot satisfy a hand surface.");
+        }
+
         internal static void OneTailAppendDoesNotReplaceOrMutateHumanActions()
         {
             object[] native = Enumerable.Range(0, 24).Select(_ => new object()).ToArray();

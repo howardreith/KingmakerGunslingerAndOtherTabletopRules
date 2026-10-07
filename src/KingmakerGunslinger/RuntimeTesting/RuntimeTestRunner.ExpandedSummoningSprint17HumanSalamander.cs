@@ -114,6 +114,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["uniqueTransforms"] = s.Bones.Distinct().Count(), ["mesh"] = s.Mesh == null ? null : s.Mesh.name }));
                 row["nativeHandActions"] = Sprint17NativeHandAttackCensus(owner);
                 row["nativeRendererState"] = HumanSalamanderRendererObservation(owner);
+                var nativeBody = skins.Single(s => s.Skin.name == SalamanderHumanBindingPolicy.BodyName);
+                var nativeGrip = new Sprint17HumanGripSurface(nativeBody.Mesh, nativeBody.Bones);
                 WriteHumanSalamanderCheckpoint("native-census-before-rollback", row);
                 UnityEngine.Object[] rollback = new UnityEngine.Object[0];
                 bool rejected; string outcome;
@@ -194,7 +196,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     (bool)row["movement"]["pose"]["finite"], row["movement"],
                     "native movement progresses with finite original skin and unchanged human action references");
                 WriteHumanSalamanderCheckpoint("movement-complete-before-attack", row);
-                foreach (int step in ReviewHumanSalamanderAttack(fixture, owner, attachment, row)) yield return step;
+                foreach (int step in ReviewHumanSalamanderAttack(fixture, owner, attachment, nativeGrip, row)) yield return step;
                 resources.AddRange(attachment.CaptureOwnedResources());
                 CheckHumanSalamander("native-reference-isolation", attachment.NativeActionsUnchanged &&
                     originalSet.Actions.SequenceEqual(nativeActions) &&
@@ -229,7 +231,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private IEnumerable<int> ReviewHumanSalamanderAttack(ExpandedSummoningCorrectionFixture fixture,
-            UnitEntityData owner, SalamanderHumanVisualAttachment attachment, JObject row)
+            UnitEntityData owner, SalamanderHumanVisualAttachment attachment, Sprint17HumanGripSurface nativeGrip, JObject row)
         {
             string placement;
             var target = CreateSprint17ContactTarget(fixture, ExpandedSummoningOpenPoint(owner.Position, 1.5f,
@@ -263,10 +265,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             owner.Memory.Add(target); target.Memory.Add(owner);
             if (!Game.Instance.State.AwakeUnits.Contains(target)) Game.Instance.State.AwakeUnits.Add(target);
             var probe = owner.View.gameObject.AddComponent<Sprint17SnakeContactFrameProbe>();
+            Sprint17HumanGripObservation gripReview = null;
+            Sprint17HumanGripFrameProbe gripProbe = null;
             observer.ObserveWeaponContact = rule => {
                 if (!ReferenceEquals(rule.Target, target) || contacts.Count >= 8) return;
                 JObject contact;
-                try { contact = HumanSalamanderContact(owner, target, attachment, rule, attack); }
+                try
+                {
+                    contact = HumanSalamanderContact(owner, target, attachment, rule, attack);
+                    contact["samePoseGripControl"] = gripReview.Read("rule-event");
+                }
                 catch (Exception error) { contact = new JObject { ["measurementFailure"] = error.ToString(), ["finite"] = false }; }
                 contacts.Add(contact);
                 var handle = attack.Animation; int frame = Time.frameCount;
@@ -275,6 +283,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     {
                         var rendered = HumanSalamanderContact(owner, target, attachment, rule, attack);
                         rendered["sameFrameAndHandle"] = frame == Time.frameCount && ReferenceEquals(handle, attack.Animation);
+                        rendered["samePoseGripControl"] = gripReview.Read("end-of-rule-frame");
                         contact["endOfFrame"] = rendered;
                     }
                     catch (Exception error) { contact["endOfFrameFailure"] = error.ToString(); }
@@ -290,8 +299,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 { if (Game.Instance.IsPaused) Game.Instance.IsPaused = false; yield return 0; }
                 if (!Sprint17ContactPairIsolated(fixture, owner, target)) throw new InvalidOperationException("Owned human/tail enemy pair not isolated.");
                 attack.Init(owner); row["attackBefore"] = Sprint17NativeCommandState(owner, target, attack);
+                Mesh spearMesh = spearWeapon.Blueprint.VisualParameters.Model.GetComponentsInChildren<MeshFilter>(true).Single().sharedMesh;
+                var spearFilter = owner.View.GetComponentsInChildren<MeshFilter>(true)
+                    .Single(filter => ReferenceEquals(filter.sharedMesh, spearMesh));
+                gripReview = new Sprint17HumanGripObservation(nativeGrip, attachment.Body, spearFilter, attack);
+                row["samePoseGripReview"] = gripReview.Evidence;
+                gripProbe = owner.View.gameObject.AddComponent<Sprint17HumanGripFrameProbe>();
                 WriteHumanSalamanderCheckpoint("before-native-attack-command", row);
                 owner.Commands.Run(attack);
+                gripProbe.Observe = gripReview.ObserveFrame;
                 DateTime deadline = DateTime.UtcNow.AddSeconds(45); int frames = 0;
                 while (!attack.IsFinished && DateTime.UtcNow < deadline && frames++ < 1800)
                 {
@@ -334,8 +350,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 CheckHumanSalamander("attack-contact", contactPass, contacts,
                     "actual rule-frame spear tip and weighted striking tail within quarter metre; both weighted hand/finger surfaces within8cm of shaft");
                 CheckHumanSalamander("finite-attack-skin", poses.Count >= 3 && poses.OfType<JObject>().All(p =>
-                    (bool)p["pose"]["finite"] && (bool)p["pose"]["poseFinite"]) && attachment.Live, poses.Count,
-                    "original skin stays finite and native human actions remain unchanged throughout the real attack");
+                    (bool)p["pose"]["finite"] && (bool)p["pose"]["poseFinite"]) && attachment.Live &&
+                    gripReview.Failure == null && (bool?)gripReview.Evidence["truncated"] == false &&
+                    ((JArray)gripReview.Evidence["timeline"]).Count >= 4 && spear.All(c =>
+                        (bool?)c["samePoseGripControl"]["available"] == true &&
+                        Math.Abs((float)c["samePoseGripControl"]["originalLeft"] - (float)c["LGripSurfaceGapMeters"]) < .0001f &&
+                        Math.Abs((float)c["samePoseGripControl"]["originalRight"] - (float)c["RGripSurfaceGapMeters"]) < .0001f),
+                    new JObject { ["poses"] = poses.Count, ["gripObservation"] = gripReview.Evidence },
+                    "finite original skin; native actions unchanged; bounded same-pose native control agrees with independent original grip measurement");
                 WriteHumanSalamanderCheckpoint("native-attack-observations-complete", row);
             }
             finally
@@ -344,6 +366,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 InterruptExpandedSummoningFixtureCommands(owner);
                 owner.CombatState.LeaveCombat(); target.CombatState.LeaveCombat();
                 owner.Descriptor.SwitchFactions(faction, false); owner.AttackFactions.Match(enemies); owner.GroupId = group;
+                if (gripProbe != null) { gripProbe.Observe = null; UnityEngine.Object.Destroy(gripProbe); }
                 if (probe != null) UnityEngine.Object.Destroy(probe);
                 target.Destroy(); Game.Instance.EntityDestroyer.Tick(); Game.Instance.Player.UpdateIsInCombat();
             }
