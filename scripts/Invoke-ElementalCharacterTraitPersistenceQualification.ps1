@@ -32,7 +32,7 @@ function Get-ElementalLiveTree([string]$Path){
 }
 $receipt=[ordered]@{schemaVersion=1;transactionId=$tx;descriptor=$descriptor;source=$manifest.commit;dllSha256=$manifest.dllSha256;
     mvid=$manifest.dllMvid;zipSha256=$manifest.packageSha256;sourceFingerprint=$manifest.sourceStateSha256;
-    status='RUNNING';runs=@();saveWrites=0;savesRestored=$false;liveRestored=$false;saveLeaseCompleted=$false;runtimeLeaseCompleted=$false}
+    status='RUNNING';runs=@();processAttempts=@();saveWrites=0;savesRestored=$false;liveRestored=$false;saveLeaseCompleted=$false;runtimeLeaseCompleted=$false}
 try{
     $catalog=Open-KmgProtectedSaveCatalog -EvidenceDirectory $transaction
     $receipt.preexistingSaveCount=@($catalog.Files|Where-Object path -CLike '*.zks').Count
@@ -80,7 +80,15 @@ try{
         finally{
             Wait-PersistenceExit
             $new=@(Get-ChildItem -LiteralPath $evidenceRoot -Directory|Where-Object {$beforeRuns -cnotcontains $_.FullName -and $_.Name.EndsWith('-elemental-character-traits-owned-save',[StringComparison]::Ordinal)})
-            if($new.Count -eq 1){$runDirectory=$new[0].FullName;[void](Register-ElementalTraitOwnedSave $catalog $lease $runDirectory $phase)}
+            if($new.Count -eq 1){
+                $runDirectory=$new[0].FullName
+                [void](Register-ElementalTraitOwnedSave $catalog $lease $runDirectory $phase)
+                $nativePath=Join-Path $runDirectory 'elemental-trait-save.json'
+                $stageWrites=0
+                if(Test-Path -LiteralPath $nativePath){$stageNative=Get-Content -LiteralPath $nativePath -Raw|ConvertFrom-Json;$stageWrites=[int]$stageNative.saveWrites}
+                $receipt.saveWrites+=$stageWrites
+                $receipt.processAttempts+=@([ordered]@{phase=$phase;directory=$runDirectory;saveWrites=$stageWrites})
+            }
             $state=Get-Content -LiteralPath $lease.Path -Raw|ConvertFrom-Json
             [void](Assert-KmgProtectedSaveCatalog -Catalog $catalog -OwnedPaths @($state.ownedPath|Where-Object {$null -ne $_}))
         }
@@ -96,7 +104,7 @@ try{
             $loaded.moduleVersionId -cne $manifest.dllMvid -or @($runs|Where-Object processId -EQ $native.processId).Count -ne 0 -or
             @($result.assertions|Where-Object status -CNE 'PASS').Count -ne 0){throw 'Exact fresh-process structured PASS required.'}
         $runs.Add([ordered]@{phase=$phase;runId=$result.runId;processId=$native.processId;assertions=@($result.assertions).Count;result=$previous;saveWrites=$native.saveWrites})
-        $receipt.saveWrites+=$native.saveWrites;$receipt.runs=@($runs.ToArray())
+        $receipt.runs=@($runs.ToArray())
         Write-ElementalTraitSaveJson (Join-Path $transaction 'transaction-result.json') $receipt
         $expected=$native.witness;$inputSave=$native.savedInfo
         if($inputSave.name -cne $descriptor -or $inputSave.sha256 -cne (Get-FileHash -LiteralPath $inputSave.path -Algorithm SHA256).Hash.ToLowerInvariant()){throw 'Native save receipt no longer matches.'}
