@@ -1,10 +1,35 @@
 # Sprint 17 closed snake routes/UI/lifecycle review
 
-Status: exactd43b39aa attempt2 FAIL79/81; native-carrier fixture SOURCE PASS; exact runtime NEXT.
+Status: exactfb9ffa50 closed review82/82+79metadata PASS; fullSprint17 NOT QUALIFIED.
 Sprint17 NOT QUALIFIED. Laptop PR26 only; DATA salvage-only/ZERO PORTS.
 All32 snake roots remain hidden; no gameplay change or publication.
 
-## Current attempt2: native Hit carrier expectation corrected
+## Latest exactfb9 bounded PASS
+
+[Artifact, every request and exact restoration](EXPANDED-SUMMONING-SPRINT17-SNAKE-FINAL-PASS-EVIDENCE.json).
+All prelaunch PASS:280focused/2082unfiltered82.9s;complete179.7s/clean14/strict320;
+515preflight168orchestration17provenance,persistence11/6/3/56,crowd8/11,launcher14/13.
+Fresh Steam smoke11/11 and review82/82,79/79metadata PASS.32private route
+executions and native widgets/UI pass;105summons/525resources reclaim exactly.
+Private helper casts are NOT public spellbook/slot or real summon-command proof.
+
+Fresh exact native Worm has9action entries, including3SpecialAttack; the older
+survey's7rows were one per UnitAnimationType, not the complete action list.
+NoHit action exists. Both snake sets remain the identical native references.
+Actual frontal hits: dots0.9985269/0.997246,damage1/2,one native started command
+each,zero foreign relations; intact finite original geometry for0.5194/0.5200
+native seconds after the wounds. No Hit clip/flinch claimed or manufactured.
+Both DyingStart death clips play; dissolve0.9972814/0.999703,native despawn,
+all5resources per body dead. All prior non-hit gates and outer restoration PASS.
+
+Actual0531083005592Z snapshot restored05:38:51.1595325UTC:136files/Info0.0.117/
+exact216A9DC2…tree. Lease Completed/recoveryfalse/released;no game/lock/staging.
+ZERO save writes;prior a429 cleanup-save/fresh absence0 remains. Earlier95c4
+andd43 failures remain failed,not retrospectively changed. FullSprint17 still
+requires Salamander and one complete same-artifact hidden/publication gate;
+then fullPhase2B closure. Phase2C authorized but deferred. No publication.
+
+## Historical attempt2: native Hit carrier expectation corrected
 
 [Exact artifact, requests, checks and restoration](EXPANDED-SUMMONING-SPRINT17-SNAKE-FINAL-ATTEMPT2-EVIDENCE.json).
 
@@ -17,7 +42,7 @@ Only2Hit-clip checks fail; both actual attacks wound (1/2damage), with isolated
 owned pairs and finite original geometry. DyingStart really plays; original
 dissolve reaches0.9972816 and all5resources per body are reclaimed.
 
-Archived exacta904 native Worm census has7actions and NO Hit. Pinned GetAction
+Archived exacta904 native Worm census has7animation-type rows and NO Hit. Pinned GetAction
 IL returns FirstOrDefault, with no alternate carrier. The fixture invented a
 mandatory clip. The mission requires stable actual hit/damage events, not a
 new animation when the native donor has none. This is a fixture expectation
