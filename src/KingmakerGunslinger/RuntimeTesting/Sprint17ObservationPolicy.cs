@@ -5,13 +5,16 @@ namespace KingmakerGunslinger.RuntimeTesting
     // Interpretation of native evidence only. No production-rule changes.
     internal static class Sprint17ObservationPolicy
     {
-        internal static bool NativeReach(float body, float spearType, float tailType,
-            float minimum, float spear, float tail)
+        internal static bool NativeReach(float body, float rawSpearType, float rawTailType,
+            float minimum, float computedSpearType, float computedTailType, float spear, float tail)
         {
-            return body == 5 && spearType == 5 && tailType == 10 &&
+            // BlueprintWeaponType.AttackRange already applies the native
+            // four-foot allowance/floor. Only m_AttackRange is a raw input.
+            return body == 5 && rawSpearType == 5 && rawTailType == 10 &&
                 !float.IsNaN(minimum) && !float.IsInfinity(minimum) && minimum > 0 &&
-                spear == Math.Max(minimum, spearType - 4) &&
-                tail == Math.Max(minimum, tailType - 4);
+                computedSpearType == Math.Max(minimum, rawSpearType - 4) &&
+                computedTailType == Math.Max(minimum, rawTailType - 4) &&
+                spear == computedSpearType && tail == computedTailType;
         }
 
         internal static bool ResolvedStrike(bool expectedMiss, bool hit,
