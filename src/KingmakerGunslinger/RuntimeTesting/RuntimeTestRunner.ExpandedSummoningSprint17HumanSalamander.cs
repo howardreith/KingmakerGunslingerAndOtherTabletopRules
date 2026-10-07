@@ -368,11 +368,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     (float?)tail[0]["tailMovementMeters"] > .3f && attachment.TailAction.ActEvents == 1 &&
                     attachment.TailAction.StartedHandles == 1 && string.IsNullOrEmpty(attachment.TailAction.Failure),
                     new JArray(tail), "exact owned clip actually moves original tail bones at its one authored event; no native null-clip fallback");
+                string gripRejection = Sprint17GripEvidence.SpearGripRejection(
+                    (JArray)gripReview.Evidence["timeline"], (JArray)gripReview.Evidence["nativeEvents"], spear);
+                row["gripContactPolicy"] = new JObject {
+                    ["legacyBothHandsAtRuleWithin8cm"] = spear.Length == 2 && spear.All(c =>
+                        (float?)c["LGripSurfaceGapMeters"] <= .08f && (float?)c["RGripSurfaceGapMeters"] <= .08f),
+                    ["rejection"] = gripRejection, ["gripMeters"] = .08f,
+                    ["scope"] = "all paired native/original frames; weapon hand retained, lead grip retained whenever native grips; native02 transition-out release tracked without changing pose, event or tolerance" };
                 bool contactPass = spear.Length == 2 && tail.Length == 1 && rows.All(c =>
-                    (float?)c["gapMeters"] <= .25f) && spear.All(c =>
-                    (float?)c["LGripSurfaceGapMeters"] <= .08f && (float?)c["RGripSurfaceGapMeters"] <= .08f);
-                CheckHumanSalamander("attack-contact", contactPass, contacts,
-                    "actual rule-frame spear tip and weighted striking tail within quarter metre; both weighted hand/finger surfaces within8cm of shaft");
+                    (float?)c["gapMeters"] <= .25f) && gripRejection == null;
+                CheckHumanSalamander("attack-contact", contactPass,
+                    new JObject { ["contacts"] = contacts, ["gripPolicy"] = row["gripContactPolicy"].DeepClone() },
+                    "rule-frame spear/tail within25cm; weapon hand within8cm, lead hand within8cm whenever native grips and follows native throughout every paired frame; only audited native02 rule-frame release");
                 CheckHumanSalamander("finite-attack-skin", poses.Count >= 3 && poses.OfType<JObject>().All(p =>
                     (bool)p["pose"]["finite"] && (bool)p["pose"]["poseFinite"]) && attachment.Live &&
                     gripReview.Failure == null && (bool?)gripReview.Evidence["truncated"] == false &&

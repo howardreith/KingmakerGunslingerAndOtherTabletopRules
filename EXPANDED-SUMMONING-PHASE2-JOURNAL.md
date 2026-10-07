@@ -1,6 +1,6 @@
 # Expanded Summoning Phase 2 journal
 
-## October 7 — exacted738 human13/15 contact/diagnostic FAIL; safely restored; grip unresolved
+## October 7 — exact23a0 human14/15 FAIL; native control proves lead-hand release; safely restored
 
 [Exact closed snake review PASS](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-FINAL-PASS-EVIDENCE.json)
 on `fb9ffa507ef5884a321921355f7088f485c8d155`: fresh Steam640820
@@ -47,46 +47,49 @@ All17 disagreeing native storage groups excluded; native upper bones unchanged.
 Fixed target-free1.4second tail sweep;29evaluated mesh poses finite/above authoring
 plane. Source gate280focused/2082unfiltered81.5s/complete178.2s/clean14/strict320 PASS.
 See `planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-TAIL-PROTOTYPE.md`.
-Exacted738a22a4e0a382e6b25c70842c35ac3a9424a6: smoke11/11 PASS;
-full human13/15 FAIL. Counter serialization is LIVE VERIFIED fixed.
-[Exact native-hand carrier evidence and restoration](planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-NATIVE-DEFORMER-EVIDENCE.json).
-All exact prelaunch PASS299/2101full84.6s/complete181.5s/clean14/strict321,
+Exact23a0a19eac8c16121e429b748a8f6bdc1c9f212d: smoke11/11 PASS;
+full human14/15 FAIL, restored. Native hand-deformer comparison is LIVE VERIFIED.
+[Exact native hand control and restoration](planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-NATIVE-GRIP-CONTROL-EVIDENCE.json).
+All exact prelaunch PASS301/2103full83.3s/complete180.8s/clean14/strict321,
 515preflight/168orchestration/17provenance and all persistence/crowd/launcher gates.
 
-The native body has ZERO positive weight to all14 selected hand/finger
-animation drivers despite valid2268 normalized weights. The original222vertices
-per hand bake successfully and agree with independent weighted-world distances
-within0.000001m. Native comparison remains unavailable and correctly FAILS.
-Both native02 spear events fail left grip:0.206531078/0.08493391m against0.08m.
-Original lead hand separates during native transition-out; faithful native
-surface comparison is still needed. No asset, pose or threshold change.
+All14 exact native ADJ parent/bind guards pass. Native hand surfaces select
+145left/150right vertices; original222/222. Both owned BakeMesh controls work,
+and the original agrees with independent weighted-world measurement.
+The real2spear+1tail command succeeds;140 paired timeline rows are complete.
+All other14 checks pass, including finite attack skin and exact resource cleanup.
 
-Preserved rig metadata names14 corresponding ADJ children, all exact parents,
-finite/invertible and duplicate binds agreeing. Their use as native deformers
-is the next bounded hypothesis, NOT runtime-qualified. No new donor census.
-Real2spear+1tail command Success;140 timing rows,17atomic stages.
-Rollback30objects; destruction36actual objects/158borrowed alive.
-Actual136/Info0.0.117/tree216A9DC2...AF3 restored14:02:54.6098627UTC;
+The remaining rule-frame both-hands-within8cm assertion also fails the NATIVE
+control: native02 lead hand0.208161578/0.0893238261m, original0.206292585/
+0.07937405m. Native transition-out begins before the cached0.734528542 act time;
+lead-hand separation is present at both real rule frames. Across ALL140 rows the original/native lead gap differs
+by at most0.019906819m; original never loses a grip the native hand retains.
+The weapon hand remains within0.006418m. This is a demonstrated observation
+assumption, not evidence requiring a mesh/animation change. Historical FAIL
+remains FAIL; no favorable earlier frame or numeric tolerance is substituted.
+
+Rollback30objects; destruction40actual objects/158borrowed alive.
+Actual136/Info0.0.117/tree216A9DC2...AF3 restored14:40:45.4735755UTC;
 ZERO save writes; no game/runtime/compatibility lock/staging; lease Completed.
 Sprints14–16 COMPLETE; Sprint17 NOT QUALIFIED;32roots hidden;
 976published+29wrappers=1005visible. HumanReview: NOT_PERFORMED_NONBLOCKING.
 
-Native hand-deformer comparison change is SOURCE PASS301focused/2103full81.9s,
-complete179.4s/clean14/strict321. Only the native control projects14 exact ADJ
-children to their corresponding hand/finger drivers, after exact mesh/palette,
-parent identity and finite/invertible duplicate-bind checks. Raw used-bone
-counters are retained. Two behavior tests reject foreign/incorrect parents,
-forearm/foot/storage/case variants and side mixing at the unchanged0.5 weight.
-Original26+10 bindings, model/pose and8cm/25cm limits are untouched.
-This native carrier has NOT yet run live; fullSprint17 remains NOT QUALIFIED.
+Source observation correction PASS305focused/2107unfiltered87.3s,
+complete184.0s/clean14/strict321. The new policy requires: all consecutive LateUpdate/
+EndOfFrame pairs must retain weapon-hand grip within8cm, retain lead grip
+whenever native grips, and follow the native lead separation within the SAME8cm.
+Require actual rule/render correlation and pinned read-only native act events;
+rule-frame release is limited to the demonstrated native02 transition-out.
+Geometry, native actions, event timing, variant selection,8cm/25cm tolerances
+and production Salamander are unchanged. Read-only replay of all140 preserved frames passes this policy, not a new
+runtime qualification. The corrected policy has NOT run live.
 
-Next: push the source-qualified native-deformer diagnostic, rebuild the exact
-clean head with all prelaunch/harness gates, then fresh Steam640820 smoke11 and
-ALL15 human checks. Require parent/bind guards, actual native hand weights,
-both baked surfaces, independent original agreement, real contact and exact
-resource cleanup. Do not guess or widen thresholds. Restore the exact snapshot.
-Then printed Salamander mechanics, same-artifact Sprint17 hidden/publication,
-fullPhase2B closure and STOP. Phase2C authorized but deferred.
+Next: commit/push this source-qualified evidence-backed observation
+correction, rebuild the exact clean head with every prelaunch/harness gate,
+then fresh Steam640820 smoke11 and ALL15 human checks. Do not aggregate earlier
+results or infer a native-following PASS before this artifact runs. Restore
+the exact snapshot. Then printed Salamander mechanics, same-artifact Sprint17
+hidden/publication, fullPhase2B closure and STOP. Phase2C authorized but deferred.
 HumanReview: NOT_PERFORMED_NONBLOCKING.
 The previous e993 attempt's stale descriptive lease label is preserved in its
 archive. Attempt2 correctly names commands/contact and remains immutable.
