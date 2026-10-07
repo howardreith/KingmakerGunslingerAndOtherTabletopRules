@@ -1,5 +1,34 @@
 {
   "schemaVersion": 1,
+  "independentPublication": {
+    "status": "CANDIDATE_RUNTIME_PENDING",
+    "purpose": "Normal independent publication gate after exact47e8c121 hidden evidence. NOT another observer correction, hidden retry or Salamander qualification.",
+    "baseCheckpoint": "87476779f9f27aff2a51a1f260426b728d3e667c",
+    "hiddenQualification": "47e8c1214f93e4c725a35261083cbd7b44f3f041",
+    "keys": [
+      "viper",
+      "constrictor-snake"
+    ],
+    "newRoots": 32,
+    "preservedSalamanderRoots": 5,
+    "surface": {
+      "registered": 1008,
+      "published": 1008,
+      "withheld": 0,
+      "nativeWrappers": 29,
+      "visibleChoices": 1037
+    },
+    "gates": {
+      "focused": "PASS321/321 of2123 after six stale publication count/record expectations were updated;artifacts/sprint17-independent-publication-focused.log. Current state/evidence candidate equation is checked without rewriting immutable historical checkpoint counts.",
+      "incrementalCompilation": "PASS14 references;publication bridge compiles;not runtime artifact.",
+      "exactSource": "PENDING one exact committed-head Sprint gate",
+      "runtime": "PENDING one scoped smoke + existing final-review publication batch"
+    },
+    "unchanged": "All production mechanics/AI/art/views/assets/identities/placements unchanged from47e8c121. Production delta only the two suppression keys; request-local public slot/parent/menu witness borrows the qualified existing native player-path helper. Failed Salamander reach observer and corrected hidden evidence retained.",
+    "retryBudget": "Product0/1 used;observation1/1 used. This normal publication gate creates no extra hidden correction authority.",
+    "qualificationBoundary": "Salamander PARTIAL/NOT QUALIFIED;full Sprint17 NOT CLOSED;Phase2B closure NOT RUN;Phase2C deferred/not started.",
+    "HumanReview": "NOT_PERFORMED_NONBLOCKING"
+  },
   "status": "PARTIAL_PASS_SOURCE_QUALIFIED_RUNTIME_NOT_QUALIFIED",
   "authority": "HOWARD-LAPTOP / codex/expanded-summoning-phase2b-sprints14-17 / draft PR26 only. DATA PR27 salvage-only; ZERO PORTS.",
   "sourceBase": "ea46fb761701529ab79bdaed0d8b1a7aa1bcbc7a",

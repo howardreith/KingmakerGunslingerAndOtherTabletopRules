@@ -1,6 +1,6 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-07 — integrated Sprint17 PARTIAL PASS; NOT QUALIFIED
+## CURRENT STATE, 2026-10-07 — independent snake publication candidate; Sprint17 PARTIAL PASS
 
 HOWARD-LAPTOP / `codex/expanded-summoning-phase2b-sprints14-17` / draft PR26 only.
 Exact corrected hidden candidate:47e8c1214f93e4c725a35261083cbd7b44f3f041.
@@ -31,13 +31,18 @@ Lease Completed/recoveryRequired=false;no game/runtime lock/compatibility lock/s
 One observation correction USED;zero product corrections USED. ONE product
 candidate remains only for a demonstrated production defect;none demonstrated.
 No second observation correction or repeat of the failing Salamander candidate.
-NEXT: assess safe independent snake publication/public-route gate;otherwise
-return this evidenced PARTIAL PASS. Phase2B closure NOT RUN;Sprint17 NOT CLOSED.
+NEXT: commit/push one normal independent Viper/Constrictor publication candidate;
+full exact-head gate ONCE,then smoke + existing final-review public-path gate.
+Exactly32 new roots and5 preserved Salamander roots;no hidden profile retry.
+Publication PENDING. Salamander's failed reach assertion remains untouched.
+Phase2B closure NOT RUN;Sprint17 NOT CLOSED.
 
 Exclusive source receipt:owner29828/start16:37:01.6154316UTC;
 keeper37216/start18:13:59.9631236UTC;session2af10b72-de34-49d5-8d34-f3fe784a0bb7.
-Sprints14–16 complete/published;1008 registered/976 published/32 withheld;
-29wrappers/1005visible. Salamander's5existing routes/identities preserved.
+Sprints14–16 complete/published. Candidate source:1008 registered/
+1008 published/0 withheld;29wrappers/1037 visible. This visibility change is
+NOT runtime-qualified until its normal publication gate passes.
+Last qualified publication remains976+29=1005. Salamander's5existing routes/identities preserved.
 HumanReview NOT_PERFORMED_NONBLOCKING;accepted limitations/adaptation unchanged.
 Exhaustive matrices ONCE at Phase2B closure,then STOP owner review.
 Phase2C authorized but deferred,NOT STARTED. DATA PR27 salvage-only/ZERO PORTS.
