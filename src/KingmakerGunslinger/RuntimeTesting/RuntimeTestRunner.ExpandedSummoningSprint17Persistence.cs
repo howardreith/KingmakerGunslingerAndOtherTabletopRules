@@ -356,6 +356,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             SnakePersistenceCheck("venom-state", poison, state, "one exact DC13 1d2 Constitution venom retains source, counters and damage across native save/load");
             if (!prepare)
             {
+                _snakeLoadResetTrace?.Capture("reset-assertion", units);
                 var grab = SummonGrabComponent.Find(SnakePersistenceRole(units, "constrictor-snake"));
                 bool free = grab != null;
                 var resetRows = new JArray();
