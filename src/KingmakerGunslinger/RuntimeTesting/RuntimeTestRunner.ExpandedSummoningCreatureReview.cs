@@ -480,12 +480,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "/" + finalGap.ToString("0.##", CultureInfo.InvariantCulture));
             }
             bool awakeRestored = true;
+            string awakeEvidence = "legacy-owned-removal";
             if (_creatureReviewCrowdAwakeBefore != null)
             {
-                foreach (UnitEntityData unit in _creatureReviewUnits)
-                    if (!_creatureReviewCrowdAwakeBefore.Contains(unit))
-                        Game.Instance.State.AwakeUnits.Remove(unit);
-                awakeRestored = Game.Instance.State.AwakeUnits.SequenceEqual(
+                bool ownedRestored = true;
+                if (SerpentineVisualPolicy.IsSnake(key))
+                    ownedRestored = RestoreSprint17SnakeCrowdAwake(key, out awakeEvidence);
+                else
+                    foreach (UnitEntityData unit in _creatureReviewUnits)
+                        if (!_creatureReviewCrowdAwakeBefore.Contains(unit))
+                            Game.Instance.State.AwakeUnits.Remove(unit);
+                awakeRestored = ownedRestored && Game.Instance.State.AwakeUnits.SequenceEqual(
                     _creatureReviewCrowdAwakeBefore);
                 Game.Instance.IsPaused = _creatureReviewCrowdWasPaused;
                 _creatureReviewCrowdAwakeBefore = null;
@@ -497,6 +502,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _creatureReviewCrowdFrames + ";travel/approach/velocity/gap=" +
                     string.Join("|", observations.ToArray()) +
                     ";awakeRestored=" + awakeRestored +
+                    ";awakeEvidence=" + awakeEvidence +
                     (error == null ? "" : ";error=" + error.GetType().Name +
                         ":" + error.Message),
                 traveled && awakeRestored,
