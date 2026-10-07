@@ -3620,6 +3620,13 @@ namespace KingmakerGunslinger.Blueprints
             unit.Type = type;
             unit.Body = NaturalBody(spear, Array.Empty<BlueprintItemWeapon>(),
                 new[] { tail });
+            BlueprintUnit humanView = BlueprintLibraryLookup.RequireExact<BlueprintUnit>(library,
+                SalamanderProductionViewPolicy.DonorGuid, "qualified native human Salamander carrier");
+            if (humanView.Prefab == null || humanView.Prefab.AssetId != SalamanderTailAnimationPolicy.Prefab)
+                throw new InvalidOperationException("Salamander human donor prefab changed.");
+            // Borrow only the qualified view. No NPC facts, faction, race,
+            // inventory, loot, weapons or progression enter this creature.
+            unit.Prefab = humanView.Prefab;
             unit.Brain = BlueprintLibraryLookup.RequireExact<BlueprintBrain>(
                 library, DumbBrainGuid, "bounded natural-attack brain");
             ConfigureUnitCore(unit, "Salamander", "Salamander",

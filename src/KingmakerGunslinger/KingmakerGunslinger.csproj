@@ -160,7 +160,13 @@
     <Compile Include="Summoning\SerpentineRulesPolicy.cs" />
     <Compile Include="Summoning\SalamanderRulesPolicy.cs" />
     <Compile Include="Summoning\SalamanderCombatComponents.cs" />
+    <Compile Include="Summoning\SalamanderProductionViewPolicy.cs" />
+    <Compile Include="Summoning\ExpandedSummoningSalamanderViewPatch.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint17SalamanderProfiles.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint17SalamanderViews.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint17SalamanderMechanics.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint17SalamanderCommands.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint17SalamanderLifecycle.cs" />
     <Compile Include="Summoning\SerpentineCombatComponents.cs" />
     <Compile Include="Summoning\SerpentineVisualAttachment.cs" />
     <Compile Include="Summoning\ExpandedSummoningSerpentineViewPatch.cs" />

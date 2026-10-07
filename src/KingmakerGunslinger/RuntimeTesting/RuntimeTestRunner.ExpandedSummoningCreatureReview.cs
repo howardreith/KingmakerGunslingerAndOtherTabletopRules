@@ -175,7 +175,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             return IsSprint11UngulateReviewKey(key) ||
                 IsSprint12QuadrupedReviewKey(key) ||
                 CrocodilianVisualPolicy.Keys.Contains(key) ||
-                SerpentineVisualPolicy.IsSnake(key);
+                SerpentineVisualPolicy.IsSnake(key) || key == "salamander";
         }
 
         private static bool IsSprint11UngulateReviewKey(string key)
@@ -484,7 +484,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (_creatureReviewCrowdAwakeBefore != null)
             {
                 bool ownedRestored = true;
-                if (SerpentineVisualPolicy.IsSnake(key))
+                if (SerpentineVisualPolicy.IsSnake(key) || key == "salamander")
                     ownedRestored = RestoreSprint17SnakeCrowdAwake(key, out awakeEvidence);
                 else
                     foreach (UnitEntityData unit in _creatureReviewUnits)
@@ -856,7 +856,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 "request-local camera pose restored; image is supporting art evidence, not mechanical proof"));
                         }
                     }
-                    if (SerpentineVisualPolicy.IsSnake(key))
+                    if (SerpentineVisualPolicy.IsSnake(key) || key == "salamander")
                         RecordSprint17SnakeCrowdOriginals(key);
                     if (key == "eagle" || key == "dire-bat" ||
                         key == "giant-wasp" || key == "stirge")
@@ -875,7 +875,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             "named native area landmark, same-area endpoints, native UnitMoveTo and cross-frame position samples"));
                     }
                     if (IsSprint12QuadrupedReviewKey(key) || CrocodilianVisualPolicy.Keys.Contains(key) ||
-                        SerpentineVisualPolicy.IsSnake(key))
+                        SerpentineVisualPolicy.IsSnake(key) || key == "salamander")
                     {
                         _creatureReviewAssertions.Add(Assertion(
                             "expanded-summoning-ground-travel-" + key,
@@ -978,7 +978,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "expanded-summoning-creature-review-cleanup-" + key, "0",
                         live.ToString(), live == 0,
                         "reviewed summon dismissed and destroyed before the next cast"));
-                    if (SerpentineVisualPolicy.IsSnake(key))
+                    if (SerpentineVisualPolicy.IsSnake(key) || key == "salamander")
                         RecordSprint17SnakeCrowdDestruction(key);
                     if (IsOriginalReviewKey(key))
                     {

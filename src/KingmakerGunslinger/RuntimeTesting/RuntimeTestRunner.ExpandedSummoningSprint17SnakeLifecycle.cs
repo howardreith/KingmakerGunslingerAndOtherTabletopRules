@@ -275,13 +275,13 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             deadObserved |= unit.Descriptor.State.IsDead;
             if (unit.View == null) return;
-            var attachment = unit.View.GetComponent<SerpentineVisualAttachment>();
-            if (attachment == null || attachment.Body == null || attachment.Body.sharedMesh == null) return;
-            foreach (var resource in attachment.CaptureOwnedResources())
+            var body = Sprint17OriginalBody(unit);
+            if (body == null || body.sharedMesh == null) return;
+            foreach (var resource in Sprint17ViewResources(unit))
                 if (!resources.Any(value => ReferenceEquals(value, resource))) resources.Add(resource);
             var manager = unit.View.AnimationManager;
             finite &= ReferenceEquals(manager.AnimationSet, expectedSet);
-            foreach (var material in attachment.Body.sharedMaterials)
+            foreach (var material in body.sharedMaterials)
                 if (material != null && material.HasProperty("_Dissolve"))
                     largestDissolve = Math.Max(largestDissolve, material.GetFloat("_Dissolve"));
             var played = new JArray();
@@ -303,7 +303,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             if (played.Count > 0 || Time.frameCount % 30 == 0)
             {
-                var pose = Sprint17OriginalBodySample(unit, attachment.Body);
+                var pose = Sprint17OriginalBodySample(unit, body);
                 finite &= (bool)pose["finite"] && (bool)pose["poseFinite"];
                 if (samples.Count(value => (string)value["phase"] == phase) < 10)
                     samples.Add(new JObject { ["phase"] = phase, ["frame"] = Time.frameCount,

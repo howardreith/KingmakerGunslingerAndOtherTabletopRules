@@ -46,7 +46,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         internal static string[] Roles
-        { get { return new[] { "viper", "constrictor-snake", "venom-target", "hold-target" }; } }
+        { get { return new[] { "viper", "constrictor-snake", "venom-target", "hold-target", "salamander", "salamander-hold-target" }; } }
 
         internal static string CreatureKey(string role)
         {
@@ -54,7 +54,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 case "viper": return "viper";
                 case "constrictor-snake": return "constrictor-snake";
-                case "venom-target": case "hold-target": return "wolf";
+                case "salamander": return "salamander";
+                case "venom-target": case "hold-target": case "salamander-hold-target": return "wolf";
                 default: return null;
             }
         }
