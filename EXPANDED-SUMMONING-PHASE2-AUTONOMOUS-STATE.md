@@ -21,7 +21,8 @@ deployment, force push or prohibited substitute subsystems.
 - Last exact runtime candidate `983828bfa9b1aff2d79fab3eb8a2954ec28e4a2f`,
   clean/pushed for smoke11/profile-body-rules62/commands51 PASS.
   All8 at-rule contacts gap0 with genuine native long Bite playback.
-  Current descendant adds the closed snake direct/crowd and persistence fixtures;
+  Current descendant adds the closed snake direct/crowd and persistence fixtures
+  plus their outer launcher routing; d700's prelaunch rejection is preserved;
   runtime NOT RUN. Ordinary gameplay, assets and publication are unchanged.
   Prior474 timing-only hypothesis was rejected; its43/51 failure is retained.
   Earlier exact130bf7a2 bounded rules PASS remains unchanged; no qualification
@@ -71,6 +72,13 @@ round trips, three historical defaults and 56 rejection cases PASS.
 Four receipt-owned summons only: Viper, Constrictor and two Wolf targets.
 Venom must retain its source/counters; the hold must reset cleanly.
 No new runtime transaction or save write. Gameplay/publication unchanged.
+
+[Outer launcher routing correction](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-LAUNCHER-REVIEW.md)
+is SOURCE PASS: actual-launcher WhatIf13 accepted/10 rejected; preflight508;
+264 focused,2066 full84.0s,complete180.4s,clean14-reference/strict320.
+Exact d70070a5 built but its old outer guards rejected snakes before any lease
+or deployment. That package and failing test are preserved. The corrected
+wrapper changes no gameplay; freeze/rebuild the replacement exact head.
 
 Next: freeze an exact candidate for the closed snake crowd/persistence batch,
 then finish native hit/death/fade/lifecycle and UI/private routes. This bounded

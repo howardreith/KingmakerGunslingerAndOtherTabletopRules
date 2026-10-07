@@ -5,6 +5,11 @@ Source parent544c5950; exact983828bf remains the qualified command/contact
 artifact. This fixture extension does not transfer that qualification to a
 different DLL. Laptop PR26 only; DATA archive-only/ZERO PORTS.32 roots hidden.
 
+Prelaunch follow-up found the outer launcher retained its old crowd allowlist,
+despite the inner request builder accepting snakes. No runtime occurred.
+[The routing correction](EXPANDED-SUMMONING-SPRINT17-SNAKE-LAUNCHER-REVIEW.md)
+adds the same two closed keys and tests the actual launcher in WhatIf mode.
+
 ## Closed scope and preserved behavior
 
 The existing guarded working-save-expanded-summoning-creature-review accepts
