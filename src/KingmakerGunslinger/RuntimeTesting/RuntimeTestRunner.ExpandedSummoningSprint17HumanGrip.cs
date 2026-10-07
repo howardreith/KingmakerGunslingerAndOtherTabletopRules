@@ -26,7 +26,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             private SkinnedMeshRenderer _baker;
             private Mesh _snapshot;
 
-            internal Sprint17HumanGripSurface(SkinnedMeshRenderer anchor, List<UnityEngine.Object> resources, JObject metadata)
+            internal Sprint17HumanGripSurface(SkinnedMeshRenderer anchor, List<UnityEngine.Object> resources, JObject metadata,
+                bool nativeDeformers = false)
             {
                 if (anchor == null || anchor.name != SalamanderHumanBindingPolicy.BodyName || resources == null || metadata == null)
                     throw new InvalidOperationException("Exact guarded human body required.");
@@ -44,12 +45,40 @@ namespace KingmakerGunslinger.RuntimeTesting
                 metadata["binds"] = _source.bindposes.Length; metadata["nativeCpuReadable"] = _source.isReadable;
                 metadata["geometryExported"] = false; metadata["weightsChanged"] = false;
                 metadata["available"] = false; metadata["ownedResources"] = 0;
+                metadata["driverFamily"] = nativeDeformers ? "exact native hand ADJ children" : "original hand animation drivers";
                 if (weights.Length != _source.vertexCount || bones.Length != _source.bindposes.Length)
                     throw new InvalidOperationException("Hand metadata mismatch: vertices=" + _source.vertexCount +
                         ";weights=" + weights.Length + ";bones=" + bones.Length +
                         ";binds=" + _source.bindposes.Length + ";readable=" + _source.isReadable);
+                if (nativeDeformers)
+                {
+                    if (_source.name != "Bandit_FighterLeader_Renderer_Character_Diffuse_Cutout" ||
+                        _source.vertexCount != 2268 || bones.Length != 1776 || bones.Distinct().Count() != 177)
+                        throw new InvalidOperationException("Unreviewed native deforming control mesh/palette.");
+                    var map = new JArray(); metadata["nativeHandDeformers"] = map;
+                    Matrix4x4[] binds = _source.bindposes;
+                    foreach (string driver in SalamanderHumanBindingPolicy.NativeNames.Where(name =>
+                        SalamanderHumanBindingPolicy.IsGripDriver(name, "L") || SalamanderHumanBindingPolicy.IsGripDriver(name, "R")))
+                    {
+                        int[] slots = Enumerable.Range(0, bones.Length).Where(i => bones[i].name == driver + "_ADJ").ToArray();
+                        Transform[] parents = bones.Where(b => b.name == driver).Distinct().ToArray();
+                        bool valid = slots.Length > 0 && parents.Length == 1;
+                        int first = slots.Length == 0 ? -1 : slots[0];
+                        if (valid) valid = slots.All(i => ReferenceEquals(bones[i], bones[first]) &&
+                            ReferenceEquals(bones[i].parent, parents[0]) &&
+                            SalamanderHumanBindingPolicy.NativeGripDeformerDriver(bones[i].name, bones[i].parent.name) == driver &&
+                            SalamanderTailAnimationPolicy.Finite(binds[i].determinant) && Math.Abs(binds[i].determinant) > .0000001f &&
+                            SalamanderHumanBindingPolicy.BakeFrameMatches(
+                                Enumerable.Range(0, 16).Select(k => binds[i][k]).ToArray(),
+                                Enumerable.Range(0, 16).Select(k => binds[first][k]).ToArray()));
+                        map.Add(new JObject { ["native"] = driver + "_ADJ", ["driver"] = driver,
+                            ["slots"] = slots.Length, ["exactParentIdentityAndBind"] = valid });
+                        if (!valid) throw new InvalidOperationException("Unreviewed native hand ADJ parent/identity/bind: " + driver);
+                    }
+                }
                 var selections = new[] { new List<int>(), new List<int>() };
                 var reasons = new[] { new Dictionary<string, int>(), new Dictionary<string, int>() };
+                var usedBones = new Dictionary<string, int>();
                 var positive = new int[2]; var maximum = new float[2];
                 var driverVertices = SalamanderHumanBindingPolicy.NativeNames.Where(name =>
                     SalamanderHumanBindingPolicy.IsGripDriver(name, "L") ||
@@ -62,7 +91,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     int[] ids = { w.boneIndex0, w.boneIndex1, w.boneIndex2, w.boneIndex3 };
                     float[] values = { w.weight0, w.weight1, w.weight2, w.weight3 };
                     bool validIds = ids.All(id => id >= 0 && id < bones.Length);
-                    string[] names = validIds ? ids.Select(id => bones[id].name).ToArray() : null;
+                    string[] names = validIds ? ids.Select(id => nativeDeformers ?
+                        SalamanderHumanBindingPolicy.NativeGripDeformerDriver(bones[id].name,
+                            bones[id].parent == null ? null : bones[id].parent.name) : bones[id].name).ToArray() : null;
                     float sum = values.Sum();
                     if (SalamanderTailAnimationPolicy.Finite(sum))
                     {
@@ -70,8 +101,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         minimumSum = Mathf.Min(minimumSum, sum); maximumSum = Mathf.Max(maximumSum, sum);
                     }
                     if (validIds)
+                    {
+                        foreach (string raw in Enumerable.Range(0, 4).Where(i => values[i] > 0)
+                            .Select(i => bones[ids[i]].name).Distinct())
+                        { if (!usedBones.ContainsKey(raw)) usedBones[raw] = 0; usedBones[raw]++; }
                         foreach (string name in driverVertices.Keys.ToArray())
                             if (Enumerable.Range(0, 4).Any(i => names[i] == name && values[i] > 0)) driverVertices[name]++;
+                    }
                     for (int side = 0; side < 2; side++)
                     {
                         string label = side == 0 ? "L" : "R";
@@ -91,6 +127,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 metadata["minimumWeightSum"] = finiteSums == 0 ? (float?)null : minimumSum;
                 metadata["maximumWeightSum"] = finiteSums == 0 ? (float?)null : maximumSum;
                 metadata["positiveWeightDriverVertices"] = Sprint17GripEvidence.Counters(driverVertices);
+                metadata["positiveRawBoneVertices"] = Sprint17GripEvidence.Counters(usedBones);
                 metadata["selection"] = new JArray(Enumerable.Range(0, 2).Select(side => new JObject {
                     ["side"] = side == 0 ? "L" : "R", ["selected"] = _hands[side].Length,
                     ["positiveInfluenceVertices"] = positive[side], ["maximumInfluence"] = maximum[side],

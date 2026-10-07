@@ -36,6 +36,16 @@ namespace KingmakerGunslinger.Summoning
             return GripSurfaceDisposition(side, names, weights) == "selected";
         }
 
+        internal static string NativeGripDeformerDriver(string name, string parent)
+        {
+            // The captured native rig separates animation drivers from their
+            // exact ADJ deforming children. This projection is diagnostic-only;
+            // it never adds a driver to the original mesh or moves a native bone.
+            if (name == null || !name.EndsWith("_ADJ", StringComparison.Ordinal)) return null;
+            string driver = name.Substring(0, name.Length - 4);
+            return parent == driver && (IsGripDriver(driver, "L") || IsGripDriver(driver, "R")) ? driver : null;
+        }
+
         internal static string GripSurfaceDisposition(string side, string[] names, float[] weights)
         {
             if (names == null || weights == null || names.Length != 4 || weights.Length != 4) return "array-shape";
