@@ -1,6 +1,6 @@
 # Expanded Summoning fidelity matrix
 
-## Current boundary: bc7 human guard FAIL/restored; diagnostic source PASS; Sprint17 NOT QUALIFIED
+## Current boundary: 759 diagnostic FAIL/restored; registry repair source PASS; Sprint17 NOT QUALIFIED
 
 [Exact closed snake review PASS](EXPANDED-SUMMONING-SPRINT17-SNAKE-FINAL-PASS-EVIDENCE.json)
 on `fb9ffa507ef5884a321921355f7088f485c8d155`: fresh Steam640820
@@ -47,19 +47,19 @@ All17 disagreeing native storage groups excluded; native upper bones unchanged.
 Fixed target-free1.4second tail sweep;29evaluated mesh poses finite/above authoring
 plane. Source gate280focused/2082unfiltered81.5s/complete178.2s/clean14/strict320 PASS.
 See `planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-TAIL-PROTOTYPE.md`.
-Exact bc7a7c9adfa893b6a916dc017c6a7139b2bb3ef6 human/owned-tail attempt
-is FAIL, not qualification: fresh Steam640820 smoke11/11; hybrid4/6
-(expected15). Native anatomy/settlement passed, but the unchanged combined
-human-set/absent-Tail guard rejected before any body/action resource was created.
-Rollback was not reached; no body, playback, contact or cleanup qualification.
-[Exact failed artifact/evidence/restoration](planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-BINDING-FAIL-EVIDENCE.json).
-Actual136files/Info0.0.117/tree216A9DC2...AF3 restored07:36:19.0667770UTC;
-no save writes, game, runtime lease or staging. All failed artifacts retained.
-Narrow read-only guard diagnostics now separate raw/effective action identities
-and three getter patch registries. The guard is NOT relaxed; no extra waits,
-native action execution, production hook or publication change.
-Diagnostic source gate PASS:291focused/2093full84.6s/complete183.0s/clean14/
-strict321. Runtime pending on the diagnostic; Sprint17 remains NOT QUALIFIED.
+Exact7590ce68319d747eea90f4a9224e4a628861b06a guard diagnostic FAIL:
+fresh Steam640820 smoke11/11; hybrid4/5(expected15). Native settlement passed.
+Harmony12's patch-info converter threw before the diagnostic published its core
+observations and before attachment. The original bc7 guard operands remain UNKNOWN;
+this fixture error is not a new body/gameplay failure or an accepted limitation.
+[Exact failed diagnostic/artifact/restoration](planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-GUARD-DIAGNOSTIC-FAIL-EVIDENCE.json).
+Actual136files/Info0.0.117/tree216A9DC2...AF3 restored08:16:10.2330898UTC;
+no save writes, game, runtime lease or staging. Every failed artifact is retained.
+Repair reuses the repository's qualified Harmony registry-before-metadata pattern
+for only three getters and records core observations first. Registered-method
+errors still fail; the native binding guard and all15 assertions are unchanged.
+Registry-bounded source PASS:292focused/2094full82.5s/complete177.5s/clean14/
+strict321. Runtime pending; no production/publication change.
 
 Next: qualify/push the narrow diagnostic checkpoint and rebuild its exact head;
 guarded smoke plus unchanged human guard review. Resolve the observed operand
