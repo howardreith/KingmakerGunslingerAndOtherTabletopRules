@@ -41,10 +41,18 @@ not aggregate qualification of fb9 or a later wholeSprint17 candidate.
 Sprints14–16 COMPLETE/PUBLISHED;97units;1008registered/976published;
 32withheld;29wrappers;1005visible. Laptop PR26 only;DATA salvage-only/ZERO PORTS.
 
-Next: separate Salamander exact native-human spear/original-body and creature-owned
-tail seam plus printed mechanics; no repeated closed donor census or global rig/
-animation rewrite. Then ONE complete same-artifact Sprint17 hidden/publication
-gate and fullPhase2B closure. STOP for owner review;Phase2C authorized but deferred.
+Salamander private authoring now has26 checked native anatomical drivers plus10
+original tail drivers,2198original vertices,32offline panels and9authoring tests PASS.
+All17 disagreeing native storage groups excluded; native upper bones unchanged.
+Fixed target-free1.4second tail sweep;29evaluated mesh poses finite/above authoring
+plane. Source gate280focused/2082unfiltered81.5s/complete178.2s/clean14/strict320 PASS.
+See `planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-TAIL-PROTOTYPE.md`.
+No prototype packaged or runtime action adopted; no new live qualification.
+
+Next: bounded request-local human/original-body/owned-tail binding with real native
+spear/tail commands, then printed Salamander mechanics. No repeated donor census
+or global animation rewrite. Then ONE same-artifact Sprint17 hidden/publication
+gate and fullPhase2B closure. STOP owner review;Phase2C authorized but deferred.
 HumanReview: NOT_PERFORMED_NONBLOCKING.
 Exact `130bf7a2de4cbd636df921f36e7f6afefe8523ca` passes the complete
 bounded rules batch: fresh Steam640820 smoke **11/11**, profile/body/signature

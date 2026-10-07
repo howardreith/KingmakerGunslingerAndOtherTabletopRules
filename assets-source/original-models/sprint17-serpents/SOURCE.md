@@ -1,5 +1,16 @@
 # Sprint 17 original serpentine and hybrid bodies
 
+## Current separate Salamander authoring, October 7 UTC
+
+The exact-human anatomical subset/original ten-driver tail prototype is now
+authored in `generate_human_salamander.py`, with nine passing behavior tests.
+It excludes all17 disagreeing native storage bind groups. Original rest/strike/
+recovery exports reproduce exactly; native geometry/curves are not inputs.
+It is PRIVATE, NOT PACKAGED and NOT RUNTIME QUALIFIED. Existing Salamander
+identity/placements/production prefab and all older evidence are unchanged.
+[Current scope, exact hashes and pending native command proof](../../../planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-TAIL-PROTOTYPE.md).
+The historical Lizardfolk attempt below remains failed, not replaced by a claim.
+
 ## Current original-art disposition, exact570a14cd research, October 6 UTC
 
 Final visuals NOT QUALIFIED. Full prelaunch PASS; smoke11/body33 of35 FAIL

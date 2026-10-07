@@ -29,7 +29,28 @@
       16
     ],
     "currentSprint": 17,
-    "currentSubItem": "Sprint17 NOT QUALIFIED. Exactfb9ffa50 bounded smoke11/review82/79metadata PASS:32private routes/UI,carrier-faithful hit/death/fade/despawn/resources. Exact restoration05:38:51UTC,zero save writes. Salamander exact-human spear/original-body/owned-tail seam and printed mechanics next, then fullsame-artifactSprint17/Phase2B.32roots hidden;Phase2C deferred.",
+    "currentSubItem": "Sprint17 NOT QUALIFIED. Exactfb9 bounded smoke11/review82/79metadata PASS and restored05:38:51UTC. Salamander private human26/original-tail10 prototype:9authoring tests/32panels/29finite mesh poses,280focused/2082full81.5s/complete178.2s PASS. No production binding/assets adopted. Native spear/tail command proof and printed mechanics next;32roots hidden;Phase2C deferred.",
+    "sprint17SalamanderHumanTailPrototype": {
+      "status": "PRIVATE AUTHORING SOURCE PASS; NOT PACKAGED OR RUNTIME QUALIFIED",
+      "sourceParent": "5b7cfdea53b49b02ec633ee52a32da7ed0f9d9a5",
+      "review": "planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-TAIL-PROTOTYPE.md",
+      "nativeAnatomicalDrivers": 26,
+      "originalTailDrivers": 10,
+      "excludedDisagreeingStorageGroups": 17,
+      "vertices": 2198,
+      "polygons": 2216,
+      "authoringTests": 9,
+      "privatePanels": 32,
+      "finiteEvaluatedMeshPoses": 29,
+      "sourceFocused": 280,
+      "sourceDomain": 2082,
+      "domainSeconds": 81.5,
+      "sourceGateSeconds": 178.2,
+      "prototypePackaged": false,
+      "runtimeExecuted": false,
+      "productionBehaviorChanged": false,
+      "meshSha256": "2c4b76f0bbf0691ae0f9d9fc2340e77f958b999e27dda2628c82b26642c16670"
+    },
     "sprint17SnakeLoadBoundaryTrace": {
       "status": "FIXTURE ASSERTION PRECEDES NATIVE LOAD-COMPLETE; DIAGNOSTIC COMPLETE; GAMEPLAY NOT QUALIFIED",
       "sourceParent": "15070179e84d799d476ce90a7b205d0e950ec52d",
@@ -957,7 +978,7 @@
       "detail": "Supplied by the owner and read. The Pteranodon passage confirms the shipped profile rather than changing it: ten-foot reach valued for attacks of opportunity, and a single main bite on which everything stacks (2d6 plus modifiers). The guide also positions multiple Pteranodons as the best single-target aerial attacker at their tier. This informs Sprint 2's acceptance emphasis on correct bite impact timing and location at Large reach; it changes no accepted statistic."
     }
   ],
-  "nextConcreteAction": "Advance the separate exact native-human Salamander spear/original-body and creature-owned tail seam plus printed mechanics; no repeated donor census/global animation framework. Then one fullsame-artifact Sprint17 hidden/publication gate and complete Phase2B closure. Stop owner review;Phase2C authorized but deferred.",
+  "nextConcreteAction": "Implement the bounded request-local human/original-body/owned-tail binding and prove real native spear/tail commands, pause/speed/interruption/cleanup, then printed Salamander mechanics. No repeated donor census or general animation framework. Complete same-artifact Sprint17 hidden/publication and Phase2B closure; stop owner review;Phase2C authorized but deferred.",
   "deploymentReconciliation": {
     "finding": "The first runs left this mission's 0.0.136 branch build installed over the pre-run 0.0.117 installation. The mission required restoration and did not authorize a permanent installation; a shared version string does not make a branch artifact an accepted release.",
     "ownershipVerified": "The live DLL hash matched this mission's exact build byte for byte, so the tree was unambiguously mission-owned.",
