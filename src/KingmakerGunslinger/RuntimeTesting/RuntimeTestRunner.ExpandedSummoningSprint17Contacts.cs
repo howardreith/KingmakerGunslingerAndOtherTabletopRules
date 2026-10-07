@@ -221,6 +221,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException("Two-hand native view identity changed.");
                 prototype = _serpentineBodyPrototype = UnityEngine.Object.Instantiate(published);
                 prototype.name = humanTailResearch ? SalamanderTailAnimationPolicy.PrototypeName : "KMG_Runtime_Sprint17_SalamanderTwoHandBody";
+                // The historical donor prototype is not the registered
+                // production profile owner. Keep its native eight levels;
+                // do not run production creation normalization on a clone.
+                prototype.ComponentsArray = prototype.ComponentsArray.Where(c => !(c is SummonSalamanderRacialProfile)).ToArray();
                 prototype.Prefab = twoHand.Prefab;
                 // No native NPC facts, inventory, faction, loot or weapons
                 // are imported. No registration or shared blueprint mutation.

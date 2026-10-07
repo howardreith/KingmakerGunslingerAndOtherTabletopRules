@@ -439,19 +439,16 @@ namespace KingmakerGunslinger.Blueprints
                 bySymbol, SalamanderSpearSymbol);
             BlueprintItemWeapon salamanderTail = Require<BlueprintItemWeapon>(
                 bySymbol, SalamanderTailSymbol);
-            BlueprintBuff salamanderTraits = Require<BlueprintBuff>(bySymbol,
-                SalamanderCombatTraitsSymbol);
             ConfigureSummonWeaponType(library, StandardSpearGuid,
                 "standard 1d8 spear", SalamanderSpearTypeSymbol,
                 salamanderSpearType, ExpandedSummoningSpecialProfiles.SalamanderSpearIsNatural);
             ConfigureSalamanderSpear(library, salamanderSpear,
                 salamanderSpearType);
-            ConfigureSalamanderTail(library, salamanderTail);
-            ConfigureSalamanderCombatTraits(library, salamanderTraits,
-                salamanderTail);
+            ConfigureSalamanderTail(library, salamanderTail,
+                Require<BlueprintWeaponType>(bySymbol, "KMG.Summoning.Special.Salamander.TailType"));
             ConfigureSalamander(library, Require<BlueprintUnit>(bySymbol,
                 SalamanderUnitSymbol), salamanderSpear, salamanderTail,
-                salamanderTraits, extraplanar);
+                Require<BlueprintUnitType>(bySymbol, "KMG.Summoning.Special.Salamander.UnitType"), extraplanar);
             BlueprintBuff domination = Require<BlueprintBuff>(bySymbol,
                 SuccubusDominationSymbol);
             BlueprintAbility dominate = Require<BlueprintAbility>(bySymbol,
@@ -1733,6 +1730,16 @@ namespace KingmakerGunslinger.Blueprints
                 new GrabSpec { Primary = true, Hold = hold, Grappled = grappled,
                     ConstrictDice = 1, ConstrictDie = DiceType.D4, ConstrictBonus = 4,
                     LiveSerpentineConstrict = true });
+            ConfigureGrabber(library, bySymbol, SalamanderUnitSymbol,
+                SalamanderCombatTraitsSymbol, "Salamander", "Salamander Heat and Constrict",
+                "The salamander's spear and tail deal an additional 1d6 fire damage. " +
+                "Only its tail can grab a foe no larger than itself. A successful grab and each " +
+                "later successful maintain also constrict (2d6+4 bludgeoning plus 1d6 fire at baseline, " +
+                "with live size and Strength). Active holds reset cleanly on reload.",
+                new GrabSpec { Additional = 1, Hold = hold, Grappled = grappled,
+                    ConstrictDice = ExpandedSummoningSpecialProfiles.SalamanderConstrictDice,
+                    ConstrictDie = DiceType.D6, ConstrictBonus = ExpandedSummoningSpecialProfiles.SalamanderConstrictBonus,
+                    LiveSalamanderConstrict = true });
             ConfigureGrabber(library, bySymbol, GrizzlyBearUnitSymbol,
                 GrizzlyBearCombatTraitsSymbol, "GrizzlyBear", "Grizzly Bear Grab",
                 "A claw hit lets the bear attempt to grab a foe no larger than itself.",
@@ -2023,6 +2030,7 @@ namespace KingmakerGunslinger.Blueprints
             internal DiceType ConstrictDie = DiceType.D6;
             internal int ConstrictBonus;
             internal bool LiveSerpentineConstrict;
+            internal bool LiveSalamanderConstrict;
             /// <summary>
             /// A crocodilian's key. The death roll's dice and flat bonus are
             /// read from its rules profile rather than written here, because
@@ -2619,6 +2627,7 @@ namespace KingmakerGunslinger.Blueprints
             grab.ConstrictDiceType = spec.ConstrictDie;
             grab.ConstrictBonus = spec.ConstrictBonus;
             if (spec.LiveSerpentineConstrict) grab.ConstrictProfileOwner = unit;
+            if (spec.LiveSalamanderConstrict) grab.SalamanderProfileOwner = unit;
             if (!string.IsNullOrEmpty(spec.DeathRollCreatureKey))
             {
                 CrocodilianRulesProfile rules = CrocodilianRulesPolicy.For(
@@ -2634,6 +2643,14 @@ namespace KingmakerGunslinger.Blueprints
             bonus.Type = CombatManeuver.Grapple;
             bonus.Bonus = ExpandedSummoningSpecialProfiles.SummonGrabManeuverBonus;
             var components = new List<BlueprintComponent> { grab, bonus };
+            if (spec.LiveSalamanderConstrict)
+            {
+                var heat = ScriptableObject.CreateInstance<SummonSalamanderHeat>();
+                heat.OwningBlueprint = unit;
+                heat.Spear = (BlueprintItemWeapon)unit.Body.PrimaryHand;
+                heat.Tail = unit.Body.AdditionalSecondaryLimbs.Single();
+                components.Add(heat);
+            }
             if (!string.IsNullOrEmpty(spec.DeathRollCreatureKey))
             {
                 var weaponStats = ScriptableObject.CreateInstance<SummonCrocodilianWeaponStats>();
@@ -3540,7 +3557,7 @@ namespace KingmakerGunslinger.Blueprints
         }
 
         private static void ConfigureSalamanderTail(
-            LibraryScriptableObject library, BlueprintItemWeapon tail)
+            LibraryScriptableObject library, BlueprintItemWeapon tail, BlueprintWeaponType type)
         {
             BlueprintItemWeapon native = BlueprintLibraryLookup.RequireExact<
                 BlueprintItemWeapon>(library, LargeTailGuid,
@@ -3550,8 +3567,13 @@ namespace KingmakerGunslinger.Blueprints
             tail.ComponentsArray = (native.ComponentsArray ??
                 Array.Empty<BlueprintComponent>()).Select(
                     ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
-            SetField(tail, "m_OverrideDamageDice", true);
-            SetField(tail, "m_DamageDice", new DiceFormula(2, DiceType.D6));
+            ConfigureSummonWeaponType(library, LargeTailGuid, "native animated tail",
+                "KMG.Summoning.Special.Salamander.TailType", type);
+            SetField(type, "m_BaseDamage", new DiceFormula(2, DiceType.D6));
+            SetField(type, "m_AttackRange", new Feet(SalamanderRulesPolicy.TailReachFeet));
+            SetField(tail, "m_Type", type);
+            SetField(tail, "m_Size", Size.Medium);
+            SetField(tail, "m_OverrideDamageDice", false);
             SetField(tail, "m_Enchantments", Array.Empty<
                 Kingmaker.Blueprints.Items.Ecnchantments.BlueprintWeaponEnchantment>());
         }
@@ -3576,61 +3598,26 @@ namespace KingmakerGunslinger.Blueprints
                 Kingmaker.Blueprints.Items.Ecnchantments.BlueprintWeaponEnchantment>());
         }
 
-        private static void ConfigureSalamanderCombatTraits(
-            LibraryScriptableObject library, BlueprintBuff buff,
-            BlueprintItemWeapon tail)
-        {
-            BlueprintFeature nativeGrab = BlueprintLibraryLookup.RequireExact<
-                BlueprintFeature>(library, NativeGrabGuid,
-                    "native bounded grab/constrict graph");
-            AddInitiatorAttackWithWeaponTrigger grab =
-                (AddInitiatorAttackWithWeaponTrigger)
-                ExpandedSummoningAbilityBuilder.DeepCloneComponent(
-                    nativeGrab.ComponentsArray.OfType<
-                        AddInitiatorAttackWithWeaponTrigger>().Single());
-            grab.WeaponType = tail.Type;
-            ContextActionDealDamage constrict = FindDamage(
-                new BlueprintComponent[] { grab });
-            constrict.Value = new ContextDiceValue {
-                DiceType = DiceType.D6,
-                DiceCountValue = Simple(ExpandedSummoningSpecialProfiles
-                    .SalamanderConstrictDice),
-                BonusValue = Simple(ExpandedSummoningSpecialProfiles
-                    .SalamanderConstrictBonus)
-            };
-            ManeuverBonus grappleBonus = (ManeuverBonus)
-                ExpandedSummoningAbilityBuilder.DeepCloneComponent(
-                    nativeGrab.ComponentsArray.OfType<ManeuverBonus>().Single());
-            var heat = ScriptableObject.CreateInstance<
-                AddInitiatorAttackWithWeaponTrigger>();
-            heat.OnlyHit = true;
-            heat.Action = new ActionList { Actions = new GameAction[] {
-                EnergyDamage(DamageEnergyType.Fire,
-                    ExpandedSummoningSpecialProfiles.SalamanderHeatDice)
-            }};
-            buff.Stacking = StackingType.Replace;
-            buff.IsClassFeature = true;
-            buff.ComponentsArray = new BlueprintComponent[] {
-                grab, grappleBonus, heat
-            };
-            BlueprintUnitFactAccess.Resolve().Configure(buff,
-                LocalizationService.Create(
-                    "KMG.ExpandedSummoning.Salamander.CombatTraits.Name",
-                    "Salamander Heat and Constrict"),
-                LocalizationService.Create(
-                    "KMG.ExpandedSummoning.Salamander.CombatTraits.Description",
-                    "Successful attacks deal 1d6 fire damage; tail hits can grab and constrict for 2d6+4 damage."), null);
-        }
-
         private static void ConfigureSalamander(LibraryScriptableObject library,
             BlueprintUnit unit, BlueprintItemWeapon spear,
             BlueprintItemWeapon tail,
-            BlueprintBuff combatTraits, BlueprintFeature extraplanar)
+            BlueprintUnitType type, BlueprintFeature extraplanar)
         {
-            unit.ComponentsArray = new BlueprintComponent[] {
-                OutsiderLevels(library,
-                    ExpandedSummoningSpecialProfiles.SalamanderHitDice)
-            };
+            AddClassLevels levels = OutsiderLevels(library, ExpandedSummoningSpecialProfiles.SalamanderHitDice);
+            levels.Skills = Array.Empty<StatType>();
+            var racial = ScriptableObject.CreateInstance<SummonSalamanderRacialProfile>();
+            racial.OwningBlueprint = unit;
+            unit.ComponentsArray = new BlueprintComponent[] { levels, racial };
+            unit.Skills = new BlueprintUnit.UnitSkills();
+            type.name = InternalName("KMG.Summoning.Special.Salamander.UnitType");
+            type.KnowledgeStat = StatType.SkillLoreReligion;
+            type.Name = LocalizationService.Create("KMG.ExpandedSummoning.Salamander.UnitType.Name", "Salamander");
+            type.Description = LocalizationService.Create("KMG.ExpandedSummoning.Salamander.UnitType.Description",
+                "A fiery extraplanar outsider with a humanoid upper body and a powerful constricting tail. " +
+                "Darkvision is unmodeled under the accepted passive-sense engine limitation.");
+            type.Image = null;
+            type.SignatureAbilities = Array.Empty<BlueprintUnitFact>();
+            unit.Type = type;
             unit.Body = NaturalBody(spear, Array.Empty<BlueprintItemWeapon>(),
                 new[] { tail });
             unit.Brain = BlueprintLibraryLookup.RequireExact<BlueprintBrain>(
@@ -3650,8 +3637,11 @@ namespace KingmakerGunslinger.Blueprints
                 Feature(library, DrMagic10Guid, "DR 10/magic"),
                 Feature(library, FireSubtypeGuid, "fire subtype"),
                 extraplanar,
-                Feature(library, WeaponFocusSpearGuid, "Weapon Focus (spear)"),
-                combatTraits
+                Feature(library, "d809b6c4ff2aaff4fa70d712a70f7d7b", "Cleave"),
+                Feature(library, IronWillGuid, "Iron Will"),
+                Feature(library, PowerAttackGuid, "Power Attack"),
+                Feature(library, "f74c6bdf5c5f5374fb9302ecdc1f7d64", "Skill Focus (Perception)"),
+                Feature(library, "c1b26f97b974aec469613f968439e7bb", "cannot be tripped")
             };
         }
 
