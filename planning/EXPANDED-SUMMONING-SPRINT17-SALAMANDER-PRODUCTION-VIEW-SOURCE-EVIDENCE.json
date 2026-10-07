@@ -3,7 +3,7 @@
   "status": "SINGLE OBSERVATION-ONLY CORRECTION CANDIDATE; INITIAL EXACT BATCH FAILED/RESTORED; SPRINT17 NOT QUALIFIED",
   "authority": "HOWARD-LAPTOP / codex/expanded-summoning-phase2b-sprints14-17 / draft PR26 only. DATA PR27 salvage-only; ZERO PORTS.",
   "sourceBase": "ea46fb761701529ab79bdaed0d8b1a7aa1bcbc7a",
-  "sourceBoundary": "This complete observation-only correction will be committed/pushed on ea46fb76. The clean committed HEAD is its immutable candidate; full source/build/package gate runs once afterward. Initial integrated exact-head evidence is retained without qualification transfer.",
+  "sourceBoundary": "Single observation-only correction is 0dd43555 plus its mechanical test-count metadata repair. The next clean committed descendant is the immutable runtime candidate. Its complete source/build/package gate runs once; 0dd43555 stopped at the source-count guard before suite/build/package and never launched.",
   "source": null,
   "gates": {
     "focused": {
@@ -175,11 +175,11 @@
     },
     {
       "path": "tools/validate_expanded_summoning_phase2a141.py",
-      "sha256": "38e92f77e06011c92932cd7b667ea93020b2f709bd2014ba0098acf7d593092c"
+      "sha256": "dc843822d89e302b043252d33c63cde3dee020e77beeb9ee138dc528f1f55fb3"
     },
     {
       "path": "validation/static-validation.json",
-      "sha256": "f3c7d38761eaf1b9fac27d1109dcad5933dbff4ffbf47c8cf6ef016f151d993a"
+      "sha256": "e2a5ea1e2d70ec58e4e43bfe74c1100dce4555867edd0c35d7d4ea753febbbd0"
     },
     {
       "path": "scripts/Invoke-KingmakerRuntimeTest.ps1",
@@ -739,5 +739,15 @@
     ],
     "newBehaviorTests": 6,
     "next": "Commit/push complete correction; full exact-head gate once, sequential prelaunch, same10-request all-three batch. One product correction remains only for an evidence-demonstrated production defect. After bounded allowances report PASS/PARTIAL PASS/blocker."
+  },
+  "sourceGateCountRepair": {
+    "attemptedHead": "0dd4355559f45c094c8908c5b4c16490f1cec67d",
+    "status": "PRELAUNCH SOURCE GUARD FAIL; corrected mechanical metadata",
+    "evidence": "artifacts/sprint17-observer-0dd43555-exact-source-gate.log",
+    "cause": "Six added observer behavior tests increased registration2117->2123; the active validator/static metadata still pinned2117.",
+    "completedExpensiveGates": [],
+    "runtimeLaunches": 0,
+    "counterEffect": "Same single observation-only correction set; no second guarded correction, no production change, no product allowance consumed.",
+    "repair": "Pin actual2123 in validator and static metadata; focused validator PASS. Freeze ordinary committed descendant before the complete exact-head pipeline."
   }
 }
