@@ -29,11 +29,40 @@
       16
     ],
     "currentSprint": 17,
-    "currentSubItem": "Sprint17 NOT QUALIFIED. Exact23a0 smoke11/11;human14/15 FAIL. Native ADJ hand control VERIFIED:145/150vertices, all14 parent/bind guards, both BakeMesh controls valid. Native02 rule-frame lead hand releases too; original tracks it within2cm across140rows. Observation correction SOURCE PASS305/2107,full184s/clean14/strict321; exact runtime pending. No geometry/animation/event/numeric-tolerance changes. Restored14:40:45UTC/ZERO writes.32roots hidden;Phase2C deferred.",
+    "currentSubItem": "Sprint17 NOT QUALIFIED. Exact6ae91 smoke11/11 and ALL15 bounded human/original-tail checks PASS on one artifact: both native spear variants,144 paired grip rows, original tail, binding/movement/rollback/destruction. Legacy both-hands-at-rule false retained. Actual136/117/tree216A restored15:14:52UTC, ZERO writes/no game/lock/staging. Printed Salamander mechanics and production view adoption next, then fullSprint17 gate/publication and Phase2B closure.32roots remain hidden;Phase2C deferred.",
+    "sprint17HumanNativeGripPass": {
+      "runtimeCandidate": "6ae91f266b203a98a0f297b24f3a70c785458502",
+      "status": "EXACT BOUNDED HUMAN/TAIL15/15 PASS; FULL SPRINT17 NOT QUALIFIED",
+      "evidence": "planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-NATIVE-GRIP-PASS-EVIDENCE.json",
+      "smoke": 11,
+      "human": 15,
+      "focused": 305,
+      "unfilteredDomain": 2107,
+      "domainSeconds": 83,
+      "completeSeconds": 180.5,
+      "cleanExactReferences": 14,
+      "strictMembers": 321,
+      "qualifies": "Request-local original body binding, native movement, two manufactured spear iteratives, one original secondary tail, contacts including both native spear variants, rollback/native destruction and borrowed-reference isolation.",
+      "doesNotQualify": "Production Salamander profile/feats/skills/defenses, heat/constrict/grab/reach, public routes/UI, full persistence, publication or entireSprint17.",
+      "pairedFrames": 144,
+      "legacyBothHandsAtRuleWithin8cm": false,
+      "maximumNativeOriginalLeadGapDifference": 0.021773786,
+      "poseOrAnimationOrEventChanged": false,
+      "originalAssetSha256": "b5524a694cac0657aaf37ce995e3143f1e0a18e8aa98d799d7fe17ed901c0f19",
+      "nativeWrites": 0,
+      "restored": "2026-10-07T15:14:52.5459355Z",
+      "baseline": {
+        "files": 136,
+        "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+        "version": "0.0.117",
+        "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+      },
+      "next": "Printed Salamander mechanics and exact production-only view adoption, then one full exact-artifact Sprint17 gate/publication and Phase2B closure."
+    },
     "sprint17HumanNativeGripFollow": {
       "sourceParent": "23a0a19eac8c16121e429b748a8f6bdc1c9f212d",
-      "status": "SOURCE PASS305/2107; FULL184s CLEAN14 STRICT321; RUNTIME PENDING; SPRINT17 NOT QUALIFIED",
-      "evidence": "planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-NATIVE-GRIP-CONTROL-EVIDENCE.json",
+      "status": "EXACT6ae91 OBSERVATION REPAIR VERIFIED, BOUNDED HUMAN15/15 PASS; SPRINT17 NOT QUALIFIED",
+      "evidence": "planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-NATIVE-GRIP-PASS-EVIDENCE.json",
       "scope": "Correct fixture observation contradicted by same-pose native control. All consecutive paired frames retain weapon grip <=8cm, retain lead grip whenever native does and follow native lead separation within same8cm. Pin actual rule/render frames and read-only cached IsActed; only audited native02 transition-out may release at rule frame. Preserve old both-hands result separately. No geometry, animation, event, variant, production or numeric-tolerance change.",
       "focused": 305,
       "unfilteredRegistered": 2107,
@@ -42,7 +71,7 @@
       "cleanExactReferences": 14,
       "strictMembers": 321,
       "preserved140FrameOfflineReplay": "PASS; diagnostic only, not new runtime qualification",
-      "runtimeExecuted": false,
+      "runtimeExecuted": true,
       "expectedRuntimeAssertions": 15
     },
     "sprint17HumanNativeDeformerControl": {
@@ -388,6 +417,7 @@
     },
     "sprint17SalamanderHumanTailPrototype": {
       "status": "HISTORICAL PRIVATE AUTHORING SOURCE PASS; exact mesh now packaged separately by binding above; NOT RUNTIME QUALIFIED",
+      "historicalScope": "This archived v2 authoring record is not the current v4 mesh. Current exact6ae91 bounded runtime PASS is sprint17HumanNativeGripPass above; no retroactive qualification of this older mesh.",
       "sourceParent": "5b7cfdea53b49b02ec633ee52a32da7ed0f9d9a5",
       "review": "planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-TAIL-PROTOTYPE.md",
       "nativeAnatomicalDrivers": 26,
@@ -1334,7 +1364,7 @@
       "detail": "Supplied by the owner and read. The Pteranodon passage confirms the shipped profile rather than changing it: ten-foot reach valued for attacks of opportunity, and a single main bite on which everything stacks (2d6 plus modifiers). The guide also positions multiple Pteranodons as the best single-target aerial attacker at their tier. This informs Sprint 2's acceptance emphasis on correct bite impact timing and location at Large reach; it changes no accepted statistic."
     }
   ],
-  "nextConcreteAction": "Finish full source gates, commit/push the native-control-backed contact observation correction, rebuild the exact clean head with every prelaunch/harness gate, then fresh Steam640820 smoke11 and ALL15 human checks. Preserve old both-hands result; require every paired frame, retained weapon grip, native-following lead grip/release, cached native act timing and exact cleanup. Restore actual snapshot. Then printed Salamander mechanics, one same-artifact Sprint17 hidden/publication, fullPhase2B closure and STOP. Phase2C authorized but deferred.",
+  "nextConcreteAction": "Implement printed Salamander profile/feats/skills/defenses, live spear/tail dice/roles and5ft/10ft reaches, tail-only grab through qualified summon lifecycle, physical-plus-fire constrict/heat and exact production-only human/original-tail view adoption preserving identity/placements. Then one complete same-artifact Sprint17 hidden candidate, publication of32snake roots plus affected Salamander routes, fullPhase2B closure and STOP for owner review. Phase2C authorized but deferred; no18-22.",
   "deploymentReconciliation": {
     "finding": "The first runs left this mission's 0.0.136 branch build installed over the pre-run 0.0.117 installation. The mission required restoration and did not authorize a permanent installation; a shared version string does not make a branch artifact an accepted release.",
     "ownershipVerified": "The live DLL hash matched this mission's exact build byte for byte, so the tree was unambiguously mission-owned.",

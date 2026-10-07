@@ -1,6 +1,6 @@
 # Sprint 17 Salamander original human/tail prototype
 
-Status: EXACT23a0 HUMAN14/15 CONTACT-OBSERVATION FAIL/RESTORED; NATIVE CONTROL VERIFIED. Sprint17 NOT QUALIFIED. Production Salamander
+Status: EXACT6ae91 BOUNDED HUMAN15/15 PASS/RESTORED. FullSprint17 NOT QUALIFIED. Production Salamander
 identity/placements/prefab unchanged; spear is now manufactured. A separate original
 human/tail mesh is packaged for guarded research only.
 Laptop PR26 only; DATA salvage-only, ZERO PORTS.
@@ -557,53 +557,52 @@ calling the converter, and restores process defaults afterward. Production
 does not change global settings. No model, pose, selector or threshold change.
 Exacted738 below verifies the JSON repair, not the missing native hand control.
 
-## Exact23a0 native hand comparison verifies the release
+## Exact6ae91 bounded human/original-tail seam PASS
 
-Exact23a0a19eac8c16121e429b748a8f6bdc1c9f212d: smoke11/11 PASS;
-full human14/15 FAIL, restored. Native hand-deformer comparison is LIVE VERIFIED.
-[Exact native hand control and restoration](EXPANDED-SUMMONING-SPRINT17-HUMAN-NATIVE-GRIP-CONTROL-EVIDENCE.json).
-All exact prelaunch PASS301/2103full83.3s/complete180.8s/clean14/strict321,
-515preflight/168orchestration/17provenance and all persistence/crowd/launcher gates.
+Exact6ae91f266b203a98a0f297b24f3a70c785458502: fresh smoke11/11 and
+ALL15 bounded human/original-tail checks PASS on one immutable artifact.
+[Exact bounded PASS and restoration](EXPANDED-SUMMONING-SPRINT17-HUMAN-NATIVE-GRIP-PASS-EVIDENCE.json).
+This qualifies the guarded prototype seam, NOT production Salamander adoption,
+printed profile/mechanics, public player paths/UI, persistence or fullSprint17.
+Sprints14–16 remain COMPLETE/PUBLISHED; Sprint17 NOT QUALIFIED;32roots hidden.
 
-All14 exact native ADJ parent/bind guards pass. Native hand surfaces select
-145left/150right vertices; original222/222. Both owned BakeMesh controls work,
-and the original agrees with independent weighted-world measurement.
-The real2spear+1tail command succeeds;140 paired timeline rows are complete.
-All other14 checks pass, including finite attack skin and exact resource cleanup.
+All exact prelaunch PASS305/2107full83.0s/complete180.5s/clean14/strict321,
+515preflight/168orchestration/17provenance and persistence/crowd/launcher gates.
+Source303e5905...;DLLbb947ca1...;MVID99265afc-55d2-4874-bc9d-531e249ac615;
+ZIPbec0be08...; complete hashes/request/process identities in linked evidence.
 
-The remaining rule-frame both-hands-within8cm assertion also fails the NATIVE
-control: native02 lead hand0.208161578/0.0893238261m, original0.206292585/
-0.07937405m. Native transition-out begins before the cached0.734528542 act time;
-lead-hand separation is present at both real rule frames. Across ALL140 rows the original/native lead gap differs
-by at most0.019906819m; original never loses a grip the native hand retains.
-The weapon hand remains within0.006418m. This is a demonstrated observation
-assumption, not evidence requiring a mesh/animation change. Historical FAIL
-remains FAIL; no favorable earlier frame or numeric tolerance is substituted.
+The real native8HD/BAB8 command resolves TWO manufactured spear iteratives
+and ONE original secondary tail. Both native spear01 and spear02 play, with
+their unchanged cached act events; the fixed original tail moves/acts once.
+Both spear tips are0.03135m from the target envelope; tail gap0.
+144 consecutive paired native/original hand rows PASS with native145/150 and
+original222/222 selected vertices. Weapon hand stays within0.006419m.
+Lead-hand motion follows native within0.021774m; original never loses a grip
+the native retains. Native02 releases its lead hand during transition-out.
+The old both-hands-at-rule predicate remains explicitly FALSE, not relabeled
+as contact. New policy is native-correlated full-motion evidence;8cm/25cm
+numbers, assets, native actions, event timing and random variant choice unchanged.
+Earlier23a0 and all previous failures remain FAIL and preserved.
 
-Rollback30objects; destruction40actual objects/158borrowed alive.
-Actual136/Info0.0.117/tree216A9DC2...AF3 restored14:40:45.4735755UTC;
-ZERO save writes; no game/runtime/compatibility lock/staging; lease Completed.
-Sprints14–16 COMPLETE; Sprint17 NOT QUALIFIED;32roots hidden;
+Original body binding/intact rest, native movement2.496482m, finite attack
+skin, native reference isolation, rollback and native destruction all PASS.
+Rollback cleans30objects; final destruction cleans all40actual owned objects,
+both controls available,158borrowed objects alive. All17 atomic stages retained.
+Actual snapshot20261007T1507549321442Z restored15:14:52.5459355UTC:
+136files/Info0.0.117/tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
+ZERO save writes; lease Completed/recovery=false/released; no game/shared lock/staging.
 976published+29wrappers=1005visible. HumanReview: NOT_PERFORMED_NONBLOCKING.
-
-Source observation correction PASS305focused/2107unfiltered87.3s,
-complete184.0s/clean14/strict321. The new policy requires: all consecutive LateUpdate/
-EndOfFrame pairs must retain weapon-hand grip within8cm, retain lead grip
-whenever native grips, and follow the native lead separation within the SAME8cm.
-Require actual rule/render correlation and pinned read-only native act events;
-rule-frame release is limited to the demonstrated native02 transition-out.
-Geometry, native actions, event timing, variant selection,8cm/25cm tolerances
-and production Salamander are unchanged. Read-only replay of all140 preserved frames passes this policy, not a new
-runtime qualification. The corrected policy has NOT run live.
 
 ## Next exact work
 
-Next: commit/push this source-qualified evidence-backed observation
-correction, rebuild the exact clean head with every prelaunch/harness gate,
-then fresh Steam640820 smoke11 and ALL15 human checks. Do not aggregate earlier
-results or infer a native-following PASS before this artifact runs. Restore
-the exact snapshot. Then printed Salamander mechanics, same-artifact Sprint17
-hidden/publication, fullPhase2B closure and STOP. Phase2C authorized but deferred.
+Next: implement Salamander's printed profile/feats/skills/defenses and exact
+spear/tail dice/roles/reaches; replace the old native grab graph with the qualified
+summon lifecycle and correct physical-plus-fire constrict/heat. Adopt the bounded
+human/original-tail view only for Salamander, preserving identity/placements.
+Verify mechanics, production view lifecycle/UI/routes and persistence together
+on one exact hidden Sprint17 artifact, then one publication gate for the32 new
+snake roots plus affected Salamander routes. FullPhase2B closure follows;
+STOP for owner review. Phase2C stays authorized but deferred; no18–22 here.
 Preserve all native two-handed weapon handling and native references.
 HumanReview: NOT_PERFORMED_NONBLOCKING.
 Preserve native two-handed spear handling
