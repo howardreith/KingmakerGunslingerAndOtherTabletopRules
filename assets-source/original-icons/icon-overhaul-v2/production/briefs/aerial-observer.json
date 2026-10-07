@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "key": "aerial-observer",
+  "draft": false,
+  "publicationStatus": "original asset technically reviewed; owner aesthetics NOT_RECORDED",
+  "behavior": "+2 Trait Perception only while exact KMG Wings of Air is active; no generic flight or altitude behavior.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/ElementalRaces/DormantElementalCharacterTraitFactory.cs",
+    "src/KingmakerGunslinger/ElementalRaces/ElementalCharacterTraitCatalog.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/aerial-observer.png",
+  "sourceSha256": "77d3196f92d4d11fee14d13d3b32de5063c8bf27b99fa6ca0295e02bd87b920e",
+  "tool": "built-in image_gen.imagegen",
+  "referenceImages": [],
+  "prompt": "Use case: stylized-concept.\nAsset type: one original hand-painted fantasy CRPG character-trait icon, in a cohesive four-icon painted-magical family.\nOutput exactly ONE standalone square image, 1024x1024 pixels or larger, full-bleed opaque dark painted background. Never make a collage, panels, contact sheet, sprite sheet, mockup, border, or frame.\nStyle: rich hand-painted fantasy materials, broad deliberate brushwork, sculpted light and shadow, crisp focal silhouette with softer peripheral edges. Controlled dramatic elemental lighting; restrained secondary details; neither photorealistic nor a 3D render. The entire icon is a compact symbolic composition, not a portrait scene or landscape. Use the same medium, contrast discipline, edge treatment and detail density as a coherent four-image art family.\nComposition: one dominant subject filling most of the central square, every essential form fully inside the canvas with a safe dark perimeter; important shapes must not be cut off. Strong immediate recognition at 128x128, 48x48, and especially 32x32. Keep the primary silhouette legible in grayscale; do not rely on color alone. Reduce tiny clutter and concentrate value contrast on the dominant subject.\nOriginality: invent a fresh composition. No copying, tracing, remixing, close imitation of any existing icon, recognizable real person, established fictional character, or copyrighted logo.\nAbsolute exclusions: no text, letters, numbers, runes, logos, monograms, caption, signature, watermark, decorative border, UI overlays or state marks. No vector/flat graphics, anime, cartoons, pixel art, generic placeholders, or modern props.\nPrimary subject: a single keen observing eye or focused gaze surveying downward from wind-borne height. Make a broad clearly legible eye the focal subject, with a watchful expression rather than intimidation. Controlled pale ribbons of air frame it without crossing or hiding the eye. A restrained curved distant cloud line and receding atmosphere below the gaze imply high perspective; these are clean secondary shapes, not a landscape panorama. Pale teal, cool blue and silver-white highlights against deep blue-gray painted shadow. Gentle stationary wind curves convey vigilance, distance and awareness, not speed. Keep the eye and all essential wind forms inside the square.\nThis icon communicates height granting exceptional perception. Differentiate its airy observant silhouette from a hot severe fire eye. Avoid wings as the subject, birds/eagles, binoculars/spyglasses, a generic flying figure, speed streaks, a Wings of Air activation emblem, generic cloud-gazing, and a scene portrait.",
+  "visualStatus": "awaiting-owner-production-review",
+  "subjectAndSilhouette": "A keen eye surveying from wind-borne height, framed by controlled currents and a cloud line; Sylph air and pale teal highlights. Perception while aloft, not flight speed.",
+  "artFamily": "painted-magical",
+  "reviewGroup": "sylph-traits",
+  "confusedWith": [
+    "wings-of-air",
+    "cloud-gazer"
+  ],
+  "uiSurfaces": [
+    "selection / character-sheet feature / tooltip"
+  ],
+  "exportProfile": "project-painted-128",
+  "forbiddenInterpretations": [
+    "No text, letters, numbers, monogram, procedural substitute, placeholder or donor art.",
+    "No claim of owner art or UI approval.",
+    "No generic flight-speed, visual-wings or altitude promise."
+  ],
+  "generationLineage": [
+    {
+      "stage": "initial",
+      "tool": "built-in image_gen",
+      "prompt": "Use case: stylized-concept.\nAsset type: one original hand-painted fantasy CRPG character-trait icon, in a cohesive four-icon painted-magical family.\nOutput exactly ONE standalone square image, 1024x1024 pixels or larger, full-bleed opaque dark painted background. Never make a collage, panels, contact sheet, sprite sheet, mockup, border, or frame.\nStyle: rich hand-painted fantasy materials, broad deliberate brushwork, sculpted light and shadow, crisp focal silhouette with softer peripheral edges. Controlled dramatic elemental lighting; restrained secondary details; neither photorealistic nor a 3D render. The entire icon is a compact symbolic composition, not a portrait scene or landscape. Use the same medium, contrast discipline, edge treatment and detail density as a coherent four-image art family.\nComposition: one dominant subject filling most of the central square, every essential form fully inside the canvas with a safe dark perimeter; important shapes must not be cut off. Strong immediate recognition at 128x128, 48x48, and especially 32x32. Keep the primary silhouette legible in grayscale; do not rely on color alone. Reduce tiny clutter and concentrate value contrast on the dominant subject.\nOriginality: invent a fresh composition. No copying, tracing, remixing, close imitation of any existing icon, recognizable real person, established fictional character, or copyrighted logo.\nAbsolute exclusions: no text, letters, numbers, runes, logos, monograms, caption, signature, watermark, decorative border, UI overlays or state marks. No vector/flat graphics, anime, cartoons, pixel art, generic placeholders, or modern props.\nPrimary subject: a single keen observing eye or focused gaze surveying downward from wind-borne height. Make a broad clearly legible eye the focal subject, with a watchful expression rather than intimidation. Controlled pale ribbons of air frame it without crossing or hiding the eye. A restrained curved distant cloud line and receding atmosphere below the gaze imply high perspective; these are clean secondary shapes, not a landscape panorama. Pale teal, cool blue and silver-white highlights against deep blue-gray painted shadow. Gentle stationary wind curves convey vigilance, distance and awareness, not speed. Keep the eye and all essential wind forms inside the square.\nThis icon communicates height granting exceptional perception. Differentiate its airy observant silhouette from a hot severe fire eye. Avoid wings as the subject, birds/eagles, binoculars/spyglasses, a generic flying figure, speed streaks, a Wings of Air activation emblem, generic cloud-gazing, and a scene portrait.",
+      "input": null,
+      "outputSha256": "b390f96ce3faf74830464f308e1e94639dc27906d39109581df3f1bd8d3f31fd"
+    },
+    {
+      "stage": "original-refinement",
+      "tool": "built-in image_gen",
+      "prompt": "Use case: precise-object-edit. Refine this one original square Aerial Observer CRPG trait icon. Preserve the cool pale-teal, blue and silver-white palette, hand-painted fantasy brushwork, watchful eye identity and opaque dark blue-gray background. Change only the composition and detail hierarchy to work at 32 pixels: enlarge and reposition the single keen eye into the central dominant focal subject, with its entire almond silhouette and iris clearly readable. The eye should occupy about three quarters of the canvas width. Reduce the broad lower landscape/cloud panorama to ONE narrow curved cloud-horizon band and a little atmospheric depth, occupying at most the lower fifth of the image. Remove the sprawling cloud landscape. Frame the eye with just two restrained controlled wind ribbons that remain secondary and never cover the iris. Every important eye and wind shape must fit fully inside a safely dark perimeter; no cropped eye, lid or elemental tips. Convey vigilance and perception from wind-borne height, not speed, generic flight power or cloud-gazing. Keep rich painted materials and strong grayscale focal contrast, minimal tiny detail, no wings/bird/modern props. This is a compact fantasy game ICON, not a portrait or landscape. Output one square image at least 1024x1024. No text, runes, letters, numbers, logos, monograms, border, frame, UI, signature or watermark.",
+      "inputSha256": "b390f96ce3faf74830464f308e1e94639dc27906d39109581df3f1bd8d3f31fd",
+      "outputSha256": "77d3196f92d4d11fee14d13d3b32de5063c8bf27b99fa6ca0295e02bd87b920e"
+    }
+  ],
+  "objectiveVisualReview": "PASS",
+  "ownerAestheticApproval": "NOT_RECORDED"
+}

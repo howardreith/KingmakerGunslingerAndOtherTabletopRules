@@ -1,5 +1,45 @@
 # Expanded Summoning fidelity matrix
 
+Current Phase 2 Sprint 11 disposition (2026-09-30): Sprints 9-11 are
+internally technically qualified. Aurochs, Bison, Rhinoceros and Woolly
+Rhinoceros are published at all 48 authorized placements, for 882 visible
+generated choices and 911 total choices with the 29 retained native wrappers.
+The four ungulates have qualified original icons/views, exact natural profiles,
+ordinary Trample or Powerful Charge, direct and quantity behavior, lifecycle,
+player paths and menu publication. Aurochs and Bison use the faithful bounded
+Stampede implementation: three allied Stampede holders must each execute their
+own registered Trample in the same round while mutually adjacent. The acting
+group then gains same-size eligibility and +2 DC; idle, queued, interrupted,
+stale-round or separated units do not count. Trample uses the disclosed
+automatic AoO-first Kingmaker adaptation exactly specified by the owner.
+
+Stirge's replacement session-only attachment is owned only by the Stirge;
+the prey receives no native grapple part or movement/action condition. The prey
+moves, acts and attacks normally while the separately targetable Stirge follows
+at a bounded offset. A standard-action Remove Stirge ability with its own icon
+chooses the better current CMB or Mobility modifier before rolling against CMD
+5. Both methods, failure/success, and the printed +8 maintain bonus passed.
+Death, dismissal, expiry, prey death, short translocation, area transition,
+module disable and reload clean up without link, ability, condition, collision
+or view residue. Four actual Constitution drains detach automatically.
+
+Filth Fever is the disclosed bounded disease adaptation. The primary Paizo
+Stirge stat block limits exposure to one check per victim from each particular
+Stirge; zero Constitution damage neither rolls nor consumes that check. The
+final evidence set is creature review `20260929T1714055122835Z` (12/12),
+turn-based `20260929T1824346229028Z`, RTWP `20260929T1827582364082Z`,
+inventory `20260929T1850489650251Z` (50/50), and player path
+`20260929T1903306672213Z` (834/834 generated roots and 29/29 native wrappers).
+The earlier attachment, removal and reload evidence remains detailed in the
+Stirge row below. Exact live-install restoration passed after every run.
+Final Sprint 11 evidence is rules `20260930T0422334006971Z` (58/58), visual
+contracts `20260930T0426570686599Z` (15/15), lifecycle
+`20260930T0430006142872Z` (7/7), inventory `20260930T0457205706691Z`
+(50/50), player path `20260930T0508037596496Z` (10/10), and the 15/15
+working-save trio `20260930T0524086567797Z` /
+`20260930T0528280228527Z` / `20260930T0532419916125Z`. Owner visual approval
+remains pending and nonblocking.
+
 Status: release-qualified on final native qualification source
 `5205805eab3fe0115d6888c53bce73c80474d1b7`. The complete roster passed the
 final-live structural observer, all 153 production summon commands, the
@@ -68,13 +108,14 @@ mechanical and compatibility runs passed with this behavior.
 
 | Creature | Families/tiers | KMG unit | Delivered chassis/offense | Deviation | Qualification |
 |---|---|---|---|---|---|
-| Dog | SM I; SNA I | `e8c90cb29374455cb6301e4fa7d1f837` | Small animal 1; Str 13/Dex 13/Con 15/Int 2/Wis 12/Cha 6; speed 40; bite 1d4; Perception focus | None structurally identified | Structural/runtime/visual/persistence/profile PASS |
-| Eagle | SM I; SNA I | `7383db28c1d74dce98533ddc257a2e3c` | Small animal 1; 80-foot airborne movement; bite and two 1d4 talons; Weapon Finesse | Separate 10-foot ground speed omitted; Roc visual used at bounded scale | Structural/runtime/visual/persistence/profile PASS |
+| Dire Rat | SM I; SNA I | `e7e43c80489a48e1b562fe6ac11c33ee` | Small animal 1; 10/17/13/2/13/4; speed 40; bite 1d4; Weapon Finesse, Skill Focus (Perception), four-leg trip defense; exact damaging bite invokes DC 11 Fortitude and native Filth Fever | Climb/swim omitted; compact original rat silhouette still pending | Registered and hidden; focused injury-disease, miss/replay and quantity-source runtime PASS; full Sprint 12 visual/player/persistence matrix pending |
+| Dog | SM I; SNA I | `e8c90cb29374455cb6301e4fa7d1f837` | Small animal 1; Str 13/Dex 13/Con 15/Int 2/Wis 12/Cha 6; speed 40; bite 1d4; Perception focus | None structurally identified | Registered and hidden for Sprint 12; inherited structural profile PASS; distinct visual and full live matrix pending |
+| Eagle | SM I; SNA I | `7383db28c1d74dce98533ddc257a2e3c`; instance-local original Eagle feathered mesh on the Giant Eagle flying rig | Small animal 1; 80-foot airborne movement; bite and two 1d4 talons; Weapon Finesse; view scale 0.30 | Separate 10-foot ground speed omitted | Phase 2 Sprint 9 visual attachment 2/2, Roc isolation 2/2, 81/81 visual contracts and lifecycle retry live PASS; player-path teardown fault, sprint-specific motion/contact and persistence pending |
 | Poisonous Frog | SM I; SNA I | `e1a8e5e206154dd48b6aca1d4262e8e7` | Tiny animal 1; bite 1; native six-tick 1d2 Constitution poison, Fortitude, one save cures | Swim movement omitted | Structural/runtime/visual/persistence/profile PASS; poison graph structurally qualified |
 | Giant Centipede | SM II; SNA I | `baf9e8f829e9410db8f3d200bb62a2c6` | Medium vermin 1; speed 40; bite 1d6-1; native six-tick 1d3 Dexterity poison; eight-leg trip defense | Int 1 represents absent Intelligence; climb omitted; native poison lacks the tabletop +2 racial DC bonus | Structural/runtime/visual/persistence/profile PASS; poison graph structurally qualified |
 | Giant Spider | SM II; SNA II | `4a3cd49e751448c8b8836485b262fdf1` | Medium vermin 3; bite 1d6; native four-tick 1d2 Strength poison; natural armor +1; native 60-ft blindsight for tremorsense, native web immunity, bounded 50-ft ranged Web (Reflex, native web-grappled state up to ten rounds, two uses per summoning) (Sprint 6) | Int 1 represents absent Intelligence; web, climb, and tremorsense omitted because no bounded contract was proven | Structural/runtime/visual/persistence/profile PASS; poison graph structurally qualified |
-| Goblin Dog | SM II; SNA II | `f1584066792a436fa3a5ba0b3731b481` | Medium animal 1; speed 50; bite 1d6+3; Toughness; Worg view only | Disease immunity and allergic reaction omitted because no safe exact contract was proven | Structural/runtime/visual/persistence/profile PASS |
-| Hyena | SM II; SNA II | `ec12fab8be5c412d8ee824d15a6621d0` | Medium animal 2; speed 50; bite 1d6+3 with native trip; Perception focus | Wolf view only | Structural/runtime/visual/persistence/profile PASS |
+| Goblin Dog | SM II; SNA II | `f1584066792a436fa3a5ba0b3731b481` | Medium animal 1; speed 50; bite 1d6+3; Toughness; disease immunity; exact damaging bite invokes DC 12 Fortitude and one nonstacking day at -2 Dexterity/-2 Charisma, removable by positive magical healing or native Remove Disease | Exact native Goblin type is exempt as a disclosed bounded adaptation because no broader Goblinoid subtype contract exists; original silhouette pending | Registered and hidden; focused immunity/allergy/removal/native-Goblin/quantity-source runtime PASS; full Sprint 12 visual/player/persistence matrix pending |
+| Hyena | SM II; SNA II | `ec12fab8be5c412d8ee824d15a6621d0` | Medium animal 2; speed 50; bite 1d6+3 with native trip; Perception focus | Original hyena silhouette pending | Registered and hidden for Sprint 12; inherited structural profile PASS; distinct visual and full live matrix pending |
 
 All 67 KMG summon units carry hidden marker
 `KMG.Summoning.Subtype.Extraplanar` (`1812739855844dc4adf3c32a70f13512`)
@@ -97,7 +138,7 @@ frozen quantity abilities generated for their higher-tier placements.
 | Cheetah | SM III; SNA III | `6eb29e76792c41c5ab9e3812fe4b66e0`; Leopard view `768275c9885dd954fb3c84ba69ac4281` | Medium animal 3; 17/19/15/2/12/6; speed 50; NA +1; bite 1d6 with trip, two 1d3 claws; Weapon Finesse, Improved Initiative; procedural spotted coat at a 0.92 view scale; bounded once-per-summoning sprint (+30 ft, one round) (Sprint 8) | Once-per-hour tenfold sprint omitted; no bounded native cooldown contract proven | Structural/runtime/visual/persistence/profile PASS |
 | Tiger (Phase 1 Sprint 8) | SNA IV | `KMG.Summoning.Unit.Tiger`; leopard rig `768275c9885dd954fb3c84ba69ac4281` at a 1.25 view scale | Large animal 6; 23/15/17/2/12/6; speed 40; NA +3; native 2d6 bite; four project 1d8 claws (two rake); Pounce; Improved Initiative, Skill Focus (Perception), Weapon Focus (claw); grab with the bite and both foreclaws by limb identity on the shared summon grapple lifecycle; rake gate (a charge, or the foe held since the round began; corrected 2026-09-25); procedural striped coat generated in the rig's texture space | Run and Skill Focus (Stealth) omitted; a stray rake roll is a silent automatic miss and the sequencing seam drops rake slots from other full attacks; no native tiger exists | Phase 1 state file records the guarded evidence |
 | Crocodile | SM III; SNA III | `ed3fa562802b418ab062a7da622874da`; Monitor Lizard view `4109b40f6bbb49640840644cc84ada67` | Large animal 3; 19/12/17/1/12/2; speed 20; NA +4; bite 1d8 and secondary KMG 1d12 tail `d7ec01bae32a4d9086214f156ce52ecd` | Swim, grab, death roll, sprint, and hold breath omitted because no summon-safe target-state and movement contracts were proven | Structural/runtime/visual/persistence/profile PASS |
-| Dire Bat | SM III; SNA III | `d867cb795b5640219a8362661f447697`; Roc-compatible Giant Eagle view `406c1e1af5400ac4881e330502ccbd9e` | Large animal 4; 17/15/13/2/14/6; 40-foot airborne movement; NA +3; bite 1d8; Stealthy | 20-foot ground mode, blindsense, and Alertness omitted | Structural/runtime/visual/persistence/profile PASS; scale/navigation bounded |
+| Dire Bat | SM III; SNA III, 14 placements registered but hidden | `d867cb795b5640219a8362661f447697`; Giant Eagle flying rig `406c1e1af5400ac4881e330502ccbd9e` with instance-local original Bat mesh; sense feature `5dcc039bc9674208a51e4babcd8a30ee` | Large animal 4; 17/15/13/2/14/6; 40-foot airborne movement; NA +3; bite 1d8; Stealthy; native imprecise blindsense component at 40 feet on a Bat-only feature | 20-foot ground mode and Alertness omitted; native Blindsight feature rejected because it grants stronger precision and blindness immunity | Phase 2 Sprint 9 sense 2/2 and original Bat visual attachment 2/2 live PASS; Eagle/Roc donor isolation 4/4 and Pteranodon regression PASS on `20260927T0412311065438Z`; icon, publication, motion/impact and player path pending |
 | Wolverine | SM III; SNA III | `f640d3e77d7d4a0d8de3351129cd7148`; Worg view `313a17cbd273d1f40bd1654ee2ae186e` | Medium animal 3; 15/15/15/2/12/10; speed 30; NA +2; two 1d6 claws and secondary 1d4 bite; Toughness | Burrow/climb and after-damage rage omitted because no save/load-safe summon-local rage state was proven | Structural/runtime/visual/persistence/profile PASS |
 | Dire Boar | SM IV; SNA IV | `1710475cee544d9d858b05b24fb3ad4c`; `6ec9c63c41a1e754ea4dcd85557625b4` | Large animal 5; 23/10/17/2/13/8; speed 40; NA +6; 2d6 gore; Ferocity, Improved Initiative, Toughness | None structurally identified | Structural/runtime/visual/persistence/profile PASS |
 | Dire Wolf | SM IV; SNA IV | `d2e7b46ea8994f7085063abac3775142`; `03dd28e92faf2e44eb9564a6ba01fdd0` | Large animal 5; 19/15/17/2/12/10; speed 50; NA +3; bite 1d8 with trip; Perception and bite focus | Run omitted because no exact final-live feature identity was proven | Structural/runtime/visual/persistence/profile PASS |
@@ -251,10 +292,370 @@ contamination. No save was accessed.
 
 | Surface | Final disposition | Evidence |
 |---|---|---|
-| Dire Bat | Hidden from publication; all identities retained. Roc is not an acceptable bat proxy and no installed bat-compatible rig passed inventory. | 14 exact placements suppressed; 667/667 remaining roots PASS. |
-| Eagle / Poisonous Frog | View-only scale 0.58 / 0.48. Mechanical size, reach, and navigation unchanged. | Live bounds 5.919 < Roc 11.226 and 1.475 < Giant Frog 3.073. |
+| Dire Bat | Phase 2 Sprint 9 publishes 14 preserved SM/SNA identities with an original skinned Bat mesh, albedo and distinct creature icon; dedicated native imprecise blindsense at 40 feet, no precise blindsight or immunity. Open-floor travel, Quickened own-tier RTWP/turn-based combat, disabled publication and save-backed module-off cleanup qualified; doorway traversal and bite contact qualified on the final guarded fixture. | Guarded cast Bat sense/visual 2/2; player path 813/813 roots; live inventory 48/48 (`20260927T0623527812622Z`); prepare/reload/expiry trio 14/14 each with original Bat renderer reattached and then absent (`20260927T0655003623332Z`, `20260927T0659022955480Z`, `20260927T0703025930540Z`). Native no-forced-path travel 6.195 m to within 1.26 m of destination (`20260927T0911579435138Z`). Exact-hostile weapon rules: turn-based 2 (`20260927T1007223013777Z`), RTWP 1 (`20260927T1010235825673Z`). Module-off eighteen-parent census PASS with zero added options and 46 native variants (`20260927T1046174341970Z`). Saved Bat reloaded on a visible native donor under the disabled module, then cleaned with the other 15 fixture summons and one authorized write (`20260927T1151452804617Z`); final load found zero KMG summons and wrote nothing (`20260927T1159482067877Z`). Exact live-tree restoration. Owner visual approval pending. |
+| Eagle / Poisonous Frog | Eagle has an original feathered skinned mesh/albedo at 0.30 view scale; Poisonous Frog retains 0.48. Mechanical size/reach unchanged. | Guarded Eagle visual 2/2; live height 1.360 < Medium humanoid 1.926; selection/navigation, locomotion, attack and hit/death contracts 81/81 (`20260927T0446552603378Z`); Eagle renderer reattached after working-save reload and absent after cleanup (`20260927T0659022955480Z`, `20260927T0703025930540Z`). Native no-forced-path travel 7.943 m to within 0.18 m of destination (`20260927T0911579435138Z`). Exact-hostile Quickened weapon rules: turn-based 6 (`20260927T1000134559074Z`), RTWP 1 (`20260927T1017190134756Z`); live body-contact and native doorway reviews passed. |
 | Dire Boar / Dire Bear | View-only scale 1.15; each reads larger than its non-dire analogue. | Live bounds 2.845 > 2.474 and 3.768 > 3.277. |
 | Pteranodon | View-only scale 0.82 to keep the Roc rig bounded. | Live bound 8.368 < Roc 11.226. |
 | Elephant / Mastodon | View-only 0.90 / 1.15; Elephant remains on shared Mastodon material rather than mutate a native asset. | Live bounds 9.568 < 12.226. Gray recolor intentionally deferred. |
 | Roc | View-only scale 1.10; bounded camera/selection/navigation checks pass. | 67-view visual scenario PASS. |
 | Icons | Exact donor/item/ability sprite, then immutable base-game category fallback. | Called-out canine, feline, reptile, flying, celestial and fiend group distinctions PASS live inventory. |
+
+### Sprint 9 attack-anchor qualification update, 2026-09-27
+
+Guarded own-tier Eagle combat `20260927T1219166168032Z` passed six
+exact-hostile weapon rules. Dire Bat combat `20260927T1226258599811Z`
+passed two exact-hostile bites. The first geometry probe reported roughly
+2 m for Eagle rig anchors and 0.436-0.454 m for Bat jaw anchors, but the
+baked-surface repeat `20260927T1240150768739Z` exposed that these distances
+were measured to the hostile's `L_WeaponMarker`, not its body. The geometry
+values are excluded from visual contact qualification; native attack evidence
+remains valid. Both runs restored the original live mod tree exactly.
+
+Corrected Eagle and Bat runs `20260927T1252224741767Z` and
+`20260927T1259362389907Z` passed native combat and measured the same
+substantial `Character` body renderer. Eagle's beak/talon weighted vertices
+were 1.27-1.39 m from its bounds at six weapon events, a visual impact defect.
+Bat's beak weighted vertices intersected the bounds at two bites (0 m).
+Both runs restored the original live mod tree. Eagle impact and doorway
+behavior remain open; Bat bite contact passed this bounded fixture.
+
+The first baked Eagle values above applied its 0.30 view scale twice and are
+excluded. Calibration `20260927T1314477538739Z` exposed this. Corrected
+guarded Eagle combat `20260927T1326061196128Z` passed six exact-hostile
+weapon events with facing dot 1; head/beak surface was 0.739-0.798 m from
+the body on bites and nearest talon surface 0.864-0.906 m away on claws.
+This is the valid Eagle attack-contact gap to resolve. Exact original-tree
+restoration and 1,927 domain, clean Release, strict package PASS.
+
+An Eagle-only, instance-local skeleton lunge now closes the measured contact
+gap without altering native attack reach. Guarded six-attack turn-based result
+`20260927T1345424022344Z` measured 0-0.144 m beak/head and 0-0.226 m talon
+weighted-surface gap to the hostile body. Guarded Eagle/Bat creature review
+`20260927T1353291620814Z` passed both native-travel and cleanup gates;
+the Bat remains unchanged. Both wrappers restored the original live tree.
+Repository validation, 1,928 domain tests, clean Release and strict package
+passed. Guarded RTWP result `20260927T1404176347439Z` passed an exact
+native bite with the Eagle head-weighted surface 0.106 m from the hostile
+body, followed by verified live-tree restoration. A doorway route remains
+open for Sprint 9.
+
+Sprint 9 final native doorway run `20260927T1536450257132Z` passed Eagle and
+Dire Bat together (12/12 assertions). Both crossed a blocked direct line by
+native `UnitMoveTo`, travelled 12.357/12.360 m, finished 0.021/0.024 m
+from the adjacent-room node and left zero reviewed summons after cleanup.
+The earlier overlong destination failed and is excluded. Combined runtime
+restored the exact original live tree; repository validation, 1,928 domain
+tests, clean Release and strict package passed. Eagle's body-contact and
+Bat's bite-contact gates had already passed. Sprint 9 internal technical
+status: PASS; HumanReview: NOT_PERFORMED_NONBLOCKING. Sprint 10 remains next.
+
+## Phase 2 Sprint 10 provisional Wasp row
+
+Giant Wasp: SM IV and SNA IV; six legal quantity placements in each family;
+Celestial/Fiendish Monster execution policy, caster-alignment Nature's Ally
+policy. Dedicated Large 4-HD Vermin unit, Str 18/Dex 12/Con 18/Int 1
+(engine substitute for no Intelligence score)/Wis 13/Cha 11, natural armor
++4, 60-foot airborne travel, and dedicated 1d8 sting. The 20-foot ground
+speed is unavailable in the single-speed engine profile. Wasp has an
+original project-owned six-leg/four-wing visual asset. A cloned native
+poison lifecycle now applies an injury Fortitude DC 18 effect on a sting hit:
+1d2 Dexterity damage, six total exposures, one successful save to cure.
+The +2 racial DC is set on the on-hit poison context, which the native buff
+retains for round saves. Guarded mechanical run
+`20260927T1912579609072Z` passed the Wasp sting, DC, initial damage,
+failed-save continuation, successful-save cure, and private 16-bone visual
+attachment (2/2); the working save's enemy-damage scale of 0.8 truncated
+one rolled 1 to zero on the next round, so that single tick is not evidence
+of positive subsequent damage. Guarded working-save review
+`20260927T1955333075608Z` passed native 12.345 m planar travel, connected
+doorway crossing and complete cleanup. The four camera frames show the
+original striped body and moving wings but are crowded by walls and shelves;
+a fifth frame with its auxiliary renderer hidden retained cyan silhouettes,
+consistent with native occlusion display. Clean attack-to-target contact,
+combat cadence, immunities and lifecycle review remain open. The guarded
+`20260927T2015561300256Z` fixture passed all four private Wasp quantity
+commands (1d3 and 1d4+1 in both families), exact-kind counts, 14/14 visual
+attachments and per-cast cleanup. All
+twelve placements stay suppressed; no
+published player choice or full Wasp combat qualification is claimed.
+The guarded `20260927T2115391949167Z` probe passed native RuleApplyBuff
+mind-affecting immunity on the Wasp against an eligible human control;
+neither control buff was installed, so only native rule eligibility is
+claimed. The native VerminType fact is present, but the cloned donor's
+`EagleGiant` species marker requires correction before publication.
+The subsequent owned unit type `682c4c25e772495e882fc2cacddc0c38`
+replaces that marker on the Wasp only. Guarded
+`20260927T2152154541742Z` passed the live type and native
+`VerminImmunities` grant with paired Wasp-immune/human-eligible
+RuleApplyBuff results. The native component mask did not directly match
+the `MindAffecting` bit; the claim rests on the actual rule result and
+granted fact. The type image is unassigned while the creature is hidden.
+Guarded own-tier Summon Monster IV combat runs
+`20260927T2217134616132Z` (turn-based) and
+`20260927T2220168994981Z` (RTWP) each passed two exact-target native
+sting rules. Baked stinger surface gaps were 0.643–0.654 m and
+0.743/2.04 m respectively. Cadence is qualified in those fixtures, but
+visual sting contact remains a defect. Wasp stays unpublished.
+At native impact, guarded overhead captures from
+`20260927T2251029714353Z` and `20260927T2254096344270Z` show the
+abdomen/stinger pointing away from the hostile. The party-camera frames
+are wall-occluded; the first RTWP overhead frame is partly dissolved.
+The intact second RTWP frame confirms the pose defect. A forward body
+lunge alone is insufficient; target-directed tail motion remains to be
+proved. Mechanical two-mode cadence continues to pass.
+Guarded request-local Tail-bone probes `20260927T2310527552766Z`
+(turn-based) and `20260927T2314172123373Z` (RTWP) passed their native
+two-sting scenarios. The probe restored the bone after each capture. Its
+baked tip moved from 2.04/2.049 m to inside the target bounds in turn-based;
+RTWP moved from 2.137 to 0.012 m and 3.51 to 1.198 m. Same-frame overhead
+renders did not establish a visibly improved sting pose, and the second
+RTWP geometry still missed. This is diagnostic only, not a contact pass or
+a production animation. All twelve Wasp choices remain suppressed.
+The follow-up two-frame request-local pose runs `20260927T2331283868029Z`
+and `20260927T2334367843649Z` again passed two native stings in each mode.
+The baked tip entered target bounds in both turn-based samples and the first
+RTWP sample, but the second RTWP gap stayed 1.193 m. Delayed renders show
+a changed pose, yet the doorway clips the Wasp body/wings and the target
+contact is obscured by impact effects. This pose is not a credible, clear
+production sting. Wasp remains hidden pending a visual-rig/contact repair.
+Source commit `9f011014` and guarded inventory
+`20260927T1804369885102Z` passed 48/48 structural/menu assertions with
+exact live-tree restoration. Source rules:
+[Paizo Giant Wasp](https://legacy.aonprd.com/bestiary/wasp.html).
+
+The original Wasp now uses a sword-length Tail-weighted stinger and a
+view-local, native-weapon-event pose. The guarded open-floor turn-based run
+`20260928T0751193161358Z` placed its baked stinger at the hostile on both
+native hits (0/0 m); RTWP `20260928T0754382265441Z` recorded 0/0.191 m.
+The 0.25 m contact gate passed in both modes. The earlier shorter-stinger
+diagnostics `20260928T0738095891433Z` and `20260928T0741288985771Z`
+failed that gate at 0.418 and 0.775 m respectively and are excluded from
+qualification. The guarded creature review `20260928T0817537337846Z`
+passed 12.334 m native travel, connected doorway crossing, retained painted
+renderer, full unit cleanup and zero private Wasp meshes/materials after
+view destruction. Normal party-camera renders read as a striped flying
+wasp; overhead impact frames still carry native effects that obscure the
+needle. The Wasp remained hidden at this visual checkpoint. HumanReview:
+NOT_PERFORMED_NONBLOCKING.
+
+The later original painting has a manifest-backed 128 px export with 26
+exact consumers. All twelve SM/SNA Wasp placements are now published.
+Guarded `20260928T0955440745921Z` passed all 825 published generated
+spellbook roots, 29 native wrappers, one-slot/quantity contracts, and
+request-local cleanup. Guarded `20260928T1044279887208Z` passed 50/50
+inventory assertions: all 18 menu equations, zero missing icons, exact
+inspectable unit-type sprite and zero prohibited references. The original
+136-file live installation was restored after both runs. This closes the
+Wasp technical publication gate; owner visual approval remains pending.
+
+## Phase 2 Sprint 10 Stirge row
+
+Final disposition: the corrected session-attachment implementation is
+published and internally technically qualified. The dated paragraphs below
+retain the incremental evidence trail; references there to a hidden choice,
+reciprocal native attachment, open art, or pending requalification describe
+superseded checkpoints rather than current behavior.
+
+Historical progression: Stirge is SNA I with nine legal quantity placements
+through SNA IX. The
+hidden unit is Tiny, one-HD magical beast with Str 3/Dex 19/Con 10/Int 1/
+Wis 12/Cha 6, 40-foot airborne speed, Weapon Finesse and a zero-base-dice
+touch carrier. Its Eagle donor is temporary rigging only. The 10-foot
+ground speed is omitted because the engine exposes one unit speed. The
+direct touch hit and reciprocal native attachment are live-qualified, as
+is one actual Constitution drain tick and explicit link cleanup. The +8
+maintain bonus is installed but has not been exercised in a native grapple
+check. Four-point detachment passed guarded `20260928T0247164550495Z`: four
+actual one-point losses and automatic reciprocal-part/buff cleanup. The 10%
+disease chance uses one per-victim check on first actual drain; guarded
+`20260928T0434428779441Z` forced an eligible exposure, observed a failed
+native Fortitude save and applied exact `FilthFever` with retained DC 12,
+then rejected a
+repeat check and retained that result through another drain. Native cure
+timing, original visual and icon remain open.
+Guarded `20260928T0610511271269Z` passed native prey death through
+`UnitLifeController` and Stirge release without another drain. It also
+passed exact timed-marker expiry while attached, followed by the Stirge's
+next round callback releasing both sides. The paused fixture did not observe
+native destruction at that boundary; the existing turn-based summon-lifecycle
+scenario is the separate native retirement witness. Native `Unlootable`
+prevents the touch proboscis from becoming scene loot; exact cleanup passed.
+The guarded working-save trio `20260928T0629198538034Z` / `0633408624544Z`
+/ `0637555596273Z` saved an attached Stirge and Pony, then found both
+freshly loaded without grapple parts, hold buffs or immobilizing conditions;
+the cleanup save left zero fixture summons. This is a safe grapple reset on
+load, as allowed by the accepted engine limitation, not preservation of an
+active hold through reload.
+Guarded
+`20260928T0304163413890Z` passed the
+victim's native break-free rule with controller-equivalent target-part removal
+and a separate area-leave safeguard sweep. Actual controller timing remains
+to be observed.
+Guarded `20260928T0332419433992Z` passed destruction of an attached summon
+after the native entity-destroyer queue advanced: victim held state and part
+were gone with no extra damage. This exercises the shared teardown path,
+not the timer's scheduling.
+The registered primary
+carrier now clones the native held-touch weapon; live inventory
+`20260928T0113159269094Z` verifies `AttackType.Touch`, zero base dice and
+the exact unit binding (49/49 assertions). This is structural touch-AC
+qualification. Guarded own-tier combat `20260928T0142219533559Z` then
+resolved a native hit at touch AC 6 against ordinary melee AC 14 with no
+HP damage (0 to 0). Guarded combat `20260928T0232376506044Z` observed the
+reciprocal native link, Stirge's lost Dexterity to AC, Constitution damage
+0 to 1, cumulative meal 1, retained attachment and explicit clean release.
+No full gameplay fidelity or publication is claimed. All nine choices stay
+suppressed. The guarded
+startup smoke `20260928T0029440999424Z` passed; the corrected live
+inventory `20260928T0052069434655Z` passed 48/48 structural assertions
+with exact installation restoration. Rules baseline:
+[Paizo Stirge](https://legacy.aonprd.com/bestiary/stirge.html).
+Original 512-vertex Stirge skinned mesh, rust-red/ochre 1024 px albedo,
+four fleshy wings, six legs, forward proboscis and 0.25 view-only scale
+are now installed on the private Eagle-donor renderer swap. Guarded
+`20260928T0919388380835Z` passed exact attachment, 12.339 m native
+travel/doorway crossing, render lifecycle and zero private view resources
+after cleanup; its read-only overhead frame shows the creature with a
+small furniture-occlusion patch. At that checkpoint the icon was source-only
+and all nine placements were hidden.
+
+Final guarded turn-based `20260928T1227208122214Z` and RTWP
+`20260928T1230343024504Z` native UnitAttack runs passed touch hit,
+reciprocal attach, forward proboscis aim and 0.05 m baked clearance outside
+the target bounds. The final disposable run `20260928T1307116237968Z`
+passed 33/33 assertions, including four-point drain, native DC 12 disease
+exposure, escape, prey death, dismissal, timed expiry, area sweep, visual
+attachment and exact cleanup. Its per-view rig has 15 bones and released
+zero private meshes/materials in the lifecycle run.
+
+The original 128 px Stirge icon is distinct from Giant Wasp and assigned
+to the unit and all nine registered SNA choices; its source/export hashes and
+exact symbols are in the icon manifest. The zero-damage touch weapon and attack
+trait are mechanics-only; the hold buff is internal and Filth Fever keeps
+its native icon. The nine choices are now hidden. The earlier guarded player path
+`20260928T1344385887684Z` passed 834/834 generated roots and 29/29 native
+wrappers. The no-save live inventory `20260928T1405023387599Z` passed 50/50
+assertions, all 18 menu equations, zero missing or misordered icons and zero
+prohibited references. Original installation restoration was exact after
+both runs. That Sprint 10 technical PASS is reopened by the 2026-09-29 owner
+correction: native target grapple suppresses prey movement incorrectly.
+Stirge publication was withdrawn on this branch pending requalification; the
+replacement attachment and removal route are required before
+Sprint 10 can pass again. Native Filth Fever cure timing was not measured;
+exposure uses the exact installed buff. Owner visual approval remains pending.
+
+The [primary Paizo Stirge stat block](https://legacy.aonprd.com/bestiary/stirge.html)
+explicitly says that a victim cannot be infected by the same Stirge once its
+exposure check is made. This is the owner's specified exception to the proposed
+per-drain change. Diagnostic `20260929T1228251279908Z` is superseded for
+rules acceptance. The source now preserves the one-check-per-victim gate and
+requires actual Constitution loss; zero loss does not consume the check.
+Guarded Steam `20260929T1241118852906Z` passed 35/35, including an initial
+zero-damage suppression, one native DC 12 Filth Fever exposure, and no repeat
+check after a later actual drain. Filth Fever is the explicit single bounded
+Kingmaker disease adaptation.
+
+The corrected final implementation uses no reciprocal target grapple. The
+Stirge owns a nonserialized session link and feeding state; the prey keeps
+normal movement and actions, and can target and kill the Stirge.
+Standard-action removal chooses the better current CMB or Mobility modifier
+before rolling. Native prey movement, bounded follow, short-translocation
+detach, independent quantity links, four-drain detach, all cleanup boundaries,
+both turn modes, the original view/icon, 834/834 generated player paths, 29/29
+native wrappers and the 50/50 inventory contract passed in the final evidence
+set listed at the top of this matrix. Owner visual approval remains pending and
+nonblocking.
+
+## Phase 2 Sprint 11 ungulate qualification history, 2026-09-29 to 2026-09-30
+
+| Creature | Registered role and mechanic | Live evidence | Remaining before publication |
+| --- | --- | --- | --- |
+| Aurochs | SM/SNA III meat/trample; original Horse-rig view | DC 17 native trample contact, successful Reflex half branch and same-round replay suppression; original view, 12.3 m doorway travel and natural 4-member group expiry | Victim choice, turn-based cadence, impact and UI/art review |
+| Bison | SM/SNA IV heavier trample; original Horse-rig view | DC 20 native trample contact; original view, 12.3 m doorway travel and natural 4-member group expiry | Victim choice, turn-based cadence, impact and UI/art review |
+| Rhinoceros | SM/SNA IV powerful charge; original Mastodon-rig view | Native `ChargeAbility` moved 3.88 m and queued first gore hit for 25 damage; original view, 12.3 m doorway travel and natural 4-member group expiry | Turn-based and quantity charge, impact and UI/art review |
+| Woolly Rhinoceros | SM/SNA V stronger charge and trample; distinct original Mastodon-rig view | Native charge moved 3.42 m and queued first gore hit for 30 damage; DC 23 trample contact; original view, 12.3 m doorway travel and natural 5-member group expiry | Victim choice, turn-based and quantity charge, impact and UI/art review |
+
+All four remain hidden. Guarded cast run `20260929T0713346420017Z` passed
+16/16 SM/SNA `1d3`/`1d4+1` routes, 48/48 original-view attachments,
+204/204 native casts, 280 spawned units, caster-level duration and exact
+per-cast cleanup. This is sequential quantity casting, not formation travel.
+The 35/35 run, 1,952-test build and exact restoration are indexed in
+`EXPANDED-SUMMONING-PHASE2-EVIDENCE-INDEX.md`.
+
+Guarded working-save group review `20260929T0805061632581Z` passed
+28/28 assertions: SNA `1d4+1` groups of 5/5/4/2 Aurochs/Bison/Rhinoceros/
+Woolly Rhinoceros moved all sixteen members 6.43–13.18 m on distinct native
+paths to within 1.5 m of separate connected-floor destinations. All views,
+single-subject doorway travel, group cleanup and zero save writes passed.
+This closes simultaneous movement on the surveyed floor. Concurrent charge,
+turn-based cadence and impact review remain open at that checkpoint.
+
+Guarded working-save `20260929T0920575813821Z` passed 32/32: all 17
+members in 4/4/4/5 simultaneous groups moved to distinct connected-floor
+goals, then all canonical summon timers and units retired under natural game
+updates (111.98–113.14 game seconds). Pause state, no-save-write cleanup and
+exact original-install restoration passed. Concurrent charge, turn-based
+cadence, victim AoO choice, impact contact and clear art review remain open.
+
+The statements above are dated hidden-candidate checkpoints. The final
+disposition is published and internally qualified. The automatic Trample
+response run `20260929T2156585120329Z` passed the full AoO/Reflex
+discrimination in RTWP and turn-based mode: one legal melee AoO at exactly -4,
+normal resource consumption, no save, no ordinary duplicate, full damage after
+hit or miss if the trampler continued, no contact or later damage after a
+stopping response, and the Reflex full/half branch only when no response could
+execute. Direct/quantity summons and player/hostile targets passed. Stampede
+`20260929T2311031955741Z` passed the faithful active-command trio at +2 DC and
+same-size eligibility, plus two-member, idle, separated, interrupted and
+stale-command rejection in both modes.
+
+Final corrected art uses compact cloven cattle hooves and articulated,
+overlapping tapered rhinoceros leg spans with separate broad feet. Unobstructed
+idle, motion, attack, overhead and four-direction oblique reviews accepted the
+result; final Rhino review `20260930T0350131904135Z` passed 18/18. Quantity
+review `20260930T0400494836310Z` passed 32/32 with distinct selectable units,
+simultaneous native travel, original renderers, natural expiry and zero
+resource/save residue. Final rules, visual-contract and lifecycle results
+`20260930T0422334006971Z`, `20260930T0426570686599Z` and
+`20260930T0430006142872Z` passed 58/58, 15/15 and 7/7.
+
+Publication inventory `20260930T0457205706691Z` passed 50/50 with all 882
+placements visible/executable, all 18 menu equations, exact icons and zero
+prohibited references. Player path `20260930T0508037596496Z` passed 10/10
+across 882 roots and 29 wrappers. Working-save prepare, cleanup and absence
+`20260930T0524086567797Z`, `20260930T0528280228527Z` and
+`20260930T0532419916125Z` passed 15/15 each, with exact publication, identity,
+context, duration, control, safe session-link reset, native expiry and final
+zero residue. Restoration record `20260930T0535320622642Z` verifies the
+original 136-file installation exactly. Owner visual approval is
+NOT_PERFORMED_NONBLOCKING.
+
+## Phase 2 Sprint 12 hidden mechanics checkpoint, 2026-09-30
+
+All 68 Dire Rat, Dog, Hyena and Goblin Dog placements remain suppressed. The
+Dire Rat and Goblin Dog mechanics candidate passed focused guarded run
+`20260930T1234331263883Z-disposable-expanded-summoning` at 39/39 assertions.
+Dire Rat required an exact hit and positive bite damage, then exercised both
+DC 11 save outcomes against the exact native Filth Fever payload, a miss, and
+same-event replay suppression. Goblin Dog exercised disease immunity, both DC
+12 outcomes, exact one-day duration and -2/-2 penalties, replacement stacking,
+ordinary-healing preservation, positive magical-healing removal, native Remove
+Disease removal, and the exact native-Goblin exemption. Separate quantity
+sources retained their own caster/victim contexts, and exact cleanup passed.
+
+This qualifies only the focused injury-disease contracts. Dog and Hyena still
+use their checked-in bite/trip profiles, but all four need original distinct
+silhouettes and the complete direct/quantity player-path, RTWP/turn-based,
+movement/contact, natural-expiry, save/load, module-disabled, compatibility,
+inventory and internal visual matrix before publication.
+
+The later hidden-view candidate adds deterministic original Dire Rat, Hyena
+and Goblin Dog meshes/albedos while preserving the audited native Dog view.
+Guarded run `20260930T1626175528422Z-disposable-expanded-summoning` passed
+41/41 direct, quantity, attachment and lifecycle assertions. This closes the
+basic live renderer-attachment check only; all 68 placements remain
+suppressed, and Sprint 12 remains unpublished until direct/quantity player
+paths, both combat modes, movement/contact, natural expiry, save/load, module
+disable, compatibility, inventory and the complete internal visual review
+pass. The 0.0.141 release boundary is Sprints 9-11: 882 visible generated
+choices and 911 total choices including 29 retained native wrappers.

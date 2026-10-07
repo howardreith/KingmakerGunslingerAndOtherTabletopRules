@@ -33,12 +33,13 @@ $checks = [ordered]@{
     'exact-save-routine-only' =
         $smoke.Contains('method.Name == "SaveRoutine"') -and
         $smoke.Contains('_expectedWorkingSaveRoutineCount == 1')
-    'fixed-two-unit-fixture' =
-        $runner.Contains('"small-air-elemental"') -and
-        $runner.Contains('value.Creature.Key == "wolf"') -and
-        $runner.Contains('ExpandedSummoningRuleCapture.Count != 2') -and
-        $runner.Contains('Game.Instance.EntityCreator.Tick();') -and
-        $runner.Contains('ReferenceEquals(value.HoldingState, caster.HoldingState)')
+    'sprint-nine-flying-fixture' =
+        $runner.Contains('new[] { "Monster", "eagle", "1" }') -and
+        $runner.Contains('new[] { "NaturesAlly", "dire-bat", "3" }') -and
+        $runner.Contains('expanded-summoning-persistent-eagle-bat-visuals') -and
+        $runner.Contains('ReferenceEquals(value.View.Data, value)') -and
+        $runner.Contains('IsEagleAttached(') -and
+        $runner.Contains('IsDireBatAttached(')
     'fresh-load-identity-context-duration' =
         $runner.Contains('ReferenceEquals(unit.Blueprint, blueprint)') -and
         $runner.Contains('.SummonedUnitBuff)') -and

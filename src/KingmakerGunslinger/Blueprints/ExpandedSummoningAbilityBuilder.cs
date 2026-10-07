@@ -203,7 +203,8 @@ namespace KingmakerGunslinger.Blueprints
                     variant.StableKey + (templateBuff == null ? "" : celestial ?
                         ".Celestial" : ".Fiendish") + ".Description",
                     "Summons " + variant.Creature.DisplayName +
-                    " through the native summon lifecycle."), native.Icon);
+                    " through the native summon lifecycle." +
+                    CreatureRulesText(variant.Creature.Key)), native.Icon);
         }
 
         private static void ConfigureDynamicTemplate(BlueprintAbility target,
@@ -245,7 +246,17 @@ namespace KingmakerGunslinger.Blueprints
                     "Summons a celestial or fiendish " +
                     variant.Creature.DisplayName + " based on the caster's " +
                     "alignment. Neutral casters use their persistent " +
-                    "Fiendish Summoning mode."), native.Icon);
+                    "Fiendish Summoning mode." +
+                    CreatureRulesText(variant.Creature.Key)), native.Icon);
+        }
+
+        private static string CreatureRulesText(string creatureKey)
+        {
+            if (creatureKey == "dire-rat")
+                return " Its damaging bite exposes a target to native Filth Fever after a DC 11 Fortitude save.";
+            if (creatureKey == "goblin-dog")
+                return " It is immune to disease. Its damaging bite causes a one-day allergic reaction (-2 Dexterity and -2 Charisma; Fortitude DC 12; nonstacking; positive magical healing or remove disease ends it). Because Kingmaker has no broader Goblinoid subtype, this adaptation exempts only units with the exact native Goblin unit type.";
+            return string.Empty;
         }
 
         private static void AppendDynamicTemplate(

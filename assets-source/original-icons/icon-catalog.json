@@ -5,9 +5,9 @@
     "commit": "db1fccf648b25baa53667dd00ac566e2a0d7f6b9",
     "version": "0.0.127",
     "registryPath": "blueprints/blueprints.json",
-    "registrySha256": "aa5152aaa99f73f7cc01b88edb74b14a5dc5f0daf01f95cb4fb2cd7a85f326c3",
-    "publishedRegistrySha256": "00f454f0704918c6cffd00c047f100e87daa67d4fb6d4eab132a85bd67586d5f",
-    "registryExtensionAuthorization": "Magic Circle follow-up: append three exact family parents after the preserved 1910-entry ledger. validate_magic_circle.py preserves the 1886-entry pre-feature prefix and all 24 accepted Magic Circle identities. Better Vendors progression: append exactly 43 generic magic weapon variant identities (Pistol/Musket/Blunderbuss ordinary +2..+5 and Reliable +1..+5; Elven Branched Spear, Wakizashi, Katana and Nodachi +2..+5) after the preserved 1913-entry ledger. validate_better_vendors138.py preserves that prefix and the exact appended identities. Each variant's item icon is its canonical +1 sibling's existing sprite (intentional-family-share); no art, cache or protected assignment changes. Expanded Summoning Phase 1 Sprint 3: append exactly 92 summoning identities after the preserved 1956-entry ledger (Pony, Horse, Owlbear and Cyclops units with their 45 logical placements and 34 template executions, three Nature's Ally Frost Giant wrappers and six Cyclops Flash of Insight specials); tools/expanded_summoning_manifest.py preserves the prefix and ExpandedSummoningSprint3Tests pins the appended tail. Their icons are four new project-owned Blender renders delegated to the expanded-summoning manifest. Expanded Summoning Phase 1 Sprint 4: append exactly 19 summoning identities after the 2048-entry ledger (Shambling Mound, Giant Flytrap and Purple Worm units with their nine Nature's Ally placements and seven shared summon grapple lifecycle specials); tools/validate_expanded_summoning_phase1.py pins the whole Phase 1 append and ExpandedSummoningSprint4Tests pins the appended tail. Their icons are three new project-owned Blender renders delegated to the expanded-summoning manifest. Expanded Summoning Phase 1 Sprint 5: append exactly 126 summoning identities after the 2067-entry ledger (Dust, Ice, Magma, Ooze, Salt and Steam Mephit units with their seventy-two Monster and Nature's Ally placements and forty-eight breath, spell-like ability, resource, cast action, brain and traits specials); tools/validate_expanded_summoning_phase1.py pins the whole Phase 1 append and ExpandedSummoningSprint5Tests pins the appended tail. Their icons are six new project-owned Blender renders delegated to the expanded-summoning manifest. Expanded Summoning Phase 1 Sprints 6-8: append exactly 27 summoning identities after the 2193-entry ledger (eight Sprint 6 grab-carrier and Giant Spider web specials, four Sprint 7 big-cat grab-and-rake carriers, and the Sprint 8 Tiger unit with its six Nature's Ally placements, the project 1d8 claw weapon, its carrier and the Cheetah's sprint pack); tools/validate_expanded_summoning_phase1.py pins the whole Phase 1 append and ExpandedSummoningSprint6Tests, Sprint7Tests and Sprint8Tests pin the appended tails. The Tiger's icon is one new project-owned Blender render delegated to the expanded-summoning manifest. Expanded Summoning Phase 1 correction order (2026-09-25): append exactly 24 summoning identities after the 2220-entry ledger (the multi-link hold and held states, the Giant Flytrap engulfed state, the Cyclops hide armor, the Pony and Horse docile-hoof carriers, the Dust, Ice and Magma Mephit role abilities, resources, cast actions and states, the wind wall area, the ally-safe stinking cloud area and the pyrotechnics blinded state); tools/validate_expanded_summoning_phase1.py pins the whole Phase 1 append and ExpandedSummoningCorrectionTests pins the appended tail. No new icons: the project mephit abilities wear their mephit's existing summon icon."
+    "registrySha256": "4fee6820c9d31f589e71f930bcb30c54ec4bd58d975d8dbca81daaeccdb38c09",
+    "publishedRegistrySha256": "b45167510620aa70e71d8122c26f79465c1139090b86e5f500cceaa3be602af3",
+    "registryExtensionAuthorization": "Magic Circle follow-up: append three exact family parents after the preserved 1910-entry ledger. validate_magic_circle.py preserves the 1886-entry pre-feature prefix and all 24 accepted Magic Circle identities. Better Vendors progression: append exactly 43 generic magic weapon variant identities (Pistol/Musket/Blunderbuss ordinary +2..+5 and Reliable +1..+5; Elven Branched Spear, Wakizashi, Katana and Nodachi +2..+5) after the preserved 1913-entry ledger. validate_better_vendors138.py preserves that prefix and the exact appended identities. Each variant's item icon is its canonical +1 sibling's existing sprite (intentional-family-share); no art, cache or protected assignment changes. Expanded Summoning Phase 1 Sprint 3: append exactly 92 summoning identities after the preserved 1956-entry ledger (Pony, Horse, Owlbear and Cyclops units with their 45 logical placements and 34 template executions, three Nature's Ally Frost Giant wrappers and six Cyclops Flash of Insight specials); tools/expanded_summoning_manifest.py preserves the prefix and ExpandedSummoningSprint3Tests pins the appended tail. Their icons are four new project-owned Blender renders delegated to the expanded-summoning manifest. Expanded Summoning Phase 1 Sprint 4: append exactly 19 summoning identities after the 2048-entry ledger (Shambling Mound, Giant Flytrap and Purple Worm units with their nine Nature's Ally placements and seven shared summon grapple lifecycle specials); tools/validate_expanded_summoning_phase1.py pins the whole Phase 1 append and ExpandedSummoningSprint4Tests pins the appended tail. Their icons are three new project-owned Blender renders delegated to the expanded-summoning manifest. Expanded Summoning Phase 1 Sprint 5: append exactly 126 summoning identities after the 2067-entry ledger (Dust, Ice, Magma, Ooze, Salt and Steam Mephit units with their seventy-two Monster and Nature's Ally placements and forty-eight breath, spell-like ability, resource, cast action, brain and traits specials); tools/validate_expanded_summoning_phase1.py pins the whole Phase 1 append and ExpandedSummoningSprint5Tests pins the appended tail. Their icons are six new project-owned Blender renders delegated to the expanded-summoning manifest. Expanded Summoning Phase 1 Sprints 6-8: append exactly 27 summoning identities after the 2193-entry ledger (eight Sprint 6 grab-carrier and Giant Spider web specials, four Sprint 7 big-cat grab-and-rake carriers, and the Sprint 8 Tiger unit with its six Nature's Ally placements, the project 1d8 claw weapon, its carrier and the Cheetah's sprint pack); tools/validate_expanded_summoning_phase1.py pins the whole Phase 1 append and ExpandedSummoningSprint6Tests, Sprint7Tests and Sprint8Tests pin the appended tails. The Tiger's icon is one new project-owned Blender render delegated to the expanded-summoning manifest. Expanded Summoning Phase 1 correction order (2026-09-25): append exactly 24 summoning identities after the 2220-entry ledger (the multi-link hold and held states, the Giant Flytrap engulfed state, the Cyclops hide armor, the Pony and Horse docile-hoof carriers, the Dust, Ice and Magma Mephit role abilities, resources, cast actions and states, the wind wall area, the ally-safe stinking cloud area and the pyrotechnics blinded state); tools/validate_expanded_summoning_phase1.py pins the whole Phase 1 append and ExpandedSummoningCorrectionTests pins the appended tail. No new icons: the project mephit abilities wear their mephit's existing summon icon. Expanded Summoning Phase 2 Sprint 9: append one Dire Bat-only 40-foot imprecise blindsense feature identity; this hidden unit fact has no independent icon or public selection consumer, and the Bat placements have passed their visual and runtime gate. Expanded Summoning Phase 2 Sprint 10 registers 26 append-only Giant Wasp identities after the accepted 2461-entry ledger: one unit, 24 logical summon abilities and one natural sting weapon. All 12 Wasp logical placements are now published. Its unit, inspectable unit type, and 24 generated ability/template symbols intentionally share the original Wasp painting, with exact consumers and source/export hashes delegated to the expanded-summoning manifest; its sting weapon is mechanics-only. Three additional append-only identities are the hidden-internal Wasp poison feature, a saved venom buff, and an owned Giant Wasp inspectable unit type. The published unit type uses the Wasp painting. The saved venom buff retains the exact native poison-family icon from the installed lifecycle donor, a native-semantic-reuse for the visible poison condition. Expanded Summoning Phase 2 Sprint 10 also appends exactly 11 Stirge identities after the 2490-entry ledger: one unit, nine Nature's Ally logical placements, and one zero-damage touch carrier weapon. All nine placements are temporarily hidden pending the owner-directed attachment correction. The unit and nine Nature's Ally abilities share the original Stirge painting, with exact symbols and hashes delegated to the expanded-summoning manifest; the touch weapon is mechanics-only. Two additional Stirge identities register the attack trait and attached hold buff. The trait is mechanics-only and the hold is an internal state without independent art; the disease condition reuses its exact native FilthFever buff icon. Expanded Summoning Phase 2 Sprint 11 appends exactly 100 Aurochs, Bison, Rhinoceros and Woolly Rhinoceros unit/placement/template identities after the 2503-entry accepted prefix. All 48 logical placements are registered but hidden, so there is no new active menu or action-bar icon consumer. Four original source-painting candidates are indexed; their exported icon assignments and actual UI use must be validated before publication. Two appended Rhino powerful-charge features are hidden unit facts with no independent icon or action-bar consumer; their exact identities are pinned by the Sprint 11 validator. Three appended hidden Trample actions provisionally reuse the exact installed Overrun action icon (native-semantic-reuse); their command icon and the four creature icon exports require actual UI and owner visual review before any ungulate choice is published. Phase 2A appends one stable Remove Stirge standard-action ability identity after the preserved 2608-entry ledger; its separate original hand-and-Stirge icon has one exact ability consumer and requires native UI review before publication. Sprint 12 appends 37 stable Dire Rat unit, logical placement and template-execution identities after the preserved 2609-entry ledger. The 18 logical placements and unit remain hidden and use a distinct original Dire Rat painting delegated to the expanded-summoning manifest; its exact 37 unit, ability and template consumers await actual UI validation before publication. Three further Sprint 12 identities own the hidden Dire Rat disease feature, hidden Goblin Dog disease-traits feature, and saved allergic-reaction disease buff. They have no independent player-selection icon; the visible native Filth Fever and project allergic-reaction conditions retain their own condition presentation."
   },
   "coveragePrefixes": [
     "KMG.ElementalRaces.",
@@ -75,8 +75,8 @@
     },
     {
       "path": "assets-source/original-icons/expanded-summoning/icon-manifest.json",
-      "sha256": "9e3d56570456c6970e96cf14ca7bf06ab7feb5c7da548af560138b3e7f68ed1c",
-      "scope": "Source/export/consumer authority for all 91 summoning identities (77 roster-mission concepts, the Phase 1 Sprint 3 Pony, Horse, Owlbear and Cyclops, the Sprint 4 Shambling Mound, Giant Flytrap and Purple Worm, the Sprint 5 Dust, Ice, Magma, Ooze, Salt and Steam Mephits, and the Sprint 8 Tiger)."
+      "sha256": "40754cb1ce93473befaf10be1c4d0fce1296ef73c218d83c6a493f014d0c734d",
+      "scope": "Source/export/consumer authority for 100 original summon and action concepts, including the temporarily hidden Sprint 12 Dire Rat. Remove Stirge is a separate hand-and-creature action painting with one exact ability consumer. Technical export PASS is not owner visual approval or publication."
     },
     {
       "path": "assets-source/original-icons/cord-of-stubborn-resolve/cord-of-stubborn-resolve-assets.json",
@@ -739,6 +739,26 @@
       "path": "assets/game/icons/expanded-summoning/tiger.png",
       "sha256": "0c2c7447cf4c8559f5bc2bd0882aac5140b84c75dd2022edb90d2fe87a1c1ae4",
       "reason": "Project-owned Blender render added by Expanded Summoning Phase 1 Sprint 8; internally reviewed, HumanReview NOT_PERFORMED_NONBLOCKING. Protection is not fresh visual approval."
+    },
+    {
+      "path": "assets/game/icons/fiery-glare.png",
+      "sha256": "0ff889c3321e0d30b82e9d8c2fc5b80f81f134b48c636f6fc231826fccf993f5",
+      "reason": "Freeze the objective-reviewed original trait export. Owner aesthetics and actual player UI acceptance remain unrecorded."
+    },
+    {
+      "path": "assets/game/icons/stoic-dignity.png",
+      "sha256": "e1f619d17470cff018799db9b1c6554cf11e6b0626723360603f332ce7fb6f51",
+      "reason": "Freeze the objective-reviewed original trait export. Owner aesthetics and actual player UI acceptance remain unrecorded."
+    },
+    {
+      "path": "assets/game/icons/aerial-observer.png",
+      "sha256": "462408b925f912e2a1063ac9e8a0ff25b33c68b80fcccb1fa85d05f706fc117f",
+      "reason": "Freeze the objective-reviewed original trait export. Owner aesthetics and actual player UI acceptance remain unrecorded."
+    },
+    {
+      "path": "assets/game/icons/whiteout.png",
+      "sha256": "3afdb75457b431530356e26ce32c005d2e8dbb8634474e20814b6cfa6d1e9f6b",
+      "reason": "Freeze the objective-reviewed original trait export. Owner aesthetics and actual player UI acceptance remain unrecorded."
     }
   ],
   "protectedAssignmentFiles": [
@@ -4331,6 +4351,130 @@
         "status": "not-reviewed",
         "reviewedExportSha256": null,
         "evidence": null
+      }
+    },
+    {
+      "key": "fiery-glare",
+      "name": "Fiery Glare",
+      "family": "painted-magical",
+      "sharingReason": "One exact original character-trait identity; Fiery Glare feature and toggle intentionally share their image. Hidden nodes have no icon.",
+      "exportProfile": "project-painted-128",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "fiery-glare"
+      },
+      "technicalStatus": "objective-small-size-PASS-runtime-pending",
+      "visualReview": {
+        "status": "awaiting-owner-production-review",
+        "reviewedExportSha256": null,
+        "evidence": null
+      },
+      "technicalReview": {
+        "status": "PASS",
+        "sourceSha256": "a3ed28c9a92940f60cee501ecd429e7e4d7c5bd7d8f6f209124985d6863005e3",
+        "exportSha256": "0ff889c3321e0d30b82e9d8c2fc5b80f81f134b48c636f6fc231826fccf993f5",
+        "evidence": "reports/elemental-character-traits/ICON-INTAKE-CONTINUATION-REVIEW-2026-10-06.json",
+        "scope": "Codex objective 128/48/32 and grayscale32 original-asset admission; owner aesthetics NOT_RECORDED"
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/fiery-glare.json",
+      "reviewGroup": "ifrit-traits",
+      "runtimeExport": {
+        "path": "assets/game/icons/fiery-glare.png",
+        "installedPath": "assets/icons/fiery-glare.png",
+        "cacheKey": "fiery-glare"
+      }
+    },
+    {
+      "key": "stoic-dignity",
+      "name": "Stoic Dignity",
+      "family": "painted-magical",
+      "sharingReason": "One exact original character-trait identity; Fiery Glare feature and toggle intentionally share their image. Hidden nodes have no icon.",
+      "exportProfile": "project-painted-128",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "stoic-dignity"
+      },
+      "technicalStatus": "objective-small-size-PASS-runtime-pending",
+      "visualReview": {
+        "status": "awaiting-owner-production-review",
+        "reviewedExportSha256": null,
+        "evidence": null
+      },
+      "technicalReview": {
+        "status": "PASS",
+        "sourceSha256": "f821992b390be1cc214a137f54c4122c2d460c542805023359a79bcb66849ac3",
+        "exportSha256": "e1f619d17470cff018799db9b1c6554cf11e6b0626723360603f332ce7fb6f51",
+        "evidence": "reports/elemental-character-traits/ICON-INTAKE-CONTINUATION-REVIEW-2026-10-06.json",
+        "scope": "Codex objective 128/48/32 and grayscale32 original-asset admission; owner aesthetics NOT_RECORDED"
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/stoic-dignity.json",
+      "reviewGroup": "oread-traits",
+      "runtimeExport": {
+        "path": "assets/game/icons/stoic-dignity.png",
+        "installedPath": "assets/icons/stoic-dignity.png",
+        "cacheKey": "stoic-dignity"
+      }
+    },
+    {
+      "key": "aerial-observer",
+      "name": "Aerial Observer",
+      "family": "painted-magical",
+      "sharingReason": "One exact original character-trait identity; Fiery Glare feature and toggle intentionally share their image. Hidden nodes have no icon.",
+      "exportProfile": "project-painted-128",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "aerial-observer"
+      },
+      "technicalStatus": "objective-small-size-PASS-runtime-pending",
+      "visualReview": {
+        "status": "awaiting-owner-production-review",
+        "reviewedExportSha256": null,
+        "evidence": null
+      },
+      "technicalReview": {
+        "status": "PASS",
+        "sourceSha256": "77d3196f92d4d11fee14d13d3b32de5063c8bf27b99fa6ca0295e02bd87b920e",
+        "exportSha256": "462408b925f912e2a1063ac9e8a0ff25b33c68b80fcccb1fa85d05f706fc117f",
+        "evidence": "reports/elemental-character-traits/ICON-INTAKE-CONTINUATION-REVIEW-2026-10-06.json",
+        "scope": "Codex objective 128/48/32 and grayscale32 original-asset admission; owner aesthetics NOT_RECORDED"
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/aerial-observer.json",
+      "reviewGroup": "sylph-traits",
+      "runtimeExport": {
+        "path": "assets/game/icons/aerial-observer.png",
+        "installedPath": "assets/icons/aerial-observer.png",
+        "cacheKey": "aerial-observer"
+      }
+    },
+    {
+      "key": "whiteout",
+      "name": "Whiteout",
+      "family": "painted-magical",
+      "sharingReason": "One exact original character-trait identity; Fiery Glare feature and toggle intentionally share their image. Hidden nodes have no icon.",
+      "exportProfile": "project-painted-128",
+      "assetAuthority": {
+        "manifest": "assets-source/original-icons/icon-overhaul-v2/production/production-manifest.json",
+        "key": "whiteout"
+      },
+      "technicalStatus": "objective-small-size-PASS-runtime-pending",
+      "visualReview": {
+        "status": "awaiting-owner-production-review",
+        "reviewedExportSha256": null,
+        "evidence": null
+      },
+      "technicalReview": {
+        "status": "PASS",
+        "sourceSha256": "86bce8afb3482f2d317809153f228dcbb76da351283b46553c186ed317f076dc",
+        "exportSha256": "3afdb75457b431530356e26ce32c005d2e8dbb8634474e20814b6cfa6d1e9f6b",
+        "evidence": "reports/elemental-character-traits/ICON-INTAKE-CONTINUATION-REVIEW-2026-10-06.json",
+        "scope": "Codex objective 128/48/32 and grayscale32 original-asset admission; owner aesthetics NOT_RECORDED"
+      },
+      "semanticBrief": "assets-source/original-icons/icon-overhaul-v2/production/briefs/whiteout.json",
+      "reviewGroup": "undine-traits",
+      "runtimeExport": {
+        "path": "assets/game/icons/whiteout.png",
+        "installedPath": "assets/icons/whiteout.png",
+        "cacheKey": "whiteout"
       }
     }
   ],
@@ -12184,6 +12328,149 @@
       "concept": "mostly-human-ancestry",
       "disposition": "intentional-family-share",
       "reason": "The Mostly Human choice and its selector show the native Human ancestry art (the human Skilled racial feature's, since Kingmaker's Human race carries none; the parent race's as a last resort); a choice that would stay blank unpublishes the trait. No new painting."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.CharacterTraits.FieryGlare.Feature",
+      "guid": "ca5d4d43d35548679ed6b533f055cb20",
+      "type": "BlueprintFeature",
+      "name": "Fiery Glare",
+      "module": "ElementalRaces",
+      "publication": "conditional all-four Favored Class racial_traits",
+      "surface": "selection / character-sheet feature / tooltip",
+      "currentArt": "owned-v2-painting",
+      "concept": "fiery-glare",
+      "disposition": "original-required",
+      "reason": "Exact original character-trait consumer; objective review PASS, owner aesthetic/UI approval not recorded."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.CharacterTraits.FieryGlare.Toggle",
+      "guid": "15549c6f936f4000a7c476f5d50d2585",
+      "type": "BlueprintActivatableAbility",
+      "name": "Fiery Glare",
+      "module": "ElementalRaces",
+      "publication": "conditional all-four Favored Class racial_traits",
+      "surface": "action bar / tooltip",
+      "currentArt": "owned-v2-painting",
+      "concept": "fiery-glare",
+      "disposition": "original-required",
+      "reason": "Exact original character-trait consumer; objective review PASS, owner aesthetic/UI approval not recorded."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.CharacterTraits.FieryGlare.ActivationBuff",
+      "guid": "7883b258441e4e179b07cacbdc5416ac",
+      "type": "BlueprintBuff",
+      "name": "Fiery Glare",
+      "module": "ElementalRaces",
+      "publication": "hidden-internal",
+      "surface": "none; hidden owned provider graph",
+      "currentArt": "internal",
+      "concept": "internal",
+      "disposition": "hidden-internal",
+      "reason": "Hidden provider/buff/area has no separate visible icon consumer."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.CharacterTraits.StoicDignity.Feature",
+      "guid": "51faa3c273df41738553c18c088ef565",
+      "type": "BlueprintFeature",
+      "name": "Stoic Dignity",
+      "module": "ElementalRaces",
+      "publication": "conditional all-four Favored Class racial_traits",
+      "surface": "selection / character-sheet feature / tooltip",
+      "currentArt": "owned-v2-painting",
+      "concept": "stoic-dignity",
+      "disposition": "original-required",
+      "reason": "Exact original character-trait consumer; objective review PASS, owner aesthetic/UI approval not recorded."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.CharacterTraits.StoicDignity.ProviderBuff",
+      "guid": "46e6b683b15a4811886730027994e58d",
+      "type": "BlueprintBuff",
+      "name": "Stoic Dignity",
+      "module": "ElementalRaces",
+      "publication": "hidden-internal",
+      "surface": "none; hidden owned provider graph",
+      "currentArt": "internal",
+      "concept": "internal",
+      "disposition": "hidden-internal",
+      "reason": "Hidden provider/buff/area has no separate visible icon consumer."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.CharacterTraits.StoicDignity.Area",
+      "guid": "b3f85f9663b44129b222ae69bb3e8cd3",
+      "type": "BlueprintAbilityAreaEffect",
+      "name": "Stoic Dignity",
+      "module": "ElementalRaces",
+      "publication": "hidden-internal",
+      "surface": "none; hidden owned provider graph",
+      "currentArt": "internal",
+      "concept": "internal",
+      "disposition": "hidden-internal",
+      "reason": "Hidden provider/buff/area has no separate visible icon consumer."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.CharacterTraits.StoicDignity.RecipientBuff",
+      "guid": "461f898838864ff0b50ab355efa0c644",
+      "type": "BlueprintBuff",
+      "name": "Stoic Dignity",
+      "module": "ElementalRaces",
+      "publication": "hidden-internal",
+      "surface": "none; hidden owned provider graph",
+      "currentArt": "internal",
+      "concept": "internal",
+      "disposition": "hidden-internal",
+      "reason": "Hidden provider/buff/area has no separate visible icon consumer."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.CharacterTraits.AerialObserver.Feature",
+      "guid": "4064cbe37690440a8650ea5689354a65",
+      "type": "BlueprintFeature",
+      "name": "Aerial Observer",
+      "module": "ElementalRaces",
+      "publication": "conditional all-four Favored Class racial_traits",
+      "surface": "selection / character-sheet feature / tooltip",
+      "currentArt": "owned-v2-painting",
+      "concept": "aerial-observer",
+      "disposition": "original-required",
+      "reason": "Exact original character-trait consumer; objective review PASS, owner aesthetic/UI approval not recorded."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.CharacterTraits.AerialObserver.ProviderBuff",
+      "guid": "12f9760b84264e178af8a5251d559242",
+      "type": "BlueprintBuff",
+      "name": "Aerial Observer",
+      "module": "ElementalRaces",
+      "publication": "hidden-internal",
+      "surface": "none; hidden owned provider graph",
+      "currentArt": "internal",
+      "concept": "internal",
+      "disposition": "hidden-internal",
+      "reason": "Hidden provider/buff/area has no separate visible icon consumer."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.CharacterTraits.Whiteout.Feature",
+      "guid": "7aa5dc9716e4437daa8e00506f6ddd83",
+      "type": "BlueprintFeature",
+      "name": "Whiteout",
+      "module": "ElementalRaces",
+      "publication": "conditional all-four Favored Class racial_traits",
+      "surface": "selection / character-sheet feature / tooltip",
+      "currentArt": "owned-v2-painting",
+      "concept": "whiteout",
+      "disposition": "original-required",
+      "reason": "Exact original character-trait consumer; objective review PASS, owner aesthetic/UI approval not recorded."
+    },
+    {
+      "symbol": "KMG.ElementalRaces.CharacterTraits.Whiteout.ProviderBuff",
+      "guid": "901f9f54462846149cf7fb24ec04a5a5",
+      "type": "BlueprintBuff",
+      "name": "Whiteout",
+      "module": "ElementalRaces",
+      "publication": "hidden-internal",
+      "surface": "none; hidden owned provider graph",
+      "currentArt": "internal",
+      "concept": "internal",
+      "disposition": "hidden-internal",
+      "reason": "Hidden provider/buff/area has no separate visible icon consumer."
     }
   ],
   "uiEntries": [
@@ -12571,6 +12858,36 @@
       "source": "assets-source/original-icons/expanded-summoning/icon-manifest.json"
     },
     {
+      "module": "Expanded summoning Phase 2 Dire Bat",
+      "disposition": "original-required",
+      "finding": "Original 1254x1254 Dire Bat painting exports to one 128x128 production icon. The unit and all 28 generated ability/template symbols share the same creature identity intentionally; each published variant receives the bat sprite through the project cache. Technical export and live assignment require validation; owner visual approval is separate.",
+      "source": "assets-source/original-icons/expanded-summoning/icon-manifest.json"
+    },
+    {
+      "module": "Expanded summoning Phase 2 Giant Wasp",
+      "disposition": "original-required",
+      "finding": "Original 1254x1254 Giant Wasp painting exports to one 128x128 production icon. Its unit, inspectable type, and 24 generated ability/template symbols share one species identity intentionally. The natural sting and hidden poison feature are mechanics-only; the saved venom condition uses the exact native poison-family donor icon. Export hashes and exact consumers are delegated to the summoning manifest. Technical and live UI validation are separate from owner visual approval.",
+      "source": "assets-source/original-icons/expanded-summoning/icon-manifest.json"
+    },
+    {
+      "module": "Expanded summoning Phase 2 Stirge",
+      "disposition": "original-required",
+      "finding": "Original 1254x1254 Stirge painting exports to one 128x128 production icon. Its unit and nine Nature's Ally ability symbols intentionally share one species identity. The zero-damage touch weapon and attach trait are mechanics-only; the hold buff is an internal state without independent art. Source/output hashes and exact visible consumers are delegated to the summoning manifest. Live UI verification and owner visual approval remain separate.",
+      "source": "assets-source/original-icons/expanded-summoning/icon-manifest.json"
+    },
+    {
+      "module": "Expanded summoning Phase 2 Stirge filth fever",
+      "disposition": "native-semantic-reuse",
+      "finding": "The Stirge's disease rider applies the exact installed FilthFever BlueprintBuff (9545a5550d89feb47a84edaeb4e63d0b). Any resulting disease UI uses that native buff's own art; no unrelated donor icon or new disease identity is introduced. The Stirge unit and nine visible Nature's Ally abilities intentionally share its original species painting; the touch carrier and attack trait are mechanics-only, while the attached hold is an internal state and uses no independent painting. Exact visible symbols and source/export hashes are delegated to the summoning manifest. Live menu use and owner visual approval are separate checks.",
+      "source": "src/KingmakerGunslinger/Summoning/ExpandedSummoningSpecialCombatComponents.cs"
+    },
+    {
+      "module": "Expanded summoning Phase 2 Remove Stirge action",
+      "disposition": "original-required",
+      "finding": "KMG.Summoning.Special.Stirge.Remove is a new visible standard action temporarily granted to attached prey. Its distinct original 1254x1254 hand-lifting-Stirge painting exports deterministically to 128x128; the creature summon portrait is not reused. The exact action symbol and source/export hashes are delegated to the summoning icon manifest. Native UI use and owner visual approval remain separate gates.",
+      "source": "assets-source/original-icons/expanded-summoning/icon-manifest.json"
+    },
+    {
       "module": "Shield Other",
       "disposition": "protected-existing",
       "finding": "Original project painting; preserve spell/buff assignment and source/export bytes.",
@@ -12612,6 +12929,21 @@
       "after": "                RuntimeTesting.IconConsumerCensus.CaptureBeforeOwnedMapping(\n                    context, library, manifest);\n                if (!RuntimeTesting.IconConsumerCensus.IsControlRequest)\n                    OwnedIconAssignments.Apply(library, manifest, teleportation != null);\n                RuntimeTesting.IconConsumerCensus.CaptureAfterOwnedMapping();\n                return new BlueprintInitializationResult(\n",
       "authorization": "Icon overhaul v2 mission section 7; exact cache extension / post-registration owned mapping and guarded read-only census. Entire remaining source must match baseline.",
       "authorizedFeatureEdits": [
+        {
+          "before": "            GunslingerClassCatalogPublication classPublication = null;\n            CapitalVendorPublication capitalVendorPublication = null;\n            CordCampaignLootPublication cordCampaignLootPublication = null;\n            OlegVendorCleanupPublication olegSupplyCleanupPublication = null;\n            BokkenVendorPublication bokkenSupplyPublication = null;\n            BeneathStolenLandsVendorPublication btslVendorPublication = null;\n            RareFirearmCampaignLootPublication rareFirearmLootPublication = null;\n",
+          "after": "            GunslingerClassCatalogPublication classPublication = null;\n            CapitalVendorPublication capitalVendorPublication = null;\n            CordCampaignLootPublication cordCampaignLootPublication = null;\n            OlegVendorPublication olegVendorPublication = null;\n            BokkenVendorPublication bokkenSupplyPublication = null;\n            BeneathStolenLandsVendorPublication btslVendorPublication = null;\n            RareFirearmCampaignLootPublication rareFirearmLootPublication = null;\n",
+          "authorization": "0.0.142 DATA-only Model D merchant bootstrap; no Summoning hunk."
+        },
+        {
+          "before": "                    library, productionFirearms, magicFirearms, basicAmmunition,\n                    firearmRepairKit, gunsmithingSupplies,\n                    publicationPlan.CapitalGunslingerStock,\n                    cordOfStubbornResolve, context.Logger);\n                cordCampaignLootPublication = CordOfStubbornResolveBlueprints\n                    .PublishCampaignLoot(library, cordOfStubbornResolve,\n                        publicationPlan.CordCampaignLoot, context.Logger);\n                olegSupplyCleanupPublication =\n                    OlegFirearmSupplyCleanupBlueprints.Normalize(library,\n                        basicAmmunition, firearmRepairKit, gunsmithingSupplies,\n                        publicationPlan.CapitalGunslingerStock, context.Logger);\n                bokkenSupplyPublication =\n                    BokkenFirearmSupplyVendorBlueprints.Publish(library,\n",
+          "after": "                    library, productionFirearms, magicFirearms, basicAmmunition,\n                    firearmRepairKit, gunsmithingSupplies,\n                    publicationPlan.CapitalGunslingerStock,\n                    easternWeapons, elvenBranchedSpears,\n                    cordOfStubbornResolve, context.Logger);\n                cordCampaignLootPublication = CordOfStubbornResolveBlueprints\n                    .PublishCampaignLoot(library, cordOfStubbornResolve,\n                        publicationPlan.CordCampaignLoot, context.Logger);\n                olegVendorPublication =\n                    OlegFirearmVendorBlueprints.Publish(library,\n                        productionFirearms, magicFirearms, basicAmmunition, firearmRepairKit, gunsmithingSupplies,\n                        publicationPlan.CapitalGunslingerStock, context.Logger);\n                bokkenSupplyPublication =\n                    BokkenFirearmSupplyVendorBlueprints.Publish(library,\n",
+          "authorization": "0.0.142 DATA-only Model D merchant bootstrap; no Summoning hunk."
+        },
+        {
+          "before": "                            vendorRollbackException);\n                    }\n                }\n                if (olegSupplyCleanupPublication != null)\n                {\n                    try { olegSupplyCleanupPublication.Rollback(); }\n                    catch (Exception vendorRollbackException)\n                    {\n                        context.Logger.Failure(\"blueprints\",\n",
+          "after": "                            vendorRollbackException);\n                    }\n                }\n                if (olegVendorPublication != null)\n                {\n                    try { olegVendorPublication.Rollback(); }\n                    catch (Exception vendorRollbackException)\n                    {\n                        context.Logger.Failure(\"blueprints\",\n",
+          "authorization": "0.0.142 DATA-only Model D merchant bootstrap; no Summoning hunk."
+        },
         {
           "before": "                        \"Core initialization failed; exact Magic Circle rollback was refused.\", circleRollbackException);\n                }",
           "after": "                        \"Core initialization failed; exact Magic Circle rollback was refused.\", circleRollbackException);\n                }\n\n                try {\n                    _favoredClass = null;\n                    favoredClassRegistry.RollbackAll();\n                }\n                catch (Exception favoredClassRollbackException) {\n                    context.Logger.Failure(\"favored-class\", \"bootstrap.rollback-failed\",\n                        \"Core initialization failed; favored-class exact rollback was refused.\", favoredClassRollbackException);\n                }\n\n                try {\n                    if (_mostlyHuman != null && _mostlyHuman.Publication != null)\n                        _mostlyHuman.Publication.Rollback();\n                    _mostlyHuman = null;\n                    KingmakerGunslinger.FavoredClass.FavoredClassRuntime.ConfigureMostlyHumanIdentity(null);\n                    mostlyHumanRegistry.RollbackAll();\n                }\n                catch (Exception mostlyHumanRollbackException) {\n                    context.Logger.Failure(\"elemental-races\", \"bootstrap.mostly-human-rollback-failed\",\n                        \"Core initialization failed; Mostly Human exact rollback was refused.\", mostlyHumanRollbackException);\n                }",
@@ -12686,15 +13018,15 @@
           "after": "            internal MagicFirearmBlueprintCatalog MagicFirearms { get; private set; }\n\n            internal ProgressionWeaponBlueprintCatalog ProgressionWeapons\n            { get; private set; }\n\n"
         }
       ],
-      "featureAuthorization": "Magic Circle implementation mission; exact new module registration, publication, rollback and counts only. Reverse these edits before enforcing the original protected icon-mapping insertion. Favored Class integration mission: contained favored-class registry, registration, rollback and totals only; these hunks are reversed first."
+      "featureAuthorization": "Magic Circle implementation mission; exact new module registration, publication, rollback and counts only. Reverse these edits before enforcing the original protected icon-mapping insertion. Favored Class integration mission: contained favored-class registry, registration, rollback and totals only; these hunks are reversed first. 0.0.142 continuation: three exact Model D call/rollback edits reverse before inherited protected presentation baseline."
     }
   ],
   "artProductionStatus": "complete-main-scope-owner-approved-images",
   "runtimeMapping": {
     "source": "src/KingmakerGunslinger/Blueprints/OwnedIconAssignments.cs",
     "stage": "after existing registration/publication, immediately before BlueprintInitializationResult in InitializeCore",
-    "paintedConceptCount": 100,
-    "paintedConsumerCount": 160,
+    "paintedConceptCount": 104,
+    "paintedConsumerCount": 165,
     "technicalEvidence": "reports/icon-overhaul/PAINTED-INTEGRATION-QUALIFICATION.json",
     "technicalStatus": "qualified-paired-census-and-working-save-smoke",
     "magicCircleStatus": "follow-up candidate; native verification pending; archived PR19 evidence applies only to its exact prior artifact"
