@@ -1,6 +1,6 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-07 — exact2dace diagnostic hand-selection FAIL/restored; full801 grip still open; Sprint17 NOT QUALIFIED
+## CURRENT STATE, 2026-10-07 — exacta5a1 human13/15 FAIL/restored; native02 grip still open; Sprint17 NOT QUALIFIED
 
 This section governs over historical mission/ownership statements below.
 HOWARD-LAPTOP / `codex/expanded-summoning-phase2b-sprints14-17` / draft PR26
@@ -83,45 +83,44 @@ All17 disagreeing native storage groups excluded; native upper bones unchanged.
 Fixed target-free1.4second tail sweep;29evaluated mesh poses finite/above authoring
 plane. Source gate280focused/2082unfiltered81.5s/complete178.2s/clean14/strict320 PASS.
 See `planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-TAIL-PROTOTYPE.md`.
-Exact2daceb68fa5ee50ee2c1205e876d47dc9d5eadea: smoke11/11 PASS; human
-diagnostic4/5partial FAIL, before the required15-check attack review.
-[Exact hand-selection failure and restoration](planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-GRIP-BAKE-RUNTIME-EVIDENCE.json).
-All exact prelaunch PASS297/2099full83.1s/complete177.1s/clean14/strict321,
+Exacta5a1e962e688c80a5acd21f64ab394eae1165314: smoke11/11 PASS;
+full human review13/15 FAIL, with complete native2spear+1tail command Success.
+[Exact full review, failures and restoration](planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-WEIGHT-CENSUS-RUNTIME-EVIDENCE.json).
+All exact prelaunch PASS298/2100full85.5s/complete182.6s/clean14/strict321,
 515preflight/168orchestration/17provenance and all persistence/crowd/launcher gates.
 
-Native2268vertex/1776palette weight/bind shape checks pass, but one hand
-selection is unavailable. Side/count/rejection distribution were not recorded.
-The control fails before allocation, BakeMesh, attachment or attacks; no new
-hand comparison or gameplay result. Classification: FIXTURE_OBSERVATION.
-Last full801 remains14/15: left-grip0.085159m exceeds unchanged0.08m.
-Neither diagnostic failure resolves that defect or qualifies the BakeMesh seam.
+Native01 left grip0.005556m passes; native02 left0.08940738m exceeds0.08m
+(end frame0.200967208m). No asset/pose change, threshold waiver or qualification.
+The second failure is diagnostic serialization: the active runtime serializer
+turns counter dictionaries into arrays, so JObject.FromObject rejects them.
+Both controls stop before BakeMesh. Native2268 weight sums are finite/normalized;
+selector counts remain unknown. Failure isolation now retains all15 checks,
+144bounded timing rows and both cached native act events rather than aborting.
+Native02 starts transitioning out before its0.734528542s act event; actual
+command resolves next frame. Timing is proved, native-hand fidelity is NOT.
 
-Actual136/Info0.0.117/tree216A9DC2...AF3 restored13:00:45.4757100UTC;
-ZERO native save writes; fixture/environment cleanup PASS; no game,
-completed/released lease/recoveryfalse, no deployment staging.
-Four atomic stages and every failed artifact are preserved.
+Rollback reclaims30objects; native destruction32actual objects/158borrowed alive.
+Actual136/Info0.0.117/tree216A9DC2...AF3 restored13:33:09.9424841UTC;
+ZERO native save writes; no game/runtime/compatibility lock or staging;
+lease Completed/recoveryfalse. All17stages/failed artifacts retained.
 Sprints14–16 COMPLETE; Sprint17 NOT QUALIFIED;32roots hidden;
 976published+29wrappers=1005visible. HumanReview: NOT_PERFORMED_NONBLOCKING.
 
-Bounded weight-census/failure-isolation change is now SOURCE PASS:
-298focused/2100full83.5s/complete180.4s/clean14/strict321.
-It records both hand selectors' rejection reasons, weight sums and positive
-driver aggregates before failure. Original/native control failures stay sticky
-and fail qualification, but no longer erase native attack/event-timing evidence.
-No normalization, native pose/import writes, art/gameplay or8cm/25cm changes.
-Every actually allocated control/probe is tracked; cleanup is not confused
-with whether an unavailable control was ever created. One new behavior test
-preserves selection while distinguishing rejection causes; count pins2100.
-Exact committed-head runtime remains PENDING; last complete grip result801 FAIL.
+Counter JSON repair is now SOURCE PASS299focused/2101full83.0s,
+complete179.0s/clean14/strict321. Explicit ordered scalar JProperty construction
+replaces only dictionary FromObject calls. The new behavior test reproduces
+the old array-converter failure, preserves exact/zero/empty counters without
+calling the converter, and restores process defaults afterward. Production
+does not change global settings. No model, pose, selector or threshold change.
+Exact committed-head runtime for this repair is still PENDING.
 
-Next: push this source-qualified diagnostic change, rebuild the exact clean
-head with every prelaunch/harness gate, then fresh Steam640820 smoke11 and
-ALL15 human checks. Review bounded native-weight rejection census, actual native
-cached event timing and original contact even if the comparison is unavailable.
-Unavailable control remains FAIL. No thresholds, anatomy or pose may be guessed.
-Restore the exact pre-transaction snapshot. Then printed Salamander mechanics,
-same-artifact Sprint17 hidden/publication, fullPhase2B closure and STOP.
-Phase2C authorized but deferred.
+Next: push the source-qualified counter-JSON repair, rebuild the exact clean
+head with all prelaunch/harness gates, then fresh Steam640820 smoke11 and
+ALL15 human checks. Inspect real hand-selection counts, both bake controls,
+independent original-distance agreement, actual native event timing and cleanup.
+No favorable-frame/variant retry or8cm/25cm waiver. Restore the exact snapshot.
+Then printed Salamander mechanics, same-artifact Sprint17 hidden/publication,
+fullPhase2B closure and STOP. Phase2C authorized but deferred.
 HumanReview: NOT_PERFORMED_NONBLOCKING.
 ### Qualified versus NOT QUALIFIED
 

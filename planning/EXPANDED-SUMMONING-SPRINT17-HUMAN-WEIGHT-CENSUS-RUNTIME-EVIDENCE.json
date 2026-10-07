@@ -1,0 +1,853 @@
+{
+  "schemaVersion": 1,
+  "recordedUtc": "2026-10-07T13:40:00Z",
+  "status": "EXACTa5a1 HUMAN13/15 FAIL/RESTORED; SPRINT17 NOT QUALIFIED",
+  "branch": "codex/expanded-summoning-phase2b-sprints14-17",
+  "pullRequest": 26,
+  "runtimeCandidate": "a5a1e962e688c80a5acd21f64ab394eae1165314",
+  "artifact": {
+    "sourceFingerprint": "b84a3f92762abdd65f33403b66835e09ad4ba7b63393176853cf67f65fdbae54",
+    "version": "0.0.141",
+    "dllSha256": "d2ff2b8a18fc7e51abd6765712b97a753d68b3384899c6d3eaeebc633a47086d",
+    "dllMvid": "314f0cf3-5874-4df6-9cf7-3adecd7fba72",
+    "zipSha256": "0f060b61438e657f940ab70ad24211210523c62b84b9b225ddf7592ca5ab6724",
+    "members": 321,
+    "archive": "artifacts/sprint17-human-weight-census-exact-a5a1e962"
+  },
+  "prelaunch": {
+    "status": "PASS",
+    "focused": 298,
+    "unfilteredDomain": 2100,
+    "domainSeconds": 85.5,
+    "completeSeconds": 182.6,
+    "cleanExactReferences": 14,
+    "strictPackageMembers": 321,
+    "runtimePreflight": 515,
+    "orchestration": 168,
+    "provenance": 17,
+    "persistence": {
+      "request": 11,
+      "roundTrip": 6,
+      "defaults": 3,
+      "rejections": 56
+    },
+    "crowd": {
+      "request": 8,
+      "rejections": 11
+    },
+    "launcher": {
+      "valid": 14,
+      "rejected": 13
+    },
+    "logs": [
+      {
+        "path": "artifacts/sprint17-human-weight-census-exact-a5a1e962-crowd.log",
+        "sha256": "2c2a1cf1f3f011f7b77cb8ec996e7b5fc2257a36abb7281e5dd007b7d3fa03b0"
+      },
+      {
+        "path": "artifacts/sprint17-human-weight-census-exact-a5a1e962-focused.log",
+        "sha256": "59d011e38fb182d4ae6cbb7add095ac4e21f16be8007ec93de4ed15cb6ec86c9"
+      },
+      {
+        "path": "artifacts/sprint17-human-weight-census-exact-a5a1e962-gate.log",
+        "sha256": "5e743caa8fb867222ee8037606dacca2264a2dbc8ff59885469f37ebbcd95498"
+      },
+      {
+        "path": "artifacts/sprint17-human-weight-census-exact-a5a1e962-launcher.log",
+        "sha256": "5e0841199affcad71b04b473f2918887ea5c4361ea0ab0c07a846ed77806b1ef"
+      },
+      {
+        "path": "artifacts/sprint17-human-weight-census-exact-a5a1e962-orchestration.log",
+        "sha256": "affee86c92d8c3aef6e11fa288815436a0db26d595756c592679e31be97f2695"
+      },
+      {
+        "path": "artifacts/sprint17-human-weight-census-exact-a5a1e962-persistence.log",
+        "sha256": "e52ac876c6cec798e83d0dd0def054c785f11aa761b3901195902ca53f817ca4"
+      },
+      {
+        "path": "artifacts/sprint17-human-weight-census-exact-a5a1e962-preflight.log",
+        "sha256": "1351705d1ad5c89fbee807eb6f9db169c8f948ec3a1e102fa9c03f40cf3a066b"
+      },
+      {
+        "path": "artifacts/sprint17-human-weight-census-exact-a5a1e962-provenance.log",
+        "sha256": "236e0d77882305e074f509b97f94772c9d21b38bb65c553f797f2d0f4d83f06f"
+      }
+    ]
+  },
+  "driver": {
+    "path": "artifacts/Invoke-LaptopSprint17-HumanTail-Attempt10-WeightCensus.ps1",
+    "sha256": "e5158fa384e8be9b488af958acc3d37f06407404535bead5dc1873d0ff299a7f"
+  },
+  "batch": {
+    "path": "artifacts/laptop-runtime-20261007T1326191609313Z/batch.json",
+    "sha256": "b987bf31546fd28194d0c4a5b3849fde7c88bc0c2b9b49ad1195c0d1fdb56bd3",
+    "startedUtc": "2026-10-07T13:26:19.2042196Z",
+    "completedUtc": "2026-10-07T13:33:09.9424841Z",
+    "runs": [
+      {
+        "label": "smoke",
+        "scenario": "working-save-smoke",
+        "startedAtUtc": "2026-10-07T13:26:44.3668829Z",
+        "parameters": {},
+        "launcherOutcome": "Clean",
+        "exitCode": 0,
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T1326452395096Z-working-save-smoke",
+        "requestId": "20261007T1326452682537Z-a1ea0f2ea94b4dc09a0af8ff176d10b2",
+        "requestSha256": "52ac0bd07cbd495b676381f9246d8346f6229c5066a33cfb81877e5175f1312f",
+        "expectedAssertions": 11,
+        "expectedNativeWrites": 0,
+        "nativeWrites": 0,
+        "nativeStashedAreas": 0,
+        "qualificationScope": "Bounded request-local human/owned-tail binding and native command/contact research ONLY. No production Salamander adoption or printed mechanics; no transfer of earlier snake evidence; full Sprint17 NOT QUALIFIED.",
+        "resultSha256": "2e60c8a6472e2a9f9145584fb42cbe80bc518ea77b1b51f01d1dc52a995b131b",
+        "assertions": 11,
+        "passed": 11,
+        "failed": [],
+        "orchestrationSha256": "6875a7bff5e1a4713e1694b684af5588d6b5031f3ba361a9b0d23f561f91f978",
+        "processId": 34044,
+        "processStartedUtc": "2026-10-07T13:26:46.2592697Z",
+        "scenarioStatus": "PASS",
+        "outcome": "PASS",
+        "completedAtUtc": "2026-10-07T13:29:35.1951306Z"
+      },
+      {
+        "label": "human-tail",
+        "scenario": "disposable-expanded-summoning-serpentine-bodies",
+        "startedAtUtc": "2026-10-07T13:29:41.9350019Z",
+        "parameters": {},
+        "launcherOutcome": "Unclean",
+        "exitCode": 1,
+        "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T1329427521279Z-disposable-expanded-summoning-serpentine-bodies",
+        "requestId": "20261007T1329427521279Z-bcedea6ddaf243d591092f8b9c15fcf7",
+        "requestSha256": "a01a2686310b90afdf119215180757b86520c4327650c562a17d42d621d12581",
+        "expectedAssertions": 15,
+        "expectedNativeWrites": 0,
+        "nativeWrites": 0,
+        "nativeStashedAreas": 0,
+        "metadataSha256": "7bfe87125c6b51c0ff9492a21ceff3df1b6c88cacd0f11f36af3b4ce550ab360",
+        "metadataRows": 1,
+        "qualificationScope": "Bounded request-local human/owned-tail binding and native command/contact research ONLY. No production Salamander adoption or printed mechanics; no transfer of earlier snake evidence; full Sprint17 NOT QUALIFIED.",
+        "resultSha256": "7d386e2d6cb5f5fb990eede324548cf6996de5baaa6b771bf8ed15b2357951e7",
+        "assertions": 15,
+        "passed": 13,
+        "failed": [
+          {
+            "name": "sprint17-human-salamander-attack-contact",
+            "status": "FAIL"
+          },
+          {
+            "name": "sprint17-human-salamander-finite-attack-skin",
+            "status": "FAIL"
+          }
+        ],
+        "orchestrationSha256": "645795cc76abc962f51fbc732d947be52a3ec53c30799dde7b90ad61c6877232",
+        "processId": 30772,
+        "processStartedUtc": "2026-10-07T13:29:43.5883439Z",
+        "scenarioStatus": "FAIL",
+        "outcome": "FAIL",
+        "completedAtUtc": "2026-10-07T13:33:07.3177097Z"
+      }
+    ]
+  },
+  "assertions": [
+    {
+      "name": "sprint17-human-salamander-native-settlement",
+      "status": "PASS"
+    },
+    {
+      "name": "sprint17-human-salamander-rollback",
+      "status": "PASS"
+    },
+    {
+      "name": "sprint17-human-salamander-binding",
+      "status": "PASS"
+    },
+    {
+      "name": "sprint17-human-salamander-original-rest",
+      "status": "PASS"
+    },
+    {
+      "name": "sprint17-human-salamander-native-movement",
+      "status": "PASS"
+    },
+    {
+      "name": "sprint17-human-salamander-native-full-attack",
+      "status": "PASS"
+    },
+    {
+      "name": "sprint17-human-salamander-native-spear-playback",
+      "status": "PASS"
+    },
+    {
+      "name": "sprint17-human-salamander-original-tail-playback",
+      "status": "PASS"
+    },
+    {
+      "name": "sprint17-human-salamander-attack-contact",
+      "status": "FAIL"
+    },
+    {
+      "name": "sprint17-human-salamander-finite-attack-skin",
+      "status": "FAIL"
+    },
+    {
+      "name": "sprint17-human-salamander-native-reference-isolation",
+      "status": "PASS"
+    },
+    {
+      "name": "sprint17-human-salamander-native-destruction",
+      "status": "PASS"
+    },
+    {
+      "name": "sprint17-body-environment-restored",
+      "status": "PASS"
+    },
+    {
+      "name": "sprint17-body-fixture-cleanup",
+      "status": "PASS"
+    },
+    {
+      "name": "loaded-mod-version",
+      "status": "PASS"
+    }
+  ],
+  "nativeRendererCensus": [
+    {
+      "name": "Cape_Red_M(Clone)",
+      "mesh": "CP_Cape2Sided_M_Any",
+      "vertices": 317,
+      "palette": 0,
+      "root": null,
+      "enabled": true,
+      "activeSelf": true,
+      "activeInHierarchy": true,
+      "updateWhenOffscreen": false,
+      "components": [
+        "UnityEngine.Transform",
+        "UnityEngine.MeshFilter",
+        "UnityEngine.SkinnedMeshRenderer",
+        "UnityEngine.Cloth",
+        "HighlightingSystem.HighlighterRenderer"
+      ]
+    },
+    {
+      "name": "Renderer_Character_Diffuse_Cutout",
+      "mesh": "Bandit_FighterLeader_Renderer_Character_Diffuse_Cutout",
+      "vertices": 2268,
+      "palette": 1776,
+      "root": "Pelvis",
+      "enabled": true,
+      "activeSelf": true,
+      "activeInHierarchy": true,
+      "updateWhenOffscreen": false,
+      "components": [
+        "UnityEngine.Transform",
+        "UnityEngine.SkinnedMeshRenderer",
+        "HighlightingSystem.HighlighterRenderer"
+      ]
+    }
+  ],
+  "failure": {
+    "classifications": [
+      {
+        "assertion": "sprint17-human-salamander-attack-contact",
+        "class": "UNRESOLVED_GEOMETRY_VERSUS_NATIVE_POSE",
+        "observed": "Native01 left0.00555565m PASS; native02 left0.08940738m exceeds0.08m. Same-frame native02 end-of-frame0.200967208m. No faithful native-hand comparison is available, so causation remains unproved."
+      },
+      {
+        "assertion": "sprint17-human-salamander-finite-attack-skin",
+        "class": "FIXTURE_OBSERVATION_SERIALIZATION",
+        "observed": "JObject.FromObject(dictionary) throws Object serialized to Array under the active runtime serializer. Both controls stop before allocation/BakeMesh. New failure isolation preserves all15 assertions, real2spear+1tail command and144 timing samples; missing control remains FAIL."
+      }
+    ],
+    "expectedAssertions": 15,
+    "executedAssertions": 15,
+    "passedAssertions": 13,
+    "thresholdsWaived": false,
+    "gameplayOrArtChanged": false,
+    "weightMetadata": "Native2268 weights all finite sums0.9999999..1.00000012, zero zero-sums. Original2198 sums exactly1. Selection/rejection and native driver aggregates still unavailable because serialization throws first.",
+    "native": {
+      "mesh": "Bandit_FighterLeader_Renderer_Character_Diffuse_Cutout",
+      "vertices": 2268,
+      "weights": 2268,
+      "bones": 1776,
+      "binds": 1776,
+      "nativeCpuReadable": false,
+      "geometryExported": false,
+      "weightsChanged": false,
+      "available": false,
+      "ownedResources": 0,
+      "finiteWeightSums": 2268,
+      "zeroWeightSums": 0,
+      "minimumWeightSum": 0.9999999,
+      "maximumWeightSum": 1.00000012,
+      "failure": "System.ArgumentException: Object serialized to Array. JObject instance expected.\r\n  at Newtonsoft.Json.Linq.JObject.FromObject (System.Object o, Newtonsoft.Json.JsonSerializer jsonSerializer) [0x0003a] in <4f213745d60e425fb763df319c826ddf>:0 \r\n  at Newtonsoft.Json.Linq.JObject.FromObject (System.Object o) [0x00007] in <4f213745d60e425fb763df319c826ddf>:0 \r\n  at KingmakerGunslinger.RuntimeTesting.RuntimeTestRunner+Sprint17HumanGripSurface..ctor (UnityEngine.SkinnedMeshRenderer anchor, System.Collections.Generic.List`1[T] resources, Newtonsoft.Json.Linq.JObject metadata) [0x0071a] in <314f0cf358744df69cf73adecd7fba72>:0 \r\n  at KingmakerGunslinger.RuntimeTesting.RuntimeTestRunner+<ReviewSprint17HumanSalamander>d__4.MoveNext () [0x0054b] in <314f0cf358744df69cf73adecd7fba72>:0 "
+    },
+    "original": {
+      "mesh": "KMG_SalamanderHuman_-1004880_Mesh",
+      "vertices": 2198,
+      "weights": 2198,
+      "bones": 36,
+      "binds": 36,
+      "nativeCpuReadable": true,
+      "geometryExported": false,
+      "weightsChanged": false,
+      "available": false,
+      "ownedResources": 0,
+      "finiteWeightSums": 2198,
+      "zeroWeightSums": 0,
+      "minimumWeightSum": 1,
+      "maximumWeightSum": 1,
+      "failure": "System.ArgumentException: Object serialized to Array. JObject instance expected.\r\n  at Newtonsoft.Json.Linq.JObject.FromObject (System.Object o, Newtonsoft.Json.JsonSerializer jsonSerializer) [0x0003a] in <4f213745d60e425fb763df319c826ddf>:0 \r\n  at Newtonsoft.Json.Linq.JObject.FromObject (System.Object o) [0x00007] in <4f213745d60e425fb763df319c826ddf>:0 \r\n  at KingmakerGunslinger.RuntimeTesting.RuntimeTestRunner+Sprint17HumanGripSurface..ctor (UnityEngine.SkinnedMeshRenderer anchor, System.Collections.Generic.List`1[T] resources, Newtonsoft.Json.Linq.JObject metadata) [0x0071a] in <314f0cf358744df69cf73adecd7fba72>:0 \r\n  at KingmakerGunslinger.RuntimeTesting.RuntimeTestRunner+Sprint17HumanGripObservation..ctor (KingmakerGunslinger.RuntimeTesting.RuntimeTestRunner+Sprint17HumanGripSurface native, UnityEngine.SkinnedMeshRenderer original, UnityEngine.MeshFilter spear, Kingmaker.UnitLogic.Commands.UnitAttack command, System.Collections.Generic.List`1[T] resources, Newtonsoft.Json.Linq.JObject nativeMetadata) [0x000dd] in <314f0cf358744df69cf73adecd7fba72>:0 "
+    }
+  },
+  "priorFullReview": {
+    "candidate": "801ed1f3638e608df082db6a8e70b28bacef927b",
+    "passed": 14,
+    "executed": 15,
+    "remaining": "Original native02 grip0.085159m failure is not resolved by this diagnostic. The new exacta5a1 native02 event reproduces it at0.08940738m."
+  },
+  "diagnostics": {
+    "stages": [
+      {
+        "name": "sprint17-human-stage-01-spawned-before-settlement.json",
+        "frame": 4233,
+        "sequence": 1,
+        "sha256": "fd599a37192bfd66951243c4de6390f7369c1100b4bccd7656467c55010f80d9"
+      },
+      {
+        "name": "sprint17-human-stage-02-native-settlement.json",
+        "frame": 4293,
+        "sequence": 2,
+        "sha256": "4ab94de4e30fa7dde59603009206a221926c6ff1a1fdaffdd576fcd1f678a3e6"
+      },
+      {
+        "name": "sprint17-human-stage-03-native-census-before-rollback.json",
+        "frame": 4293,
+        "sequence": 3,
+        "sha256": "7ad909fbb87eef2891fbc0ac4c6a15cc77febedf0c805813b5978ce4caa069c8"
+      },
+      {
+        "name": "sprint17-human-stage-04-rollback-returned-before-render.json",
+        "frame": 4293,
+        "sequence": 4,
+        "sha256": "d375306826b1d027e9a99aec9cef24eb2345842982e21ba09325632683bd10e5"
+      },
+      {
+        "name": "sprint17-human-stage-05-rollback-settled-before-binding.json",
+        "frame": 4295,
+        "sequence": 5,
+        "sha256": "9c5a39139a8a101e6335c0b539ef57e11902e3ac3003164ffd3da2fcdf5455bf"
+      },
+      {
+        "name": "sprint17-human-stage-06-binding-returned-before-render.json",
+        "frame": 4295,
+        "sequence": 6,
+        "sha256": "d9989cbb9730975ab61c69bb55e5f85ff240bad469ccd141258b7f2050b2ec51"
+      },
+      {
+        "name": "sprint17-human-stage-07-first-native-frame-after-binding.json",
+        "frame": 4296,
+        "sequence": 7,
+        "sha256": "fb742f9a41418cd9ab761135666911fe9a47613ecd957ba9e5f340b3370a7264"
+      },
+      {
+        "name": "sprint17-human-stage-08-rest-sampled-before-supporting-frame.json",
+        "frame": 4296,
+        "sequence": 8,
+        "sha256": "a09a7e5397890ad4817be74411dce78370b62bc94296178d15b8d99e35a94cef"
+      },
+      {
+        "name": "sprint17-human-stage-09-rest-frame-complete-before-movement.json",
+        "frame": 4296,
+        "sequence": 9,
+        "sha256": "02e0584a7861bdb3319b68a0d455ccad553d6276d42dacb94241d342e7100ec2"
+      },
+      {
+        "name": "sprint17-human-stage-10-movement-queued-before-render.json",
+        "frame": 4296,
+        "sequence": 10,
+        "sha256": "d445952a2fda39859b6e242585b54110b9d45e005a7c04a1a005dc1a18c2d37c"
+      },
+      {
+        "name": "sprint17-human-stage-11-movement-complete-before-attack.json",
+        "frame": 4323,
+        "sequence": 11,
+        "sha256": "5984a7f6ee320f6a1aaece7fc708147426d798b377f8f2a557dafa228c87f8fb"
+      },
+      {
+        "name": "sprint17-human-stage-12-before-attack-combat-join.json",
+        "frame": 4323,
+        "sequence": 12,
+        "sha256": "8dcdb758b20009d302ddda64afe63ae10cd08fd9b6c2ba6d48dab6b03aaea835"
+      },
+      {
+        "name": "sprint17-human-stage-13-before-native-attack-command.json",
+        "frame": 4413,
+        "sequence": 13,
+        "sha256": "f41b318c4d951c6431620cd6e4fc0295fc33241eca1822252922958a466dd5a9"
+      },
+      {
+        "name": "sprint17-human-stage-14-native-attack-observations-complete.json",
+        "frame": 4612,
+        "sequence": 14,
+        "sha256": "5a1c8960ac505bba341ed99ba651c2f12195c7ff13b73d11e623abd886a770eb"
+      },
+      {
+        "name": "sprint17-human-stage-15-before-owner-destruction.json",
+        "frame": 4612,
+        "sequence": 15,
+        "sha256": "7404933c80d02a5f749c7a61a91711ed88c4d63136f4e1c40687c1a826d72192"
+      },
+      {
+        "name": "sprint17-human-stage-16-owner-destruction-returned.json",
+        "frame": 4612,
+        "sequence": 16,
+        "sha256": "715bae05f8f581dad35e2fe864be14aca7e9b10858ae6b30dd773f1c1f791aa7"
+      },
+      {
+        "name": "sprint17-human-stage-17-native-destruction-settled.json",
+        "frame": 4614,
+        "sequence": 17,
+        "sha256": "e08fa44f7ab70fee3fe1e59d39cc8f3b304bc6b3219474b428bc40839bbfff0a"
+      }
+    ],
+    "timelineRows": 144,
+    "truncated": false,
+    "events": [
+      {
+        "handleId": 0,
+        "clip": "Human_2H_spear_attack_01",
+        "events": [
+          {
+            "time": 0.481699,
+            "method": "Kingmaker.Visual.Animation.AnimationClipEventsCache+<>c__DisplayClass3_0.<CreateEvent>b__2"
+          },
+          {
+            "time": 0.4999997,
+            "method": "Kingmaker.Visual.Animation.AnimationClipEventsCache+<>c.<CreateEvent>b__3_3"
+          },
+          {
+            "time": 0.5,
+            "method": "Kingmaker.Visual.Animation.AnimationClipEventsCache+<>c__DisplayClass3_0.<CreateEvent>b__11"
+          },
+          {
+            "time": 0.620427966,
+            "method": "Kingmaker.Visual.Animation.AnimationClipEventsCache+<>c.<CreateEvent>b__3_12"
+          }
+        ],
+        "eventInvoked": false,
+        "cacheProviderInvoked": false
+      },
+      {
+        "handleId": 1,
+        "clip": "Human_2H_spear_attack_02",
+        "events": [
+          {
+            "time": 0.0258002039,
+            "method": "Kingmaker.Visual.Animation.AnimationClipEventsCache+<>c__DisplayClass3_0.<CreateEvent>b__1"
+          },
+          {
+            "time": 0.37882337,
+            "method": "Kingmaker.Visual.Animation.AnimationClipEventsCache+<>c.<CreateEvent>b__3_3"
+          },
+          {
+            "time": 0.429999828,
+            "method": "Kingmaker.Visual.Animation.AnimationClipEventsCache+<>c__DisplayClass3_0.<CreateEvent>b__11"
+          },
+          {
+            "time": 0.734528542,
+            "method": "Kingmaker.Visual.Animation.AnimationClipEventsCache+<>c.<CreateEvent>b__3_12"
+          }
+        ],
+        "eventInvoked": false,
+        "cacheProviderInvoked": false
+      }
+    ],
+    "eventAdjacentTimeline": [
+      {
+        "frame": 4490,
+        "phase": "LateUpdate",
+        "handleId": 0,
+        "clipTime": 0.6279065,
+        "acted": false,
+        "state": "Playing",
+        "weight": 1,
+        "available": false
+      },
+      {
+        "frame": 4490,
+        "phase": "EndOfFrame",
+        "handleId": 0,
+        "clipTime": 0.6279065,
+        "acted": false,
+        "state": "Playing",
+        "weight": 1,
+        "available": false
+      },
+      {
+        "frame": 4491,
+        "phase": "LateUpdate",
+        "handleId": 0,
+        "clipTime": 0.664842963,
+        "acted": true,
+        "state": "Playing",
+        "weight": 1,
+        "available": false
+      },
+      {
+        "frame": 4491,
+        "phase": "EndOfFrame",
+        "handleId": 0,
+        "clipTime": 0.664842963,
+        "acted": true,
+        "state": "Playing",
+        "weight": 1,
+        "available": false
+      },
+      {
+        "frame": 4542,
+        "phase": "LateUpdate",
+        "handleId": 1,
+        "clipTime": 0.719999969,
+        "acted": false,
+        "state": "TransitioningOut",
+        "weight": 1,
+        "available": false
+      },
+      {
+        "frame": 4542,
+        "phase": "EndOfFrame",
+        "handleId": 1,
+        "clipTime": 0.719999969,
+        "acted": false,
+        "state": "TransitioningOut",
+        "weight": 1,
+        "available": false
+      },
+      {
+        "frame": 4543,
+        "phase": "LateUpdate",
+        "handleId": 1,
+        "clipTime": 0.76,
+        "acted": true,
+        "state": "TransitioningOut",
+        "weight": 0.9393939,
+        "available": false
+      },
+      {
+        "frame": 4543,
+        "phase": "EndOfFrame",
+        "handleId": 1,
+        "clipTime": 0.76,
+        "acted": true,
+        "state": "TransitioningOut",
+        "weight": 0.9393939,
+        "available": false
+      },
+      {
+        "frame": 4544,
+        "phase": "LateUpdate",
+        "handleId": 1,
+        "clipTime": 0.799999952,
+        "acted": true,
+        "state": "TransitioningOut",
+        "weight": 0.8787878,
+        "available": false
+      },
+      {
+        "frame": 4544,
+        "phase": "EndOfFrame",
+        "handleId": 1,
+        "clipTime": 0.799999952,
+        "acted": true,
+        "state": "TransitioningOut",
+        "weight": 0.8787878,
+        "available": false
+      }
+    ],
+    "cachedActAudit": {
+      "nativeAssemblySha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb",
+      "files": [
+        {
+          "path": "artifacts/Inspect-Sprint17-CachedActEvents.ps1",
+          "sha256": "89c8921246625bef0f58da50bd8e86511e926991d635542936922bc53bd82653"
+        },
+        {
+          "path": "artifacts/sprint17-cached-act-events-audit.txt",
+          "sha256": "3e9653e8f220fa276b3ec40db44b052f17ce920b53631d14ec32cf7500b2cb1f"
+        }
+      ],
+      "finding": "Exact <>c.<CreateEvent>b__3_12 sets the owning handle IsActed. Native01 cached act0.620427966s; native02 act0.734528542s. No native methods/events/cache provider invoked."
+    },
+    "timingInference": "Native02 is already TransitioningOut at0.72s before IsActed. First observed acted pose0.76s/frame4543 precedes the rule on4544; its end frame advances0.80s. This is evidence of native event/command/pose timing, not proof that original geometry is faithful.",
+    "qualification": false
+  },
+  "restoration": {
+    "status": "VERIFIED",
+    "snapshot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20261007T1326199536784Z",
+    "lease": "C:\\Dev\\KingmakerGunslingerLab\\compatibility-state\\runtime-20261007T132619Z-1429ee59b35343b0a3ddc3f77499e382\\runtime-lease.json",
+    "leaseStatus": "Completed",
+    "recoveryRequired": false,
+    "leaseReleased": true,
+    "before": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "after": {
+      "files": 136,
+      "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+      "version": "0.0.117",
+      "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+    },
+    "completedUtc": "2026-10-07T13:33:09.9424841Z",
+    "noGame": true,
+    "noDeploymentStaging": true,
+    "saveWrites": 0
+  },
+  "next": {
+    "strategy": "Construct scalar counter JObject properties explicitly, bypassing the active serializer's dictionary converters. Reproduce the old array-converter failure in a focused test and prove exact repaired counts without invoking or changing global defaults. Keep selector/geometry/pose/thresholds unchanged.",
+    "gates": "Full source gate; commit/push; exact clean-head prelaunch; fresh smoke11+all15 human review; exact restoration."
+  },
+  "sourceCorrection": {
+    "sourceParent": "a5a1e962e688c80a5acd21f64ab394eae1165314",
+    "status": "SOURCE PASS; EXACT RUNTIME PENDING; NOT QUALIFIED",
+    "focused": 299,
+    "unfilteredDomain": 2101,
+    "domainSeconds": 83,
+    "completeSeconds": 179,
+    "cleanExactReferences": 14,
+    "strictPackageMembers": 321,
+    "sourceArtifact": {
+      "sourceFingerprint": "6d0e15669c8ecf52ad11a2c8da17cd2bdda9610d30c8b528528a431e34d8e020",
+      "dllSha256": "160f8968a12cb69839b4dbedb850420b3d974f5d0dcd240a3b3ac98e4046ba12",
+      "dllMvid": "d8351615-3011-46ff-9005-88399bd86924",
+      "zipSha256": "c8b2c6244f66f48487e8af4feb1291a2e9957a5e2c281a3b6d8fb4c133791072",
+      "version": "0.0.141",
+      "archive": "artifacts/sprint17-human-counter-json-source-pass",
+      "dirtyParentNotRuntimeCandidate": true
+    },
+    "files": [
+      {
+        "path": "src/KingmakerGunslinger/RuntimeTesting/Sprint17GripEvidence.cs",
+        "sha256": "b9413671102b69e4a8d85fe5bd4d63203a578f6ff95b3fed63f127e9d6022c93"
+      },
+      {
+        "path": "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningSprint17HumanGrip.cs",
+        "sha256": "6e952dd5336edac60943db4f43796494bbc9f65cbd8544b9bea653eb2b67aecf"
+      },
+      {
+        "path": "src/KingmakerGunslinger/KingmakerGunslinger.csproj",
+        "sha256": "b796219bf6384fe2980091ccfe3342e46582290c46720b6693a401ddc0781ce5"
+      },
+      {
+        "path": "tests/KingmakerGunslinger.DomainTests/KingmakerGunslinger.DomainTests.csproj",
+        "sha256": "e10f91311e94bb92f00b8d163cc1ebe8ada1e68790fb1c9ececc3271320abebc"
+      },
+      {
+        "path": "tests/KingmakerGunslinger.DomainTests/SalamanderHumanBindingTests.cs",
+        "sha256": "15517ad4ef7be2487150b487543efcbba7a48bac0a02598c0b69809756227f43"
+      },
+      {
+        "path": "tests/KingmakerGunslinger.DomainTests/Program.cs",
+        "sha256": "4f0d55415667cb21f31ca160b13e0d8fab0cfbb48ac70b3c94d12b116d2840fc"
+      },
+      {
+        "path": "tools/validate_expanded_summoning_phase2a141.py",
+        "sha256": "c83d7182c583e17fc816211b3dc17c8020ba35756399f3e0cb4f87d0903578a4"
+      },
+      {
+        "path": "validation/static-validation.json",
+        "sha256": "42deac32760c14871fcaedbe36ef7ad5088923f9d15093ebdaa2b1bbe7877cc9"
+      },
+      {
+        "path": "artifacts/sprint17-human-counter-json-source-focused.log",
+        "sha256": "46d8b77b545fd6e02d73bba6243782a01d3b4fc50073b91c2dd861f9ee9b8e92"
+      },
+      {
+        "path": "artifacts/sprint17-human-counter-json-source-gate.log",
+        "sha256": "4579603925466d282415d7f6813816ffe3c05ec15a5c424860864163846e69d1"
+      }
+    ],
+    "behavior": "Explicit ordered JProperty scalar construction bypasses process-global dictionary serialization. Regression test reproduces old array-converter failure, preserves exact/zero/empty counters, verifies no repaired-path converter call, and restores all test-global defaults. No runtime global-setting writes, anatomy/pose/art/gameplay/selector/threshold changes.",
+    "runtimeExecuted": false,
+    "expectedRuntimeAssertions": 15
+  },
+  "counts": {
+    "registered": 1008,
+    "published": 976,
+    "withheld": 32,
+    "nativeWrappers": 29,
+    "visible": 1005
+  },
+  "sprints14Through16": "COMPLETE/PUBLISHED",
+  "sprint17": "NOT QUALIFIED",
+  "HumanReview": "NOT_PERFORMED_NONBLOCKING",
+  "cleanup": [
+    {
+      "name": "sprint17-human-salamander-rollback",
+      "status": "PASS",
+      "observed": "{\"resources\":30,\"remaining\":0,\"restored\":true,\"outcome\":\"human-tail:failed:InvalidOperationException:owned human/tail post-swap rollback drill\"}"
+    },
+    {
+      "name": "sprint17-human-salamander-native-destruction",
+      "status": "PASS",
+      "observed": "{\"captured\":32,\"remaining\":0,\"required\":31,\"bothControlsAvailable\":false,\"borrowedAlive\":158}"
+    },
+    {
+      "name": "sprint17-body-environment-restored",
+      "status": "PASS",
+      "observed": "restored=True"
+    },
+    {
+      "name": "sprint17-body-fixture-cleanup",
+      "status": "PASS",
+      "observed": "cleaned=True"
+    }
+  ],
+  "contacts": [
+    {
+      "frame": 4492,
+      "weapon": "99394d453c6f425f84d4b92f7a8deea0",
+      "tail": false,
+      "gap": 0.0313496925,
+      "left": 0.00555564836,
+      "right": 0.006416738,
+      "issued": {
+        "frame": 4492,
+        "handlePresent": true,
+        "observedActedClip": true,
+        "handleStarted": true,
+        "handleActed": true,
+        "handleTime": 0.704843044,
+        "weaponStyle": "PiercingTwoHanded",
+        "animationTargetDistance": 1.5,
+        "variant": 0,
+        "actionClass": "Kingmaker.Visual.Animation.Kingmaker.Actions.UnitAnimationActionHandAttack",
+        "actionName": "MyAttackMainHand",
+        "activeAnimationPresent": true,
+        "activeClass": "Kingmaker.Visual.Animation.PlayableInfo",
+        "activeState": "Playing",
+        "activeTime": 0.664842963,
+        "activeWeight": 1,
+        "activeSpeed": 1,
+        "clip": {
+          "name": "Human_2H_spear_attack_01",
+          "durationSeconds": 1.46666718,
+          "events": []
+        }
+      },
+      "control": {
+        "frame": 4492,
+        "phase": "rule-event",
+        "handleId": 0,
+        "attackIndex": 0,
+        "handleTime": 0.704843044,
+        "acted": true,
+        "finished": false,
+        "clip": "Human_2H_spear_attack_01",
+        "clipTime": 0.664842963,
+        "state": "Playing",
+        "weight": 1,
+        "nativeLeft": null,
+        "nativeRight": null,
+        "originalLeft": null,
+        "originalRight": null,
+        "available": false
+      },
+      "endFrame": {
+        "left": 0.005920008,
+        "right": 0.006416958,
+        "gap": 0.0313497037,
+        "frame": 4492
+      }
+    },
+    {
+      "frame": 4544,
+      "weapon": "99394d453c6f425f84d4b92f7a8deea0",
+      "tail": false,
+      "gap": 0.0313497037,
+      "left": 0.08940738,
+      "right": 0.006416411,
+      "issued": {
+        "frame": 4544,
+        "handlePresent": true,
+        "observedActedClip": true,
+        "handleStarted": true,
+        "handleActed": true,
+        "handleTime": 0.8000001,
+        "weaponStyle": "PiercingTwoHanded",
+        "animationTargetDistance": 1.5,
+        "variant": 1,
+        "actionClass": "Kingmaker.Visual.Animation.Kingmaker.Actions.UnitAnimationActionHandAttack",
+        "actionName": "MyAttackMainHand",
+        "activeAnimationPresent": true,
+        "activeClass": "Kingmaker.Visual.Animation.PlayableInfo",
+        "activeState": "TransitioningOut",
+        "activeTime": 0.76,
+        "activeWeight": 0.9393939,
+        "activeSpeed": 1,
+        "clip": {
+          "name": "Human_2H_spear_attack_02",
+          "durationSeconds": 1.40000057,
+          "events": []
+        }
+      },
+      "control": {
+        "frame": 4544,
+        "phase": "rule-event",
+        "handleId": 1,
+        "attackIndex": 1,
+        "handleTime": 0.8000001,
+        "acted": true,
+        "finished": false,
+        "clip": "Human_2H_spear_attack_02",
+        "clipTime": 0.76,
+        "state": "TransitioningOut",
+        "weight": 0.9393939,
+        "nativeLeft": null,
+        "nativeRight": null,
+        "originalLeft": null,
+        "originalRight": null,
+        "available": false
+      },
+      "endFrame": {
+        "left": 0.200967208,
+        "right": 0.006417347,
+        "gap": 0.0313497037,
+        "frame": 4544
+      }
+    },
+    {
+      "frame": 4590,
+      "weapon": "93e097b8d3db42d3a37656502899e1a9",
+      "tail": true,
+      "gap": 0,
+      "left": null,
+      "right": null,
+      "issued": {
+        "frame": 4590,
+        "handlePresent": true,
+        "observedActedClip": false,
+        "handleStarted": true,
+        "handleActed": true,
+        "handleTime": 0.639901638,
+        "weaponStyle": "None",
+        "animationTargetDistance": 1.5,
+        "variant": 0,
+        "actionClass": "KingmakerGunslinger.Summoning.SalamanderTailAction",
+        "actionName": "KMG_SalamanderHuman_-1004880_TailAction",
+        "activeAnimationPresent": false
+      },
+      "control": null,
+      "endFrame": {
+        "left": null,
+        "right": null,
+        "gap": 0,
+        "frame": 4590
+      }
+    }
+  ]
+}
