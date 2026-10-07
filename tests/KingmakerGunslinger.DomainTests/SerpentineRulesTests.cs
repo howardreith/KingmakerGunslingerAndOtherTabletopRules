@@ -144,12 +144,12 @@ namespace KingmakerGunslinger.DomainTests
         {
             object first = new object(), second = new object();
             object[] before = { first }, validOwned = { first, second };
-            foreach (string key in new[] { null, "", "Viper", "salamander", "crocodile", "purple-worm" })
+            foreach (string key in new[] { null, "", "Viper", "Salamander", "crocodile", "purple-worm" })
             {
                 var live = new System.Collections.Generic.List<object> { first, second };
                 string detail;
                 Assertions.False(SerpentineCrowdReviewPolicy.RestoreOwnedAwake(key, live, before, validOwned,
-                    value => true, out detail), "Only two closed snake keys.");
+                    value => true, out detail), "Only the three exact Sprint 17 creature keys.");
                 Assertions.True(live.SequenceEqual(validOwned), "Rejected roster leaves the list untouched.");
             }
             foreach (object[] owned in new[] { new object[0], new[] { first }, new[] { first, first },
@@ -162,6 +162,11 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(live.SequenceEqual(validOwned), "Invalid scope leaves the list untouched.");
             }
             string reason;
+            var salamander = new System.Collections.Generic.List<object> { first, second };
+            Assertions.True(SerpentineCrowdReviewPolicy.RestoreOwnedAwake("salamander", salamander,
+                before, validOwned, value => true, out reason), "Exact owned Salamander crowd shares the bounded fixture.");
+            Assertions.True(salamander.Count == 1 && ReferenceEquals(salamander[0], first),
+                "Only owned additional membership is retired; the captured reference remains exact.");
             var unchanged = new System.Collections.Generic.List<object> { first, second };
             Assertions.False(SerpentineCrowdReviewPolicy.RestoreOwnedAwake("viper", unchanged, before, validOwned,
                 value => !ReferenceEquals(value, first), out reason), "Destroyed or foreign-area owned actor cannot be reawakened.");
@@ -233,21 +238,22 @@ namespace KingmakerGunslinger.DomainTests
             }
         }
 
-        internal static void PersistenceFixtureHasOnlyFourClosedRoles()
+        internal static void PersistenceFixtureHasOnlySixClosedRoles()
         {
             var roles = SerpentinePersistenceReviewPolicy.Roles;
-            Assertions.Equal(4, roles.Length, "Two snakes and two independently marked targets.");
-            Assertions.Equal(4, roles.Distinct().Count(), "No ambiguous role identity.");
+            Assertions.Equal(6, roles.Length, "Three Sprint17 creatures and three independently marked targets.");
+            Assertions.Equal(6, roles.Distinct().Count(), "No ambiguous role identity.");
             Assertions.Equal("snakes", SerpentinePersistenceReviewPolicy.Scope, "One closed persistence request value.");
             foreach (string role in roles)
             {
                 string key = SerpentinePersistenceReviewPolicy.CreatureKey(role);
                 var creature = ExpandedSummoningCatalog.All.Single(value => value.Key == key);
-                Assertions.True(creature.NaturesAllyTier.HasValue, "Every fixture uses a real native single-summon route.");
+                Assertions.True(key == "salamander" ? creature.MonsterTier.HasValue : creature.NaturesAllyTier.HasValue,
+                    "Every fixture uses its actual available single-summon family.");
                 Assertions.Equal(role.EndsWith("-target", StringComparison.Ordinal) ? "wolf" : role, key,
                     "Targets never alias a party member, native hostile or arbitrary creature.");
             }
-            foreach (string invalid in new[] { null, "", "Viper", "salamander", "wolf", "crocodile", "foreign" })
+            foreach (string invalid in new[] { null, "", "Viper", "Salamander", "wolf", "crocodile", "foreign" })
                 Assertions.True(SerpentinePersistenceReviewPolicy.CreatureKey(invalid) == null,
                     "Only explicit role tokens authorize a fixture identity.");
             roles[0] = "foreign";
