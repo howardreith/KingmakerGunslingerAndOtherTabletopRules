@@ -51,7 +51,12 @@ stable production identities, party character IDs, ordered inventory entries
 with slot/blueprint/count/identification, money, game time and foreign fact
 blueprint multiplicities. Native ItemEntity has no general UniqueId property;
 the test does not invent one or claim cross-process object-reference equality.
-Same-process cleanup uses exact recorded fact references.
+Same-process cleanup uses exact recorded fact references. Native save turns
+units/facts OFF temporarily before serialization. The owned-grant component,
+like native AddFacts, retains its exact serialized grant across this temporary
+OFF/ON cycle; real feature deactivation and module OFF remove it. The fixture
+checks reference preservation and Fiery ON both immediately after save and in
+the next fresh process.
 
 Every stage retains structured evidence and performs save-inventory checks.
 Finally removes only a native receipt-backed owned file, restores the acquired
