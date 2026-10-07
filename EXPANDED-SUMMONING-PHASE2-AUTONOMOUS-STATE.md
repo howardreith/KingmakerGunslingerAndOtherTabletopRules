@@ -1,55 +1,45 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-07 — v0.0.143 checkpoint release mission
+## CURRENT STATE, 2026-10-07 — Sprint17 complete; v0.0.143 integration next
 
-Latest owner mission supersedes prior no-release/retry-stop instructions.
-Phase2B intake e518f41fae1ba4c2d46d0bbc68ca042e966c8e88 is preserved;
-origin/master and v0.0.142 both4ba8d4aca087391144abf401f526189f59b26535.
-Phase2A5482db42;PR25/26 remain draft/unmerged;DATA PR27 archive/ZERO PORTS.
-Laptop source owner session7b92656a-92cc-41f5-af6a-4e22ed65f558;
-owner29828/start16:37:01.6154316UTC;keeper29980/start22:43:47.9859757UTC.
-Prior keeper37216 exited and its Released receipt was archived,not deleted.
-Root icon-art agent is unrelated;no second Phase2B owner/game/runtime lock/staging.
-Intake was clean;permanent release143 safety refs preserve master/Phase2A/Phase2B.
+Latest owner checkpoint-release mission governs. Merge/tag/real Latest v0.0.143
+are authorized ONLY after the integration, complete closure and release gates pass.
+Then STOP; no Sprint18, Phase2C or Sprint22, no permanent deployment.
 
-Sprints14–16 COMPLETE/PUBLISHED. Viper18 and Constrictor14 roots independently
-QUALIFIED/PUBLISHED on hidden47e8c121 and publication996c5fe7.
-Current source:1008 registered/1008 published/0 withheld;29 wrappers/1037 visible.
-Salamander identity and five existing public roots remain intact;NOT QUALIFIED
-until the single new observation-only correction passes its exact-artifact gate.
-One prior mandatory FAIL is retained:computed2/6 were treated as raw5/10.
-The correction reads raw m_AttackRange separately,checks computed type/weapon2/6
-and body5. NO production profile,mechanics,AI,animation,geometry,icon or balance
-change. Focused test rejects swapped raw/computed inputs and inflated body reach.
+Sprints14–16 COMPLETE/PUBLISHED; Sprint17 now technically COMPLETE/PUBLISHED.
+Viper18/Constrictor14 retain exact47e8c121 qualification and996c5fe7 publication.
+Salamander INCLUDED: single additional observation-only correction on exact
+db1da016c8ded77550c619d9f672691bbb64e08d PASS, smoke11/11 + profile/view73/73.
+Raw spear5/tail10, computed2/6, body5 separately observed. No product changes.
+All other mandatory Salamander cells retain their unchanged exact47 evidence;
+five public roots/UI/lifecycle retain996 publication proof. Old failure preserved.
+Exact source gate2123/2123,14-reference clean Release,deterministic strict321.
+DLL2b925c41…/MVIDb8e15e6b-9c6a-456d-99a4-e465bdc52e23;
+ZIP71d4c695…; full hashes/requests/results in the evidence record.
+Current source:1008 registered,1008 published,0 withheld;29 wrappers/1037 visible.
+HumanReview: NOT_PERFORMED_NONBLOCKING. Accepted limitations/adaptation unchanged.
 
-Next gate:commit/push this one bounded observer candidate;full source/build/package
-ONCE on that exact head;canonical working-save smoke plus existing Sprint17
-snake-profiles/view scenario ONLY;exact restoration. No new scenario family.
-PASS includes Salamander and closes Sprint17 technically. Any repeat failure,
-real product defect or required production change excludes all unqualified
-Salamander changes from the release slice and restores released behavior/five routes.
-No further Salamander retries under this mission.
+Exact actual snapshot20261007T2258344605477Z restored23:06:08.4004559UTC:
+136files/Info0.0.117/tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3;
+Info SHA1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff.
+Lease Completed/released/recovery=false; no game/staging; ZERO save writes.
+Only KMG_AUTOMATION_WORKING; protected baseline untouched; no manual save access.
+One prelaunch memory abort preceded the successful unchanged-candidate batch;
+documented Steam-helper recovery preserved client/install/saves and original guard.
 
-Then create codex/release-0.0.143-expanded-summoning-phase2b-checkpoint from latest
-accepted master;normal reviewed integration preserving v0.0.142 and qualified
-Phase2A/2B;draft PR to master and exact conflict/identity ledger. Full closure
-and focused v0.0.142 regression gates must PASS before ready/merge/tag/real Latest
-v0.0.143 release. Do not merge PR25/26 directly;close them as superseded only
-after the successful checkpoint release. No blind current-tree release.
+Next: create codex/release-0.0.143-expanded-summoning-phase2b-checkpoint from
+accepted master4ba8d4aca087391144abf401f526189f59b26535; normal integration
+of this qualified Phase2B descendant; preserve every v0.0.142 feature and identities;
+record every conflict in an integration ledger; new draft PR to master.
+Full Phase2B/release-wide closure NOT RUN; integration/release NOT QUALIFIED.
+Do not merge PR25/26 directly; close them as superseded only AFTER v0.0.143 release.
+DATA PR27 remains archived/ZERO PORTS. Safety refs/worktrees/evidence preserved.
+Laptop source receipt session7b92656a-92cc-41f5-af6a-4e22ed65f558, keeper29980;
+transfer/release exact ownership receipt before moving production source work.
 
-Last verified restored snapshot:20261007T2152425844224Z at22:00:34.9412483UTC,
-136files/Info0.0.117/tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
-Reobserve/snapshot ACTUAL state under a runtime lease before each new transaction.
-Prior cleanup saved natively and fresh absence proved ZERO owned fixture units;
-only KMG_AUTOMATION_WORKING,protected baseline untouched,no manual save access.
-[Exact Sprint17 evidence](planning/EXPANDED-SUMMONING-SPRINT17-SALAMANDER-PRODUCTION-VIEW-SOURCE-EVIDENCE.json)
-retains old failed/PASS artifacts and now carries the bounded release decision.
-
-Accepted limitations/adaptation unchanged;HumanReview NOT_PERFORMED_NONBLOCKING.
-Phase2B exhaustive closure NOT RUN;no release qualification claimed yet.
-After v0.0.143 STOP. Permanent workflow:one charter sprint per branch/PR/release
-from latest released master;no stacking or autonomous next sprint. Sprint18,
-Phase2C and Sprint22 NOT STARTED/NOT AUTHORIZED HERE. No permanent deployment.
+[Exact evidence](planning/EXPANDED-SUMMONING-SPRINT17-SALAMANDER-PRODUCTION-VIEW-SOURCE-EVIDENCE.json).
+Permanent future workflow: one charter sprint per branch/PR/release from latest
+released master; no stacking, no autonomous next sprint, new owner mission required.
 
 ## Preserved earlier checkpoint — source-qualified mechanics, runtime NOT QUALIFIED
 

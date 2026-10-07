@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "program": "Kingmaker Expanded Summoning Ideal Roster",
   "phase2Mission": {
-    "authority": "Latest owner directive 2026-10-05: laptop sole Phase 2B source owner, PR 26 active; PR 27 frozen salvage-only; finish Phase 2B and stop for owner review",
+    "authority": "Latest owner checkpoint-release mission: qualified integration with current master, release v0.0.143 only after every gate passes, then STOP; one sprint per future release, new owner mission required.",
     "authorizedSprints": [
       9,
       10,
@@ -26,18 +26,19 @@
       13,
       14,
       15,
-      16
+      16,
+      17
     ],
-    "currentSprint": 17,
-    "currentSubItem": "STOP with PARTIAL PASS at owner efficiency amendment retry limit. Viper18/Constrictor14 independently qualified/published on996c5fe7 after hidden47e8c121 PASS. Salamander mandatory native-per-weapon-reach observer FAIL retained;computed2/6 was supplied where raw5/10 was expected;no demonstrated production defect. Further bounded observation-only correction and exact-artifact qualification require new owner authority. Full Phase2B closure matrices NOT RUN;Phase2C authorized but deferred/not started.",
+    "currentSprint": null,
+    "currentSubItem": "Sprint17 technically COMPLETE;include Salamander after exact db1da016 smoke11/profile-view73 PASS with no product change. Create release143 integration branch from accepted master4ba8d4a, preserve v142 features, then one exhaustive closure/regression/release gate. Release NOT QUALIFIED;Sprint18 not started.",
     "sprint17IntegratedQualification": {
-      "status": "PARTIAL_PASS",
+      "status": "COMPLETE_TECHNICALLY_QUALIFIED",
       "hiddenCandidate": "47e8c1214f93e4c725a35261083cbd7b44f3f041",
       "publicationCandidate": "996c5fe7eaf8c3be1966746f0227aa9f85074d73",
       "evidence": "planning/EXPANDED-SUMMONING-SPRINT17-SALAMANDER-PRODUCTION-VIEW-SOURCE-EVIDENCE.json",
       "viper": "QUALIFIED/PUBLISHED18roots",
       "constrictorSnake": "QUALIFIED/PUBLISHED14roots",
-      "salamander": "PARTIAL/NOT QUALIFIED;one reach-observation failure retained;5 prior public roots preserved and PASS",
+      "salamander": "QUALIFIED;5 roots preserved;one owner-authorized observation-only db1da016 profile/view73/73 PASS;other cells47e8c121 andpublication996c5fe7 unchanged.",
       "hiddenAssertions": {
         "passed": 422,
         "total": 423
@@ -59,7 +60,7 @@
         "nativeWrappers": 29,
         "visibleChoices": 1037
       },
-      "failedAssertion": "sprint17-salamander-profile-native-per-weapon-reach",
+      "failedAssertion": null,
       "failureKind": "FIXTURE_OBSERVATION_CONTRACT;no demonstrated production range defect",
       "retryBudget": {
         "productUsed": 0,
@@ -70,9 +71,18 @@
       "phase2BClosed": false,
       "closureMatricesRun": false,
       "phase2CStarted": false,
-      "restoration": "VERIFIED136files/Info0.0.117/tree216A9DC2...;lease Completed/released;no game/active staging;publication0savewrites;prior47native cleanup/fresh absence PASS",
-      "stop": "Owner efficiency retry limit;no additional observer correction or waiver. Further bounded raw-range observation correction requires new owner authority.",
-      "historicalRecordsMeaning": "Earlier named checkpoints retain their own exact source/artifact counts and qualification scope;they do not override this current integrated result."
+      "restoration": "VERIFIED snapshot20261007T2258344605477Z at23:06:08.4004559UTC;136files/Info0.0.117/exacttree+InfoSHA;lease Completed/released,no game/staging,ZERO writes.",
+      "stop": "Sprint17 complete. Continue ONLY release143 integration/closure/release mission;STOP after release, noSprint18.",
+      "historicalRecordsMeaning": "Earlier named checkpoints retain their own exact source/artifact counts and qualification scope;they do not override this current integrated result.",
+      "priorStatus": "PARTIAL_PASS on47e8c121;failed reach assertion preserved historically.",
+      "observationCorrection": {
+        "candidate": "db1da016c8ded77550c619d9f672691bbb64e08d",
+        "assertions": 84,
+        "passed": 84,
+        "productionChanges": false,
+        "observationBudgetUsed": 1,
+        "evidence": "planning/EXPANDED-SUMMONING-SPRINT17-SALAMANDER-PRODUCTION-VIEW-SOURCE-EVIDENCE.json#checkpointRelease143"
+      }
     },
     "sprint17SalamanderProfileSource": {
       "sourceBase": "65bc05362920a7bdae5f8cfc8b0f1275c3d562d0",
@@ -241,7 +251,7 @@
       "focused": 296,
       "domain": 2098,
       "domainSeconds": 82.7,
-      "gateSeconds": 180.0,
+      "gateSeconds": 180,
       "cleanExactReferences": 14,
       "strictPackageMembers": 321,
       "evidence": "planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-GRIP-OBSERVATION-SOURCE-EVIDENCE.json",
@@ -356,7 +366,11 @@
       "restoration": "VERIFIED 2026-10-07T09:58:17.2992027Z",
       "ownedObjectsReclaimed": 30,
       "borrowedObjectsPreserved": 158,
-      "remainingFailureClasses": ["production spear iterative count", "dependent spear playback count", "hand-origin and distal-tail contact"],
+      "remainingFailureClasses": [
+        "production spear iterative count",
+        "dependent spear playback count",
+        "hand-origin and distal-tail contact"
+      ],
       "expectedRuntimeAssertions": 15,
       "suppression": "Only audited zero-bone native cape sharedMesh=null; native bones/root/renderer flags unchanged; exact original mesh restored",
       "baseOwnedObjectCount": 29,
@@ -373,7 +387,7 @@
       "focused": 292,
       "domain": 2094,
       "domainSeconds": 83.7,
-      "gateSeconds": 178.0,
+      "gateSeconds": 178,
       "cleanExactReferences": 14,
       "strictPackageMembers": 321,
       "evidence": "planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-TAIL-FALLBACK-EVIDENCE.json",
@@ -420,7 +434,7 @@
       "focused": 291,
       "domain": 2093,
       "domainSeconds": 84.6,
-      "gateSeconds": 183.0,
+      "gateSeconds": 183,
       "cleanExactReferences": 14,
       "strictPackageMembers": 321,
       "newBehaviorTests": 1,
@@ -442,7 +456,7 @@
       "focused": 290,
       "domain": 2092,
       "domainSeconds": 81.9,
-      "gateSeconds": 179.0,
+      "gateSeconds": 179,
       "cleanExactReferences": 14,
       "strictPackageMembers": 321,
       "runtimeExecuted": true,
@@ -704,7 +718,7 @@
       "allDuplicateBindsAgree": false,
       "saveWrite": false
     },
-    "sprint17TechnicalQualified": false,
+    "sprint17TechnicalQualified": true,
     "sprint17ResearchReview": "planning/EXPANDED-SUMMONING-SPRINT17-RIG-SURVEY-REVIEW.md",
     "sprint17Research": {
       "candidate": "f507278bbebe5894130dc6ec51978580bc2c43d0",
@@ -740,7 +754,7 @@
     "sprint12TechnicalQualified": true,
     "sprint12Published": true,
     "sprint10OriginalIconSourcesPainted": true,
-    "automaticContinuationAllowed": true,
+    "automaticContinuationAllowed": false,
     "supersedesHistoricalMissionAuthorization": true,
     "acceptedMaster": "2ce70e4e7e9d3c97ca1008ab05a341e758f5cf5a",
     "trancheA": "codex/expanded-summoning-phase2a-sprints9-13",
@@ -794,8 +808,8 @@
     "sprint16HiddenCandidateReview": "planning/EXPANDED-SUMMONING-SPRINT16-HIDDEN-CANDIDATE-REVIEW.md",
     "sprint16PrelaunchCorrection": "b6e26e2ef207cf5302e9796026527beb9556d17c rejected before deployment: full suite 2018 tests, two stale 305/303 package expectations. Corrected to current 312/310; private execution suffix corrected; prelaunch abort policy now prevents repeated failed builds. Focused 218/218 and 68 orchestration assertions PASS. No runtime/save write; exact interrupted generic lease completed, actual live tree equals snapshot 20261005T1524442963100Z at the accepted 136-file fingerprint. Full corrected candidate gate next.",
     "sprint16Published": true,
-    "releaseAuthorized": false,
-    "mergeAuthorized": false,
+    "releaseAuthorized": true,
+    "mergeAuthorized": true,
     "sprint22Authorized": false,
     "sprint14Published": true,
     "sprint14Status": "COMPLETE WITH OWNER-ACCEPTED ENGINE LIMITATION (PASSIVE_CREATURE_SENSES_UNMODELED)",
@@ -1147,6 +1161,18 @@
       ],
       "nativeHitReactionDisposition": "Native rig has no Hit action; no flinch claimed, no gameplay change or new owner-accepted limitation.",
       "qualificationScope": "Closed private32 routes/UI/carrier-faithful native hit/death/fade/resource lifecycle only; no publicspellbook/slot or fullSprint17 claim"
+    },
+    "checkpointRelease143": {
+      "version": "0.0.143",
+      "qualifiedSalamanderIncluded": true,
+      "master": "4ba8d4aca087391144abf401f526189f59b26535",
+      "integrationBranch": "codex/release-0.0.143-expanded-summoning-phase2b-checkpoint",
+      "integrationQualified": false,
+      "closureRun": false,
+      "releasePublished": false,
+      "sprint18Authorized": false,
+      "stopAfterRelease": true,
+      "futureWorkflow": "ONE_SPRINT_PER_BRANCH_PR_RELEASE_NEW_OWNER_MISSION"
     }
   },
   "charter": {
@@ -1424,7 +1450,7 @@
       "detail": "Supplied by the owner and read. The Pteranodon passage confirms the shipped profile rather than changing it: ten-foot reach valued for attacks of opportunity, and a single main bite on which everything stacks (2d6 plus modifiers). The guide also positions multiple Pteranodons as the best single-target aerial attacker at their tier. This informs Sprint 2's acceptance emphasis on correct bite impact timing and location at Large reach; it changes no accepted statistic."
     }
   ],
-  "nextConcreteAction": "STOP with PARTIAL PASS at owner efficiency amendment retry limit. Viper18/Constrictor14 independently qualified/published on996c5fe7 after hidden47e8c121 PASS. Salamander mandatory native-per-weapon-reach observer FAIL retained;computed2/6 was supplied where raw5/10 was expected;no demonstrated production defect. Further bounded observation-only correction and exact-artifact qualification require new owner authority. Full Phase2B closure matrices NOT RUN;Phase2C authorized but deferred/not started.",
+  "nextConcreteAction": "Sprint17 technically COMPLETE;include Salamander after exact db1da016 smoke11/profile-view73 PASS with no product change. Create release143 integration branch from accepted master4ba8d4a, preserve v142 features, then one exhaustive closure/regression/release gate. Release NOT QUALIFIED;Sprint18 not started.",
   "deploymentReconciliation": {
     "finding": "The first runs left this mission's 0.0.136 branch build installed over the pre-run 0.0.117 installation. The mission required restoration and did not authorize a permanent installation; a shared version string does not make a branch artifact an accepted release.",
     "ownershipVerified": "The live DLL hash matched this mission's exact build byte for byte, so the tree was unambiguously mission-owned.",
