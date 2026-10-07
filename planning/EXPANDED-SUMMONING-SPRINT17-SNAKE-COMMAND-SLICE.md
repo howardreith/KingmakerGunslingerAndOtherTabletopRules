@@ -50,15 +50,19 @@ All17 disagreeing native storage groups excluded; native upper bones unchanged.
 Fixed target-free1.4second tail sweep;29evaluated mesh poses finite/above authoring
 plane. Source gate280focused/2082unfiltered81.5s/complete178.2s/clean14/strict320 PASS.
 See `planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-TAIL-PROTOTYPE.md`.
-No prototype packaged or runtime action adopted; no new live qualification.
-Source-only Tail bridge now passes6 new behavior tests and the complete gate:
-286focused/2088unfiltered83.7s/complete177.9s/clean14/strict320. Native command
-clock, exact clip acknowledgement, one-event/replay rejection and exception-safe
-owned stop are implemented, but no fixture/production hook calls the bridge yet.
-Source parent8ca5795f; no native playback/contact or publication inferred.
+Request-local human/owned-tail binding is now implemented, with no production
+hook. The exact original mesh is packaged separately as salamander-human-mesh.json;
+all old assets and native spear handling remain unchanged. Corrected source gate
+PASS:290focused/2092unfiltered81.9s/complete179.0s/clean14/strict321, plus9
+Blender authoring tests. Source parent19949d30; no new runtime qualification.
+A prelaunch audit corrected exported sorted-palette versus authoring order and
+added all36-index round-trip assertions; the earlier undeployed package is retained.
+One closed disposable-serpentine-bodies request now exercises only this hybrid's
+native settlement, rollback, movement, full attack/contact and exact destruction.
+No runtime result, pause/interruption qualification or production adoption inferred.
 
-Next: bounded request-local human/original-body/owned-tail binding with real native
-spear/tail commands, then printed Salamander mechanics. No repeated donor census
+Next: commit/push and rebuild one exact-head human/owned-tail research candidate;
+guarded smoke plus hybrid native-command review, then printed Salamander mechanics. No repeated donor census
 or global animation rewrite. Then ONE same-artifact Sprint17 hidden/publication
 gate and fullPhase2B closure. STOP owner review;Phase2C authorized but deferred.
 HumanReview: NOT_PERFORMED_NONBLOCKING.

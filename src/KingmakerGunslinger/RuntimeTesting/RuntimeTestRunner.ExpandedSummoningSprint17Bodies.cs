@@ -62,6 +62,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             try
             {
                 Game.Instance.IsPaused = false;
+                if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSerpentineBodies)
+                {
+                    foreach (int step in ReviewSprint17HumanSalamander(fixture)) yield return step;
+                    yield break; // Closed current hybrid research; old Lizardfolk attempts remain historical evidence.
+                }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSnakeFinalReview)
                 {
                     foreach (int step in ReviewSprint17SnakeFinalCases(fixture)) yield return step;
@@ -393,7 +398,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool poseFinite = skin.All(matrix => Enumerable.Range(0, 16)
                 .All(index => SerpentineRigSurveyPolicy.Finite(matrix[index / 4, index % 4])));
             var transforms = new JArray(bones.Select((bone, index) => new JObject {
-                ["name"] = body.GetComponentInParent<SerpentineVisualAttachment>().DriverNames[index],
+                ["name"] = body.GetComponentInParent<SalamanderHumanVisualAttachment>() != null
+                    ? SalamanderHumanBindingPolicy.Names[index]
+                    : body.GetComponentInParent<SerpentineVisualAttachment>().DriverNames[index],
                 ["nativeTransformName"] = bone.name, ["worldPosition"] = SurveyVector(bone.position),
                 ["skinToWorldRowMajor"] = Sprint17SurveyMatrix(skin[index]) }));
             return new JObject { ["frame"] = Time.frameCount, ["finite"] = finite, ["poseFinite"] = poseFinite,
