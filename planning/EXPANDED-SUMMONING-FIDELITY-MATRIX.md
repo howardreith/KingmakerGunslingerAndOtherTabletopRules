@@ -1,6 +1,6 @@
 # Expanded Summoning fidelity matrix
 
-## Current boundary: exactd5bc diagnostic readability FAIL/restored; Sprint17 NOT QUALIFIED
+## Current boundary: exact2dace diagnostic hand-selection FAIL/restored; Sprint17 NOT QUALIFIED
 
 [Exact closed snake review PASS](EXPANDED-SUMMONING-SPRINT17-SNAKE-FINAL-PASS-EVIDENCE.json)
 on `fb9ffa507ef5884a321921355f7088f485c8d155`: fresh Steam640820
@@ -47,48 +47,34 @@ All17 disagreeing native storage groups excluded; native upper bones unchanged.
 Fixed target-free1.4second tail sweep;29evaluated mesh poses finite/above authoring
 plane. Source gate280focused/2082unfiltered81.5s/complete178.2s/clean14/strict320 PASS.
 See `planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-TAIL-PROTOTYPE.md`.
-Exactd5bc656519300da5753248a62e602da7f1aed525: smoke11/11 PASS; human
-diagnostic FAIL after5 assertions (4PASS), not the required15-check review.
-[Exact native-readability failure and restoration](EXPANDED-SUMMONING-SPRINT17-HUMAN-GRIP-READABILITY-EVIDENCE.json).
-All exact prelaunch PASS296/2098full82.8s/complete179.0s/clean14/strict321,
+Exact2daceb68fa5ee50ee2c1205e876d47dc9d5eadea: smoke11/11 PASS; human
+diagnostic4/5partial FAIL, before the required15-check attack review.
+[Exact hand-selection failure and restoration](EXPANDED-SUMMONING-SPRINT17-HUMAN-GRIP-BAKE-RUNTIME-EVIDENCE.json).
+All exact prelaunch PASS297/2099full83.1s/complete177.1s/clean14/strict321,
 515preflight/168orchestration/17provenance and all persistence/crowd/launcher gates.
 
-The native combined body reports2268vertices/1776palette slots, but its CPU
-vertex getter rejects access because isReadable=false (preserved game log).
-The new read-only control incorrectly assumed direct vertices were available;
-it fails before original attachment, rollback or attacks. Classification:
-FIXTURE_OBSERVATION, not a proved gameplay regression. No grip-control result.
-The last full review remains exact801 human14/15, with the0.085159m left
-grip failure against the unchanged0.08m limit. That failure is NOT resolved.
+Native2268vertex/1776palette weight/bind shape checks pass, but one hand
+selection is unavailable. Side/count/rejection distribution were not recorded.
+The control fails before allocation, BakeMesh, attachment or attacks; no new
+hand comparison or gameplay result. Classification: FIXTURE_OBSERVATION.
+Last full801 remains14/15: left-grip0.085159m exceeds unchanged0.08m.
+Neither diagnostic failure resolves that defect or qualifies the BakeMesh seam.
 
-Actual136/Info0.0.117/tree216A9DC2...AF3 restored12:19:30.7905394UTC;
+Actual136/Info0.0.117/tree216A9DC2...AF3 restored13:00:45.4757100UTC;
 ZERO native save writes; fixture/environment cleanup PASS; no game,
 completed/released lease/recoveryfalse, no deployment staging.
-Four atomic stages, the native log and all earlier artifacts are preserved.
+Four atomic stages and every failed artifact are preserved.
 Sprints14–16 COMPLETE; Sprint17 NOT QUALIFIED;32roots hidden;
 976published+29wrappers=1005visible. HumanReview: NOT_PERFORMED_NONBLOCKING.
 
-Owned BakeMesh control repair is now SOURCE PASS297focused/2099full82.6s,
-complete176.9s/clean14/strict321. It replaces the invalid direct native vertex
-read with two disabled project-owned renderers outside the live view.
-Each retains the exact borrowed mesh/bones and fills only an owned snapshot;
-original/native import flags, renderers, clips, bones and weapon are untouched.
-The owned control must match every finite world-matrix entry within1e-5;
-original baked grip must agree with the independent weighted-world measurement.
-All eight bake resources plus both frame probes are captured for exact cleanup;
-native asset references must survive. No geometry export or8cm/25cm waiver.
-A new finite-frame rejection test and both count pins are synchronized to2099.
-This repair has NOT run live. The last complete grip result remains801 FAIL.
-
-Next: push the source-qualified bake-control repair, rebuild the exact clean
-head with all prelaunch/harness gates, then fresh Steam640820 smoke11 and
-ALL15 human checks. Prove usable native/owned baked hand samples, independent
-original-distance agreement, cached-event timing and all40 expected resources
-(39required base plus any material clones) reclaimed with borrowed assets intact.
-Do not waive8cm/25cm limits or accept a favorable variant as a fix for native02.
-Acquire the runtime lease before snapshot and restore that exact installation.
-Then printed Salamander mechanics, same-artifact Sprint17 hidden/publication,
-fullPhase2B closure and STOP. Phase2C authorized but deferred.
+Next: persist bounded hand-selection/rejection aggregates and isolate native
+control observation failures from the real command/timing review. Missing
+control remains a failed qualification check, never PASS or silently omitted.
+No weight normalization, native pose/import/weapon changes, geometry export,
+threshold waiver or favorable-variant retry. Then source/full gates, commit/push,
+exact-head prelaunch and fresh smoke11+ALL15 human checks with exact restoration.
+After bounded hybrid proof: printed Salamander mechanics, same-artifact Sprint17
+hidden/publication, fullPhase2B closure and STOP. Phase2C authorized but deferred.
 HumanReview: NOT_PERFORMED_NONBLOCKING.
 Exact `130bf7a2de4cbd636df921f36e7f6afefe8523ca` passes the complete
 bounded rules batch: fresh Steam640820 smoke **11/11**, profile/body/signature
