@@ -1,7 +1,7 @@
 # Sprint 17 Salamander original human/tail prototype
 
-Status: EXACT487 HUMAN REVIEW12/15 FAIL/NO CRASH/RESTORED; Sprint17 NOT QUALIFIED. Production Salamander
-identity, placements, profile and prefab remain unchanged. A separate original
+Status: EXACT801 HUMAN REVIEW14/15 FAIL/RESTORED; Sprint17 NOT QUALIFIED. Production Salamander
+identity/placements/prefab unchanged; spear is now manufactured. A separate original
 human/tail mesh is packaged for guarded research only.
 Laptop PR26 only; DATA salvage-only, ZERO PORTS.
 
@@ -420,13 +420,38 @@ All earlier failed artifacts/diagnostics preserved. Sprints14–16 COMPLETE;
 Sprint17 NOT QUALIFIED;32roots hidden;976published+29wrappers=1005visible.
 HumanReview: NOT_PERFORMED_NONBLOCKING.
 
+## Exact801 printed levels and attacks pass; grip remains open
+
+Exact801ed1f3638e608df082db6a8e70b28bacef927b: smoke11/11, human14/15 FAIL.
+[Exact printed-level runtime and restoration](EXPANDED-SUMMONING-SPRINT17-HUMAN-PRINTED-LEVEL-RUNTIME-EVIDENCE.json).
+All exact prelaunch PASS294/2096full82.5s/complete178.8s/clean14/strict321,
+515preflight/168orchestration/17provenance and all persistence/crowd/launcher gates.
+The zero summon-level override now preserves authored/character/baseBAB/modifiedBAB8.
+The native command succeeds with exactly TWO spear events plus ONE original tail.
+
+Only attack-contact fails: second left weighted hand-surface gap0.0851590857m
+exceeds the unchanged0.08m limit; first is0.07913925m. Both native spear clips
+are Human_2H_spear_attack_02, already TransitioningOut at weight0.9393939.
+Same-frame rendered gaps grow to0.1625474/0.196584031m. This suggests a timing
+or original-geometry issue, not a proved cause. No peak cherry-picking, limit
+change, forced native pose, favorable-clip rerun or accepted limitation.
+Right grips~0.006417m, spear target gaps~0.03135m, original337point tail gap0;
+one owned tail event/movement3.5892m. Other14 checks PASS, not aggregate qualification.
+
+Rollback/native destruction reclaim30owned objects;158borrowed survive.
+Actual136/Info0.0.117/tree216A9DC2...AF3 restored11:38:07.0136916UTC;
+ZERO save writes; no game, completed/released lease, no deployment staging.
+Seventeen correlated stages and all earlier failures/artifacts are preserved.
+Sprints14–16 COMPLETE; Sprint17 NOT QUALIFIED;32roots hidden;
+976published+29wrappers=1005visible. HumanReview: NOT_PERFORMED_NONBLOCKING.
+
 ## Next exact work
 
-Next: push this level-corrected source, rebuild its exact clean head with every
-prelaunch/harness gate, then fresh Steam640820 smoke11 and ALL15 human checks.
-Require native blueprint/character/BAB8 and TWO spear events plus ONE tail;
-keep the same contact thresholds and record actual command disposition.
-Acquire runtime lease before snapshot; restore that exact installation.
+Next: bounded native action/event/frame audit and same-pose native-versus-original
+hand-surface observation. Fix only a demonstrated defect; preserve8cm grip/25cm
+strike limits and all15 checks. Any correction needs focused/full source gates,
+commit/push, exact clean-head prelaunch and a complete fresh Steam640820 review.
+Acquire runtime lease before snapshot and restore that exact installation.
 Then printed Salamander mechanics, ONE same-artifact Sprint17 hidden/publication,
 fullPhase2B closure and STOP. Phase2C authorized but deferred.
 Preserve all native two-handed weapon handling and native references.
