@@ -48,6 +48,7 @@ try{
     $runtime=Enter-KmgRuntimeLease -Purpose ('elemental-character-trait-save '+$tx)
     $receipt.runtimeLease=$runtime.Lease.RunId;$receipt.saveLease=$lease.Path
     $original=Get-ElementalLiveTree $live
+    $receipt.liveBefore=$original
     $backup=& (Join-Path $PSScriptRoot 'Backup-Live-Mod.ps1') -Confirm:$false
     $receipt.liveBackup=$backup.Destination
     if(($original.files|ConvertTo-Json -Depth 8 -Compress) -cne ((Get-ElementalLiveTree $backup.Destination).files|ConvertTo-Json -Depth 8 -Compress)){throw 'Exact backup differs.'}
@@ -107,6 +108,7 @@ finally{
         if($null -ne $lease){
             Remove-ElementalTraitOwnedSave $catalog $lease $currentPhase
             $final=Assert-KmgProtectedSaveCatalog -Catalog $catalog;$receipt.savesRestored=$final.passed
+            $receipt.finalSaveInventoryExact=$final
             $state=Assert-ElementalTraitSaveLease $lease $currentPhase
             $state.status=if($null -eq $failure){'Completed'}else{'FailedRestored'}
             Write-ElementalTraitSaveJson $lease.Path $state
@@ -129,7 +131,7 @@ finally{
                     }
                     $restored=Get-ElementalLiveTree $live
                     if(($original|ConvertTo-Json -Depth 8 -Compress) -cne ($restored|ConvertTo-Json -Depth 8 -Compress)){throw 'Exact live restoration failed.'}
-                    $receipt.liveRestored=$true
+                    $receipt.liveAfter=$restored;$receipt.liveRestored=$true
                 }
                 Exit-KmgRuntimeLease $runtime;$receipt.runtimeLeaseCompleted=$true
             }catch{if($null -eq $failure){$failure=$_};$receipt.liveCleanupFailure=$_.Exception.ToString()}
