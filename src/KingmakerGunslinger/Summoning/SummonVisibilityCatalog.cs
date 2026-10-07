@@ -36,16 +36,17 @@ namespace KingmakerGunslinger.Summoning
         // the same day once the owner accepted the passive-sense limitation
         // that was the only thing holding them.
         //
-        // Dire Crocodile is the only key removed by the Sprint 16 publication.
-        // Interior AC/HP remains the accepted engine limitation, not a blocker.
+        // The exact 47e8c121 hidden batch qualifies both new snakes independently.
+        // This is their publication candidate, not a full Sprint 17 PASS:
+        // Salamander's retained reach-observation failure still blocks closure.
+        // Existing Salamander identities and five published roots do not move.
         private static readonly HashSet<string> SuppressedCreatureKeys =
-            new HashSet<string>(new[] { "viper", "constrictor-snake" },
-                StringComparer.Ordinal);
+            new HashSet<string>(StringComparer.Ordinal);
 
         internal const int RegisteredLogicalPlacementCount = 1008;
-        // Sprint 17 allocates identities without publishing: Viper has 18
-        // placements and Constrictor Snake 14. The qualified 976 stay visible.
-        internal const int SuppressedLogicalPlacementCount = 32;
+        // Only Viper's18 and Constrictor's14 keys are newly exposed. Their
+        // exact public-route artifact gate is mandatory before publication PASS.
+        internal const int SuppressedLogicalPlacementCount = 0;
         internal const int PublishedLogicalPlacementCount =
             RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount;
 
