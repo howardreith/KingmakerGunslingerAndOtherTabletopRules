@@ -29,7 +29,7 @@
       16
     ],
     "currentSprint": 17,
-    "currentSubItem": "Sprint17 NOT QUALIFIED. Exacta429da50 native snake persistence PASS: smoke11/prepare14/cleanup13/absence6. Existing production hold reset witnessed at native completion4252; fixture-only readiness repair qualified. Two authorized native writes,zero saved owned units after fresh absence. Exact restoration03:37:14UTC;32roots hidden. Next snake lifecycle/UI/private32 routes, separate Salamander, fullSprint17/Phase2B;Phase2C deferred.",
+    "currentSubItem": "Sprint17 NOT QUALIFIED. Closed snake routes/UI/lifecycle fixture SOURCE PASS:275focused/2077full84.1s/complete182.2s/clean14-referenceRelease/strict320. New request expected81; exact-head runtime NEXT. Latest a429 native persistence11/14/13/6 PASS and actual snapshot restored03:37:14UTC;zero saved owned fixtures.32roots hidden;Salamander/fullSprint17/Phase2B open;Phase2C deferred.",
     "sprint17SnakeLoadBoundaryTrace": {
       "status": "FIXTURE ASSERTION PRECEDES NATIVE LOAD-COMPLETE; DIAGNOSTIC COMPLETE; GAMEPLAY NOT QUALIFIED",
       "sourceParent": "15070179e84d799d476ce90a7b205d0e950ec52d",
@@ -637,6 +637,30 @@
       },
       "cleanupScenesFrame": 4235,
       "cleanupNativeResetFrame": 4252
+    },
+    "sprint17SnakeFinalReview": {
+      "status": "SOURCE PASS; EXACT RUNTIME NOT RUN; FULL SPRINT17 NOT QUALIFIED",
+      "sourceParent": "7a5a710c2c46d5c7d3198acaa5b025b292d285df",
+      "review": "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-FINAL-REVIEW.md",
+      "scenario": "disposable-expanded-summoning-snake-final-review",
+      "focused": 275,
+      "domain": 2077,
+      "domainSeconds": 84.1,
+      "sourceGateSeconds": 182.2,
+      "cleanExactReferences": 14,
+      "strictPackageMembers": 320,
+      "expectedAssertions": 81,
+      "runtimeExecuted": false,
+      "runtimeQualified": false,
+      "publicPlayerPathQualified": false,
+      "publicationAuthorized": false,
+      "productionGameplayChanged": false,
+      "saveWriteAuthorized": false,
+      "launcherWhatIf": {
+        "accepted": 14,
+        "rejected": 13
+      },
+      "autoExit": "Required for exact new request in both script preflight and in-game validator; other scenarios unchanged"
     }
   },
   "charter": {
@@ -914,7 +938,7 @@
       "detail": "Supplied by the owner and read. The Pteranodon passage confirms the shipped profile rather than changing it: ten-foot reach valued for attacks of opportunity, and a single main bite on which everything stacks (2d6 plus modifiers). The guide also positions multiple Pteranodons as the best single-target aerial attacker at their tier. This informs Sprint 2's acceptance emphasis on correct bite impact timing and location at Large reach; it changes no accepted statistic."
     }
   ],
-  "nextConcreteAction": "Remaining snake lifecycle/UI/private32 routes; separate Salamander seam; one complete exact Sprint17 hidden candidate and publication, then full Phase2B closure. Stop for owner review. Keep32 snake roots hidden. Earlier commands/rules/crowd qualification is artifact-bounded; complete final Sprint17 candidate must rerun all required gates on one artifact.",
+  "nextConcreteAction": "Policy-push source-qualified bounded snake final-review fixture. Repeat all exact-head prelaunch gates; freeze/archive one immutable artifact; guarded Steam640820 smoke11 plus final-review81; exact actual snapshot restoration. No publication or public-path claim. Then separate Salamander, complete Sprint17 hidden/publication and Phase2B closure; STOP for owner review. Phase2C authorized but deferred.",
   "deploymentReconciliation": {
     "finding": "The first runs left this mission's 0.0.136 branch build installed over the pre-run 0.0.117 installation. The mission required restoration and did not authorize a permanent installation; a shared version string does not make a branch artifact an accepted release.",
     "ownershipVerified": "The live DLL hash matched this mission's exact build byte for byte, so the tree was unambiguously mission-owned.",

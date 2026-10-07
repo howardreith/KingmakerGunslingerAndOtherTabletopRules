@@ -427,6 +427,55 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal("viper", SerpentineCommandReviewPolicy.Cells()[0][0], "No mutable global matrix.");
         }
 
+        internal static void FinalReviewRequestIsClosed()
+        {
+            string scenario = RuntimeTestScenarioCatalog.DisposableExpandedSummoningSnakeFinalReview;
+            Assertions.Equal("disposable-expanded-summoning-snake-final-review", scenario, "One bounded request.");
+            Assertions.True(SerpentineFinalReviewPolicy.ValidExit(scenario, true), "Bounded protocol exits.");
+            Assertions.False(SerpentineFinalReviewPolicy.ValidExit(scenario, false), "No live fixture handoff.");
+            Assertions.True(SerpentineFinalReviewPolicy.ValidExit(
+                RuntimeTestScenarioCatalog.DisposableExpandedSummoningSnakeCommands, false), "Other request exit contracts unchanged.");
+            Assertions.True(RuntimeTestScenarioCatalog.IsAllowed(scenario) &&
+                RuntimeTestScenarioCatalog.IsExpandedSummoningRulesScenario(scenario), "Existing working-save guards.");
+            foreach (string invalid in new[] { scenario.ToUpperInvariant(), scenario + "-all",
+                "working-save-expanded-summoning-snake-final-review" })
+                Assertions.False(RuntimeTestScenarioCatalog.IsAllowed(invalid), "No arbitrary scope or save authority.");
+        }
+
+        internal static void FinalReviewRoutesAndQuantitiesAreExact()
+        {
+            var routes = SerpentineFinalReviewPolicy.Routes();
+            Assertions.Equal(32, routes.Length, "All and only snake roots.");
+            Assertions.Equal(18, routes.Count(value => value.Creature.Key == "viper"), "Viper roots.");
+            Assertions.Equal(14, routes.Count(value => value.Creature.Key == "constrictor-snake"), "Constrictor roots.");
+            Assertions.Equal(32, routes.Select(value => value.StableKey).Distinct().Count(), "No duplicated route.");
+            Assertions.True(routes.All(value => !SummonVisibilityCatalog.IsPublished(value)), "Private gate never publishes.");
+            foreach (SummonMultiplicity kind in Enum.GetValues(typeof(SummonMultiplicity)))
+                for (int count = -1; count <= 6; count++)
+                    Assertions.Equal(kind == SummonMultiplicity.One ? count == 1 :
+                        kind == SummonMultiplicity.OneD3 ? count >= 1 && count <= 3 :
+                        kind == SummonMultiplicity.OneD4PlusOne && count >= 2 && count <= 5,
+                        SerpentineFinalReviewPolicy.Quantity(kind, count), "Every exact quantity boundary.");
+            Assertions.False(SerpentineFinalReviewPolicy.Quantity((SummonMultiplicity)99, 1), "Unknown quantity fails closed.");
+        }
+
+        internal static void FinalReviewRequiresActualNativePlayback()
+        {
+            Assertions.True(SerpentineFinalReviewPolicy.PlayedNativeClip(true, true, "native", 1f, .2, .5f),
+                "Positive native clip/time/weight.");
+            Assertions.False(SerpentineFinalReviewPolicy.PlayedNativeClip(false, true, "native", 1f, .2, .5f), "Exact native action.");
+            Assertions.False(SerpentineFinalReviewPolicy.PlayedNativeClip(true, false, "native", 1f, .2, .5f), "Actually started.");
+            foreach (string name in new[] { null, "" })
+                Assertions.False(SerpentineFinalReviewPolicy.PlayedNativeClip(true, true, name, 1f, .2, .5f), "No IsActed-only fallback.");
+            foreach (float invalid in new[] { -1f, 0f, float.NaN, float.PositiveInfinity })
+            {
+                Assertions.False(SerpentineFinalReviewPolicy.PlayedNativeClip(true, true, "native", invalid, .2, .5f), "Finite positive duration.");
+                Assertions.False(SerpentineFinalReviewPolicy.PlayedNativeClip(true, true, "native", 1f, invalid, .5f), "Finite elapsed time.");
+                Assertions.False(SerpentineFinalReviewPolicy.PlayedNativeClip(true, true, "native", 1f, .2, invalid), "Nonzero actual weight.");
+            }
+            Assertions.False(SerpentineFinalReviewPolicy.PlayedNativeClip(true, true, "native", 1f, .2, 2f), "No impossible weight.");
+        }
+
         internal static void CommandRetryNeverDrivesAiOrReplaysHeldAttack()
         {
             for (int attempt = 0; attempt < 4; attempt++)

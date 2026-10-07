@@ -46,7 +46,13 @@ foreach ($roster in @('crocodile,dire-crocodile', 'viper,constrictor-snake')) {
 }
 $prepare = 'working-save-expanded-summoning-prepare'
 $crowd = 'working-save-expanded-summoning-creature-review'
+$snakeFinal = 'disposable-expanded-summoning-snake-final-review'
+Invoke-SourceOnlyLauncher $snakeFinal @{}
+$valid++
 $badCases = @(
+    @{ Scenario=$snakeFinal; Parameters=@{}; Save='KMG_AUTOMATION_BASELINE' },
+    @{ Scenario=$snakeFinal; Parameters=@{creature='salamander'} },
+    @{ Scenario=$snakeFinal; Parameters=@{}; ExitAutomatically=$false },
     @{ Scenario=$prepare; Parameters=@{persistenceScope='snakes'}; Save='KMG_AUTOMATION_BASELINE' },
     @{ Scenario=$prepare; Parameters=@{persistenceScope='Snakes'} },
     @{ Scenario=$prepare; Parameters=@{persistenceScope='salamander'} },
@@ -62,7 +68,7 @@ foreach ($bad in $badCases) {
     $didReject = $false
     try { Invoke-SourceOnlyLauncher @bad }
     catch { $didReject = $true }
-    if (-not $didReject) { throw 'Actual launcher accepted an invalid scoped request.' }
+    if (-not $didReject) { throw ('Actual launcher accepted an invalid scoped request: ' + ($bad | ConvertTo-Json -Compress)) }
     $rejected++
 }
 $afterEvidence = @(Get-ChildItem -LiteralPath $script:KmgRuntimeEvidenceRoot -Directory | ForEach-Object FullName)
