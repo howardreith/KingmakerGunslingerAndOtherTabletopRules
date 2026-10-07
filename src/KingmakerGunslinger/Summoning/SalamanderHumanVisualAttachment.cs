@@ -10,6 +10,7 @@ using Kingmaker.View;
 using Kingmaker.Visual.Animation;
 using Kingmaker.Visual.Animation.Actions;
 using Kingmaker.Visual.Animation.Kingmaker;
+using Kingmaker.Visual.Animation.Kingmaker.Actions;
 using Kingmaker.Visual.MaterialEffects;
 using KingmakerGunslinger.Assets;
 using KingmakerGunslinger.Bootstrap;
@@ -103,10 +104,17 @@ namespace KingmakerGunslinger.Summoning
             var manager = _view.AnimationManager;
             _nativeSet = manager == null ? null : manager.AnimationSet;
             bool exactHuman = ReferenceEquals(_nativeSet, BlueprintRoot.Instance.HumanAnimationSet);
-            // Preserve the original guard and its short-circuit behavior.
-            // Distinguish its two operands instead of guessing which failed.
+            // A patched lookup can return native Slam when raw Tail is absent.
+            // Keep the exact human carrier and reject any existing real Tail;
+            // accept only null or the exact observed native-Slam fallback.
+            var specials = exactHuman ? _nativeSet.Actions.OfType<UnitAnimationActionSpecialAttack>().ToArray() :
+                new UnitAnimationActionSpecialAttack[0];
+            var effectiveTail = exactHuman ? manager.GetAction(UnitAnimationSpecialAttackType.Tail) : null;
+            var nativeSlam = specials.SingleOrDefault(action =>
+                action.AttackType == UnitAnimationSpecialAttackType.Slam && action.name == "MyAnimationSet_Slam");
             string rejection = SalamanderHumanBindingPolicy.NativeSetRejection(exactHuman,
-                exactHuman && manager.GetAction(UnitAnimationSpecialAttackType.Tail) != null);
+                specials.Any(action => action.AttackType == UnitAnimationSpecialAttackType.Tail),
+                SalamanderHumanBindingPolicy.IsReviewedEffectiveTail(effectiveTail, nativeSlam));
             if (rejection != null) throw new InvalidDataException("Native human action guard: " + rejection);
             _nativeActions = _nativeSet.Actions.ToArray();
 
