@@ -1,6 +1,6 @@
 # Sprint 17 Salamander original human/tail prototype
 
-Status: EXACTd989 DIAGNOSTIC COMPLETE/BINDING GUARD FAIL/RESTORED; Sprint17 NOT QUALIFIED. Production Salamander
+Status: EXACTcd709 NATIVE RENDER CRASH/NO FINAL RESULT/RESTORED; Sprint17 NOT QUALIFIED. Production Salamander
 identity, placements, profile and prefab remain unchanged. A separate original
 human/tail mesh is packaged for guarded research only.
 Laptop PR26 only; DATA salvage-only, ZERO PORTS.
@@ -285,10 +285,39 @@ complete repository/static/icon/manifest, clean14-reference Release and
 deterministic strict321 package178.0s. Logs:
 artifacts/sprint17-human-native-slam-source-{focused,gate}.log.
 
+## Exact cd709 native crash — preserved, not qualified
+
+Exact cd70979f37af00e26fcc4247ce2f30579bb1f592 passed every prelaunch gate:
+292focused/2094full84.0s/complete180.6s/clean14/strict321 plus all harness checks.
+Smoke11/11 PASS; human-tail review ended in a native Unity access violation
+before a final result. No body/playback/contact/cleanup qualification is claimed.
+[Exact crash and restoration](EXPANDED-SUMMONING-SPRINT17-HUMAN-NATIVE-CRASH-EVIDENCE.json).
+The log reports a zero-sized D3D buffer immediately before the crash.
+Assigning an empty mesh to the native cape is a bounded suspect, not a proven
+causal stack or memory-exhaustion diagnosis. A supporting rest image is not
+mechanical proof. Smoke audited ZERO save writes; the crashed review's final
+write audit is absent/UNKNOWN. No save-file inspection or manual surgery.
+Actual136/Info0.0.117/tree216A9DC2...AF3 restored09:08:27.5428737UTC;
+no game/runtime lease/staging. Raw logs/dump remain private, hash-preserved.
+The d989 raw/effective Tail finding remains valid: exact native human root,
+NO raw Tail, CoTW exact native-Slam fallback. cd709 keeps all24 native actions,
+rejects raw Tail/foreign lookup, and still requires its owned Tail afterward.
+No CoTW mutation, borrowed Slam adoption, production Salamander change or waiver.
+
+The exact native error is UnityPlayer.dll access violation0xc0000005 at
+offset0x0000000000c10d4d, PID31096. Native crash diagnostics show13968MiB
+physical memory free; this is not evidence of OOM. The original zero-vertex
+suppression mesh is the focused next investigation. No unrelated global
+renderer/cloth/action changes or repeated unchanged-candidate launch.
+
 ## Next exact work
 
-Qualify/commit/push this fallback-boundary correction, rebuild one exact candidate
-and run guarded working-save-smoke plus the complete bounded human review.
+Next: remove the request-local zero-vertex auxiliary mesh path, preserving exact
+native bones/flags/restoration, and add durable non-qualifying stage checkpoints.
+Run focused/full source gates, push a coherent correction, rebuild its exact head,
+then guarded smoke and all15 human binding/command/contact/destruction assertions.
+Then printed Salamander mechanics, ONE same-artifact Sprint17 hidden/publication
+gate, fullPhase2B closure and STOP for owner review. Phase2C authorized but deferred.
 Preserve native two-handed spear handling
 and all native references. Prove the original tail with real commands, then
 finish Salamander's printed mechanics. Only a complete same-artifact Sprint17

@@ -29,10 +29,10 @@
       16
     ],
     "currentSprint": 17,
-    "currentSubItem": "Sprint17 NOT QUALIFIED. Exactd989 diagnostic complete: exact human root/no raw Tail; CoTW returns native Slam fallback. Smoke11/11, hybrid4/6(expected15) FAIL before resources; restored08:41:31UTC/zero save writes. Narrow raw/effective correction source PASS292focused/2094full83.7s/178.0s/clean14/strict321; exact new-head review next. All24 native actions and15 assertions preserved.32roots hidden;Phase2C deferred.",
+    "currentSubItem": "Sprint17 NOT QUALIFIED. Exactcd709 prelaunch PASS292focused/2094full84.0s/180.6s/321; smoke11/11, human review native Unity crash before final result. Exact restore09:08:27UTC; no game/runtime lease/staging. Zero-sized D3D buffer logged; empty auxiliary mesh is a bounded suspect, not proven cause. Crashed review save-write audit UNKNOWN. Correct suppression/add durable diagnostics, then exact-head full review.32roots hidden;Phase2C deferred.",
     "sprint17HumanNativeSlamFallbackCorrection": {
       "sourceParent": "d989915120c7380a20ba33e83177c0cd20392dea",
-      "status": "SOURCE PASS; NOT RUNTIME QUALIFIED",
+      "status": "EXACTcd709 NATIVE RENDER CRASH/NO FINAL RESULT; RESTORED; NOT QUALIFIED",
       "focused": 292,
       "domain": 2094,
       "domainSeconds": 83.7,
@@ -47,7 +47,15 @@
       "borrowedSlamAdopted": false,
       "coTWOrGlobalPatchChanged": false,
       "postInstallOwnedTailLookupStillRequired": true,
-      "runtimeExecuted": false
+      "runtimeExecuted": true,
+      "runtimeCandidate": "cd70979f37af00e26fcc4247ce2f30579bb1f592",
+      "runtimeEvidence": "planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-NATIVE-CRASH-EVIDENCE.json",
+      "runtimeSmokePassed": 11,
+      "runtimeReviewPassed": null,
+      "runtimeReviewExpected": 15,
+      "runtimeReviewNativeSaveWriteAudit": "UNKNOWN: final result absent after native crash",
+      "restoration": "VERIFIED 2026-10-07T09:08:27.5428737Z",
+      "nextInvestigation": "Request-local empty auxiliary mesh suppression and durable pre-native-boundary stage diagnostics; exact native crash cause not established"
     },
     "sprint17HumanGuardRegistryRepair": {
       "sourceParent": "7590ce68319d747eea90f4a9224e4a628861b06a",
@@ -1078,7 +1086,7 @@
       "detail": "Supplied by the owner and read. The Pteranodon passage confirms the shipped profile rather than changing it: ten-foot reach valued for attacks of opportunity, and a single main bite on which everything stacks (2d6 plus modifiers). The guide also positions multiple Pteranodons as the best single-target aerial attacker at their tier. This informs Sprint 2's acceptance emphasis on correct bite impact timing and location at Large reach; it changes no accepted statistic."
     }
   ],
-  "nextConcreteAction": "Wire the source-qualified inactive Tail bridge into bounded request-local human/original-body/owned-tail binding; prove real native spear/tail commands, pause/speed/interruption/cleanup, then printed Salamander mechanics. No repeated donor census or general animation framework. Complete same-artifact Sprint17 hidden/publication and Phase2B closure; stop owner review;Phase2C authorized but deferred.",
+  "nextConcreteAction": "Correct only the request-local zero-vertex auxiliary mesh path and persist non-qualifying stage diagnostics; focused/full source gates, push, exact-head rebuild and all15 guarded human review assertions. Then printed Salamander mechanics, same-artifact Sprint17 hidden/publication and Phase2B closure. Stop owner review;Phase2C authorized but deferred. No unchanged-candidate retry or global renderer/animation rewrite.",
   "deploymentReconciliation": {
     "finding": "The first runs left this mission's 0.0.136 branch build installed over the pre-run 0.0.117 installation. The mission required restoration and did not authorize a permanent installation; a shared version string does not make a branch artifact an accepted release.",
     "ownershipVerified": "The live DLL hash matched this mission's exact build byte for byte, so the tree was unambiguously mission-owned.",
