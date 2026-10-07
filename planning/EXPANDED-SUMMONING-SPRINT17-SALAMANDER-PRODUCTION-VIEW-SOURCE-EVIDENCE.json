@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "independentPublication": {
-    "status": "CANDIDATE_RUNTIME_PENDING",
-    "purpose": "Normal independent publication gate after exact47e8c121 hidden evidence. NOT another observer correction, hidden retry or Salamander qualification.",
+    "status": "QUALIFIED_AND_PUBLISHED",
+    "purpose": "Normal independent publication of Viper/Constrictor after all of their exact47e8c121 hidden gates PASS;NOT another observer correction or Salamander qualification.",
     "baseCheckpoint": "87476779f9f27aff2a51a1f260426b728d3e667c",
     "hiddenQualification": "47e8c1214f93e4c725a35261083cbd7b44f3f041",
     "keys": [
@@ -21,18 +21,698 @@
     "gates": {
       "focused": "PASS321/321 of2123 after six stale publication count/record expectations were updated;artifacts/sprint17-independent-publication-focused.log. Current state/evidence candidate equation is checked without rewriting immutable historical checkpoint counts.",
       "incrementalCompilation": "PASS14 references;publication bridge compiles;not runtime artifact.",
-      "exactSource": "PENDING one exact committed-head Sprint gate",
-      "runtime": "PENDING one scoped smoke + existing final-review publication batch"
+      "exactSource": {
+        "status": "PASS",
+        "commit": "996c5fe7eaf8c3be1966746f0227aa9f85074d73",
+        "domain": {
+          "passed": 2123,
+          "failed": 0,
+          "seconds": 83
+        },
+        "gateSeconds": 179.3,
+        "referenceCount": 14,
+    "memberCount": 321,
+    "iconDisposition": "No bitmap,GUID or consumer assignment changed. Existing original128x128 Viper/Constrictor species icons remain bound to all32 newly visible roots and existing execution/unit/type/trait consumers. Exact47 hidden native root widgets/status/sheet consumers PASS;exact996 public native slot/command paths and final UI/lifecycle PASS. Native venom/feat icons retained. HumanReview NOT_PERFORMED_NONBLOCKING;no owner aesthetic approval claimed.",
+        "log": "artifacts/sprint17-independent-publication-996c5fe7-exact-source-gate.log",
+        "logSha256": "3ad4d5ecc6c3aeb32ef855fb998e73c2e3c184b2328f361b2204f57e400db02c",
+        "prelaunch": {
+          "runtimePreflight": 515,
+          "orchestration": 168,
+          "persistenceRequests": 11,
+          "persistenceRoundTrips": 6,
+          "persistenceDefaults": 3,
+          "persistenceRejections": 56,
+          "crowdRoundTrips": 10,
+          "crowdRejections": 11,
+          "launcherValid": 18,
+          "launcherRejected": 13
+        },
+        "invocationCorrection": "Existing orchestration script default PSScriptRoot bound empty under -File; explicit absolute -ScriptRoot passed168. No source mutation, installation observation or runtime retry."
+      },
+      "runtime": "PASS74/74:smoke11/11 + existing final-review63/63;all37 public roots;exact snapshot restored;zero native writes."
     },
     "unchanged": "All production mechanics/AI/art/views/assets/identities/placements unchanged from47e8c121. Production delta only the two suppression keys; request-local public slot/parent/menu witness borrows the qualified existing native player-path helper. Failed Salamander reach observer and corrected hidden evidence retained.",
     "retryBudget": "Product0/1 used;observation1/1 used. This normal publication gate creates no extra hidden correction authority.",
-    "qualificationBoundary": "Salamander PARTIAL/NOT QUALIFIED;full Sprint17 NOT CLOSED;Phase2B closure NOT RUN;Phase2C deferred/not started.",
-    "HumanReview": "NOT_PERFORMED_NONBLOCKING"
+    "qualificationBoundary": "Viper/Constrictor independently QUALIFIED AND PUBLISHED. Salamander PARTIAL/NOT QUALIFIED,its5 existing public routes preserved and individually PASS. FullSprint17/Phase2B NOT CLOSED;exhaustive closure not run;Phase2C deferred/not started.",
+    "HumanReview": "NOT_PERFORMED_NONBLOCKING",
+    "source": {
+      "schemaVersion": 1,
+      "generatedAtUtc": "2026-10-07T21:48:40.5151016Z",
+      "generator": "scripts/Build-Local.ps1",
+      "repositoryRoot": "C:\\Dev\\KingmakerGunslingerLab\\repo\\KingmakerGunslinger\\.worktrees\\expanded-summoning-phase2b-laptop-20261005",
+      "commit": "996c5fe7eaf8c3be1966746f0227aa9f85074d73",
+      "branch": "codex/expanded-summoning-phase2b-sprints14-17",
+      "sourceStateSha256": "03c4d1e7c77e6e247d342381ab9283cb24374845a325dce7ca87e4d0daf88b66",
+      "version": "0.0.141",
+      "packagePath": "C:\\Dev\\KingmakerGunslingerLab\\repo\\KingmakerGunslinger\\.worktrees\\expanded-summoning-phase2b-laptop-20261005\\artifacts\\local-runtime\\0.0.141\\KingmakerGunslinger-0.0.141-local-runtime.zip",
+      "packageSha256": "326aa8d238bcf16be888811e887bda154e503e8a45084a966e78b37c7323b91a",
+      "dllSha256": "51576d09c11187f2aefb7eb7590ca8df986e98a320f0dc48e8bb58f92d8640f7",
+      "dllMvid": "99f51797-12d6-4552-914f-0aa8c4880dee",
+      "firearmManifestSha256": "bf57981ad5ec2cbf3149ecafc3ef737d87bc9035b14bccc7d254dca8f991c62e",
+      "firearmSoundBankSha256": "0e9f88c562f4f937a8941ace0f241bb31a7ed56b46fbca549c98f764392edf18",
+      "validated": true
+    },
+    "runtime": {
+      "status": "PASS",
+      "journal": "artifacts/laptop-runtime-20261007T2152416392503Z/batch.json",
+      "journalSha256": "b363ba69918d3f86da11d9ec689eba0b2b5f97d1c16838c8c51c1250245e8203",
+      "startedAtUtc": "2026-10-07T21:52:41.6760205Z",
+      "completedAtUtc": "2026-10-07T22:00:34.9412483Z",
+      "memberCount": 321,
+      "steamAppId": 640820,
+      "runs": [
+        {
+          "label": "smoke",
+          "scenario": "working-save-smoke",
+          "startedAtUtc": "2026-10-07T21:53:08.0461074Z",
+          "parameters": {},
+          "launcherOutcome": "Clean",
+          "exitCode": 0,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T2153089631178Z-working-save-smoke",
+          "requestId": "20261007T2153089787555Z-5a95c56cd2e54faabc4856c45978639e",
+          "requestSha256": "0e14b02812bdecba7cfa8a98594dfb4f6bf0c743865f7a2da39f52fe198bedcc",
+          "minimumAssertions": 11,
+          "requiredAssertionIds": [],
+          "expectedNativeWrites": 0,
+          "nativeWrites": 0,
+          "nativeStashedAreas": 0,
+          "qualificationScope": "Normal independent Viper/Constrictor publication gate;all32 new public roots and5 preserved Salamander roots plus UI/lifecycle required. Hidden47e8c121 evidence remains separately pinned;failed Salamander range observer untouched;Sprint17/Phase2B NOT CLOSED.",
+          "resultSha256": "cba699b0e2b400703765577a509835d3618bd6d52ec00351fcec391bb10aa133",
+          "assertions": 11,
+          "passed": 11,
+          "failed": [],
+          "orchestrationSha256": "8aefa20774dc01060bde8f26cb59957ab7b824fcdcf07eb6751f3857df05158d",
+          "processId": 37284,
+          "processStartedUtc": "2026-10-07T21:53:10.0211163Z",
+          "scenarioStatus": "PASS",
+          "outcome": "PASS",
+          "completedAtUtc": "2026-10-07T21:56:01.3711591Z"
+        },
+        {
+          "label": "independent-snake-publication-and-preserved-salamander-routes",
+          "scenario": "disposable-expanded-summoning-snake-final-review",
+          "startedAtUtc": "2026-10-07T21:56:07.4896217Z",
+          "parameters": {},
+          "launcherOutcome": "Clean",
+          "exitCode": 0,
+          "evidenceDirectory": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\20261007T2156082738833Z-disposable-expanded-summoning-snake-final-review",
+          "requestId": "20261007T2156082895504Z-895280a606ca4771886e4aeaa4a4c848",
+          "requestSha256": "0bd32048cf07fe36e1c60789a58593efc0953f158a9e5fa6aec56f1636469d70",
+          "minimumAssertions": 63,
+          "requiredAssertionIds": [
+            "sprint17-salamander-lifecycle-carriers",
+            "sprint17-salamander-native-wound-lifecycle",
+            "sprint17-salamander-native-death",
+            "sprint17-salamander-native-expiry-control",
+            "sprint17-salamander-native-fade-despawn",
+            "sprint17-salamander-lifecycle-resources",
+            "sprint17-salamander-inspectable-type-icon",
+            "sprint17-final-published-route-census",
+            "sprint17-final-KMG_Summoning_Special_Salamander_CombatTraits-native-buff-row",
+            "sprint17-final-native-ui-restoration",
+            "sprint17-final-viper-lifecycle-intact",
+            "sprint17-final-viper-native-hit",
+            "sprint17-final-viper-native-death",
+            "sprint17-final-viper-native-fade-despawn",
+            "sprint17-final-viper-lifecycle-resources",
+            "sprint17-final-constrictor-snake-lifecycle-intact",
+            "sprint17-final-constrictor-snake-native-hit",
+            "sprint17-final-constrictor-snake-native-death",
+            "sprint17-final-constrictor-snake-native-fade-despawn",
+            "sprint17-final-constrictor-snake-lifecycle-resources",
+            "sprint17-final-published-root-Monster.1.viper.One",
+            "sprint17-final-published-root-Monster.2.viper.OneD3",
+            "sprint17-final-published-root-Monster.3.viper.OneD4PlusOne",
+            "sprint17-final-published-root-Monster.4.viper.OneD4PlusOne",
+            "sprint17-final-published-root-Monster.5.viper.OneD4PlusOne",
+            "sprint17-final-published-root-Monster.6.viper.OneD4PlusOne",
+            "sprint17-final-published-root-Monster.7.viper.OneD4PlusOne",
+            "sprint17-final-published-root-Monster.8.viper.OneD4PlusOne",
+            "sprint17-final-published-root-Monster.9.viper.OneD4PlusOne",
+            "sprint17-final-published-root-Monster.3.constrictor-snake.One",
+            "sprint17-final-published-root-Monster.4.constrictor-snake.OneD3",
+            "sprint17-final-published-root-Monster.5.constrictor-snake.OneD4PlusOne",
+            "sprint17-final-published-root-Monster.6.constrictor-snake.OneD4PlusOne",
+            "sprint17-final-published-root-Monster.7.constrictor-snake.OneD4PlusOne",
+            "sprint17-final-published-root-Monster.8.constrictor-snake.OneD4PlusOne",
+            "sprint17-final-published-root-Monster.9.constrictor-snake.OneD4PlusOne",
+            "sprint17-final-published-root-NaturesAlly.1.viper.One",
+            "sprint17-final-published-root-NaturesAlly.2.viper.OneD3",
+            "sprint17-final-published-root-NaturesAlly.3.viper.OneD4PlusOne",
+            "sprint17-final-published-root-NaturesAlly.4.viper.OneD4PlusOne",
+            "sprint17-final-published-root-NaturesAlly.5.viper.OneD4PlusOne",
+            "sprint17-final-published-root-NaturesAlly.6.viper.OneD4PlusOne",
+            "sprint17-final-published-root-NaturesAlly.7.viper.OneD4PlusOne",
+            "sprint17-final-published-root-NaturesAlly.8.viper.OneD4PlusOne",
+            "sprint17-final-published-root-NaturesAlly.9.viper.OneD4PlusOne",
+            "sprint17-final-published-root-NaturesAlly.3.constrictor-snake.One",
+            "sprint17-final-published-root-NaturesAlly.4.constrictor-snake.OneD3",
+            "sprint17-final-published-root-NaturesAlly.5.constrictor-snake.OneD4PlusOne",
+            "sprint17-final-published-root-NaturesAlly.6.constrictor-snake.OneD4PlusOne",
+            "sprint17-final-published-root-NaturesAlly.7.constrictor-snake.OneD4PlusOne",
+            "sprint17-final-published-root-NaturesAlly.8.constrictor-snake.OneD4PlusOne",
+            "sprint17-final-published-root-NaturesAlly.9.constrictor-snake.OneD4PlusOne",
+            "sprint17-final-published-root-Monster.5.salamander.One",
+            "sprint17-final-published-root-Monster.6.salamander.OneD3",
+            "sprint17-final-published-root-Monster.7.salamander.OneD4PlusOne",
+            "sprint17-final-published-root-Monster.8.salamander.OneD4PlusOne",
+            "sprint17-final-published-root-Monster.9.salamander.OneD4PlusOne"
+          ],
+          "expectedNativeWrites": 0,
+          "nativeWrites": 0,
+          "nativeStashedAreas": 0,
+          "metadataSha256": "864ecda2b95b59a6dceb386569ee07b9a53e337f1eacc61d6087e81ba6bbfce3",
+          "metadataRows": 60,
+          "creatureKeys": [
+            "constrictor-snake",
+            "salamander",
+            "viper"
+          ],
+          "qualificationScope": "Normal independent Viper/Constrictor publication gate;all32 new public roots and5 preserved Salamander roots plus UI/lifecycle required. Hidden47e8c121 evidence remains separately pinned;failed Salamander range observer untouched;Sprint17/Phase2B NOT CLOSED.",
+          "resultSha256": "fe7534236e87e9104ba37896733cf5613cb972f666822d32d2d5717d57d60105",
+          "assertions": 63,
+          "passed": 63,
+          "failed": [],
+          "orchestrationSha256": "1b78b6b9677c6381b220ab557952cd275652070285b69d3b06e2927310864490",
+          "processId": 34028,
+          "processStartedUtc": "2026-10-07T21:56:09.4084146Z",
+          "scenarioStatus": "PASS",
+          "outcome": "PASS",
+          "completedAtUtc": "2026-10-07T22:00:32.4377555Z"
+        }
+      ],
+      "rootWitnesses": [
+        {
+          "name": "sprint17-final-published-root-Monster.1.viper.One",
+          "status": "PASS",
+          "nativeDurationExact": true,
+          "nativeCleanupExact": true,
+          "count": 1,
+          "baseSeconds": [
+            120
+          ],
+          "bonusSeconds": [
+            0
+          ]
+        },
+        {
+          "name": "sprint17-final-published-root-Monster.2.viper.OneD3",
+          "status": "PASS",
+          "nativeDurationExact": true,
+          "nativeCleanupExact": true,
+          "count": 1,
+          "baseSeconds": [
+            120
+          ],
+          "bonusSeconds": [
+            0
+          ]
+        },
+        {
+          "name": "sprint17-final-published-root-Monster.3.viper.OneD4PlusOne",
+          "status": "PASS",
+          "nativeDurationExact": true,
+          "nativeCleanupExact": true,
+          "count": 4,
+          "baseSeconds": [
+            120
+          ],
+          "bonusSeconds": [
+            0
+          ]
+        },
+        {
+          "name": "sprint17-final-published-root-Monster.3.constrictor-snake.One",
+          "status": "PASS",
+          "nativeDurationExact": true,
+          "nativeCleanupExact": true,
+          "count": 1,
+          "baseSeconds": [
+            120
+          ],
+          "bonusSeconds": [
+            0
+          ]
+        },
+        {
+          "name": "sprint17-final-published-root-Monster.4.viper.OneD4PlusOne",
+          "status": "PASS",
+          "nativeDurationExact": true,
+          "nativeCleanupExact": true,
+          "count": 5,
+          "baseSeconds": [
+            120
+          ],
+          "bonusSeconds": [
+            0
+          ]
+        },
+        {
+          "name": "sprint17-final-published-root-Monster.4.constrictor-snake.OneD3",
+          "status": "PASS",
+          "nativeDurationExact": true,
+          "nativeCleanupExact": true,
+          "count": 1,
+          "baseSeconds": [
+            120
+          ],
+          "bonusSeconds": [
+            0
+          ]
+        },
+        {
+          "name": "sprint17-final-published-root-Monster.5.viper.OneD4PlusOne",
+          "status": "PASS",
+          "nativeDurationExact": true,
+          "nativeCleanupExact": true,
+          "count": 5,
+          "baseSeconds": [
+            120
+          ],
+          "bonusSeconds": [
+            0
+          ]
+        },
+        {
+          "name": "sprint17-final-published-root-Monster.5.constrictor-snake.OneD4PlusOne",
+          "status": "PASS",
+          "nativeDurationExact": true,
+          "nativeCleanupExact": true,
+          "count": 5,
+          "baseSeconds": [
+            120
+          ],
+          "bonusSeconds": [
+            0
+          ]
+        },
+        {
+          "name": "sprint17-final-published-root-Monster.6.viper.OneD4PlusOne",
+          "status": "PASS",
+          "nativeDurationExact": true,
+          "nativeCleanupExact": true,
+          "count": 2,
+          "baseSeconds": [
+            120
+          ],
+          "bonusSeconds": [
+            0
+          ]
+        },
+        {
+          "name": "sprint17-final-published-root-Monster.6.constrictor-snake.OneD4PlusOne",
+          "status": "PASS",
+          "nativeDurationExact": true,
+          "nativeCleanupExact": true,
+          "count": 3,
+          "baseSeconds": [
+            120
+          ],
+          "bonusSeconds": [
+            0
+          ]
+        },
+        {
+          "name": "sprint17-final-published-root-Monster.7.viper.OneD4PlusOne",
+          "status": "PASS",
+          "nativeDurationExact": true,
+          "nativeCleanupExact": true,
+          "count": 5,
+          "baseSeconds": [
+            120
+          ],
+          "bonusSeconds": [
+            0
+          ]
+        },
+        {
+          "name": "sprint17-final-published-root-Monster.7.constrictor-snake.OneD4PlusOne",
+          "status": "PASS",
+          "nativeDurationExact": true,
+          "nativeCleanupExact": true,
+          "count": 5,
+          "baseSeconds": [
+            120
+          ],
+          "bonusSeconds": [
+            0
+          ]
+        },
+        {
+          "name": "sprint17-final-published-root-Monster.8.viper.OneD4PlusOne",
+          "status": "PASS",
+          "nativeDurationExact": true,
+          "nativeCleanupExact": true,
+          "count": 5,
+          "baseSeconds": [
+            120
+          ],
+          "bonusSeconds": [
+            0
+          ]
+        },
+        {
+          "name": "sprint17-final-published-root-Monster.8.constrictor-snake.OneD4PlusOne",
+          "status": "PASS",
+          "nativeDurationExact": true,
+          "nativeCleanupExact": true,
+          "count": 3,
+          "baseSeconds": [
+            120
+          ],
+          "bonusSeconds": [
+            0
+          ]
+        },
+        {
+          "name": "sprint17-final-published-root-Monster.9.viper.OneD4PlusOne",
+          "status": "PASS",
+          "nativeDurationExact": true,
+          "nativeCleanupExact": true,
+          "count": 5,
+          "baseSeconds": [
+            120
+          ],
+          "bonusSeconds": [
+            0
+          ]
+        },
+        {
+          "name": "sprint17-final-published-root-Monster.9.constrictor-snake.OneD4PlusOne",
+          "status": "PASS",
+          "nativeDurationExact": true,
+          "nativeCleanupExact": true,
+          "count": 3,
+          "baseSeconds": [
+            120
+          ],
+          "bonusSeconds": [
+            0
+          ]
+        },
+        {
+          "name": "sprint17-final-published-root-NaturesAlly.1.viper.One",
+          "status": "PASS",
+          "nativeDurationExact": true,
+          "nativeCleanupExact": true,
+          "count": 1,
+          "baseSeconds": [
+            120
+          ],
+          "bonusSeconds": [
+            0
+          ]
+        },
+        {
+          "name": "sprint17-final-published-root-NaturesAlly.2.viper.OneD3",
+          "status": "PASS",
+          "nativeDurationExact": true,
+          "nativeCleanupExact": true,
+          "count": 3,
+          "baseSeconds": [
+            120
+          ],
+          "bonusSeconds": [
+            0
+          ]
+        },
+        {
+          "name": "sprint17-final-published-root-NaturesAlly.3.viper.OneD4PlusOne",
+          "status": "PASS",
+          "nativeDurationExact": true,
+          "nativeCleanupExact": true,
+          "count": 2,
+          "baseSeconds": [
+            120
+          ],
+          "bonusSeconds": [
+            0
+          ]
+        },
+        {
+          "name": "sprint17-final-published-root-NaturesAlly.3.constrictor-snake.One",
+          "status": "PASS",
+          "nativeDurationExact": true,
+          "nativeCleanupExact": true,
+          "count": 1,
+          "baseSeconds": [
+            120
+          ],
+          "bonusSeconds": [
+            0
+          ]
+        },
+        {
+          "name": "sprint17-final-published-root-NaturesAlly.4.viper.OneD4PlusOne",
+          "status": "PASS",
+          "nativeDurationExact": true,
+          "nativeCleanupExact": true,
+          "count": 3,
+          "baseSeconds": [
+            120
+          ],
+          "bonusSeconds": [
+            0
+          ]
+        },
+        {
+          "name": "sprint17-final-published-root-NaturesAlly.4.constrictor-snake.OneD3",
+          "status": "PASS",
+          "nativeDurationExact": true,
+          "nativeCleanupExact": true,
+          "count": 1,
+          "baseSeconds": [
+            120
+          ],
+          "bonusSeconds": [
+            0
+          ]
+        },
+        {
+          "name": "sprint17-final-published-root-NaturesAlly.5.viper.OneD4PlusOne",
+          "status": "PASS",
+          "nativeDurationExact": true,
+          "nativeCleanupExact": true,
+          "count": 3,
+          "baseSeconds": [
+            120
+          ],
+          "bonusSeconds": [
+            0
+          ]
+        },
+        {
+          "name": "sprint17-final-published-root-NaturesAlly.5.constrictor-snake.OneD4PlusOne",
+          "status": "PASS",
+          "nativeDurationExact": true,
+          "nativeCleanupExact": true,
+          "count": 2,
+          "baseSeconds": [
+            120
+          ],
+          "bonusSeconds": [
+            0
+          ]
+        },
+        {
+          "name": "sprint17-final-published-root-NaturesAlly.6.viper.OneD4PlusOne",
+          "status": "PASS",
+          "nativeDurationExact": true,
+          "nativeCleanupExact": true,
+          "count": 5,
+          "baseSeconds": [
+            120
+          ],
+          "bonusSeconds": [
+            0
+          ]
+        },
+        {
+          "name": "sprint17-final-published-root-NaturesAlly.6.constrictor-snake.OneD4PlusOne",
+          "status": "PASS",
+          "nativeDurationExact": true,
+          "nativeCleanupExact": true,
+          "count": 3,
+          "baseSeconds": [
+            120
+          ],
+          "bonusSeconds": [
+            0
+          ]
+        },
+        {
+          "name": "sprint17-final-published-root-NaturesAlly.7.viper.OneD4PlusOne",
+          "status": "PASS",
+          "nativeDurationExact": true,
+          "nativeCleanupExact": true,
+          "count": 4,
+          "baseSeconds": [
+            120
+          ],
+          "bonusSeconds": [
+            0
+          ]
+        },
+        {
+          "name": "sprint17-final-published-root-NaturesAlly.7.constrictor-snake.OneD4PlusOne",
+          "status": "PASS",
+          "nativeDurationExact": true,
+          "nativeCleanupExact": true,
+          "count": 4,
+          "baseSeconds": [
+            120
+          ],
+          "bonusSeconds": [
+            0
+          ]
+        },
+        {
+          "name": "sprint17-final-published-root-NaturesAlly.8.viper.OneD4PlusOne",
+          "status": "PASS",
+          "nativeDurationExact": true,
+          "nativeCleanupExact": true,
+          "count": 5,
+          "baseSeconds": [
+            120
+          ],
+          "bonusSeconds": [
+            0
+          ]
+        },
+        {
+          "name": "sprint17-final-published-root-NaturesAlly.8.constrictor-snake.OneD4PlusOne",
+          "status": "PASS",
+          "nativeDurationExact": true,
+          "nativeCleanupExact": true,
+          "count": 5,
+          "baseSeconds": [
+            120
+          ],
+          "bonusSeconds": [
+            0
+          ]
+        },
+        {
+          "name": "sprint17-final-published-root-NaturesAlly.9.viper.OneD4PlusOne",
+          "status": "PASS",
+          "nativeDurationExact": true,
+          "nativeCleanupExact": true,
+          "count": 2,
+          "baseSeconds": [
+            120
+          ],
+          "bonusSeconds": [
+            0
+          ]
+        },
+        {
+          "name": "sprint17-final-published-root-NaturesAlly.9.constrictor-snake.OneD4PlusOne",
+          "status": "PASS",
+          "nativeDurationExact": true,
+          "nativeCleanupExact": true,
+          "count": 3,
+          "baseSeconds": [
+            120
+          ],
+          "bonusSeconds": [
+            0
+          ]
+        },
+        {
+          "name": "sprint17-final-published-root-Monster.5.salamander.One",
+          "status": "PASS",
+          "nativeDurationExact": true,
+          "nativeCleanupExact": true,
+          "count": 1,
+          "baseSeconds": [
+            120
+          ],
+          "bonusSeconds": [
+            0
+          ]
+        },
+        {
+          "name": "sprint17-final-published-root-Monster.6.salamander.OneD3",
+          "status": "PASS",
+          "nativeDurationExact": true,
+          "nativeCleanupExact": true,
+          "count": 2,
+          "baseSeconds": [
+            120
+          ],
+          "bonusSeconds": [
+            0
+          ]
+        },
+        {
+          "name": "sprint17-final-published-root-Monster.7.salamander.OneD4PlusOne",
+          "status": "PASS",
+          "nativeDurationExact": true,
+          "nativeCleanupExact": true,
+          "count": 3,
+          "baseSeconds": [
+            120
+          ],
+          "bonusSeconds": [
+            0
+          ]
+        },
+        {
+          "name": "sprint17-final-published-root-Monster.8.salamander.OneD4PlusOne",
+          "status": "PASS",
+          "nativeDurationExact": true,
+          "nativeCleanupExact": true,
+          "count": 2,
+          "baseSeconds": [
+            120
+          ],
+          "bonusSeconds": [
+            0
+          ]
+        },
+        {
+          "name": "sprint17-final-published-root-Monster.9.salamander.OneD4PlusOne",
+          "status": "PASS",
+          "nativeDurationExact": true,
+          "nativeCleanupExact": true,
+          "count": 2,
+          "baseSeconds": [
+            120
+          ],
+          "bonusSeconds": [
+            0
+          ]
+        }
+      ],
+      "actualSummonedUnitCount": 111,
+      "lease": "C:\\Dev\\KingmakerGunslingerLab\\compatibility-state\\runtime-20261007T215242Z-5a37ef83b7214a238e35ef987f91868a\\runtime-lease.json",
+      "snapshot": "C:\\Dev\\KingmakerGunslingerLab\\runtime-backups\\live-mod\\20261007T2152425844224Z",
+      "deploymentManifest": "C:\\Dev\\KingmakerGunslingerLab\\runtime-evidence\\deployments\\20261007T2153075481858Z\\deployment.json",
+      "deploymentManifestSha256": "00ea84a3de6e1018b6c1d5b92507d97e49d3debf53f53c7585e34859463dc34e",
+      "restoration": "VERIFIED",
+      "before": {
+        "files": 136,
+        "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+        "version": "0.0.117",
+        "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+      },
+      "after": {
+        "files": 136,
+        "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
+        "version": "0.0.117",
+        "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff"
+      },
+      "leaseReleased": true,
+      "recoveryRequired": false,
+      "gameProcessesRemaining": 0,
+      "activeStaging": false,
+      "nativeSaveWrites": 0
+    }
   },
-  "status": "PARTIAL_PASS_SOURCE_QUALIFIED_RUNTIME_NOT_QUALIFIED",
+  "status": "SPRINT17_PARTIAL_PASS_SNAKES_QUALIFIED_PUBLISHED_SALAMANDER_NOT_QUALIFIED",
   "authority": "HOWARD-LAPTOP / codex/expanded-summoning-phase2b-sprints14-17 / draft PR26 only. DATA PR27 salvage-only; ZERO PORTS.",
   "sourceBase": "ea46fb761701529ab79bdaed0d8b1a7aa1bcbc7a",
-  "sourceBoundary": "Immutable corrected hidden candidate 47e8c1214f93e4c725a35261083cbd7b44f3f041 passed its complete exact-head source/build/package gate once, then completed one all-three ten-request guarded batch:422/423 PASS, one retained Salamander reach-observation failure. No second observation correction or product correction was attempted.",
+  "sourceBoundary": "Complete corrected hidden47e8c121 exact gate and all-three ten-request batch422/423 retained:one mandatory Salamander reach-observation FAIL,not waived. Independently qualified Viper18/Constrictor14 publish through exact996c5fe7 full-source gate and one existing final-review publication batch74/74. No additional hidden observer/product correction. Latest checkpoint reports these two immutable artifacts;it is not itself a newly tested runtime artifact.",
   "source": {
     "schemaVersion": 1,
     "generatedAtUtc": "2026-10-07T20:22:09.6404669Z",
@@ -75,7 +755,7 @@
     "repositoryWrapper": "PASS;complete Sprint gate182.6s;repository/static/icon/manifest/orchestration",
     "cleanExactReferenceRelease": "PASS;14 pinned private references;clean Release on47e8c121",
     "strictStandalonePackage": "PASS;deterministic321-member exact-head package",
-    "runtime": "PARTIAL PASS422/423;native batch NOT-QUALIFIED;all10 requests complete;exact restoration VERIFIED",
+    "runtime": "FULL SPRINT17 PARTIAL/NOT QUALIFIED;hidden422/423 plus independent snake publication74/74 PASS. Exact restoration twice VERIFIED.",
     "prelaunch": {
       "runtimePreflight": 515,
       "orchestration": 168,
@@ -87,6 +767,38 @@
       "crowdRejections": 11,
       "launcherValid": 18,
       "launcherRejected": 13
+    },
+    "publication": {
+      "focused": "PASS321/321 of2123 after six stale publication count/record expectations were updated;artifacts/sprint17-independent-publication-focused.log. Current state/evidence candidate equation is checked without rewriting immutable historical checkpoint counts.",
+      "incrementalCompilation": "PASS14 references;publication bridge compiles;not runtime artifact.",
+      "exactSource": {
+        "status": "PASS",
+        "commit": "996c5fe7eaf8c3be1966746f0227aa9f85074d73",
+        "domain": {
+          "passed": 2123,
+          "failed": 0,
+          "seconds": 83
+        },
+        "gateSeconds": 179.3,
+        "referenceCount": 14,
+        "memberCount": 321,
+        "log": "artifacts/sprint17-independent-publication-996c5fe7-exact-source-gate.log",
+        "logSha256": "3ad4d5ecc6c3aeb32ef855fb998e73c2e3c184b2328f361b2204f57e400db02c",
+        "prelaunch": {
+          "runtimePreflight": 515,
+          "orchestration": 168,
+          "persistenceRequests": 11,
+          "persistenceRoundTrips": 6,
+          "persistenceDefaults": 3,
+          "persistenceRejections": 56,
+          "crowdRoundTrips": 10,
+          "crowdRejections": 11,
+          "launcherValid": 18,
+          "launcherRejected": 13
+        },
+        "invocationCorrection": "Existing orchestration script default PSScriptRoot bound empty under -File; explicit absolute -ScriptRoot passed168. No source mutation, installation observation or runtime retry."
+      },
+      "runtime": "PASS74/74:smoke11/11 + existing final-review63/63;all37 public roots;exact snapshot restored;zero native writes."
     }
   },
   "changes": [
@@ -96,6 +808,7 @@
     "Only the exact production Salamander and closed research prototype can bind the unchanged original human-body/ten-bone tail seam. Existing native24actions preserved; one owned Tail action. No asset, texture, pose, timing, event, native-clip or global animation change."
   ],
   "unchanged": {
+    "boundary": "Historical prepublication47e8c121 surface/profile fields below;current source equation is independentPublication.surface. Original assets,profiles,identities and existingSalamander roots did not change for publication.",
     "profileCheckpoint": "621f0c3b996f9adf6541dfc2c602a3d67d56c0c0",
     "priorProfileEvidence": "planning/EXPANDED-SUMMONING-SPRINT17-SALAMANDER-PROFILE-SOURCE-EVIDENCE.json",
     "priorPrototypeCandidate": "6ae91f266b203a98a0f297b24f3a70c785458502",
@@ -108,18 +821,22 @@
     "visibleChoices": 1005
   },
   "lastRuntime": {
-    "restoredAtUtc": "2026-10-07T21:14:01.4006856Z",
+    "restoredAtUtc": "2026-10-07T22:00:34.9412483Z",
     "files": 136,
     "sha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
     "version": "0.0.117",
     "infoSha256": "1040695b0ae4339b2a935be3fe06828be80a451b4ea86bae11a7c16d6dce5cff",
     "treeSha256": "216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3",
-    "newLaunches": 10,
-    "newSaveWrites": 2,
-    "nativeCleanupSaved": true,
-    "freshAbsencePassed": true,
-    "ownedFixtureUnitsRemaining": 0,
-    "note": "Exact actual leased snapshot restored. Prepare/cleanup made one guarded native KMG_AUTOMATION_WORKING write each; fresh absence6/6PASS afterward. No protected-baseline load/write or manual save filesystem access. No game/runtime lease/compatibility lock/active deployment staging."
+    "newLaunches": 2,
+    "newSaveWrites": 0,
+    "nativeCleanupSaved": "Prior47e8c121 cleanup native working-save write PASS followed by fresh absence6/6 with ZERO owned fixtures;normal publication writes no save and creates no persisted fixtures.",
+    "runtimeLeaseStatus": "Completed",
+    "recoveryRequired": false,
+    "leaseReleased": true,
+    "gameProcessesRemaining": 0,
+    "activeStaging": false,
+    "protectedBaselineAccess": false,
+    "manualSaveFilesystemAccess": false
   },
   "archive": "artifacts/sprint17-salamander-production-view-source-pass",
   "hashes": [
@@ -273,9 +990,9 @@
     }
   ],
   "openGates": [
-    "Salamander raw-versus-computed reach observation:mandatory failure retained;observation retry budget exhausted.",
-    "Assess safe independent Viper/Constrictor publication and exact public-route gate without repairing or waiving the Salamander failure.",
-    "Phase2B exhaustive player-path,persistence,module-disabled,compatibility and boundary closure NOT RUN;only once after Sprint17 closes. Then STOP owner review;no Phase2C."
+    "Salamander:sprint17-salamander-profile-native-per-weapon-reach remains FAIL;observer used computed2/6 where predicate expects raw5/10. No demonstrated production defect or new accepted limitation.",
+    "Observation correction1/1 USED;zero product corrections. STOP with PARTIAL PASS under latest efficiency amendment;no extra observer retry.",
+    "Full Phase2B closure remains NOT RUN and must follow successful mandatory Salamander qualification under any further owner authority;Phase2C not started."
   ],
   "HumanReview": "NOT_PERFORMED_NONBLOCKING",
   "interruptedSourceGate": {
@@ -402,17 +1119,17 @@
     "closure": "Exhaustive player paths, persistence and compatibility once at Phase2B closure; then STOP owner review. Phase2C authorized but deferred; do not start."
   },
   "currentOwner": {
-    "receipt": "artifacts/laptop-source-owner-20261005.json",
+    "host": "HOWARD-LAPTOP",
+    "branch": "codex/expanded-summoning-phase2b-sprints14-17",
     "ownerPid": 29828,
     "ownerStartedUtc": "2026-10-07T16:37:01.6154316Z",
-    "keeperPid": 37216,
-    "keeperStartedUtc": "2026-10-07T18:13:59.9631236Z",
+    "holderPid": 37216,
+    "holderStartedUtc": "2026-10-07T18:13:59.9631236Z",
     "sessionId": "2af10b72-de34-49d5-8d34-f3fe784a0bb7",
-    "priorReceipt": "artifacts/laptop-source-owner-20261005-released-20261007T163701Z.json",
-    "priorReleaseReason": "Owner process ended",
-    "fetchedRemote": "47e8c1214f93e4c725a35261083cbd7b44f3f041",
-    "runtimeClearAtResume": true,
-    "runtimeClearAfterBatch": true
+    "receipt": "artifacts/laptop-source-owner-20261005.json",
+    "status": "Held during qualification;explicit release after final pushed checkpoint at session ending. Actual receipt is the live authority.",
+    "lastVerifiedRemote": "996c5fe7eaf8c3be1966746f0227aa9f85074d73",
+    "DATA": "PR27 archived salvage-only;ZERO PORTS;no parallel source agent."
   },
   "integratedChanges": [
     "Preserved the interrupted production-view changes and completed gate without rerunning the full gate at resume.",
@@ -425,7 +1142,7 @@
     "Same closed snakes persistence scope/receipt now has six roles: all three creatures and three separately marked targets. Stale exact owned fixtures retire natively; loaded Salamander hold resets safely, heat/profile/view persist, cleanup writes only through the authorized working-save routine, absence requires a fresh load.",
     "Four new binding-policy domain cases and updated bounded crowd/six-role persistence behavior tests. No snake production mechanics, original assets, tail poses/clip, public visibility or version changes."
   ],
-  "archiveMeaning": "Historical interrupted production-view-only source gate; retained, not integrated runtime artifact.",
+  "archiveMeaning": "Earlier exact-head failures and prototype/slice results remain historical/artifact-bounded. Corrected hidden47e8c121 remains PARTIAL;no retroactive qualification. Current independentPublication is a separate exact996c5fe7 PASS for Viper/Constrictor and existing public routes,not fullSprint17 closure.",
   "batch": {
     "driver": "artifacts/Invoke-LaptopSprint17-IntegratedHiddenBatch.ps1",
     "scenarioOrder": [
@@ -1336,8 +2053,8 @@
     "meaning": "Matched untouched human donor has no DismemberUnitFX. No expiry dissolve or invented animation is claimed;exact native set,actual wound/death,finite original geometry and complete native/resource cleanup PASS."
   },
   "independentQualification": {
-    "viper": "All mandatory hidden profile/mechanics/command/AI/visual/UI/private-route/crowd/persistence/cleanup/absence cells PASS on47e8c121;PUBLICATION PENDING.",
-    "constrictorSnake": "All mandatory hidden cells PASS on47e8c121,including the corrected actual turn-based AI later-maintain witness;PUBLICATION PENDING.",
-    "salamander": "PARTIAL PASS;one failed mandatory range-observation check retained. Production view/contacts,printed damage/skills/feats,heat/grab/constrict,commands/AI,UI/private routes,crowd/native lifecycle and closed persistence PASS;Sprint17 NOT QUALIFIED."
+    "viper": "QUALIFIED/PUBLISHED;all mandatory hidden gates47e8c121 PASS;18/18 native public roots996c5fe7 PASS including prepared slot/command/RuleCast/spawn/quantity/template/source/duration/view/cleanup.",
+    "constrictorSnake": "QUALIFIED/PUBLISHED;all mandatory hidden gates47e8c121 PASS including actual turn-based AI later maintain;14/14 native public roots996c5fe7 PASS.",
+    "salamander": "PARTIAL/NOT QUALIFIED;mandatory47e8c121 reach-observation FAIL retained. All other integrated mandatory cells PASS. Five preexisting public roots and UI/lifecycle63/63 on996c5fe7 PASS;this does not waive the failed profile gate."
   }
 }

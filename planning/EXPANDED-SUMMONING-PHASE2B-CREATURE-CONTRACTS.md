@@ -1,5 +1,19 @@
 # Expanded Summoning Phase 2B creature contracts (Sprints 14-17)
 
+## Current delivery disposition, 2026-10-07
+
+Primary-source contracts below remain frozen. Sprints14–16 complete/published;
+Viper and Constrictor independently qualified/published (hidden47e8c121,
+public roots996c5fe7:18/18 and14/14). Salamander retains its identity and5/5
+existing public roots,with original Human-rig body/tail and native spear seam;
+it is PARTIAL/NOT QUALIFIED because one mandatory raw-versus-computed range
+observation FAIL remains. No new engine limitation or assertion waiver.
+The missing native expiry effect is recorded honestly;no animation invented.
+Current source:1008 published+29 wrappers=1037 visible;zero suppressed.
+Owner efficiency retry limit reached;fullPhase2B closure NOT RUN.
+See the controlling state and single integrated Sprint17 evidence record;
+earlier donor uncertainties below are historical research,not reopened gates.
+
 The owner's acceleration order asks for the primary-source creature contract to
 be frozen before implementation, and for donor and rig research to run once per
 tranche rather than once per creature. This document is that freeze. Every stat
