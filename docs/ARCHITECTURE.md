@@ -917,14 +917,20 @@ as the Giant Spider they borrow.
 The resulting append-only ledger contains 2772 stable IDs: 2770 active and 2 reserved.
 
 Sprints 15-16 extended that ledger to 2836 entries and are now qualified and
-published. Sprint 17 appends 73 snake identities without changing that prefix:
-2909 stable IDs: 2907 active and 2 reserved. The new entries are two units,
+published. Sprint 17 appends 73 snake identities and two Salamander support
+identities without changing that prefix:
+2911 stable IDs: 2909 active and 2 reserved. The snake entries are two units,
 32 logical placements, 32 SM template children and seven owned profile/type/
 poison/grab carriers. The current source registers 97 creatures and 1008
 generated placements, publishes 976, and withholds all 32 Viper/Constrictor
 Snake placements. Snake mechanics and actual UI/visual use are NOT QUALIFIED.
-Salamander retains its existing identity and placements; its Sprint 17 hybrid
-weapon/tail seam is still open. No version bump or release is authorized.
+Salamander retains its existing identity and placements. Its owned tail type
+encodes Medium 2d6 damage and native ten-foot reach; its species type replaces
+donor inspection identity. Printed racial HP/save/rank contributions, native
+feats, wielder-owned heat and tail-only project grab/constrict are a runtime-
+unqualified source candidate. Exact 6ae91f26 qualified only the separate human/
+original-tail prototype; production view adoption and the complete Sprint 17
+gate remain open. No version bump or release is authorized.
 
 - **Pure policy** (`FavoredClass/`): `FavoredClassRankPolicy` (the host's
   full/partial alternation, N = fullRank + partialRank, with KMG-owned ceilings

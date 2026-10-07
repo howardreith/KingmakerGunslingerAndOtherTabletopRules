@@ -72,6 +72,16 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintUnitFactAccess.Resolve().SetIcon((BlueprintBuff)traits,
                 ExpandedSummoningProjectIcons.Require(
                     SummonIconCatalog.PassiveTraitIconFor(SummonIconCatalog.ConstrictorTraitsSymbol)));
+            BlueprintScriptableObject salamanderType;
+            if (!bySymbol.TryGetValue("KMG.Summoning.Special.Salamander.UnitType", out salamanderType) ||
+                !(salamanderType is BlueprintUnitType))
+                throw new InvalidOperationException("Salamander species icon consumer is missing.");
+            ((BlueprintUnitType)salamanderType).Image = ExpandedSummoningProjectIcons.Require("salamander");
+            if (!bySymbol.TryGetValue(SummonIconCatalog.SalamanderTraitsSymbol, out traits) ||
+                !(traits is BlueprintBuff) || traits.AssetGuid != "a47bc65d6b6b42b6a19610e22b13f171")
+                throw new InvalidOperationException("Exact Salamander passive trait icon consumer is missing.");
+            BlueprintUnitFactAccess.Resolve().SetIcon((BlueprintBuff)traits,
+                ExpandedSummoningProjectIcons.Require(SummonIconCatalog.PassiveTraitIconFor(SummonIconCatalog.SalamanderTraitsSymbol)));
             // The Cyclops's own summon icon marks its Flash of Insight on the
             // action bar; the ability has no separate art of its own.
             Set(bySymbol, "KMG.Summoning.Special.Cyclops.FlashOfInsight",
