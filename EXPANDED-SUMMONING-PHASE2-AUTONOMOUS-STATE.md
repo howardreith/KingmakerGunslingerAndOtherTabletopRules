@@ -1,6 +1,6 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-07 — laptop sole owner; bounded fixture repair SOURCE PASS; exact runtime NEXT; Sprint17 NOT QUALIFIED
+## CURRENT STATE, 2026-10-07 — exactec crowd/prepare PASS; hold-reset FAIL; restored installation; four saved fixtures remain; Sprint17 NOT QUALIFIED
 
 This section governs over historical mission/ownership statements below.
 HOWARD-LAPTOP / `codex/expanded-summoning-phase2b-sprints14-17` / draft PR26
@@ -21,9 +21,11 @@ deployment, force push or prohibited substitute subsystems.
 - Last exact runtime candidate `983828bfa9b1aff2d79fab3eb8a2954ec28e4a2f`,
   clean/pushed for smoke11/profile-body-rules62/commands51 PASS.
   All8 at-rule contacts gap0 with genuine native long Bite playback.
-  Latest exact candidate4c95cf139847b765519eccd0b39117c8bf2e56cf passes
-  smoke11/direct14, fails crowd17/18 and prepare10/13; dependent cleanup3/6
-  fails, absence NOT RUN. Zero save writes; exact restoration verified.
+  Latest exact candidateec9721f71b06ed184b92bcfbd9418e6eb292ece7 passes
+  smoke11/direct14/crowd18/prepare13. Cleanup10/12 fails the aggregate
+  session-hold-reset assertion and refuses its write; absence NOT RUN.
+  One prepare write; four marked fixtures remain in the working save.
+  Actual installation restoration verified; no game/runtime lease/staging.
   d700's prelaunch rejection is preserved. Gameplay/assets/publication unchanged.
   Prior474 timing-only hypothesis was rejected; its43/51 failure is retained.
   Earlier exact130bf7a2 bounded rules PASS remains unchanged; no qualification
@@ -34,68 +36,63 @@ deployment, force push or prohibited substitute subsystems.
 
 ### Latest transaction and exact next gate
 
-[Bounded crowd/persistence fixture repair](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-CROWD-PERSISTENCE-REPAIR.md)
-is SOURCE PASS, runtime NOT RUN. Source parent:
-9de166145d71dbf5efafe33b88550d4539f76f2f. Only owned snake awake entries may
-be restored; foreign sequence changes reject without mutation. Exact
-before/native-after/restored identities are recorded. Venom arming now waits
-for native appearance/action/movement locks to clear and observes the actual
-bite, wound and native saving throws. No poison production change, forced
-save result, threshold waiver or extra save authority. The prior venom cause
-remains unresolved.
+[Exact ec9721f7 crowd/persistence attempt2](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-CROWD-PERSISTENCE-ATTEMPT2-EVIDENCE.json)
+is NOT QUALIFIED overall. Candidate ec9721f71b06ed184b92bcfbd9418e6eb292ece7:
+smoke 11/11, direct 14/14, crowd 18/18 and prepare 13/13 PASS;
+cleanup 10/12 FAIL; absence NOT RUN.
+[Failure review and saved-fixture boundary](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-CROWD-PERSISTENCE-ATTEMPT2-REVIEW.md).
 
-Repair precommit PASS: 269 focused; all 2,071 domain tests (82.3s);
-complete repository/static/icon/manifest, clean 14-reference Release and
-strict 320-member package (178.6s); 508 preflight, 168 orchestration,
-17 provenance, persistence 11/6 round trips/3 defaults/56 rejects,
-crowd 8/11 and actual-launcher 13/10. Dirty-source output was never deployed.
-A new committed exact-head build and the full affected batch are mandatory.
+The owned-awake repair passed with exact identity evidence: one Viper present
+in the original snapshot was missing from the native-after list. Only owned
+references were restored; both unrelated subsequences stayed unchanged and
+the complete original lists matched afterward. All five Vipers and four
+Constrictors passed movement, native expiry and exact resource reclamation.
+Direct travel was 12.327m/12.359m; no retained or later owned resources.
+These are bounded observations, not full Sprint17 or human approval.
 
-[Snake crowd/persistence attempt1](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-CROWD-PERSISTENCE-ATTEMPT1-EVIDENCE.json):
-exact candidate4c95cf139847b765519eccd0b39117c8bf2e56cf is NOT QUALIFIED.
-Fresh Steam640820 results: smoke11/11 PASS; direct14/14 PASS; crowd17/18 FAIL;
-prepare10/13 FAIL; cleanup3/6 FAIL; absence NOT RUN. No native save write.
-[Failure review](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-CROWD-PERSISTENCE-ATTEMPT1-REVIEW.md).
+Prepare naturally reached complete appearance/control readiness after
+257 frames / 9.825 native seconds. Its same seeded bite dealt 5 damage,
+failed one native DC13 injury save and established one venom application,
+tick1/saves0/2 Constitution damage. Reload preserved that exact state/source;
+one later exposure dealt2, and one native successful save cured it.
+No poison production change. The earlier4c95 causal detail was not recorded.
 
-The only crowd failure is Viper awake-list restoration. All five Vipers and
-four Constrictors pass movement thresholds, original identity/geometry,
-native timer expiry and exact owned-resource reclamation. Direct movement
-is12.353m/12.314m at max2.032m/s; six captured private resources per subject
-are destroyed, with zero later instance-owned clones. These are bounded
-observations, not a full-sprint pass or human approval.
+The mandatory hold-reset assertion returned only free=false. It does not
+identify a missing Grab component, native part/link, owned state buff or
+action/movement lock. Production versus fixture cause is UNRESOLVED.
+ACTIVE_SUMMON_GRAPPLES_RESET_SAFELY_ON_RELOAD remains accepted; the clean-reset
+requirement is not waived. Add per-unit diagnostics before changing behavior.
 
-Prepare did not establish venom; the row lacks exact attack/save observations,
-so its cause is unresolved. Hold, four owned identities, native appearance,
-skills and unrelated-unit preservation pass. No save was armed. Fresh cleanup
-found zero prepared units and correctly refused a write. Absence is blocked
-until a successful native cleanup save; no absence qualification is claimed.
-No manual save surgery, protected-baseline load/write or production fix.
+WORKING SAVE: prepare made one authorized native write (two stashed areas).
+Cleanup destroyed all four marked fixtures and12 owned resources in memory,
+but correctly refused its save after the failed reset assertion. Thus four
+marked fixture units remain in KMG_AUTOMATION_WORKING. Absence was not run.
+Next prepare must retire only these exact receipt-owned units through the
+existing native fixture. No manual save access/surgery or baseline load/write.
 
-Exact prelaunch PASS:264 focused,2066 full82.5s,complete177.7s,
+Exact prelaunch PASS:269 focused,2071 full82.1s,complete177.6s,
 508 preflight,168 orchestration,17 provenance,persistence11/6/3/56,
-crowd8/11,actual-launcher13/10; repository/static/icon/manifest,
-clean14-reference Release,strict320-member version0.0.141 package.
-All old artifacts, including d700's no-deployment launcher rejection, remain.
+crowd8/11,actual-launcher13/10; clean14-reference Release/strict320.
+All earlier failed candidates and raw evidence remain preserved.
 
-Actual leased snapshot20261007T0020146810604Z restored
-2026-10-07T00:42:42.5922110Z:136 files/Info0.0.117/
+Actual leased snapshot20261007T0116357820797Z restored
+2026-10-07T01:39:29.1597928Z:136 files/Info0.0.117/
 tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
 Lease Completed/recovery=false/released; no game/shared runtime lock/this-
-worktree staging. Zero save writes; unrelated September14 extraction untouched.
+worktree staging. Installation restoration is exact; working-save cleanup
+is outstanding. Unrelated September14 extraction remains untouched.
 
 [Prior exact command/contact PASS](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-COMMAND-PASS-EVIDENCE.json)
-remains983828bf:smoke11/profile-body-rules62/commands51; all8 at-rule jaw
-gaps0m on genuine native long Bite variant01. That qualification does not
-transfer to another DLL, and no threshold/attack/reach change is accepted.
+remains983828bf:rules62/commands51,all8 at-rule jaw gaps0m on native long Bite.
+It does not transfer to another DLL. Sprints14–16 COMPLETE/PUBLISHED.
 
-Next: commit/policy-push this NOT QUALIFIED source checkpoint, repeat every
-prelaunch check on that immutable head, then run smoke/direct/crowd/prepare/
-cleanup/absence in fresh guarded Steam640820 processes. Preserve all exact
-assertions and restore the actual leased snapshot. Absence requires a
-successful native cleanup save. Then native hit/death/fade/lifecycle,
-UI/private32 routes and separate Salamander. Sprint17 hidden/publication and
-full Phase2B closure remain mandatory. STOP for owner review afterward;
-Phase2C authorized but deferred.32 roots remain hidden.
+Next: per-unit native-part/link, Grab, state-buff and condition diagnostics;
+source checks, coherent NOT QUALIFIED commit/policy-push, new exact artifact
+and complete affected persistence protocol. No reset calls or relaxed
+assertions to fabricate a pass. Then lifecycle/UI/private32 routes, separate
+Salamander, fullSprint17 hidden/publication and fullPhase2B closure.
+STOP for owner review afterward; Phase2C authorized but deferred.
+32 roots remain hidden. HumanReview: NOT_PERFORMED_NONBLOCKING.
 
 ### Qualified versus NOT QUALIFIED
 
