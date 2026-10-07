@@ -1,8 +1,38 @@
 # Sprint 17 snake native-load readiness repair
 
-Status: SOURCE PASS; corrected runtime NOT RUN; Sprint 17 NOT QUALIFIED.
+Status: exact a429da50 native snake persistence PASS; full Sprint 17 NOT QUALIFIED.
 Source parent: 16f61e19d42c8fab918ba1a263ec72f9952990f2.
 Laptop PR #26 only. DATA salvage-only / ZERO PORTS.
+
+## Corrected exact runtime result
+
+[Exact artifact, requests, callback trace and restoration](EXPANDED-SUMMONING-SPRINT17-SNAKE-NATIVE-BOUNDARY-PASS-EVIDENCE.json).
+
+Candidate a429da506ebfbbf5c243faa0da163394d32012a2 passes smoke11/11,
+prepare14/14, cleanup13/13 and fresh absence6/6 in four fresh Steam640820
+processes on one immutable package. Exact prelaunch:272 focused,2074 full
+(81.8s), complete178.3s,14-reference Release/strict320,508preflight,
+168orchestration,17provenance,persistence11/6/3/56,crowd8/11,launcher13/10 PASS.
+
+Cleanup scenes-loaded4235 still contains the saved Constrictor's native
+initiator, Hold buff and CantAct/CantMove. At4252 the existing production
+reset removes each; its load-complete callback returns, then the unchanged
+strict assertion verifies all four units free and grab retained. No direct
+reset, predicate waiver, production repair or reconstructed relationship.
+
+Prepare safely retires the previous four marked units and12 private resources.
+Venom source/DC13/counters/2 Constitution damage survive load; one native
+later exposure adds2 and a native save cures. Cleanup destroys all four new
+units and12 resources, preserving the three unrelated units/party. Exactly
+one native prepare write and one native cleanup write; fresh absence0.
+The authorized working save is normalized without any save-file access.
+
+Snapshot20261007T0323408975413Z restored2026-10-07T03:37:14.0902498Z:
+136files/Info0.0.117/tree216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3.
+Lease Completed/recovery=false/released; no game/shared runtime lock/worktree
+staging. This qualifies enabled-module snake persistence only. Full Sprint17,
+module-disabled matrix, lifecycle/UI/routes, Salamander and publication remain
+open. Previous failures and their saved-fixture states below are historical.
 
 ## Observed fixture defect
 
@@ -54,7 +84,7 @@ wrong state/area, nulls, preceding frames, exact completion, stale completion
 after another load, and same-frame genuine completion without an invented
 minimum delay. Existing exhaustive reset-predicate tests remain.
 
-## Source gates and next exact gate
+## Historical pre-candidate source gates
 
 272 focused PASS; 2074 complete unfiltered PASS (81.4s).
 Repository/static/icon/manifest, clean 14-reference Release, deterministic
@@ -64,7 +94,7 @@ prelaunch gate and the complete affected smoke/prepare/cleanup/absence
 protocol on one immutable package. Native reset must now pass in reality;
 an observed callback alone cannot qualify it.
 
-## Restoration and saved fixtures
+## Historical failed diagnostic restoration and saved fixtures
 
 Batch artifacts/laptop-runtime-20261007T0256127798172Z.
 Snapshot 20261007T0256135125979Z restored at 2026-10-07T03:06:24.8492046Z:
