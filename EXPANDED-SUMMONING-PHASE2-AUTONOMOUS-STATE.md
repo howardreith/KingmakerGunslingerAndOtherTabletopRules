@@ -84,6 +84,11 @@ Fixed target-free1.4second tail sweep;29evaluated mesh poses finite/above author
 plane. Source gate280focused/2082unfiltered81.5s/complete178.2s/clean14/strict320 PASS.
 See `planning/EXPANDED-SUMMONING-SPRINT17-HUMAN-TAIL-PROTOTYPE.md`.
 No prototype packaged or runtime action adopted; no new live qualification.
+Source-only Tail bridge now passes6 new behavior tests and the complete gate:
+286focused/2088unfiltered83.7s/complete177.9s/clean14/strict320. Native command
+clock, exact clip acknowledgement, one-event/replay rejection and exception-safe
+owned stop are implemented, but no fixture/production hook calls the bridge yet.
+Source parent8ca5795f; no native playback/contact or publication inferred.
 
 Next: bounded request-local human/original-body/owned-tail binding with real native
 spear/tail commands, then printed Salamander mechanics. No repeated donor census
