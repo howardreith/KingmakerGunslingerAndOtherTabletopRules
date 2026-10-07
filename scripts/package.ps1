@@ -140,7 +140,7 @@ if (Test-Path -LiteralPath $crocodilianSource -PathType Container) {
         Copy-Item -LiteralPath (Join-Path $crocodilianSource "$kind-albedo.png") -Destination $crocodilianDestination
     }
 }
-# Closed six-file original Sprint 17 body inventory. Fail closed on a
+# Closed seven-file original Sprint 17 body inventory. Fail closed on a
 # missing export; no private authoring outputs or broad folder copy.
 $serpentineSource = Join-Path $outputDirectory 'assets\sprint17-serpents'
 $serpentineDestination = Join-Path $modDirectory 'assets\sprint17-serpents'
@@ -149,6 +149,7 @@ foreach ($kind in @('viper','constrictor-snake','salamander')) {
     Copy-Item -LiteralPath (Join-Path $serpentineSource "$kind-mesh.json") -Destination $serpentineDestination
     Copy-Item -LiteralPath (Join-Path $serpentineSource "$kind-albedo.png") -Destination $serpentineDestination
 }
+Copy-Item -LiteralPath (Join-Path $serpentineSource 'salamander-human-mesh.json') -Destination $serpentineDestination
 $soundBankSource=Join-Path $repositoryRoot 'assets\soundbanks'
 if(Test-Path -LiteralPath (Join-Path $soundBankSource 'KMG_Firearms.bnk') -PathType Leaf){
     $soundBankDestination=Join-Path $modDirectory 'assets\soundbanks'
@@ -178,7 +179,8 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
 # Sprint 17 adds six original body/painting files for the bounded donor
 # acceptance slice. They do not register/publish either new snake or switch
 # the existing Salamander's production view.
-$expectedPackageFileCount = if ($hasFirearmSoundBank) { 320 } else { 318 }
+# One separate human/original-tail research mesh reuses the same Salamander paint.
+$expectedPackageFileCount = if ($hasFirearmSoundBank) { 321 } else { 319 }
 & $python (Join-Path $repositoryRoot 'tools\create_deterministic_package.py') `
     --source $modDirectory --output $packagePath `
     --expected-file-count $expectedPackageFileCount

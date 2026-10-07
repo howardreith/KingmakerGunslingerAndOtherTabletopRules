@@ -204,7 +204,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private UnitEntityData SummonSprint17BodyCarrier(ExpandedSummoningCorrectionFixture fixture,
-            string key, out Sprint16ManualSummonControl control)
+            string key, out Sprint16ManualSummonControl control, bool humanTailResearch = false)
         {
             bool snake = SerpentineVisualPolicy.IsSnake(key);
             BlueprintUnit published = fixture.Blueprints.OfType<BlueprintUnit>().Single(value =>
@@ -216,11 +216,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     published.Prefab.AssetId != SerpentineVisualPolicy.ClubShieldPrefab)
                     throw new InvalidOperationException("Unreviewed hybrid prototype source.");
                 var twoHand = fixture.Blueprints.OfType<BlueprintUnit>().Single(value =>
-                    value.AssetGuid == "f080877221934ea40b29e1d9fa71bc1c");
-                if (twoHand.Prefab.AssetId != SerpentineVisualPolicy.TwoHandPrefab)
+                    value.AssetGuid == (humanTailResearch ? "86dc43534645e234eb35431131e3b669" : "f080877221934ea40b29e1d9fa71bc1c"));
+                if (twoHand.Prefab.AssetId != (humanTailResearch ? SalamanderTailAnimationPolicy.Prefab : SerpentineVisualPolicy.TwoHandPrefab))
                     throw new InvalidOperationException("Two-hand native view identity changed.");
                 prototype = _serpentineBodyPrototype = UnityEngine.Object.Instantiate(published);
-                prototype.name = "KMG_Runtime_Sprint17_SalamanderTwoHandBody";
+                prototype.name = humanTailResearch ? SalamanderTailAnimationPolicy.PrototypeName : "KMG_Runtime_Sprint17_SalamanderTwoHandBody";
                 prototype.Prefab = twoHand.Prefab;
                 // No native NPC facts, inventory, faction, loot or weapons
                 // are imported. No registration or shared blueprint mutation.

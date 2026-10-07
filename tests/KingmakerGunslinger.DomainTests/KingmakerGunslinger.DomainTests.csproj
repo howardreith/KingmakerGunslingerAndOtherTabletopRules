@@ -203,6 +203,8 @@
     <Compile Include="ExpandedSummoningSprint17Tests.cs" />
     <Compile Include="SerpentineRulesTests.cs" />
     <Compile Include="SalamanderTailAnimationTests.cs" />
+    <Compile Include="SalamanderHumanBindingTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SalamanderHumanBindingPolicy.cs"><Link>Summoning\SalamanderHumanBindingPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SalamanderTailAnimationPolicy.cs"><Link>Summoning\SalamanderTailAnimationPolicy.cs</Link></Compile>
     <Compile Include="ExpandedSummoningCorrectionTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonFamily.cs"><Link>Summoning\SummonFamily.cs</Link></Compile>
