@@ -1,5 +1,20 @@
 # Autonomous Gunslinger resume handoff
 
+## 2026-09-30 Expanded Summoning 0.0.141 checkpoint
+
+The owner selected the fully qualified end of Sprint 11 as a near-term public
+release boundary. Branch `codex/expanded-summoning-phase2a-sprints9-13` and
+draft PR #25 contain 882 visible generated choices plus 29 retained native
+wrappers. Sprints 9-11 are internally qualified; owner visual review remains
+`NOT_PERFORMED_NONBLOCKING`.
+
+Sprint 12 work is intentionally retained but unpublished. All 68 Dire Rat,
+Dog, Hyena and Goblin Dog placements remain suppressed. Focused disease
+mechanics and original-view attachment pass, but player paths, persistence,
+compatibility, movement/contact, natural expiry, module-disabled behavior,
+inventory and complete internal visual review remain. Resume there after the
+0.0.141 release; do not begin Sprint 22, merge autonomously or force-push.
+
 ## 2026-09-06 0.0.115 public release verification
 
 Owner-authorized master merge/tag commit:

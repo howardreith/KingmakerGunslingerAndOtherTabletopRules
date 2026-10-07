@@ -62,6 +62,47 @@ namespace KingmakerGunslinger.Acquisition
                 (T[])existing.Clone(), published, true);
         }
 
+        // Normalize only exact owned blueprint identities. Detached construction
+        // completes before the caller assigns a table; rollback retains every row.
+        internal static VendorCatalogPublication<T> NormalizeOwned<TItem>(
+            T[] existing, TItem[] owned, TItem[] items, int[] counts,
+            Func<T, TItem> readItem, Func<T, int> readCount,
+            Func<TItem, int, T> create) where TItem : class
+        {
+            if (existing == null || owned == null || items == null || counts == null ||
+                readItem == null || readCount == null || create == null)
+                throw new ArgumentNullException("Vendor normalization input");
+            // Reuse the native-catalog null/duplicate-reference conflict guard.
+            Create(existing, Array.Empty<T>());
+            var ownedSet = new HashSet<TItem>(owned, ReferenceComparer<TItem>.Instance);
+            var desired = new HashSet<TItem>(ReferenceComparer<TItem>.Instance);
+            if (ownedSet.Contains(null) || items.Length != counts.Length)
+                throw new InvalidOperationException("Invalid owned vendor stock contract.");
+            for (int index = 0; index < items.Length; index++)
+                if (items[index] == null || !ownedSet.Contains(items[index]) ||
+                    !desired.Add(items[index]) || counts[index] <= 0)
+                    throw new InvalidOperationException("Invalid desired vendor stock contract.");
+            bool exact = !existing.Any(row => ownedSet.Contains(readItem(row)) &&
+                !desired.Contains(readItem(row)));
+            for (int index = 0; index < items.Length && exact; index++)
+            {
+                TItem item = items[index];
+                T[] matches = existing.Where(row => ReferenceEquals(readItem(row), item)).ToArray();
+                exact = matches.Length == 1 && readCount(matches[0]) == counts[index];
+            }
+            if (exact) return Create(existing, Array.Empty<T>());
+            T[] retained = existing.Where(row => !ownedSet.Contains(readItem(row))).ToArray();
+            T[] additions = items.Select((item, index) => create(item, counts[index])).ToArray();
+            // Fail before publication if a native row factory cannot round-trip.
+            for (int index = 0; index < additions.Length; index++)
+                if (additions[index] == null ||
+                    !ReferenceEquals(readItem(additions[index]), items[index]) ||
+                    readCount(additions[index]) != counts[index])
+                    throw new InvalidOperationException("Vendor row factory did not round-trip.");
+            T[] published = Create(retained, additions).Published;
+            return new VendorCatalogPublication<T>((T[])existing.Clone(), published, true);
+        }
+
         internal static VendorCatalogPublication<T> CreateIntegrated(
             T[] existing, T[] additions, Func<T, string> sortKey)
         {

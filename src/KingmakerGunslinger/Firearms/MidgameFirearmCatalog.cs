@@ -11,12 +11,12 @@ namespace KingmakerGunslinger.Firearms
         internal static readonly MidgameFirearmSpec Roadwarden = new MidgameFirearmSpec(
             "KMG.Firearms.RoadwardenItem", "KMG_Roadwarden_Item", "Roadwarden",
             FirearmKind.Musket, 33800, true, false,
-            "Reliable reduces this firearm's misfire value by 1 after other increases, to a minimum of 0. A natural 1 still misses.",
+            FirearmEnchantmentItemText.Reliable,
             "The stock bears the mile marks of a road that no longer appears on any map. Its last keeper never missed a watch.");
         internal static readonly MidgameFirearmSpec DeadReckoning = new MidgameFirearmSpec(
             "KMG.Firearms.DeadReckoningItem", "KMG_DeadReckoning_Item", "Dead Reckoning",
             FirearmKind.Pistol, 33300, false, true,
-            "Seeking ignores concealment miss chances. It does not reveal unseen creatures, allow targeting a creature you could not otherwise target, or bypass other defenses.",
+            FirearmEnchantmentItemText.Seeking,
             "Its maker promised that no debtor could lose themselves in the mist. The promise outlived them both.");
         internal static MidgameFirearmSpec[] Entries
         { get { return new[] { Roadwarden, DeadReckoning }; } }

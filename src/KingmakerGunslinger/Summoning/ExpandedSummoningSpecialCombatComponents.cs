@@ -2,12 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Linq;
+using System.Reflection;
+using Newtonsoft.Json;
 using Harmony12;
 using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Area;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.Blueprints.Items.Weapons;
+using Kingmaker.Blueprints.Root;
 using Kingmaker.Controllers.Units;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.EntitySystem.Stats;
@@ -19,12 +22,15 @@ using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.RuleSystem.Rules.Damage;
 using Kingmaker.UnitLogic;
+using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Buffs.Components;
 using Kingmaker.UnitLogic.Mechanics;
+using Kingmaker.UnitLogic.Mechanics.Actions;
 using Kingmaker.UnitLogic.Parts;
 using Kingmaker.Utility;
+using UnityEngine;
 
 namespace KingmakerGunslinger.Summoning
 {
@@ -624,21 +630,415 @@ namespace KingmakerGunslinger.Summoning
         }
     }
 
-    /// <summary>
-    /// The holder's side of a single-link hold (Sprint 4), carried by the hold
-    /// buff the native initiator part applies. Each new round the holder
-    /// makes a grapple check to maintain at the tabletop +5 (on top of the
-    /// +4 grab bonus): success deals the damage of the attack that
-    /// established the hold - the establishing limb's weapon entity through
-    /// the game's own weapon-stats rule, the first grab limb after a load -
-    /// plus any constrict; a swallower that began the round holding uses the
-    /// successful check as though attempting to pin and swallows instead
-    /// (bite damage, swallowed state); failure releases. When the hold state
-    /// ends for any reason - the target broke free, the holder fell, the
-    /// summon expired or was dismissed, the buff was dispelled - the target
-    /// this summon holds is released too, and only that target: the link is
-    /// owned here and never inferred from the target's side.
-    /// </summary>
+    /// <summary>The Stirge's touch hit establishes its own session attachment,
+    /// without making the prey grappled. The attack's zero-damage touch
+    /// weapon is the only eligible limb.</summary>
+    [Serializable]
+    public sealed class StirgeAttachComponent :
+        RuleInitiatorLogicComponent<RuleAttackWithWeapon>
+    {
+        public BlueprintItemWeapon TouchWeapon;
+        public BlueprintBuff HoldBuff;
+        public BlueprintBuff DiseaseBuff;
+
+        // Paizo Stirge Diseased: one exposure check per victim from this
+        // particular Stirge, even across later blood-drain events.
+        [JsonProperty]
+        private List<string> m_DiseaseCheckedVictims = new List<string>();
+        [JsonIgnore]
+        private int m_NativeEventCalls;
+        [JsonIgnore]
+        private int m_NativeFallbackCalls;
+
+        internal int NativeEventCalls { get { return m_NativeEventCalls; } }
+        internal int NativeFallbackCalls { get { return m_NativeFallbackCalls; } }
+
+        internal int DiseaseCheckedVictimCount
+        {
+            get { return m_DiseaseCheckedVictims == null ? 0 :
+                m_DiseaseCheckedVictims.Count; }
+        }
+
+        internal static StirgeAttachComponent Find(UnitEntityData owner)
+        {
+            if (owner == null || owner.Descriptor == null) return null;
+            foreach (Buff buff in owner.Descriptor.Buffs.RawFacts.OfType<Buff>())
+            {
+                StirgeAttachComponent live = buff == null || buff.Components == null ?
+                    null : buff.Components.OfType<StirgeAttachComponent>()
+                        .FirstOrDefault();
+                if (live != null) return live;
+            }
+            return null;
+        }
+
+        internal bool TryDiseaseExposure(UnitEntityData target,
+            int actualConstitutionDamage)
+        {
+            if (target == null || string.IsNullOrEmpty(target.UniqueId) ||
+                !StirgeAttachPolicy.ShouldRollDiseaseExposure(
+                    actualConstitutionDamage) ||
+                m_DiseaseCheckedVictims != null &&
+                    m_DiseaseCheckedVictims.Contains(target.UniqueId))
+                return false;
+            return TryDiseaseExposure(target, actualConstitutionDamage,
+                UnityEngine.Random.Range(0, 100));
+        }
+
+        internal bool TryDiseaseExposure(UnitEntityData target,
+            int actualConstitutionDamage, int percentileRoll)
+        {
+            UnitEntityData owner = Owner == null ? null : Owner.Unit;
+            if (owner == null || target == null || target.Descriptor == null ||
+                DiseaseBuff == null || string.IsNullOrEmpty(target.UniqueId) ||
+                !StirgeAttachPolicy.ShouldRollDiseaseExposure(
+                    actualConstitutionDamage))
+                return false;
+            if (m_DiseaseCheckedVictims == null)
+                m_DiseaseCheckedVictims = new List<string>();
+            if (m_DiseaseCheckedVictims.Contains(target.UniqueId)) return false;
+            m_DiseaseCheckedVictims.Add(target.UniqueId);
+            if (!StirgeAttachPolicy.DiseaseExposureSelected(percentileRoll))
+                return true;
+            var context = new MechanicsContext(owner, target.Descriptor,
+                DiseaseBuff, Fact == null ? null : Fact.MaybeContext,
+                new TargetWrapper(target));
+            context.Params.DC = StirgeAttachPolicy.FilthFeverFortitudeDc;
+            var saving = new RuleSavingThrow(target, SavingThrowType.Fortitude,
+                StirgeAttachPolicy.FilthFeverFortitudeDc);
+            saving.Reason = context;
+            context.TriggerRule(saving);
+            if (saving.IsPassed) return true;
+            var apply = new RuleApplyBuff(target, DiseaseBuff, context,
+                null, (buff, source, duration) =>
+                    target.Descriptor.Buffs.AddBuff(buff, source, duration));
+            Rulebook.Trigger(apply);
+            return true;
+        }
+
+        public override void OnEventAboutToTrigger(RuleAttackWithWeapon evt) { }
+
+        public override void OnEventDidTrigger(RuleAttackWithWeapon evt)
+        {
+            m_NativeEventCalls++;
+            if (evt == null || evt.AttackRoll == null || evt.Weapon == null)
+                return;
+            TryAttach(evt.Target, evt.Weapon, evt.AttackRoll.IsHit);
+        }
+
+        internal void AttachAfterNativeRule(RuleAttackWithWeapon attack)
+        {
+            if (attack == null || attack.AttackRoll == null ||
+                !attack.AttackRoll.IsHit || attack.Weapon == null ||
+                !ReferenceEquals(attack.Weapon.Blueprint, TouchWeapon) ||
+                ReferenceEquals(StirgeHoldComponent.AttachedTarget(attack.Initiator),
+                    attack.Target)) return;
+            m_NativeFallbackCalls++;
+            TryAttach(attack.Target, attack.Weapon, true);
+        }
+
+        internal bool TryAttach(UnitEntityData target, ItemEntityWeapon weapon,
+            bool touchHit)
+        {
+            UnitEntityData owner = Owner == null ? null : Owner.Unit;
+            if (owner == null || target == null || target.Descriptor == null ||
+                weapon == null || TouchWeapon == null || HoldBuff == null ||
+                !ReferenceEquals(weapon.Blueprint, TouchWeapon) ||
+                !ReferenceEquals(owner.Body.PrimaryHand.MaybeWeapon, weapon) ||
+                ReferenceEquals(owner, target) || target.Destroyed)
+                return false;
+            bool busy = StirgeHoldComponent.AttachedTarget(owner) != null;
+            if (!StirgeAttachPolicy.MayAttach(touchHit, busy,
+                    !target.Descriptor.State.IsDead)) return false;
+            MechanicsContext context = Fact == null ? null : Fact.MaybeContext;
+            Buff hold = owner.Descriptor.Buffs.AddBuff(HoldBuff, context, null);
+            StirgeHoldComponent link = hold == null || hold.Components == null ?
+                null : hold.Components.OfType<StirgeHoldComponent>().FirstOrDefault();
+            if (link == null)
+            {
+                if (hold != null) owner.Descriptor.Buffs.RemoveFact(hold);
+                return false;
+            }
+            if (!link.Attach(target))
+            {
+                owner.Descriptor.Buffs.RemoveFact(hold);
+                return false;
+            }
+            return ReferenceEquals(StirgeHoldComponent.AttachedTarget(owner), target);
+        }
+    }
+
+    /// <summary>Native UnitAttack can complete a Stirge touch rule without
+    /// dispatching its buff's initiator callback. Retry only that exact owned
+    /// touch weapon after the native rule; an existing link is left alone.</summary>
+    [HarmonyPatch(typeof(RuleAttackWithWeapon), "OnTrigger",
+        new[] { typeof(RulebookEventContext) })]
+    internal static class StirgeNativeTouchAttachPatch
+    {
+        [HarmonyPriority(Priority.First)]
+        private static void Postfix(RuleAttackWithWeapon __instance)
+        {
+            UnitEntityData owner = __instance == null ? null :
+                __instance.Initiator;
+            if (owner == null || owner.Blueprint == null ||
+                owner.Blueprint.name != "KMG_Summoning_Unit_Stirge") return;
+            StirgeAttachComponent attach = StirgeAttachComponent.Find(owner);
+            if (attach != null) attach.AttachAfterNativeRule(__instance);
+        }
+    }
+
+    /// <summary>Native translocation is a discontinuous move, including
+    /// short teleports that the per-frame distance guard cannot distinguish
+    /// from ordinary walking. Release only Stirges attached to that unit.</summary>
+    [HarmonyPatch]
+    internal static class StirgePreyTranslocationPatch
+    {
+        private static IEnumerable<MethodBase> TargetMethods()
+        {
+            return typeof(UnitEntityData).GetMethods(BindingFlags.Instance |
+                    BindingFlags.Public | BindingFlags.NonPublic)
+                .Where(method => method.Name == "Translocate" &&
+                    method.GetParameters().Length > 0 &&
+                    method.GetParameters()[0].ParameterType == typeof(Vector3));
+        }
+
+        private static void Postfix(UnitEntityData __instance)
+        {
+            StirgeHoldComponent.DetachFromTranslocatedTarget(__instance);
+        }
+    }
+
+    [Serializable]
+    public sealed class RemoveStirgeTargetChecker : BlueprintComponent,
+        Kingmaker.UnitLogic.Abilities.Components.Base.IAbilityTargetChecker
+    {
+        public bool CanTarget(UnitEntityData caster, TargetWrapper target)
+        {
+            UnitEntityData stirge = target == null ? null : target.Unit;
+            return caster != null && stirge != null &&
+                !stirge.Destroyed && caster.Descriptor != null &&
+                ReferenceEquals(StirgeHoldComponent.AttachedTarget(stirge), caster);
+        }
+    }
+
+    /// <summary>One voluntary standard action against a selected attached
+    /// Stirge. The better currently available CMB/Mobility modifier is chosen
+    /// before triggering either roll; success removes that Stirge alone.</summary>
+    [Serializable]
+    public sealed class ContextActionRemoveStirge : ContextAction
+    {
+        public override string GetCaption()
+        { return "Remove one attached Stirge with CMB or Mobility"; }
+
+        public override void RunAction()
+        {
+            UnitEntityData prey = Context == null ? null : Context.MaybeCaster;
+            UnitEntityData stirge = Target == null ? null : Target.Unit;
+            if (prey == null || stirge == null || prey.Descriptor == null ||
+                !ReferenceEquals(StirgeHoldComponent.AttachedTarget(stirge), prey) ||
+                prey.Descriptor.State.IsDead || stirge.Destroyed) return;
+            var cmb = new RuleCalculateCMB(prey, stirge,
+                CombatManeuver.Grapple);
+            Context.TriggerRule(cmb);
+            int mobility = prey.Descriptor.Stats.SkillMobility.ModifiedValue;
+            bool success;
+            if (cmb.Result >= mobility)
+            {
+                var grapple = new RuleCombatManeuver(prey, stirge,
+                    CombatManeuver.Grapple);
+                Context.TriggerRule(grapple);
+                success = SummonManeuverChecks.Succeeded(grapple);
+            }
+            else
+            {
+                var defense = new RuleCalculateCMD(prey, stirge,
+                    CombatManeuver.Grapple);
+                Context.TriggerRule(defense);
+                var escape = new RuleSkillCheck(prey,
+                    StatType.SkillMobility, defense.Result);
+                Context.TriggerRule(escape);
+                success = escape.IsPassed;
+            }
+            if (success) StirgeHoldComponent.Detach(stirge);
+        }
+    }
+
+    /// <summary>One attached Stirge's bounded Constitution meal. The active
+    /// attachment is session-scoped and resets cleanly on save/load.</summary>
+    [Serializable]
+    public sealed class StirgeHoldComponent : BuffLogic, ITickEachRound,
+        IInitiatorRulebookHandler<RuleCalculateCMB>
+    {
+        internal static BlueprintAbility RemoveAbility;
+        [JsonProperty]
+        private int m_CumulativeDamage;
+        // Entity references intentionally do not survive a save. The load
+        // safeguard removes the owner-only hold before play resumes.
+        [JsonIgnore]
+        private UnitEntityData m_Target;
+        [JsonIgnore]
+        private Vector3 m_Offset;
+        [JsonIgnore]
+        private Vector3 m_LastTargetPosition;
+
+        internal int CumulativeDamage { get { return m_CumulativeDamage; } }
+
+        internal bool Attach(UnitEntityData target)
+        {
+            if (target == null || target.Descriptor == null ||
+                RemoveAbility == null) return false;
+            if (!target.Descriptor.HasFact(RemoveAbility) &&
+                target.Descriptor.AddFact(RemoveAbility) == null) return false;
+            m_Target = target;
+            m_LastTargetPosition = target.Position;
+            UnitEntityData owner = Owner == null ? null : Owner.Unit;
+            Vector3 direction = owner == null ? Vector3.right :
+                owner.Position - target.Position;
+            direction.y = 0f;
+            if (direction.sqrMagnitude < 0.001f) direction = Vector3.right;
+            m_Offset = direction.normalized * 0.6f;
+            return true;
+        }
+
+        internal static UnitEntityData AttachedTarget(UnitEntityData owner)
+        {
+            StirgeHoldComponent link = Find(owner);
+            return link == null ? null : link.m_Target;
+        }
+
+        private static StirgeHoldComponent Find(UnitEntityData owner)
+        {
+            if (owner == null || owner.Descriptor == null) return null;
+            return owner.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                .Where(value => value != null && value.Components != null)
+                .SelectMany(value => value.Components.OfType<StirgeHoldComponent>())
+                .FirstOrDefault();
+        }
+
+        internal static bool Detach(UnitEntityData owner)
+        {
+            if (owner == null || owner.Descriptor == null) return false;
+            Buff hold = owner.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                .FirstOrDefault(value => value != null && value.Components != null &&
+                    value.Components.OfType<StirgeHoldComponent>().Any());
+            if (hold == null) return false;
+            owner.Descriptor.Buffs.RemoveFact(hold);
+            return true;
+        }
+
+        internal static void DetachFromTranslocatedTarget(UnitEntityData target)
+        {
+            if (target == null || Game.Instance == null ||
+                Game.Instance.State == null ||
+                Game.Instance.State.Units == null) return;
+            foreach (UnitEntityData unit in Game.Instance.State.Units.All.ToArray())
+                if (ReferenceEquals(AttachedTarget(unit), target)) Detach(unit);
+        }
+
+        internal static void FollowAttached(UnitEntityData owner)
+        {
+            StirgeHoldComponent link = Find(owner);
+            if (link == null || link.m_Target == null) return;
+            UnitEntityData target = link.m_Target;
+            if (owner == null || owner.Destroyed || !owner.IsInGame ||
+                owner.Descriptor == null || owner.Descriptor.State.IsDead ||
+                target.Destroyed || !target.IsInGame || target.View == null ||
+                target.Descriptor == null || target.Descriptor.State.IsDead ||
+                Vector3.Distance(link.m_LastTargetPosition, target.Position) > 8f)
+            {
+                Detach(owner);
+                return;
+            }
+            link.m_LastTargetPosition = target.Position;
+            Vector3 position = target.Position + link.m_Offset;
+            if (Vector3.Distance(owner.Position, position) < 0.08f) return;
+            owner.Translocate(position, null);
+            if (Game.Instance != null && Game.Instance.CurrentScene != null &&
+                Game.Instance.CurrentScene.Area != null)
+                Game.Instance.CurrentScene.Area.InteractiveObjectGrid.MoveTo(
+                    owner, position.x, position.z);
+        }
+
+        public void OnNewRound()
+        {
+            UnitEntityData owner = Owner == null ? null : Owner.Unit;
+            UnitEntityData target = m_Target;
+            if (owner == null) return;
+            // A timed marker can expire before the game's summon controller
+            // retires the unit. Never let that gap keep prey grappled.
+            if (owner.Descriptor.Buffs.GetBuff(BlueprintRoot.Instance
+                    .SystemMechanics.SummonedUnitBuff) == null)
+            {
+                Detach(owner);
+                return;
+            }
+            if (target == null || target.Destroyed ||
+                target.Descriptor.State.IsDead)
+            {
+                Detach(owner);
+                return;
+            }
+            int requested = StirgeAttachPolicy.RequestedDamage(true, true,
+                m_CumulativeDamage);
+            int before = target.Descriptor.Stats.Constitution.Damage;
+            if (requested > 0)
+            {
+                var rule = new RuleDealStatDamage(owner, target,
+                    StatType.Constitution, new DiceFormula(0, DiceType.D6),
+                    requested);
+                MechanicsContext context = Fact == null ? null : Fact.MaybeContext;
+                if (context != null) context.TriggerRule(rule);
+                else Rulebook.Trigger(rule);
+            }
+            int actual = Math.Max(0, Math.Min(requested,
+                target.Descriptor.Stats.Constitution.Damage - before));
+            if (actual > 0 && !target.Descriptor.State.IsDead)
+            {
+                StirgeAttachComponent attach = StirgeAttachComponent.Find(owner);
+                if (attach != null) attach.TryDiseaseExposure(target, actual);
+            }
+            StirgeDrainStep step = StirgeAttachPolicy.EndTurn(true,
+                !target.Descriptor.State.IsDead, m_CumulativeDamage, actual);
+            m_CumulativeDamage = step.CumulativeDamage;
+            if (step.Detach) Detach(owner);
+        }
+
+        public void OnEventAboutToTrigger(RuleCalculateCMB evt)
+        {
+            if (evt == null || evt.Type != CombatManeuver.Grapple ||
+                Owner == null || Owner.Unit == null ||
+                !ReferenceEquals(evt.Initiator, Owner.Unit) ||
+                !ReferenceEquals(evt.Target,
+                    m_Target)) return;
+            evt.AddBonus(StirgeAttachPolicy.MaintainGrappleRacialBonus, Fact);
+        }
+
+        public void OnEventDidTrigger(RuleCalculateCMB evt) { }
+
+        public override void OnTurnOff()
+        {
+            base.OnTurnOff();
+            UnitEntityData target = m_Target;
+            m_Target = null;
+            ReleaseRemoveAction(target);
+        }
+
+        internal static void ReleaseRemoveAction(UnitEntityData target)
+        {
+            if (target == null || target.Descriptor == null ||
+                RemoveAbility == null ||
+                !target.Descriptor.HasFact(RemoveAbility)) return;
+            if (Game.Instance != null && Game.Instance.State != null &&
+                Game.Instance.State.Units != null &&
+                Game.Instance.State.Units.All.Any(unit =>
+                    ReferenceEquals(AttachedTarget(unit), target))) return;
+            target.Descriptor.RemoveFact(RemoveAbility);
+        }
+    }
+
+    /// <summary>The shared single-link grab hold. A native grapple part owns
+    /// its target, and each round a successful maintain check deals the
+    /// establishing limb's weapon damage or swallows when applicable.</summary>
     [Serializable]
     public sealed class SummonHoldComponent : BuffLogic, ITickEachRound,
         IInitiatorRulebookHandler<RuleCalculateCMB>
@@ -1033,7 +1433,27 @@ namespace KingmakerGunslinger.Summoning
         internal static int Sweep(bool leaving)
         {
             if (Game.Instance == null || Game.Instance.Player == null) return 0;
-            return Sweep(leaving, Game.Instance.Player.Party);
+            int stirges = Game.Instance.State == null ||
+                Game.Instance.State.Units == null ? 0 :
+                SweepStirge(Game.Instance.State.Units.All);
+            return stirges + Sweep(leaving, Game.Instance.Player.Party);
+        }
+
+        internal static int SweepStirge(IEnumerable<UnitEntityData> units)
+        {
+            if (units == null) return 0;
+            UnitEntityData[] all = units.Where(value => value != null &&
+                value.Descriptor != null).ToArray();
+            int released = 0;
+            foreach (UnitEntityData unit in all.Where(value =>
+                value.Blueprint != null &&
+                value.Blueprint.name == "KMG_Summoning_Unit_Stirge"))
+                if (StirgeHoldComponent.Detach(unit)) released++;
+            // An ability fact may have been serialized on prey, while its
+            // session link was deliberately not. Remove that orphan on load.
+            foreach (UnitEntityData unit in all)
+                StirgeHoldComponent.ReleaseRemoveAction(unit);
+            return released;
         }
 
         /// <summary>The same sweep over an explicit set of units (the runtime

@@ -1,0 +1,64 @@
+{
+  "sourceBase": "97f0a966b3219ce0122626a492529b509e1db880",
+  "RuntimeBehaviorChanged": false,
+  "SummoningContentChanged": false,
+  "AuthorityMetadataCorrected": true,
+  "catalogChangedFields": [
+    "baseline.registrySha256",
+    "delegatedManifests[expanded-summoning/icon-manifest.json].sha256"
+  ],
+  "authorities": [
+    {
+      "path": "assets-source/original-icons/expanded-summoning/icon-manifest.json",
+      "stalePin": "f8f1a2e6dba3d420067befb2d5ea3cc4c40bc1c776a351debf61253467f712e6",
+      "releasedSha256": "40754cb1ce93473befaf10be1c4d0fce1296ef73c218d83c6a493f014d0c734d",
+      "bytesEqualTag": true
+    },
+    {
+      "path": "blueprints/blueprints.json",
+      "stalePin": "c3bedfa7fb8b9cab7f39ff775e73de4339c3870b662660008e2f67ec4246e87c",
+      "releasedSha256": "63b9102ca821029d1e440cc68be118d3ef06de9f9036428ee13b5c9e2d3ba356",
+      "bytesEqualTag": true
+    }
+  ],
+  "delegatedIconCount": 100,
+  "actualIconRecords": 100,
+  "registryEntries": 2649,
+  "registryNamespace": "KMG",
+  "productionFilesChanged": 0,
+  "newRegressionCases": 2,
+  "continuationStartingHead": "13ddbb17d083d9cc112aacd69f0f07f648b75cc7",
+  "baselineDomainTests": 1958,
+  "domainFailures": 0,
+  "iconCorruptionTests": 26,
+  "newRegressions": 2,
+  "repositoryValidation": "PASS",
+  "cleanExactReferenceReleaseBuild": "PASS",
+  "strictStandalonePackageValidation": "PASS",
+  "packageMemberCount": 282,
+  "artifact": {
+    "commit": "13ddbb17d083d9cc112aacd69f0f07f648b75cc7",
+    "version": "0.0.141",
+    "packageSha256": "f81efd8723bfdc222cf8e3836ec24d7bd8003c47a4761f0e7945a316127868bf",
+    "dllSha256": "b936db799ccebbf5c78148a0829a518acdfa62e92e3ec2252ba9727107553beb",
+    "dllMvid": "afc2daf5-44f7-492a-9965-53d3b8fb01ae",
+    "sourceStateSha256": "10dfd1976911c1b3031ccf8314ea2fab976dddb61e99976327fd12dc95980286"
+  },
+  "artifactQualification": "metadata-only development checkpoint; no game launch; not a 0.0.142 candidate",
+  "saveWrites": 0,
+  "runtimeLaunches": 0,
+  "liveDeployment": false,
+  "localPrerequisitesRestored": [
+    "ignored GamePath.props",
+    "ignored exact installed native IL fixture"
+  ],
+  "commands": [
+    "python -X utf8 tools/validate_icon_catalog.py --root .",
+    "python -X utf8 tools/test_icon_catalog.py",
+    "powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/Build-Local.ps1"
+  ],
+  "failedAttempts": [
+    "Missing ignored reference configuration: Newtonsoft.Json could not resolve; added established GamePath.props",
+    "1958 tests executed with two missing ignored native IL fixture failures; regenerated exact verified assembly IL, no production repair"
+  ]
+}

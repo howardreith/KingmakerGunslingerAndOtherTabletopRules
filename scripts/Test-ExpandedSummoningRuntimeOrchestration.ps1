@@ -51,6 +51,42 @@ function Assert-Equal {
     $script:Passed++
 }
 
+# The outer restoration wrapper must expose the guarded harness's two stage
+# deadlines. A slow first OnUpdate must not be mistaken for a mechanical test
+# failure merely because the aggregate timeout was raised while the startup
+# watchdog silently remained at its default.
+$wrapperPath = Join-Path $ScriptRoot 'Invoke-ExpandedSummoningRuntimeScenario.ps1'
+$wrapperSource = Get-Content -LiteralPath $wrapperPath -Raw
+foreach ($contract in @(
+    '[int]$ObserverStartupTimeoutSeconds = 180',
+    '[int]$CompletionTimeoutSeconds = 180',
+    'ObserverStartupTimeoutSeconds = $ObserverStartupTimeoutSeconds',
+    'CompletionTimeoutSeconds = $CompletionTimeoutSeconds')) {
+    Assert-True ($wrapperSource.Contains($contract)) `
+        "runtime restoration wrapper must preserve stage-timeout contract: $contract"
+}
+
+$enabledSettings = '{"schemaVersion":10,"expanded-summoning":true,"gunslinger":true}'
+$disabledBytes = ConvertTo-KmgDisabledExpandedSummoningSettingsBytes `
+    -OriginalBytes ([Text.Encoding]::UTF8.GetBytes($enabledSettings))
+Assert-Equal '{"schemaVersion":10,"expanded-summoning":false,"gunslinger":true}' `
+    ([Text.Encoding]::UTF8.GetString($disabledBytes)) `
+    'module-off staging changes only the one explicit JSON Boolean'
+foreach ($invalidSettings in @(
+    '{"schemaVersion":10,"gunslinger":true}',
+    '{"schemaVersion":10,"expanded-summoning":false}',
+    '{"schemaVersion":10,"expanded-summoning":"true"}',
+    '{"expanded-summoning":true,"expanded-summoning":true}')) {
+    $rejected = $false
+    try {
+        ConvertTo-KmgDisabledExpandedSummoningSettingsBytes `
+            -OriginalBytes ([Text.Encoding]::UTF8.GetBytes($invalidSettings)) |
+            Out-Null
+    }
+    catch { $rejected = $true }
+    Assert-True $rejected 'module-off staging rejects absent, disabled, mistyped or duplicate settings'
+}
+
 $scenario = 'disposable-expanded-summoning'
 $started = [DateTime]::SpecifyKind(
     [DateTime]::ParseExact('20260923T163838', 'yyyyMMddTHHmmss',

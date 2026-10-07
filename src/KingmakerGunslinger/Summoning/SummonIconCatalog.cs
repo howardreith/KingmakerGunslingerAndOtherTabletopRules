@@ -38,15 +38,18 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            string[] visibleCatalog = ExpandedSummoningCatalog.All.Where(value =>
-                !string.Equals(value.Key, "dire-bat", StringComparison.Ordinal))
+            string[] visibleCatalog = ExpandedSummoningCatalog.All
+                .Where(IsPublishedSomewhere)
                 .Select(value => value.Key).ToArray();
             string[] split = { "redcap", "axiomite", "soul-eater", "bogeyman",
                 "movanic-deva", "frost-giant", "thanadaemon" };
             string[] preserved = { "mite", "manticore", "nereid", "hamadryad" };
+            string[] prepared = { "dire-rat", "dog", "hyena",
+                "goblin-dog", "remove-stirge" };
             string[] expected = visibleCatalog.Concat(split).Concat(preserved)
+                .Concat(prepared)
                 .ToArray();
-            if (Values.Length != 91 || expected.Length != 91 ||
+            if (Values.Length != 100 || expected.Length != 100 ||
                 Values.Any(value => value == null ||
                     string.IsNullOrWhiteSpace(value.Key) ||
                     string.IsNullOrWhiteSpace(value.DisplayName)) ||
@@ -62,8 +65,8 @@ namespace KingmakerGunslinger.Summoning
 
         private static SummonProjectIconSpec[] Build()
         {
-            var result = ExpandedSummoningCatalog.All.Where(value =>
-                value.Key != "dire-bat").Select(value => new SummonProjectIconSpec(
+            var result = ExpandedSummoningCatalog.All.Where(IsPublishedSomewhere)
+                .Select(value => new SummonProjectIconSpec(
                     value.Key, value.DisplayName, SummonProjectIconScope.KmgCatalog))
                 .ToList();
             Add(result, SummonProjectIconScope.SplitNative,
@@ -74,7 +77,22 @@ namespace KingmakerGunslinger.Summoning
             Add(result, SummonProjectIconScope.PreservedNative,
                 "mite", "Mite", "manticore", "Manticore", "nereid",
                 "Nereid", "hamadryad", "Hamadryad");
+            // Qualified creature icons enter through visibleCatalog. Sprint
+            // 12 candidates remain catalogued while their choices are hidden;
+            // the Stirge removal action remains a separate concept.
+            Add(result, SummonProjectIconScope.KmgCatalog,
+                "dire-rat", "Dire Rat", "dog", "Dog", "hyena", "Hyena",
+                "goblin-dog", "Goblin Dog", "remove-stirge", "Remove Stirge");
             return result.ToArray();
+        }
+
+        internal static bool IsPublishedSomewhere(SummonCreatureSpec creature)
+        {
+            return ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
+                .Concat(ExpandedSummoningCatalog.GenerateVariants(
+                    SummonFamily.NaturesAlly))
+                .Any(value => value.Creature.Key == creature.Key &&
+                    SummonVisibilityCatalog.IsPublished(value));
         }
 
         private static void Add(ICollection<SummonProjectIconSpec> values,

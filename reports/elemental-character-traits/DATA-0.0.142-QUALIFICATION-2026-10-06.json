@@ -1,0 +1,2079 @@
+{
+  "schemaVersion": 1,
+  "recordedAtUtc": "2026-10-06T20:07:14.878416+00:00",
+  "repository": "howardreith/KingmakerGunslingerAndOtherTabletopRules",
+  "branch": "codex/data-content-traits-0.0.142-integration-2026-10-06",
+  "releaseBase": "97f0a966b3219ce0122626a492529b509e1db880",
+  "continuationStartingHead": "13ddbb17d083d9cc112aacd69f0f07f648b75cc7",
+  "qualifiedSource": "64870d327b513077f0032a0ee1d544301378a5d4",
+  "version": "0.0.142",
+  "informationalVersion": "0.0.142-elemental-race-traits-and-content",
+  "artifact": {
+    "packagePath": "artifacts/packages/KingmakerGunslinger-0.0.142-elemental-race-traits-and-content.zip",
+    "zipSha256": "776f027a950a793d98a5295ceb1bf8d2914d50346194af7a2d6b8981fc5b3b7c",
+    "dllSha256": "df420ccceb33014009017e2324cd82f9de6c02e86350bbf9d62181ba7b6c8312",
+    "mvid": "a9a2febb-55b5-42c6-91b5-b36153477671",
+    "sourceFingerprint": "b919a867a2f27df003de4c5dfc2b2ddcb22a0fbfb7c4cdbfeb41616fdbe34562",
+    "packageMemberCount": 286,
+    "deterministicReproduction": "PASS",
+    "strictStandaloneValidation": "PASS"
+  },
+  "validation": {
+    "baselineDomainTestCount": 1958,
+    "finalDomainTestCount": 2252,
+    "completeDomainTests": "2252/2252 PASS",
+    "focusedDataTests": "294/294 PASS",
+    "iconCatalogCorruptionChecks": "26/26 PASS",
+    "traitIconIntakeCorruptionChecks": "12/12 PASS",
+    "runtimePreflightChecks": "500/500 PASS",
+    "powerShellParser": "PASS",
+    "pythonSyntax": "PASS",
+    "repository": "PASS",
+    "activeIconCatalog": "PASS",
+    "protectedAssignments": "PASS",
+    "blueprintManifest": "PASS",
+    "cleanExactReferenceReleaseBuild": "PASS",
+    "immutableReleasedFileCount": 351,
+    "forbiddenTreeDiff": "PASS",
+    "historicalReleaseRegistryEntriesPreserved": 2649,
+    "onlyNewRegistryNodes": 11,
+    "currentRegistrySha256": "4fee6820c9d31f589e71f930bcb30c54ec4bd58d975d8dbca81daaeccdb38c09",
+    "delegatedReleaseManifestSha256": "40754cb1ce93473befaf10be1c4d0fce1296ef73c218d83c6a493f014d0c734d"
+  },
+  "commands": [
+    "powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/Build-Local.ps1",
+    "powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/Test-RuntimeScenarioPreflight.ps1 (normal-user helper; no launch)",
+    "python tools/validate_repository.py",
+    "python tools/inspect_elemental_character_trait_icons.py --expect ready",
+    "python tools/test_elemental_character_trait_icon_intake.py",
+    "python tools/test_icon_catalog.py",
+    "artifacts/tests/Release/KingmakerGunslinger.DomainTests/KingmakerGunslinger.DomainTests.exe --test-prefix elemental-character-trait,whiteout-,fiery-foundation,stoic-foundation,aerial-foundation,model-d,firearm-descriptions",
+    "python tools/create_deterministic_package.py --source artifacts/staging/install/KingmakerGunslinger --output artifacts/local-runtime/0.0.142/KingmakerGunslinger-0.0.142-local-runtime.zip --expected-file-count 286 (invoked by scripts/Build-Local.ps1); independent reproduction artifacts/mission/KingmakerGunslinger-0.0.142-final-repeat.zip has identical bytes",
+    "& scripts/Invoke-KingmakerRuntimeTest.ps1 -Scenario <each recorded scenario> -ExpectedVersion 0.0.142 -ExitAfterCompletion:$true -TimeoutSeconds 1200 -RuntimeLease $ownedScope.Lease -ReuseInstalledArtifact -DeploymentManifestPath <recorded deployment> -PackagePath artifacts/local-runtime/0.0.142/KingmakerGunslinger-0.0.142-local-runtime.zip -Confirm:$false; -SaveName KMG_AUTOMATION_WORKING only when RequiresSaveName",
+    "git diff --exit-code 97f0a966b3219ce0122626a492529b509e1db880 HEAD -- <all forbidden path families>",
+    "git diff --check; git diff --cached --check"
+  ],
+  "icons": [
+    {
+      "concept": "fiery-glare",
+      "sourcePath": "assets-source/original-icons/icon-overhaul-v2/production/sources/fiery-glare.png",
+      "sourceSha256": "a3ed28c9a92940f60cee501ecd429e7e4d7c5bd7d8f6f209124985d6863005e3",
+      "exportPath": "assets-source/original-icons/icon-overhaul-v2/production/exports/fiery-glare.png",
+      "runtimePath": "assets/game/icons/fiery-glare.png",
+      "exportSha256": "0ff889c3321e0d30b82e9d8c2fc5b80f81f134b48c636f6fc231826fccf993f5",
+      "sourceDimensions": [
+        1254,
+        1254
+      ],
+      "exportDimensions": [
+        128,
+        128
+      ],
+      "profile": "project-painted-128",
+      "family": "painted-magical",
+      "provenance": "assets-source/original-icons/icon-overhaul-v2/production/briefs/fiery-glare.json",
+      "objectiveVisualReview": "PASS",
+      "ownerAestheticApproval": "NOT_RECORDED"
+    },
+    {
+      "concept": "stoic-dignity",
+      "sourcePath": "assets-source/original-icons/icon-overhaul-v2/production/sources/stoic-dignity.png",
+      "sourceSha256": "f821992b390be1cc214a137f54c4122c2d460c542805023359a79bcb66849ac3",
+      "exportPath": "assets-source/original-icons/icon-overhaul-v2/production/exports/stoic-dignity.png",
+      "runtimePath": "assets/game/icons/stoic-dignity.png",
+      "exportSha256": "e1f619d17470cff018799db9b1c6554cf11e6b0626723360603f332ce7fb6f51",
+      "sourceDimensions": [
+        1254,
+        1254
+      ],
+      "exportDimensions": [
+        128,
+        128
+      ],
+      "profile": "project-painted-128",
+      "family": "painted-magical",
+      "provenance": "assets-source/original-icons/icon-overhaul-v2/production/briefs/stoic-dignity.json",
+      "objectiveVisualReview": "PASS",
+      "ownerAestheticApproval": "NOT_RECORDED"
+    },
+    {
+      "concept": "aerial-observer",
+      "sourcePath": "assets-source/original-icons/icon-overhaul-v2/production/sources/aerial-observer.png",
+      "sourceSha256": "77d3196f92d4d11fee14d13d3b32de5063c8bf27b99fa6ca0295e02bd87b920e",
+      "exportPath": "assets-source/original-icons/icon-overhaul-v2/production/exports/aerial-observer.png",
+      "runtimePath": "assets/game/icons/aerial-observer.png",
+      "exportSha256": "462408b925f912e2a1063ac9e8a0ff25b33c68b80fcccb1fa85d05f706fc117f",
+      "sourceDimensions": [
+        1254,
+        1254
+      ],
+      "exportDimensions": [
+        128,
+        128
+      ],
+      "profile": "project-painted-128",
+      "family": "painted-magical",
+      "provenance": "assets-source/original-icons/icon-overhaul-v2/production/briefs/aerial-observer.json",
+      "objectiveVisualReview": "PASS",
+      "ownerAestheticApproval": "NOT_RECORDED"
+    },
+    {
+      "concept": "whiteout",
+      "sourcePath": "assets-source/original-icons/icon-overhaul-v2/production/sources/whiteout.png",
+      "sourceSha256": "86bce8afb3482f2d317809153f228dcbb76da351283b46553c186ed317f076dc",
+      "exportPath": "assets-source/original-icons/icon-overhaul-v2/production/exports/whiteout.png",
+      "runtimePath": "assets/game/icons/whiteout.png",
+      "exportSha256": "3afdb75457b431530356e26ce32c005d2e8dbb8634474e20814b6cfa6d1e9f6b",
+      "sourceDimensions": [
+        1254,
+        1254
+      ],
+      "exportDimensions": [
+        128,
+        128
+      ],
+      "profile": "project-painted-128",
+      "family": "painted-magical",
+      "provenance": "assets-source/original-icons/icon-overhaul-v2/production/briefs/whiteout.json",
+      "objectiveVisualReview": "PASS",
+      "ownerAestheticApproval": "NOT_RECORDED"
+    }
+  ],
+  "stableNodes": [
+    {
+      "symbol": "KMG.ElementalRaces.CharacterTraits.FieryGlare.Feature",
+      "guid": "ca5d4d43d35548679ed6b533f055cb20",
+      "type": "BlueprintFeature",
+      "stable": true,
+      "registered": true,
+      "visible": true,
+      "iconConsumer": true,
+      "hidden": false,
+      "ordinarySelection": true,
+      "ordinaryAcquisition": "correct-race Favored Class racial_traits",
+      "saveIdentityStable": true,
+      "saveLoadQualification": "BLOCKED-PERSISTENCE-FIXTURE"
+    },
+    {
+      "symbol": "KMG.ElementalRaces.CharacterTraits.FieryGlare.Toggle",
+      "guid": "15549c6f936f4000a7c476f5d50d2585",
+      "type": "BlueprintActivatableAbility",
+      "stable": true,
+      "registered": true,
+      "visible": true,
+      "iconConsumer": true,
+      "hidden": false,
+      "ordinarySelection": false,
+      "ordinaryAcquisition": "owned feature graph only",
+      "saveIdentityStable": true,
+      "saveLoadQualification": "BLOCKED-PERSISTENCE-FIXTURE"
+    },
+    {
+      "symbol": "KMG.ElementalRaces.CharacterTraits.FieryGlare.ActivationBuff",
+      "guid": "7883b258441e4e179b07cacbdc5416ac",
+      "type": "BlueprintBuff",
+      "stable": true,
+      "registered": true,
+      "visible": false,
+      "iconConsumer": false,
+      "hidden": true,
+      "ordinarySelection": false,
+      "ordinaryAcquisition": "owned feature graph only",
+      "saveIdentityStable": true,
+      "saveLoadQualification": "BLOCKED-PERSISTENCE-FIXTURE"
+    },
+    {
+      "symbol": "KMG.ElementalRaces.CharacterTraits.StoicDignity.Feature",
+      "guid": "51faa3c273df41738553c18c088ef565",
+      "type": "BlueprintFeature",
+      "stable": true,
+      "registered": true,
+      "visible": true,
+      "iconConsumer": true,
+      "hidden": false,
+      "ordinarySelection": true,
+      "ordinaryAcquisition": "correct-race Favored Class racial_traits",
+      "saveIdentityStable": true,
+      "saveLoadQualification": "BLOCKED-PERSISTENCE-FIXTURE"
+    },
+    {
+      "symbol": "KMG.ElementalRaces.CharacterTraits.StoicDignity.ProviderBuff",
+      "guid": "46e6b683b15a4811886730027994e58d",
+      "type": "BlueprintBuff",
+      "stable": true,
+      "registered": true,
+      "visible": false,
+      "iconConsumer": false,
+      "hidden": true,
+      "ordinarySelection": false,
+      "ordinaryAcquisition": "owned feature graph only",
+      "saveIdentityStable": true,
+      "saveLoadQualification": "BLOCKED-PERSISTENCE-FIXTURE"
+    },
+    {
+      "symbol": "KMG.ElementalRaces.CharacterTraits.StoicDignity.Area",
+      "guid": "b3f85f9663b44129b222ae69bb3e8cd3",
+      "type": "BlueprintAbilityAreaEffect",
+      "stable": true,
+      "registered": true,
+      "visible": false,
+      "iconConsumer": false,
+      "hidden": true,
+      "ordinarySelection": false,
+      "ordinaryAcquisition": "owned feature graph only",
+      "saveIdentityStable": true,
+      "saveLoadQualification": "BLOCKED-PERSISTENCE-FIXTURE"
+    },
+    {
+      "symbol": "KMG.ElementalRaces.CharacterTraits.StoicDignity.RecipientBuff",
+      "guid": "461f898838864ff0b50ab355efa0c644",
+      "type": "BlueprintBuff",
+      "stable": true,
+      "registered": true,
+      "visible": false,
+      "iconConsumer": false,
+      "hidden": true,
+      "ordinarySelection": false,
+      "ordinaryAcquisition": "owned feature graph only",
+      "saveIdentityStable": true,
+      "saveLoadQualification": "BLOCKED-PERSISTENCE-FIXTURE"
+    },
+    {
+      "symbol": "KMG.ElementalRaces.CharacterTraits.AerialObserver.Feature",
+      "guid": "4064cbe37690440a8650ea5689354a65",
+      "type": "BlueprintFeature",
+      "stable": true,
+      "registered": true,
+      "visible": true,
+      "iconConsumer": true,
+      "hidden": false,
+      "ordinarySelection": true,
+      "ordinaryAcquisition": "correct-race Favored Class racial_traits",
+      "saveIdentityStable": true,
+      "saveLoadQualification": "BLOCKED-PERSISTENCE-FIXTURE"
+    },
+    {
+      "symbol": "KMG.ElementalRaces.CharacterTraits.AerialObserver.ProviderBuff",
+      "guid": "12f9760b84264e178af8a5251d559242",
+      "type": "BlueprintBuff",
+      "stable": true,
+      "registered": true,
+      "visible": false,
+      "iconConsumer": false,
+      "hidden": true,
+      "ordinarySelection": false,
+      "ordinaryAcquisition": "owned feature graph only",
+      "saveIdentityStable": true,
+      "saveLoadQualification": "BLOCKED-PERSISTENCE-FIXTURE"
+    },
+    {
+      "symbol": "KMG.ElementalRaces.CharacterTraits.Whiteout.Feature",
+      "guid": "7aa5dc9716e4437daa8e00506f6ddd83",
+      "type": "BlueprintFeature",
+      "stable": true,
+      "registered": true,
+      "visible": true,
+      "iconConsumer": true,
+      "hidden": false,
+      "ordinarySelection": true,
+      "ordinaryAcquisition": "correct-race Favored Class racial_traits",
+      "saveIdentityStable": true,
+      "saveLoadQualification": "BLOCKED-PERSISTENCE-FIXTURE"
+    },
+    {
+      "symbol": "KMG.ElementalRaces.CharacterTraits.Whiteout.ProviderBuff",
+      "guid": "901f9f54462846149cf7fb24ec04a5a5",
+      "type": "BlueprintBuff",
+      "stable": true,
+      "registered": true,
+      "visible": false,
+      "iconConsumer": false,
+      "hidden": true,
+      "ordinarySelection": false,
+      "ordinaryAcquisition": "owned feature graph only",
+      "saveIdentityStable": true,
+      "saveLoadQualification": "BLOCKED-PERSISTENCE-FIXTURE"
+    }
+  ],
+  "publication": {
+    "traitsRegistered": true,
+    "traitsConditionallyPublished": true,
+    "selectionGuid": "331ed3c4a988415785f71a37b826d0f1",
+    "selectionField": "racial_traits",
+    "selectionName": "RacialTrait",
+    "allFourAtomic": true,
+    "visibleConsumerCount": 5,
+    "hiddenNodeCount": 6,
+    "localizationKeys": 8,
+    "raceMapping": {
+      "FieryGlare": "Ifrit",
+      "StoicDignity": "Oread",
+      "AerialObserver": "Sylph",
+      "Whiteout": "Undine"
+    },
+    "exactRacePrerequisites": true,
+    "nativeNoFeatureSelf": true,
+    "prerequisiteGroup": "All",
+    "canonicalResolution": "complete-or-absent; exact reference/type/component validation",
+    "moduleTransition": "native instance event; exact recorded owned fact removed/rebuilt; foreign fact preserved",
+    "favoredClassTraitsSetting": "immutable startup-loaded enable_traits; fresh-process setting changes; paused OFF control uses exact request-local settings copy and getter, never a GUI/configuration write",
+    "respec": "exact feature-removal cleanup proven; saved-character respec reconstruction not qualified",
+    "persistence": "BLOCKED-PERSISTENCE-FIXTURE"
+  },
+  "runtime": {
+    "freshProcessCount": 8,
+    "assertionTotal": 291,
+    "sameExactArtifact": true,
+    "whiteoutConsecutivePasses": 2,
+    "saveWrites": 0,
+    "rawSaveOperations": 0,
+    "baselineTouched": false,
+    "saveTransactionStarted": false,
+    "exactLiveRestorationCount": 8,
+    "leaseCompletedCount": 8,
+    "capturedLiveTreeSha256": "6ab46591e2046b036d2052db757b6a75db186055936ca1d075ce4445456db58d",
+    "weatherRestoration": "per-area exact native fields/controller/listeners before leaving mansion and before exiting Oleg",
+    "nonPartySceneReferenceRestorationRequired": false,
+    "disposableNoSaveProcessIsolation": true,
+    "runs": [
+      {
+        "scenario": "observe-published-elemental-character-traits",
+        "status": "PASS",
+        "runId": "20261006T1941085100966Z-3ebbbbd71a4c4e8c9c640f720132fd0b",
+        "processId": 36756,
+        "assertionCount": 38,
+        "startedAtUtc": "2026-10-06T19:41:15.3329857Z",
+        "endedAtUtc": "2026-10-06T19:42:01.7370414Z",
+        "evidenceId": "20261006T1941084970994Z-observe-published-elemental-character-traits",
+        "receipt": "artifacts/mission/runtime-transaction-20261006T1940490597844Z.json",
+        "receiptSha256": "f8b9d8b874481a089c29b03635f6291c1f5edb44f2200bfbd869ab72f4f62834",
+        "leaseId": "runtime-20261006T194049Z-874a668c6b204c718ba3718245962780",
+        "leaseStatus": "Completed",
+        "backupIdentity": "20261006T1940493933678Z",
+        "deploymentIdentity": "20261006T1941069895366Z",
+        "liveFileCount": 254,
+        "liveDirectoryCount": 7,
+        "capturedLiveTreeSha256": "6ab46591e2046b036d2052db757b6a75db186055936ca1d075ce4445456db58d",
+        "exactLiveTreeRestored": true,
+        "saveWrites": 0,
+        "readOnlyWorkingSaveLoader": true,
+        "saveWritingApiObserved": false,
+        "noSaveArchitecture": false,
+        "requestHooksRemoved": true,
+        "diagnostics": [
+          "mainThreadManagedId=1",
+          "FavoredClassEnableTraits=IMMUTABLE_LOADED_SETTING; OFF control=request-local MemberwiseClone with exact getter/backing-field contract; original settings object and file untouched; no live host GUI transition claimed."
+        ],
+        "assertions": [
+          {
+            "name": "race-trait-published-eleven-canonical",
+            "observed": "eleven canonical manifest-owned resolutions",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-published-four-only-racial-traits",
+            "observed": "correct Favored Class selection; no hidden choice",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-published-race-0-trait-0",
+            "observed": "exact native host PrerequisiteRace and native duplicate prerequisite",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-published-race-0-trait-1",
+            "observed": "exact native host PrerequisiteRace and native duplicate prerequisite",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-published-race-0-trait-2",
+            "observed": "exact native host PrerequisiteRace and native duplicate prerequisite",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-published-race-0-trait-3",
+            "observed": "exact native host PrerequisiteRace and native duplicate prerequisite",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-published-native-character-selection-0",
+            "observed": "native level-one trait state and SelectFeature; preview only, no permanent player commit",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-published-duplicate-0",
+            "observed": "selected preview owns the stable feature; native duplicate prerequisite rejects it",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-published-ui-resolution-0",
+            "observed": "localized name/description and exact 128 sprite; aesthetic approval not recorded",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-published-race-1-trait-0",
+            "observed": "exact native host PrerequisiteRace and native duplicate prerequisite",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-published-race-1-trait-1",
+            "observed": "exact native host PrerequisiteRace and native duplicate prerequisite",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-published-race-1-trait-2",
+            "observed": "exact native host PrerequisiteRace and native duplicate prerequisite",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-published-race-1-trait-3",
+            "observed": "exact native host PrerequisiteRace and native duplicate prerequisite",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-published-native-character-selection-1",
+            "observed": "native level-one trait state and SelectFeature; preview only, no permanent player commit",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-published-duplicate-1",
+            "observed": "selected preview owns the stable feature; native duplicate prerequisite rejects it",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-published-ui-resolution-1",
+            "observed": "localized name/description and exact 128 sprite; aesthetic approval not recorded",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-published-race-2-trait-0",
+            "observed": "exact native host PrerequisiteRace and native duplicate prerequisite",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-published-race-2-trait-1",
+            "observed": "exact native host PrerequisiteRace and native duplicate prerequisite",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-published-race-2-trait-2",
+            "observed": "exact native host PrerequisiteRace and native duplicate prerequisite",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-published-race-2-trait-3",
+            "observed": "exact native host PrerequisiteRace and native duplicate prerequisite",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-published-native-character-selection-2",
+            "observed": "native level-one trait state and SelectFeature; preview only, no permanent player commit",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-published-duplicate-2",
+            "observed": "selected preview owns the stable feature; native duplicate prerequisite rejects it",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-published-ui-resolution-2",
+            "observed": "localized name/description and exact 128 sprite; aesthetic approval not recorded",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-published-race-3-trait-0",
+            "observed": "exact native host PrerequisiteRace and native duplicate prerequisite",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-published-race-3-trait-1",
+            "observed": "exact native host PrerequisiteRace and native duplicate prerequisite",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-published-race-3-trait-2",
+            "observed": "exact native host PrerequisiteRace and native duplicate prerequisite",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-published-race-3-trait-3",
+            "observed": "exact native host PrerequisiteRace and native duplicate prerequisite",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-published-native-character-selection-3",
+            "observed": "native level-one trait state and SelectFeature; preview only, no permanent player commit",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-published-duplicate-3",
+            "observed": "selected preview owns the stable feature; native duplicate prerequisite rejects it",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-published-ui-resolution-3",
+            "observed": "localized name/description and exact 128 sprite; aesthetic approval not recorded",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-published-active-toggle-control",
+            "observed": "published toggle owns one exact activation buff before any settings change",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-published-traits-off-acquisition-only",
+            "observed": "exact immutable native getter on request-local OFF settings copy; no original object/file mutation or GUI/save callback; existing mechanics remain",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-published-traits-on-canonical-reuse",
+            "observed": "all-four acquisition restored with exact original canonical graph and grants",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-published-module-off-immediate",
+            "observed": "exact notification withdraws only owned acquisition/providers; stable IDs and foreign grant remain",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-published-module-on-one",
+            "observed": "one rebuilt owned grant per feature; Fiery begins off again; canonical graph reused and foreign facts preserved",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-published-repeated-initialization",
+            "observed": "no repeated registration/grant/selection",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-published-feature-removal-exact",
+            "observed": "remove feature through exact native fact collection; its foreign same-blueprint provider remains",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-published-fixture-cleanup",
+            "observed": "exact preexisting scene/party/facts/time/selection; no save writes; request-local preview and actors removed",
+            "status": "PASS"
+          }
+        ]
+      },
+      {
+        "scenario": "observe-firearm-descriptions",
+        "status": "PASS",
+        "runId": "20261006T1944393671357Z-661ab4bca26d4273936d2d737fbd751d",
+        "processId": 38900,
+        "assertionCount": 8,
+        "startedAtUtc": "2026-10-06T19:44:46.1541992Z",
+        "endedAtUtc": "2026-10-06T19:45:17.9005572Z",
+        "evidenceId": "20261006T1944393540098Z-observe-firearm-descriptions",
+        "receipt": "artifacts/mission/runtime-transaction-20261006T1944187674930Z.json",
+        "receiptSha256": "8a7dd8cdeac3122c29b6088d38e98e4f71dca7873f94ba0499cb90c3e18547b7",
+        "leaseId": "runtime-20261006T194418Z-23b35108ae6947a8a65bdad1ea762f9c",
+        "leaseStatus": "Completed",
+        "backupIdentity": "20261006T1944191120827Z",
+        "deploymentIdentity": "20261006T1944378821799Z",
+        "liveFileCount": 254,
+        "liveDirectoryCount": 7,
+        "capturedLiveTreeSha256": "6ab46591e2046b036d2052db757b6a75db186055936ca1d075ce4445456db58d",
+        "exactLiveTreeRestored": true,
+        "saveWrites": 0,
+        "readOnlyWorkingSaveLoader": false,
+        "saveWritingApiObserved": null,
+        "noSaveArchitecture": true,
+        "requestHooksRemoved": null,
+        "diagnostics": [
+          "mainThreadManagedId=1",
+          "HumanTooltipReview=NOT_PERFORMED; read-only registered blueprint/localization getters; no save required, UI input, fixture mutation or save-writing call"
+        ],
+        "assertions": [
+          {
+            "name": "pistol-resolved-description",
+            "observed": "This firearm fires lead balls driven by black powder. It can misfire, and it must be reloaded to fire again. Attacks with this firearm are resolved against touch AC out to 20 ft. (its first range increment), and against normal AC at greater distances.",
+            "status": "PASS"
+          },
+          {
+            "name": "pistol-spacing-punctuation",
+            "observed": "This firearm fires lead balls driven by black powder. It can misfire, and it must be reloaded to fire again. Attacks with this firearm are resolved against touch AC out to 20 ft. (its first range increment), and against normal AC at greater distances.",
+            "status": "PASS"
+          },
+          {
+            "name": "blunderbuss-resolved-description",
+            "observed": "This firearm fires lead balls driven by black powder, or pellets in a 15-foot cone with Scatter Shot. It can misfire, and it must be reloaded to fire again. Attacks with a lead ball are resolved against touch AC out to 10 ft. (its first range increment), and against normal AC at greater distances.",
+            "status": "PASS"
+          },
+          {
+            "name": "blunderbuss-spacing-punctuation",
+            "observed": "This firearm fires lead balls driven by black powder, or pellets in a 15-foot cone with Scatter Shot. It can misfire, and it must be reloaded to fire again. Attacks with a lead ball are resolved against touch AC out to 10 ft. (its first range increment), and against normal AC at greater distances.",
+            "status": "PASS"
+          },
+          {
+            "name": "last-word-resolved-description",
+            "observed": "This weapon's misfire value is 1 lower than it would otherwise be, to a minimum of 0. A natural 1 still misses. This weapon's attacks ignore the miss chance from concealment. It grants no ability to see or target creatures the wielder could not otherwise target, and other defenses still apply. Attacks with this firearm are resolved against touch AC out to 20 ft. (its first range increment), and against normal AC at greater distances.",
+            "status": "PASS"
+          },
+          {
+            "name": "last-word-spacing-punctuation",
+            "observed": "This weapon's misfire value is 1 lower than it would otherwise be, to a minimum of 0. A natural 1 still misses. This weapon's attacks ignore the miss chance from concealment. It grants no ability to see or target creatures the wielder could not otherwise target, and other defenses still apply. Attacks with this firearm are resolved against touch AC out to 20 ft. (its first range increment), and against normal AC at greater distances.",
+            "status": "PASS"
+          },
+          {
+            "name": "last-word-complete-properties-once",
+            "observed": "This weapon's misfire value is 1 lower than it would otherwise be, to a minimum of 0. A natural 1 still misses. This weapon's attacks ignore the miss chance from concealment. It grants no ability to see or target creatures the wielder could not otherwise target, and other defenses still apply. Attacks with this firearm are resolved against touch AC out to 20 ft. (its first range increment), and against normal AC at greater distances.",
+            "status": "PASS"
+          },
+          {
+            "name": "blunderbuss-lead-ball-attack-scope",
+            "observed": "This firearm fires lead balls driven by black powder, or pellets in a 15-foot cone with Scatter Shot. It can misfire, and it must be reloaded to fire again. Attacks with a lead ball are resolved against touch AC out to 10 ft. (its first range increment), and against normal AC at greater distances.",
+            "status": "PASS"
+          }
+        ]
+      },
+      {
+        "scenario": "observe-model-d-vendors",
+        "status": "PASS",
+        "runId": "20261006T1945524113896Z-4db9293f2daf4ed8bec1248c644d30f8",
+        "processId": 36592,
+        "assertionCount": 26,
+        "startedAtUtc": "2026-10-06T19:45:59.1238683Z",
+        "endedAtUtc": "2026-10-06T19:46:30.6823733Z",
+        "evidenceId": "20261006T1945523684024Z-observe-model-d-vendors",
+        "receipt": "artifacts/mission/runtime-transaction-20261006T1945326079610Z.json",
+        "receiptSha256": "6284837cea040f3482c148f9275ed1b81a92144979350a68060f8069b1279735",
+        "leaseId": "runtime-20261006T194532Z-25feced597f748f99d342bcd069f312a",
+        "leaseStatus": "Completed",
+        "backupIdentity": "20261006T1945329386001Z",
+        "deploymentIdentity": "20261006T1945508692042Z",
+        "liveFileCount": 254,
+        "liveDirectoryCount": 7,
+        "capturedLiveTreeSha256": "6ab46591e2046b036d2052db757b6a75db186055936ca1d075ce4445456db58d",
+        "exactLiveTreeRestored": true,
+        "saveWrites": 0,
+        "readOnlyWorkingSaveLoader": false,
+        "saveWritingApiObserved": null,
+        "noSaveArchitecture": true,
+        "requestHooksRemoved": null,
+        "diagnostics": [
+          "mainThreadManagedId=1",
+          "Model D fixed stock can deplete; native table regeneration is not guaranteed. No save, UI input, merchant navigation, inventory mutation or renewable supply is involved."
+        ],
+        "assertions": [
+          {
+            "name": "model-d-oleg",
+            "observed": "table=f720440559fc00949900bfa1575196ac:C11_OlegVendorTable;rows=a303d71d244640959827e9464df5a867:KMG_EarlyPistol_Item*1|6c9cdfa2d47e4894847fa85d5319fbd2:KMG_EarlyMusket_Item*1|236f3e167f5542bcac22bca72046fb1f:KMG_EarlyBlunderbuss_Item*1|ea966bf998a647cf97b0ed92f71c4b7d:KMG_BlackPowderCharge_Item*50|55c29771445947d685dba9e1ead46a42:KMG_LeadBall_Item*50",
+            "status": "PASS"
+          },
+          {
+            "name": "model-d-capital",
+            "observed": "table=7de959347266092448d8a72089ef9778:SmithVendorTable;rows=d0145d0410a34df08d68a67367c1dfc9:KMG_PistolPlus1_Item*1|3402fe01de1648b187c192500e370f01:KMG_MusketPlus1_Item*1|1dc7efe0792040f187a18adfdc54c6e0:KMG_BlunderbussPlus1_Item*1|ea966bf998a647cf97b0ed92f71c4b7d:KMG_BlackPowderCharge_Item*200|55c29771445947d685dba9e1ead46a42:KMG_LeadBall_Item*200|fea7337cfd06417a853546af9d950f77:KMG_PaperCartridge_Item*200|d52aacb753434691b1ed85a16cc87104:KMG_GunsmithKit_Item*1",
+            "status": "PASS"
+          },
+          {
+            "name": "model-d-bokken",
+            "observed": "table=4778ecb5df5d48742b9be5a204ed4657:C11_BokkenVendorTable;rows=ea966bf998a647cf97b0ed92f71c4b7d:KMG_BlackPowderCharge_Item*100|55c29771445947d685dba9e1ead46a42:KMG_LeadBall_Item*100|fea7337cfd06417a853546af9d950f77:KMG_PaperCartridge_Item*100",
+            "status": "PASS"
+          },
+          {
+            "name": "model-d-regional-eastern",
+            "observed": "table=f072a8f6889b5f345b7f4e7c74cb3e4c:DireNarlmarchesVillageVendorTable;rows=b61ee7e62bc9288004eb0121c8f5d37e:KMG_EasternWeapons_Wakizashi_Item*1|58fd0f272f4523458016dc3656b778c3:KMG_EasternWeapons_Wakizashi_Masterwork_Item*1|1aa01a0528eb595b5cbf19ac7c71a64e:KMG_EasternWeapons_Wakizashi_ColdIron_Item*1|83a507873a518b54793d0da632def246:KMG_EasternWeapons_Wakizashi_Plus1_Item*1|aba40a9e8302b31e4daa2acf6ab48a46:KMG_EasternWeapons_Katana_Item*1|37e8c76b2fc196e9f82e1196e918263c:KMG_EasternWeapons_Katana_Masterwork_Item*1|599f8f45f325911ffcbdbd6544ba114f:KMG_EasternWeapons_Katana_ColdIron_Item*1|87b3d851726a4a9abd0baec6beca957c:KMG_EasternWeapons_Katana_Plus1_Item*1|35b7082d98ff45ba51dce536a1bc68a1:KMG_EasternWeapons_Nodachi_Item*1|df5a3b333eab59c04028d88084d7ada9:KMG_EasternWeapons_Nodachi_Masterwork_Item*1|0db026048052031be931b9701b3859ef:KMG_EasternWeapons_Nodachi_ColdIron_Item*1|38e31ba5cdbdc668f8dcd8985070c0b7:KMG_EasternWeapons_Nodachi_Plus1_Item*1",
+            "status": "PASS"
+          },
+          {
+            "name": "model-d-regional-spear",
+            "observed": "table=f072a8f6889b5f345b7f4e7c74cb3e4c:DireNarlmarchesVillageVendorTable;rows=6edc216d68810960f85417237748b042:KMG_ElvenBranchedSpear_Item*1|9c9edabf91f2117fd1b642c4d39b9574:KMG_MasterworkElvenBranchedSpear_Item*1|8c0de00a236fe0f532d31711dcaa00a2:KMG_ColdIronElvenBranchedSpear_Item*1|b16c34215cae9d60345042157149a4c0:KMG_MasterworkColdIronElvenBranchedSpear_Item*1|66111becd22690a2a19444a5c6bd0c7b:KMG_ElvenBranchedSpearPlus1_Item*1|25d8f6c6f4767b3168f4700a2890954f:KMG_ColdIronElvenBranchedSpearPlus1_Item*1",
+            "status": "PASS"
+          },
+          {
+            "name": "model-d-oleg-eastern-preserved",
+            "observed": "table=f720440559fc00949900bfa1575196ac:C11_OlegVendorTable;rows=b61ee7e62bc9288004eb0121c8f5d37e:KMG_EasternWeapons_Wakizashi_Item*1|58fd0f272f4523458016dc3656b778c3:KMG_EasternWeapons_Wakizashi_Masterwork_Item*1|aba40a9e8302b31e4daa2acf6ab48a46:KMG_EasternWeapons_Katana_Item*1|37e8c76b2fc196e9f82e1196e918263c:KMG_EasternWeapons_Katana_Masterwork_Item*1|35b7082d98ff45ba51dce536a1bc68a1:KMG_EasternWeapons_Nodachi_Item*1|df5a3b333eab59c04028d88084d7ada9:KMG_EasternWeapons_Nodachi_Masterwork_Item*1",
+            "status": "PASS"
+          },
+          {
+            "name": "model-d-oleg-spear-preserved",
+            "observed": "table=f720440559fc00949900bfa1575196ac:C11_OlegVendorTable;rows=6edc216d68810960f85417237748b042:KMG_ElvenBranchedSpear_Item*1|9c9edabf91f2117fd1b642c4d39b9574:KMG_MasterworkElvenBranchedSpear_Item*1|8c0de00a236fe0f532d31711dcaa00a2:KMG_ColdIronElvenBranchedSpear_Item*1|b16c34215cae9d60345042157149a4c0:KMG_MasterworkColdIronElvenBranchedSpear_Item*1",
+            "status": "PASS"
+          },
+          {
+            "name": "model-d-pitax-eastern-preserved",
+            "observed": "table=e5ab1fccf37c55f41a20a80c6ba6a460:PitaxTownVendorTable;rows=b61ee7e62bc9288004eb0121c8f5d37e:KMG_EasternWeapons_Wakizashi_Item*1|58fd0f272f4523458016dc3656b778c3:KMG_EasternWeapons_Wakizashi_Masterwork_Item*1|1aa01a0528eb595b5cbf19ac7c71a64e:KMG_EasternWeapons_Wakizashi_ColdIron_Item*1|83a507873a518b54793d0da632def246:KMG_EasternWeapons_Wakizashi_Plus1_Item*1|aba40a9e8302b31e4daa2acf6ab48a46:KMG_EasternWeapons_Katana_Item*1|37e8c76b2fc196e9f82e1196e918263c:KMG_EasternWeapons_Katana_Masterwork_Item*1|599f8f45f325911ffcbdbd6544ba114f:KMG_EasternWeapons_Katana_ColdIron_Item*1|87b3d851726a4a9abd0baec6beca957c:KMG_EasternWeapons_Katana_Plus1_Item*1|35b7082d98ff45ba51dce536a1bc68a1:KMG_EasternWeapons_Nodachi_Item*1|df5a3b333eab59c04028d88084d7ada9:KMG_EasternWeapons_Nodachi_Masterwork_Item*1|0db026048052031be931b9701b3859ef:KMG_EasternWeapons_Nodachi_ColdIron_Item*1|38e31ba5cdbdc668f8dcd8985070c0b7:KMG_EasternWeapons_Nodachi_Plus1_Item*1",
+            "status": "PASS"
+          },
+          {
+            "name": "model-d-pitax-spear-preserved",
+            "observed": "table=e5ab1fccf37c55f41a20a80c6ba6a460:PitaxTownVendorTable;rows=6edc216d68810960f85417237748b042:KMG_ElvenBranchedSpear_Item*1|9c9edabf91f2117fd1b642c4d39b9574:KMG_MasterworkElvenBranchedSpear_Item*1|8c0de00a236fe0f532d31711dcaa00a2:KMG_ColdIronElvenBranchedSpear_Item*1|b16c34215cae9d60345042157149a4c0:KMG_MasterworkColdIronElvenBranchedSpear_Item*1|66111becd22690a2a19444a5c6bd0c7b:KMG_ElvenBranchedSpearPlus1_Item*1|25d8f6c6f4767b3168f4700a2890954f:KMG_ColdIronElvenBranchedSpearPlus1_Item*1",
+            "status": "PASS"
+          },
+          {
+            "name": "model-d-repeat-initialization",
+            "observed": "oleg=False;capital=False;bokken=False",
+            "status": "PASS"
+          },
+          {
+            "name": "oleg-migration-old-shape",
+            "observed": "before=8;after=7",
+            "status": "PASS"
+          },
+          {
+            "name": "oleg-migration-preserves-native-foreign",
+            "observed": "retained=2",
+            "status": "PASS"
+          },
+          {
+            "name": "oleg-migration-idempotent",
+            "observed": "changed=False",
+            "status": "PASS"
+          },
+          {
+            "name": "oleg-migration-module-off",
+            "observed": "rows=2",
+            "status": "PASS"
+          },
+          {
+            "name": "oleg-migration-rollback",
+            "observed": "rows=8",
+            "status": "PASS"
+          },
+          {
+            "name": "capital-migration-old-shape",
+            "observed": "before=30;after=9",
+            "status": "PASS"
+          },
+          {
+            "name": "capital-migration-preserves-native-foreign",
+            "observed": "retained=2",
+            "status": "PASS"
+          },
+          {
+            "name": "capital-migration-idempotent",
+            "observed": "changed=False",
+            "status": "PASS"
+          },
+          {
+            "name": "capital-migration-module-off",
+            "observed": "rows=2",
+            "status": "PASS"
+          },
+          {
+            "name": "capital-migration-rollback",
+            "observed": "rows=30",
+            "status": "PASS"
+          },
+          {
+            "name": "bokken-migration-old-shape",
+            "observed": "before=6;after=5",
+            "status": "PASS"
+          },
+          {
+            "name": "bokken-migration-preserves-native-foreign",
+            "observed": "retained=2",
+            "status": "PASS"
+          },
+          {
+            "name": "bokken-migration-idempotent",
+            "observed": "changed=False",
+            "status": "PASS"
+          },
+          {
+            "name": "bokken-migration-module-off",
+            "observed": "rows=2",
+            "status": "PASS"
+          },
+          {
+            "name": "bokken-migration-rollback",
+            "observed": "rows=6",
+            "status": "PASS"
+          },
+          {
+            "name": "model-d-detached-fixture-cleanup",
+            "observed": "no registered-table mutation, inventory access or save load",
+            "status": "PASS"
+          }
+        ]
+      },
+      {
+        "scenario": "observe-unpublished-race-trait-foundations",
+        "status": "PASS",
+        "runId": "20261006T1947054829256Z-879a4c232df1478bba99321e8196953a",
+        "processId": 7440,
+        "assertionCount": 49,
+        "startedAtUtc": "2026-10-06T19:47:12.1870730Z",
+        "endedAtUtc": "2026-10-06T19:47:57.8130903Z",
+        "evidenceId": "20261006T1947054388631Z-observe-unpublished-race-trait-foundations",
+        "receipt": "artifacts/mission/runtime-transaction-20261006T1946456892701Z.json",
+        "receiptSha256": "d72839349d08e9b67004c4dfb0381c166d0c5c70def0f083e7cfd5335a3c85c0",
+        "leaseId": "runtime-20261006T194645Z-ae8dd7a979204f649bed4d7bd67ac32b",
+        "leaseStatus": "Completed",
+        "backupIdentity": "20261006T1946460227368Z",
+        "deploymentIdentity": "20261006T1947038642591Z",
+        "liveFileCount": 254,
+        "liveDirectoryCount": 7,
+        "capturedLiveTreeSha256": "6ab46591e2046b036d2052db757b6a75db186055936ca1d075ce4445456db58d",
+        "exactLiveTreeRestored": true,
+        "saveWrites": 0,
+        "readOnlyWorkingSaveLoader": true,
+        "saveWritingApiObserved": false,
+        "noSaveArchitecture": false,
+        "requestHooksRemoved": true,
+        "diagnostics": [
+          "mainThreadManagedId=1"
+        ],
+        "assertions": [
+          {
+            "name": "race-trait-fixture-hostility",
+            "observed": "exact native ally/enemy relationships",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-fiery-absent",
+            "observed": "d20=17",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-fiery-off-default",
+            "observed": "default off; d20=17",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-fiery-take10-success",
+            "observed": "d20=10",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-fiery-roll-on-take10-failure",
+            "observed": "d20=17;native fallback to roll",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-fiery-unaffected-CheckBluff",
+            "observed": "d20=17",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-fiery-unaffected-CheckDiplomacy",
+            "observed": "d20=17",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-fiery-unaffected-SkillPersuasion",
+            "observed": "d20=17",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-fiery-unaffected-SkillUseMagicDevice",
+            "observed": "d20=17",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-fiery-unaffected-SkillPerception",
+            "observed": "d20=17",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-fiery-independent-units",
+            "observed": "unrelated actor unaffected",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-fiery-free-activation",
+            "observed": "native immediate toggle; Free contract; no resource component or queued action",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-fiery-combat",
+            "observed": "native combat flag and CheckIntimidate",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-fiery-repeat-one-component",
+            "observed": "one native buff and one stat-specific subscriber after repeated off/on",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-fiery-deactivation",
+            "observed": "d20=17;take10=False;buffCount=0",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-fiery-fact-cleanup",
+            "observed": "transient toggle removed",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-fiery-contract-fails-closed",
+            "observed": "wrong exact native type rejected before graph construction",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-stoic-contract-fails-closed",
+            "observed": "wrong exact context type rejected before construction; no fallback handler",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-stoic-self-trait",
+            "observed": "self +1; no own aura recipient",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-stoic-ally-nine-feet",
+            "observed": "native recipient and save +1",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-stoic-enemy",
+            "observed": "enemy within range excluded",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-stoic-nonmind",
+            "observed": "non-mind-affecting control",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-stoic-same-ability",
+            "observed": "active Charm A suppresses only incoming A",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-stoic-unrelated-charm-fear",
+            "observed": "active Charm A does not suppress Fear B",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-stoic-same-buff",
+            "observed": "exact incoming buff identity",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-stoic-different-caster-same-ability",
+            "observed": "effect-blueprint policy independent of caster",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-stoic-ambiguous-grants",
+            "observed": "known descriptor but no effect identity grants",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-stoic-distinct-buff-same-source",
+            "observed": "different known effect stronger than shared ability",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-stoic-explicit-parent",
+            "observed": "explicit child-to-active-source parent lineage",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-stoic-no-cleanse-or-immunity",
+            "observed": "effect references, duration and active state intact; no automatic save pass",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-stoic-unrelated-fear-charm",
+            "observed": "active Fear B does not suppress Charm A",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-stoic-unconscious-save-time",
+            "observed": "native life=Unconscious;ally=0;self=0;before area refresh",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-stoic-dead-save-time",
+            "observed": "native dead holder gives neither self nor ally bonus",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-stoic-conscious-again",
+            "observed": "later save benefits without periodic scan",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-stoic-outside-save-time",
+            "observed": "11 feet excluded even before stale aura reconciliation",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-stoic-recipient-exit",
+            "observed": "native area exit removed its recipient",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-stoic-recipient-reentry",
+            "observed": "native reentry restored exactly one recipient",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-stoic-moving-holder-exit",
+            "observed": "moving native attached aura removed distant ally recipient",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-stoic-moving-holder-return",
+            "observed": "attached area followed holder back exactly once",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-stoic-two-morale-providers",
+            "observed": "two real recipient facts; native morale maximum +1",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-stoic-foreign-morale",
+            "observed": "foreign +2 morale wins; no additive +3",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-stoic-self-and-foreign-aura",
+            "observed": "self trait and OTHER holder's morale stack, never own morale",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-stoic-foreign-trait",
+            "observed": "foreign +2 trait wins plus foreign +1 morale",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-stoic-replay-once",
+            "observed": "request-local duplicate delivery of same native save rule; deliveries=4",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-stoic-area-deactivation",
+            "observed": "native provider/area/recipient cleanup",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-stoic-absent-after-cleanup",
+            "observed": "no foundation no modifier",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-no-registry-publication",
+            "observed": "both library indexes restored exactly; only the request-local area lookup was temporarily cached; no ordinary bootstrap reachability",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-no-icons",
+            "observed": "canonical visible toggle icon; hidden production buffs have no independent icon",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-fixture-exact-cleanup",
+            "observed": "original unit/area/party/buff references preserved; all disposable entities removed; no save writes",
+            "status": "PASS"
+          }
+        ]
+      },
+      {
+        "scenario": "observe-unpublished-aerial-observer-foundation",
+        "status": "PASS",
+        "runId": "20261006T1948320543511Z-546d2f79c14c49ff94cba2b227d7031f",
+        "processId": 34580,
+        "assertionCount": 29,
+        "startedAtUtc": "2026-10-06T19:48:38.6615017Z",
+        "endedAtUtc": "2026-10-06T19:49:24.8020058Z",
+        "evidenceId": "20261006T1948320104374Z-observe-unpublished-aerial-observer-foundation",
+        "receipt": "artifacts/mission/runtime-transaction-20261006T1948123425735Z.json",
+        "receiptSha256": "65f23008df265c50776d9352df2f66302bf83e4a4b063487adee1b1b7fe03610",
+        "leaseId": "runtime-20261006T194812Z-d7c2b0ab6fca4420b487a1ad77a3a1cd",
+        "leaseStatus": "Completed",
+        "backupIdentity": "20261006T1948126730897Z",
+        "deploymentIdentity": "20261006T1948304281421Z",
+        "liveFileCount": 254,
+        "liveDirectoryCount": 7,
+        "capturedLiveTreeSha256": "6ab46591e2046b036d2052db757b6a75db186055936ca1d075ce4445456db58d",
+        "exactLiveTreeRestored": true,
+        "saveWrites": 0,
+        "readOnlyWorkingSaveLoader": true,
+        "saveWritingApiObserved": false,
+        "noSaveArchitecture": false,
+        "requestHooksRemoved": true,
+        "diagnostics": [
+          "mainThreadManagedId=1"
+        ],
+        "assertions": [
+          {
+            "name": "race-trait-aerial-exact-carrier-contract",
+            "observed": "canonical released flight buff with all three native mechanical components",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-aerial-absent",
+            "observed": "ordinary native Perception without the foundation",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-aerial-flight-without-foundation",
+            "observed": "flight alone supplies no Perception bonus",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-aerial-grounded",
+            "observed": "active and cached native grounded controls",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-aerial-visual-height-only",
+            "observed": "request-owned FlyHeight alone does not establish mechanical flight; no movement controller is changed",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-aerial-native-flight-state",
+            "observed": "real native flight fact activates the mechanical terrain-immunity state",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-aerial-passive-stat-consumers",
+            "observed": "actual native passive Perception lambdas consume +2 before any skill rule; no discovery/radius controller is ticked",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-aerial-active-perception",
+            "observed": "native RuleSkillCheck stat=2;base=0",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-aerial-cached-perception",
+            "observed": "real RuleCachedPerceptionCheck uses the same +2 Trait stat resolution",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-aerial-rule-cleanup",
+            "observed": "one event-maintained Trait modifier survives rules; neither rule adds a second modifier",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-aerial-other-skill",
+            "observed": "native Stealth remains unchanged while flight is active",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-aerial-independent-units",
+            "observed": "the second foundation holder is grounded and receives no bonus",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-aerial-foreign-lesser-trait",
+            "observed": "native +1 Trait is replaced by the effective +2, not summed",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-aerial-foreign-greater-trait",
+            "observed": "native +3 Trait wins over the foundation's +2",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-aerial-foreign-distinct-descriptor",
+            "observed": "different native descriptor adds normally",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-aerial-duplicate-native-trait",
+            "observed": "two actual providers still yield one effective +2 Trait",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-aerial-replay-once-per-provider",
+            "observed": "each of two native provider instances receives replay twice; exact actual modifier count=2",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-aerial-flight-inactive",
+            "observed": "inactive exact carrier does not qualify either native Perception path",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-aerial-flight-reactivated",
+            "observed": "later native reactivation benefits a new rule without polling",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-aerial-native-flight-suppression",
+            "observed": "native exact-buff suppression removes the bonus before raw/cached Perception resolution",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-aerial-native-flight-suppression-release",
+            "observed": "native release reactivates the flight listener and bonus without a rule or polling",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-aerial-flight-removed",
+            "observed": "native flight removal restores grounded active/cached Perception and terrain-immunity baseline",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-aerial-repeated-transitions",
+            "observed": "three native flight grant/remove cycles retain one provider",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-aerial-flight-listener-detached",
+            "observed": "foundation removal detaches only its owned listener and modifier from the still-active native flight fact",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-aerial-provider-removal",
+            "observed": "real mechanical flight after foundation removal supplies no bonus",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-aerial-contract-fails-closed",
+            "observed": "wrong native rule type fails before construction",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-aerial-cloned-carrier-rejected",
+            "observed": "copied name/GUID/components without canonical object identity cannot broaden flight",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-aerial-unregistered-idempotent-builders",
+            "observed": "fresh random request identities only; repeated builders register no blueprint or icon consumer",
+            "status": "PASS"
+          },
+          {
+            "name": "race-trait-aerial-fixture-exact-cleanup",
+            "observed": "original units/positions/areas/party/facts/library/time preserved; disposable actors/facts removed; no save write",
+            "status": "PASS"
+          }
+        ]
+      },
+      {
+        "scenario": "observe-unpublished-whiteout-foundation",
+        "status": "PASS",
+        "runId": "20261006T1950004439702Z-fa250195c9924c46bb0862f8be6391e1",
+        "processId": 36764,
+        "assertionCount": 65,
+        "startedAtUtc": "2026-10-06T19:50:07.1378237Z",
+        "endedAtUtc": "2026-10-06T19:50:59.7334099Z",
+        "evidenceId": "20261006T1950003988228Z-observe-unpublished-whiteout-foundation",
+        "receipt": "artifacts/mission/runtime-transaction-20261006T1949394213054Z.json",
+        "receiptSha256": "f69158e1896c189cd73763f397372cf56367d10315b1bfc7c8ac4f39ea19279f",
+        "leaseId": "runtime-20261006T194939Z-de36b35440be4336b054008b80e97408",
+        "leaseStatus": "Completed",
+        "backupIdentity": "20261006T1949397446575Z",
+        "deploymentIdentity": "20261006T1949587821622Z",
+        "liveFileCount": 254,
+        "liveDirectoryCount": 7,
+        "capturedLiveTreeSha256": "6ab46591e2046b036d2052db757b6a75db186055936ca1d075ce4445456db58d",
+        "exactLiveTreeRestored": true,
+        "saveWrites": 0,
+        "readOnlyWorkingSaveLoader": true,
+        "saveWritingApiObserved": false,
+        "noSaveArchitecture": false,
+        "requestHooksRemoved": true,
+        "diagnostics": [
+          "mainThreadManagedId=1",
+          "One-way disposable no-save mansion to Oleg. Per-area weather and owned fixture cleanup required; no claim of prior NPC reference restoration."
+        ],
+        "assertions": [
+          {
+            "name": "whiteout-indoor-native-touch-stage-eligible",
+            "observed": "request-owned neutral faction bypasses friendly touch AutoHit; registered faction unchanged",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-indoor-provider-independent-owners",
+            "observed": "two native per-fact instances; equal name/copied random GUID on foreign blueprint does not authorize it",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-indoor-exact-seeking-identity",
+            "observed": "canonical Last Word bypass; foreign equal name/copied canonical GUID/marker never bypasses",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-indoor-unmarked-control",
+            "observed": "stageCalls=1;native=True;stageResult=True;active=False;WhiteoutRolls=0;forcedConsumed=0;d100=;nativeConcealment=None:0;attackResult=Hit;attackType=Melee",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-indoor-marked-clear-control",
+            "observed": "stageCalls=1;native=True;stageResult=True;active=False;WhiteoutRolls=0;forcedConsumed=0;d100=;nativeConcealment=None:0;attackResult=Miss;attackType=Melee",
+            "status": "PASS"
+          },
+          {
+            "name": "indoor-mansion-rain-light",
+            "observed": "type=Rain;actual=Light;indoor=True;active=False",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-indoor-weather-state",
+            "observed": "exact native provider event state; indoors=True",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-indoor-rain-marked-indoor-control",
+            "observed": "stageCalls=1;native=True;stageResult=True;active=False;WhiteoutRolls=0;forcedConsumed=0;d100=;nativeConcealment=None:0;attackResult=Hit;attackType=Melee",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-indoor-rain-unmarked-indoor-control",
+            "observed": "stageCalls=1;native=True;stageResult=True;active=False;WhiteoutRolls=0;forcedConsumed=0;d100=;nativeConcealment=None:0;attackResult=Hit;attackType=Melee",
+            "status": "PASS"
+          },
+          {
+            "name": "indoor-mansion-repeat-idempotent",
+            "observed": "transitions=0",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-indoor-event-idempotence",
+            "observed": "two native deliveries; exactly one outdoor activation, zero indoor activation",
+            "status": "PASS"
+          },
+          {
+            "name": "indoor-mansion-snow-light",
+            "observed": "type=Snow;actual=Light;active=False",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-indoor-snow-provider-state",
+            "observed": "real native Snow/Light event reconciles the exact providers",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-indoor-snow-attack",
+            "observed": "stageCalls=1;native=True;stageResult=True;active=False;WhiteoutRolls=0;forcedConsumed=0;d100=;nativeConcealment=None:0;attackResult=CriticalHit;attackType=Melee",
+            "status": "PASS"
+          },
+          {
+            "name": "indoor-mansion-clear",
+            "observed": "Clear;active=False",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-indoor-clear-provider-state",
+            "observed": "native Clear removes every provider's active state",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-indoor-clear-removes-protection",
+            "observed": "stageCalls=1;native=True;stageResult=True;active=False;WhiteoutRolls=0;forcedConsumed=0;d100=;nativeConcealment=None:0;attackResult=Hit;attackType=Melee",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-indoor-exact-weather-handler-delivery",
+            "observed": "all owned native fact components receive exactly five notifications, including per-area rollback",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-indoor-exact-owned-fixture-cleanup",
+            "observed": "same-area native units/facts/positions/combat/party/areas/registry/time/listeners unchanged; owned facts/actors/diagnostics/attack cache removed; zero save writes; cleanupErrors=0",
+            "status": "PASS"
+          },
+          {
+            "name": "indoor-mansion-listener-cleanup",
+            "observed": "restored=True",
+            "status": "PASS"
+          },
+          {
+            "name": "indoor-mansion-native-event-count",
+            "observed": "deliveries=5",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-before-one-way-transition-persistent-controls",
+            "observed": "pass=True",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-native-touch-stage-eligible",
+            "observed": "request-owned neutral faction bypasses friendly touch AutoHit; registered faction unchanged",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-provider-independent-owners",
+            "observed": "two native per-fact instances; equal name/copied random GUID on foreign blueprint does not authorize it",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-exact-seeking-identity",
+            "observed": "canonical Last Word bypass; foreign equal name/copied canonical GUID/marker never bypasses",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-unmarked-control",
+            "observed": "stageCalls=1;native=True;stageResult=True;active=False;WhiteoutRolls=0;forcedConsumed=0;d100=;nativeConcealment=None:0;attackResult=Hit;attackType=Melee",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-marked-clear-control",
+            "observed": "stageCalls=1;native=True;stageResult=True;active=False;WhiteoutRolls=0;forcedConsumed=0;d100=;nativeConcealment=None:0;attackResult=Hit;attackType=Melee",
+            "status": "PASS"
+          },
+          {
+            "name": "outdoor-oleg-rain-light",
+            "observed": "type=Rain;actual=Light;indoor=False;active=True",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-weather-state",
+            "observed": "exact native provider event state; indoors=False",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-melee-10-miss",
+            "observed": "stageCalls=1;native=True;stageResult=False;active=True;WhiteoutRolls=1;forcedConsumed=1;d100=10;nativeConcealment=None:0;attackResult=Concealment;attackType=Melee",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-melee-11-continue",
+            "observed": "stageCalls=1;native=True;stageResult=True;active=True;WhiteoutRolls=1;forcedConsumed=1;d100=11;nativeConcealment=None:0;attackResult=Hit;attackType=Melee",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-native-whiteout-d100",
+            "observed": "stageCalls=1;native=True;stageResult=True;active=True;WhiteoutRolls=1;forcedConsumed=0;d100=95;nativeConcealment=None:0;attackResult=Hit;attackType=Melee",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-native-rng-boundary",
+            "observed": "real native Dice.D100 path; no override; observed=95",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-diagnostic-exact-attack-isolation",
+            "observed": "A forced=10; B native=77; same tuple/thread cannot borrow A's queued decision",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-natural-10-miss",
+            "observed": "stageCalls=1;native=True;stageResult=False;active=True;WhiteoutRolls=1;forcedConsumed=1;d100=10;nativeConcealment=None:0;attackResult=Concealment;attackType=Melee",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-bow-10-miss",
+            "observed": "stageCalls=1;native=True;stageResult=False;active=True;WhiteoutRolls=1;forcedConsumed=1;d100=10;nativeConcealment=None:0;attackResult=Concealment;attackType=Ranged",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-firearm-10-miss",
+            "observed": "stageCalls=1;native=True;stageResult=False;active=True;WhiteoutRolls=1;forcedConsumed=1;d100=10;nativeConcealment=None:0;attackResult=Concealment;attackType=Ranged",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-ray-rangedtouch-10-miss",
+            "observed": "stageCalls=1;native=True;stageResult=False;active=True;WhiteoutRolls=1;forcedConsumed=1;d100=10;nativeConcealment=None:0;attackResult=Concealment;attackType=RangedTouch",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-unmarked-rain-control",
+            "observed": "stageCalls=1;native=True;stageResult=True;active=False;WhiteoutRolls=0;forcedConsumed=0;d100=;nativeConcealment=None:0;attackResult=Hit;attackType=Melee",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-foreign-whiteout-lookalike",
+            "observed": "stageCalls=1;native=True;stageResult=True;active=False;WhiteoutRolls=0;forcedConsumed=0;d100=;nativeConcealment=None:0;attackResult=Hit;attackType=Melee",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-other-attacker-unmarked-control",
+            "observed": "stageCalls=1;native=True;stageResult=True;active=False;WhiteoutRolls=0;forcedConsumed=0;d100=;nativeConcealment=None:0;attackResult=Hit;attackType=Melee",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-second-marked-target-independent",
+            "observed": "stageCalls=1;native=True;stageResult=True;active=True;WhiteoutRolls=1;forcedConsumed=1;d100=11;nativeConcealment=None:0;attackResult=Miss;attackType=Melee",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-replay-one-whiteout-roll",
+            "observed": "stageCalls=3;native=True;stageResult=False;active=True;WhiteoutRolls=1;forcedConsumed=1;d100=10;nativeConcealment=None:0;attackResult=Concealment;attackType=Melee",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-native-20-failure-short-circuit",
+            "observed": "stageCalls=1;native=False;stageResult=False;active=True;WhiteoutRolls=0;forcedConsumed=0;d100=;nativeConcealment=Partial:1;attackResult=Concealment;attackType=Melee",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-native-failure-preserved",
+            "observed": "real native Partial 20% fails before Whiteout; zero roll",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-native-20-success-whiteout-10",
+            "observed": "stageCalls=1;native=True;stageResult=False;active=True;WhiteoutRolls=1;forcedConsumed=1;d100=10;nativeConcealment=Partial:100;attackResult=Concealment;attackType=Melee",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-native-20-success-whiteout-11",
+            "observed": "stageCalls=1;native=True;stageResult=True;active=True;WhiteoutRolls=1;forcedConsumed=1;d100=11;nativeConcealment=Partial:100;attackResult=Hit;attackType=Melee",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-seeking-bypass",
+            "observed": "stageCalls=1;native=True;stageResult=True;active=True;WhiteoutRolls=0;forcedConsumed=0;d100=;nativeConcealment=Partial:1;attackResult=Hit;attackType=Ranged",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-foreign-seeking-not-bypass",
+            "observed": "stageCalls=1;native=True;stageResult=False;active=True;WhiteoutRolls=1;forcedConsumed=1;d100=10;nativeConcealment=Partial:100;attackResult=Concealment;attackType=Ranged",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-ignore-concealment-bypass",
+            "observed": "stageCalls=1;native=True;stageResult=True;active=True;WhiteoutRolls=0;forcedConsumed=0;d100=;nativeConcealment=none:;attackResult=Hit;attackType=Melee",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-native-concealment-unchanged",
+            "observed": "no concealment cleanup/suppression/classification mutation by Whiteout",
+            "status": "PASS"
+          },
+          {
+            "name": "outdoor-oleg-repeat-idempotent",
+            "observed": "transitions=1",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-event-idempotence",
+            "observed": "two native deliveries; exactly one outdoor activation, zero indoor activation",
+            "status": "PASS"
+          },
+          {
+            "name": "outdoor-oleg-snow-light",
+            "observed": "type=Snow;actual=Light;active=True",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-snow-provider-state",
+            "observed": "real native Snow/Light event reconciles the exact providers",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-snow-attack",
+            "observed": "stageCalls=1;native=True;stageResult=False;active=True;WhiteoutRolls=1;forcedConsumed=1;d100=10;nativeConcealment=None:0;attackResult=Concealment;attackType=Melee",
+            "status": "PASS"
+          },
+          {
+            "name": "outdoor-oleg-clear",
+            "observed": "Clear;active=False",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-clear-provider-state",
+            "observed": "native Clear removes every provider's active state",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-clear-removes-protection",
+            "observed": "stageCalls=1;native=True;stageResult=True;active=False;WhiteoutRolls=0;forcedConsumed=0;d100=;nativeConcealment=None:0;attackResult=Hit;attackType=Melee",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-exact-weather-handler-delivery",
+            "observed": "all owned native fact components receive exactly five notifications, including per-area rollback",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-exact-owned-fixture-cleanup",
+            "observed": "same-area native units/facts/positions/combat/party/areas/registry/time/listeners unchanged; owned facts/actors/diagnostics/attack cache removed; zero save writes; cleanupErrors=0",
+            "status": "PASS"
+          },
+          {
+            "name": "outdoor-oleg-listener-cleanup",
+            "observed": "restored=True",
+            "status": "PASS"
+          },
+          {
+            "name": "outdoor-oleg-native-event-count",
+            "observed": "deliveries=5",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-before-process-exit-persistent-controls",
+            "observed": "pass=True",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-process-probe-cleanup",
+            "observed": "subscribed=False",
+            "status": "PASS"
+          }
+        ]
+      },
+      {
+        "scenario": "observe-unpublished-whiteout-foundation",
+        "status": "PASS",
+        "runId": "20261006T1951355784808Z-f641a7651fad4e79834b5940ed390c4c",
+        "processId": 36880,
+        "assertionCount": 65,
+        "startedAtUtc": "2026-10-06T19:51:42.1228966Z",
+        "endedAtUtc": "2026-10-06T19:52:35.2126256Z",
+        "evidenceId": "20261006T1951355353889Z-observe-unpublished-whiteout-foundation",
+        "receipt": "artifacts/mission/runtime-transaction-20261006T1951146186328Z.json",
+        "receiptSha256": "5c6b7a8bbb49d26aea5e0a15c2698b95c2606a5e846ad9490f32e60d1f43839b",
+        "leaseId": "runtime-20261006T195114Z-bbc2505805ed4835830b6c7715af58bf",
+        "leaseStatus": "Completed",
+        "backupIdentity": "20261006T1951149730723Z",
+        "deploymentIdentity": "20261006T1951336677247Z",
+        "liveFileCount": 254,
+        "liveDirectoryCount": 7,
+        "capturedLiveTreeSha256": "6ab46591e2046b036d2052db757b6a75db186055936ca1d075ce4445456db58d",
+        "exactLiveTreeRestored": true,
+        "saveWrites": 0,
+        "readOnlyWorkingSaveLoader": true,
+        "saveWritingApiObserved": false,
+        "noSaveArchitecture": false,
+        "requestHooksRemoved": true,
+        "diagnostics": [
+          "mainThreadManagedId=1",
+          "One-way disposable no-save mansion to Oleg. Per-area weather and owned fixture cleanup required; no claim of prior NPC reference restoration."
+        ],
+        "assertions": [
+          {
+            "name": "whiteout-indoor-native-touch-stage-eligible",
+            "observed": "request-owned neutral faction bypasses friendly touch AutoHit; registered faction unchanged",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-indoor-provider-independent-owners",
+            "observed": "two native per-fact instances; equal name/copied random GUID on foreign blueprint does not authorize it",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-indoor-exact-seeking-identity",
+            "observed": "canonical Last Word bypass; foreign equal name/copied canonical GUID/marker never bypasses",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-indoor-unmarked-control",
+            "observed": "stageCalls=1;native=True;stageResult=True;active=False;WhiteoutRolls=0;forcedConsumed=0;d100=;nativeConcealment=None:0;attackResult=Miss;attackType=Melee",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-indoor-marked-clear-control",
+            "observed": "stageCalls=1;native=True;stageResult=True;active=False;WhiteoutRolls=0;forcedConsumed=0;d100=;nativeConcealment=None:0;attackResult=Hit;attackType=Melee",
+            "status": "PASS"
+          },
+          {
+            "name": "indoor-mansion-rain-light",
+            "observed": "type=Rain;actual=Light;indoor=True;active=False",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-indoor-weather-state",
+            "observed": "exact native provider event state; indoors=True",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-indoor-rain-marked-indoor-control",
+            "observed": "stageCalls=1;native=True;stageResult=True;active=False;WhiteoutRolls=0;forcedConsumed=0;d100=;nativeConcealment=None:0;attackResult=Hit;attackType=Melee",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-indoor-rain-unmarked-indoor-control",
+            "observed": "stageCalls=1;native=True;stageResult=True;active=False;WhiteoutRolls=0;forcedConsumed=0;d100=;nativeConcealment=None:0;attackResult=Hit;attackType=Melee",
+            "status": "PASS"
+          },
+          {
+            "name": "indoor-mansion-repeat-idempotent",
+            "observed": "transitions=0",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-indoor-event-idempotence",
+            "observed": "two native deliveries; exactly one outdoor activation, zero indoor activation",
+            "status": "PASS"
+          },
+          {
+            "name": "indoor-mansion-snow-light",
+            "observed": "type=Snow;actual=Light;active=False",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-indoor-snow-provider-state",
+            "observed": "real native Snow/Light event reconciles the exact providers",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-indoor-snow-attack",
+            "observed": "stageCalls=1;native=True;stageResult=True;active=False;WhiteoutRolls=0;forcedConsumed=0;d100=;nativeConcealment=None:0;attackResult=Hit;attackType=Melee",
+            "status": "PASS"
+          },
+          {
+            "name": "indoor-mansion-clear",
+            "observed": "Clear;active=False",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-indoor-clear-provider-state",
+            "observed": "native Clear removes every provider's active state",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-indoor-clear-removes-protection",
+            "observed": "stageCalls=1;native=True;stageResult=True;active=False;WhiteoutRolls=0;forcedConsumed=0;d100=;nativeConcealment=None:0;attackResult=Hit;attackType=Melee",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-indoor-exact-weather-handler-delivery",
+            "observed": "all owned native fact components receive exactly five notifications, including per-area rollback",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-indoor-exact-owned-fixture-cleanup",
+            "observed": "same-area native units/facts/positions/combat/party/areas/registry/time/listeners unchanged; owned facts/actors/diagnostics/attack cache removed; zero save writes; cleanupErrors=0",
+            "status": "PASS"
+          },
+          {
+            "name": "indoor-mansion-listener-cleanup",
+            "observed": "restored=True",
+            "status": "PASS"
+          },
+          {
+            "name": "indoor-mansion-native-event-count",
+            "observed": "deliveries=5",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-before-one-way-transition-persistent-controls",
+            "observed": "pass=True",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-native-touch-stage-eligible",
+            "observed": "request-owned neutral faction bypasses friendly touch AutoHit; registered faction unchanged",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-provider-independent-owners",
+            "observed": "two native per-fact instances; equal name/copied random GUID on foreign blueprint does not authorize it",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-exact-seeking-identity",
+            "observed": "canonical Last Word bypass; foreign equal name/copied canonical GUID/marker never bypasses",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-unmarked-control",
+            "observed": "stageCalls=1;native=True;stageResult=True;active=False;WhiteoutRolls=0;forcedConsumed=0;d100=;nativeConcealment=None:0;attackResult=CriticalHit;attackType=Melee",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-marked-clear-control",
+            "observed": "stageCalls=1;native=True;stageResult=True;active=False;WhiteoutRolls=0;forcedConsumed=0;d100=;nativeConcealment=None:0;attackResult=Hit;attackType=Melee",
+            "status": "PASS"
+          },
+          {
+            "name": "outdoor-oleg-rain-light",
+            "observed": "type=Rain;actual=Light;indoor=False;active=True",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-weather-state",
+            "observed": "exact native provider event state; indoors=False",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-melee-10-miss",
+            "observed": "stageCalls=1;native=True;stageResult=False;active=True;WhiteoutRolls=1;forcedConsumed=1;d100=10;nativeConcealment=None:0;attackResult=Concealment;attackType=Melee",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-melee-11-continue",
+            "observed": "stageCalls=1;native=True;stageResult=True;active=True;WhiteoutRolls=1;forcedConsumed=1;d100=11;nativeConcealment=None:0;attackResult=Miss;attackType=Melee",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-native-whiteout-d100",
+            "observed": "stageCalls=1;native=True;stageResult=True;active=True;WhiteoutRolls=1;forcedConsumed=0;d100=22;nativeConcealment=None:0;attackResult=Hit;attackType=Melee",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-native-rng-boundary",
+            "observed": "real native Dice.D100 path; no override; observed=22",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-diagnostic-exact-attack-isolation",
+            "observed": "A forced=10; B native=53; same tuple/thread cannot borrow A's queued decision",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-natural-10-miss",
+            "observed": "stageCalls=1;native=True;stageResult=False;active=True;WhiteoutRolls=1;forcedConsumed=1;d100=10;nativeConcealment=None:0;attackResult=Concealment;attackType=Melee",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-bow-10-miss",
+            "observed": "stageCalls=1;native=True;stageResult=False;active=True;WhiteoutRolls=1;forcedConsumed=1;d100=10;nativeConcealment=None:0;attackResult=Concealment;attackType=Ranged",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-firearm-10-miss",
+            "observed": "stageCalls=1;native=True;stageResult=False;active=True;WhiteoutRolls=1;forcedConsumed=1;d100=10;nativeConcealment=None:0;attackResult=Concealment;attackType=Ranged",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-ray-rangedtouch-10-miss",
+            "observed": "stageCalls=1;native=True;stageResult=False;active=True;WhiteoutRolls=1;forcedConsumed=1;d100=10;nativeConcealment=None:0;attackResult=Concealment;attackType=RangedTouch",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-unmarked-rain-control",
+            "observed": "stageCalls=1;native=True;stageResult=True;active=False;WhiteoutRolls=0;forcedConsumed=0;d100=;nativeConcealment=None:0;attackResult=Hit;attackType=Melee",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-foreign-whiteout-lookalike",
+            "observed": "stageCalls=1;native=True;stageResult=True;active=False;WhiteoutRolls=0;forcedConsumed=0;d100=;nativeConcealment=None:0;attackResult=Hit;attackType=Melee",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-other-attacker-unmarked-control",
+            "observed": "stageCalls=1;native=True;stageResult=True;active=False;WhiteoutRolls=0;forcedConsumed=0;d100=;nativeConcealment=None:0;attackResult=Hit;attackType=Melee",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-second-marked-target-independent",
+            "observed": "stageCalls=1;native=True;stageResult=True;active=True;WhiteoutRolls=1;forcedConsumed=1;d100=11;nativeConcealment=None:0;attackResult=Hit;attackType=Melee",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-replay-one-whiteout-roll",
+            "observed": "stageCalls=3;native=True;stageResult=False;active=True;WhiteoutRolls=1;forcedConsumed=1;d100=10;nativeConcealment=None:0;attackResult=Concealment;attackType=Melee",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-native-20-failure-short-circuit",
+            "observed": "stageCalls=1;native=False;stageResult=False;active=True;WhiteoutRolls=0;forcedConsumed=0;d100=;nativeConcealment=Partial:1;attackResult=Concealment;attackType=Melee",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-native-failure-preserved",
+            "observed": "real native Partial 20% fails before Whiteout; zero roll",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-native-20-success-whiteout-10",
+            "observed": "stageCalls=1;native=True;stageResult=False;active=True;WhiteoutRolls=1;forcedConsumed=1;d100=10;nativeConcealment=Partial:100;attackResult=Concealment;attackType=Melee",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-native-20-success-whiteout-11",
+            "observed": "stageCalls=1;native=True;stageResult=True;active=True;WhiteoutRolls=1;forcedConsumed=1;d100=11;nativeConcealment=Partial:100;attackResult=Hit;attackType=Melee",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-seeking-bypass",
+            "observed": "stageCalls=1;native=True;stageResult=True;active=True;WhiteoutRolls=0;forcedConsumed=0;d100=;nativeConcealment=Partial:1;attackResult=Miss;attackType=Ranged",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-foreign-seeking-not-bypass",
+            "observed": "stageCalls=1;native=True;stageResult=False;active=True;WhiteoutRolls=1;forcedConsumed=1;d100=10;nativeConcealment=Partial:100;attackResult=Concealment;attackType=Ranged",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-ignore-concealment-bypass",
+            "observed": "stageCalls=1;native=True;stageResult=True;active=True;WhiteoutRolls=0;forcedConsumed=0;d100=;nativeConcealment=none:;attackResult=Hit;attackType=Melee",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-native-concealment-unchanged",
+            "observed": "no concealment cleanup/suppression/classification mutation by Whiteout",
+            "status": "PASS"
+          },
+          {
+            "name": "outdoor-oleg-repeat-idempotent",
+            "observed": "transitions=1",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-event-idempotence",
+            "observed": "two native deliveries; exactly one outdoor activation, zero indoor activation",
+            "status": "PASS"
+          },
+          {
+            "name": "outdoor-oleg-snow-light",
+            "observed": "type=Snow;actual=Light;active=True",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-snow-provider-state",
+            "observed": "real native Snow/Light event reconciles the exact providers",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-snow-attack",
+            "observed": "stageCalls=1;native=True;stageResult=False;active=True;WhiteoutRolls=1;forcedConsumed=1;d100=10;nativeConcealment=None:0;attackResult=Concealment;attackType=Melee",
+            "status": "PASS"
+          },
+          {
+            "name": "outdoor-oleg-clear",
+            "observed": "Clear;active=False",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-clear-provider-state",
+            "observed": "native Clear removes every provider's active state",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-clear-removes-protection",
+            "observed": "stageCalls=1;native=True;stageResult=True;active=False;WhiteoutRolls=0;forcedConsumed=0;d100=;nativeConcealment=None:0;attackResult=Hit;attackType=Melee",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-exact-weather-handler-delivery",
+            "observed": "all owned native fact components receive exactly five notifications, including per-area rollback",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-outdoor-exact-owned-fixture-cleanup",
+            "observed": "same-area native units/facts/positions/combat/party/areas/registry/time/listeners unchanged; owned facts/actors/diagnostics/attack cache removed; zero save writes; cleanupErrors=0",
+            "status": "PASS"
+          },
+          {
+            "name": "outdoor-oleg-listener-cleanup",
+            "observed": "restored=True",
+            "status": "PASS"
+          },
+          {
+            "name": "outdoor-oleg-native-event-count",
+            "observed": "deliveries=5",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-before-process-exit-persistent-controls",
+            "observed": "pass=True",
+            "status": "PASS"
+          },
+          {
+            "name": "whiteout-process-probe-cleanup",
+            "observed": "subscribed=False",
+            "status": "PASS"
+          }
+        ]
+      },
+      {
+        "scenario": "working-save-smoke",
+        "status": "PASS",
+        "runId": "20261006T1953099960985Z-2579531216a04cc5925690dea7f5ed94",
+        "processId": 38100,
+        "assertionCount": 11,
+        "startedAtUtc": "2026-10-06T19:53:16.7990760Z",
+        "endedAtUtc": "2026-10-06T19:53:59.9592123Z",
+        "evidenceId": "20261006T1953099835826Z-working-save-smoke",
+        "receipt": "artifacts/mission/runtime-transaction-20261006T1952498368504Z.json",
+        "receiptSha256": "d651918419ce5b90eda0070ca4330fe16171b3eaaab1cffd248d06259178d066",
+        "leaseId": "runtime-20261006T195249Z-4018fea66a7e42a1a76c28994f506b56",
+        "leaseStatus": "Completed",
+        "backupIdentity": "20261006T1952501487239Z",
+        "deploymentIdentity": "20261006T1953083878207Z",
+        "liveFileCount": 254,
+        "liveDirectoryCount": 7,
+        "capturedLiveTreeSha256": "6ab46591e2046b036d2052db757b6a75db186055936ca1d075ce4445456db58d",
+        "exactLiveTreeRestored": true,
+        "saveWrites": 0,
+        "readOnlyWorkingSaveLoader": true,
+        "saveWritingApiObserved": false,
+        "noSaveArchitecture": false,
+        "requestHooksRemoved": true,
+        "diagnostics": [
+          "mainThreadManagedId=1"
+        ],
+        "assertions": [
+          {
+            "name": "exact-ui-action",
+            "observed": "candidates=1;onClick=1;handler=1",
+            "status": "PASS"
+          },
+          {
+            "name": "complete-catalog",
+            "observed": "initialize=1;count=89;complete=True",
+            "status": "PASS"
+          },
+          {
+            "name": "unique-working-and-distinct-baseline",
+            "observed": "working=1;baseline=1",
+            "status": "PASS"
+          },
+          {
+            "name": "descriptor-load-correlation",
+            "observed": "correlated",
+            "status": "PASS"
+          },
+          {
+            "name": "load-completion-and-fingerprint",
+            "observed": "callback=True;fingerprint=areaType=Kingmaker.Blueprints.Area.BlueprintArea;sceneType=Kingmaker.EntitySystem.AreaPersistentState;gameId=dce769e0-229c-4bfd-b8ea-e2d572bf8472;partyCount=3;mainCharacterType=Kingmaker.EntitySystem.Entities.UnitReference",
+            "status": "PASS"
+          },
+          {
+            "name": "no-save-writing-api",
+            "observed": "none",
+            "status": "PASS"
+          },
+          {
+            "name": "loaded-mod-version",
+            "observed": "0.0.142",
+            "status": "PASS"
+          },
+          {
+            "name": "unique-working-slot",
+            "observed": "entries=1",
+            "status": "PASS"
+          },
+          {
+            "name": "exact-receiver-bound-path",
+            "observed": "slot=1;window=1;load=1",
+            "status": "PASS"
+          },
+          {
+            "name": "strict-receiver-bound-order",
+            "observed": "22<24<26<32<35",
+            "status": "PASS"
+          },
+          {
+            "name": "autonomous-action-invoked",
+            "observed": "True",
+            "status": "PASS"
+          }
+        ]
+      }
+    ]
+  },
+  "meaningfulFailuresAndRepairs": [
+    "Initial baseline build lacked ignored GamePath.props/private native IL fixture; established private references and installed SDK inspection restored those inputs without weakening a test.",
+    "Current whole-package/test/version metadata and native fact namespace/lifecycle imports were reconciled against the exact released API; historical Summoning claims stayed immutable.",
+    "Concurrent artifact/log writes caused a preflight immutability failure; preflight ran alone and passed 500 checks.",
+    "An unnecessary SaveName was rejected before the no-save firearm launch; the wrapper now derives save arguments from exact scenario metadata.",
+    "An optional WorkingSaveSmoke receipt property caused wrapper failure after an earlier native firearm PASS; the wrapper now admits absent no-save evidence fields explicitly.",
+    "Publication source 314a11775b0141fa616689cf09dcadcd27263892 failed before fixture construction because native enable_traits has no setter. Exact installed IL proved initonly startup state; source 64870d327b513077f0032a0ee1d544301378a5d4 uses a paused request-local MemberwiseClone OFF control and restores the original settings object.",
+    "SDK inspection emitted one proprietary resources file in the worktree root; its exact positively owned output was moved to ignored inspection evidence before any successful push.",
+    "An elevated final preflight was rejected by its administrator guard before any game launch; the established verified normal-user broker then passed all 500 checks. No guard was relaxed.",
+    "Default sandbox CIM access was denied; final process state was verified with an approved read-only query treating errors as failures."
+  ],
+  "limitations": {
+    "persistence": "Existing independent generic writer lacks exact KMG_AUTOMATION_WORKING backup/restoration transaction; no write sequence attempted.",
+    "humanAestheticApproval": "NOT_RECORDED",
+    "humanTooltipAcceptance": "PENDING",
+    "humanMerchantAcceptance": "PENDING",
+    "alreadySerializedMerchantInventories": "not rewritten",
+    "uiEvidence": "sprite/localization and native preview-selection contracts only; no visual/UI approval inferred"
+  },
+  "pr": {
+    "number": 28,
+    "url": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/28",
+    "state": "OPEN",
+    "draft": true,
+    "base": "master",
+    "head": "codex/data-content-traits-0.0.142-integration-2026-10-06",
+    "mergeableObserved": "MERGEABLE",
+    "gitHubMergeStateObserved": "CLEAN",
+    "observedBeforeDocumentationCloseout": true
+  },
+  "terminal": {
+    "mergeReadyTechnical": false,
+    "masterMerged": false,
+    "tagCreated": false,
+    "releasePublished": false,
+    "postReleaseSummoningImported": false,
+    "otherBacklogStarted": false
+  }
+}

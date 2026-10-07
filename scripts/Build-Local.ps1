@@ -1,4 +1,4 @@
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param(
     [string]$MSBuildPath,
     [string]$ReferenceBundleDir,
@@ -12,7 +12,7 @@ $ErrorActionPreference = 'Stop'
 
 $root = Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
 $info = Get-KmgModInfo -RepositoryRoot $root
-if ($info.Version -ne '0.0.140') { throw "Build-Local supports only active version 0.0.140, observed $($info.Version)." }
+if ($info.Version -ne '0.0.142') { throw "Build-Local supports only active version 0.0.142, observed $($info.Version)." }
 $msbuild = Resolve-KmgMsBuild -ExplicitPath $MSBuildPath
 Write-Host "MSBuild: $msbuild"
 $git = Get-KmgGitState -RepositoryRoot $root
@@ -51,7 +51,7 @@ if (-not (Test-Path -LiteralPath (Join-Path $net47 'mscorlib.dll') -PathType Lea
 & (Join-Path $PSScriptRoot 'validate-repository.ps1')
 & (Join-Path $PSScriptRoot 'test-domain.ps1') -Configuration Release -Clean -MSBuildPath $msbuild
 
-$localRoot = Join-Path $root 'artifacts\local-runtime\0.0.140'
+$localRoot = Join-Path $root 'artifacts\local-runtime\0.0.142'
 $exactRoot = Join-Path $localRoot 'exact-build'
 & $python (Join-Path $root 'tools\build_mod_from_private_references.py') `
     --reference-bundle-dir $ReferenceBundleDir --dotnet $dotnet `
@@ -80,6 +80,25 @@ Copy-Item -Path (Join-Path $root 'assets\game\icons\expanded-summoning\*') -Dest
 New-Item -ItemType Directory -Path (Join-Path $buildOutput 'assets\pteranodon') -Force | Out-Null
 Copy-Item -LiteralPath (Join-Path $root 'assets\pteranodon\pteranodon-mesh.json') -Destination (Join-Path $buildOutput 'assets\pteranodon') -Force
 Copy-Item -LiteralPath (Join-Path $root 'assets\pteranodon\pteranodon-albedo.png') -Destination (Join-Path $buildOutput 'assets\pteranodon') -Force
+New-Item -ItemType Directory -Path (Join-Path $buildOutput 'assets\flying-animals') -Force | Out-Null
+Copy-Item -LiteralPath (Join-Path $root 'assets\flying-animals\dire-bat-mesh.json') -Destination (Join-Path $buildOutput 'assets\flying-animals') -Force
+Copy-Item -LiteralPath (Join-Path $root 'assets\flying-animals\dire-bat-albedo.png') -Destination (Join-Path $buildOutput 'assets\flying-animals') -Force
+Copy-Item -LiteralPath (Join-Path $root 'assets\flying-animals\eagle-mesh.json') -Destination (Join-Path $buildOutput 'assets\flying-animals') -Force
+Copy-Item -LiteralPath (Join-Path $root 'assets\flying-animals\eagle-albedo.png') -Destination (Join-Path $buildOutput 'assets\flying-animals') -Force
+Copy-Item -LiteralPath (Join-Path $root 'assets\flying-animals\giant-wasp-mesh.json') -Destination (Join-Path $buildOutput 'assets\flying-animals') -Force
+Copy-Item -LiteralPath (Join-Path $root 'assets\flying-animals\giant-wasp-albedo.png') -Destination (Join-Path $buildOutput 'assets\flying-animals') -Force
+Copy-Item -LiteralPath (Join-Path $root 'assets\flying-animals\stirge-mesh.json') -Destination (Join-Path $buildOutput 'assets\flying-animals') -Force
+Copy-Item -LiteralPath (Join-Path $root 'assets\flying-animals\stirge-albedo.png') -Destination (Join-Path $buildOutput 'assets\flying-animals') -Force
+New-Item -ItemType Directory -Path (Join-Path $buildOutput 'assets\ungulates') -Force | Out-Null
+foreach ($kind in @('aurochs','bison','rhinoceros','woolly-rhinoceros')) {
+    Copy-Item -LiteralPath (Join-Path $root "assets\ungulates\$kind-mesh.json") -Destination (Join-Path $buildOutput 'assets\ungulates') -Force
+    Copy-Item -LiteralPath (Join-Path $root "assets\ungulates\$kind-albedo.png") -Destination (Join-Path $buildOutput 'assets\ungulates') -Force
+}
+New-Item -ItemType Directory -Path (Join-Path $buildOutput 'assets\sprint12-quadrupeds') -Force | Out-Null
+foreach ($kind in @('dire-rat','hyena','goblin-dog')) {
+    Copy-Item -LiteralPath (Join-Path $root "assets\sprint12-quadrupeds\$kind-mesh.json") -Destination (Join-Path $buildOutput 'assets\sprint12-quadrupeds') -Force
+    Copy-Item -LiteralPath (Join-Path $root "assets\sprint12-quadrupeds\$kind-albedo.png") -Destination (Join-Path $buildOutput 'assets\sprint12-quadrupeds') -Force
+}
 $bundleManifest = Get-Content -LiteralPath (Join-Path $root 'assets\bundles\asset-bundle-manifest.json') -Raw | ConvertFrom-Json
 $bundleSource = 'C:\Dev\KingmakerGunslingerLab\unity-asset-build\KingmakerGunslinger-2018.4.10f1\Builds\Windows\kingmakergunslinger.firearms'
 if (-not (Test-Path -LiteralPath $bundleSource -PathType Leaf)) {
@@ -109,10 +128,10 @@ $packagePath = Join-Path $localRoot "$($info.Id)-$($info.Version)-local-runtime.
 New-Item -ItemType Directory -Path $localRoot -Force | Out-Null
 $stagedMod = Join-Path $root 'artifacts\staging\install\KingmakerGunslinger'
 $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $stagedMod 'assets\soundbanks\KMG_Firearms.bnk') -PathType Leaf
-# Existing 135-file package plus 89 original elemental/strategic paintings,
-# the 3 composed strategic scroll item icons, and the Pteranodon mesh data
-# with its painted albedo.
-$expectedPackageFileCount = if ($hasFirearmSoundBank) { 251 } else { 249 }
+# Strict package inventory including the six reviewed Sprint 12 quadruped
+# mesh/painting files. The soundbank and its manifest account for the optional
+# two-file difference.
+$expectedPackageFileCount = if ($hasFirearmSoundBank) { 286 } else { 284 }
 & $python (Join-Path $root 'tools\create_deterministic_package.py') --source $stagedMod --output $packagePath --expected-file-count $expectedPackageFileCount
 if ($LASTEXITCODE -ne 0) { throw 'Deterministic package creation failed.' }
 & (Join-Path $PSScriptRoot 'validate-package.ps1') `

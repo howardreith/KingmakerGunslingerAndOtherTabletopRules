@@ -69,7 +69,7 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Values.Length != 34 || Values.Select(value => value.Key)
+            if (Values.Length != 41 || Values.Select(value => value.Key)
                     .Distinct(StringComparer.Ordinal).Count() != Values.Length)
                 throw new InvalidOperationException(
                     "The natural reconstruction catalog is incomplete or duplicated.");
@@ -99,6 +99,13 @@ namespace KingmakerGunslinger.Summoning
         private static NaturalSummonProfile[] Build()
         {
             return new[] {
+                P("dire-rat", "Dire Rat", "Animal", 1, "Small",
+                    10, 17, 13, 2, 13, 4, 40, 1, "Bite1d4",
+                    Array.Empty<string>(),
+                    A("TripDefenseFourLegs", "WeaponFinesse",
+                        "SkillFocusPerception", "DireRatDisease"),
+                    "A bite that hits and deals positive damage makes the printed DC 11 Fortitude save before applying the native Filth Fever payload and cure lifecycle.",
+                    "The native Dog rig is a bounded locomotion donor only; an original compact rat silhouette is required before publication."),
                 P("dog", "Dog", "Animal", 1, "Small",
                     13, 13, 15, 2, 12, 6, 40, 1, "Bite1d4",
                     Array.Empty<string>(),
@@ -127,8 +134,9 @@ namespace KingmakerGunslinger.Summoning
                     "Web is a bounded ranged ability on the special builder (Sprint 6; correction order): a 50-foot ranged touch attack through the game's own projectile delivery against one foe up to one size larger than the spider, no saving throw, that entangles and holds it through the native web-grappled state until its Constitution-based break-free check succeeds (at most ten rounds); two uses per summoning; the spider is immune to its own webs."),
                 P("goblin-dog", "Goblin Dog", "Animal", 1, "Medium",
                     15, 14, 15, 2, 12, 8, 50, 1, "Bite1d6",
-                    Array.Empty<string>(), A("Toughness"),
-                    "Disease immunity and allergic reaction are omitted pending a duration-bound exact native disease contract; the Worg donor contributes only its view and bite animation."),
+                    Array.Empty<string>(), A("Toughness", "GoblinDogTraits"),
+                    "Disease immunity uses the native disease-descriptor gate. A damaging bite against a living non-goblin makes the printed DC 12 Fortitude save; failure applies one nonstacking day of -2 Dexterity and -2 Charisma, removed by positive magical healing or remove disease. Because Kingmaker has no broader Goblinoid subtype, only the exact native Goblin unit type is exempt.",
+                    "The Worg donor contributes only its rig and bite animation; an original Goblin Dog silhouette remains required before publication."),
                 P("hyena", "Hyena", "Animal", 2, "Medium",
                     14, 15, 15, 2, 13, 6, 50, 2, "Bite1d6",
                     Array.Empty<string>(),
@@ -169,9 +177,9 @@ namespace KingmakerGunslinger.Summoning
                 P("dire-bat", "Dire Bat", "Animal", 4, "Large",
                     17, 15, 13, 2, 14, 6, 40, 3, "Bite1d8",
                     Array.Empty<string>(),
-                    A("ReducedReach", "Airborne", "Stealthy"),
+                    A("ReducedReach", "Airborne", "Stealthy", "DireBatBlindsense"),
                     "Kingmaker exposes one movement speed; 40-foot fly speed is used with airborne navigation and the 20-foot ground speed is omitted.",
-                    "Blindsense and Alertness are omitted because no exact bounded native facts were proven in the final-live library."),
+                    "A dedicated imprecise 40-foot blindsense fact uses the native component without granting the native Blindsight feature's blindness immunity; Alertness remains omitted."),
                 PS("wolverine", "Wolverine", "Animal", 3, "Medium",
                     15, 15, 15, 2, 12, 10, 30, 2, "Claw1d6",
                     A("Claw1d6"), A("Bite1d4"),
@@ -315,7 +323,35 @@ namespace KingmakerGunslinger.Summoning
                         "ImprovedCriticalBite", "PowerAttack", "WeaponFocusBite"),
                     "Grab and swallow whole follow the tabletop sequence (corrected 2026-09-25): a bite hit attempts the game's grapple check and success holds the target, and on a later turn a successful maintain check - used as though attempting to pin - swallows a foe up to one size smaller through the native swallow-whole part, which handles break-free attempts, the per-round crushing damage and the spit-out on the worm's death or end; a foe of the worm's own size is held but never swallowed.",
                     "Burrow and swim movement are omitted; the native summoned worm's burrowing kit is not carried, as the charter's bounded combat adaptation directs. The sting poison is the exact native Constitution-scaled graph.",
-                    "Awesome Blow, Improved Bull Rush, Staggering Critical and Weapon Focus (sting) are omitted because exact final-live feature identities were not proven; Kingmaker cannot represent an absent Intelligence score, so Intelligence 1 is used.")
+                    "Awesome Blow, Improved Bull Rush, Staggering Critical and Weapon Focus (sting) are omitted because exact final-live feature identities were not proven; Kingmaker cannot represent an absent Intelligence score, so Intelligence 1 is used."),
+                P("giant-wasp", "Giant Wasp", "Vermin", 4, "Large",
+                    18, 12, 18, 1, 13, 11, 60, 4, "WaspSting1d8",
+                    Array.Empty<string>(), A("Airborne", "WaspPoison"),
+                    "The 60-foot fly speed uses airborne navigation; 20-foot ground speed is omitted because Kingmaker exposes one movement speed. An absent Intelligence score is represented as 1. Its dedicated Constitution-scaled poison graph and original visual passed guarded live qualification."),
+                P("stirge", "Stirge", "MagicalBeast", 1, "Tiny",
+                    3, 19, 10, 1, 12, 6, 40, 0, "StirgeTouch",
+                    Array.Empty<string>(), A("Airborne", "WeaponFinesse"),
+                    "The 40-foot fly speed uses airborne navigation; 10-foot ground speed is omitted because Kingmaker exposes one movement speed. Its native melee-touch carrier has zero base dice; the touch hit, attachment lifecycle, blood drain and visual contact passed guarded runtime checks."),
+                P("aurochs", "Aurochs", "Animal", 3, "Large",
+                    23, 10, 17, 2, 11, 4, 40, 4, "Gore1d8",
+                    Array.Empty<string>(), A("ReducedReach", "TripDefenseFourLegs",
+                        "SkillFocusPerception"),
+                    "Trample uses the disclosed Kingmaker automatic-AoO-or-Reflex adaptation. Stampede requires three adjacent allied Stampede owners actively executing their own Trample in the same round, then permits same-size targets and adds +2 save DC only while that command formation remains valid. Endurance is omitted because no exact summon-safe feat identity was proven. The sanitized Horse rig drives the original Aurochs mesh and painting."),
+                P("bison", "Bison", "Animal", 5, "Large",
+                    27, 10, 19, 2, 11, 4, 40, 8, "Gore2d6",
+                    Array.Empty<string>(), A("ReducedReach", "TripDefenseFourLegs",
+                        "PowerAttack"),
+                    "Trample uses the disclosed Kingmaker automatic-AoO-or-Reflex adaptation. Stampede requires three adjacent allied Stampede owners actively executing their own Trample in the same round, then permits same-size targets and adds +2 save DC only while that command formation remains valid. Endurance and Improved Bull Rush are omitted because exact summon-safe feat identities were not proven. The sanitized Horse rig drives the original Bison mesh and painting."),
+                P("rhinoceros", "Rhinoceros", "Animal", 5, "Large",
+                    22, 10, 19, 2, 13, 5, 40, 7, "Gore2d6",
+                    Array.Empty<string>(), A("ReducedReach", "TripDefenseFourLegs",
+                        "GreatFortitude", "SkillFocusPerception"),
+                    "The summon-local powerful charge applies only to its gore on a native charge and uses the printed 4d6+12 result. Endurance is omitted because no exact summon-safe feat identity was proven. The sanitized Mastodon rig drives the original Rhinoceros mesh and painting."),
+                P("woolly-rhinoceros", "Woolly Rhinoceros", "Animal", 8,
+                    "Large", 28, 10, 21, 2, 13, 3, 30, 10, "Gore2d8",
+                    Array.Empty<string>(), A("ReducedReach", "TripDefenseFourLegs",
+                        "GreatFortitude", "SkillFocusPerception"),
+                    "The summon-local powerful charge applies only to its gore on a native charge and uses the printed 4d8+18 result. Trample uses the disclosed Kingmaker automatic-AoO-or-Reflex adaptation. Diehard and Endurance are omitted because exact summon-safe feat identities were not proven. The sanitized Mastodon rig drives the original Woolly Rhinoceros mesh and painting.")
             };
         }
 

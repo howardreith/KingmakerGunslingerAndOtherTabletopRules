@@ -217,10 +217,8 @@ namespace KingmakerGunslinger.Blueprints
                 int matches = specs.Count(value => value.Creature.Key ==
                     native.EquivalentCreatureKey && value.Multiplicity ==
                     native.Multiplicity);
-                if (matches != 1) throw new InvalidOperationException(
-                    "Native duplicate map did not resolve exactly one KMG option: " +
-                    native.Guid);
-                return false;
+                return SummonVariantMergePolicy
+                    .PreserveNativeSemanticDuplicate(matches, native.Guid);
             }).ToArray();
             IReadOnlyList<BlueprintAbility> merged = SummonDisplayOrderPolicy.Order(
                 preservedOriginals, additions.Concat(nativeAdditions),

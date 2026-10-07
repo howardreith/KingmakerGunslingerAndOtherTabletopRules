@@ -5,16 +5,18 @@ using System.Linq;
 namespace KingmakerGunslinger.Summoning
 {
     /// <summary>
-    /// Frozen publication-only exclusions. Identities and unit blueprints remain
-    /// registered so existing saves continue to deserialize safely.
+    /// Publication-only exclusions. Sprint 12 creatures remain hidden while
+    /// their mechanics, presentation and runtime lifecycle are qualified.
     /// </summary>
     internal static class SummonVisibilityCatalog
     {
         private static readonly HashSet<string> SuppressedCreatureKeys =
-            new HashSet<string>(new[] { "dire-bat" }, StringComparer.Ordinal);
+            new HashSet<string>(new[] {
+                "dire-rat", "dog", "hyena", "goblin-dog"
+            }, StringComparer.Ordinal);
 
-        internal const int RegisteredLogicalPlacementCount = 813;
-        internal const int SuppressedLogicalPlacementCount = 14;
+        internal const int RegisteredLogicalPlacementCount = 900;
+        internal const int SuppressedLogicalPlacementCount = 68;
         internal const int PublishedLogicalPlacementCount =
             RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount;
 
@@ -34,7 +36,6 @@ namespace KingmakerGunslinger.Summoning
                 !IsPublished(value)).ToArray();
             if (all.Length != RegisteredLogicalPlacementCount ||
                 suppressed.Length != SuppressedLogicalPlacementCount ||
-                suppressed.Any(value => value.Creature.Key != "dire-bat") ||
                 all.Count(IsPublished) != PublishedLogicalPlacementCount)
                 throw new InvalidOperationException(
                     "Frozen summon publication visibility catalog changed.");

@@ -1,0 +1,93 @@
+#!/usr/bin/env python3
+"""Validate the 0.0.141 Expanded Summoning Phase 2A release boundary.
+
+Sprints 9-11 are published and technically qualified. Sprint 12 is retained
+as hidden groundwork: its registered placements must remain suppressed until
+the rest of its publication matrix is completed in a later release.
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+from pathlib import Path
+
+sys.dont_write_bytecode = True
+
+import validate_favored_class140 as baseline
+
+
+VERSION = "0.0.141"
+INFORMATIONAL_VERSION = "0.0.141-expanded-summoning-phase2a"
+PACKAGE = "KingmakerGunslinger-0.0.141-local-runtime.zip"
+PACKAGE_SUFFIX = "expanded-summoning-phase2a"
+DETERMINISTIC_TEST_COUNT = 1958
+STATIC_KEY = "expandedSummoningPhase2A141"
+
+
+def validate(root: Path) -> None:
+    baseline.VERSION = VERSION
+    baseline.INFORMATIONAL_VERSION = INFORMATIONAL_VERSION
+    baseline.PACKAGE = PACKAGE
+    baseline.PACKAGE_SUFFIX = PACKAGE_SUFFIX
+    baseline.DETERMINISTIC_TEST_COUNT = DETERMINISTIC_TEST_COUNT
+    baseline.validate(root)
+
+    require_tokens = baseline.baseline.require_tokens
+    require_tokens(root / "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs",
+        '"dire-rat", "dog", "hyena", "goblin-dog"',
+        "RegisteredLogicalPlacementCount = 900",
+        "SuppressedLogicalPlacementCount = 68",
+        "RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount")
+    require_tokens(root / "planning/EXPANDED-SUMMONING-FIDELITY-MATRIX.md",
+        "Sprints 9-11", "882 visible", "911 total choices",
+        "all 68", "remain suppressed")
+    require_tokens(root / "docs/RELEASE-NOTES-0.0.141.md",
+        INFORMATIONAL_VERSION, "Sprints 9-11", "Sprint 12", "hidden",
+        "owner visual review", "uninstall")
+
+    static = json.loads((root / "validation/static-validation.json").read_text(
+        encoding="utf-8"))
+    if static.get("version") != VERSION or \
+            static.get("milestone") != INFORMATIONAL_VERSION:
+        raise AssertionError("Static validation does not identify 0.0.141")
+    state = static.get(STATIC_KEY, {})
+    expected = {
+        "deterministicTestCount": DETERMINISTIC_TEST_COUNT,
+        "publicReleaseAuthorized": True,
+        "candidateOnly": False,
+        "releaseVersion": VERSION,
+        "releaseInformationalVersion": INFORMATIONAL_VERSION,
+        "publishedSprintRange": "9-11",
+        "visibleGeneratedChoices": 882,
+        "retainedNativeWrappers": 29,
+        "hiddenSprint12Placements": 68,
+        "sprint12Published": False,
+        "compatibilityRuntimeQualificationPending": False,
+        "runtimeEvidence":
+            "20260930T1626175528422Z-disposable-expanded-summoning",
+        "ownerVisualReview": "NOT_PERFORMED_NONBLOCKING",
+    }
+    for key, value in expected.items():
+        if state.get(key) != value:
+            raise AssertionError(
+                f"Expanded Summoning Phase 2A metadata mismatch: {key}")
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--root", type=Path,
+                        default=Path(__file__).resolve().parents[1])
+    args = parser.parse_args()
+    try:
+        validate(args.root.resolve())
+    except Exception as exc:
+        print(f"Expanded Summoning Phase 2A {VERSION} validation failed: {exc}",
+              file=sys.stderr)
+        return 1
+    print(f"Expanded Summoning Phase 2A {VERSION} validation passed.")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

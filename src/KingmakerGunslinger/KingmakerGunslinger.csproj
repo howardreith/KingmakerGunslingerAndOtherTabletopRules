@@ -124,6 +124,10 @@
     <Compile Include="Summoning\SummonVisibilityCatalog.cs" />
     <Compile Include="Summoning\SummonViewScaleCatalog.cs" />
     <Compile Include="Summoning\ExpandedSummoningViewScalePatch.cs" />
+    <Compile Include="Summoning\EagleAttackLungePolicy.cs" />
+    <Compile Include="Summoning\EagleAttackVisualLunge.cs" />
+    <Compile Include="Summoning\GiantWaspVisualSting.cs" />
+    <Compile Include="Summoning\StirgeVisualTouch.cs" />
     <Compile Include="Summoning\ExpandedSummoningPteranodonViewPatch.cs" />
     <Compile Include="Summoning\ExpandedSummoningVisualVariantPatch.cs" />
     <Compile Include="Summoning\ExpandedSummoningVariantMenuPatch.cs" />
@@ -136,6 +140,14 @@
     <Compile Include="Summoning\SummonTemplateSmitePolicy.cs" />
     <Compile Include="Summoning\ExpandedSummoningSmiteComponent.cs" />
     <Compile Include="Summoning\ExpandedSummoningSpecialCombatComponents.cs" />
+    <Compile Include="Summoning\ExpandedSummoningSprint12CombatComponents.cs" />
+    <Compile Include="Summoning\GiantWaspPoison.cs" />
+    <Compile Include="Summoning\GiantWaspPoisonPolicy.cs" />
+    <Compile Include="Summoning\StirgeAttachPolicy.cs" />
+    <Compile Include="Summoning\SummonInjuryDiseasePolicy.cs" />
+    <Compile Include="Summoning\UngulateRulesPolicy.cs" />
+    <Compile Include="Summoning\UngulatePowerfulCharge.cs" />
+    <Compile Include="Summoning\ContextActionUngulateTrample.cs" />
     <Compile Include="Summoning\SummonGrappleLinkState.cs" />
     <Compile Include="Summoning\SummonAlignmentRuntimePolicy.cs" />
     <Compile Include="Summoning\SummonSameTurnActivationPolicy.cs" />
@@ -1128,6 +1140,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningNativeDonors.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningCorrection.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningCreatureReview.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint12.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.PteranodonAttachedView.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircle.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.MagicCircleEvil.cs" />
@@ -1445,6 +1458,46 @@
       <Link>assets\pteranodon\pteranodon-albedo.png</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="..\..\assets\flying-animals\dire-bat-mesh.json">
+      <Link>assets\flying-animals\dire-bat-mesh.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\flying-animals\dire-bat-albedo.png">
+      <Link>assets\flying-animals\dire-bat-albedo.png</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\flying-animals\eagle-mesh.json">
+      <Link>assets\flying-animals\eagle-mesh.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\flying-animals\eagle-albedo.png">
+      <Link>assets\flying-animals\eagle-albedo.png</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\flying-animals\giant-wasp-mesh.json">
+      <Link>assets\flying-animals\giant-wasp-mesh.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\flying-animals\giant-wasp-albedo.png">
+      <Link>assets\flying-animals\giant-wasp-albedo.png</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\ungulates\*-mesh.json">
+      <Link>assets\ungulates\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\ungulates\*-albedo.png">
+      <Link>assets\ungulates\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\sprint12-quadrupeds\*-mesh.json">
+      <Link>assets\sprint12-quadrupeds\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\sprint12-quadrupeds\*-albedo.png">
+      <Link>assets\sprint12-quadrupeds\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="..\..\assets\game\icons\expanded-summoning\*.png">
       <Link>assets\icons\expanded-summoning\%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -1490,4 +1543,42 @@
   </Target>
 
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Compile Include="Firearms\FirearmEnchantmentItemText.cs" />
+    <Compile Include="Blueprints\OlegFirearmVendorBlueprints.cs" />
+    <Compile Include="ElementalRaces\UnpublishedRaceTraitFoundationFactory.cs" />
+    <Compile Include="ElementalRaces\StoicDignityPolicy.cs" />
+    <Compile Include="ElementalRaces\StoicDignityMechanics.cs" />
+    <Compile Include="ElementalRaces\AerialObserverPolicy.cs" />
+    <Compile Include="ElementalRaces\AerialObserverMechanics.cs" />
+    <Compile Include="ElementalRaces\UnpublishedAerialObserverFoundationFactory.cs" />
+    <Compile Include="ElementalRaces\WhiteoutPolicy.cs" />
+    <Compile Include="ElementalRaces\WhiteoutFoundationPolicy.cs" />
+    <Compile Include="ElementalRaces\WhiteoutNativeMechanics.cs" />
+    <Compile Include="ElementalRaces\DormantElementalCharacterTraitFactory.cs" />
+    <Compile Include="ElementalRaces\ElementalCharacterTraitCatalog.cs" />
+    <Compile Include="ElementalRaces\ElementalCharacterTraitAssetGate.cs" />
+    <Compile Include="ElementalRaces\ElementalCharacterTraitPublicationTransaction.cs" />
+    <Compile Include="ElementalRaces\ElementalCharacterTraitOwnedGrant.cs" />
+    <Compile Include="RuntimeTesting\WhiteoutGuardedDiagnostics.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.FirearmDescriptions.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ModelDVendors.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.WhiteoutWeather.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.WhiteoutCatalog.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.PublishedElementalCharacterTraits.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.UnpublishedRaceTraitFoundations.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.UnpublishedAerialObserverFoundation.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.UnpublishedWhiteoutFoundation.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.WhiteoutAttackFixture.cs" />
+  </ItemGroup>
+  <ItemGroup><Compile Include="ElementalRaces\ElementalCharacterTraitNativeGraph.cs" /></ItemGroup>
+  <ItemGroup><Compile Include="ElementalRaces\ElementalCharacterTraitPublicationCoordinator.cs" /></ItemGroup>
+  <ItemGroup>
+    <Compile Include="ElementalRaces\CharacterTraitCanonicalAdmission.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="RuntimeTesting\ElementalCharacterTraitSaveContract.cs" />
+    <Compile Include="RuntimeTesting\ElementalCharacterTraitSavePlan.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ElementalCharacterTraitSave.cs" />
+  </ItemGroup>
 </Project>

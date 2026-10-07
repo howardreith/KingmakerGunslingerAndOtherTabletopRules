@@ -32,6 +32,21 @@ namespace KingmakerGunslinger.Summoning
             return true;
         }
 
+        internal static bool PreserveNativeSemanticDuplicate(
+            int publishedReplacementCount, string nativeGuid)
+        {
+            if (publishedReplacementCount < 0)
+                throw new ArgumentOutOfRangeException(
+                    "publishedReplacementCount");
+            if (string.IsNullOrWhiteSpace(nativeGuid))
+                throw new ArgumentException("Native GUID is missing.", "nativeGuid");
+            if (publishedReplacementCount == 0) return true;
+            if (publishedReplacementCount == 1) return false;
+            throw new InvalidOperationException(
+                "Native duplicate map did not resolve exactly one KMG option: " +
+                nativeGuid);
+        }
+
         private static void AddUnique<T>(IEnumerable<T> source, IList<T> result,
             ISet<T> references, ISet<string> guids, Func<T, string> guid,
             bool rejectDuplicateAdditions) where T : class

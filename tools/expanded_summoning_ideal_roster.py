@@ -19,6 +19,7 @@ ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "src/KingmakerGunslinger/Summoning/ExpandedSummoningIdealRosterCatalog.cs"
 SHIPPED = ROOT / "src/KingmakerGunslinger/Summoning/ExpandedSummoningCatalog.cs"
 WRAPPERS = ROOT / "src/KingmakerGunslinger/Summoning/SummonNativeExpansionCatalog.cs"
+VISIBILITY = ROOT / "src/KingmakerGunslinger/Summoning/SummonVisibilityCatalog.cs"
 ROSTER_DOC = ROOT / "planning/EXPANDED-SUMMONING-IDEAL-ROSTER.md"
 TRACE_DOC = ROOT / "planning/EXPANDED-SUMMONING-CHARTER-TRACEABILITY.md"
 
@@ -238,9 +239,8 @@ def roster_doc(entries, d, shipped, cov):
         f"({published_somewhere} published somewhere, "
         f"{len(project) + len(wrapper_only) - published_somewhere} registered but hidden).",
         "",
-        "Frost Giant is the case that makes the split necessary: its unit exists "
-        "and is published at Summon Monster VIII through a retained wrapper, "
-        "while its Nature's Ally VII placement is still only planned.",
+        "Frost Giant has one retained native unit identity and published "
+        "Summon Monster and Nature's Ally wrappers in both families.",
     ]
     lines += [
         "",
@@ -285,7 +285,9 @@ def trace_doc(entries):
     ]
     done = {0: "Sprint 0 complete; owner acceptance pending",
             1: "Sprint 1 complete; owner acceptance pending",
-            2: "Sprint 2 in progress"}
+            2: "Sprint 2 in progress",
+            9: "Internal technical PASS: original models, Bat 40-foot imprecise blindsense and preserved publication, native combat/contact, obstructed doorway travel, lifecycle, persistence and controls; owner visual review pending",
+            10: "In progress: Giant Wasp published and technically qualified; Stirge hidden pending attack-pose, disease timing and icon/UI review"}
     for number, phase, name, weight in SPRINTS:
         owned = by_sprint.get(number, [])
         if number in AUDIT_SPRINTS:
@@ -334,8 +336,15 @@ def coverage(entries, shipped):
     wrapper_keys = set(wrap["sm"]) | set(wrap["sna"])
     wrapper_only = sorted(wrapper_keys - shipped)
 
-    # Dire Bat is the one registered-but-hidden project-owned identity.
-    hidden = {"dire-bat"}
+    visibility = VISIBILITY.read_text(encoding="utf-8")
+    suppressed = re.search(
+        r'SuppressedCreatureKeys\s*=\s*new HashSet<string>\(StringComparer.Ordinal\)\s*\{([^}]*)\}',
+        visibility, re.S)
+    if suppressed is None:
+        raise SystemExit("Cannot identify the current summon visibility catalog")
+    hidden = set(re.findall(r'"([a-z0-9-]+)"', suppressed.group(1)))
+    if not hidden <= shipped:
+        raise SystemExit("Visibility catalog suppresses an unregistered creature")
     fam_counts = {"sm": {}, "sna": {}}
     states_by_key = {}
     published_somewhere = 0

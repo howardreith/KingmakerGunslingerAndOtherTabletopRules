@@ -737,7 +737,7 @@ namespace KingmakerGunslinger.Bootstrap
             GunslingerClassCatalogPublication classPublication = null;
             CapitalVendorPublication capitalVendorPublication = null;
             CordCampaignLootPublication cordCampaignLootPublication = null;
-            OlegVendorCleanupPublication olegSupplyCleanupPublication = null;
+            OlegVendorPublication olegVendorPublication = null;
             BokkenVendorPublication bokkenSupplyPublication = null;
             BeneathStolenLandsVendorPublication btslVendorPublication = null;
             RareFirearmCampaignLootPublication rareFirearmLootPublication = null;
@@ -1213,13 +1213,14 @@ namespace KingmakerGunslinger.Bootstrap
                     library, productionFirearms, magicFirearms, basicAmmunition,
                     firearmRepairKit, gunsmithingSupplies,
                     publicationPlan.CapitalGunslingerStock,
+                    easternWeapons, elvenBranchedSpears,
                     cordOfStubbornResolve, context.Logger);
                 cordCampaignLootPublication = CordOfStubbornResolveBlueprints
                     .PublishCampaignLoot(library, cordOfStubbornResolve,
                         publicationPlan.CordCampaignLoot, context.Logger);
-                olegSupplyCleanupPublication =
-                    OlegFirearmSupplyCleanupBlueprints.Normalize(library,
-                        basicAmmunition, firearmRepairKit, gunsmithingSupplies,
+                olegVendorPublication =
+                    OlegFirearmVendorBlueprints.Publish(library,
+                        productionFirearms, magicFirearms, basicAmmunition, firearmRepairKit, gunsmithingSupplies,
                         publicationPlan.CapitalGunslingerStock, context.Logger);
                 bokkenSupplyPublication =
                     BokkenFirearmSupplyVendorBlueprints.Publish(library,
@@ -1481,9 +1482,9 @@ namespace KingmakerGunslinger.Bootstrap
                             vendorRollbackException);
                     }
                 }
-                if (olegSupplyCleanupPublication != null)
+                if (olegVendorPublication != null)
                 {
-                    try { olegSupplyCleanupPublication.Rollback(); }
+                    try { olegVendorPublication.Rollback(); }
                     catch (Exception vendorRollbackException)
                     {
                         context.Logger.Failure("blueprints",
