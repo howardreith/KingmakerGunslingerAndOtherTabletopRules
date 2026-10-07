@@ -1,6 +1,10 @@
 # Sprint17 closed snake direct/crowd review extension
 
-Status: SOURCE PASS; NOT RUN. Full Sprint17 NOT QUALIFIED.
+Status: exact4c95 direct14/14 PASS; crowd17/18 FAIL; full Sprint17 NOT QUALIFIED.
+The [attempt1 review](EXPANDED-SUMMONING-SPRINT17-SNAKE-CROWD-PERSISTENCE-ATTEMPT1-REVIEW.md)
+governs over the historical source-only record below. One awake-restoration
+failure; movement, expiry and exact resource cleanup passed. Zero save writes;
+actual snapshot restored2026-10-07T00:42:42.5922110Z. No assertion waiver.
 Source parent544c5950; exact983828bf remains the qualified command/contact
 artifact. This fixture extension does not transfer that qualification to a
 different DLL. Laptop PR26 only; DATA archive-only/ZERO PORTS.32 roots hidden.
