@@ -125,6 +125,22 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(propagated, "Do not relabel a registered-method observation failure as absence or PASS.");
         }
 
+        internal static void AuxiliarySuppressionAcceptsOnlyTheAuditedNativeCape()
+        {
+            Assertions.True(SalamanderHumanBindingPolicy.IsReviewedAuxiliary(
+                "Cape_Red_M(Clone)", "CP_Cape2Sided_M_Any", 0), "Exact observed zero-bone cape only.");
+            foreach (string renderer in new[] { null, "", SalamanderHumanBindingPolicy.BodyName,
+                "Spear", "Cape_Red_M", "Cape_Blue_M(Clone)" })
+                Assertions.False(SalamanderHumanBindingPolicy.IsReviewedAuxiliary(
+                    renderer, "CP_Cape2Sided_M_Any", 0), "Never suppress body, equipment or an unreviewed renderer.");
+            foreach (string mesh in new[] { null, "", "CP_Cape2Sided_M_Any(Clone)", "ForeignMesh" })
+                Assertions.False(SalamanderHumanBindingPolicy.IsReviewedAuxiliary(
+                    "Cape_Red_M(Clone)", mesh, 0), "A familiar renderer name cannot authorize a different mesh.");
+            foreach (int bones in new[] { -1, 1, 36, 1776 })
+                Assertions.False(SalamanderHumanBindingPolicy.IsReviewedAuxiliary(
+                    "Cape_Red_M(Clone)", "CP_Cape2Sided_M_Any", bones), "Changed native cape contract fails closed.");
+        }
+
         internal static void OneTailAppendDoesNotReplaceOrMutateHumanActions()
         {
             object[] native = Enumerable.Range(0, 24).Select(_ => new object()).ToArray();

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using Harmony12;
@@ -24,6 +25,34 @@ namespace KingmakerGunslinger.RuntimeTesting
 {
     internal sealed partial class RuntimeTestRunner
     {
+        private int _humanSalamanderCheckpointSequence;
+
+        // Flushed request-local observations survive a native process crash.
+        // They are never a final result, save-write audit or qualification.
+        private void WriteHumanSalamanderCheckpoint(string stage, JObject row)
+        {
+            int sequence = ++_humanSalamanderCheckpointSequence;
+            string file = "sprint17-human-stage-" + sequence.ToString("D2") + "-" + stage + ".json";
+            RuntimeTestResultWriter.WriteAtomic(Path.Combine(_request.EvidenceDirectory, file),
+                new JObject { ["schemaVersion"] = 1, ["runId"] = _request.RunId,
+                    ["scenario"] = _request.Scenario, ["sequence"] = sequence, ["stage"] = stage,
+                    ["recordedAtUtc"] = DateTime.UtcNow.ToString("o"), ["frame"] = Time.frameCount,
+                    ["isFinalResult"] = false, ["qualifies"] = false, ["nativeSaveWriteAudit"] = "PENDING_FINAL",
+                    ["assertionsSoFar"] = JArray.FromObject(_serpentineBodyAssertions),
+                    ["observation"] = row.DeepClone() }.ToString(Formatting.Indented));
+        }
+
+        private static JArray HumanSalamanderRendererObservation(UnitEntityData owner)
+        {
+            return new JArray(owner.View.GetComponentsInChildren<SkinnedMeshRenderer>(true).Select(s => new JObject {
+                ["name"] = s.name, ["mesh"] = s.sharedMesh == null ? null : s.sharedMesh.name,
+                ["vertices"] = s.sharedMesh == null ? (int?)null : s.sharedMesh.vertexCount,
+                ["palette"] = s.bones.Length, ["root"] = s.rootBone == null ? null : s.rootBone.name,
+                ["enabled"] = s.enabled, ["activeSelf"] = s.gameObject.activeSelf,
+                ["activeInHierarchy"] = s.gameObject.activeInHierarchy, ["updateWhenOffscreen"] = s.updateWhenOffscreen,
+                ["components"] = new JArray(s.GetComponents<Component>().Where(c => c != null).Select(c => c.GetType().FullName)) }));
+        }
+
         private void CheckHumanSalamander(string id, bool pass, JToken evidence, string expected)
         {
             _serpentineBodyAssertions.Add(Assertion("sprint17-human-salamander-" + id, expected,
@@ -43,6 +72,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             _serpentineBodyRows.Add(row);
             try
             {
+                WriteHumanSalamanderCheckpoint("spawned-before-settlement", row);
                 bool capital = Game.Instance.CurrentlyLoadedArea != null && Game.Instance.CurrentlyLoadedArea.IsCapital;
                 if (capital) owner.Descriptor.Master = Game.Instance.Player.MainCharacter;
                 else if (!owner.Faction.IsDirectlyControllable)
@@ -64,6 +94,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Sprint17BodyIntact(owner.View, SalamanderHumanBindingPolicy.BodyName);
                 row["nativeControl"] = Sprint16ControlObservation(owner); row["settlementFrames"] = settle;
                 CheckHumanSalamander("native-settlement", ready, row["nativeControl"], "intact native human frame and one exact manual summon-part rule");
+                WriteHumanSalamanderCheckpoint("native-settlement", row);
                 if (!ready) throw new InvalidOperationException("Native human appearance/control did not settle.");
                 var originalSet = owner.View.AnimationManager.AnimationSet;
                 // Read before any attachment/rollback. The first live attempt
@@ -72,13 +103,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 HumanSalamanderActionSetBoundary(owner, row);
                 var nativeActions = originalSet.Actions.ToArray();
                 var skins = owner.View.GetComponentsInChildren<SkinnedMeshRenderer>(true).Select(s =>
-                    new { Skin = s, Mesh = s.sharedMesh, Bones = s.bones, Quality = s.quality }).ToArray();
+                    new { Skin = s, Mesh = s.sharedMesh, Bones = s.bones, Quality = s.quality,
+                        Enabled = s.enabled, ActiveSelf = s.gameObject.activeSelf, Root = s.rootBone,
+                        Offscreen = s.updateWhenOffscreen }).ToArray();
                 var staticMeshes = owner.View.GetComponentsInChildren<MeshFilter>(true).Select(f =>
                     new { Filter = f, Mesh = f.sharedMesh }).ToArray();
                 row["nativeRendererCensus"] = new JArray(skins.Select(s => new JObject {
                     ["name"] = s.Skin.name, ["palette"] = s.Bones.Length,
                     ["uniqueTransforms"] = s.Bones.Distinct().Count(), ["mesh"] = s.Mesh == null ? null : s.Mesh.name }));
                 row["nativeHandActions"] = Sprint17NativeHandAttackCensus(owner);
+                row["nativeRendererState"] = HumanSalamanderRendererObservation(owner);
+                WriteHumanSalamanderCheckpoint("native-census-before-rollback", row);
                 UnityEngine.Object[] rollback = new UnityEngine.Object[0];
                 bool rejected; string outcome;
                 try
@@ -91,34 +126,60 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 finally { SalamanderHumanVisualAttachment.PostSwapFaultForTest = null; }
                 row["rollbackOutcome"] = outcome;
+                WriteHumanSalamanderCheckpoint("rollback-returned-before-render", row);
                 yield return 0; yield return 0;
                 bool restored = skins.All(s => s.Skin != null && ReferenceEquals(s.Skin.sharedMesh, s.Mesh) &&
-                    s.Skin.bones.SequenceEqual(s.Bones) && s.Skin.quality == s.Quality) &&
+                    s.Skin.bones.SequenceEqual(s.Bones) && s.Skin.quality == s.Quality &&
+                    s.Skin.enabled == s.Enabled && s.Skin.gameObject.activeSelf == s.ActiveSelf &&
+                    ReferenceEquals(s.Skin.rootBone, s.Root) && s.Skin.updateWhenOffscreen == s.Offscreen) &&
                     staticMeshes.All(s => s.Filter != null && ReferenceEquals(s.Filter.sharedMesh, s.Mesh)) &&
                     ReferenceEquals(owner.View.AnimationManager.AnimationSet, originalSet) &&
                     originalSet.Actions.SequenceEqual(nativeActions);
-                CheckHumanSalamander("rollback", rejected && rollback.Length >= 30 && rollback.All(v => v == null) && restored,
+                // 29 required owned objects: eight assets/components/root GO,
+                // its Transform, and ten tail GO/Transform pairs. Controller
+                // material clones add to this; no empty mesh is allocated.
+                CheckHumanSalamander("rollback", rejected && rollback.Length >= 29 && rollback.All(v => v == null) && restored,
                     new JObject { ["resources"] = rollback.Length, ["remaining"] = rollback.Count(v => v != null),
                         ["restored"] = restored, ["outcome"] = outcome },
                     "post-swap fault restores all exact native body/static/action references and destroys every owned object");
+                row["rollbackRendererState"] = HumanSalamanderRendererObservation(owner);
+                WriteHumanSalamanderCheckpoint("rollback-settled-before-binding", row);
                 if (!restored || rollback.Length == 0) throw new InvalidOperationException("Human binding could not reach or restore the rollback seam: " + outcome);
                 bool attached = SalamanderHumanVisualAttachment.TryAttach(owner.View, _context, out outcome);
                 row["attachmentOutcome"] = outcome;
                 var attachment = owner.View.GetComponent<SalamanderHumanVisualAttachment>();
                 CheckHumanSalamander("binding", attached && attachment != null && attachment.Live,
                     outcome, "one owned body/ten original drivers/one Tail action, all24 human actions preserved");
+                row["attachedRendererState"] = HumanSalamanderRendererObservation(owner);
+                WriteHumanSalamanderCheckpoint("binding-returned-before-render", row);
                 if (!attached || attachment == null || !attachment.Live) throw new InvalidOperationException(outcome);
                 resources.AddRange(attachment.CaptureOwnedResources());
                 borrowed = attachment.BorrowedResources();
+                // Do not force a camera render in the swap frame: the native
+                // skinning/render loop must first consume the new palette.
+                int bindingFrame = Time.frameCount;
+                yield return 0;
+                row["restFrameBoundary"] = new JObject { ["bindingFrame"] = bindingFrame,
+                    ["observationFrame"] = Time.frameCount, ["advanced"] = Time.frameCount > bindingFrame };
+                WriteHumanSalamanderCheckpoint("first-native-frame-after-binding", row);
+                if (Time.frameCount <= bindingFrame)
+                    throw new InvalidOperationException("No native frame boundary after human skin swap.");
+                row["bodyMaterial"] = Sprint17BodyMaterialResearch(attachment.Body.sharedMaterial);
                 row["restPose"] = Sprint17OriginalBodySample(owner, attachment.Body);
+                WriteHumanSalamanderCheckpoint("rest-sampled-before-supporting-frame", row);
                 row["supportingRestFrame"] = CaptureSprint17OriginalBodyFrame(owner, attachment.Body, "human-salamander-rest");
                 CheckHumanSalamander("original-rest", (bool)row["restPose"]["finite"] && (bool)row["restPose"]["poseFinite"] &&
                     attachment.Body.bones.Length == 36 && attachment.Body.sharedMesh.vertexCount == 2198 &&
+                    attachment.AuxiliaryGeometrySuppressed && skins.All(s => s.Skin.enabled == s.Enabled &&
+                        s.Skin.gameObject.activeSelf == s.ActiveSelf && ReferenceEquals(s.Skin.rootBone, s.Root) &&
+                        s.Skin.updateWhenOffscreen == s.Offscreen) &&
                     Sprint17BodyIntact(owner.View, SalamanderHumanBindingPolicy.BodyName),
                     row["restPose"], "finite intact original body; no native skin visible or visibility forcing");
+                WriteHumanSalamanderCheckpoint("rest-frame-complete-before-movement", row);
                 Vector3 origin = owner.Position;
                 var move = new UnitMoveTo(Sprint17BodyMoveDestination(origin));
                 move.Init(owner); owner.Commands.Run(move);
+                WriteHumanSalamanderCheckpoint("movement-queued-before-render", row);
                 DateTime deadline = DateTime.UtcNow.AddSeconds(18);
                 while (!move.IsFinished && DateTime.UtcNow < deadline)
                 {
@@ -131,6 +192,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Vector3.Distance(origin, owner.Position) > 1 && attachment.Live &&
                     (bool)row["movement"]["pose"]["finite"], row["movement"],
                     "native movement progresses with finite original skin and unchanged human action references");
+                WriteHumanSalamanderCheckpoint("movement-complete-before-attack", row);
                 foreach (int step in ReviewHumanSalamanderAttack(fixture, owner, attachment, row)) yield return step;
                 resources.AddRange(attachment.CaptureOwnedResources());
                 CheckHumanSalamander("native-reference-isolation", attachment.NativeActionsUnchanged &&
@@ -142,21 +204,27 @@ namespace KingmakerGunslinger.RuntimeTesting
             finally
             {
                 SalamanderHumanVisualAttachment.PostSwapFaultForTest = null;
-                if (owner != null && !owner.Destroyed)
+                try { WriteHumanSalamanderCheckpoint("before-owner-destruction", row); }
+                finally
                 {
-                    var owned = owner.View == null ? null : owner.View.GetComponent<SalamanderHumanVisualAttachment>();
-                    if (owned != null) resources.AddRange(owned.CaptureOwnedResources());
-                    InterruptExpandedSummoningFixtureCommands(owner);
-                    owner.CombatState.LeaveCombat(); owner.Destroy(); Game.Instance.EntityDestroyer.Tick();
-                    Game.Instance.Player.UpdateIsInCombat();
+                    if (owner != null && !owner.Destroyed)
+                    {
+                        var owned = owner.View == null ? null : owner.View.GetComponent<SalamanderHumanVisualAttachment>();
+                        if (owned != null) resources.AddRange(owned.CaptureOwnedResources());
+                        InterruptExpandedSummoningFixtureCommands(owner);
+                        owner.CombatState.LeaveCombat(); owner.Destroy(); Game.Instance.EntityDestroyer.Tick();
+                        Game.Instance.Player.UpdateIsInCombat();
+                    }
                 }
+                WriteHumanSalamanderCheckpoint("owner-destruction-returned", row);
             }
             yield return 0; yield return 0;
-            CheckHumanSalamander("native-destruction", resources.Count >= 30 && resources.All(v => v == null) &&
+            CheckHumanSalamander("native-destruction", resources.Distinct().Count() >= 29 && resources.All(v => v == null) &&
                 borrowed.Length >= 25 && borrowed.All(v => v != null),
                 new JObject { ["captured"] = resources.Distinct().Count(), ["remaining"] = resources.Count(v => v != null),
                     ["borrowedAlive"] = borrowed.Count(v => v != null) },
                 "native unit destruction releases only exact project-owned body/tail/clip/set/material resources");
+            WriteHumanSalamanderCheckpoint("native-destruction-settled", row);
         }
 
         private IEnumerable<int> ReviewHumanSalamanderAttack(ExpandedSummoningCorrectionFixture fixture,
@@ -202,12 +270,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             EventBus.Subscribe(observer);
             try
             {
+                WriteHumanSalamanderCheckpoint("before-attack-combat-join", row);
                 owner.JoinCombat(); target.JoinCombat(); Game.Instance.Player.UpdateIsInCombat();
                 new UnitCombatJoinController().Tick(); new UnitCombatPrepareController().Tick();
                 for (int frame = 0; frame < 90; frame++)
                 { if (Game.Instance.IsPaused) Game.Instance.IsPaused = false; yield return 0; }
                 if (!Sprint17ContactPairIsolated(fixture, owner, target)) throw new InvalidOperationException("Owned human/tail enemy pair not isolated.");
                 attack.Init(owner); row["attackBefore"] = Sprint17NativeCommandState(owner, target, attack);
+                WriteHumanSalamanderCheckpoint("before-native-attack-command", row);
                 owner.Commands.Run(attack);
                 DateTime deadline = DateTime.UtcNow.AddSeconds(45); int frames = 0;
                 while (!attack.IsFinished && DateTime.UtcNow < deadline && frames++ < 1800)
@@ -246,6 +316,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 CheckHumanSalamander("finite-attack-skin", poses.Count >= 3 && poses.OfType<JObject>().All(p =>
                     (bool)p["pose"]["finite"] && (bool)p["pose"]["poseFinite"]) && attachment.Live, poses.Count,
                     "original skin stays finite and native human actions remain unchanged throughout the real attack");
+                WriteHumanSalamanderCheckpoint("native-attack-observations-complete", row);
             }
             finally
             {

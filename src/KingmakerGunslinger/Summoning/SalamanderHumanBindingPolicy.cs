@@ -9,6 +9,11 @@ namespace KingmakerGunslinger.Summoning
     {
         internal const string BodyName = "Renderer_Character_Diffuse_Cutout";
         internal const string AssetHash = "2c4b76f0bbf0691ae0f9d9fc2340e77f958b999e27dda2628c82b26642c16670";
+        internal static bool IsReviewedAuxiliary(string renderer, string mesh, int bones)
+        {
+            return renderer == "Cape_Red_M(Clone)" && mesh == "CP_Cape2Sided_M_Any" && bones == 0;
+        }
+
         internal static string[] NativeNames
         {
             get { return new[] { "Pelvis", "Spine_1", "Spine_2", "Spine_3", "Neck", "Head" }
