@@ -236,7 +236,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     fixture.Caster.Descriptor);
                 var context = new AbilityExecutionContext(data, data.CalculateParams(),
                     new TargetWrapper(fixture.Caster.Position), Rulebook.CurrentContext);
-                var rule = new RuleSummonUnit(fixture.Caster, prototype, fixture.Caster.Position, 100.Rounds(), 20)
+                // This argument overrides the creature's AddClassLevels,
+                // not caster level. Zero preserves the blueprint's printed
+                // progression;20 incorrectly made the8HD Salamander BAB20.
+                var rule = new RuleSummonUnit(fixture.Caster, prototype, fixture.Caster.Position, 100.Rounds(), 0)
                     { Context = context, Reason = context };
                 Rulebook.Trigger(rule);
                 if (rule.SummonedUnit == null) throw new InvalidOperationException("Native hybrid summon did not resolve.");
