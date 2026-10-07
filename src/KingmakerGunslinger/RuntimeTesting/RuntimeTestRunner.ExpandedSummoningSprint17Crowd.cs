@@ -1,5 +1,7 @@
 using System;
 using System.Linq;
+using Kingmaker;
+using Kingmaker.EntitySystem.Entities;
 using KingmakerGunslinger.Summoning;
 using UnityEngine;
 
@@ -9,6 +11,23 @@ namespace KingmakerGunslinger.RuntimeTesting
     {
         private UnityEngine.Object[] _snakeCrowdOwned;
         private string[] _snakeCrowdMeshNames;
+
+        private bool RestoreSprint17SnakeCrowdAwake(string key, out string evidence)
+        {
+            var live = Game.Instance.State.AwakeUnits;
+            var nativeAfter = live.ToArray();
+            string disposition;
+            bool restored = SerpentineCrowdReviewPolicy.RestoreOwnedAwake(key, live,
+                _creatureReviewCrowdAwakeBefore, _creatureReviewUnits, unit =>
+                    !unit.Destroyed && unit.View != null &&
+                    ReferenceEquals(unit.HoldingState, _creatureReviewCaster.HoldingState), out disposition);
+            Func<UnitEntityData[], string> ids = units => string.Join(",", units.Select(unit =>
+                unit == null ? "<null>" : unit.UniqueId).ToArray());
+            evidence = "disposition=" + disposition + ";before=" + ids(_creatureReviewCrowdAwakeBefore) +
+                ";nativeAfter=" + ids(nativeAfter) + ";restored=" + ids(live.ToArray()) +
+                ";owned=" + ids(_creatureReviewUnits);
+            return restored;
+        }
 
         // The existing guarded direct/quantity review owns every unit here.
         // Do not bind a mesh, force visibility, drive a pose or repair a view.

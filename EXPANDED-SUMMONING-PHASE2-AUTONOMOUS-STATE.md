@@ -1,6 +1,6 @@
 # Expanded Summoning Phase 2 autonomous state
 
-## CURRENT STATE, 2026-10-07 — laptop sole owner; exact4c95 crowd/persistence FAIL, restored; Sprint17 NOT QUALIFIED
+## CURRENT STATE, 2026-10-07 — laptop sole owner; bounded fixture repair SOURCE PASS; exact runtime NEXT; Sprint17 NOT QUALIFIED
 
 This section governs over historical mission/ownership statements below.
 HOWARD-LAPTOP / `codex/expanded-summoning-phase2b-sprints14-17` / draft PR26
@@ -33,6 +33,23 @@ deployment, force push or prohibited substitute subsystems.
   motion remains a stop; DATA motion informational. All old artifacts retained.
 
 ### Latest transaction and exact next gate
+
+[Bounded crowd/persistence fixture repair](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-CROWD-PERSISTENCE-REPAIR.md)
+is SOURCE PASS, runtime NOT RUN. Source parent:
+9de166145d71dbf5efafe33b88550d4539f76f2f. Only owned snake awake entries may
+be restored; foreign sequence changes reject without mutation. Exact
+before/native-after/restored identities are recorded. Venom arming now waits
+for native appearance/action/movement locks to clear and observes the actual
+bite, wound and native saving throws. No poison production change, forced
+save result, threshold waiver or extra save authority. The prior venom cause
+remains unresolved.
+
+Repair precommit PASS: 269 focused; all 2,071 domain tests (82.3s);
+complete repository/static/icon/manifest, clean 14-reference Release and
+strict 320-member package (178.6s); 508 preflight, 168 orchestration,
+17 provenance, persistence 11/6 round trips/3 defaults/56 rejects,
+crowd 8/11 and actual-launcher 13/10. Dirty-source output was never deployed.
+A new committed exact-head build and the full affected batch are mandatory.
 
 [Snake crowd/persistence attempt1](planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-CROWD-PERSISTENCE-ATTEMPT1-EVIDENCE.json):
 exact candidate4c95cf139847b765519eccd0b39117c8bf2e56cf is NOT QUALIFIED.
@@ -71,12 +88,13 @@ remains983828bf:smoke11/profile-body-rules62/commands51; all8 at-rule jaw
 gaps0m on genuine native long Bite variant01. That qualification does not
 transfer to another DLL, and no threshold/attack/reach change is accepted.
 
-Next: bounded owned-awake restoration with before/after identity evidence,
-and native venom-arming attack/save instrumentation. Preserve exact assertions;
-focused/source gates, coherent NOT QUALIFIED commit/policy push, a new exact
-artifact and the complete affected batch. Then native hit/death/fade/lifecycle,
+Next: commit/policy-push this NOT QUALIFIED source checkpoint, repeat every
+prelaunch check on that immutable head, then run smoke/direct/crowd/prepare/
+cleanup/absence in fresh guarded Steam640820 processes. Preserve all exact
+assertions and restore the actual leased snapshot. Absence requires a
+successful native cleanup save. Then native hit/death/fade/lifecycle,
 UI/private32 routes and separate Salamander. Sprint17 hidden/publication and
-fullPhase2B closure remain mandatory. STOP for owner review afterward;
+full Phase2B closure remain mandatory. STOP for owner review afterward;
 Phase2C authorized but deferred.32 roots remain hidden.
 
 ### Qualified versus NOT QUALIFIED
