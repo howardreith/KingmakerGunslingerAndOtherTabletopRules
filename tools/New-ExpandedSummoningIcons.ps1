@@ -46,6 +46,9 @@ function Get-Consumers([string]$Key, [object[]]$Entries) {
             $_.symbol -like "KMG.Summoning.Ability.*.$token.*" -or
             $_.symbol -like "KMG.Summoning.NativeOption.*.$token.*")
     } | ForEach-Object { $_.symbol })
+    if ($Key -ceq 'constrictor-snake') {
+        $matches += 'KMG.Summoning.Special.ConstrictorSnake.CombatTraits'
+    }
     return @($matches | Sort-Object -Unique)
 }
 
