@@ -39,6 +39,13 @@ namespace KingmakerGunslinger.Summoning
             return Enumerable.Range(0, 4).Where(i => IsGripDriver(names[i], side)).Sum(i => weights[i]) >= .5f;
         }
 
+        internal static bool BakeFrameMatches(float[] control, float[] live)
+        {
+            return control != null && live != null && control.Length == 16 && live.Length == 16 &&
+                Enumerable.Range(0, 16).All(i => SalamanderTailAnimationPolicy.Finite(control[i]) &&
+                    SalamanderTailAnimationPolicy.Finite(live[i]) && Math.Abs(control[i] - live[i]) <= .00001f);
+        }
+
         // The mesh exporter sorts names; anatomical order and skin palette
         // order are deliberately separate. Never assume an index range.
         internal static int BindingIndex(string name)

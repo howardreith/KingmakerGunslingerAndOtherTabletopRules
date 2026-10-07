@@ -187,6 +187,29 @@ namespace KingmakerGunslinger.DomainTests
                     "Missing or foreign anatomical palettes cannot satisfy a hand surface.");
         }
 
+        internal static void BakedControlRequiresTheExactFiniteLiveFrame()
+        {
+            float[] live = { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 12, 3, -8, 1 };
+            Assertions.True(SalamanderHumanBindingPolicy.BakeFrameMatches((float[])live.Clone(), live),
+                "A separate non-rendering control can share the exact live world frame without writing the live transform.");
+            for (int i = 0; i < 16; i++)
+            {
+                float[] changed = (float[])live.Clone(); changed[i] += .001f;
+                Assertions.False(SalamanderHumanBindingPolicy.BakeFrameMatches(changed, live),
+                    "Every matrix entry is checked; offsets, scale, rotation and shear cannot be approximated.");
+                foreach (float invalid in new[] { float.NaN, float.PositiveInfinity, float.NegativeInfinity })
+                {
+                    changed = (float[])live.Clone(); changed[i] = invalid;
+                    Assertions.False(SalamanderHumanBindingPolicy.BakeFrameMatches(changed, live), "Finite control required.");
+                    Assertions.False(SalamanderHumanBindingPolicy.BakeFrameMatches(live, changed), "Finite live frame required.");
+                }
+            }
+            Assertions.False(SalamanderHumanBindingPolicy.BakeFrameMatches(null, live), "No missing control.");
+            Assertions.False(SalamanderHumanBindingPolicy.BakeFrameMatches(live, null), "No missing native frame.");
+            Assertions.False(SalamanderHumanBindingPolicy.BakeFrameMatches(new float[15], live), "No partial matrix.");
+            Assertions.False(SalamanderHumanBindingPolicy.BakeFrameMatches(live, new float[17]), "No unknown layout.");
+        }
+
         internal static void OneTailAppendDoesNotReplaceOrMutateHumanActions()
         {
             object[] native = Enumerable.Range(0, 24).Select(_ => new object()).ToArray();
