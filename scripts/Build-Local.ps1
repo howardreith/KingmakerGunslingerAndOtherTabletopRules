@@ -143,6 +143,7 @@ foreach ($kind in @('viper','constrictor-snake','salamander')) {
     Copy-Item -LiteralPath (Join-Path $root "assets\sprint17-serpents\$kind-mesh.json") -Destination (Join-Path $buildOutput 'assets\sprint17-serpents') -Force
     Copy-Item -LiteralPath (Join-Path $root "assets\sprint17-serpents\$kind-albedo.png") -Destination (Join-Path $buildOutput 'assets\sprint17-serpents') -Force
 }
+Copy-Item -LiteralPath (Join-Path $root 'assets\sprint17-serpents\salamander-human-mesh.json') -Destination (Join-Path $buildOutput 'assets\sprint17-serpents') -Force
 $bundleManifest = Get-Content -LiteralPath (Join-Path $root 'assets\bundles\asset-bundle-manifest.json') -Raw | ConvertFrom-Json
 $bundleSource = 'C:\Dev\KingmakerGunslingerLab\unity-asset-build\KingmakerGunslinger-2018.4.10f1\Builds\Windows\kingmakergunslinger.firearms'
 if (-not (Test-Path -LiteralPath $bundleSource -PathType Leaf)) {
@@ -186,7 +187,7 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $stagedMod 'assets\soun
 # Strict package inventory including the six reviewed Sprint 12 quadruped
 # mesh/painting files. The soundbank and its manifest account for the optional
 # two-file difference.
-$expectedPackageFileCount = if ($hasFirearmSoundBank) { 320 } else { 318 }
+$expectedPackageFileCount = if ($hasFirearmSoundBank) { 321 } else { 319 }
 & $python (Join-Path $root 'tools\create_deterministic_package.py') --source $stagedMod --output $packagePath --expected-file-count $expectedPackageFileCount
 if ($LASTEXITCODE -ne 0) { throw 'Deterministic package creation failed.' }
 & (Join-Path $PSScriptRoot 'validate-package.ps1') `
