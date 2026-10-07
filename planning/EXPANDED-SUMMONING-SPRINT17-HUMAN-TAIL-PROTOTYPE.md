@@ -1,6 +1,6 @@
 # Sprint 17 Salamander original human/tail prototype
 
-Status: EXACT759 GUARD DIAGNOSTIC FIXTURE FAIL/RESTORED; Sprint17 NOT QUALIFIED. Production Salamander
+Status: EXACTd989 DIAGNOSTIC COMPLETE/BINDING GUARD FAIL/RESTORED; Sprint17 NOT QUALIFIED. Production Salamander
 identity, placements, profile and prefab remain unchanged. A separate original
 human/tail mesh is packaged for guarded research only.
 Laptop PR26 only; DATA salvage-only, ZERO PORTS.
@@ -252,11 +252,44 @@ complete repository/static/icon/manifest, clean14-reference Release and
 deterministic strict321 package177.5s. Logs:
 artifacts/sprint17-human-guard-registry-source-{focused,gate}.log.
 
+## Exact raw/effective boundary — cause identified
+
+Exactd989915120c7380a20ba33e83177c0cd20392dea passed292focused/2094full80.7s,
+complete176.4s/clean14/strict321 and every harness prelaunch gate.
+Smoke11/11 PASS, hybrid4/6 FAIL(expected15); exactly restored08:41:31.7143709UTC,
+ZERO save writes, no game/runtime lease/staging.
+[Exact bounded evidence](EXPANDED-SUMMONING-SPRINT17-HUMAN-TAIL-FALLBACK-EVIDENCE.json).
+
+The live manager and root are the same MyAnimationSet instance457560, with
+24actions and one transition. Its raw specials are Claw/Bite/Gore/Slam: no Tail.
+GetAction(Tail) nevertheless returns its exact raw MyAnimationSet_Slam,
+declared Slam. The registered CallOfTheWild.UnitAnimationManager_GetAction
+postfix is the effective fallback source. AnimationSet/AttackType getters are
+unpatched; their metadata calls are correctly skipped. Both core and provenance
+are complete and unchanged after reading. The original pre-allocation guard
+therefore conflated an effective fallback with a real existing Tail carrier.
+Rollback/body/playback/contact remain unqualified, not waived.
+
+Correction: keep exact human-root identity, reject every raw Tail, and allow
+only a null lookup or this identical raw native Slam reference declared Slam.
+All other effective results still fail. Append only the original owned Tail,
+preserving every native action and clip; the strict post-install lookup must
+return that owned action. No native Slam relabeling/playback/adoption, CoTW
+patch change/disabling, or global animation rewrite.
+The behavior test covers all eight guard states and exact-versus-foreign
+fallback reference identity. All15 runtime assertions are retained.
+Read-only pinned type metadata also confirms native Transition derives from
+UnityEngine.ScriptableObject; no transition cloning/ownership change was made.
+Fallback-boundary source gate PASS:292focused/2094unfiltered83.7s,
+complete repository/static/icon/manifest, clean14-reference Release and
+deterministic strict321 package178.0s. Logs:
+artifacts/sprint17-human-native-slam-source-{focused,gate}.log.
+
 ## Next exact work
 
-Qualify/commit/push this diagnostic, rebuild one exact candidate and run guarded
-working-save-smoke plus the unchanged bounded human review. Resolve the observed
-operand before changing binding. Preserve native two-handed spear handling
+Qualify/commit/push this fallback-boundary correction, rebuild one exact candidate
+and run guarded working-save-smoke plus the complete bounded human review.
+Preserve native two-handed spear handling
 and all native references. Prove the original tail with real commands, then
 finish Salamander's printed mechanics. Only a complete same-artifact Sprint17
 hidden/publication gate can publish the32 withheld snake roots.
