@@ -1,4 +1,4 @@
-﻿# Current architecture
+# Current architecture
 
 ## Retained public Brown-Fur direct-cast contract
 
@@ -864,8 +864,22 @@ contract, lifecycle and limits are in
 
 The optional Favored Class integration appends its owned leaf identities to
 the ledger after the Expanded Summoning Phase 1 append, for
-2460 stable IDs: 2458 active and 2 reserved (2172 before the merge with 0.0.139). It never compiles
+2461 stable IDs: 2459 active and 2 reserved (2172 before the merge with 0.0.139). It never compiles
 against Favored Class or Call of the Wild and never executes host code.
+
+Expanded Summoning Phase 2 preserves the accepted ledger prefix and appends
+the Dire Bat, Giant Wasp and Stirge identities, then 100 Sprint 11 ungulate
+unit/placement identities, two Rhino charge facts and three hidden trample
+abilities and Stirge's session-granted removal action: 2609 stable IDs: 2607 active and 2 reserved.
+The Wasp, Stirge and four Sprint 11 ungulate choices are published after their
+technical qualification.
+
+Sprint 12 appends 37 active Dire Rat identities: one unit, eighteen logical
+placements and eighteen celestial/fiendish execution children. It then appends
+the Dire Rat disease feature, Goblin Dog disease-traits feature, and Goblin Dog
+allergic-reaction buff. The resulting append-only ledger contains 2649 stable IDs: 2647 active and 2 reserved. Dire Rat, Dog, Hyena and Goblin Dog remain
+publication-gated while their Sprint 12 mechanics, distinct visuals and
+lifecycle are qualified.
 
 - **Pure policy** (`FavoredClass/`): `FavoredClassRankPolicy` (the host's
   full/partial alternation, N = fullRank + partialRank, with KMG-owned ceilings
@@ -894,3 +908,7 @@ against Favored Class or Call of the Wild and never executes host code.
 
 The host contract and its limits are in
 [FAVORED-CLASS-COMPATIBILITY.md](FAVORED-CLASS-COMPATIBILITY.md).
+
+## DATA 0.0.142 candidate
+
+The eleven stable elemental character-trait identities append after the exact released 0.0.141 ledger. The current registry has 2660 stable IDs: 2658 active and 2 reserved. All released Summoning entries remain unchanged. A late, all-four Favored Class publication coordinator registers save-resolvable identities even when acquisition is unavailable; settings withdrawal removes only owned selection entries. Provider reconciliation removes exact owned facts on Elemental Races OFF and rebuilds one provider on ON. Native runtime and persistence qualification remain pending.

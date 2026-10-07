@@ -207,6 +207,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool _expandedSummoningPersistenceIdentityValid;
         private string _expandedSummoningPersistencePteranodonVisual = "<not observed>";
         private bool _expandedSummoningPersistencePteranodonVisualValid;
+        private string _expandedSummoningPersistenceFlyingVisual = "<not observed>";
+        private bool _expandedSummoningPersistenceFlyingVisualValid;
         private bool _expandedSummoningPersistenceContextValid;
         private bool _expandedSummoningPersistenceDurationValid;
         private bool _expandedSummoningPersistenceControlValid;
@@ -330,6 +332,38 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal bool SuperiorSummoning;
             internal bool RepresentativeCombat;
             internal bool SpecialAdaptations;
+            internal bool WaspVerminImmunity;
+            internal string WaspVerminImmunityDetail;
+            internal bool StirgeTouchAttack;
+            internal string StirgeTouchAttackDetail;
+            internal bool StirgeAttachment;
+            internal string StirgeAttachmentDetail;
+            internal bool StirgeFirstDrain;
+            internal string StirgeFirstDrainDetail;
+            internal bool StirgeDisease;
+            internal string StirgeDiseaseDetail;
+            internal bool StirgeFourPointDetach;
+            internal string StirgeFourPointDetachDetail;
+            internal bool StirgeEscapeAndTransition;
+            internal string StirgeEscapeAndTransitionDetail;
+            internal bool StirgeQuantityFreedom;
+            internal string StirgeQuantityFreedomDetail;
+            internal bool StirgeDismissal;
+            internal string StirgeDismissalDetail;
+            internal bool StirgePreyDeath;
+            internal string StirgePreyDeathDetail;
+            internal bool StirgeExpiry;
+            internal string StirgeExpiryDetail;
+            internal bool Sprint12DireRatDisease;
+            internal string Sprint12DireRatDiseaseDetail;
+            internal bool Sprint12GoblinDogAllergy;
+            internal string Sprint12GoblinDogAllergyDetail;
+            internal bool Sprint12DiseaseQuantity;
+            internal string Sprint12DiseaseQuantityDetail;
+            internal bool Sprint12DonorRigs;
+            internal string Sprint12DonorRigsDetail;
+            internal bool Sprint12OriginalVisuals;
+            internal string Sprint12OriginalVisualsDetail;
             internal bool HostileAbilityTarget;
             internal int AdditionalCasts;
             internal readonly List<string> Diagnostics = new List<string>();
@@ -640,12 +674,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableMagicCircleEvil &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableMagicCircleUi &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableMagicCircleTerrain &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.ObservePublishedElementalCharacterTraits &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.ObserveUnpublishedRaceTraitFoundations &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.ObserveUnpublishedWhiteoutFoundation &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.ObserveWhiteoutDisposableWeatherFixture &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.ObserveUnpublishedAerialObserverFoundation &&
+                    _request.Scenario != RuntimeTestScenarioCatalog.ObserveWhiteoutWeather &&
                     !RuntimeTestScenarioCatalog.IsMagicCirclePersistence(_request.Scenario) &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast &&
                     _request.Scenario != RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap &&
                     !IsTeleportationCoexistenceFixture &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationPersistence &&
                     _request.Scenario != FcbPersistenceIdentity.Scenario &&
+                    _request.Scenario != ElementalCharacterTraitSaveContract.Scenario &&
                     _request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity &&
                     _request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveFavoredClassVisualCensus &&
                     _request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveFavoredClassLifecycle &&
@@ -771,6 +812,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _request.Scenario))
                 {
                     RunSummonSameTurnCompatibility();
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutWeatherCatalog)
+                {
+                    if (!BlueprintBootstrap.IsInitialized || ResourcesLibrary.Preloading) return;
+                    Complete(RunWhiteoutWeatherCatalogObservation());
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.ObserveModelDVendors)
+                {
+                    if (!BlueprintBootstrap.IsInitialized || ResourcesLibrary.Preloading) return;
+                    Complete(RunModelDVendorObservation());
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.ObserveFirearmDescriptions)
+                {
+                    if (!BlueprintBootstrap.IsInitialized || ResourcesLibrary.Preloading) return;
+                    Complete(RunFirearmDescriptionObservation());
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.ModLoadSmoke)
@@ -1014,6 +1073,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ObserveFeatureModuleSettings)
                 {
                     Complete(RunFeatureModuleSettingsObservation());
+                    return;
+                }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.
+                    ObserveExpandedSummoningModuleBoundary)
+                {
+                    Complete(RunExpandedSummoningModuleBoundaryObservation());
                     return;
                 }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.
@@ -1969,12 +2034,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleEvil ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleUi ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleTerrain ||
+                _request.Scenario == RuntimeTestScenarioCatalog.ObservePublishedElementalCharacterTraits ||
+                _request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedRaceTraitFoundations ||
+                _request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedWhiteoutFoundation ||
+                _request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutDisposableWeatherFixture ||
+                _request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedAerialObserverFoundation ||
+                _request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutWeather ||
                     RuntimeTestScenarioCatalog.IsMagicCirclePersistence(_request.Scenario) ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
                     _request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap ||
                     IsTeleportationCoexistenceFixture ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationPersistence ||
                     _request.Scenario == FcbPersistenceIdentity.Scenario ||
+                    _request.Scenario == ElementalCharacterTraitSaveContract.Scenario ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity ||
                     _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveFavoredClassVisualCensus ||
                     _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveFavoredClassLifecycle ||
@@ -2087,12 +2159,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleEvil ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleUi ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleTerrain ||
+                _request.Scenario == RuntimeTestScenarioCatalog.ObservePublishedElementalCharacterTraits ||
+                _request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedRaceTraitFoundations ||
+                _request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedWhiteoutFoundation ||
+                _request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutDisposableWeatherFixture ||
+                _request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedAerialObserverFoundation ||
+                _request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutWeather ||
                     RuntimeTestScenarioCatalog.IsMagicCirclePersistence(_request.Scenario) ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
                     _request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap ||
                     IsTeleportationCoexistenceFixture ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationPersistence ||
                     _request.Scenario == FcbPersistenceIdentity.Scenario ||
+                    _request.Scenario == ElementalCharacterTraitSaveContract.Scenario ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity ||
                     _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveFavoredClassVisualCensus ||
                     _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveFavoredClassLifecycle ||
@@ -2178,6 +2257,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _teleportPersistencePlan = new TeleportPersistencePlan(_request);
                 if (_request.Scenario == FcbPersistenceIdentity.Scenario)
                     _fcbPersistencePlan = new FcbPersistencePlan(_request);
+                if (_request.Scenario == ElementalCharacterTraitSaveContract.Scenario)
+                    _traitSavePlan = new ElementalCharacterTraitSavePlan(_request);
                 _workingSaveSmoke = new WorkingSaveSmokeScenario(
                     _context, _elapsed, _request.RunId, _trace.Record,
                     _request.Scenario ==
@@ -2190,6 +2271,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         RuntimeTestScenarioCatalog.ObserveWorkingSaveSelectionLoadAction,
                     _request.Scenario ==
                         RuntimeTestScenarioCatalog.ObserveWorkingSaveReceiverBoundAction,
+                    _traitSavePlan != null ? _traitSavePlan.Identity :
                     _teleportPersistencePlan != null ? _teleportPersistencePlan.Identity :
                     _fcbPersistencePlan != null ? _fcbPersistencePlan.Identity :
                     _request.Scenario == RuntimeTestScenarioCatalog
@@ -2217,7 +2299,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ? WorkingSaveSmokeIdentity
                                     .InHarmsWayHumanRepro
                             : null,
-                    pauseOnLoadCompletion: _request.Scenario ==
+                    pauseOnLoadCompletion: _request.Scenario == ElementalCharacterTraitSaveContract.Scenario || _request.Scenario ==
                         RuntimeTestScenarioCatalog.WorkingSaveFavoredClassVisualCensus ||
                         _request.Scenario ==
                         RuntimeTestScenarioCatalog.WorkingSaveFavoredClassLifecycle ||
@@ -2229,6 +2311,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalDeferredMarkers);
                 _workingStartupStage = "hooks-install-start";
                 WriteLifecycleStage(_workingStartupStage);
+                if (_traitSavePlan != null) _workingSaveSmoke.RestrictToTransactionOwnedWrites();
                 _workingSaveSmoke.Install();
                 StartTeleportationLoadDiagnostics();
                 _workingStartupStage = "hooks-install-complete";
@@ -2568,6 +2651,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             if (_workingSaveSmoke.Complete)
             {
+                if (_traitSavePlan != null) { PollElementalTraitSave(); return; }
                 if (IsMidgameWorkingScenario()) { PollWorkingMidgameFirearms(); }
                 else
                 if (_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveElementalCharacterCreation ||
@@ -2744,6 +2828,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 else if (RuntimeTestScenarioCatalog.IsMagicCirclePersistence(_request.Scenario))
                 { PollMagicCirclePersistence(); }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedAerialObserverFoundation)
+                {
+                    var loading = Kingmaker.EntitySystem.Persistence.LoadingProcess.Instance;
+                    if (loading.IsLoadingInProcess || loading.IsLoadingScreenActive || loading.IsManualLoadingScreenActive) return;
+                    Complete(RunUnpublishedAerialObserverFoundation());
+                }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog.ObservePublishedElementalCharacterTraits)
+                {
+                    var loading = Kingmaker.EntitySystem.Persistence.LoadingProcess.Instance;
+                    if (loading.IsLoadingInProcess || loading.IsLoadingScreenActive || loading.IsManualLoadingScreenActive) return;
+                    Complete(RunPublishedElementalCharacterTraits());
+                }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedRaceTraitFoundations)
+                {
+                    var loading = Kingmaker.EntitySystem.Persistence.LoadingProcess.Instance;
+                    if (loading.IsLoadingInProcess || loading.IsLoadingScreenActive || loading.IsManualLoadingScreenActive) return;
+                    Complete(RunUnpublishedRaceTraitFoundations());
+                }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedWhiteoutFoundation ||
+                    _request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutDisposableWeatherFixture)
+                { PollWhiteoutDisposableFixture(); }
+                else if (_request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutWeather)
+                { PollWhiteoutWeather(); }
                 else if (_request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleUi ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleTerrain)
                 { PollMagicCircleUi(); }
@@ -3824,11 +3931,66 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ";" + DescribePteranodonRenderers(value.View)).ToArray());
                 _expandedSummoningPersistencePteranodonVisualValid = prepare || verifyCleanup
                     ? pteranodons.Length == 1 && pteranodons.All(value =>
-                        value.View != null && ExpandedSummoningPteranodonViewPatch
-                            .DescribeView(value.View).StartsWith("visual:attached;",
-                                StringComparison.Ordinal) &&
-                        IsPteranodonAttached(DescribePteranodonRenderers(value.View)))
+                        value.View != null && (active ?
+                            ExpandedSummoningPteranodonViewPatch
+                                .DescribeView(value.View).StartsWith("visual:attached;",
+                                    StringComparison.Ordinal) &&
+                            IsPteranodonAttached(DescribePteranodonRenderers(value.View)) :
+                            ExpandedSummoningPteranodonViewPatch
+                                .DescribeView(value.View) ==
+                                    "donor-visual:module-disabled" &&
+                            IsUsableDisabledSummonDonor(
+                                DescribePteranodonRenderers(value.View))))
                     : pteranodons.Length == 0;
+                string eagleName = "KMG_Summoning_Unit_Eagle";
+                string batName = "KMG_Summoning_Unit_DireBat";
+                UnitEntityData[] flying = units.Where(value => value != null &&
+                    value.Blueprint != null && (value.Blueprint.name == eagleName ||
+                        value.Blueprint.name == batName)).ToArray();
+                _expandedSummoningPersistenceFlyingVisual = flying.Length == 0
+                    ? "eagle=0;direBat=0"
+                    : string.Join("|", flying.Select(value => value.Blueprint.name +
+                        ";view=" + (value.View != null &&
+                            ReferenceEquals(value.View.Data, value)) +
+                        ";visual=" + (value.View == null ? "no-view" :
+                            ExpandedSummoningPteranodonViewPatch.DescribeView(value.View)) +
+                        ";renderer=" + (value.View == null ? "no-view" :
+                            DescribePteranodonRenderers(value.View))).ToArray());
+                _expandedSummoningPersistenceFlyingVisualValid = prepare ||
+                    verifyCleanup
+                    ? flying.Count(value => value.Blueprint.name == eagleName) == 1 &&
+                        flying.Count(value => value.Blueprint.name == batName) == 1 &&
+                        flying.All(value => value.View != null &&
+                            ReferenceEquals(value.View.Data, value) &&
+                            (active ? (value.Blueprint.name == eagleName
+                                ? IsEagleAttached(
+                                    DescribePteranodonRenderers(value.View))
+                                : IsDireBatAttached(
+                                    DescribePteranodonRenderers(value.View))) :
+                                ExpandedSummoningPteranodonViewPatch
+                                    .DescribeView(value.View) ==
+                                        "donor-visual:module-disabled" &&
+                                IsUsableDisabledSummonDonor(
+                                    DescribePteranodonRenderers(value.View))))
+                    : flying.Length == 0;
+            }
+
+            if (!cleanupContinuation)
+            {
+                if (prepare)
+                    _expandedSummoningPersistenceStirgeValid =
+                        PrepareExpandedSummoningPersistentStirge(units,
+                            out _expandedSummoningPersistenceStirgeDetail);
+                else if (verifyCleanup)
+                    _expandedSummoningPersistenceStirgeValid =
+                        VerifyExpandedSummoningReloadedStirge(units,
+                            out _expandedSummoningPersistenceStirgeDetail);
+                else
+                {
+                    _expandedSummoningPersistenceStirgeValid = units.Length == 0;
+                    _expandedSummoningPersistenceStirgeDetail =
+                        "post-cleanup-units=" + units.Length;
+                }
             }
 
             if (verifyCleanup)
@@ -3882,6 +4044,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _expandedSummoningPersistenceDurationValid &&
                 _expandedSummoningPersistenceControlValid &&
                 _expandedSummoningPersistenceCleanupValid &&
+                _expandedSummoningPersistenceStirgeValid &&
                 (prepare || verifyCleanup ?
                     _expandedSummoningPersistenceUnitCount ==
                         ExpandedSummoningPersistenceFixtureCount :
@@ -3948,6 +4111,11 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static readonly string[][] ExpandedSummoningPersistenceFixture =
         {
             new[] { "Monster", "pteranodon", "4" },
+            // Sprint 9: the bird and bat visuals must reattach on load.
+            new[] { "Monster", "eagle", "1" },
+            new[] { "NaturesAlly", "dire-bat", "3" },
+            // Sprint 10: save while this Stirge is attached to the Pony.
+            new[] { "NaturesAlly", "stirge", "1" },
             new[] { "Monster", "small-air-elemental", "2" },
             new[] { "NaturesAlly", "wolf", "2" },
             // Sprint 3
@@ -4333,12 +4501,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _expandedSummoningPersistencePublicationValid,
                     "required base parents with always-registered identities"),
                 Assertion("expanded-summoning-persistent-pteranodon-visual",
-                    writes ? "one Pteranodon whose view carries the original mesh and albedo on the donor's renderer" +
-                        (verifyCleanup ? ", re-attached on the freshly deserialized unit" : "")
+                    writes ? (_context.FeatureModules.Active.ExpandedSummoning ?
+                        "one Pteranodon whose view carries the original mesh and albedo on the donor's renderer" +
+                            (verifyCleanup ? ", re-attached on the freshly deserialized unit" : "") :
+                        "one freshly deserialized Pteranodon with a visible native donor renderer and no project-owned visual")
                         : "no Pteranodon after cleanup",
                     _expandedSummoningPersistencePteranodonVisual,
                     _expandedSummoningPersistencePteranodonVisualValid,
                     "ExpandedSummoningPteranodonViewPatch.DescribeView and the renderer state on the persistent unit"),
+                Assertion("expanded-summoning-persistent-eagle-bat-visuals",
+                    writes ? (_context.FeatureModules.Active.ExpandedSummoning ?
+                        "one Eagle and one Dire Bat with their own skinned mesh/material on attached views" +
+                            (verifyCleanup ? ", reattached after loading the working save" : "") :
+                        "one freshly deserialized Eagle and Dire Bat each with a visible native donor renderer and no project-owned visual")
+                        : "no Eagle or Dire Bat after cleanup",
+                    _expandedSummoningPersistenceFlyingVisual,
+                    _expandedSummoningPersistenceFlyingVisualValid,
+                    "exact unit identities, attached view.Data, and module-appropriate renderer state after native save/load"),
                 Assertion("expanded-summoning-pteranodon-motion-review",
                     writes ? "four party-camera renders of the " + (prepare ? "freshly cast" : "freshly deserialized") +
                         " Pteranodon - idle, moving twice, attacking - each with the creature in frame"
@@ -4353,6 +4532,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _expandedSummoningPersistenceLinkDetail,
                     writes ? _expandedSummoningPersistenceLinkValid : true,
                     "the serialized link part on each holder, resolved against the reloaded body, and SummonHoldComponent.MaintainLink"),
+                Assertion("expanded-summoning-stirge-attached-save-load",
+                    prepare ? "one Stirge attached to a disposable summoned Pony at the save boundary" :
+                        verifyCleanup ? "after reload neither side retains a grapple part, hold buff or immobilizing condition" :
+                        "after cleanup neither summon remains",
+                    _expandedSummoningPersistenceStirgeDetail,
+                    _expandedSummoningPersistenceStirgeValid,
+                    "exact working-save write and fresh-load native grapple parts, buffs and conditions"),
                 Assertion("expanded-summoning-cyclops-flash-persistence",
                     prepare ? "the Cyclops's Flash of Insight spent and armed (an arming with no duration of its own) before the save" :
                         verifyCleanup ? "after the reload the resource is still spent, the ability unavailable and the arming present exactly once; the next attack's own d20 is the chosen 20 and the arming is gone; the attack after it rolls its own 1 and misses" :
@@ -5796,12 +5982,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleEvil ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleUi ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleTerrain ||
+                _request.Scenario == RuntimeTestScenarioCatalog.ObservePublishedElementalCharacterTraits ||
+                _request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedRaceTraitFoundations ||
+                _request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedWhiteoutFoundation ||
+                _request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutDisposableWeatherFixture ||
+                _request.Scenario == RuntimeTestScenarioCatalog.ObserveUnpublishedAerialObserverFoundation ||
+                _request.Scenario == RuntimeTestScenarioCatalog.ObserveWhiteoutWeather ||
                     RuntimeTestScenarioCatalog.IsMagicCirclePersistence(_request.Scenario) ||
                 _request.Scenario == RuntimeTestScenarioCatalog.DisposableBrownFurNativeCast ||
                 _request.Scenario == RuntimeTestScenarioCatalog.ObserveTeleportationWorldMap ||
                 IsTeleportationCoexistenceFixture ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationPersistence ||
                     _request.Scenario == FcbPersistenceIdentity.Scenario ||
+                    _request.Scenario == ElementalCharacterTraitSaveContract.Scenario ||
                     _request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationFamiliarity ||
                     _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveFavoredClassVisualCensus ||
                     _request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveFavoredClassLifecycle ||
@@ -11109,23 +11302,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                         !capitalEntries.Any(value => value.Contains("<null>")),
                     "SmithVendorTable LootItemsPackFixed fields"),
                 Assertion("gunslinger-capital-vendor-publication",
-                    "ten exact early/+1/supply entries including Paper, one Blunderbuss, and zero retired maintenance kits",
-                    observed, projectEntries == 10 && invalidProjectCounts == 0 &&
-                        blunderbussEntries == 1 && capitalRetiredKitRows == 0,
-                    "registered early and +1 firearms, ammunition, and the reusable Gunsmith's Kit"),
-                Assertion("oleg-firearm-supplies-absent",
-                    "exact Oleg table contains zero project-owned firearm-supply rows",
+                    "seven exact +1/supply entries including Paper, no mundane Blunderbuss, and zero retired maintenance kits",
+                    observed, projectEntries == 7 && invalidProjectCounts == 0 &&
+                        blunderbussEntries == 0 && capitalRetiredKitRows == 0,
+                    "registered +1 firearms, ammunition, and the reusable Gunsmith's Kit"),
+                Assertion("oleg-firearm-supplies-model-d",
+                    "exact Oleg table contains powder and ball supply rows; no retired kits",
                     observed, olegTable != null && string.Equals(olegTable.name,
-                        OlegFirearmSupplyCleanupBlueprints.ExpectedTableName,
+                        OlegFirearmVendorBlueprints.ExpectedTableName,
                         StringComparison.Ordinal) && olegRepairRows == 0 &&
-                        olegOverhaulRows == 0 && olegOwnedSupplyRows == 0,
+                        olegOverhaulRows == 0 && olegOwnedSupplyRows == 2,
                     "exact BlueprintSharedVendorTable and project-owned item references"),
                 Assertion("oleg-vendor-owners",
                     "OTP_Oleg and OTP_Oleg_FirstVisit are the two exact direct table owners",
                     observed, olegOwnerContracts,
                     "read-only direct blueprint reference index and exact owner GUIDs"),
                 Assertion("bokken-firearm-supply-stock",
-                    "exact Bokken unit-loot table contains the four stocked firearm-supply rows and zero retired kit rows",
+                    "exact Bokken unit-loot table contains the three stocked firearm-supply rows and zero retired kit rows",
                     observed, bokkenTable != null && string.Equals(bokkenTable.name,
                         BokkenFirearmSupplyVendorBlueprints.ExpectedTableName,
                         StringComparison.Ordinal) && bokkenPowderRows == 1 &&
@@ -11136,8 +11329,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         bokkenPaperRows == 1 && bokkenPaperCount ==
                             BokkenFirearmSupplyVendorBlueprints.AmmunitionCount &&
                         bokkenRepairRows == 0 && bokkenOverhaulRows == 0 &&
-                        bokkenGunsmithRows == 1 && bokkenGunsmithCount ==
-                            BokkenFirearmSupplyVendorBlueprints.GunsmithKitCount,
+                        bokkenGunsmithRows == 0,
                     "exact BlueprintUnitLoot and project-owned item references"),
                 Assertion("bokken-vendor-owners",
                     "OTP_Bokken and OTP_Bokken_ZeroState are the two exact direct loot-table owners",
@@ -14820,6 +15012,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             int sharedComponents = 0, prohibitedReferences = 0,
                 nonemptyInventories = 0, inheritedSpellArrays = 0,
                 extraplanarMarkers = 0;
+            var prohibitedReferenceDetails = new List<string>();
             foreach (SummonCreatureSpec creature in ExpandedSummoningCatalog.All)
             {
                 BlueprintUnit unit = all.OfType<BlueprintUnit>().Single(value =>
@@ -14843,15 +15036,30 @@ namespace KingmakerGunslinger.RuntimeTesting
                             values != null && values.Length != 0) inheritedSpellArrays++;
                         if (values == null || !typeof(BlueprintScriptableObject)
                             .IsAssignableFrom(field.FieldType.GetElementType())) continue;
-                        prohibitedReferences += values.Cast<object>()
-                            .OfType<BlueprintScriptableObject>().Count(value =>
-                                ExpandedSummoningIsForbiddenReference(value));
+                        foreach (BlueprintScriptableObject value in values
+                            .Cast<object>().OfType<BlueprintScriptableObject>()
+                            .Where(ExpandedSummoningIsForbiddenReference))
+                        {
+                            prohibitedReferences++;
+                            prohibitedReferenceDetails.Add(unit.name + "/" +
+                                component.GetType().Name + "." + field.Name +
+                                "=" + value.name + ":" + value.AssetGuid);
+                        }
                     }
                 }
                 if (unit.AddFacts != null)
                 {
-                    prohibitedReferences += unit.AddFacts.Count(value => value == null ||
-                        ExpandedSummoningIsForbiddenReference(value));
+                    foreach (BlueprintUnitFact value in unit.AddFacts.Where(
+                        value => value == null ||
+                            !ExpandedSummoningIsApprovedUngulateDirectFact(
+                                unit, value) &&
+                            ExpandedSummoningIsForbiddenReference(value)))
+                    {
+                        prohibitedReferences++;
+                        prohibitedReferenceDetails.Add(unit.name + "/AddFacts=" +
+                            (value == null ? "<null>" :
+                                value.name + ":" + value.AssetGuid));
+                    }
                     extraplanarMarkers += unit.AddFacts.Count(value => value != null &&
                         value.name == "KMG_Summoning_Subtype_Extraplanar");
                 }
@@ -14979,6 +15187,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             ExpandedSummoningMenuAudit menuAudit =
                 AuditExpandedSummoningMenus(all, canonicalSummonParents,
                     logicalVariants);
+            BlueprintUnitType publishedWaspType = all.OfType<BlueprintUnitType>()
+                .Single(value => value.name ==
+                    "KMG_Summoning_Natural_GiantWasp_UnitType");
+            BlueprintUnit publishedWasp = all.OfType<BlueprintUnit>()
+                .Single(value => value.name == "KMG_Summoning_Unit_GiantWasp");
+            bool publishedWaspTypeIconExact =
+                ReferenceEquals(publishedWasp.Type, publishedWaspType) &&
+                ReferenceEquals(publishedWaspType.Image,
+                    ExpandedSummoningProjectIcons.Require("giant-wasp"));
             string menuContactSheetEvidence =
                 WriteExpandedSummoningMenuEvidenceIndex(
                     canonicalSummonParents, _request.EvidenceDirectory);
@@ -15570,6 +15787,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             int distinctDonors = ExpandedSummoningDonorCatalog.All
                 .Select(value => value.Guid).Distinct(StringComparer.Ordinal)
                 .Count();
+            BlueprintUnit stirge = all.OfType<BlueprintUnit>().Single(value =>
+                value.name == "KMG_Summoning_Unit_Stirge");
+            BlueprintItemWeapon stirgeTouch = all.OfType<BlueprintItemWeapon>()
+                .Single(value => value.name ==
+                    "KMG_Summoning_Natural_StirgeTouch");
+            bool stirgeTouchExact = stirgeTouch.AttackType == AttackType.Touch &&
+                stirgeTouch.Damage.Rolls == 0 &&
+                stirgeTouch.Damage.Dice == DiceType.Zero &&
+                ReferenceEquals(stirge.Body.PrimaryHand, stirgeTouch);
             var assertions = new List<RuntimeTestAssertion>
             {
                 Assertion("summon-family-ability-candidates", ">=18",
@@ -15599,6 +15825,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         kmgAbilities == expectedKmgAbilities &&
                         BlueprintBootstrap.RegisteredBlueprintCount == BlueprintBootstrap.ExpectedRegisteredBlueprintCountForCurrentRuntime,
                     "exact final-live KMG blueprint identity scan"),
+                Assertion("expanded-summoning-stirge-touch-carrier",
+                    "published Stirge primary attack uses native melee touch AC and zero base dice",
+                    "type=" + stirgeTouch.AttackType + ";dice=" +
+                        stirgeTouch.Damage + ";primary=" +
+                        ReferenceEquals(stirge.Body.PrimaryHand, stirgeTouch),
+                    stirgeTouchExact,
+                    "live Stirge body and exact project weapon blueprint"),
                 Assertion("expanded-summoning-lantern-archon", "exact",
                     lanternExact ? "exact" : "mismatch", lanternExact,
                     "2-HD Small LG Will-o'-Wisp view, bounded dual 1d6 touch rays, native aura, and KMG defenses"),
@@ -15720,6 +15953,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         menuAudit.CategoryIconsDistinct,
                     menuAudit.PresentationExact,
                     "reference-exact display sequence, immutable creature icon catalog, and localized quantity suffixes"),
+                Assertion("expanded-summoning-wasp-inspectable-type-icon",
+                    "original Giant Wasp sprite on the summoned unit's inspectable type",
+                    publishedWaspTypeIconExact ? "exact" : "mismatch",
+                    publishedWaspTypeIconExact,
+                    "final-live BlueprintUnit.Type and BlueprintUnitType.Image reference identity"),
                 Assertion("expanded-summoning-menu-counts",
                     "18 exact before/after tier and multiplicity equations",
                     menuAudit.Counts, menuAudit.CountMismatches == 0,
@@ -15744,7 +15982,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "all " + ExpandedSummoningCatalog.All.Count +
                         " KMG units versus frozen donor component references"),
                 Assertion("expanded-summoning-prohibited-references", "0",
-                    prohibitedReferences.ToString(), prohibitedReferences == 0,
+                    prohibitedReferences == 0 ? "0" :
+                        prohibitedReferences + ":" + string.Join("|",
+                            prohibitedReferenceDetails.ToArray()),
+                    prohibitedReferences == 0,
                     "direct facts and component blueprint-array grants"),
                 Assertion("expanded-summoning-extraplanar-markers",
                     ExpandedSummoningCatalog.All.Count.ToString(),
@@ -16266,7 +16507,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         SummonVisibilityCatalog.PublishedLogicalPlacementCount +
                         " visible roots live with one-slot and quantity contracts; " +
                         SummonVisibilityCatalog.SuppressedLogicalPlacementCount +
-                        " Dire Bat identities registered but unpublished",
+                        " registered identities unpublished",
                     broadCases.Count(value => value.LiveContract &&
                         value.SlotContract && value.QuantityContract) + "/" +
                         broadCases.Count, allBroadPlayerPaths,
@@ -16817,8 +17058,23 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             int patchOutcomesBefore =
                 ExpandedSummoningPteranodonViewPatch.ObservedOutcomes.Count;
+            int patchOutcomesAfterCoverage = -1;
+            int ungulateVisualChecked = 0;
+            int ungulateVisualAttached = 0;
+            int sprint12VisualChecked = 0;
+            int sprint12VisualAttached = 0;
             BlueprintScriptableObject[] blueprints = BlueprintBootstrap.Library
                 .GetAllBlueprints().Where(value => value != null).ToArray();
+            BlueprintFeature direBatSense = blueprints.OfType<BlueprintFeature>()
+                .Single(value => value.name == ExpandedSummoningInternalName(
+                    "KMG.Summoning.Natural.DireBat.Blindsense"));
+            var direBatSenseComponents = direBatSense.ComponentsArray.OfType<
+                Kingmaker.Designers.Mechanics.Facts.Blindsense>().ToArray();
+            bool direBatSenseDefinition = direBatSense.ComponentsArray.Length == 1 &&
+                direBatSenseComponents.Length == 1 &&
+                !direBatSenseComponents[0].Blindsight &&
+                Math.Abs(direBatSenseComponents[0].Range.Meters -
+                    new Kingmaker.Utility.Feet(40).Meters) < 0.001f;
             IReadOnlyList<SummonVariantSpec> monster =
                 ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster);
             IReadOnlyList<SummonVariantSpec> ally =
@@ -16843,8 +17099,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .Where(value => !oneD3.Contains(value) &&
                     !oneD4PlusOne.Contains(value))
                 .ToArray();
+            // The alphabetical tier sample cannot establish Wasp's own
+            // quantity contract. Cast both quantities in both families while
+            // every Wasp menu placement remains suppressed.
+            SummonVariantSpec[] waspCrowd = monster.Concat(ally)
+                .Where(value => value.Creature.Key == "giant-wasp" &&
+                    value.Multiplicity != SummonMultiplicity.One)
+                .GroupBy(value => new { value.Family, value.Multiplicity })
+                .Select(group => group.OrderBy(value => value.ParentTier).First())
+                .Where(value => !oneD3.Contains(value) &&
+                    !oneD4PlusOne.Contains(value))
+                .ToArray();
+            string[] ungulateKeys = {
+                "aurochs", "bison", "rhinoceros", "woolly-rhinoceros"
+            };
+            SummonVariantSpec[] ungulateCrowd = monster.Concat(ally)
+                .Where(value => ungulateKeys.Contains(value.Creature.Key) &&
+                    value.Multiplicity != SummonMultiplicity.One)
+                .GroupBy(value => new { value.Creature.Key, value.Family,
+                    value.Multiplicity })
+                .Select(group => group.OrderBy(value => value.ParentTier).First())
+                .ToArray();
+            SummonVariantSpec[] ungulateExtra = ungulateCrowd
+                .Where(value => !oneD3.Contains(value) &&
+                    !oneD4PlusOne.Contains(value)).ToArray();
             SummonVariantSpec[] casts = oneCreature.Concat(oneD3)
-                .Concat(oneD4PlusOne).Concat(pteranodonCrowd).ToArray();
+                .Concat(oneD4PlusOne).Concat(pteranodonCrowd)
+                .Concat(waspCrowd).Concat(ungulateExtra).ToArray();
             // One own-tier single per roster entry in each family, plus the
             // alphabetical 1d3 / 1d4+1 coverage samples; both move with the roster.
             int rosterEntries = ExpandedSummoningCatalog.All.Count(value =>
@@ -16865,7 +17146,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             int completed = 0, spawnedTotal = 0, singleExact = 0,
                 oneD3Legal = 0, oneD4PlusOneLegal = 0, sameKind = 0,
                 durationExact = 0, legalPlacement = 0,
-                illegalPlacementRejected = 0, pteranodonCrowdLegal = 0;
+                illegalPlacementRejected = 0, pteranodonCrowdLegal = 0,
+                waspCrowdLegal = 0, ungulateCrowdLegal = 0,
+                ungulateExtraLegal = 0,
+                direBatSenseChecked = 0, direBatSensePassed = 0,
+                birdSenseChecked = 0, birdSenseClean = 0;
             var observedCounts = new List<string>();
             var durationObservations = new List<string>();
             var durationProfiles = new HashSet<string>(StringComparer.Ordinal);
@@ -17084,6 +17369,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                         throw new InvalidOperationException(
                             "Spawn result mismatch: count=" + count + ";kind=" +
                             exactKind + ";expected=" + expectedUnit.name + ".");
+                    if (variant.Creature.Key == "dire-bat")
+                    {
+                        foreach (UnitEntityData unit in spawned)
+                        {
+                            direBatSenseChecked++;
+                            var part = unit.Get<Kingmaker.UnitLogic.Parts.UnitPartBlindsense>();
+                            if (unit.Descriptor.HasFact(direBatSense) && part != null &&
+                                part.Reach(caster)) direBatSensePassed++;
+                        }
+                    }
+                    else if (variant.Creature.Key == "eagle" ||
+                        variant.Creature.Key == "pteranodon" ||
+                        variant.Creature.Key == "roc")
+                    {
+                        foreach (UnitEntityData unit in spawned)
+                        {
+                            birdSenseChecked++;
+                            if (!unit.Descriptor.HasFact(direBatSense)) birdSenseClean++;
+                        }
+                    }
                     // Sprint 2 needs the Pteranodon's attached view contract -
                     // the controller, clips, attack and impact event frames, and
                     // effect anchors that only exist once a view attaches to a
@@ -17135,6 +17440,101 @@ namespace KingmakerGunslinger.RuntimeTesting
                             _pteranodonWithdrawal = null;
                         }
                     }
+                    else if (variant.Creature.Key == "eagle")
+                    {
+                        foreach (UnitEntityData unit in spawned)
+                        {
+                            if (unit == null || unit.View == null) continue;
+                            _eagleVisualChecked++;
+                            string outcome = ExpandedSummoningPteranodonViewPatch
+                                .DescribeView(unit.View);
+                            string renderers = DescribePteranodonRenderers(unit.View);
+                            if (outcome.StartsWith("visual:attached;",
+                                    StringComparison.Ordinal) &&
+                                IsEagleAttached(renderers))
+                                _eagleVisualAttached++;
+                            else _eagleVisualDetail.Add(outcome + ":" + renderers);
+                        }
+                    }
+                    else if (variant.Creature.Key == "dire-bat")
+                    {
+                        foreach (UnitEntityData unit in spawned)
+                        {
+                            if (unit == null || unit.View == null) continue;
+                            _direBatVisualChecked++;
+                            string outcome = ExpandedSummoningPteranodonViewPatch
+                                .DescribeView(unit.View);
+                            string renderers = DescribePteranodonRenderers(unit.View);
+                            if (outcome.StartsWith("visual:attached;",
+                                    StringComparison.Ordinal) &&
+                                IsDireBatAttached(renderers))
+                                _direBatVisualAttached++;
+                            else _direBatVisualDetail.Add(outcome + ":" + renderers);
+                        }
+                    }
+                    else if (variant.Creature.Key == "giant-wasp")
+                    {
+                        foreach (UnitEntityData unit in spawned)
+                        {
+                            if (unit == null || unit.View == null) continue;
+                            _giantWaspVisualChecked++;
+                            string outcome = ExpandedSummoningPteranodonViewPatch
+                                .DescribeView(unit.View);
+                            string renderers = DescribePteranodonRenderers(unit.View);
+                            if (outcome.StartsWith("visual:attached;",
+                                    StringComparison.Ordinal) &&
+                                IsGiantWaspAttached(renderers))
+                                _giantWaspVisualAttached++;
+                            else _giantWaspVisualDetail.Add(outcome + ":" + renderers);
+                        }
+                    }
+                    else if (variant.Creature.Key == "stirge")
+                    {
+                        foreach (UnitEntityData unit in spawned)
+                        {
+                            if (unit == null || unit.View == null) continue;
+                            _stirgeVisualChecked++;
+                            string outcome = ExpandedSummoningPteranodonViewPatch
+                                .DescribeView(unit.View);
+                            string renderers = DescribePteranodonRenderers(unit.View);
+                            if (outcome.StartsWith("visual:attached;",
+                                    StringComparison.Ordinal) &&
+                                IsStirgeAttached(renderers))
+                                _stirgeVisualAttached++;
+                            else _stirgeVisualDetail.Add(outcome + ":" + renderers);
+                        }
+                    }
+                    else if (variant.Creature.Key == "aurochs" ||
+                        variant.Creature.Key == "bison" ||
+                        variant.Creature.Key == "rhinoceros" ||
+                        variant.Creature.Key == "woolly-rhinoceros")
+                    {
+                        foreach (UnitEntityData unit in spawned)
+                        {
+                            if (unit == null || unit.View == null) continue;
+                            ungulateVisualChecked++;
+                            string outcome = ExpandedSummoningPteranodonViewPatch
+                                .DescribeView(unit.View);
+                            if (outcome.StartsWith("visual:attached;",
+                                    StringComparison.Ordinal))
+                                ungulateVisualAttached++;
+                        }
+                    }
+                    else if (variant.Creature.Key == "dire-rat" ||
+                        variant.Creature.Key == "hyena" ||
+                        variant.Creature.Key == "goblin-dog")
+                    {
+                        foreach (UnitEntityData unit in spawned)
+                        {
+                            if (unit == null || unit.View == null) continue;
+                            sprint12VisualChecked++;
+                            string outcome = ExpandedSummoningPteranodonViewPatch
+                                .DescribeView(unit.View);
+                            if (outcome.StartsWith("visual:attached;",
+                                    StringComparison.Ordinal))
+                                sprint12VisualAttached++;
+                        }
+                    }
                     else if (PteranodonDonorSharers.Contains(variant.Creature.Key))
                     {
                         // Isolation: the creatures that share the GiantEagle
@@ -17156,7 +17556,10 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                     completed++;
                     spawnedTotal += count;
+                    if (ungulateCrowd.Contains(variant)) ungulateCrowdLegal++;
                     if (pteranodonCrowd.Contains(variant)) pteranodonCrowdLegal++;
+                    else if (waspCrowd.Contains(variant)) waspCrowdLegal++;
+                    else if (ungulateExtra.Contains(variant)) ungulateExtraLegal++;
                     else if (variant.Multiplicity == SummonMultiplicity.One) singleExact++;
                     else if (variant.Multiplicity == SummonMultiplicity.OneD3)
                         oneD3Legal++;
@@ -17190,6 +17593,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ";after=" + DescribeExpandedSummoningReferences(
                                 afterCleanup) + ".");
                 }
+                patchOutcomesAfterCoverage =
+                    ExpandedSummoningPteranodonViewPatch.ObservedOutcomes.Count;
                 stage = "mechanical-contracts";
                 mechanics = ExerciseExpandedSummoningMechanicalContracts(
                     blueprints, caster, scene, sceneEntities);
@@ -17281,9 +17686,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     sameKind.ToString(), sameKind == casts.Length,
                     "spawned BlueprintUnit reference equality for every command"),
                 Assertion("expanded-summoning-command-total",
-                    (coverageCasts + 2) + ": " + coverageCasts +
-                        " coverage casts plus the two Pteranodon crowd casts",
-                    completed.ToString(), casts.Length == coverageCasts + pteranodonCrowd.Length &&
+                    (coverageCasts + 2 + waspCrowd.Length +
+                        ungulateExtra.Length) + ": " + coverageCasts +
+                        " coverage casts plus two Pteranodon, four Wasp and " +
+                        ungulateExtra.Length + " additional ungulate crowd casts",
+                    completed.ToString(), casts.Length == coverageCasts +
+                        pteranodonCrowd.Length + waspCrowd.Length +
+                        ungulateExtra.Length &&
                         pteranodonCrowd.Length == 2 && completed == casts.Length,
                     "native AbilityData, UnitUseAbility command, RuleCastSpell, and execution-process completion"),
                 Assertion("expanded-summoning-caster-level-duration",
@@ -17320,9 +17729,103 @@ namespace KingmakerGunslinger.RuntimeTesting
                         mechanics.SpecialAdaptations &&
                         mechanics.HostileAbilityTarget,
                     "RuleAttackWithWeapon plus native special AbilityData/UnitUseAbility paths"),
+                Assertion("expanded-summoning-giant-wasp-vermin-immunity",
+                    "native RuleApplyBuff reports mind-affecting immunity for a live Wasp and eligibility for a human control",
+                    mechanics == null ? "not-run" : mechanics.WaspVerminImmunityDetail,
+                    mechanics != null && mechanics.WaspVerminImmunity,
+                    "live granted feature and paired native AddBuff outcomes on disposable units"),
+                Assertion("expanded-summoning-stirge-native-touch-attack",
+                    "Stirge's own-tier primary attack resolves touch AC below armored melee AC, hits, and deals no HP damage",
+                    mechanics == null ? "not-run" : mechanics.StirgeTouchAttackDetail,
+                    mechanics != null && mechanics.StirgeTouchAttack,
+                    "native RuleCalculateAC controls and RuleAttackWithWeapon on a disposable hostile"),
+                Assertion("expanded-summoning-stirge-native-attachment",
+                    "the touch hit establishes a Stirge-only session link while prey stays free to move and act, then releases without residue",
+                    mechanics == null ? "not-run" : mechanics.StirgeAttachmentDetail,
+                    mechanics != null && mechanics.StirgeAttachment,
+                    "live touch attack, owner-only hold, prey conditions and removal-action grant"),
+                Assertion("expanded-summoning-stirge-first-blood-drain",
+                    "the first attached round deals exactly one actual Constitution damage and retains the session link",
+                    mechanics == null ? "not-run" : mechanics.StirgeFirstDrainDetail,
+                    mechanics != null && mechanics.StirgeFirstDrain,
+                    "live StirgeHoldComponent round tick and target Constitution damage"),
+                Assertion("expanded-summoning-stirge-native-disease",
+                    "the first actual blood drain checks 10% native filth fever at DC 12; zero damage and later drains from this Stirge do not reroll the victim",
+                    mechanics == null ? "not-run" : mechanics.StirgeDiseaseDetail,
+                    mechanics != null && mechanics.StirgeDisease,
+                    "live attached Stirge, native Fortitude saving rule and RuleApplyBuff on a disposable hostile"),
+                Assertion("expanded-summoning-stirge-four-point-detach",
+                    "each of four attached rounds deals one actual Constitution damage; the fourth clears the hold and removal action",
+                    mechanics == null ? "not-run" : mechanics.StirgeFourPointDetachDetail,
+                    mechanics != null && mechanics.StirgeFourPointDetach,
+                    "four live StirgeHoldComponent round ticks with per-tick stat and link checks"),
+                Assertion("expanded-summoning-stirge-escape-and-transition",
+                    "one failed then successful standard-action removal and the area safeguard each handle re-established Stirge holds",
+                    mechanics == null ? "not-run" : mechanics.StirgeEscapeAndTransitionDetail,
+                    mechanics != null && mechanics.StirgeEscapeAndTransition,
+                    "native UnitUseAbility removal commands and Stirge-only area sweep"),
+                Assertion("expanded-summoning-stirge-quantity-freedom",
+                    "two quantity Stirges attach from staged touch contact to distinct victims; an ordinary prey movement step and melee counterattack affect only their own Stirge",
+                    mechanics == null ? "not-run" : mechanics.StirgeQuantityFreedomDetail,
+                    mechanics != null && mechanics.StirgeQuantityFreedom,
+                    "live 1d4+1 Stirge summon, two prey action grants, owner follow and native prey attack"),
+                Assertion("expanded-summoning-stirge-dismissal-release",
+                    "destroying an attached disposable summon leaves its former victim free, without an extra blood-drain tick",
+                    mechanics == null ? "not-run" : mechanics.StirgeDismissalDetail,
+                    mechanics != null && mechanics.StirgeDismissal,
+                    "summoned-unit marker removal and actual UnitEntityData.Destroy lifecycle"),
+                Assertion("expanded-summoning-stirge-prey-death-release",
+                    "an attached Stirge releases dead prey without another Constitution drain",
+                    mechanics == null ? "not-run" : mechanics.StirgePreyDeathDetail,
+                    mechanics != null && mechanics.StirgePreyDeath,
+                    "live dead-state check, holder round tick and reciprocal native grapple cleanup"),
+                Assertion("expanded-summoning-stirge-timed-expiry-release",
+                    "the native timed summon lifecycle expires and releases an attached victim",
+                    mechanics == null ? "not-run" : mechanics.StirgeExpiryDetail,
+                    mechanics != null && mechanics.StirgeExpiry,
+                    "actual SummonedUnitBuff deadline, BuffCollection.Tick and native destroyer queue"),
+                Assertion("expanded-summoning-sprint12-dire-rat-disease",
+                    "exact damaging bite fails/passes DC 11 as seeded, native Filth Fever applies only on failure, miss delivers nothing, and a replayed event resolves once",
+                    mechanics == null ? "not-run" :
+                        mechanics.Sprint12DireRatDiseaseDetail,
+                    mechanics != null && mechanics.Sprint12DireRatDisease,
+                    "live Dire Rat natural attacks, native RuleSavingThrow/RuleApplyBuff, and exact runtime component replay"),
+                Assertion("expanded-summoning-sprint12-goblin-dog-allergy",
+                    "damaging bite uses DC 12; exact Goblins are exempt; one-day -2 Dexterity/-2 Charisma never stacks; disease immunity, positive magical healing, and remove disease use native rules",
+                    mechanics == null ? "not-run" :
+                        mechanics.Sprint12GoblinDogAllergyDetail,
+                    mechanics != null && mechanics.Sprint12GoblinDogAllergy,
+                    "live Goblin Dog natural attacks, exact native Goblin type, paired RuleApplyBuff immunity, RuleHealDamage sources, and native Remove Disease cast"),
+                Assertion("expanded-summoning-sprint12-disease-quantity",
+                    "separate Dire Rats and Goblin Dogs from quantity casts deliver only their own disease state to distinct victims",
+                    mechanics == null ? "not-run" :
+                        mechanics.Sprint12DiseaseQuantityDetail,
+                    mechanics != null && mechanics.Sprint12DiseaseQuantity,
+                    "live 1d4+1 summons, independent natural attacks, source contexts, and paired victim buffs"),
+                Assertion("expanded-summoning-sprint12-donor-rigs",
+                    "live hidden Sprint 12 summons expose exact Dog, Wolf and Worg renderer-local bind frames for original-mesh authoring",
+                    mechanics == null ? "not-run" :
+                        mechanics.Sprint12DonorRigsDetail,
+                    mechanics != null && mechanics.Sprint12DonorRigs,
+                    "three request-local summoned views, their SkinnedMeshRenderer bones and shared-mesh bind poses, and private evidence files"),
+                Assertion("expanded-summoning-sprint12-original-visuals",
+                    "Dire Rat, Hyena and Goblin Dog use their exact original project meshes while Dog remains a separate native-visual choice",
+                    mechanics == null ? "not-run" :
+                        mechanics.Sprint12OriginalVisualsDetail,
+                    mechanics != null && mechanics.Sprint12OriginalVisuals,
+                    "live hidden direct and quantity summon views, exact instance-local mesh names, and the VisualKeys exclusion for Dog"),
                 Assertion("expanded-summoning-disposable-cleanup",
                     "exact party and global-unit snapshots restored", observed,
                     cleaned, "per-cast UnitEntityData.Dispose and final exact snapshots"),
+                Assertion("expanded-summoning-dire-bat-blindsense",
+                    "every live Dire Bat has only imprecise native blindsense at 40 feet, with no feature leak to donor-sharing birds",
+                    "definition=" + direBatSenseDefinition + ";bat=" +
+                        direBatSensePassed + "/" + direBatSenseChecked +
+                        ";birds=" + birdSenseClean + "/" + birdSenseChecked,
+                    direBatSenseDefinition && direBatSenseChecked >= 2 &&
+                        direBatSensePassed == direBatSenseChecked &&
+                        birdSenseChecked >= 2 && birdSenseClean == birdSenseChecked,
+                    "exact registered feature, live UnitPartBlindsense.Reach, and Eagle/Pteranodon/Roc negative controls"),
                 // Sprint 2 authoring input, captured from a live attached view
                 // during this run's Pteranodon cast. The controller and clips
                 // only exist once a view attaches to a unit, so this is the one
@@ -17352,13 +17855,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                     pteranodonAttachedCount > 0 && pteranodonAttachedClean,
                     "ExpandedSummoningPteranodonViewPatch.DescribeView plus the live renderer states on each spawned unit's view"),
                 Assertion("expanded-summoning-pteranodon-donor-isolation",
-                    "eagle, dire bat and roc keep the donor visual: not-attempted, the eagle's own mesh and material on the 72-bone rig",
+                    "roc keeps the donor visual: not-attempted, the eagle's own mesh and material on the 72-bone rig",
                     "checked=" + _donorIsolationChecked + ";clean=" + _donorIsolationClean +
                         (_donorIsolationDetail.Count == 0 ? string.Empty :
                             ";detail=" + string.Join("|", _donorIsolationDetail.ToArray())),
                     _donorIsolationChecked > 0 &&
                         _donorIsolationClean == _donorIsolationChecked,
-                    "the same GiantEagle donor prefab, observed on every unit of the three sharing creatures"),
+                    "the same GiantEagle donor prefab, observed on every Roc unit"),
+                Assertion("expanded-summoning-eagle-visual-attached",
+                    "each live Small Eagle carries its original feathered mesh and painting on the donor's renderer",
+                    "checked=" + _eagleVisualChecked + ";attached=" +
+                        _eagleVisualAttached + (_eagleVisualDetail.Count == 0 ?
+                            string.Empty : ";detail=" + string.Join("|",
+                                _eagleVisualDetail.ToArray())),
+                    _eagleVisualChecked >= 2 &&
+                        _eagleVisualAttached == _eagleVisualChecked,
+                    "guarded UnitUseAbility spawns and live renderer state"),
+                Assertion("expanded-summoning-dire-bat-visual-attached",
+                    "each live Dire Bat carries its original skinned mesh and painting on a private material and the donor's renderer",
+                    "checked=" + _direBatVisualChecked + ";attached=" +
+                        _direBatVisualAttached + (_direBatVisualDetail.Count == 0 ?
+                            string.Empty : ";detail=" + string.Join("|",
+                                _direBatVisualDetail.ToArray())),
+                    _direBatVisualChecked >= 2 &&
+                        _direBatVisualAttached == _direBatVisualChecked,
+                    "guarded UnitUseAbility spawns and live renderer state"),
                 Assertion("expanded-summoning-pteranodon-crowding",
                     "a multi-unit Pteranodon cast attaches the visual to every unit at once",
                     "maxSimultaneous=" + _pteranodonCrowdMax + ";casts=" +
@@ -17367,18 +17888,71 @@ namespace KingmakerGunslinger.RuntimeTesting
                     pteranodonCrowd.Length == 2 && pteranodonCrowdLegal == 2 &&
                         _pteranodonCrowdMax >= 2 && pteranodonAttachedClean,
                     "the 1d3 and 1d4+1 Pteranodon casts added to the quantity coverage"),
+                Assertion("expanded-summoning-giant-wasp-quantity",
+                    "four native quantity commands: 1d3 and 1d4+1 in both SM and SNA",
+                    "casts=" + waspCrowdLegal + "/" + waspCrowd.Length +
+                        ";families=" + string.Join(",", waspCrowd.Select(value =>
+                            value.Family + "/" + value.Multiplicity).ToArray()),
+                    waspCrowd.Length == 4 && waspCrowdLegal == 4 &&
+                        waspCrowd.Select(value => value.Family).Distinct().Count() == 2 &&
+                        waspCrowd.Select(value => value.Multiplicity).Distinct().Count() == 2,
+                    "exact-kind native counts and per-cast cleanup are checked by the common cast loop"),
+                Assertion("expanded-summoning-sprint11-ungulate-quantity",
+                    "1d3 and 1d4+1 native commands for all four ungulates in both SM and SNA",
+                    "covered=" + ungulateCrowdLegal + "/" + ungulateCrowd.Length +
+                        ";extra=" + ungulateExtraLegal + "/" +
+                        ungulateExtra.Length + ";keys=" +
+                        string.Join(",", ungulateCrowd.Select(value =>
+                            value.Creature.Key).Distinct().OrderBy(value => value).ToArray()),
+                    ungulateCrowd.Length == 16 && ungulateCrowdLegal == 16 &&
+                        ungulateExtraLegal == ungulateExtra.Length &&
+                        ungulateCrowd.Select(value => value.Creature.Key)
+                            .Distinct().Count() == 4 &&
+                        ungulateCrowd.Select(value => value.Family)
+                            .Distinct().Count() == 2 &&
+                        ungulateCrowd.Select(value => value.Multiplicity)
+                            .Distinct().Count() == 2,
+                    "exact-kind native quantity counts, duration and per-cast cleanup through the common cast loop"),
+                Assertion("expanded-summoning-sprint11-ungulate-quantity-visuals",
+                    "every cast ungulate view receives the private original visual",
+                    "checked=" + ungulateVisualChecked + ";attached=" +
+                        ungulateVisualAttached,
+                    ungulateVisualChecked > 0 &&
+                        ungulateVisualAttached == ungulateVisualChecked,
+                    "one attached view per observed summoned unit"),
                 Assertion("expanded-summoning-pteranodon-repeated-lifecycle",
                     "several Pteranodon casts in one lifecycle, each view attached exactly once, each cast cleaned to the exact snapshot",
                     "casts=" + _pteranodonCastsSeen + ";views=" +
                         _pteranodonVisualOutcomes.Count + ";patchOutcomes=" +
-                        (ExpandedSummoningPteranodonViewPatch.ObservedOutcomes.Count -
-                            patchOutcomesBefore),
+                        (patchOutcomesAfterCoverage - patchOutcomesBefore),
                     _pteranodonCastsSeen >= 4 &&
                         _pteranodonVisualOutcomes.Count >= _pteranodonCastsSeen &&
-                        ExpandedSummoningPteranodonViewPatch.ObservedOutcomes.Count -
-                            patchOutcomesBefore == _pteranodonVisualOutcomes.Count &&
+                        patchOutcomesAfterCoverage - patchOutcomesBefore ==
+                            _pteranodonVisualOutcomes.Count +
+                                _direBatVisualChecked + _eagleVisualChecked +
+                                _giantWaspVisualChecked + _stirgeVisualChecked +
+                                ungulateVisualChecked + sprint12VisualChecked &&
+                        sprint12VisualAttached == sprint12VisualChecked &&
                         pteranodonAttachedClean,
                     "one patch outcome per attached view; per-cast cleanup is enforced by the cast loop itself"),
+                Assertion("expanded-summoning-stirge-visual-attached",
+                    "every published Stirge cast carries its private skinned view",
+                    "checked=" + _stirgeVisualChecked + ";attached=" +
+                        _stirgeVisualAttached + (_stirgeVisualDetail.Count == 0 ?
+                            "" : ";detail=" + string.Join("|",
+                                _stirgeVisualDetail.ToArray())),
+                    _stirgeVisualChecked >= 1 &&
+                        _stirgeVisualAttached == _stirgeVisualChecked,
+                    "exact mesh, material and rig on each guarded summon"),
+                Assertion("expanded-summoning-giant-wasp-visual-attached",
+                    "every registered Wasp cast carries the project mesh and material on its private view",
+                    "checked=" + _giantWaspVisualChecked + ";attached=" +
+                        _giantWaspVisualAttached + (_giantWaspVisualDetail.Count == 0 ?
+                            "" : ";detail=" + string.Join("|",
+                                _giantWaspVisualDetail.ToArray())),
+                    _giantWaspVisualChecked >= 2 &&
+                        _giantWaspVisualAttached == _giantWaspVisualChecked,
+                    "live skinned renderer mesh, material and bone count"),
                 Assertion("loaded-mod-version", _request.ExpectedModVersion,
                     _context.ModEntry.Info.Version,
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,
@@ -17786,6 +18360,64 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool sprintEightPack = ExerciseExpandedSummoningSprintEightPack(blueprints,
                     caster, hostile, created, result, out sprintEightDetail);
 
+                // Sprint 10: prove the registered, still-suppressed Wasp
+                // actually delivers its poison through a sting in the engine.
+                string waspPoisonDetail;
+                ResetExpandedSummoningMechanicalHostile(hostile, blueprints);
+                bool waspPoison = ExerciseExpandedSummoningWaspPoison(blueprints,
+                    caster, hostile, created, result, out waspPoisonDetail);
+                UnitEntityData waspForImmunity = created.Last(value =>
+                    value.Blueprint != null && value.Blueprint.name ==
+                        "KMG_Summoning_Unit_GiantWasp");
+                result.WaspVerminImmunity =
+                    ExerciseExpandedSummoningWaspVerminImmunity(blueprints,
+                        waspForImmunity, caster, hostile,
+                        out result.WaspVerminImmunityDetail);
+
+                ResetExpandedSummoningMechanicalHostile(hostile, blueprints);
+                result.StirgeTouchAttack =
+                    ExerciseExpandedSummoningStirgeTouchAttack(blueprints,
+                        caster, hostile, created, result,
+                        out result.StirgeTouchAttackDetail,
+                        out result.StirgeAttachment,
+                        out result.StirgeAttachmentDetail,
+                        out result.StirgeFirstDrain,
+                        out result.StirgeFirstDrainDetail,
+                        out result.StirgeFourPointDetach,
+                        out result.StirgeFourPointDetachDetail,
+                        out result.StirgeEscapeAndTransition,
+                        out result.StirgeEscapeAndTransitionDetail);
+                ResetExpandedSummoningMechanicalHostile(hostile, blueprints);
+                result.StirgeQuantityFreedom =
+                    ExerciseExpandedSummoningStirgeQuantityFreedom(blueprints,
+                        caster, hostile, created, result,
+                        out result.StirgeQuantityFreedomDetail);
+                ResetExpandedSummoningMechanicalHostile(hostile, blueprints);
+                result.StirgeDisease =
+                    ExerciseExpandedSummoningStirgeDisease(blueprints,
+                        caster, hostile, created, result,
+                        out result.StirgeDiseaseDetail);
+                ResetExpandedSummoningMechanicalHostile(hostile, blueprints);
+                result.StirgeDismissal =
+                    ExerciseExpandedSummoningStirgeDismissal(blueprints,
+                        caster, hostile, created, result,
+                        out result.StirgeDismissalDetail);
+                ResetExpandedSummoningMechanicalHostile(hostile, blueprints);
+                result.StirgeExpiry =
+                    ExerciseExpandedSummoningStirgeExpiry(blueprints,
+                        caster, hostile, created, result,
+                        out result.StirgeExpiryDetail);
+                ResetExpandedSummoningMechanicalHostile(hostile, blueprints);
+                result.StirgePreyDeath =
+                    ExerciseExpandedSummoningStirgePreyDeath(blueprints,
+                        caster, hostile, created, result,
+                        out result.StirgePreyDeathDetail);
+
+                ResetExpandedSummoningMechanicalHostile(hostile, blueprints);
+                ExerciseExpandedSummoningSprint12DiseasePack(blueprints,
+                    caster, hostile, scene, created, result,
+                    _request.EvidenceDirectory);
+
                 result.RepresentativeCombat = animalAttack && proxyAttack &&
                     elementalAttack && stalkerAttack && shadowAttack &&
                     salamanderAttack && succubusAttack && pixieAttack &&
@@ -17795,12 +18427,37 @@ namespace KingmakerGunslinger.RuntimeTesting
                     sleepBefore == 16 && sleepAfter == 15 && sleepApplied &&
                     bebelithFirst && bebelithSecond && dismantledApplied &&
                     armorUnchanged && cyclopsFlash && grappleLifecycle && mephitPack &&
-                    sprintSixPack && rakeCadence && sprintEightPack;
+                    sprintSixPack && rakeCadence && sprintEightPack && waspPoison;
                 result.Diagnostics.Add("grapple[" + grappleDetail + "]");
                 result.Diagnostics.Add("mephits[" + mephitDetail + "]");
                 result.Diagnostics.Add("sprintSix[" + sprintSixDetail + "]");
                 result.Diagnostics.Add("rake[" + rakeDetail + "]");
                 result.Diagnostics.Add("sprintEight[" + sprintEightDetail + "]");
+                result.Diagnostics.Add("waspPoison[" + waspPoisonDetail + "]");
+                result.Diagnostics.Add("stirgeTouch[" +
+                    result.StirgeTouchAttackDetail + "]");
+                result.Diagnostics.Add("stirgeAttach[" +
+                    result.StirgeAttachmentDetail + "]");
+                result.Diagnostics.Add("stirgeDrain[" +
+                    result.StirgeFirstDrainDetail + "]");
+                result.Diagnostics.Add("stirgeDisease[" +
+                    result.StirgeDiseaseDetail + "]");
+                result.Diagnostics.Add("stirgeMeal[" +
+                    result.StirgeFourPointDetachDetail + "]");
+                result.Diagnostics.Add("stirgeInterrupt[" +
+                    result.StirgeEscapeAndTransitionDetail + "]");
+                result.Diagnostics.Add("stirgeDismiss[" +
+                    result.StirgeDismissalDetail + "]");
+                result.Diagnostics.Add("stirgeExpiry[" +
+                    result.StirgeExpiryDetail + "]");
+                result.Diagnostics.Add("stirgePreyDeath[" +
+                    result.StirgePreyDeathDetail + "]");
+                result.Diagnostics.Add("sprint12DireRat[" +
+                    result.Sprint12DireRatDiseaseDetail + "]");
+                result.Diagnostics.Add("sprint12GoblinDog[" +
+                    result.Sprint12GoblinDogAllergyDetail + "]");
+                result.Diagnostics.Add("sprint12Quantity[" +
+                    result.Sprint12DiseaseQuantityDetail + "]");
                 result.Diagnostics.Add("cyclops[granted=" + flashGranted +
                     ";resource=" + flashBefore + "->" + flashAfter + ";armed=" +
                     flashArmed + ";armedNatural1=" + flashArmedDetail +
@@ -17847,7 +18504,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 throw new InvalidOperationException(
                     "Mechanical-contract cleanup did not restore the exact area snapshot: before=" +
                     DescribeExpandedSummoningReferences(exactStart) +
-                    ";after=" + DescribeExpandedSummoningReferences(exactEnd) + ".");
+                    ";after=" + DescribeExpandedSummoningReferences(exactEnd) +
+                    ";stirgeExpiry=" + result.StirgeExpiryDetail +
+                    ";stirgePreyDeath=" + result.StirgePreyDeathDetail + ".");
             return result;
         }
 
@@ -18618,6 +19277,1012 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             detail = string.Join(";", steps.ToArray());
             return ok;
+        }
+
+        private sealed class StirgeRemovalRuleObserver :
+            IGlobalRulebookHandler<RuleSkillCheck>,
+            IGlobalRulebookHandler<RuleCombatManeuver>,
+            IGlobalRulebookHandler<RuleCalculateCMD>
+        {
+            internal UnitEntityData Prey;
+            internal UnitEntityData Stirge;
+            internal readonly List<bool> MobilityResults = new List<bool>();
+            internal readonly List<int> MobilityDefenses = new List<int>();
+            internal int GrappleManeuvers;
+
+            public void OnEventAboutToTrigger(RuleSkillCheck evt) { }
+            public void OnEventDidTrigger(RuleSkillCheck evt)
+            {
+                if (evt != null && evt.StatType == StatType.SkillMobility &&
+                    ReferenceEquals(evt.Initiator, Prey))
+                    MobilityResults.Add(evt.IsPassed);
+            }
+            public void OnEventAboutToTrigger(RuleCombatManeuver evt) { }
+            public void OnEventDidTrigger(RuleCombatManeuver evt)
+            {
+                if (evt != null && evt.Type == CombatManeuver.Grapple &&
+                    ReferenceEquals(evt.Initiator, Prey) &&
+                    ReferenceEquals(evt.Target, Stirge)) GrappleManeuvers++;
+            }
+            public void OnEventAboutToTrigger(RuleCalculateCMD evt) { }
+            public void OnEventDidTrigger(RuleCalculateCMD evt)
+            {
+                if (evt != null && evt.Type == CombatManeuver.Grapple &&
+                    ReferenceEquals(evt.Initiator, Prey) &&
+                    ReferenceEquals(evt.Target, Stirge))
+                    MobilityDefenses.Add(evt.Result);
+            }
+        }
+
+        /// <summary>
+        /// A Stirge's own-tier attack against an armored, disposable
+        /// hostile. The native attack roll must use touch AC while the empty
+        /// carrier leaves hit points unchanged; attachment is tested apart.
+        /// </summary>
+        private static bool ExerciseExpandedSummoningStirgeTouchAttack(
+            BlueprintScriptableObject[] blueprints, UnitEntityData caster,
+            UnitEntityData hostile, List<UnitEntityData> created,
+            ExpandedSummoningMechanicalEvidence evidence, out string detail,
+            out bool attachmentEstablished, out string attachmentDetail,
+            out bool firstDrain, out string drainDetail,
+            out bool fourPointDetach, out string mealDetail,
+            out bool escapeAndTransition, out string interruptDetail)
+        {
+            detail = "not-run";
+            attachmentEstablished = false;
+            attachmentDetail = "not-run";
+            firstDrain = false;
+            drainDetail = "not-run";
+            fourPointDetach = false;
+            mealDetail = "not-run";
+            escapeAndTransition = false;
+            interruptDetail = "not-run";
+            BlueprintBuff hold = blueprints.OfType<BlueprintBuff>().Single(value =>
+                value.name == "KMG_Summoning_Special_Stirge_Hold");
+            BlueprintAbility removeStirge = blueprints.OfType<BlueprintAbility>()
+                .Single(value => value.name ==
+                    "KMG_Summoning_Special_Stirge_Remove");
+            UnitEntityData stirge = CastExpandedSummoningCombatUnit(blueprints,
+                caster, SummonFamily.NaturesAlly, "stirge", 1,
+                created, evidence);
+            RemoveExpandedSummoningAppearanceBuffs(stirge);
+            ItemEntityWeapon weapon = stirge.Body.PrimaryHand.MaybeWeapon;
+            int damageBefore = hostile.Descriptor.Damage;
+            int constitutionDamageBefore = hostile.Descriptor.Stats.Constitution.Damage;
+            int babBefore = stirge.Descriptor.Stats.BaseAttackBonus.BaseValue;
+            try
+            {
+                int baseMaintainCmb = Rulebook.Trigger(new RuleCalculateCMB(
+                    stirge, hostile, CombatManeuver.Grapple)).Result;
+                int ordinaryAc = Rulebook.Trigger(new RuleCalculateAC(stirge,
+                    hostile, AttackType.Melee)).TargetAC;
+                int touchAc = Rulebook.Trigger(new RuleCalculateAC(stirge,
+                    hostile, AttackType.Touch)).TargetAC;
+                stirge.Descriptor.Stats.BaseAttackBonus.BaseValue = 100;
+                UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                var attack = new RuleAttackWithWeapon(stirge, hostile, weapon, 0);
+                Rulebook.Trigger(attack);
+                // The boosted BAB belongs only to the touch-hit control.
+                // Compare maintain CMB and removal CMD at the native profile.
+                stirge.Descriptor.Stats.BaseAttackBonus.BaseValue = babBefore;
+                RuleAttackRoll roll = attack.AttackRoll;
+                int damageAfter = hostile.Descriptor.Damage;
+                detail = "weapon=" + (weapon == null ? "<null>" :
+                    weapon.Blueprint.name) + ";attackType=" +
+                    (roll == null ? "<none>" : roll.AttackType.ToString()) +
+                    ";ordinaryAc=" + ordinaryAc + ";touchAc=" + touchAc +
+                    ";resolvedAc=" + (roll == null ? -1 : roll.TargetAC) +
+                    ";hit=" + (roll != null && roll.IsHit) + ";hpDamage=" +
+                    damageBefore + "->" + damageAfter;
+                bool sessionLink = ReferenceEquals(
+                    StirgeHoldComponent.AttachedTarget(stirge), hostile);
+                bool holderBuff = stirge.Descriptor.HasFact(hold);
+                bool targetFree = hostile.Get<Kingmaker.UnitLogic.Parts
+                    .UnitPartGrappleTarget>() == null &&
+                    !hostile.Descriptor.State.HasCondition(UnitCondition.CantMove) &&
+                    !hostile.Descriptor.State.HasCondition(UnitCondition.CantAct) &&
+                    hostile.Descriptor.HasFact(removeStirge) &&
+                    hostile.Descriptor.Abilities.GetAbility(removeStirge) != null;
+                bool removeIcon = ReferenceEquals(removeStirge.Icon,
+                    ExpandedSummoningProjectIcons.Require("remove-stirge"));
+                bool losesDexterity = stirge.Descriptor.State.HasCondition(
+                    UnitCondition.LoseDexterityToAC);
+                int attachedMaintainCmb = Rulebook.Trigger(
+                    new RuleCalculateCMB(stirge, hostile,
+                        CombatManeuver.Grapple)).Result;
+                bool maintainBonus = attachedMaintainCmb - baseMaintainCmb ==
+                    StirgeAttachPolicy.MaintainGrappleRacialBonus;
+                attachmentEstablished = sessionLink && holderBuff && removeIcon &&
+                    targetFree && losesDexterity && maintainBonus &&
+                    stirge.Descriptor.State.HasCondition(UnitCondition.CantMove) &&
+                    stirge.Descriptor.State.HasCondition(UnitCondition.CantAct);
+                attachmentDetail = "sessionLink=" + sessionLink +
+                    ";holderBuff=" + holderBuff + ";targetFree=" +
+                    targetFree + ";removeIcon=" + removeIcon +
+                    ";losesDexterity=" + losesDexterity +
+                    ";maintainCmb=" + baseMaintainCmb + "->" +
+                    attachedMaintainCmb + ";maintainBonus=" + maintainBonus;
+                StirgeHoldComponent liveHold = holderBuff ?
+                    ExpandedSummoningRuntimeComponent<StirgeHoldComponent>(
+                        stirge, hold) : null;
+                StirgeAttachComponent liveAttach = StirgeAttachComponent.Find(stirge);
+                int constitutionBeforeTick =
+                    hostile.Descriptor.Stats.Constitution.Damage;
+                if (liveHold != null) liveHold.OnNewRound();
+                int constitutionAfterTick =
+                    hostile.Descriptor.Stats.Constitution.Damage;
+                bool stillAttached = ReferenceEquals(
+                    StirgeHoldComponent.AttachedTarget(stirge), hostile);
+                firstDrain = liveHold != null &&
+                    constitutionAfterTick - constitutionBeforeTick == 1 &&
+                    liveHold.CumulativeDamage == 1 && stillAttached &&
+                    liveAttach != null &&
+                    liveAttach.DiseaseCheckedVictimCount == 1;
+                drainDetail = "component=" + (liveHold != null) +
+                    ";constitutionDamage=" + constitutionBeforeTick + "->" +
+                    constitutionAfterTick + ";cumulative=" +
+                    (liveHold == null ? -1 : liveHold.CumulativeDamage) +
+                    ";stillAttached=" + stillAttached + ";difficultyScale=" +
+                    Game.Instance.Player.Difficulty.DamageToParty +
+                    ";diseaseChecks=" + (liveAttach == null ? -1 :
+                        liveAttach.DiseaseCheckedVictimCount);
+                var mealSteps = new List<string>();
+                bool mealExact = firstDrain;
+                for (int round = 2; round <= 4 && liveHold != null; round++)
+                {
+                    int beforeRound = hostile.Descriptor.Stats.Constitution.Damage;
+                    liveHold.OnNewRound();
+                    int afterRound = hostile.Descriptor.Stats.Constitution.Damage;
+                    bool linked = ReferenceEquals(
+                        StirgeHoldComponent.AttachedTarget(stirge), hostile);
+                    mealSteps.Add(round + ":" + beforeRound + "->" + afterRound +
+                        "/" + liveHold.CumulativeDamage + "/linked=" + linked);
+                    mealExact &= afterRound - beforeRound == 1 &&
+                        liveHold.CumulativeDamage == round &&
+                        linked == (round < 4);
+                }
+                bool automaticCleanup =
+                    stirge.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleInitiator>() == null &&
+                    hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>() == null &&
+                    !stirge.Descriptor.HasFact(hold) &&
+                    !hostile.Descriptor.HasFact(removeStirge) &&
+                    !stirge.Descriptor.State.HasCondition(
+                        UnitCondition.LoseDexterityToAC);
+                fourPointDetach = mealExact && automaticCleanup &&
+                    hostile.Descriptor.Stats.Constitution.Damage -
+                        constitutionDamageBefore == 4 && liveAttach != null &&
+                    liveAttach.DiseaseCheckedVictimCount == 1;
+                mealDetail = "ticks=" + string.Join("|", mealSteps.ToArray()) +
+                    ";automaticCleanup=" + automaticCleanup;
+                hostile.Descriptor.Stats.Constitution.Damage =
+                    constitutionDamageBefore;
+                UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                Rulebook.Trigger(new RuleAttackWithWeapon(stirge, hostile,
+                    weapon, 0));
+                bool reattachedForEscape = ReferenceEquals(
+                    StirgeHoldComponent.AttachedTarget(stirge), hostile);
+                int targetBabBefore = hostile.Descriptor.Stats.BaseAttackBonus.BaseValue;
+                int mobilityBefore = hostile.Descriptor.Stats.SkillMobility.BaseValue;
+                bool failedRemoval, successfulRemoval;
+                bool failedMobilityRemoval = false;
+                bool successfulMobilityRemoval = false;
+                bool mobilityUsedNativeSkill = false;
+                bool reattachedForMobility = false;
+                int expectedMobilityCmd = -1;
+                var removalObserver = new StirgeRemovalRuleObserver {
+                    Prey = hostile, Stirge = stirge };
+                EventBus.Subscribe(removalObserver);
+                try
+                {
+                    PlaceExpandedSummoningUnit(stirge, hostile.Position +
+                        Vector3.right * 0.6f);
+                    hostile.Descriptor.Stats.BaseAttackBonus.BaseValue = -100;
+                    hostile.Descriptor.Stats.SkillMobility.BaseValue = -100;
+                    UnityEngine.Random.InitState(FindNativeD20Seed(1));
+                    ExecuteExpandedSummoningRuntimeAbility(hostile,
+                        removeStirge, 0, new TargetWrapper(stirge), false,
+                        stirge);
+                    failedRemoval = ReferenceEquals(
+                        StirgeHoldComponent.AttachedTarget(stirge), hostile);
+                    hostile.Descriptor.Stats.BaseAttackBonus.BaseValue = 100;
+                    hostile.Descriptor.Stats.SkillMobility.BaseValue = -100;
+                    UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                    ExecuteExpandedSummoningRuntimeAbility(hostile,
+                        removeStirge, 0, new TargetWrapper(stirge), false,
+                        stirge);
+                    successfulRemoval =
+                        StirgeHoldComponent.AttachedTarget(stirge) == null;
+                    int priorGrappleManeuvers =
+                        removalObserver.GrappleManeuvers;
+                    UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                    Rulebook.Trigger(new RuleAttackWithWeapon(stirge, hostile,
+                        weapon, 0));
+                    reattachedForMobility = ReferenceEquals(
+                        StirgeHoldComponent.AttachedTarget(stirge), hostile);
+                    PlaceExpandedSummoningUnit(stirge, hostile.Position +
+                        Vector3.right * 0.6f);
+                    hostile.Descriptor.Stats.BaseAttackBonus.BaseValue = -100;
+                    hostile.Descriptor.Stats.SkillMobility.BaseValue = -50;
+                    bool mobilityBetterOnFailure =
+                        hostile.Descriptor.Stats.SkillMobility.ModifiedValue >
+                        Rulebook.Trigger(new RuleCalculateCMB(hostile, stirge,
+                            CombatManeuver.Grapple)).Result;
+                    expectedMobilityCmd = Rulebook.Trigger(
+                        new RuleCalculateCMD(hostile, stirge,
+                            CombatManeuver.Grapple)).Result;
+                    UnityEngine.Random.InitState(FindNativeD20Seed(1));
+                    ExecuteExpandedSummoningRuntimeAbility(hostile,
+                        removeStirge, 0, new TargetWrapper(stirge), false,
+                        stirge);
+                    failedMobilityRemoval = reattachedForMobility &&
+                        mobilityBetterOnFailure &&
+                        ReferenceEquals(StirgeHoldComponent.AttachedTarget(stirge),
+                            hostile) && removalObserver.MobilityResults.Count == 1 &&
+                        !removalObserver.MobilityResults[0] &&
+                        removalObserver.MobilityDefenses.LastOrDefault() ==
+                            expectedMobilityCmd;
+                    hostile.Descriptor.Stats.SkillMobility.BaseValue = 100;
+                    bool mobilityBetterOnSuccess =
+                        hostile.Descriptor.Stats.SkillMobility.ModifiedValue >
+                        Rulebook.Trigger(new RuleCalculateCMB(hostile, stirge,
+                            CombatManeuver.Grapple)).Result;
+                    UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                    ExecuteExpandedSummoningRuntimeAbility(hostile,
+                        removeStirge, 0, new TargetWrapper(stirge), false,
+                        stirge);
+                    successfulMobilityRemoval = mobilityBetterOnSuccess &&
+                        StirgeHoldComponent.AttachedTarget(stirge) == null &&
+                        removalObserver.MobilityResults.Count == 2 &&
+                        removalObserver.MobilityResults[1] &&
+                        removalObserver.MobilityDefenses.LastOrDefault() ==
+                            expectedMobilityCmd;
+                    mobilityUsedNativeSkill =
+                        removalObserver.GrappleManeuvers ==
+                            priorGrappleManeuvers &&
+                        removalObserver.MobilityResults.Count == 2;
+                }
+                finally
+                {
+                    EventBus.Unsubscribe(removalObserver);
+                    hostile.Descriptor.Stats.BaseAttackBonus.BaseValue =
+                        targetBabBefore;
+                    hostile.Descriptor.Stats.SkillMobility.BaseValue =
+                        mobilityBefore;
+                }
+                bool escapeClean = stirge.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleInitiator>() == null &&
+                    hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>() == null &&
+                    hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleInitiator>() == null &&
+                    stirge.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>() == null &&
+                    !stirge.Descriptor.HasFact(hold) &&
+                    !hostile.Descriptor.HasFact(removeStirge) &&
+                    !hostile.Descriptor.State.HasCondition(UnitCondition.CantMove) &&
+                    !hostile.Descriptor.State.HasCondition(UnitCondition.CantAct) &&
+                    hostile.Descriptor.Stats.Constitution.Damage ==
+                        constitutionDamageBefore;
+                UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                Rulebook.Trigger(new RuleAttackWithWeapon(stirge, hostile,
+                    weapon, 0));
+                bool reattachedForTransition = ReferenceEquals(
+                    StirgeHoldComponent.AttachedTarget(stirge), hostile);
+                int swept = SummonGrappleAreaSafeguard.SweepStirge(
+                    new[] { stirge, hostile });
+                bool transitionClean = swept == 1 &&
+                    stirge.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleInitiator>() == null &&
+                    hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>() == null &&
+                    !stirge.Descriptor.HasFact(hold) &&
+                    !hostile.Descriptor.HasFact(removeStirge) &&
+                    !stirge.Descriptor.State.HasCondition(
+                        UnitCondition.LoseDexterityToAC);
+                escapeAndTransition = reattachedForEscape && failedRemoval &&
+                    successfulRemoval && reattachedForMobility &&
+                    failedMobilityRemoval && successfulMobilityRemoval &&
+                    mobilityUsedNativeSkill &&
+                    escapeClean && reattachedForTransition && transitionClean;
+                interruptDetail = "escapeAttach=" + reattachedForEscape +
+                    ";failedRemoval=" + failedRemoval +
+                    ";successfulRemoval=" + successfulRemoval +
+                    ";mobilityAttach=" + reattachedForMobility +
+                    ";failedMobility=" + failedMobilityRemoval +
+                    ";successfulMobility=" + successfulMobilityRemoval +
+                    ";mobilitySkillRoute=" + mobilityUsedNativeSkill +
+                    ";mobilityCmd=" + expectedMobilityCmd +
+                    ";escapeClean=" + escapeClean +
+                    ";transitionAttach=" + reattachedForTransition +
+                    ";swept=" + swept + ";transitionClean=" + transitionClean;
+                return weapon != null && weapon.Blueprint.name ==
+                    "KMG_Summoning_Natural_StirgeTouch" &&
+                    roll != null && roll.AttackType == AttackType.Touch &&
+                    ordinaryAc > touchAc && roll.TargetAC == touchAc &&
+                    roll.IsHit && damageAfter == damageBefore;
+            }
+            finally
+            {
+                StirgeHoldComponent.Detach(stirge);
+                bool clean = stirge.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleInitiator>() == null &&
+                    hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>() == null &&
+                    !stirge.Descriptor.HasFact(hold) &&
+                    !hostile.Descriptor.HasFact(removeStirge) &&
+                    !stirge.Descriptor.State.HasCondition(
+                        UnitCondition.LoseDexterityToAC);
+                attachmentEstablished = attachmentEstablished && clean;
+                attachmentDetail += ";releasedClean=" + clean;
+                stirge.Descriptor.Stats.BaseAttackBonus.BaseValue = babBefore;
+                hostile.Descriptor.Stats.Constitution.Damage =
+                    constitutionDamageBefore;
+                hostile.Descriptor.Damage = damageBefore;
+            }
+        }
+
+        /// <summary>Two actual quantity Stirges keep separate prey/action
+        /// links while one prey moves and kills its own Stirge.</summary>
+        private static bool ExerciseExpandedSummoningStirgeQuantityFreedom(
+            BlueprintScriptableObject[] blueprints, UnitEntityData caster,
+            UnitEntityData hostile, List<UnitEntityData> created,
+            ExpandedSummoningMechanicalEvidence evidence, out string detail)
+        {
+            UnitEntityData[] stirges = CastExpandedSummoningVariant(blueprints,
+                caster, ExpandedSummoningVariant(SummonFamily.NaturesAlly,
+                    "stirge", 3, SummonMultiplicity.OneD4PlusOne), null,
+                evidence);
+            created.AddRange(stirges);
+            UnitEntityData pony = CastExpandedSummoningCombatUnit(blueprints,
+                caster, SummonFamily.NaturesAlly, "pony", 1,
+                created, evidence);
+            RemoveExpandedSummoningAppearanceBuffs(pony);
+            detail = "quantity=" + stirges.Length;
+            if (stirges.Length < 2) return false;
+            UnitEntityData first = stirges[0], second = stirges[1];
+            Vector3 preyStart = hostile.Position;
+            int bab = hostile.Descriptor.Stats.BaseAttackBonus.BaseValue;
+            int firstDamage = first.Descriptor.Damage;
+            bool preyCouldMoveBefore = hostile.Descriptor.State.CanMove;
+            bool preyCouldActBefore = hostile.Descriptor.State.CanAct;
+            bool ponyCantMoveBefore = pony.Descriptor.State.HasCondition(
+                UnitCondition.CantMove);
+            bool ponyCantActBefore = pony.Descriptor.State.HasCondition(
+                UnitCondition.CantAct);
+            try
+            {
+                RemoveExpandedSummoningAppearanceBuffs(first);
+                RemoveExpandedSummoningAppearanceBuffs(second);
+                // A real touch hit can only establish an attachment from
+                // contact on the victim's current floor. Stage that contact
+                // explicitly; the fixture's summons otherwise enter on a
+                // different nearby navigation level.
+                Vector3 firstContact = hostile.Position + Vector3.right * 0.6f;
+                first.Position = firstContact;
+                if (first.View != null) first.View.transform.position = firstContact;
+                Vector3 secondContact = pony.Position + Vector3.right * 0.6f;
+                second.Position = secondContact;
+                if (second.View != null) second.View.transform.position = secondContact;
+                StirgeAttachComponent one = StirgeAttachComponent.Find(first);
+                StirgeAttachComponent two = StirgeAttachComponent.Find(second);
+                bool both = one != null && two != null &&
+                    one.TryAttach(hostile, first.Body.PrimaryHand.MaybeWeapon,
+                        true) &&
+                    two.TryAttach(pony, second.Body.PrimaryHand.MaybeWeapon,
+                        true);
+                bool firstLinked = ReferenceEquals(
+                        StirgeHoldComponent.AttachedTarget(first), hostile) &&
+                    !hostile.Descriptor.State.HasCondition(UnitCondition.CantMove) &&
+                    !hostile.Descriptor.State.HasCondition(UnitCondition.CantAct);
+                bool secondLinked = ReferenceEquals(
+                        StirgeHoldComponent.AttachedTarget(second), pony) &&
+                    pony.Descriptor.State.HasCondition(UnitCondition.CantMove) ==
+                        ponyCantMoveBefore &&
+                    pony.Descriptor.State.HasCondition(UnitCondition.CantAct) ==
+                        ponyCantActBefore;
+                bool actionGrants =
+                    hostile.Descriptor.HasFact(StirgeHoldComponent.RemoveAbility) &&
+                    pony.Descriptor.HasFact(StirgeHoldComponent.RemoveAbility);
+                bool preyFreedom =
+                    hostile.Descriptor.State.CanMove == preyCouldMoveBefore &&
+                    hostile.Descriptor.State.CanAct == preyCouldActBefore;
+                bool independent = both && firstLinked && secondLinked &&
+                    actionGrants && preyFreedom;
+                // Advance the prey the same way a native movement tick commits
+                // its view/data position. Translocate is deliberately excluded:
+                // teleportation is a separate, required detach path.
+                Vector3 movedPreyPosition = preyStart + Vector3.right * 2f;
+                hostile.Position = movedPreyPosition;
+                if (hostile.View != null)
+                    hostile.View.transform.position = movedPreyPosition;
+                SparseGrid<Kingmaker.EntitySystem.EntityDataBase> grid =
+                    ExpandedSummoningAreaGrid();
+                if (grid != null) grid.MoveTo(hostile,
+                    movedPreyPosition.x, movedPreyPosition.z);
+                Vector3 stirgeBeforeFollow = first.Position;
+                bool stirgeInGameBeforeFollow = first.IsInGame;
+                bool preyInGameBeforeFollow = hostile.IsInGame;
+                StirgeHoldComponent.FollowAttached(first);
+                Vector3 stirgeAfterFollow = first.Position;
+                bool firstStillLinkedAfterFollow = ReferenceEquals(
+                    StirgeHoldComponent.AttachedTarget(first), hostile);
+                float targetHorizontalDistance = Vector2.Distance(
+                    new Vector2(stirgeAfterFollow.x, stirgeAfterFollow.z),
+                    new Vector2(hostile.Position.x, hostile.Position.z));
+                float startHorizontalDistance = Vector2.Distance(
+                    new Vector2(stirgeAfterFollow.x, stirgeAfterFollow.z),
+                    new Vector2(preyStart.x, preyStart.z));
+                bool followed =
+                    targetHorizontalDistance > 0.35f &&
+                    targetHorizontalDistance < 0.9f &&
+                    startHorizontalDistance > 1f &&
+                    ReferenceEquals(StirgeHoldComponent.AttachedTarget(second),
+                        pony);
+                ItemEntityWeapon weapon = hostile.Body.PrimaryHand.MaybeWeapon;
+                first.Descriptor.Damage = Math.Max(0, first.MaxHP - 1);
+                hostile.Descriptor.Stats.BaseAttackBonus.BaseValue = 100;
+                UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                var counterattack = weapon == null ? null :
+                    new RuleAttackWithWeapon(hostile, first, weapon, 0);
+                if (counterattack != null) Rulebook.Trigger(counterattack);
+                typeof(Kingmaker.Controllers.Units.UnitLifeController)
+                    .GetMethod("TickOnUnit", BindingFlags.Instance |
+                        BindingFlags.Public | BindingFlags.NonPublic)
+                    .Invoke(new Kingmaker.Controllers.Units.UnitLifeController(),
+                        new object[] { first });
+                StirgeHoldComponent.FollowAttached(first);
+                bool killed = counterattack != null &&
+                    counterattack.AttackRoll != null &&
+                    counterattack.AttackRoll.IsHit &&
+                    (first.Descriptor.State.IsDead || first.Destroyed) &&
+                    StirgeHoldComponent.AttachedTarget(first) == null &&
+                    !hostile.Descriptor.HasFact(
+                        StirgeHoldComponent.RemoveAbility);
+                bool otherIntact = ReferenceEquals(
+                        StirgeHoldComponent.AttachedTarget(second), pony) &&
+                    pony.Descriptor.HasFact(StirgeHoldComponent.RemoveAbility);
+                StirgeHoldComponent.Detach(second);
+                bool cleanup = !pony.Descriptor.HasFact(
+                    StirgeHoldComponent.RemoveAbility) &&
+                    !hostile.Descriptor.HasFact(
+                        StirgeHoldComponent.RemoveAbility);
+                detail = "quantity=" + stirges.Length + ";both=" + both +
+                    ";firstLinked=" + firstLinked + ";secondLinked=" +
+                    secondLinked + ";actionGrants=" + actionGrants +
+                    ";preyMove=" + preyCouldMoveBefore + "->" +
+                    hostile.Descriptor.State.CanMove + ";preyAct=" +
+                    preyCouldActBefore + "->" +
+                    hostile.Descriptor.State.CanAct + ";ponyCantMove=" +
+                    ponyCantMoveBefore + "->" +
+                    pony.Descriptor.State.HasCondition(UnitCondition.CantMove) +
+                    ";ponyCantAct=" + ponyCantActBefore + "->" +
+                    pony.Descriptor.State.HasCondition(UnitCondition.CantAct) +
+                    ";positions=" + Vec(preyStart) + "->" +
+                    Vec(hostile.Position) + "/stirge=" +
+                    Vec(stirgeBeforeFollow) + "->" + Vec(stirgeAfterFollow) +
+                    "/targetHorizontalDistance=" + targetHorizontalDistance
+                        .ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) +
+                    "/startHorizontalDistance=" + startHorizontalDistance
+                        .ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) +
+                    ";inGame=" + stirgeInGameBeforeFollow + "/" +
+                    preyInGameBeforeFollow + ";linkedAfterFollow=" +
+                    firstStillLinkedAfterFollow +
+                    ";independent=" +
+                    independent + ";followed=" + followed +
+                    ";counterHit=" + (counterattack != null &&
+                        counterattack.AttackRoll != null &&
+                        counterattack.AttackRoll.IsHit) + ";killed=" + killed +
+                    ";otherIntact=" + otherIntact + ";cleanup=" + cleanup;
+                if (first.Destroyed) created.Remove(first);
+                return independent && followed && killed && otherIntact &&
+                    cleanup;
+            }
+            finally
+            {
+                StirgeHoldComponent.Detach(first);
+                StirgeHoldComponent.Detach(second);
+                PlaceExpandedSummoningUnit(hostile, preyStart);
+                hostile.Descriptor.Stats.BaseAttackBonus.BaseValue = bab;
+                if (!first.Destroyed) first.Descriptor.Damage = firstDamage;
+            }
+        }
+
+        /// <summary>Force the eligible branch of the printed 10% exposure
+        /// without changing production odds. A real later drain from this
+        /// Stirge must not check the same victim again.</summary>
+        private static bool ExerciseExpandedSummoningStirgeDisease(
+            BlueprintScriptableObject[] blueprints, UnitEntityData caster,
+            UnitEntityData hostile, List<UnitEntityData> created,
+            ExpandedSummoningMechanicalEvidence evidence, out string detail)
+        {
+            BlueprintBuff hold = blueprints.OfType<BlueprintBuff>().Single(value =>
+                value.name == "KMG_Summoning_Special_Stirge_Hold");
+            BlueprintBuff fever = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(
+                BlueprintBootstrap.Library, "9545a5550d89feb47a84edaeb4e63d0b",
+                "native filth fever exposure control");
+            UnitEntityData stirge = CastExpandedSummoningCombatUnit(blueprints,
+                caster, SummonFamily.NaturesAlly, "stirge", 1,
+                created, evidence);
+            RemoveExpandedSummoningAppearanceBuffs(stirge);
+            int babBefore = stirge.Descriptor.Stats.BaseAttackBonus.BaseValue;
+            int fortBefore = hostile.Descriptor.Stats.SaveFortitude.BaseValue;
+            int constitutionBefore = hostile.Descriptor.Stats.Constitution.Damage;
+            detail = "not-run";
+            try
+            {
+                Buff prior = hostile.Descriptor.Buffs.GetBuff(fever);
+                if (prior != null) hostile.Descriptor.Buffs.RemoveFact(prior);
+                stirge.Descriptor.Stats.BaseAttackBonus.BaseValue = 100;
+                UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                Rulebook.Trigger(new RuleAttackWithWeapon(stirge, hostile,
+                    stirge.Body.PrimaryHand.MaybeWeapon, 0));
+                bool attached = ReferenceEquals(
+                    StirgeHoldComponent.AttachedTarget(stirge), hostile);
+                StirgeAttachComponent attach = StirgeAttachComponent.Find(stirge);
+                hostile.Descriptor.Stats.SaveFortitude.BaseValue = -100;
+                UnityEngine.Random.InitState(FindNativeD20Seed(1));
+                bool zeroDamage = attach != null &&
+                    attach.TryDiseaseExposure(hostile, 0, 0);
+                bool first = attach != null &&
+                    attach.TryDiseaseExposure(hostile, 1, 0);
+                Buff infected = hostile.Descriptor.Buffs.GetBuff(fever);
+                StirgeHoldComponent liveHold = attached ?
+                    ExpandedSummoningRuntimeComponent<StirgeHoldComponent>(
+                        stirge, hold) : null;
+                if (liveHold != null) liveHold.OnNewRound();
+                bool repeat = attach != null &&
+                    attach.TryDiseaseExposure(hostile, 1, 0);
+                int checkedVictims = attach == null ? -1 :
+                    attach.DiseaseCheckedVictimCount;
+                bool retained = infected != null &&
+                    hostile.Descriptor.Buffs.GetBuff(fever) != null;
+                int nativeDc = infected == null || infected.MaybeContext == null ||
+                    infected.MaybeContext.Params == null ? -1 :
+                    infected.MaybeContext.Params.DC;
+                detail = "attached=" + attached + ";firstCheck=" + first +
+                    ";nativeBuff=" + (infected != null) +
+                    ";nativeDc=" + nativeDc +
+                    ";zeroDamageCheck=" + zeroDamage + ";repeatCheck=" +
+                    repeat + ";checkedVictims=" + checkedVictims +
+                    ";buffRetained=" + retained +
+                    ";drain=" + constitutionBefore + "->" +
+                    hostile.Descriptor.Stats.Constitution.Damage;
+                return attached && first && infected != null && !zeroDamage &&
+                    !repeat &&
+                    nativeDc == StirgeAttachPolicy.FilthFeverFortitudeDc &&
+                    checkedVictims == 1 && retained && liveHold != null &&
+                    hostile.Descriptor.Stats.Constitution.Damage ==
+                        constitutionBefore + 1;
+            }
+            finally
+            {
+                StirgeHoldComponent.Detach(stirge);
+                Buff infected = hostile.Descriptor.Buffs.GetBuff(fever);
+                if (infected != null) hostile.Descriptor.Buffs.RemoveFact(infected);
+                stirge.Descriptor.Stats.BaseAttackBonus.BaseValue = babBefore;
+                hostile.Descriptor.Stats.SaveFortitude.BaseValue = fortBefore;
+                hostile.Descriptor.Stats.Constitution.Damage = constitutionBefore;
+            }
+        }
+
+        /// <summary>Destroy one attached, disposable Stirge through the same
+        /// summoned-unit marker and unit teardown path used by dismissal.
+        /// The target must immediately lose its native held state.</summary>
+        private static bool ExerciseExpandedSummoningStirgeDismissal(
+            BlueprintScriptableObject[] blueprints, UnitEntityData caster,
+            UnitEntityData hostile, List<UnitEntityData> created,
+            ExpandedSummoningMechanicalEvidence evidence, out string detail)
+        {
+            BlueprintBuff hold = blueprints.OfType<BlueprintBuff>().Single(value =>
+                value.name == "KMG_Summoning_Special_Stirge_Hold");
+            BlueprintAbility removeStirge = blueprints.OfType<BlueprintAbility>()
+                .Single(value => value.name ==
+                    "KMG_Summoning_Special_Stirge_Remove");
+            UnitEntityData stirge = CastExpandedSummoningCombatUnit(blueprints,
+                caster, SummonFamily.NaturesAlly, "stirge", 1,
+                created, evidence);
+            int constitutionBefore = hostile.Descriptor.Stats.Constitution.Damage;
+            int hitPointsBefore = hostile.Descriptor.Damage;
+            detail = "not-run";
+            try
+            {
+                RemoveExpandedSummoningAppearanceBuffs(stirge);
+                stirge.Descriptor.Stats.BaseAttackBonus.BaseValue = 100;
+                UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                Rulebook.Trigger(new RuleAttackWithWeapon(stirge, hostile,
+                    stirge.Body.PrimaryHand.MaybeWeapon, 0));
+                bool attached = ReferenceEquals(
+                    StirgeHoldComponent.AttachedTarget(stirge), hostile) &&
+                    stirge.Descriptor.HasFact(hold) &&
+                    hostile.Descriptor.HasFact(removeStirge);
+                CleanupExpandedSummoningUnit(stirge);
+                // UnitEntityData.Destroy queues its fact teardown. Advance
+                // the same destroyer the guarded fixture drains at its end.
+                Game.Instance.EntityDestroyer.Tick();
+                bool victimFree = hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>() == null &&
+                    !hostile.Descriptor.HasFact(removeStirge) &&
+                    !hostile.Descriptor.State.HasCondition(UnitCondition.CantMove) &&
+                    hostile.Descriptor.Stats.Constitution.Damage ==
+                        constitutionBefore &&
+                    hostile.Descriptor.Damage == hitPointsBefore;
+                detail = "attached=" + attached + ";summonDestroyed=" +
+                    stirge.Destroyed + ";victimFree=" + victimFree +
+                    ";constitutionDamage=" + constitutionBefore + "->" +
+                    hostile.Descriptor.Stats.Constitution.Damage;
+                return attached && stirge.Destroyed && victimFree;
+            }
+            finally
+            {
+                if (!stirge.Destroyed)
+                {
+                    CleanupExpandedSummoningUnit(stirge);
+                    Game.Instance.EntityDestroyer.Tick();
+                }
+                if (stirge.Destroyed) created.Remove(stirge);
+            }
+        }
+
+        /// <summary>The actual timed native summon marker, not a manual
+        /// dismissal, reaches its recorded deadline while Stirge is holding
+        /// disposable prey. Only the fixture's clock is advanced and restored.</summary>
+        private static bool ExerciseExpandedSummoningStirgeExpiry(
+            BlueprintScriptableObject[] blueprints, UnitEntityData caster,
+            UnitEntityData hostile, List<UnitEntityData> created,
+            ExpandedSummoningMechanicalEvidence evidence, out string detail)
+        {
+            BlueprintBuff hold = blueprints.OfType<BlueprintBuff>().Single(value =>
+                value.name == "KMG_Summoning_Special_Stirge_Hold");
+            BlueprintAbility removeStirge = blueprints.OfType<BlueprintAbility>()
+                .Single(value => value.name ==
+                    "KMG_Summoning_Special_Stirge_Remove");
+            UnitEntityData stirge = CastExpandedSummoningCombatUnit(blueprints,
+                caster, SummonFamily.NaturesAlly, "stirge", 1,
+                created, evidence);
+            RemoveExpandedSummoningAppearanceBuffs(stirge);
+            TimeSpan clock = Game.Instance.Player.GameTime;
+            int damageBefore = hostile.Descriptor.Stats.Constitution.Damage;
+            detail = "not-run";
+            try
+            {
+                bool naturalCarrier = stirge.Body.PrimaryHand.MaybeWeapon != null &&
+                    stirge.Body.PrimaryHand.MaybeWeapon.Blueprint.IsNonRemovable;
+                BlueprintBuff unlootable = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(
+                    BlueprintBootstrap.Library, "0f775c7d5d8b6494197e1ce937754482",
+                    "native Stirge no-loot control");
+                bool nativeNoLoot = stirge.Descriptor.HasFact(unlootable) &&
+                    stirge.Descriptor.State.HasCondition(UnitCondition.Unlootable);
+                BlueprintBuff summoned = BlueprintRoot.Instance.SystemMechanics
+                    .SummonedUnitBuff;
+                Buff[] markers = stirge.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                    .Where(value => ReferenceEquals(value.Blueprint, summoned))
+                    .ToArray();
+                Buff marker = markers.Length == 1 ? markers[0] : null;
+                bool timed = marker != null && !marker.IsPermanent &&
+                    marker.EndTime > clock + TimeSpan.FromSeconds(1);
+                bool beforeStill = false;
+                if (timed)
+                {
+                    Game.Instance.Player.GameTime = marker.EndTime -
+                        TimeSpan.FromSeconds(0.1);
+                    stirge.Descriptor.Buffs.Tick();
+                }
+                stirge.Descriptor.Stats.BaseAttackBonus.BaseValue = 100;
+                UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                Rulebook.Trigger(new RuleAttackWithWeapon(stirge, hostile,
+                    stirge.Body.PrimaryHand.MaybeWeapon, 0));
+                bool attached = ReferenceEquals(
+                    StirgeHoldComponent.AttachedTarget(stirge), hostile);
+                StirgeHoldComponent liveHold = attached ?
+                    ExpandedSummoningRuntimeComponent<StirgeHoldComponent>(
+                        stirge, hold) : null;
+                if (timed)
+                {
+                    beforeStill = !stirge.Destroyed && marker.Active &&
+                        ReferenceEquals(StirgeHoldComponent.AttachedTarget(stirge),
+                            hostile);
+                    Game.Instance.Player.GameTime = marker.EndTime +
+                        TimeSpan.FromSeconds(0.1);
+                    stirge.Descriptor.Buffs.Tick();
+                    Game.Instance.EntityCreator.Tick();
+                    Game.Instance.EntityDestroyer.Tick();
+                    if (liveHold != null) liveHold.OnNewRound();
+                }
+                bool markerGone = marker != null &&
+                    !stirge.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                        .Any(value => ReferenceEquals(value, marker));
+                bool victimFree = hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>() == null &&
+                    !hostile.Descriptor.HasFact(removeStirge) &&
+                    (stirge.Destroyed ||
+                        stirge.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleInitiator>() == null);
+                detail = "attached=" + attached + ";nonRemovable=" +
+                    naturalCarrier + ";nativeNoLoot=" + nativeNoLoot +
+                    ";timed=" + timed +
+                    ";beforeStill=" + beforeStill + ";markerGone=" +
+                    markerGone + ";nativeDestroyQueued=" +
+                    stirge.ShouldBeDestroyed + ";summonDestroyed=" + stirge.Destroyed +
+                    ";victimFree=" + victimFree + ";constitutionDamage=" +
+                    damageBefore + "->" +
+                    hostile.Descriptor.Stats.Constitution.Damage;
+                return attached && naturalCarrier && nativeNoLoot && timed &&
+                    beforeStill && markerGone && victimFree;
+            }
+            finally
+            {
+                Game.Instance.Player.GameTime = clock;
+                if (!stirge.Destroyed)
+                {
+                    StirgeHoldComponent.Detach(stirge);
+                    CleanupExpandedSummoningUnit(stirge);
+                    Game.Instance.EntityDestroyer.Tick();
+                }
+                if (stirge.Destroyed) created.Remove(stirge);
+                hostile.Descriptor.Stats.Constitution.Damage = damageBefore;
+            }
+        }
+
+        /// <summary>A dead disposable victim causes the holder's next native
+        /// round callback to release both sides without another meal tick.</summary>
+        private static bool ExerciseExpandedSummoningStirgePreyDeath(
+            BlueprintScriptableObject[] blueprints, UnitEntityData caster,
+            UnitEntityData hostile, List<UnitEntityData> created,
+            ExpandedSummoningMechanicalEvidence evidence, out string detail)
+        {
+            BlueprintBuff hold = blueprints.OfType<BlueprintBuff>().Single(value =>
+                value.name == "KMG_Summoning_Special_Stirge_Hold");
+            BlueprintAbility removeStirge = blueprints.OfType<BlueprintAbility>()
+                .Single(value => value.name ==
+                    "KMG_Summoning_Special_Stirge_Remove");
+            UnitEntityData stirge = CastExpandedSummoningCombatUnit(blueprints,
+                caster, SummonFamily.NaturesAlly, "stirge", 1,
+                created, evidence);
+            RemoveExpandedSummoningAppearanceBuffs(stirge);
+            int hitPointsBefore = hostile.Descriptor.Damage;
+            int constitutionBefore = hostile.Descriptor.Stats.Constitution.Damage;
+            bool cheater = hostile.Blueprint.IsCheater;
+            detail = "not-run";
+            try
+            {
+                stirge.Descriptor.Stats.BaseAttackBonus.BaseValue = 100;
+                UnityEngine.Random.InitState(FindNativeD20Seed(20));
+                Rulebook.Trigger(new RuleAttackWithWeapon(stirge, hostile,
+                    stirge.Body.PrimaryHand.MaybeWeapon, 0));
+                bool attached = ReferenceEquals(
+                    StirgeHoldComponent.AttachedTarget(stirge), hostile);
+                StirgeHoldComponent liveHold = attached ?
+                    ExpandedSummoningRuntimeComponent<StirgeHoldComponent>(
+                        stirge, hold) : null;
+                // Native damage followed by the life controller transitions
+                // UnitState to dead in this paused disposable fixture.
+                // The disposable target's fixture armor remains owned by the
+                // outer cleanup and must not materialize as dropped loot.
+                hostile.Blueprint.IsCheater = false;
+                if (hostile.Body.Armor.HasArmor)
+                    hostile.Body.Armor.RemoveItem(false);
+                Rulebook.Trigger(new RuleDealDamage(caster, hostile,
+                    new DamageBundle(new DirectDamage(
+                        new DiceFormula(0, DiceType.D6), hostile.MaxHP + 100)))
+                {
+                    DisablePrecisionDamage = true,
+                    IgnoreDamageReduction = true
+                });
+                typeof(Kingmaker.Controllers.Units.UnitLifeController)
+                    .GetMethod("TickOnUnit", BindingFlags.Instance |
+                        BindingFlags.Public | BindingFlags.NonPublic)
+                    .Invoke(new Kingmaker.Controllers.Units.UnitLifeController(),
+                        new object[] { hostile });
+                bool preyDead = hostile.Descriptor.State.IsDead;
+                if (liveHold != null) liveHold.OnNewRound();
+                bool released = stirge.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleInitiator>() == null &&
+                    hostile.Get<Kingmaker.UnitLogic.Parts.UnitPartGrappleTarget>() == null &&
+                    !stirge.Descriptor.HasFact(hold) &&
+                    !hostile.Descriptor.HasFact(removeStirge);
+                bool noDrain = hostile.Descriptor.Stats.Constitution.Damage ==
+                    constitutionBefore;
+                detail = "attached=" + attached + ";preyDead=" + preyDead +
+                    ";damage=" + hitPointsBefore + "->" +
+                    hostile.Descriptor.Damage + ";hpLeft=" + hostile.HPLeft +
+                    ";cheater=" + cheater + "->" +
+                    hostile.Blueprint.IsCheater +
+                    ";released=" + released + ";noDrain=" + noDrain;
+                return attached && preyDead && released && noDrain;
+            }
+            finally
+            {
+                StirgeHoldComponent.Detach(stirge);
+                hostile.Descriptor.Damage = hitPointsBefore;
+                hostile.Descriptor.Stats.Constitution.Damage = constitutionBefore;
+                typeof(Kingmaker.Controllers.Units.UnitLifeController)
+                    .GetMethod("TickOnUnit", BindingFlags.Instance |
+                        BindingFlags.Public | BindingFlags.NonPublic)
+                    .Invoke(new Kingmaker.Controllers.Units.UnitLifeController(),
+                        new object[] { hostile });
+                hostile.Blueprint.IsCheater = cheater;
+            }
+        }
+
+        /// <summary>
+        /// A suppressed Wasp's sting and native saved-poison lifecycle on a
+        /// disposable hostile in the guarded mechanical fixture.
+        /// </summary>
+        private static bool ExerciseExpandedSummoningWaspPoison(
+            BlueprintScriptableObject[] blueprints, UnitEntityData caster,
+            UnitEntityData hostile, List<UnitEntityData> created,
+            ExpandedSummoningMechanicalEvidence evidence, out string detail)
+        {
+            BlueprintBuff venom = blueprints.OfType<BlueprintBuff>().Single(value =>
+                value.name == "KMG_Summoning_Natural_GiantWasp_Venom");
+            UnitEntityData wasp = CastExpandedSummoningCombatUnit(blueprints,
+                caster, SummonFamily.NaturesAlly, "giant-wasp", 4,
+                created, evidence);
+            BlueprintFeature verminType = blueprints.OfType<BlueprintFeature>()
+                .Single(value => value.AssetGuid ==
+                    "09478937695300944a179530664e42ec");
+            string verminProbe = "species=" +
+                (wasp.Blueprint.Type == null ? "<none>" :
+                    wasp.Blueprint.Type.name) + ";verminFact=" +
+                wasp.Descriptor.HasFact(verminType) + ";typeComponents=" +
+                string.Join(",", (verminType.ComponentsArray ??
+                    Array.Empty<BlueprintComponent>()).Select(value =>
+                    value == null ? "<null>" : value.GetType().FullName)
+                    .ToArray()) + ";grantedTypeFacts=" +
+                string.Join(",", wasp.Descriptor.Progression.Features.Enumerable
+                    .Where(value => value != null && value.Blueprint != null &&
+                        value.Blueprint.name.IndexOf("Type",
+                            StringComparison.OrdinalIgnoreCase) >= 0)
+                    .Select(value => value.Blueprint.name).ToArray());
+            int fortBefore = hostile.Descriptor.Stats.SaveFortitude.BaseValue;
+            int dexBaseBefore = hostile.Descriptor.Stats.Dexterity.BaseValue;
+            int dexDamageBefore = hostile.Descriptor.Stats.Dexterity.Damage;
+            int hitPointsBefore = hostile.Descriptor.Damage;
+            try
+            {
+                RemoveExpandedSummoningAppearanceBuffs(wasp);
+                hostile.Descriptor.Stats.SaveFortitude.BaseValue = -100;
+                hostile.Descriptor.Stats.Dexterity.BaseValue = 30;
+                int dexBefore = hostile.Descriptor.Stats.Dexterity.ModifiedValue;
+                string attackDetail;
+                bool hit = ExerciseExpandedSummoningAttack(wasp, hostile,
+                    out attackDetail);
+                Buff applied = hostile.Descriptor.Buffs.GetBuff(venom);
+                int dexAfterHit = hostile.Descriptor.Stats.Dexterity.ModifiedValue;
+                int dc = applied == null || applied.Context == null ? -1 :
+                    applied.Context.Params.DC;
+                var poisonLogic = applied == null ? null : applied.Components
+                    .OfType<Kingmaker.Designers.Mechanics.Buffs.BuffPoisonStatDamage>()
+                    .SingleOrDefault();
+                int ticksBefore = poisonLogic == null ? -1 :
+                    (int)ReadExactMember(poisonLogic, "m_TicksPassed");
+                int savesBefore = poisonLogic == null ? -1 :
+                    (int)ReadExactMember(poisonLogic, "m_SavesSucceeded");
+                int damageAfterHit = hostile.Descriptor.Stats.Dexterity.Damage;
+                bool activeBefore = applied != null && applied.Active;
+                bool suppressedBefore = applied != null && applied.IsSuppressed;
+                if (applied != null) applied.TickMechanics();
+                int dexAfterFailedRound = hostile.Descriptor.Stats.Dexterity.ModifiedValue;
+                int ticksAfter = poisonLogic == null ? -1 :
+                    (int)ReadExactMember(poisonLogic, "m_TicksPassed");
+                int savesAfter = poisonLogic == null ? -1 :
+                    (int)ReadExactMember(poisonLogic, "m_SavesSucceeded");
+                int damageAfterFailedRound = hostile.Descriptor.Stats.Dexterity.Damage;
+                bool presentAfterFailure = hostile.Descriptor.HasFact(venom);
+                hostile.Descriptor.Stats.SaveFortitude.BaseValue = 100;
+                Buff beforeCure = hostile.Descriptor.Buffs.GetBuff(venom);
+                if (beforeCure != null) beforeCure.TickMechanics();
+                bool cured = !hostile.Descriptor.HasFact(venom);
+                int dexAfterCure = hostile.Descriptor.Stats.Dexterity.ModifiedValue;
+                float enemyDamageScale = Game.Instance.Player.Difficulty.DamageToParty;
+                bool poisonRules = poisonLogic != null &&
+                    poisonLogic.Value.Rolls == 1 &&
+                    poisonLogic.Value.Dice == DiceType.D2 &&
+                    poisonLogic.Ticks == GiantWaspPoisonPolicy.Exposures &&
+                    poisonLogic.SuccesfullSaves ==
+                        GiantWaspPoisonPolicy.SavesToCure &&
+                    poisonLogic.SaveType == SavingThrowType.Fortitude;
+                bool passed = hit && dc == GiantWaspPoisonPolicy.DifficultyClass(
+                    wasp.Descriptor.Stats.Constitution.Bonus) &&
+                    dexBefore - dexAfterHit >= 1 && dexBefore - dexAfterHit <= 2 &&
+                    poisonRules && activeBefore && !suppressedBefore &&
+                    ticksBefore == 1 && ticksAfter == 2 &&
+                    savesBefore == 0 && savesAfter == 0 &&
+                    damageAfterFailedRound >= damageAfterHit &&
+                    damageAfterFailedRound - damageAfterHit <= 2 &&
+                    presentAfterFailure && cured &&
+                    dexAfterCure == dexAfterFailedRound;
+                detail = "verminProbe=" + verminProbe + ";attack=" + attackDetail + ";dc=" + dc +
+                    ";dex=" + dexBefore + "->" + dexAfterHit + "->" +
+                    dexAfterFailedRound + "->" + dexAfterCure +
+                    ";statDamage=" + dexDamageBefore + "->" +
+                    damageAfterHit + "->" + damageAfterFailedRound +
+                    ";ticks=" + ticksBefore + "->" + ticksAfter +
+                    ";saves=" + savesBefore + "->" + savesAfter +
+                    ";active=" + activeBefore + ";suppressed=" +
+                    suppressedBefore + ";rules=" + poisonRules +
+                    ";enemyDamageScale=" + enemyDamageScale +
+                    ";enemyTarget=" + hostile.IsPlayersEnemy +
+                    ";afterFailedRound=" + presentAfterFailure +
+                    ";cured=" + cured;
+                return passed;
+            }
+            finally
+            {
+                Buff remaining = hostile.Descriptor.Buffs.GetBuff(venom);
+                if (remaining != null) hostile.Descriptor.Buffs.RemoveFact(remaining);
+                hostile.Descriptor.Stats.SaveFortitude.BaseValue = fortBefore;
+                hostile.Descriptor.Stats.Dexterity.BaseValue = dexBaseBefore;
+                hostile.Descriptor.Stats.Dexterity.Damage = dexDamageBefore;
+                hostile.Descriptor.Damage = hitPointsBefore;
+            }
+        }
+
+        private static bool ExerciseExpandedSummoningWaspVerminImmunity(
+            BlueprintScriptableObject[] blueprints, UnitEntityData wasp,
+            UnitEntityData humanControl, UnitEntityData source,
+            out string detail)
+        {
+            BlueprintFeature verminType = blueprints.OfType<BlueprintFeature>()
+                .Single(value => value.AssetGuid ==
+                    "09478937695300944a179530664e42ec");
+            BlueprintBuff confusion = BlueprintBootstrap.GunslingerClass
+                .TargetingHead.ConfusionBuff;
+            string buffImmunity = string.Join(",", verminType.ComponentsArray.OfType<
+                Kingmaker.UnitLogic.FactLogic.BuffDescriptorImmunity>()
+                .Select(value => value.Descriptor.Value.ToString()).ToArray());
+            string spellImmunity = string.Join(",", verminType.ComponentsArray.OfType<
+                Kingmaker.UnitLogic.FactLogic.SpellImmunityToSpellDescriptor>()
+                .Select(value => value.Descriptor.Value.ToString()).ToArray());
+            bool descriptor = verminType.ComponentsArray.OfType<
+                Kingmaker.UnitLogic.FactLogic.SpellImmunityToSpellDescriptor>()
+                .Any(value => (value.Descriptor.Value &
+                    SpellDescriptor.MindAffecting) != 0);
+            string grantedByType = string.Join(",", verminType.ComponentsArray
+                .OfType<AddFacts>().SelectMany(value => value.Facts ??
+                    Array.Empty<BlueprintUnitFact>()).Where(value => value != null)
+                .Select(value => value.name).ToArray());
+            bool granted = wasp.Descriptor.HasFact(verminType) &&
+                !humanControl.Descriptor.HasFact(verminType);
+            bool species = wasp.Blueprint.Type != null &&
+                wasp.Blueprint.Type.name ==
+                    "KMG_Summoning_Natural_GiantWasp_UnitType" &&
+                wasp.Blueprint.Type.KnowledgeStat == StatType.SkillLoreNature;
+            Buff onWasp = null;
+            Buff onHuman = null;
+            RuleApplyBuff waspRule = null;
+            RuleApplyBuff humanRule = null;
+            try
+            {
+                waspRule = new RuleApplyBuff(wasp, confusion,
+                    new MechanicsContext(source, source.Descriptor, confusion,
+                        null, new TargetWrapper(wasp)),
+                    TimeSpan.FromSeconds(6d), (buff, context, duration) =>
+                        wasp.Descriptor.Buffs.AddBuff(buff, context, duration));
+                Rulebook.Trigger(waspRule);
+                onWasp = waspRule.AppliedBuff;
+                humanRule = new RuleApplyBuff(humanControl, confusion,
+                    new MechanicsContext(source, source.Descriptor, confusion,
+                        null, new TargetWrapper(humanControl)),
+                    TimeSpan.FromSeconds(6d), (buff, context, duration) =>
+                        humanControl.Descriptor.Buffs.AddBuff(buff, context,
+                            duration));
+                Rulebook.Trigger(humanRule);
+                onHuman = humanRule.AppliedBuff;
+                bool waspBlocked = waspRule.Immunity && !waspRule.CanApply &&
+                    onWasp == null &&
+                    !wasp.Descriptor.State.HasCondition(UnitCondition.Confusion);
+                bool controlEligible = !humanRule.Immunity && humanRule.CanApply;
+                detail = "species=" + (wasp.Blueprint.Type == null ?
+                    "<none>" : wasp.Blueprint.Type.name) +
+                    ";verminGranted=" + granted + ";nativeMaskMatchesMind=" +
+                    descriptor + ";grantedByType=" + grantedByType +
+                    ";buffImmunity=" + buffImmunity +
+                    ";spellImmunity=" + spellImmunity +
+                    ";waspRule=" + waspRule.CanApply + "/" +
+                    waspRule.Immunity + "/" + (onWasp != null) +
+                    ";humanRule=" + humanRule.CanApply + "/" +
+                    humanRule.Immunity + "/" + (onHuman != null) +
+                    ";waspBlocked=" + waspBlocked + ";humanEligible=" +
+                    controlEligible + ";buffInstalledOnControl=" +
+                    (onHuman != null);
+                return species && granted && waspBlocked &&
+                    controlEligible;
+            }
+            finally
+            {
+                if (onWasp != null) wasp.Descriptor.Buffs.RemoveFact(onWasp);
+                if (onHuman != null)
+                    humanControl.Descriptor.Buffs.RemoveFact(onHuman);
+            }
         }
 
         /// <summary>
@@ -20202,7 +21867,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             var countRows = new List<string>();
             var creatureIcons = new Dictionary<string, Sprite>(
                 StringComparer.Ordinal);
-            foreach (SummonCreatureSpec creature in ExpandedSummoningCatalog.All)
+            foreach (SummonCreatureSpec creature in ExpandedSummoningCatalog.All
+                .Where(SummonIconCatalog.IsPublishedSomewhere))
             {
                 SummonVariantSpec representative = logicalVariants.First(value =>
                     ReferenceEquals(value.Creature, creature));
@@ -20212,12 +21878,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                             representative)));
                 creatureIcons.Add(creature.Key, ability.Icon);
             }
-            result.CategoryIconsDistinct = creatureIcons.Where(value =>
-                value.Key != "dire-bat").All(value => value.Value != null &&
+            result.CategoryIconsDistinct = creatureIcons.All(value =>
+                value.Value != null &&
                     value.Value.name == "KMG_SummonIcon_" + value.Key) &&
-                creatureIcons.Where(value => value.Key != "dire-bat")
-                    .Select(value => value.Value).Distinct().Count() ==
-                    ExpandedSummoningCatalog.All.Count - 1 &&
+                creatureIcons.Select(value => value.Value).Distinct().Count() ==
+                    creatureIcons.Count &&
                 ExpandedSummoningCreatureIconsDistinct(creatureIcons,
                     "dog", "wolf", "hyena", "goblin-dog") &&
                 ExpandedSummoningCreatureIconsDistinct(creatureIcons,
@@ -20660,6 +22325,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { "MonitorLizardPoison", "d88236a83413baa45ae9c8e5ddce5a6c" },
                     { "ImprovedInitiative", "797f25d709f559546b29e7bcb181cc74" },
                     { "Stealthy", "c7e1d5ef809325943af97f093e149c4f" },
+                    { "DireBatBlindsense", "5dcc039bc9674208a51e4babcd8a30ee" },
                     { "WeaponFocusBite", "b97edcf55321a814ea6b7807d246726c" },
                     { "Dodge", "97e216dbb46ae3c4faef90cf6bbe6fd5" },
                     { "WeaponFocusClaw", "153937f44fcd42a429a286a10babd82d" },
@@ -21529,11 +23195,34 @@ namespace KingmakerGunslinger.RuntimeTesting
                 damage.Value.DiceCountValue.Value == profile.BreathDice;
         }
 
+        private static bool ExpandedSummoningIsApprovedUngulateDirectFact(
+            BlueprintUnit unit, BlueprintUnitFact fact)
+        {
+            if (unit == null || fact == null) return false;
+            string owner = unit.AssetGuid;
+            string granted = fact.AssetGuid;
+            return owner == "40bf3f1e2b094e83ba2ab498c3d5d603" &&
+                    granted == "e58bb2d887ad435eaaa220c1c4528211" ||
+                owner == "d1f0439382454d908f2086dda33eafcc" &&
+                    granted == "48d90c0f49c54e84a463b006e507e322" ||
+                owner == "e0d2c0f0589e467792aff319fdb2b6f9" &&
+                    granted == "8441491856fc46a4837c80c89f5472d5" ||
+                owner == "8c4a8e045ca844a8bd42f614707b8e74" &&
+                    (granted == "9b73615998e94f308e1325153ee08a19" ||
+                     granted == "0f12c70e9b264ae484fb720d0c6845aa");
+        }
+
         private static bool ExpandedSummoningIsForbiddenReference(
             BlueprintScriptableObject blueprint)
         {
             if (blueprint == null) return true;
             if (blueprint.name == "KMG_Summoning_Subtype_Extraplanar" ||
+                blueprint.name ==
+                    "KMG_Summoning_Natural_DireBat_Blindsense" ||
+                blueprint.name ==
+                    "KMG_Summoning_Natural_GiantWasp_Poison" ||
+                blueprint.name ==
+                    "KMG_Summoning_Special_Stirge_CombatTraits" ||
                 blueprint.name ==
                     "KMG_Summoning_Special_LanternArchon_LightRay" ||
                 blueprint.name ==
@@ -21580,6 +23269,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 blueprint.name ==
                     "KMG_Summoning_Special_PurpleWorm_CombatTraits" ||
                 blueprint.name == "KMG_Summoning_Special_PurpleWorm_Swallowed")
+                return false;
+            // The Stirge's native Unlootable fact prevents its touch
+            // carrier from becoming a dropped item. Require the installed
+            // blueprint identity; the general "loot" sanitizer stays strict.
+            if (blueprint.AssetGuid == "0f775c7d5d8b6494197e1ce937754482" &&
+                blueprint.name == "Unlootable")
                 return false;
             // Correction order: the Cyclops hide armor fact and the docile-hoof carriers.
             if (blueprint.name == "KMG_Summoning_Special_Cyclops_HideArmor" ||
@@ -33446,10 +35141,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     result.Diagnostics.Add("firearm input cleanup failed: " + cleanup);
                 }
             }
+            StopElementalTraitSave(result);
             StopTeleportPersistence(result);
             StopTeleportationInteraction(result);
             StopTeleportationSpellbookUi(result);
             StopMagicCircleUi(result);
+            StopWhiteoutWeather(result);
+            StopWhiteoutDisposableFixture(result);
             StopTeleportationLoadDiagnostics(result);
             if (_saveLoadObservation != null && result.SaveLoadObservation == null)
                 result.SaveLoadObservation = _saveLoadObservation.Stop();

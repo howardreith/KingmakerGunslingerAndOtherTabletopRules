@@ -81,6 +81,10 @@ namespace KingmakerGunslinger.Blueprints
                     blueprint = registry.Register<BlueprintWeaponType>(
                         identity.Symbol, () => CreateWeaponTypeShell(
                             identity.Symbol));
+                else if (identity.PlannedType == "BlueprintUnitType")
+                    blueprint = registry.Register<BlueprintUnitType>(
+                        identity.Symbol, () => CreateUnitTypeShell(
+                            identity.Symbol));
                 else if (identity.PlannedType == "BlueprintAbilityResource")
                     blueprint = registry.Register<BlueprintAbilityResource>(
                         identity.Symbol, () => CreateResourceShell(identity.Symbol));
@@ -165,6 +169,14 @@ namespace KingmakerGunslinger.Blueprints
                 ScriptableObject.CreateInstance<BlueprintWeaponType>();
             result.name = InternalName(symbol);
             result.ComponentsArray = Array.Empty<BlueprintComponent>();
+            return result;
+        }
+
+        private static BlueprintUnitType CreateUnitTypeShell(string symbol)
+        {
+            BlueprintUnitType result = ScriptableObject.CreateInstance<
+                BlueprintUnitType>();
+            result.name = InternalName(symbol);
             return result;
         }
 

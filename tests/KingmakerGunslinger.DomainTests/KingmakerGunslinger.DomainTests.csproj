@@ -191,6 +191,10 @@
     <Compile Include="ExpandedSummoningSprint6Tests.cs" />
     <Compile Include="ExpandedSummoningSprint7Tests.cs" />
     <Compile Include="ExpandedSummoningSprint8Tests.cs" />
+    <Compile Include="ExpandedSummoningSprint9Tests.cs" />
+    <Compile Include="ExpandedSummoningSprint10Tests.cs" />
+    <Compile Include="ExpandedSummoningSprint11Tests.cs" />
+    <Compile Include="ExpandedSummoningSprint12Tests.cs" />
     <Compile Include="ExpandedSummoningCorrectionTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonFamily.cs"><Link>Summoning\SummonFamily.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonMultiplicity.cs"><Link>Summoning\SummonMultiplicity.cs</Link></Compile>
@@ -208,6 +212,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ExpandedSummoningIdealRosterCatalog.cs"><Link>Summoning\ExpandedSummoningIdealRosterCatalog.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ExpandedSummoningCoveragePolicy.cs"><Link>Summoning\ExpandedSummoningCoveragePolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonViewScaleCatalog.cs"><Link>Summoning\SummonViewScaleCatalog.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\EagleAttackLungePolicy.cs"><Link>Summoning\EagleAttackLungePolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonIconCatalog.cs"><Link>Summoning\SummonIconCatalog.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonPublicationTransaction.cs"><Link>Summoning\SummonPublicationTransaction.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonUnitSanitizationPolicy.cs"><Link>Summoning\SummonUnitSanitizationPolicy.cs</Link></Compile>
@@ -220,6 +225,10 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ExpandedSummoningDonorCatalog.cs"><Link>Summoning\ExpandedSummoningDonorCatalog.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ExpandedSummoningSpecialProfiles.cs"><Link>Summoning\ExpandedSummoningSpecialProfiles.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ExpandedSummoningNaturalProfiles.cs"><Link>Summoning\ExpandedSummoningNaturalProfiles.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\GiantWaspPoisonPolicy.cs"><Link>Summoning\GiantWaspPoisonPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\StirgeAttachPolicy.cs"><Link>Summoning\StirgeAttachPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonInjuryDiseasePolicy.cs"><Link>Summoning\SummonInjuryDiseasePolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\UngulateRulesPolicy.cs"><Link>Summoning\UngulateRulesPolicy.cs</Link></Compile>
     <Compile Include="ArchetypeFoundationTests.cs" />
     <Compile Include="RapidReloadPrerequisiteTests.cs" />
     <Compile Include="RapidReloadGateEvidenceTests.cs" />
@@ -1059,4 +1068,34 @@
   </ItemGroup>
 
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Compile Include="FieryGlareFoundationTests.cs" />
+    <Compile Include="StoicDignityFoundationTests.cs" />
+    <Compile Include="AerialObserverFoundationTests.cs" />
+    <Compile Include="WhiteoutPolicyTests.cs" />
+    <Compile Include="WhiteoutNativeContractTests.cs" />
+    <Compile Include="WhiteoutNativeFoundationTests.cs" />
+    <Compile Include="WhiteoutContinuationTests.cs" />
+    <Compile Include="ElementalCharacterTraitReadinessTests.cs" />
+    <Compile Include="ModelDVendorTests.cs" />
+    <Compile Include="FirearmItemDescriptionTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\\WhiteoutPolicy.cs"><Link>ElementalRaces\WhiteoutPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\\StoicDignityPolicy.cs"><Link>ElementalRaces\StoicDignityPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\\AerialObserverPolicy.cs"><Link>ElementalRaces\AerialObserverPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\\WhiteoutFoundationPolicy.cs"><Link>ElementalRaces\WhiteoutFoundationPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\\ElementalCharacterTraitCatalog.cs"><Link>ElementalRaces\ElementalCharacterTraitCatalog.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\\ElementalCharacterTraitAssetGate.cs"><Link>ElementalRaces\ElementalCharacterTraitAssetGate.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\\ElementalCharacterTraitPublicationTransaction.cs"><Link>ElementalRaces\ElementalCharacterTraitPublicationTransaction.cs</Link></Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmEnchantmentItemText.cs"><Link>Firearms\FirearmEnchantmentItemText.cs</Link></Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ElementalCharacterTraitCanonicalTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\ElementalRaces\CharacterTraitCanonicalAdmission.cs"><Link>ElementalRaces\CharacterTraitCanonicalAdmission.cs</Link></Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ElementalCharacterTraitSaveTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\ElementalCharacterTraitSaveContract.cs"><Link>RuntimeTesting\ElementalCharacterTraitSaveContract.cs</Link></Compile>
+  </ItemGroup>
 </Project>

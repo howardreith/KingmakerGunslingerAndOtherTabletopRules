@@ -1,6 +1,15 @@
-# Kingmaker Gunslinger
+﻿# Kingmaker Gunslinger
 
-The current full release, **0.0.140-favored-class-integration**, adds an optional
+The current full release, **0.0.141-expanded-summoning-phase2a**, publishes
+Expanded Summoning Sprints 9 through 11: Eagle, Dire Bat, Giant Wasp, Stirge,
+Aurochs, Bison, Rhinoceros and Woolly Rhinoceros. Together with the retained
+native summon wrappers, the mod now exposes 911 summon choices. Sprint 12 work
+is included only as hidden groundwork; all 68 Dire Rat, Dog, Hyena and Goblin
+Dog placements remain suppressed. Owner visual review remains pending and was
+accepted as nonblocking for this checkpoint. See the
+[release notes](docs/RELEASE-NOTES-0.0.141.md).
+
+The previous release, **0.0.140-favored-class-integration**, adds an optional
 integration with the Favored Class mod: Gunslinger and elemental-race
 favored-class options, and a Mostly Human alternate racial trait for the four
 elemental races. Favored Class stays optional, and only the exact qualified
@@ -775,3 +784,20 @@ candidate (see `TELEPORTATION-COMPLETION-HANDOFF.md` for exact evidence):
   them from the world-map menu, and using one from inventory tells you to
   select a destination on the world map. Each activation consumes exactly
   one scroll; bought-out stock stays bought out.
+
+## 0.0.142 candidate
+
+The 0.0.142-elemental-race-traits-and-content candidate adds four character race
+traits through optional Favored Class integration: Fiery Glare, Stoic Dignity,
+Aerial Observer and Whiteout. Aerial Observer requires Wings of Air; Whiteout
+requires outdoor rain or snow and uses an independent 10% miss chance.
+It also improves firearm descriptions and distributes firearm stock across
+Oleg, the capital smith and Bokken. Existing serialized merchant inventories
+are not rewritten.
+
+The released 0.0.141 checkpoint is retained unchanged. No later Expanded
+Summoning development, Lunge or Earthsense is included. See the
+[release notes](docs/RELEASE-NOTES-0.0.142.md) and
+[final qualification handoff](CODEX-DATA-CONTENT-0.0.142-INTEGRATION-HANDOFF-2026-10-06.md)
+for exact automated evidence and pending owner visual, tooltip and merchant
+review. This candidate has not been merged, tagged or released.

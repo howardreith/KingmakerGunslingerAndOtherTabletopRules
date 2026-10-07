@@ -63,9 +63,9 @@ def validate(root: Path, version: str = VERSION,
     require_tokens(acquisition,
         ["7de959347266092448d8a72089ef9778", "WeaponCount = 1",
          "SmithVendorTable", "PistolPlus1Symbol",
-         "BlunderbussPlus1Symbol", "modern and named firearms excluded",
+         "BlunderbussPlus1Symbol", "mundane, modern, named and regional weapons excluded",
          "VendorCatalogPublication<BlueprintComponent>.Create",
-         "owned.Contains(ReadItem",
+         "VendorCatalogPublication<BlueprintComponent>.NormalizeOwned",
          "rollback refused because the table changed"],
         "Sprint 61 capital vendor publication")
     if bootstrap.index('"initialize.root-cause"') > bootstrap.index(

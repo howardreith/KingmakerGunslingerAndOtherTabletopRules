@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -63,9 +63,12 @@ namespace KingmakerGunslinger.DomainTests
         {
             JToken[] entries = JObject.Parse(Read("blueprints", "blueprints.json"))["entries"].ToArray();
             int start = PrecedingManifestEntries + FavoredClassIdentityCatalog.IdentityCount;
-            JToken[] block = entries.Skip(start).ToArray();
+            JToken[] block = entries.Skip(start).Take(ElementalMostlyHumanPolicy.IdentityCount).ToArray();
             IList<ElementalMostlyHumanIdentity> identities = ElementalMostlyHumanPolicy.All;
-            Assertions.Equal(identities.Count, block.Length, "Mostly Human block is the manifest tail.");
+            Assertions.Equal(identities.Count, block.Length, "Mostly Human identity block remains exact.");
+            Assertions.Equal("KMG.Summoning.Natural.DireBat.Blindsense",
+                (string)entries[start + identities.Count]["symbol"],
+                "The next append belongs to Expanded Summoning Phase 2.");
             for (int index = 0; index < identities.Count; index++)
             {
                 Assertions.Equal(identities[index].Symbol, (string)block[index]["symbol"], "Symbol at " + index);
@@ -77,7 +80,7 @@ namespace KingmakerGunslinger.DomainTests
                     "Milestone at " + index);
             }
             Assertions.Equal(240, entries.Count(value => ((string)value["symbol"]).StartsWith(
-                "KMG.ElementalRaces.", StringComparison.Ordinal) && (string)value["status"] == "active"),
+                "KMG.ElementalRaces.", StringComparison.Ordinal) && !((string)value["symbol"]).StartsWith("KMG.ElementalRaces.CharacterTraits.",StringComparison.Ordinal) && (string)value["status"] == "active"),
                 "The pinned elemental race inventory is unchanged.");
         }
 

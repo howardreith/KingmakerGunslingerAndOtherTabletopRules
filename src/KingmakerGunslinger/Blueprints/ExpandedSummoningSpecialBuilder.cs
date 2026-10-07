@@ -6,6 +6,7 @@ using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.Blueprints.Facts;
+using Kingmaker.Blueprints.TurnBasedModifiers;
 using Kingmaker.Blueprints.Items;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Controllers.Brain.Blueprints;
@@ -227,6 +228,27 @@ namespace KingmakerGunslinger.Blueprints
         private const string CheetahBrainSymbol = "KMG.Summoning.Special.Cheetah.Brain";
         private const string CheetahCombatTraitsSymbol =
             "KMG.Summoning.Special.Cheetah.CombatTraits";
+        private const string StirgeUnitSymbol = "KMG.Summoning.Unit.Stirge";
+        private const string StirgeTouchSymbol = "KMG.Summoning.Natural.StirgeTouch";
+        private const string StirgeCombatTraitsSymbol =
+            "KMG.Summoning.Special.Stirge.CombatTraits";
+        private const string StirgeHoldSymbol = "KMG.Summoning.Special.Stirge.Hold";
+        private const string StirgeRemoveSymbol = "KMG.Summoning.Special.Stirge.Remove";
+        private const string RhinocerosUnitSymbol = "KMG.Summoning.Unit.Rhinoceros";
+        private const string RhinocerosPowerfulChargeSymbol =
+            "KMG.Summoning.Special.Rhinoceros.PowerfulCharge";
+        private const string WoollyRhinocerosUnitSymbol =
+            "KMG.Summoning.Unit.WoollyRhinoceros";
+        private const string WoollyRhinocerosPowerfulChargeSymbol =
+            "KMG.Summoning.Special.WoollyRhinoceros.PowerfulCharge";
+        private const string AurochsTrampleSymbol =
+            "KMG.Summoning.Special.Aurochs.Trample";
+        private const string BisonTrampleSymbol =
+            "KMG.Summoning.Special.Bison.Trample";
+        private const string WoollyRhinocerosTrampleSymbol =
+            "KMG.Summoning.Special.WoollyRhinoceros.Trample";
+        private const string NativeOverrunAbilityGuid =
+            "1a3b471ecea51f7439a946b23577fd70";
         internal const string SmallClawGuid = "800092a2b9a743b48ae8aeeb5d243dcc";
         internal const string MediumClawGuid = "118fdd03e569a66459ab01a20af6811a";
         internal const string Claw2d4Guid = "8afc47748d00b3e4a8aff2787d9ee350";
@@ -425,7 +447,138 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureDocileHooves(bySymbol, PonyUnitSymbol, PonyCombatTraitsSymbol, "Pony");
             ConfigureDocileHooves(bySymbol, HorseUnitSymbol, HorseCombatTraitsSymbol, "Horse");
             ConfigureGrapplers(library, bySymbol);
+            ConfigureStirgeAttachment(library, bySymbol);
+            ConfigureUngulatePowerfulCharge(bySymbol, RhinocerosUnitSymbol,
+                RhinocerosPowerfulChargeSymbol, "rhinoceros");
+            ConfigureUngulatePowerfulCharge(bySymbol, WoollyRhinocerosUnitSymbol,
+                WoollyRhinocerosPowerfulChargeSymbol, "woolly-rhinoceros");
+            ConfigureUngulateTrample(library, bySymbol, "KMG.Summoning.Unit.Aurochs",
+                AurochsTrampleSymbol, "aurochs");
+            ConfigureUngulateTrample(library, bySymbol, "KMG.Summoning.Unit.Bison",
+                BisonTrampleSymbol, "bison");
+            ConfigureUngulateTrample(library, bySymbol,
+                WoollyRhinocerosUnitSymbol, WoollyRhinocerosTrampleSymbol,
+                "woolly-rhinoceros");
             ConfigureMephitVariants(library, bySymbol);
+        }
+
+        private static void ConfigureUngulateTrample(
+            LibraryScriptableObject library,
+            IDictionary<string, BlueprintScriptableObject> bySymbol,
+            string unitSymbol, string abilitySymbol, string creatureKey)
+        {
+            BlueprintUnit unit = Require<BlueprintUnit>(bySymbol, unitSymbol);
+            BlueprintAbility ability = Require<BlueprintAbility>(bySymbol,
+                abilitySymbol);
+            UngulateRulesProfile rules = UngulateRulesPolicy.For(creatureKey);
+            if (!rules.HasTrample)
+                throw new InvalidOperationException(
+                    "A non-trampling ungulate cannot own a trample ability: " +
+                    creatureKey);
+            BlueprintAbility native = BlueprintLibraryLookup.RequireExact<
+                BlueprintAbility>(library, NativeOverrunAbilityGuid,
+                    "native path-following overrun ability");
+            ExpandedSummoningAbilityBuilder.CopyFields(native, ability);
+            ability.name = InternalName(abilitySymbol);
+            ability.Type = AbilityType.Extraordinary;
+            ability.Parent = null;
+            ability.Hidden = false;
+            ability.ActionBarAutoFillIgnored = false;
+            ability.Range = AbilityRange.DoubleMove;
+            ability.CanTargetPoint = true;
+            ability.CanTargetSelf = false;
+            ability.CanTargetFriends = false;
+            ability.CanTargetEnemies = false;
+            ability.EffectOnEnemy = AbilityEffectOnUnit.Harmful;
+            ability.EffectOnAlly = AbilityEffectOnUnit.None;
+            ability.SpellResistance = false;
+            ability.ActionType = UnitCommand.CommandType.Standard;
+            ability.SetIsFullRoundAction(true);
+            var contact = ScriptableObject.CreateInstance<
+                ContextActionUngulateTrample>();
+            contact.SourceUnit = unit;
+            contact.CreatureKey = creatureKey;
+            var overrun = ScriptableObject.CreateInstance<AbilityCustomOverrun>();
+            overrun.AutoSuccess = true;
+            overrun.FirstTargetOnly = false;
+            overrun.StopOnCorpulence = false;
+            overrun.DelayBeforeStart = 0f;
+            overrun.DelayAfterFinish = 0f;
+            overrun.Actions = new ActionList {
+                Actions = new GameAction[] { contact }
+            };
+            var fullRound = ScriptableObject.CreateInstance<
+                AbilityIsFullRoundInTurnBased>();
+            fullRound.FullRoundIfTurnBased = true;
+            var path = ScriptableObject.CreateInstance<
+                UngulateTramplePathChecker>();
+            ability.ComponentsArray = new BlueprintComponent[] {
+                overrun, fullRound, path
+            };
+            BlueprintUnitFactAccess.Resolve().Configure(ability,
+                LocalizationService.Create("KMG.ExpandedSummoning." +
+                    creatureKey + ".Trample.Name", "Trample"),
+                LocalizationService.Create("KMG.ExpandedSummoning." +
+                    creatureKey + ".Trample.Description",
+                    "As a full-round action, move up to twice speed through " +
+                    "smaller enemies. Each target takes " +
+                    rules.TrampleDiceCount + "d" + rules.TrampleDieSides +
+                    "+" + rules.TrampleBonus + " bludgeoning damage at most " +
+                    "once per round. On first contact, a target that can make " +
+                    "a legal melee attack of opportunity automatically makes " +
+                    "one at -4 before damage and receives no save. Otherwise " +
+                    "it attempts a Reflex DC " + rules.TrampleDc +
+                    " save for half. An attack that stops the trampler " +
+                    "prevents that contact's damage and ends the trample." +
+                    (rules.Stampede ?
+                        " Stampede activates only while at least three allied " +
+                        "creatures with Stampede each execute their own " +
+                        "Trample in the same combat round and remain mutually " +
+                        "adjacent. In real time all three commands must be " +
+                        "running together; in turn-based mode commands that " +
+                        "entered execution count through that native round. " +
+                        "While active, same-size enemies are eligible and the " +
+                        "save DC increases to " + (rules.TrampleDc + 2) +
+                        ". Nearby idle creatures never count." : "")),
+                native.Icon);
+            if (rules.Stampede)
+                UngulateStampedeRuntime.Register(unit, ability);
+            unit.AddFacts = (unit.AddFacts ?? Array.Empty<BlueprintUnitFact>())
+                .Concat(new BlueprintUnitFact[] { ability }).ToArray();
+        }
+
+        private static void ConfigureUngulatePowerfulCharge(
+            IDictionary<string, BlueprintScriptableObject> bySymbol,
+            string unitSymbol, string featureSymbol, string creatureKey)
+        {
+            BlueprintUnit unit = Require<BlueprintUnit>(bySymbol, unitSymbol);
+            BlueprintFeature feature = Require<BlueprintFeature>(bySymbol,
+                featureSymbol);
+            UngulateRulesProfile rules = UngulateRulesPolicy.For(creatureKey);
+            BlueprintItemWeapon gore = unit.Body == null ? null :
+                unit.Body.PrimaryHand as BlueprintItemWeapon;
+            if (gore == null || rules.ChargeDiceIncrement <= 0 ||
+                rules.ChargeBonusIncrement < 0)
+                throw new InvalidOperationException(
+                    "Ungulate charge requires a configured primary gore and printed increment: " +
+                    creatureKey);
+            var charge = ScriptableObject.CreateInstance<UngulatePowerfulCharge>();
+            charge.Gore = gore;
+            charge.AdditionalDiceRolls = rules.ChargeDiceIncrement;
+            charge.AdditionalDamageBonus = rules.ChargeBonusIncrement;
+            feature.name = InternalName(featureSymbol);
+            feature.IsClassFeature = true;
+            feature.HideInUI = true;
+            feature.ComponentsArray = new BlueprintComponent[] { charge };
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create("KMG.ExpandedSummoning." +
+                    creatureKey + ".PowerfulCharge.Name", "Powerful Charge"),
+                LocalizationService.Create("KMG.ExpandedSummoning." +
+                    creatureKey + ".PowerfulCharge.Description",
+                    "The first gore attack on a charge uses this creature's printed powerful-charge damage."),
+                null);
+            unit.AddFacts = (unit.AddFacts ?? Array.Empty<BlueprintUnitFact>())
+                .Concat(new BlueprintUnitFact[] { feature }).ToArray();
         }
 
         /// <summary>
@@ -1539,6 +1692,94 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureCheetahSprint(bySymbol);
             ExpandedSummoningVisualVariantPatch.Register(new SummonVisualVariant(
                 InternalName(CheetahUnitSymbol), ExpandedSummoningSpecialProfiles.CheetahCoat));
+        }
+
+        private static void ConfigureStirgeAttachment(LibraryScriptableObject library,
+            IDictionary<string, BlueprintScriptableObject> bySymbol)
+        {
+            BlueprintUnit unit = Require<BlueprintUnit>(bySymbol, StirgeUnitSymbol);
+            BlueprintItemWeapon touch = Require<BlueprintItemWeapon>(bySymbol,
+                StirgeTouchSymbol);
+            BlueprintBuff traits = Require<BlueprintBuff>(bySymbol,
+                StirgeCombatTraitsSymbol);
+            BlueprintBuff hold = Require<BlueprintBuff>(bySymbol,
+                StirgeHoldSymbol);
+            BlueprintAbility remove = Require<BlueprintAbility>(bySymbol,
+                StirgeRemoveSymbol);
+            BlueprintBuff filthFever = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(
+                library, "9545a5550d89feb47a84edaeb4e63d0b",
+                "native Filth Fever disease");
+            BlueprintBuff unlootable = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(
+                library, "0f775c7d5d8b6494197e1ce937754482",
+                "native Unlootable condition");
+            if (unit.Body == null || !ReferenceEquals(unit.Body.PrimaryHand, touch))
+                throw new InvalidOperationException(
+                    "Stirge attachment requires the exact touch carrier.");
+            var attach = ScriptableObject.CreateInstance<StirgeAttachComponent>();
+            attach.TouchWeapon = touch;
+            attach.HoldBuff = hold;
+            attach.DiseaseBuff = filthFever;
+            StirgeHoldComponent.RemoveAbility = remove;
+            traits.name = InternalName(StirgeCombatTraitsSymbol);
+            traits.Stacking = StackingType.Replace;
+            traits.IsClassFeature = true;
+            traits.ComponentsArray = new BlueprintComponent[] { attach };
+            BlueprintUnitFactAccess.Resolve().Configure(traits,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Stirge.CombatTraits.Name",
+                    "Stirge Attach"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Stirge.CombatTraits.Description",
+                    "A touch hit attaches to one living foe without a second grapple check."),
+                null);
+            var loseDexterity = ScriptableObject.CreateInstance<AddCondition>();
+            loseDexterity.Condition = UnitCondition.LoseDexterityToAC;
+            var cannotMove = ScriptableObject.CreateInstance<AddCondition>();
+            cannotMove.Condition = UnitCondition.CantMove;
+            var cannotAct = ScriptableObject.CreateInstance<AddCondition>();
+            cannotAct.Condition = UnitCondition.CantAct;
+            hold.name = InternalName(StirgeHoldSymbol);
+            hold.Stacking = StackingType.Replace;
+            hold.IsClassFeature = false;
+            hold.ComponentsArray = new BlueprintComponent[] { loseDexterity,
+                cannotMove, cannotAct,
+                ScriptableObject.CreateInstance<StirgeHoldComponent>() };
+            BlueprintUnitFactAccess.Resolve().Configure(hold,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Stirge.Hold.Name", "Attached"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Stirge.Hold.Description",
+                    "Attached to prey: loses Dexterity to AC and drains one Constitution per round until four points are taken or the prey escapes."),
+                null);
+            unit.AddFacts = (unit.AddFacts ?? Array.Empty<BlueprintUnitFact>())
+                .Concat(new BlueprintUnitFact[] { traits, unlootable }).ToArray();
+
+            remove.name = InternalName(StirgeRemoveSymbol);
+            remove.Type = AbilityType.Extraordinary;
+            remove.Parent = null;
+            remove.Hidden = false;
+            remove.ActionBarAutoFillIgnored = false;
+            remove.Range = AbilityRange.Touch;
+            remove.CanTargetEnemies = true;
+            remove.CanTargetFriends = true;
+            remove.CanTargetSelf = false;
+            remove.CanTargetPoint = false;
+            remove.NeedEquipWeapons = false;
+            remove.ActionType = UnitCommand.CommandType.Standard;
+            remove.MaterialComponent = new BlueprintAbility.MaterialComponentData();
+            remove.ResourceAssetIds = Array.Empty<string>();
+            var effect = ScriptableObject.CreateInstance<AbilityEffectRunAction>();
+            effect.Actions = new ActionList { Actions = new GameAction[] {
+                ScriptableObject.CreateInstance<ContextActionRemoveStirge>() } };
+            remove.ComponentsArray = new BlueprintComponent[] {
+                ScriptableObject.CreateInstance<RemoveStirgeTargetChecker>(), effect };
+            BlueprintUnitFactAccess.Resolve().Configure(remove,
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Stirge.Remove.Name", "Remove Stirge"),
+                LocalizationService.Create(
+                    "KMG.ExpandedSummoning.Stirge.Remove.Description",
+                    "Spend a standard action to remove an attached Stirge. Use the better of your grapple CMB or Mobility check against the Stirge's CMD; failure leaves it attached."),
+                null);
         }
 
         /// <summary>

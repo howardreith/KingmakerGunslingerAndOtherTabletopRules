@@ -50,6 +50,18 @@ namespace KingmakerGunslinger.DomainTests
                     "6c7915c9dc494849918e958618f61db0")
                     .IsSemanticDuplicate,
                 "Native SM I preservation child must reconcile to KMG Dog.");
+            Assertions.True(SummonVariantMergePolicy
+                    .PreserveNativeSemanticDuplicate(0,
+                        "6c7915c9dc494849918e958618f61db0"),
+                "A hidden KMG Dog must preserve the visible vanilla SM I Dog.");
+            Assertions.False(SummonVariantMergePolicy
+                    .PreserveNativeSemanticDuplicate(1,
+                        "6c7915c9dc494849918e958618f61db0"),
+                "A published exact KMG Dog replacement must collapse the vanilla duplicate.");
+            Assertions.Throws<InvalidOperationException>(() =>
+                SummonVariantMergePolicy.PreserveNativeSemanticDuplicate(2,
+                    "6c7915c9dc494849918e958618f61db0"),
+                "Ambiguous published replacements must fail closed.");
             Assertions.Equal(29, SummonNativeExpansionCatalog.All.Count,
                 "Native individual-option expansion count changed.");
             Assertions.True(SummonNativeExpansionCatalog.Replaces(
@@ -74,18 +86,18 @@ namespace KingmakerGunslinger.DomainTests
                     "86f4287572bef49449b9d06c66adf456")
                     .EquivalentCreatureKey,
                 "Native SNA Smilodon reconciliation changed.");
-            Assertions.Equal(799,
+            Assertions.Equal(832,
                 ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
                     .Concat(ExpandedSummoningCatalog.GenerateVariants(
                         SummonFamily.NaturesAlly))
                     .Count(SummonVisibilityCatalog.IsPublished),
                 "Visible summon placement count changed.");
-            Assertions.Equal(14,
+            Assertions.Equal(68,
                 ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
                     .Concat(ExpandedSummoningCatalog.GenerateVariants(
                         SummonFamily.NaturesAlly))
                     .Count(value => !SummonVisibilityCatalog.IsPublished(value)),
-                "Dire Bat compatibility-shell placement count changed.");
+                "Only the authorized Sprint 12 placements may remain hidden.");
         }
 
         internal static void DisplayOrderGroupsSinglesBeforeQuantities()
@@ -114,8 +126,10 @@ namespace KingmakerGunslinger.DomainTests
         {
             SummonIconCatalog.Validate();
             SummonViewScaleCatalog.Validate();
-            Assertions.Equal(91, SummonIconCatalog.All.Count,
+            Assertions.Equal(100, SummonIconCatalog.All.Count,
                 "Project icon concept count changed.");
+            Assertions.Equal("Dire Bat", SummonIconCatalog.For("dire-bat")
+                .DisplayName, "Dire Bat requires its own creature icon identity.");
             Assertions.Equal("Smilodon", SummonIconCatalog.For("dire-tiger")
                 .DisplayName, "Smilodon icon identity changed.");
             Assertions.True(new[] { "air-mephit", "earth-mephit",

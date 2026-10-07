@@ -26,10 +26,17 @@ namespace KingmakerGunslinger.DomainTests
         /// pyrotechnics blinded state.
         /// </summary>
         internal const int AppendedLedgerIdentities = 24;
-        // The Favored Class and Mostly Human blocks (0.0.140) follow the Phase 1 appends.
+        // The Favored Class and Mostly Human blocks (0.0.140), then the
+        // Dire Bat sense and the suppressed Wasp, Stirge, and ungulate identities follow Phase 1.
         internal static readonly int LaterLedgerIdentities =
             KingmakerGunslinger.FavoredClass.FavoredClassIdentityCatalog.IdentityCount +
-            KingmakerGunslinger.ElementalRaces.ElementalMostlyHumanPolicy.IdentityCount;
+            KingmakerGunslinger.ElementalRaces.ElementalMostlyHumanPolicy.IdentityCount + 1 +
+            ExpandedSummoningSprint10Tests.AppendedLedgerIdentities +
+            ExpandedSummoningSprint10Tests.StirgeAppendedLedgerIdentities +
+            ExpandedSummoningSprint11Tests.AppendedLedgerIdentities +
+            ExpandedSummoningSprint10Tests.StirgeRemovalIdentityCount +
+            ExpandedSummoningSprint12Tests.AppendedLedgerIdentities +
+            KingmakerGunslinger.ElementalRaces.ElementalCharacterTraitCatalog.Nodes().Length;
 
         private static readonly string[] AppendedSymbols = {
             "KMG.Summoning.Special.Grapple.MultiHold", "KMG.Summoning.Special.Grapple.MultiHeld",

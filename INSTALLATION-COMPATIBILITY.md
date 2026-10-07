@@ -1,6 +1,12 @@
 # Installation, updates, removal, and compatibility
 
-Full release: `0.0.140-favored-class-integration` (UMM version `0.0.140`), archive
+Full release: `0.0.141-expanded-summoning-phase2a` (UMM version `0.0.141`),
+archive `KingmakerGunslinger-0.0.141-expanded-summoning-phase2a.zip`. It
+publishes Expanded Summoning Sprints 9-11. All 68 Sprint 12 placements remain
+hidden. See [its release notes](docs/RELEASE-NOTES-0.0.141.md).
+
+Previous full release: `0.0.140-favored-class-integration` (UMM version
+`0.0.140`), archive
 `KingmakerGunslinger-0.0.140-favored-class-integration.zip`. It adds the
 optional Favored Class integration described in
 [docs/FAVORED-CLASS-COMPATIBILITY.md](docs/FAVORED-CLASS-COMPATIBILITY.md) and
@@ -734,3 +740,22 @@ The presentation calibration changes no item acquisition or save identity.
 Static merchant and fixed-loot blueprint behavior remains as qualified in
 `0.0.88`; no refresh is promised for an already opened container or already
 materialized merchant in an existing save.
+
+## 0.0.142 candidate
+
+The candidate archive is `KingmakerGunslinger-0.0.142-elemental-race-traits-and-content.zip`.
+It preserves the exact released 0.0.141 checkpoint and adds no later summoning
+content. The four character traits require the already supported Favored Class
+contract, its traits setting and the Elemental Races module for acquisition.
+Their stable identities remain resolvable when acquisition is disabled.
+Disabling Elemental Races removes the exact owned providers; re-enabling it
+rebuilds one provider per feature. An enabled Fiery toggle is retained through
+native saving; module disable/re-enable starts its rebuilt toggle off.
+
+Model D changes newly generated merchant stock and does not rewrite inventory
+already serialized in a campaign. Original trait art passed objective admission;
+owner aesthetic approval is not recorded. Exact native save/reload, feature
+removal, module transitions and restoration evidence are recorded in the DATA
+integration handoff. Qualification uses a newly created transaction-owned manual
+save; KMG_AUTOMATION_WORKING is load-only, and all preexisting saves are protected.
+This candidate is not merge, tag or release authorization.

@@ -56,6 +56,17 @@ namespace KingmakerGunslinger.Assets
     {
         internal const string MeshDataRelativePath =
             "assets/pteranodon/pteranodon-mesh.json";
+        internal const string DireBatMeshDataRelativePath =
+            "assets/flying-animals/dire-bat-mesh.json";
+        internal const string EagleMeshDataRelativePath =
+            "assets/flying-animals/eagle-mesh.json";
+        internal const string GiantWaspMeshDataRelativePath =
+            "assets/flying-animals/giant-wasp-mesh.json";
+        internal const string StirgeMeshDataRelativePath =
+            "assets/flying-animals/stirge-mesh.json";
+        private const string UngulateDirectory = "assets/ungulates/";
+        private const string Sprint12QuadrupedDirectory =
+            "assets/sprint12-quadrupeds/";
         internal const int SupportedSchemaVersion = 2;
 
         /// <summary>
@@ -84,6 +95,87 @@ namespace KingmakerGunslinger.Assets
             "R_Finger_4_1", "R_Finger_4_2"
         };
 
+        // The two captured native quadruped rigs have different naming and
+        // orientation. Keep each authoring family to the bones actually used
+        // by its original mesh; a stray donor bone must fail before attach.
+        private static readonly string[] AllowedHorseBones =
+        {
+            "Chest", "Head", "Jaw", "LowerTorso", "UpperTorso", "Neck1", "Neck2",
+            "L_Arm_Upper", "L_Arm_Lower", "L_Palm", "L_Fingers",
+            "R_Arm_Upper", "R_Arm_Lower", "R_Palm", "R_Fingers",
+            "L_Leg0_Upper", "L_Leg0_Lower", "L_Foot0", "L_Toes0",
+            "R_Leg0_Upper", "R_Leg0_Lower", "R_Foot0", "R_Toes0",
+            "Tail1", "Tail2", "Tail3", "Tail4", "Tail5"
+        };
+        private static readonly string[] AllowedMastodonBones =
+        {
+            "Head", "LowerTorso", "Spine", "UpperTorso", "Neck",
+            "L_Arm_Upper", "L_Arm_Lower", "L_Palm",
+            "R_Arm_Upper", "R_Arm_Lower", "R_Palm",
+            "L_Leg0_Upper", "L_Leg0_Lower", "L_Foot0",
+            "R_Leg0_Upper", "R_Leg0_Lower", "R_Foot0",
+            "frontKnee_L", "frontKnee_R", "frontAnkle_L", "frontAnkle_R",
+            "backKnee_L", "backKnee_R", "backAnkle_L", "backAnkle_R",
+            "Tail0_M", "Tail1_M", "Tail2_M", "Tail3_M", "Tail4_M"
+        };
+
+        private static readonly string[] AllowedDogBones =
+        {
+            "Head", "Jaw", "L_Arm_Lower", "L_Arm_Upper", "L_Ear",
+            "L_Finger0", "L_Leg0_Foot", "L_Leg0_Lower", "L_Leg0_Lower1",
+            "L_Leg0_Toe0", "L_Leg0_Upper", "L_Palm", "LowerTorso", "Neck0",
+            "Neck1", "Nose", "Pelvis", "R_Arm_Lower", "R_Arm_Upper", "R_Ear",
+            "R_Finger0", "R_Leg0_Foot", "R_Leg0_Lower", "R_Leg0_Lower1",
+            "R_Leg0_Toe0", "R_Leg0_Upper", "R_Palm", "Tail00", "Tail01",
+            "Tail02", "Tail03", "UpperTorso"
+        };
+        private static readonly string[] AllowedWolfWorgBones =
+        {
+            "Head", "L_Arm_Lower", "L_Arm_Upper", "L_Foot0", "L_Leg0_Lower",
+            "L_Leg0_Lower2", "L_Leg0_Upper", "L_Palm", "R_Arm_Lower",
+            "R_Arm_Upper", "R_Foot0", "R_Leg0_Lower", "R_Leg0_Lower2",
+            "R_Leg0_Upper", "R_Palm", "Torso_Lower", "Torso_Upper", "ear_L",
+            "ear_R", "front_paw__tip_R", "front_paw_tip_L", "hindpaw_tip_L",
+            "hindpaw_tip_R", "jaw", "jaw_woo_down", "jaw_woo_up",
+            "jaw_woo_up_add", "neck", "spine_0", "tail_01", "tail_02",
+            "tail_03", "tail_04", "withers"
+        };
+
+        private sealed class UngulateVisual
+        {
+            internal Mesh Mesh;
+            internal string[] Bones;
+            internal Texture2D Albedo;
+            internal string Status = "donor-visual:not-configured";
+        }
+
+        private static readonly Dictionary<string, UngulateVisual> Ungulates =
+            new Dictionary<string, UngulateVisual>(StringComparer.Ordinal)
+            {
+                { "aurochs", new UngulateVisual() },
+                { "bison", new UngulateVisual() },
+                { "rhinoceros", new UngulateVisual() },
+                { "woolly-rhinoceros", new UngulateVisual() }
+            };
+
+        private sealed class Sprint12QuadrupedVisual
+        {
+            internal Mesh Mesh;
+            internal string[] Bones;
+            internal Texture2D Albedo;
+            internal string Status = "donor-visual:not-configured";
+        }
+
+        private static readonly Dictionary<string, Sprint12QuadrupedVisual>
+            Sprint12Quadrupeds =
+                new Dictionary<string, Sprint12QuadrupedVisual>(
+                    StringComparer.Ordinal)
+                {
+                    { "dire-rat", new Sprint12QuadrupedVisual() },
+                    { "hyena", new Sprint12QuadrupedVisual() },
+                    { "goblin-dog", new Sprint12QuadrupedVisual() }
+                };
+
         /// <summary>
         /// What the mesh data says about its painting. Checked against the
         /// bytes on disk before the texture is decoded, so a texture swapped
@@ -102,6 +194,22 @@ namespace KingmakerGunslinger.Assets
         private static string[] _boneNames;
         private static Texture2D _albedo;
         private static string _status = "donor-visual:not-configured";
+        private static Mesh _direBatMesh;
+        private static string[] _direBatBoneNames;
+        private static Texture2D _direBatAlbedo;
+        private static string _direBatStatus = "donor-visual:not-configured";
+        private static Mesh _eagleMesh;
+        private static string[] _eagleBoneNames;
+        private static Texture2D _eagleAlbedo;
+        private static string _eagleStatus = "donor-visual:not-configured";
+        private static Mesh _giantWaspMesh;
+        private static string[] _giantWaspBoneNames;
+        private static Texture2D _giantWaspAlbedo;
+        private static string _giantWaspStatus = "donor-visual:not-configured";
+        private static Mesh _stirgeMesh;
+        private static string[] _stirgeBoneNames;
+        private static Texture2D _stirgeAlbedo;
+        private static string _stirgeStatus = "donor-visual:not-configured";
 
         internal static string Status { get { lock (Sync) return _status; } }
 
@@ -136,6 +244,118 @@ namespace KingmakerGunslinger.Assets
             {
                 albedo = _albedo;
                 return albedo != null;
+            }
+        }
+
+        internal static string DireBatStatus
+        { get { lock (Sync) return _direBatStatus; } }
+
+        /// <summary>The Bat uses the same audited rig, parser and binding path.</summary>
+        internal static bool TryGetDireBatVisual(out Mesh mesh,
+            out string[] boneNames, out Texture2D albedo)
+        {
+            lock (Sync)
+            {
+                mesh = _direBatMesh;
+                boneNames = _direBatBoneNames == null ? null :
+                    (string[])_direBatBoneNames.Clone();
+                albedo = _direBatAlbedo;
+                return mesh != null && boneNames != null && albedo != null;
+            }
+        }
+
+        internal static string EagleStatus
+        { get { lock (Sync) return _eagleStatus; } }
+
+        internal static bool TryGetEagleVisual(out Mesh mesh,
+            out string[] boneNames, out Texture2D albedo)
+        {
+            lock (Sync)
+            {
+                mesh = _eagleMesh;
+                boneNames = _eagleBoneNames == null ? null :
+                    (string[])_eagleBoneNames.Clone();
+                albedo = _eagleAlbedo;
+                return mesh != null && boneNames != null && albedo != null;
+            }
+        }
+
+        internal static string GiantWaspStatus
+        { get { lock (Sync) return _giantWaspStatus; } }
+
+        internal static bool TryGetGiantWaspVisual(out Mesh mesh,
+            out string[] boneNames, out Texture2D albedo)
+        {
+            lock (Sync)
+            {
+                mesh = _giantWaspMesh;
+                boneNames = _giantWaspBoneNames == null ? null :
+                    (string[])_giantWaspBoneNames.Clone();
+                albedo = _giantWaspAlbedo;
+                return mesh != null && boneNames != null && albedo != null;
+            }
+        }
+
+        internal static string StirgeStatus
+        { get { lock (Sync) return _stirgeStatus; } }
+
+        internal static bool TryGetStirgeVisual(out Mesh mesh,
+            out string[] boneNames, out Texture2D albedo)
+        {
+            lock (Sync)
+            {
+                mesh = _stirgeMesh;
+                boneNames = _stirgeBoneNames == null ? null :
+                    (string[])_stirgeBoneNames.Clone();
+                albedo = _stirgeAlbedo;
+                return mesh != null && boneNames != null && albedo != null;
+            }
+        }
+
+        internal static bool TryGetUngulateVisual(string key, out Mesh mesh,
+            out string[] boneNames, out Texture2D albedo, out string status)
+        {
+            lock (Sync)
+            {
+                UngulateVisual visual;
+                if (!Ungulates.TryGetValue(key, out visual))
+                {
+                    mesh = null;
+                    boneNames = null;
+                    albedo = null;
+                    status = "donor-visual:unknown-ungulate";
+                    return false;
+                }
+                mesh = visual.Mesh;
+                boneNames = visual.Bones == null ? null :
+                    (string[])visual.Bones.Clone();
+                albedo = visual.Albedo;
+                status = visual.Status;
+                return mesh != null && boneNames != null && albedo != null;
+            }
+        }
+
+        internal static bool TryGetSprint12QuadrupedVisual(string key,
+            out Mesh mesh, out string[] boneNames, out Texture2D albedo,
+            out string status)
+        {
+            lock (Sync)
+            {
+                Sprint12QuadrupedVisual visual;
+                if (!Sprint12Quadrupeds.TryGetValue(key, out visual))
+                {
+                    mesh = null;
+                    boneNames = null;
+                    albedo = null;
+                    status = "donor-visual:unknown-sprint12-quadruped";
+                    return false;
+                }
+                mesh = visual.Mesh;
+                boneNames = visual.Bones == null ? null :
+                    (string[])visual.Bones.Clone();
+                albedo = visual.Albedo;
+                status = visual.Status;
+                return mesh != null && boneNames != null && albedo != null;
             }
         }
 
@@ -190,6 +410,163 @@ namespace KingmakerGunslinger.Assets
         }
 
         internal static void Configure(ModContext context)
+        {
+            ConfigurePteranodon(context);
+            ConfigureDireBat(context);
+            ConfigureEagle(context);
+            ConfigureGiantWasp(context);
+            ConfigureStirge(context);
+            ConfigureUngulates(context);
+            ConfigureSprint12Quadrupeds(context);
+        }
+
+        private static void ConfigureSprint12Quadrupeds(ModContext context)
+        {
+            if (context == null) throw new ArgumentNullException("context");
+            foreach (var entry in Sprint12Quadrupeds)
+            {
+                string key = entry.Key;
+                Sprint12QuadrupedVisual visual = entry.Value;
+                if (!context.FeatureModules.Active.ExpandedSummoning)
+                {
+                    lock (Sync) visual.Status = "donor-visual:module-disabled";
+                    continue;
+                }
+                lock (Sync)
+                    if (visual.Mesh != null && visual.Bones != null &&
+                        visual.Albedo != null) continue;
+                string path = Path.Combine(context.ModEntry.Path,
+                    (Sprint12QuadrupedDirectory + key + "-mesh.json")
+                    .Replace('/', Path.DirectorySeparatorChar));
+                if (!File.Exists(path))
+                {
+                    lock (Sync) visual.Status = "donor-visual:mesh-data-missing";
+                    context.Logger.Warning(key, "mesh.missing",
+                        "The original Sprint 12 visual is unavailable; the donor remains active: " + path);
+                    continue;
+                }
+                Mesh mesh = null;
+                Texture2D albedo = null;
+                try
+                {
+                    string[] names;
+                    AlbedoRequirement requirement;
+                    string[] allowed = key == "dire-rat" ? AllowedDogBones :
+                        AllowedWolfWorgBones;
+                    mesh = BuildMesh(File.ReadAllText(path), out names,
+                        out requirement, allowed);
+                    string reason;
+                    albedo = LoadAlbedo(Path.GetDirectoryName(path), requirement,
+                        out reason);
+                    if (albedo == null)
+                        throw new InvalidDataException("albedo:" + reason);
+                    mesh.name = "KMG_" + key;
+                    albedo.name = "KMG_" + key + "_Albedo";
+                    lock (Sync)
+                    {
+                        visual.Mesh = mesh;
+                        visual.Bones = names;
+                        visual.Albedo = albedo;
+                        visual.Status = "visual:published";
+                    }
+                    context.Logger.Info(key, "mesh.published",
+                        "Validated original Sprint 12 mesh: vertices=" +
+                        mesh.vertexCount + ";triangles=" +
+                        mesh.triangles.Length / 3 + ";bones=" + names.Length +
+                        ";albedo=" + albedo.width + "x" + albedo.height);
+                }
+                catch (Exception error)
+                {
+                    if (mesh != null) UnityEngine.Object.Destroy(mesh);
+                    if (albedo != null) UnityEngine.Object.Destroy(albedo);
+                    lock (Sync)
+                    {
+                        visual.Mesh = null;
+                        visual.Bones = null;
+                        visual.Albedo = null;
+                        visual.Status = "donor-visual:invalid-mesh-data";
+                    }
+                    context.Logger.Warning(key, "mesh.rejected",
+                        "The original Sprint 12 visual was rejected; the donor remains active: " +
+                        error.Message);
+                }
+            }
+        }
+
+        private static void ConfigureUngulates(ModContext context)
+        {
+            if (context == null) throw new ArgumentNullException("context");
+            foreach (var entry in Ungulates)
+            {
+                string key = entry.Key;
+                UngulateVisual visual = entry.Value;
+                if (!context.FeatureModules.Active.ExpandedSummoning)
+                {
+                    lock (Sync) visual.Status = "donor-visual:module-disabled";
+                    continue;
+                }
+                lock (Sync)
+                    if (visual.Mesh != null && visual.Bones != null &&
+                        visual.Albedo != null) continue;
+                string path = Path.Combine(context.ModEntry.Path,
+                    (UngulateDirectory + key + "-mesh.json")
+                    .Replace('/', Path.DirectorySeparatorChar));
+                if (!File.Exists(path))
+                {
+                    lock (Sync) visual.Status = "donor-visual:mesh-data-missing";
+                    context.Logger.Warning(key, "mesh.missing",
+                        "The original ungulate visual is unavailable; the donor remains active: " + path);
+                    continue;
+                }
+                Mesh mesh = null;
+                Texture2D albedo = null;
+                try
+                {
+                    string[] names;
+                    AlbedoRequirement requirement;
+                    string[] allowed = key == "aurochs" || key == "bison"
+                        ? AllowedHorseBones : AllowedMastodonBones;
+                    mesh = BuildMesh(File.ReadAllText(path), out names,
+                        out requirement, allowed);
+                    string reason;
+                    albedo = LoadAlbedo(Path.GetDirectoryName(path), requirement,
+                        out reason);
+                    if (albedo == null)
+                        throw new InvalidDataException("albedo:" + reason);
+                    mesh.name = "KMG_" + key;
+                    albedo.name = "KMG_" + key + "_Albedo";
+                    lock (Sync)
+                    {
+                        visual.Mesh = mesh;
+                        visual.Bones = names;
+                        visual.Albedo = albedo;
+                        visual.Status = "visual:published";
+                    }
+                    context.Logger.Info(key, "mesh.published",
+                        "Validated original ungulate mesh: vertices=" + mesh.vertexCount +
+                        ";triangles=" + mesh.triangles.Length / 3 +
+                        ";bones=" + names.Length + ";albedo=" +
+                        albedo.width + "x" + albedo.height);
+                }
+                catch (Exception error)
+                {
+                    if (mesh != null) UnityEngine.Object.Destroy(mesh);
+                    if (albedo != null) UnityEngine.Object.Destroy(albedo);
+                    lock (Sync)
+                    {
+                        visual.Mesh = null;
+                        visual.Bones = null;
+                        visual.Albedo = null;
+                        visual.Status = "donor-visual:invalid-mesh-data";
+                    }
+                    context.Logger.Warning(key, "mesh.rejected",
+                        "The original ungulate visual was rejected; the donor remains active: " +
+                        error.Message);
+                }
+            }
+        }
+
+        private static void ConfigurePteranodon(ModContext context)
         {
             if (context == null) throw new ArgumentNullException("context");
             if (!context.FeatureModules.Active.ExpandedSummoning)
@@ -277,6 +654,274 @@ namespace KingmakerGunslinger.Assets
             }
         }
 
+        private static void ConfigureDireBat(ModContext context)
+        {
+            if (context == null) throw new ArgumentNullException("context");
+            if (!context.FeatureModules.Active.ExpandedSummoning)
+            {
+                lock (Sync) _direBatStatus = "donor-visual:module-disabled";
+                return;
+            }
+            lock (Sync)
+            {
+                if (_direBatMesh != null && _direBatBoneNames != null &&
+                    _direBatAlbedo != null) return;
+            }
+            string path = Path.Combine(context.ModEntry.Path,
+                DireBatMeshDataRelativePath.Replace('/', Path.DirectorySeparatorChar));
+            if (!File.Exists(path))
+            {
+                lock (Sync) _direBatStatus = "donor-visual:mesh-data-missing";
+                context.Logger.Warning("dire-bat", "mesh.missing",
+                    "The original Bat visual is unavailable; the donor remains active: " + path);
+                return;
+            }
+            Mesh mesh = null;
+            Texture2D albedo = null;
+            try
+            {
+                string[] names;
+                AlbedoRequirement requirement;
+                mesh = BuildMesh(File.ReadAllText(path), out names,
+                    out requirement);
+                string reason;
+                albedo = LoadAlbedo(Path.GetDirectoryName(path), requirement,
+                    out reason);
+                if (albedo == null)
+                    throw new InvalidDataException("albedo:" + reason);
+                mesh.name = "KMG_DireBat";
+                albedo.name = "KMG_DireBat_Albedo";
+                lock (Sync)
+                {
+                    _direBatMesh = mesh;
+                    _direBatBoneNames = names;
+                    _direBatAlbedo = albedo;
+                    _direBatStatus = "visual:published";
+                }
+                context.Logger.Info("dire-bat", "mesh.published",
+                    "Validated original Bat mesh: vertices=" + mesh.vertexCount +
+                    ";triangles=" + mesh.triangles.Length / 3 +
+                    ";bones=" + names.Length + ";albedo=" +
+                    albedo.width + "x" + albedo.height);
+            }
+            catch (Exception error)
+            {
+                if (mesh != null) UnityEngine.Object.Destroy(mesh);
+                if (albedo != null) UnityEngine.Object.Destroy(albedo);
+                lock (Sync)
+                {
+                    _direBatMesh = null;
+                    _direBatBoneNames = null;
+                    _direBatAlbedo = null;
+                    _direBatStatus = "donor-visual:invalid-mesh-data";
+                }
+                context.Logger.Warning("dire-bat", "mesh.rejected",
+                    "The original Bat visual was rejected; the donor remains active: " +
+                    error.Message);
+            }
+        }
+
+        private static void ConfigureEagle(ModContext context)
+        {
+            if (context == null) throw new ArgumentNullException("context");
+            if (!context.FeatureModules.Active.ExpandedSummoning)
+            {
+                lock (Sync) _eagleStatus = "donor-visual:module-disabled";
+                return;
+            }
+            lock (Sync)
+            {
+                if (_eagleMesh != null && _eagleBoneNames != null &&
+                    _eagleAlbedo != null) return;
+            }
+            string path = Path.Combine(context.ModEntry.Path,
+                EagleMeshDataRelativePath.Replace('/', Path.DirectorySeparatorChar));
+            if (!File.Exists(path))
+            {
+                lock (Sync) _eagleStatus = "donor-visual:mesh-data-missing";
+                context.Logger.Warning("eagle", "mesh.missing",
+                    "The original Eagle visual is unavailable; the donor remains active: " + path);
+                return;
+            }
+            Mesh mesh = null;
+            Texture2D albedo = null;
+            try
+            {
+                string[] names;
+                AlbedoRequirement requirement;
+                mesh = BuildMesh(File.ReadAllText(path), out names,
+                    out requirement);
+                string reason;
+                albedo = LoadAlbedo(Path.GetDirectoryName(path), requirement,
+                    out reason);
+                if (albedo == null)
+                    throw new InvalidDataException("albedo:" + reason);
+                mesh.name = "KMG_Eagle";
+                albedo.name = "KMG_Eagle_Albedo";
+                lock (Sync)
+                {
+                    _eagleMesh = mesh;
+                    _eagleBoneNames = names;
+                    _eagleAlbedo = albedo;
+                    _eagleStatus = "visual:published";
+                }
+                context.Logger.Info("eagle", "mesh.published",
+                    "Validated original Eagle mesh: vertices=" + mesh.vertexCount +
+                    ";triangles=" + mesh.triangles.Length / 3 +
+                    ";bones=" + names.Length + ";albedo=" +
+                    albedo.width + "x" + albedo.height);
+            }
+            catch (Exception error)
+            {
+                if (mesh != null) UnityEngine.Object.Destroy(mesh);
+                if (albedo != null) UnityEngine.Object.Destroy(albedo);
+                lock (Sync)
+                {
+                    _eagleMesh = null;
+                    _eagleBoneNames = null;
+                    _eagleAlbedo = null;
+                    _eagleStatus = "donor-visual:invalid-mesh-data";
+                }
+                context.Logger.Warning("eagle", "mesh.rejected",
+                    "The original Eagle visual was rejected; the donor remains active: " +
+                    error.Message);
+            }
+        }
+
+        private static void ConfigureGiantWasp(ModContext context)
+        {
+            if (context == null) throw new ArgumentNullException("context");
+            if (!context.FeatureModules.Active.ExpandedSummoning)
+            {
+                lock (Sync) _giantWaspStatus = "donor-visual:module-disabled";
+                return;
+            }
+            lock (Sync)
+            {
+                if (_giantWaspMesh != null && _giantWaspBoneNames != null &&
+                    _giantWaspAlbedo != null) return;
+            }
+            string path = Path.Combine(context.ModEntry.Path,
+                GiantWaspMeshDataRelativePath.Replace('/', Path.DirectorySeparatorChar));
+            if (!File.Exists(path))
+            {
+                lock (Sync) _giantWaspStatus = "donor-visual:mesh-data-missing";
+                context.Logger.Warning("giant-wasp", "mesh.missing",
+                    "The original Wasp visual is unavailable; the donor remains active: " + path);
+                return;
+            }
+            Mesh mesh = null;
+            Texture2D albedo = null;
+            try
+            {
+                string[] names;
+                AlbedoRequirement requirement;
+                mesh = BuildMesh(File.ReadAllText(path), out names,
+                    out requirement);
+                string reason;
+                albedo = LoadAlbedo(Path.GetDirectoryName(path), requirement,
+                    out reason);
+                if (albedo == null)
+                    throw new InvalidDataException("albedo:" + reason);
+                mesh.name = "KMG_GiantWasp";
+                albedo.name = "KMG_GiantWasp_Albedo";
+                lock (Sync)
+                {
+                    _giantWaspMesh = mesh;
+                    _giantWaspBoneNames = names;
+                    _giantWaspAlbedo = albedo;
+                    _giantWaspStatus = "visual:published";
+                }
+                context.Logger.Info("giant-wasp", "mesh.published",
+                    "Validated original Wasp mesh: vertices=" + mesh.vertexCount +
+                    ";triangles=" + mesh.triangles.Length / 3 +
+                    ";bones=" + names.Length + ";albedo=" +
+                    albedo.width + "x" + albedo.height);
+            }
+            catch (Exception error)
+            {
+                if (mesh != null) UnityEngine.Object.Destroy(mesh);
+                if (albedo != null) UnityEngine.Object.Destroy(albedo);
+                lock (Sync)
+                {
+                    _giantWaspMesh = null;
+                    _giantWaspBoneNames = null;
+                    _giantWaspAlbedo = null;
+                    _giantWaspStatus = "donor-visual:invalid-mesh-data";
+                }
+                context.Logger.Warning("giant-wasp", "mesh.rejected",
+                    "The original Wasp visual was rejected; the donor remains active: " +
+                    error.Message);
+            }
+        }
+
+        private static void ConfigureStirge(ModContext context)
+        {
+            if (context == null) throw new ArgumentNullException("context");
+            if (!context.FeatureModules.Active.ExpandedSummoning)
+            {
+                lock (Sync) _stirgeStatus = "donor-visual:module-disabled";
+                return;
+            }
+            lock (Sync)
+            {
+                if (_stirgeMesh != null && _stirgeBoneNames != null &&
+                    _stirgeAlbedo != null) return;
+            }
+            string path = Path.Combine(context.ModEntry.Path,
+                StirgeMeshDataRelativePath.Replace('/', Path.DirectorySeparatorChar));
+            if (!File.Exists(path))
+            {
+                lock (Sync) _stirgeStatus = "donor-visual:mesh-data-missing";
+                context.Logger.Warning("stirge", "mesh.missing",
+                    "The original Stirge visual is unavailable; the donor remains active: " + path);
+                return;
+            }
+            Mesh mesh = null;
+            Texture2D albedo = null;
+            try
+            {
+                string[] names;
+                AlbedoRequirement requirement;
+                mesh = BuildMesh(File.ReadAllText(path), out names,
+                    out requirement);
+                string reason;
+                albedo = LoadAlbedo(Path.GetDirectoryName(path), requirement,
+                    out reason);
+                if (albedo == null)
+                    throw new InvalidDataException("albedo:" + reason);
+                mesh.name = "KMG_Stirge";
+                albedo.name = "KMG_Stirge_Albedo";
+                lock (Sync)
+                {
+                    _stirgeMesh = mesh;
+                    _stirgeBoneNames = names;
+                    _stirgeAlbedo = albedo;
+                    _stirgeStatus = "visual:published";
+                }
+                context.Logger.Info("stirge", "mesh.published",
+                    "Validated original Stirge mesh: vertices=" + mesh.vertexCount +
+                    ";triangles=" + mesh.triangles.Length / 3 +
+                    ";bones=" + names.Length + ";albedo=" +
+                    albedo.width + "x" + albedo.height);
+            }
+            catch (Exception error)
+            {
+                if (mesh != null) UnityEngine.Object.Destroy(mesh);
+                if (albedo != null) UnityEngine.Object.Destroy(albedo);
+                lock (Sync)
+                {
+                    _stirgeMesh = null;
+                    _stirgeBoneNames = null;
+                    _stirgeAlbedo = null;
+                    _stirgeStatus = "donor-visual:invalid-mesh-data";
+                }
+                context.Logger.Warning("stirge", "mesh.rejected",
+                    "The original Stirge visual was rejected; the donor remains active: " +
+                    error.Message);
+            }
+        }
+
         internal static Mesh BuildMesh(string json, out string[] boneNames)
         {
             AlbedoRequirement ignored;
@@ -290,6 +935,12 @@ namespace KingmakerGunslinger.Assets
         /// </summary>
         internal static Mesh BuildMesh(string json, out string[] boneNames,
             out AlbedoRequirement albedo)
+        {
+            return BuildMesh(json, out boneNames, out albedo, AllowedBones);
+        }
+
+        internal static Mesh BuildMesh(string json, out string[] boneNames,
+            out AlbedoRequirement albedo, string[] allowedBones)
         {
             JObject document = JObject.Parse(json);
             int schema = (int?)document["schemaVersion"] ?? 0;
@@ -307,7 +958,7 @@ namespace KingmakerGunslinger.Assets
             if (names.Distinct(StringComparer.Ordinal).Count() != names.Length)
                 throw new InvalidDataException("The bone list repeats a name.");
             string[] unexpected = names.Where(value =>
-                !AllowedBones.Contains(value, StringComparer.Ordinal)).ToArray();
+                !allowedBones.Contains(value, StringComparer.Ordinal)).ToArray();
             if (unexpected.Length != 0)
                 throw new InvalidDataException(
                     "The mesh binds to bones outside the declared set: " +

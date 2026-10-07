@@ -33,6 +33,26 @@ class IconCatalogTests(unittest.TestCase):
     def test_current_candidate_is_technically_consistent(self):
         self.assertEqual([], validate(ROOT))
 
+    def test_registry_authority_pin_matches_exact_disk_bytes(self):
+        import hashlib
+        authority = self.catalog["baseline"]
+        actual = hashlib.sha256((ROOT / authority["registryPath"]).read_bytes()).hexdigest()
+        self.assertEqual(actual, authority["registrySha256"])
+        stale = copy.deepcopy(self.catalog)
+        stale["baseline"]["registrySha256"] = "c3bedfa7fb8b9cab7f39ff775e73de4339c3870b662660008e2f67ec4246e87c"
+        self.rejects("Hash mismatch: blueprints/blueprints.json", catalog=stale)
+
+    def test_released_delegated_authority_pin_rejects_stale_metadata(self):
+        import hashlib
+        path = "assets-source/original-icons/expanded-summoning/icon-manifest.json"
+        authority = next(d for d in self.catalog["delegatedManifests"] if d["path"] == path)
+        actual = hashlib.sha256((ROOT / path).read_bytes()).hexdigest()
+        self.assertEqual("40754cb1ce93473befaf10be1c4d0fce1296ef73c218d83c6a493f014d0c734d", actual)
+        self.assertEqual(actual, authority["sha256"])
+        stale = copy.deepcopy(self.catalog)
+        next(d for d in stale["delegatedManifests"] if d["path"] == path)["sha256"] = "f8f1a2e6dba3d420067befb2d5ea3cc4c40bc1c776a351debf61253467f712e6"
+        self.rejects("Hash mismatch: " + path, catalog=stale)
+
     def test_source_file_without_compile_item_is_rejected(self):
         project = (ROOT / 'src/KingmakerGunslinger/KingmakerGunslinger.csproj').read_text(encoding='utf-8-sig')
         self.assertEqual([], validator.compiled_authority_errors(ROOT, self.catalog, project))

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -139,9 +139,15 @@ namespace KingmakerGunslinger.DomainTests
                     ExpandedSummoningSprint7Tests.AppendedLedgerIdentities +
                     (ExpandedSummoningSprint8Tests.AppendedLedgerIdentities + ExpandedSummoningCorrectionTests.AppendedLedgerIdentities) +
                     KingmakerGunslinger.FavoredClass.FavoredClassIdentityCatalog.IdentityCount +
-                    KingmakerGunslinger.ElementalRaces.ElementalMostlyHumanPolicy.IdentityCount,
+                    KingmakerGunslinger.ElementalRaces.ElementalMostlyHumanPolicy.IdentityCount + 1 +
+                    ExpandedSummoningSprint10Tests.AppendedLedgerIdentities +
+                    ExpandedSummoningSprint10Tests.StirgeAppendedLedgerIdentities +
+                    ExpandedSummoningSprint11Tests.AppendedLedgerIdentities +
+                    ExpandedSummoningSprint10Tests.StirgeRemovalIdentityCount +
+                    ExpandedSummoningSprint12Tests.AppendedLedgerIdentities +
+                    KingmakerGunslinger.ElementalRaces.ElementalCharacterTraitCatalog.Nodes().Length,
                 entries.Length,
-                "Manifest must be the preserved ledger plus 43 progression identities, the Expanded Summoning Phase 1 appends and the later Favored Class and Mostly Human blocks.");
+                "Manifest preserves accepted blocks and appends only approved Phase 2 identities.");
             string prefix = string.Concat(entries.Take(PreservedManifestEntries)
                 .Select(value => string.Join("|", new[] {
                     (string)value["symbol"], (string)value["guid"],
@@ -1371,7 +1377,7 @@ namespace KingmakerGunslinger.DomainTests
                 "ElvenBranchedSpearCampaignBlueprints.cs",
                 "RareFirearmCampaignLootBlueprints.cs", "SkeletalSalesmanBlueprints.cs",
                 "BokkenFirearmSupplyVendorBlueprints.cs",
-                "OlegFirearmSupplyCleanupBlueprints.cs"
+                "OlegFirearmVendorBlueprints.cs"
             };
             foreach (string path in paths)
             {

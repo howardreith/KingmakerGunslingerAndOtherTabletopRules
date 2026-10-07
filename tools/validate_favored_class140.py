@@ -9,6 +9,7 @@ observed.
 """
 from __future__ import annotations
 import argparse
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -21,8 +22,13 @@ VERSION = "0.0.140"
 INFORMATIONAL_VERSION = "0.0.140-favored-class-integration"
 PACKAGE = "KingmakerGunslinger-0.0.140-local-runtime.zip"
 PACKAGE_SUFFIX = "favored-class-integration"
-DETERMINISTIC_TEST_COUNT = 1918
+DETERMINISTIC_TEST_COUNT = 1958
 STATIC_KEY = "favoredClassIntegration140"
+# Preserve this release's own static record when a later validator chains
+# through it with the active release identity.
+RELEASE_VERSION = VERSION
+RELEASE_INFORMATIONAL_VERSION = INFORMATIONAL_VERSION
+RELEASE_TEST_COUNT = DETERMINISTIC_TEST_COUNT
 
 # Exact ordered (symbol, guid) pairs this candidate appends after the
 # Better Vendors block.
@@ -255,7 +261,126 @@ def validate(root: Path) -> None:
     # Favored-class misfire reductions (G01/G18) made the scatter all-roll
     # aggregate use the effective threshold that decided each native roll.
     validate_sprint32.SCATTER_MISFIRE_AGGREGATE_TOKEN = "IsMisfire(misfireThreshold)"
-    baseline.AUTHORIZED_APPENDED_AFTER = APPENDED
+    entries = json.loads((root / "blueprints/blueprints.json").read_text(
+        encoding="utf-8"))["entries"]
+    legacy = entries[:2609]
+    sprint12 = entries[2609:2646]
+    sprint12_mechanics = entries[2646:2649]
+    wasp = entries[2461:2487]
+    wasp_pinned = [(entry["symbol"], entry["guid"],
+                    entry["plannedType"], entry["status"]) for entry in wasp]
+    wasp_hash = hashlib.sha256(json.dumps(wasp_pinned,
+        separators=(",", ":")).encode()).hexdigest()
+    poison = entries[2487:2489]
+    poison_pinned = [(entry["symbol"], entry["guid"],
+                     entry["plannedType"], entry["status"])
+                     for entry in poison]
+    poison_hash = hashlib.sha256(json.dumps(poison_pinned,
+        separators=(",", ":")).encode()).hexdigest()
+    unit_type = entries[2489:2490]
+    stirge = entries[2490:2501]
+    stirge_pinned = [(entry["symbol"], entry["guid"],
+                      entry["plannedType"], entry["status"])
+                     for entry in stirge]
+    stirge_hash = hashlib.sha256(json.dumps(stirge_pinned,
+        separators=(",", ":")).encode()).hexdigest()
+    stirge_attachment = entries[2501:2503]
+    ungulates = entries[2503:2603]
+    charge = entries[2603:2605]
+    trample = entries[2605:2608]
+    ungulate_tokens = (".Aurochs", ".Bison", ".Rhinoceros",
+                       ".WoollyRhinoceros")
+    expected_ungulates = {
+        symbol: planned_type for symbol, planned_type in
+        baseline.validate_expanded_summoning_phase1.expanded_summoning_manifest.planned()
+        if ((symbol.startswith("KMG.Summoning.Unit.") or
+             symbol.startswith("KMG.Summoning.Ability.")) and
+            any(token in symbol for token in ungulate_tokens))
+    }
+    if len(legacy) != 2609 or len(wasp) != 26 or wasp_hash != (
+            "8a9dac72a9e83675765d8fc850901f76976bf6191418c6cf7f1c4ff6af261ef3"):
+        raise AssertionError("Expanded Summoning Phase 2 Wasp append drifted")
+    if [(entry["symbol"], entry["guid"], entry["plannedType"],
+         entry["status"]) for entry in legacy[2608:]] != [
+            ("KMG.Summoning.Special.Stirge.Remove",
+             "d5e6506db41d490fa69b88e881ddfe0b", "BlueprintAbility", "active")]:
+        raise AssertionError("Stirge removal action identity drifted")
+    sprint12_pinned = [(entry["symbol"], entry["guid"],
+                        entry["plannedType"], entry["status"])
+                       for entry in sprint12]
+    sprint12_hash = hashlib.sha256(json.dumps(sprint12_pinned,
+        separators=(",", ":")).encode()).hexdigest()
+    expected_sprint12 = {
+        symbol: planned_type for symbol, planned_type in
+        baseline.validate_expanded_summoning_phase1.expanded_summoning_manifest.planned()
+        if symbol == "KMG.Summoning.Unit.DireRat" or
+        symbol.startswith("KMG.Summoning.Ability.SM.Tier") and
+            ".DireRat." in symbol or
+        symbol.startswith("KMG.Summoning.Ability.SNA.Tier") and
+            ".DireRat." in symbol
+    }
+    if len(sprint12) != 37 or len(expected_sprint12) != 37 or {
+            entry["symbol"]: entry["plannedType"] for entry in sprint12
+            } != expected_sprint12 or sprint12_hash != (
+            "bc074bdbf1d078bf6bb118b319adb4fcc8ecaf3908bcf4c90ed7084e5e7d2272") or any(
+            entry["status"] != "active" or
+            entry["milestone"] != "Expanded Summoning"
+            for entry in sprint12):
+        raise AssertionError(
+            "Expanded Summoning Sprint 12 Dire Rat identities drifted")
+    if [(entry["symbol"], entry["guid"], entry["plannedType"],
+            entry["status"]) for entry in sprint12_mechanics] != [
+            ("KMG.Summoning.Natural.DireRat.Disease",
+             "8ca8ed3c08a5460193520cbe934eac35", "BlueprintFeature", "active"),
+            ("KMG.Summoning.Natural.GoblinDog.Traits",
+             "0f410b4ca075402485f596f474ddc9a9", "BlueprintFeature", "active"),
+            ("KMG.Summoning.Natural.GoblinDog.AllergicReaction",
+             "d9b5a71bf8424d278877e1eb735c2eae", "BlueprintBuff", "active")]:
+        raise AssertionError(
+            "Expanded Summoning Sprint 12 disease identities drifted")
+    if len(poison) != 2 or poison_hash != (
+            "92e7a5cfbf28ce94938eef6c16451d5688d47247d222b2a64f6c3db362e02adb"):
+        raise AssertionError("Expanded Summoning Wasp poison identities drifted")
+    if [(entry["symbol"], entry["guid"], entry["plannedType"], entry["status"])
+            for entry in unit_type] != [("KMG.Summoning.Natural.GiantWasp.UnitType",
+            "682c4c25e772495e882fc2cacddc0c38", "BlueprintUnitType", "active")]:
+        raise AssertionError("Expanded Summoning Wasp species identity drifted")
+    if len(stirge) != 11 or stirge_hash != (
+            "b3ae7a67e47587ff55ae251f753a50f1c7d7cf5e676ddc82cd09f0bae2128339"):
+        raise AssertionError("Expanded Summoning Phase 2 Stirge append drifted")
+    if [(entry["symbol"], entry["guid"], entry["plannedType"], entry["status"])
+            for entry in stirge_attachment] != [
+                ("KMG.Summoning.Special.Stirge.CombatTraits",
+                 "a081012ee90f4f34a35ea3bf63c5402c", "BlueprintBuff", "active"),
+                ("KMG.Summoning.Special.Stirge.Hold",
+                 "13c3b690a91f4431b2b5044dec026e4f", "BlueprintBuff", "active")]:
+        raise AssertionError("Expanded Summoning Stirge attachment identities drifted")
+    if len(ungulates) != 100 or len(expected_ungulates) != 100 or {
+            entry["symbol"]: entry["plannedType"] for entry in ungulates
+            } != expected_ungulates or any(entry["status"] != "active" or
+            entry["milestone"] != "Expanded Summoning" for entry in ungulates):
+        raise AssertionError("Expanded Summoning Sprint 11 hidden identity append drifted")
+    if [(entry["symbol"], entry["guid"], entry["plannedType"],
+         entry["status"]) for entry in charge] != [
+            ("KMG.Summoning.Special.Rhinoceros.PowerfulCharge",
+             "8441491856fc46a4837c80c89f5472d5", "BlueprintFeature", "active"),
+            ("KMG.Summoning.Special.WoollyRhinoceros.PowerfulCharge",
+             "9b73615998e94f308e1325153ee08a19", "BlueprintFeature", "active")]:
+        raise AssertionError("Expanded Summoning Rhino charge identities drifted")
+    if [(entry["symbol"], entry["guid"], entry["plannedType"],
+         entry["status"]) for entry in trample] != [
+            ("KMG.Summoning.Special.Aurochs.Trample",
+             "e58bb2d887ad435eaaa220c1c4528211", "BlueprintAbility", "active"),
+            ("KMG.Summoning.Special.Bison.Trample",
+             "48d90c0f49c54e84a463b006e507e322", "BlueprintAbility", "active"),
+            ("KMG.Summoning.Special.WoollyRhinoceros.Trample",
+             "0f12c70e9b264ae484fb720d0c6845aa", "BlueprintAbility", "active")]:
+        raise AssertionError("Expanded Summoning hidden trample identities drifted")
+    baseline.AUTHORIZED_APPENDED_AFTER = APPENDED + (
+        ("KMG.Summoning.Natural.DireBat.Blindsense", "5dcc039bc9674208a51e4babcd8a30ee"),
+    ) + tuple((entry["symbol"], entry["guid"]) for entry in
+              wasp + poison + unit_type + stirge + stirge_attachment +
+              ungulates + charge + trample + entries[2608:])
     # Chains through the 0.0.139 release, which hands these to its baseline.
     release139.VERSION = VERSION
     release139.INFORMATIONAL_VERSION = INFORMATIONAL_VERSION
@@ -297,14 +422,14 @@ def validate(root: Path) -> None:
     static = json.loads((root / "validation/static-validation.json").read_text(
         encoding="utf-8"))
     if static.get("version") != VERSION or static.get("milestone") != INFORMATIONAL_VERSION:
-        raise AssertionError("Static validation does not identify the 0.0.140 release")
+        raise AssertionError("Static validation does not identify the active release")
     state = static[STATIC_KEY]
     expected = {
-        "deterministicTestCount": DETERMINISTIC_TEST_COUNT,
+        "deterministicTestCount": RELEASE_TEST_COUNT,
         "publicReleaseAuthorized": True,
         "candidateOnly": False,
-        "releaseVersion": VERSION,
-        "releaseInformationalVersion": INFORMATIONAL_VERSION,
+        "releaseVersion": RELEASE_VERSION,
+        "releaseInformationalVersion": RELEASE_INFORMATIONAL_VERSION,
         "hostVerifiedVersion": "1.3.1",
         "hostVerifiedFileSha256": HOST_SHA256,
         "hostVerifiedMvid": HOST_MVID,
@@ -323,7 +448,7 @@ def validate(root: Path) -> None:
         raise AssertionError("A native qualification claim needs recorded evidence")
 
     baseline.require_tokens(root / "docs/RELEASE-NOTES-0.0.140.md",
-        INFORMATIONAL_VERSION, "Favored Class", "optional", "owner authorized",
+        RELEASE_INFORMATIONAL_VERSION, "Favored Class", "optional", "owner authorized",
         "uninstall")
 
 
