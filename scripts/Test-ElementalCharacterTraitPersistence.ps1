@@ -16,6 +16,11 @@ $foreign=Join-Path $saveDir 'Manual_1_foreign.zks'
 $script:checks=0
 function Check([bool]$Value,[string]$Name){if(-not $Value){throw ('Invariant: '+$Name)};$script:checks++}
 function Reject([scriptblock]$Action,[string]$Name){$rejected=$false;try{& $Action|Out-Null}catch{$rejected=$true};Check $rejected $Name}
+Check (Test-ElementalTraitOwnedPath $seed $seed.Replace('\','/')) 'native-mixed-separators-same-absolute-path'
+Check (-not (Test-ElementalTraitOwnedPath $seed $foreign)) 'normalized-path-rejects-foreign-file'
+Check (-not (Test-ElementalTraitOwnedPath $seed (Split-Path -Leaf $seed))) 'relative-path-rejected'
+Check (-not (Test-ElementalTraitOwnedPath $seed $null)) 'missing-owned-path-rejected'
+Check (Test-ElementalTraitOwnedPath $seed $seed.ToUpperInvariant()) 'windows-path-case-preserves-exact-file'
 $typed=@{phase='prepare';planPath='closed-plan'}
 $bound=New-ElementalTraitSaveParameters 'KMG_AUTOMATION_WORKING' $typed
 Check ($bound.Count -eq 3 -and $bound.saveName -ceq 'KMG_AUTOMATION_WORKING') 'typed-save-name-reaches-closed-scenario'

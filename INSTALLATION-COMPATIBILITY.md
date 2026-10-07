@@ -743,4 +743,19 @@ materialized merchant in an existing save.
 
 ## 0.0.142 candidate
 
-The candidate archive is `KingmakerGunslinger-0.0.142-elemental-race-traits-and-content.zip`. It preserves the exact released 0.0.141 summoning checkpoint. Original trait art has objective admission but owner aesthetic approval is not recorded. Technical publication, runtime and persistence qualification are tracked in the DATA integration handoff; this is not release authorization.
+The candidate archive is `KingmakerGunslinger-0.0.142-elemental-race-traits-and-content.zip`.
+It preserves the exact released 0.0.141 checkpoint and adds no later summoning
+content. The four character traits require the already supported Favored Class
+contract, its traits setting and the Elemental Races module for acquisition.
+Their stable identities remain resolvable when acquisition is disabled.
+Disabling Elemental Races removes the exact owned providers; re-enabling it
+rebuilds one provider per feature. An enabled Fiery toggle is retained through
+native saving; module disable/re-enable starts its rebuilt toggle off.
+
+Model D changes newly generated merchant stock and does not rewrite inventory
+already serialized in a campaign. Original trait art passed objective admission;
+owner aesthetic approval is not recorded. Exact native save/reload, feature
+removal, module transitions and restoration evidence are recorded in the DATA
+integration handoff. Qualification uses a newly created transaction-owned manual
+save; KMG_AUTOMATION_WORKING is load-only, and all preexisting saves are protected.
+This candidate is not merge, tag or release authorization.
