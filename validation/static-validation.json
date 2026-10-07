@@ -2082,7 +2082,7 @@
   },
   "dataContentTraits142": {
     "candidateOnly": true,
-    "deterministicTestCount": 2280,
+    "deterministicTestCount": 2284,
     "humanMerchantAcceptance": "PENDING",
     "humanTooltipAcceptance": "PENDING",
     "nativeRuntimeQualified": false,

@@ -74,9 +74,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             int pid=(int)lease["ownerPid"]; var process=Process.GetProcessById(pid);
             if((string)lease["status"]!="Active" || (string)lease["transactionId"]!=Transaction ||
                 (string)lease["descriptor"]!=OutputName || (string)lease["phase"]!=Phase ||
-                process.HasExited || process.StartTime.ToUniversalTime().ToString("o")!=(string)lease["ownerStartedUtc"] ||
-                DateTime.Parse((string)lease["expiresUtc"]).ToUniversalTime()<=DateTime.UtcNow)
-                throw new InvalidOperationException("Save lease is stale, foreign or closed.");
+                process.HasExited || !ElementalCharacterTraitSaveContract.MatchesProcessStart(process.StartTime,(DateTime)lease["ownerStartedUtc"]) ||
+                !ElementalCharacterTraitSaveContract.LeaseUnexpired(DateTime.UtcNow,(DateTime)lease["expiresUtc"]))
+                throw new InvalidOperationException("Save lease is stale, foreign or closed; state="+(string)lease["status"]+
+                    ";phase="+(string)lease["phase"]+";pid="+pid+";expectedStart="+((DateTime)lease["ownerStartedUtc"]).ToUniversalTime().ToString("o")+
+                    ";actualStart="+process.StartTime.ToUniversalTime().ToString("o"));
             if(Phase!="prepare" && (string)lease["ownedPath"]!=InputPath && InputPath!=null)
                 throw new InvalidOperationException("Save lease does not own the loaded file.");
         }
