@@ -12,6 +12,129 @@ namespace KingmakerGunslinger.DomainTests
     internal static class SerpentineRulesTests
     {
         internal const int AppendedLedgerIdentities = 73;
+        internal static void CrowdAwakeRestoresOnlyOwnedReferences()
+        {
+            object foreignA = new object(), foreignB = new object();
+            object first = new string('x', 1), second = new string('x', 1), added = new object();
+            object[] owned = { first, second, added }, before = { foreignA, first, foreignB, second };
+            foreach (string key in new[] { "viper", "constrictor-snake" })
+            foreach (object[] native in new[] {
+                new[] { foreignA, foreignB },
+                new[] { foreignA, second, foreignB, added },
+                new[] { first, foreignA, second, added, foreignB },
+                before
+            })
+            {
+                var live = new System.Collections.Generic.List<object>(native);
+                string detail;
+                Assertions.True(SerpentineCrowdReviewPolicy.RestoreOwnedAwake(key, live, before, owned,
+                    value => true, out detail), "Restore omitted, reordered and introduced OWNED references.");
+                Assertions.True(live.Count == before.Length && live.Select((value, index) =>
+                    ReferenceEquals(value, before[index])).All(value => value), "Full exact sequence remains mandatory.");
+                Assertions.True(live.Where(value => ReferenceEquals(value, foreignA) ||
+                    ReferenceEquals(value, foreignB)).SequenceEqual(new[] { foreignA, foreignB }),
+                    "Unrelated actors preserve their exact references/order.");
+                Assertions.Equal(4, before.Length, "The source snapshot was not mutated.");
+            }
+        }
+
+        internal static void CrowdAwakeRejectsForeignChangesWithoutMutation()
+        {
+            object foreignA = new object(), foreignB = new object(), foreignNew = new object();
+            object first = new object(), second = new object();
+            object[] before = { foreignA, first, foreignB, second }, owned = { first, second };
+            foreach (object[] native in new[] {
+                new[] { foreignA, first },
+                new[] { foreignB, foreignA, second },
+                new[] { foreignA, foreignB, foreignNew },
+                new[] { foreignNew, first, foreignB }
+            })
+            {
+                var live = new System.Collections.Generic.List<object>(native);
+                string detail;
+                Assertions.False(SerpentineCrowdReviewPolicy.RestoreOwnedAwake("viper", live, before, owned,
+                    value => true, out detail), "Unrelated sleep/wake/reordering is a failure, never repair authority.");
+                Assertions.Equal("unrelated-awake-sequence-changed-no-mutation", detail, "Failure is explicit.");
+                Assertions.True(live.Count == native.Length && live.Select((value, index) =>
+                    ReferenceEquals(value, native[index])).All(value => value), "Rejection made no list mutation.");
+            }
+            // Value equality cannot replace native object identity.
+            object original = new string('a', 1), replacement = new string('a', 1);
+            var replaced = new System.Collections.Generic.List<object> { replacement, first };
+            string disposition;
+            Assertions.False(SerpentineCrowdReviewPolicy.RestoreOwnedAwake("viper", replaced,
+                new[] { original, first }, owned, value => true, out disposition),
+                "A different equal-valued foreign object cannot impersonate the captured reference.");
+            Assertions.True(ReferenceEquals(replaced[0], replacement), "Foreign replacement remains untouched.");
+        }
+
+        internal static void CrowdAwakeRejectsMalformedOrDeadScope()
+        {
+            object first = new object(), second = new object();
+            object[] before = { first }, validOwned = { first, second };
+            foreach (string key in new[] { null, "", "Viper", "salamander", "crocodile", "purple-worm" })
+            {
+                var live = new System.Collections.Generic.List<object> { first, second };
+                string detail;
+                Assertions.False(SerpentineCrowdReviewPolicy.RestoreOwnedAwake(key, live, before, validOwned,
+                    value => true, out detail), "Only two closed snake keys.");
+                Assertions.True(live.SequenceEqual(validOwned), "Rejected roster leaves the list untouched.");
+            }
+            foreach (object[] owned in new[] { new object[0], new[] { first }, new[] { first, first },
+                new[] { first, (object)null }, new[] { first, second, new object(), new object(), new object(), new object() } })
+            {
+                var live = new System.Collections.Generic.List<object> { first, second };
+                string detail;
+                Assertions.False(SerpentineCrowdReviewPolicy.RestoreOwnedAwake("viper", live, before, owned,
+                    value => true, out detail), "Requires two-to-five distinct nonnull owned actors.");
+                Assertions.True(live.SequenceEqual(validOwned), "Invalid scope leaves the list untouched.");
+            }
+            string reason;
+            var unchanged = new System.Collections.Generic.List<object> { first, second };
+            Assertions.False(SerpentineCrowdReviewPolicy.RestoreOwnedAwake("viper", unchanged, before, validOwned,
+                value => !ReferenceEquals(value, first), out reason), "Destroyed or foreign-area owned actor cannot be reawakened.");
+            Assertions.True(unchanged.SequenceEqual(validOwned), "Liveness rejection is nonmutating.");
+            Assertions.False(SerpentineCrowdReviewPolicy.RestoreOwnedAwake("viper", unchanged,
+                new[] { first, first }, validOwned, value => true, out reason), "Ambiguous duplicate snapshot rejects.");
+            Assertions.False(SerpentineCrowdReviewPolicy.RestoreOwnedAwake("viper", unchanged.AsReadOnly(),
+                before, validOwned, value => true, out reason), "Readonly storage rejects before mutation.");
+            Assertions.False(SerpentineCrowdReviewPolicy.RestoreOwnedAwake("viper", unchanged,
+                before, validOwned, null, out reason), "No liveness/area authority rejects.");
+            Assertions.True(unchanged.SequenceEqual(validOwned), "Every rejected boundary is unchanged.");
+        }
+
+        internal static void PersistenceArmingDiagnosticsDistinguishNativeOutcomes()
+        {
+            Func<bool, int?, int, bool, bool, string> observe = SerpentinePersistenceReviewPolicy.ArmingObservation;
+            Assertions.Equal("bite-did-not-hit", observe(false, 0, 0, false, false), "A miss is not a poison defect.");
+            Assertions.Equal("no-melee-damage-event", observe(true, null, 0, false, false), "Missing damage differs from zero.");
+            Assertions.Equal("bite-did-not-wound", observe(true, 0, 0, false, false), "Zero damage must not deliver injury poison.");
+            foreach (int count in new[] { 0, 2, 3 })
+                Assertions.Equal("injury-save-census-not-one", observe(true, 1, count, false, false),
+                    "Absent or duplicate native observations are not a known failed save.");
+            Assertions.Equal("native-injury-save-succeeded", observe(true, 1, 1, true, false),
+                "A real successful native save must prevent poison; never force failure.");
+            Assertions.Equal("venom-missing-after-failed-save", observe(true, 1, 1, false, false),
+                "A missing application after a measured failed save is separately observable.");
+            Assertions.Equal("venom-after-successful-save", observe(true, 1, 1, true, true),
+                "Inconsistent application evidence cannot be mislabeled a clean arming.");
+            Assertions.Equal("wounding-bite-failed-save-venom-present", observe(true, 1, 1, false, true),
+                "Established exposure requires the entire observed native chain.");
+        }
+
+        internal static void PersistenceAppearanceRequiresNativeLocksToEnd()
+        {
+            Func<bool, float, bool, bool, bool, bool> ready = SerpentinePersistenceReviewPolicy.NativeAppearanceReady;
+            foreach (float dissolve in new[] { 0f, .01f, .02f })
+                Assertions.True(ready(true, dissolve, true, true, false), "Intact visible and natively free actor can arm.");
+            Assertions.False(ready(true, 0f, true, true, true), "Visual fade alone never proves summon lock expiry.");
+            Assertions.False(ready(true, 0f, false, true, false), "An action-locked actor cannot arm.");
+            Assertions.False(ready(true, 0f, true, false, false), "A movement-locked actor cannot arm.");
+            Assertions.False(ready(false, 0f, true, true, false), "Native visibility must settle.");
+            foreach (float dissolve in new[] { -.01f, .021f, 1f, float.NaN, float.PositiveInfinity, float.NegativeInfinity })
+                Assertions.False(ready(true, dissolve, true, true, false), "Missing, invalid or incomplete dissolve rejects.");
+        }
+
         internal static void PersistenceReceiptRequiresExactOwnedIdentity()
         {
             foreach (string role in SerpentinePersistenceReviewPolicy.Roles)

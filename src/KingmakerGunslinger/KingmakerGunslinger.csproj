@@ -159,6 +159,7 @@
     <Compile Include="RuntimeTesting\SerpentineRigSurveyPolicy.cs" />
     <Compile Include="RuntimeTesting\SerpentinePoisonReviewPolicy.cs" />
     <Compile Include="RuntimeTesting\SerpentinePersistenceReviewPolicy.cs" />
+    <Compile Include="RuntimeTesting\SerpentineCrowdReviewPolicy.cs" />
     <Compile Include="RuntimeTesting\SerpentineCommandReviewPolicy.cs" />
     <Compile Include="RuntimeTesting\CrocodilianLifecycleReviewPolicy.cs" />
     <Compile Include="Summoning\CrocodilianAttackVisualPose.cs" />

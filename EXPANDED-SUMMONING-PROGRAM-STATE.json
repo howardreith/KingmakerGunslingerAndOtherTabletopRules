@@ -29,7 +29,7 @@
       16
     ],
     "currentSprint": 17,
-    "currentSubItem": "Sprint17 NOT QUALIFIED. Exact4c95cf13 smoke11/direct14 PASS; crowd17/18 FAIL(owned awake restoration); prepare10/13 FAIL(no venom,0writes); cleanup3/6 FAIL(no prepared units,0writes); absence NOT RUN. Actual snapshot20261007T0020146810604Z restored00:42:42UTC exactly. Next owned-only awake repair and exact venom attack/save instrumentation, then new exact affected batch.32 roots hidden;Phase2C deferred.",
+    "currentSubItem": "Sprint17 NOT QUALIFIED. Bounded owned-awake restoration, native appearance/control readiness and venom attack/save diagnostics SOURCE PASS:269 focused/2071 full82.3s/complete178.6s/strict320 and all ancillary checks. Repairs runtime NOT RUN; no production change. Last exact4c95 failed crowd/persistence batch restored exactly with zero writes. Commit/policy-push, new immutable exact head and complete six-stage batch NEXT;32 roots hidden;Phase2C deferred.",
     "sprint17SnakeCommandSlice": {
       "pairedContactObserver": "RUNTIME DIAGNOSTIC COMPLETE; same-frame Viper gap does not improve; Constrictor commands ended and correlation rejected. Existing51 assertions unchanged; no waiver.",
       "status": "BOUNDED NATIVE COMMAND/CONTACT SLICE PASS51/51; FULL SPRINT17 NOT QUALIFIED",
@@ -352,6 +352,28 @@
       "evidence": "planning/EXPANDED-SUMMONING-SPRINT16-LAPTOP-CONTACT-BATCH-EVIDENCE.json",
       "restoration": "VERIFIED actual 136-file / Info 0.0.117 snapshot; lease Completed; no game, compatibility lock or staging",
       "salvageImported": false
+    },
+    "sprint17SnakeCrowdPersistenceRepair": {
+      "status": "SOURCE PASS; RUNTIME NOT RUN; FULL SPRINT17 NOT QUALIFIED",
+      "sourceParent": "9de166145d71dbf5efafe33b88550d4539f76f2f",
+      "review": "planning/EXPANDED-SUMMONING-SPRINT17-SNAKE-CROWD-PERSISTENCE-REPAIR.md",
+      "focused": 269,
+      "domain": 2071,
+      "domainSeconds": 82.3,
+      "sourceGateSeconds": 178.6,
+      "strictPackageMembers": 320,
+      "preflight": 508,
+      "orchestration": 168,
+      "provenance": 17,
+      "actualLauncherAccepted": 13,
+      "actualLauncherRejected": 10,
+      "productionGameplayChanged": false,
+      "runtimeExecuted": false,
+      "runtimeQualified": false,
+      "publicationAuthorized": false,
+      "venomFailureCause": "UNRESOLVED; native hit/wound/injury-save diagnostics added, no forced outcome",
+      "awakeScope": "Only exact owned live same-area snake references; foreign sequence changes reject without mutation; full exact sequence assertion retained",
+      "appearanceScope": "Native fade plus CanAct/CanMove and absence of exact native summon appearance buff; no removal or visibility forcing"
     },
     "sprint17SnakeCrowdSlice": {
       "status": "DIRECT14/14 PASS; CROWD17/18 FAIL; FULL SPRINT17 NOT QUALIFIED",
@@ -720,7 +742,7 @@
       "detail": "Supplied by the owner and read. The Pteranodon passage confirms the shipped profile rather than changing it: ten-foot reach valued for attacks of opportunity, and a single main bite on which everything stacks (2d6 plus modifiers). The guide also positions multiple Pteranodons as the best single-target aerial attacker at their tier. This informs Sprint 2's acceptance emphasis on correct bite impact timing and location at Large reach; it changes no accepted statistic."
     }
   ],
-  "nextConcreteAction": "Bounded owned-awake repair and native venom-arming instrumentation; focused/source gates, commit/policy-push NOT QUALIFIED, new exact artifact and complete affected batch. Then lifecycle/UI/private routes, separate Salamander and full Sprint17/Phase2B gates. Stop after Phase2B owner-review handoff; Phase2C authorized but deferred.",
+  "nextConcreteAction": "Freeze/policy-push the source-qualified snake crowd/persistence fixture repair; repeat all exact-head prelaunch gates and the complete six-stage guarded batch. No poison production change without measured bite/wound/save evidence. Then lifecycle/UI/private routes, separate Salamander and full Sprint17/Phase2B gates. Stop after Phase2B owner review;Phase2C authorized but deferred.",
   "deploymentReconciliation": {
     "finding": "The first runs left this mission's 0.0.136 branch build installed over the pre-run 0.0.117 installation. The mission required restoration and did not authorize a permanent installation; a shared version string does not make a branch artifact an accepted release.",
     "ownershipVerified": "The live DLL hash matched this mission's exact build byte for byte, so the tree was unambiguously mission-owned.",
