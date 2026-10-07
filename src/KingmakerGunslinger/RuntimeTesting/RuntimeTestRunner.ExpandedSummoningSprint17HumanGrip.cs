@@ -14,86 +14,126 @@ namespace KingmakerGunslinger.RuntimeTesting
     internal sealed partial class RuntimeTestRunner
     {
         // CPU-only, request-local native/original surface comparison. Keep
-        // borrowed references and bone-local points privately; never render,
+        // borrowed references and weights privately; never render,
         // export, change, rebind or dispose a native mesh/transform.
-        private sealed class Sprint17HumanGripSurface
+        private sealed class Sprint17HumanGripSurface : IDisposable
         {
-            private sealed class Point
-            {
-                internal Transform[] Bones;
-                internal Vector3[] Local;
-                internal float[] Weights;
-            }
-            private readonly Point[][] _hands;
+            private readonly int[][] _hands;
             private readonly Mesh _source;
-            internal Sprint17HumanGripSurface(Mesh mesh, Transform[] bones)
+            private readonly SkinnedMeshRenderer _anchor;
+            private GameObject _control;
+            private SkinnedMeshRenderer _baker;
+            private Mesh _snapshot;
+
+            internal Sprint17HumanGripSurface(SkinnedMeshRenderer anchor, List<UnityEngine.Object> resources)
             {
-                if (mesh == null || bones == null || bones.Length == 0 || bones.Length > 4096 ||
-                    mesh.vertexCount < 8 || mesh.vertexCount > 200000 || bones.Any(b => b == null))
+                if (anchor == null || anchor.name != SalamanderHumanBindingPolicy.BodyName || resources == null)
+                    throw new InvalidOperationException("Exact guarded human body required.");
+                _anchor = anchor; _source = anchor.sharedMesh;
+                Transform[] bones = anchor.bones;
+                if (_source == null || bones.Length == 0 || bones.Length > 4096 ||
+                    _source.vertexCount < 8 || _source.vertexCount > 200000 || bones.Any(b => b == null))
                     throw new InvalidOperationException("Unbounded or missing exact hand surface.");
-                _source = mesh;
-                var vertices = mesh.vertices; var weights = mesh.boneWeights; var bind = mesh.bindposes;
-                if (vertices.Length != weights.Length || bones.Length != bind.Length)
-                    throw new InvalidOperationException("Hand surface palette mismatch.");
-                _hands = new Point[2][];
+                // Imported combined meshes can reject vertices while exposing
+                // weights/binds. Do not access native vertices or change its
+                // import flags: BakeMesh fills only a new owned snapshot.
+                var weights = _source.boneWeights;
+                if (weights.Length != _source.vertexCount || bones.Length != _source.bindposes.Length)
+                    throw new InvalidOperationException("Hand metadata mismatch: vertices=" + _source.vertexCount +
+                        ";weights=" + weights.Length + ";bones=" + bones.Length +
+                        ";binds=" + _source.bindposes.Length + ";readable=" + _source.isReadable);
+                _hands = new int[2][];
                 for (int side = 0; side < 2; side++)
                 {
-                    var selected = new List<Point>();
-                    for (int v = 0; v < vertices.Length; v++)
+                    var selected = new List<int>();
+                    for (int v = 0; v < weights.Length; v++)
                     {
                         BoneWeight w = weights[v];
                         int[] ids = { w.boneIndex0, w.boneIndex1, w.boneIndex2, w.boneIndex3 };
                         float[] values = { w.weight0, w.weight1, w.weight2, w.weight3 };
                         if (ids.Any(id => id < 0 || id >= bones.Length))
                             throw new InvalidOperationException("Invalid hand surface bone index.");
-                        if (!SalamanderHumanBindingPolicy.IsGripSurfaceVertex(side == 0 ? "L" : "R",
-                            ids.Select(id => bones[id].name).ToArray(), values)) continue;
-                        int[] used = Enumerable.Range(0, 4).Where(i => values[i] > 0).ToArray();
-                        selected.Add(new Point { Bones = used.Select(i => bones[ids[i]]).ToArray(),
-                            Local = used.Select(i => bind[ids[i]].MultiplyPoint3x4(vertices[v])).ToArray(),
-                            Weights = used.Select(i => values[i]).ToArray() });
+                        if (SalamanderHumanBindingPolicy.IsGripSurfaceVertex(side == 0 ? "L" : "R",
+                            ids.Select(id => bones[id].name).ToArray(), values)) selected.Add(v);
                     }
                     if (selected.Count < 8 || selected.Count > 8192)
                         throw new InvalidOperationException("Exact native/original hand surface unavailable.");
                     _hands[side] = selected.ToArray();
                 }
+                try
+                {
+                    // Outside the live view so native renderer/material census
+                    // cannot adopt it. No UnitEntityView, Animator or material.
+                    // All transform writes below target only this owned control.
+                    _control = new GameObject("KMG_Runtime_Sprint17_GripControl_" + _source.GetInstanceID());
+                    resources.Add(_control); resources.Add(_control.transform);
+                    _baker = _control.AddComponent<SkinnedMeshRenderer>(); resources.Add(_baker);
+                    _baker.enabled = false;
+                    _baker.sharedMesh = _source; _baker.bones = bones; _baker.rootBone = anchor.rootBone;
+                    _baker.quality = anchor.quality; _baker.updateWhenOffscreen = false;
+                    _snapshot = new Mesh { name = _control.name + "_Snapshot" }; resources.Add(_snapshot);
+                }
+                catch { Dispose(); throw; }
             }
 
             internal JObject Census()
             {
                 return new JObject { ["mesh"] = _source.name, ["meshId"] = _source.GetInstanceID(),
+                    ["nativeCpuReadable"] = _source.isReadable, ["vertices"] = _source.vertexCount,
                     ["leftVertices"] = _hands[0].Length, ["rightVertices"] = _hands[1].Length,
-                    ["geometryExported"] = false, ["poseWritten"] = false };
+                    ["quality"] = _baker.quality.ToString(), ["controlEnabled"] = _baker.enabled,
+                    ["controlOutsideLiveView"] = !_control.transform.IsChildOf(_anchor.transform),
+                    ["ownedResources"] = 4, ["method"] = "owned disabled renderer CPU BakeMesh; live anchor frame",
+                    ["geometryExported"] = false, ["nativePoseWritten"] = false };
             }
 
             internal float[] Gaps(Vector3 start, Vector3 axis)
             {
-                if (_source == null || axis.sqrMagnitude <= 0)
-                    throw new InvalidOperationException("Borrowed hand or native spear unavailable.");
-                var frames = _hands.SelectMany(hand => hand).SelectMany(point => point.Bones)
-                    .Distinct().ToDictionary(bone => bone, bone => bone.localToWorldMatrix);
+                if (_source == null || _anchor == null || _baker == null || _snapshot == null ||
+                    _baker.enabled || !ReferenceEquals(_baker.sharedMesh, _source) || axis.sqrMagnitude <= 0)
+                    throw new InvalidOperationException("Exact non-rendering hand control unavailable.");
+                Transform frame = _anchor.transform;
+                _control.transform.position = frame.position;
+                _control.transform.rotation = frame.rotation;
+                _control.transform.localScale = frame.lossyScale;
+                Matrix4x4 actual = _control.transform.localToWorldMatrix, expected = frame.localToWorldMatrix;
+                if (!SalamanderHumanBindingPolicy.BakeFrameMatches(
+                    Enumerable.Range(0, 16).Select(i => actual[i]).ToArray(),
+                    Enumerable.Range(0, 16).Select(i => expected[i]).ToArray()))
+                    throw new InvalidOperationException("Native hand frame has shear or changed scale; do not approximate.");
+                _baker.BakeMesh(_snapshot);
+                Vector3[] vertices = _snapshot.vertices;
+                if (vertices.Length != _source.vertexCount)
+                    throw new InvalidOperationException("Incomplete owned baked hand snapshot: " + vertices.Length +
+                        "/" + _source.vertexCount);
                 var result = new float[2];
                 for (int side = 0; side < 2; side++)
                 {
                     float gap = float.PositiveInfinity;
-                    foreach (var point in _hands[side])
+                    foreach (int index in _hands[side])
                     {
-                        Vector3 world = Vector3.zero;
-                        for (int i = 0; i < point.Bones.Length; i++)
-                            world += frames[point.Bones[i]].MultiplyPoint3x4(point.Local[i]) * point.Weights[i];
+                        Vector3 world = actual.MultiplyPoint3x4(vertices[index]);
                         float distance = Vector3.Distance(world, start + axis *
                             Mathf.Clamp01(Vector3.Dot(world - start, axis) / axis.sqrMagnitude));
                         if (!SalamanderTailAnimationPolicy.Finite(distance))
-                            throw new InvalidOperationException("Non-finite same-pose hand control.");
+                            throw new InvalidOperationException("Non-finite same-pose baked hand control.");
                         gap = Mathf.Min(gap, distance);
                     }
                     result[side] = gap;
                 }
                 return result;
             }
+
+            public void Dispose()
+            {
+                if (_baker != null) { _baker.sharedMesh = null; _baker.bones = new Transform[0]; _baker.rootBone = null; }
+                if (_snapshot != null) UnityEngine.Object.Destroy(_snapshot);
+                if (_control != null) UnityEngine.Object.Destroy(_control);
+                _baker = null; _snapshot = null; _control = null;
+            }
         }
 
-        private sealed class Sprint17HumanGripObservation
+        private sealed class Sprint17HumanGripObservation : IDisposable
         {
             private readonly Sprint17HumanGripSurface _native, _original;
             private readonly MeshFilter _spear;
@@ -103,9 +143,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal readonly JObject Evidence;
             internal string Failure;
             internal Sprint17HumanGripObservation(Sprint17HumanGripSurface native,
-                SkinnedMeshRenderer original, MeshFilter spear, UnitAttack command)
+                SkinnedMeshRenderer original, MeshFilter spear, UnitAttack command, List<UnityEngine.Object> resources)
             {
-                _native = native; _original = new Sprint17HumanGripSurface(original.sharedMesh, original.bones);
+                _native = native; _original = new Sprint17HumanGripSurface(original, resources);
                 _spear = spear; _command = command;
                 Evidence = new JObject { ["scope"] = "same actor/bones/spear/frame; CPU-only borrowed native hand control; no native geometry export",
                     ["native"] = native.Census(), ["original"] = _original.Census(),
@@ -151,6 +191,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 catch (Exception error) { Evidence["failure"] = Failure = error.ToString(); }
             }
+
+            public void Dispose() { _original.Dispose(); }
 
             private static JObject NativeEventMetadata(AnimationBase active, int handleId, string clip)
             {

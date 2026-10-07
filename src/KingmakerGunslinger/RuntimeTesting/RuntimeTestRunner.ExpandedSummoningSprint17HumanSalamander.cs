@@ -67,6 +67,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData owner = SummonSprint17BodyCarrier(fixture, "salamander", out control, humanTailResearch: true);
             SetExpandedSummoningBrainActive(owner, false);
             var resources = new List<UnityEngine.Object>();
+            Sprint17HumanGripSurface nativeGrip = null;
             UnityEngine.Object[] borrowed = new UnityEngine.Object[0];
             var row = new JObject { ["key"] = "salamander-human-tail",
                 ["scope"] = "closed human/original-tail integration research; published Salamander unchanged" };
@@ -115,7 +116,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 row["nativeHandActions"] = Sprint17NativeHandAttackCensus(owner);
                 row["nativeRendererState"] = HumanSalamanderRendererObservation(owner);
                 var nativeBody = skins.Single(s => s.Skin.name == SalamanderHumanBindingPolicy.BodyName);
-                var nativeGrip = new Sprint17HumanGripSurface(nativeBody.Mesh, nativeBody.Bones);
+                nativeGrip = new Sprint17HumanGripSurface(nativeBody.Skin, resources);
                 WriteHumanSalamanderCheckpoint("native-census-before-rollback", row);
                 UnityEngine.Object[] rollback = new UnityEngine.Object[0];
                 bool rejected; string outcome;
@@ -196,7 +197,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     (bool)row["movement"]["pose"]["finite"], row["movement"],
                     "native movement progresses with finite original skin and unchanged human action references");
                 WriteHumanSalamanderCheckpoint("movement-complete-before-attack", row);
-                foreach (int step in ReviewHumanSalamanderAttack(fixture, owner, attachment, nativeGrip, row)) yield return step;
+                foreach (int step in ReviewHumanSalamanderAttack(fixture, owner, attachment, nativeGrip, resources, row)) yield return step;
                 resources.AddRange(attachment.CaptureOwnedResources());
                 CheckHumanSalamander("native-reference-isolation", attachment.NativeActionsUnchanged &&
                     originalSet.Actions.SequenceEqual(nativeActions) &&
@@ -210,28 +211,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                 try { WriteHumanSalamanderCheckpoint("before-owner-destruction", row); }
                 finally
                 {
-                    if (owner != null && !owner.Destroyed)
+                    try { if (nativeGrip != null) nativeGrip.Dispose(); }
+                    finally
                     {
-                        var owned = owner.View == null ? null : owner.View.GetComponent<SalamanderHumanVisualAttachment>();
-                        if (owned != null) resources.AddRange(owned.CaptureOwnedResources());
-                        InterruptExpandedSummoningFixtureCommands(owner);
-                        owner.CombatState.LeaveCombat(); owner.Destroy(); Game.Instance.EntityDestroyer.Tick();
-                        Game.Instance.Player.UpdateIsInCombat();
+                        if (owner != null && !owner.Destroyed)
+                        {
+                            var owned = owner.View == null ? null : owner.View.GetComponent<SalamanderHumanVisualAttachment>();
+                            if (owned != null) resources.AddRange(owned.CaptureOwnedResources());
+                            InterruptExpandedSummoningFixtureCommands(owner);
+                            owner.CombatState.LeaveCombat(); owner.Destroy(); Game.Instance.EntityDestroyer.Tick();
+                            Game.Instance.Player.UpdateIsInCombat();
+                        }
                     }
                 }
                 WriteHumanSalamanderCheckpoint("owner-destruction-returned", row);
             }
             yield return 0; yield return 0;
-            CheckHumanSalamander("native-destruction", resources.Distinct().Count() >= 29 && resources.All(v => v == null) &&
+            CheckHumanSalamander("native-destruction", resources.Distinct().Count() >= 39 && resources.All(v => v == null) &&
                 borrowed.Length >= 25 && borrowed.All(v => v != null),
                 new JObject { ["captured"] = resources.Distinct().Count(), ["remaining"] = resources.Count(v => v != null),
                     ["borrowedAlive"] = borrowed.Count(v => v != null) },
-                "native unit destruction releases only exact project-owned body/tail/clip/set/material resources");
+                "native unit destruction releases body/tail assets, eight owned bake-control resources and both frame probes; borrowed native assets survive");
             WriteHumanSalamanderCheckpoint("native-destruction-settled", row);
         }
 
         private IEnumerable<int> ReviewHumanSalamanderAttack(ExpandedSummoningCorrectionFixture fixture,
-            UnitEntityData owner, SalamanderHumanVisualAttachment attachment, Sprint17HumanGripSurface nativeGrip, JObject row)
+            UnitEntityData owner, SalamanderHumanVisualAttachment attachment, Sprint17HumanGripSurface nativeGrip,
+            List<UnityEngine.Object> resources, JObject row)
         {
             string placement;
             var target = CreateSprint17ContactTarget(fixture, ExpandedSummoningOpenPoint(owner.Position, 1.5f,
@@ -265,6 +271,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             owner.Memory.Add(target); target.Memory.Add(owner);
             if (!Game.Instance.State.AwakeUnits.Contains(target)) Game.Instance.State.AwakeUnits.Add(target);
             var probe = owner.View.gameObject.AddComponent<Sprint17SnakeContactFrameProbe>();
+            resources.Add(probe);
             Sprint17HumanGripObservation gripReview = null;
             Sprint17HumanGripFrameProbe gripProbe = null;
             observer.ObserveWeaponContact = rule => {
@@ -302,9 +309,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Mesh spearMesh = spearWeapon.Blueprint.VisualParameters.Model.GetComponentsInChildren<MeshFilter>(true).Single().sharedMesh;
                 var spearFilter = owner.View.GetComponentsInChildren<MeshFilter>(true)
                     .Single(filter => ReferenceEquals(filter.sharedMesh, spearMesh));
-                gripReview = new Sprint17HumanGripObservation(nativeGrip, attachment.Body, spearFilter, attack);
+                gripReview = new Sprint17HumanGripObservation(nativeGrip, attachment.Body, spearFilter, attack, resources);
                 row["samePoseGripReview"] = gripReview.Evidence;
                 gripProbe = owner.View.gameObject.AddComponent<Sprint17HumanGripFrameProbe>();
+                resources.Add(gripProbe);
                 WriteHumanSalamanderCheckpoint("before-native-attack-command", row);
                 owner.Commands.Run(attack);
                 gripProbe.Observe = gripReview.ObserveFrame;
@@ -368,7 +376,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 owner.Descriptor.SwitchFactions(faction, false); owner.AttackFactions.Match(enemies); owner.GroupId = group;
                 if (gripProbe != null) { gripProbe.Observe = null; UnityEngine.Object.Destroy(gripProbe); }
                 if (probe != null) UnityEngine.Object.Destroy(probe);
-                target.Destroy(); Game.Instance.EntityDestroyer.Tick(); Game.Instance.Player.UpdateIsInCombat();
+                try { if (gripReview != null) gripReview.Dispose(); }
+                finally { target.Destroy(); Game.Instance.EntityDestroyer.Tick(); Game.Instance.Player.UpdateIsInCombat(); }
             }
         }
 
